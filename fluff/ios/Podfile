@@ -7,6 +7,10 @@ target 'fluff' do
 
   # Pods for fluff
   pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Crash'
+  pod 'Firebase/Database'
 
   target 'fluff-tvOSTests' do
     inherit! :search_paths

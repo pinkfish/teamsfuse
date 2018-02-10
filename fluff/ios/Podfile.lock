@@ -1,3 +1,121 @@
-PODFILE CHECKSUM: ece0e78f5135f4f2fd4a2bd02edb8ac485e12711
+PODS:
+  - BoringSSL (9.2):
+    - BoringSSL/Implementation (= 9.2)
+    - BoringSSL/Interface (= 9.2)
+  - BoringSSL/Implementation (9.2):
+    - BoringSSL/Interface (= 9.2)
+  - BoringSSL/Interface (9.2)
+  - Firebase/Auth (4.8.2):
+    - Firebase/Core
+    - FirebaseAuth (= 4.4.2)
+  - Firebase/Core (4.8.2):
+    - FirebaseAnalytics (= 4.0.9)
+    - FirebaseCore (= 4.0.14)
+  - Firebase/Crash (4.8.2):
+    - Firebase/Core
+    - FirebaseCrash (= 2.0.2)
+  - Firebase/Database (4.8.2):
+    - Firebase/Core
+    - FirebaseDatabase (= 4.1.4)
+  - Firebase/Firestore (4.8.2):
+    - Firebase/Core
+    - FirebaseFirestore (= 0.10.0)
+  - FirebaseAnalytics (4.0.9):
+    - FirebaseCore (~> 4.0)
+    - FirebaseInstanceID (~> 2.0)
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - nanopb (~> 0.3)
+  - FirebaseAuth (4.4.2):
+    - FirebaseAnalytics (~> 4.0)
+    - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - FirebaseCore (4.0.14):
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+  - FirebaseCrash (2.0.2):
+    - FirebaseAnalytics (~> 4.0)
+    - FirebaseInstanceID (~> 2.0)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - Protobuf (~> 3.1)
+  - FirebaseDatabase (4.1.4):
+    - FirebaseAnalytics (~> 4.0)
+    - FirebaseCore (~> 4.0)
+    - leveldb-library (~> 1.18)
+  - FirebaseFirestore (0.10.0):
+    - FirebaseAnalytics (~> 4.0)
+    - FirebaseCore (~> 4.0)
+    - gRPC-ProtoRPC (~> 1.0)
+    - leveldb-library (~> 1.18)
+    - Protobuf (~> 3.1)
+  - FirebaseInstanceID (2.0.8):
+    - FirebaseCore (~> 4.0)
+  - GoogleToolboxForMac/DebugUtils (2.1.3):
+    - GoogleToolboxForMac/Defines (= 2.1.3)
+  - GoogleToolboxForMac/Defines (2.1.3)
+  - GoogleToolboxForMac/Logger (2.1.3):
+    - GoogleToolboxForMac/Defines (= 2.1.3)
+  - GoogleToolboxForMac/NSData+zlib (2.1.3):
+    - GoogleToolboxForMac/Defines (= 2.1.3)
+  - GoogleToolboxForMac/NSDictionary+URLArguments (2.1.3):
+    - GoogleToolboxForMac/DebugUtils (= 2.1.3)
+    - GoogleToolboxForMac/Defines (= 2.1.3)
+    - GoogleToolboxForMac/NSString+URLArguments (= 2.1.3)
+  - GoogleToolboxForMac/NSString+URLArguments (2.1.3)
+  - gRPC (1.9.1):
+    - gRPC-RxLibrary (= 1.9.1)
+    - gRPC/Main (= 1.9.1)
+  - gRPC-Core (1.9.1):
+    - gRPC-Core/Implementation (= 1.9.1)
+    - gRPC-Core/Interface (= 1.9.1)
+  - gRPC-Core/Implementation (1.9.1):
+    - BoringSSL (~> 9.0)
+    - gRPC-Core/Interface (= 1.9.1)
+    - nanopb (~> 0.3)
+  - gRPC-Core/Interface (1.9.1)
+  - gRPC-ProtoRPC (1.9.1):
+    - gRPC (= 1.9.1)
+    - gRPC-RxLibrary (= 1.9.1)
+    - Protobuf (~> 3.0)
+  - gRPC-RxLibrary (1.9.1)
+  - gRPC/Main (1.9.1):
+    - gRPC-Core (= 1.9.1)
+    - gRPC-RxLibrary (= 1.9.1)
+  - GTMSessionFetcher/Core (1.1.13)
+  - leveldb-library (1.20)
+  - nanopb (0.3.8):
+    - nanopb/decode (= 0.3.8)
+    - nanopb/encode (= 0.3.8)
+  - nanopb/decode (0.3.8)
+  - nanopb/encode (0.3.8)
+  - Protobuf (3.5.0)
+
+DEPENDENCIES:
+  - Firebase/Auth
+  - Firebase/Core
+  - Firebase/Crash
+  - Firebase/Database
+  - Firebase/Firestore
+
+SPEC CHECKSUMS:
+  BoringSSL: f3d6b8ce199b9c450a8cfc14895d07a2627fc232
+  Firebase: 7d3b8cd837ad9fcd391657734c0d56dab8e9a5a3
+  FirebaseAnalytics: 388b630c15713f5dbf364071f5f3d6077fb52f4e
+  FirebaseAuth: bd2738c5c1e92b108ba5f7f7335908097a4e50bb
+  FirebaseCore: 2e0b98fb2d64ca8140136beff15772bdd14d2dd7
+  FirebaseCrash: cded0fc566c03651aea606a101bc156085f333ca
+  FirebaseDatabase: de4446507ccd3257fca37d16f40e1540324571fd
+  FirebaseFirestore: 713f0c555e7af5ac03d0fec0e2477c48857f4977
+  FirebaseInstanceID: 81df5805a08001e69138664bdd02c6719a9ac80f
+  GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
+  gRPC: 58828d611419d49da19ad02a60679ffa10a10a87
+  gRPC-Core: 66413bf1f2d038a6221bc7bfcbeeaa5a117cee29
+  gRPC-ProtoRPC: f29e8b7445e0d3c0311678ab121e6c164da4ca5e
+  gRPC-RxLibrary: 8e0067bfe8a054022c7a81470baace4f2f633b48
+  GTMSessionFetcher: 5bb1eae636127de695590f50e7d248483eb891e6
+  leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
+  nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
+  Protobuf: 8a9838fba8dae3389230e1b7f8c104aa32389c03
+
+PODFILE CHECKSUM: aa8446a1bf0fbdc3fed6a142ea4559787ba440f5
 
 COCOAPODS: 1.4.0
