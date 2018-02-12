@@ -7,9 +7,9 @@
 	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
 	<string>ca-app-pub-3940256099942544/4411468910</string>
 	<key>CLIENT_ID</key>
-	<string>400199897683-8glgg0is6l0epa96sl065npi6ifusgqv.apps.googleusercontent.com</string>
+	<string>400199897683-q1bmm6cbkkskqgtmuoaaruikkcq9vtgj.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.400199897683-8glgg0is6l0epa96sl065npi6ifusgqv</string>
+	<string>com.googleusercontent.apps.400199897683-q1bmm6cbkkskqgtmuoaaruikkcq9vtgj</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBVJ6DGEqQv4lRicySx0siZTCk-9lXY6lY</string>
 	<key>GCM_SENDER_ID</key>
@@ -17,7 +17,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.teamsfuse.App</string>
+	<string>com.fluff</string>
 	<key>PROJECT_ID</key>
 	<string>teamsfuse</string>
 	<key>STORAGE_BUCKET</key>
@@ -33,7 +33,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:400199897683:ios:3727bcd3cf55b000</string>
+	<string>1:400199897683:ios:a5ce747f9ac0530a</string>
 	<key>DATABASE_URL</key>
 	<string>https://teamsfuse.firebaseio.com</string>
 </dict>
