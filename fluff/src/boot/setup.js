@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { StyleProvider } from "native-base";
 
-import App from "../App";
+import App from "../components/app";
 import getTheme from "../theme/components";
 import variables from "../theme/variables/commonColor";
 

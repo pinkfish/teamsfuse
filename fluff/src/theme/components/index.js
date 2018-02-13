@@ -36,6 +36,8 @@ import inputTheme from "./Input";
 import swipeRowTheme from "./SwipeRow";
 import segmentTheme from "./Segment";
 import spinnerTheme from "./Spinner";
+import textInputTheme from "./TextInput";
+
 import cardItemTheme from "./CardItem";
 import listItemTheme from "./ListItem";
 import formTheme from "./Form";
@@ -208,6 +210,9 @@ export default (variables = variable) => {
     },
     "NativeBase.Thumbnail": {
       ...thumbnailTheme(variables)
+    },
+    "TextInput": {
+      ...textInputTheme(variables)
     }
   };
 

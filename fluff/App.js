@@ -1,5 +1,5 @@
 import React from "react";
-import Setup from "./src/boot/setup";
+import AppBase from "./src/components/app/AppBase";
 import AppReducer from './src/reducers/AppReducer';
 import configureStore from './src/store/ConfigureStore';
 import { Provider } from 'react-redux';
@@ -12,7 +12,7 @@ export default class App extends React.Component {
   render() {
 
     return <Provider store={store}>
-      <Setup />
+      <AppBase />
     </Provider>;
   }
 }
