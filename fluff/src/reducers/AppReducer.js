@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux';
 import UserReducer from './UserReducer';
 import { firebaseStateReducer } from 'react-redux-firebase';
-import { reducer as formReducer } from 'redux-form'
+import { reducer as formReducer } from 'redux-form';
+import { NavReducer } from './NavReducers';
 
 
 export const makeRootReducer = (asyncReducers) => {
@@ -9,6 +10,7 @@ export const makeRootReducer = (asyncReducers) => {
     nav: UserReducer,
     firebase: firebaseStateReducer,
     form: formReducer,
+    nav: NavReducer,
     ...asyncReducers
   });
 }

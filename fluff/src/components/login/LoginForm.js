@@ -1,6 +1,6 @@
 
 import React, { Component } from "react";
-import { View } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Field, reduxForm } from 'redux-form'
 import {
   Container,
@@ -23,11 +23,10 @@ import styles from "./styles";
 import MyTextInput from "../utils/MyTextInput";
 import firebase from 'react-native-firebase';
 
-
 const onSubmit = (values, dispatch) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      firebase.auth().signInAndRetrieveDataWithEmailAndPassword(values.email, values.password)
+      this.firebase.auth().signInAndRetrieveDataWithEmailAndPassword(values.email, values.password)
           .then((cred) => {
             resolve();
           });
@@ -50,10 +49,10 @@ class LoginFormView extends Component {
     return (
        <ScrollView style={styles.container}>
 
-            <Label floatingLabel >Email</Label>
+            <Label floatingLabel >{I18n.t('email')}</Label>
             <Field name="email" component={MyTextInput} floatingLabel />
 
-            <Label floatingLabel>Password</Label>
+            <Label floatingLabel>{I18n.t('password')}</Label>
             <Field name="password" component={MyTextInput} secureTextEntry floatingLabel/>
 
           <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(onSubmit)} >
@@ -63,8 +62,6 @@ class LoginFormView extends Component {
     );
   }
 };
-
-
 
 export default reduxForm({
   form: 'Login',
@@ -79,11 +76,11 @@ export default reduxForm({
     //values = values.toJS()
 
     if (!values.email) {
-      errors.email = 'Email is required.'
+      errors.email = I18n.t('needemail')
     }
 
     if (!values.password) {
-      errors.password = 'Password is required.'
+      errors.password = I18n.t('needpassword')
     }
     console.log('in here', errors)
 
@@ -91,34 +88,3 @@ export default reduxForm({
     return errors
   }
 })(LoginFormView)
-
-/*
-
-import { Field, reduxForm } from 'redux-form'
-
-const submit = values => {
-  console.log('submitting form', values)
-}
-
-const renderInput = ({ input: { onChange, ...restInput }}) => {
-  return <TextInput style={styles.input} onChangeText={onChange} {...restInput} />
-}
-
-const Form = props => {
-  const { handleSubmit } = props
-
-  return (
-    <View style={styles.container}>
-      <Text>Email:</Text>
-      <Field name="email" component={renderInput} />
-      <TouchableOpacity onPress={handleSubmit(submit)}>
-        <Text style={styles.button}>Submit</Text>
-      </TouchableOpacity>
-    </View>
-  )
-}
-
-export default reduxForm({
-  form: 'test'
-})(Form)
-*/
