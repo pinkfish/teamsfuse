@@ -21,9 +21,21 @@ import {
 import styles from "./styles";
 import MyTextInput from "../utils/MyTextInput";
 import LoginForm from './LoginForm';
-
+import { withFirestore } from 'react-redux-firebase';
 
 class UserLogin extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.logout = this.logout.bind(this);
+    this.state = {
+         errorText: ''
+    }
+  }
+
+  logout() {
+    this.firebase.logout();
+  }
+
   render() {
     const { handleSubmit, submitting } = this.props
 
@@ -39,17 +51,20 @@ class UserLogin extends Component {
             </Button>
           </Left>
           <Body>
-            <Title>Login to Team Fuse</Title>
+            <Button>Teamfuse</Title>
           </Body>
           <Right />
         </Header>
 
         <Content>
-          <LoginForm />
+          <Button onPress={() => this.logout()}>
+            <Text>{I18n.t('logout')}</Text>
+          </Button>
+          <Text>{this.state.errorText}</Text>
         </Content>
       </Container>
     );
   }
 }
 
-export default UserLogin;
+export default withFirestore(UserLogin);

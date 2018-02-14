@@ -24,31 +24,6 @@ import {
 import styles from "./styles";
 import MyTextInput from "../utils/MyTextInput";
 
-/*
-const onSubmit = (values, dispatch) => {
-  console.log('onSubmit', values);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, 1500);
-    setTimeout(() => withFirebase(() => {
-      console.log('onSubmit', values);
-      resolve();
-      firebase.login({ email : values.email, password: values.password })
-          .then((cred) => {
-            console.log('resolved');
-            resolve();
-          })
-          .catch((error) => {
-            console.log('error!', error);
-            reject(error);
-          });
-    }), 1500)
-  })
-  });
-}
-*/
-
 const renderInput = ({ input: { onChange, ...restInput }}) => {
   console.log("Rendering input");
   return <Input style={styles.input} onChangeText={(value) => { onChange(value); console.log("onChange<", value); }} {...restInput} />
@@ -59,6 +34,9 @@ class LoginFormView extends Component {
   constructor(props, context) {
     super(props, context);
     this.onSubmit = this.onSubmit.bind(this);
+    this.state = {
+         errorText: ''
+    }
   }
 
   onSubmit = (values, dispatch) => {
@@ -66,12 +44,14 @@ class LoginFormView extends Component {
     return new Promise((resolve, reject) => {
       this.props.firebase.login({ email : values.email, password: values.password })
             .then((cred) => {
-              console.log('resolved');
+              console.log('resolved ');
               resolve();
+              this.navigation.navigate.goBack();
             })
             .catch((error) => {
-              console.log('error!', error);
-              reject(error);
+              // Update the field with an error string.
+              this.setState({errorText: error.message});
+              resolve();
             })
           });
   }
@@ -89,6 +69,7 @@ class LoginFormView extends Component {
 
             <Label floatingLabel>{I18n.t('password')}</Label>
             <Field name="password" component={MyTextInput} secureTextEntry floatingLabel/>
+            <Text>{this.state.errorText}</Text>
 
           <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
             <Text>Sign In</Text>

@@ -5,6 +5,7 @@ import ConfigureStore from './src/store/ConfigureStore';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react'
 import { Text } from "native-base";
+import { MenuProvider } from 'react-native-popup-menu';
 
 
 import { createStore } from 'redux';
@@ -17,8 +18,10 @@ export default class App extends React.Component {
     console.log(store);
 
   return <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <AppBase />
+           <PersistGate loading={null} persistor={persistor}>
+             <MenuProvider>
+               <AppBase />
+             </MenuProvider>
           </PersistGate>
         </Provider>;
   }

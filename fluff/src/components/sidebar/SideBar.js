@@ -6,13 +6,14 @@ import {
   Text,
   List,
   ListItem,
-  Icon,
   Container,
   Left,
   Right,
   Badge
 } from "native-base";
 import styles from "./style";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 
 const drawerCover = require("../../../assets/drawer-cover.png");
 const drawerImage = require("../../../assets/logo-kitchen-sink.png");
@@ -20,7 +21,13 @@ const dataItems = [
   {
     name: I18n.t('profile'),
     route: "Profile",
-    icon: "phone-portrait",
+    icon: "account-circle",
+    bg: "#C5F442"
+  },
+  {
+    name: I18n.t('logout'),
+    route: "Logout",
+    icon: "logout",
     bg: "#C5F442"
   },
   {
@@ -30,11 +37,17 @@ const dataItems = [
     bg: "#C5F442"
   },
   {
-    name: I18n.t('logout'),
-    route: "Logout",
-    icon: "ios-log-out",
+    name: I18n.t('help'),
+    route: "Help",
+    icon: "help",
     bg: "#C5F442"
   },
+  {
+    name: I18n.t('sendfeedback'),
+    route: "SendFeedback",
+    icon: "email",
+    bg: "#C5F442"
+  }
 ];
 
 class SideBar extends Component {
