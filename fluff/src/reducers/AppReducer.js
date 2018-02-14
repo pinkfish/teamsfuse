@@ -7,12 +7,12 @@ import { NavReducer } from './NavReducers';
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
-    nav: UserReducer,
-    firebase: firebaseStateReducer,
-    form: formReducer,
-    nav: NavReducer,
-    ...asyncReducers
-  });
+      nav: UserReducer,
+      firebase: firebaseStateReducer,
+      form: formReducer,
+      nav: NavReducer,
+      ...asyncReducers
+    });
 }
 
 export default makeRootReducer;

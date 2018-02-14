@@ -13,7 +13,7 @@ import {
 } from "native-base";
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { isLoaded, isEmpty, firebaseConnect } from 'react-redux-firebase';
+import { isLoaded, isEmpty, firebaseConnect, withFirebase } from 'react-redux-firebase';
 import { withNavigation, HeaderBackButton} from 'react-navigation';
 
 
@@ -33,21 +33,30 @@ export class AppHeaderLeftInternal extends Component {
 export const AppHeaderLeft = withNavigation(AppHeaderLeftInternal);
 
 const enhance = compose(
-  connect(({ firebase: { auth } }) => ({
-    uid: auth.uid
+  connect(({ firebase: { auth, profile } }) => ({
+    auth: auth,
+    profile: profile
   })),
-  withNavigation
+  withNavigation,
+  withFirebase
   );
 
 
 export class AppHeaderRightInternal extends Component {
+  loginOrProfile = (auth, nav) => {
+    if (isEmpty(auth)) {
+      nav.navigate('UserLogin');
+    } else {
+      nav.navigate('Profile');
+    }
+  }
   render() {
     return (
       <Button
         transparent
-        onPress={() => this.props.navigation.navigate('Profile') }
+        onPress={() => this.loginOrProfile(this.props.auth, this.props.navigation)  }
       >
-        <Icon name="ios-images" />
+        <Icon name={isEmpty(this.props.auth) ? "ios-images" : "ios-images-outline" } />
       </Button>
     );
   }
