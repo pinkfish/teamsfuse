@@ -21,13 +21,14 @@ const enhance = compose(
   connect((state) => ({
     // todos: state.firebase.data.todos, // todos data object from redux -> props.todos
     opponents: state.firebase.ordered.Teams, // todos ordered array from redux -> props.todos
+    currentTeam: state.currentTeam
   })),
   // Show activity indicator while loading todos
   //spinnerWhileLoading(['opponents'])
 )
 
 const Item = Picker.Item;
-export default class PickerExample extends Component {
+export default class TeamsDropDown extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -41,37 +42,34 @@ export default class PickerExample extends Component {
     });
   }
 
+  renderList() {
+
+  }
+
   render() {
+    if (!teams || teams.length == 0) {
+      return <Button onPress={() => this.navigation.navigate("EditTeam", {teamId : 0 })}>
+               <Text>{I18n.t('addteam')}</Text>
+             </Button>
+    }
     return (
-      <Container>
-        <Header>
-          <Left>
-            <Button transparent onPress={() => this.props.navigation.goBack()}>
-              <Icon name="arrow-back" />
-            </Button>
-          </Left>
-          <Body>
-            <Title>{I18n.t('selectteam')}</Title>
-          </Body>
-          <Right />
-        </Header>
-        <Content>
-          <Form>
-            <Picker
-              iosHeader="Select one"
-              mode="dropdown"
-              selectedValue={this.state.selected1}
-              onValueChange={this.onValueChange.bind(this)}
-            >
-              <Item label="Wallet" value="key0" />
-              <Item label="ATM Card" value="key1" />
-              <Item label="Debit Card" value="key2" />
-              <Item label="Credit Card" value="key3" />
-              <Item label="Net Banking" value="key4" />
-            </Picker>
-          </Form>
-        </Content>
-      </Container>
+        <Picker
+          iosHeader={I18n.t('selectone')}
+          mode="dropdown"
+          selectedValue={this.props.currentTeam.teamId}
+          onValueChange={this.onValueChange.bind(this)}
+        >
+          {team && teams.map((team) => {
+
+              return (
+                  <Item label={team.name} key={team.teamId} />
+              );
+          })}
+
+        </Picker>
     );
   }
 }
+
+
+export default enhance(TeamsDropDown);

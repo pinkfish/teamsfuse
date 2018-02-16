@@ -26,4 +26,5 @@ export default {
   showrecord: 'Show Record',
   deleteopponent: 'Delete Opponent',
   deleteopponentsure: 'Are you sure?',
+  addteam: 'Add team'
 };

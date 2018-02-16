@@ -1,11 +1,11 @@
-import { SET_TEAM } from "../actions/teams;
+import { SET_CURRENT_TEAM } from "../actions/Teams";
 
 export const TeamReducer = (state = {}, action) => {
   // console.log('GLOBALS.JS REDUCER, action:', action);
 
-  if(action.type === SET_TEAM) {
+  if(action.type === SET_CURRENT_TEAM) {
     console.log('teams.js', action.type)
-    return ({ ...state, team: action.payload})
+    return ({ ...state, currentTeam: action.payload})
   }
   else {
     return ({ ...state })
