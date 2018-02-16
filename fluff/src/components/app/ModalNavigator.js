@@ -7,6 +7,9 @@ import AppNavigator from "./AppNavigator";
 import UserLogin from '../login/UserLogin';
 import Settings from "../settings/Settings";
 import Profile from "../login/Profile";
+import EditProfile from "../login/EditProfile";
+import OpponentList from "../opponent/OpponentList";
+import EditOpponent from "../opponent/EditOpponent";
 
 const ModalNavigator = StackNavigator(
   {
@@ -14,6 +17,9 @@ const ModalNavigator = StackNavigator(
     UserLogin: { screen: UserLogin },
     Settings : { screen: Settings },
     Profile: { screen: Profile },
+    EditProfile: { screen: EditProfile },
+    OpponentList: { screen: OpponentList },
+    EditOpponont: { screen: EditOpponent },
   },
   {
     mode: 'modal',

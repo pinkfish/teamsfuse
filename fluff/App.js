@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react'
 import { Text } from "native-base";
 import { MenuProvider } from 'react-native-popup-menu';
+import Loading from "./src/components/app/Loading";
 
 
 import { createStore } from 'redux';
@@ -18,7 +19,7 @@ export default class App extends React.Component {
     console.log(store);
 
   return <Provider store={store}>
-           <PersistGate loading={null} persistor={persistor}>
+           <PersistGate loading={<Loading />} persistor={persistor}>
              <MenuProvider>
                <AppBase />
              </MenuProvider>

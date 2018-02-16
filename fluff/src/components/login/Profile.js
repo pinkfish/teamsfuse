@@ -1,74 +1,89 @@
 import React, { Component } from "react";
-import { Content, Card, CardItem, Text, Body, Container } from "native-base";
 import { ModalHeader } from "../app/AppHeader";
 import I18n from '../../../i18n/I18n';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { isLoaded, isEmpty, firebaseConnect, withFirebase, login, logout } from 'react-redux-firebase';
+import { isLoaded, isEmpty, firebaseConnect, withFirestore, login, logout } from 'react-redux-firebase';
 import {
   Button,
   Header,
   Title,
-  Icon,
+  Item,
   Left,
   Right,
+  Content,
+  Card,
+  CardItem,
+  Text,
+  Body,
+  Container,
+  Fab,
+  List,
+  ListItem,
+  Thumbnail
 } from "native-base";
 import { Image } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import styles from './styles';
 
 const camera = require("../../../assets/camera.png");
 
 class Profile extends Component {
+  constructor(props, context) {
+    super(props, context);
+  }
+
+  onPressItem = () => {
+    this.props.navigation.navigate("EditProfile");
+  };
+
   render() {
+    console.log('Profie ', this.props.auth);
     return (
       <Container>
-        <ModalHeader />
-        <Content padder>
-          <Card>
-            <CardItem>
-              <Image source={camera} />
-            </CardItem>
-            <CardItem>
-              <Header>
-                <Text>{I18n.t('name')}</Text>
-              </Header>
+        <ModalHeader  title={I18n.t('profile')} />
+        <Content style={{ flex: 1, backgroundColor: "#fff", top: -1 }}>
+          <List>
+            <ListItem style={styles.container}>
+              <Thumbnail source={this.props.auth.photoURL ? {uri: this.props.auth.photoURL} : camera }
+                    style={{width: 100, height: 100}} />
               <Body>
                 <Text>{this.props.auth.displayName ? this.props.auth.displayName : I18n.t('unknown')}</Text>
-              </Body>
-            </CardItem>
-            <CardItem>
-              <Header>
-                <Text>{I18n.t('email')}</Text>
-              </Header>
-              <Body>
                 <Text>{this.props.auth.email}</Text>
               </Body>
-            </CardItem>
-            <CardItem>
-              <Header>
-                <Text>{I18n.t('phonenumber')}</Text>
-              </Header>
+            </ListItem>
+            <ListItem style={styles.container}>
               <Body>
                 <Text>
                   {this.props.auth.phoneNumber ? this.props.auth.phoneNumber : I18n.t('unknown')}
                 </Text>
               </Body>
-            </CardItem>
-          </Card>
+            </ListItem>
+          </List>
         </Content>
-      </Container>
+        <Fab
+            active={true}
+            direction="up"
+            containerStyle={{ }}
+            style={{ backgroundColor: '#5067FF' }}
+            position="bottomRight"
+            onPress={() => this.onPressItem() }>
+            <Icon name="account-edit" />
+        </Fab>
 
+      </Container>
     );
   }
 }
 
 const enhance = compose(
+  firebaseConnect([ 'auth', 'profile']),
   connect(
   // Map redux state to component props
   ({ firebase: { auth, profile } }) => ({
     auth,
     profile
   })),
-  withFirebase
   );
 
 

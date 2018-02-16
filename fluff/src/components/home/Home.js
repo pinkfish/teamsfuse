@@ -89,7 +89,6 @@ export default TabNavigator(
               <Icon name="md-mail" />
               <Text>{I18n.t('messages')}</Text>
             </Button>
-            <MoreMenu />
           </FooterTab>
         </Footer>
       </Container>

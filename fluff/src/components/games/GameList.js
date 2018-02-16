@@ -1,20 +1,17 @@
 import React, { Component } from "react";
-import { FlatList } from "react-native";
+import { FlatList, View } from "react-native";
+import { Button, Icon, Fab } from "native-base";
 import GameSummary from "./GameSummary";
+import { withNavigation } from "react-navigation";
 
-export default class GameList extends React.PureComponent {
+class GameList extends React.PureComponent {
   state = {selected: (new Map(): Map<string, boolean>)};
 
   _keyExtractor = (item, index) => item.id;
 
-  _onPressItem = (id: string) => {
+  _onPressItem = () => {
     // updater functions are preferred for transactional updates
-    this.setState((state) => {
-      // copy the map rather than modifying state.
-      const selected = new Map(state.selected);
-      selected.set(id, !selected.get(id)); // toggle
-      return {selected};
-    });
+    this.navigation.navigate("AddGame");
   };
 
   _renderItem = ({item}) => (
@@ -29,13 +26,26 @@ export default class GameList extends React.PureComponent {
 
   render() {
     return (
-      <FlatList
-        data={ [ { id: '12', title: 'bing', description: 'desc'},
-      { id: '13', title: 'rabbit', description: 'bingle'} ] }
-        extraData={this.state}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderItem}
-      />
+      <View>
+        <FlatList
+          data={ [ { id: '12', title: 'bing', description: 'desc'},
+        { id: '13', title: 'rabbit', description: 'bingle'} ] }
+          extraData={this.state}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderItem}
+        />
+        <Fab
+            active={this.state.active}
+            direction="up"
+            containerStyle={{ }}
+            style={{ backgroundColor: '#5067FF' }}
+            position="bottomRight"
+            onPress={() => this._onPressItem }>
+            <Icon name="add" />
+        </Fab>
+    </View>
     );
   }
-}
+};
+
+export default withNavigation(GameList);

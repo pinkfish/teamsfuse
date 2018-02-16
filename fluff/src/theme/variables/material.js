@@ -103,6 +103,7 @@ export default {
   brandSidebar: "#252932",
   brandDark: "#000",
   brandLight: "#f4f4f4",
+  grey500: '#9e9e9e',
 
   // Font
   fontFamily: "Roboto",

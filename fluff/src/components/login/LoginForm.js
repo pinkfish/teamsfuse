@@ -62,13 +62,11 @@ class LoginFormView extends Component {
     console.log("Rendering loginform");
 
     return (
-       <ScrollView style={styles.container}>
+       <ScrollView>
 
-            <Label floatingLabel >{I18n.t('email')}</Label>
-            <Field name="email" component={MyTextInput} floatingLabel />
+            <Field name="email" title={I18n.t('email')}component={MyTextInput} floatingLabel />
 
-            <Label floatingLabel>{I18n.t('password')}</Label>
-            <Field name="password" component={MyTextInput} secureTextEntry floatingLabel/>
+            <Field name="password" title={I18n.t('password')} component={MyTextInput} secureTextEntry floatingLabel/>
             <Text>{this.state.errorText}</Text>
 
           <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >

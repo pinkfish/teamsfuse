@@ -17,7 +17,7 @@ const AppNavigator = StackNavigator(
     /* The header config from HomeScreen is now here */
     navigationOptions: ({navigation}) => ({
       headerStyle: {
-        backgroundColor: '#f4511e',
+        backgroundColor: "#3F51B5",
       },
       headerTintColor: '#fff',
       title: 'Team Fuse',

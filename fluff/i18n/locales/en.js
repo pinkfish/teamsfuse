@@ -15,5 +15,7 @@ export default {
   phonenumber: 'Phone Number',
   players: 'Players',
   help: 'Help',
-  sendfeedback: 'Send Feedback'
+  sendfeedback: 'Send Feedback',
+  games: 'Games',
+  opponents: 'Opponents'
 };
