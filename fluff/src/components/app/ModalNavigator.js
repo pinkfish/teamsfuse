@@ -19,7 +19,7 @@ const ModalNavigator = StackNavigator(
     Profile: { screen: Profile },
     EditProfile: { screen: EditProfile },
     OpponentList: { screen: OpponentList },
-    EditOpponont: { screen: EditOpponent },
+    EditOpponent: { screen: EditOpponent },
   },
   {
     mode: 'modal',

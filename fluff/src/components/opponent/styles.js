@@ -8,5 +8,14 @@ export default {
   },
   list: {
 
+  },
+  opponentBox: {
+    lineHeight:22,
+  },
+  opponentRecord: {
+    top: 8,
+    lineHeight:22 * 1.1,
+    textAlignVertical: 'top',
+    fontSize: 8
   }
 };

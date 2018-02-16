@@ -32,7 +32,7 @@ import { withNavigation } from 'react-navigation';
 
 const camera = require("../../../assets/camera.png");
 
-class EditProfileForm extends Component {
+class EditOpponentForm extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -55,7 +55,24 @@ class EditProfileForm extends Component {
   mySubmitCheck = (values, dispatch) => {
     console.log('mySubmitCheck', values, this.props.auth);
     return new Promise((resolve, reject) => {
-      this.props.firebase.update(this.opponentId, {
+      if (this.props.navigation.state.params.opponentId != 0) {
+        console.log('update', values, this.props.navigation.state.params);
+        this.props.firebase.update(this.opponentId, {
+          name: values.name,
+          contact: values.contact })
+              .then((cred) => {
+                resolve();
+                console.log('Submit done ', this.props.auth);
+                this.props.navigation.goBack();
+              })
+              .catch((error) => {
+                // Update the field with an error string.
+                this.setState({errorText: error.message});
+                resolve();
+              })
+      } else {
+        console.log('push', values, this.props.auth);
+        this.props.firebase.push('Opponents', {
         name: values.name,
         contact: values.contact })
             .then((cred) => {
@@ -68,21 +85,20 @@ class EditProfileForm extends Component {
               this.setState({errorText: error.message});
               resolve();
             })
-          });
+    }
+    })
   }
 
-
   render() {
-    const { opponentId, opponent } = this.props;
+    const { opponentId, opponent } = this.props.navigation.state.params;
 
-
-    console.log('stuff ', name, phone)
+    console.log('stuff ', opponentId, opponent)
     return (
       <Content style={{ flex: 1, backgroundColor: "#fff", top: -1 }}>
         <ListItem style={styles.container}>
           <Body>
-            <Field name="name" title={I18n.t('name')} component={MyTextInput} defaultValue={opponent.name} floatingLabel />
-            <Field name="contact" title={I18n.t('contact')} component={MyTextInput} defaultValue={opponent.contact} secureTextEntry floatingLabel last/>
+            <Field name="name" title={I18n.t('name')} component={MyTextInput} defaultValue={opponent?opponent.name:''} floatingLabel />
+            <Field name="contact" title={I18n.t('contact')} component={MyTextInput} defaultValue={opponent?opponent.contact:''} secureTextEntry floatingLabel last/>
             <Text>{this.state.errorText}</Text>
           </Body>
         </ListItem>
@@ -92,20 +108,29 @@ class EditProfileForm extends Component {
 }
 
 const enhance = compose(
-  connect(
-  // Map redux state to component props
-  ({ firebase: { auth, profile } }) => ({
-    auth,
-    profile
-  })),
   withFirestore,
   withNavigation,
   reduxForm({
-    form: 'EditProfile',
+    form: 'EditOpponent',
+    validate: values => {
+      const errors = {}
+      console.log(values)
+
+      //values = values.toJS()
+
+      if (!values.name) {
+        errors.name = I18n.t('needname')
+      }
+
+      console.log('in here', errors)
+
+      // Do the actual login here.
+      return errors
+    },
     onSubmit: values => {
     },
   })
   );
 
 
-export default enhance(EditProfileForm);
+export default enhance(EditOpponentForm);

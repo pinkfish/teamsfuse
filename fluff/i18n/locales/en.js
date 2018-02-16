@@ -17,5 +17,13 @@ export default {
   help: 'Help',
   sendfeedback: 'Send Feedback',
   games: 'Games',
-  opponents: 'Opponents'
+  opponents: 'Opponents',
+  contact: 'Contact',
+  delete: 'Delete',
+  cancel: 'Cancel',
+  edit: 'Edit',
+  opponentaction: 'Opponent Action',
+  showrecord: 'Show Record',
+  deleteopponent: 'Delete Opponent',
+  deleteopponentsure: 'Are you sure?',
 };

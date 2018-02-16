@@ -51,7 +51,7 @@ class EditOpponent extends Component {
       <Container>
         <ModalHeader title={I18n.t('profile')} iconRight="check" onRightPress={this.onPressItem}/>
 
-        <EditOpponentForm opponent={opponent} opponentId={opponentId} tonMyFormRef={(ref) => (this.child = ref)} />
+        <EditOpponentForm opponent={opponent} opponentId={opponentId} onMyFormRef={(ref) => (this.child = ref)} />
       </Container>
     );
   }
