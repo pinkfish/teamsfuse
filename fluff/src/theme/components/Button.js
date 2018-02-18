@@ -399,6 +399,13 @@ export default (variables = variable) => {
       height: null,
     },
 
+    '.verticalmore': {
+      flexDirection: 'column',
+      height: null,
+      width: 20,
+      flex: 0,
+    },
+
     'NativeBase.Text': {
       fontFamily: variables.btnFontFamily,
       marginLeft: 0,

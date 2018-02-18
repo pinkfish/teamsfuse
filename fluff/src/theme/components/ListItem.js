@@ -129,7 +129,7 @@ export default (variables = variable) => {
         alignItems: null,
         alignSelf: null
       },
-      "NativeBase.Icon": {
+      ".Icon": {
         width: variables.iconFontSize - 10,
         fontSize: variables.iconFontSize - 10
       },
@@ -392,6 +392,20 @@ export default (variables = variable) => {
     },
     ".noBorder": {
       borderBottomWidth: null
+    },
+    ".dense": {
+      paddingVertical: variables.listItemPadding - 3,
+    },
+    ".settingItem": {
+      "NativeBase.Left": {
+        flex: 0,
+        width: 29,
+      },
+      "NativeBase.Text": {
+        fontSize: variables.iconFontSize,
+      },
+      borderBottomWidth: null,
+      paddingVertical: variables.listItemPadding - 3,
     },
     alignItems: "center",
     flexDirection: "row",

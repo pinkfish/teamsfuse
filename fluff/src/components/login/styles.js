@@ -1,6 +1,10 @@
 export default {
   container: {
-    backgroundColor: "#FFF"
+    backgroundColor: "#FFF",
+    flex: 1,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   '.floatingLabel': {
     'NativeBase.Input': {

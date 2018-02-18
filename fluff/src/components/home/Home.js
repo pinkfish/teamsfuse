@@ -10,11 +10,11 @@ import {
   Title,
   Tab,
   HeaderTab,
+  Icon,
   Tabs,
   ScrollableTab,
   StatusBar,
   Body,
-  Icon,
   Left,
   List,
   ListItem,
@@ -27,6 +27,7 @@ import styles from "./styles";
 import Messages from "../messages/Messages";
 import Schedule from "../schedule/Schedule";
 import Stream from "../stream/Stream";
+import MoreMenu from "./MoreMenu";
 
 export default TabNavigator(
   {
@@ -40,11 +41,11 @@ export default TabNavigator(
         const { routeName } = navigation.state;
         let iconName;
         if (routeName === 'Schedule') {
-          iconName = `ios-calendar${focused ? '' : '-outline'}`;
+          iconName = `today`;
         } else if (routeName === 'Stream') {
-          iconName = `ios-home${focused ? '' : '-outline'}`;
+          iconName = `home`;
         } else if (routeName === 'Messages') {
-          iconName = `ios-mail${focused ? '' : '-outline'}`;
+          iconName = `email`;
         }
 
         // You can return any component that you like here! We usually use an
@@ -69,7 +70,7 @@ export default TabNavigator(
               active={props.navigationState.index === 0}
               onPress={() => props.navigation.navigate("Stream")}
             >
-              <Icon name="ios-home" />
+              <Icon name="md-home" />
               <Text>{I18n.t('stream')}</Text>
             </Button>
             <Button
@@ -77,7 +78,7 @@ export default TabNavigator(
               active={props.navigationState.index === 1}
               onPress={() => props.navigation.navigate("Schedule")}
             >
-              <Icon name="ios-calendar" />
+              <Icon name="md-calendar" />
               <Text>{I18n.t('schedule')}</Text>
             </Button>
             <Button
@@ -85,7 +86,7 @@ export default TabNavigator(
               active={props.navigationState.index === 2}
               onPress={() => props.navigation.navigate("Messages")}
             >
-              <Icon name="ios-mail" />
+              <Icon name="md-mail" />
               <Text>{I18n.t('messages')}</Text>
             </Button>
           </FooterTab>

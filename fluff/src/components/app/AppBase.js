@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { Root, StyleProvider, StatusBar } from "native-base";
 import getTheme from "../../theme/components";
-import variables from "../../theme/variables/commonColor";
+import material from "../../theme/variables/material";
 import { connect } from 'react-redux'
 
 import ModalNavigator from "./ModalNavigator";
 
 export default () =>
-    <StyleProvider style={getTheme(variables)}>
+    <StyleProvider style={getTheme(material)}>
       <Root>
         <ModalNavigator />
       </Root>

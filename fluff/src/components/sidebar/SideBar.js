@@ -6,35 +6,68 @@ import {
   Text,
   List,
   ListItem,
-  Icon,
   Container,
   Left,
   Right,
   Badge
 } from "native-base";
 import styles from "./style";
+import { connect } from 'react-redux';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { isLoaded, isEmpty, firebaseConnect, withFirebase } from 'react-redux-firebase';
+import Drawer from './drawer/Drawer';
+import DrawerHeader from './drawer/DrawerHeader';
+import DrawerSection from './drawer/DrawerSection';
+import DrawerHeaderAccount from './drawer/DrawerHeaderAccount';
+
 
 const drawerCover = require("../../../assets/drawer-cover.png");
-const drawerImage = require("../../../assets/logo-kitchen-sink.png");
-const dataItems = [
+const mainItems = [
   {
-    name: I18n.t('profile'),
+    value: I18n.t('profile'),
     route: "Profile",
-    icon: "phone-portrait",
-    bg: "#C5F442"
+    icon: "account-circle",
+    key: '1'
   },
   {
-    name: I18n.t('settings'),
+    value: I18n.t('games'),
+    route: "Games",
+    icon: "calendar",
+    key: '2'
+  },
+  {
+    value: I18n.t('opponents'),
+    route: "OpponentList",
+    icon: "gamepad",
+    key: '3'
+  },
+];
+
+const otherItems = [
+  {
+    value: I18n.t('logout'),
+    route: "Logout",
+    icon: "logout",
+    key: '4'
+  },
+  {
+    value: I18n.t('settings'),
     route: "Settings",
     icon: "settings",
-    bg: "#C5F442"
+    key: '5'
   },
   {
-    name: I18n.t('logout'),
-    route: "Logout",
-    icon: "ios-log-out",
-    bg: "#C5F442"
+    value: I18n.t('help'),
+    route: "Help",
+    icon: "help",
+    key: '6'
   },
+  {
+    value: I18n.t('sendfeedback'),
+    route: "SendFeedback",
+    icon: "email",
+    key: '7'
+  }
 ];
 
 class SideBar extends Component {
@@ -47,54 +80,48 @@ class SideBar extends Component {
   }
 
   render() {
+
+    if (isEmpty(this.props.auth)) {
+       MyIcon = <Icon name="account-circle" style={styles.drawerImage} />;
+    } else {
+      if (this.props.auth.photoURL) {
+        MyIcon = <Thumbnail source={this.props.auth.photoURL}  style={styles.drawerImage} />
+      } else {
+        MyIcon = <Icon name="account-circle" style={styles.drawerImage} />;
+      }
+    }
+
     return (
       <Container>
-        <Content
-          bounces={false}
-          style={{ flex: 1, backgroundColor: "#fff", top: -1 }}
-        >
-          <Image source={drawerCover} style={styles.drawerCover} />
-          <Image square style={styles.drawerImage} source={drawerImage} />
-
-          <List
-            dataArray={dataItems}
-            renderRow={data =>
-              <ListItem
-                button
-                noBorder
-                onPress={() => this.props.navigation.navigate(data.route)}
-              >
-                <Left>
-                  <Icon
-                    active
-                    name={data.icon}
-                    style={{ color: "#777", fontSize: 26, width: 30 }}
-                  />
-                  <Text style={styles.text}>
-                    {data.name}
-                  </Text>
-                </Left>
-                {data.types &&
-                  <Right style={{ flex: 1 }}>
-                    <Badge
-                      style={{
-                        borderRadius: 3,
-                        height: 25,
-                        width: 72,
-                        backgroundColor: data.bg
-                      }}
-                    >
-                      <Text
-                        style={styles.badgeText}
-                      >{`${data.types} Types`}</Text>
-                    </Badge>
-                  </Right>}
-              </ListItem>}
+        <Drawer>
+          <DrawerHeader>
+            <DrawerHeaderAccount
+              avatar={MyIcon}
+              footer={{
+                dense: true,
+                centerElement: {
+                  primaryText: this.props.auth.displayName,
+                  secondaryText: this.props.auth.email
+                },
+                rightElement: 'arrow-drop-down'
+              }}
+            />
+          </DrawerHeader>
+          <DrawerSection
+            divider
+            items={mainItems}
           />
-        </Content>
+          <DrawerSection
+            title="fluff"
+            items={otherItems}
+          />
+        </Drawer>
       </Container>
     );
   }
 }
 
-export default SideBar;
+export default connect(({ firebase: { auth, profile } }) => ({
+  auth,
+  profile
+}))(SideBar);

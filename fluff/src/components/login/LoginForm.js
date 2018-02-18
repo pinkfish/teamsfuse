@@ -2,6 +2,8 @@
 import React, { Component } from "react";
 import { View, ScrollView } from 'react-native';
 import { Field, reduxForm } from 'redux-form'
+import I18n from '../../../i18n/I18n';
+import { isLoaded, isEmpty, firebaseConnect, withFirestore } from 'react-redux-firebase';
 import {
   Container,
   Header,
@@ -21,18 +23,6 @@ import {
 } from "native-base";
 import styles from "./styles";
 import MyTextInput from "../utils/MyTextInput";
-import firebase from 'react-native-firebase';
-
-const onSubmit = (values, dispatch) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      this.firebase.auth().signInAndRetrieveDataWithEmailAndPassword(values.email, values.password)
-          .then((cred) => {
-            resolve();
-          });
-    }, 1500)
-  })
-}
 
 const renderInput = ({ input: { onChange, ...restInput }}) => {
   console.log("Rendering input");
@@ -41,21 +31,45 @@ const renderInput = ({ input: { onChange, ...restInput }}) => {
 
 
 class LoginFormView extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.state = {
+         errorText: ''
+    }
+  }
+
+  onSubmit = (values, dispatch) => {
+    console.log('onSubmit', this.props)
+    return new Promise((resolve, reject) => {
+      this.props.firebase.login({ email : values.email, password: values.password })
+            .then((cred) => {
+              console.log('resolved ');
+              resolve();
+              this.navigation.navigate.goBack();
+            })
+            .catch((error) => {
+              // Update the field with an error string.
+              this.setState({errorText: error.message});
+              resolve();
+            })
+          });
+  }
+
   render() {
     const { handleSubmit, submitting } = this.props
 
     console.log("Rendering loginform");
 
     return (
-       <ScrollView style={styles.container}>
+       <ScrollView>
 
-            <Label floatingLabel >{I18n.t('email')}</Label>
-            <Field name="email" component={MyTextInput} floatingLabel />
+            <Field name="email" title={I18n.t('email')}component={MyTextInput} floatingLabel />
 
-            <Label floatingLabel>{I18n.t('password')}</Label>
-            <Field name="password" component={MyTextInput} secureTextEntry floatingLabel/>
+            <Field name="password" title={I18n.t('password')} component={MyTextInput} secureTextEntry floatingLabel/>
+            <Text>{this.state.errorText}</Text>
 
-          <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(onSubmit)} >
+          <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
             <Text>Sign In</Text>
           </Button>
         </ScrollView>
@@ -68,6 +82,7 @@ export default reduxForm({
   onSubmit: values => {
     console.log('this one')
     console.log(values)
+
   },
   validate: values => {
     const errors = {}
@@ -87,4 +102,4 @@ export default reduxForm({
     // Do the actual login here.
     return errors
   }
-})(LoginFormView)
+})(withFirestore(LoginFormView))
