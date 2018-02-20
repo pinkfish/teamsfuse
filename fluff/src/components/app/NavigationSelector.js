@@ -5,6 +5,7 @@ import { isLoaded, isEmpty, withFirestore } from 'react-redux-firebase';
 import SignedOutNavigator from "./SignedOutNavigator";
 import ModalNavigator from "./ModalNavigator";
 import { setTeam } from "../../actions/Teams";
+import { fetchPlayerData } from "../../actions/Players";
 
 class NavigationSelector extends Component {
   componentWillMount = () => {
@@ -12,6 +13,8 @@ class NavigationSelector extends Component {
     this.props.firebase.reloadAuth()
         .then((cred) => {
           console.log('reloaded auth');
+          // Load the subprofile into the store too.
+          this.props.dispatch(fetchPlayerData());
         })
         .catch((error) => {
           console.log('Error reloading auth', error)
@@ -21,7 +24,6 @@ class NavigationSelector extends Component {
   render() {
     const { dispatch, currentTeam } = this.props;
 
-    console.log('navigator ', this.props);
     if (!this.props.auth || !this.props.auth.uid) {
       return <SignedOutNavigator />;
     }

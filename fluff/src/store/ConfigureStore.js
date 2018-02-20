@@ -7,6 +7,8 @@ import { getFirebase, reactReduxFirebase } from 'react-redux-firebase';
 import { persistStore, persistCombineReducers, persistReducer } from 'redux-persist';
 import { AsyncStorage } from 'react-native';
 import { reduxFirestore } from 'redux-firestore';
+import { createLogicMiddleware } from 'redux-logic';
+import arrLogic from '../logic/logic';
 
 
 const reactNativeFirebaseConfig = {
@@ -38,9 +40,19 @@ export default (initialState = { firebase: {}, firestore: {} }) => {
 
  const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+ const deps = { // optional injected dependencies for logic
+   // anything you need to have available in your logic
+   firestore: firebase.firestore(),
+   firebase: firebase
+ };
+
+ console.log('Logic', arrLogic, deps);
+ const logicMiddleware = createLogicMiddleware(arrLogic, deps);
+
  const middleware = [
      // make getFirebase available in third argument of thunks
     thunk.withExtraArgument({ getFirebase }),
+    logicMiddleware
   ];
 
  const store = createStore(

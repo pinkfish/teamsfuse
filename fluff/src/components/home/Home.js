@@ -60,6 +60,10 @@ class Home extends Component {
   }
 }
 
+function mapStateToProps(state) {
+  return { currentPlayer: state.currentPlayer }
+}
+
 const enhance = compose(
   // Pass data from redux as a prop
   connect(({ firebase: { auth }, firebase: { ordered } }) => ({
@@ -67,6 +71,7 @@ const enhance = compose(
     games: ordered.games,
     teams: ordered.teams
   })),
+  connect(mapStateToProps),
   firestoreConnect(props => [
     {
       collection: 'Games',
@@ -76,8 +81,15 @@ const enhance = compose(
     {
       collection: 'Teams',
       storeAs: 'teams',
-      where: [['user.uid', '==', props.auth.uid]],
+      //where: [['user.uid', '==', props.auth.uid]],
+      where: [ `Teams.${props.currentPlayer.uid}`, '==', true],
     },
+    {
+      collection: 'Player',
+      storeAs: 'players',
+      //where: [['user.uid', '==', props.currentPlayer.uid ]],
+      where: [ `Player.${props.auth.uid}`, '==', true ],
+    }
   ]),
   withNavigation
 );

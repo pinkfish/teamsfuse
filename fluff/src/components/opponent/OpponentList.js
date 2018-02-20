@@ -7,7 +7,7 @@ import { ActionSheet, Container, Fab, Content, Thumbnail } from 'native-base';
 import { spinnerWhileLoading, } from '../utils/Spinner';
 import { ModalHeader } from "../app/AppHeader";
 import OpponentCard from './OpponentCard';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from '../utils/Icon';
 import I18n from '../../../i18n/I18n';
 import styles from './styles';
 

@@ -148,9 +148,9 @@ class SideBar extends Component {
 const enhance = compose(
     // Pass data from redux as a prop
     connect((state) => ({
-      // todos: state.firebase.data.todos, // todos data object from redux -> props.todos
-      opponents: state.firebase.ordered.Teams, // todos ordered array from redux -> props.todos
-      currentTeam: state.currentTeam
+      player: state.firebase.ordered.player,
+      currentTeam: state.currentTeam,
+      currentPlayer: state.currentPlayer
     })),
     connect(({ firebase: { auth, profile } }) => ({
       auth,
@@ -158,9 +158,9 @@ const enhance = compose(
     })),
     firestoreConnect(props => [
       {
-        collection: 'Players',
-        where: [ `Players.${props.auth.uid}`, '==', true ],
-        storeAs: 'players'
+        collection: 'Player',
+        where: [ `Player.${props.auth.uid}`, '==', true ],
+        storeAs: 'player'
       },
     ]),
   );

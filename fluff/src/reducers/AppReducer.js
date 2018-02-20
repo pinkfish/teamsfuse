@@ -3,7 +3,9 @@ import { firebaseStateReducer } from 'react-redux-firebase';
 import { reducer as formReducer } from 'redux-form';
 import { CurrentTeamReducer } from './TeamsReducer';
 import { NavReducer } from './NavReducers';
+import { CurrentPlayerReducer } from './PlayerReducer';
 import { firestoreReducer } from 'redux-firestore';
+import { PlayerDataReducer } from './PlayerDataReducer';
 
 
 export const makeRootReducer = (asyncReducers) => {
@@ -13,6 +15,8 @@ export const makeRootReducer = (asyncReducers) => {
       form: formReducer,
       nav: NavReducer,
       currentTeam: CurrentTeamReducer,
+      currentPlayer: CurrentPlayerReducer,
+      players: PlayerDataReducer,
       ...asyncReducers
     });
 }
