@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { isLoaded, isEmpty, firebaseConnect } from 'react-redux-firebase';
+import { isLoaded, isEmpty, firestoreConnect } from 'react-redux-firebase';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { ActionSheet, Container, Fab, Content, Thumbnail } from 'native-base';
 import { spinnerWhileLoading, } from '../utils/Spinner';
@@ -13,17 +13,19 @@ import styles from './styles';
 
 
 const enhance = compose(
-  // Create listener for todos path when component mounts
-  firebaseConnect([
-    { path: 'Opponents' } // create listener for firebase data -> redux
-  ]),
   // Pass data from redux as a prop
   connect((state) => ({
     // todos: state.firebase.data.todos, // todos data object from redux -> props.todos
     opponents: state.firebase.ordered.Opponents, // todos ordered array from redux -> props.todos
+    currentTeam: state.currentTeam
   })),
-  // Show activity indicator while loading todos
-  //spinnerWhileLoading(['opponents'])
+  // Create listener for todos path when component mounts
+  firestoreConnect([
+    {
+      path: 'Opponents',
+      //queryParams: ['orderByChild=uid', `equalTo=${currentTeam}`]
+    } // create listener for firebase data -> redux
+  ]),
 )
 
 const BUTTONS = [

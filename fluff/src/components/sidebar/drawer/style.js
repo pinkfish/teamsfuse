@@ -51,6 +51,8 @@ export default {
    },
    drawerHeaderListItem: {
        backgroundColor: "transparent",
+       flexDirection: 'column',
+       alignItems: 'flex-end'
    },
    drawerSection: {
        container: {

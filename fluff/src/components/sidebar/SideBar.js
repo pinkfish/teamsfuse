@@ -13,8 +13,9 @@ import {
 } from "native-base";
 import styles from "./style";
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { isLoaded, isEmpty, firebaseConnect, withFirebase } from 'react-redux-firebase';
+import { isLoaded, isEmpty, firestoreConnect, withFirestore } from 'react-redux-firebase';
 import Drawer from './drawer/Drawer';
 import DrawerHeader from './drawer/DrawerHeader';
 import DrawerSection from './drawer/DrawerSection';
@@ -80,16 +81,36 @@ class SideBar extends Component {
   }
 
   render() {
+    const { teams, auth }  = this.props;
 
     if (isEmpty(this.props.auth)) {
        MyIcon = <Icon name="account-circle" style={styles.drawerImage} />;
     } else {
-      if (this.props.auth.photoURL) {
-        MyIcon = <Thumbnail source={this.props.auth.photoURL}  style={styles.drawerImage} />
+      if (auth.photoURL) {
+        MyIcon = <Thumbnail source={auth.photoURL}  style={styles.drawerImage} />
       } else {
         MyIcon = <Icon name="account-circle" style={styles.drawerImage} />;
       }
     }
+
+    myTeamArray = [];
+    if (!teams || teams.length == 0) {
+    } else {
+      for (team in teams) {
+        myTeamArray.push( {
+          value: team.name,
+          route: "TeamView",
+          icon: "mat-people",
+          key: team.uid
+        });
+      }
+    }
+    myTeamArray.push({
+      value: I18n.t('addteam'),
+      route: "TeamEdit",
+      icon: "mat-people",
+      key: 'add'
+    })
 
     return (
       <Container>
@@ -108,11 +129,14 @@ class SideBar extends Component {
             />
           </DrawerHeader>
           <DrawerSection
+            title="Teams"
+            items={myTeamArray}
+          />
+          <DrawerSection
             divider
             items={mainItems}
           />
           <DrawerSection
-            title="fluff"
             items={otherItems}
           />
         </Drawer>
@@ -121,7 +145,24 @@ class SideBar extends Component {
   }
 }
 
-export default connect(({ firebase: { auth, profile } }) => ({
-  auth,
-  profile
-}))(SideBar);
+const enhance = compose(
+    // Pass data from redux as a prop
+    connect((state) => ({
+      // todos: state.firebase.data.todos, // todos data object from redux -> props.todos
+      opponents: state.firebase.ordered.Teams, // todos ordered array from redux -> props.todos
+      currentTeam: state.currentTeam
+    })),
+    connect(({ firebase: { auth, profile } }) => ({
+      auth,
+      profile,
+    })),
+    firestoreConnect(props => [
+      {
+        collection: 'Players',
+        where: [ `Players.${props.auth.uid}`, '==', true ],
+        storeAs: 'players'
+      },
+    ]),
+  );
+
+export default enhance(SideBar);

@@ -1,98 +1,85 @@
 import React, { Component } from "react";
-import { TabNavigator, TabBarTop } from "react-navigation";
+import { Content, Container, Card, CardItem, Text, Body, Button, Fab } from "native-base";
+import { compose } from 'redux';
+import { connect } from 'react-redux';
+import { firestoreConnect, withFirestore } from 'react-redux-firebase';
+import Icon from '../utils/Icon';
+import GameList from "../games/GameList";
+import { withNavigation } from 'react-navigation';
 import I18n from '../../../i18n/I18n';
-import {
-  Button,
-  Container,
-  Footer,
-  FooterTab,
-  Header,
-  Title,
-  Tab,
-  HeaderTab,
-  Icon,
-  Tabs,
-  ScrollableTab,
-  StatusBar,
-  Body,
-  Left,
-  List,
-  ListItem,
-  Content,
-  Right,
-  Text
-} from "native-base";
-import Feather from 'react-native-vector-icons/Feather';
-import styles from "./styles";
-import Messages from "../messages/Messages";
-import Schedule from "../schedule/Schedule";
-import Stream from "../stream/Stream";
-import MoreMenu from "./MoreMenu";
 
-export default TabNavigator(
-  {
-    Stream: { screen: Stream },
-    Schedule: { screen: Schedule },
-    Messages: { screen: Messages },
-  },
-  {
-    navigationOptions: ({ navigation }) => ({
-      tabBarIcon: ({ focused, tintColor }) => {
-        const { routeName } = navigation.state;
-        let iconName;
-        if (routeName === 'Schedule') {
-          iconName = `today`;
-        } else if (routeName === 'Stream') {
-          iconName = `home`;
-        } else if (routeName === 'Messages') {
-          iconName = `email`;
-        }
-
-        // You can return any component that you like here! We usually use an
-        // icon component from react-native-vector-icons
-        return <Ionicons name={iconName} size={25} color={tintColor} />;
-      },
-    }),
-    tabBarOptions: {
-      activeTintColor: 'black',
-      inactiveTintColor: 'gray',
-    },
-    tabBarPosition: 'top',
-    animationEnabled: false,
-    swipeEnabled: false,
-    tabBarComponent: props => {
-      return (
-        <Container>
-          <Footer>
-          <FooterTab>
-            <Button
-              vertical
-              active={props.navigationState.index === 0}
-              onPress={() => props.navigation.navigate("Stream")}
-            >
-              <Icon name="md-home" />
-              <Text>{I18n.t('stream')}</Text>
-            </Button>
-            <Button
-              vertical
-              active={props.navigationState.index === 1}
-              onPress={() => props.navigation.navigate("Schedule")}
-            >
-              <Icon name="md-calendar" />
-              <Text>{I18n.t('schedule')}</Text>
-            </Button>
-            <Button
-              vertical
-              active={props.navigationState.index === 2}
-              onPress={() => props.navigation.navigate("Messages")}
-            >
-              <Icon name="md-mail" />
-              <Text>{I18n.t('messages')}</Text>
-            </Button>
-          </FooterTab>
-        </Footer>
-      </Container>
-      );
-    }
+class Home extends Component {
+  constructor(props, context) {
+    super(props, context);
+    this.state = { active: false };
   }
+
+  addGame = () => {
+    this.props.navigation.navigate("AddGame");
+  }
+
+  addTeam = () => {
+    this.props.navigation.navigate("EditTeam", { uid: 0 });
+  }
+
+  render() {
+    const { games, teams } = this.props;
+
+    if (!teams || teams.length == 0) {
+      return <Container>
+
+      <Content padder>
+        <Text>{I18n.t('noteams')}</Text>
+        <Button  onPress={this.addTeam} transparent >
+          <Text>{I18n.t('addteam')}</Text>
+        </Button>
+      </Content>
+      <Fab
+          active={true}
+          direction="up"
+          containerStyle={{ }}
+          style={{ backgroundColor: '#5067FF' }}
+          position="bottomRight"
+          onPress={this.addGame}>
+          <Icon name="mat-add" />
+      </Fab>
+    </Container>
+    }
+    return
+      <Content>
+        <GameList />
+        <Fab
+            direction="up"
+            containerStyle={{ }}
+            style={{ backgroundColor: '#5067FF' }}
+            position="bottomRight"
+            onPress={this.addGame}>
+            <Icon name="add" />
+        </Fab>
+      </Content>
+  }
+}
+
+const enhance = compose(
+  // Pass data from redux as a prop
+  connect(({ firebase: { auth }, firebase: { ordered } }) => ({
+    auth,
+    games: ordered.games,
+    teams: ordered.teams
+  })),
+  firestoreConnect(props => [
+    {
+      collection: 'Games',
+      storeAs: 'games',
+      where: [['user.uid', '==', props.auth.uid]],
+    },
+    {
+      collection: 'Teams',
+      storeAs: 'teams',
+      where: [['user.uid', '==', props.auth.uid]],
+    },
+  ]),
+  withNavigation
 );
+
+export default enhance(Home);

@@ -26,5 +26,11 @@ export default {
   showrecord: 'Show Record',
   deleteopponent: 'Delete Opponent',
   deleteopponentsure: 'Are you sure?',
-  addteam: 'Add team'
+  addteam: 'Add team',
+  forgotpassword: 'Forgot Password',
+  addevent: 'Add Event',
+  nogames: 'No games',
+  noteams: 'No teams',
+  addteam: 'Add Team',
+  teamselect: 'Select team'
 };

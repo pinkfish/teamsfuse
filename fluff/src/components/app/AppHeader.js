@@ -14,7 +14,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { isLoaded, isEmpty, firebaseConnect, withFirestore } from 'react-redux-firebase';
 import { withNavigation, HeaderBackButton} from 'react-navigation';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from '../utils/Icon';
 import PropTypes from 'prop-types';
 
 
@@ -34,46 +34,18 @@ export class AppHeaderLeftInternal extends Component {
 export const AppHeaderLeft = withNavigation(AppHeaderLeftInternal);
 
 const enhance = compose(
-  connect(
-  // Map redux state to component props
-  ({ firebase: { auth, profile } }) => ({
-    auth,
-    profile
-  })),
-  withNavigation,
-  withFirestore
+  withNavigation
   );
 
-
 export class AppHeaderRightInternal extends Component {
-  loginOrProfile = (auth, nav) => {
-    if (isEmpty(auth)) {
-      nav.navigate('UserLogin');
-    } else {
-      nav.navigate('Profile');
-    }
-  }
-
   render() {
-    console.log('auth ', this.props.auth, this.props.profile);
-
-    if (isEmpty(this.props.auth)) {
-       MyIcon = <Icon name="login" size={25} style={{color: 'white'}} />;
-    } else {
-      if (this.props.auth.photoURL) {
-        MyIcon = <Thumbnail source={this.props.auth.photoURL}  size={25} s/>
-      } else {
-        MyIcon = <Icon name="account-circle" size={25} />;
-      }
-    }
-
     return (
-      <Button
-        transparent
-        onPress={() => this.loginOrProfile(this.props.auth, this.props.navigation)  }
-      >
-        {MyIcon}
-      </Button>
+          <Button
+            transparent
+            onPress={() => this.props.navigation.navigate('Messages') }
+          >
+            <Icon name="email" size={25} style={{color: 'white'}}/>
+          </Button>
     );
   }
 }

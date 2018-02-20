@@ -6,7 +6,7 @@ import { ListItem, Separator, Left, Body } from 'native-base';
 /* eslint-enable import/no-unresolved, import/extensions */
 import { withNavigation } from 'react-navigation';
 import styles from "./style";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from '../../utils/Icon';
 
 
 const propTypes = {
@@ -95,7 +95,9 @@ class DrawerSection extends PureComponent {
     renderTitle = () => {
         const { title } = this.props;
 
-        return (<ListItem itemHeader>{title}</ListItem>);
+        return <ListItem itemHeader>
+          <Text>{title}</Text>
+        </ListItem>;
     }
     onPressNavigate = (item, route) => {
       console.log('item', item, route);
@@ -106,10 +108,11 @@ class DrawerSection extends PureComponent {
       }
     }
     render() {
-        const { items, divider } = this.props;
+        const { items, title, divider } = this.props;
 
         return (
             <View key={this.props.key}>
+              {title ? this.renderTitle() : null}
                 <View style={styles.drawerSection.container} >
                     {items && items.map((item) => {
 

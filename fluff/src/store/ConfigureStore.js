@@ -6,6 +6,7 @@ import RNFirebase from 'react-native-firebase';
 import { getFirebase, reactReduxFirebase } from 'react-redux-firebase';
 import { persistStore, persistCombineReducers, persistReducer } from 'redux-persist';
 import { AsyncStorage } from 'react-native';
+import { reduxFirestore } from 'redux-firestore';
 
 
 const reactNativeFirebaseConfig = {
@@ -14,8 +15,9 @@ const reactNativeFirebaseConfig = {
 };
 
 const reduxFirebaseConfig = {
-    userProfile: 'users', // save users profiles to 'users' collection,
-    enableRedirectHandling: false
+    userProfile: 'User', // save users profiles to 'users' collection,
+    enableRedirectHandling: false,
+    useFirestoreForProfile: true
 };
 
 const persistConfig = {
@@ -25,10 +27,11 @@ const persistConfig = {
 };
 
 
-export default (initialState = { firebase: {} }) => {
-  console.log('Bing?');
+export default (initialState = { firebase: {}, firestore: {} }) => {
+ console.log('Bing?');
  // initialize firebase
  const firebase = RNFirebase.initializeApp(reactNativeFirebaseConfig);
+ firebase.firestore();
  const rootReducer = makeRootReducer();
  console.log(rootReducer);
 
@@ -45,10 +48,11 @@ export default (initialState = { firebase: {} }) => {
    initialState,
    compose(
      reactReduxFirebase(firebase, reduxFirebaseConfig),
+     reduxFirestore(firebase),
      applyMiddleware(...middleware)
    )
  );
  const persistor = persistStore(store);
- console.log('Created store and persistor ', persistor);
+ console.log('Created store and persistor ', persistor, store);
  return { persistor, store };
 };

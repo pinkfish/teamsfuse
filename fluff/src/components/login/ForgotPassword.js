@@ -20,22 +20,22 @@ import {
 } from "native-base";
 import styles from "./styles";
 import MyTextInput from "../utils/MyTextInput";
-import LoginForm from './LoginForm';
+import ForgotPasswordForm from './ForgotPasswordForm';
 import I18n from '../../../i18n/I18n';
 
 
-class UserLogin extends Component {
+class ForgotPassword extends Component {
   render() {
     const { handleSubmit, submitting } = this.props
 
     return (
       <Container style={styles.container}>
         <Content>
-          <LoginForm />
+          <ForgotPasswordForm />
         </Content>
       </Container>
     );
   }
 }
 
-export default UserLogin;
+export default ForgotPassword;

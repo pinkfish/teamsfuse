@@ -38,24 +38,24 @@ class Profile extends Component {
   };
 
   render() {
-    console.log('Profie ', this.props.auth);
+    const { auth } = this.props;
     return (
       <Container>
         <ModalHeader  title={I18n.t('profile')} />
         <Content style={{ flex: 1, backgroundColor: "#fff", top: -1 }}>
           <List>
             <ListItem style={styles.container}>
-              <Thumbnail source={this.props.auth.photoURL ? {uri: this.props.auth.photoURL} : camera }
+              <Thumbnail source={auth.photoURL ? {uri: auth.photoURL} : camera }
                     style={{width: 100, height: 100}} />
               <Body>
-                <Text>{this.props.auth.displayName ? this.props.auth.displayName : I18n.t('unknown')}</Text>
-                <Text>{this.props.auth.email}</Text>
+                <Text>{auth.displayName ? auth.displayName : I18n.t('unknown')}</Text>
+                <Text>{auth.email}</Text>
               </Body>
             </ListItem>
             <ListItem style={styles.container}>
               <Body>
                 <Text>
-                  {this.props.auth.phoneNumber ? this.props.auth.phoneNumber : I18n.t('unknown')}
+                  {auth.phoneNumber ? auth.phoneNumber : I18n.t('unknown')}
                 </Text>
               </Body>
             </ListItem>

@@ -11,24 +11,26 @@ import EditProfile from "../login/EditProfile";
 import OpponentList from "../opponent/OpponentList";
 import EditOpponent from "../opponent/EditOpponent";
 import EditTeam from "../team/EditTeam";
-import AddGame from "../games/AddGame";
+import SignUp from "../login/SignUp";
 
 const ModalNavigator = StackNavigator(
   {
-    Main: { screen: AppNavigator },
-    UserLogin: { screen: UserLogin },
-    Settings : { screen: Settings },
-    Profile: { screen: Profile },
-    EditProfile: { screen: EditProfile },
-    OpponentList: { screen: OpponentList },
-    EditOpponent: { screen: EditOpponent },
-    EditTeam: { screen: EditTeam },
-    AddGame: { screen: AddGame },
+    SignIn: {
+      screen: UserLogin,
+      navigationOptions: {
+        title: 'Sign In'
+      }
+    },
+    SignUp: {
+      screen: SignUp,
+      navigationOptions: {
+        title: 'Sign Up'
+      }
+    },
   },
   {
     mode: 'modal',
-    initialRouteMode: 'Main',
-    headerMode: 'none',
+    initialRouteMode: 'UserLogin',
   }
 );
 

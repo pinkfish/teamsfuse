@@ -3,26 +3,17 @@ import { FlatList, View } from "react-native";
 import { Button, Icon, Fab } from "native-base";
 import GameSummary from "./GameSummary";
 import { withNavigation } from "react-navigation";
+import { compose } from 'redux';
+import { connect } from 'react-redux';
+import { firestoreConnect } from 'react-redux-firebase';
 
 class GameList extends React.PureComponent {
-  state = {selected: (new Map(): Map<string, boolean>)};
-
   _keyExtractor = (item, index) => item.id;
 
   _onPressItem = () => {
     // updater functions are preferred for transactional updates
     this.navigation.navigate("AddGame");
   };
-
-  _renderItem = ({item}) => (
-    <GameSummary
-      id={item.id}
-      onPressItem={this._onPressItem}
-      selected={!!this.state.selected.get(item.id)}
-      title={item.title}
-      description={item.description}
-    />
-  );
 
   render() {
     return (
@@ -48,4 +39,20 @@ class GameList extends React.PureComponent {
   }
 };
 
-export default withNavigation(GameList);
+const enhance = compose(
+  // Pass data from redux as a prop
+  connect(({ firebase: { auth }, firebase: { ordered } }) => ({
+    auth,
+    games: ordered.games
+  })),
+  firestoreConnect(props => [
+    {
+      collection: 'Games',
+      storeAs: 'games',
+      where: [['user.uid', '==', props.auth.uid]],
+    },
+  ]),
+  withNavigation
+);
+
+export default enhance(GameList);

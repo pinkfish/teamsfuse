@@ -1,29 +1,15 @@
-
 import React, { Component } from "react";
-import { View, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { Field, reduxForm } from 'redux-form'
 import I18n from '../../../i18n/I18n';
-import { isLoaded, isEmpty, firebaseConnect, withFirestore } from 'react-redux-firebase';
+import { withFirestore } from 'react-redux-firebase';
 import {
   Container,
-  Header,
-  Title,
-  Content,
   Button,
-  Item,
-  Label,
-  Input,
-  Body,
-  Left,
-  Right,
-  Icon,
-  Form,
   Text,
-  TextInput
 } from "native-base";
 import styles from "./styles";
 import MyTextInput from "../utils/MyTextInput";
-import { withNavigation } from 'react-navigation';
 
 const renderInput = ({ input: { onChange, ...restInput }}) => {
   console.log("Rendering input");
@@ -43,7 +29,8 @@ class LoginFormView extends Component {
   onSubmit = (values, dispatch) => {
     console.log('onSubmit', this.props)
     return new Promise((resolve, reject) => {
-      this.props.firebase.login({ email : values.email, password: values.password })
+      this.props.firebase.createUser({ email : values.email, password: values.password },
+                                     { displayName: values.displayName, phoneNumber: values.phoneNumber })
             .then((cred) => {
               console.log('resolved ');
               resolve();
@@ -57,43 +44,22 @@ class LoginFormView extends Component {
           });
   }
 
-  handleForgotPassword = () => {
-    this.props.navigation.navigate('ForgotPassword')
-  }
-
-  handleSignUp = () => {
-    this.props.navigation.navigate('SignUp')
-  }
-
   render() {
     const { handleSubmit, submitting } = this.props
-
-    const formStates = ['asyncValidating', 'dirty', 'pristine', 'valid', 'invalid', 'submitting',
-    'submitSucceeded', 'submitFailed'];
 
     return (
        <ScrollView>
 
-          <Field name="email" title={I18n.t('email')} component={MyTextInput} defaultValue='' floatingLabel />
+            <Field name="email" title={I18n.t('email')}component={MyTextInput} floatingLabel />
 
-          <Field name="password" title={I18n.t('password')} component={MyTextInput} defaultValue='' secureTextEntry floatingLabel/>
-          <Text>{this.state.errorText}</Text>
-
-          <Text>The form is:</Text>
-      {
-        formStates.filter((state) => this.props[state]).map((state) => {
-          return <Text key={state}> - { state }</Text>
-        })
-      }
+            <Field name="password" title={I18n.t('password')} component={MyTextInput} secureTextEntry floatingLabel/>
+            <Field name="passwordCheck" title={I18n.t('password')} component={MyTextInput} secureTextEntry floatingLabel/>
+            <Field name="displayName" title={I18n.t('name')} component={MyTextInput} floatingLabel/>
+            <Field name="phoneNumber" title={I18n.t('phonenumber')} component={MyTextInput} floatingLabel/>
+            <Text>{this.state.errorText}</Text>
 
           <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
-            <Text>Sign In</Text>
-          </Button>
-          <Button block style={{ margin: 15 }} onPress={this.handleForgotPassword} >
-            <Text>Forgot Password</Text>
-          </Button>
-          <Button block style={{ margin: 15 }} onPress={this.handleSignUp} >
-            <Text>Sign Up</Text>
+            <Text>Create Account</Text>
           </Button>
         </ScrollView>
     );
@@ -114,13 +80,18 @@ export default reduxForm({
     if (!values.email) {
       errors.email = I18n.t('needemail')
     }
-
     if (!values.password) {
       errors.password = I18n.t('needpassword')
+    }
+    if (!values.displayName) {
+      errors.displayName = I18n.t('needName')
+    }
+    if (values.password != values.passwordCheck) {
+      errors.passwordCheck = I18n.t('passwordsmustmatch')
     }
     console.log('in here', errors)
 
     // Do the actual login here.
     return errors
   }
-})(withFirestore(withNavigation(LoginFormView)))
+})(withFirestore(LoginFormView))

@@ -1,14 +1,7 @@
-import React, { Component } from "react";
+import React, { Component } from 'react'
 import { connect } from 'react-redux';
-import {
-  Container
-} from "native-base";
-import styles from './styles';
-import EditProfileForm from './EditProfileForm';
-import { ModalHeader } from "../app/AppHeader";
-import I18n from '../../../i18n/I18n';
-
-const camera = require("../../../assets/camera.png");
+import { Container } from 'native-base';
+import EditTeamForm from './EditTeamForm';
 
 class EditProfile extends Component {
   constructor(props, context) {
@@ -29,7 +22,7 @@ class EditProfile extends Component {
       <Container>
         <ModalHeader title={I18n.t('profile')} iconRight="check" onRightPress={this.onPressItem}/>
 
-        <EditProfileForm onMyFormRef={(ref) => (this.child = ref)} />
+        <EditTeamForm onMyFormRef={(ref) => (this.child = ref)} />
       </Container>
     );
   }

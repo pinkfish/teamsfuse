@@ -4,11 +4,12 @@ import getTheme from "../../theme/components";
 import material from "../../theme/variables/material";
 import { connect } from 'react-redux'
 
-import ModalNavigator from "./ModalNavigator";
+import NavigationSelector from "./NavigationSelector";
+
 
 export default () =>
     <StyleProvider style={getTheme(material)}>
       <Root>
-        <ModalNavigator />
+        <NavigationSelector />
       </Root>
     </StyleProvider>;

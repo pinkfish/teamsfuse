@@ -1,6 +1,6 @@
 import { SET_CURRENT_TEAM } from "../actions/Teams";
 
-export const TeamReducer = (state = {}, action) => {
+export const CurrentTeamReducer = (state = { uid: 0 }, action) => {
   // console.log('GLOBALS.JS REDUCER, action:', action);
 
   if(action.type === SET_CURRENT_TEAM) {

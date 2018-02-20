@@ -3,9 +3,8 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { View, TouchableWithoutFeedback, ViewPropTypes } from 'react-native';
 /* eslint-enable import/no-unresolved, import/extensions */
-import { Container, ListItem } from "native-base";
+import { Container, ListItem, Body, Text } from "native-base";
 import styles from "./style";
-
 
 const propTypes = {
     avatar: PropTypes.element,
@@ -42,13 +41,19 @@ class DrawerHeaderAcount extends PureComponent {
         if (!footer) {
             return null;
         }
+        const { centerElement, rightElement } = footer;
 
         const props = {
             ...footer,
             style: styles.drawerHeaderListItem,
         };
-
-        return <ListItem {...props} />;
+        if (centerElement) {
+          return <Body style={styles.drawerHeaderListItem}>
+            <Text>{centerElement.primaryText}</Text>
+            <Text>{centerElement.secondaryText}</Text>
+          </Body>
+        }
+        return <ListItem {...props} />
     }
 
     renderAccount = (account) => {
@@ -67,32 +72,15 @@ class DrawerHeaderAcount extends PureComponent {
             </TouchableWithoutFeedback>
         );
     }
-    renderAccounts = () => {
-        const { accounts } = this.props;
-
-        if (!accounts) {
-            return null;
-        }
-
-        // TODO: slice of accounts
-        // add more soficticated slice when there will be lots of accounts
-        return accounts.slice(0, 3).map(this.renderAccount);
-    }
     render() {
         const { avatar } = this.props;
 
         return (
             <Container style={styles.drawerHeaderAccount.container}>
-                <View style={styles.drawerHeaderAccount.accountContainer}>
-                    <View style={styles.drawerHeaderAccount.topContainer}>
-                        <View style={styles.drawerHeaderAccount.avatarsContainer}>
-                            <View style={styles.drawerHeaderAccount.activeAvatarContainer}>
-                                {React.cloneElement(avatar, { size: 56 })}
-                            </View>
-                        </View>
-                    </View>
-                </View>
-                {this.renderFooter()}
+                {React.cloneElement(avatar, { size: 56 })}
+                <Body style={{ flex: 1 }}>
+                  {this.renderFooter()}
+                </Body>
 
             </Container>
         );
