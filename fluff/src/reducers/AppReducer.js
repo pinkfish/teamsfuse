@@ -6,7 +6,8 @@ import { NavReducer } from './NavReducers';
 import { CurrentPlayerReducer } from './PlayerReducer';
 import { firestoreReducer } from 'redux-firestore';
 import { PlayerDataReducer } from './PlayerDataReducer';
-
+import { TeamDataReducer } from './TeamDataReducer';
+import { GameDataReducer } from './GameDataReducer';
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
@@ -17,6 +18,8 @@ export const makeRootReducer = (asyncReducers) => {
       currentTeam: CurrentTeamReducer,
       currentPlayer: CurrentPlayerReducer,
       players: PlayerDataReducer,
+      games: GameDataReducer,
+      teams: TeamDataReducer,
       ...asyncReducers
     });
 }

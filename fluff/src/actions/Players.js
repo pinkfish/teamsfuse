@@ -10,18 +10,18 @@ export const FETCH_PLAYER_DATA_CANCEL = "FETCH_PLAYER_DATA_CANCEL";
 /*
  * Action creators.
  */
- export function setPlayer(player) {
-   return { type: SET_CURRENT_PLAYER, payload: player }
- }
+export function setPlayer(player) {
+ return { type: SET_CURRENT_PLAYER, payload: player }
+}
 
- export function fetchPlayerDataSuccess(allPlayers) {
-   return { type: FETCH_PLAYER_DATA_SUCCESS, payload: allPlayers }
- }
+export function fetchPlayerDataSuccess(allPlayers) {
+ return { type: FETCH_PLAYER_DATA_SUCCESS, payload: allPlayers }
+}
 
- export function fetchPlayerDataFailure() {
-   return { type: FETCH_PLAYER_DATA_FAILURE, payload: {} }
- }
+export function fetchPlayerDataFailure() {
+ return { type: FETCH_PLAYER_DATA_FAILURE, payload: {} }
+}
 
- export function fetchPlayerData() {
-   return { type: FETCH_PLAYER_DATA, payload: {} }
- }
+export function fetchPlayerData() {
+ return { type: FETCH_PLAYER_DATA, payload: {} }
+}

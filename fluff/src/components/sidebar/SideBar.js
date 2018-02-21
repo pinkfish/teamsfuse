@@ -20,6 +20,8 @@ import Drawer from './drawer/Drawer';
 import DrawerHeader from './drawer/DrawerHeader';
 import DrawerSection from './drawer/DrawerSection';
 import DrawerHeaderAccount from './drawer/DrawerHeaderAccount';
+import { fetchPlayerData } from '../../actions/Players.js';
+import { fetchTeamData } from '../../actions/Teams.js';
 
 
 const drawerCover = require("../../../assets/drawer-cover.png");
@@ -80,8 +82,19 @@ class SideBar extends Component {
     };
   }
 
+  componentWillMount = () => {
+    const { teams, players, dispatch } = this.props;
+
+    if (players.loaded == 0) {
+      // Request the players.
+      dispatch(fetchPlayerData());
+    } else if (teams.loaded == 0) {
+      dispatch(fetchTeamData());
+    }
+  }
+
   render() {
-    const { teams, auth }  = this.props;
+    const { teams, auth, players }  = this.props;
 
     if (isEmpty(this.props.auth)) {
        MyIcon = <Icon name="account-circle" style={styles.drawerImage} />;
@@ -94,7 +107,9 @@ class SideBar extends Component {
     }
 
     myTeamArray = [];
-    if (!teams || teams.length == 0) {
+    console.log('Teams', teams);
+    console.log('Players', players);
+    if (!teams.list|| teams.list.length == 0) {
     } else {
       for (team in teams) {
         myTeamArray.push( {
@@ -150,19 +165,14 @@ const enhance = compose(
     connect((state) => ({
       player: state.firebase.ordered.player,
       currentTeam: state.currentTeam,
-      currentPlayer: state.currentPlayer
+      currentPlayer: state.currentPlayer,
+      teams: state.teams,
+      players: state.players
     })),
     connect(({ firebase: { auth, profile } }) => ({
       auth,
       profile,
-    })),
-    firestoreConnect(props => [
-      {
-        collection: 'Player',
-        where: [ `Player.${props.auth.uid}`, '==', true ],
-        storeAs: 'player'
-      },
-    ]),
+    }))
   );
 
 export default enhance(SideBar);

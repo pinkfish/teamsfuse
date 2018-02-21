@@ -35,9 +35,11 @@ const fetchTeamsLogic = createLogic({
                   }).then(documentReference => {
                     console.log(`Added document with name: ${documentReference}`);
                     dispatch(fetchPlayerDataSuccess([documentReference]));
+                    done();
                   }).catch(error => {
                     console.log('Error adding', error);
                     dispatch(fetchPlayerDataFailure());
+                    done();
                   })
                 } else {
                   allPlayers = []
@@ -45,6 +47,7 @@ const fetchTeamsLogic = createLogic({
                     console.log("player", doc);
                     var player = doc.data();
                     player.teams = [];
+                    player.uid = doc.id;
                     allPlayers.push(player);
                     var dbRef = firestore.collection("Teams")
                         .where('player.' + player.uid + '.active', '==', true)
@@ -60,17 +63,20 @@ const fetchTeamsLogic = createLogic({
                   Promise.all(promises)
                       .then(function(values) {
                         console.log('all done', promises)
-                        dispatch(fetchPlayerDataSuccess(allPlayers))
+                        dispatch(fetchPlayerDataSuccess(allPlayers));
+                        done();
                       })
                       .catch(function(error) {
                         console.log('all errors', error)
                         dispatch(fetchPlayerDataFailure());
+                        done();
                       });
-                })
+                }
               })
               .catch(function(error) {
                 console.log('fetch error', error)
                 dispatch(fetchPlayerDataFailure());
+                done();
               })
 
   }

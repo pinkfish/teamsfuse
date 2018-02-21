@@ -13,8 +13,6 @@ class NavigationSelector extends Component {
     this.props.firebase.reloadAuth()
         .then((cred) => {
           console.log('reloaded auth');
-          // Load the subprofile into the store too.
-          this.props.dispatch(fetchPlayerData());
         })
         .catch((error) => {
           console.log('Error reloading auth', error)
