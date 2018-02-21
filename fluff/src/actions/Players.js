@@ -30,13 +30,13 @@ export function fetchPlayerData() {
 }
 
 export function fetchPlayerDataAdd(player) {
-  return { type: FETCH_PLAYER_DATA_ADD, player }
+  return { type: FETCH_PLAYER_DATA_ADD, payload: player }
 }
 
 export function fetchPlayerDataDelete(player) {
-  return { type: FETCH_PLAYER_DATA_DELETE, player }
+  return { type: FETCH_PLAYER_DATA_DELETE, payload: player }
 }
 
 export function fetchPlayerDataUpdate(player) {
-  return { type: FETCH_PLAYER_DATA_UPDATE, player }
+  return { type: FETCH_PLAYER_DATA_UPDATE, payload: player }
 }

@@ -8,15 +8,13 @@ import { setTeam } from "../../actions/Teams";
 import { fetchPlayerData } from "../../actions/Players";
 
 class NavigationSelector extends Component {
+
   componentWillMount = () => {
-    // Refresh the login in here.
-    this.props.firebase.reloadAuth()
-        .then((cred) => {
-          console.log('reloaded auth');
-        })
-        .catch((error) => {
-          console.log('Error reloading auth', error)
-        })
+    const { dispatch } = this.props;
+    if (this.props.auth && this.props.auth.uid) {
+      // Request the players.
+      dispatch(fetchPlayerData());
+    }
   }
 
   render() {

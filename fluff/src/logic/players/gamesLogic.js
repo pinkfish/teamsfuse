@@ -6,17 +6,19 @@ import {
   fetchGameDataSuccess,
   fetchGameDataAdd,
   fetchGameDataUpdate,
-  fetchGameDataDelete
+  fetchGameDataDelete,
+  fetchGameData
 } from '../../actions/Games';
 import {
   FETCH_TEAM_DATA_ADD,
-  FETCH_TEAM_DATA_DELETE
+  FETCH_TEAM_DATA_DELETE,
+  FETCH_TEAM_DATA_SUCCESS
 } from '../../actions/Teams';
 
 function teamOnSnapshot(querySnapshot, dispatch) {
   querySnapshot.docChanges.forEach((change) => {
-    var team = doc.data();
-    team.uid = doc.id;
+    var team = change.doc.data();
+    team.uid = change.doc.id;
     if (change.type === "added") {
       dispatch(fetchGameDataAdd(team));
     }
@@ -29,7 +31,7 @@ function teamOnSnapshot(querySnapshot, dispatch) {
   });
 }
 
-const fetchTeamsLogic = createLogic({
+const fetchGamesLogic = createLogic({
   type: FETCH_GAME_DATA, // only apply this logic to this type
   cancelType: CANCEL_FETCH_GAME_DATA, // cancel on this type
   latest: true, // only take latest
@@ -74,22 +76,25 @@ const fetchTeamsLogic = createLogic({
 
 
 // Handle updateing the unsubscribe/unsubscribe on delete/addr
-const addPlayerLogic = createLogic({
+const addTeamLogic = createLogic({
   type: FETCH_TEAM_DATA_ADD,
-  cancelType: CANCEL_FETCH_TEAM_DATA, // cancel on this type
+  cancelType: CANCEL_FETCH_GAME_DATA, // cancel on this type
   process({ firebase, firestore, getState, action }, dispatch, done) {
-    teamQuery = teamsColl.doc(team.uid).collection('Games')
+    teamsColl = firestore.collection('Teams');
+    teamQuery = teamsColl.doc(action.payload.uid).collection('Games')
         .orderBy("gameTime");
+    console.log('addTeamLogic', action);
     action.payload.snapshotListen = teamQuery.onSnapshot(function(querySnapshot) {
       teamOnSnapshot(querySnapshot, dispatch);
     });
+    done();
   }
 });
 
 // Handle updateing the unsubscribe/unsubscribe on delete/addr
-const deletePlayerLogic = createLogic({
+const deleteTeamLogic = createLogic({
   type: FETCH_TEAM_DATA_DELETE,
-  cancelType: CANCEL_FETCH_TEAM_DATA, // cancel on this type
+  cancelType: CANCEL_FETCH_GAME_DATA, // cancel on this type
   process({ firebase, firestore, getState, action }, dispatch, done) {
     // Find the player in the storage.
     teams = getState().teams.list;
@@ -102,9 +107,23 @@ const deletePlayerLogic = createLogic({
         }
       }
     });
+    done();
   }
 });
 
+const teamsLoadSuccessLogic = createLogic({
+  type: FETCH_TEAM_DATA_SUCCESS,
+  cancelType: CANCEL_FETCH_GAME_DATA, // cancel on this type
+  process({ firebase, firestore, getState, action }, dispatch, done) {
+    // dispatch a request to get the team data too.
+    dispatch(fetchGameData());
+    done();
+  }
+})
+
 export default [
-  fetchTeamsLogic
+  fetchGamesLogic,
+  addTeamLogic,
+  deleteTeamLogic,
+  teamsLoadSuccessLogic
 ];

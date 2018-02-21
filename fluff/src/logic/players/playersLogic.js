@@ -20,18 +20,19 @@ const fetchTeamsLogic = createLogic({
     // Get the players first.
     playerQuery = firestore.collection('Players')
         .where('user.' + auth.uid + '.added', '==', true);
-    player.snapshotListen = playerquery.onSnapshot(function(querySnapshot) {
+    result = {}
+    result.snapshotListen = playerQuery.onSnapshot(function(querySnapshot) {
           querySnapshot.docChanges.forEach((change) => {
-            var player = doc.data();
-            player.uid = doc.id;
+            var player = change.doc.data();
+            player.uid = change.doc.id;
             if (change.type === "added") {
-              dispatch(fetchPlayerDataAdd(team));
+              dispatch(fetchPlayerDataAdd(player));
             }
             if (change.type === "modified") {
-              dispatch(fetchPlayerDataUpdate(team));
+              dispatch(fetchPlayerDataUpdate(player));
             }
             if (change.type === "removed") {
-              dispatch(fetchPlayerDataDelete(team));
+              dispatch(fetchPlayerDataDelete(player));
             }
         });
       });
@@ -51,7 +52,8 @@ const fetchTeamsLogic = createLogic({
                     }
                   }).then(documentReference => {
                     console.log(`Added document with name: ${documentReference}`);
-                    dispatch(fetchPlayerDataSuccess([documentReference]));
+                    result.list = [documentReference];
+                    dispatch(fetchPlayerDataSuccess(result));
                     done();
                   }).catch(error => {
                     console.log('Error adding', error);
@@ -68,7 +70,8 @@ const fetchTeamsLogic = createLogic({
                     allPlayers.push(player);
                   })
                   console.log('all done', promises)
-                  dispatch(fetchPlayerDataSuccess(allPlayers));
+                  result.list = allPlayers;
+                  dispatch(fetchPlayerDataSuccess(result));
                   done();
                 }
               })

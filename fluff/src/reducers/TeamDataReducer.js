@@ -19,6 +19,15 @@ export const TeamDataReducer = (state = { loaded: false }, action) => {
       loading: true
     };
   case FETCH_TEAM_DATA_SUCCESS:
+    // If we already have a list, then disable all the onsnapshot stuff.
+    if (state.list && state.list.length > 0) {
+      state.list.forEach((team) => {
+        if (team.snapshotListen) {
+          team.snapshotListen();
+          team.snapshotListen = null;
+        }
+      });
+    }
     return {
       ...state,
       list: action.payload,
@@ -36,7 +45,24 @@ export const TeamDataReducer = (state = { loaded: false }, action) => {
     newState = {
       ...state
     };
-    newState.list.push(action.payload);
+    found = false;
+    if (!newState.list) {
+      console.error("List doesn't exist for team", newState);
+      return newState;
+    }
+    newState.list.forEach((team) => {
+      if (team.uid == action.payload.uid) {
+        // Merge the data into this element.
+        team = {
+          ...team,
+          ...action.payload
+        };
+        found = true;
+      }
+    });
+    if (!found) {
+      newState.list.push(action.payload);
+    }
     newState.fetchStatus = `Team add snapshot ${(new Date()).toLocaleString()}`;
     return newState;
   case FETCH_TEAM_DATA_DELETE:
@@ -54,12 +80,12 @@ export const TeamDataReducer = (state = { loaded: false }, action) => {
       ...state
     };
     newState.list.forEach((team) => {
-      if (team.uid == payload.uid) {
+      if (team.uid == action.payload.uid) {
         // Merge the data into this element.
         team = {
           ...team,
-          ...payload
-        }
+          ...action.payload
+        };
       }
     });
     return newState;

@@ -32,17 +32,17 @@ export function fetchTeamData() {
 }
 
 export function fetchTeamDataAdd(team) {
-  return { type: FETCH_TEAM_DATA_ADD, team }
+  return { type: FETCH_TEAM_DATA_ADD, payload: team }
 }
 
 export function fetchTeamDataDelete(team) {
-  return { type: FETCH_TEAM_DATA_DELETE, team }
+  return { type: FETCH_TEAM_DATA_DELETE, payload: team }
 }
 
 export function fetchTeamDataUpdate(team) {
-  return { type: FETCH_TEAM_DATA_UPDATE, team }
+  return { type: FETCH_TEAM_DATA_UPDATE, payload: team }
 }
 
 export function fetchTeamDataSingle(teamUid) {
-  return { type: FETCH_TEAM_DATA_SINGLE, teamUid }
+  return { type: FETCH_TEAM_DATA_SINGLE, payload: teamUid }
 }

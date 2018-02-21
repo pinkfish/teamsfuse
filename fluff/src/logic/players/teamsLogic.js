@@ -6,18 +6,21 @@ import {
   fetchTeamDataSuccess,
   fetchTeamDataAdd,
   fetchTeamDataDelete,
-  fetchTeamDataUpdate
+  fetchTeamDataUpdate,
+  fetchTeamData
 } from '../../actions/Teams.js';
 import {
   FETCH_PLAYER_DATA_ADD,
   FETCH_PLAYER_DATA_DELETE,
+  FETCH_PLAYER_DATA_SUCCESS,
 } from '../../actions/Players.js';
 
 
 function playerOnSnapshot(querySnapshot, dispatch) {
   querySnapshot.docChanges.forEach((change) => {
-    var team = doc.data();
-    team.uid = doc.id;
+    console.log('changes', change)
+    var team = change.doc.data();
+    team.uid = change.doc.id;
     if (change.type === "added") {
       dispatch(fetchTeamDataAdd(team));
     }
@@ -82,10 +85,12 @@ const addPlayerLogic = createLogic({
   type: FETCH_PLAYER_DATA_ADD,
   cancelType: CANCEL_FETCH_TEAM_DATA, // cancel on this type
   process({ firebase, firestore, getState, action }, dispatch, done) {
-    playerquery = teamsColl.where('player.' + player.uid + '.added', '==', true)
+    teamsColl = firestore.collection('Teams');
+    playerquery = teamsColl.where('player.' + action.payload.uid + '.added', '==', true)
     action.payload.snapshotListen = playerquery.onSnapshot(function(querySnapshot) {
       playerOnSnapshot(querySnapshot, dispatch);
     });
+    done();
   }
 });
 
@@ -105,11 +110,23 @@ const deletePlayerLogic = createLogic({
         }
       }
     });
+    done();
   }
 });
+
+const playerLoadSuccessLogic = createLogic({
+  type: FETCH_PLAYER_DATA_SUCCESS,
+  cancelType: CANCEL_FETCH_TEAM_DATA, // cancel on this type
+  process({ firebase, firestore, getState, action }, dispatch, done) {
+    // dispatch a request to get the team data too.
+    dispatch(fetchTeamData());
+    done();
+  }
+})
 
 export default [
   fetchTeamsLogic,
   addPlayerLogic,
   deletePlayerLogic,
+  playerLoadSuccessLogic
 ];

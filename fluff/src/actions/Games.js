@@ -26,13 +26,13 @@ export function fetchGameData() {
 }
 
 export function fetchGameDataAdd(game) {
-  return { type: FETCH_GAME_DATA_ADD, game }
+  return { type: FETCH_GAME_DATA_ADD, payload: game }
 }
 
 export function fetchGameDataDelete(game) {
-  return { type: FETCH_GAME_DATA_DELETE, game }
+  return { type: FETCH_GAME_DATA_DELETE, payload: game }
 }
 
 export function fetchGameDataUpdate(game) {
-  return { type: FETCH_GAME_DATA_UPDATE, game }
+  return { type: FETCH_GAME_DATA_UPDATE, payload: game }
 }

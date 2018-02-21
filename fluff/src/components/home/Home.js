@@ -28,69 +28,57 @@ class Home extends Component {
     if (!teams || teams.length == 0) {
       return <Container>
 
-      <Content padder>
-        <Text>{I18n.t('noteams')}</Text>
-        <Button  onPress={this.addTeam} transparent >
-          <Text>{I18n.t('addteam')}</Text>
-        </Button>
-      </Content>
-      <Fab
-          active={true}
-          direction="up"
-          containerStyle={{ }}
-          style={{ backgroundColor: '#5067FF' }}
-          position="bottomRight"
-          onPress={this.addGame}>
-          <Icon name="mat-add" />
-      </Fab>
-    </Container>
+                <Content padder>
+                  <Text>{I18n.t('noteams')}</Text>
+                  <Button  onPress={this.addTeam} transparent >
+                    <Text>{I18n.t('addteam')}</Text>
+                  </Button>
+                </Content>
+                <Fab
+                    active={true}
+                    direction="up"
+                    containerStyle={{ }}
+                    style={{ backgroundColor: '#5067FF' }}
+                    position="bottomRight"
+                    onPress={this.addGame}>
+                    <Icon name="mat-add" />
+                </Fab>
+              </Container>
     }
-    return
-      <Content>
-        <GameList />
+    ret = (
+      <Container>
+        <Content>
+          <Text>SOmething here</Text>
+          <GameList />
+        </Content>
         <Fab
             direction="up"
             containerStyle={{ }}
             style={{ backgroundColor: '#5067FF' }}
             position="bottomRight"
             onPress={this.addGame}>
-            <Icon name="add" />
+            <Icon name="mat-add" />
         </Fab>
-      </Content>
+      </Container>);
+
+      return ret;
   }
 }
 
 function mapStateToProps(state) {
-  return { currentPlayer: state.currentPlayer }
+  return {
+    currentPlayer: state.currentPlayer,
+    teams: state.teams,
+    games: state.games
+  }
 }
 
 const enhance = compose(
   // Pass data from redux as a prop
   connect(({ firebase: { auth }, firebase: { ordered } }) => ({
     auth,
-    games: ordered.games,
-    teams: ordered.teams
   })),
   connect(mapStateToProps),
-  firestoreConnect(props => [
-    {
-      collection: 'Games',
-      storeAs: 'games',
-      where: [['user.uid', '==', props.auth.uid]],
-    },
-    {
-      collection: 'Teams',
-      storeAs: 'teams',
-      //where: [['user.uid', '==', props.auth.uid]],
-      where: [ `Teams.${props.currentPlayer.uid}`, '==', true],
-    },
-    {
-      collection: 'Player',
-      storeAs: 'players',
-      //where: [['user.uid', '==', props.currentPlayer.uid ]],
-      where: [ `Player.${props.auth.uid}`, '==', true ],
-    }
-  ]),
   withNavigation
 );
 

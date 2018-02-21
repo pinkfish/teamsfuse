@@ -27,27 +27,15 @@ import RNFirebase from 'react-native-firebase';
 
 const drawerCover = require("../../../assets/drawer-cover.png");
 const mainItems = [
+];
+
+const otherItems = [
   {
     value: I18n.t('profile'),
     route: "Profile",
     icon: "account-circle",
     key: '1'
   },
-  {
-    value: I18n.t('games'),
-    route: "Games",
-    icon: "calendar",
-    key: '2'
-  },
-  {
-    value: I18n.t('opponents'),
-    route: "OpponentList",
-    icon: "gamepad",
-    key: '3'
-  },
-];
-
-const otherItems = [
   {
     value: I18n.t('logout'),
     route: "Logout",
@@ -83,18 +71,6 @@ class SideBar extends Component {
     };
   }
 
-  componentWillMount = () => {
-    const { teams, players, dispatch } = this.props;
-
-    if (players.loaded == 0) {
-      // Request the players.
-      dispatch(fetchPlayerData());
-    } else if (teams.loaded == 0) {
-      dispatch(fetchTeamData());
-    }
-    // Watch for changes.
-  }
-
   render() {
     const { teams, auth, players }  = this.props;
 
@@ -113,14 +89,15 @@ class SideBar extends Component {
     console.log('Players', players);
     if (!teams.list|| teams.list.length == 0) {
     } else {
-      for (team in teams.list) {
+      teams.list.forEach((team) => {
+        console.log('me team', team);
         myTeamArray.push( {
           value: team.name,
           route: "TeamView",
           icon: "mat-people",
           key: team.uid
         });
-      }
+      });
     }
     myTeamArray.push({
       value: I18n.t('addteam'),
@@ -148,10 +125,6 @@ class SideBar extends Component {
           <DrawerSection
             title="Teams"
             items={myTeamArray}
-          />
-          <DrawerSection
-            divider
-            items={mainItems}
           />
           <DrawerSection
             items={otherItems}

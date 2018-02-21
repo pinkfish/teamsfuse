@@ -19,7 +19,8 @@ export const GameDataReducer = (state = { loaded: 0 }, action) => {
       loading: true
     };
   case FETCH_GAME_DATA_SUCCESS:
-    console.log('Fetched all player data', action.payload)
+    console.log('Fetched all game data', action.payload)
+    // If we already have a list, then disable all the onsnapshot stuff.
     return {
       ...state,
       list: action.payload,
@@ -37,7 +38,20 @@ export const GameDataReducer = (state = { loaded: 0 }, action) => {
     newState = {
       ...state
     };
-    newState.list.push(action.payload);
+    found = false;
+    newState.list.forEach((player) => {
+      if (player.uid == action.payload.uid) {
+        // Merge the data into this element.
+        player = {
+          ...player,
+          ...payload
+        };
+        found = true;
+      }
+    });
+    if (!found) {
+      newState.list.push(action.payload);
+    }
     newState.fetchStatus = `Player add snapshot ${(new Date()).toLocaleString()}`;
     return newState;
   case FETCH_GAME_DATA_DELETE:
@@ -55,11 +69,11 @@ export const GameDataReducer = (state = { loaded: 0 }, action) => {
       ...state
     };
     newState.list.forEach((player) => {
-      if (player.uid == payload.uid) {
+      if (player.uid == action.payload.uid) {
         // Merge the data into this element.
         player = {
           ...player,
-          ...payload
+          ...action.payload
         };
       }
     });
