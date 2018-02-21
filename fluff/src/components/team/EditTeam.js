@@ -2,8 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import { Container } from 'native-base';
 import EditTeamForm from './EditTeamForm';
+import { ModalHeader } from "../app/AppHeader";
+import I18n from '../../../i18n/I18n';
 
-class EditProfile extends Component {
+class EditTeam extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -28,4 +30,4 @@ class EditProfile extends Component {
   }
 }
 
-export default connect()(EditProfile);
+export default connect()(EditTeam);

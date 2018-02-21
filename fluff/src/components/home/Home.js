@@ -19,7 +19,7 @@ class Home extends Component {
   }
 
   addTeam = () => {
-    this.props.navigation.navigate("EditTeam", { uid: 0 });
+    this.props.navigation.navigate("AddTeam", { uid: 0 });
   }
 
   render() {

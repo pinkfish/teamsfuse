@@ -2,7 +2,10 @@ import {
   FETCH_GAME_DATA,
   FETCH_GAME_DATA_CANCEL,
   FETCH_GAME_DATA_SUCCESS,
-  FETCH_GAME_DATA_FAILURE
+  FETCH_GAME_DATA_FAILURE,
+  FETCH_GAME_DATA_ADD,
+  FETCH_GAME_DATA_DELETE,
+  FETCH_GAME_DATA_UPDATE
 } from "../actions/Games";
 
 export const GameDataReducer = (state = { loaded: 0 }, action) => {
@@ -30,6 +33,37 @@ export const GameDataReducer = (state = { loaded: 0 }, action) => {
       fetchStatus: `errored: ${action.payload}`,
       loading: false
     };
+  case FETCH_GAME_DATA_ADD:
+    newState = {
+      ...state
+    };
+    newState.list.push(action.payload);
+    newState.fetchStatus = `Player add snapshot ${(new Date()).toLocaleString()}`;
+    return newState;
+  case FETCH_GAME_DATA_DELETE:
+    newState = {
+      ...state
+    };
+    // find the item and erase it.
+    newState.list = newState.list.filter(function(player) {
+      return player.uid != action.payload.uid;
+    });
+    newState.fetchStatus = `Player delete snapshot ${(new Date()).toLocaleString()}`;
+    return newState;
+  case FETCH_GAME_DATA_UPDATE:
+    newState = {
+      ...state
+    };
+    newState.list.forEach((player) => {
+      if (player.uid == payload.uid) {
+        // Merge the data into this element.
+        player = {
+          ...player,
+          ...payload
+        };
+      }
+    });
+    return newState;
   default:
     return state;
   }

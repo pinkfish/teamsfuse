@@ -29,8 +29,6 @@ import { Field, reduxForm, submit } from 'redux-form'
 import MyTextInput from "../utils/MyTextInput";
 import { withNavigation } from 'react-navigation';
 
-const camera = require("../../../assets/camera.png");
-
 class EditTeamForm extends Component {
   constructor(props, context) {
     super(props, context);
@@ -97,7 +95,7 @@ class EditTeamForm extends Component {
         <ListItem style={styles.container}>
           <Body>
             <Field name="name" title={I18n.t('name')} component={MyTextInput} defaultValue={opponent?opponent.name:''} floatingLabel />
-            <Field name="contact" title={I18n.t('contact')} component={MyTextInput} defaultValue={opponent?opponent.contact:''} secureTextEntry floatingLabel last/>
+            <Field name="contact" title={I18n.t('contact')} component={MyTextInput} defaultValue={opponent?opponent.contact:''} floatingLabel last/>
             <Text>{this.state.errorText}</Text>
           </Body>
         </ListItem>
@@ -107,7 +105,6 @@ class EditTeamForm extends Component {
 }
 
 const enhance = compose(
-  withFirestore,
   withNavigation,
   reduxForm({
     form: 'EditOpponent',

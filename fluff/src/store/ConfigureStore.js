@@ -30,7 +30,6 @@ const persistConfig = {
 
 
 export default (initialState = { firebase: {}, firestore: {} }) => {
- console.log('Bing?');
  // initialize firebase
  const firebase = RNFirebase.initializeApp(reactNativeFirebaseConfig);
  firebase.firestore();

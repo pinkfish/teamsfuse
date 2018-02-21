@@ -3,7 +3,10 @@ import {
   FETCH_PLAYER_DATA,
   CANCEL_FETCH_PLAYER_DATA,
   fetchPlayerDataFailure,
-  fetchPlayerDataSuccess
+  fetchPlayerDataSuccess,
+  fetchPlayerDataAdd,
+  fetchPlayerDataUpdate,
+  fetchPlayerDataDelete,
 } from '../../actions/Players.js';
 
 const fetchTeamsLogic = createLogic({
@@ -12,13 +15,27 @@ const fetchTeamsLogic = createLogic({
   latest: true, // only take latest
   debounce: 500, /* ms */
   process({ firebase, firestore, getState, action }, dispatch, done) {
-
     console.log('fetch', getState());
     auth = getState().firebase.auth;
     // Get the players first.
-    firestore.collection('Players')
-        .where('user.' + auth.uid + '.added', '==', true)
-        .get()
+    playerQuery = firestore.collection('Players')
+        .where('user.' + auth.uid + '.added', '==', true);
+    player.snapshotListen = playerquery.onSnapshot(function(querySnapshot) {
+          querySnapshot.docChanges.forEach((change) => {
+            var player = doc.data();
+            player.uid = doc.id;
+            if (change.type === "added") {
+              dispatch(fetchPlayerDataAdd(team));
+            }
+            if (change.type === "modified") {
+              dispatch(fetchPlayerDataUpdate(team));
+            }
+            if (change.type === "removed") {
+              dispatch(fetchPlayerDataDelete(team));
+            }
+        });
+      });
+    playerQuery.get()
             .then(function(querySnapshot) {
                 promises = []
                 allPlayers = []
@@ -49,28 +66,10 @@ const fetchTeamsLogic = createLogic({
                     player.teams = [];
                     player.uid = doc.id;
                     allPlayers.push(player);
-                    var dbRef = firestore.collection("Teams")
-                        .where('player.' + player.uid + '.active', '==', true)
-                        .get();
-                    added = dbRef.then(function(querySnapshot) {
-                      querySnapshot.forEach(teamDoc => {
-                        console.log("Add parent");
-                        player.teams.push(teamDoc.data());
-                      });
-                    });
-                    promises.push(added);
                   })
-                  Promise.all(promises)
-                      .then(function(values) {
-                        console.log('all done', promises)
-                        dispatch(fetchPlayerDataSuccess(allPlayers));
-                        done();
-                      })
-                      .catch(function(error) {
-                        console.log('all errors', error)
-                        dispatch(fetchPlayerDataFailure());
-                        done();
-                      });
+                  console.log('all done', promises)
+                  dispatch(fetchPlayerDataSuccess(allPlayers));
+                  done();
                 }
               })
               .catch(function(error) {

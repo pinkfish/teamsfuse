@@ -1,31 +1,66 @@
 import React from 'react';
-import { TextInput, View, Text } from 'react-native';
-import { Item, Input, Label } from 'native-base';
+import { Item, Input, Label, Text, Icon, Textarea } from 'native-base';
 
 /**
  * to be wrapped with redux-form Field component
  */
 export default function MyTextInput(props) {
-  const { input, meta, title, ...inputProps } = props;
-
+  const { input, meta, title, placeholder, multiline, numberOfLines, disableValid, rowspan, ...inputProps } = props;
+/*
   const formStates = ['active', 'autofilled', 'asyncValidating', 'dirty', 'invalid', 'pristine',
     'submitting', 'touched', 'valid', 'visited'];
 
-  console.log("Rendering text input ", input, title, ...inputProps);
 
   formStates.filter((state) => meta[state]).map((state) => {
     console.log(state);
   })
 
-  return (
-      <Item {...inputProps} floatingLabel>
-        <Label>{title}</Label>
-        <Input onChangeText={input.onChange}
-          onBlur={input.onBlur}
-          onFocus={input.onFocus}
-          value={input.value}
-        />
-        {props.touched && props.error && <Text>{props.error}</Text>}
+  */
+  var renderError = meta.invalid && (meta.submitFailed || !meta.pristine);
+
+  extra = null;
+  if ((meta.submitFailed || !meta.pristine) && !disableValid) {
+    if (meta.invalid) {
+      inputProps.error = true
+      extra = <Icon name='close-circle' />;
+    } else {
+      inputProps.success = true
+      extra = <Icon name='checkmark-circle' />;
+    }
+  }
+  if (multiline) {
+    ret = (
+        <Item {...inputProps}  >
+          {title && <Label>{title}</Label>}
+          <Textarea
+            onChangeText={input.onChange}
+            onBlur={input.onBlur}
+            onFocus={input.onFocus}
+            value={input.value}
+            placeholder={placeholder}
+            rowspan={rowspan}
+            numberOfLines={numberOfLines}
+          />
+          {extra}
         </Item>
-  );
+      );
+  } else {
+    ret = (
+        <Item {...inputProps}  >
+          {title && <Label>{title}</Label>}
+          <Input
+            onChangeText={input.onChange}
+            onBlur={input.onBlur}
+            onFocus={input.onFocus}
+            value={input.value}
+            placeholder={placeholder}
+            multiline={multiline}
+            numberOfLines={numberOfLines}
+          />
+          {extra}
+        </Item>
+    );
+  }
+  console.log(ret);
+  return ret;
 }

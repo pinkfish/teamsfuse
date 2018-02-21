@@ -22,6 +22,7 @@ import DrawerSection from './drawer/DrawerSection';
 import DrawerHeaderAccount from './drawer/DrawerHeaderAccount';
 import { fetchPlayerData } from '../../actions/Players.js';
 import { fetchTeamData } from '../../actions/Teams.js';
+import RNFirebase from 'react-native-firebase';
 
 
 const drawerCover = require("../../../assets/drawer-cover.png");
@@ -91,6 +92,7 @@ class SideBar extends Component {
     } else if (teams.loaded == 0) {
       dispatch(fetchTeamData());
     }
+    // Watch for changes.
   }
 
   render() {
@@ -111,7 +113,7 @@ class SideBar extends Component {
     console.log('Players', players);
     if (!teams.list|| teams.list.length == 0) {
     } else {
-      for (team in teams) {
+      for (team in teams.list) {
         myTeamArray.push( {
           value: team.name,
           route: "TeamView",

@@ -11,6 +11,7 @@ import EditProfile from "../login/EditProfile";
 import OpponentList from "../opponent/OpponentList";
 import EditOpponent from "../opponent/EditOpponent";
 import EditTeam from "../team/EditTeam";
+import AddTeam from "../team/AddTeam";
 import AddGame from "../games/AddGame";
 
 const ModalNavigator = StackNavigator(
@@ -24,6 +25,7 @@ const ModalNavigator = StackNavigator(
     EditOpponent: { screen: EditOpponent },
     EditTeam: { screen: EditTeam },
     AddGame: { screen: AddGame },
+    AddTeam: { screen: AddTeam },
   },
   {
     mode: 'modal',
