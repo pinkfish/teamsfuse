@@ -55,12 +55,12 @@ export const AppHeaderRight = enhance(AppHeaderRightInternal);
 
 export class ModalHeaderInternal extends Component {
   render() {
-    const { title, icon, iconRight, onRightPress } = this.props;
+    const { title, icon, iconRight, onRightPress, onLeftPress } = this.props;
 
     return (
       <Header style={{backgroundColor: "#3F51B5" }}>
         <Left>
-          <Button transparent onPress={() => this.props.navigation.goBack() }>
+          <Button transparent onPress={() => onLeftPress ? onLeftPress() : this.props.navigation.goBack() }>
             <Icon name={icon} size={20} style={{color: 'white'}} />
           </Button>
         </Left>

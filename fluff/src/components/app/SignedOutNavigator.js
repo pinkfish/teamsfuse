@@ -48,7 +48,7 @@ export const SignedOutNavigator = StackNavigator(
   routes,
   {
     mode: 'modal',
-    initialRouteMode: 'SignIn',
+    initialRouteName: 'SignIn',
   }
 );
 
@@ -56,6 +56,6 @@ export const VerifyEmailNavigator = StackNavigator(
   routes,
   {
     mode: 'modal',
-    initialRouteMode: 'VerifyEmail',
+    initialRouteName: 'VerifyEmail',
   }
 );

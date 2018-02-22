@@ -1,88 +1,93 @@
-import React, { Component } from "react";
+import React, { Component, PropTypes } from 'react'
+import { View, Modal } from 'react-native'
+import AddGame1 from './add/AddGame1'
+import AddGame2 from './add/AddGame2'
+import { Container, Spinner, Text, Button } from 'native-base';
 import { ModalHeader } from "../app/AppHeader";
-import { connect } from 'react-redux';
-import { compose } from 'redux';
-import { FlatList } from 'react-native';
-import {
-  Container,
-  Text,
-  Button
-} from "native-base";
-import styles from './styles';
-import { firestoreConnect } from 'react-redux-firebase';
-import { withNavigation } from 'react-navigation';
 import I18n from '../../../i18n/I18n';
+import RNFirebase from 'react-native-firebase';
+import styles from './styles';
 
-const camera = require("../../../assets/camera.png");
 
 class AddGame extends Component {
-  constructor(props, context) {
-    super(props, context);
+  constructor(props) {
+    super(props)
+    this.nextPage = this.nextPage.bind(this)
+    this.previousPage = this.previousPage.bind(this)
     this.state = {
-         errorText: ''
+      page: 1,
+      errorVisible: false,
+      savingVisible: false,
+      error: ''
     }
   }
-
-  onPressItem = () => {
-    // updater functions are preferred for transactional updates
-    console.log(this.child);
-    this.child.doSubmit();
-  };
-
-  keyExtractor = (item, index) => item.uid;
-
-  renderItem = (item) => {
-    return <Button transparent>
-      <Text>{item.name}</Text>
-    </Button>
+  nextPage() {
+    this.setState({ page: this.state.page + 1 })
   }
 
-  addTeam = () => {
-    this.props.navigation.navigate("EditTeam", { uid: 0 });
+  previousPage() {
+    this.setState({ page: this.state.page - 1 })
+  }
+
+  onSubmit = (values) => {
+    player = {}
+    player[values.playeruid] = {
+      added: true,
+    }
+    this.setState({ savingVisible: true });
+    RNFirebase.firestore().collection("Teams").add({
+      name: values.name,
+      league: values.league,
+      gender: values.gender,
+      sport: values.sport,
+      player: player
+    }).then(() => {
+      this.setState({ savingVisible: false });
+      this.props.navigation.goBack();
+    }).catch(() => {
+      this.setState({error: 'Error saving team', errorVisible : true });
+    })
+    // Move to saving state.
   }
 
   render() {
-    const { teams } = this.props;
-
-    if (!teams || teams.length == 0) {
-      return <Container>
-        <ModalHeader title={I18n.t('addevent')} iconRight="check" onRightPress={this.onPressItem}/>
-        <Text>{I18n.t('noteams')}</Text>
-        <Button  onPress={this.addTeam} transparent >
-          <Text>{I18n.t('addteam')}</Text>
-        </Button>
-      </Container>;
-    }
+    const { page } = this.state
     return (
       <Container>
-        <ModalHeader title={I18n.t('addevent')} iconRight="check" onRightPress={this.onPressItem}/>
-        <Text>{I18n.t('teamselect')}</Text>
+        <ModalHeader title={I18n.t('addevent')} />
 
-        <FlatList
-          data={teams}
-          extraData={this.state}
-          keyExtractor={this.keyExtractor}
-          renderItem={this.renderItem}
-        />
-      </Container>
+        <Modal
+           visible={this.state.savingVisible}
+           animationType={'slide'}
+           onRequestClose={() => this.closeModal()}
+         >
+           <View style={styles.modalContainer}>
+             <View style={styles.innerContainer}>
+               <Text>Saving</Text>
+               <Spinner color="green" />
+             </View>
+           </View>
+        </Modal>
+
+        <Modal
+           visible={this.state.errorVisible}
+           animationType={'slide'}
+           onRequestClose={() => this.closeModal()}
+         >
+           <View style={styles.modalContainer}>
+             <View style={styles.innerContainer}>
+               <Text>Error</Text>
+               <Text error>{this.state.error}</Text>
+               <Button onPress={() => this.closeModal()} title="Ok" />
+             </View>
+           </View>
+        </Modal>
+
+        {page === 1 && <AddGame1 onSubmit={this.nextPage}/>}
+        {page === 2 && <AddGame2 previousPage={this.previousPage} onSubmit={this.nextPage}/>}
+    </Container>
     );
   }
 }
 
-const enhance = compose(
-  // Pass data from redux as a prop
-  connect(({ firebase: { auth }, firebase: { ordered } }) => ({
-    auth,
-    teams: ordered.teams
-  })),
-  firestoreConnect(props => [
-    {
-      collection: 'Teams',
-      storeAs: 'teams',
-      where: [['user.uid', '==', props.auth.uid]],
-    },
-  ]),
-  withNavigation
-);
-
-export default enhance(AddGame);
+export default AddGame

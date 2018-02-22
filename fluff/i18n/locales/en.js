@@ -8,6 +8,7 @@ export default {
   verifyemail: 'Verify Email',
   createaccount: 'Create Account',
   verifycode: 'Verification code',
+  resendverifyemail: 'Resend Email Verification',
   stream: 'Stream',
   schedule: 'Schedule',
   messages: 'Messages',
@@ -64,4 +65,7 @@ export default {
   description: 'Description',
   createteam: 'Create Team',
   newplayer: 'New Player',
+  gamename: 'Event name',
+  eventtime: 'Event Time',
+  eventdate: 'Event Date',
 };

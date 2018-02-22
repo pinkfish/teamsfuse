@@ -15,7 +15,15 @@ class Home extends Component {
   }
 
   addGame = () => {
-    this.props.navigation.navigate("AddGame");
+    this.props.navigation.navigate("AddGame", { type: 'game' });
+  }
+
+  addPractice = () => {
+    this.props.navigation.navigate("AddGame", { type: 'addPractice' });
+  }
+
+  addEvent = () => {
+    this.props.navigation.navigate("AddGame", { type: 'event' });
   }
 
   addTeam = () => {
@@ -52,12 +60,25 @@ class Home extends Component {
           <GameList />
         </Content>
         <Fab
+            active={this.state.active}
             direction="up"
             containerStyle={{ }}
             style={{ backgroundColor: '#5067FF' }}
             position="bottomRight"
-            onPress={this.addGame}>
+            onPress={() => this.setState({active: !this.state.active })}>
             <Icon name="mat-add" />
+            <Button style={{ backgroundColor: '#34A34F' }} onPress={this.addGame}>
+              <Text>{I18n.t('addgame')}</Text>
+              <Icon name="gamepad" />
+            </Button>
+            <Button style={{ backgroundColor: '#3B5998' }} onPress={this.addPractice}>
+              <Text>{I18n.t('addpractice')}</Text>
+              <Icon name="mat-people" />
+            </Button>
+            <Button disabled style={{ backgroundColor: '#DD5144' }} onPress={this.addEvent}>
+              <Text>{I18n.t('addevent')}</Text>
+              <Icon name='calendar' />
+            </Button>
         </Fab>
       </Container>);
 

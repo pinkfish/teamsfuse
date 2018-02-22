@@ -28,6 +28,7 @@ import styles from './styles';
 import { Field, reduxForm, submit } from 'redux-form'
 import MyTextInput from "../utils/MyTextInput";
 import { withNavigation } from 'react-navigation';
+import RNFirebase from 'react-native-firebase';
 
 
 const camera = require("../../../assets/camera.png");
@@ -42,9 +43,19 @@ class VerifyEmailForm extends Component {
 
   mySubmitCheck = (values, dispatch) => {
     console.log('mySubmitCheck', values, this.props.auth);
+    this.props.firebase.reloadAuth();
     return new Promise((resolve, reject) => {
       this.props.firebase.verifyPasswordResetCode({ code: values.code});
       });
+  }
+
+  onSignout = () => {
+    this.props.auth.logout();
+  }
+
+  onResendVerify = () => {
+    this.props.firebase.reloadAuth();
+    RNFirebase.auth().currentUser.sendEmailVerification();
   }
 
 
@@ -58,8 +69,14 @@ class VerifyEmailForm extends Component {
         <Body>
           <Field name="code" title={I18n.t('verifycode')} component={MyTextInput} floatingLabel />
           <Text>{this.state.errorText}</Text>
-          <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
+          <Button block primary style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
             <Text>{I18n.t('verifyemail')}</Text>
+          </Button>
+          <Button block light style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onResendVerify)} >
+            <Text>{I18n.t('resendverifyemail')}</Text>
+          </Button>
+          <Button block light style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSignout)} >
+            <Text>{I18n.t('logout')}</Text>
           </Button>
         </Body>
       </Content>

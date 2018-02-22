@@ -100,7 +100,6 @@ class DrawerSection extends PureComponent {
         </ListItem>;
     }
     onPressNavigate = (item, route) => {
-      console.log('item', item, route);
       if (item.route) {
         this.navigation.navigate(item.route);
       } else {

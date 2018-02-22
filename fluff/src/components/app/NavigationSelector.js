@@ -14,6 +14,8 @@ class NavigationSelector extends Component {
     if (this.props.auth && this.props.auth.uid && this.props.auth.emailVerified) {
       // Request the players.
       dispatch(fetchPlayerData());
+    } else if (this.props.auth.uid) {
+      this.props.firebase.reloadAuth();
     }
   }
 
@@ -24,6 +26,7 @@ class NavigationSelector extends Component {
       return <SignedOutNavigator />;
     }
 
+    console.log('verified', this.props.firebase);
     if (!this.props.auth.emailVerified) {
       return <VerifyEmailNavigator />;
     }
