@@ -10,6 +10,8 @@ import {
 } from "native-base";
 import styles from "./styles";
 import MyTextInput from "../utils/MyTextInput";
+import RNFirebase from 'react-native-firebase';
+
 
 const renderInput = ({ input: { onChange, ...restInput }}) => {
   console.log("Rendering input");
@@ -35,6 +37,7 @@ class LoginFormView extends Component {
               console.log('resolved ');
               resolve();
               this.navigation.navigate.goBack();
+              RNFirebase.firebase.auth().currentUser.sendEmailVerification();
             })
             .catch((error) => {
               // Update the field with an error string.
@@ -59,7 +62,7 @@ class LoginFormView extends Component {
             <Text>{this.state.errorText}</Text>
 
           <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
-            <Text>Create Account</Text>
+            <Text>{I18n.t('createaccount')}</Text>
           </Button>
         </ScrollView>
     );

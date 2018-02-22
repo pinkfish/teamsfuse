@@ -32,7 +32,7 @@ import { withNavigation } from 'react-navigation';
 
 const camera = require("../../../assets/camera.png");
 
-class EditProfileForm extends Component {
+class VerifyEmailForm extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -43,21 +43,24 @@ class EditProfileForm extends Component {
   mySubmitCheck = (values, dispatch) => {
     console.log('mySubmitCheck', values, this.props.auth);
     return new Promise((resolve, reject) => {
-      this.props.firebase.forgotpassword({ email: values.email});
+      this.props.firebase.verifyPasswordResetCode({ code: values.code});
       });
   }
 
 
   render() {
-    const { auth } = this.props;
+    const { auth, handleSubmit } = this.props;
 
     console.log('props', this.props);
 
     return (
       <Content style={{ flex: 1, backgroundColor: "#fff" }}>
         <Body>
-          <Field name="email" title={I18n.t('email')} component={MyTextInput} floatingLabel />
+          <Field name="code" title={I18n.t('verifycode')} component={MyTextInput} floatingLabel />
           <Text>{this.state.errorText}</Text>
+          <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
+            <Text>{I18n.t('verifyemail')}</Text>
+          </Button>
         </Body>
       </Content>
     );
@@ -73,7 +76,7 @@ const enhance = compose(
   withFirestore,
   withNavigation,
   reduxForm({
-    form: 'ForgotPassword',
+    form: 'VerifyEmail',
     enableReinitialize: true,
     onSubmit: values => {
     },
@@ -81,4 +84,4 @@ const enhance = compose(
   );
 
 
-export default enhance(EditProfileForm);
+export default enhance(VerifyEmailForm);

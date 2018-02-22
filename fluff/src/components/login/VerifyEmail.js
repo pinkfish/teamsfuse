@@ -4,22 +4,22 @@ import {
   Content,
 } from "native-base";
 import styles from "./styles";
-import ForgotPasswordForm from './ForgotPasswordForm';
+import VerifyEmailForm from './VerifyEmailForm';
 import I18n from '../../../i18n/I18n';
 
 
-class ForgotPassword extends Component {
+class VerifyEmail extends Component {
   render() {
     const { handleSubmit, submitting } = this.props
 
     return (
       <Container style={styles.container}>
         <Content>
-          <ForgotPasswordForm />
+          <VerifyEmailForm />
         </Content>
       </Container>
     );
   }
 }
 
-export default ForgotPassword;
+export default VerifyEmail;

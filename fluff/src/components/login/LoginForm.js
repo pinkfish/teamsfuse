@@ -65,6 +65,10 @@ class LoginFormView extends Component {
     this.props.navigation.navigate('SignUp')
   }
 
+  handleVerify = () => {
+    this.props.navigation.navigate('VerifyEmail')
+  }
+
   render() {
     const { handleSubmit, submitting } = this.props
 
@@ -86,14 +90,17 @@ class LoginFormView extends Component {
         })
       }
 
-          <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
-            <Text>Sign In</Text>
+          <Button block primary style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
+            <Text>{I18n.t('signin')}</Text>
           </Button>
-          <Button block style={{ margin: 15 }} onPress={this.handleForgotPassword} >
-            <Text>Forgot Password</Text>
+          <Button block light style={{ margin: 15 }} onPress={this.handleForgotPassword} >
+            <Text>{I18n.t('forgotpassword')}</Text>
           </Button>
-          <Button block style={{ margin: 15 }} onPress={this.handleSignUp} >
-            <Text>Sign Up</Text>
+          <Button block light style={{ margin: 15 }} onPress={this.handleSignUp} >
+            <Text>{I18n.t('signup')}</Text>
+          </Button>
+          <Button block light style={{ margin: 15 }} onPress={this.handleVerify} >
+            <Text>{I18n.t('verifyemail')}</Text>
           </Button>
         </ScrollView>
     );

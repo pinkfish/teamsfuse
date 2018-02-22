@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { isLoaded, isEmpty, withFirestore } from 'react-redux-firebase';
-import SignedOutNavigator from "./SignedOutNavigator";
+import { SignedOutNavigator, VerifyEmailNavigator } from "./SignedOutNavigator";
 import ModalNavigator from "./ModalNavigator";
 import { setTeam } from "../../actions/Teams";
 import { fetchPlayerData } from "../../actions/Players";
@@ -11,7 +11,7 @@ class NavigationSelector extends Component {
 
   componentWillMount = () => {
     const { dispatch } = this.props;
-    if (this.props.auth && this.props.auth.uid) {
+    if (this.props.auth && this.props.auth.uid && this.props.auth.emailVerified) {
       // Request the players.
       dispatch(fetchPlayerData());
     }
@@ -22,6 +22,10 @@ class NavigationSelector extends Component {
 
     if (!this.props.auth || !this.props.auth.uid) {
       return <SignedOutNavigator />;
+    }
+
+    if (!this.props.auth.emailVerified) {
+      return <VerifyEmailNavigator />;
     }
 
     return <ModalNavigator />;

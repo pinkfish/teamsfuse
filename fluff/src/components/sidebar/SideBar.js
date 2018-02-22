@@ -85,12 +85,9 @@ class SideBar extends Component {
     }
 
     myTeamArray = [];
-    console.log('Teams', teams);
-    console.log('Players', players);
     if (!teams.list|| teams.list.length == 0) {
     } else {
       teams.list.forEach((team) => {
-        console.log('me team', team);
         myTeamArray.push( {
           value: team.name,
           route: "TeamView",
