@@ -36,7 +36,7 @@ export default class MyDatePicker extends Component {
               onRequestClose={() => this.closeModal()}
               >
             <Container>
-              <ModalHeader title={title}  onLeftPress={this.closeModal} />
+              <ModalHeader title={title}  onLeftPress={this.closeModal} iconRight='check' onRightPress={this.closeModal} />
               <Content>
                 <DatePickerInternal value={input.value} onChange={input.onChange}/>
               </Content>
