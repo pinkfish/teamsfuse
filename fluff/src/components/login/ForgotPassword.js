@@ -13,10 +13,8 @@ class ForgotPassword extends Component {
     const { handleSubmit, submitting } = this.props
 
     return (
-      <Container style={styles.container}>
-        <Content>
-          <ForgotPasswordForm />
-        </Content>
+      <Container>
+        <ForgotPasswordForm />
       </Container>
     );
   }

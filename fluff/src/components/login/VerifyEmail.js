@@ -14,9 +14,7 @@ class VerifyEmail extends Component {
 
     return (
       <Container style={styles.container}>
-        <Content>
-          <VerifyEmailForm />
-        </Content>
+        <VerifyEmailForm />
       </Container>
     );
   }

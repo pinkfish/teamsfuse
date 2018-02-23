@@ -49,17 +49,22 @@ class EditProfileForm extends Component {
 
 
   render() {
-    const { auth } = this.props;
+    const { auth, handleSubmit, navigation } = this.props;
 
     console.log('props', this.props);
 
     return (
-      <Content style={{ flex: 1, backgroundColor: "#fff" }}>
-        <Body>
-          <Field name="email" title={I18n.t('email')} component={MyTextInput} floatingLabel />
+        <Content padder>
+          <Field name="email" placeholder={I18n.t('email')} component={MyTextInput} reegular />
           <Text>{this.state.errorText}</Text>
-        </Body>
-      </Content>
+          <Button block primary style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.mySubmitCheck)} >
+            <Text>{I18n.t('forgotpassword')}</Text>
+          </Button>
+          <Button transparent
+            onPress={() => navigation.navigate("SignIn")}>
+            <Text>{I18n.t('signin')}</Text>
+          </Button>
+        </Content>
     );
   }
 }

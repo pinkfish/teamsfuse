@@ -19,7 +19,6 @@ import {
   Container,
   Fab,
   List,
-  ListItem,
   Thumbnail
 } from "native-base";
 import { Image } from 'react-native';
@@ -86,16 +85,16 @@ class EditProfileForm extends Component {
     console.log('props', this.props);
 
     return (
-      <Content style={{ flex: 1, backgroundColor: "#fff", top: -1 }}>
-        <ListItem style={styles.container}>
+      <Content padder>
+        <Item>
           <Thumbnail source={auth.photoURL ? {uri: auth.photoURL} : camera }
               style={{width: 100, height: 100}} />
           <Body>
-            <Field name="displayName" title={I18n.t('name')} component={MyTextInput} defaultValue={profile.displayName} floatingLabel />
-            <Field name="phoneNumber" title={I18n.t('phonenumber')} component={MyTextInput} defaultValue={profile.phoneNumber} secureTextEntry floatingLabel last/>
+            <Field name="displayName" placeholder={I18n.t('name')} component={MyTextInput} defaultValue={profile.displayName} regular first />
+            <Field name="phoneNumber" placeholder={I18n.t('phonenumber')} component={MyTextInput} defaultValue={profile.phoneNumber} regular last/>
             <Text>{this.state.errorText}</Text>
           </Body>
-        </ListItem>
+        </Item>
       </Content>
     );
   }

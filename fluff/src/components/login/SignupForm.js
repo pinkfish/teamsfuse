@@ -51,32 +51,25 @@ class SignupFormView extends Component {
   }
 
   render() {
-    const { handleSubmit, submitting } = this.props
+    const { handleSubmit, submitting, navigation } = this.props
 
     return (
-      <Container style={styles.formbase}>
         <Content>
-          <ListItem>
-            <Body>
-              <Field name="email" title={I18n.t('email')} component={MyTextInput} regular first />
-              <Field name="password" title={I18n.t('password')} component={MyTextInput} secureTextEntry regular />
-              <Field name="passwordCheck" title={I18n.t('password')} component={MyTextInput} secureTextEntry regular />
-              <Field name="displayName" title={I18n.t('name')} component={MyTextInput} regular />
-              <Field name="phoneNumber" title={I18n.t('phonenumber')} component={MyTextInput} regular last />
-              <Text>{this.state.errorText}</Text>
+          <Field name="email" placeholder={I18n.t('email')} component={MyTextInput} regular first />
+          <Field name="password" placeholder={I18n.t('password')} component={MyTextInput} secureTextEntry regular />
+          <Field name="passwordCheck" placeholder={I18n.t('password')} component={MyTextInput} secureTextEntry regular />
+          <Field name="displayName" placeholder={I18n.t('name')} component={MyTextInput} regular />
+          <Field name="phoneNumber" placeholder={I18n.t('phonenumber')} component={MyTextInput} regular last />
+          <Text>{this.state.errorText}</Text>
 
-              <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
-                <Text>{I18n.t('createaccount')}</Text>
-              </Button>
-              <Button transparent
-                textStyle={{ color: "#bcbec1" }}
-                title={I18n.t('login')}
-                onPress={() => navigation.navigate("SignIn")}
-              />
-          </Body>
-        </ListItem>
+          <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
+            <Text>{I18n.t('createaccount')}</Text>
+          </Button>
+          <Button transparent
+            onPress={() => navigation.navigate("SignIn")}>
+            <Text>{I18n.t('signin')}</Text>
+          </Button>
       </Content>
-    </Container>
     );
   }
 };

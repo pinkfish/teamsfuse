@@ -6,7 +6,8 @@ export default {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  formbase: {
-    marginTop: 20,
+  extrabuttons: {
+    flexDirection: 'row',
+    flex: 1 
   }
 };

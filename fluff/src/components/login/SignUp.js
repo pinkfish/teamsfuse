@@ -29,8 +29,8 @@ class SignUp extends Component {
     const { handleSubmit, submitting } = this.props
 
     return (
-      <Container style={styles.container}>
-          <SignupForm />
+      <Container>
+        <SignupForm />
       </Container>
     );
   }

@@ -25,7 +25,7 @@ const reduxFirebaseConfig = {
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  blacklist: [ 'form' ]
+  blacklist: [ 'form', 'firebase' ]
 };
 
 

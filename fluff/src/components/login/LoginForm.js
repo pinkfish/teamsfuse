@@ -78,35 +78,29 @@ class LoginFormView extends Component {
     'submitSucceeded', 'submitFailed'];
 
     return (
-      <Container style={styles.formbase}>
-        <Content>
-          <ListItem>
-            <Body>
-              <Image source={require('../../../assets/loginlogo.png')} />
-              <Field name="email" placeholder={I18n.t('email')} component={MyTextInput} regular />
+        <Content padder>
+          <Image source={require('../../../assets/loginlogo.png')} />
+          <Field name="email" placeholder={I18n.t('email')} component={MyTextInput} regular first />
 
-              <Field name="password" placeholder={I18n.t('password')} component={MyTextInput} defaultValue='' secureTextEntry regular />
-              <Text>{this.state.errorText}</Text>
+          <Field name="password" placeholder={I18n.t('password')} component={MyTextInput} defaultValue='' secureTextEntry regular last />
+          <Text>{this.state.errorText}</Text>
 
-              <Button block primary style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
-                <Text>{I18n.t('signin')}</Text>
-              </Button>
+          <Button block primary style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
+            <Text>{I18n.t('signin')}</Text>
+          </Button>
 
-              <View style={{flexDirection: 'row', flex: 1 }}>
-                <Button  transparent onPress={this.handleForgotPassword} >
-                  <Text>{I18n.t('forgotpassword')}</Text>
-                </Button>
-                <Button transparent onPress={this.handleSignUp} >
-                  <Text>{I18n.t('signup')}</Text>
-                </Button>
-                <Button transparent onPress={this.handleVerify} >
-                  <Text>{I18n.t('verifyemail')}</Text>
-                </Button>
-              </View>
-            </Body>
-          </ListItem>
+          <View style={styles.extrabuttons}>
+            <Button  transparent onPress={this.handleForgotPassword} >
+              <Text>{I18n.t('forgotpassword')}</Text>
+            </Button>
+            <Button transparent onPress={this.handleSignUp} >
+              <Text>{I18n.t('signup')}</Text>
+            </Button>
+            <Button transparent onPress={this.handleVerify} >
+              <Text>{I18n.t('verifyemail')}</Text>
+            </Button>
+          </View>
         </Content>
-      </Container>
     );
   }
 };
