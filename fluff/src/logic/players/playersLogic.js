@@ -25,21 +25,22 @@ const fetchTeamsLogic = createLogic({
           querySnapshot.docChanges.forEach((change) => {
             var player = change.doc.data();
             player.uid = change.doc.id;
+            update = {};
+            update[player.uid] = player;
             if (change.type === "added") {
-              dispatch(fetchPlayerDataAdd(player));
+              dispatch(fetchPlayerDataAdd(update));
             }
             if (change.type === "modified") {
-              dispatch(fetchPlayerDataUpdate(player));
+              dispatch(fetchPlayerDataUpdate(update));
             }
             if (change.type === "removed") {
-              dispatch(fetchPlayerDataDelete(player));
+              dispatch(fetchPlayerDataDelete(update));
             }
         });
       });
     playerQuery.get()
             .then(function(querySnapshot) {
                 promises = []
-                allPlayers = []
                 if (querySnapshot.empty) {
                   console.log('No players, making one for me');
                   firestore.collection('Players').add( {
@@ -52,7 +53,10 @@ const fetchTeamsLogic = createLogic({
                     }
                   }).then(documentReference => {
                     console.log(`Added document with name: ${documentReference}`);
-                    result.list = [documentReference];
+                    data = documentReference.data();
+                    data.uid = documentReference.id();
+                    result.list = { };
+                    result.list[data.uid] = data;
                     dispatch(fetchPlayerDataSuccess(result));
                     done();
                   }).catch(error => {
@@ -61,13 +65,13 @@ const fetchTeamsLogic = createLogic({
                     done();
                   })
                 } else {
-                  allPlayers = []
+                  allPlayers = {}
                   querySnapshot.forEach(doc => {
                     console.log("player", doc);
                     var player = doc.data();
                     player.teams = [];
                     player.uid = doc.id;
-                    allPlayers.push(player);
+                    allPlayers[doc.id] = player;
                   })
                   console.log('all done', promises)
                   result.list = allPlayers;

@@ -28,6 +28,7 @@ import styles from './styles';
 import { Field, reduxForm, submit } from 'redux-form'
 import MyTextInput from "../utils/MyTextInput";
 import { withNavigation } from 'react-navigation';
+import TeamListPicker from '../team/TeamListPicker';
 
 
 const camera = require("../../../assets/camera.png");
@@ -90,25 +91,36 @@ class EditOpponentForm extends Component {
   }
 
   render() {
-    const { opponentId, opponent } = this.props.navigation.state.params;
+    const { teamuid, opponentuid, teams } = this.props;
 
-    console.log('stuff ', opponentId, opponent)
     return (
       <Content style={{ flex: 1, backgroundColor: "#fff", top: -1 }}>
-        <ListItem style={styles.container}>
-          <Body>
-            <Field name="name" title={I18n.t('name')} component={MyTextInput} defaultValue={opponent?opponent.name:''} floatingLabel />
-            <Field name="contact" title={I18n.t('contact')} component={MyTextInput} defaultValue={opponent?opponent.contact:''} secureTextEntry floatingLabel last/>
-            <Text>{this.state.errorText}</Text>
-          </Body>
-        </ListItem>
+        <List>
+          <Field name="teamuid" title={I18n.t('selectteam')} component={TeamListPicker} teams={teams} />
+          <Field name="name" title={I18n.t('name')} component={MyTextInput} defaultValue={opponent?opponent.name:''} floatingLabel />
+          <Field name="contact" title={I18n.t('contact')} component={MyTextInput} defaultValue={opponent?opponent.contact:''} secureTextEntry floatingLabel last/>
+          <Text>{this.state.errorText}</Text>
+        </List>
       </Content>
     );
   }
 }
 
+function mapStateToProps(state) {
+  return {
+    teams: state.teams,
+    opponentuid: this.props.navigation.state.params.opponentuid,
+    initialValues: () => {
+      teamuid = this.props.navigation.state.params.teamuid;
+      oppponentuid = this.props.navigation.state.params.opponentuid;
+      return {
+        teamuid: this.props.navigation.state.params.teamuid,
+      }
+    }
+  }
+}
+
 const enhance = compose(
-  withFirestore,
   withNavigation,
   reduxForm({
     form: 'EditOpponent',
@@ -129,7 +141,8 @@ const enhance = compose(
     },
     onSubmit: values => {
     },
-  })
+  }),
+  connect(mapStateToProps)
   );
 
 

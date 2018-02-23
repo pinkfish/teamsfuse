@@ -33,6 +33,7 @@ export default {
   showrecord: 'Show Record',
   deleteopponent: 'Delete Opponent',
   deleteopponentsure: 'Are you sure?',
+  oppenentadd: 'Add Opponent',
   addteam: 'Add team',
   forgotpassword: 'Forgot Password',
   addevent: 'Add Event',
@@ -40,6 +41,7 @@ export default {
   noteams: 'No teams',
   addteam: 'Add Team',
   teamselect: 'Select team',
+  teamselectfirst: 'Must select a team first',
   teamname: 'Team Name',
   next: 'Next',
   previous: 'Previous',
@@ -68,4 +70,7 @@ export default {
   gamename: 'Event name',
   eventtime: 'Event Time',
   eventdate: 'Event Date',
+  eventplace: 'Event Place',
+  eventopponent: 'Event Opponent',
+  eventtimezone: 'Event Timezone',
 };

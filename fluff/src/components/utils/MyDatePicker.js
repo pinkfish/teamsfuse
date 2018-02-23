@@ -50,7 +50,6 @@ export default class MyDatePicker extends Component {
             <Icon name='mat-chevron-right' />
           </Right>
         </ListItem>;
-    console.log('ret', ret);
 
     return ret;
   }

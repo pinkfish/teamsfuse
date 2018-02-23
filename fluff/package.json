@@ -15,6 +15,7 @@
     "react-moment": "^0.7.0",
     "react-native": "0.53.0",
     "react-native-firebase": "^3.2.4",
+    "react-native-google-places": "^2.4.2",
     "react-native-i18n": "^2.0.12",
     "react-native-popup-menu": "^0.12.2",
     "react-native-vector-icons": "^4.5.0",

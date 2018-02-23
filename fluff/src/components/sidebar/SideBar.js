@@ -87,14 +87,17 @@ class SideBar extends Component {
     myTeamArray = [];
     if (!teams.list|| teams.list.length == 0) {
     } else {
-      teams.list.forEach((team) => {
-        myTeamArray.push( {
-          value: team.name,
-          route: "TeamView",
-          icon: "mat-people",
-          key: team.uid
-        });
-      });
+      for (key in teams.list) {
+        if (teams.list.hasOwnProperty(key)) {
+          team = teams.list[key];
+          myTeamArray.push( {
+            value: team.name,
+            route: "TeamView",
+            icon: "mat-people",
+            key: team.uid
+          });
+        }
+      }
     }
     myTeamArray.push({
       value: I18n.t('addteam'),

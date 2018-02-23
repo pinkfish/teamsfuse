@@ -16,16 +16,9 @@ const enhance = compose(
   // Pass data from redux as a prop
   connect((state) => ({
     // todos: state.firebase.data.todos, // todos data object from redux -> props.todos
-    opponents: state.firebase.ordered.Opponents, // todos ordered array from redux -> props.todos
-    currentTeam: state.currentTeam
+    teams: state.teams
   })),
   // Create listener for todos path when component mounts
-  firestoreConnect([
-    {
-      path: 'Opponents',
-      //queryParams: ['orderByChild=uid', `equalTo=${currentTeam}`]
-    } // create listener for firebase data -> redux
-  ]),
 )
 
 const BUTTONS = [
@@ -87,14 +80,14 @@ class OpponentList extends Component {
   }
 
   render() {
-    const { opponents } = this.props;
+    const { opponents, teamId } = this.props;
 
     return (
       <Container>
         <ModalHeader title={I18n.t('opponents')} />
         <Content padder>
 
-          {this.listDetails(opponents)}
+          {this.listDetails(teamdId, opponents)}
         </Content>
         <Fab
             active={true}

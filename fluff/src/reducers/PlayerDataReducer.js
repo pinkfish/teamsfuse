@@ -43,23 +43,20 @@ export const PlayerDataReducer = (state = { loaded: 0 }, action) => {
       loading: false
     };
   case FETCH_PLAYER_DATA_ADD:
+  case FETCH_PLAYER_DATA_UPDATE:
     console.log('player add', action);
     newState = {
       ...state
     };
     found = false;
-    newState.list.forEach((player) => {
-      if (player.uid == action.payload.uid) {
-        // Merge the data into this element.
-        player = {
-          ...player,
-          ...action.payload
-        };
-        found = true;
-      }
-    });
-    if (!found) {
-      newState.list.push(action.payload);
+    player = action.payload;
+    if (newState.list.hasOwnProperty(player.uid)) {
+      newState.list[player.uid] = {
+        ...newState.list[player.uid],
+        ...player
+      };
+    } else {
+      newState.list[player.uid] = player;
     }
     newState.fetchStatus = `Player add snapshot ${(new Date()).toLocaleString()}`;
     return newState;
@@ -67,25 +64,10 @@ export const PlayerDataReducer = (state = { loaded: 0 }, action) => {
     newState = {
       ...state
     };
+    player = action.payload;
     // find the item and erase it.
-    newState.list = newState.list.filter(function(player) {
-      return player.uid != action.payload.uid;
-    });
+    delete newState.list[player.uid];
     newState.fetchStatus = `Player delete snapshot ${(new Date()).toLocaleString()}`;
-    return newState;
-  case FETCH_PLAYER_DATA_UPDATE:
-    newState = {
-      ...state
-    };
-    newState.list.forEach((player) => {
-      if (player.uid == action.payload.uid) {
-        // Merge the data into this element.
-        player = {
-          ...player,
-          ...action.payload
-        };
-      }
-    });
     return newState;
   default:
     return state;

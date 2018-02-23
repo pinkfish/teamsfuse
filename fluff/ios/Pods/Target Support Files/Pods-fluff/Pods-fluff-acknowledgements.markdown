@@ -227,7 +227,7 @@ Copyright 2018 Google
 
 ## FirebaseInstanceID
 
-Copyright 2017 Google
+Copyright 2018 Google
 
 ## GTMSessionFetcher
 
@@ -434,6 +434,18 @@ Copyright 2017 Google
    See the License for the specific language governing permissions and
    limitations under the License.
 
+
+## GoogleMaps
+
+Copyright 2017 Google
+
+## GooglePlacePicker
+
+Copyright 2017 Google
+
+## GooglePlaces
+
+Copyright 2017 Google
 
 ## GoogleToolboxForMac
 

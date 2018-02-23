@@ -34,6 +34,9 @@ export default class MyPicker extends Component {
   selectItem = (item) => {
     this.props.input.onChange(item.key);
     this.closeModal();
+    if (item.onPress) {
+      item.onPress(item);
+    }
   }
 
   showValue = () => {
@@ -49,10 +52,10 @@ export default class MyPicker extends Component {
   }
 
   render() {
-    const { options, title, input, ...inputProps } = this.props;
+    const { options, title, input, disabled, ...inputProps } = this.props;
 
     ret =
-        <ListItem {...inputProps} icon onPress={this.openModal}>
+        <ListItem {...inputProps} icon onPress={disabled ? () => {}: this.openModal}>
           <Modal
               visible={this.state.modalVisible}
               animationType={'slide'}

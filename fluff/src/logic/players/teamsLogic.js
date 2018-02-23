@@ -42,30 +42,32 @@ const fetchTeamsLogic = createLogic({
     // Go through all the players and get their teams.
     const players = getState().players.list;
     teamsColl = firestore.collection('Teams');
-    allTeams = [];
-    allGames= [];
+    allTeams = {};
     allPromises = [];
-    players.forEach(player => {
-      playerquery = teamsColl.where('player.' + player.uid + '.added', '==', true)
-      // Track changes to this query too.
-      player.snapshotListen = playerquery.onSnapshot(function(querySnapshot) {
-        playerOnSnapshot(querySnapshot, dispatch);
-      });
-      playerPromise = playerquery.get()
-        .then(function(querySnapshot) {
-          // Got all the teams.  Yay!
-          querySnapshot.forEach(doc => {
-            console.log("team", doc);
-            var team = doc.data();
-            team.uid = doc.id;
-            // Make sure we track how we got in here.
-            team.myPlayerId = player.uid;
-            allTeams.push(team);
-          });
+    for(var key in players) {
+      player = players[key];
+      if (players.hasOwnProperty(key)) {
+        playerquery = teamsColl.where('player.' + player.uid + '.added', '==', true)
+        // Track changes to this query too.
+        player.snapshotListen = playerquery.onSnapshot(function(querySnapshot) {
+          playerOnSnapshot(querySnapshot, dispatch);
         });
-      allPromises.push(playerPromise);
-      // Do onSnapshot updates.
-    });
+        playerPromise = playerquery.get()
+          .then(function(querySnapshot) {
+            // Got all the teams.  Yay!
+            querySnapshot.forEach(doc => {
+              console.log("team", doc);
+              var team = doc.data();
+              team.uid = doc.id;
+              // Make sure we track how we got in here.
+              team.myPlayerId = player.uid;
+              allTeams[team.uid] = team;
+            });
+          });
+        allPromises.push(playerPromise);
+        // Do onSnapshot updates.
+      }
+    }
     Promise.all(allPromises)
        .then(function(values) {
          // All done, sent the messages.

@@ -40,30 +40,34 @@ const fetchGamesLogic = createLogic({
     // Go through all the players and get their teams.
     const teams = getState().teams.list;
     teamsColl = firestore.collection('Teams');
-    allGames= [];
+    allGames= {};
     allPromises = [];
-    teams.forEach(team => {
-      teamQuery = teamsColl.doc(team.uid).collection('Games')
-          .orderBy("gameTime");
-      team.snapshotListen = teamQuery.onSnapshot(function(querySnapshot) {
-        teamOnSnapshot(querySnapshot, dispatch);
-      });
-      teamPromise = teamQuery.get()
-              .then(function(querySnapshot) {
-                // Got all the teams.  Yay!
-                querySnapshot.forEach(gameDoc => {
-                  console.log("Add game");
-                  var game = gameDoc.data();
-                  game.uid = gameDoc.id;
-                  allGames.push(gameDoc.data());
-              })
-            });
-      allPromises.push(teamPromise);
-    });
+    for (key in teams) {
+      team = teams[key];
+      if (teams.hasOwnProperty(key)) {
+        teamQuery = teamsColl.doc(team.uid).collection('Games')
+            .orderBy("gameTime");
+        team.snapshotListen = teamQuery.onSnapshot(function(querySnapshot) {
+          teamOnSnapshot(querySnapshot, dispatch);
+        });
+        teamPromise = teamQuery.get()
+            .then(function(querySnapshot) {
+              // Got all the teams.  Yay!
+              querySnapshot.forEach(gameDoc => {
+                console.log("Add game");
+                var game = gameDoc.data();
+                game.uid = gameDoc.id;
+                game.teamUid = team.uid;
+                allGames[game.uid] = game;
+            })
+          });
+        allPromises.push(teamPromise);
+      }
+    }
     Promise.all(allPromises)
        .then(function(values) {
          // All done, sent the messages.
-         dispatch(fetchGameDataSuccess(allTeams));
+         dispatch(fetchGameDataSuccess(allGames));
          done();
        })
        .catch(function(error) {

@@ -25,12 +25,14 @@ import {
 import { Image, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
-import { Field, reduxForm, submit } from 'redux-form'
+import { Field, reduxForm, submit, getFormValues } from 'redux-form'
 import MyTextInput from "../../utils/MyTextInput";
 import MyPicker from "../../utils/MyPicker";
 import MyRadioGroup from "../../utils/MyRadioGroup";
 import MyTimePicker from "../../utils/MytimePicker";
 import MyDatePicker from "../../utils/MyDatePicker";
+import MyPlacePicker from "../../utils/MyPlacePicker";
+import TeamListPicker from "../../team/TeamListPicker";
 import { withNavigation } from 'react-navigation';
 
 class AddGame1 extends Component {
@@ -50,13 +52,26 @@ class AddGame1 extends Component {
     this.setState({ selected: state });
   }
 
-  render() {
-    const { handleSubmit, players, teams, navigation, error } = this.props;
+  addOpponent = () => {
+    const { teamuid } = this.props;
+    this.props.navigation.navigate('EditOpponent', { opponent: teamuid });
+  }
 
-    optionList = [];
-    teams.list.map((team) => {
-       optionList.push({ title: team.name, key: team.uid })
-    })
+  render() {
+    const { handleSubmit, players, teams, navigation, error, teamuid } = this.props;
+
+   // See if we have the team, or not.
+   opponentList = [];
+   if (teams.list.hasOwnProperty(teamuid)) {
+     // Yay.
+     opponentList = [{ title: I18n.t('oppenentadd'), key: 'add', onPress: this.addOpponent }];
+     for (key in teams.list[teamuid].opponents) {
+       if (teams.list[teamuid].opponents.hasOwnProperty(key)) {
+         oppenent =  teams.list[teamuid].opponents[key];
+         opponentList.push({ title: opponent.name, key: opponent.uid })
+       }
+     }
+   }
 
     return (
       <Container>
@@ -64,9 +79,17 @@ class AddGame1 extends Component {
           <ListItem style={styles.main} key='4'>
             <Body>
               <Field name="name" component={MyTextInput} regular placeholder={I18n.t('gamename')} />
-              <Field name="teamuid" title={I18n.t('teamselect')} component={MyPicker} options={optionList} />
+              <Field name="teamuid" title={I18n.t('teamselect')} component={TeamListPicker} teams={teams} />
               <Field name="time" title={I18n.t('eventtime')} component={MyTimePicker} />
               <Field name="date" title={I18n.t('eventdate')} component={MyDatePicker} />
+              <Field name="place" title={I18n.t('eventplace')} component={MyPlacePicker} />
+              <Field name="opponentuid"
+                title={teamuid != '' ? I18n.t('eventopponent') : I18n.t('teamselectfirst')}
+                disabled={teamuid == ''}
+                component={MyPicker}
+                options={opponentList}
+                onUpdate={teamuid == 'add' ? this.addOpponent() : () => {}}
+              />
               <Text>{this.state.errorText}</Text>
             </Body>
           </ListItem>
@@ -89,7 +112,8 @@ class AddGame1 extends Component {
 function mapStateToProps(state) {
   return {
     teams: state.teams ,
-    players: state.players
+    players: state.players,
+    teamuid: getFormValues('AddGame')(state).teamuid
   }
 }
 

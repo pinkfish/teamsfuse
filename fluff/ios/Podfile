@@ -11,13 +11,15 @@ target 'fluff' do
   pod 'Firebase/Firestore'
   pod 'Firebase/Crash'
   pod 'Firebase/Database'
-
+  pod 'GooglePlaces'
+  pod 'GooglePlacePicker'
+  pod 'GoogleMaps'
+ 
   target 'fluff-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
-    pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
-    pod 'RNI18n', :path => '../node_modules/react-native-i18n'
+    #pod 'RNI18n', :path => '../node_modules/react-native-i18n'
 
   end
 
@@ -26,4 +28,13 @@ target 'fluff' do
     # Pods for testing
   end
 
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.name == 'React'
+      target.remove_from_project
+      puts "Deleting React from project #{target.inspect}."
+    end
+  end
 end

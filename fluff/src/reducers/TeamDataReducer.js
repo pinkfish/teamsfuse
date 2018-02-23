@@ -7,8 +7,14 @@ import {
   FETCH_TEAM_DATA_DELETE,
   FETCH_TEAM_DATA_UPDATE
 } from "../actions/Teams";
+import {
+  FETCH_OPPONENT_DATA,
+  FETCH_OPPONENT_DATA_CANCEL,
+  FETCH_OPPONENT_DATA_SUCCESS,
+  FETCH_OPPONENT_DATA_FAILURE
+} from "../actions/Opponents";
 
-export const TeamDataReducer = (state = { loaded: false }, action) => {
+export const TeamDataReducer = (state = { loaded: false, loadedOpponents: false, loadedLocations: false }, action) => {
   // console.log('GLOBALS.JS REDUCER, action:', action);
   switch(action.type) {
   case FETCH_TEAM_DATA:
@@ -26,6 +32,10 @@ export const TeamDataReducer = (state = { loaded: false }, action) => {
           team.snapshotListen();
           team.snapshotListen = null;
         }
+        if (team.snapshotListenOpponent) {
+          team.snapshotListenOpponent();
+          team.snapshotListenOpponent = null;
+        }
       });
     }
     return {
@@ -42,6 +52,7 @@ export const TeamDataReducer = (state = { loaded: false }, action) => {
       loading: false
     };
   case FETCH_TEAM_DATA_ADD:
+  case FETCH_TEAM_DATA_UPDATE:
     newState = {
       ...state
     };
@@ -50,18 +61,14 @@ export const TeamDataReducer = (state = { loaded: false }, action) => {
       console.error("List doesn't exist for team", newState);
       return newState;
     }
-    newState.list.forEach((team) => {
-      if (team.uid == action.payload.uid) {
-        // Merge the data into this element.
-        team = {
-          ...team,
-          ...action.payload
-        };
-        found = true;
-      }
-    });
-    if (!found) {
-      newState.list.push(action.payload);
+    team = action.payload;
+    if (newState.list.hasOwnProperty(team.uid)) {
+      newState.list[team.uid] = {
+        ...newState.list[team.uid],
+        ...action.payload
+      };
+    } else {
+      newState.list[team.uid] = action.payload;
     }
     newState.fetchStatus = `Team add snapshot ${(new Date()).toLocaleString()}`;
     return newState;
@@ -70,25 +77,39 @@ export const TeamDataReducer = (state = { loaded: false }, action) => {
       ...state
     };
     // find the item and erase it.
-    newState.list = newState.list.filter(function(team) {
-      return team.uid != action.payload.uid;
-    });
+    delete newState.list[team.uid];
     newState.fetchStatus = `Team delete snapshot ${(new Date()).toLocaleString()}`;
     return newState;
-  case FETCH_TEAM_DATA_UPDATE:
+  case FETCH_OPPONENT_DATA:
+    // Don't overwrite the list while lodingh, just track the loading/loaded state.
+    return {
+      ...state,
+      fetchStatus: `fetching opponents for ${action.payload}... ${(new Date()).toLocaleString()}`,
+      loadingOpponents: true
+    };
+  case FETCH_OPPONENT_DATA_SUCCESS:
+    // If we already have a list, then disable all the onsnapshot stuff.
+    // Update the team.
     newState = {
       ...state
     };
-    newState.list.forEach((team) => {
-      if (team.uid == action.payload.uid) {
-        // Merge the data into this element.
-        team = {
-          ...team,
-          ...action.payload
-        };
-      }
-    });
-    return newState;
+    team = action.team;
+    opponentList = action.payload;
+    if (newState.list.hasOwnProperty(team.uid)) {
+      newState.list[team.uid].opponents = action.payload;
+    }
+    return {
+      ...state,
+      fetchStatus: `Results oppnents from ${(new Date()).toLocaleString()}`,
+      loadingOpponents: false,
+      loadedOpponents: Date.now()
+    };
+  case FETCH_OPPONENT_DATA_FAILURE:
+    return {
+      ...state,
+      fetchStatus: `errored: ${action.payload}`,
+      loadingOpponents: false
+    };
   default:
     return state;
   }
