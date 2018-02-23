@@ -106,15 +106,20 @@ class EditOpponentForm extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   return {
     teams: state.teams,
-    opponentuid: this.props.navigation.state.params.opponentuid,
+    opponentuid: props.navigation.state.params.opponentuid,
     initialValues: () => {
-      teamuid = this.props.navigation.state.params.teamuid;
-      oppponentuid = this.props.navigation.state.params.opponentuid;
+      teamuid = props.navigation.state.params.teamuid;
+      oppponentuid = props.navigation.state.params.opponentuid;
+      if (opponentuid && state.teams[teamuid].opponents.hasOwnProperty(opponentuid)) {
+        opponent = state.teams[teamuid].opponents[opponentuid];
+      }
       return {
-        teamuid: this.props.navigation.state.params.teamuid,
+        teamuid: props.navigation.state.params.teamuid,
+        name: opponent.name,
+        contact: opponent.contact
       }
     }
   }

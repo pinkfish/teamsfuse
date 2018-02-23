@@ -49,19 +49,8 @@ export default class MyTimePicker extends Component {
     const { options, title, input, ...inputProps } = this.props;
     ret =
         <ListItem {...inputProps} icon onPress={this.openModal}>
-          <Modal
-              visible={this.state.modalVisible}
-              animationType={'slide'}
-              onRequestClose={() => this.closeModal()}
-              >
-            <Container>
-              <ModalHeader title={title}  onLeftPress={this.closeModal} iconRight='check' onRightPress={this.closeModal} />
-              <Content>
-                <TimePickerInternal value={input.value} onChange={input.onChange}/>
-              </Content>
-            </Container>
-          </Modal>
           <Body>
+            <TimePickerInternal input={input} visible={this.state.modalVisible} />
             {input.value instanceof Date && <Text>{this.displayNiceTime(input.value)}</Text>}
             {!(input.value instanceof Date) && <Text note>{title}</Text>}
           </Body>

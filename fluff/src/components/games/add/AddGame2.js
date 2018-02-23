@@ -26,9 +26,9 @@ import { Image, View, DatePickerIOS } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
 import { Field, reduxForm, submit } from 'redux-form'
-import MyTextInput from "../../utils/MyTextInput";
 import MyPicker from "../../utils/MyPicker";
-import MyRadioGroup from "../../utils/MyRadioGroup";
+import MyCheckbox from "../../utils/MyCheckbox";
+import MyDatePicker from "../../utils/MyDatePicker";
 
 class AddGame1 extends Component {
   constructor(props, context) {
@@ -57,19 +57,31 @@ class AddGame1 extends Component {
   render() {
     const { handleSubmit, players, teams } = this.props;
 
+    howOftenList = [
+      {
+        title: 'Weekly',
+        key: 'weekly'
+      },
+      {
+        title: 'Days of Week',
+        key: 'daysofweek'
+      },
+    ]
     return (
       <Container>
         <Content>
           <ListItem style={styles.main} key='4'>
             <Body>
-              <View>
-                <DatePickerIOS
-                  date={this.state.chosenDate}
-                  mode='datetime'
-                  minuteInterval={5}
-                  onDateChange={this.setDate}
-                />
-              </View>
+              <Field name="repeat" title={I18n.t('repeat')} component={MyCheckBox} />
+              <Field name="howoften" title={I18n.t('howoften')} component={MyPicker} options={howOftenList} />
+              <Field name="until" title={I18n.t('until')} component={MyDatePicker} />
+              <Field name="monday" title={I18n.t('monday')} component={MyCheckbox} disabled />
+              <Field name="tuesday" title={I18n.t('tuesday')} component={MyCheckbox} disabled />
+              <Field name="wednesday" title={I18n.t('wednesday')} component={MyCheckbox} disabled />
+              <Field name="thursday" title={I18n.t('thursday')} component={MyCheckbox} disabled />
+              <Field name="friday" title={I18n.t('friday')} component={MyCheckbox} disabled />
+              <Field name="saturday" title={I18n.t('saturday')} component={MyCheckbox} disabled />
+              <Field name="sunday" title={I18n.t('sunday')} component={MyCheckbox} disabled />
               <Text>{this.state.errorText}</Text>
             </Body>
           </ListItem>

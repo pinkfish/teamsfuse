@@ -30,9 +30,7 @@ class UserLogin extends Component {
 
     return (
       <Container style={styles.container}>
-        <Content>
-          <LoginForm />
-        </Content>
+        <LoginForm />
       </Container>
     );
   }

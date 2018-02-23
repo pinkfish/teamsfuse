@@ -1,6 +1,6 @@
 
 import React, { Component } from "react";
-import { View, ScrollView } from 'react-native';
+import { View, Image } from 'react-native';
 import { Field, reduxForm } from 'redux-form'
 import I18n from '../../../i18n/I18n';
 import { isLoaded, isEmpty, firebaseConnect, withFirestore } from 'react-redux-firebase';
@@ -10,6 +10,7 @@ import {
   Title,
   Content,
   Button,
+  Footer,
   Item,
   Label,
   Input,
@@ -19,7 +20,8 @@ import {
   Icon,
   Form,
   Text,
-  TextInput
+  TextInput,
+  ListItem
 } from "native-base";
 import styles from "./styles";
 import MyTextInput from "../utils/MyTextInput";
@@ -76,33 +78,35 @@ class LoginFormView extends Component {
     'submitSucceeded', 'submitFailed'];
 
     return (
-       <ScrollView>
+      <Container style={styles.formbase}>
+        <Content>
+          <ListItem>
+            <Body>
+              <Image source={require('../../../assets/loginlogo.png')} />
+              <Field name="email" placeholder={I18n.t('email')} component={MyTextInput} regular />
 
-          <Field name="email" title={I18n.t('email')} component={MyTextInput} defaultValue='' floatingLabel />
+              <Field name="password" placeholder={I18n.t('password')} component={MyTextInput} defaultValue='' secureTextEntry regular />
+              <Text>{this.state.errorText}</Text>
 
-          <Field name="password" title={I18n.t('password')} component={MyTextInput} defaultValue='' secureTextEntry floatingLabel/>
-          <Text>{this.state.errorText}</Text>
+              <Button block primary style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
+                <Text>{I18n.t('signin')}</Text>
+              </Button>
 
-          <Text>The form is:</Text>
-      {
-        formStates.filter((state) => this.props[state]).map((state) => {
-          return <Text key={state}> - { state }</Text>
-        })
-      }
-
-          <Button block primary style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
-            <Text>{I18n.t('signin')}</Text>
-          </Button>
-          <Button block light style={{ margin: 15 }} onPress={this.handleForgotPassword} >
-            <Text>{I18n.t('forgotpassword')}</Text>
-          </Button>
-          <Button block light style={{ margin: 15 }} onPress={this.handleSignUp} >
-            <Text>{I18n.t('signup')}</Text>
-          </Button>
-          <Button block light style={{ margin: 15 }} onPress={this.handleVerify} >
-            <Text>{I18n.t('verifyemail')}</Text>
-          </Button>
-        </ScrollView>
+              <View style={{flexDirection: 'row', flex: 1 }}>
+                <Button  transparent onPress={this.handleForgotPassword} >
+                  <Text>{I18n.t('forgotpassword')}</Text>
+                </Button>
+                <Button transparent onPress={this.handleSignUp} >
+                  <Text>{I18n.t('signup')}</Text>
+                </Button>
+                <Button transparent onPress={this.handleVerify} >
+                  <Text>{I18n.t('verifyemail')}</Text>
+                </Button>
+              </View>
+            </Body>
+          </ListItem>
+        </Content>
+      </Container>
     );
   }
 };

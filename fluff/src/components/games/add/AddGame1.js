@@ -83,6 +83,7 @@ class AddGame1 extends Component {
               <Field name="time" title={I18n.t('eventtime')} component={MyTimePicker} />
               <Field name="date" title={I18n.t('eventdate')} component={MyDatePicker} />
               <Field name="place" title={I18n.t('eventplace')} component={MyPlacePicker} />
+              <Field name="placenotes" placehold={I18n.t('placenotes')} regular component={MyTextInput} />
               <Field name="opponentuid"
                 title={teamuid != '' ? I18n.t('eventopponent') : I18n.t('teamselectfirst')}
                 disabled={teamuid == ''}

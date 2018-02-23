@@ -6,16 +6,7 @@ export default {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  '.floatingLabel': {
-    'NativeBase.Input': {
-      height: 60,
-      top: 8,
-    },
-    'NativeBase.Label': {
-      top: 8,
-    },
-    'NativeBase.Icon': {
-      top: 6,
-    },
-  },
+  formbase: {
+    marginTop: 20,
+  }
 };

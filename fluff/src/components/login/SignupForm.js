@@ -6,6 +6,9 @@ import { withFirestore } from 'react-redux-firebase';
 import {
   Container,
   Button,
+  Content,
+  Body,
+  ListItem,
   Text,
 } from "native-base";
 import styles from "./styles";
@@ -19,7 +22,7 @@ const renderInput = ({ input: { onChange, ...restInput }}) => {
 }
 
 
-class LoginFormView extends Component {
+class SignupFormView extends Component {
   constructor(props, context) {
     super(props, context);
     this.onSubmit = this.onSubmit.bind(this);
@@ -51,20 +54,29 @@ class LoginFormView extends Component {
     const { handleSubmit, submitting } = this.props
 
     return (
-       <ScrollView>
+      <Container style={styles.formbase}>
+        <Content>
+          <ListItem>
+            <Body>
+              <Field name="email" title={I18n.t('email')} component={MyTextInput} regular first />
+              <Field name="password" title={I18n.t('password')} component={MyTextInput} secureTextEntry regular />
+              <Field name="passwordCheck" title={I18n.t('password')} component={MyTextInput} secureTextEntry regular />
+              <Field name="displayName" title={I18n.t('name')} component={MyTextInput} regular />
+              <Field name="phoneNumber" title={I18n.t('phonenumber')} component={MyTextInput} regular last />
+              <Text>{this.state.errorText}</Text>
 
-            <Field name="email" title={I18n.t('email')}component={MyTextInput} floatingLabel />
-
-            <Field name="password" title={I18n.t('password')} component={MyTextInput} secureTextEntry floatingLabel/>
-            <Field name="passwordCheck" title={I18n.t('password')} component={MyTextInput} secureTextEntry floatingLabel/>
-            <Field name="displayName" title={I18n.t('name')} component={MyTextInput} floatingLabel/>
-            <Field name="phoneNumber" title={I18n.t('phonenumber')} component={MyTextInput} floatingLabel/>
-            <Text>{this.state.errorText}</Text>
-
-          <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
-            <Text>{I18n.t('createaccount')}</Text>
-          </Button>
-        </ScrollView>
+              <Button block style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >
+                <Text>{I18n.t('createaccount')}</Text>
+              </Button>
+              <Button transparent
+                textStyle={{ color: "#bcbec1" }}
+                title={I18n.t('login')}
+                onPress={() => navigation.navigate("SignIn")}
+              />
+          </Body>
+        </ListItem>
+      </Content>
+    </Container>
     );
   }
 };
@@ -97,4 +109,4 @@ export default reduxForm({
     // Do the actual login here.
     return errors
   }
-})(withFirestore(LoginFormView))
+})(withFirestore(SignupFormView))

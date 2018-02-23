@@ -30,16 +30,7 @@ class SignUp extends Component {
 
     return (
       <Container style={styles.container}>
-        <Content>
           <SignupForm />
-          <Button
-            buttonStyle={{ marginTop: 20 }}
-            backgroundColor="transparent"
-            textStyle={{ color: "#bcbec1" }}
-            title={I18n.t('login')}
-            onPress={() => navigation.navigate("SignIn")}
-          />
-        </Content>
       </Container>
     );
   }
