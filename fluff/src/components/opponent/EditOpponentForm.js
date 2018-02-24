@@ -5,29 +5,15 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { isLoaded, isEmpty, firebaseConnect, withFirestore, login, logout } from 'react-redux-firebase';
 import {
-  Button,
-  Header,
-  Title,
-  Item,
-  Left,
-  Right,
   Content,
-  Card,
-  CardItem,
   Text,
-  Body,
   Container,
-  Fab,
-  List,
-  ListItem,
-  Thumbnail
+  List
 } from "native-base";
-import { Image } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
-import { Field, reduxForm, submit } from 'redux-form'
-import MyTextInput from "../utils/MyTextInput";
+import { Field, reduxForm } from 'redux-form'
 import { withNavigation } from 'react-navigation';
+import MyTextInput from "../utils/MyTextInput";
 import TeamListPicker from '../team/TeamListPicker';
 import RNFirebase from 'react-native-firebase';
 import SavingModal from '../utils/SavingModal';

@@ -15,10 +15,9 @@ import styles from './styles';
 const enhance = compose(
   // Pass data from redux as a prop
   connect((state) => ({
-    // todos: state.firebase.data.todos, // todos data object from redux -> props.todos
-    teams: state.teams
+    teams: state.teams,
+    games: state.games
   })),
-  // Create listener for todos path when component mounts
 )
 
 const BUTTONS = [
@@ -64,30 +63,61 @@ class OpponentList extends Component {
             )
   }
 
-  listDetails(opponents) {
-    if (!opponents || opponents.length == 0) {
+  listDetails(teams) {
+    if (!teams || teams.length == 0) {
       return <Text>No opponents</Text>
     }
-    return <FlatList
-      data={opponents.reverse()}
-      style={styles.list}
-      renderItem={({ item: { key, value } }) => (
-          <TouchableOpacity onPress={this.onPress}>
-            <OpponentCard opponentId={key} opponent={value} />
-          </TouchableOpacity>
-      )}
-    />;
+    ret = [];
+    for(var key in teams) {
+      if (teams.list.hasOwnProperty(key)) {
+        ret.push(renderTeam(teams.list[key]));
+      }
+    }
+    return ret;
+  }
+
+  renderGame(game) {
+    return <Text>{game.result}</Text>;
+  }
+
+  renderOpponent(opponent) {
+    int win = 0;
+    int tie = 0;
+    int loss = 0;
+    int unknown = 0;
+    myGames = this.games.values().filter(
+      game => game.opponentuid == opponent.uid
+    );
+    return <Card>
+             <Text>{opponent.name}</Text>
+             <Text>Win 1, Tie 2, Loss 3</Text>
+             <FlatList
+                 data={myGames}
+                 renderItem={this.renderGame}
+                 />
+           </Card>;
+  }
+
+  renderTeam(team) {
+    ret = [<ListItem header><Text>{team.name}</Text></ListItem>];
+    for(var key in team.opponents) {
+      if (team.opponents.hasOwnProperty(key)) {
+        ret.push(renderOpponent(team.opponents[key]));
+      }
+    }
+    return ret;
   }
 
   render() {
-    const { opponents, teamId } = this.props;
+    const { teams, teamuid } = this.props;
 
     return (
       <Container>
         <ModalHeader title={I18n.t('opponents')} />
         <Content padder>
-
-          {this.listDetails(teamdId, opponents)}
+          <List>
+            {teams.list.hasOwnProperty(teamuid) ? this.renderTeam(teams.list[teamuid]) : this.listDetails(teams)}
+          </List>
         </Content>
         <Fab
             active={true}

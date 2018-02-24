@@ -75,5 +75,7 @@ export default {
   eventtimezone: 'Event Timezone',
   placenotes: 'Field/Place notes',
   timezoneofplace: 'Timezone of place',
-  timezone: 'Timezone'
+  timezone: 'Timezone',
+  earlyarrival: 'Arrive before game',
+  minutes: 'Minutes'
 };

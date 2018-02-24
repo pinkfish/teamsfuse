@@ -48,6 +48,9 @@ export default class MyTimePicker extends Component {
     const { options, title, input, ...inputProps } = this.props;
     ret =
         <ListItem {...inputProps} icon onPress={this.openModal}>
+          <Left>
+            <Icon name="mat-access-time" />
+          </Left>
           <Body>
             <TimePickerInternal input={input} visible={this.state.modalVisible} onClose={this.closeModal} />
             {input.value instanceof Date && <Text>{this.displayNiceTime(input.value)}</Text>}

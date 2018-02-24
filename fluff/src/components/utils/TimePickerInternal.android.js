@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { TimePickerAndroid } from 'react-native';
+import { Text } from 'native-base';
 
 export default class TimePickerInternal extends Component {
   constructor(props) {

@@ -1,8 +1,8 @@
-import React, { Component, PropTypes } from 'react'
-import { View, Modal } from 'react-native'
-import AddTeamPageOne from './add/AddTeamPageOne'
-import AddTeamPageTwo from './add/AddTeamPageTwo'
-import AddTeamPageThree from './add/AddTeamPageThree'
+import React, { Component, PropTypes } from 'react';
+import { View, Modal } from 'react-native';
+import AddTeam1 from './add/AddTeam1';
+import AddTeam2 from './add/AddTeam2';
+import AddTeam3 from './add/AddTeam3';
 import { Container, Spinner, Text, Button } from 'native-base';
 import { ModalHeader } from "../app/AppHeader";
 import I18n from '../../../i18n/I18n';
@@ -84,9 +84,9 @@ class AddTeam extends Component {
            </View>
         </Modal>
 
-        {page === 1 && <AddTeamPageOne onSubmit={this.nextPage}/>}
-        {page === 2 && <AddTeamPageTwo previousPage={this.previousPage} onSubmit={this.nextPage}/>}
-        {page === 3 && <AddTeamPageThree previousPage={this.previousPage} onSubmit={this.onSubmit}/>}
+        {page === 1 && <AddTeam1 onSubmit={this.nextPage}/>}
+        {page === 2 && <AddTeam2 previousPage={this.previousPage} onSubmit={this.nextPage}/>}
+        {page === 3 && <AddTeam3 previousPage={this.previousPage} onSubmit={this.onSubmit}/>}
       </Container>
     );
   }

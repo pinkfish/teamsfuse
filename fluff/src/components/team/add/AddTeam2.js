@@ -27,6 +27,7 @@ import styles from './styles';
 import { Field, reduxForm, submit } from 'redux-form'
 import MyTextInput from "../../utils/MyTextInput";
 import MyPicker from "../../utils/MyPicker";
+import MyDurationPicker from '../../utils/MyDurationPicker';
 
 class AddTeamPageOne extends Component {
   constructor(props, context) {
@@ -64,6 +65,8 @@ class AddTeamPageOne extends Component {
                 <Item label={I18n.t('gendercoed')} value='coed' />
                 <Item label={I18n.t('genderna')} value='na' />
               </Field>
+              <Separator />
+              <Field name="defaultearlyarrival" component={MyDurationPicker} title={I18n.t('defaultearlyarrival')} />
               <Text>{this.state.errorText}</Text>
             </Body>
           </ListItem>

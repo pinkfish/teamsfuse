@@ -92,26 +92,15 @@ class AddGame1 extends Component {
           <ListItem style={styles.main} key='4'>
             <Body>
               <Field name="teamuid" title={I18n.t('teamselect')} component={TeamListPicker} teams={teams} />
-              <Field name="opponentuid"
-                title={teamuid != '' ? I18n.t('eventopponent') : I18n.t('teamselectfirst')}
-                disabled={teamuid == ''}
-                component={MyPicker}
-                options={opponentList}
-                onUpdate={teamuid == 'add' ? this.addOpponent() : () => {}}
-              />
               <Separator />
               <Field name="time" title={I18n.t('eventtime')} component={MyTimePicker} />
               <Field name="date" title={I18n.t('eventdate')} component={MyDatePicker} />
-              <Field name="arriveearly" title={I18n.t('arriveearly')} component={MyDurationPicker} regular />
+              <Field name="duration" title={I18n.t('duration')} component={MyDurationPicker} />
               <Separator />
               <Field name="place" title={I18n.t('eventplace')} component={MyPlacePicker} onFormChange={this.onPlaceChange} />
               <Field name="placenotes" placeholder={I18n.t('placenotes')} multiline={true} regular component={MyTextInput} />
               <Separator />
-              <Field name="uniform" placeholder={I18n.t("Uniform")} component={MyTextInput} regular />
-              <Separator />
               <Field name="notes" placeholder={I18n.t('notes')} multiline={true} component={MyTextInput} regular />
-              <Separator />
-              <Field name="gamelength" title={I18n.t('gamelength')} component={MyDurationPicker} regular />
               <Text>{this.state.errorText}</Text>
             </Body>
           </ListItem>
@@ -135,21 +124,17 @@ function mapStateToProps(state) {
   return {
     teams: state.teams ,
     players: state.players,
-    teamuid: getFormValues('AddGame')(state).teamuid,
-    timezoneOfPlace: getFormValues('AddGame')(state).timezoneOfPlace,
+    teamuid: getFormValues('AddEvent')(state).teamuid,
   }
 }
 
 const enhance = compose(
   reduxForm({
-    form: 'AddGame',
+    form: 'AddEvent',
     destroyOnUnmount: false, // Preserve the data.
     initialValues: {
-      type: 'game',
       name: '',
       teamuid: '',
-      timezone: I18n.t('unknown'),
-      timezoneOfPlace: true
     },
     validate: values => {
       const errors = {}
