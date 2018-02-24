@@ -92,6 +92,7 @@ class AddGame1 extends Component {
           <ListItem style={styles.main} key='4'>
             <Body>
               <Field name="teamuid" title={I18n.t('teamselect')} component={TeamListPicker} teams={teams} />
+              <Field name="name" title={I19n.t('eventname')} component={MyTextInput} regular />
               <Separator />
               <Field name="time" title={I18n.t('eventtime')} component={MyTimePicker} />
               <Field name="date" title={I18n.t('eventdate')} component={MyDatePicker} />
