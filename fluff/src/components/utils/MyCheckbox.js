@@ -1,5 +1,6 @@
 import React from 'react';
 import { Item, Label, Body, CheckBox } from 'native-base';
+import variables from '../../theme/variables/platform';
 
 /**
  * to be wrapped with redux-form Field component
@@ -10,8 +11,8 @@ export default function MyCheckbox(props) {
 
   extra = null;
   ret = (
-      <Item {...inputProps}  >
-        <Checkbox
+      <Item {...inputProps} style={{ height: variables.inputHeightBase}} >
+        <CheckBox
           onPress={(input) => { input.onChange(!input.checked) }}
           onBlur={input.onBlur}
           onFocus={input.onFocus}

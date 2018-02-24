@@ -29,6 +29,8 @@ import { Field, reduxForm, submit } from 'redux-form'
 import MyTextInput from "../utils/MyTextInput";
 import { withNavigation } from 'react-navigation';
 import TeamListPicker from '../team/TeamListPicker';
+import RNFirebase from 'react-native-firebase';
+import SavingModal from '../utils/SavingModal';
 
 
 const camera = require("../../../assets/camera.png");
@@ -37,7 +39,8 @@ class EditOpponentForm extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-         errorText: ''
+         errorText: '',
+         savingVisible: false
     }
   }
 
@@ -55,50 +58,55 @@ class EditOpponentForm extends Component {
 
   mySubmitCheck = (values, dispatch) => {
     console.log('mySubmitCheck', values, this.props.auth);
-    return new Promise((resolve, reject) => {
-      if (this.props.navigation.state.params.opponentId != 0) {
-        console.log('update', values, this.props.navigation.state.params);
-        this.props.firebase.update(this.opponentId, {
-          name: values.name,
-          contact: values.contact })
-              .then((cred) => {
-                resolve();
-                console.log('Submit done ', this.props.auth);
-                this.props.navigation.goBack();
-              })
-              .catch((error) => {
-                // Update the field with an error string.
-                this.setState({errorText: error.message});
-                resolve();
-              })
-      } else {
-        console.log('push', values, this.props.auth);
-        this.props.firebase.push('Opponents', {
-        name: values.name,
-        contact: values.contact })
-            .then((cred) => {
-              resolve();
-              console.log('Submit done ', this.props.auth);
-              this.props.navigation.goBack();
-            })
-            .catch((error) => {
-              // Update the field with an error string.
-              this.setState({errorText: error.message});
-              resolve();
-            })
+    this.setState({ savingVisible: true });
+    if (this.props.teamuid != null) {
+      teamuid = this.props.teamuid;
+    } else {
+      teamuid = values.teamuid;
     }
-    })
+    return new Promise((resolve, reject) => {
+      if (this.props.opponentuid == 0) {
+        console.log('update', values, this.props);
+        RNFirebase.firestore().collection("Teams").doc(teamuid)
+            .collection("Opponents").add({
+          name: values.name,
+          conect: values.contact
+        }).then(() => {
+          this.setState({ savingVisible: false });
+          this.props.navigation.goBack();
+        }).catch(() => {
+          this.setState({error: 'Error saving team', errorVisible : true });
+        });
+      } else {
+        RNFirebase.firestore().collection("Teams").doc(teamuid)
+            .collection("Opponents").doc(this.props.opponentuid).set({
+          name: values.name,
+          conect: values.contact
+        }).then(() => {
+          this.setState({ savingVisible: false });
+          this.props.navigation.goBack();
+        }).catch(() => {
+          this.setState({error: 'Error saving team', errorVisible : true });
+        });
+      }
+    });
   }
 
   render() {
-    const { teamuid, opponentuid, teams } = this.props;
+    const { teamuid, teamname, opponentuid, teams, opponent } = this.props;
+
+    console.log('initval ', this.props);
 
     return (
       <Content style={{ flex: 1, backgroundColor: "#fff", top: -1 }}>
+        <SavingModal onClose={() => this.closeModal()} visible={this.state.savingVisible} />
+
         <List>
-          <Field name="teamuid" title={I18n.t('selectteam')} component={TeamListPicker} teams={teams} />
-          <Field name="name" title={I18n.t('name')} component={MyTextInput} defaultValue={opponent?opponent.name:''} floatingLabel />
-          <Field name="contact" title={I18n.t('contact')} component={MyTextInput} defaultValue={opponent?opponent.contact:''} secureTextEntry floatingLabel last/>
+          {teamname != null ?
+              <Text>{teamname}</Text>:
+              <Field name="teamuid" title={I18n.t('teamselect')} component={TeamListPicker} teams={teams} />}
+          <Field name="name" placeholder={I18n.t('name')} component={MyTextInput} regular />
+          <Field name="contact" placeholder={I18n.t('contact')} component={MyTextInput} secureTextEntry regular last/>
           <Text>{this.state.errorText}</Text>
         </List>
       </Content>
@@ -107,21 +115,32 @@ class EditOpponentForm extends Component {
 }
 
 function mapStateToProps(state, props) {
-  return {
-    teams: state.teams,
-    opponentuid: props.navigation.state.params.opponentuid,
-    initialValues: () => {
-      teamuid = props.navigation.state.params.teamuid;
-      oppponentuid = props.navigation.state.params.opponentuid;
-      if (opponentuid && state.teams[teamuid].opponents.hasOwnProperty(opponentuid)) {
-        opponent = state.teams[teamuid].opponents[opponentuid];
-      }
-      return {
+  teamuid = props.navigation.state.params.teamuid;
+  opponentuid = props.navigation.state.params.opponentuid;
+  teamname = null;
+  if (state.teams.list.hasOwnProperty(teamuid)) {
+    teamname = state.teams.list[teamuid].name;
+    if (state.teams.list[teamuid].opponents.hasOwnProperty(opponentuid)) {
+      opponent = state.teams.list[teamuid].opponents[opponentuid];
+
+      initValues = {
         teamuid: props.navigation.state.params.teamuid,
         name: opponent.name,
         contact: opponent.contact
       }
+    } else {
+      initValues =  {
+        teamuid: props.navigation.state.params.teamuid,
+      }
     }
+  } else {
+    initValues = {}
+  }
+  return {
+    teams: state.teams,
+    teamname: teamname,
+    opponentuid: props.navigation.state.params.opponentuid,
+    initialValues: initValues
   }
 }
 

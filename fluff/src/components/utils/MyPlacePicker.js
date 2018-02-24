@@ -5,12 +5,39 @@ import { ModalHeader } from '../app/AppHeader';
 import Icon from './Icon';
 import RNGooglePlaces from 'react-native-google-places';
 
+const URL = "https://maps.googleapis.com/maps/api/timezone/json?location=";
+const KEY = "AIzaSyCP22ZMhWoQuzH9qIEnxYL7C_XfjWjo6tI";
+
 export default class MyDatePicker extends Component {
   constructor(props) {
     super(props)
     this.state = {
       modalVisible: false,
     };
+  }
+
+  lookupPlaceToTimezone = (place) => {
+    const { onChange } = this.props.input;
+
+    url = URL + place.latitude + "," + place.longitude + "&key=" + KEY
+        + "&timestamp=" + (Date.now() / 1000);
+    return fetch(url)
+        .then((response) => response.json())
+        .then((responseJson) => {
+           place.timeZoneId = responseJson.timeZoneId;
+           place.timeZoneName = responseJson.timeZoneName;
+           onChange(place);
+           if (this.props.onFormChange) {
+             this.props.onFormChange(place);
+           }
+        })
+        .catch((error) => {
+          console.log('error getting tz', error);
+          onChange(place);
+          if (this.props.onFormChange) {
+            this.props.onFormChange(place);
+          }
+        });
   }
 
 
@@ -21,7 +48,7 @@ export default class MyDatePicker extends Component {
   		console.log(place);
   		// place represents user's selection from the
   		// suggestions and it is a simplified Google Place object.
-      onChange(place);
+      this.lookupPlaceToTimezone(place);
     })
     .catch(error => console.log(error.message));  // error is a Javascript Error object
   }

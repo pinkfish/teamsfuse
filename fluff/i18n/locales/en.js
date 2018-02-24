@@ -74,4 +74,6 @@ export default {
   eventopponent: 'Event Opponent',
   eventtimezone: 'Event Timezone',
   placenotes: 'Field/Place notes',
+  timezoneofplace: 'Timezone of place',
+  timezone: 'Timezone'
 };

@@ -103,7 +103,7 @@ class AddGame1 extends Component {
 
 function mapStateToProps(state) {
   return {
-    teams: state.teams ,
+    teams: state.teams,
     players: state.players
   }
 }

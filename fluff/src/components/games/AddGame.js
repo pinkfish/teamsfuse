@@ -7,6 +7,8 @@ import { ModalHeader } from "../app/AppHeader";
 import I18n from '../../../i18n/I18n';
 import RNFirebase from 'react-native-firebase';
 import styles from './styles';
+import SavingModal from '../utils/SavingModal';
+import momenttz from 'moment-timezone';
 
 
 class AddGame extends Component {
@@ -35,12 +37,29 @@ class AddGame extends Component {
       added: true,
     }
     this.setState({ savingVisible: true });
-    RNFirebase.firestore().collection("Teams").add({
-      name: values.name,
-      league: values.league,
-      gender: values.gender,
-      sport: values.sport,
-      player: player
+    // Do stuff with the time and date, convert to a single number
+    var timeObj =
+    {
+      hour: values.time.getHour(),
+      minute: valuestiome.getMinute(),
+      year: values.date.getYear(),
+      month: values.date.getMonth(),
+      day: values.date.getDay(),
+    };
+    // Make a date in the timezone we are going to.
+    timeInZone = momenttz.tz(timeObj, values.timezone);
+
+    RNFirebase.firestore().collection("Teams").doc(teamuid).collection("Games").add({
+      time: timeInZone,
+      timezone: values.timezone,
+      place: {
+        name: values.place.name,
+        address: values.place.address,
+        placeid: values.place.placeid,
+        notes: values.placenotes,
+      },
+      opponent: values.opponentuid,
+      result: 'unknown',
     }).then(() => {
       this.setState({ savingVisible: false });
       this.props.navigation.goBack();
@@ -51,34 +70,24 @@ class AddGame extends Component {
   }
 
   render() {
-    const { page } = this.state
+    const { page, savingVisible, errorVisible } = this.state;
+    console.log('my state' , this.state);
     return (
       <Container>
         <ModalHeader title={I18n.t('addevent')} />
 
-        <Modal
-           visible={this.state.savingVisible}
-           animationType={'slide'}
-           onRequestClose={() => this.closeModal()}
-         >
-           <View style={styles.modalContainer}>
-             <View style={styles.innerContainer}>
-               <Text>Saving</Text>
-               <Spinner color="green" />
-             </View>
-           </View>
-        </Modal>
+        <SavingModal onClose={() => this.setState({ savingVisible: false })} visible={savingVisible} />
 
         <Modal
-           visible={this.state.errorVisible}
+           visible={errorVisible}
            animationType={'slide'}
-           onRequestClose={() => this.closeModal()}
+           onRequestClose={() => this.setState({ errorVisible: false })}
          >
            <View style={styles.modalContainer}>
              <View style={styles.innerContainer}>
                <Text>Error</Text>
                <Text error>{this.state.error}</Text>
-               <Button onPress={() => this.closeModal()} title="Ok" />
+               <Button onPress={() => this.setState({ errorVisible: false })} title="Ok" />
              </View>
            </View>
         </Modal>

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Modal } from 'react-native';
-import { ListItem, Text, Container, Content, Left, Body, Right } from 'native-base';
-import { ModalHeader } from '../app/AppHeader';
+import { ListItem, Text, Container, Content, Left, Body, Right, Item } from 'native-base';
 import Icon from './Icon';
 import TimePickerInternal from './TimePickerInternal';
 
@@ -50,9 +49,9 @@ export default class MyTimePicker extends Component {
     ret =
         <ListItem {...inputProps} icon onPress={this.openModal}>
           <Body>
-            <TimePickerInternal input={input} visible={this.state.modalVisible} />
+            <TimePickerInternal input={input} visible={this.state.modalVisible} onClose={this.closeModal} />
             {input.value instanceof Date && <Text>{this.displayNiceTime(input.value)}</Text>}
-            {!(input.value instanceof Date) && <Text note>{title}</Text>}
+            {!(input.value instanceof Date) && <Text note>{this.props.title}</Text>}
           </Body>
           <Right>
             <Icon name='mat-chevron-right' />
