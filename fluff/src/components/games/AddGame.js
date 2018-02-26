@@ -108,7 +108,8 @@ class AddGame extends Component {
            </View>
         </Modal>
 
-        {page === 1 && <AddGame1 onSubmit={this.handleSubmit} onMyFormRef={(ref) => (this.child = ref)}/>}
+        {page === 1 && <AddGame1 onSubmit={this.nextPage} onMyFormRef={(ref) => (this.child = ref)}/>}
+        {page === 2 && <AddGame2 onSubmit={this.handleSubmit} onMyFormRef={(ref) => (this.child = ref)}/>}
     </Container>
     );
   }

@@ -82,7 +82,7 @@ class LoginFormView extends Component {
           <Image source={require('../../../assets/loginlogo.png')} />
           <Field name="email" placeholder={I18n.t('email')} component={MyTextInput} regular first />
 
-          <Field name="password" placeholder={I18n.t('password')} component={MyTextInput} defaultValue='' secureTextEntry regular last />
+          <Field name="password" placeholder={I18n.t('password')} component={MyTextInput} regular last secureTextEntry />
           <Text>{this.state.errorText}</Text>
 
           <Button block primary style={{ margin: 15, marginTop: 50 }} onPress={handleSubmit(this.onSubmit)} >

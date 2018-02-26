@@ -70,8 +70,11 @@ class AddGame1 extends FormRefComponent {
     }
   }
 
+  checkThenNext = (handleSubmit) {
+  }
+
   render() {
-    const { handleSubmit, players, teams, navigation, error, teamuid, timezoneOfPlace } = this.props;
+    const { handleSubmit, players, teams, navigation, error, teamuid, timezoneOfPlace, invalid } = this.props;
 
    // See if we have the team, or not.
    opponentList = [];
@@ -109,10 +112,10 @@ class AddGame1 extends FormRefComponent {
         </Content>
         <Footer style={{ height: 50 }}>
           <Left>
-
+            <Button full light/>
           </Left>
           <Right>
-            <Button onPress={handleSubmit} block primary>
+            <Button onPress={handleSubmit} disabled={invalid} full primary>
               <Text>{I18n.t('next')}</Text>
             </Button>
           </Right>

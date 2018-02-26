@@ -8,7 +8,7 @@ import styles from './styles';
  */
 export default function MyTextInput(props) {
   const { input, meta, title, placeholder, multiline, numberOfLines,
-    disableValid, rowspan, icon, ...inputProps } = props;
+    disableValid, rowspan, icon, number, ...inputProps } = props;
 /*
   const formStates = ['active', 'autofilled', 'asyncValidating', 'dirty', 'invalid', 'pristine',
     'submitting', 'touched', 'valid', 'visited'];
@@ -30,6 +30,11 @@ export default function MyTextInput(props) {
       inputProps.success = true
       extra = <Icon name='checkmark-circle' />;
     }
+  }
+  if (number) {
+    myInput = input.onChange;
+    input.onChange = (value) => { input.onChange(parseInt(value)) };
+    input.value = input.value + ''
   }
   if (multiline) {
     ret = (

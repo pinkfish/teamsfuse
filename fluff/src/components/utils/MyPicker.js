@@ -53,7 +53,7 @@ export default class MyPicker extends Component {
   }
 
   render() {
-    const { options, title, input, disabled, disableValid, meta, icon, ...inputProps } = this.props;
+    const { options, title, input, disabled, disableValid, meta, icon, inline, ...inputProps } = this.props;
 
     if ((meta.submitFailed || !meta.pristine) && !disableValid) {
       if (meta.invalid) {
@@ -65,7 +65,7 @@ export default class MyPicker extends Component {
 
     ret =
         <Item {...inputProps} icon onPress={disabled ? () => {}: this.openModal}
-          style={styles.item} icon>
+              style={styles.item} icon>
           <Modal
               visible={this.state.modalVisible}
               animationType={'slide'}
@@ -89,7 +89,6 @@ export default class MyPicker extends Component {
             <Icon name='mat-chevron-right' />
           </Right>
         </Item>;
-    console.log('ret', ret);
 
     return ret;
   }

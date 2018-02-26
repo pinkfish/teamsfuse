@@ -6,6 +6,7 @@ export default {
   },
   itemBody: {
     alignItems: 'flex-start',
+    flexDirection: 'row',
     flex: 1
   },
   itemLeft: {
@@ -15,5 +16,23 @@ export default {
   itemRight: {
     width: 25,
     flex: 0
+  },
+  itemRightSwitch: {
+    width: 50,
+    flex: 0
+  },
+  roundButton: {
+    height: variables.btnTextSizeLarge * 1.5,
+    width: variables.btnTextSizeLarge * 1.5,
+    marginRight: 8,
+    marginTop: 8,
+    justifyContent: 'center',
+    backgroundColor: variables.listBtnUnderlayColor
+  },
+  roundButtonSelected: {
+    backgroundColor: variables.btnPrimaryBg
+  },
+  roundButtonLabelSelected: {
+    color: 'white',
   }
 };

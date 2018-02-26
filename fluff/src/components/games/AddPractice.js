@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { View, Modal } from 'react-native'
 import AddPractice1 from './add/AddPractice1'
+import AddPractice2 from './add/AddPractice2'
 import { Container, Spinner, Text, Button } from 'native-base';
 import { ModalHeader } from "../app/AppHeader";
 import I18n from '../../../i18n/I18n';
@@ -98,7 +99,8 @@ class AddPractice extends Component {
            </View>
         </Modal>
 
-        {page === 1 && <AddPractice1 onSubmit={this.handleSubmit} onMyFormRef={(ref) => (this.child = ref)}/>}
+        {page === 2 && <AddPractice1 onSubmit={this.nextPage} onMyFormRef={(ref) => (this.child = ref)}/>}
+        {page === 1 && <AddPractice2 previousPage={this.previousPage} onSubmit={this.handleSubmit} onMyFormRef={(ref) => (this.child = ref)}/>}
     </Container>
     );
   }

@@ -66,7 +66,7 @@ class AddGame1 extends FormRefComponent {
   }
 
   render() {
-    const { handleSubmit, players, teams, navigation, error, teamuid, timezoneOfPlace } = this.props;
+    const { handleSubmit, players, teams, navigation, error, teamuid, timezoneOfPlace, previousPage } = this.props;
 
    // See if we have the team, or not.
    opponentList = [];
@@ -99,12 +99,12 @@ class AddGame1 extends FormRefComponent {
         </Content>
         <Footer>
           <Left>
-            <Button onPress={handleSubmit} light>
+            <Button onPress={previousPage} full light>
               <Text style={{color: 'white', alignItems: 'center' }}>{I18n.t('previous')}</Text>
             </Button>
           </Left>
           <Right>
-            <Button onPress={handleSubmit} primary>
+            <Button onPress={handleSubmit} full primary>
               <Text style={{color: 'white', alignItems: 'center' }}>{I18n.t('addgame')}</Text>
             </Button>
           </Right>

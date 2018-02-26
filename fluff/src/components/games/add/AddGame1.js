@@ -71,7 +71,7 @@ class AddGame1 extends FormRefComponent {
   }
 
   render() {
-    const { handleSubmit, players, teams, navigation, error, teamuid, timezoneOfPlace } = this.props;
+    const { handleSubmit, players, teams, navigation, error, teamuid, timezoneOfPlace, invalid } = this.props;
 
    // See if we have the team, or not.
    opponentList = [];
@@ -119,11 +119,11 @@ class AddGame1 extends FormRefComponent {
         </Content>
         <Footer>
           <Left>
-            <Button light>
+            <Button light full>
             </Button>
           </Left>
           <Right>
-            <Button onPress={handleSubmit} primary style={{ width: '100%' }}>
+            <Button onPress={handleSubmit} primary full style={{ width: '100%' }} disabled={invalid}>
               <Text style={{color: 'white', alignItems: 'center' }}>{I18n.t('next')}</Text>
             </Button>
           </Right>
@@ -173,6 +173,10 @@ const enhance = compose(
 
       if (values.date == null) {
         errors.time = I18n.t('needdate');
+      }
+
+      if (values.place == '') {
+        errors.place = I18n.t('needplace');
       }
 
       // Do the actual login here.
