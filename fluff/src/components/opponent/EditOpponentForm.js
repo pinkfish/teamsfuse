@@ -17,29 +17,18 @@ import MyTextInput from "../utils/MyTextInput";
 import TeamListPicker from '../team/TeamListPicker';
 import RNFirebase from 'react-native-firebase';
 import SavingModal from '../utils/SavingModal';
+import FormRefComponent from '../utils/FormRefComponent';
 
 
 const camera = require("../../../assets/camera.png");
 
-class EditOpponentForm extends Component {
+class EditOpponentForm extends FormRefComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
          errorText: '',
          savingVisible: false
     }
-  }
-
-  componentDidMount() {
-    this.props.onMyFormRef(this)
-  }
-
-  componentWillUnmount() {
-    this.props.onMyFormRef(undefined)
-  }
-
-  doSubmit = () =>{
-    this.props.handleSubmit(this.mySubmitCheck)();
   }
 
   mySubmitCheck = (values, dispatch) => {

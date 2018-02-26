@@ -38,8 +38,9 @@ import MyDurationPicker from '../../utils/MyDurationPicker';
 import MyCheckbox from "../../utils/MyCheckbox";
 import TimeZonePicker from "../../utils/TimeZonePicker"
 import { withNavigation } from 'react-navigation';
+import FormRefComponent from '../../utils/FormRefComponent';
 
-class AddGame1 extends Component {
+class AddGame1 extends FormRefComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -99,8 +100,6 @@ class AddGame1 extends Component {
               <Separator />
               <Field name="place" title={I18n.t('eventplace')} component={MyPlacePicker} onFormChange={this.onPlaceChange} />
               <Field name="placenotes" placeholder={I18n.t('placenotes')} multiline={true} regular component={MyTextInput} />
-              <Separator />
-              <Field name="uniform" placeholder={I18n.t("Uniform")} component={MyTextInput} regular />
               <Separator />
               <Field name="notes" placeholder={I18n.t('notes')} multiline={true} component={MyTextInput} regular />
               <Text>{this.state.errorText}</Text>

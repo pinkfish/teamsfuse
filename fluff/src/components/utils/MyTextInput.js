@@ -1,11 +1,14 @@
 import React from 'react';
-import { Item, Input, Label, Text, Icon, Textarea } from 'native-base';
+import { Item, Input, Label, Text, Textarea, Left, Body } from 'native-base';
+import Icon from './Icon';
+import styles from './styles';
 
 /**
  * to be wrapped with redux-form Field component
  */
 export default function MyTextInput(props) {
-  const { input, meta, title, placeholder, multiline, numberOfLines, disableValid, rowspan, ...inputProps } = props;
+  const { input, meta, title, placeholder, multiline, numberOfLines,
+    disableValid, rowspan, icon, ...inputProps } = props;
 /*
   const formStates = ['active', 'autofilled', 'asyncValidating', 'dirty', 'invalid', 'pristine',
     'submitting', 'touched', 'valid', 'visited'];
@@ -32,14 +35,14 @@ export default function MyTextInput(props) {
     ret = (
         <Item {...inputProps}  >
           {title && <Label>{title}</Label>}
+
           <Textarea
             onChangeText={input.onChange}
             onBlur={input.onBlur}
             onFocus={input.onFocus}
             value={input.value}
             placeholder={placeholder}
-            rowspan={rowspan}
-            numberOfLines={numberOfLines}
+            placeholderTextColor='#a7a7a7'
           />
           {extra}
         </Item>
@@ -47,6 +50,7 @@ export default function MyTextInput(props) {
   } else {
     ret = (
         <Item {...inputProps}  >
+          {icon && <Icon name={icon} />}
           {title && <Label>{title}</Label>}
           <Input
             onChangeText={input.onChange}
@@ -56,6 +60,7 @@ export default function MyTextInput(props) {
             placeholder={placeholder}
             multiline={multiline}
             numberOfLines={numberOfLines}
+            placeholderTextColor='#a7a7a7'
           />
           {extra}
         </Item>

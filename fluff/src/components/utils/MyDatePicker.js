@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Modal } from 'react-native';
-import { ListItem, Text, Container, Content, Left, Body, Right } from 'native-base';
+import { Item, Text, Container, Content, Left, Body, Right } from 'native-base';
 import { ModalHeader } from '../app/AppHeader';
 import Icon from './Icon';
 import DatePickerInternal from './DatePickerInternal';
+import styles from './styles';
 
 export default class MyDatePicker extends Component {
   constructor(props) {
@@ -27,9 +28,18 @@ export default class MyDatePicker extends Component {
   }
 
   render() {
-    const { options, title, input, ...inputProps } = this.props;
+    const { options, title, input, meta, disableValid, ...inputProps } = this.props;
+
+    if ((meta.submitFailed || !meta.pristine) && !disableValid) {
+      if (meta.invalid) {
+        inputProps.error = true
+      } else {
+        inputProps.success = true
+      }
+    }
+
     ret =
-        <ListItem {...inputProps} icon onPress={this.openModal}>
+        <Item {...inputProps} icon onPress={this.openModal} style={styles.item}>
           <Modal
               visible={this.state.modalVisible}
               animationType={'slide'}
@@ -42,14 +52,17 @@ export default class MyDatePicker extends Component {
               </Content>
             </Container>
           </Modal>
-          <Body>
+          <Left style={styles.itemLeft}>
+            <Icon name="calendar" />
+          </Left>
+          <Body style={styles.itemBody}>
             {input.value instanceof Date && <Text>{this.displayNiceDate(input.value)}</Text>}
             {!(input.value instanceof Date) && <Text note>{title}</Text>}
           </Body>
-          <Right>
+          <Right style={styles.itemRight}>
             <Icon name='mat-chevron-right' />
           </Right>
-        </ListItem>;
+        </Item>;
 
     return ret;
   }

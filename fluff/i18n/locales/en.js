@@ -35,6 +35,7 @@ export default {
   deleteopponentsure: 'Are you sure?',
   oppenentadd: 'Add Opponent',
   addteam: 'Add team',
+  addgame: 'Add Game',
   forgotpassword: 'Forgot Password',
   addevent: 'Add Event',
   nogames: 'No games',
@@ -77,5 +78,9 @@ export default {
   timezoneofplace: 'Timezone of place',
   timezone: 'Timezone',
   earlyarrival: 'Arrive before game',
-  minutes: 'Minutes'
+  minutes: 'Minutes',
+  uniform: 'Uniform',
+  notes: 'Notes',
+  gamelength: 'Game Length',
+  addPractice: 'Add Practice',
 };

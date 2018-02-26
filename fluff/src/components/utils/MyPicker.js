@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { View, Modal } from 'react-native';
-import { Label, ListItem, Text, List, Container, Content, Left, Body, Right } from 'native-base';
+import { Label, ListItem, Text, Item, List, Container, Content, Left, Body, Right } from 'native-base';
 import { ModalHeader } from '../app/AppHeader';
 import Icon from './Icon';
+import styles from './styles';
 
 export default class MyPicker extends Component {
   constructor(props) {
@@ -23,12 +24,12 @@ export default class MyPicker extends Component {
 
   renderItem = (item) => {
     const { input } = this.props;
-    return <ListItem key={item.key} onPress={() => this.selectItem(item)} icon>
+    return <Item key={item.key} onPress={() => this.selectItem(item)} icon style={styles.item}>
             <Body>
                <Text>{item.title}</Text>
              </Body>
              {item.key == input.value && <Right><Icon name='mat-check'/></Right>}
-          </ListItem>
+          </Item>
   }
 
   selectItem = (item) => {
@@ -52,10 +53,19 @@ export default class MyPicker extends Component {
   }
 
   render() {
-    const { options, title, input, disabled, ...inputProps } = this.props;
+    const { options, title, input, disabled, disableValid, meta, icon, ...inputProps } = this.props;
+
+    if ((meta.submitFailed || !meta.pristine) && !disableValid) {
+      if (meta.invalid) {
+        inputProps.error = true
+      } else {
+        inputProps.success = true
+      }
+    }
 
     ret =
-        <ListItem {...inputProps} icon onPress={disabled ? () => {}: this.openModal}>
+        <Item {...inputProps} icon onPress={disabled ? () => {}: this.openModal}
+          style={styles.item} icon>
           <Modal
               visible={this.state.modalVisible}
               animationType={'slide'}
@@ -70,14 +80,15 @@ export default class MyPicker extends Component {
               </Content>
             </Container>
           </Modal>
-          <Body>
+          {icon ? <Left style={styles.itemLeft} ><Icon name={icon} /></Left> : null}
+          <Body style={styles.itemBody}>
             {input.value != '' && <Text>{this.showValue()}</Text>}
             {input.value == '' && <Text note>{title}</Text>}
           </Body>
-          <Right>
+          <Right style={styles.itemRight}>
             <Icon name='mat-chevron-right' />
           </Right>
-        </ListItem>;
+        </Item>;
     console.log('ret', ret);
 
     return ret;

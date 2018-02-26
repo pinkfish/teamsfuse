@@ -38,8 +38,9 @@ import MyDurationPicker from '../../utils/MyDurationPicker';
 import MyCheckbox from "../../utils/MyCheckbox";
 import TimeZonePicker from "../../utils/TimeZonePicker"
 import { withNavigation } from 'react-navigation';
+import FormRefComponent from '../../utils/FormRefComponent';
 
-class AddGame1 extends Component {
+class AddGame1 extends FormRefComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
