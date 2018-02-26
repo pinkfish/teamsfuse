@@ -48,7 +48,6 @@ class AddTeamPageOne extends Component {
               <Text>Select player</Text>
               <Field name="playeruid" component={MyPicker} mode="dropdown" defaultValue='other' regular styles={{height: 60}}c>
                 {players && players.list.map((player) => {
-
                     return (
                         <Item label={player.name} value={player.uid} key={player.uid} />
                     );
@@ -77,19 +76,22 @@ class AddTeamPageOne extends Component {
 }
 
 function mapStateToProps(state) {
-  return { players: state.players }
+  return {
+    players: state.players,
+    initialValues: {
+      sport: 'other',
+      timezone: 'PST',
+      country: 'us',
+      gender: 'na',
+      season: new Date().getFullYear()
+    }
+  }
 }
 
 const enhance = compose(
   reduxForm({
     form: 'AddTeam',
     destroyOnUnmount: false, // Preserve the data.
-    initialValues: {
-      sport: 'other',
-      timezone: 'PST',
-      country: 'us',
-      gender: 'na',
-    },
     validate: values => {
       const errors = {}
       console.log('validate teams p1', values)

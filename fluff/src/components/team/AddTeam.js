@@ -8,6 +8,7 @@ import { ModalHeader } from "../app/AppHeader";
 import I18n from '../../../i18n/I18n';
 import RNFirebase from 'react-native-firebase';
 import styles from './styles';
+import GUID from '../utils/GUID';
 
 
 class AddTeam extends Component {
@@ -36,12 +37,29 @@ class AddTeam extends Component {
       added: true,
     }
     this.setState({ savingVisible: true });
+    uid = GUID();
+    seasons = {}
+    seasons[uid] = {
+      name: values.season,
+      current: true,
+      record: {
+        win: 0,
+        loss: 0,
+        tie: 0
+      }
+    }
     RNFirebase.firestore().collection("Teams").add({
       name: values.name,
       league: values.league,
       gender: values.gender,
       sport: values.sport,
-      player: player
+      player: player,
+      record: {
+        win: 0,
+        tie: 0,
+        loss: 0
+      }
+      seasons: seasons
     }).then(() => {
       this.setState({ savingVisible: false });
       this.props.navigation.goBack();

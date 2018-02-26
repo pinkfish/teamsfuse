@@ -34,6 +34,7 @@ import MyTimePicker from "../../utils/MytimePicker";
 import MyDatePicker from "../../utils/MyDatePicker";
 import MyPlacePicker from "../../utils/MyPlacePicker";
 import TeamListPicker from "../../team/TeamListPicker";
+import SeasonListPicker from "../../team/SeasonListPicker";
 import MyDurationPicker from '../../utils/MyDurationPicker';
 import MyCheckbox from "../../utils/MyCheckbox";
 import TimeZonePicker from "../../utils/TimeZonePicker"
@@ -87,7 +88,7 @@ class AddGame1 extends FormRefComponent {
    }
    console.log('fields', this.props);
 
-    return (
+   return (
       <Container>
         <Content>
           <ListItem style={styles.main} key='4'>
@@ -100,6 +101,7 @@ class AddGame1 extends FormRefComponent {
                 options={opponentList}
                 onUpdate={teamuid == 'add' ? this.addOpponent() : () => {}}
               />
+              <Field name="season" title={I18n.t('teamselect')} component={SeaonListPicker} teamuid={teamuid} first />
               <Separator />
               <Field name="time" title={I18n.t('eventtime')} component={MyTimePicker} />
               <Field name="date" title={I18n.t('eventdate')} component={MyDatePicker} />
@@ -135,13 +137,19 @@ class AddGame1 extends FormRefComponent {
 
 function mapStateToProps(state) {
   return {
-    teams: state.teams ,
+    teams: state.teams,
     players: state.players,
     teamuid: getFormValues('AddGame')(state).teamuid,
     timezoneOfPlace: getFormValues('AddGame')(state).timezoneOfPlace,
     time: null,
     date: null,
-    arriveearly: 0
+    arriveearly: 0,
+    initialValues: {
+      type: 'game',
+      name: '',
+      teamuid: '',
+      place: '',
+    }
   }
 }
 
@@ -149,12 +157,6 @@ const enhance = compose(
   reduxForm({
     form: 'AddGame',
     destroyOnUnmount: false, // Preserve the data.
-    initialValues: {
-      type: 'game',
-      name: '',
-      teamuid: '',
-      place: '',
-    },
     validate: values => {
       const errors = {}
       console.log('validate teams p1', values)
