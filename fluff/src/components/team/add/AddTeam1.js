@@ -83,7 +83,8 @@ function mapStateToProps(state) {
       timezone: 'PST',
       country: 'us',
       gender: 'na',
-      season: new Date().getFullYear()
+      season: new Date().getFullYear(),
+      adminuid: state.auth.uid,
     }
   }
 }
