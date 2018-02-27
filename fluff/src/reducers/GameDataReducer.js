@@ -9,7 +9,6 @@ import {
 } from "../actions/Games";
 
 export const GameDataReducer = (state = { loaded: 0 }, action) => {
-  // console.log('GLOBALS.JS REDUCER, action:', action);
   switch(action.type) {
   case FETCH_GAME_DATA:
     // Don't overwrite the list while lodingh, just track the loading/loaded state.
@@ -19,7 +18,6 @@ export const GameDataReducer = (state = { loaded: 0 }, action) => {
       loading: true
     };
   case FETCH_GAME_DATA_SUCCESS:
-    console.log('Fetched all game data', action.payload)
     // If we already have a list, then disable all the onsnapshot stuff.
     return {
       ...state,

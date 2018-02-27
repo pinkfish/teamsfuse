@@ -30,7 +30,7 @@ import { Field, reduxForm, submit, getFormValues } from 'redux-form'
 import MyTextInput from "../../utils/MyTextInput";
 import MyDurationPicker from '../../utils/MyDurationPicker';
 import MyCheckbox from "../../utils/MyCheckbox";
-import MySwitch from '../utils/MySwitch';
+import MySwitch from '../../utils/MySwitch';
 import TimeZonePicker from "../../utils/TimeZonePicker"
 import { withNavigation } from 'react-navigation';
 import FormRefComponent from '../../utils/FormRefComponent';
@@ -80,7 +80,6 @@ class AddGame1 extends FormRefComponent {
        }
      }
    }
-   console.log('fields', this.props);
 
     return (
       <Container>
@@ -89,9 +88,9 @@ class AddGame1 extends FormRefComponent {
             <Body>
               <Field name="homegame" icon="mat-home" title={I18n.t('homegame')} component={MySwitch} regular />
               <Field name="uniform" icon="tshirt-crew" placeholder={I18n.t("uniform")} component={MyTextInput} regular />
-              <Separator />
-              <Field name="notes" placeholder={I18n.t('notes')} multiline={true} component={MyTextInput} regular />
-              <Separator />
+              <Separator style={styles.separator} />
+              <Field icon="mat-place" name="notes" placeholder={I18n.t('notes')} multiline={true} component={MyTextInput} regular />
+              <Separator style={styles.separator} />
               <Field name="gamelength" title={I18n.t('gamelength')} component={MyDurationPicker} regular last />
               <Text>{this.state.errorText}</Text>
             </Body>
@@ -138,7 +137,6 @@ const enhance = compose(
     },
     validate: values => {
       const errors = {}
-      console.log('validate teams p1', values)
 
       if (!values.teamuid) {
         errors.teamuid = I18n.t('needteam');
@@ -156,7 +154,6 @@ const enhance = compose(
         errors.time = I18n.t('needdate');
       }
 
-      // Do the actual login here.
       return errors
     },
     onSubmit: values => {

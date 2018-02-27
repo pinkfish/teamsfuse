@@ -85,7 +85,6 @@ class AddPractice1 extends FormRefComponent {
        }
      }
    }
-   console.log('fields', this.props);
 
     return (
       <Container>
@@ -141,9 +140,6 @@ const enhance = compose(
     },
     validate: values => {
       const errors = {}
-      console.log('validate teams p1', values)
-
-      //values = values.toJS()
 
       if (values.teamuid == '') {
         errors.name = I18n.t('needteam')
@@ -157,7 +153,6 @@ const enhance = compose(
         errors.date = I18n.t('needdate')
       }
 
-      // Do the actual login here.
       return errors
     },
     onSubmit: values => {

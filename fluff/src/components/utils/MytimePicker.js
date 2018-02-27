@@ -59,7 +59,7 @@ export default class MyTimePicker extends Component {
     ret =
         <Item {...inputProps} icon onPress={this.openModal} style={styles.item}>
           <Left style={styles.itemLeft}>
-            <Icon name="mat-access-time" />
+            <Icon name="mat-access-time" style={styles.iconstart}/>
           </Left>
           <Body style={styles.itemBody}>
             <TimePickerInternal input={input} visible={this.state.modalVisible} onClose={this.closeModal} />
@@ -67,7 +67,7 @@ export default class MyTimePicker extends Component {
             {!(input.value instanceof Date) && <Text note>{this.props.title}</Text>}
           </Body>
           <Right style={styles.itemRight}>
-            <Icon name='mat-chevron-right' />
+            <Icon name='mat-chevron-right' style={styles.iconend} />
           </Right>
         </Item>;
 

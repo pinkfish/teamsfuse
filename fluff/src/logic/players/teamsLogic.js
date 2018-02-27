@@ -14,13 +14,15 @@ import {
   FETCH_PLAYER_DATA_DELETE,
   FETCH_PLAYER_DATA_SUCCESS,
 } from '../../actions/Players.js';
+import momenttz from 'moment-timezone';
+import moment from 'moment';
 
 
 function playerOnSnapshot(querySnapshot, dispatch) {
   querySnapshot.docChanges.forEach((change) => {
-    console.log('changes', change)
     var team = change.doc.data();
     team.uid = change.doc.id;
+    team.displayTime = moment(team.time).tz(team.timezone);
     if (change.type === "added") {
       dispatch(fetchTeamDataAdd(team));
     }
@@ -56,7 +58,6 @@ const fetchTeamsLogic = createLogic({
           .then(function(querySnapshot) {
             // Got all the teams.  Yay!
             querySnapshot.forEach(doc => {
-              console.log("team", doc);
               var team = doc.data();
               team.uid = doc.id;
               // Make sure we track how we got in here.
@@ -64,6 +65,7 @@ const fetchTeamsLogic = createLogic({
                 team.myPlayerId = allTeams[team.uid].myPlayerId;
                 team.myPlayerId.push(player.uid);
               }
+              team.displayTime = moment(team.time).tz(team.timezone);
               allTeams[team.uid] = team;
             });
           });
@@ -109,7 +111,6 @@ const deletePlayerLogic = createLogic({
     players.forEach(player => {
       if (player.uid == action.payload.uid) {
         if (player.snapshotListen) {
-          console.log('Not listening to this any more', player.uid);
           player.snapshotListen();
           player.snapshotListen = null;
         }

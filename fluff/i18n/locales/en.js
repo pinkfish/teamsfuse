@@ -97,4 +97,6 @@ export default {
   month: 'month',
   until: 'Until',
   howoften: 'How often',
+  homegame: 'Home Game',
+  season: 'Season',
 };

@@ -9,7 +9,6 @@ import {
 } from "../actions/Players";
 
 export const PlayerDataReducer = (state = { loaded: 0 }, action) => {
-  // console.log('GLOBALS.JS REDUCER, action:', action);
   switch(action.type) {
   case FETCH_PLAYER_DATA:
     // Don't overwrite the list while lodingh, just track the loading/loaded state.
@@ -19,7 +18,6 @@ export const PlayerDataReducer = (state = { loaded: 0 }, action) => {
       loading: true
     };
   case FETCH_PLAYER_DATA_SUCCESS:
-    console.log('Fetched all player data', action.payload)
     if (state.list && state.list.length > 0) {
       state.list.forEach((player) => {
         if (player.snapshotListen) {
@@ -44,7 +42,6 @@ export const PlayerDataReducer = (state = { loaded: 0 }, action) => {
     };
   case FETCH_PLAYER_DATA_ADD:
   case FETCH_PLAYER_DATA_UPDATE:
-    console.log('player add', action);
     newState = {
       ...state
     };

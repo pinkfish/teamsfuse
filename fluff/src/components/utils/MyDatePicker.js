@@ -53,14 +53,14 @@ export default class MyDatePicker extends Component {
             </Container>
           </Modal>
           <Left style={styles.itemLeft}>
-            <Icon name="calendar" />
+            <Icon name="calendar" style={styles.iconstart} />
           </Left>
           <Body style={styles.itemBody}>
             {input.value instanceof Date && <Text>{this.displayNiceDate(input.value)}</Text>}
             {!(input.value instanceof Date) && <Text note>{title}</Text>}
           </Body>
           <Right style={styles.itemRight}>
-            <Icon name='mat-chevron-right' />
+            <Icon name='mat-chevron-right' style={styles.iconend} />
           </Right>
         </Item>;
 

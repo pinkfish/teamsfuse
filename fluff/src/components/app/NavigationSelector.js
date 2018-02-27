@@ -26,7 +26,6 @@ class NavigationSelector extends Component {
       return <SignedOutNavigator />;
     }
 
-    console.log('verified', this.props.firebase);
     if (!this.props.auth.emailVerified) {
       return <VerifyEmailNavigator />;
     }

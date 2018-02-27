@@ -25,10 +25,10 @@ export default function MyTextInput(props) {
   if ((meta.submitFailed || !meta.pristine) && !disableValid) {
     if (meta.invalid) {
       inputProps.error = true
-      extra = <Icon name='close-circle' />;
+      extra = <Icon name='close-circle'  />;
     } else {
       inputProps.success = true
-      extra = <Icon name='mat-checkmark-circle' />;
+      extra = <Icon name='mat-checkmark-circle'  />;
     }
   }
   if (number) {
@@ -39,6 +39,7 @@ export default function MyTextInput(props) {
   if (multiline) {
     ret = (
         <Item {...inputProps}  >
+          {icon && <Icon style={styles.iconstart} name={icon} />}
           {title && <Label>{title}</Label>}
 
           <Textarea
@@ -55,7 +56,7 @@ export default function MyTextInput(props) {
   } else {
     ret = (
         <Item {...inputProps}  >
-          {icon && <Icon name={icon} />}
+          {icon && <Icon style={styles.iconstart} name={icon} />}
           {title && <Label>{title}</Label>}
           <Input
             onChangeText={input.onChange}

@@ -78,7 +78,6 @@ class AddEvent extends Component {
 
   render() {
     const { page, savingVisible, errorVisible } = this.state;
-    console.log('my state' , this.state);
     return (
       <Container>
         <ModalHeader title={I18n.t('addpractice')} iconRight="check" onRightPress={this.doFormSubmit} />

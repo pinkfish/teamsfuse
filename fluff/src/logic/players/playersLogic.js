@@ -15,7 +15,6 @@ const fetchTeamsLogic = createLogic({
   latest: true, // only take latest
   debounce: 500, /* ms */
   process({ firebase, firestore, getState, action }, dispatch, done) {
-    console.log('fetch', getState());
     auth = getState().firebase.auth;
     // Get the players first.
     playerQuery = firestore.collection('Players')
@@ -42,7 +41,6 @@ const fetchTeamsLogic = createLogic({
             .then(function(querySnapshot) {
                 promises = []
                 if (querySnapshot.empty) {
-                  console.log('No players, making one for me');
                   firestore.collection('Players').add( {
                     name: auth.displayName,
                     user: {
@@ -52,7 +50,6 @@ const fetchTeamsLogic = createLogic({
                       }
                     }
                   }).then(documentReference => {
-                    console.log(`Added document with name: ${documentReference}`);
                     data = documentReference.data();
                     data.uid = documentReference.id();
                     result.list = { };
@@ -67,13 +64,11 @@ const fetchTeamsLogic = createLogic({
                 } else {
                   allPlayers = {}
                   querySnapshot.forEach(doc => {
-                    console.log("player", doc);
                     var player = doc.data();
                     player.teams = [];
                     player.uid = doc.id;
                     allPlayers[doc.id] = player;
                   })
-                  console.log('all done', promises)
                   result.list = allPlayers;
                   dispatch(fetchPlayerDataSuccess(result));
                   done();

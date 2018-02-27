@@ -80,6 +80,7 @@ class AddGame1 extends FormRefComponent {
      // Yay.
      opponentList = [{ title: I18n.t('oppenentadd'), key: 'add', onPress: this.addOpponent }];
      team = teams.list[teamuid];
+     console.log('team', team);
      for (key in team.opponents) {
        if (team.opponents.hasOwnProperty(key)) {
          opponent =  team.opponents[key];
@@ -101,20 +102,14 @@ class AddGame1 extends FormRefComponent {
                 options={opponentList}
                 onUpdate={teamuid == 'add' ? this.addOpponent() : () => {}}
               />
-              <Field name="seasonuid" title={I18n.t('teamselect')} component={SeasonListPicker} teams={teams} players={players} teamuid={teamuid} first />
-              <Separator />
+              <Field name="seasonuid" title={I18n.t('season')} component={SeasonListPicker} teams={teams} players={players} teamuid={teamuid} first />
+              <Separator style={styles.separator} />
               <Field name="time" title={I18n.t('eventtime')} component={MyTimePicker} />
               <Field name="date" title={I18n.t('eventdate')} component={MyDatePicker} />
               <Field name="arriveearly" title={I18n.t('earlyarrival')} component={MyDurationPicker} regular />
-              <Separator />
-              <Field name="place" title={I18n.t('eventplace')} component={MyPlacePicker} onFormChange={this.onPlaceChange} />
-              <Field icon="mat-place" name="placenotes" placeholder={I18n.t('placenotes')} multiline={true} regular component={MyTextInput} />
-              <Separator />
-              <Field name="uniform" icon="tshirt-crew" placeholder={I18n.t("uniform")} component={MyTextInput} regular />
-              <Separator />
-              <Field name="notes" placeholder={I18n.t('notes')} multiline={true} component={MyTextInput} regular />
-              <Separator />
-              <Field name="gamelength" title={I18n.t('gamelength')} component={MyDurationPicker} regular last />
+              <Separator style={styles.separator} />
+              <Field name="place" title={I18n.t('eventplace')} icon="mat-note" component={MyPlacePicker} onFormChange={this.onPlaceChange} />
+              <Field icon="mat-place" name="placenotes" placeholder={I18n.t('placenotes')} multiline={true} regular last component={MyTextInput} />
               <Text>{this.state.errorText}</Text>
             </Body>
           </ListItem>
@@ -156,10 +151,10 @@ const enhance = compose(
       name: '',
       teamuid: '',
       place: '',
+      homegame: true
     },
     validate: values => {
       const errors = {}
-      console.log('validate teams p1', values)
 
       if (!values.teamuid) {
         errors.teamuid = I18n.t('needteam');

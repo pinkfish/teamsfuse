@@ -54,7 +54,6 @@ const fetchGamesLogic = createLogic({
             .then(function(querySnapshot) {
               // Got all the teams.  Yay!
               querySnapshot.forEach(gameDoc => {
-                console.log("Add game");
                 var game = gameDoc.data();
                 game.uid = gameDoc.id;
                 game.teamUid = team.uid;
@@ -87,7 +86,6 @@ const addTeamLogic = createLogic({
     teamsColl = firestore.collection('Teams');
     teamQuery = teamsColl.doc(action.payload.uid).collection('Games')
         .orderBy("gameTime");
-    console.log('addTeamLogic', action);
     action.payload.snapshotListen = teamQuery.onSnapshot(function(querySnapshot) {
       teamOnSnapshot(querySnapshot, dispatch);
     });

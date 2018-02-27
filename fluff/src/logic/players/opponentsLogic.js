@@ -17,7 +17,15 @@ function teamOnSnapshot(team, querySnapshot, dispatch) {
   querySnapshot.forEach((doc) => {
     var opponent = doc.data();
     opponent.uid = doc.id;
-    allOpponents.push(opponent);
+    var ignore = false;
+    allOpponents.forEach((value) => {
+      if (value.uid == opponent.uid) {
+        ignore = true;
+      }
+    });
+    if (!ignore) {
+      allOpponents.push(opponent);
+    }
   });
   dispatch(fetchOpponentDataSuccess(team, allOpponents));
 }
@@ -46,7 +54,15 @@ const fetchOpponentsLogic = createLogic({
                   querySnapshot.forEach(opponentDoc => {
                     var opponent = opponentDoc.data();
                     opponent.uid = opponentDoc.id;
-                    allOpponents.push(opponentDoc.data());
+                    var ignore = false;
+                    allOpponents.forEach((value) => {
+                      if (value.uid == opponent.uid) {
+                        ignore = true;
+                      }
+                    });
+                    if (!ignore) {
+                      allOpponents.push(opponentDoc.data());
+                    }
                 })
                 dispatch(fetchOpponentDataSuccess(team, allOpponents));
               });
@@ -73,7 +89,6 @@ const addTeamLogic = createLogic({
   process({ firebase, firestore, getState, action }, dispatch, done) {
     teamsColl = firestore.collection('Teams');
     teamQuery = teamsColl.doc(action.payload.uid).collection('Opponents');
-    console.log('addTeamLogic', action);
     action.payload.snapshotListenOpponent = teamQuery.onSnapshot(function(querySnapshot) {
       teamOnSnapshot(action.payload, querySnapshot, dispatch);
     });
@@ -91,7 +106,6 @@ const deleteTeamLogic = createLogic({
     teams.forEach(team => {
       if (team.uid == action.payload.uid) {
         if (team.snapshotListenOpponent) {
-          console.log('Not listening to this any more', player.uid);
           team.snapshotListenOpponent();
           team.snapshotListenOpponent = null;
         }

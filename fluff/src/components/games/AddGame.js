@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { View, Modal } from 'react-native'
 import AddGame1 from './add/AddGame1'
+import AddGame2 from './add/AddGame2'
 import { Container, Spinner, Text, Button } from 'native-base';
 import { ModalHeader } from "../app/AppHeader";
 import I18n from '../../../i18n/I18n';
@@ -30,7 +31,7 @@ class AddGame extends Component {
     this.setState({ page: this.state.page - 1 })
   }
 
-  onSubmit = (values) => {
+  handleSubmit = (values) => {
     player = {}
     player[values.playeruid] = {
       added: true,
@@ -39,24 +40,24 @@ class AddGame extends Component {
     // Do stuff with the time and date, convert to a single number
     var timeObj =
     {
-      hour: values.time.getHour(),
-      minute: valuestiome.getMinute(),
-      year: values.date.getYear(),
+      hour: values.time.getHours(),
+      minute: values.time.getMinutes(),
+      year: values.date.getFullYear(),
       month: values.date.getMonth(),
-      day: values.date.getDay(),
+      day: values.date.getDate(),
     };
     // Make a date in the timezone we are going to.
     timeInZone = momenttz.tz(timeObj, values.place.timeZoneId);
 
-    RNFirebase.firestore().collection("Teams").doc(teamuid).collection("Games").add({
+    RNFirebase.firestore().collection("Teams").doc(values.teamuid).collection("Games").add({
       type: 'game',
-      time: timeInZone,
+      time: timeInZone.valueOf(),
       timezone: values.place.timeZoneId,
       timezoneName: values.place.timeZoneName,
       place: {
         name: values.place.name,
         address: values.place.address,
-        placeid: values.place.placeid,
+        placeid: values.place.placeId,
         notes: values.placenotes,
       },
       opponent: values.opponentuid,
@@ -69,6 +70,7 @@ class AddGame extends Component {
       uniform: values.uniform,
       arriveearly: values.arriveearly,
       gamelength: values.gamelength,
+      seasonuid: values.seasonuid,
       attendence: {
 
       }
@@ -88,7 +90,6 @@ class AddGame extends Component {
 
   render() {
     const { page, savingVisible, errorVisible } = this.state;
-    console.log('my state' , this.state);
     return (
       <Container>
         <ModalHeader title={I18n.t('addgame')} iconRight="check" onRightPress={this.doFormSubmit} />

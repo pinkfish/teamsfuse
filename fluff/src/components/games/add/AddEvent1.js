@@ -88,7 +88,6 @@ class AddGame1 extends FormRefComponent {
        }
      }
    }
-   console.log('fields', this.props);
 
     return (
       <Container>
@@ -143,7 +142,6 @@ const enhance = compose(
     },
     validate: values => {
       const errors = {}
-      console.log('validate teams p1', values)
 
       //values = values.toJS()
 
