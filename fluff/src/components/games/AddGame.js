@@ -77,6 +77,7 @@ class AddGame extends Component {
       this.props.navigation.goBack();
     }).catch(() => {
       this.setState({error: 'Error saving team', errorVisible : true });
+      this.setState({ savingVisible: false });
     })
     // Move to saving state.
   }

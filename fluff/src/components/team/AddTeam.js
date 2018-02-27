@@ -32,42 +32,39 @@ class AddTeam extends Component {
   }
 
   onSubmit = (values) => {
+    seasons = {}
+    seasonUid = GUID();
     player = {}
     player[values.playeruid] = {
       added: true,
+      role: values.role
+    }
+    seasonplayer = {}
+    seasonplayer[values.playeruid] = true;
+    seasons[seasonUid] = {
+      name: values.seasonName,
+      player: seasonplayer
     }
     this.setState({ savingVisible: true });
-    RNFirebase.firestore().collection("Seasons").add({
-      name: values.season,
-      player: player,
-      record: {
-        win: 0,
-        loss: 0,
-        tie: 0
-      }
-    }).then((seasonDoc) => {
       RNFirebase.firestore().collection("Teams").add({
         name: values.name,
         league: values.league,
         gender: values.gender,
         sport: values.sport,
+        earlyarrival: values.defaultearlyarrival,
         admins: [
           // THis is a list of user ids that corresponds to admins.
           values.adminuid
         ],
-        currentSeason: seasonDoc.id
+        seasons: seasons,
+        player: player,
+        currentSeason: seasonUid
       }).then(() => {
         this.setState({ savingVisible: false });
         this.props.navigation.goBack();
       }).catch(() => {
-        // Delete the season, in case we added it.
-        seasonDoc.delete();
         this.setState({error: 'Error saving team', errorVisible : true });
       });
-    }).catch(() => {
-      this.setState({error: 'Error saving team', errorVisible : true });
-    })
-    // Move to saving state.
   }
 
   render() {

@@ -99,8 +99,8 @@ class AddPractice extends Component {
            </View>
         </Modal>
 
-        {page === 2 && <AddPractice1 onSubmit={this.nextPage} onMyFormRef={(ref) => (this.child = ref)}/>}
-        {page === 1 && <AddPractice2 previousPage={this.previousPage} onSubmit={this.handleSubmit} onMyFormRef={(ref) => (this.child = ref)}/>}
+        {page === 1 && <AddPractice1 onSubmit={this.nextPage} onMyFormRef={(ref) => (this.child = ref)}/>}
+        {page === 2 && <AddPractice2 previousPage={this.previousPage} onSubmit={this.handleSubmit} onMyFormRef={(ref) => (this.child = ref)}/>}
     </Container>
     );
   }

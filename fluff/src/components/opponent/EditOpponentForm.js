@@ -31,7 +31,7 @@ class EditOpponentForm extends FormRefComponent {
     }
   }
 
-  mySubmitCheck = (values, dispatch) => {
+  myFluffSubmitCheck = (values, dispatch) => {
     console.log('mySubmitCheck', values, this.props.auth);
     this.setState({ savingVisible: true });
     if (this.props.teamuid != null) {
@@ -40,11 +40,11 @@ class EditOpponentForm extends FormRefComponent {
       teamuid = values.teamuid;
     }
     return new Promise((resolve, reject) => {
-      if (this.props.opponentuid == 0) {
+      if (!this.props.opponentuid) {
         console.log('update', values, this.props);
         RNFirebase.firestore().collection("Teams").doc(teamuid)
             .collection("Opponents").add({
-          name: values.name,
+          name: values.opponentname,
           conect: values.contact
         }).then(() => {
           this.setState({ savingVisible: false });
@@ -53,9 +53,10 @@ class EditOpponentForm extends FormRefComponent {
           this.setState({error: 'Error saving team', errorVisible : true });
         });
       } else {
+        console.log('add', values, this.props);
         RNFirebase.firestore().collection("Teams").doc(teamuid)
             .collection("Opponents").doc(this.props.opponentuid).set({
-          name: values.name,
+          name: values.opponentname,
           conect: values.contact
         }).then(() => {
           this.setState({ savingVisible: false });
@@ -67,8 +68,13 @@ class EditOpponentForm extends FormRefComponent {
     });
   }
 
+  doFluffSubmit = () => {
+    //this.props.handleSubmit(this.myFluffSubmitCheck);
+    this.props.handleSubmit(this.myFluffSubmitCheck)();
+  }
+
   render() {
-    const { teamuid, teamname, opponentuid, teams, opponent } = this.props;
+    const { teamname, opponentuid, teams, opponent } = this.props;
 
     console.log('initval ', this.props);
 
@@ -80,8 +86,8 @@ class EditOpponentForm extends FormRefComponent {
           {teamname != null ?
               <Text>{teamname}</Text>:
               <Field name="teamuid" title={I18n.t('teamselect')} component={TeamListPicker} teams={teams} />}
-          <Field name="name" placeholder={I18n.t('name')} component={MyTextInput} regular />
-          <Field name="contact" placeholder={I18n.t('contact')} component={MyTextInput} secureTextEntry regular last/>
+          <Field name="opponentname" placeholder={I18n.t('name')} component={MyTextInput} regular />
+          <Field name="contact" placeholder={I18n.t('contact')} component={MyTextInput} regular last/>
           <Text>{this.state.errorText}</Text>
         </List>
       </Content>
@@ -111,10 +117,12 @@ function mapStateToProps(state, props) {
   } else {
     initValues = {}
   }
+  console.log('in here', props, initValues);
   return {
     teams: state.teams,
     teamname: teamname,
     opponentuid: props.navigation.state.params.opponentuid,
+    teamuid: initValues.teamuid,
     initialValues: initValues
   }
 }
@@ -125,20 +133,15 @@ const enhance = compose(
     form: 'EditOpponent',
     validate: values => {
       const errors = {}
-      console.log(values)
 
-      //values = values.toJS()
-
-      if (!values.name) {
+      if (!values.opponentname) {
         errors.name = I18n.t('needname')
       }
 
-      console.log('in here', errors)
-
-      // Do the actual login here.
       return errors
     },
-    onSubmit: values => {
+    onSubmit: () => {
+      console.log('onSubmit')
     },
   }),
   connect(mapStateToProps)

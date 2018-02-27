@@ -28,7 +28,7 @@ export default function MyTextInput(props) {
       extra = <Icon name='close-circle' />;
     } else {
       inputProps.success = true
-      extra = <Icon name='checkmark-circle' />;
+      extra = <Icon name='mat-checkmark-circle' />;
     }
   }
   if (number) {

@@ -60,7 +60,10 @@ const fetchTeamsLogic = createLogic({
               var team = doc.data();
               team.uid = doc.id;
               // Make sure we track how we got in here.
-              team.myPlayerId = player.uid;
+              if (allTeams.hasOwnProperty(team.uid)) {
+                team.myPlayerId = allTeams[team.uid].myPlayerId;
+                team.myPlayerId.push(player.uid);
+              }
               allTeams[team.uid] = team;
             });
           });

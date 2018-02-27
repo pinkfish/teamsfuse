@@ -28,6 +28,21 @@ import { Field, reduxForm, submit } from 'redux-form'
 import MyTextInput from "../../utils/MyTextInput";
 import MyPicker from "../../utils/MyPicker";
 
+const ROLE_DATA = [
+  {
+    title: I18n.t('player'),
+    key: 'player'
+  },
+  {
+    title: I18n.t('coach'),
+    key: 'coach'
+  },
+  {
+    title: I18n.t('nonplayer'),
+    key: 'nonplayer'
+  }
+]
+
 class AddTeamPageOne extends Component {
   constructor(props, context) {
     super(props, context);
@@ -53,6 +68,7 @@ class AddTeamPageOne extends Component {
                     );
                 })}
               </Field>
+              <Field name="role" component={MyPicker} options={ROLE_DATA} regular />
               <Text>{this.state.errorText}</Text>
               <Button light>
                 <Text>{I18n.t('newplayer')}</Text>
@@ -80,9 +96,8 @@ function mapStateToProps(state) {
     players: state.players,
     initialValues: {
       sport: 'other',
-      timezone: 'PST',
-      country: 'us',
       gender: 'na',
+      role: 'coach',
       season: new Date().getFullYear(),
       adminuid: state.auth.uid,
     }

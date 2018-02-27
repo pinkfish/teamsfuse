@@ -79,14 +79,14 @@ class AddGame1 extends FormRefComponent {
    if (teams.list.hasOwnProperty(teamuid)) {
      // Yay.
      opponentList = [{ title: I18n.t('oppenentadd'), key: 'add', onPress: this.addOpponent }];
-     for (key in teams.list[teamuid].opponents) {
-       if (teams.list[teamuid].opponents.hasOwnProperty(key)) {
-         oppenent =  teams.list[teamuid].opponents[key];
+     team = teams.list[teamuid];
+     for (key in team.opponents) {
+       if (team.opponents.hasOwnProperty(key)) {
+         opponent =  team.opponents[key];
          opponentList.push({ title: opponent.name, key: opponent.uid })
        }
      }
    }
-   console.log('fields', this.props);
 
    return (
       <Container>
@@ -101,7 +101,7 @@ class AddGame1 extends FormRefComponent {
                 options={opponentList}
                 onUpdate={teamuid == 'add' ? this.addOpponent() : () => {}}
               />
-              <Field name="season" title={I18n.t('teamselect')} component={SeaonListPicker} teamuid={teamuid} first />
+              <Field name="seasonuid" title={I18n.t('teamselect')} component={SeasonListPicker} teams={teams} players={players} teamuid={teamuid} first />
               <Separator />
               <Field name="time" title={I18n.t('eventtime')} component={MyTimePicker} />
               <Field name="date" title={I18n.t('eventdate')} component={MyDatePicker} />
@@ -144,12 +144,6 @@ function mapStateToProps(state) {
     time: null,
     date: null,
     arriveearly: 0,
-    initialValues: {
-      type: 'game',
-      name: '',
-      teamuid: '',
-      place: '',
-    }
   }
 }
 
@@ -157,6 +151,12 @@ const enhance = compose(
   reduxForm({
     form: 'AddGame',
     destroyOnUnmount: false, // Preserve the data.
+    initialValues: {
+      type: 'game',
+      name: '',
+      teamuid: '',
+      place: '',
+    },
     validate: values => {
       const errors = {}
       console.log('validate teams p1', values)

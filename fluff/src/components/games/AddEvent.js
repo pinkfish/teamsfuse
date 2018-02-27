@@ -60,6 +60,7 @@ class AddEvent extends Component {
         notes: values.placenotes,
       },
       notes: values.notes,
+      season: values.seasonuid,
       attendence: {
       }
     }).then(() => {

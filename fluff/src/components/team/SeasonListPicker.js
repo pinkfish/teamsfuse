@@ -1,18 +1,17 @@
 import React from 'react';
 import MyPicker from '../utils/MyPicker';
+import { getTeam, getSeasons } from "../../data/Team";
 
 export default SeasonListPicker = (props) => {
-  const { teams, title, input, teamuid, ...inputProps } = props;
+  const { teams, title, input, teamuid, players, ...inputProps } = props;
 
-  if (input.value == '' && teams.list.hasOwnProperty(teamuid)) {
-    input.value = item;
-  }
+  team =  getTeam(teams, teamuid);
   optionList = [];
-  if (teams.list.hasOwnProperty(teamuid)) {
+  if (team != null) {
     item = ''
-    team = teams.list[teamuid];
+    seasons = getSeasons(team, players);
     for (key in team.seasons) {
-      if (team.seasons[key].current) {
+      if (key == team.currentSeason) {
         item = key;
       }
       optionList.push({ title: team.seasons[key].name, key: key })
@@ -22,5 +21,6 @@ export default SeasonListPicker = (props) => {
     }
  }
 
+ console.log('players', teams, optionList);
   return <MyPicker icon="mat-people" title={title} options={optionList} input={input} {...inputProps} />
 }
