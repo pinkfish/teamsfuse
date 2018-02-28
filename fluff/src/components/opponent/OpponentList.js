@@ -81,10 +81,10 @@ class OpponentList extends Component {
   }
 
   renderOpponent(opponent) {
-    int win = 0;
-    int tie = 0;
-    int loss = 0;
-    int unknown = 0;
+    var win = 0;
+    var tie = 0;
+    var loss = 0;
+    var unknown = 0;
     myGames = this.games.values().filter(
       game => game.opponentuid == opponent.uid
     );
