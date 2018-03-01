@@ -38,6 +38,18 @@ export const TeamDataReducer = (state = { loaded: false, loadedOpponents: false,
         }
       });
     }
+    for (key in state.list) {
+      if (action.payload.hasOwnProperty(key)) {
+        if (state.list.hasOwnProperty(key)) {
+          if (!action.payload[key].opponents) {
+            action.payload[key].opponents = state.list[key].opponents;
+          }
+        }
+        if (!action.payload.opponents) {
+          action.payload.opponents = {};
+        }
+      }
+    }
     return {
       ...state,
       list: action.payload,
@@ -95,11 +107,10 @@ export const TeamDataReducer = (state = { loaded: false, loadedOpponents: false,
     };
     team = action.team;
     opponentList = action.payload;
-    if (newState.list.hasOwnProperty(team.uid)) {
-      newState.list[team.uid].opponents = action.payload;
-    }
+    console.log('opp', team, opponentList);
+    newState.list[team.uid].opponents = opponentList;
     return {
-      ...state,
+      ...newState,
       fetchStatus: `Results oppnents from ${(new Date()).toLocaleString()}`,
       loadingOpponents: false,
       loadedOpponents: Date.now()

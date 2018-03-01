@@ -7,9 +7,9 @@ import { connect } from 'react-redux'
 import NavigationSelector from "./NavigationSelector";
 
 
-export default () =>
+export default (props) =>
     <StyleProvider style={getTheme(material)}>
       <Root>
-        <NavigationSelector />
+        <NavigationSelector persistor={props.persistor}/>
       </Root>
     </StyleProvider>;

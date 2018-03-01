@@ -14,15 +14,12 @@ import {
   FETCH_PLAYER_DATA_DELETE,
   FETCH_PLAYER_DATA_SUCCESS,
 } from '../../actions/Players.js';
-import momenttz from 'moment-timezone';
-import moment from 'moment';
 
 
 function playerOnSnapshot(querySnapshot, dispatch) {
   querySnapshot.docChanges.forEach((change) => {
     var team = change.doc.data();
     team.uid = change.doc.id;
-    team.displayTime = moment(team.time).tz(team.timezone);
     if (change.type === "added") {
       dispatch(fetchTeamDataAdd(team));
     }
@@ -65,7 +62,6 @@ const fetchTeamsLogic = createLogic({
                 team.myPlayerId = allTeams[team.uid].myPlayerId;
                 team.myPlayerId.push(player.uid);
               }
-              team.displayTime = moment(team.time).tz(team.timezone);
               allTeams[team.uid] = team;
             });
           });

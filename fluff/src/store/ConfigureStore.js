@@ -4,11 +4,13 @@ import thunk from 'redux-thunk';
 import makeRootReducer from '../reducers/AppReducer';
 import RNFirebase from 'react-native-firebase';
 import { getFirebase, reactReduxFirebase } from 'react-redux-firebase';
-import { persistStore, persistCombineReducers, persistReducer } from 'redux-persist';
+import { persistStore, persistCombineReducers, persistReducer, createTransform } from 'redux-persist';
 import { AsyncStorage } from 'react-native';
 import { reduxFirestore } from 'redux-firestore';
 import { createLogicMiddleware } from 'redux-logic';
 import arrLogic from '../logic/logic';
+import momenttz from 'moment-timezone';
+import moment from 'moment';
 
 
 const reactNativeFirebaseConfig = {
@@ -25,17 +27,16 @@ const reduxFirebaseConfig = {
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  blacklist: [ 'form', 'firebase' ]
+  blacklist: [ 'form', 'firebase', 'firestore' ],
+  transforms: [ ],
+  debug: true
 };
-
 
 export default (initialState = { firebase: {}, firestore: {} }) => {
  // initialize firebase
  const firebase = RNFirebase.initializeApp(reactNativeFirebaseConfig);
  firebase.firestore();
  const rootReducer = makeRootReducer();
- console.log(rootReducer);
-
 
  const persistedReducer = persistReducer(persistConfig, rootReducer);
 
@@ -45,7 +46,6 @@ export default (initialState = { firebase: {}, firestore: {} }) => {
    firebase: firebase
  };
 
- console.log('Logic', arrLogic, deps);
  const logicMiddleware = createLogicMiddleware(arrLogic, deps);
 
  const middleware = [
@@ -63,7 +63,6 @@ export default (initialState = { firebase: {}, firestore: {} }) => {
      applyMiddleware(...middleware)
    )
  );
- const persistor = persistStore(store);
- console.log('Created store and persistor ', persistor, store);
+ const persistor = persistStore(store, null, () => console.log('callback'));
  return { persistor, store };
 };

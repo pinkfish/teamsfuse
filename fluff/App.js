@@ -18,7 +18,7 @@ export default class App extends React.Component {
     return <Provider store={store}>
              <PersistGate loading={<Loading />} persistor={persistor}>
                <MenuProvider>
-                 <AppBase />
+                 <AppBase persistor={persistor} />
                </MenuProvider>
             </PersistGate>
           </Provider>;

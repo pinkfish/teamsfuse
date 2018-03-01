@@ -10,7 +10,8 @@ import { fetchPlayerData } from "../../actions/Players";
 class NavigationSelector extends Component {
 
   componentWillMount = () => {
-    const { dispatch } = this.props;
+    const { dispatch, persistor } = this.props;
+    console.log('persist', persistor, persistor.getState());
     if (this.props.auth && this.props.auth.uid && this.props.auth.emailVerified) {
       // Request the players.
       dispatch(fetchPlayerData());

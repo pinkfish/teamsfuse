@@ -13,19 +13,11 @@ import {
 } from '../../actions/Teams';
 
 function teamOnSnapshot(team, querySnapshot, dispatch) {
-  allOpponents = [];
+  allOpponents = {};
   querySnapshot.forEach((doc) => {
     var opponent = doc.data();
     opponent.uid = doc.id;
-    var ignore = false;
-    allOpponents.forEach((value) => {
-      if (value.uid == opponent.uid) {
-        ignore = true;
-      }
-    });
-    if (!ignore) {
-      allOpponents.push(opponent);
-    }
+    allOpponents[doc.id] = opponent;
   });
   dispatch(fetchOpponentDataSuccess(team, allOpponents));
 }
@@ -47,22 +39,15 @@ const fetchOpponentsLogic = createLogic({
         team.snapshotListenOpponent = teamQuery.onSnapshot(function(querySnapshot) {
           teamOnSnapshot(team, querySnapshot, dispatch);
         });
-        allOpponents = [];
+        allOpponents = {};
         teamPromise = teamQuery.get()
                 .then(function(querySnapshot) {
                   // Got all the teams.  Yay!
                   querySnapshot.forEach(opponentDoc => {
                     var opponent = opponentDoc.data();
                     opponent.uid = opponentDoc.id;
+                    allOpponents[opponent.uid] = opponent;
                     var ignore = false;
-                    allOpponents.forEach((value) => {
-                      if (value.uid == opponent.uid) {
-                        ignore = true;
-                      }
-                    });
-                    if (!ignore) {
-                      allOpponents.push(opponentDoc.data());
-                    }
                 })
                 dispatch(fetchOpponentDataSuccess(team, allOpponents));
               });
