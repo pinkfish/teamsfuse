@@ -119,6 +119,17 @@ class SignupScreenState extends State<SignupScreen> {
                               ),
                               new TextFormField(
                                   decoration: const InputDecoration(
+                                    icon: const Icon(Icons.phone),
+                                    hintText: 'Phone Number (optional)',
+                                    labelText: 'Phone number',
+                                  ),
+                                  keyboardType: TextInputType.phone,
+                                  obscureText: false,
+                                  validator: validations.validatePhone,
+                                  onSaved: (String value) { person.phoneNumber = value; }
+                              ),
+                              new TextFormField(
+                                  decoration: const InputDecoration(
                                     icon: const Icon(Icons.lock),
                                     hintText: 'Password',
                                     labelText: 'Password',

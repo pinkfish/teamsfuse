@@ -18,4 +18,9 @@ class Validations{
     if (value.isEmpty) return 'Please choose a password.';
     return null;
   }
+
+  String validatePhone(String value) {
+    return null;
+  }
+
 }

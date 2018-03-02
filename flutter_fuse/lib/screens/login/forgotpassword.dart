@@ -40,7 +40,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      UserAuth.sendPasswordResetEmail(email)
+      UserAuth.instance.sendPasswordResetEmail(email)
           .then((Null) {
             Navigator.pushNamed(context, "/");
           }).catchError((error) {

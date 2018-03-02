@@ -38,9 +38,10 @@ class LoginScreenState extends State<LoginScreen> {
       form.save();
       // Login!
       print(person);
-      UserAuth.signIn(person)
+      UserAuth.instance.signIn(person)
           .then((FirebaseUser) {
-            Navigator.pushNamed(context, "/HomePage");
+            print('Home page');
+            //avigator.pushNamed(context, "/HomePage");
           })
           .catchError((error) {
             print(error.toString());
@@ -125,7 +126,7 @@ class LoginScreenState extends State<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             new FlatButton(
-                              child: const Text("Create Account 1"),
+                              child: const Text("Create Account"),
                               textColor: Theme.of(context).accentColor,
                               onPressed: () => onPressed("/SignUp"),
                             ),
