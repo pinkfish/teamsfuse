@@ -1,25 +1,35 @@
+import 'package:flutter/material.dart';
+import 'messages.dart';
+
 class Validations{
-  String validateName(String value) {
-    if (value.isEmpty) return 'Name is required.';
+  String validateName(BuildContext context, String value) {
+    if (value.isEmpty) return Messages.of(context).namerequired;
     final RegExp nameExp = new RegExp(r'^[A-za-z ]+$');
     if (!nameExp.hasMatch(value))
-      return 'Please enter only alphabetical characters.';
+      return Messages.of(context).invalidname;
     return null;
   }
 
-  String validateEmail(String value) {
-    if (value.isEmpty) return 'Email is required.';
+  String validateEmail(BuildContext context, String value) {
+    if (value.isEmpty) return Messages.of(context).emailrequired;
     final RegExp nameExp = new RegExp(r'^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$');
-    if (!nameExp.hasMatch(value)) return 'Invalid email address';
+    if (!nameExp.hasMatch(value)) return Messages.of(context).invalidemail;
     return null;
   }
 
-  String validatePassword(String value) {
-    if (value.isEmpty) return 'Please choose a password.';
+  String validatePassword(BuildContext context, String value) {
+    if (value.isEmpty) return Messages.of(context).emptypassword;
     return null;
   }
 
-  String validatePhone(String value) {
+  String validateOpponent(BuildContext context, String value) {
+    if (value == 'none' || value == 'add') {
+      return Messages.of(context).needtoselectopponent;
+    }
+    return null;
+  }
+
+  String validatePhone(BuildContext context, String value) {
     return null;
   }
 

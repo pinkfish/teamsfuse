@@ -3,6 +3,10 @@ import 'package:flutter_fuse/screens/login/loginform.dart';
 import 'package:flutter_fuse/screens/login/forgotpassword.dart';
 import 'package:flutter_fuse/screens/login/signup.dart';
 import 'package:flutter_fuse/screens/home/home.dart';
+import 'package:flutter_fuse/screens/settings/about.dart';
+import 'package:flutter_fuse/screens/settings/settings.dart';
+import 'package:flutter_fuse/screens/team/team.dart';
+import 'package:flutter_fuse/screens/game/editgame.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:timezone/timezone.dart';
@@ -22,7 +26,9 @@ class Routes {
     "/SignUp": (BuildContext context) => new SignupScreen(),
   };
   final loggedInRoutes = <String, WidgetBuilder>{
-    "/": (BuildContext context) => new HomeScreen()
+    "/": (BuildContext context) => new HomeScreen(),
+    "/Settings": (BuildContext context) => new SettingsScreen(),
+    "/About" : (BuildContext context) => new AboutScreen()
   };
 
   final theme = new ThemeData(
@@ -40,6 +46,7 @@ class Routes {
   MaterialApp app;
 
   Route<Null> _buildRoute(RouteSettings routeSettings) {
+    print(routeSettings.name);
     if (_currentUser != null) {
       if (_currentUser.isEmailVerified) {
         if (loggedInRoutes.containsKey(routeSettings.name)) {
@@ -48,6 +55,24 @@ class Routes {
               builder: loggedInRoutes[routeSettings.name]
           );
         }
+
+        // Check for stuff.
+        var path = routeSettings.name.split('/');
+        if (path[0] == "Team") {
+          final uid = path.length > 1 ? path[1] : null;
+          return new MaterialPageRoute(
+            builder: (context) => new TeamScreen(uid),
+            settings: routeSettings,
+          );
+        }
+        if (path[0] == "EditGame") {
+          final uid = path.length > 1 ? path[1] : null;
+          return new MaterialPageRoute(
+            builder: (context) => new EditGame(uid),
+            settings: routeSettings,
+          );
+        }
+
         return new MaterialPageRoute<Null>(
             settings: routeSettings,
             builder: loggedInRoutes["/"]

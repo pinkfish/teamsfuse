@@ -1,11 +1,8 @@
 library services.databasedetails;
 
 import 'dart:async';
-import 'package:timezone/standalone.dart';
+import 'package:timezone/timezone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dson/dson.dart';
-
-part 'databasedetails.g.dart';
 
 class User {
   String name;
@@ -14,191 +11,420 @@ class User {
   String relationship;
 }
 
-@serializable
 enum RoleInTeam { Player, Coach, NonPlayer }
-@serializable
 enum Sport { Basketball, Softball, Soccer }
-@serializable
 enum Gender { Female, Male, Coed, NA }
-@serializable
 enum EventType { Game, Practice, Event }
-@serializable
 enum GameResult { Win, Loss, Tie, Unknown }
-@serializable
 enum UpdateReason { Delete, Update }
+enum Attendance { Yes, No, Maybe }
 
+// shared keys.
+const String _NAME = 'name';
+const String _ARRIVEEARLY = 'arriveEarly';
+const String _NOTES = 'notes';
+const String _ADDED = 'added';
 
-@serializable
-class Player extends _$PlayerSerializable {
+class Player {
   String name;
   String uid;
 
-  @ignore
-  Stream<QuerySnapshot> _snapshot;
+  // ignore
+  StreamSubscription<QuerySnapshot> get snapshot {
+    return UserDatabaseData.snapshotMapping[this];
+  }
 
-  void updateFrom(Map<String, dynamic> data) {
-    name = data['name'];
+  void fromJSON(Map<String, dynamic> data) {
+    name = data[_NAME];
 
     // Teams.
     CollectionReference ref = Firestore.instance.collection("Seasons")
-        .where('players.' + uid + '.added', isEqualTo: true)
+        .where('players.' + uid + '.' + _ADDED, isEqualTo: true)
         .reference();
-    _snapshot = ref.snapshots;
-    _snapshot.listen(UserDatabaseData.instance._onSeasonUpdated);
+    UserDatabaseData.snapshotMapping[this] =
+        ref.snapshots.listen(UserDatabaseData.instance._onSeasonUpdated);
+  }
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = new Map<String, dynamic>();
+    ret[_NAME] = name;
+    return ret;
+  }
+
+  void close() {
+    if (UserDatabaseData.snapshotMapping.containsKey(this)) {
+      UserDatabaseData.snapshotMapping[this].cancel();
+      UserDatabaseData.snapshotMapping.remove(this);
+    }
+  }
+
+  void updateFirestore() async  {
+    // Add or update this record into the database.
+    CollectionReference ref = Firestore.instance.collection("Players");
+    if (uid == '' || uid == null) {
+      // Add the game.
+      DocumentReference doc = await ref.add(toJSON());
+      this.uid = doc.documentID;
+    } else {
+      // Update the game.
+      await ref.document(uid).updateData(toJSON());
+    }
   }
 }
 
-@serializable
-class GameResultDetails extends _$GameResultDetailsSerializable {
-  int ptsFor;
-  int ptsAgainst;
+class GameResultDetails {
+  num ptsFor;
+  num ptsAgainst;
   GameResult result;
 
-  void updateFrom(Map<String, dynamic> data) {
-    ptsFor = data['ptsFor'];
-    ptsAgainst = data['ptsAgainst'];
-    result = GameResult.values.firstWhere((e) => e.toString() == data['result']);
+  GameResultDetails() {
+    ptsAgainst = 0;
+    ptsFor = 0;
+    result = GameResult.Unknown;
+  }
+
+  static const String _PTS_FOR = 'ptsFor';
+  static const String _PTS_AGAINST = 'ptsAgainst';
+  static const String _RESULT = 'result';
+
+
+  void fromJSON(Map<String, dynamic> data) {
+    ptsFor = data[_PTS_FOR];
+    ptsAgainst = data[_PTS_AGAINST];
+    result =
+        GameResult.values.firstWhere((e) => e.toString() == data[_RESULT]);
+  }
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = new Map<String, dynamic>();
+    ret[_PTS_FOR] = ptsFor;
+    ret[_PTS_AGAINST] = ptsAgainst;
+    ret[_RESULT] = result.toString();
+    return ret;
   }
 }
 
-@serializable
-class GamePlace extends _$GamePlaceSerializable {
+class GamePlace {
   String name;
   String placeId;
   String address;
   String notes;
 
+  GamePlace() {}
 
-  void updateFrom(Map<String, dynamic> data) {
-    name = data['name'];
-    placeId = data['placeId'];
-    address = data['address'];
-    notes = data['notes'];
+
+  static const String _PLACEID = 'placeId';
+  static const String _ADDRESS = 'address';
+
+  void fromJSON(Map<String, dynamic> data) {
+    name = data[_NAME];
+    placeId = data[_PLACEID];
+    address = data[_ADDRESS];
+    notes = data[_NOTES];
+  }
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = new Map<String, dynamic>();
+    ret[_NAME] = name;
+    ret[_PLACEID] = placeId;
+    ret[_ADDRESS] = address;
+    ret[_NOTES] = notes;
+    return ret;
   }
 }
 
-@serializable
-class Game extends _$GameSerializable {
+class Game {
   String uid;
-  String name;
-  TZDateTime time;
-  Location timezone;
-  int arriveEarly;
-  int gameLength;
+  num time;
+  String timezone;
+  num arriveEarly;
+  num gameLength;
   String notes;
   String opponentUid;
+  String seasonUid;
   String teamUid;
   String uniform;
   EventType type;
+  bool homegame;
   GameResultDetails result;
   GamePlace place;
+  Map<String, Attendance> attendance;
 
-  void updateFrom(String teamuid, Map<String, dynamic> data) {
+  Game() {}
+
+  Game.newGame(this.type) {
+    arriveEarly = 0;
+    gameLength = 0;
+    result = new GameResultDetails();
+    place = new GamePlace();
+    attendance = new Map<String, Attendance>();
+  }
+
+  TZDateTime get tzTime {
+    Location timezone = getLocation(this.timezone);
+    return new TZDateTime.fromMillisecondsSinceEpoch(timezone, time);
+  }
+
+  static const String _TIMEZONE = 'timezone';
+  static const String _TIME = 'time';
+  static const String _GAMELENGTH = 'gameLength';
+  static const String _OPPONENTUID = 'opponentUid';
+  static const String _SEASONUID = 'seasonUid';
+  static const String _UNIFORM = 'uniform';
+  static const String _HOMEGAME = 'homegame';
+  static const String _TYPE = 'type';
+  static const String _RESULT = 'result';
+  static const String _PLACE = 'place';
+  static const String _ATTENDANCE = 'attendance';
+  static const String _ATTENDANCEVALUE = 'value';
+
+  void fromJSON(String teamuid, Map<String, dynamic> data) {
     teamUid = teamuid;
-    name = data['name'];
-    timezone = getLocation(data['timezone']);
-    time = new TZDateTime.fromMillisecondsSinceEpoch(timezone, data['time']);
-    arriveEarly = data['arriveEarly'];
-    gameLength = data['gameLength'];
-    notes = data['notes'];
-    opponentUid = data['opponentUid'];
-    uniform = data['uniform'];
-    type = EventType.values.firstWhere((e) => e.toString() == data['type']);
+    timezone = data[_TIMEZONE];
+    time = data[_TIME];
+    arriveEarly = data[_ARRIVEEARLY];
+    if (arriveEarly == null) {
+      arriveEarly = 0;
+    }
+    gameLength = data[_GAMELENGTH];
+    if (gameLength == null) {
+      gameLength = 0;
+    }
+    notes = data[_NOTES];
+    opponentUid = data[_OPPONENTUID];
+    seasonUid = data[_SEASONUID];
+    uniform = data[_UNIFORM];
+    homegame = data[_HOMEGAME];
+    type = EventType.values.firstWhere((e) => e.toString() == data[_TYPE]);
     GameResultDetails details = new GameResultDetails();
-    details.updateFrom(data['result']);
+    details.fromJSON(data[_RESULT]);
     result = details;
     GamePlace place = new GamePlace();
-    place.updateFrom(data['place']);
-    place = place;
-    print('Update Game ' + uid);
+    place.fromJSON(data[_PLACE]);
+    this.place = place;
+
+    print('Update Game ' + uid + ' ${data}');
+    // Work out attendance.
+    Map<String, Attendance> newAttendanceData = new Map<String, Attendance>();
+    Map<String, dynamic> attendanceData = data[_ATTENDANCE];
+    if (attendanceData != null) {
+      attendanceData.forEach((String key, dynamic data) {
+        newAttendanceData[key] = Attendance.values.firstWhere((e) =>
+        e.toString() ==
+            data[_ATTENDANCEVALUE]);
+      });
+    }
+    attendance = newAttendanceData;
+
+    print(toJSON());
+  }
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = new Map<String, dynamic>();
+    ret[_TYPE] = type.toString();
+    ret[_TIMEZONE] = timezone;
+    ret[_TIME] = time;
+    ret[_ARRIVEEARLY] = arriveEarly;
+    ret[_GAMELENGTH] = gameLength;
+    ret[_NOTES] = notes;
+    ret[_OPPONENTUID] = opponentUid;
+    ret[_SEASONUID] = seasonUid;
+    ret[_UNIFORM] = uniform;
+    ret[_HOMEGAME] = homegame;
+    ret[_TYPE] = type.toString();
+    ret[_RESULT] = result.toJSON();
+    ret[_PLACE] = result.toJSON();
+    Map<String, dynamic> attendanceData = new Map<String, dynamic>();
+    attendance.forEach((String key, Attendance value) {
+      Map<String, dynamic>attendanceInner = new Map<String, dynamic>();
+      attendanceInner[_ATTENDANCEVALUE] = value.toString();
+      attendanceData[key] = attendanceInner;
+    });
+    ret[_ATTENDANCE] = attendanceData;
+
+    return ret;
+  }
+
+
+  void close() {
+
+  }
+
+  void updateFirestore() async  {
+    // Add or update this record into the database.
+    CollectionReference ref = Firestore.instance.collection("Teams").document(
+        teamUid).getCollection("Games");
+    if (uid == '' || uid == null) {
+      // Add the game.
+      DocumentReference doc = await ref.add(toJSON());
+      this.uid = doc.documentID;
+    } else {
+      // Update the game.
+      await ref.document(uid).updateData(toJSON());
+    }
   }
 }
 
-@serializable
-class WinRecord extends _$WinRecordSerializable {
-  int win;
-  int loss;
-  int tie;
+class WinRecord {
+  num win;
+  num loss;
+  num tie;
 
-  void updateFrom(Map<String, dynamic> data) {
-    win = data['win'];
-    loss = data['loss'];
-    tie = data['tie'];
+  static const String _WIN = 'win';
+  static const String _LOSS = 'loss';
+  static const String _TIE = 'tie';
+
+  void fromJSON(Map<String, dynamic> data) {
+    win = data[_WIN];
+    loss = data[_LOSS];
+    tie = data[_TIE];
   }
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = new Map<String, dynamic>();
+    ret[_TIE] = tie;
+    ret[_LOSS] = loss;
+    ret[_WIN] = win;
+    return ret;
+  }
+
 }
 
-@serializable
-class Opponent extends _$OpponentSerializable {
+class Opponent {
   String name;
+  String teamUid;
   String contact;
   String uid;
   WinRecord record;
 
-  void updateFrom(Map<String, dynamic> data) {
-    name = data['name'];
-    contact = data['contact'];
-    print('Update Opponent ' + uid);
+  static const String _CONTACT = 'contact';
 
+  void fromJSON(Map<String, dynamic> data) {
+    name = data[_NAME];
+    contact = data[_CONTACT];
+    print('Update Opponent ' + uid);
+  }
+
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = new Map<String, dynamic>();
+    ret[_NAME] = name;
+    ret[_CONTACT] = contact;
+    return ret;
+  }
+
+  void updateFirestore() async  {
+    // Add or update this record into the database.
+    CollectionReference ref = Firestore.instance.collection("Teams").document(
+        teamUid).getCollection("Opponents");
+    if (uid == '' || uid == null) {
+      // Add the game.
+      DocumentReference doc = await ref.add(toJSON());
+      this.uid = doc.documentID;
+    } else {
+      // Update the game.
+      await ref.document(uid).updateData(toJSON());
+    }
   }
 }
 
-@serializable
-class SeasonPlayer extends _$SeasonPlayerSerializable {
+class SeasonPlayer {
   String playerUid;
+  String displayName;
   RoleInTeam role;
 
-  void updateFrom(Map<String, dynamic> data) {
-    role = RoleInTeam.values.firstWhere((e) => e.toString() == data['role']);
+  static const String _ROLE = 'role';
+
+  void fromJSON(Map<String, dynamic> data) {
+    role = RoleInTeam.values.firstWhere((e) => e.toString() == data[_ROLE]);
+  }
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = new Map<String, dynamic>();
+    ret[_ROLE] = role.toString();
+    ret[_ADDED] = true;
+    return ret;
   }
 }
 
-@serializable
-class Season extends _$SeasonSerializable {
+class Season {
   String name;
   String uid;
+  String teamUid;
   WinRecord record;
   List<SeasonPlayer> players;
 
-  void updateFrom(Map<String, dynamic> data) {
-    name = data['name'];
+  Iterable<Game> getGames() {
+    // Get all the games for this season.
+    return UserDatabaseData.instance.games.values.where((game) {
+      return game.teamUid == this.teamUid && game.seasonUid == uid;
+    });
+  }
+
+  static const String _RECORD = 'record';
+  static const String _PLAYERS = 'players';
+
+
+  void fromJSON(String teamUid, Map<String, dynamic> data) {
+    name = data[_NAME];
     record = new WinRecord();
-    record.updateFrom(data['record']);
+    record.fromJSON(data[_RECORD]);
     this.record = record;
-    Map<String, dynamic> playersData = data['players'];
+    this.teamUid = teamUid;
+    Map<String, dynamic> playersData = data[_PLAYERS];
     List<SeasonPlayer> newPlayers = new List<SeasonPlayer>();
     playersData.forEach((key, val) {
       SeasonPlayer player = new SeasonPlayer();
       player.playerUid = key;
-      player.updateFrom(val);
+      player.fromJSON(val);
       newPlayers.add(player);
     });
     players = newPlayers;
     print('Update Season ' + uid);
   }
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = new Map<String, dynamic>();
+    ret[_NAME] = name;
+    ret[_RECORD] = record.toJSON();
+    players.forEach((value) {
+      ret[value.playerUid] = value.toJSON();
+    });
+    return ret;
+  }
+
+  void updateFirestore() async  {
+    // Add or update this record into the database.
+    CollectionReference ref = Firestore.instance.collection("Seasons");
+    if (uid == '' || uid == null) {
+      // Add the game.
+      DocumentReference doc = await ref.add(toJSON());
+      this.uid = doc.documentID;
+    } else {
+      // Update the game.
+      await ref.document(uid).updateData(toJSON());
+    }
+  }
 }
 
-@serializable
-class Team extends _$TeamSerializable {
+class Team {
   String name;
-  int earlyArrival;
+  num arriveEarly;
   String currentSeason;
   Gender gender;
   String league;
   Sport sport;
   String uid;
-  WinRecord record;
 
   List<String> admins = new List<String>();
   Map<String, Opponent> opponents = new Map<String, Opponent>();
   Map<String, Season> seasons = new Map<String, Season>();
-  @ignore
+
   Stream<UpdateReason> opponentStream;
-  @ignore
   Stream<UpdateReason> thisTeamStream;
 
-
-  StreamController<UpdateReason> _opponentController = new StreamController<UpdateReason>();
-  StreamController<UpdateReason> _updateThisTeam = new StreamController<UpdateReason>();
+  StreamController<UpdateReason> _updateThisTeam = new StreamController<
+      UpdateReason>();
 
   // Firebase subscriptions
   StreamSubscription<DocumentSnapshot> _teamSnapshot;
@@ -208,9 +434,8 @@ class Team extends _$TeamSerializable {
 
   Team() {
     thisTeamStream = _updateThisTeam.stream.asBroadcastStream();
-    opponentStream = _opponentController.stream.asBroadcastStream();
+    gender = Gender.NA;
   }
-
 
 
   void _onOpponentUpdated(QuerySnapshot query) {
@@ -222,31 +447,55 @@ class Team extends _$TeamSerializable {
         opponent = new Opponent();
         opponent.uid = doc.documentID;
       }
-      opponent.updateFrom(doc.data);
+      opponent.teamUid = this.uid;
+      opponent.fromJSON(doc.data);
       opponents[doc.documentID] = opponent;
     });
     _updateThisTeam.add(UpdateReason.Update);
   }
 
-   void _onTeamUpdated(DocumentSnapshot snap) {
-    name = snap.data['name'];
-    earlyArrival = snap.data['earlyArrival'];
-    currentSeason = snap.data['currentSeason'];
-    league = snap.data['league'];
-    gender = Gender.values.firstWhere((e) => e.toString() == snap.data['gender']);
-    sport = Sport.values.firstWhere((e) => e.toString() == snap.data['sport']);
+  static const String _CURRENTSEASON = 'currentSeason';
+  static const String _LEAGUE = 'league';
+  static const String _GENDER = 'gender';
+  static const String _SPORT = 'sport';
 
+  void fromJSON(Map<String, dynamic> data) {
+    name = data[_NAME];
+    arriveEarly = data[_ARRIVEEARLY];
+    if (arriveEarly == null) {
+      arriveEarly = 0;
+    }
+    currentSeason = data[_CURRENTSEASON];
+    league = data[_LEAGUE];
+    gender =
+        Gender.values.firstWhere((e) => e.toString() == data[_GENDER]);
+    sport = Sport.values.firstWhere((e) => e.toString() == data[_SPORT]);
+  }
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = new Map<String, dynamic>();
+    ret[_NAME] = name;
+    ret[_ARRIVEEARLY] = arriveEarly;
+    ret[_CURRENTSEASON] = currentSeason;
+    ret[_LEAGUE] = league;
+    ret[_GENDER] = gender.toString();
+    ret[_SPORT] = sport.toString();
+    return ret;
+  }
+
+  void _onTeamUpdated(DocumentSnapshot snap) {
+    fromJSON(snap.data);
     print('team ' + uid);
     _updateThisTeam.add(UpdateReason.Update);
   }
 
   void updateSeason(DocumentSnapshot doc) {
     if (seasons.containsKey(doc.documentID)) {
-      seasons[doc.documentID].updateFrom(doc.data);
+      seasons[doc.documentID].fromJSON(uid, doc.data);
     } else {
       Season season = new Season();
       season.uid = doc.documentID;
-      season.updateFrom(doc.data);
+      season.fromJSON(uid, doc.data);
       seasons[doc.documentID] = season;
     }
     _updateThisTeam.add(UpdateReason.Update);
@@ -254,7 +503,8 @@ class Team extends _$TeamSerializable {
 
   void setupSnap() {
     if (_teamSnapshot == null) {
-      _teamSnapshot = Firestore.instance.collection("Teams")
+      _teamSnapshot = Firestore.instance
+          .collection("Teams")
           .document(uid)
           .snapshots
           .listen(this._onTeamUpdated);
@@ -264,7 +514,7 @@ class Team extends _$TeamSerializable {
       CollectionReference opCollection = Firestore.instance
           .collection("Teams")
           .document(uid)
-          .getCollection("Oppponents");
+          .getCollection("Opponents");
       _opponentSnapshot = opCollection.snapshots
           .listen(this._onOpponentUpdated);
     }
@@ -280,6 +530,26 @@ class Team extends _$TeamSerializable {
       });
     }
   }
+
+  void close() {
+    _gameSnapshot.cancel();
+    _opponentSnapshot.cancel();
+    _teamSnapshot.cancel();
+    _updateThisTeam.close();
+  }
+
+  void updateFirestore() async  {
+    // Add or update this record into the database.
+    CollectionReference ref = Firestore.instance.collection("Teams");
+    if (uid == '' || uid == null) {
+      // Add the game.
+      DocumentReference doc = await ref.add(toJSON());
+      this.uid = doc.documentID;
+    } else {
+      // Update the game.
+      await ref.document(uid).updateData(toJSON());
+    }
+  }
 }
 
 class UserDatabaseData {
@@ -290,15 +560,25 @@ class UserDatabaseData {
   Stream<UpdateReason> teamStream;
   Stream<UpdateReason> gameStream;
   Stream<UpdateReason> playerStream;
+
   Map<String, Player> get players => _players;
+
   Map<String, Team> get teams => _teams;
+
   Map<String, Game> get games => _games;
 
-  StreamController<UpdateReason> _teamController = new StreamController<UpdateReason>();
-  StreamController<UpdateReason> _playerController = new StreamController<UpdateReason>();
-  StreamController<UpdateReason> _gameController = new StreamController<UpdateReason>();
+  StreamController<UpdateReason> _teamController = new StreamController<
+      UpdateReason>();
+  StreamController<UpdateReason> _playerController = new StreamController<
+      UpdateReason>();
+  StreamController<UpdateReason> _gameController = new StreamController<
+      UpdateReason>();
+
   // From firebase.
   StreamSubscription<QuerySnapshot> _playerSnapshot;
+
+  static UserDatabaseData _instance;
+  static Map<Object, dynamic> snapshotMapping = new Map<Object, dynamic>();
 
   UserDatabaseData() {
     teamStream = _teamController.stream.asBroadcastStream();
@@ -309,13 +589,13 @@ class UserDatabaseData {
   void _onPlayerUpdated(QuerySnapshot query) {
     query.documents.forEach((doc) {
       if (_players.containsKey(doc.documentID)) {
-        _players[doc.documentID].updateFrom(doc.data);
+        _players[doc.documentID].fromJSON(doc.data);
         return;
       }
       Player player = new Player();
       player.uid = doc.documentID;
       // Add in snapshots to find the teams associated with the player.
-      player.updateFrom(doc.data);
+      player.fromJSON(doc.data);
       _players[player.uid] = player;
       print('player ' + player.uid);
       _playerController.add(UpdateReason.Update);
@@ -341,7 +621,7 @@ class UserDatabaseData {
     });
   }
 
-  void  _onGameUpdated(String teamuid, QuerySnapshot query) {
+  void _onGameUpdated(String teamuid, QuerySnapshot query) {
     query.documents.forEach((doc) {
       Game game;
       if (_games.containsKey(doc.documentID)) {
@@ -350,13 +630,19 @@ class UserDatabaseData {
         game = new Game();
         game.uid = doc.documentID;
       }
-      game.updateFrom(teamuid, doc.data);
+      game.fromJSON(teamuid, doc.data);
       _games[doc.documentID] = game;
       _gameController.add(UpdateReason.Update);
     });
   }
 
-  static UserDatabaseData instance;
+
+  static UserDatabaseData get instance {
+    if (_instance == null) {
+      _instance = new UserDatabaseData();
+    }
+    return _instance;
+  }
 
   void _setUid(String uid) {
     if (this._uid != uid) {
@@ -365,31 +651,38 @@ class UserDatabaseData {
     this._uid = uid;
     // The uid everything is based off.
     Query collection =
-        Firestore.instance.collection("Players")
-            .where("user." + uid + ".added", isEqualTo: true);
+    Firestore.instance.collection("Players")
+        .where("user." + uid + ".added", isEqualTo: true);
     _playerSnapshot = collection.snapshots.listen(this._onPlayerUpdated);
   }
 
   void close() {
+    if (_playerSnapshot != null) {
+      _playerSnapshot.cancel();
+    }
+    _teams.forEach((String key, Team value) {
+      value.close();
+    });
     _teams.clear();
+    _games.forEach((String key, Game value) {
+      value.close();
+    });
     _games.clear();
+    _players.forEach((String key, Player value) {
+      value.close();
+    });
     _players.clear();
   }
 
   static void load(String uid) {
     print('loading data');
-    instance = new UserDatabaseData();
-    instance._setUid(uid);
+    _instance._setUid(uid);
   }
 
   static void clear() {
-    if (instance != null) {
-      instance.close();
+    if (_instance != null) {
+      _instance.close();
     }
-    instance = null;
   }
 }
 
-void main() {
-  _initMirrors();
-}

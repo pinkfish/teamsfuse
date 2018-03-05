@@ -10,8 +10,9 @@ class FusedDrawerContent extends StatelessWidget {
     List<Widget> data = new List<Widget>();
     UserDatabaseData.instance.teams.forEach((uid, team) {
       data.add(new ListTile(
-          leading: const Icon(Icons.group),
-          title: new Text(team.name),
+        leading: const Icon(Icons.group),
+        title: new Text(team.name),
+        onTap: () { Navigator.pushNamed(context, "Team/" + team.uid); }
       ));
     });
     data.add(new ListTile(
@@ -41,12 +42,12 @@ class FusedDrawerContent extends StatelessWidget {
       new ListTile(
         leading: const Icon(Icons.settings),
         title: const Text('Settings'),
-        onTap: () {},
+        onTap: () { Navigator.popAndPushNamed(context, "/Settings"); },
       ),
       new ListTile(
         leading: const Icon(Icons.help),
         title: const Text('About'),
-        onTap: () {},
+        onTap: () {  Navigator.popAndPushNamed(context, "/About"); },
       ),
     ];
     return new ListView(children: children);

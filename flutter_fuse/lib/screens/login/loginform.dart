@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
+import 'dart:async';
 
 
 class LoginScreen extends StatefulWidget {
@@ -50,11 +51,28 @@ class LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  static StreamSubscription<UserData> listenStream;
+
   @override
   Widget build(BuildContext context) {
     this.context = context;
     final Size screenSize = MediaQuery.of(context).size;
-    //print(context.widget.toString());
+
+    if (listenStream == null) {
+      listenStream = UserAuth.instance.onAuthChanged().listen((UserData data) {
+        print('on auth changed');
+        if (data != null) {
+          if (!data.isEmailVerified) {
+            Navigator.of(context).pushNamed("/");
+          } else {
+            Navigator.of(context).pushNamed("/Verify");
+          }
+          listenStream.cancel();
+        }
+      });
+    }
+
+
     Validations validations = new Validations();
     return new Scaffold(
         key: _scaffoldKey,

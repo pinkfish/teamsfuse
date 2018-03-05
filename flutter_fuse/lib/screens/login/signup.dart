@@ -103,7 +103,9 @@ class SignupScreenState extends State<SignupScreen> {
                                   ),
                                   keyboardType: TextInputType.text,
                                   obscureText: false,
-                                  validator: validations.validateName,
+                                  validator: (String str) {
+                                    return validations.validateName(context, str);
+                                  },
                                   onSaved: (String value) { person.displayName = value; }
                               ),
                               new TextFormField(
@@ -114,7 +116,9 @@ class SignupScreenState extends State<SignupScreen> {
                                   ),
                                   keyboardType: TextInputType.emailAddress,
                                   obscureText: false,
-                                  validator: validations.validateEmail,
+                                  validator: (String str) {
+                                    return validations.validateEmail(context, str);
+                                  },
                                   onSaved: (String value) { person.email = value; }
                               ),
                               new TextFormField(
@@ -125,8 +129,10 @@ class SignupScreenState extends State<SignupScreen> {
                                   ),
                                   keyboardType: TextInputType.phone,
                                   obscureText: false,
-                                  validator: validations.validatePhone,
-                                  onSaved: (String value) { person.phoneNumber = value; }
+                                  validator: (String str) {
+                                    return validations.validatePhone(context, str);
+                                  },
+                                  onSaved: (String value) { person.email = value; }
                               ),
                               new TextFormField(
                                   decoration: const InputDecoration(
@@ -135,6 +141,9 @@ class SignupScreenState extends State<SignupScreen> {
                                     labelText: 'Password',
                                   ),
                                   obscureText: true,
+                                  validator: (String str) {
+                                    return validations.validatePassword(context, str);
+                                  },
                                   key: _passwordFieldKey,
                                   onSaved: (String password) {
                                     person.password = password;

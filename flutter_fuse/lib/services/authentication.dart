@@ -19,15 +19,15 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 class UserAuth {
   static UserAuth instance = new UserAuth();
 
-  // To create new User
-  Future<FirebaseUser> createUser(UserData userData) {
+   // To create new User
+  FutureOr<FirebaseUser> createUser(UserData userData) {
     return _auth.createUserWithEmailAndPassword(
         email: userData.email,
         password: userData.password).then((FirebaseUser) {
           UserUpdateInfo update = new UserUpdateInfo();
           update.displayName = userData.displayName;
           update.photoUrl = userData.photoUrl;
-          return _auth.updateProfile(update);
+          _auth.updateProfile(update);
         });
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/authentication.dart';
+import 'package:flutter_fuse/services/messages.dart';
 
 class FusedDrawerHeader extends StatefulWidget {
   @override
@@ -27,8 +28,8 @@ class FusedDrawerHeaderState extends State<FusedDrawerHeader> {
             fit: BoxFit.cover
           ),
         ),
-        accountName: new Text(user.displayName),
-        accountEmail: new Text(user.email),
+        accountName: new Text(user != null ? user.displayName : Messages.of(context).unknown),
+        accountEmail: new Text(user != null ? user.email : Messages.of(context).unknown),
     );
   }
 }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
+import 'package:flutter_fuse/widgets/games/gameslist.dart';
 
 class HomeScreen extends StatelessWidget {
-  _onPressed() {
-    print("button clicked");
+  _onPressed(BuildContext context) {
+    Navigator.popAndPushNamed(context, "EditGame/add");
   }
 
   // This widget is the root of your application.
@@ -17,10 +18,10 @@ class HomeScreen extends StatelessWidget {
         ),
         drawer: new FusedDrawer(),
         body: new Center(
-            child: new Text('fluff')
+            child: new GameList()
         ),
         floatingActionButton: new FloatingActionButton(
-          onPressed: _onPressed,
+          onPressed: () { _onPressed(context); },
           tooltip: 'Increment',
           child: new Icon(Icons.add),
         ), // This trailing comma makes auto-formatting nicer for build methods.
