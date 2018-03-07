@@ -1,34 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:fluro/fluro.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:timezone/timezone.dart';
+
+import 'package:flutter_fuse/services/approuter.dart';
+
 import 'package:flutter_fuse/screens/login/loginform.dart';
 import 'package:flutter_fuse/screens/login/forgotpassword.dart';
 import 'package:flutter_fuse/screens/login/signup.dart';
-import 'package:flutter_fuse/screens/home/home.dart';
-import 'package:flutter_fuse/screens/settings/about.dart';
-import 'package:flutter_fuse/screens/settings/settings.dart';
-import 'package:flutter_fuse/screens/team/team.dart';
-import 'package:flutter_fuse/screens/game/editgame.dart';
+import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
-import 'package:timezone/timezone.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
-
 class Routes {
-
   UserData _currentUser;
   UserDatabaseData _data;
 
   final loggedOutRoutes = <String, WidgetBuilder>{
-    "/" : (BuildContext context) => new LoginScreen(),
+    "/Home": (BuildContext context) => new LoginScreen(),
     "/ForgotPassword": (BuildContext context) => new ForgotPasswordScreen(),
     "/SignUp": (BuildContext context) => new SignupScreen(),
-  };
-  final loggedInRoutes = <String, WidgetBuilder>{
-    "/": (BuildContext context) => new HomeScreen(),
-    "/Settings": (BuildContext context) => new SettingsScreen(),
-    "/About" : (BuildContext context) => new AboutScreen()
   };
 
   final theme = new ThemeData(
@@ -49,40 +42,11 @@ class Routes {
     print(routeSettings.name);
     if (_currentUser != null) {
       if (_currentUser.isEmailVerified) {
-        if (loggedInRoutes.containsKey(routeSettings.name)) {
-          return new MaterialPageRoute<Null>(
-              settings: routeSettings,
-              builder: loggedInRoutes[routeSettings.name]
-          );
-        }
-
-        // Check for stuff.
-        var path = routeSettings.name.split('/');
-        if (path[0] == "Team") {
-          final uid = path.length > 1 ? path[1] : null;
-          return new MaterialPageRoute(
-            builder: (context) => new TeamScreen(uid),
-            settings: routeSettings,
-          );
-        }
-        if (path[0] == "EditGame") {
-          final uid = path.length > 1 ? path[1] : null;
-          return new MaterialPageRoute(
-            builder: (context) => new EditGame(uid),
-            settings: routeSettings,
-          );
-        }
-
-        return new MaterialPageRoute<Null>(
-            settings: routeSettings,
-            builder: loggedInRoutes["/"]
-        );
+        return AppRouter.instance.generator(routeSettings);
       }
     }
     return new MaterialPageRoute<Null>(
-        settings: routeSettings,
-        builder: loggedOutRoutes[routeSettings.name]
-    );
+        settings: routeSettings, builder: loggedOutRoutes[routeSettings.name]);
   }
 
   void _authChanged(UserData user) async {
@@ -101,14 +65,12 @@ class Routes {
     } else {
       UserDatabaseData.clear();
     }
-    if (changePages) {
-      //app.navigatorKey.currentState.pushNamed("/");
-    }
   }
 
   Routes() {
     // Subscribe to auth changes.
     UserAuth.instance.onAuthChanged().listen(_authChanged);
+    Router router = new Router();
     app = new MaterialApp(
         localizationsDelegates: [
           const MessagesDelegate(),
@@ -123,8 +85,8 @@ class Routes {
         title: 'Team Fuse',
         theme: theme,
         initialRoute: "/",
-        onGenerateRoute: this._buildRoute
-    );
+        home: new SplashScreen(),
+        onGenerateRoute: _buildRoute);
     runApp(app);
   }
 }

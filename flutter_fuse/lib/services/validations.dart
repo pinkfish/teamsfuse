@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'messages.dart';
 
-class Validations{
+class Validations {
   String validateName(BuildContext context, String value) {
     if (value.isEmpty) return Messages.of(context).namerequired;
     final RegExp nameExp = new RegExp(r'^[A-za-z ]+$');
-    if (!nameExp.hasMatch(value))
-      return Messages.of(context).invalidname;
+    if (!nameExp.hasMatch(value)) return Messages.of(context).invalidname;
     return null;
   }
 
@@ -29,8 +28,21 @@ class Validations{
     return null;
   }
 
-  String validatePhone(BuildContext context, String value) {
+  String validateSport(BuildContext context, String value) {
+    if (value == 'none' || value == 'add') {
+      return Messages.of(context).needtoselectsport;
+    }
     return null;
   }
 
+  String validateGender(BuildContext context, String value) {
+    if (value == 'none') {
+      return Messages.of(context).needtoselectgender;
+    }
+    return null;
+  }
+
+  String validatePhone(BuildContext context, String value) {
+    return null;
+  }
 }

@@ -3,26 +3,23 @@ import 'dart:async';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
-class OpponentFormField extends FormField<String> {
-  OpponentFormField({
+class GenderFormField extends FormField<String> {
+  GenderFormField({
     Key key,
-    String initialValue: '',
-    String teamUid,
+    String initialValue,
     InputDecoration decoration: const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
   })
       : assert(initialValue != null),
-        assert(teamUid != null),
         super(
             key: key,
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,
             builder: (FormFieldState<String> field) {
-              final OpponentFormFieldState state = field;
-              state.teamUid = teamUid;
+              final GenderFormFieldState state = field;
 
               final InputDecoration effectiveDecoration = (decoration ??
                       const InputDecoration())
@@ -31,7 +28,7 @@ class OpponentFormField extends FormField<String> {
                   decoration:
                       effectiveDecoration.copyWith(errorText: field.errorText),
                   child: new DropdownButton(
-                      hint: new Text(Messages.of(state.context).opponentselect),
+                      hint: new Text(Messages.of(state.context).genderselect),
                       items: state._buildItems(state.context),
                       value: state.value,
                       onChanged: (dynamic val) {
@@ -44,57 +41,34 @@ class OpponentFormField extends FormField<String> {
             });
 
   @override
-  OpponentFormFieldState createState() => new OpponentFormFieldState();
+  GenderFormFieldState createState() => new GenderFormFieldState();
 }
 
-class OpponentFormFieldState extends FormFieldState<String> {
+class GenderFormFieldState extends FormFieldState<String> {
   @override
-  OpponentFormField get widget => super.widget;
-
-  String teamUid;
-  StreamSubscription<UpdateReason> teamSubscription;
-
-  void setTeamUid(String teamUid) {
-    setState(() {
-      this.teamUid = teamUid;
-      if (teamSubscription != null) {
-        teamSubscription.cancel();
-      }
-      teamSubscription = UserDatabaseData.instance.teams[teamUid].thisTeamStream
-          .listen((UpdateReason value) {
-        setState(() {});
-      });
-    });
-  }
-
-
-  @override
-  void dispose() {
-    super.dispose();
-    teamSubscription.cancel();
-    teamSubscription = null;
-  }
+  GenderFormField get widget => super.widget;
 
   List<DropdownMenuItem> _buildItems(BuildContext context) {
     List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
     ret.add(new DropdownMenuItem(
-      child: new Text(Messages.of(context).opponentselect),
-      value: 'none',
+      child: new Text(Messages.of(context).genderfemale),
+      value: Gender.Female.toString(),
     ));
 
     ret.add(new DropdownMenuItem(
-        child: new Text(Messages.of(context).addopponent), value: 'add'));
+      child: new Text(Messages.of(context).gendermale),
+      value: Gender.Male.toString(),
+    ));
 
-    if (teamUid != null &&
-        UserDatabaseData.instance.teams.containsKey(teamUid)) {
-      UserDatabaseData.instance.teams[teamUid].opponents
-          .forEach((key, opponent) {
-        if (opponent.name != null) {
-          ret.add(new DropdownMenuItem(
-              child: new Text(opponent.name), value: opponent.uid));
-        }
-      });
-    }
+    ret.add(new DropdownMenuItem(
+      child: new Text(Messages.of(context).gendercoed),
+      value: Gender.Coed.toString(),
+    ));
+
+    ret.add(new DropdownMenuItem(
+      child: new Text(Messages.of(context).genderna),
+      value: Gender.NA.toString(),
+    ));
 
     return ret;
   }

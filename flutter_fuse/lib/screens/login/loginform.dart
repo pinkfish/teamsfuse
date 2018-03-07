@@ -4,7 +4,6 @@ import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'dart:async';
 
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key key}) : super(key: key);
 
@@ -39,41 +38,21 @@ class LoginScreenState extends State<LoginScreen> {
       form.save();
       // Login!
       print(person);
-      UserAuth.instance.signIn(person)
-          .then((FirebaseUser) {
-            print('Home page');
-            //avigator.pushNamed(context, "/HomePage");
-          })
-          .catchError((error) {
-            print(error.toString());
-            showInSnackBar(error.toString());
-          });
+      UserAuth.instance.signIn(person).then((FirebaseUser) {
+        print('Home page');
+        Navigator.of(context).pushNamed("/Home");
+      }).catchError((error) {
+        print(error.toString());
+        showInSnackBar(error.toString());
+      });
     }
   }
-
-  static StreamSubscription<UserData> listenStream;
 
   @override
   Widget build(BuildContext context) {
     this.context = context;
     final Size screenSize = MediaQuery.of(context).size;
 
-    if (listenStream == null) {
-      listenStream = UserAuth.instance.onAuthChanged().listen((UserData data) {
-        print('on auth changed');
-        if (data != null) {
-          if (!data.isEmailVerified) {
-            Navigator.of(context).pushNamed("/");
-          } else {
-            Navigator.of(context).pushNamed("/Verify");
-          }
-          listenStream.cancel();
-        }
-      });
-    }
-
-
-    Validations validations = new Validations();
     return new Scaffold(
         key: _scaffoldKey,
         body: new SingleChildScrollView(
@@ -90,12 +69,13 @@ class LoginScreenState extends State<LoginScreen> {
                       children: <Widget>[
                         new Center(
                             child: new Image(
-                              image: new ExactAssetImage("assets/images/abstractsport.png"),
-                              width: (screenSize.width < 500)
-                                  ? 120.0
-                                  : (screenSize.width / 4) + 12.0,
-                              height: screenSize.height / 4 + 20,
-                            ))
+                          image: new ExactAssetImage(
+                              "assets/images/abstractsport.png"),
+                          width: (screenSize.width < 500)
+                              ? 120.0
+                              : (screenSize.width / 4) + 12.0,
+                          height: screenSize.height / 4 + 20,
+                        ))
                       ],
                     ),
                   ),
@@ -117,8 +97,9 @@ class LoginScreenState extends State<LoginScreen> {
                                   ),
                                   keyboardType: TextInputType.emailAddress,
                                   obscureText: false,
-                                  onSaved: (String value) { person.email = value; }
-                              ),
+                                  onSaved: (String value) {
+                                    person.email = value;
+                                  }),
                               new TextFormField(
                                   decoration: const InputDecoration(
                                     icon: const Icon(Icons.lock_open),
@@ -133,9 +114,9 @@ class LoginScreenState extends State<LoginScreen> {
                                 child: new RaisedButton(
                                     child: const Text("Login"),
                                     color: Theme.of(context).primaryColor,
-                                    onPressed: _handleSubmitted
-                                ),
-                                margin: new EdgeInsets.only(top: 20.0, bottom: 20.0),
+                                    onPressed: _handleSubmitted),
+                                margin: new EdgeInsets.only(
+                                    top: 20.0, bottom: 20.0),
                               ),
                             ],
                           ),

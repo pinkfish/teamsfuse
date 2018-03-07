@@ -3,26 +3,23 @@ import 'dart:async';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
-class OpponentFormField extends FormField<String> {
-  OpponentFormField({
+class SportFormField extends FormField<String> {
+  SportFormField({
     Key key,
     String initialValue: '',
-    String teamUid,
     InputDecoration decoration: const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
   })
       : assert(initialValue != null),
-        assert(teamUid != null),
         super(
             key: key,
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,
             builder: (FormFieldState<String> field) {
-              final OpponentFormFieldState state = field;
-              state.teamUid = teamUid;
+              final SportFormFieldState state = field;
 
               final InputDecoration effectiveDecoration = (decoration ??
                       const InputDecoration())
@@ -44,57 +41,39 @@ class OpponentFormField extends FormField<String> {
             });
 
   @override
-  OpponentFormFieldState createState() => new OpponentFormFieldState();
+  SportFormFieldState createState() => new SportFormFieldState();
 }
 
-class OpponentFormFieldState extends FormFieldState<String> {
+class SportFormFieldState extends FormFieldState<String> {
   @override
-  OpponentFormField get widget => super.widget;
-
-  String teamUid;
-  StreamSubscription<UpdateReason> teamSubscription;
-
-  void setTeamUid(String teamUid) {
-    setState(() {
-      this.teamUid = teamUid;
-      if (teamSubscription != null) {
-        teamSubscription.cancel();
-      }
-      teamSubscription = UserDatabaseData.instance.teams[teamUid].thisTeamStream
-          .listen((UpdateReason value) {
-        setState(() {});
-      });
-    });
-  }
-
-
-  @override
-  void dispose() {
-    super.dispose();
-    teamSubscription.cancel();
-    teamSubscription = null;
-  }
+  SportFormField get widget => super.widget;
 
   List<DropdownMenuItem> _buildItems(BuildContext context) {
     List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
     ret.add(new DropdownMenuItem(
-      child: new Text(Messages.of(context).opponentselect),
+      child: new Text(Messages.of(context).sportselect),
       value: 'none',
     ));
 
     ret.add(new DropdownMenuItem(
-        child: new Text(Messages.of(context).addopponent), value: 'add'));
+      child: new Text(Messages.of(context).sportbasketball),
+      value: Sport.Basketball.toString(),
+    ));
 
-    if (teamUid != null &&
-        UserDatabaseData.instance.teams.containsKey(teamUid)) {
-      UserDatabaseData.instance.teams[teamUid].opponents
-          .forEach((key, opponent) {
-        if (opponent.name != null) {
-          ret.add(new DropdownMenuItem(
-              child: new Text(opponent.name), value: opponent.uid));
-        }
-      });
-    }
+    ret.add(new DropdownMenuItem(
+      child: new Text(Messages.of(context).sportsoftball),
+      value: Sport.Softball.toString(),
+    ));
+
+    ret.add(new DropdownMenuItem(
+      child: new Text(Messages.of(context).sportsoccer),
+      value: Sport.Soccer.toString(),
+    ));
+
+    ret.add(new DropdownMenuItem(
+      child: new Text(Messages.of(context).sportother),
+      value: Sport.Other.toString(),
+    ));
 
     return ret;
   }

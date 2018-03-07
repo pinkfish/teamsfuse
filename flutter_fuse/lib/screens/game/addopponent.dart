@@ -4,7 +4,6 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 
 class AddOpponent extends StatefulWidget {
-
   AddOpponent(this.teamUid);
 
   final String teamUid;
@@ -37,17 +36,13 @@ class _AddOpponentState extends State<AddOpponent> {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text(Messages
-              .of(context)
-              .addopponent),
-          actions: [
+          title: new Text(Messages.of(context).addopponent),
+          actions: <Widget>[
             new FlatButton(
                 onPressed: () {
                   this._savePressed(context);
                 },
-                child: new Text(Messages
-                    .of(context)
-                    .savebuttontext,
+                child: new Text(Messages.of(context).savebuttontext,
                     style: Theme
                         .of(context)
                         .textTheme
@@ -58,53 +53,37 @@ class _AddOpponentState extends State<AddOpponent> {
         body: new Container(
             padding: new EdgeInsets.all(16.0),
             child: new Form(
-              key: _formKey,
+                key: _formKey,
                 child: new Column(
                   children: <Widget>[
-                    new EnsureVisibleWhenFocused(focusNode: _focusNode,
-                      child:
-                      new TextFormField(
+                    new EnsureVisibleWhenFocused(
+                      focusNode: _focusNode,
+                      child: new TextFormField(
                           decoration: new InputDecoration(
                               icon: const Icon(Icons.short_text),
-                              hintText: Messages
-                                  .of(context)
-                                  .opponentnamehint,
-                              labelText: Messages
-                                  .of(context)
-                                  .opponentname
-                          ),
-                          keyboardType: TextInputType
-                              .text,
+                              hintText: Messages.of(context).opponentnamehint,
+                              labelText: Messages.of(context).opponentname),
+                          keyboardType: TextInputType.text,
                           obscureText: false,
                           onSaved: (String value) {
                             _opponent.name = value;
-                          }
-                      ),
+                          }),
                     ),
-                    new EnsureVisibleWhenFocused(focusNode: _focusNode,
-                      child:
-                      new TextFormField(
+                    new EnsureVisibleWhenFocused(
+                      focusNode: _focusNode,
+                      child: new TextFormField(
                           decoration: new InputDecoration(
                               icon: const Icon(Icons.email),
-                              hintText: Messages
-                                  .of(context)
-                                  .opponentcontacthint,
-                              labelText: Messages
-                                  .of(context)
-                                  .opponentcontact
-                          ),
-                          keyboardType: TextInputType
-                              .text,
+                              hintText:
+                                  Messages.of(context).opponentcontacthint,
+                              labelText: Messages.of(context).opponentcontact),
+                          keyboardType: TextInputType.text,
                           obscureText: false,
                           onSaved: (String value) {
                             _opponent.contact = value;
-                          }
-                      ),
+                          }),
                     ),
                   ],
-                )
-            )
-        )
-    );
+                ))));
   }
 }

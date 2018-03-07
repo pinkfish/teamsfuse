@@ -1,8 +1,10 @@
 library services.databasedetails;
 
 import 'dart:async';
+import 'dart:io';
 import 'package:timezone/timezone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class User {
   String name;
@@ -12,7 +14,7 @@ class User {
 }
 
 enum RoleInTeam { Player, Coach, NonPlayer }
-enum Sport { Basketball, Softball, Soccer }
+enum Sport { Basketball, Softball, Soccer, Other }
 enum Gender { Female, Male, Coed, NA }
 enum EventType { Game, Practice, Event }
 enum GameResult { Win, Loss, Tie, Unknown }
@@ -24,10 +26,20 @@ const String _NAME = 'name';
 const String _ARRIVEEARLY = 'arriveEarly';
 const String _NOTES = 'notes';
 const String _ADDED = 'added';
+const String _PHOTOURL = 'photourl';
 
 class Player {
   String name;
   String uid;
+  String photoUrl;
+
+  Player() {}
+
+  Player.copy(Player copy) {
+    name = copy.name;
+    uid = copy.uid;
+    photoUrl = copy.photoUrl;
+  }
 
   // ignore
   StreamSubscription<QuerySnapshot> get snapshot {
@@ -36,9 +48,11 @@ class Player {
 
   void fromJSON(Map<String, dynamic> data) {
     name = data[_NAME];
+    photoUrl = data[_PHOTOURL];
 
     // Teams.
-    CollectionReference ref = Firestore.instance.collection("Seasons")
+    CollectionReference ref = Firestore.instance
+        .collection("Seasons")
         .where('players.' + uid + '.' + _ADDED, isEqualTo: true)
         .reference();
     UserDatabaseData.snapshotMapping[this] =
@@ -48,6 +62,7 @@ class Player {
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = new Map<String, dynamic>();
     ret[_NAME] = name;
+    ret[_PHOTOURL] = photoUrl;
     return ret;
   }
 
@@ -58,7 +73,7 @@ class Player {
     }
   }
 
-  void updateFirestore() async  {
+  void updateFirestore() async {
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance.collection("Players");
     if (uid == '' || uid == null) {
@@ -83,16 +98,20 @@ class GameResultDetails {
     result = GameResult.Unknown;
   }
 
+  GameResultDetails.copy(GameResultDetails copy) {
+    ptsAgainst = copy.ptsAgainst;
+    ptsFor = copy.ptsFor;
+    result = copy.result;
+  }
+
   static const String _PTS_FOR = 'ptsFor';
   static const String _PTS_AGAINST = 'ptsAgainst';
   static const String _RESULT = 'result';
 
-
   void fromJSON(Map<String, dynamic> data) {
     ptsFor = data[_PTS_FOR];
     ptsAgainst = data[_PTS_AGAINST];
-    result =
-        GameResult.values.firstWhere((e) => e.toString() == data[_RESULT]);
+    result = GameResult.values.firstWhere((e) => e.toString() == data[_RESULT]);
   }
 
   Map<String, dynamic> toJSON() {
@@ -109,18 +128,35 @@ class GamePlace {
   String placeId;
   String address;
   String notes;
+  num latitude;
+  num longitude;
 
-  GamePlace() {}
+  GamePlace() {
+    latitude = 0;
+    longitude = 0;
+  }
 
+  GamePlace.copy(GamePlace copy) {
+    name = copy.name;
+    placeId = copy.placeId;
+    address = copy.address;
+    notes = copy.notes;
+    latitude = copy.latitude;
+    longitude = copy.longitude;
+  }
 
   static const String _PLACEID = 'placeId';
   static const String _ADDRESS = 'address';
+  static const String _LONGITUDE = 'longitude';
+  static const String _LATITUDE = 'latitude';
 
   void fromJSON(Map<String, dynamic> data) {
     name = data[_NAME];
     placeId = data[_PLACEID];
     address = data[_ADDRESS];
     notes = data[_NOTES];
+    longitude = data[_LONGITUDE];
+    latitude = data[_LATITUDE];
   }
 
   Map<String, dynamic> toJSON() {
@@ -129,6 +165,8 @@ class GamePlace {
     ret[_PLACEID] = placeId;
     ret[_ADDRESS] = address;
     ret[_NOTES] = notes;
+    ret[_LATITUDE] = latitude;
+    ret[_LONGITUDE] = longitude;
     return ret;
   }
 }
@@ -150,7 +188,26 @@ class Game {
   GamePlace place;
   Map<String, Attendance> attendance;
 
-  Game() {}
+  Game() {
+    homegame = false;
+  }
+
+  Game.copy(Game copy) {
+    uid = copy.uid;
+    timezone = copy.timezone;
+    arriveEarly = copy.arriveEarly;
+    gameLength = copy.gameLength;
+    notes = copy.notes;
+    opponentUid = copy.opponentUid;
+    seasonUid = copy.seasonUid;
+    teamUid = copy.teamUid;
+    uniform = copy.uniform;
+    type = copy.type;
+    homegame = copy.homegame;
+    result = new GameResultDetails.copy(copy.result);
+    place = new GamePlace.copy(copy.place);
+    attendance = new Map<String, Attendance>.from(attendance);
+  }
 
   Game.newGame(this.type) {
     arriveEarly = 0;
@@ -163,6 +220,11 @@ class Game {
   TZDateTime get tzTime {
     Location timezone = getLocation(this.timezone);
     return new TZDateTime.fromMillisecondsSinceEpoch(timezone, time);
+  }
+
+  TZDateTime get tzArriveTime {
+    Location timezone = getLocation(this.timezone);
+    return new TZDateTime.fromMillisecondsSinceEpoch(timezone, time - arriveEarly * 60000);
   }
 
   static const String _TIMEZONE = 'timezone';
@@ -195,6 +257,9 @@ class Game {
     seasonUid = data[_SEASONUID];
     uniform = data[_UNIFORM];
     homegame = data[_HOMEGAME];
+    if (homegame == null) {
+      homegame = false;
+    }
     type = EventType.values.firstWhere((e) => e.toString() == data[_TYPE]);
     GameResultDetails details = new GameResultDetails();
     details.fromJSON(data[_RESULT]);
@@ -209,9 +274,8 @@ class Game {
     Map<String, dynamic> attendanceData = data[_ATTENDANCE];
     if (attendanceData != null) {
       attendanceData.forEach((String key, dynamic data) {
-        newAttendanceData[key] = Attendance.values.firstWhere((e) =>
-        e.toString() ==
-            data[_ATTENDANCEVALUE]);
+        newAttendanceData[key] = Attendance.values
+            .firstWhere((e) => e.toString() == data[_ATTENDANCEVALUE]);
       });
     }
     attendance = newAttendanceData;
@@ -236,7 +300,7 @@ class Game {
     ret[_PLACE] = result.toJSON();
     Map<String, dynamic> attendanceData = new Map<String, dynamic>();
     attendance.forEach((String key, Attendance value) {
-      Map<String, dynamic>attendanceInner = new Map<String, dynamic>();
+      Map<String, dynamic> attendanceInner = new Map<String, dynamic>();
       attendanceInner[_ATTENDANCEVALUE] = value.toString();
       attendanceData[key] = attendanceInner;
     });
@@ -245,15 +309,14 @@ class Game {
     return ret;
   }
 
+  void close() {}
 
-  void close() {
-
-  }
-
-  void updateFirestore() async  {
+  void updateFirestore() async {
     // Add or update this record into the database.
-    CollectionReference ref = Firestore.instance.collection("Teams").document(
-        teamUid).getCollection("Games");
+    CollectionReference ref = Firestore.instance
+        .collection("Teams")
+        .document(teamUid)
+        .getCollection("Games");
     if (uid == '' || uid == null) {
       // Add the game.
       DocumentReference doc = await ref.add(toJSON());
@@ -263,12 +326,35 @@ class Game {
       await ref.document(uid).updateData(toJSON());
     }
   }
+  
+  void updateFirestoreAttendence(String playerUid, Attendance attend) {
+    DocumentReference ref = Firestore.instance
+        .collection("Teams")
+        .document(teamUid)
+        .getCollection("Games").document(uid);
+
+    Map<String, dynamic> data = new Map<String, dynamic>();
+    data[_ATTENDANCE + "." + playerUid + "." + _ATTENDANCEVALUE] = attend.toString();
+    ref.updateData(data);
+  }
 }
 
 class WinRecord {
   num win;
   num loss;
   num tie;
+
+  WinRecord() {
+    win = 0;
+    loss = 0;
+    tie = 0;
+  }
+
+  WinRecord.copy(WinRecord copy) {
+    win = copy.win;
+    loss = copy.loss;
+    tie = copy.tie;
+  }
 
   static const String _WIN = 'win';
   static const String _LOSS = 'loss';
@@ -287,7 +373,6 @@ class WinRecord {
     ret[_WIN] = win;
     return ret;
   }
-
 }
 
 class Opponent {
@@ -297,6 +382,20 @@ class Opponent {
   String uid;
   WinRecord record;
 
+  Opponent({this.record, this.name, this.teamUid, this.contact, this.uid}) {
+    if (record == null) {
+      record = new WinRecord();
+    }
+  }
+
+  Opponent.copy(Opponent copy) {
+    name = copy.name;
+    teamUid = copy.teamUid;
+    contact = copy.contact;
+    uid = copy.uid;
+    record = copy.record;
+  }
+
   static const String _CONTACT = 'contact';
 
   void fromJSON(Map<String, dynamic> data) {
@@ -305,7 +404,6 @@ class Opponent {
     print('Update Opponent ' + uid);
   }
 
-
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = new Map<String, dynamic>();
     ret[_NAME] = name;
@@ -313,10 +411,12 @@ class Opponent {
     return ret;
   }
 
-  void updateFirestore() async  {
+  void updateFirestore() async {
     // Add or update this record into the database.
-    CollectionReference ref = Firestore.instance.collection("Teams").document(
-        teamUid).getCollection("Opponents");
+    CollectionReference ref = Firestore.instance
+        .collection("Teams")
+        .document(teamUid)
+        .getCollection("Opponents");
     if (uid == '' || uid == null) {
       // Add the game.
       DocumentReference doc = await ref.add(toJSON());
@@ -332,6 +432,14 @@ class SeasonPlayer {
   String playerUid;
   String displayName;
   RoleInTeam role;
+
+  SeasonPlayer({this.playerUid, this.displayName, this.role});
+
+  SeasonPlayer.copy(SeasonPlayer copy) {
+    playerUid = copy.playerUid;
+    displayName = copy.displayName;
+    role = copy.role;
+  }
 
   static const String _ROLE = 'role';
 
@@ -354,6 +462,20 @@ class Season {
   WinRecord record;
   List<SeasonPlayer> players;
 
+  Season({this.name, this.uid, this.teamUid, this.record, this.players}) {
+    if (players == null) {
+      players = new List<SeasonPlayer>();
+    }
+  }
+
+  Season.copy(Season copy) {
+    name = copy.name;
+    uid = copy.uid;
+    teamUid = copy.teamUid;
+    record = copy.record;
+    players = copy.players;
+  }
+
   Iterable<Game> getGames() {
     // Get all the games for this season.
     return UserDatabaseData.instance.games.values.where((game) {
@@ -363,7 +485,6 @@ class Season {
 
   static const String _RECORD = 'record';
   static const String _PLAYERS = 'players';
-
 
   void fromJSON(String teamUid, Map<String, dynamic> data) {
     name = data[_NAME];
@@ -393,7 +514,7 @@ class Season {
     return ret;
   }
 
-  void updateFirestore() async  {
+  void updateFirestore() async {
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance.collection("Seasons");
     if (uid == '' || uid == null) {
@@ -415,6 +536,7 @@ class Team {
   String league;
   Sport sport;
   String uid;
+  String photoUrl;
 
   List<String> admins = new List<String>();
   Map<String, Opponent> opponents = new Map<String, Opponent>();
@@ -423,20 +545,43 @@ class Team {
   Stream<UpdateReason> opponentStream;
   Stream<UpdateReason> thisTeamStream;
 
-  StreamController<UpdateReason> _updateThisTeam = new StreamController<
-      UpdateReason>();
+  StreamController<UpdateReason> _updateThisTeam =
+      new StreamController<UpdateReason>();
 
   // Firebase subscriptions
   StreamSubscription<DocumentSnapshot> _teamSnapshot;
   StreamSubscription<QuerySnapshot> _gameSnapshot;
   StreamSubscription<QuerySnapshot> _opponentSnapshot;
 
-
-  Team() {
+  Team(
+      {this.name,
+      this.arriveEarly: 0,
+      this.currentSeason,
+      this.gender: Gender.NA,
+      this.league,
+      this.sport: Sport.Other,
+      this.uid,
+      this.photoUrl}) {
     thisTeamStream = _updateThisTeam.stream.asBroadcastStream();
-    gender = Gender.NA;
   }
 
+  Team.copy(Team copy) {
+    name = copy.name;
+    arriveEarly = copy.arriveEarly;
+    currentSeason = copy.currentSeason;
+    gender = copy.gender;
+    league = copy.league;
+    sport = copy.sport;
+    uid = copy.uid;
+    photoUrl = copy.photoUrl;
+    admins = new List<String>.from(admins);
+    opponents = opponents.map((String key, Opponent op) {
+      return new MapEntry(key, new Opponent.copy(op));
+    });
+    seasons = seasons.map((String key, Season season) {
+      return new MapEntry(key, new Season.copy(season));
+    });
+  }
 
   void _onOpponentUpdated(QuerySnapshot query) {
     query.documents.forEach((doc) {
@@ -467,8 +612,8 @@ class Team {
     }
     currentSeason = data[_CURRENTSEASON];
     league = data[_LEAGUE];
-    gender =
-        Gender.values.firstWhere((e) => e.toString() == data[_GENDER]);
+    photoUrl = data[_PHOTOURL];
+    gender = Gender.values.firstWhere((e) => e.toString() == data[_GENDER]);
     sport = Sport.values.firstWhere((e) => e.toString() == data[_SPORT]);
   }
 
@@ -480,11 +625,13 @@ class Team {
     ret[_LEAGUE] = league;
     ret[_GENDER] = gender.toString();
     ret[_SPORT] = sport.toString();
+    ret[_PHOTOURL] = photoUrl;
     return ret;
   }
 
   void _onTeamUpdated(DocumentSnapshot snap) {
     fromJSON(snap.data);
+    this.uid = snap.documentID;
     print('team ' + uid);
     _updateThisTeam.add(UpdateReason.Update);
   }
@@ -515,8 +662,8 @@ class Team {
           .collection("Teams")
           .document(uid)
           .getCollection("Opponents");
-      _opponentSnapshot = opCollection.snapshots
-          .listen(this._onOpponentUpdated);
+      _opponentSnapshot =
+          opCollection.snapshots.listen(this._onOpponentUpdated);
     }
 
     if (_gameSnapshot == null) {
@@ -524,8 +671,7 @@ class Team {
           .collection("Teams")
           .document(uid)
           .getCollection("Games");
-      _gameSnapshot = gameCollection.snapshots
-          .listen((value) {
+      _gameSnapshot = gameCollection.snapshots.listen((value) {
         UserDatabaseData.instance._onGameUpdated(this.uid, value);
       });
     }
@@ -538,7 +684,7 @@ class Team {
     _updateThisTeam.close();
   }
 
-  void updateFirestore() async  {
+  void updateFirestore() async {
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance.collection("Teams");
     if (uid == '' || uid == null) {
@@ -549,6 +695,16 @@ class Team {
       // Update the game.
       await ref.document(uid).updateData(toJSON());
     }
+  }
+
+  Future<Uri> updateImage(File imgFile) async {
+    final StorageReference ref =
+        FirebaseStorage.instance.ref().child("team_" + uid + ".img");
+    final StorageUploadTask task = ref.put(imgFile);
+    final UploadTaskSnapshot snapshot = (await task.future);
+    this.photoUrl = snapshot.downloadUrl.toString();
+    print('photurl ${photoUrl}');
+    return snapshot.downloadUrl;
   }
 }
 
@@ -567,12 +723,12 @@ class UserDatabaseData {
 
   Map<String, Game> get games => _games;
 
-  StreamController<UpdateReason> _teamController = new StreamController<
-      UpdateReason>();
-  StreamController<UpdateReason> _playerController = new StreamController<
-      UpdateReason>();
-  StreamController<UpdateReason> _gameController = new StreamController<
-      UpdateReason>();
+  StreamController<UpdateReason> _teamController =
+      new StreamController<UpdateReason>();
+  StreamController<UpdateReason> _playerController =
+      new StreamController<UpdateReason>();
+  StreamController<UpdateReason> _gameController =
+      new StreamController<UpdateReason>();
 
   // From firebase.
   StreamSubscription<QuerySnapshot> _playerSnapshot;
@@ -636,7 +792,6 @@ class UserDatabaseData {
     });
   }
 
-
   static UserDatabaseData get instance {
     if (_instance == null) {
       _instance = new UserDatabaseData();
@@ -650,8 +805,8 @@ class UserDatabaseData {
     }
     this._uid = uid;
     // The uid everything is based off.
-    Query collection =
-    Firestore.instance.collection("Players")
+    Query collection = Firestore.instance
+        .collection("Players")
         .where("user." + uid + ".added", isEqualTo: true);
     _playerSnapshot = collection.snapshots.listen(this._onPlayerUpdated);
   }
@@ -676,13 +831,12 @@ class UserDatabaseData {
 
   static void load(String uid) {
     print('loading data');
-    _instance._setUid(uid);
+    instance._setUid(uid);
   }
 
   static void clear() {
     if (_instance != null) {
-      _instance.close();
+      instance.close();
     }
   }
 }
-

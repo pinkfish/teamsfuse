@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 
-
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key key}) : super(key: key);
 
@@ -40,12 +39,11 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      UserAuth.instance.sendPasswordResetEmail(email)
-          .then((Null) {
-            Navigator.pushNamed(context, "/");
-          }).catchError((error) {
-            showInSnackBar(error);
-          });
+      UserAuth.instance.sendPasswordResetEmail(email).then((Null) {
+        Navigator.pushNamed(context, "/");
+      }).catchError((error) {
+        showInSnackBar(error);
+      });
     }
   }
 
@@ -71,12 +69,13 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       children: <Widget>[
                         new Center(
                             child: new Image(
-                              image: new ExactAssetImage("assets/images/abstractsport.png"),
-                              width: (screenSize.width < 500)
-                                  ? 120.0
-                                  : (screenSize.width / 4) + 12.0,
-                              height: screenSize.height / 4 + 20,
-                            ))
+                          image: new ExactAssetImage(
+                              "assets/images/abstractsport.png"),
+                          width: (screenSize.width < 500)
+                              ? 120.0
+                              : (screenSize.width / 4) + 12.0,
+                          height: screenSize.height / 4 + 20,
+                        ))
                       ],
                     ),
                   ),
@@ -98,15 +97,16 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                   ),
                                   keyboardType: TextInputType.emailAddress,
                                   obscureText: false,
-                                  onSaved: (String value) { email = value; }
-                              ),
+                                  onSaved: (String value) {
+                                    email = value;
+                                  }),
                               new Container(
                                 child: new RaisedButton(
                                     child: const Text("Forgot Password"),
                                     color: Theme.of(context).primaryColor,
-                                    onPressed: _handleSubmitted
-                                ),
-                                margin: new EdgeInsets.only(top: 20.0, bottom: 20.0),
+                                    onPressed: _handleSubmitted),
+                                margin: new EdgeInsets.only(
+                                    top: 20.0, bottom: 20.0),
                               ),
                             ],
                           ),

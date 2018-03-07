@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 class UserData {
   String displayName;
   String email;
@@ -11,7 +10,13 @@ class UserData {
   String photoUrl;
   bool isEmailVerified;
 
-  UserData({this.displayName, this.email, this.uid, this.password, this.phoneNumber, this.photoUrl});
+  UserData(
+      {this.displayName,
+      this.email,
+      this.uid,
+      this.password,
+      this.phoneNumber,
+      this.photoUrl});
 }
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -19,35 +24,33 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 class UserAuth {
   static UserAuth instance = new UserAuth();
 
-   // To create new User
+  // To create new User
   FutureOr<FirebaseUser> createUser(UserData userData) {
-    return _auth.createUserWithEmailAndPassword(
-        email: userData.email,
-        password: userData.password).then((FirebaseUser) {
-          UserUpdateInfo update = new UserUpdateInfo();
-          update.displayName = userData.displayName;
-          update.photoUrl = userData.photoUrl;
-          _auth.updateProfile(update);
-        });
+    return _auth
+        .createUserWithEmailAndPassword(
+            email: userData.email, password: userData.password)
+        .then((FirebaseUser) {
+      UserUpdateInfo update = new UserUpdateInfo();
+      update.displayName = userData.displayName;
+      update.photoUrl = userData.photoUrl;
+      _auth.updateProfile(update);
+    });
   }
 
   // To verify new User
-  Future<FirebaseUser> signIn(UserData userData)  {
+  Future<FirebaseUser> signIn(UserData userData) {
     print(userData);
-    return _auth
-        .signInWithEmailAndPassword(
-        email: userData.email,
-        password: userData.password);
+    return _auth.signInWithEmailAndPassword(
+        email: userData.email, password: userData.password);
   }
 
   //To verify new User
-  Future<bool> sendPasswordResetEmail (String email) async {
-    return _auth
-        .sendPasswordResetEmail(email: email);
+  Future<bool> sendPasswordResetEmail(String email) async {
+    return _auth.sendPasswordResetEmail(email: email);
   }
 
   //To verify new User
-  Future<bool> signOut () async {
+  Future<bool> signOut() async {
     return _auth.signOut();
   }
 

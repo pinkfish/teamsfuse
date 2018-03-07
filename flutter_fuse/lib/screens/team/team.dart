@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
+import 'dart:async';
 
 class TeamScreen extends StatefulWidget {
   String teamuid;
@@ -18,15 +19,22 @@ class TeamScreenState extends State<TeamScreen> {
   Team team;
   String teamuid;
 
+  StreamSubscription<UpdateReason> teamUpdate;
+
   TeamScreenState(this.teamuid) {
     team = UserDatabaseData.instance.teams[teamuid];
     if (team != null) {
-      team.thisTeamStream.listen((data) {
+      teamUpdate = team.thisTeamStream.listen((data) {
         setState(() {
-
         });
       });
     }
+  }
+
+  @override
+  void dispose() {
+    teamUpdate.cancel();
+    teamUpdate = null;
   }
 
   Widget _buildSeasons(BuildContext context) {
@@ -58,6 +66,10 @@ class TeamScreenState extends State<TeamScreen> {
     );
   }
 
+  void _onFABPressed(BuildContext context) {
+    Navigator.popAndPushNamed(context, "TeamEdit/" + teamuid);
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
@@ -66,12 +78,6 @@ class TeamScreenState extends State<TeamScreen> {
       return new Scaffold(
         appBar: new AppBar(
           title: new Text(Messages.of(context).title),
-          actions: <Widget>[
-            new IconButton(
-                icon: new Icon(Icons.edit),
-                tooltip: Messages.of(context).editteam,
-                onPressed: () { Navigator.popAndPushNamed(context, "TeamEdit/" + teamuid); })
-          ],
         ),
         body: new Column(
           children: <Widget>[
@@ -117,6 +123,11 @@ class TeamScreenState extends State<TeamScreen> {
           _buildSeasons(context)
         ],
       ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: () { _onFABPressed(context); },
+        tooltip: Messages.of(context).teamedithint,
+        child: new Icon(Icons.edit),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

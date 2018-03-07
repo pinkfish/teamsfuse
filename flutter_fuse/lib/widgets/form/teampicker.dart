@@ -4,7 +4,6 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
 class TeamPicker extends StatefulWidget {
-
   final ValueChanged<String> onChanged;
 
   TeamPicker(this.onChanged);
@@ -17,34 +16,38 @@ class TeamPicker extends StatefulWidget {
 class TeamPickerState extends State<TeamPicker> {
   final ValueChanged<String> onChanged;
   String _value;
+  StreamSubscription<UpdateReason> teamStresm;
 
   TeamPickerState(this.onChanged) {
-    UserDatabaseData.instance.teamStream.listen((update) {
+    teamStresm = UserDatabaseData.instance.teamStream.listen((update) {
       setState(() {});
     });
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    teamStresm.cancel();
+    teamStresm = null;
   }
 
   List<DropdownMenuItem> _buildItems() {
     List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
     UserDatabaseData.instance.teams.forEach((key, team) {
-      ret.add(
-          new DropdownMenuItem(
-            child: new Text(team.name),
-            value: team.uid,
-          )
-      );
+      ret.add(new DropdownMenuItem(
+        child: new Text(team.name),
+        value: team.uid,
+      ));
     });
     return ret;
   }
-
 
   @override
   Widget build(BuildContext context) {
     return new InputDecorator(
       decoration: new InputDecoration(
-        labelText: Messages
-            .of(context)
-            .team,
+        labelText: Messages.of(context).team,
       ),
       child: new Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,18 +56,14 @@ class TeamPickerState extends State<TeamPicker> {
           new Expanded(
               flex: 1,
               child: new DropdownButton(
-                  hint: new Text(Messages
-                      .of(context)
-                      .teamselect),
+                  hint: new Text(Messages.of(context).teamselect),
                   items: _buildItems(),
                   value: this._value,
                   onChanged: (dynamic val) {
                     _value = val;
                     this.onChanged(val);
                     return val;
-                  }
-              )
-          )
+                  }))
         ],
       ),
     );

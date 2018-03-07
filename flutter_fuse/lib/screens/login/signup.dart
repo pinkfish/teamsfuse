@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 
-
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key key}) : super(key: key);
 
@@ -15,7 +14,8 @@ class SignupScreenState extends State<SignupScreen> {
   BuildContext context;
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<FormFieldState<String>> _passwordFieldKey = new GlobalKey<FormFieldState<String>>();
+  final GlobalKey<FormFieldState<String>> _passwordFieldKey =
+      new GlobalKey<FormFieldState<String>>();
   ScrollController scrollController = new ScrollController();
   bool autovalidate = false;
   Validations validations = new Validations();
@@ -49,8 +49,7 @@ class SignupScreenState extends State<SignupScreen> {
     final FormFieldState<String> passwordField = _passwordFieldKey.currentState;
     if (passwordField.value == null || passwordField.value.isEmpty)
       return 'Please choose a password.';
-    if (passwordField.value != value)
-      return 'Passwords don\'t match';
+    if (passwordField.value != value) return 'Passwords don\'t match';
     return null;
   }
 
@@ -76,12 +75,13 @@ class SignupScreenState extends State<SignupScreen> {
                       children: <Widget>[
                         new Center(
                             child: new Image(
-                              image: new ExactAssetImage("assets/images/abstractsport.png"),
-                              width: (screenSize.width < 500)
-                                  ? 120.0
-                                  : (screenSize.width / 4) + 12.0,
-                              height: screenSize.height / 4 + 20,
-                            ))
+                          image: new ExactAssetImage(
+                              "assets/images/abstractsport.png"),
+                          width: (screenSize.width < 500)
+                              ? 120.0
+                              : (screenSize.width / 4) + 12.0,
+                          height: screenSize.height / 4 + 20,
+                        ))
                       ],
                     ),
                   ),
@@ -104,10 +104,12 @@ class SignupScreenState extends State<SignupScreen> {
                                   keyboardType: TextInputType.text,
                                   obscureText: false,
                                   validator: (String str) {
-                                    return validations.validateName(context, str);
+                                    return validations.validateName(
+                                        context, str);
                                   },
-                                  onSaved: (String value) { person.displayName = value; }
-                              ),
+                                  onSaved: (String value) {
+                                    person.displayName = value;
+                                  }),
                               new TextFormField(
                                   decoration: const InputDecoration(
                                     icon: const Icon(Icons.email),
@@ -117,10 +119,12 @@ class SignupScreenState extends State<SignupScreen> {
                                   keyboardType: TextInputType.emailAddress,
                                   obscureText: false,
                                   validator: (String str) {
-                                    return validations.validateEmail(context, str);
+                                    return validations.validateEmail(
+                                        context, str);
                                   },
-                                  onSaved: (String value) { person.email = value; }
-                              ),
+                                  onSaved: (String value) {
+                                    person.email = value;
+                                  }),
                               new TextFormField(
                                   decoration: const InputDecoration(
                                     icon: const Icon(Icons.phone),
@@ -130,10 +134,12 @@ class SignupScreenState extends State<SignupScreen> {
                                   keyboardType: TextInputType.phone,
                                   obscureText: false,
                                   validator: (String str) {
-                                    return validations.validatePhone(context, str);
+                                    return validations.validatePhone(
+                                        context, str);
                                   },
-                                  onSaved: (String value) { person.email = value; }
-                              ),
+                                  onSaved: (String value) {
+                                    person.email = value;
+                                  }),
                               new TextFormField(
                                   decoration: const InputDecoration(
                                     icon: const Icon(Icons.lock),
@@ -142,7 +148,8 @@ class SignupScreenState extends State<SignupScreen> {
                                   ),
                                   obscureText: true,
                                   validator: (String str) {
-                                    return validations.validatePassword(context, str);
+                                    return validations.validatePassword(
+                                        context, str);
                                   },
                                   key: _passwordFieldKey,
                                   onSaved: (String password) {
@@ -163,9 +170,9 @@ class SignupScreenState extends State<SignupScreen> {
                                 child: new RaisedButton(
                                     child: const Text("Create"),
                                     color: Theme.of(context).primaryColor,
-                                    onPressed: _handleSubmitted
-                                ),
-                                margin: new EdgeInsets.only(top: 20.0, bottom: 20.0),
+                                    onPressed: _handleSubmitted),
+                                margin: new EdgeInsets.only(
+                                    top: 20.0, bottom: 20.0),
                               ),
                             ],
                           ),
