@@ -15,7 +15,7 @@ class FusedDrawerContent extends StatelessWidget {
           leading: const Icon(Icons.group),
           title: new Text(team.name),
           onTap: () {
-            AppRouter.instance.navigateTo(context, "EditTeam/" + team.uid,
+            AppRouter.instance.navigateTo(context, "Team/" + team.uid,
                 transition: TransitionType.inFromRight);
           }));
     });

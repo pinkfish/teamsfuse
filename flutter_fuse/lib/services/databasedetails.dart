@@ -17,7 +17,22 @@ enum RoleInTeam { Player, Coach, NonPlayer }
 enum Sport { Basketball, Softball, Soccer, Other }
 enum Gender { Female, Male, Coed, NA }
 enum EventType { Game, Practice, Event }
-enum GameResult { Win, Loss, Tie, Unknown }
+enum GameResult { Win, Loss, Tie, Unknown, InProgress }
+enum GameInProgress {
+  NotStarted,
+  First,
+  Second,
+  Third,
+  Fourth,
+  Fifth,
+  Sixth,
+  Seventh,
+  Eighth,
+  Nineth,
+  Tenth,
+  Half,
+  Final
+}
 enum UpdateReason { Delete, Update }
 enum Attendance { Yes, No, Maybe }
 
@@ -27,6 +42,27 @@ const String _ARRIVEEARLY = 'arriveEarly';
 const String _NOTES = 'notes';
 const String _ADDED = 'added';
 const String _PHOTOURL = 'photourl';
+
+String getString(dynamic data) {
+  if (data == null) {
+    return '';
+  }
+  return data;
+}
+
+bool getBool(dynamic data) {
+  if (data == null) {
+    return false;
+  }
+  return data;
+}
+
+num getNum(dynamic data) {
+  if (data == null) {
+    return 0;
+  }
+  return data;
+}
 
 class Player {
   String name;
@@ -61,8 +97,8 @@ class Player {
 
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = new Map<String, dynamic>();
-    ret[_NAME] = name;
-    ret[_PHOTOURL] = photoUrl;
+    ret[_NAME] = getString(name);
+    ret[_PHOTOURL] = getString(photoUrl);
     return ret;
   }
 
@@ -91,6 +127,7 @@ class GameResultDetails {
   num ptsFor;
   num ptsAgainst;
   GameResult result;
+  GameInProgress inProgress;
 
   GameResultDetails() {
     ptsAgainst = 0;
@@ -102,16 +139,33 @@ class GameResultDetails {
     ptsAgainst = copy.ptsAgainst;
     ptsFor = copy.ptsFor;
     result = copy.result;
+    inProgress = copy.inProgress;
   }
 
   static const String _PTS_FOR = 'ptsFor';
   static const String _PTS_AGAINST = 'ptsAgainst';
   static const String _RESULT = 'result';
+  static const String _INPROGRESS = 'inProgress';
 
   void fromJSON(Map<String, dynamic> data) {
-    ptsFor = data[_PTS_FOR];
-    ptsAgainst = data[_PTS_AGAINST];
+    ptsFor = getNum(data[_PTS_FOR]);
+    ptsAgainst = getNum(data[_PTS_AGAINST]);
+    if (data[_INPROGRESS] == null) {
+      inProgress = GameInProgress.NotStarted;
+    } else {
+      String str = data[_INPROGRESS];
+      if (!str.startsWith('GameInProgress')) {
+        inProgress = GameInProgress.NotStarted;
+      } else {
+        inProgress = GameInProgress.values.firstWhere((e) =>
+        e.toString() ==
+            data[_INPROGRESS]);
+      }
+    }
     result = GameResult.values.firstWhere((e) => e.toString() == data[_RESULT]);
+    if (result == null) {
+      result = GameResult.Unknown;
+    }
   }
 
   Map<String, dynamic> toJSON() {
@@ -119,6 +173,7 @@ class GameResultDetails {
     ret[_PTS_FOR] = ptsFor;
     ret[_PTS_AGAINST] = ptsAgainst;
     ret[_RESULT] = result.toString();
+    ret[_INPROGRESS] = inProgress.toString();
     return ret;
   }
 }
@@ -151,12 +206,12 @@ class GamePlace {
   static const String _LATITUDE = 'latitude';
 
   void fromJSON(Map<String, dynamic> data) {
-    name = data[_NAME];
-    placeId = data[_PLACEID];
-    address = data[_ADDRESS];
-    notes = data[_NOTES];
-    longitude = data[_LONGITUDE];
-    latitude = data[_LATITUDE];
+    name = getString(data[_NAME]);
+    placeId = getString(data[_PLACEID]);
+    address = getString(data[_ADDRESS]);
+    notes = getString(data[_NOTES]);
+    longitude = getNum(data[_LONGITUDE]);
+    latitude = getNum(data[_LATITUDE]);
   }
 
   Map<String, dynamic> toJSON() {
@@ -190,6 +245,7 @@ class Game {
 
   Game() {
     homegame = false;
+    attendance = new Map<String, Attendance>();
   }
 
   Game.copy(Game copy) {
@@ -206,7 +262,7 @@ class Game {
     homegame = copy.homegame;
     result = new GameResultDetails.copy(copy.result);
     place = new GamePlace.copy(copy.place);
-    attendance = new Map<String, Attendance>.from(attendance);
+    attendance = new Map<String, Attendance>.from(copy.attendance);
   }
 
   Game.newGame(this.type) {
@@ -224,7 +280,8 @@ class Game {
 
   TZDateTime get tzArriveTime {
     Location timezone = getLocation(this.timezone);
-    return new TZDateTime.fromMillisecondsSinceEpoch(timezone, time - arriveEarly * 60000);
+    return new TZDateTime.fromMillisecondsSinceEpoch(
+        timezone, time - arriveEarly * 60000);
   }
 
   static const String _TIMEZONE = 'timezone';
@@ -241,26 +298,17 @@ class Game {
   static const String _ATTENDANCEVALUE = 'value';
 
   void fromJSON(String teamuid, Map<String, dynamic> data) {
-    teamUid = teamuid;
-    timezone = data[_TIMEZONE];
-    time = data[_TIME];
-    arriveEarly = data[_ARRIVEEARLY];
-    if (arriveEarly == null) {
-      arriveEarly = 0;
-    }
-    gameLength = data[_GAMELENGTH];
-    if (gameLength == null) {
-      gameLength = 0;
-    }
-    notes = data[_NOTES];
-    opponentUid = data[_OPPONENTUID];
-    seasonUid = data[_SEASONUID];
-    uniform = data[_UNIFORM];
-    homegame = data[_HOMEGAME];
-    if (homegame == null) {
-      homegame = false;
-    }
-    type = EventType.values.firstWhere((e) => e.toString() == data[_TYPE]);
+    teamUid = getString(teamuid);
+    timezone = getString(data[_TIMEZONE]);
+    time = getNum(data[_TIME]);
+    arriveEarly = getNum(data[_ARRIVEEARLY]);
+     gameLength = getNum(data[_GAMELENGTH]);
+     notes = getString(data[_NOTES]);
+    opponentUid = getString(data[_OPPONENTUID]);
+    seasonUid = getString(data[_SEASONUID]);
+    uniform = getString(data[_UNIFORM]);
+    homegame = getBool(data[_HOMEGAME]);
+     type = EventType.values.firstWhere((e) => e.toString() == data[_TYPE]);
     GameResultDetails details = new GameResultDetails();
     details.fromJSON(data[_RESULT]);
     result = details;
@@ -326,17 +374,33 @@ class Game {
       await ref.document(uid).updateData(toJSON());
     }
   }
-  
+
   void updateFirestoreAttendence(String playerUid, Attendance attend) {
     DocumentReference ref = Firestore.instance
         .collection("Teams")
         .document(teamUid)
-        .getCollection("Games").document(uid);
+        .getCollection("Games")
+        .document(uid);
 
     Map<String, dynamic> data = new Map<String, dynamic>();
-    data[_ATTENDANCE + "." + playerUid + "." + _ATTENDANCEVALUE] = attend.toString();
+    data[_ATTENDANCE + "." + playerUid + "." + _ATTENDANCEVALUE] =
+        attend.toString();
     ref.updateData(data);
   }
+
+
+  void updateFirestoreGameResult(GameResultDetails result) {
+    DocumentReference ref = Firestore.instance
+        .collection("Teams")
+        .document(teamUid)
+        .getCollection("Games")
+        .document(uid);
+
+    Map<String, dynamic> data = new Map<String, dynamic>();
+    data[_RESULT] = result.toJSON();
+    ref.updateData(data);
+  }
+
 }
 
 class WinRecord {
@@ -361,9 +425,9 @@ class WinRecord {
   static const String _TIE = 'tie';
 
   void fromJSON(Map<String, dynamic> data) {
-    win = data[_WIN];
-    loss = data[_LOSS];
-    tie = data[_TIE];
+    win = getNum(data[_WIN]);
+    loss = getNum(data[_LOSS]);
+    tie = getNum(data[_TIE]);
   }
 
   Map<String, dynamic> toJSON() {
@@ -399,8 +463,8 @@ class Opponent {
   static const String _CONTACT = 'contact';
 
   void fromJSON(Map<String, dynamic> data) {
-    name = data[_NAME];
-    contact = data[_CONTACT];
+    name = getString(data[_NAME]);
+    contact = getString(data[_CONTACT]);
     print('Update Opponent ' + uid);
   }
 
@@ -445,11 +509,13 @@ class SeasonPlayer {
 
   void fromJSON(Map<String, dynamic> data) {
     role = RoleInTeam.values.firstWhere((e) => e.toString() == data[_ROLE]);
+    displayName = getString(data[_NAME]);
   }
 
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = new Map<String, dynamic>();
     ret[_ROLE] = role.toString();
+    ret[_NAME] = displayName;
     ret[_ADDED] = true;
     return ret;
   }
@@ -487,11 +553,11 @@ class Season {
   static const String _PLAYERS = 'players';
 
   void fromJSON(String teamUid, Map<String, dynamic> data) {
-    name = data[_NAME];
+    name = getString(data[_NAME]);
     record = new WinRecord();
     record.fromJSON(data[_RECORD]);
     this.record = record;
-    this.teamUid = teamUid;
+    this.teamUid = getString(teamUid);
     Map<String, dynamic> playersData = data[_PLAYERS];
     List<SeasonPlayer> newPlayers = new List<SeasonPlayer>();
     playersData.forEach((key, val) {
@@ -605,14 +671,11 @@ class Team {
   static const String _SPORT = 'sport';
 
   void fromJSON(Map<String, dynamic> data) {
-    name = data[_NAME];
-    arriveEarly = data[_ARRIVEEARLY];
-    if (arriveEarly == null) {
-      arriveEarly = 0;
-    }
-    currentSeason = data[_CURRENTSEASON];
-    league = data[_LEAGUE];
-    photoUrl = data[_PHOTOURL];
+    name = getString(data[_NAME]);
+    arriveEarly = getNum(data[_ARRIVEEARLY]);
+      currentSeason = getString(data[_CURRENTSEASON]);
+    league = getString(data[_LEAGUE]);
+    photoUrl = getString(data[_PHOTOURL]);
     gender = Gender.values.firstWhere((e) => e.toString() == data[_GENDER]);
     sport = Sport.values.firstWhere((e) => e.toString() == data[_SPORT]);
   }
@@ -782,7 +845,8 @@ class UserDatabaseData {
       Game game;
       if (_games.containsKey(doc.documentID)) {
         game = _games[doc.documentID];
-      } else {
+      }
+      if (game == null) {
         game = new Game();
         game.uid = doc.documentID;
       }

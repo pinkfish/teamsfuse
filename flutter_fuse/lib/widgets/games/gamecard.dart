@@ -3,6 +3,8 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
+import 'attendanceicon.dart';
+import 'package:timezone/timezone.dart';
 
 class GameCard extends StatelessWidget {
   Game game;
@@ -100,25 +102,38 @@ class GameCard extends StatelessWidget {
       return null;
     }
     List<Widget> widgets = new List<Widget>();
-    ThemeData theme = Theme.of(context);
     attendence.forEach((Player player, Attendance attend) {
-      switch (attend) {
-        case Attendance.Yes:
-          widgets.add(new Icon(Icons.check, color: theme.accentColor));
-          break;
-        case Attendance.No:
-          widgets.add(new Icon(Icons.clear, color: theme.errorColor));
-          break;
-        case Attendance.Maybe:
-          widgets.add(new Icon(Icons.help, color: theme.disabledColor));
-          break;
-      }
+      widgets.add(new AttendanceIcon(attend));
     });
-    return new FlatButton(
-        onPressed: () {
+    return new GestureDetector(
+        onTap: () {
           this._openAttendance(context);
         },
         child: new Column(children: widgets));
+  }
+
+  Widget _buildInProgress(BuildContext context) {
+    if (game.result.inProgress == GameInProgress.Final) {
+      return new Column(
+        children: <Widget>[
+          new Text(Messages.of(context).gameresult(game.result.result)),
+          new Text("${game.result.ptsFor} - ${game.result.ptsAgainst}"),
+        ],
+      );
+    }
+    return new Column(
+      children: <Widget>[
+        new Text(Messages.of(context).gameinprogress(game.result.inProgress)),
+        new Text("${game.result.ptsFor} - ${game.result.ptsAgainst}"),
+      ],
+    );
+  }
+
+  Widget _buildTrailing(BuildContext context) {
+    if (game.result.inProgress == GameInProgress.NotStarted) {
+      return _buildAvailability(context);
+    }
+    return _buildInProgress(context);
   }
 
   Widget build(BuildContext context) {
@@ -132,7 +147,32 @@ class GameCard extends StatelessWidget {
     }
     TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
     String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
+    String arriveFormat;
+    if (game.arriveEarly > 0) {
+      DateTime arriveAtTime =
+          game.tzTime.subtract(new Duration(minutes: game.arriveEarly));
+      TimeOfDay arriveDay = new TimeOfDay.fromDateTime(arriveAtTime);
+      arriveFormat =
+          MaterialLocalizations.of(context).formatTimeOfDay(arriveDay);
+    }
 
+    TZDateTime time = new TZDateTime.now(local);
+    Duration dur = time.difference(game.tzTime).abs();
+    // Within an hour.
+    String title;
+    if (dur.inMinutes < 60) {
+      title = Messages.of(context).gametitlenow(format, opName);
+    } else {
+      title = Messages.of(context).gametitle(format, opName);
+    }
+    String subtitle;
+    if (arriveFormat != null) {
+      subtitle = Messages
+          .of(context)
+          .gameaddressarriveat(arriveFormat, game.place.address);
+    } else {
+      subtitle = game.place.address;
+    }
     return new Card(
         child: new FlatButton(
       onPressed: () {
@@ -140,15 +180,11 @@ class GameCard extends StatelessWidget {
       },
       child: new ListTile(
         leading: new TeamImage(game.teamUid),
-        title: new Row(
-          children: <Widget>[
-            new Text(format + ' vs ',
-                style: new TextStyle(fontWeight: FontWeight.bold)),
-            new Text(opName)
-          ],
-        ),
-        subtitle: new Text(game.place.address),
-        trailing: _buildAvailability(context),
+        title: new Text(title,
+            overflow: TextOverflow.clip,
+            style: new TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: new Text(subtitle),
+        trailing: _buildTrailing(context),
       ),
     ));
   }
