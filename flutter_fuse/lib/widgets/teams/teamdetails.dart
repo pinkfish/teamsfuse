@@ -4,6 +4,7 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'dart:async';
+import 'package:flutter_fuse/widgets/util/teamimage.dart';
 
 class TeamDetails extends StatefulWidget {
   String teamuid;
@@ -107,8 +108,8 @@ class TeamDetailsState extends State<TeamDetails> {
     return new Column(
       children: <Widget>[
         new Center(
-            child: new Image(
-          image: new ExactAssetImage("assets/images/abstractsport.png"),
+            child: new TeamImage(
+          team.uid,
           width:
               (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
           height: screenSize.height / 4 + 20,

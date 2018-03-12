@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/util/playerimage.dart';
 
 class TeamPlayers extends StatefulWidget {
   final String _teamUid;
@@ -46,6 +47,7 @@ class TeamPlayersState extends State<TeamPlayers> {
     print('players ${_season.toJSON()}');
     _season.players.forEach((SeasonPlayer player) {
       ret.add(new ListTile(
+        leading: new PlayerImage(player.playerUid),
         title: new Text(player.displayName),
         subtitle: new Text(Messages.of(context).roleingame(player.role)),
       ));

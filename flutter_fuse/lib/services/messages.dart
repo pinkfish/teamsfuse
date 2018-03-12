@@ -433,7 +433,7 @@ class Messages {
       case GameResult.Win:
         return Intl.message('Win', name: 'Win', desc: 'Short message for win');
       case GameResult.Tie:
-        return Intl.message('Win', name: 'Tie', desc: 'Short message for tie');
+        return Intl.message('Tie', name: 'Tie', desc: 'Short message for tie');
       case GameResult.Loss:
         return Intl.message('Loss',
             name: 'Loss', desc: 'Short message for loss');
