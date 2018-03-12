@@ -19,10 +19,6 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Validations validations = new Validations();
   String email = '';
 
-  _onPressed() {
-    print("button clicked");
-  }
-
   onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
   }
@@ -39,7 +35,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      UserAuth.instance.sendPasswordResetEmail(email).then((Null) {
+      UserAuth.instance.sendPasswordResetEmail(email).then((bool user) {
         Navigator.pushNamed(context, "/");
       }).catchError((error) {
         showInSnackBar(error);
@@ -51,8 +47,6 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     this.context = context;
     final Size screenSize = MediaQuery.of(context).size;
-    //print(context.widget.toString());
-    Validations validations = new Validations();
     return new Scaffold(
         key: _scaffoldKey,
         body: new SingleChildScrollView(

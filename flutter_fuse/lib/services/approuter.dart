@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/screens/home/home.dart';
 import 'package:flutter_fuse/screens/settings/about.dart';
 import 'package:flutter_fuse/screens/settings/settings.dart';
+import 'package:flutter_fuse/screens/settings/profile.dart';
 import 'package:flutter_fuse/screens/team/team.dart';
 import 'package:flutter_fuse/screens/game/addgame.dart';
 import 'package:flutter_fuse/screens/game/editgame.dart';
+import 'package:flutter_fuse/screens/settings/editprofile.dart';
 import 'package:flutter_fuse/screens/team/editteam.dart';
 import 'package:flutter_fuse/screens/game/gamedetails.dart';
 
@@ -26,6 +28,14 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new HomeScreen()));
+    router.define("/Profile",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new ProfileScreen()));
+    router.define("/EditProfile/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new EditProfileScreen(vals["id"])));
     router.define("/Settings",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

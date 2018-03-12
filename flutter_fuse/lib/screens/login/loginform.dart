@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
-import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key key}) : super(key: key);
@@ -38,7 +38,7 @@ class LoginScreenState extends State<LoginScreen> {
       form.save();
       // Login!
       print(person);
-      UserAuth.instance.signIn(person).then((FirebaseUser) {
+      UserAuth.instance.signIn(person).then((FirebaseUser user) {
         print('Home page');
         Navigator.of(context).pushNamed("/Home");
       }).catchError((error) {

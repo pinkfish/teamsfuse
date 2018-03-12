@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'dart:async';
 import 'loginform.dart';
@@ -14,7 +12,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  static UserData currentUser = null;
+  static UserData currentUser;
   static bool loaded = false;
   static bool loadOnMounted = false;
 
@@ -33,7 +31,7 @@ class SplashScreenState extends State<SplashScreen> {
     if (!loaded) {
       currentUser = await UserAuth.instance.currentUser();
     }
-    print('Got current user ${currentUser}');
+    print('Got current user $currentUser');
     setState(() {
       loaded = true;
     });

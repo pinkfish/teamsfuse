@@ -4,7 +4,7 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/teams/teameditform.dart';
 
 class EditTeamScreen extends StatefulWidget {
-  String teamUid;
+  final String teamUid;
 
   EditTeamScreen(this.teamUid);
 
@@ -20,7 +20,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   EditTeamScreenState(String teamuid) {
-    print('team uid ${teamuid}');
+    print('team uid $teamuid');
     if (UserDatabaseData.instance.teams.containsKey(teamuid)) {
       this._team = new Team.copy(UserDatabaseData.instance.teams[teamuid]);
       print('Existing team uid ${_team.toJSON()}');

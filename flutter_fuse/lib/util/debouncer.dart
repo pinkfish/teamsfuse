@@ -19,7 +19,7 @@ class Debouncer<Val> {
 
   Debouncer(this._delay, this._callback, {this.atBegin = false, this.resetOnAdd});
 
-  Timer _timeoutId = null;
+  Timer _timeoutId;
 
   void _exec() {
     _callback(_data);

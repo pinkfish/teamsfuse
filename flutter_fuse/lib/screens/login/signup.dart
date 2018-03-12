@@ -21,11 +21,7 @@ class SignupScreenState extends State<SignupScreen> {
   Validations validations = new Validations();
   UserData person = new UserData();
 
-  _onPressed() {
-    print("button clicked");
-  }
-
-  onPressed(String routeName) {
+ void  _onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
   }
 
@@ -183,12 +179,12 @@ class SignupScreenState extends State<SignupScreen> {
                             new FlatButton(
                               child: const Text("Login"),
                               textColor: Theme.of(context).accentColor,
-                              onPressed: () => onPressed("/"),
+                              onPressed: () => _onPressed("/"),
                             ),
                             new FlatButton(
                                 child: const Text("Forgot Password"),
                                 textColor: Theme.of(context).accentColor,
-                                onPressed: () => onPressed("/ForgotPassword")),
+                                onPressed: () => _onPressed("/ForgotPassword")),
                           ],
                         )
                       ],

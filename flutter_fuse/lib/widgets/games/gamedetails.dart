@@ -108,7 +108,7 @@ class GameDetailsState extends State<GameDetails> {
                         child: new Container(
                             padding: const EdgeInsets.all(20.0),
                             child: loadingWidget)),
-                    imageUrl: uri.toString())),
+                    imageNow: uri.toString())),
           )),
     );
 

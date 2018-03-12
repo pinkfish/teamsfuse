@@ -4,8 +4,6 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/games/gamedetails.dart';
 import 'package:flutter_fuse/widgets/games/availability.dart';
 
-import 'dart:async';
-
 class GameDetailsScreen extends StatefulWidget {
   GameDetailsScreen(this.gameUid);
 

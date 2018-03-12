@@ -5,8 +5,6 @@ import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/games/gameeditform.dart';
 
 class AddGameScreen extends StatefulWidget {
-  String gameuid;
-
   AddGameScreen();
 
   @override
@@ -24,7 +22,7 @@ class AddGameScreenState extends State<AddGameScreen> {
   StepState createStepStage = StepState.disabled;
   int currentStep = 0;
 
-  AddGameScreenState() {}
+  AddGameScreenState();
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState

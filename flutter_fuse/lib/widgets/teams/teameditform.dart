@@ -7,12 +7,13 @@ import 'package:flutter_fuse/widgets/form/sportformfield.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
 
 class TeamEditForm extends StatefulWidget {
-  Team team;
+  final Team team;
 
   TeamEditForm(this.team, GlobalKey<TeamEditFormState> key) : super(key: key);
 
@@ -29,7 +30,7 @@ class TeamEditFormState extends State<TeamEditForm> {
   Validations _validations = new Validations();
   ScrollController _scrollController = new ScrollController();
   FocusNode _focusNode = new FocusNode();
-  File _imageFile = null;
+  File _imageFile;
   bool _changedImage = false;
 
   TeamEditFormState(this.team);
@@ -67,7 +68,7 @@ class TeamEditFormState extends State<TeamEditForm> {
     }
   }
 
-  Image _buildImage() {
+  Widget _buildImage() {
     if (!_changedImage) {
       return new TeamImage(team.uid);
     }
@@ -133,7 +134,7 @@ class TeamEditFormState extends State<TeamEditForm> {
                           }),
                       new GenderFormField(
                           decoration: new InputDecoration(
-                            icon: const Icon(Icons.person),
+                            icon: const Icon(CommunityIcons.gendermalefemale),
                             hintText: Messages.of(context).genderselect,
                             labelText: Messages.of(context).genderselect,
                           ),

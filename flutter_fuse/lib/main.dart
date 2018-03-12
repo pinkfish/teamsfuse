@@ -5,7 +5,7 @@ void main() {
   CacheManager.getInstance().then((CacheManager man) {
     print('got manager');
   }).catchError((Exception error) {
-    print('Got error ${error}');
+    print('Got error $error');
   });
   new Routes();
 }

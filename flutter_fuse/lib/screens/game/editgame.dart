@@ -4,7 +4,7 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/games/gameeditform.dart';
 
 class EditGameScreen extends StatefulWidget {
-  String gameuid;
+  final String gameuid;
 
   EditGameScreen(this.gameuid);
 

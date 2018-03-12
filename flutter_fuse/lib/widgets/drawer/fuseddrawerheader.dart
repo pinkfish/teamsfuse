@@ -31,6 +31,10 @@ class FusedDrawerHeaderState extends State<FusedDrawerHeader> {
     }
   }
 
+  void _showProfile() {
+    Navigator.pushNamed(context, "Profile");
+  }
+
   @override
   Widget build(BuildContext context) {
     return new UserAccountsDrawerHeader(
@@ -44,6 +48,7 @@ class FusedDrawerHeaderState extends State<FusedDrawerHeader> {
           "assets/images/defaultavatar2.png",
         ),
       ),
+      onDetailsPressed: _showProfile,
       accountName: new Text(
           user != null ? user.displayName : Messages.of(context).unknown),
       accountEmail:

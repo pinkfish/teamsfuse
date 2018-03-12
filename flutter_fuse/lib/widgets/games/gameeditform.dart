@@ -9,7 +9,9 @@ import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/screens/game/addopponent.dart';
-import 'package:flutter_fuse/services/approuter.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:map_view/map_view.dart';
+
 
 // This form has all the stuff needed to edit the main parts
 // of the game.  Does not have the add game step flow.
@@ -178,6 +180,14 @@ class EditGameFormState extends State<EditGameForm> {
                         },
                         onFieldSubmitted: this._changeAtTime,
                       ),
+                      new FlatButton(onPressed: () {
+                        MapView.openPlacePickerModal().then((Map<String, dynamic> val) {
+                          print('places ret ${val}');
+                        }).catchError((Object err) {
+                          print('${err} Error!');
+                        });
+                      },
+                      child: new Text('Place')),
                       new Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         mainAxisSize: MainAxisSize.min,
@@ -214,7 +224,7 @@ class EditGameFormState extends State<EditGameForm> {
                         focusNode: _focusNode,
                         child: new TextFormField(
                             decoration: new InputDecoration(
-                              icon: const Icon(Icons.event_note),
+                              icon: const Icon(CommunityIcons.tshirtcrew),
                               hintText: Messages.of(context).uniformhint,
                               labelText: Messages.of(context).uniform,
                             ),

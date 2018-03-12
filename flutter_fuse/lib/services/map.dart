@@ -1,7 +1,7 @@
 import 'package:map_view/map_view.dart';
 
 class MapData {
-  final String APIKEY = "AIzaSyC0nzXvh-NqEV5c1Qoa-DCUY6iVXG0HcGQ";
+  static const String _APIKEY = "AIzaSyC0nzXvh-NqEV5c1Qoa-DCUY6iVXG0HcGQ";
 
   static MapData _instance;
   StaticMapProvider _providerData;
@@ -18,9 +18,17 @@ class MapData {
   }
 
   MapData() {
-    MapView.setApiKey(APIKEY);
+    MapView.setApiKey(_APIKEY);
 
-    _providerData = new StaticMapProvider(APIKEY);
+    _providerData = new StaticMapProvider(_APIKEY);
+  }
+
+  void openPlacesPickerModal() {
+    MapView.openPlacePickerModal().then((Map<String, dynamic> val) {
+      print('places ret ${val}');
+    }).catchError((Object err) {
+      print('${err} Error!');
+    });
   }
 }
 

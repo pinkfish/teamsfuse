@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
+import 'cachednetworkimage.dart';
 
 class TeamImage extends Image {
   TeamImage(String teamUid,
@@ -11,37 +12,35 @@ class TeamImage extends Image {
       BoxFit fit,
       AlignmentGeometry alignment: Alignment.center,
       ImageRepeat repeat: ImageRepeat.noRepeat,
-      Rect centerSlice,
-      bool matchTextDirection: false,
-      bool gaplessPlayback: false})
+      bool matchTextDirection: false})
       : super(
-            image: getImageProvider(teamUid),
-            key: key,
+            image: getImageURL(teamUid),
+      key: key,
             width: width,
             height: height,
-            color: color,
-            colorBlendMode: colorBlendMode,
             fit: fit,
             alignment: alignment,
             repeat: repeat,
-            centerSlice: centerSlice,
-            matchTextDirection: matchTextDirection,
-            gaplessPlayback: gaplessPlayback);
+             matchTextDirection: matchTextDirection);
 
-  static ImageProvider getImageProvider(String teamUid) {
-    ImageProvider logo;
+  static ImageProvider getImageURL(String teamUid) {
+    if (UserDatabaseData.instance.teams.containsKey(teamUid)) {
+      return new CachedNetworkImageProvider(urlNow: UserDatabaseData.instance.teams[teamUid].photoUrl);
+    }
+    return const AssetImage("assets/images/defaultavatar.png");
+  }
+
+  static Widget getPlaceholderImage(String teamUid, Color color, BlendMode colorBlendMode) {
+     Widget placeholder;
+
     if (UserDatabaseData.instance.teams.containsKey(teamUid)) {
       Team team = UserDatabaseData.instance.teams[teamUid];
-      if (team.photoUrl != null) {
-        logo = new NetworkImage(team.photoUrl);
+      placeholder =
+        new Image(image: new AssetImage('assets/sports/' + team.sport.toString() + '.png'), color: color, colorBlendMode: colorBlendMode);
       } else {
-        logo =
-            new AssetImage('assets/sports/' + team.sport.toString() + '.png');
-      }
+      placeholder =  new Image(image: const AssetImage('assets/images/defaultavatar.png'), color: color, colorBlendMode: colorBlendMode);
     }
-    if (logo == null) {
-      logo = new AssetImage('assets/images/defaultavatar.png');
-    }
-    return logo;
+
+    return placeholder;
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
-import 'dart:async';
 
 import 'fuseddrawerheader.dart';
 import 'package:flutter_fuse/services/approuter.dart';

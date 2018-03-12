@@ -431,11 +431,9 @@ class Messages {
       case GameResult.InProgress:
         return unknown;
       case GameResult.Win:
-        return Intl.message('Win',
-            name: 'Win', desc: 'Short message for win');
+        return Intl.message('Win', name: 'Win', desc: 'Short message for win');
       case GameResult.Tie:
-        return Intl.message('Win',
-            name: 'Tie', desc: 'Short message for tie');
+        return Intl.message('Win', name: 'Tie', desc: 'Short message for tie');
       case GameResult.Loss:
         return Intl.message('Loss',
             name: 'Loss', desc: 'Short message for loss');
@@ -500,6 +498,18 @@ class Messages {
     return unknown;
   }
 
+  String roleingame(RoleInTeam role) {
+    switch (role) {
+      case RoleInTeam.Player:
+        return Intl.message("Player", desc: "Player role in the team");
+      case RoleInTeam.Coach:
+        return Intl.message("Coach", desc: "Coach role in the team");
+      case RoleInTeam.NonPlayer:
+        return Intl.message("Non Player", desc: "Non Player role in the team");
+    }
+    return unknown;
+  }
+
   String get startgame {
     return Intl.message('Start Game', desc: 'Start game dialofg title');
   }
@@ -512,6 +522,23 @@ class Messages {
   String get finalscore {
     return Intl.message('Final score', desc: 'Final score dialofg title');
   }
+
+  String get displayname {
+    return Intl.message('Name', desc: 'Name for the edit box to edit the user name');
+  }
+
+  String get displaynamehint {
+    return Intl.message('Your name', desc: 'Name for the edit box to edit the user name');
+  }
+
+  String get phonenumber {
+    return Intl.message('Phone Number', desc: 'Phone number for the edit box to edit the user name');
+  }
+
+  String get phonenumberhint {
+    return Intl.message('Contact phone number', desc: 'Phone number for the edit box to edit the user name');
+  }
+
 
   String finalscorebody(num ptsFor, num ptsAgainst, String result) {
     return Intl.message(
@@ -530,7 +557,8 @@ class Messages {
   }
 
   String gametitle(String time, String opponent) {
-    return Intl.message('${time} vs ${opponent}', desc: 'Game title in game list');
+    return Intl.message('${time} vs ${opponent}',
+        desc: 'Game title in game list');
   }
 
   String gametitlenow(String time, String opponent) {
@@ -543,11 +571,10 @@ class Messages {
         desc: 'Game address in game list with arrive by');
   }
 
-  String get players{
+  String get players {
     return Intl.message('Players',
         desc: 'Title in the bottom navigation tab for players');
   }
-
 }
 
 class MessagesDelegate extends LocalizationsDelegate<Messages> {

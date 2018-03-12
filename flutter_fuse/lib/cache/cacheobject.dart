@@ -13,13 +13,18 @@ class CacheObject {
   static const _keyValidTill = "validTill";
   static const _keyETag = "ETag";
   static const _keyTouched = "touched";
+  static Directory _directory;
 
-  Future<String> getFilePath() async {
+  static void initDirectory() async {
+     _directory = await getTemporaryDirectory();
+  }
+
+  String getFilePath() {
     if(relativePath == null){
       return null;
     }
-    Directory directory = await getTemporaryDirectory();
-    return directory.path + relativePath;
+
+    return _directory.path + relativePath;
   }
 
   DateTime touched;
@@ -119,8 +124,8 @@ class CacheObject {
     }
 
     if (relativePath == null) {
-      var fileName = "cache/${new Uuid().v1()}${fileExtension}";
-      _map[_keyFilePath] = "${fileName}";
+      var fileName = "cache/${new Uuid().v1()}$fileExtension";
+      _map[_keyFilePath] = "$fileName";
     }
 
   }

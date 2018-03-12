@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluro/fluro.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:timezone/timezone.dart';
 
@@ -16,7 +15,6 @@ import 'package:flutter_fuse/services/messages.dart';
 
 class Routes {
   UserData _currentUser;
-  UserDatabaseData _data;
 
   final loggedOutRoutes = <String, WidgetBuilder>{
     "/Home": (BuildContext context) => new LoginScreen(),
@@ -50,13 +48,6 @@ class Routes {
   }
 
   void _authChanged(UserData user) async {
-    bool changePages = false;
-    if (_currentUser != null && user == null) {
-      changePages = true;
-    }
-    if (_currentUser == null && user != null) {
-      changePages = true;
-    }
     _currentUser = user;
     if (user != null) {
       final data = await rootBundle.load('assets/timezone/2018c.tzf');
@@ -70,7 +61,6 @@ class Routes {
   Routes() {
     // Subscribe to auth changes.
     UserAuth.instance.onAuthChanged().listen(_authChanged);
-    Router router = new Router();
     app = new MaterialApp(
         localizationsDelegates: [
           const MessagesDelegate(),

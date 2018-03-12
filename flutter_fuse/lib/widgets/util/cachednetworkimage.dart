@@ -32,7 +32,8 @@ class CachedNetworkImage extends StatefulWidget {
   const CachedNetworkImage({
     Key key,
     this.placeholder,
-    @required this.imageUrl,
+    this.imageNow,
+    this.imageFuture,
     this.errorWidget,
     this.fadeOutDuration: const Duration(milliseconds: 300),
     this.fadeOutCurve: Curves.easeOut,
@@ -45,7 +46,7 @@ class CachedNetworkImage extends StatefulWidget {
     this.repeat: ImageRepeat.noRepeat,
     this.matchTextDirection: false,
   })
-      : assert(imageUrl != null),
+      : assert(imageFuture != null || imageNow != null),
         assert(fadeOutDuration != null),
         assert(fadeOutCurve != null),
         assert(fadeInDuration != null),
@@ -59,7 +60,10 @@ class CachedNetworkImage extends StatefulWidget {
   final Widget placeholder;
 
   /// The target image that is displayed.
-  final String imageUrl;
+  final Future<String> imageFuture;
+
+  /// The target image that is displayed.
+  final String imageNow;
 
   /// Widget displayed while the target [imageUrl] failed loading.
   final Widget errorWidget;
@@ -156,6 +160,9 @@ enum ImagePhase {
   /// wait for the image to load.
   start,
 
+  // After starting we wait a bit to see if we can show the image with a fast fadein.
+  starttimeout,
+
   /// Waiting for the target image to load.
   waiting,
 
@@ -218,16 +225,19 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
 
   ImagePhase _phase = ImagePhase.start;
   ImagePhase get phase => _phase;
+  Timer _timer;
 
   bool _hasError;
 
   @override
   void initState() {
     _hasError = false;
-    _imageProvider = new CachedNetworkImageProvider(widget.imageUrl,
+    _imageProvider = new CachedNetworkImageProvider(
+        urlNow: widget.imageNow,
+        urlFuture: widget.imageFuture,
         errorListener: _imageLoadingFailed);
     _imageResolver =
-    new _ImageProviderResolver(state: this, listener: _updatePhase);
+        new _ImageProviderResolver(state: this, listener: _updatePhase);
 
     _controller = new AnimationController(
       value: 1.0,
@@ -243,6 +253,11 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
     });
 
     super.initState();
+    _timer = new Timer(const Duration(milliseconds: 50), () {
+      if (_phase == ImagePhase.start) {
+        _phase = ImagePhase.starttimeout;
+      }
+    });
   }
 
   @override
@@ -250,9 +265,9 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
     _imageProvider
         .obtainKey(createLocalImageConfiguration(context))
         .then<void>((CachedNetworkImageProvider key) {
-    if (CachedNetworkImage._registeredErrors.contains(key)) {
-    setState(() => _hasError = true);
-    }
+      if (CachedNetworkImage._registeredErrors.contains(key)) {
+        setState(() => _hasError = true);
+      }
     });
 
     _resolveImage();
@@ -262,8 +277,10 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
   @override
   void didUpdateWidget(CachedNetworkImage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.imageUrl != oldWidget.imageUrl ||
-        widget.placeholder != widget.placeholder) _resolveImage();
+    if (widget.imageFuture != oldWidget.imageFuture ||
+        widget.placeholder != widget.placeholder) {
+      _resolveImage();
+    }
   }
 
   @override
@@ -275,28 +292,36 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
   void _resolveImage() {
     _imageResolver.resolve(_imageProvider);
 
-    if (_phase == ImagePhase.start) _updatePhase();
+    if (_phase == ImagePhase.start) {
+      _updatePhase();
+    }
   }
 
   void _updatePhase() {
     setState(() {
       switch (_phase) {
         case ImagePhase.start:
-          if (_imageResolver._imageInfo != null || _hasError)
+          if (_imageResolver._imageInfo != null || _hasError) {
             _phase = ImagePhase.completed;
-          else
+          }
+          break;
+        case ImagePhase.starttimeout:
+          if (_imageResolver._imageInfo != null || _hasError) {
+            _phase = ImagePhase.completed;
+          } else {
             _phase = ImagePhase.waiting;
+          }
           break;
         case ImagePhase.waiting:
-          if(_hasError && widget.errorWidget == null){
+          if (_hasError && widget.errorWidget == null) {
             _phase = ImagePhase.completed;
             return;
           }
 
           if (_imageResolver._imageInfo != null || _hasError) {
-            if(widget.placeholder == null){
+            if (widget.placeholder == null) {
               _startFadeIn();
-            }else{
+            } else {
               _startFadeOut();
             }
           }
@@ -313,14 +338,14 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
           }
           break;
         case ImagePhase.completed:
-        // Nothing to do.
+          // Nothing to do.
           break;
       }
     });
   }
 
   // Received image data. Begin placeholder fade-out.
-  void _startFadeOut(){
+  void _startFadeOut() {
     _controller.duration = widget.fadeOutDuration;
     _animation = new CurvedAnimation(
       parent: _controller,
@@ -331,7 +356,7 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
   }
 
   // Done fading out placeholder. Begin target image fade-in.
-  void _startFadeIn(){
+  void _startFadeIn() {
     _controller.duration = widget.fadeInDuration;
     _animation = new CurvedAnimation(
       parent: _controller,
@@ -351,6 +376,7 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
   bool get _isShowingPlaceholder {
     assert(_phase != null);
     switch (_phase) {
+      case ImagePhase.starttimeout:
       case ImagePhase.start:
       case ImagePhase.waiting:
       case ImagePhase.fadeOut:
@@ -367,9 +393,9 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
     _imageProvider
         .obtainKey(createLocalImageConfiguration(context))
         .then<void>((CachedNetworkImageProvider key) {
-    if (!CachedNetworkImage._registeredErrors.contains(key)) {
-    CachedNetworkImage._registeredErrors.add(key);
-    }
+      if (!CachedNetworkImage._registeredErrors.contains(key)) {
+        CachedNetworkImage._registeredErrors.add(key);
+      }
     });
     _hasError = true;
     _updatePhase();
@@ -401,7 +427,7 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
     );
   }
 
-  Widget _fadedWidget(Widget w){
+  Widget _fadedWidget(Widget w) {
     return new Opacity(
       opacity: _animation?.value ?? 1.0,
       child: w,
@@ -423,16 +449,17 @@ typedef void ErrorListener();
 
 class CachedNetworkImageProvider
     extends ImageProvider<CachedNetworkImageProvider> {
-
   /// Creates an ImageProvider which loads an image from the [url], using the [scale].
   /// When the image fails to load [errorListener] is called.
-  const CachedNetworkImageProvider(this.url,
-      {this.scale: 1.0, this.errorListener})
-      : assert(url != null),
+  const CachedNetworkImageProvider(
+      {this.urlNow, this.urlFuture, this.scale: 1.0, this.errorListener})
+      : assert(urlNow != null || urlFuture != null),
         assert(scale != null);
 
   /// Web url of the image to load
-  final String url;
+  final String urlNow;
+
+  final Future<String> urlFuture;
 
   /// Scale of the image
   final double scale;
@@ -449,9 +476,7 @@ class CachedNetworkImageProvider
   @override
   ImageStreamCompleter load(CachedNetworkImageProvider key) {
     return new MultiFrameImageStreamCompleter(
-        codec: _loadAsync(key).catchError((e) {
-          if (errorListener != null) errorListener();
-        }),
+        codec: _loadAsync(key),
         scale: key.scale,
         informationCollector: (StringBuffer information) {
           information.writeln('Image provider: $this');
@@ -459,13 +484,34 @@ class CachedNetworkImageProvider
         });
   }
 
-  Future<ui.Codec> _loadAsync(CachedNetworkImageProvider key) async {
+  // Never return if the file is not found.
+  Future<ui.Codec> _loadAsync(CachedNetworkImageProvider key) {
     print('load async');
-    CacheManager cacheManager = await CacheManager.getInstance();
-    print('got the cache mamanger');
-    File file = await cacheManager.getFile(url);
-    print('did get file');
-    return _loadAsyncFromFile(key, file);
+    Completer<ui.Codec> completer = new Completer<ui.Codec>();
+    _internalLoadAsync(key, completer);
+    return completer.future;
+  }
+
+  void _internalLoadAsync(
+      CachedNetworkImageProvider key, Completer<ui.Codec> completer) async {
+    String url = urlNow;
+
+    if (urlFuture != null) {
+      url = await urlFuture;
+    }
+    try {
+      CacheManager manager = await CacheManager.getInstance();
+      print('got the cache mamanger');
+      File f = await manager.getFile(url);
+      print('did get file');
+      if (f != null) {
+        _loadAsyncFromFile(key, f).then((ui.Codec codec) {
+          completer.complete(codec);
+        });
+      }
+    } catch (error) {
+      completer.completeError(error);
+    }
   }
 
   Future<ui.Codec> _loadAsyncFromFile(
@@ -482,12 +528,12 @@ class CachedNetworkImageProvider
   bool operator ==(dynamic other) {
     if (other.runtimeType != runtimeType) return false;
     final CachedNetworkImageProvider typedOther = other;
-    return url == typedOther.url && scale == typedOther.scale;
+    return urlNow == typedOther.urlNow && scale == typedOther.scale;
   }
 
   @override
-  int get hashCode => hashValues(url, scale);
+  int get hashCode => hashValues(urlNow, urlFuture, scale);
 
   @override
-  String toString() => '$runtimeType("$url", scale: $scale)';
+  String toString() => '$runtimeType("$urlNow", scale: $scale)';
 }
