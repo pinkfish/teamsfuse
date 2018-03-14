@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
+import 'dart:async';
 
 class TeamPlayers extends StatefulWidget {
   final String _teamUid;
@@ -19,12 +20,59 @@ class TeamPlayersState extends State<TeamPlayers> {
   String _seasonUid;
   Team _team;
   Season _season;
+  List<Invite> _invites;
+  StreamSubscription<UpdateReason> _updateStream;
+  StreamSubscription<List<Invite>> _inviteStream;
 
   TeamPlayersState(this._teamUid) {
     _team = UserDatabaseData.instance.teams[_teamUid];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updateSeason(_team.currentSeason);
+    _updateStream = _team.thisTeamStream.listen((UpdateReason upd) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void deactivate() {
+    if (_updateStream != null) {
+      _updateStream.cancel();
+      _updateStream = null;
+    }
+    if (_inviteStream != null) {
+      _inviteStream.cancel();
+      _inviteStream = null;
+    }
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    if (_updateStream != null) {
+      _updateStream.cancel();
+      _updateStream = null;
+    }
+    if (_inviteStream != null) {
+      _inviteStream.cancel();
+      _inviteStream = null;
+    }
+    super.dispose();
+  }
+
+  void updateSeason(String seasonUid) {
     if (_team.seasons.containsKey(_team.currentSeason)) {
       _seasonUid = _team.currentSeason;
       _season = _team.seasons[_team.currentSeason];
+      // Look for the invites.
+      _inviteStream = _season.inviteStream.listen((List<Invite> invites) {
+        setState(() {
+          _invites = invites;
+        });
+      });
     }
   }
 
@@ -41,6 +89,45 @@ class TeamPlayersState extends State<TeamPlayers> {
     return ret;
   }
 
+  void _deleteInvite(Invite invite) async {
+    Messages mess = Messages.of(context);
+    // Show an alert dialog first.
+    bool result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      child: new AlertDialog(
+        title: new Text(mess.deleteinvite),
+        content: new SingleChildScrollView(
+          child: new ListBody(
+            children: <Widget>[
+              new Text(mess.confirmdelete(invite)),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+            onPressed: () {
+              // Do the delete.
+              Navigator.of(context).pop(true);
+
+            },
+          ),
+          new FlatButton(
+            child:
+            new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+          ),
+        ],
+      ),
+    );
+if (result) {
+  invite.firestoreDelete();
+}
+  }
+
   List<Widget> _buildPlayers() {
     List<Widget> ret = new List<Widget>();
 
@@ -52,6 +139,43 @@ class TeamPlayersState extends State<TeamPlayers> {
         subtitle: new Text(Messages.of(context).roleingame(player.role)),
       ));
     });
+    ret.add(new ListTile(
+        title: new FlatButton(
+            textColor: Theme.of(context).accentColor,
+            onPressed: () {
+              Navigator.pushNamed(
+                  context, "AddPlayer/" + _teamUid + "/" + _seasonUid);
+            },
+            child: new Text(Messages.of(context).addplayer))));
+
+    // Put in an expansion bar if there are pending invites.
+    if (_invites != null && _invites.length > 0 && _team.isAdmin()) {
+      List<Widget> kids = new List<Widget>();
+      _invites.forEach((Invite inv) {
+        kids.add(
+          new ListTile(
+            title: new Row(
+              children: inv.playerName.map((String name) {
+                return new Chip(
+                    backgroundColor: Colors.lightBlueAccent,
+                    label: new Text(name));
+              }).toList(),
+            ),
+            leading: const Icon(Icons.email),
+            subtitle: new Text(inv.email),
+            trailing: new IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                _deleteInvite(inv);
+              },
+            ),
+          ),
+        );
+      });
+      ret.add(new ExpansionTile(
+          title: new Text(Messages.of(context).invitedpeople(_invites.length)),
+          children: kids));
+    }
     return ret;
   }
 
@@ -62,24 +186,32 @@ class TeamPlayersState extends State<TeamPlayers> {
 
     return new Column(
       children: <Widget>[
-        new DropdownButton(
-            hint: new Text(messsages.seasonselect),
-            value: _seasonUid,
-            items: _buildItems(context),
-            onChanged: (dynamic val) {
-              print('changed $val');
-              setState(() {
-                _seasonUid = val;
-                _season = _team.seasons[val];
-              });
-            }),
+        new Row(
+          children: <Widget>[
+            new DropdownButton(
+              hint: new Text(messsages.seasonselect),
+              value: _seasonUid,
+              items: _buildItems(context),
+              onChanged: (dynamic val) {
+                print('changed $val');
+                setState(() {
+                  _seasonUid = val;
+                  _season = _team.seasons[val];
+                });
+              },
+            ),
+          ],
+        ),
         new Expanded(
-            child: new Container(
-                constraints: new BoxConstraints(),
-                margin: new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-                decoration: new BoxDecoration(color: theme.cardColor),
-                child: new SingleChildScrollView(
-                    child: new Column(children: _buildPlayers()))))
+          child: new Container(
+            constraints: new BoxConstraints(),
+            margin: new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+            decoration: new BoxDecoration(color: theme.cardColor),
+            child: new SingleChildScrollView(
+              child: new Column(children: _buildPlayers()),
+            ),
+          ),
+        )
       ],
     );
   }

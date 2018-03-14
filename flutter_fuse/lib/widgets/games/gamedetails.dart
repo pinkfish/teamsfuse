@@ -9,6 +9,7 @@ import 'package:flutter_fuse/widgets/games/editresultdialog.dart';
 import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 
 import 'dart:async';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
 
 class GameDetails extends StatefulWidget {
   GameDetails(this.gameUid);
@@ -125,7 +126,7 @@ class GameDetailsState extends State<GameDetails> {
 
     // Map details
     body.add(new ListTile(
-      leading: new Icon(Icons.map),
+      leading: new Icon(Icons.directions),
       title: new Text(dateStr + " " + timeStr,
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor)),
       subtitle: new Text(game.place.address),
@@ -159,13 +160,13 @@ class GameDetailsState extends State<GameDetails> {
     }
     body.add(new ListTile(
         onTap: this._editResult,
-        leading: new Icon(Icons.score),
+        leading: new Icon(CommunityIcons.bookopenvariant),
         title: new Text(title, style: resultStyle)));
 
     // Uniform
     if (game.uniform != null && !game.uniform.isEmpty) {
       body.add(new ListTile(
-          leading: const Icon(Icons.check),
+          leading: const Icon(CommunityIcons.tshirtcrew),
           title: new Text(game.uniform == null ? 'fluff' : game.uniform)));
     }
 
@@ -176,18 +177,27 @@ class GameDetailsState extends State<GameDetails> {
     }
 
     // Opponent last games.
+    String seasonName;
+    if (team.seasons.containsKey(game.seasonUid)) {
+      seasonName = team.seasons[game.seasonUid].name;
+    } else {
+      seasonName = Messages.of(context).unknown;
+    }
     body.add(new ExpansionTile(
       onExpansionChanged: this._opponentExpansionChanged,
       title: new Row(children: <Widget>[
-        new Text(opponent.name,
-            style:
-                theme.textTheme.subhead.copyWith(fontWeight: FontWeight.bold)),
-        new Text(Messages.of(context).oppoentwinrecord(opponent))
+        new Text(Messages.of(context).opponentwinrecord(opponent, game.seasonUid, seasonName))
       ]),
       initiallyExpanded: false,
       leading: const Icon(Icons.people),
       children: <Widget>[],
     ));
+    if (team.seasons.length > 1) {
+      body.add(new ExpansionTile(title: new Text(Messages.of(context).previousSeasons),
+      initiallyExpanded:  false,
+      leading: const Icon(Icons.people),
+      children: <Widget>[]));
+    }
 
     return new Column(
         mainAxisAlignment: MainAxisAlignment.start, children: body);

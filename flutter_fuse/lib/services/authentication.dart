@@ -103,7 +103,6 @@ class UserAuth {
     user.uid = input.uid;
     user.isEmailVerified = input.isEmailVerified;
     _currentUser = user;
-    _tokenId = await input.getIdToken();
     return user;
   }
 

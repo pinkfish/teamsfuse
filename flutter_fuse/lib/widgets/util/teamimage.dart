@@ -25,7 +25,10 @@ class TeamImage extends Image {
 
   static ImageProvider getImageURL(String teamUid) {
     if (UserDatabaseData.instance.teams.containsKey(teamUid)) {
-      return new CachedNetworkImageProvider(urlNow: UserDatabaseData.instance.teams[teamUid].photoUrl);
+      String photoUrl = UserDatabaseData.instance.teams[teamUid].photoUrl;
+      if (photoUrl != null && photoUrl.isNotEmpty) {
+        return new CachedNetworkImageProvider(urlNow: photoUrl);
+      }
     }
     return const AssetImage("assets/images/defaultavatar.png");
   }

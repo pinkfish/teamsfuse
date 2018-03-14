@@ -69,8 +69,10 @@ class SeasonFormFieldState extends FormFieldState<String> {
   @override
   void dispose() {
     super.dispose();
-    teamSubscription.cancel();
-    teamSubscription = null;
+    if (teamSubscription != null) {
+      teamSubscription.cancel();
+      teamSubscription = null;
+    }
   }
 
   List<DropdownMenuItem> _buildItems(BuildContext context) {

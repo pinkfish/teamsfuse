@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
+import 'package:flutter_fuse/services/messages.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key key}) : super(key: key);
@@ -34,7 +35,7 @@ class SignupScreenState extends State<SignupScreen> {
     final FormState form = formKey.currentState;
     if (!form.validate()) {
       autovalidate = true; // Start validating on every change.
-      showInSnackBar('Please fix the errors in red before submitting.');
+      showInSnackBar(Messages.of(context).formerror);
     } else {
       form.save();
       Navigator.pushNamed(context, "/HomePage");
@@ -42,11 +43,11 @@ class SignupScreenState extends State<SignupScreen> {
   }
 
   String _validatePassword(String value) {
-    final FormFieldState<String> passwordField = _passwordFieldKey.currentState;
-    if (passwordField.value == null || passwordField.value.isEmpty)
-      return 'Please choose a password.';
-    if (passwordField.value != value) return 'Passwords don\'t match';
-    return null;
+   String old = _passwordFieldKey.currentState.value;
+   if (value != old) {
+     return Messages.of(context).passwordsnotmatching;
+   }
+   return null;
   }
 
   @override
@@ -92,10 +93,10 @@ class SignupScreenState extends State<SignupScreen> {
                           child: new Column(
                             children: <Widget>[
                               new TextFormField(
-                                  decoration: const InputDecoration(
+                                  decoration: new InputDecoration(
                                     icon: const Icon(Icons.account_box),
-                                    hintText: 'Name',
-                                    labelText: 'Name',
+                                    hintText: Messages.of(context).displaynamehint,
+                                    labelText: Messages.of(context).displayname
                                   ),
                                   keyboardType: TextInputType.text,
                                   obscureText: false,
@@ -107,10 +108,10 @@ class SignupScreenState extends State<SignupScreen> {
                                     person.displayName = value;
                                   }),
                               new TextFormField(
-                                  decoration: const InputDecoration(
+                                  decoration: new InputDecoration(
                                     icon: const Icon(Icons.email),
-                                    hintText: 'Your email address',
-                                    labelText: 'E-mail',
+                                    hintText: Messages.of(context).youremailHint,
+                                    labelText: Messages.of(context).email,
                                   ),
                                   keyboardType: TextInputType.emailAddress,
                                   obscureText: false,
@@ -122,10 +123,10 @@ class SignupScreenState extends State<SignupScreen> {
                                     person.email = value;
                                   }),
                               new TextFormField(
-                                  decoration: const InputDecoration(
+                                  decoration: new InputDecoration(
                                     icon: const Icon(Icons.phone),
-                                    hintText: 'Phone Number (optional)',
-                                    labelText: 'Phone number',
+                                    hintText: Messages.of(context).phonenumberhintoptional,
+                                    labelText: Messages.of(context).phonenumber,
                                   ),
                                   keyboardType: TextInputType.phone,
                                   obscureText: false,
@@ -137,10 +138,10 @@ class SignupScreenState extends State<SignupScreen> {
                                     person.email = value;
                                   }),
                               new TextFormField(
-                                  decoration: const InputDecoration(
+                                  decoration: new InputDecoration(
                                     icon: const Icon(Icons.lock),
-                                    hintText: 'Password',
-                                    labelText: 'Password',
+                                    hintText: Messages.of(context).password,
+                                    labelText: Messages.of(context).password,
                                   ),
                                   obscureText: true,
                                   validator: (String str) {
@@ -152,10 +153,10 @@ class SignupScreenState extends State<SignupScreen> {
                                     person.password = password;
                                   }),
                               new TextFormField(
-                                  decoration: const InputDecoration(
+                                  decoration: new InputDecoration(
                                     icon: const Icon(Icons.lock),
-                                    hintText: 'Verify Password',
-                                    labelText: 'Verify Password',
+                                    hintText: Messages.of(context).verifypassword,
+                                    labelText: Messages.of(context).verifypassword,
                                   ),
                                   obscureText: true,
                                   validator: _validatePassword,
@@ -164,7 +165,7 @@ class SignupScreenState extends State<SignupScreen> {
                                   }),
                               new Container(
                                 child: new RaisedButton(
-                                    child: const Text("Create"),
+                                    child: new Text(Messages.of(context).createaccount),
                                     color: Theme.of(context).primaryColor,
                                     onPressed: _handleSubmitted),
                                 margin: new EdgeInsets.only(
@@ -177,12 +178,12 @@ class SignupScreenState extends State<SignupScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             new FlatButton(
-                              child: const Text("Login"),
+                              child: new Text(Messages.of(context).login),
                               textColor: Theme.of(context).accentColor,
                               onPressed: () => _onPressed("/"),
                             ),
                             new FlatButton(
-                                child: const Text("Forgot Password"),
+                                child: new Text(Messages.of(context).forgotPassword),
                                 textColor: Theme.of(context).accentColor,
                                 onPressed: () => _onPressed("/ForgotPassword")),
                           ],

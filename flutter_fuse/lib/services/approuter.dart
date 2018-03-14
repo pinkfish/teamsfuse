@@ -11,6 +11,9 @@ import 'package:flutter_fuse/screens/game/editgame.dart';
 import 'package:flutter_fuse/screens/settings/editprofile.dart';
 import 'package:flutter_fuse/screens/team/editteam.dart';
 import 'package:flutter_fuse/screens/game/gamedetails.dart';
+import 'package:flutter_fuse/screens/team/addplayer.dart';
+import 'package:flutter_fuse/screens/invites/invitelist.dart';
+import 'package:flutter_fuse/screens/invites/addinvite.dart';
 
 class AppRouter {
   static Router myRouter = null;
@@ -44,6 +47,14 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AboutScreen()));
+    router.define("/Invites",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new InviteListScreen()));
+    router.define("/AddInvite/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new AddInviteScreen(vals["id"])));
     router.define("/Team/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -52,6 +63,10 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new EditTeamScreen(vals["id"])));
+    router.define("/AddPlayer/:team/:season",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new AddPlayerScreen(vals["team"], vals["season"])));
     router.define("/EditGame/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

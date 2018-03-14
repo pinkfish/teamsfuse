@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/teams/teamplayers.dart';
 import 'package:flutter_fuse/widgets/teams/teamdetails.dart';
+import 'package:flutter_fuse/services/databasedetails.dart';
 
 class TeamScreen extends StatefulWidget {
   String teamuid;
@@ -22,7 +23,7 @@ class TeamScreenState extends State<TeamScreen> {
 
   Widget _buildBody() {
     if (_tabIndex == 0) {
-      return new TeamDetails(teamUid);
+      return new SingleChildScrollView(child:new TeamDetails(teamUid));
     }
     return new TeamPlayers(teamUid);
   }
@@ -33,21 +34,26 @@ class TeamScreenState extends State<TeamScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> actions = new List<Widget>();
+    if (UserDatabaseData.instance.teams.containsKey(teamUid)) {
+      if (UserDatabaseData.instance.teams[teamUid].isAdmin()) {
+        actions.add(new FlatButton(
+            onPressed: () {
+              this._onEditTeam(context);
+            },
+            child: new Text(Messages.of(context).editbuttontext,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(color: Colors.white))),
+          );
+      }
+    }
     return new Scaffold(
         appBar: new AppBar(
           title: new Text(Messages.of(context).title),
-          actions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  this._onEditTeam(context);
-                },
-                child: new Text(Messages.of(context).editbuttontext,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .subhead
-                        .copyWith(color: Colors.white))),
-          ],
+          actions: actions,
         ),
         bottomNavigationBar: new BottomNavigationBar(
             onTap: (int index) {

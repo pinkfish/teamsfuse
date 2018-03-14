@@ -39,6 +39,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     Widget body;
     Team team = UserDatabaseData.instance.teams[game.teamUid];
     Opponent opponent = team.opponents[game.opponentUid];
+    List<Widget> actions = new List<Widget>();
 
     if (_tabIndex == 0) {
       body = new GameDetails(gameUid);
@@ -46,19 +47,22 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
       body = new Availaility(game);
     }
 
+    if (team.isAdmin()) {
+      actions.add(new FlatButton(
+          onPressed: this._editGame,
+          child: new Text(Messages.of(context).editbuttontext,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .subhead
+                  .copyWith(color: Colors.white))));
+    }
+
+
     return new Scaffold(
         appBar: new AppBar(
           title: new Text(Messages.of(context).gametitlevs(opponent.name)),
-          actions: <Widget>[
-            new FlatButton(
-                onPressed: this._editGame,
-                child: new Text(Messages.of(context).editbuttontext,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .subhead
-                        .copyWith(color: Colors.white))),
-          ],
+          actions: actions,
         ),
         bottomNavigationBar: new BottomNavigationBar(
           onTap: (int index) {

@@ -72,7 +72,7 @@ flutter:
     - family: CommunityIcons
       fonts:
           # https://materialdesignicons.com/
-          - asset: assets/fonts/MaterialCommunityIcons.ttf
+          - asset: assets/fonts/materialdesignicons-webfont.ttf
 
   # fonts:
   #   - family: Schyler

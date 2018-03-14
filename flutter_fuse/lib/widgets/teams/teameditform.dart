@@ -84,97 +84,105 @@ class TeamEditFormState extends State<TeamEditForm> {
 
     print('uid ${team.toJSON()}');
     return new SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        controller: _scrollController,
-        child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Form(
-                  key: _formKey,
-                  autovalidate: _autovalidate,
-                  child: new DropdownButtonHideUnderline(
-                      child: new Column(
-                    children: <Widget>[
-                      new IconButton(
-                        onPressed: this._selectImage,
-                        iconSize: (screenSize.width < 500)
-                            ? 120.0
-                            : (screenSize.width / 4) + 12.0,
-                        icon: this._buildImage(),
+      scrollDirection: Axis.vertical,
+      controller: _scrollController,
+      child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          new Form(
+            key: _formKey,
+            autovalidate: _autovalidate,
+            child: new DropdownButtonHideUnderline(
+              child: new Column(
+                children: <Widget>[
+                  new IconButton(
+                    onPressed: this._selectImage,
+                    iconSize: (screenSize.width < 500)
+                        ? 120.0
+                        : (screenSize.width / 4) + 12.0,
+                    icon: this._buildImage(),
+                  ),
+                  new EnsureVisibleWhenFocused(
+                    focusNode: _focusNode,
+                    child: new TextFormField(
+                      decoration: new InputDecoration(
+                        icon: const Icon(Icons.event_note),
+                        hintText: Messages.of(context).team,
+                        labelText: Messages.of(context).teamnamehint,
                       ),
-                      new EnsureVisibleWhenFocused(
-                        focusNode: _focusNode,
-                        child: new TextFormField(
-                            decoration: new InputDecoration(
-                              icon: const Icon(Icons.event_note),
-                              hintText: Messages.of(context).team,
-                              labelText: Messages.of(context).teamnamehint,
-                            ),
-                            initialValue: team.name,
-                            keyboardType: TextInputType.text,
-                            obscureText: false,
-                            onSaved: (String value) {
-                              team.name = value;
-                            }),
+                      initialValue: team.name,
+                      keyboardType: TextInputType.text,
+                      obscureText: false,
+                      onSaved: (String value) {
+                        team.name = value;
+                      },
+                    ),
+                  ),
+                  new SportFormField(
+                    decoration: new InputDecoration(
+                      icon: const Icon(Icons.people),
+                      hintText: Messages.of(context).sportselect,
+                      labelText: Messages.of(context).sportselect,
+                    ),
+                    initialValue: team.sport.toString(),
+                    validator: (String value) {
+                      _validations.validateSport(context, value);
+                    },
+                    onSaved: (String value) {
+                      team.sport =
+                          Sport.values.firstWhere((e) => e.toString() == value);
+                    },
+                  ),
+                  new GenderFormField(
+                    decoration: new InputDecoration(
+                      icon: const Icon(CommunityIcons.gendermalefemale),
+                      hintText: Messages.of(context).genderselect,
+                      labelText: Messages.of(context).genderselect,
+                    ),
+                    initialValue: team.gender.toString(),
+                    validator: (String value) {
+                      _validations.validateGender(context, value);
+                    },
+                    onSaved: (String value) {
+                      team.gender = Gender.values
+                          .firstWhere((e) => e.toString() == value);
+                    },
+                  ),
+                  new SeasonFormField(
+                    decoration: new InputDecoration(
+                      icon: const Icon(Icons.calendar_today),
+                      hintText: Messages.of(context).seasonselect,
+                      labelText: Messages.of(context).seasonselect,
+                    ),
+                    teamUid: team.uid,
+                    initialValue: team.currentSeason,
+                    onSaved: (String value) {
+                      team.currentSeason = value;
+                    },
+                  ),
+                  new EnsureVisibleWhenFocused(
+                    focusNode: _focusNode,
+                    child: new TextFormField(
+                      decoration: new InputDecoration(
+                        icon: const Icon(Icons.event_note),
+                        hintText: Messages.of(context).league,
+                        labelText: Messages.of(context).leaguehint,
                       ),
-                      new SportFormField(
-                          decoration: new InputDecoration(
-                            icon: const Icon(Icons.people),
-                            hintText: Messages.of(context).sportselect,
-                            labelText: Messages.of(context).sportselect,
-                          ),
-                          initialValue: team.sport.toString(),
-                          validator: (String value) {
-                            _validations.validateSport(context, value);
-                          },
-                          onSaved: (String value) {
-                            team.sport = Sport.values
-                                .firstWhere((e) => e.toString() == value);
-                          }),
-                      new GenderFormField(
-                          decoration: new InputDecoration(
-                            icon: const Icon(CommunityIcons.gendermalefemale),
-                            hintText: Messages.of(context).genderselect,
-                            labelText: Messages.of(context).genderselect,
-                          ),
-                          initialValue: team.gender.toString(),
-                          validator: (String value) {
-                            _validations.validateGender(context, value);
-                          },
-                          onSaved: (String value) {
-                            team.gender = Gender.values
-                                .firstWhere((e) => e.toString() == value);
-                          }),
-                      new SeasonFormField(
-                          decoration: new InputDecoration(
-                            icon: const Icon(Icons.calendar_today),
-                            hintText: Messages.of(context).seasonselect,
-                            labelText: Messages.of(context).seasonselect,
-                          ),
-                          teamUid: team.uid,
-                          initialValue: team.currentSeason,
-                          onSaved: (String value) {
-                            team.currentSeason = value;
-                          }),
-                      new EnsureVisibleWhenFocused(
-                        focusNode: _focusNode,
-                        child: new TextFormField(
-                            decoration: new InputDecoration(
-                              icon: const Icon(Icons.event_note),
-                              hintText: Messages.of(context).league,
-                              labelText: Messages.of(context).leaguehint,
-                            ),
-                            initialValue:
-                                team.league == null ? '' : team.league,
-                            keyboardType: TextInputType.text,
-                            obscureText: false,
-                            onSaved: (String value) {
-                              team.league = value;
-                            }),
-                      ),
-                    ],
-                  )))
-            ]));
+                      initialValue: team.league == null ? '' : team.league,
+                      keyboardType: TextInputType.text,
+                      obscureText: false,
+                      onSaved: (String value) {
+                        team.league = value;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -52,7 +52,7 @@ class Routes {
     if (user != null) {
       final data = await rootBundle.load('assets/timezone/2018c.tzf');
       initializeDatabase(data.buffer.asUint8List());
-      UserDatabaseData.load(user.uid);
+      UserDatabaseData.load(user.uid, user.email);
     } else {
       UserDatabaseData.clear();
     }

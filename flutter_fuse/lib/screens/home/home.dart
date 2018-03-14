@@ -2,28 +2,43 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
 import 'package:flutter_fuse/widgets/games/gameslist.dart';
+import 'package:flutter_fuse/widgets/invites/invitecard.dart';
+import 'package:flutter_fuse/services/messages.dart';
 
 class HomeScreen extends StatelessWidget {
-  _onPressed(BuildContext context) {
+  void _onPressed(BuildContext context) {
     Navigator.popAndPushNamed(context, "AddGame");
+  }
+
+  void _showInvites(BuildContext context) {
+    print("showing invites");
+    Navigator.pushNamed(context, "Invites");
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    print('Doing this');
-
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Team Fuse'),
+        title: new Text(Messages.of(context).title),
       ),
       drawer: new FusedDrawer(),
-      body: new Center(child: new GameList()),
+      body: new Column(
+        children: <Widget>[
+          new Expanded(
+            child: new SingleChildScrollView(child: new GameList()),
+          ),
+          new GestureDetector(
+            onTap: () { _showInvites(context); },
+            child: new InviteCard(),
+          ),
+        ],
+      ),
       floatingActionButton: new FloatingActionButton(
         onPressed: () {
           _onPressed(context);
         },
-        tooltip: 'Increment',
+        tooltip: Messages.of(context).addgame,
         child: new Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );

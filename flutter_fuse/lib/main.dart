@@ -7,5 +7,6 @@ void main() {
   }).catchError((Exception error) {
     print('Got error $error');
   });
+
   new Routes();
 }

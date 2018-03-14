@@ -29,57 +29,65 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
     );
 
     _attendance.forEach((Player player, Attendance attend) {
-      ret.add(new Row(crossAxisAlignment: CrossAxisAlignment.center, children: <
-          Widget>[
-        new Expanded(child: new Text(player.name)),
-        new Container(
-            width: 150.0,
-            child: new Row(
+      ret.add(
+        new Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            new Expanded(child: new Text(player.name)),
+            new Container(
+              width: 150.0,
+              child: new Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   new Container(
-                      decoration: (attend == Attendance.Yes ? selected : null),
-                      child: new IconButton(
-                          iconSize: 24.0,
-                          onPressed: () {
-                            setState(() {
-                              _attendance[player] = Attendance.Yes;
-                              _changed.add(player);
-                            });
-                          },
-                          padding: EdgeInsets.zero,
-                          icon:
-                              new Icon(Icons.check, color: theme.accentColor))),
+                    decoration: (attend == Attendance.Yes ? selected : null),
+                    child: new IconButton(
+                      iconSize: 24.0,
+                      onPressed: () {
+                        setState(() {
+                          _attendance[player] = Attendance.Yes;
+                          _changed.add(player);
+                        });
+                      },
+                      padding: EdgeInsets.zero,
+                      icon: new Icon(Icons.check, color: theme.accentColor),
+                    ),
+                  ),
                   new Container(
-                      decoration: (attend == Attendance.No ? selected : null),
-                      child: new IconButton(
-                          iconSize: 24.0,
-                          onPressed: () {
-                            setState(() {
-                              _attendance[player] = Attendance.No;
-                              _changed.add(player);
-                            });
-                          },
-                          padding: EdgeInsets.zero,
-                          icon:
-                              new Icon(Icons.clear, color: theme.errorColor))),
+                    decoration: (attend == Attendance.No ? selected : null),
+                    child: new IconButton(
+                      iconSize: 24.0,
+                      onPressed: () {
+                        setState(() {
+                          _attendance[player] = Attendance.No;
+                          _changed.add(player);
+                        });
+                      },
+                      padding: EdgeInsets.zero,
+                      icon: new Icon(Icons.clear, color: theme.errorColor),
+                    ),
+                  ),
                   new Container(
-                      decoration:
-                          (attend == Attendance.Maybe ? selected : null),
-                      child: new IconButton(
-                          iconSize: 24.0,
-                          onPressed: () {
-                            setState(() {
-                              _attendance[player] = Attendance.Maybe;
-                              _changed.add(player);
-                            });
-                          },
-                          padding: EdgeInsets.zero,
-                          icon: new Icon(Icons.help,
-                              color: theme.disabledColor))),
-                ]))
-      ]));
+                    decoration: (attend == Attendance.Maybe ? selected : null),
+                    child: new IconButton(
+                      iconSize: 24.0,
+                      onPressed: () {
+                        setState(() {
+                          _attendance[player] = Attendance.Maybe;
+                          _changed.add(player);
+                        });
+                      },
+                      padding: EdgeInsets.zero,
+                      icon: new Icon(Icons.help, color: theme.disabledColor),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
     });
 
     return ret;
@@ -101,31 +109,36 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
   @override
   Widget build(BuildContext context) {
     return new Dialog(
-        child: new IntrinsicWidth(
-            stepWidth: 56.0,
-            child: new ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 280.0),
-                child: new Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      new Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              24.0, 24.0, 24.0, 0.0),
-                          child: new DefaultTextStyle(
-                              style: Theme.of(context).textTheme.title,
-                              child: new Text(
-                                  Messages.of(context).attendanceselect))),
-                      new Flexible(
-                          child: new SingleChildScrollView(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  12.0, 12.0, 0.0, 16.0),
-                              child: new ListBody(
-                                  children:
-                                      this._buildAttendenceSet(context)))),
-                      new FlatButton(
-                          onPressed: this._saveDialog,
-                          child: new Text(Messages.of(context).savebuttontext))
-                    ]))));
+      child: new IntrinsicWidth(
+        stepWidth: 56.0,
+        child: new ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 280.0),
+          child: new Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              new Padding(
+                padding:
+                    const EdgeInsetsDirectional.fromSTEB(24.0, 24.0, 24.0, 0.0),
+                child: new DefaultTextStyle(
+                    style: Theme.of(context).textTheme.title,
+                    child: new Text(Messages.of(context).attendanceselect)),
+              ),
+              new Flexible(
+                child: new SingleChildScrollView(
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                      12.0, 12.0, 0.0, 16.0),
+                  child:
+                      new ListBody(children: this._buildAttendenceSet(context)),
+                ),
+              ),
+              new FlatButton(
+                  onPressed: this._saveDialog,
+                  child: new Text(Messages.of(context).savebuttontext))
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

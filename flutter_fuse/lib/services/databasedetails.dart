@@ -71,7 +71,6 @@ class PlayerUser {
 
   static const String _RELATIONSHIP = 'relationship';
 
-
   void fromJSON(Map<String, dynamic> data) {
     print('$data');
     relationship = Relationship.values
@@ -497,11 +496,11 @@ class Opponent {
   String teamUid;
   String contact;
   String uid;
-  WinRecord record;
+  Map<String, WinRecord> record;
 
   Opponent({this.record, this.name, this.teamUid, this.contact, this.uid}) {
     if (record == null) {
-      record = new WinRecord();
+      record = new Map<String, WinRecord>();
     }
   }
 
@@ -510,14 +509,26 @@ class Opponent {
     teamUid = copy.teamUid;
     contact = copy.contact;
     uid = copy.uid;
-    record = copy.record;
+    record = new Map<String, WinRecord>.from(copy.record);
   }
 
   static const String _CONTACT = 'contact';
+  static const String _SEASONS = 'seasons';
 
   void fromJSON(Map<String, dynamic> data) {
     name = getString(data[_NAME]);
     contact = getString(data[_CONTACT]);
+    Map<String, WinRecord> newRecord = new Map<String, WinRecord>();
+    if (data[_SEASONS] != null) {
+      Map<String, dynamic> innerSeason = data[_SEASONS];
+      // Load the seasons.
+      innerSeason.forEach((String seasonUid, dynamic value) {
+        WinRecord newData = new WinRecord();
+        newData.fromJSON(value);
+        newRecord[seasonUid] = newData;
+      });
+    }
+    record = newRecord;
     print('Update Opponent ' + uid);
   }
 
@@ -525,6 +536,11 @@ class Opponent {
     Map<String, dynamic> ret = new Map<String, dynamic>();
     ret[_NAME] = name;
     ret[_CONTACT] = contact;
+    Map<String, dynamic> recordSection = new Map<String, dynamic>();
+    record.forEach((String key, WinRecord record) {
+      recordSection[key] = record.toJSON();
+    });
+    ret[_SEASONS] = recordSection;
     return ret;
   }
 
@@ -580,6 +596,11 @@ class Season {
   String teamUid;
   WinRecord record;
   List<SeasonPlayer> players;
+
+  StreamController<List<Invite>> _controller;
+  StreamSubscription<QuerySnapshot> _inviteSnapshot;
+  Stream<List<Invite>> _stream;
+  List<Invite> _invites;
 
   Season({this.name, this.uid, this.teamUid, this.record, this.players}) {
     if (players == null) {
@@ -648,6 +669,93 @@ class Season {
       // Update the game.
       await ref.document(uid).updateData(toJSON());
     }
+  }
+
+  // Send an invite to a user for this season and team.
+  Future<void> inviteUser(
+      {String userId, String playername, String email}) async {
+    CollectionReference ref = Firestore.instance.collection("Invites");
+    // See if the invite already exists.
+    QuerySnapshot snapshot = await ref
+        .where(Invite._EMAIL, isEqualTo: email)
+        .where(Invite._SEASONUID, isEqualTo: uid)
+        .where(Invite._TEAMUID, isEqualTo: teamUid)
+        .getDocuments();
+    Team team = UserDatabaseData.instance.teams[teamUid];
+    if (snapshot.documents.length > 0) {
+      Invite invite = new Invite();
+      invite.fromJSON(
+          snapshot.documents[0].documentID, snapshot.documents[0].data);
+      invite.playerName.add(playername);
+      invite.seasonName = name;
+      invite.teamName = team.name;
+      snapshot.documents[0].reference.updateData(invite.toJSON());
+      print('Updating invite');
+    } else {
+      Invite invite = new Invite();
+      invite.email = email;
+      invite.teamUid = this.teamUid;
+      invite.seasonUid = this.uid;
+      invite.playerName = [playername];
+      invite.sentByUid = userId;
+      invite.teamName = team.name;
+      invite.seasonName = name;
+
+      print('Adding invite');
+      return ref.add(invite.toJSON());
+    }
+  }
+
+  Stream<List<Invite>> get inviteStream {
+    if (_stream == null) {
+      _controller = new StreamController<List<Invite>>();
+      _stream = _controller.stream.asBroadcastStream();
+    }
+    // Do an async query.
+    _doInviteQuery();
+    return _stream;
+  }
+
+  Future<void> _doInviteQuery() async {
+    CollectionReference ref = Firestore.instance.collection("Invites");
+    // See if the invite already exists.
+    _inviteSnapshot = ref
+        .where(Invite._SEASONUID, isEqualTo: uid)
+        .where(Invite._TEAMUID, isEqualTo: teamUid)
+        .snapshots
+        .listen((QuerySnapshot query) {
+      List<Invite> ret = new List<Invite>();
+
+      query.documents.forEach((DocumentSnapshot doc) {
+        Invite invite = new Invite();
+        invite.fromJSON(doc.documentID, doc.data);
+        ret.add(invite);
+      });
+      _invites = ret;
+      _controller.add(_invites);
+    });
+  }
+
+  void close() {
+    if (_controller != null) {
+      _controller.close();
+    }
+    if (_stream != null) {
+      _stream = null;
+    }
+    if (_inviteSnapshot != null) {
+      _inviteSnapshot.cancel();
+      _inviteSnapshot = null;
+    }
+  }
+
+  // Is one of the players associated with this user an admin?
+  bool isAdmin() {
+    //Find the team and check there.
+    if (UserDatabaseData.instance.teams.containsKey(teamUid)) {
+      return UserDatabaseData.instance.teams[teamUid].isAdmin();
+    }
+    return false;
   }
 }
 
@@ -726,6 +834,7 @@ class Team {
   static const String _LEAGUE = 'league';
   static const String _GENDER = 'gender';
   static const String _SPORT = 'sport';
+  static const String _ADMINS = 'admins';
 
   void fromJSON(Map<String, dynamic> data) {
     name = getString(data[_NAME]);
@@ -735,6 +844,15 @@ class Team {
     photoUrl = getString(data[_PHOTOURL]);
     gender = Gender.values.firstWhere((e) => e.toString() == data[_GENDER]);
     sport = Sport.values.firstWhere((e) => e.toString() == data[_SPORT]);
+    if (data[_ADMINS] != null) {
+      List<String> newAdmin = new List<String>();
+      data[_ADMINS].forEach((String key, bool data) {
+        if (data) {
+          newAdmin.add(key);
+        }
+      });
+      admins = newAdmin;
+    }
   }
 
   Map<String, dynamic> toJSON() {
@@ -746,6 +864,11 @@ class Team {
     ret[_GENDER] = gender.toString();
     ret[_SPORT] = sport.toString();
     ret[_PHOTOURL] = photoUrl;
+    Map<String, bool> adminMap = new Map<String, bool>();
+    admins.forEach((String key) {
+      adminMap[key] = true;
+    });
+    ret[_ADMINS] = adminMap;
     return ret;
   }
 
@@ -802,6 +925,12 @@ class Team {
     _opponentSnapshot.cancel();
     _teamSnapshot.cancel();
     _updateThisTeam.close();
+    seasons.forEach((String key, Season season) {
+      season.close();
+    });
+    seasons.clear();
+    opponents.clear();
+    admins.clear();
   }
 
   Future<void> updateFirestore() async {
@@ -826,6 +955,89 @@ class Team {
     print('photurl ${photoUrl}');
     return snapshot.downloadUrl;
   }
+
+  // Is one of the players associated with this user an admin?
+  bool isAdmin() {
+    bool ret = false;
+    UserDatabaseData.instance.players.forEach((String uid, Player plauyer) {
+      if (admins.any((String myUid) {
+        return myUid == uid;
+      })) {
+        ret = true;
+      }
+    });
+    return ret;
+  }
+}
+
+class Invite {
+  String email;
+  String uid;
+  String teamName;
+  String seasonName;
+  String teamUid;
+  String seasonUid;
+  String sentByUid;
+  List<String> playerName;
+
+  Invite(
+      {this.email,
+      this.uid,
+      this.teamUid,
+      this.teamName,
+      this.seasonName,
+      this.seasonUid,
+      this.sentByUid,
+      this.playerName});
+
+  Invite.copy(Invite invite) {
+    teamName = invite.teamName;
+    seasonName = invite.seasonName;
+    teamUid = invite.teamUid;
+    seasonUid = invite.seasonUid;
+    uid = invite.uid;
+    sentByUid = invite.sentByUid;
+    email = invite.email;
+    playerName = new List<String>.from(invite.playerName);
+  }
+
+  static const String _EMAIL = 'email';
+  static const String _DETAILS = 'details';
+  static const String _TEAMUID = 'teamUid';
+  static const String _TEAMNAME = 'teamName';
+  static const String _SEASONNAME = 'seasonName';
+  static const String _SEASONUID = 'seasonUid';
+  static const String _SENTBYUID = 'sentbyUid';
+
+  void fromJSON(String uid, Map<String, dynamic> data) {
+    email = getString(data[_EMAIL]);
+    this.uid = uid;
+    teamUid = getString(data[_TEAMUID]);
+    playerName = data[_NAME];
+    if (playerName == null) {
+      playerName = new List<String>();
+    }
+    seasonUid = getString(data[_SEASONUID]);
+    sentByUid = getString(data[_SENTBYUID]);
+    teamName = getString(data[_TEAMNAME]);
+    seasonName = getString(data[_SEASONNAME]);
+  }
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = new Map<String, dynamic>();
+    ret[_EMAIL] = email;
+    ret[_TEAMUID] = teamUid;
+    ret[_SEASONUID] = seasonUid;
+    ret[_NAME] = playerName;
+    ret[_SENTBYUID] = sentByUid;
+    ret[_TEAMNAME] = teamName;
+    ret[_SEASONNAME] = seasonName;
+    return ret;
+  }
+
+  Future<void> firestoreDelete() {
+    return Firestore.instance.collection("Invites").document(uid).delete();
+  }
 }
 
 class UserDatabaseData {
@@ -833,9 +1045,12 @@ class UserDatabaseData {
   Map<String, Player> _players = new Map<String, Player>();
   Map<String, Team> _teams = new Map<String, Team>();
   Map<String, Game> _games = new Map<String, Game>();
+  Map<String, Invite> _invites = new Map<String, Invite>();
+
   Stream<UpdateReason> teamStream;
   Stream<UpdateReason> gameStream;
   Stream<UpdateReason> playerStream;
+  Stream<UpdateReason> inviteStream;
 
   Map<String, Player> get players => _players;
 
@@ -843,23 +1058,56 @@ class UserDatabaseData {
 
   Map<String, Game> get games => _games;
 
+  Map<String, Invite> get invites => _invites;
+
   StreamController<UpdateReason> _teamController =
       new StreamController<UpdateReason>();
   StreamController<UpdateReason> _playerController =
       new StreamController<UpdateReason>();
   StreamController<UpdateReason> _gameController =
       new StreamController<UpdateReason>();
+  StreamController<UpdateReason> _inviteController =
+      new StreamController<UpdateReason>();
 
   // From firebase.
   StreamSubscription<QuerySnapshot> _playerSnapshot;
+  StreamSubscription<QuerySnapshot> _inviteSnapshot;
 
   static UserDatabaseData _instance;
   static Map<Object, dynamic> snapshotMapping = new Map<Object, dynamic>();
 
   UserDatabaseData() {
+    initStuff();
+  }
+
+  void initStuff() {
     teamStream = _teamController.stream.asBroadcastStream();
     gameStream = _gameController.stream.asBroadcastStream();
     playerStream = _playerController.stream.asBroadcastStream();
+    inviteStream = _inviteController.stream.asBroadcastStream();
+  }
+
+  Future<Invite> getInvite(String inviteUid) async {
+    DocumentSnapshot doc = await Firestore.instance
+        .collection("Invites")
+        .document(inviteUid)
+        .get();
+    Invite invite = new Invite();
+    invite.fromJSON(doc.documentID, doc.data);
+    return invite;
+  }
+
+  Future<Invite> addInvite(Invite invite) async {
+    // We add ourselves to the season.
+    DocumentSnapshot doc = await Firestore.instance
+        .collection("Seasons")
+        .document(invite.seasonUid)
+        .get();
+    if (doc.exists) {
+      // Update it!  First we make a player.
+      
+    }
+    return invite;
   }
 
   void _onPlayerUpdated(QuerySnapshot query) {
@@ -893,8 +1141,8 @@ class UserDatabaseData {
       team.setupSnap();
       team.updateSeason(doc);
       _teams[teamUid] = team;
-      _teamController.add(UpdateReason.Update);
     });
+    _teamController.add(UpdateReason.Update);
   }
 
   void _onGameUpdated(String teamuid, QuerySnapshot query) {
@@ -909,8 +1157,18 @@ class UserDatabaseData {
       }
       game.fromJSON(teamuid, doc.data);
       _games[doc.documentID] = game;
-      _gameController.add(UpdateReason.Update);
     });
+    _gameController.add(UpdateReason.Update);
+  }
+
+  void _onInviteUpdated(QuerySnapshot query) {
+    query.documents.forEach((DocumentSnapshot doc) {
+      String uid = doc.documentID;
+      Invite invite = new Invite();
+      invite.fromJSON(uid, doc.data);
+      _invites[uid] = invite;
+    });
+    _inviteController.add(UpdateReason.Update);
   }
 
   static UserDatabaseData get instance {
@@ -920,9 +1178,10 @@ class UserDatabaseData {
     return _instance;
   }
 
-  void _setUid(String uid) {
-    if (this._uid != uid) {
+  void _setUid(String uid, String email) {
+    if (this._uid != uid && this._uid != null) {
       close();
+      initStuff();
     }
     this._uid = uid;
     // The uid everything is based off.
@@ -930,11 +1189,42 @@ class UserDatabaseData {
         .collection("Players")
         .where("user." + uid + ".added", isEqualTo: true);
     _playerSnapshot = collection.snapshots.listen(this._onPlayerUpdated);
+    Query emailCollection = Firestore.instance
+        .collection("Invites")
+        .where("email", isEqualTo: email);
+    _inviteSnapshot = emailCollection.snapshots.listen(this._onInviteUpdated);
   }
 
   void close() {
     if (_playerSnapshot != null) {
       _playerSnapshot.cancel();
+      _playerSnapshot = null;
+      playerStream = null;
+    }
+    if (_inviteSnapshot != null) {
+      _inviteSnapshot.cancel();
+      _inviteSnapshot = null;
+      inviteStream = null;
+    }
+    if (_teamController != null) {
+      _teamController.close();
+      teamStream = null;
+      _teamController = null;
+    }
+    if (_playerController != null) {
+      _playerController.close();
+      playerStream = null;
+      _playerController = null;
+    }
+    if (_inviteController != null) {
+      _inviteController.close();
+      inviteStream = null;
+      _inviteController = null;
+    }
+    if (_gameController != null) {
+      _gameController.close();
+      _gameController = null;
+      gameStream = null;
     }
     _teams.forEach((String key, Team value) {
       value.close();
@@ -948,11 +1238,12 @@ class UserDatabaseData {
       value.close();
     });
     _players.clear();
+    _invites.clear();
   }
 
-  static void load(String uid) {
+  static void load(String uid, String email) {
     print('loading data');
-    instance._setUid(uid);
+    instance._setUid(uid, email);
   }
 
   static void clear() {

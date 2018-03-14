@@ -36,6 +36,41 @@ class Messages {
     );
   }
 
+  String get login {
+    return Intl.message(
+      'Login',
+      name: 'Login button text',
+    );
+  }
+
+  String get forgotPassword {
+    return Intl.message(
+      'Forgot Password',
+      name: 'Forgot password button text',
+    );
+  }
+
+  String get createnew {
+    return Intl.message(
+      'Create new',
+      name: 'Create new account button text',
+    );
+  }
+
+  String get email {
+    return Intl.message('Email', name: 'Email input field');
+  }
+
+  String get youremailHint {
+    return Intl.message('Your email address',
+        name: 'Your email input field hint');
+  }
+
+  String get playeremailHint {
+    return Intl.message('Player email address',
+        name: 'Player email input field hint');
+  }
+
   String get nogames {
     return Intl.message(
       'No games',
@@ -387,11 +422,27 @@ class Messages {
         name: 'Loading message', desc: 'Message for loading the app');
   }
 
-  String oppoentwinrecord(Opponent opponent) {
+  String get addplayer {
+    return Intl.message('Add Player',
+        name: 'Loading message', desc: 'Message for loading the app');
+  }
+
+  String opponentwinrecord(
+      Opponent opponent, String seasonUid, String seasonName) {
+    WinRecord rec = opponent.record[seasonUid];
+    if (rec == null) {
+      rec = new WinRecord();
+    }
     return Intl.message(
-        '${opponent.name} Win: ${opponent.record.win} Loss: ${opponent.record.loss} Tie: ${opponent.record.tie}',
-        name: 'Win record for an opponent',
-        desc: 'Win record for an opponent');
+        '${opponent.name} - ${seasonName} Win: ${rec.win} Loss: ${rec.loss} Tie: ${rec.tie}',
+        name: 'Win record for an opponent for this season',
+        desc: 'Win record for an opponent for this season');
+  }
+
+  String get previousSeasons {
+    return Intl.message('Previous Seasons',
+        name: 'Previous seasons for this game',
+        desc: 'Previous seasons for this game');
   }
 
   String winrecord(WinRecord record) {
@@ -423,6 +474,34 @@ class Messages {
     return Intl.message('No result.',
         name: 'No result for the game yet', desc: 'No result for the game');
   }
+
+  String get addgame {
+    return Intl.message('Add game', name: 'Button to add a game');
+  }
+
+  String get deleteinvite {
+    return Intl.message('Delete invite',
+        name: 'Title for the dialog to delete an invite');
+  }
+
+  String confirmdelete(Invite invite) {
+    return Intl.message(
+        'Do you want to delete the invite to ${invite.teamName} for ${invite.playerName}',
+        name: 'Text to delete the invite to the team in the alert dialog.');
+  }
+
+  String get playername {
+    return Intl.message(
+        'Name',
+        name: 'Text to show before the player name.');
+  }
+
+  String get playernamehint {
+    return Intl.message(
+        'Name of player in team',
+        name: 'Hint for the name of the player in the team.');
+  }
+
 
   String gameresult(GameResult result) {
     switch (result) {
@@ -524,21 +603,52 @@ class Messages {
   }
 
   String get displayname {
-    return Intl.message('Name', desc: 'Name for the edit box to edit the user name');
+    return Intl.message('Name',
+        desc: 'Name for the edit box to edit the user name');
   }
 
   String get displaynamehint {
-    return Intl.message('Your name', desc: 'Name for the edit box to edit the user name');
+    return Intl.message('Your name',
+        desc: 'Name for the edit box to edit the user name');
   }
 
   String get phonenumber {
-    return Intl.message('Phone Number', desc: 'Phone number for the edit box to edit the user name');
+    return Intl.message('Phone Number',
+        desc: 'Phone number for the edit box to edit the phone number');
   }
 
   String get phonenumberhint {
-    return Intl.message('Contact phone number', desc: 'Phone number for the edit box to edit the user name');
+    return Intl.message('Contact phone number',
+        desc: 'Phone number for the edit box to edit the phone number');
   }
 
+  String get phonenumberhintoptional {
+    return Intl.message('Phone number (optional)',
+        desc:
+            'Phone number for the edit box to edit the phone number marked as optional');
+  }
+
+  String get password {
+    return Intl.message('Password', desc: 'Input box for a password');
+  }
+
+  String get verifypassword {
+    return Intl.message('Verify password',
+        desc: 'Input box for a verification to the main password password');
+  }
+
+  String get createaccount {
+    return Intl.message('Create', desc: 'Create account button text');
+  }
+
+  String get passwordsnotmatching {
+    return Intl.message('Passwords must match',
+        desc: 'Passwords must match signup form error');
+  }
+
+  String invitedpeople(int num) {
+    return Intl.message("Invited: ${num}");
+  }
 
   String finalscorebody(num ptsFor, num ptsAgainst, String result) {
     return Intl.message(

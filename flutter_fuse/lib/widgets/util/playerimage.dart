@@ -36,7 +36,7 @@ class PlayerImage extends CircleAvatar {
     ImageProvider logo;
     if (UserDatabaseData.instance.players.containsKey(playerUid)) {
       Player player = UserDatabaseData.instance.players[playerUid];
-      if (player.photoUrl != null) {
+      if (player.photoUrl != null && player.photoUrl.isNotEmpty) {
         logo = new NetworkImage(player.photoUrl);
       } else {
         logo = const AssetImage("assets/images/defaultavatar2.png");

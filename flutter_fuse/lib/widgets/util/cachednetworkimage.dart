@@ -403,7 +403,7 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
 
   @override
   Widget build(BuildContext context) {
-    assert(_phase != ImagePhase.start);
+    //assert(_phase != ImagePhase.start && _phase != ImagePhase.starttimeout);
     if (_isShowingPlaceholder && widget.placeholder != null) {
       return _fadedWidget(widget.placeholder);
     }
