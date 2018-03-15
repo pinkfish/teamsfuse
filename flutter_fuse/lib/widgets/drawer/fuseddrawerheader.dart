@@ -50,7 +50,7 @@ class FusedDrawerHeaderState extends State<FusedDrawerHeader> {
       ),
       onDetailsPressed: _showProfile,
       accountName: new Text(
-          user != null ? user.displayName : Messages.of(context).unknown),
+          user != null ? user.profile.displayName : Messages.of(context).unknown),
       accountEmail:
           new Text(user != null ? user.email : Messages.of(context).unknown),
     );

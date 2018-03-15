@@ -5,11 +5,10 @@ import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
 import 'attendanceicon.dart';
 import 'package:timezone/timezone.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 
 class GameCard extends StatelessWidget {
-  Game game;
-  Map<Player, Attendance> attendence = new Map<Player, Attendance>();
+  final Game game;
+  final Map<Player, Attendance> attendence = new Map<Player, Attendance>();
 
   GameCard(this.game);
 

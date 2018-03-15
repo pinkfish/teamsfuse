@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:timezone/timezone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_fuse/services/authentication.dart';
 
 class User {
   String name;
@@ -68,6 +69,7 @@ num getNum(dynamic data) {
 class PlayerUser {
   String userUid;
   Relationship relationship;
+  UserProfile profile;
 
   static const String _RELATIONSHIP = 'relationship';
 
@@ -83,6 +85,11 @@ class PlayerUser {
     data[_RELATIONSHIP] = relationship.toString();
     data[_ADDED] = true;
     return data;
+  }
+
+  Future<UserProfile> getProfile() async {
+    profile = await UserAuth.instance.getProfile(userUid);
+    return profile;
   }
 }
 
@@ -106,6 +113,7 @@ class Player {
   }
 
   static const String _USERS = 'user';
+  static const String _EMAIL = 'email';
 
   void fromJSON(Map<String, dynamic> data) {
     name = data[_NAME];
@@ -122,11 +130,13 @@ class Player {
       });
     }
     users = newUsers;
+  }
 
+  void setupSnap() {
     // Teams.
     CollectionReference ref = Firestore.instance
         .collection("Seasons")
-        .where('players.' + uid + '.' + _ADDED, isEqualTo: true)
+        .where(Season._PLAYERS + '.' + uid + '.' + _ADDED, isEqualTo: true)
         .reference();
     UserDatabaseData.snapshotMapping[this] =
         ref.snapshots.listen(UserDatabaseData.instance._onSeasonUpdated);
@@ -173,6 +183,9 @@ class Player {
     final UploadTaskSnapshot snapshot = (await task.future);
     this.photoUrl = snapshot.downloadUrl.toString();
     print('photurl $photoUrl');
+    Map<String, String> data = new Map<String, String>();
+    data[_PHOTOURL] = photoUrl;
+    await Firestore.instance.collection("Players").document(uid).updateData(data);
     return snapshot.downloadUrl;
   }
 }
@@ -369,7 +382,7 @@ class Game {
     place.fromJSON(data[_PLACE]);
     this.place = place;
 
-    print('Update Game ' + uid + ' ${data}');
+    print('Update Game $uid');
     // Work out attendance.
     Map<String, Attendance> newAttendanceData = new Map<String, Attendance>();
     Map<String, dynamic> attendanceData = data[_ATTENDANCE];
@@ -564,21 +577,25 @@ class Opponent {
 class SeasonPlayer {
   String playerUid;
   String displayName;
+  String photoUrl;
   RoleInTeam role;
 
-  SeasonPlayer({this.playerUid, this.displayName, this.role});
+  SeasonPlayer({this.playerUid, this.displayName, this.role, this.photoUrl});
 
   SeasonPlayer.copy(SeasonPlayer copy) {
     playerUid = copy.playerUid;
     displayName = copy.displayName;
     role = copy.role;
+    photoUrl = copy.photoUrl;
   }
 
   static const String _ROLE = 'role';
+  static const String _PHOTOURL = 'photourl';
 
   void fromJSON(Map<String, dynamic> data) {
     role = RoleInTeam.values.firstWhere((e) => e.toString() == data[_ROLE]);
     displayName = getString(data[_NAME]);
+    photoUrl = getString(data[_PHOTOURL]);
   }
 
   Map<String, dynamic> toJSON() {
@@ -586,6 +603,7 @@ class SeasonPlayer {
     ret[_ROLE] = role.toString();
     ret[_NAME] = displayName;
     ret[_ADDED] = true;
+    ret[_PHOTOURL] = photoUrl;
     return ret;
   }
 }
@@ -637,8 +655,10 @@ class Season {
     playersData.forEach((key, val) {
       SeasonPlayer player = new SeasonPlayer();
       player.playerUid = key;
-      player.fromJSON(val);
-      newPlayers.add(player);
+      if (val != null) {
+        player.fromJSON(val);
+        newPlayers.add(player);
+      }
     });
     players = newPlayers;
     print('Update Season ' + uid);
@@ -669,6 +689,22 @@ class Season {
       // Update the game.
       await ref.document(uid).updateData(toJSON());
     }
+  }
+
+  Future<void> removePlayer(SeasonPlayer player) async {
+    DocumentReference doc =
+        Firestore.instance.collection("Seasons").document(uid);
+    Map<String, dynamic> data = new Map<String, dynamic>();
+    data[_PLAYERS + "." + player.playerUid] = null;
+    await doc.updateData(data);
+  }
+
+  Future<void> updateRoleInTeam(SeasonPlayer player, RoleInTeam role) async {
+    Map<String, dynamic> data = new Map<String, dynamic>();
+
+    data[_PLAYERS + "." + player.playerUid + "." + SeasonPlayer._ROLE] =
+        role.toString();
+    Firestore.instance.collection("Seasons").document(uid).updateData(data);
   }
 
   // Send an invite to a user for this season and team.
@@ -952,7 +988,7 @@ class Team {
     final StorageUploadTask task = ref.put(imgFile);
     final UploadTaskSnapshot snapshot = (await task.future);
     this.photoUrl = snapshot.downloadUrl.toString();
-    print('photurl ${photoUrl}');
+    print('photurl $photoUrl');
     return snapshot.downloadUrl;
   }
 
@@ -978,6 +1014,7 @@ class Invite {
   String teamUid;
   String seasonUid;
   String sentByUid;
+  RoleInTeam role;
   List<String> playerName;
 
   Invite(
@@ -999,15 +1036,16 @@ class Invite {
     sentByUid = invite.sentByUid;
     email = invite.email;
     playerName = new List<String>.from(invite.playerName);
+    role = invite.role;
   }
 
   static const String _EMAIL = 'email';
-  static const String _DETAILS = 'details';
   static const String _TEAMUID = 'teamUid';
   static const String _TEAMNAME = 'teamName';
   static const String _SEASONNAME = 'seasonName';
   static const String _SEASONUID = 'seasonUid';
   static const String _SENTBYUID = 'sentbyUid';
+  static const String _ROLE = 'role';
 
   void fromJSON(String uid, Map<String, dynamic> data) {
     email = getString(data[_EMAIL]);
@@ -1021,6 +1059,11 @@ class Invite {
     sentByUid = getString(data[_SENTBYUID]);
     teamName = getString(data[_TEAMNAME]);
     seasonName = getString(data[_SEASONNAME]);
+    try {
+      role = RoleInTeam.values.firstWhere((e) => e.toString() == data[_ROLE]);
+    } catch (e) {
+      role = RoleInTeam.NonPlayer;
+    }
   }
 
   Map<String, dynamic> toJSON() {
@@ -1032,6 +1075,7 @@ class Invite {
     ret[_SENTBYUID] = sentByUid;
     ret[_TEAMNAME] = teamName;
     ret[_SEASONNAME] = seasonName;
+    ret[_ROLE] = role;
     return ret;
   }
 
@@ -1041,7 +1085,7 @@ class Invite {
 }
 
 class UserDatabaseData {
-  String _uid;
+  String userUid;
   Map<String, Player> _players = new Map<String, Player>();
   Map<String, Team> _teams = new Map<String, Team>();
   Map<String, Game> _games = new Map<String, Game>();
@@ -1093,33 +1137,78 @@ class UserDatabaseData {
         .document(inviteUid)
         .get();
     Invite invite = new Invite();
-    invite.fromJSON(doc.documentID, doc.data);
-    return invite;
+    if (doc.exists) {
+      invite.fromJSON(doc.documentID, doc.data);
+      return invite;
+    } else {
+      _invites.remove(invite.uid);
+      _inviteController.add(UpdateReason.Update);
+    }
+    return null;
   }
 
-  Future<Invite> addInvite(Invite invite) async {
+  Future<bool> acceptInvite(
+      Invite invite, String playerUid, String name) async {
     // We add ourselves to the season.
     DocumentSnapshot doc = await Firestore.instance
         .collection("Seasons")
         .document(invite.seasonUid)
         .get();
     if (doc.exists) {
-      // Update it!  First we make a player.
-      
+      // Update it!  First we add to the player.
+      Map<String, dynamic> data = new Map<String, dynamic>();
+      SeasonPlayer seasonPlayer = new SeasonPlayer(
+          playerUid: playerUid, displayName: name, role: invite.role);
+      data[Season._PLAYERS + "." + playerUid] = seasonPlayer.toJSON();
+      doc.reference.updateData(data);
+      return true;
     }
-    return invite;
+    return false;
+  }
+
+  Future<String> addPlayer(String name, Relationship rel) async {
+    // We add ourselves to the season.
+    CollectionReference ref = Firestore.instance.collection("Players");
+    Player player = new Player();
+    player.name = name;
+    player.users = new Map<String, PlayerUser>();
+    player.users[this.userUid] = new PlayerUser();
+    player.users[this.userUid].relationship = rel;
+    DocumentReference doc = await ref.add(player.toJSON(includeUsers: true));
+    return doc.documentID;
+  }
+
+  Future<Player> getPlayer(String playerId, {bool withProfile}) async {
+    DocumentSnapshot ref =
+        await Firestore.instance.collection("Players").document(playerId).get();
+    if (ref.exists) {
+      print('Found player $playerId');
+      Player player = new Player();
+      player.fromJSON(ref.data);
+      // Fill in all the user data.
+      if (withProfile) {
+        await Future.forEach(player.users.values, (PlayerUser user) async {
+          return user.getProfile();
+        });
+      }
+      return player;
+    }
+    print('No player $playerId');
+    return null;
   }
 
   void _onPlayerUpdated(QuerySnapshot query) {
     query.documents.forEach((doc) {
       if (_players.containsKey(doc.documentID)) {
         _players[doc.documentID].fromJSON(doc.data);
+        _players[doc.documentID].setupSnap();
         return;
       }
       Player player = new Player();
       player.uid = doc.documentID;
       // Add in snapshots to find the teams associated with the player.
       player.fromJSON(doc.data);
+      player.setupSnap();
       _players[player.uid] = player;
       print('player ' + player.uid);
       _playerController.add(UpdateReason.Update);
@@ -1162,12 +1251,15 @@ class UserDatabaseData {
   }
 
   void _onInviteUpdated(QuerySnapshot query) {
+    Map<String, Invite> newInvites = new Map<String, Invite>();
+
     query.documents.forEach((DocumentSnapshot doc) {
       String uid = doc.documentID;
       Invite invite = new Invite();
       invite.fromJSON(uid, doc.data);
-      _invites[uid] = invite;
+      newInvites[uid] = invite;
     });
+    _invites = newInvites;
     _inviteController.add(UpdateReason.Update);
   }
 
@@ -1179,19 +1271,19 @@ class UserDatabaseData {
   }
 
   void _setUid(String uid, String email) {
-    if (this._uid != uid && this._uid != null) {
+    if (this.userUid != uid && this.userUid != null) {
       close();
       initStuff();
     }
-    this._uid = uid;
+    this.userUid = uid;
     // The uid everything is based off.
     Query collection = Firestore.instance
         .collection("Players")
-        .where("user." + uid + ".added", isEqualTo: true);
+        .where(Player._USERS + "." + uid + "." + _ADDED, isEqualTo: true);
     _playerSnapshot = collection.snapshots.listen(this._onPlayerUpdated);
     Query emailCollection = Firestore.instance
         .collection("Invites")
-        .where("email", isEqualTo: email);
+        .where(Invite._EMAIL, isEqualTo: email);
     _inviteSnapshot = emailCollection.snapshots.listen(this._onInviteUpdated);
   }
 

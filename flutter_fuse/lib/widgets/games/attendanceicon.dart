@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 
 class AttendanceIcon extends StatelessWidget {
-  Attendance attend;
+  final Attendance attend;
 
   AttendanceIcon(this.attend);
 

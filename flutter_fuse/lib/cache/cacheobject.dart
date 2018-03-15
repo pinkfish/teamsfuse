@@ -2,7 +2,6 @@
 // Copyright (c) 2017 Rene Floor
 // Released under MIT License.
 
-import 'dart:async';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -117,7 +116,7 @@ class CacheObject {
       }
     }
 
-    var oldPath = await getFilePath();
+    var oldPath = getFilePath();
     if (oldPath != null && !oldPath.endsWith(fileExtension)) {
       removeOldFile(oldPath);
       _map[_keyFilePath] = null;

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
-import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 
 class PlayerImage extends CircleAvatar {
   PlayerImage(String playerUid,
@@ -18,6 +17,7 @@ class PlayerImage extends CircleAvatar {
       bool gaplessPlayback: false})
       : super(
             backgroundColor: backgroundColor,
+            radius: width == null ? 20.0 : (width < height ? width / 2: height / 2),
             child: new Image(
                 image: getImageProvider(playerUid),
                 key: key,

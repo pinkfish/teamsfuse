@@ -12,7 +12,7 @@ typedef void OnChangedFunc(DateTimeUnion field);
 class DateTimeFormField extends FormField<DateTimeUnion> {
   DateTimeFormField(
       {Key key,
-      DateTimeUnion initialValue: null,
+      DateTimeUnion initialValue,
       InputDecoration decoration: const InputDecoration(),
       ValueChanged<DateTimeUnion> onFieldSubmitted,
       FormFieldSetter<DateTimeUnion> onSaved,

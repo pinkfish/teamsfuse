@@ -10,14 +10,6 @@ import 'dart:ui' as ui show instantiateImageCodec, Codec;
 
 import 'package:flutter_fuse/cache/cachemanager.dart';
 
-/**
- *  CachedNetworkImage for Flutter
- *
- *  Copyright (c) 2017 Rene Floor
- *
- *  Released under MIT License.
- */
-
 class CachedNetworkImage extends StatefulWidget {
   static List<Object> _registeredErrors = <Object>[];
 
@@ -225,9 +217,10 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
 
   ImagePhase _phase = ImagePhase.start;
   ImagePhase get phase => _phase;
-  Timer _timer;
 
   bool _hasError;
+
+  Timer _timer;
 
   @override
   void initState() {
@@ -370,6 +363,7 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
   void dispose() {
     _imageResolver.stopListening();
     _controller.dispose();
+    _timer.cancel();
     super.dispose();
   }
 

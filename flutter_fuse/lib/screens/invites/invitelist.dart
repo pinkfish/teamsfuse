@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 
 // Shows the current invites pending for this user.
 class InviteListScreen extends StatefulWidget {
@@ -14,7 +13,6 @@ class InviteListScreen extends StatefulWidget {
 
 class InviteListScreenState extends State<InviteListScreen> {
   StreamSubscription<UpdateReason> _stream;
-  List<Invite> _invites;
 
   @override
   void initState() {
@@ -79,6 +77,7 @@ class InviteListScreenState extends State<InviteListScreen> {
   @override
   Widget build(BuildContext context) {
     List<Widget> invites = new List<Widget>();
+    Messages messages = Messages.of(context);
     ThemeData theme = Theme.of(context);
     UserDatabaseData.instance.invites.forEach((String key, Invite invite) {
       invites.add(
@@ -91,13 +90,21 @@ class InviteListScreenState extends State<InviteListScreen> {
                 _addInvite(invite);
               },
             ),
-            title: new Text(invite.teamName + ' ' + invite.seasonName),
-            subtitle: new Row(
-              children: invite.playerName.map((String name) {
-                return new Chip(
-                    backgroundColor: Colors.lightBlueAccent,
-                    label: new Text(name));
-              }).toList(),
+            title: new Text(messages.teamandseason(invite.teamName, invite.seasonName)),
+            subtitle: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(height: 5.0),
+                new Text(Messages.of(context).roleingame(invite.role)),
+                const SizedBox(height: 5.0),
+                new Row(
+                  children: invite.playerName.map((String name) {
+                    return new Chip(
+                        backgroundColor: Colors.lightBlueAccent,
+                        label: new Text(name));
+                  }).toList(),
+                ),
+              ],
             ),
             trailing: new IconButton(
               icon: const Icon(Icons.delete),
@@ -112,7 +119,7 @@ class InviteListScreenState extends State<InviteListScreen> {
 
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+        title: new Text(messages.title),
       ),
       body: new SingleChildScrollView(
         child: new Column(

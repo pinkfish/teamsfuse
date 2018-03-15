@@ -5,38 +5,37 @@ import 'package:flutter_fuse/widgets/teams/teamdetails.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 
 class TeamScreen extends StatefulWidget {
-  String teamuid;
+  final String teamUid;
 
-  TeamScreen(this.teamuid);
+  TeamScreen(this.teamUid);
 
   @override
   TeamScreenState createState() {
-    return new TeamScreenState(this.teamuid);
+    return new TeamScreenState();
   }
 }
 
 class TeamScreenState extends State<TeamScreen> {
   int _tabIndex = 0;
-  String teamUid;
 
-  TeamScreenState(this.teamUid);
+  TeamScreenState();
 
   Widget _buildBody() {
     if (_tabIndex == 0) {
-      return new SingleChildScrollView(child:new TeamDetails(teamUid));
+      return new SingleChildScrollView(child:new TeamDetails(widget.teamUid));
     }
-    return new TeamPlayers(teamUid);
+    return new TeamPlayers(widget.teamUid);
   }
 
   void _onEditTeam(BuildContext context) {
-    Navigator.pushNamed(context, "EditTeam/" + teamUid);
+    Navigator.pushNamed(context, "EditTeam/" + widget.teamUid);
   }
 
   @override
   Widget build(BuildContext context) {
     List<Widget> actions = new List<Widget>();
-    if (UserDatabaseData.instance.teams.containsKey(teamUid)) {
-      if (UserDatabaseData.instance.teams[teamUid].isAdmin()) {
+    if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
+      if (UserDatabaseData.instance.teams[widget.teamUid].isAdmin()) {
         actions.add(new FlatButton(
             onPressed: () {
               this._onEditTeam(context);

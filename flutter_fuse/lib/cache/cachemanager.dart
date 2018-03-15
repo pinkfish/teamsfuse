@@ -49,7 +49,7 @@ class CacheManager {
     _prefs = await SharedPreferences.getInstance();
     _getSavedCacheDataFromPreferences();
     _getLastCleanTimestampFromPreferences();
-    await CacheObject.initDirectory();
+    CacheObject.initDirectory();
   }
 
   bool _isStoringData = false;
@@ -178,7 +178,7 @@ class CacheManager {
 
     _cacheData.remove(cacheObject.url);
 
-    File file = new File(await cacheObject.getFilePath());
+    File file = new File(cacheObject.getFilePath());
     if (await file.exists()) {
       file.delete();
     }
@@ -215,7 +215,7 @@ class CacheManager {
       // Set touched date to show that this object is being used recently
       cacheObject.touch();
 
-      var filePath = await cacheObject.getFilePath();
+      var filePath = cacheObject.getFilePath();
       //If we have never downloaded this file, do download
       if (filePath == null) {
         print("[Flutter Cache Manager] Download first $url");
@@ -255,12 +255,14 @@ class CacheManager {
 
     //If non of the above is true, than we don't have to download anything.
     _save();
-    if (showDebugLogs) print(log);
-    CacheObject ob = await _cacheData[url];
+    if (showDebugLogs) {
+      print(log);
+    }
+    CacheObject ob = _cacheData[url];
     if (ob == null) {
       return null;
     }
-    String fname = await ob.getFilePath();
+    String fname = ob.getFilePath();
     if (fname == null) {
       return null;
     }
@@ -290,7 +292,7 @@ class CacheManager {
       if (response.statusCode == 200) {
         await newCache.setDataFromHeaders(response.headers);
 
-        var filePath = await newCache.getFilePath();
+        var filePath = newCache.getFilePath();
         var folder = new File(filePath).parent;
         if (!(await folder.exists())) {
           folder.createSync(recursive: true);

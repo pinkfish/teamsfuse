@@ -7,24 +7,27 @@ import 'dart:async';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
 
 class TeamDetails extends StatefulWidget {
-  String teamuid;
+  final String teamuid;
 
   TeamDetails(this.teamuid);
 
   @override
   TeamDetailsState createState() {
-    return new TeamDetailsState(this.teamuid);
+    return new TeamDetailsState();
   }
 }
 
 class TeamDetailsState extends State<TeamDetails> {
   Team team;
-  String teamuid;
 
   StreamSubscription<UpdateReason> teamUpdate;
 
-  TeamDetailsState(this.teamuid) {
-    team = UserDatabaseData.instance.teams[teamuid];
+  TeamDetailsState();
+
+  @override
+  void initState() {
+    super.initState();
+    team = UserDatabaseData.instance.teams[widget.teamuid];
     if (team != null) {
       teamUpdate = team.thisTeamStream.listen((data) {
         setState(() {});

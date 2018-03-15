@@ -14,9 +14,11 @@ import 'package:flutter_fuse/screens/game/gamedetails.dart';
 import 'package:flutter_fuse/screens/team/addplayer.dart';
 import 'package:flutter_fuse/screens/invites/invitelist.dart';
 import 'package:flutter_fuse/screens/invites/addinvite.dart';
+import 'package:flutter_fuse/screens/team/playerdetails.dart';
+import 'package:flutter_fuse/screens/settings/editplayer.dart';
 
 class AppRouter {
-  static Router myRouter = null;
+  static Router myRouter;
 
   static Router get instance {
     if (myRouter == null) {
@@ -34,11 +36,15 @@ class AppRouter {
     router.define("/Profile",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new ProfileScreen()));
+                new ProfileScreen()));
     router.define("/EditProfile/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new EditProfileScreen(vals["id"])));
+                new EditProfileScreen(vals["id"])));
+    router.define("/EditPlayer/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new EditPlayerScreen(playerUid: vals["id"])));
     router.define("/Settings",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -50,11 +56,11 @@ class AppRouter {
     router.define("/Invites",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new InviteListScreen()));
+                new InviteListScreen()));
     router.define("/AddInvite/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AddInviteScreen(vals["id"])));
+                new AddInviteScreen(vals["id"])));
     router.define("/Team/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -66,7 +72,12 @@ class AppRouter {
     router.define("/AddPlayer/:team/:season",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AddPlayerScreen(vals["team"], vals["season"])));
+                new AddPlayerScreen(vals["team"], vals["season"])));
+    router.define("/PlayerDetails/:team/:season/:player",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new PlayerDetailsScreen(
+                    vals["team"], vals["season"], vals["player"])));
     router.define("/EditGame/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

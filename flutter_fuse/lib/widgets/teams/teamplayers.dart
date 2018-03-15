@@ -110,12 +110,11 @@ class TeamPlayersState extends State<TeamPlayers> {
             onPressed: () {
               // Do the delete.
               Navigator.of(context).pop(true);
-
             },
           ),
           new FlatButton(
             child:
-            new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+                new Text(MaterialLocalizations.of(context).cancelButtonLabel),
             onPressed: () {
               Navigator.of(context).pop(false);
             },
@@ -123,21 +122,27 @@ class TeamPlayersState extends State<TeamPlayers> {
         ],
       ),
     );
-if (result) {
-  invite.firestoreDelete();
-}
+    if (result) {
+      invite.firestoreDelete();
+    }
   }
 
   List<Widget> _buildPlayers() {
     List<Widget> ret = new List<Widget>();
+    ThemeData theme = Theme.of(context);
 
     print('players ${_season.toJSON()}');
     _season.players.forEach((SeasonPlayer player) {
-      ret.add(new ListTile(
-        leading: new PlayerImage(player.playerUid),
-        title: new Text(player.displayName),
-        subtitle: new Text(Messages.of(context).roleingame(player.role)),
-      ));
+      ret.add(
+        new GestureDetector(
+          onTap: () { Navigator.pushNamed(context, "PlayerDetails/" + _team.uid + "/" + _season.uid + "/" + player.playerUid); },
+          child: new ListTile(
+            leading: new PlayerImage(player.playerUid),
+            title: new Text(player.displayName),
+            subtitle: new Text(Messages.of(context).roleingame(player.role)),
+          ),
+        ),
+      );
     });
     ret.add(new ListTile(
         title: new FlatButton(
@@ -162,7 +167,19 @@ if (result) {
               }).toList(),
             ),
             leading: const Icon(Icons.email),
-            subtitle: new Text(inv.email),
+            subtitle: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(height: 5.0),
+                new Text(
+                  inv.email,
+                  style: theme.textTheme.body1
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 5.0),
+                new Text(Messages.of(context).roleingame(inv.role)),
+              ],
+            ),
             trailing: new IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {

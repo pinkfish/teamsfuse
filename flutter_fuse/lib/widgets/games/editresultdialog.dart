@@ -6,18 +6,17 @@ import 'package:flutter_fuse/util/debouncer.dart';
 import 'package:flutter_fuse/widgets/util/statepicker.dart';
 
 class EditResultDialog extends StatefulWidget {
-  Game game;
+  final Game game;
 
   EditResultDialog(this.game);
 
   @override
   EditResultDialogState createState() {
-    return new EditResultDialogState(this.game);
+    return new EditResultDialogState();
   }
 }
 
 class EditResultDialogState extends State<EditResultDialog> {
-  Game _game;
   Team _team;
   Opponent _opponent;
   GameResultDetails _details;
@@ -26,15 +25,15 @@ class EditResultDialogState extends State<EditResultDialog> {
   int _ptsFor;
   int _ptsAgainst;
 
-  EditResultDialogState(this._game) {
-    _details = new GameResultDetails.copy(_game.result);
+  EditResultDialogState() {
+    _details = new GameResultDetails.copy(widget.game.result);
     _ptsFor = _details.ptsFor;
     _ptsAgainst = _details.ptsAgainst;
-    _team = UserDatabaseData.instance.teams[_game.teamUid];
+    _team = UserDatabaseData.instance.teams[widget.game.teamUid];
     if (_team == null) {
       _team = new Team();
     }
-    _opponent = _team.opponents[_game.opponentUid];
+    _opponent = _team.opponents[widget.game.opponentUid];
     if (_opponent == null) {
       _opponent = new Opponent();
     }
@@ -44,7 +43,7 @@ class EditResultDialogState extends State<EditResultDialog> {
 
   void _sendUpdate(List<bool> results) {
     print('updating values');
-    _game.updateFirestoreGameResult(_details);
+    widget.game.updateFirestoreGameResult(_details);
   }
 
   void _selectResult(GameInProgress result) async {
@@ -126,11 +125,6 @@ class EditResultDialogState extends State<EditResultDialog> {
       });
       debouncer.debounce(true);
     }
-  }
-
-  PopupMenuItem<GameInProgress> _makeItem(GameInProgress val) {
-    return new PopupMenuItem<GameInProgress>(
-        child: new Text(Messages.of(context).gameinprogress(val)), value: val);
   }
 
   void _updateScore() {

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
 class SportFormField extends FormField<String> {
   SportFormField({
     Key key,
-    String initialValue: '',
+    String initialValue: 'none',
     InputDecoration decoration: const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
@@ -55,25 +54,12 @@ class SportFormFieldState extends FormFieldState<String> {
       value: 'none',
     ));
 
-    ret.add(new DropdownMenuItem(
-      child: new Text(Messages.of(context).sportbasketball),
-      value: Sport.Basketball.toString(),
-    ));
-
-    ret.add(new DropdownMenuItem(
-      child: new Text(Messages.of(context).sportsoftball),
-      value: Sport.Softball.toString(),
-    ));
-
-    ret.add(new DropdownMenuItem(
-      child: new Text(Messages.of(context).sportsoccer),
-      value: Sport.Soccer.toString(),
-    ));
-
-    ret.add(new DropdownMenuItem(
-      child: new Text(Messages.of(context).sportother),
-      value: Sport.Other.toString(),
-    ));
+    Sport.values.forEach((Sport sport) {
+      ret.add(new DropdownMenuItem(
+        child: new Text(Messages.of(context).sportname(sport)),
+        value: sport.toString(),
+      ));
+    });
 
     return ret;
   }

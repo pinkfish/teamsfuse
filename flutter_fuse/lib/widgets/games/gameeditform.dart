@@ -155,7 +155,6 @@ class EditGameFormState extends State<EditGameForm> {
                                     ? 'none'
                                     : game.opponentUid,
                                 validator: (String str) {
-                                  print('validate ${str}');
                                   return _validations.validateOpponent(
                                       context, str);
                                 },
@@ -182,9 +181,9 @@ class EditGameFormState extends State<EditGameForm> {
                       ),
                       new FlatButton(onPressed: () {
                         MapView.openPlacePickerModal().then((Map<String, dynamic> val) {
-                          print('places ret ${val}');
+                          print('places ret $val');
                         }).catchError((Object err) {
-                          print('${err} Error!');
+                          print('$err Error!');
                         });
                       },
                       child: new Text('Place')),

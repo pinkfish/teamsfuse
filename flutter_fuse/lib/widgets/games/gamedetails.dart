@@ -66,8 +66,6 @@ class GameDetailsState extends State<GameDetails> {
   @override
   Widget build(BuildContext context) {
     print('lat: ${game.place.latitude} long: ${game.place.longitude}');
-    Location loc = new Location(
-        game.place.latitude.toDouble(), game.place.longitude.toDouble());
     Marker marker = new Marker(game.place.placeId, game.place.address,
         game.place.latitude.toDouble(), game.place.longitude.toDouble());
     var uri = MapData.instance.provider
@@ -164,14 +162,14 @@ class GameDetailsState extends State<GameDetails> {
         title: new Text(title, style: resultStyle)));
 
     // Uniform
-    if (game.uniform != null && !game.uniform.isEmpty) {
+    if (game.uniform != null && game.uniform.isNotEmpty) {
       body.add(new ListTile(
           leading: const Icon(CommunityIcons.tshirtcrew),
           title: new Text(game.uniform == null ? 'fluff' : game.uniform)));
     }
 
     // Notes.
-    if (game.uniform != null && !game.uniform.isEmpty) {
+    if (game.uniform != null && game.uniform.isNotEmpty) {
       body.add(new ListTile(
           leading: const Icon(Icons.note), title: new Text(game.notes)));
     }

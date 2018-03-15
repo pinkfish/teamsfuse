@@ -105,7 +105,7 @@ class SignupScreenState extends State<SignupScreen> {
                                         context, str);
                                   },
                                   onSaved: (String value) {
-                                    person.displayName = value;
+                                    person.profile.displayName = value;
                                   }),
                               new TextFormField(
                                   decoration: new InputDecoration(
@@ -135,7 +135,7 @@ class SignupScreenState extends State<SignupScreen> {
                                         context, str);
                                   },
                                   onSaved: (String value) {
-                                    person.email = value;
+                                    person.profile.phoneNumber = value;
                                   }),
                               new TextFormField(
                                   decoration: new InputDecoration(

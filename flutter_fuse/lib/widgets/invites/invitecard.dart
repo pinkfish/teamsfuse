@@ -14,7 +14,6 @@ class InviteCard extends StatefulWidget {
 
 class InviteCardState extends State<InviteCard> {
   StreamSubscription<UpdateReason> _stream;
-  List<Invite> _invites;
 
   @override
   void initState() {
@@ -32,8 +31,6 @@ class InviteCardState extends State<InviteCard> {
   void onInviteUpdate(UpdateReason reason) {
     setState(() {});
   }
-
-  void _openInvitationList() {}
 
   @override
   Widget build(BuildContext context) {

@@ -41,6 +41,14 @@ class Validations {
     return null;
   }
 
+  String validateRoleInTeam(BuildContext context, String value) {
+    if (value == 'none' || value == 'add') {
+      return Messages.of(context).needtoselectrole;
+    }
+    return null;
+  }
+
+
   String validateGender(BuildContext context, String value) {
     if (value == 'none') {
       return Messages.of(context).needtoselectgender;

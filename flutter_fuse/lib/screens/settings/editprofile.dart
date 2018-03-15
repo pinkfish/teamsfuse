@@ -81,15 +81,13 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         .showSnackBar(new SnackBar(content: new Text(value)));
   }
 
-
   void _savePressed(BuildContext context) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       if (_changedImage) {
-        Uri photoUrl = await me.updateImage(_imageFile);
-        user.photoUrl = photoUrl.toString();
+        // Only update in the me player, we don't use the built in photourl.
+        await me.updateImage(_imageFile);
       }
-      await UserAuth.instance.updateProfile(user);
       Navigator.pop(context);
     } else {
       _showInSnackBar(Messages.of(context).formerror);
@@ -102,77 +100,91 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     final Size screenSize = MediaQuery.of(context).size;
-       return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(Messages.of(context).title),
-          key: _scaffoldKey,
-          actions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  this._savePressed(context);
-                },
-                child: new Text(Messages.of(context).savebuttontext,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .subhead
-                        .copyWith(color: Colors.white))),
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text(Messages.of(context).title),
+        key: _scaffoldKey,
+        actions: <Widget>[
+          new FlatButton(
+            onPressed: () {
+              this._savePressed(context);
+            },
+            child: new Text(
+              Messages.of(context).savebuttontext,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .subhead
+                  .copyWith(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+      body: new SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        controller: _scrollController,
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Form(
+              key: _formKey,
+              autovalidate: _autovalidate,
+              child: new DropdownButtonHideUnderline(
+                child: new Column(
+                  children: <Widget>[
+                    new IconButton(
+                      onPressed: this._selectImage,
+                      iconSize: (screenSize.width < 500)
+                          ? 120.0
+                          : (screenSize.width / 4) + 12.0,
+                      icon: this._buildImage(),
+                    ),
+                    new EnsureVisibleWhenFocused(
+                      focusNode: _focusNode,
+                      child: new TextFormField(
+                        decoration: new InputDecoration(
+                          icon: const Icon(Icons.person),
+                          hintText: Messages.of(context).displayname,
+                          labelText: Messages.of(context).displaynamehint,
+                        ),
+                        initialValue: user.profile.displayName,
+                        keyboardType: TextInputType.text,
+                        obscureText: false,
+                        validator: (String name) {
+                          return _validations.validateName(context, name);
+                        },
+                        onSaved: (String value) {
+                          user.profile.displayName = value;
+                        },
+                      ),
+                    ),
+                    new EnsureVisibleWhenFocused(
+                      focusNode: _focusNode,
+                      child: new TextFormField(
+                        decoration: new InputDecoration(
+                          icon: const Icon(Icons.phone),
+                          hintText: Messages.of(context).phonenumber,
+                          labelText: Messages.of(context).phonenumberhint,
+                        ),
+                        initialValue: user.profile.phoneNumber,
+                        keyboardType: TextInputType.text,
+                        obscureText: false,
+                        validator: (String phone) {
+                          return _validations.validatePhone(context, phone);
+                        },
+                        onSaved: (String value) {
+                          user.profile.displayName = value;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
           ],
         ),
-        body: new SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            controller: _scrollController,
-            child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  new Form(
-                      key: _formKey,
-                      autovalidate: _autovalidate,
-                      child: new DropdownButtonHideUnderline(
-                          child: new Column(
-                        children: <Widget>[
-                          new IconButton(
-                            onPressed: this._selectImage,
-                            iconSize: (screenSize.width < 500)
-                                ? 120.0
-                                : (screenSize.width / 4) + 12.0,
-                            icon: this._buildImage(),
-                          ),
-                          new EnsureVisibleWhenFocused(
-                            focusNode: _focusNode,
-                            child: new TextFormField(
-                                decoration: new InputDecoration(
-                                  icon: const Icon(Icons.person),
-                                  hintText: Messages.of(context).displayname,
-                                  labelText:
-                                      Messages.of(context).displaynamehint,
-                                ),
-                                initialValue: user.displayName,
-                                keyboardType: TextInputType.text,
-                                obscureText: false,
-                                onSaved: (String value) {
-                                  user.displayName = value;
-                                }),
-                          ),
-                          new EnsureVisibleWhenFocused(
-                            focusNode: _focusNode,
-                            child: new TextFormField(
-                                decoration: new InputDecoration(
-                                  icon: const Icon(Icons.phone),
-                                  hintText: Messages.of(context).phonenumber,
-                                  labelText:
-                                  Messages.of(context).phonenumberhint,
-                                ),
-                                initialValue: user.phoneNumber,
-                                keyboardType: TextInputType.text,
-                                obscureText: false,
-                                onSaved: (String value) {
-                                  user.displayName = value;
-                                }),
-                          ),
-                        ],
-                      )))
-                ])));
+      ),
+    );
   }
 }

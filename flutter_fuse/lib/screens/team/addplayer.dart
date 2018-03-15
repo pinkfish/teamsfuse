@@ -4,6 +4,7 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
+import 'package:flutter_fuse/widgets/form/roleinteamformfield.dart';
 import 'dart:async';
 
 class AddPlayerScreen extends StatefulWidget {
@@ -23,6 +24,7 @@ class EmailName {
       new GlobalKey<FormFieldState<String>>();
   String email = '';
   String name = '';
+  RoleInTeam role = RoleInTeam.NonPlayer;
 }
 
 class AddPlayerScreenState extends State<AddPlayerScreen> {
@@ -63,7 +65,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
 
   Widget _buildForm() {
     List<Widget> rows = new List<Widget>();
-    Team team = UserDatabaseData.instance.teams[_teamUid];
+    Messages messages = Messages.of(context);
 
     rows.add(new DropdownButtonHideUnderline(
         child: new SeasonFormField(
@@ -85,8 +87,8 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
             initialValue: '',
             decoration: new InputDecoration(
                 icon: const Icon(Icons.person),
-                labelText: Messages.of(context).displayname,
-                hintText: Messages.of(context).displaynamehint),
+                labelText: messages.displayname,
+                hintText: messages.displaynamehint),
             validator: (String value) {
               return _validations.validateDisplayName(context, value);
             },
@@ -102,8 +104,8 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
             initialValue: '',
             decoration: new InputDecoration(
                 icon: const Icon(Icons.email),
-                labelText: Messages.of(context).email,
-                hintText: Messages.of(context).playeremailHint),
+                labelText: messages.email,
+                hintText: messages.playeremailHint),
             validator: (String value) {
               return _validations.validateEmail(context, value);
             },
@@ -119,6 +121,41 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
             },
             onSaved: (String value) {
               en.email = value;
+            },
+          ),
+        );
+
+        rows.add(
+          new TextFormField(
+            key: en.nameKey,
+            initialValue: '',
+            decoration: new InputDecoration(
+                icon: const Icon(Icons.person),
+                labelText: messages.displayname,
+                hintText: messages.displaynamehint),
+            validator: (String value) {
+              return _validations.validateDisplayName(context, value);
+            },
+            keyboardType: TextInputType.text,
+            onSaved: (String value) {
+              en.name = value;
+            },
+          ),
+        );
+
+        rows.add(
+          new RoleInTeamFormField(
+            initialValue: 'none',
+            decoration: new InputDecoration(
+              icon: const Icon(Icons.message),
+              labelText: messages.roleselect,
+            ),
+            validator: (String val) {
+              _validations.validateRoleInTeam(context, val);
+            },
+            onSaved: (String val) {
+              en.role =
+                  RoleInTeam.values.firstWhere((e) => e.toString() == val);
             },
           ),
         );

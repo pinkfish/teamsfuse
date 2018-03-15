@@ -3,7 +3,7 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
 class MultipleAttendanceDialog extends StatefulWidget {
-  Map<Player, Attendance> attendance;
+  final Map<Player, Attendance> attendance;
   MultipleAttendanceDialog(this.attendance);
 
   @override
@@ -16,7 +16,6 @@ class MultipleAttendanceDialog extends StatefulWidget {
 class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
   Map<Player, Attendance> _attendance;
   Set<Player> _changed = new Set<Player>();
-  Game _game;
 
   MultipleAttendanceDialogState(this._attendance);
 
