@@ -8,5 +8,8 @@ export default {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'stretch'
+  },
+  separator: {
+    height: 10,
   }
 };

@@ -15,15 +15,12 @@ const { persistor, store } = ConfigureStore({});
 
 export default class App extends React.Component {
   render() {
-    console.log('stuff here');
-    console.log(store);
-
-  return <Provider store={store}>
-           <PersistGate loading={<Loading />} persistor={persistor}>
-             <MenuProvider>
-               <AppBase />
-             </MenuProvider>
-          </PersistGate>
-        </Provider>;
+    return <Provider store={store}>
+             <PersistGate loading={<Loading />} persistor={persistor}>
+               <MenuProvider>
+                 <AppBase persistor={persistor} />
+               </MenuProvider>
+            </PersistGate>
+          </Provider>;
   }
 }

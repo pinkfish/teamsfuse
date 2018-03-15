@@ -74,7 +74,7 @@ export default class MyDatePicker extends Component {
     ret =
         <Item {...inputProps} icon onPress={this.openModal} style={styles.item}>
           <Left style={styles.itemLeft}>
-            <Icon name="mat-place" />
+            <Icon name="mat-place" style={styles.iconstart} />
           </Left>
           <Body style={styles.itemBody}>
             {input.value != '' && <Text>{input.value.name} ({input.value.address})</Text>}
@@ -82,7 +82,7 @@ export default class MyDatePicker extends Component {
           </Body>
           <Right style={styles.itemRight}>
             {extra}
-            <Icon name='mat-chevron-right' />
+            <Icon name='mat-chevron-right' style={styles.iconend} />
           </Right>
         </Item>;
 

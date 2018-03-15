@@ -14,19 +14,23 @@ import {
   FETCH_TEAM_DATA_DELETE,
   FETCH_TEAM_DATA_SUCCESS
 } from '../../actions/Teams';
+import momenttz from 'moment-timezone';
+import moment from 'moment';
 
 function teamOnSnapshot(querySnapshot, dispatch) {
   querySnapshot.docChanges.forEach((change) => {
-    var team = change.doc.data();
-    team.uid = change.doc.id;
+    var game = change.doc.data();
+    game.uid = change.doc.id;
+    game.displayTime = moment(game.time).tz(game.timezone);
+    game.teamuid = team.uid;
     if (change.type === "added") {
-      dispatch(fetchGameDataAdd(team));
+      dispatch(fetchGameDataAdd(game));
     }
     if (change.type === "modified") {
-      dispatch(fetchGameDataUpdate(team));
+      dispatch(fetchGameDataUpdate(game));
     }
     if (change.type === "removed") {
-      dispatch(fetchGameDataDelete(team));
+      dispatch(fetchGameDataDelete(game));
     }
   });
 }
@@ -45,23 +49,23 @@ const fetchGamesLogic = createLogic({
     for (key in teams) {
       team = teams[key];
       if (teams.hasOwnProperty(key)) {
-        teamQuery = teamsColl.doc(team.uid).collection('Games')
-            .orderBy("gameTime");
-        team.snapshotListen = teamQuery.onSnapshot(function(querySnapshot) {
+        gameQuery = teamsColl.doc(key).collection('Games');
+        team.snapshotListen = gameQuery.onSnapshot(function(querySnapshot) {
           teamOnSnapshot(querySnapshot, dispatch);
         });
-        teamPromise = teamQuery.get()
+        console.log('fetchihng for ', key);
+        gamePromise = gameQuery.get()
             .then(function(querySnapshot) {
               // Got all the teams.  Yay!
               querySnapshot.forEach(gameDoc => {
-                console.log("Add game");
                 var game = gameDoc.data();
                 game.uid = gameDoc.id;
-                game.teamUid = team.uid;
+                game.teamuid = team.uid;
+                game.displayTime = moment(game.time).tz(game.timezone);
                 allGames[game.uid] = game;
             })
           });
-        allPromises.push(teamPromise);
+        allPromises.push(gamePromise);
       }
     }
     Promise.all(allPromises)
@@ -87,7 +91,6 @@ const addTeamLogic = createLogic({
     teamsColl = firestore.collection('Teams');
     teamQuery = teamsColl.doc(action.payload.uid).collection('Games')
         .orderBy("gameTime");
-    console.log('addTeamLogic', action);
     action.payload.snapshotListen = teamQuery.onSnapshot(function(querySnapshot) {
       teamOnSnapshot(querySnapshot, dispatch);
     });

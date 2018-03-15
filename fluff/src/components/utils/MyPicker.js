@@ -25,10 +25,10 @@ export default class MyPicker extends Component {
   renderItem = (item) => {
     const { input } = this.props;
     return <Item key={item.key} onPress={() => this.selectItem(item)} icon style={styles.item}>
-            <Body>
+            <Body style={styles.itemBody}>
                <Text>{item.title}</Text>
              </Body>
-             {item.key == input.value && <Right><Icon name='mat-check'/></Right>}
+             {item.key == input.value && <Right style={styles.itemRight}><Icon name='mat-check'/></Right>}
           </Item>
   }
 
@@ -80,13 +80,13 @@ export default class MyPicker extends Component {
               </Content>
             </Container>
           </Modal>
-          {icon ? <Left style={styles.itemLeft} ><Icon name={icon} /></Left> : null}
+          {icon ? <Left style={styles.itemLeft} ><Icon name={icon} style={styles.iconstart} /></Left> : null}
           <Body style={styles.itemBody}>
             {input.value != '' && <Text>{this.showValue()}</Text>}
             {input.value == '' && <Text note>{title}</Text>}
           </Body>
           <Right style={styles.itemRight}>
-            <Icon name='mat-chevron-right' />
+            <Icon name='mat-chevron-right' style={styles.iconend} />
           </Right>
         </Item>;
 

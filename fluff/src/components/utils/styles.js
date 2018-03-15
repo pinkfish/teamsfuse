@@ -34,5 +34,13 @@ export default {
   },
   roundButtonLabelSelected: {
     color: 'white',
+  },
+  iconstart: {
+    fontSize: 20,
+    color: 'black'
+  },
+  iconend: {
+    fontSize: 15,
+    color: 'black'
   }
 };

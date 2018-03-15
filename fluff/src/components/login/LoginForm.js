@@ -28,8 +28,7 @@ import MyTextInput from "../utils/MyTextInput";
 import { withNavigation } from 'react-navigation';
 
 const renderInput = ({ input: { onChange, ...restInput }}) => {
-  console.log("Rendering input");
-  return <Input style={styles.input} onChangeText={(value) => { onChange(value); console.log("onChange<", value); }} {...restInput} />
+  return <Input style={styles.input} onChangeText={(value) => { onChange(value);  }} {...restInput} />
 }
 
 
@@ -43,11 +42,9 @@ class LoginFormView extends Component {
   }
 
   onSubmit = (values, dispatch) => {
-    console.log('onSubmit', this.props)
     return new Promise((resolve, reject) => {
       this.props.firebase.login({ email : values.email, password: values.password })
             .then((cred) => {
-              console.log('resolved ');
               resolve();
               this.navigation.navigate.goBack();
             })
@@ -108,13 +105,10 @@ class LoginFormView extends Component {
 export default reduxForm({
   form: 'Login',
   onSubmit: values => {
-    console.log('this one')
-    console.log(values)
 
   },
   validate: values => {
     const errors = {}
-    console.log(values)
 
     if (!values.email) {
       errors.email = I18n.t('needemail')
@@ -123,7 +117,6 @@ export default reduxForm({
     if (!values.password) {
       errors.password = I18n.t('needpassword')
     }
-    console.log('in here', errors)
 
     // Do the actual login here.
     return errors

@@ -149,13 +149,11 @@ const enhance = compose(
     },
     validate: values => {
       const errors = {}
-      console.log('validate teams p1', values)
-
+  
       if (values.repeat && values.howoften == 'unknown') {
         errors.unknown = I18n.t('needrepeat');
       }
 
-      // Do the actual login here.
       return errors
     },
     onSubmit: values => {

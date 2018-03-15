@@ -58,7 +58,6 @@ class Home extends Component {
     ret = (
       <Container>
         <Content>
-          <Text>SOmething here</Text>
           <GameList />
         </Content>
         <Fab

@@ -128,18 +128,17 @@ export default class MyDurationPicker extends Component {
             </Container>
           </Modal>
           <Left style={styles.itemLeft}>
-            <Icon name="calendar-range" />
+            <Icon name="calendar-range" style={styles.iconstart} />
           </Left>
           <Body style={styles.itemBody}>
             {input.value != '' && <Text>{this.showValue()}</Text>}
             {input.value == '' && <Text note>{title}</Text>}
           </Body>
           <Right style={styles.itemRight}>
-            <Icon name='mat-chevron-right' />
+            <Icon name='mat-chevron-right' style={styles.iconend} />
           </Right>
         </Item>;
-    console.log('ret', ret);
-
+    
     return ret;
   }
 }

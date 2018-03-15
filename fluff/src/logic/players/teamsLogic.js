@@ -18,7 +18,6 @@ import {
 
 function playerOnSnapshot(querySnapshot, dispatch) {
   querySnapshot.docChanges.forEach((change) => {
-    console.log('changes', change)
     var team = change.doc.data();
     team.uid = change.doc.id;
     if (change.type === "added") {
@@ -56,7 +55,6 @@ const fetchTeamsLogic = createLogic({
           .then(function(querySnapshot) {
             // Got all the teams.  Yay!
             querySnapshot.forEach(doc => {
-              console.log("team", doc);
               var team = doc.data();
               team.uid = doc.id;
               // Make sure we track how we got in here.
@@ -109,7 +107,6 @@ const deletePlayerLogic = createLogic({
     players.forEach(player => {
       if (player.uid == action.payload.uid) {
         if (player.snapshotListen) {
-          console.log('Not listening to this any more', player.uid);
           player.snapshotListen();
           player.snapshotListen = null;
         }

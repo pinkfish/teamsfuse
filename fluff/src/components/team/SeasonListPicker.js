@@ -21,6 +21,5 @@ export default SeasonListPicker = (props) => {
     }
  }
 
- console.log('players', teams, optionList);
   return <MyPicker icon="mat-people" title={title} options={optionList} input={input} {...inputProps} />
 }
