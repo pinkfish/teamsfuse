@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { View, Modal } from 'react-native'
-import AddGame1 from './add/AddGame1'
+import AddEvent1 from './add/AddEvent1'
 import { Container, Spinner, Text, Button } from 'native-base';
 import { ModalHeader } from "../app/AppHeader";
 import I18n from '../../../i18n/I18n';
@@ -10,7 +10,7 @@ import SavingModal from '../utils/SavingModal';
 import momenttz from 'moment-timezone';
 
 
-class AddGame extends Component {
+class AddEvent extends Component {
   constructor(props) {
     super(props)
     this.nextPage = this.nextPage.bind(this)
@@ -49,35 +49,25 @@ class AddGame extends Component {
     timeInZone = momenttz.tz(timeObj, values.place.timeZoneId);
 
     RNFirebase.firestore().collection("Teams").doc(teamuid).collection("Games").add({
-      type: 'game',
       time: timeInZone,
       timezone: values.place.timeZoneId,
       timezoneName: values.place.timeZoneName,
+      duration: values.duration,
       place: {
         name: values.place.name,
         address: values.place.address,
         placeid: values.place.placeid,
         notes: values.placenotes,
       },
-      opponent: values.opponentuid,
-      result: {
-        ptsFor: 0,
-        ptsAgainst: 0,
-        result: 'unknown'
-      },
       notes: values.notes,
-      uniform: values.uniform,
-      arriveearly: values.arriveearly,
-      gamelength: values.gamelength,
+      season: values.seasonuid,
       attendence: {
-
       }
     }).then(() => {
       this.setState({ savingVisible: false });
       this.props.navigation.goBack();
     }).catch(() => {
       this.setState({error: 'Error saving team', errorVisible : true });
-      this.setState({ savingVisible: false });
     })
     // Move to saving state.
   }
@@ -91,7 +81,7 @@ class AddGame extends Component {
     console.log('my state' , this.state);
     return (
       <Container>
-        <ModalHeader title={I18n.t('addgame')} iconRight="check" onRightPress={this.doFormSubmit} />
+        <ModalHeader title={I18n.t('addpractice')} iconRight="check" onRightPress={this.doFormSubmit} />
 
         <SavingModal onClose={() => this.setState({ savingVisible: false })} visible={savingVisible} />
 
@@ -109,11 +99,10 @@ class AddGame extends Component {
            </View>
         </Modal>
 
-        {page === 1 && <AddGame1 onSubmit={this.nextPage} onMyFormRef={(ref) => (this.child = ref)}/>}
-        {page === 2 && <AddGame2 onSubmit={this.handleSubmit} onMyFormRef={(ref) => (this.child = ref)}/>}
+        {page === 1 && <AddEvent1 onSubmit={this.handleSubmit} onMyFormRef={(ref) => (this.child = ref)}/>}
     </Container>
     );
   }
 }
 
-export default AddGame
+export default AddPractice

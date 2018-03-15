@@ -18,8 +18,7 @@ class EditOpponent extends Component {
 
   onPressItem = () => {
     // updater functions are preferred for transactional updates
-    console.log(this.child);
-    this.child.doSubmit();
+    this.child.doFluffSubmit();
   };
 
   render() {

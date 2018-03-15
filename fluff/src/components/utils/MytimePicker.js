@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Modal } from 'react-native';
-import { ListItem, Text, Container, Content, Left, Body, Right, Item } from 'native-base';
+import { Item, Text, Container, Content, Left, Body, Right } from 'native-base';
 import Icon from './Icon';
 import TimePickerInternal from './TimePickerInternal';
+import styles from './styles';
 
 export default class MyTimePicker extends Component {
   constructor(props) {
@@ -45,21 +46,30 @@ export default class MyTimePicker extends Component {
   }
 
   render() {
-    const { options, title, input, ...inputProps } = this.props;
+    const { options, title, input, meta, disableValid, ...inputProps } = this.props;
+
+    if ((meta.submitFailed || !meta.pristine) && !disableValid) {
+      if (meta.invalid) {
+        inputProps.error = true
+      } else {
+        inputProps.success = true
+      }
+    }
+
     ret =
-        <ListItem {...inputProps} icon onPress={this.openModal}>
-          <Left>
+        <Item {...inputProps} icon onPress={this.openModal} style={styles.item}>
+          <Left style={styles.itemLeft}>
             <Icon name="mat-access-time" />
           </Left>
-          <Body>
+          <Body style={styles.itemBody}>
             <TimePickerInternal input={input} visible={this.state.modalVisible} onClose={this.closeModal} />
             {input.value instanceof Date && <Text>{this.displayNiceTime(input.value)}</Text>}
             {!(input.value instanceof Date) && <Text note>{this.props.title}</Text>}
           </Body>
-          <Right>
+          <Right style={styles.itemRight}>
             <Icon name='mat-chevron-right' />
           </Right>
-        </ListItem>;
+        </Item>;
 
     return ret;
   }

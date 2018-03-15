@@ -6,7 +6,9 @@ import { firestoreConnect, withFirestore } from 'react-redux-firebase';
 import Icon from '../utils/Icon';
 import GameList from "../games/GameList";
 import { withNavigation } from 'react-navigation';
+import { View } from 'react-native';
 import I18n from '../../../i18n/I18n';
+import styles from './styles';
 
 class Home extends Component {
   constructor(props, context) {
@@ -62,20 +64,29 @@ class Home extends Component {
         <Fab
             active={this.state.active}
             direction="up"
-            containerStyle={{ }}
-            style={{ backgroundColor: '#5067FF' }}
+            containerStyle={{ width: 200, justifyContent: 'flex-end', alignItems: 'flex-end', flexDirection: 'row' }}
+            style={{ backgroundColor: '#5067FF'}}
             position="bottomRight"
             onPress={() => this.setState({active: !this.state.active })}>
             <Icon name="mat-add" />
-            <Button style={{ backgroundColor: '#34A34F' }} onPress={this.addGame}>
-              <Icon name="gamepad" />
-            </Button>
-            <Button style={{ backgroundColor: '#3B5998' }} onPress={this.addPractice}>
-              <Icon name="mat-people" />
-            </Button>
-            <Button disabled style={{ backgroundColor: '#DD5144' }} onPress={this.addEvent}>
-              <Icon name='calendar' />
-            </Button>
+            <View style={styles.fabview} onPress={this.addGame}>
+              <Text style={styles.fabtext}>{I18n.t('addgame')}</Text>
+              <Button style={{ ...styles.fabbutton, backgroundColor: '#34A34F'}} onPress={this.addGame}>
+                <Icon name="gamepad" size={20} color='white' />
+              </Button>
+            </View>
+            <View style={styles.fabview} onPress={this.addPractice}>
+              <Text style={styles.fabtext}>{I18n.t('addpractice')}</Text>
+              <Button style={{ ...styles.fabbutton, backgroundColor: '#3B5998' }} onPress={this.addPractice}>
+                <Icon name="mat-people" size={20} color='white' />
+              </Button>
+            </View>
+            <View style={styles.fabview} onPress={this.addEvent}>
+              <Text style={styles.fabtext}>{I18n.t('addevent')}</Text>
+              <Button disabled style={{ ...styles.fabbutton, backgroundColor: '#DD5144' }} onPress={this.addEvent}>
+                <Icon name='calendar' size={20} color='white' />
+              </Button>
+            </View>
         </Fab>
       </Container>);
 

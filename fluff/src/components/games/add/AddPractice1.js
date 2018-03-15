@@ -38,8 +38,9 @@ import MyDurationPicker from '../../utils/MyDurationPicker';
 import MyCheckbox from "../../utils/MyCheckbox";
 import TimeZonePicker from "../../utils/TimeZonePicker"
 import { withNavigation } from 'react-navigation';
+import FormRefComponent from '../../utils/FormRefComponent';
 
-class AddGame1 extends Component {
+class AddPractice1 extends FormRefComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -70,7 +71,7 @@ class AddGame1 extends Component {
   }
 
   render() {
-    const { handleSubmit, players, teams, navigation, error, teamuid, timezoneOfPlace } = this.props;
+    const { handleSubmit, players, teams, navigation, error, teamuid, timezoneOfPlace, invalid } = this.props;
 
    // See if we have the team, or not.
    opponentList = [];
@@ -100,8 +101,6 @@ class AddGame1 extends Component {
               <Field name="place" title={I18n.t('eventplace')} component={MyPlacePicker} onFormChange={this.onPlaceChange} />
               <Field name="placenotes" placeholder={I18n.t('placenotes')} multiline={true} regular component={MyTextInput} />
               <Separator />
-              <Field name="uniform" placeholder={I18n.t("Uniform")} component={MyTextInput} regular />
-              <Separator />
               <Field name="notes" placeholder={I18n.t('notes')} multiline={true} component={MyTextInput} regular />
               <Text>{this.state.errorText}</Text>
             </Body>
@@ -112,7 +111,7 @@ class AddGame1 extends Component {
 
           </Left>
           <Right>
-            <Button onPress={handleSubmit} block primary>
+            <Button onPress={handleSubmit} full primary disabled={invalid}>
               <Text>{I18n.t('next')}</Text>
             </Button>
           </Right>
@@ -137,6 +136,8 @@ const enhance = compose(
     initialValues: {
       name: '',
       teamuid: '',
+      time: null,
+      date: null
     },
     validate: values => {
       const errors = {}
@@ -144,8 +145,16 @@ const enhance = compose(
 
       //values = values.toJS()
 
-      if (!values.teamuid) {
+      if (values.teamuid == '') {
         errors.name = I18n.t('needteam')
+      }
+
+      if (values.time == null) {
+        errors.time = I18n.t('needtime');
+      }
+
+      if (values.date == null) {
+        errors.date = I18n.t('needdate')
       }
 
       // Do the actual login here.
@@ -159,4 +168,4 @@ const enhance = compose(
   );
 
 
-export default enhance(AddGame1);
+export default enhance(AddPractice1);

@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Modal } from 'react-native';
-import { ListItem, Text, Container, Content, Left, Body, Right } from 'native-base';
+import { Item, Text, Container, Content, Left, Body, Right } from 'native-base';
 import { ModalHeader } from '../app/AppHeader';
 import Icon from './Icon';
 import RNGooglePlaces from 'react-native-google-places';
+import styles from './styles';
 
 const URL = "https://maps.googleapis.com/maps/api/timezone/json?location=";
 const KEY = "AIzaSyCP22ZMhWoQuzH9qIEnxYL7C_XfjWjo6tI";
@@ -57,17 +58,33 @@ export default class MyDatePicker extends Component {
   }
 
   render() {
-    const { options, title, input, ...inputProps } = this.props;
+    const { options, title, input, meta, disableValid, ...inputProps } = this.props;
+
+    extra = null;
+    if ((meta.submitFailed || !meta.pristine) && !disableValid) {
+      if (meta.invalid) {
+        inputProps.error = true
+        extra = <Icon name='close-circle' color='red' />;
+      } else {
+        inputProps.success = true
+      }
+    }
+
+
     ret =
-        <ListItem {...inputProps} icon onPress={this.openModal}>
-          <Body>
+        <Item {...inputProps} icon onPress={this.openModal} style={styles.item}>
+          <Left style={styles.itemLeft}>
+            <Icon name="mat-place" />
+          </Left>
+          <Body style={styles.itemBody}>
             {input.value != '' && <Text>{input.value.name} ({input.value.address})</Text>}
             {(input.value == '') && <Text note>{title}</Text>}
           </Body>
-          <Right>
+          <Right style={styles.itemRight}>
+            {extra}
             <Icon name='mat-chevron-right' />
           </Right>
-        </ListItem>;
+        </Item>;
 
     return ret;
   }

@@ -12,5 +12,5 @@ export default teamListPicker = (props) => {
    }
  }
 
-  return <MyPicker title={title} options={optionList} input={input} {...inputProps} />
+  return <MyPicker icon="mat-people" title={title} options={optionList} input={input} {...inputProps} />
 }

@@ -46,8 +46,8 @@ class AddTeamPageOne extends Component {
         <Content>
           <ListItem style={styles.container} key='4'>
             <Body>
-              <Field name="name" title={I18n.t('teamname')} component={MyTextInput} floatingLabel />
-              <Field name="league" title={I18n.t('league')} component={MyTextInput} floatingLabel disableValid={true} />
+              <Field name="name" title={I18n.t('teamname')} component={MyTextInput} regular />
+              <Field name="league" title={I18n.t('league')} component={MyTextInput} regular disableValid={true} />
               <Field name="sport" title={I18n.t('sport')} component={MyPicker} mode="dropdown" defaultValue='other' regular styles={{height: 60}}c>
                 <Item label={I18n.t('basketball')} value='basketball' />
                 <Item label={I18n.t('soccer')} value='soccer' />
@@ -66,6 +66,7 @@ class AddTeamPageOne extends Component {
                 <Item label={I18n.t('genderna')} value='na' />
               </Field>
               <Separator />
+              <Field name="season" component={MyTextInput} title={I18n.t('season')} regular />
               <Field name="defaultearlyarrival" component={MyDurationPicker} title={I18n.t('defaultearlyarrival')} />
               <Text>{this.state.errorText}</Text>
             </Body>

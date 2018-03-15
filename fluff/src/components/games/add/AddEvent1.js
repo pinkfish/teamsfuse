@@ -38,8 +38,9 @@ import MyDurationPicker from '../../utils/MyDurationPicker';
 import MyCheckbox from "../../utils/MyCheckbox";
 import TimeZonePicker from "../../utils/TimeZonePicker"
 import { withNavigation } from 'react-navigation';
+import FormRefComponent from '../../utils/FormRefComponent';
 
-class AddGame1 extends Component {
+class AddGame1 extends FormRefComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -69,8 +70,11 @@ class AddGame1 extends Component {
     }
   }
 
+  checkThenNext = (handleSubmit) {
+  }
+
   render() {
-    const { handleSubmit, players, teams, navigation, error, teamuid, timezoneOfPlace } = this.props;
+    const { handleSubmit, players, teams, navigation, error, teamuid, timezoneOfPlace, invalid } = this.props;
 
    // See if we have the team, or not.
    opponentList = [];
@@ -108,10 +112,10 @@ class AddGame1 extends Component {
         </Content>
         <Footer style={{ height: 50 }}>
           <Left>
-
+            <Button full light/>
           </Left>
           <Right>
-            <Button onPress={handleSubmit} block primary>
+            <Button onPress={handleSubmit} disabled={invalid} full primary>
               <Text>{I18n.t('next')}</Text>
             </Button>
           </Right>

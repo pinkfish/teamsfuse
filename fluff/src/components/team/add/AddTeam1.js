@@ -28,6 +28,21 @@ import { Field, reduxForm, submit } from 'redux-form'
 import MyTextInput from "../../utils/MyTextInput";
 import MyPicker from "../../utils/MyPicker";
 
+const ROLE_DATA = [
+  {
+    title: I18n.t('player'),
+    key: 'player'
+  },
+  {
+    title: I18n.t('coach'),
+    key: 'coach'
+  },
+  {
+    title: I18n.t('nonplayer'),
+    key: 'nonplayer'
+  }
+]
+
 class AddTeamPageOne extends Component {
   constructor(props, context) {
     super(props, context);
@@ -48,12 +63,12 @@ class AddTeamPageOne extends Component {
               <Text>Select player</Text>
               <Field name="playeruid" component={MyPicker} mode="dropdown" defaultValue='other' regular styles={{height: 60}}c>
                 {players && players.list.map((player) => {
-
                     return (
                         <Item label={player.name} value={player.uid} key={player.uid} />
                     );
                 })}
               </Field>
+              <Field name="role" component={MyPicker} options={ROLE_DATA} regular />
               <Text>{this.state.errorText}</Text>
               <Button light>
                 <Text>{I18n.t('newplayer')}</Text>
@@ -77,19 +92,22 @@ class AddTeamPageOne extends Component {
 }
 
 function mapStateToProps(state) {
-  return { players: state.players }
+  return {
+    players: state.players,
+    initialValues: {
+      sport: 'other',
+      gender: 'na',
+      role: 'coach',
+      season: new Date().getFullYear(),
+      adminuid: state.auth.uid,
+    }
+  }
 }
 
 const enhance = compose(
   reduxForm({
     form: 'AddTeam',
     destroyOnUnmount: false, // Preserve the data.
-    initialValues: {
-      sport: 'other',
-      timezone: 'PST',
-      country: 'us',
-      gender: 'na',
-    },
     validate: values => {
       const errors = {}
       console.log('validate teams p1', values)

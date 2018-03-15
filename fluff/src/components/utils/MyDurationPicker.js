@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Modal } from 'react-native';
+<<<<<<< HEAD
 import { Label, ListItem, Text, List, Container, Content, Left, Body, Right, Grid, Col } from 'native-base';
 import { ModalHeader } from '../app/AppHeader';
 import Icon from './Icon';
@@ -26,8 +27,16 @@ const MINUTES =  [
   { title: "45", value: 1 },
   { title: "50", value: 1 },
 ];
+=======
+import { Label, Item, Text, List, Container, Content, Left, Body, Right } from 'native-base';
+import { ModalHeader } from '../app/AppHeader';
+import Icon from './Icon';
+import styles from "./styles";
+>>>>>>> 301cb850a5aa7aa1460467501138833d2388dd1d
 
-export default class MyPicker extends Component {
+const ITEM_LIST = [ 0, 5,  10, 15, 20, 25, 30, 45, 60, 90, 120, 180, 240 ];
+
+export default class MyDurationPicker extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -46,6 +55,7 @@ export default class MyPicker extends Component {
 
   renderItem = (item) => {
     const { input } = this.props;
+<<<<<<< HEAD
     return <ListItem key={item.key} onPress={() => this.selectItem(item)} icon>
             <Body>
                <Text>{item.title}</Text>
@@ -60,6 +70,15 @@ export default class MyPicker extends Component {
     if (item.onPress) {
       item.onPress(item);
     }
+=======
+    return <Item key={'time' + item} onPress={() => this.selectItem(item)} icon style={styles.item}>
+            <Left style={styles.itemLeft}></Left>
+            <Body style={styles.itemBody}>
+               <Text>{item}</Text>
+             </Body>
+             {item == input.value && <Right style={styles.itemRight}><Icon name='mat-check'/></Right>}
+          </Item>
+>>>>>>> 301cb850a5aa7aa1460467501138833d2388dd1d
   }
 
   showValue = () => {
@@ -75,10 +94,14 @@ export default class MyPicker extends Component {
   }
 
   render() {
+<<<<<<< HEAD
     const { title, input, disabled, ...inputProps } = this.props;
+=======
+    const { options, title, input, disabled, icon, ...inputProps } = this.props;
+>>>>>>> 301cb850a5aa7aa1460467501138833d2388dd1d
 
     ret =
-        <ListItem {...inputProps} icon onPress={disabled ? () => {}: this.openModal}>
+        <Item {...inputProps} icon onPress={disabled ? () => {}: this.openModal} style={styles.item}>
           <Modal
               visible={this.state.modalVisible}
               animationType={'slide'}
@@ -87,6 +110,7 @@ export default class MyPicker extends Component {
             <Container>
               <ModalHeader title={title} onLeftPress={this.closeModal}/>
               <Content>
+<<<<<<< HEAD
                 <Grid>
                   <Col>
                     {HOURS.map((item) => this.renderItem(item))}
@@ -95,17 +119,25 @@ export default class MyPicker extends Component {
                     {MINUTES.map((item) => this.renderItem(item))}
                   </Col>
                 </Grid>
+=======
+                <List>
+                  {ITEM_LIST.forEach((value) => (this.renderItem(value)))}
+                </List>
+>>>>>>> 301cb850a5aa7aa1460467501138833d2388dd1d
               </Content>
             </Container>
           </Modal>
-          <Body>
+          <Left style={styles.itemLeft}>
+            <Icon name="calendar-range" />
+          </Left>
+          <Body style={styles.itemBody}>
             {input.value != '' && <Text>{this.showValue()}</Text>}
             {input.value == '' && <Text note>{title}</Text>}
           </Body>
-          <Right>
+          <Right style={styles.itemRight}>
             <Icon name='mat-chevron-right' />
           </Right>
-        </ListItem>;
+        </Item>;
     console.log('ret', ret);
 
     return ret;

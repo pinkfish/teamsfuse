@@ -7,6 +7,6 @@ export default {
   main: {
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'stretch'  
+    alignItems: 'stretch'
   }
 };

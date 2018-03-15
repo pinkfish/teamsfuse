@@ -8,6 +8,7 @@ import { ModalHeader } from "../app/AppHeader";
 import I18n from '../../../i18n/I18n';
 import RNFirebase from 'react-native-firebase';
 import styles from './styles';
+import GUID from '../utils/GUID';
 
 
 class AddTeam extends Component {
@@ -31,24 +32,39 @@ class AddTeam extends Component {
   }
 
   onSubmit = (values) => {
+    seasons = {}
+    seasonUid = GUID();
     player = {}
     player[values.playeruid] = {
       added: true,
+      role: values.role
+    }
+    seasonplayer = {}
+    seasonplayer[values.playeruid] = true;
+    seasons[seasonUid] = {
+      name: values.seasonName,
+      player: seasonplayer
     }
     this.setState({ savingVisible: true });
-    RNFirebase.firestore().collection("Teams").add({
-      name: values.name,
-      league: values.league,
-      gender: values.gender,
-      sport: values.sport,
-      player: player
-    }).then(() => {
-      this.setState({ savingVisible: false });
-      this.props.navigation.goBack();
-    }).catch(() => {
-      this.setState({error: 'Error saving team', errorVisible : true });
-    })
-    // Move to saving state.
+      RNFirebase.firestore().collection("Teams").add({
+        name: values.name,
+        league: values.league,
+        gender: values.gender,
+        sport: values.sport,
+        earlyarrival: values.defaultearlyarrival,
+        admins: [
+          // THis is a list of user ids that corresponds to admins.
+          values.adminuid
+        ],
+        seasons: seasons,
+        player: player,
+        currentSeason: seasonUid
+      }).then(() => {
+        this.setState({ savingVisible: false });
+        this.props.navigation.goBack();
+      }).catch(() => {
+        this.setState({error: 'Error saving team', errorVisible : true });
+      });
   }
 
   render() {
