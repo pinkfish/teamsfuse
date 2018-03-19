@@ -2,24 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_fuse/services/analytics.dart';
+import 'package:flutter_fuse/services/messages.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key key}) : super(key: key);
+class VerifyEmailScreen extends StatefulWidget {
+  const VerifyEmailScreen({Key key}) : super(key: key);
 
   @override
-  LoginScreenState createState() => new LoginScreenState();
+  VerifyEmailScreenState createState() => new VerifyEmailScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen> {
+class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   BuildContext context;
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   ScrollController scrollController = new ScrollController();
   bool autovalidate = false;
   Validations validations = new Validations();
-  UserData person = new UserData();
+  String email = '';
 
   onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
@@ -34,27 +33,22 @@ class LoginScreenState extends State<LoginScreen> {
     final FormState form = formKey.currentState;
     if (!form.validate()) {
       autovalidate = true; // Start validating on every change.
-      showInSnackBar('Please fix the errors in red before submitting.');
+      showInSnackBar(Messages.of(context).formerror);
     } else {
       form.save();
-      // Login!
-      print(person);
-      UserAuth.instance.signIn(person).then((FirebaseUser user) {
-        print('Home page');
-        Navigator.of(context).pushNamed("/Home");
-        Analytics.analytics.logLogin();
+      UserAuth.instance.sendPasswordResetEmail(email).then((bool user) {
+        Navigator.pushNamed(context, "/");
       }).catchError((error) {
-        print(error.toString());
-        showInSnackBar(error.toString());
+        showInSnackBar(error);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    Messages messages = Messages.of(context);
     this.context = context;
     final Size screenSize = MediaQuery.of(context).size;
-
     return new Scaffold(
         key: _scaffoldKey,
         body: new SingleChildScrollView(
@@ -71,13 +65,13 @@ class LoginScreenState extends State<LoginScreen> {
                       children: <Widget>[
                         new Center(
                             child: new Image(
-                          image: new ExactAssetImage(
-                              "assets/images/abstractsport.png"),
-                          width: (screenSize.width < 500)
-                              ? 120.0
-                              : (screenSize.width / 4) + 12.0,
-                          height: screenSize.height / 4 + 20,
-                        ))
+                              image: new ExactAssetImage(
+                                  "assets/images/abstractsport.png"),
+                              width: (screenSize.width < 500)
+                                  ? 120.0
+                                  : (screenSize.width / 4) + 12.0,
+                              height: screenSize.height / 4 + 20,
+                            ))
                       ],
                     ),
                   ),
@@ -91,30 +85,21 @@ class LoginScreenState extends State<LoginScreen> {
                           autovalidate: autovalidate,
                           child: new Column(
                             children: <Widget>[
+                              new Text(messages.verifyexplanation),
                               new TextFormField(
-                                  decoration: const InputDecoration(
+                                  decoration: new InputDecoration(
                                     icon: const Icon(Icons.email),
-                                    hintText: 'Your email address',
-                                    labelText: 'E-mail',
+                                    hintText: messages.email,
+                                    labelText: messages.youremailHint,
                                   ),
                                   keyboardType: TextInputType.emailAddress,
                                   obscureText: false,
                                   onSaved: (String value) {
-                                    person.email = value;
-                                  }),
-                              new TextFormField(
-                                  decoration: const InputDecoration(
-                                    icon: const Icon(Icons.lock_open),
-                                    hintText: 'Password',
-                                    labelText: 'Password',
-                                  ),
-                                  obscureText: true,
-                                  onSaved: (String password) {
-                                    person.password = password;
+                                    email = value;
                                   }),
                               new Container(
                                 child: new RaisedButton(
-                                    child: const Text("Login"),
+                                    child: new Text(messages.resendverify),
                                     color: Theme.of(context).primaryColor,
                                     onPressed: _handleSubmitted),
                                 margin: new EdgeInsets.only(
@@ -127,14 +112,14 @@ class LoginScreenState extends State<LoginScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             new FlatButton(
-                              child: const Text("Create Account"),
+                              child: new Text(messages.createaccount),
                               textColor: Theme.of(context).accentColor,
                               onPressed: () => onPressed("/SignUp"),
                             ),
                             new FlatButton(
-                                child: const Text("Forgot Password"),
+                                child: new Text(messages.login),
                                 textColor: Theme.of(context).accentColor,
-                                onPressed: () => onPressed("/ForgotPassword")),
+                                onPressed: () => onPressed("/")),
                           ],
                         )
                       ],

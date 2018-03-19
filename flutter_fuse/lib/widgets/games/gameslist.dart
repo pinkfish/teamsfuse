@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
+import 'emptygamelist.dart';
 import 'dart:async';
 
 class GameList extends StatefulWidget {
@@ -50,7 +51,7 @@ class GameListState extends State<GameList> {
     });
 
     if (games.isEmpty) {
-      widgets.add(new Text("no games"));
+      widgets.add(new EmptyGameList());
     }
 
     return new Column(children: widgets);

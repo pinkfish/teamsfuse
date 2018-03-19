@@ -76,8 +76,18 @@ class ProfileScreenState extends State<ProfileScreen> {
     if (user != null) {
       ret.add(
           new Text(user.profile.displayName, style: theme.textTheme.headline));
-      ret.add(new Text(user.email));
-      ret.add(new Text(user.profile.phoneNumber));
+      ret.add(
+        new ListTile(
+          leading: const Icon(Icons.email),
+          title: new Text(user.email),
+        ),
+      );
+      ret.add(
+        new ListTile(
+          leading: const Icon(Icons.phone),
+          title: new Text(user.profile.phoneNumber),
+        ),
+      );
       ret.add(new Divider());
       ret.add(new Text(messages.players,
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor)));
@@ -118,8 +128,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           if (player.photoUrl != null && player.photoUrl.isNotEmpty) {
             leading = new CachedNetworkImageProvider(urlNow: player.photoUrl);
           } else {
-            leading =
-                const AssetImage("assets/images/defaultavatar2.png");
+            leading = const AssetImage("assets/images/defaultavatar2.png");
           }
           ret.add(
             new Card(

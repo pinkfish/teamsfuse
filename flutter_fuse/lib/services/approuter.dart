@@ -7,10 +7,11 @@ import 'package:flutter_fuse/screens/settings/settings.dart';
 import 'package:flutter_fuse/screens/settings/profile.dart';
 import 'package:flutter_fuse/screens/team/team.dart';
 import 'package:flutter_fuse/screens/game/addgame.dart';
+import 'package:flutter_fuse/screens/game/addtraining.dart';
 import 'package:flutter_fuse/screens/game/editgame.dart';
+import 'package:flutter_fuse/screens/game/gamedetails.dart';
 import 'package:flutter_fuse/screens/settings/editprofile.dart';
 import 'package:flutter_fuse/screens/team/editteam.dart';
-import 'package:flutter_fuse/screens/game/gamedetails.dart';
 import 'package:flutter_fuse/screens/team/addplayer.dart';
 import 'package:flutter_fuse/screens/invites/invitelist.dart';
 import 'package:flutter_fuse/screens/invites/addinvite.dart';
@@ -90,6 +91,10 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AddGameScreen()));
+    router.define("/AddTraining",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new AddTrainingScreen()));
     return router;
   }
 }

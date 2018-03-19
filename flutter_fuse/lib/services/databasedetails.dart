@@ -6,6 +6,7 @@ import 'package:timezone/timezone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_fuse/services/authentication.dart';
+import 'sqldata.dart';
 
 class User {
   String name;
@@ -74,9 +75,12 @@ class PlayerUser {
   static const String _RELATIONSHIP = 'relationship';
 
   void fromJSON(Map<String, dynamic> data) {
-    print('$data');
-    relationship = Relationship.values
-        .firstWhere((e) => e.toString() == data[_RELATIONSHIP]);
+    try {
+      relationship = Relationship.values
+          .firstWhere((e) => e.toString() == data[_RELATIONSHIP]);
+    } catch (e) {
+      relationship = Relationship.Friend;
+    }
   }
 
   Map<String, dynamic> toJSON() {
@@ -115,7 +119,8 @@ class Player {
   static const String _USERS = 'user';
   static const String _EMAIL = 'email';
 
-  void fromJSON(Map<String, dynamic> data) {
+  void fromJSON(String playerUid, Map<String, dynamic> data) {
+    uid = playerUid;
     name = data[_NAME];
     photoUrl = data[_PHOTOURL];
 
@@ -185,7 +190,10 @@ class Player {
     print('photurl $photoUrl');
     Map<String, String> data = new Map<String, String>();
     data[_PHOTOURL] = photoUrl;
-    await Firestore.instance.collection("Players").document(uid).updateData(data);
+    await Firestore.instance
+        .collection("Players")
+        .document(uid)
+        .updateData(data);
     return snapshot.downloadUrl;
   }
 }
@@ -362,9 +370,10 @@ class Game {
   static const String _PLACE = 'place';
   static const String _ATTENDANCE = 'attendance';
   static const String _ATTENDANCEVALUE = 'value';
+  static const String _TEAMUID = 'teamUid';
 
-  void fromJSON(String teamuid, Map<String, dynamic> data) {
-    teamUid = getString(teamuid);
+  void fromJSON(String gameUid, Map<String, dynamic> data) {
+    uid = gameUid;
     timezone = getString(data[_TIMEZONE]);
     time = getNum(data[_TIME]);
     arriveEarly = getNum(data[_ARRIVEEARLY]);
@@ -374,6 +383,7 @@ class Game {
     seasonUid = getString(data[_SEASONUID]);
     uniform = getString(data[_UNIFORM]);
     homegame = getBool(data[_HOMEGAME]);
+    teamUid = getString(data[_TEAMUID]);
     type = EventType.values.firstWhere((e) => e.toString() == data[_TYPE]);
     GameResultDetails details = new GameResultDetails();
     details.fromJSON(data[_RESULT]);
@@ -393,8 +403,6 @@ class Game {
       });
     }
     attendance = newAttendanceData;
-
-    print(toJSON());
   }
 
   Map<String, dynamic> toJSON() {
@@ -411,7 +419,8 @@ class Game {
     ret[_HOMEGAME] = homegame;
     ret[_TYPE] = type.toString();
     ret[_RESULT] = result.toJSON();
-    ret[_PLACE] = result.toJSON();
+    ret[_PLACE] = place.toJSON();
+    ret[_TEAMUID] = teamUid;
     Map<String, dynamic> attendanceData = new Map<String, dynamic>();
     attendance.forEach((String key, Attendance value) {
       Map<String, dynamic> attendanceInner = new Map<String, dynamic>();
@@ -427,10 +436,7 @@ class Game {
 
   Future<void> updateFirestore() async {
     // Add or update this record into the database.
-    CollectionReference ref = Firestore.instance
-        .collection("Teams")
-        .document(teamUid)
-        .getCollection("Games");
+    CollectionReference ref = Firestore.instance.collection("Games");
     if (uid == '' || uid == null) {
       // Add the game.
       DocumentReference doc = await ref.add(toJSON());
@@ -443,11 +449,8 @@ class Game {
 
   Future<void> updateFirestoreAttendence(
       String playerUid, Attendance attend) async {
-    DocumentReference ref = Firestore.instance
-        .collection("Teams")
-        .document(teamUid)
-        .getCollection("Games")
-        .document(uid);
+    DocumentReference ref =
+        Firestore.instance.collection("Games").document(uid);
 
     Map<String, dynamic> data = new Map<String, dynamic>();
     data[_ATTENDANCE + "." + playerUid + "." + _ATTENDANCEVALUE] =
@@ -456,11 +459,8 @@ class Game {
   }
 
   Future<void> updateFirestoreGameResult(GameResultDetails result) async {
-    DocumentReference ref = Firestore.instance
-        .collection("Teams")
-        .document(teamUid)
-        .getCollection("Games")
-        .document(uid);
+    DocumentReference ref =
+        Firestore.instance.collection("Games").document(uid);
 
     Map<String, dynamic> data = new Map<String, dynamic>();
     data[_RESULT] = result.toJSON();
@@ -528,7 +528,9 @@ class Opponent {
   static const String _CONTACT = 'contact';
   static const String _SEASONS = 'seasons';
 
-  void fromJSON(Map<String, dynamic> data) {
+  void fromJSON(String uid, String teamUid, Map<String, dynamic> data) {
+    this.uid = uid;
+    this.teamUid = teamUid;
     name = getString(data[_NAME]);
     contact = getString(data[_CONTACT]);
     Map<String, WinRecord> newRecord = new Map<String, WinRecord>();
@@ -643,13 +645,16 @@ class Season {
 
   static const String _RECORD = 'record';
   static const String _PLAYERS = 'players';
+  static const String _TEAMUID = 'teamUid';
 
-  void fromJSON(String teamUid, Map<String, dynamic> data) {
+  void fromJSON(String uid, Map<String, dynamic> data) {
+    this.uid = uid;
     name = getString(data[_NAME]);
     record = new WinRecord();
     record.fromJSON(data[_RECORD]);
+    this.teamUid = teamUid;
     this.record = record;
-    this.teamUid = getString(teamUid);
+    this.teamUid = data[_TEAMUID];
     Map<String, dynamic> playersData = data[_PLAYERS];
     List<SeasonPlayer> newPlayers = new List<SeasonPlayer>();
     playersData.forEach((key, val) {
@@ -668,6 +673,7 @@ class Season {
     Map<String, dynamic> ret = new Map<String, dynamic>();
     ret[_NAME] = name;
     ret[_RECORD] = record.toJSON();
+    ret[_TEAMUID] = teamUid;
     if (includePlayers) {
       Map<String, dynamic> output = new Map<String, dynamic>();
       players.forEach((value) {
@@ -851,17 +857,26 @@ class Team {
   }
 
   void _onOpponentUpdated(QuerySnapshot query) {
+    Set<String> toDeleteOpponents = new Set<String>();
+    SqlData sql = SqlData.instance;
+
+    toDeleteOpponents.addAll(opponents.keys);
     query.documents.forEach((doc) {
       Opponent opponent;
       if (opponents.containsKey(doc.documentID)) {
         opponent = opponents[doc.documentID];
       } else {
         opponent = new Opponent();
-        opponent.uid = doc.documentID;
       }
-      opponent.teamUid = this.uid;
-      opponent.fromJSON(doc.data);
+      opponent.fromJSON(doc.documentID, uid, doc.data);
       opponents[doc.documentID] = opponent;
+      toDeleteOpponents.remove(doc.documentID);
+      sql.updateTeamElement(
+          SqlData.OPPONENTS_TABLE, doc.documentID, uid, toJSON());
+    });
+    toDeleteOpponents.forEach((String id) {
+      sql.deleteElement(SqlData.OPPONENTS_TABLE, id);
+      opponents.remove(id);
     });
     _updateThisTeam.add(UpdateReason.Update);
   }
@@ -913,17 +928,21 @@ class Team {
     this.uid = snap.documentID;
     print('team ' + uid);
     _updateThisTeam.add(UpdateReason.Update);
+    SqlData.instance.updateElement(SqlData.TEAMS_TABLE, uid, toJSON());
   }
 
   void updateSeason(DocumentSnapshot doc) {
+    Season season;
     if (seasons.containsKey(doc.documentID)) {
-      seasons[doc.documentID].fromJSON(uid, doc.data);
+      season = seasons[doc.documentID];
+      season.fromJSON(doc.documentID, doc.data);
     } else {
-      Season season = new Season();
-      season.uid = doc.documentID;
-      season.fromJSON(uid, doc.data);
+      season = new Season();
+      season.fromJSON(doc.documentID, doc.data);
       seasons[doc.documentID] = season;
     }
+    SqlData.instance.updateElement(SqlData.SEASON_TABLE, doc.documentID,
+        season.toJSON(includePlayers: true));
     _updateThisTeam.add(UpdateReason.Update);
   }
 
@@ -946,14 +965,26 @@ class Team {
     }
 
     if (_gameSnapshot == null) {
-      CollectionReference gameCollection = Firestore.instance
-          .collection("Teams")
-          .document(uid)
-          .getCollection("Games");
-      _gameSnapshot = gameCollection.snapshots.listen((value) {
+      Query gameQuery = Firestore.instance
+          .collection("Games")
+          .where(Game._TEAMUID, isEqualTo: uid);
+      _gameSnapshot = gameQuery.snapshots.listen((value) {
         UserDatabaseData.instance._onGameUpdated(this.uid, value);
       });
     }
+  }
+
+  void loadOpponents() async {
+    Map<String, Map<String, dynamic>> opps =
+        await SqlData.instance.getAllTeamElements(SqlData.OPPONENTS_TABLE, uid);
+
+    Map<String, Opponent> ops = new Map<String, Opponent>();
+    opps.forEach((String opUid, Map<String, dynamic> data) {
+      Opponent op = new Opponent();
+      op.fromJSON(opUid, uid, data);
+      ops[opUid] = op;
+    });
+    this.opponents = ops;
   }
 
   void close() {
@@ -1184,7 +1215,7 @@ class UserDatabaseData {
     if (ref.exists) {
       print('Found player $playerId');
       Player player = new Player();
-      player.fromJSON(ref.data);
+      player.fromJSON(playerId, ref.data);
       // Fill in all the user data.
       if (withProfile) {
         await Future.forEach(player.users.values, (PlayerUser user) async {
@@ -1198,27 +1229,43 @@ class UserDatabaseData {
   }
 
   void _onPlayerUpdated(QuerySnapshot query) {
+    Set<String> toDeletePlayers = new Set<String>();
+    SqlData sql = SqlData.instance;
+
+    toDeletePlayers.addAll(_players.keys);
     query.documents.forEach((doc) {
+      Player player;
       if (_players.containsKey(doc.documentID)) {
-        _players[doc.documentID].fromJSON(doc.data);
-        _players[doc.documentID].setupSnap();
-        return;
+        player = _players[doc.documentID];
+        player.fromJSON(doc.documentID, doc.data);
+        player.setupSnap();
+      } else {
+        player = new Player();
+        // Add in snapshots to find the teams associated with the player.
+        player.fromJSON(doc.documentID, doc.data);
+        player.setupSnap();
+        _players[player.uid] = player;
+        print('player ' + player.uid);
       }
-      Player player = new Player();
-      player.uid = doc.documentID;
-      // Add in snapshots to find the teams associated with the player.
-      player.fromJSON(doc.data);
-      player.setupSnap();
-      _players[player.uid] = player;
-      print('player ' + player.uid);
-      _playerController.add(UpdateReason.Update);
+      toDeletePlayers.remove(doc.documentID);
+      sql.updateElement(
+          SqlData.PLAYERS_TABLE, player.uid, player.toJSON(includeUsers: true));
     });
+    toDeletePlayers.forEach((String id) {
+      _players.remove(id);
+      sql.deleteElement(SqlData.PLAYERS_TABLE, id);
+    });
+    _playerController.add(UpdateReason.Update);
   }
 
   void _onSeasonUpdated(QuerySnapshot query) {
+    Set<String> toDeleteSeasons;
+    String teamUid;
+    SqlData sql = SqlData.instance;
+
     query.documents.forEach((doc) {
       // Get the team from the season.
-      String teamUid = doc.data['teamUid'];
+      teamUid = doc.data[Season._TEAMUID];
       Team team;
       if (_teams.containsKey(teamUid)) {
         team = _teams[teamUid];
@@ -1227,14 +1274,31 @@ class UserDatabaseData {
         team = new Team();
         team.uid = teamUid;
       }
+      if (toDeleteSeasons == null) {
+        toDeleteSeasons = new Set<String>();
+        toDeleteSeasons.addAll(team.seasons.keys);
+      }
       team.setupSnap();
       team.updateSeason(doc);
+      toDeleteSeasons.remove(doc.documentID);
       _teams[teamUid] = team;
     });
+    if (toDeleteSeasons != null) {
+      toDeleteSeasons.forEach((String id) {
+        _teams[teamUid].seasons.remove(id);
+        sql.deleteElement(SqlData.SEASON_TABLE, id);
+      });
+    }
     _teamController.add(UpdateReason.Update);
   }
 
   void _onGameUpdated(String teamuid, QuerySnapshot query) {
+    // See if anything got deleted.
+    Set<String> toDeleteGames = new Set();
+    SqlData sql = SqlData.instance;
+
+    toDeleteGames.addAll(
+        _games.keys.where((String id) => _games[id].teamUid == teamuid));
     query.documents.forEach((doc) {
       Game game;
       if (_games.containsKey(doc.documentID)) {
@@ -1242,22 +1306,32 @@ class UserDatabaseData {
       }
       if (game == null) {
         game = new Game();
-        game.uid = doc.documentID;
       }
-      game.fromJSON(teamuid, doc.data);
+      game.fromJSON(doc.documentID, doc.data);
       _games[doc.documentID] = game;
+      toDeleteGames.remove(doc.documentID);
+      sql.updateElement(SqlData.GAME_TABLE, doc.documentID, game.toJSON());
+    });
+    print('Got $toDeleteGames to delete');
+    toDeleteGames.forEach((String id) {
+      _games.remove(id);
+      sql.deleteElement(SqlData.GAME_TABLE, id);
     });
     _gameController.add(UpdateReason.Update);
   }
 
   void _onInviteUpdated(QuerySnapshot query) {
     Map<String, Invite> newInvites = new Map<String, Invite>();
+    SqlData sql = SqlData.instance;
 
+    // Completely clear the invite table.
+    sql.clearTable(SqlData.INVITES_TABLE);
     query.documents.forEach((DocumentSnapshot doc) {
       String uid = doc.documentID;
       Invite invite = new Invite();
       invite.fromJSON(uid, doc.data);
       newInvites[uid] = invite;
+      sql.updateElement(SqlData.INVITES_TABLE, uid, invite.toJSON());
     });
     _invites = newInvites;
     _inviteController.add(UpdateReason.Update);
@@ -1270,11 +1344,69 @@ class UserDatabaseData {
     return _instance;
   }
 
-  void _setUid(String uid, String email) {
+  void _setUid(String uid, String email) async {
     if (this.userUid != uid && this.userUid != null) {
       close();
       initStuff();
+      print('Updating uid to $uid dropping database');
+      SqlData.instance.dropDatabase();
     }
+    // Load from SQL first.
+    try {
+      SqlData sql = SqlData.instance;
+      Map<String, Map<String, dynamic>> data =
+      await sql.getAllElements(SqlData.TEAMS_TABLE);
+      Map<String, Team> newTeams = new Map<String, Team>();
+      await Future.forEach(data.keys, (String uid) {
+        Map<String, dynamic> input = data[uid];
+        Team team = new Team();
+        team.fromJSON(input);
+        team.setupSnap();
+        // Load opponents.
+        newTeams[uid] = team;
+        return team.loadOpponents();
+      });
+      _teams = newTeams;
+      _teamController.add(UpdateReason.Update);
+
+      data = await sql.getAllElements(SqlData.PLAYERS_TABLE);
+      Map<String, Player> newPlayers = new Map<String, Player>();
+      data.forEach((String uid, Map<String, dynamic> input) {
+        Player player = new Player();
+        player.fromJSON(uid, input);
+        newPlayers[uid] = player;
+      });
+      _players = newPlayers;
+      _playerController.add(UpdateReason.Update);
+
+      data = await sql.getAllElements(SqlData.GAME_TABLE);
+      Map<String, Game> newGames = new Map<String, Game>();
+      data.forEach((String uid, Map<String, dynamic> input) {
+        Game game = new Game();
+        game.fromJSON(uid, input);
+        newGames[uid] = game;
+      });
+      _games = newGames;
+      _gameController.add(UpdateReason.Update);
+
+      data = await sql.getAllElements(SqlData.INVITES_TABLE);
+      Map<String, Invite> newInvites = new Map<String, Invite>();
+      data.forEach((String uid, Map<String, dynamic> input) {
+        Invite invite = new Invite();
+        invite.fromJSON(uid, input);
+        newInvites[uid] = invite;
+      });
+      _invites = newInvites;
+      _inviteController.add(UpdateReason.Update);
+    } catch (e) {
+      // Any exception and we cleanup all the data to nothing.
+      print('Caught exception $e');
+      _games.clear();
+      _teams.clear();
+      _invites.clear();
+      _players.clear();
+    }
+
     this.userUid = uid;
     // The uid everything is based off.
     Query collection = Firestore.instance

@@ -219,7 +219,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     );
 
     ret.add(new ListTile(
-      leading: const Icon(CommunityIcons.bookopen),
+      leading: const Icon(CommunityIcons.bookopenvariant),
       title: new Text(messages.roleingame(_player.role)),
     ));
 

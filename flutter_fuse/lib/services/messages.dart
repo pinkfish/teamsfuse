@@ -12,6 +12,7 @@ class Messages {
 
     return initializeMessages(localeName).then((dynamic _) {
       Intl.defaultLocale = localeName;
+      print(localeName);
       return new Messages();
     });
   }
@@ -47,6 +48,20 @@ class Messages {
     return Intl.message(
       'Forgot Password',
       name: 'Forgot password button text',
+    );
+  }
+
+  String get resendverify {
+    return Intl.message(
+      'Resend email',
+      name: 'Button to resend the email to verify their email address',
+    );
+  }
+
+  String get verifyexplanation {
+    return Intl.message(
+      'Email address needs to be verified, please check your email or resend the verification details',
+      name: 'Button to resend the email to verify their email address',
     );
   }
 
@@ -105,10 +120,58 @@ class Messages {
 
   String get gamenotes {
     return Intl.message(
-      'Game Notes',
+      'Game notes',
       name: 'Notes for the game',
       desc: 'The notes associated with the game',
     );
+  }
+
+  String get trainingnoteshint {
+    return Intl.message(
+      'Notes for the training',
+      name: 'Notes for the game hint',
+      desc: 'The hint text for notes associated with the game',
+    );
+  }
+
+  String get trainingnotes {
+    return Intl.message(
+      'Training notes',
+      name: 'Notes for the game',
+      desc: 'The notes associated with the game',
+    );
+  }
+
+  String get repeat {
+    return Intl.message(
+      'Repeat',
+      name: 'Repeat title for the traning create steps',
+    );
+  }
+
+  String get noneperiod {
+    return Intl.message(
+      'No repeat',
+      name: 'No repeat period',
+    );
+  }
+
+  String get weeklyperiod {
+    return Intl.message(
+      'Weekly',
+      name: 'Weekly repeat',
+    );
+  }
+
+  String get monthlyperiod {
+    return Intl.message(
+      'Monthly',
+      name: 'Monthly repeat',
+    );
+  }
+
+  String get every {
+    return Intl.message('Every');
   }
 
   String get opponentselect {
@@ -496,9 +559,22 @@ class Messages {
     return Intl.message('Add player');
   }
 
+  String get addtraining {
+    return Intl.message('Add training',
+        name: 'Button to add a training to a team');
+  }
+
+  String get addevent {
+    return Intl.message('Add event', name: 'Button to add an event to a team');
+  }
+
   String get deleteinvite {
     return Intl.message('Delete invite',
         name: 'Title for the dialog to delete an invite');
+  }
+
+  String get gamecreate {
+    return Intl.message('Create', name: 'Title for the step to create a game');
   }
 
   String confirmdelete(Invite invite) {

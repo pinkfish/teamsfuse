@@ -12,6 +12,7 @@ import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/screens/login/verifyemail.dart';
 
 class Routes {
   UserData _currentUser;
@@ -20,6 +21,7 @@ class Routes {
     "/Home": (BuildContext context) => new LoginScreen(),
     "/ForgotPassword": (BuildContext context) => new ForgotPasswordScreen(),
     "/SignUp": (BuildContext context) => new SignupScreen(),
+    "/Verify": (BuildContext context) => new VerifyEmailScreen(),
   };
 
   final theme = new ThemeData(

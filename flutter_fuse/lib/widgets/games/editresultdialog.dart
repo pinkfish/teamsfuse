@@ -51,23 +51,27 @@ class EditResultDialogState extends State<EditResultDialog> {
         result != GameInProgress.NotStarted) {
       // Ask if they are sure
       bool ret = await showDialog(
-          context: context,
-          child: new AlertDialog(
-            title: new Text(Messages.of(context).startgame),
-            content: new Text(Messages.of(context).startgamebody),
-            actions: <Widget>[
-              new FlatButton(
-                  child: new Text(MaterialLocalizations.of(context).okButtonLabel),
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  }),
-              new FlatButton(
-                  child: new Text(MaterialLocalizations.of(context).cancelButtonLabel),
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  })
-            ],
-          ));
+        context: context,
+        child: new AlertDialog(
+          title: new Text(Messages.of(context).startgame),
+          content: new Text(Messages.of(context).startgamebody),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+            ),
+            new FlatButton(
+              child:
+                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+            )
+          ],
+        ),
+      );
       if (ret != null && ret == true) {
         // Save the state update.
         setState(() {
@@ -88,24 +92,28 @@ class EditResultDialogState extends State<EditResultDialog> {
         gameResult = GameResult.Tie;
       }
       bool ret = await showDialog(
-          context: context,
-          child: new AlertDialog(
-            title: new Text(Messages.of(context).finalscore),
-            content: new Text(Messages.of(context).finalscorebody(
-                _details.ptsFor, _details.ptsAgainst, gameResult.toString())),
-            actions: <Widget>[
-              new FlatButton(
-                  child: new Text(MaterialLocalizations.of(context).okButtonLabel),
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  }),
-              new FlatButton(
-                  child: new Text(MaterialLocalizations.of(context).cancelButtonLabel),
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  })
-            ],
-          ));
+        context: context,
+        child: new AlertDialog(
+          title: new Text(Messages.of(context).finalscore),
+          content: new Text(Messages.of(context).finalscorebody(
+              _details.ptsFor, _details.ptsAgainst, gameResult.toString())),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+            ),
+            new FlatButton(
+              child:
+                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+            )
+          ],
+        ),
+      );
       if (ret != null && ret == true) {
         // Save the state update.
         setState(() {
@@ -117,7 +125,7 @@ class EditResultDialogState extends State<EditResultDialog> {
     } else {
       setState(() {
         _details.inProgress = result;
-        if (result == GameInProgress.NotStarted){
+        if (result == GameInProgress.NotStarted) {
           _details.result = GameResult.Unknown;
         } else {
           _details.result = GameResult.InProgress;
@@ -140,135 +148,148 @@ class EditResultDialogState extends State<EditResultDialog> {
 
     print(_details.toJSON());
     return new Form(
-        key: _formKey,
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            new Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                new Expanded(
-                    flex: 1,
-                    child: new Container(
-                      decoration: new BoxDecoration(),
-                      margin: new EdgeInsets.only(bottom: 5.0),
-                      child: new Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          new Text("For",
-                              style: theme.textTheme.subhead.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.accentColor)),
-                          new Container(
-                              decoration: new BoxDecoration(
-                                  border: new Border.all(
-                                      color: theme.dividerColor, width: 1.0),
-                                  gradient: new LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerLeft,
-                                      tileMode: TileMode.mirror,
-                                      colors: [
-                                        Colors.grey.shade300,
-                                        Colors.white
-                                      ])),
-                              child: new NumberPicker.integer(
-                                disabled: _details.inProgress ==
-                                    GameInProgress.NotStarted,
-                                initialValue: _details.ptsFor,
-                                minValue: 0,
-                                maxValue: 10000,
-                                onChanged: (num val) {
-                                  _ptsFor = val;
-                                },
-                              )),
-                        ],
-                      ),
-                    )),
-                new Expanded(
-                    flex: 1,
-                    child: new Container(
-                      decoration: new BoxDecoration(),
-                      margin: new EdgeInsets.only(bottom: 5.0),
-                      child: new Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          new Container(
-                              decoration: new BoxDecoration(
-                                  border: new Border.all(
-                                      color: theme.dividerColor, width: 1.0),
-                                  gradient: new LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.centerLeft,
-                                      tileMode: TileMode.mirror,
-                                      colors: [
-                                        Colors.grey.shade300,
-                                        Colors.white
-                                      ])),
-                              child: new InProgressGamePicker(
-                                initialValue: _details.inProgress,
-                                onChanged: (GameInProgress val) {
-                                  _selectResult(val);
-                                },
-                              )),
-                        ],
-                      ),
-                    )),
-                new Expanded(
-                    flex: 1,
-                    child: new Container(
-                      decoration: new BoxDecoration(),
-                      margin: new EdgeInsets.only(bottom: 5.0),
-                      child: new Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            new Text("Against",
-                                style: theme.textTheme.subhead.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: theme.accentColor)),
-                            new Container(
-                                decoration: new BoxDecoration(
-                                    border: new Border.all(
-                                        color: theme.dividerColor, width: 1.0),
-                                    gradient: new LinearGradient(
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.centerLeft,
-                                        tileMode: TileMode.mirror,
-                                        colors: [
-                                          Colors.grey.shade300,
-                                          Colors.white
-                                        ])),
-                                child: new NumberPicker.integer(
-                                  disabled: _details.inProgress ==
-                                      GameInProgress.NotStarted,
-                                  initialValue: _details.ptsAgainst,
-                                  minValue: 0,
-                                  maxValue: 10000,
-                                  onChanged: (num val) {
-                                    _ptsAgainst = val;
-                                  },
-                                )),
-                          ]),
-                    )),
-              ],
-            ),
-            new Row(
-              children: <Widget>[
-                new Expanded(
-                  child: new Container(
-                      margin: new EdgeInsets.all(5.0),
-                      child: new RaisedButton(
-                          onPressed: _updateScore,
+      key: _formKey,
+      child: new Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          new Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              new Expanded(
+                flex: 1,
+                child: new Container(
+                  decoration: new BoxDecoration(),
+                  margin: new EdgeInsets.only(bottom: 5.0),
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      new Text(
+                        "For",
+                        style: theme.textTheme.subhead.copyWith(
+                          fontWeight: FontWeight.bold,
                           color: theme.accentColor,
-                          textColor: Colors.white,
-                          child: new Text("Set Score'"))),
-                )
-              ],
-            ),
-          ],
-        ));
+                        ),
+                      ),
+                      new Container(
+                        decoration: new BoxDecoration(
+                          border: new Border.all(
+                              color: theme.dividerColor, width: 1.0),
+                          gradient: new LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.centerLeft,
+                            tileMode: TileMode.mirror,
+                            colors: [Colors.grey.shade300, Colors.white],
+                          ),
+                        ),
+                        child: new NumberPicker.integer(
+                          disabled:
+                              _details.inProgress == GameInProgress.NotStarted,
+                          initialValue: _details.ptsFor,
+                          minValue: 0,
+                          maxValue: 10000,
+                          onChanged: (num val) {
+                            _ptsFor = val;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              new Expanded(
+                flex: 1,
+                child: new Container(
+                  decoration: new BoxDecoration(),
+                  margin: new EdgeInsets.only(bottom: 5.0),
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      new Container(
+                        decoration: new BoxDecoration(
+                          border: new Border.all(
+                              color: theme.dividerColor, width: 1.0),
+                          gradient: new LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.centerLeft,
+                            tileMode: TileMode.mirror,
+                            colors: [Colors.grey.shade300, Colors.white],
+                          ),
+                        ),
+                        child: new InProgressGamePicker(
+                          initialValue: _details.inProgress,
+                          onChanged: (GameInProgress val) {
+                            _selectResult(val);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              new Expanded(
+                flex: 1,
+                child: new Container(
+                  decoration: new BoxDecoration(),
+                  margin: new EdgeInsets.only(bottom: 5.0),
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      new Text(
+                        "Against",
+                        style: theme.textTheme.subhead.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.accentColor,
+                        ),
+                      ),
+                      new Container(
+                        decoration: new BoxDecoration(
+                          border: new Border.all(
+                              color: theme.dividerColor, width: 1.0),
+                          gradient: new LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.centerLeft,
+                            tileMode: TileMode.mirror,
+                            colors: [Colors.grey.shade300, Colors.white],
+                          ),
+                        ),
+                        child: new NumberPicker.integer(
+                          disabled:
+                              _details.inProgress == GameInProgress.NotStarted,
+                          initialValue: _details.ptsAgainst,
+                          minValue: 0,
+                          maxValue: 10000,
+                          onChanged: (num val) {
+                            _ptsAgainst = val;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          new Row(
+            children: <Widget>[
+              new Expanded(
+                child: new Container(
+                  margin: new EdgeInsets.all(5.0),
+                  child: new RaisedButton(
+                    onPressed: _updateScore,
+                    color: theme.accentColor,
+                    textColor: Colors.white,
+                    child: new Text("Set Score'"),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -276,36 +297,44 @@ class EditResultDialogState extends State<EditResultDialog> {
     ThemeData theme = Theme.of(context);
 
     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(Messages.of(context).gametitlevs(_opponent.name)),
-        ),
-        backgroundColor: Colors.grey.shade100,
-        resizeToAvoidBottomPadding: true,
-        body: new Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              new Expanded(
-                  child: new Container(
-                constraints: new BoxConstraints(),
-                margin: new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-                decoration: new BoxDecoration(color: theme.cardColor),
-                child: new SingleChildScrollView(child: new Text(Messages.of(context).nomessages)),
-              )),
-              new Container(
-                margin: new EdgeInsets.only(left: 10.0, right: 10.0, bottom: 10.0, top: 1.0),
-                  child: new TextField(
-                      decoration: new InputDecoration(
-                        prefixIcon: const Icon(Icons.send),
-                        labelText: Messages.of(context).message,
-                        fillColor: Colors.white,
-                        filled: true,
-                      ),
-                      keyboardType: TextInputType.text)),
-              new Flexible(
-                  fit: FlexFit.tight,
-                  flex: 0,
-                  child: this._buildResults(context))
-            ]));
+      appBar: new AppBar(
+        title: new Text(Messages.of(context).gametitlevs(_opponent.name)),
+      ),
+      backgroundColor: Colors.grey.shade100,
+      resizeToAvoidBottomPadding: true,
+      body: new Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          new Expanded(
+            child: new Container(
+              constraints: new BoxConstraints(),
+              margin: new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+              decoration: new BoxDecoration(color: theme.cardColor),
+              child: new SingleChildScrollView(
+                  child: new Text(Messages.of(context).nomessages)),
+            ),
+          ),
+          new Container(
+            margin: new EdgeInsets.only(
+                left: 10.0, right: 10.0, bottom: 10.0, top: 1.0),
+            child: new TextField(
+              decoration: new InputDecoration(
+                prefixIcon: const Icon(Icons.send),
+                labelText: Messages.of(context).message,
+                fillColor: Colors.white,
+                filled: true,
+              ),
+              keyboardType: TextInputType.text,
+            ),
+          ),
+          new Flexible(
+            fit: FlexFit.tight,
+            flex: 0,
+            child: this._buildResults(context),
+          )
+        ],
+      ),
+    );
   }
 }

@@ -1,22 +1,17 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'inputdropdown.dart';
-import 'package:tuple/tuple.dart';
 
-class DateTimeUnion extends Tuple2<DateTime, TimeOfDay> {
-  DateTimeUnion(DateTime date, TimeOfDay day) : super(date, day);
-}
+typedef void OnChangedFunc(DateTime field);
 
-typedef void OnChangedFunc(DateTimeUnion field);
-
-class DateTimeFormField extends FormField<DateTimeUnion> {
+class DateTimeFormField extends FormField<DateTime> {
   DateTimeFormField(
       {Key key,
-      DateTimeUnion initialValue,
+      DateTime initialValue,
       InputDecoration decoration: const InputDecoration(),
-      ValueChanged<DateTimeUnion> onFieldSubmitted,
-      FormFieldSetter<DateTimeUnion> onSaved,
-      FormFieldValidator<DateTimeUnion> validator,
+      ValueChanged<DateTime> onFieldSubmitted,
+      FormFieldSetter<DateTime> onSaved,
+      FormFieldValidator<DateTime> validator,
       this.hideDate,
       this.labelText})
       : assert(initialValue != null),
@@ -25,21 +20,25 @@ class DateTimeFormField extends FormField<DateTimeUnion> {
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,
-            builder: (FormFieldState<DateTimeUnion> state) {
+            builder: (FormFieldState<DateTime> state) {
               DateTimeFormFieldState field = state;
 
               final TextStyle valueStyle =
                   Theme.of(field.context).textTheme.title;
+              final InputDecoration effectiveDecoration = (decoration ??
+                  new InputDecoration(labelText: labelText))
+                  .applyDefaults(Theme.of(field.context).inputDecorationTheme);
+
               List<Widget> children = new List<Widget>();
               if (!hideDate) {
                 children.add(new Expanded(
                   flex: 4,
                   child: new InputDropdown(
-                    decoration: new InputDecoration(labelText: labelText),
+                    decoration: effectiveDecoration,
                     errorText: field.errorText,
                     valueText: MaterialLocalizations
                         .of(field.context)
-                        .formatMediumDate(field.value.item1),
+                        .formatMediumDate(field.value),
                     valueStyle: valueStyle,
                     onPressed: () {
                       field._selectDate(onFieldSubmitted);
@@ -50,7 +49,8 @@ class DateTimeFormField extends FormField<DateTimeUnion> {
                 children.add(new Expanded(
                   flex: 3,
                   child: new InputDropdown(
-                    valueText: field.value.item2.format(field.context),
+                    valueText:
+                        new TimeOfDay.fromDateTime(field.value).format(field.context),
                     decoration: new InputDecoration(),
                     valueStyle: valueStyle,
                     onPressed: () {
@@ -62,8 +62,9 @@ class DateTimeFormField extends FormField<DateTimeUnion> {
                 children.add(new Expanded(
                   flex: 1,
                   child: new InputDropdown(
-                    decoration: new InputDecoration(labelText: labelText),
-                    valueText: field.value.item2.format(field.context),
+                    decoration: effectiveDecoration,
+                    valueText:
+                        new TimeOfDay.fromDateTime(field.value).format(field.context),
                     valueStyle: valueStyle,
                     onPressed: () {
                       field._selectTime(onFieldSubmitted);
@@ -83,30 +84,41 @@ class DateTimeFormField extends FormField<DateTimeUnion> {
   DateTimeFormFieldState createState() => new DateTimeFormFieldState();
 }
 
-class DateTimeFormFieldState extends FormFieldState<DateTimeUnion> {
+class DateTimeFormFieldState extends FormFieldState<DateTime> {
   @override
   DateTimeFormField get widget => super.widget;
 
-  Future<Null> _selectDate(ValueChanged<DateTimeUnion> onFieldSubmitted) async {
+  Future<Null> _selectDate(ValueChanged<DateTime> onFieldSubmitted) async {
     final DateTime picked = await showDatePicker(
         context: context,
-        initialDate: value.item1,
+        initialDate: value,
         firstDate: new DateTime(2015, 8),
         lastDate: new DateTime(2101));
-    if (picked != null && picked != value.item1) {
-      onChanged(new DateTimeUnion(picked, value.item2));
-      onFieldSubmitted(value);
+    if (picked != null &&
+        (picked.day != value.day ||
+            picked.month != value.month ||
+            picked.year != value.year)) {
+      DateTime newTime = new DateTime(
+          picked.year, picked.month, picked.day, value.hour, value.minute);
+
+      onChanged(newTime);
+      onFieldSubmitted(newTime);
     }
   }
 
-  Future<Null> _selectTime(ValueChanged<DateTimeUnion> onFieldSubmitted) async {
+  Future<Null> _selectTime(ValueChanged<DateTime> onFieldSubmitted) async {
     final TimeOfDay picked = await showTimePicker(
       context: context,
-      initialTime: value.item2,
+      initialTime: new TimeOfDay.fromDateTime(value),
     );
-    if (picked != null && picked != value.item2) {
-      onChanged(new DateTimeUnion(value.item1, picked));
-      onFieldSubmitted(value);
+    if (picked != null &&
+        (picked.minute != this.value.minute || picked.hour != value.hour)) {
+      DateTime newTime = new DateTime(
+          value.year, value.month, value.day, picked.hour, picked.minute);
+      onChanged(newTime);
+      if (onFieldSubmitted != null) {
+        onFieldSubmitted(newTime);
+      }
     }
   }
 }

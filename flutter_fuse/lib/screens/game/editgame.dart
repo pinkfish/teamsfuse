@@ -17,8 +17,8 @@ class EditGameScreen extends StatefulWidget {
 class EditGameScreenState extends State<EditGameScreen> {
   final Game _game;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<EditGameFormState> _gameFormKey =
-      new GlobalKey<EditGameFormState>();
+  final GlobalKey<GameEditFormState> _gameFormKey =
+      new GlobalKey<GameEditFormState>();
 
   EditGameScreenState(String gameUid)
       : _game = new Game.copy(UserDatabaseData.instance.games[gameUid]);
@@ -57,7 +57,7 @@ class EditGameScreenState extends State<EditGameScreen> {
         ),
         body: new Container(
           padding: new EdgeInsets.all(16.0),
-          child: new EditGameForm(_game, _gameFormKey),
+          child: new GamEditForm(_game, _gameFormKey),
         ));
   }
 }

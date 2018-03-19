@@ -16,32 +16,36 @@ class OpponentFormField extends FormField<String> {
       : assert(initialValue != null),
         assert(teamUid != null),
         super(
-            key: key,
-            initialValue: initialValue,
-            onSaved: onSaved,
-            validator: validator,
-            builder: (FormFieldState<String> field) {
-              final OpponentFormFieldState state = field;
-              state.teamUid = teamUid;
+          key: key,
+          initialValue: initialValue,
+          onSaved: onSaved,
+          validator: validator,
+          builder: (FormFieldState<String> field) {
+            final OpponentFormFieldState state = field;
+            state.teamUid = teamUid;
 
-              final InputDecoration effectiveDecoration = (decoration ??
-                      const InputDecoration())
-                  .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-              return new InputDecorator(
-                  decoration:
-                      effectiveDecoration.copyWith(errorText: field.errorText),
-                  child: new DropdownButton(
-                      hint: new Text(Messages.of(state.context).opponentselect),
-                      items: state._buildItems(state.context),
-                      value: state.value,
-                      onChanged: (dynamic val) {
-                        state.setValue(val);
-                        field.onChanged(val);
-                        if (onFieldSubmitted != null) {
-                          onFieldSubmitted(val);
-                        }
-                      }));
-            });
+            final InputDecoration effectiveDecoration = (decoration ??
+                    const InputDecoration())
+                .applyDefaults(Theme.of(field.context).inputDecorationTheme);
+            return new InputDecorator(
+              decoration: effectiveDecoration.copyWith(
+                errorText: field.errorText,
+              ),
+              child: new DropdownButton(
+                hint: new Text(Messages.of(state.context).opponentselect),
+                items: state._buildItems(state.context),
+                value: state.value,
+                onChanged: (dynamic val) {
+                  state.setValue(val);
+                  field.onChanged(val);
+                  if (onFieldSubmitted != null) {
+                    onFieldSubmitted(val);
+                  }
+                },
+              ),
+            );
+          },
+        );
 
   @override
   OpponentFormFieldState createState() => new OpponentFormFieldState();
@@ -66,7 +70,6 @@ class OpponentFormFieldState extends FormFieldState<String> {
       });
     });
   }
-
 
   @override
   void dispose() {

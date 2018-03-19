@@ -13,31 +13,34 @@ class GenderFormField extends FormField<String> {
   })
       : assert(initialValue != null),
         super(
-            key: key,
-            initialValue: initialValue,
-            onSaved: onSaved,
-            validator: validator,
-            builder: (FormFieldState<String> field) {
-              final GenderFormFieldState state = field;
+          key: key,
+          initialValue: initialValue,
+          onSaved: onSaved,
+          validator: validator,
+          builder: (FormFieldState<String> field) {
+            final GenderFormFieldState state = field;
 
-              final InputDecoration effectiveDecoration = (decoration ??
-                      const InputDecoration())
-                  .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-              return new InputDecorator(
-                  decoration:
-                      effectiveDecoration.copyWith(errorText: field.errorText),
-                  child: new DropdownButton(
-                      hint: new Text(Messages.of(state.context).genderselect),
-                      items: state._buildItems(state.context),
-                      value: state.value,
-                      onChanged: (dynamic val) {
-                        state.setValue(val);
-                        field.onChanged(val);
-                        if (onFieldSubmitted != null) {
-                          onFieldSubmitted(val);
-                        }
-                      }));
-            });
+            final InputDecoration effectiveDecoration = (decoration ??
+                    const InputDecoration())
+                .applyDefaults(Theme.of(field.context).inputDecorationTheme);
+            return new InputDecorator(
+              decoration:
+                  effectiveDecoration.copyWith(errorText: field.errorText),
+              child: new DropdownButton(
+                hint: new Text(Messages.of(state.context).genderselect),
+                items: state._buildItems(state.context),
+                value: state.value,
+                onChanged: (dynamic val) {
+                  state.setValue(val);
+                  field.onChanged(val);
+                  if (onFieldSubmitted != null) {
+                    onFieldSubmitted(val);
+                  }
+                },
+              ),
+            );
+          },
+        );
 
   @override
   GenderFormFieldState createState() => new GenderFormFieldState();

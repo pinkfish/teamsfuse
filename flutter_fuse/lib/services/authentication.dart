@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_fuse/services/sqldata.dart';
 
 class UserProfile {
   String displayName;
@@ -70,15 +71,23 @@ class UserAuth {
   UserData _currentUser;
   StreamController<UserData> _controller = new StreamController<UserData>();
   Stream<UserData> _stream;
+  StreamSubscription<DocumentSnapshot> _profileUpdates;
 
   UserAuth() {
     _auth.onAuthStateChanged.listen((FirebaseUser input) async {
       print('onAuthStateChanged');
       print(input);
+      if (_profileUpdates != null) {
+        _profileUpdates.cancel();
+        _profileUpdates = null;
+      }
       if (input == null) {
         _controller.add(null);
       } else {
-        _controller.add(await _userDataFromFirebase(input));
+        _controller.add(await _userDataFromFirestore(input, true));
+        DocumentReference ref =
+            Firestore.instance.collection("UserData").document(input.uid);
+        _profileUpdates = ref.snapshots.listen(this._onProfileUpdates);
       }
     });
   }
@@ -120,9 +129,18 @@ class UserAuth {
   }
 
   Future<UserData> currentUser() async {
+    print('Loading locally');
     FirebaseUser fbUser = await _auth.currentUser();
     if (fbUser != null) {
-      return await _userDataFromFirebase(fbUser);
+      print('Loading from firestore');
+      UserData user = await _userDataFromFirestore(fbUser, false);
+      print('Loaded!');
+      if (_profileUpdates == null) {
+        DocumentReference ref =
+            Firestore.instance.collection("UserData").document(user.uid);
+        _profileUpdates = ref.snapshots.listen(this._onProfileUpdates);
+      }
+      return user;
     }
     return null;
   }
@@ -133,7 +151,7 @@ class UserAuth {
 
   Future<void> updateProfile(UserData user) async {
     DocumentReference ref =
-         Firestore.instance.collection("UserData").document(user.uid);
+        Firestore.instance.collection("UserData").document(user.uid);
     await ref.updateData(user.profile.toJSON());
   }
 
@@ -148,18 +166,53 @@ class UserAuth {
     return null;
   }
 
-  Future<UserData> _userDataFromFirebase(FirebaseUser input) async {
+  void _onProfileUpdates(DocumentSnapshot doc) {
+    if (doc.exists) {
+      SqlData.instance
+          .updateElement(SqlData.PROFILE_TABLE, doc.documentID, doc.data);
+      UserProfile profile = new UserProfile();
+      profile.fromJSON(doc.data);
+      _currentUser.profile = profile;
+    }
+  }
+
+  Future<UserData> _userDataFromFirestore(
+      FirebaseUser input, bool forceProfile) async {
+    // Read from sql for the profile details first, assume the snap
+    // shot listener will catch the actual firebase stuff when
+    // it exists.
+    Map<String, dynamic> data =
+        await SqlData.instance.getElement(SqlData.PROFILE_TABLE, input.uid);
+    print('sql data $data');
     UserData user = new UserData();
     user.email = input.email;
     user.uid = input.uid;
     user.isEmailVerified = input.isEmailVerified;
-    DocumentSnapshot ref = await Firestore.instance
-        .collection("UserData")
-        .document(input.uid)
-        .get();
-    UserProfile profile = new UserProfile();
-    profile.fromJSON(ref.data);
-    user.profile = profile;
+    if (data == null && forceProfile) {
+      print('No sql data');
+      Future<DocumentSnapshot> ref =
+          Firestore.instance.collection("UserData").document(input.uid).get();
+      if (forceProfile) {
+        DocumentSnapshot doc = await ref;
+        data = doc.data;
+      } else {
+        // Update when ready.
+        ref.then((DocumentSnapshot doc) {
+          print('Loaded from firestore');
+          UserProfile profile = new UserProfile();
+          profile.fromJSON(doc.data);
+          user.profile = profile;
+          SqlData.instance
+              .updateElement(SqlData.PROFILE_TABLE, doc.documentID, data);
+        });
+      }
+      print('loaded from firestore $data');
+    }
+    if (data != null) {
+      UserProfile profile = new UserProfile();
+      profile.fromJSON(data);
+      user.profile = profile;
+    }
     _currentUser = user;
     return user;
   }

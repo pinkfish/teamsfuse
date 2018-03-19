@@ -14,7 +14,17 @@ class FusedDrawerHeaderState extends State<FusedDrawerHeader> {
   UserData user;
   StreamSubscription<UserData> streamListen;
 
-  FusedDrawerHeaderState() {
+  FusedDrawerHeaderState();
+
+  @override
+  void initState() {
+    super.initState();
+    print('initState');
+    UserAuth.instance.currentUser().then((UserData data) {
+      setState(() {
+        this.user = data;
+      });
+    });
     streamListen = UserAuth.instance.onAuthChanged().listen((UserData data) {
       setState(() {
         this.user = data;
@@ -28,6 +38,7 @@ class FusedDrawerHeaderState extends State<FusedDrawerHeader> {
     print('dispose header');
     if (streamListen != null) {
       streamListen.cancel();
+      streamListen = null;
     }
   }
 
@@ -50,9 +61,9 @@ class FusedDrawerHeaderState extends State<FusedDrawerHeader> {
       ),
       onDetailsPressed: _showProfile,
       accountName: new Text(
-          user != null ? user.profile.displayName : Messages.of(context).unknown),
+          user != null && user.profile != null ? user.profile.displayName : Messages.of(context).unknown),
       accountEmail:
-          new Text(user != null ? user.email : Messages.of(context).unknown),
+          new Text(user != null && user.profile != null ? user.email : Messages.of(context).unknown),
     );
   }
 }
