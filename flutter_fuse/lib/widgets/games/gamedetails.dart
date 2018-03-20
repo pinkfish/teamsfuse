@@ -100,9 +100,11 @@ class GameDetailsState extends State<GameDetails> {
         .getStaticUriWithMarkers([marker], width: 900, height: 400);
     TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
     TimeOfDay dayArrive = new TimeOfDay.fromDateTime(game.tzArriveTime);
+    TimeOfDay dayEnd = new TimeOfDay.fromDateTime(game.tzEndTime);
     String dateStr =
-        MaterialLocalizations.of(context).formatMediumDate(game.tzTime);
+        MaterialLocalizations.of(context).formatFullDate(game.tzTime);
     String timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
+    String endTimeStr = MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
     String arriveAttimeStr;
     if (dayArrive.minute == day.minute && dayArrive.hour == day.hour) {
       arriveAttimeStr =
@@ -161,7 +163,7 @@ class GameDetailsState extends State<GameDetails> {
       new ListTile(
         leading: new Icon(Icons.directions),
         title: new Text(
-          dateStr + " " + timeStr,
+          dateStr + " " + timeStr + (game.endTime == game.time ? '' : " - " + endTimeStr),
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
         ),
         subtitle: new Text(game.place.address),

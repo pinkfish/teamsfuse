@@ -19,9 +19,12 @@ public class MainActivity extends FlutterActivity {
 
     new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(
             new MethodCallHandler() {
-              @Override
-              public void onMethodCall(MethodCall call, Result result) {
-              }
+
+
+                @Override
+                public void onMethodCall(MethodCall methodCall, Result result) {
+
+                }
             });
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
 import 'package:flutter_fuse/widgets/games/repeatdetails.dart';
-import 'package:timezone/timezone.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
 
 class AddTrainingScreen extends StatefulWidget {
   AddTrainingScreen();
@@ -19,6 +19,8 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<TrainingEditFormState> _trainingFormKey =
       new GlobalKey<TrainingEditFormState>();
+  final GlobalKey<RepeatDetailsState> _repeatKey =
+      new GlobalKey<RepeatDetailsState>();
   StepState teamStepState = StepState.editing;
   StepState detailsStepState = StepState.disabled;
   StepState repeatStepState = StepState.disabled;
@@ -29,19 +31,68 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
 
   AddTrainingScreenState();
 
+  @override
+  void initState() {
+    newGame();
+    super.initState();
+  }
+
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(value)));
   }
 
   Widget _buildForm(BuildContext context) {
-    return new TrainingEditForm(
-        game: _initGame, key: _trainingFormKey);
+    return new TrainingEditForm(game: _initGame, key: _trainingFormKey);
   }
 
   Widget _buildRepeat(BuildContext context) {
     DateTime time = new DateTime.fromMillisecondsSinceEpoch(_initGame.time);
-    return new RepeatDetailsWidget(time.weekday);
+    return new RepeatDetailsWidget(time, key: _repeatKey);
+  }
+
+  Widget _buildRepeatSummary() {
+    if (_trainingFormKey.currentState == null || _repeatKey.currentState == null) {
+      return new Text(Messages.of(context).unknown);
+    }
+    Game myGame = _trainingFormKey.currentState.widget.game;
+    List<DateTime> times = _repeatKey.currentState.repeatTimes(myGame.tzTime);
+    return new SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: new Column(
+        children: <Widget>[
+              new ListTile(
+                leading: const Icon(Icons.calendar_today),
+                title: new Text(myGame.tzTime.toString()),
+              ),
+              new ListTile(
+                leading: const Icon(Icons.place),
+                title: new Text(myGame.place.name),
+                subtitle: new Text(myGame.place.address),
+              ),
+              new ListTile(
+                leading: const Icon(Icons.note),
+                title: new Text(myGame.notes),
+              ),
+              new ListTile(
+                leading: const Icon(CommunityIcons.tshirtcrew),
+                title: new Text(myGame.uniform),
+              ),
+              new Text(
+                Messages.of(context).trainingtimes,
+                style: Theme.of(context).textTheme.headline,
+              )
+            ] +
+            times.map((DateTime t) {
+              return new ListTile(
+                leading: const Icon(CommunityIcons.calendarplus),
+                title: new Text(
+                  MaterialLocalizations.of(context).formatFullDate(t),
+                ),
+              );
+            }).toList(),
+      ),
+    );
   }
 
   bool _leaveCurrentState(bool backwards) {
@@ -75,13 +126,12 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
         detailsStepState = StepState.complete;
         repeatStepState = StepState.editing;
         break;
-       case 2:
+      case 2:
         repeatStepState = StepState.complete;
         createStepStage = StepState.complete;
         break;
       case 3:
         createStepStage = StepState.disabled;
-        repeatStepState = StepState.disabled;
         break;
     }
     return true;
@@ -93,9 +143,11 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
         if (currentStep < 3) {
           currentStep++;
         } else {
+          Game myGame = _trainingFormKey.currentState.widget.game;
+
           // Write the game out.
           _trainingFormKey.currentState
-              .validateAndSaveToFirebase()
+              .validateAndSaveToFirebase(_repeatKey.currentState.repeatTimes(myGame.tzTime))
               .then((bool result) {
             if (result) {
               Navigator.pop(context);
@@ -114,25 +166,26 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     }
   }
 
-  void _teamChanged(String str) {
-    _teamUid = str;
-    //_gameFormKey.currentState.setTeam(str);
+  void newGame() {
     _initGame = new Game.newGame(EventType.Practice);
-    Team teamData = UserDatabaseData.instance.teams[_teamUid];
-    DateTime start = new DateTime.now().add(const Duration(days: 0));
-    _initGame.time = start.millisecondsSinceEpoch;
-    _initGame.arriveEarly = start
-        .subtract(new Duration(minutes: teamData.arriveEarly))
-        .millisecondsSinceEpoch;
-    _initGame.teamUid = _teamUid;
-    _initGame.seasonUid = teamData.currentSeason;
-    _initGame.opponentUid = null;
+     _initGame.opponentUid = null;
     _initGame.homegame = false;
     _initGame.uniform = '';
     _initGame.notes = '';
-    // Set the timezone to the local timezone to start with.
-    //_initGame.timezone = getLocation(start.timeZoneName).name;
-print('team changed ${_initGame.toJSON()}');
+  }
+
+  void _teamChanged(String str) {
+    _teamUid = str;
+    _initGame.teamUid = _teamUid;
+    Team teamData = UserDatabaseData.instance.teams[_teamUid];
+    DateTime start = new DateTime.now().add(const Duration(days: 0));
+    _initGame.time = start.millisecondsSinceEpoch;
+    _initGame.arriveTime = start
+        .subtract(new Duration(minutes: teamData.arriveEarly))
+        .millisecondsSinceEpoch;
+    _initGame.seasonUid = teamData.currentSeason;
+
+     print('team changed ${_initGame.toJSON()}');
   }
 
   @override
@@ -190,7 +243,7 @@ print('team changed ${_initGame.toJSON()}');
               isActive: _trainingFormKey != null &&
                   _trainingFormKey.currentState != null &&
                   _trainingFormKey.currentState.validate(),
-              content: new Text('Stuff'),
+              content: _buildRepeatSummary(),
             )
           ],
         ),

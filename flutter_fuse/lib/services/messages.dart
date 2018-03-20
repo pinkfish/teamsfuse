@@ -170,8 +170,9 @@ class Messages {
     );
   }
 
-  String get every {
-    return Intl.message('Every');
+  String get trainingtimes {
+    return Intl.message("Training times",
+        name: 'HEader for the extra training times in a repeat event');
   }
 
   String get opponentselect {
@@ -180,6 +181,12 @@ class Messages {
       name: 'Select opponent for the event',
       desc: 'The hint text for selecting opponent for the game',
     );
+  }
+
+  String get until {
+    return Intl.message("Until",
+        name: 'Drop down for the until option');
+
   }
 
   String get opponentname {
@@ -803,11 +810,29 @@ class Messages {
         desc: 'In a text edit box to send a message to the team');
   }
 
-  String gametitle(String time, String opponent) {
+  String get gameend {
+    return Intl.message('Game end',
+        desc: 'Title for the time drop down to choose the game end time');
+  }
+
+  String get trainingend {
+    return Intl.message('Training end',
+        desc: 'Title for the time drop down to choose the training end time');
+  }
+
+  String gametitle(String time, String endTime, String opponent) {
+    if (endTime != null) {
+      return Intl.message('$time - $endTime vs $opponent',
+          desc: 'Game title in game list');
+    }
     return Intl.message('$time vs $opponent', desc: 'Game title in game list');
   }
 
-  String gametitlenow(String time, String opponent) {
+  String gametitlenow(String time, String endTime, String opponent) {
+    if (endTime != null) {
+      return Intl.message('NOW! $time - $endTime vs $opponent',
+          name: 'Game title in game list', desc: 'Game title in game list');
+    }
     return Intl.message('NOW! $time vs $opponent',
         name: 'Game title in game list', desc: 'Game title in game list');
   }

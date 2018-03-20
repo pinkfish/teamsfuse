@@ -3,7 +3,6 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/games/gameeditform.dart';
-import 'package:timezone/timezone.dart';
 
 class AddGameScreen extends StatefulWidget {
   AddGameScreen();
@@ -105,20 +104,19 @@ class AddGameScreenState extends State<AddGameScreen> {
     //_gameFormKey.currentState.setTeam(str);
     _initGame = new Game.newGame(EventType.Game);
     Team teamData = UserDatabaseData.instance.teams[_teamUid];
-    DateTime start = new DateTime.now().add(const Duration(days: 0));
+    DateTime start = new DateTime.now().add(const Duration(days: 1));
     _initGame.time = start.millisecondsSinceEpoch;
-    _initGame.arriveEarly = start
+    _initGame.arriveTime = start
         .subtract(new Duration(minutes: teamData.arriveEarly))
         .millisecondsSinceEpoch;
+    _initGame.endTime = _initGame.time;
     _initGame.teamUid = _teamUid;
     _initGame.seasonUid = teamData.currentSeason;
     _initGame.opponentUid = null;
     _initGame.homegame = false;
     _initGame.uniform = '';
     _initGame.notes = '';
-    // Set the timezone to the local timezone to start with.
-    //_initGame.timezone = getLocation(start.timeZoneName).name;
-  }
+   }
 
   @override
   Widget build(BuildContext context) {

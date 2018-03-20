@@ -13,7 +13,7 @@ buildscript {
         classpath 'com.google.android.gms:play-services-base:11.8.0'
         classpath 'com.google.android.gms:play-services-places:11.8.0'
         classpath 'com.google.android.gms:play-services-location:11.8.0'
-    }
+     }
 }
 
 allprojects {

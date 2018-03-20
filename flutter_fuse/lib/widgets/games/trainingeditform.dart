@@ -5,7 +5,9 @@ import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:map_view/map_view.dart';
+import 'package:timezone/timezone.dart';
 import 'dart:async';
+import 'package:uuid/uuid.dart';
 
 class TrainingEditForm extends StatefulWidget {
   final Game game;
@@ -21,9 +23,12 @@ class TrainingEditForm extends StatefulWidget {
 
 class TrainingEditFormState extends State<TrainingEditForm> {
   ScrollController _scrollController = new ScrollController();
+  GlobalKey<DateTimeFormFieldState> _endTimeKey =
+      new GlobalKey<DateTimeFormFieldState>();
   bool autoValidate = false;
   GlobalKey<FormState> _formState = new GlobalKey<FormState>();
   DateTime _atDate;
+  DateTime _atEnd;
 
   void save() {}
 
@@ -31,20 +36,48 @@ class TrainingEditFormState extends State<TrainingEditForm> {
   void initState() {
     super.initState();
     _atDate = new DateTime.fromMillisecondsSinceEpoch(widget.game.time);
+    _atEnd = new DateTime.fromMillisecondsSinceEpoch(widget.game.endTime);
   }
 
   bool validate() {
     return _formState.currentState.validate();
   }
 
-  Future<bool> validateAndSaveToFirebase() async {
+  Future<bool> validateAndSaveToFirebase(List<DateTime> extraTimes) async {
     if (_formState.currentState.validate()) {
+      Uuid uuid = new Uuid();
+      String seriesId = uuid.v4();
       _formState.currentState.save();
-      widget.game.time = _atDate.millisecondsSinceEpoch;
+      widget.game.time = new TZDateTime(
+              getLocation(widget.game.timezone),
+              _atDate.year,
+              _atDate.month,
+              _atDate.day,
+              _atDate.hour,
+              _atDate.minute)
+          .millisecondsSinceEpoch;
+      widget.game.seriesId = seriesId;
+      DateTime end = _atEnd;
+      if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
+        end.add(new Duration(days: 1));
+      }
+      widget.game.endTime = new TZDateTime(getLocation(widget.game.timezone),
+              end.year, end.month, end.day, end.hour, end.minute)
+          .millisecondsSinceEpoch;
       await widget.game.updateFirestore();
+      await Future.forEach(extraTimes, (DateTime time) async {
+        Game newGame = new Game.copy(widget.game);
+        newGame.time = time.millisecondsSinceEpoch;
+        return newGame.updateFirestore();
+      });
       return true;
     }
     return false;
+  }
+
+  void _updateTimes(Duration diff) {
+    _endTimeKey.currentState
+        .setValue(_endTimeKey.currentState.value.subtract(diff));
   }
 
   @override
@@ -81,8 +114,21 @@ class TrainingEditFormState extends State<TrainingEditForm> {
                 ),
                 initialValue: _atDate,
                 hideDate: false,
+                onFieldChanged: _updateTimes,
                 onSaved: (DateTime value) {
                   _atDate = value;
+                },
+              ),
+              new DateTimeFormField(
+                labelText: Messages.of(context).trainingend,
+                key: _endTimeKey,
+                decoration: new InputDecoration(
+                  icon: const Icon(CommunityIcons.calendarrange),
+                ),
+                initialValue: _atEnd,
+                hideDate: false,
+                onSaved: (DateTime value) {
+                  _atEnd = value;
                 },
               ),
               new FlatButton(

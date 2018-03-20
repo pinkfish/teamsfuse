@@ -49,8 +49,7 @@ class SqlData {
   Future<void> initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     _path = join(documentsDirectory.path, _DBNAME);
-    deleteDatabase(_path);
-     _database = await openDatabase(_path, version: 1,
+    _database = await openDatabase(_path, version: 1,
         onCreate: (Database db, int version) async {
       await Future.forEach(_TABLES, (String table) async {
         print('Made db $table');
@@ -136,6 +135,7 @@ class SqlData {
     await _initialized;
     Map<String, Map<String, dynamic>> ret =
         new Map<String, Map<String, dynamic>>();
+
     List<Map<String, String>> data = await _database
         .query(table, where: TEAMUID + " = ?", whereArgs: [teamUid]);
 
@@ -150,7 +150,6 @@ class SqlData {
       Map<String, dynamic> data) async {
     await _initialized;
     String json = JSON.encode(data);
-    print("UpdateTeamElement $tableId, $key $teamUid");
 
     await _database.execute(
         "insert or replace into " +

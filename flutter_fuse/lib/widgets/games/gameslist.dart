@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'emptygamelist.dart';
 import 'dart:async';
 
@@ -15,11 +16,11 @@ class GameListState extends State<GameList> {
   StreamSubscription<UpdateReason> updateStream;
 
   GameListState() {
-    updateStream = UserDatabaseData.instance.gameStream.listen((UpdateReason update) {
+    updateStream =
+        UserDatabaseData.instance.gameStream.listen((UpdateReason update) {
       setState(() {});
     });
   }
-
 
   @override
   void dispose() {
@@ -33,6 +34,17 @@ class GameListState extends State<GameList> {
     games.sort((a, b) => a.time.compareTo(b.time));
     DateTime time = new DateTime.fromMicrosecondsSinceEpoch(0);
     List<Widget> widgets = new List<Widget>();
+
+    if (!UserDatabaseData.instance.loading) {
+      widgets.add(
+        new ListTile(
+          leading: const CircularProgressIndicator(),
+          title: new Text(Messages
+              .of(context)
+              .loading),
+        ),
+      );
+    }
 
     games.forEach((game) {
       if (time.year != game.tzTime.year ||

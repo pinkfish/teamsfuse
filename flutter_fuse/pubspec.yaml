@@ -18,6 +18,9 @@ dependencies:
   url_launcher: "^2.0.2"
   map_view: # "^0.0.10"
     path: ../../flutter_google_map_view
+  flutter_timezone: # "^0.0.10"
+    path: ../../flutter_timezone
+
   fluro: any
   image_picker: any
   timezone: any

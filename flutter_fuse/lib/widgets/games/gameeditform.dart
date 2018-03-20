@@ -11,6 +11,7 @@ import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/screens/game/addopponent.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:map_view/map_view.dart';
+import 'package:timezone/timezone.dart';
 
 // This form has all the stuff needed to edit the main parts
 // of the game.  Does not have the add game step flow.
@@ -28,6 +29,8 @@ class GameEditFormState extends State<GamEditForm> {
   Game game;
   final GlobalKey<DateTimeFormFieldState> _arriveByKey =
       new GlobalKey<DateTimeFormFieldState>();
+  final GlobalKey<DateTimeFormFieldState> _atEndKEy =
+      new GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<OpponentFormFieldState> _opponentState =
       new GlobalKey<OpponentFormFieldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
@@ -37,6 +40,7 @@ class GameEditFormState extends State<GamEditForm> {
   FocusNode _focusNode = new FocusNode();
   DateTime _atDate;
   DateTime _atArrival;
+  DateTime _atEnd;
 
   GameEditFormState(this.game);
 
@@ -47,8 +51,9 @@ class GameEditFormState extends State<GamEditForm> {
   @override
   void initState() {
     super.initState();
-    _atArrival = new DateTime.fromMillisecondsSinceEpoch(game.arriveEarly);
+    _atArrival = new DateTime.fromMillisecondsSinceEpoch(game.arriveTime);
     _atDate = new DateTime.fromMillisecondsSinceEpoch(game.time);
+    _atEnd = new DateTime.fromMillisecondsSinceEpoch(game.endTime);
   }
 
   bool validate() {
@@ -65,17 +70,46 @@ class GameEditFormState extends State<GamEditForm> {
     } else {
       _formKey.currentState.save();
       // Add the date time and the time together.
-      game.time = _atDate.millisecondsSinceEpoch;
-      game.arriveEarly = _atArrival.millisecondsSinceEpoch;
+      widget.game.time = new TZDateTime(
+              getLocation(widget.game.timezone),
+              _atDate.year,
+              _atDate.month,
+              _atDate.day,
+              _atDate.hour,
+              _atDate.minute)
+          .millisecondsSinceEpoch;
+      // Move forward a day so it is in the next day.
+      DateTime arrival = _atArrival;
+      if (_atArrival.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
+        arrival.add(new Duration(days: 1));
+      }
+      widget.game.arriveTime = new TZDateTime(
+              getLocation(widget.game.timezone),
+              arrival.year,
+              arrival.month,
+              arrival.day,
+              arrival.hour,
+              arrival.minute)
+          .millisecondsSinceEpoch;
+      DateTime end = _atEnd;
+      if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
+        end.add(new Duration(days: 1));
+      }
+      widget.game.endTime = new TZDateTime(getLocation(widget.game.timezone),
+              end.year, end.month, end.day, end.hour, end.minute)
+          .millisecondsSinceEpoch;
+      game.arriveTime = _atArrival.millisecondsSinceEpoch;
+      game.endTime = _atEnd.millisecondsSinceEpoch;
       await game.updateFirestore();
     }
     return true;
   }
 
-  void _changeAtTime(DateTime newDate) {
-    Duration diff = _atDate.difference(newDate);
+  void _changeAtTime(Duration diff) {
     _arriveByKey.currentState
-        .setValue(_arriveByKey.currentState.value.add(diff));
+        .setValue(_arriveByKey.currentState.value.subtract(diff));
+    _atEndKEy.currentState
+        .setValue(_atEndKEy.currentState.value.subtract(diff));
   }
 
   void _openAddOpponentDialog() async {
@@ -158,7 +192,7 @@ class GameEditFormState extends State<GamEditForm> {
                     onSaved: (DateTime value) {
                       _atDate = value;
                     },
-                    onFieldSubmitted: this._changeAtTime,
+                    onFieldChanged: this._changeAtTime,
                   ),
                   new FlatButton(
                     onPressed: () {
@@ -191,15 +225,14 @@ class GameEditFormState extends State<GamEditForm> {
                       ),
                       const SizedBox(width: 12.0),
                       new Expanded(
-                        flex: 1,
-                        child: new SwitchFormField(
-                          decoration: new InputDecoration(
-                            icon: const Icon(CommunityIcons.home),
-                            labelText: Messages.of(context).homeaway,
-                          ),
-                          initialValue: game.homegame,
-                          onSaved: (bool value) {
-                            game.homegame = value;
+                        flex: 4,
+                        child: new DateTimeFormField(
+                          key: _atEndKEy,
+                          labelText: Messages.of(context).gameend,
+                          initialValue: _atEnd,
+                          hideDate: true,
+                          onSaved: (DateTime val) {
+                            _atEnd = val;
                           },
                         ),
                       ),
@@ -233,6 +266,19 @@ class GameEditFormState extends State<GamEditForm> {
                       initialValue: game.notes,
                       onSaved: (String value) {
                         game.notes = value;
+                      },
+                    ),
+                  ),
+                  new Expanded(
+                    flex: 1,
+                    child: new SwitchFormField(
+                      decoration: new InputDecoration(
+                        icon: const Icon(CommunityIcons.home),
+                        labelText: Messages.of(context).homeaway,
+                      ),
+                      initialValue: game.homegame,
+                      onSaved: (bool value) {
+                        game.homegame = value;
                       },
                     ),
                   ),

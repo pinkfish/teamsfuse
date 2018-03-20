@@ -111,11 +111,15 @@ class GameCard extends StatelessWidget {
     }
     TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
     String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
+    String endTimeFormat;
+    if (game.time != game.endTime) {
+      TimeOfDay endDay = new TimeOfDay.fromDateTime(game.tzEndTime);
+      endTimeFormat =
+          MaterialLocalizations.of(context).formatTimeOfDay(endDay);
+    }
     String arriveFormat;
-    if (game.arriveEarly > 0) {
-      DateTime arriveAtTime =
-          game.tzTime.subtract(new Duration(minutes: game.arriveEarly));
-      TimeOfDay arriveDay = new TimeOfDay.fromDateTime(arriveAtTime);
+    if (game.arriveTime != game.time) {
+       TimeOfDay arriveDay = new TimeOfDay.fromDateTime(game.tzArriveTime);
       arriveFormat =
           MaterialLocalizations.of(context).formatTimeOfDay(arriveDay);
     }
@@ -125,9 +129,9 @@ class GameCard extends StatelessWidget {
     // Within an hour.
     String title;
     if (dur.inMinutes < 60) {
-      title = Messages.of(context).gametitlenow(format, opName);
+      title = Messages.of(context).gametitlenow(format, endTimeFormat, opName);
     } else {
-      title = Messages.of(context).gametitle(format, opName);
+      title = Messages.of(context).gametitle(format, endTimeFormat, opName);
     }
     String subtitle;
     if (arriveFormat != null) {
