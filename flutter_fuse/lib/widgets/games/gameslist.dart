@@ -6,6 +6,10 @@ import 'emptygamelist.dart';
 import 'dart:async';
 
 class GameList extends StatefulWidget {
+  FilterDetails details;
+
+  GameList(this.details);
+
   @override
   GameListState createState() {
     return new GameListState();
@@ -13,35 +17,59 @@ class GameList extends StatefulWidget {
 }
 
 class GameListState extends State<GameList> {
-  StreamSubscription<UpdateReason> updateStream;
+  StreamSubscription<UpdateReason> _updateStream;
+  Iterable<Game> _listToShow;
 
-  GameListState() {
-    updateStream =
+  @override
+  void initState() {
+    _updateStream =
         UserDatabaseData.instance.gameStream.listen((UpdateReason update) {
       setState(() {});
+      UserDatabaseData.instance
+          .getGames(widget.details)
+          .then((Iterable<Game> res) {
+        setState(() {
+          _listToShow = res;
+        });
+      });
     });
+    UserDatabaseData.instance
+        .getGames(widget.details)
+        .then((Iterable<Game> res) {
+      setState(() {
+        _listToShow = res;
+      });
+    });
+    super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
-    updateStream.cancel();
-    updateStream = null;
+    _updateStream.cancel();
+    _updateStream = null;
   }
 
   Widget _buildGames(BuildContext context, AsyncSnapshot<UpdateReason> reason) {
-    List<Game> games = UserDatabaseData.instance.games.values.toList();
+    if (_listToShow == null) {
+      return new ListTile(
+        leading: const CircularProgressIndicator(),
+        title: new Text(Messages.of(context).loading),
+      );
+    }
+
+    // Find the games.
+    List<Game> games = _listToShow.toList();
     games.sort((a, b) => a.time.compareTo(b.time));
     DateTime time = new DateTime.fromMicrosecondsSinceEpoch(0);
     List<Widget> widgets = new List<Widget>();
 
-    if (!UserDatabaseData.instance.loading) {
+    // Only show the loading in the main bit if we have no games.
+    if (!UserDatabaseData.instance.loading && games.length == 0) {
       widgets.add(
         new ListTile(
           leading: const CircularProgressIndicator(),
-          title: new Text(Messages
-              .of(context)
-              .loading),
+          title: new Text(Messages.of(context).loading),
         ),
       );
     }
@@ -63,7 +91,16 @@ class GameListState extends State<GameList> {
     });
 
     if (games.isEmpty) {
-      widgets.add(new EmptyGameList());
+      if (UserDatabaseData.instance.games.length > 0) {} else {
+        widgets.add(
+          new ListTile(
+            leading: const Icon(Icons.tune),
+            title: new Text(Messages.of(context).nogamesfiltered),
+          ),
+        );
+
+        widgets.add(new EmptyGameList());
+      }
     }
 
     return new Column(children: widgets);

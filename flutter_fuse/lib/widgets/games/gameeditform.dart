@@ -12,6 +12,7 @@ import 'package:flutter_fuse/screens/game/addopponent.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:map_view/map_view.dart';
 import 'package:timezone/timezone.dart';
+import 'package:flutter_fuse/widgets/util/googleplacesautocomplete.dart';
 
 // This form has all the stuff needed to edit the main parts
 // of the game.  Does not have the add game step flow.
@@ -126,6 +127,10 @@ class GameEditFormState extends State<GamEditForm> {
     }
   }
 
+  void _showPlacesPicker() async {
+    await showGooglePlacesAutocomplete(context: context);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (game.teamUid == null ||
@@ -195,15 +200,7 @@ class GameEditFormState extends State<GamEditForm> {
                     onFieldChanged: this._changeAtTime,
                   ),
                   new FlatButton(
-                    onPressed: () {
-                      MapView
-                          .openPlacePickerModal()
-                          .then((Map<String, dynamic> val) {
-                        print('places ret $val');
-                      }).catchError((Object err) {
-                        print('$err Error!');
-                      });
-                    },
+                    onPressed: _showPlacesPicker,
                     child: new Text('Place'),
                   ),
                   new Row(

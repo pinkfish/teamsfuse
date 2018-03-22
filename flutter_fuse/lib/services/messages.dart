@@ -184,9 +184,65 @@ class Messages {
   }
 
   String get until {
-    return Intl.message("Until",
-        name: 'Drop down for the until option');
+    return Intl.message("Until", name: 'Drop down for the until option');
+  }
 
+  String get noevent {
+    return Intl.message("All events", name: 'Drop down for all the events');
+  }
+
+  String get gametype {
+    return Intl.message("Games", name: 'Drop down for onlhy the game events');
+  }
+
+  String get trainingtype {
+    return Intl.message("Training",
+        name: 'Drop down foronlhy the training events');
+  }
+
+  String get eventtype {
+    return Intl.message("Special Events",
+        name: 'Drop down for only the special events');
+  }
+
+  String get noresult {
+    return Intl.message("All Games", name: 'Drop down for all the games');
+  }
+
+  String get notfinished {
+    return Intl.message("Not finished",
+        name: 'Drop down for  the not finished result');
+  }
+
+  String get allteams {
+    return Intl.message("All teams",
+        name: 'Drop down for  the all teams result');
+  }
+
+  String get allplayers {
+    return Intl.message("All players",
+        name: 'Drop down for  the all players result');
+  }
+
+  String get allgames {
+    return Intl.message("All games", name: 'Checkbox to select all the games');
+  }
+
+  String get nogamesfiltered {
+    return Intl.message("No games to display, check filters",
+        name: 'No games to display based on filters');
+  }
+
+  String get win {
+    return Intl.message("Win", name: 'Drop down for  the win result');
+  }
+
+  String get loss {
+    return Intl.message("Loss", name: 'Drop down for  the loss result');
+  }
+
+  String get tie {
+    return Intl.message("Tie", name: 'Drop down for  the tie result');
   }
 
   String get opponentname {
@@ -835,6 +891,42 @@ class Messages {
     }
     return Intl.message('NOW! $time vs $opponent',
         name: 'Game title in game list', desc: 'Game title in game list');
+  }
+
+  String eventtitle(String time, String endTime) {
+    if (endTime != null) {
+      return Intl.message('Event $time - $endTime',
+          desc: 'Special event title in game list');
+    }
+    return Intl.message('Event $time',
+        desc: 'Special event title in game list');
+  }
+
+  String eventtitlenow(String time, String endTime) {
+    if (endTime != null) {
+      return Intl.message('NOW! Event $time - $endTime',
+          desc: 'Special event title in game list');
+    }
+    return Intl.message('NOW! Event $time',
+        desc: 'Special event title in game list');
+  }
+
+  String trainingtitle(String time, String endTime) {
+    if (endTime != null) {
+      return Intl.message('Practice $time - $endTime',
+          desc: 'Practice title in game list');
+    }
+    return Intl.message('Practice $time',
+        desc: 'Practice title in game list');
+  }
+
+  String trainingtitlenow(String time, String endTime) {
+    if (endTime != null) {
+      return Intl.message('NOW! Practice $time - $endTime',
+          desc: 'Training title in game list');
+    }
+    return Intl.message('NOW! Practice $time',
+        desc: 'Training title in game list');
   }
 
   String gameaddressarriveat(String arriveAt, String address) {

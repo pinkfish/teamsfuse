@@ -1,7 +1,7 @@
 import 'package:map_view/map_view.dart';
 
 class MapData {
-  static const String _APIKEY = "AIzaSyC0nzXvh-NqEV5c1Qoa-DCUY6iVXG0HcGQ";
+  static const String APIKEY = "AIzaSyC0nzXvh-NqEV5c1Qoa-DCUY6iVXG0HcGQ";
 
   static MapData _instance;
   StaticMapProvider _providerData;
@@ -18,9 +18,9 @@ class MapData {
   }
 
   MapData() {
-    MapView.setApiKey(_APIKEY);
+    MapView.setApiKey(APIKEY);
 
-    _providerData = new StaticMapProvider(_APIKEY);
+    _providerData = new StaticMapProvider(APIKEY);
   }
 
   void openPlacesPickerModal() {

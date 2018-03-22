@@ -5,6 +5,7 @@ import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
 import 'package:flutter_fuse/widgets/games/repeatdetails.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:timezone/timezone.dart';
 
 class AddTrainingScreen extends StatefulWidget {
   AddTrainingScreen();
@@ -27,7 +28,9 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   StepState createStepStage = StepState.disabled;
   String _teamUid;
   Game _initGame;
+  RepeatData repeatData = new RepeatData();
   int currentStep = 0;
+  List<TZDateTime> _repeatDates;
 
   AddTrainingScreenState();
 
@@ -43,54 +46,101 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   Widget _buildForm(BuildContext context) {
-    return new TrainingEditForm(game: _initGame, key: _trainingFormKey);
+    return new TrainingEditForm(
+      game: _initGame,
+      key: _trainingFormKey,
+    );
   }
 
   Widget _buildRepeat(BuildContext context) {
-    DateTime time = new DateTime.fromMillisecondsSinceEpoch(_initGame.time);
-    return new RepeatDetailsWidget(time, key: _repeatKey);
+    return new RepeatDetailsWidget(
+      _initGame.tzTime,
+      repeatData,
+      key: _repeatKey,
+    );
   }
 
   Widget _buildRepeatSummary() {
-    if (_trainingFormKey.currentState == null || _repeatKey.currentState == null) {
+    print("${_trainingFormKey.currentState} ${_repeatKey.currentState}");
+    if (_repeatDates == null) {
       return new Text(Messages.of(context).unknown);
     }
-    Game myGame = _trainingFormKey.currentState.widget.game;
-    List<DateTime> times = _repeatKey.currentState.repeatTimes(myGame.tzTime);
+    Game myGame = _initGame;
+    String timeStr;
+    print("game -- ${myGame.time} ${myGame.endTime}");
+    if (myGame.time != myGame.endTime) {
+      timeStr = MaterialLocalizations
+              .of(context)
+              .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.tzTime)) +
+          " - " +
+          MaterialLocalizations
+              .of(context)
+              .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.tzEndTime));
+    } else {
+      timeStr = MaterialLocalizations
+          .of(context)
+          .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.tzTime));
+    }
+    List<Widget> cols = [
+      new RaisedButton(
+        child: new Text(Messages.of(context).createnew),
+        color: Theme.of(context).accentColor,
+        textColor: Colors.white,
+        onPressed: () => _onStepperContinue(context),
+      ),
+      new ListTile(
+        leading: const Icon(Icons.calendar_today),
+        title: new Text(
+            MaterialLocalizations.of(context).formatFullDate(myGame.tzTime)),
+        subtitle: new Text(timeStr),
+      ),
+      new ListTile(
+        leading: const Icon(Icons.place),
+        title: new Text(myGame.place.name != null ? myGame.place.name : ""),
+        subtitle:
+            new Text(myGame.place.address != null ? myGame.place.address : ""),
+      ),
+    ];
+
+    if (myGame.notes.isNotEmpty) {
+      cols.add(
+        new ListTile(
+          leading: const Icon(Icons.note),
+          title: new Text(myGame.notes),
+        ),
+      );
+    }
+    if (myGame.uniform.isNotEmpty) {
+      cols.add(
+        new ListTile(
+          leading: const Icon(CommunityIcons.tshirtcrew),
+          title: new Text(myGame.uniform),
+        ),
+      );
+    }
+    cols.add(
+      new Text(
+        Messages.of(context).trainingtimes,
+        style: Theme.of(context).textTheme.headline,
+      ),
+    );
+
+    _repeatDates.forEach((DateTime t) {
+      cols.add(
+        new ListTile(
+          leading: const Icon(CommunityIcons.calendarplus),
+          title: new Text(
+            MaterialLocalizations.of(context).formatFullDate(t),
+          ),
+        ),
+      );
+    });
+
     return new SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: new Column(
-        children: <Widget>[
-              new ListTile(
-                leading: const Icon(Icons.calendar_today),
-                title: new Text(myGame.tzTime.toString()),
-              ),
-              new ListTile(
-                leading: const Icon(Icons.place),
-                title: new Text(myGame.place.name),
-                subtitle: new Text(myGame.place.address),
-              ),
-              new ListTile(
-                leading: const Icon(Icons.note),
-                title: new Text(myGame.notes),
-              ),
-              new ListTile(
-                leading: const Icon(CommunityIcons.tshirtcrew),
-                title: new Text(myGame.uniform),
-              ),
-              new Text(
-                Messages.of(context).trainingtimes,
-                style: Theme.of(context).textTheme.headline,
-              )
-            ] +
-            times.map((DateTime t) {
-              return new ListTile(
-                leading: const Icon(CommunityIcons.calendarplus),
-                title: new Text(
-                  MaterialLocalizations.of(context).formatFullDate(t),
-                ),
-              );
-            }).toList(),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: cols,
       ),
     );
   }
@@ -127,8 +177,14 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
         repeatStepState = StepState.editing;
         break;
       case 2:
+        if (!_repeatKey.currentState.validate()) {
+          _showInSnackBar('Please fix the errors in red before submitting.');
+          return false;
+        }
+        _repeatKey.currentState.save();
         repeatStepState = StepState.complete;
         createStepStage = StepState.complete;
+        _repeatDates = _repeatKey.currentState.repeatTimes(_initGame.tzTime);
         break;
       case 3:
         createStepStage = StepState.disabled;
@@ -147,7 +203,8 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
 
           // Write the game out.
           _trainingFormKey.currentState
-              .validateAndSaveToFirebase(_repeatKey.currentState.repeatTimes(myGame.tzTime))
+              .validateAndSaveToFirebase(
+                  _repeatKey.currentState.repeatTimes(myGame.tzTime))
               .then((bool result) {
             if (result) {
               Navigator.pop(context);
@@ -168,7 +225,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
 
   void newGame() {
     _initGame = new Game.newGame(EventType.Practice);
-     _initGame.opponentUid = null;
+    _initGame.opponentUid = null;
     _initGame.homegame = false;
     _initGame.uniform = '';
     _initGame.notes = '';
@@ -180,12 +237,10 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     Team teamData = UserDatabaseData.instance.teams[_teamUid];
     DateTime start = new DateTime.now().add(const Duration(days: 0));
     _initGame.time = start.millisecondsSinceEpoch;
-    _initGame.arriveTime = start
-        .subtract(new Duration(minutes: teamData.arriveEarly))
-        .millisecondsSinceEpoch;
+    _initGame.endTime = _initGame.time;
     _initGame.seasonUid = teamData.currentSeason;
 
-     print('team changed ${_initGame.toJSON()}');
+    print('team changed ${_initGame.toJSON()}');
   }
 
   @override

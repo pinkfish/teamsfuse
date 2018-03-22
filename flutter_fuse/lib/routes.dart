@@ -55,7 +55,8 @@ class Routes {
     if (user != null) {
       final data = await rootBundle.load('assets/timezone/2018c.tzf');
       final String currentTimeZone = await Timezone.getLocalTimezone();
-      initializeDatabase(data.buffer.asUint8List());
+      await Timezone.getPlacesDialog();
+      await initializeDatabase(data.buffer.asUint8List());
       setLocalLocation(getLocation(currentTimeZone));
       UserDatabaseData.load(user.uid, user.email);
       print('$currentTimeZone ${local.toString()}');

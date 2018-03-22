@@ -5,10 +5,19 @@ import 'package:timezone/timezone.dart';
 
 enum RepeatPeriod { None, Weekly, Monthly }
 
+class RepeatData {
+  RepeatPeriod period;
+  num repeatInterval = 1;
+  bool repeatUntil = false;
+  TZDateTime endRepeat;
+  List<bool> dayRepeats = [false, false, false, false, false, false, false];
+}
+
 class RepeatDetailsWidget extends StatefulWidget {
   final TZDateTime startTime;
+  final RepeatData repeat;
 
-  RepeatDetailsWidget(this.startTime, {GlobalKey<RepeatDetailsState> key})
+  RepeatDetailsWidget(this.startTime, this.repeat, {GlobalKey<RepeatDetailsState> key})
       : super(key: key);
 
   @override
@@ -22,35 +31,39 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
   bool autoValidate = false;
   GlobalKey<FormState> _formState = new GlobalKey<FormState>();
 
-  RepeatPeriod period = RepeatPeriod.None;
-  num repeatInterval = 1;
-  bool _repeatTimes = true;
-  List<bool> dayRepeats = [false, false, false, false, false, false, false];
-  TZDateTime _endRepeat;
 
   void initState() {
-    dayRepeats[widget.startTime.weekday] = true;
-    _endRepeat = widget.startTime.add(const Duration(days: 7));
+    widget.repeat.dayRepeats[widget.startTime.weekday] = true;
+    widget.repeat.endRepeat = widget.startTime.add(const Duration(days: 7));
     super.initState();
-    print('initState $_endRepeat');
+    print('initState $widget.repeat.endRepeat');
+  }
+
+  bool validate() {
+    return _formState.currentState.validate();
+  }
+
+  void save() {
+    _formState.currentState.save();
   }
 
   //// List of date times that are based around the start point
   //// given the current repeat stuff.
   List<TZDateTime> repeatTimes(final TZDateTime start) {
-    List<TZDateTime> newDates = [start];
+    List<TZDateTime> newDates = [];
     // Normalize to 0.
     TZDateTime startOfWeek = start.subtract(new Duration(days: start.weekday));
-    if (period != RepeatPeriod.None) {
-      if (_repeatTimes || period == RepeatPeriod.Monthly) {
-        for (int i = 0; i < repeatInterval; i++) {
-          if (period == RepeatPeriod.Monthly) {
+    if (widget.repeat.period != RepeatPeriod.None) {
+      if (widget.repeat.repeatUntil || widget.repeat.period == RepeatPeriod.Monthly) {
+        print("Interval ${widget.repeat.repeatInterval}");
+        for (int i = 0; i < widget.repeat.repeatInterval; i++) {
+          if (widget.repeat.period == RepeatPeriod.Monthly) {
             newDates.add(new TZDateTime(start.location, start.year, start.month + i, start.day,
                 start.hour, start.minute));
           } else {
             DateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
-            for (int dayNum = 0; dayNum < dayRepeats.length; dayNum++) {
-              if (dayRepeats[dayNum]) {
+            for (int dayNum = 0; dayNum < widget.repeat.dayRepeats.length; dayNum++) {
+              if (widget.repeat.dayRepeats[dayNum]) {
                 newDates.add(newWeek.add(new Duration(days: dayNum)));
               }
             }
@@ -59,13 +72,13 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
       } else {
         int i = 0;
         TZDateTime end =
-            new TZDateTime(_endRepeat.location, _endRepeat.year, _endRepeat.month, _endRepeat.day)
+            new TZDateTime(widget.repeat.endRepeat.location, widget.repeat.endRepeat.year, widget.repeat.endRepeat.month, widget.repeat.endRepeat.day)
                 .add(new Duration(days: 1));
         while (
             startOfWeek.millisecondsSinceEpoch < end.millisecondsSinceEpoch) {
           DateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
-          for (int dayNum = 0; dayNum < dayRepeats.length; dayNum++) {
-            if (dayRepeats[dayNum]) {
+          for (int dayNum = 0; dayNum < widget.repeat.dayRepeats.length; dayNum++) {
+            if (widget.repeat.dayRepeats[dayNum]) {
               TZDateTime newTime = newWeek.add(new Duration(days: dayNum));
               if (newTime.millisecondsSinceEpoch < end.millisecondsSinceEpoch) {
                 newDates.add(newTime);
@@ -74,6 +87,8 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
           }
         }
       }
+    } else {
+      newDates.add(start);
     }
     return newDates;
   }
@@ -106,16 +121,16 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
       new DropdownButton<RepeatPeriod>(
         hint: new Text(messages.repeat),
         items: _buildRepeatIntervalItems(context),
-        value: period,
+        value: widget.repeat.period,
         onChanged: (RepeatPeriod val) {
           setState(() {
-            period = val;
+            widget.repeat.period = val;
           });
         },
       ),
     );
-    print('$_endRepeat');
-    switch (period) {
+    print('$widget.repeat.endRepeat');
+    switch (widget.repeat.period) {
       case RepeatPeriod.Weekly:
         ret.add(new Row(
           mainAxisSize: MainAxisSize.min,
@@ -123,7 +138,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             new DropdownButton<bool>(
-              value: _repeatTimes,
+              value: widget.repeat.repeatUntil,
               items: <DropdownMenuItem<bool>>[
                 new DropdownMenuItem(
                   child: new Text(
@@ -138,9 +153,9 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                   value: false,
                 ),
               ],
-              onChanged: (bool val) => _repeatTimes = val,
+              onChanged: (bool val) => widget.repeat.repeatUntil = val,
             ),
-            _repeatTimes
+            widget.repeat.repeatUntil
                 ? new Container(
                     constraints: new BoxConstraints.loose(
                       new Size.fromWidth(20.0),
@@ -149,15 +164,18 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                     child: new TextFormField(
                       initialValue: "1",
                       keyboardType: TextInputType.number,
+                      onSaved: (String val) {
+                        widget.repeat.repeatInterval = int.parse(val);
+                      },
                     ),
                   )
                 : new Flexible(
                     flex: 1,
                     child: new DateTimeFormField(
-                      initialValue: _endRepeat,
+                      initialValue: widget.repeat.endRepeat,
                       hideTime: true,
                       onSaved: (DateTime tim) {
-                        _endRepeat = tim;
+                        widget.repeat.endRepeat = tim;
                       },
                     ),
                   ),
@@ -176,11 +194,11 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
               child: new GestureDetector(
                 onTap: () {
                   setState(() {
-                    dayRepeats[pos] = !dayRepeats[pos];
+                    widget.repeat.dayRepeats[pos] = !widget.repeat.dayRepeats[pos];
                   });
                 },
                 child: new Chip(
-                  backgroundColor: dayRepeats[pos]
+                  backgroundColor: widget.repeat.dayRepeats[pos]
                       ? Theme.of(context).accentColor
                       : Theme.of(context).disabledColor,
                   label: new Text(days[pos]),
@@ -211,7 +229,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
               icon: const Icon(Icons.repeat),
             ),
             onSaved: (String val) {
-              repeatInterval = int.parse(val);
+              widget.repeat.repeatInterval = int.parse(val);
             },
           ),
         );

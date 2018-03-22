@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'fabminimenuitem.dart';
 
 class FabDialer extends StatefulWidget {
-  const FabDialer({this.menu, this.color, this.icon});
+  const FabDialer({@required this.menu, @required this.color, @required this.icon});
 
   final List<FabMiniMenuItemWidget> menu;
   final Color color;

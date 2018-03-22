@@ -91,6 +91,43 @@ class GameDetailsState extends State<GameDetails> {
     }
   }
 
+  Widget _buildAttendence(Season season) {
+    List<Widget> availability = [];
+    Map<Player, Attendance> availavilityResult = new Map<Player, Attendance>();
+
+    UserDatabaseData.instance.players.forEach((String key, Player player) {
+      if (season.players.any((SeasonPlayer play) {
+        return play.playerUid == key;
+      })) {
+        Attendance attend = Attendance.Maybe;
+        if (game.attendance.containsKey(key)) {
+          attend = game.attendance[key];
+        }
+        availavilityResult[player] = attend;
+        availability.add(
+          new Row(
+            children: <Widget>[
+              new Expanded(child: new Text(player.name)),
+              new AttendanceIcon(attend),
+            ],
+          ),
+        );
+      }
+    });
+    this._attendence = availavilityResult;
+
+    // Not started, show availability.
+    return new ListTile(
+      leading: const Icon(CommunityIcons.bookopenvariant),
+      title: new GestureDetector(
+        onTap: _openAttendance,
+        child: new Column(
+          children: availability,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     print('lat: ${game.place.latitude} long: ${game.place.longitude}');
@@ -104,7 +141,8 @@ class GameDetailsState extends State<GameDetails> {
     String dateStr =
         MaterialLocalizations.of(context).formatFullDate(game.tzTime);
     String timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
-    String endTimeStr = MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
+    String endTimeStr =
+        MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
     String arriveAttimeStr;
     if (dayArrive.minute == day.minute && dayArrive.hour == day.hour) {
       arriveAttimeStr =
@@ -135,9 +173,11 @@ class GameDetailsState extends State<GameDetails> {
           child: new Center(
             child: new CachedNetworkImage(
               placeholder: new Center(
-                  child: new Container(
-                      padding: const EdgeInsets.all(20.0),
-                      child: loadingWidget)),
+                child: new Container(
+                  padding: const EdgeInsets.all(20.0),
+                  child: loadingWidget,
+                ),
+              ),
               imageNow: uri.toString(),
             ),
           ),
@@ -150,7 +190,7 @@ class GameDetailsState extends State<GameDetails> {
       new ListTile(
         leading: new TeamImage(game.teamUid, width: 50.0, height: 50.0),
         title: new Text(team.name, style: theme.textTheme.title),
-        subtitle: arriveAttimeStr != null
+        subtitle: arriveAttimeStr != null && game.type == EventType.Game
             ? new Text('arrive at ' + arriveAttimeStr,
                 style: theme.textTheme.subhead)
             : null,
@@ -163,7 +203,10 @@ class GameDetailsState extends State<GameDetails> {
       new ListTile(
         leading: new Icon(Icons.directions),
         title: new Text(
-          dateStr + " " + timeStr + (game.endTime == game.time ? '' : " - " + endTimeStr),
+          dateStr +
+              " " +
+              timeStr +
+              (game.endTime == game.time ? '' : " - " + endTimeStr),
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
         ),
         subtitle: new Text(game.place.address),
@@ -171,79 +214,77 @@ class GameDetailsState extends State<GameDetails> {
     );
 
     // Results.
-    String title;
-    TextStyle resultStyle;
-    if (game.result.inProgress == GameInProgress.NotStarted) {
-      List<Widget> availability = [];
-      Map<Player, Attendance> availavilityResult =
-          new Map<Player, Attendance>();
-
-      UserDatabaseData.instance.players.forEach((String key, Player player) {
-        if (season.players.any((SeasonPlayer play) {
-          return play.playerUid == key;
-        })) {
-          Attendance attend = Attendance.Maybe;
-          if (game.attendance.containsKey(key)) {
-            attend = game.attendance[key];
-          }
-          availavilityResult[player] = attend;
-          availability.add(
-            new Row(
-              children: <Widget>[
-                new Expanded(child: new Text(player.name)),
-                new AttendanceIcon(attend),
-              ],
-            ),
-          );
+    if (game.type == EventType.Game) {
+      String title;
+      TextStyle resultStyle;
+      if (game.result.inProgress == GameInProgress.NotStarted) {
+        if (game.trackAttendance) {
+          body.add(_buildAttendence(season));
         }
-      });
-      this._attendence = availavilityResult;
-
-      // Not started, show availability.
-      body.add(
-        new ListTile(
-          leading: const Icon(CommunityIcons.bookopenvariant),
-          title: new GestureDetector(
-            onTap: _openAttendance,
-            child: new Column(
-              children: availability,
-            ),
-          ),
-        ),
-      );
-    } else {
-      // Started.
-      switch (game.result.result) {
-        case GameResult.Unknown:
-          title = Messages.of(context).resultunknown;
-          resultStyle = theme.textTheme.subhead;
-          break;
-        case GameResult.Loss:
-          title = Messages.of(context).resultloss(game.result);
-          resultStyle =
-              theme.textTheme.subhead.copyWith(color: theme.errorColor);
-          break;
-        case GameResult.Win:
-          title = Messages.of(context).resultwin(game.result);
-          resultStyle =
-              theme.textTheme.subhead.copyWith(color: theme.accentColor);
-          break;
-        case GameResult.Tie:
-          title = Messages.of(context).resulttie(game.result);
-          resultStyle = theme.textTheme.subhead;
-          break;
-        case GameResult.InProgress:
-          title = Messages.of(context).resultinprogress(game.result);
-          resultStyle = theme.textTheme.subhead;
-          break;
       }
-      body.add(
-        new ListTile(
-          onTap: this._editResult,
-          leading: new Icon(CommunityIcons.bookopenvariant),
-          title: new Text(title, style: resultStyle),
-        ),
-      );
+      // Show the live stuff if the game is close to starting.
+      if (game.time >
+          new DateTime.now()
+              .subtract(const Duration(hours: 1))
+              .millisecondsSinceEpoch) {
+        // Started.
+        switch (game.result.result) {
+          case GameResult.Unknown:
+            title = Messages.of(context).resultunknown;
+            resultStyle = theme.textTheme.subhead;
+            break;
+          case GameResult.Loss:
+            title = Messages.of(context).resultloss(game.result);
+            resultStyle =
+                theme.textTheme.subhead.copyWith(color: theme.errorColor);
+            break;
+          case GameResult.Win:
+            title = Messages.of(context).resultwin(game.result);
+            resultStyle =
+                theme.textTheme.subhead.copyWith(color: theme.accentColor);
+            break;
+          case GameResult.Tie:
+            title = Messages.of(context).resulttie(game.result);
+            resultStyle = theme.textTheme.subhead;
+            break;
+          case GameResult.InProgress:
+            title = Messages.of(context).resultinprogress(game.result);
+            resultStyle = theme.textTheme.subhead;
+            break;
+        }
+        body.add(
+          new ListTile(
+            onTap: this._editResult,
+            leading: new Icon(CommunityIcons.bookopenvariant),
+            title: new Text(title, style: resultStyle),
+          ),
+        );
+      }
+    } else {
+      // Tell people this is a practice or special event.
+      if (game.type == EventType.Practice) {
+        body.add(
+          new ListTile(
+            leading: const Icon(Icons.train),
+            title: new Text(Messages.of(context).trainingtype),
+          ),
+        );
+      } else if (game.type == EventType.Event) {
+        body.add(
+          new ListTile(
+            leading: const Icon(Icons.plus_one),
+            title: new Text(Messages.of(context).eventtype),
+          ),
+        );
+      }
+      // Attendance, possibly.
+      if (game.trackAttendance &&
+          game.time >
+              new DateTime.now()
+                  .subtract(const Duration(hours: 1))
+                  .millisecondsSinceEpoch) {
+        body.add(_buildAttendence(season));
+      }
     }
 
     // Uniform
@@ -267,38 +308,40 @@ class GameDetailsState extends State<GameDetails> {
     }
 
     // Opponent last games.
-    String seasonName;
-    if (team.seasons.containsKey(game.seasonUid)) {
-      seasonName = team.seasons[game.seasonUid].name;
-    } else {
-      seasonName = Messages.of(context).unknown;
-    }
-    body.add(
-      new ExpansionTile(
-        onExpansionChanged: this._opponentExpansionChanged,
-        title: new Row(
-          children: <Widget>[
-            new Text(
-              Messages
-                  .of(context)
-                  .opponentwinrecord(opponent, game.seasonUid, seasonName),
-            ),
-          ],
-        ),
-        initiallyExpanded: false,
-        leading: const Icon(Icons.people),
-        children: <Widget>[],
-      ),
-    );
-    if (team.seasons.length > 1) {
+    if (game.type == EventType.Game) {
+      String seasonName;
+      if (team.seasons.containsKey(game.seasonUid)) {
+        seasonName = team.seasons[game.seasonUid].name;
+      } else {
+        seasonName = Messages.of(context).unknown;
+      }
       body.add(
         new ExpansionTile(
-          title: new Text(Messages.of(context).previousSeasons),
+          onExpansionChanged: this._opponentExpansionChanged,
+          title: new Row(
+            children: <Widget>[
+              new Text(
+                Messages
+                    .of(context)
+                    .opponentwinrecord(opponent, game.seasonUid, seasonName),
+              ),
+            ],
+          ),
           initiallyExpanded: false,
           leading: const Icon(Icons.people),
           children: <Widget>[],
         ),
       );
+      if (team.seasons.length > 1) {
+        body.add(
+          new ExpansionTile(
+            title: new Text(Messages.of(context).previousSeasons),
+            initiallyExpanded: false,
+            leading: const Icon(Icons.people),
+            children: <Widget>[],
+          ),
+        );
+      }
     }
 
     return new Column(

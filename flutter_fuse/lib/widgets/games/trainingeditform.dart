@@ -57,13 +57,17 @@ class TrainingEditFormState extends State<TrainingEditForm> {
               _atDate.minute)
           .millisecondsSinceEpoch;
       widget.game.seriesId = seriesId;
-      DateTime end = _atEnd;
-      if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
+      DateTime end = new TZDateTime(
+          getLocation(widget.game.timezone),
+          _atEnd.year,
+          _atEnd.month,
+          _atEnd.day,
+          _atEnd.hour,
+          _atEnd.minute);
+      if (end.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
         end.add(new Duration(days: 1));
       }
-      widget.game.endTime = new TZDateTime(getLocation(widget.game.timezone),
-              end.year, end.month, end.day, end.hour, end.minute)
-          .millisecondsSinceEpoch;
+      widget.game.endTime = end.millisecondsSinceEpoch;
       await widget.game.updateFirestore();
       await Future.forEach(extraTimes, (DateTime time) async {
         Game newGame = new Game.copy(widget.game);
