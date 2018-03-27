@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 typedef void OnFabMiniMenuItemPressed();
 
 class FabMiniMenuItemWidget extends StatelessWidget {
-
   FabMiniMenuItemWidget(
       {Key key,
       this.elevation = 1.0,
@@ -12,7 +11,7 @@ class FabMiniMenuItemWidget extends StatelessWidget {
       this.tooltip,
       this.text,
       this.icon,
-        this.index,
+      this.index,
       this.fabColor,
       this.chipColor,
       this.controller,
@@ -57,26 +56,27 @@ class FabMiniMenuItemWidget extends StatelessWidget {
           new Container(
             margin: new EdgeInsets.symmetric(horizontal: 8.0),
             child: new ScaleTransition(
-                scale: new CurvedAnimation(
-                  parent: controller,
-                  curve: new Interval(
-                    ((index + 1) / 10),
-                    1.0,
-                    curve: Curves.linear,
-                  ),
+              scale: new CurvedAnimation(
+                parent: controller,
+                curve: new Interval(
+                  ((index + 1) / 10),
+                  1.0,
+                  curve: Curves.linear,
                 ),
-                child: text != null
-                    ? new Chip(
-                        label: new Text(
-                          text,
-                          textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          style: new TextStyle(
-                              color: textColor, fontWeight: FontWeight.bold),
-                        ),
-                        backgroundColor: chipColor,
-                      )
-                    : null),
+              ),
+              child: text != null
+                  ? new Chip(
+                      label: new Text(
+                        text,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: new TextStyle(
+                            color: textColor, fontWeight: FontWeight.bold),
+                      ),
+                      backgroundColor: chipColor,
+                    )
+                  : null,
+            ),
           ),
           new ScaleTransition(
             scale: new CurvedAnimation(
@@ -85,13 +85,14 @@ class FabMiniMenuItemWidget extends StatelessWidget {
                   new Interval(((index + 1) / 10), 1.0, curve: Curves.linear),
             ),
             child: new FloatingActionButton(
-                elevation: elevation,
-                mini: true,
-                backgroundColor: fabColor,
-                heroTag: "Inner fab " + index.toString(),
-                tooltip: tooltip,
-                child: icon,
-                onPressed: onPressed),
+              elevation: elevation,
+              mini: true,
+              backgroundColor: fabColor,
+              heroTag: "Inner fab " + index.toString(),
+              tooltip: tooltip,
+              child: icon,
+              onPressed: onPressed,
+            ),
           )
         ],
       ),

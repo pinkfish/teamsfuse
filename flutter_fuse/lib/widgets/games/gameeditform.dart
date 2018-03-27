@@ -10,9 +10,8 @@ import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/screens/game/addopponent.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:map_view/map_view.dart';
 import 'package:timezone/timezone.dart';
-import 'package:flutter_fuse/widgets/util/googleplacesautocomplete.dart';
+import 'package:flutter_fuse/services/map.dart';
 
 // This form has all the stuff needed to edit the main parts
 // of the game.  Does not have the add game step flow.
@@ -128,7 +127,15 @@ class GameEditFormState extends State<GamEditForm> {
   }
 
   void _showPlacesPicker() async {
-    await showGooglePlacesAutocomplete(context: context);
+    LocationAndPlace place = await MapData.instance.getPlaceAndLocation();
+    if (place != null) {
+      // Yay!
+      setState(() {
+        game.place.name = place.details.name;
+        game.place.address = place.details.address;
+        game.timezone = place.loc.name;
+      });
+    }
   }
 
   @override
@@ -199,9 +206,13 @@ class GameEditFormState extends State<GamEditForm> {
                     },
                     onFieldChanged: this._changeAtTime,
                   ),
-                  new FlatButton(
-                    onPressed: _showPlacesPicker,
-                    child: new Text('Place'),
+                  new ListTile(
+                    leading: const Icon(Icons.place),
+                    onTap: _showPlacesPicker,
+                    title: new Text(game.place.name == null
+                        ? Messages.of(context).where
+                        : game.place.name),
+                    subtitle: new Text(game.place.address),
                   ),
                   new Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -301,7 +301,7 @@ class Game {
 
   Future<void> updateFirestore() async {
     // Add or update this record into the database.
-    CollectionReference ref = Firestore.instance.collection("Games");
+    CollectionReference ref = Firestore.instance.collection(GAMES_COLLECTION);
     if (uid == '' || uid == null) {
       // Add the game.
       DocumentReference doc = await ref.add(toJSON());
@@ -315,7 +315,7 @@ class Game {
   Future<void> updateFirestoreAttendence(
       String playerUid, Attendance attend) async {
     DocumentReference ref =
-        Firestore.instance.collection("Games").document(uid);
+        Firestore.instance.collection(GAMES_COLLECTION).document(uid);
 
     Map<String, dynamic> data = new Map<String, dynamic>();
     data[_ATTENDANCE + "." + playerUid + "." + _ATTENDANCEVALUE] =
@@ -325,7 +325,7 @@ class Game {
 
   Future<void> updateFirestoreGameResult(GameResultDetails result) async {
     DocumentReference ref =
-        Firestore.instance.collection("Games").document(uid);
+        Firestore.instance.collection(GAMES_COLLECTION).document(uid);
 
     Map<String, dynamic> data = new Map<String, dynamic>();
     data[_RESULT] = result.toJSON();

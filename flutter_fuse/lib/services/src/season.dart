@@ -119,7 +119,7 @@ class Season {
 
   Future<void> updateFirestore() async {
     // Add or update this record into the database.
-    CollectionReference ref = Firestore.instance.collection("Seasons");
+    CollectionReference ref = Firestore.instance.collection(SEASONS_COLLECTION);
     if (uid == '' || uid == null) {
       // Add the game.
       DocumentReference doc = await ref.add(toJSON());
@@ -132,7 +132,7 @@ class Season {
 
   Future<void> removePlayer(SeasonPlayer player) async {
     DocumentReference doc =
-        Firestore.instance.collection("Seasons").document(uid);
+        Firestore.instance.collection(SEASONS_COLLECTION).document(uid);
     Map<String, dynamic> data = new Map<String, dynamic>();
     data[PLAYERS + "." + player.playerUid] = null;
     await doc.updateData(data);
@@ -143,13 +143,13 @@ class Season {
 
     data[PLAYERS + "." + player.playerUid + "." + SeasonPlayer._ROLE] =
         role.toString();
-    Firestore.instance.collection("Seasons").document(uid).updateData(data);
+    Firestore.instance.collection(SEASONS_COLLECTION).document(uid).updateData(data);
   }
 
   // Send an invite to a user for this season and team.
   Future<void> inviteUser(
       {String userId, String playername, String email}) async {
-    CollectionReference ref = Firestore.instance.collection("Invites");
+    CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     QuerySnapshot snapshot = await ref
         .where(Invite.EMAIL, isEqualTo: email)
@@ -192,7 +192,7 @@ class Season {
   }
 
   Future<void> _doInviteQuery() async {
-    CollectionReference ref = Firestore.instance.collection("Invites");
+    CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     _inviteSnapshot = ref
         .where(Invite.SEASONUID, isEqualTo: uid)

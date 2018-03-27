@@ -10,8 +10,6 @@ import 'package:timezone/timezone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_fuse/services/sqldata.dart';
 
-
-
 class FilterDetails {
   Set<String> teamUids = new Set<String>();
   Set<String> playerUids = new Set<String>();
@@ -22,44 +20,59 @@ class FilterDetails {
   TZDateTime endDate = new TZDateTime.now(local).add(new Duration(days: 30));
 }
 
-
 class UserDatabaseData {
+  static const num MAX_MESSAGES = 20;
+
+  // User id for us!
   String userUid;
-  Map<String, Player> _players = new Map<String, Player>();
-  Map<String, Team> _teams = new Map<String, Team>();
-  Map<String, Game> _games = new Map<String, Game>();
-  Map<String, Invite> _invites = new Map<String, Invite>();
+
+  Map<String, Player> _players = {};
+  Map<String, Team> _teams = {};
+  Map<String, Game> _games = {};
+  Map<String, Invite> _invites = {};
+  Map<String, Message> _messages = {};
 
   Stream<UpdateReason> teamStream;
   Stream<UpdateReason> gameStream;
   Stream<UpdateReason> playerStream;
   Stream<UpdateReason> inviteStream;
+  Stream<UpdateReason> messagesStream;
 
+  // Current loading status.
   bool _completedLoading = false;
   bool _loadedPlayers = false;
   bool _loadedTeams = false;
   bool _loadedGames = false;
   bool _loadedInvites = false;
+  bool _loadedReadMessages = false;
+  bool _loadedUnreadMessages = false;
 
   Map<String, Player> get players => _players;
   Map<String, Team> get teams => _teams;
   Map<String, Game> get games => _games;
   Map<String, Invite> get invites => _invites;
+  Map<String, Message> get messages => _messages;
+  int unreadMessageCount = 0;
 
-  bool get loading => _completedLoading;
+  bool get loadedDatabase => _completedLoading;
+  bool get loadedMessages => _loadedReadMessages && _loadedUnreadMessages;
 
   StreamController<UpdateReason> _teamController =
-  new StreamController<UpdateReason>();
+      new StreamController<UpdateReason>();
   StreamController<UpdateReason> _playerController =
-  new StreamController<UpdateReason>();
+      new StreamController<UpdateReason>();
   StreamController<UpdateReason> _gameController =
-  new StreamController<UpdateReason>();
+      new StreamController<UpdateReason>();
   StreamController<UpdateReason> _inviteController =
-  new StreamController<UpdateReason>();
+      new StreamController<UpdateReason>();
+  StreamController<UpdateReason> _messageController =
+      new StreamController<UpdateReason>();
 
   // From firebase.
   StreamSubscription<QuerySnapshot> _playerSnapshot;
   StreamSubscription<QuerySnapshot> _inviteSnapshot;
+  StreamSubscription<QuerySnapshot> _messageSnapshot;
+  StreamSubscription<QuerySnapshot> _readMessageSnapshot;
 
   static UserDatabaseData _instance;
   static Map<Object, dynamic> snapshotMapping = new Map<Object, dynamic>();
@@ -73,11 +86,12 @@ class UserDatabaseData {
     gameStream = _gameController.stream.asBroadcastStream();
     playerStream = _playerController.stream.asBroadcastStream();
     inviteStream = _inviteController.stream.asBroadcastStream();
+    messagesStream = _messageController.stream.asBroadcastStream();
   }
 
   Future<Invite> getInvite(String inviteUid) async {
     DocumentSnapshot doc = await Firestore.instance
-        .collection("Invites")
+        .collection(INVITE_COLLECTION)
         .document(inviteUid)
         .get();
     Invite invite = new Invite();
@@ -95,7 +109,7 @@ class UserDatabaseData {
       Invite invite, String playerUid, String name) async {
     // We add ourselves to the season.
     DocumentSnapshot doc = await Firestore.instance
-        .collection("Seasons")
+        .collection(SEASONS_COLLECTION)
         .document(invite.seasonUid)
         .get();
     if (doc.exists) {
@@ -112,7 +126,7 @@ class UserDatabaseData {
 
   Future<String> addPlayer(String name, Relationship rel) async {
     // We add ourselves to the season.
-    CollectionReference ref = Firestore.instance.collection("Players");
+    CollectionReference ref = Firestore.instance.collection(PLAYERS_COLLECTION);
     Player player = new Player();
     player.name = name;
     player.users = new Map<String, PlayerUser>();
@@ -123,8 +137,10 @@ class UserDatabaseData {
   }
 
   Future<Player> getPlayer(String playerId, {bool withProfile}) async {
-    DocumentSnapshot ref =
-    await Firestore.instance.collection("Players").document(playerId).get();
+    DocumentSnapshot ref = await Firestore.instance
+        .collection(PLAYERS_COLLECTION)
+        .document(playerId)
+        .get();
     if (ref.exists) {
       Player player = new Player();
       player.fromJSON(playerId, ref.data);
@@ -171,12 +187,13 @@ class UserDatabaseData {
       }
       if (details.eventType != null) {
         if (details.eventType != game.type) {
-          print ('not event');
+          print('not event');
           return false;
         }
       }
       if (!details.allGames) {
-        if (game.time < details.endDate.millisecondsSinceEpoch && game.time > details.startDate.millisecondsSinceEpoch) {
+        if (game.time < details.endDate.millisecondsSinceEpoch &&
+            game.time > details.startDate.millisecondsSinceEpoch) {
           print('not in range');
           return false;
         }
@@ -224,12 +241,108 @@ class UserDatabaseData {
     _playerController.add(UpdateReason.Update);
   }
 
-  void onSeasonUpdated(QuerySnapshot query) {
+  void _onUnreadMessagesUpdated(QuerySnapshot query) async {
+    SqlData sql = SqlData.instance;
+
+    // Fill in all the messages.
+    await Future.forEach(query.documents, (DocumentSnapshot doc) async {
+      MessageRecipient recipient;
+      // Update in place to keep the fetched and seen times.
+      recipient = new MessageRecipient();
+      recipient.fromJSON(doc.documentID, doc.data);
+
+      if (messages.containsKey(recipient.messageId)) {
+        Message mess = messages[recipient.messageId];
+        // Update just my recipient piece of this.
+        mess.recipients[recipient.userId] = recipient;
+        sql.updateElement(SqlData.MESSAGES_TABLE, doc.documentID,
+            mess.toJSON(includeMessage: true, forSQL: true));
+      } else {
+        // Otherwise we need to load it.
+        DocumentSnapshot ref = await Firestore.instance
+            .collection(MESSAGES_COLLECTION)
+            .document(recipient.messageId)
+            .get();
+        if (ref.exists) {
+          Message mess = new Message();
+          mess.recipients = {};
+          mess.fromJSON(ref.documentID, ref.data);
+          mess.recipients[recipient.userId] = recipient;
+          messages[mess.uid] = mess;
+          sql.updateElement(SqlData.MESSAGES_TABLE, doc.documentID,
+              mess.toJSON(includeMessage: true, forSQL: true));
+        }
+      }
+    });
+    unreadMessageCount = query.documents.length;
+    query.documentChanges.forEach((DocumentChange change) {
+      if (change.type == DocumentChangeType.removed) {
+        MessageRecipient rec = new MessageRecipient();
+        rec.fromJSON(change.document.documentID, change.document.data);
+        messages.remove(rec.messageId);
+        sql.deleteElement(SqlData.MESSAGES_TABLE, rec.messageId);
+      }
+    });
+    _loadedUnreadMessages = true;
+    print('Loaded unread');
+    _messageController.add(UpdateReason.Update);
+  }
+
+  void _onReadMessagesUpdated(QuerySnapshot query) async {
+    SqlData sql = SqlData.instance;
+
+    await Future.forEach(query.documents, (DocumentSnapshot doc) async {
+      MessageRecipient recipient;
+      // Update in place to keep the fetched and seen times.
+      recipient = new MessageRecipient();
+      recipient.fromJSON(doc.documentID, doc.data);
+
+      if (messages.containsKey(recipient.messageId)) {
+        Message mess = messages[recipient.messageId];
+        // Update just my recipient piece of this.
+        mess.recipients[recipient.userId] = recipient;
+        sql.updateElement(SqlData.MESSAGES_TABLE, doc.documentID,
+            mess.toJSON(includeMessage: true, forSQL: true));
+      } else {
+        // Otherwise we need to load it.
+        DocumentSnapshot ref = await Firestore.instance
+            .collection(MESSAGES_COLLECTION)
+            .document(recipient.messageId)
+            .get();
+        if (ref.exists) {
+          Message mess = new Message();
+          mess.recipients = {};
+          mess.fromJSON(ref.documentID, ref.data);
+          mess.recipients[recipient.userId] = recipient;
+          messages[mess.uid] = mess;
+          sql.updateElement(SqlData.MESSAGES_TABLE, doc.documentID,
+              mess.toJSON(includeMessage: true, forSQL: true));
+        }
+      }
+    });
+    query.documentChanges.forEach((DocumentChange change) {
+      if (change.type == DocumentChangeType.removed) {
+        MessageRecipient rec = new MessageRecipient();
+        rec.fromJSON(change.document.documentID, change.document.data);
+        messages.remove(rec.messageId);
+        sql.deleteElement(SqlData.MESSAGES_TABLE, rec.messageId);
+      }
+    });
+    unreadMessageCount = messages.keys
+        .where((String key) =>
+            messages[key].recipients[userUid].state == MessageState.Unread)
+        .length;
+    _loadedReadMessages = true;
+    print('Loaded read');
+    _messageController.add(UpdateReason.Update);
+  }
+
+  void onSeasonUpdated(QuerySnapshot query) async {
     Set<String> toDeleteSeasons;
     String teamUid;
     SqlData sql = SqlData.instance;
 
-    Future.forEach(query.documents, (doc) async {
+    await Future.forEach(query.documents, (doc) async {
       // Get the team from the season.
       teamUid = doc.data[Season.TEAMUID];
       Team team;
@@ -329,7 +442,7 @@ class UserDatabaseData {
     try {
       SqlData sql = SqlData.instance;
       Map<String, Map<String, dynamic>> data =
-      await sql.getAllElements(SqlData.TEAMS_TABLE);
+          await sql.getAllElements(SqlData.TEAMS_TABLE);
       Map<String, Team> newTeams = new Map<String, Team>();
       await Future.forEach(data.keys, (String uid) {
         Map<String, dynamic> input = data[uid];
@@ -372,6 +485,21 @@ class UserDatabaseData {
       });
       _invites = newInvites;
       _inviteController.add(UpdateReason.Update);
+
+      data = await sql.getAllElements(SqlData.MESSAGES_TABLE);
+      Map<String, Message> newMessages = {};
+      data.forEach((String uid, Map<String, dynamic> input) {
+        Message mess = new Message();
+        print("fluff $uid ${mess.teamUid}");
+        mess.fromJSON(uid, input);
+        newMessages[uid] = mess;
+      });
+      _messages = newMessages;
+      unreadMessageCount = _messages.keys
+          .where((String key) =>
+              _messages[key].recipients[userUid].state == MessageState.Unread)
+          .length;
+      _messageController.add(UpdateReason.Update);
     } catch (e) {
       // Any exception and we cleanup all the data to nothing.
       print('Caught exception $e');
@@ -384,16 +512,39 @@ class UserDatabaseData {
     this.userUid = uid;
     // The uid everything is based off.
     Query collection = Firestore.instance
-        .collection("Players")
+        .collection(PLAYERS_COLLECTION)
         .where(Player.USERS + "." + uid + "." + ADDED, isEqualTo: true);
     _playerSnapshot = collection.snapshots.listen(this._onPlayerUpdated);
     Query inviteCollection = Firestore.instance
-        .collection("Invites")
+        .collection(INVITE_COLLECTION)
         .where(Invite.EMAIL, isEqualTo: email);
     inviteCollection.getDocuments().then((QuerySnapshot query) {
       this._onInviteUpdated(query);
     });
     _inviteSnapshot = inviteCollection.snapshots.listen(this._onInviteUpdated);
+
+    Query unreadQuery = Firestore.instance
+        .collection(MESSAGE_RECIPIENTS_COLLECTION)
+        .where(MessageRecipient.USERID, isEqualTo: uid)
+        .where(MessageRecipient.STATE,
+            isEqualTo: MessageState.Unread.toString());
+    unreadQuery.getDocuments().then((QuerySnapshot results) {
+      print("Got some messages $results");
+      this._onUnreadMessagesUpdated(results);
+    });
+    _messageSnapshot =
+        unreadQuery.snapshots.listen(this._onUnreadMessagesUpdated);
+    Query readQuery = Firestore.instance
+        .collection(MESSAGE_RECIPIENTS_COLLECTION)
+        .where(MessageRecipient.USERID, isEqualTo: uid)
+        .orderBy(MessageRecipient.SENTAT)
+        .limit(MAX_MESSAGES);
+    readQuery.getDocuments().then((QuerySnapshot results) {
+      print("Got some read $results");
+      this._onReadMessagesUpdated(results);
+    });
+    _readMessageSnapshot =
+        readQuery.snapshots.listen(this._onReadMessagesUpdated);
   }
 
   void close() {
@@ -407,6 +558,14 @@ class UserDatabaseData {
       _inviteSnapshot.cancel();
       _inviteSnapshot = null;
       inviteStream = null;
+    }
+    if (_messageSnapshot != null) {
+      _messageSnapshot.cancel();
+      _messageSnapshot = null;
+    }
+    if (_readMessageSnapshot != null) {
+      _readMessageSnapshot.cancel();
+      _readMessageSnapshot = null;
     }
     if (_teamController != null) {
       _teamController.close();
@@ -427,6 +586,11 @@ class UserDatabaseData {
       _gameController.close();
       _gameController = null;
       gameStream = null;
+    }
+    if (_messageController != null) {
+      _messageController.close();
+      _messageController = null;
+      messagesStream = null;
     }
     _teams.forEach((String key, Team value) {
       value.close();

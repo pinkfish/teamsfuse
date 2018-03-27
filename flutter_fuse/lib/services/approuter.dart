@@ -17,6 +17,9 @@ import 'package:flutter_fuse/screens/invites/invitelist.dart';
 import 'package:flutter_fuse/screens/invites/addinvite.dart';
 import 'package:flutter_fuse/screens/team/playerdetails.dart';
 import 'package:flutter_fuse/screens/settings/editplayer.dart';
+import 'package:flutter_fuse/screens/message/messages.dart';
+import 'package:flutter_fuse/screens/message/addmessage.dart';
+import 'package:flutter_fuse/screens/message/messageview.dart';
 
 class AppRouter {
   static Router myRouter;
@@ -94,7 +97,31 @@ class AppRouter {
     router.define("/AddTraining",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AddTrainingScreen()));
+                new AddTrainingScreen()));
+    router.define("/Messages",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new MessagesScreen()));
+    router.define("/AddMessage",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new AddMessageScreen()));
+    router.define("/ShowMessage/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new ShowMessageScreen(messageUid: vals["id"][0])));
+    router.define("/AddMessageTeam/:team",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new AddMessageScreen(teamUid: vals["team"])));
+    router.define("/AddMessagePlayer/:team/:season/:player",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new AddMessageScreen(
+                  teamUid: vals["team"],
+                  seasonUid: vals["season"],
+                  playerUid: vals["player"],
+                )));
     return router;
   }
 }

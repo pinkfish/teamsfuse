@@ -65,7 +65,7 @@ class GameListState extends State<GameList> {
     List<Widget> widgets = new List<Widget>();
 
     // Only show the loading in the main bit if we have no games.
-    if (!UserDatabaseData.instance.loading && games.length == 0) {
+    if (!UserDatabaseData.instance.loadedDatabase && games.length == 0) {
       widgets.add(
         new ListTile(
           leading: const CircularProgressIndicator(),

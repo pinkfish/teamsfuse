@@ -26,5 +26,15 @@ const String NOTES = 'notes';
 const String ADDED = 'added';
 const String PHOTOURL = 'photourl';
 
+// Collection definitions for firestore.
+const String MESSAGES_COLLECTION = "Messages";
+const String MESSAGE_RECIPIENTS_COLLECTION = "MessageRecipients";
+const String TEAMS_COLLECTION = "Teams";
+const String GAMES_COLLECTION = "Games";
+const String SEASONS_COLLECTION = "Seasons";
+const String OPPONENT_COLLECTION = "Opponents";
+const String INVITE_COLLECTION = "Invites";
+const String PLAYERS_COLLECTION = "Players";
+
 enum UpdateReason { Delete, Update }
 

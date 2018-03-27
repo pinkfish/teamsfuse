@@ -77,6 +77,6 @@ class Invite {
   }
 
   Future<void> firestoreDelete() {
-    return Firestore.instance.collection("Invites").document(uid).delete();
+    return Firestore.instance.collection(INVITE_COLLECTION).document(uid).delete();
   }
 }

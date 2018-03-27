@@ -57,7 +57,7 @@ class AddGameScreenState extends State<AddGameScreen> {
         if (!_gameFormKey.currentState.validate()) {
           detailsStepState = StepState.error;
           createStepStage = StepState.disabled;
-          _showInSnackBar('Please fix the errors in red before submitting.');
+          _showInSnackBar(Messages.of(context).formerror);
           _gameFormKey.currentState.autovalidate = true;
           return false;
         }
@@ -151,7 +151,7 @@ class AddGameScreenState extends State<AddGameScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new TeamPicker(this._teamChanged),
+                  new TeamPicker(onChanged: this._teamChanged),
                 ],
               ),
             ),

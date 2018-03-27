@@ -1,35 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
 class TeamPicker extends StatefulWidget {
   final ValueChanged<String> onChanged;
+  final String teamUid;
 
-  TeamPicker(this.onChanged);
+  TeamPicker({ @required this.onChanged,this.teamUid});
 
   TeamPickerState createState() {
-    return new TeamPickerState(onChanged);
+    return new TeamPickerState();
   }
 }
 
 class TeamPickerState extends State<TeamPicker> {
-  final ValueChanged<String> onChanged;
   String _value;
   StreamSubscription<UpdateReason> teamStresm;
 
-  TeamPickerState(this.onChanged) {
-    teamStresm = UserDatabaseData.instance.teamStream.listen((update) {
-      setState(() {});
-    });
-  }
-
-
+  TeamPickerState();
   @override
   void dispose() {
     super.dispose();
     teamStresm.cancel();
     teamStresm = null;
+  }
+
+  void initState() {
+    teamStresm = UserDatabaseData.instance.teamStream.listen((update) {
+      setState(() {});
+    });
+    _value = widget.teamUid;
   }
 
   List<DropdownMenuItem> _buildItems() {
@@ -54,16 +56,18 @@ class TeamPickerState extends State<TeamPicker> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           new Expanded(
-              flex: 1,
-              child: new DropdownButton(
-                  hint: new Text(Messages.of(context).teamselect),
-                  items: _buildItems(),
-                  value: this._value,
-                  onChanged: (dynamic val) {
-                    _value = val;
-                    this.onChanged(val);
-                    return val;
-                  }))
+            flex: 1,
+            child: new DropdownButton(
+              hint: new Text(Messages.of(context).teamselect),
+              items: _buildItems(),
+              value: this._value,
+              onChanged: (dynamic val) {
+                _value = val;
+                this.widget.onChanged(val);
+                return val;
+              },
+            ),
+          ),
         ],
       ),
     );

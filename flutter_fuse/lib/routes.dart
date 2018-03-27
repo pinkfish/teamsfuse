@@ -10,6 +10,7 @@ import 'package:flutter_fuse/screens/login/signup.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
@@ -55,11 +56,11 @@ class Routes {
     if (user != null) {
       final data = await rootBundle.load('assets/timezone/2018c.tzf');
       final String currentTimeZone = await Timezone.getLocalTimezone();
-      await Timezone.getPlacesDialog();
       await initializeDatabase(data.buffer.asUint8List());
       setLocalLocation(getLocation(currentTimeZone));
       UserDatabaseData.load(user.uid, user.email);
       print('$currentTimeZone ${local.toString()}');
+
     } else {
       UserDatabaseData.clear();
     }

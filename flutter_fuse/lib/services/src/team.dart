@@ -72,9 +72,9 @@ class Opponent {
   Future<void> updateFirestore() async {
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance
-        .collection("Teams")
+        .collection(TEAMS_COLLECTION)
         .document(teamUid)
-        .getCollection("Opponents");
+        .getCollection(OPPONENT_COLLECTION);
     if (uid == '' || uid == null) {
       // Add the game.
       DocumentReference doc = await ref.add(toJSON());
@@ -234,7 +234,7 @@ class Team {
   Future<void> setupSnap() async {
     if (_teamSnapshot == null) {
       _teamSnapshot = Firestore.instance
-          .collection("Teams")
+          .collection(TEAMS_COLLECTION)
           .document(uid)
           .snapshots
           .listen(this._onTeamUpdated);
@@ -242,9 +242,9 @@ class Team {
 
     if (_opponentSnapshot == null) {
       CollectionReference opCollection = Firestore.instance
-          .collection("Teams")
+          .collection(TEAMS_COLLECTION)
           .document(uid)
-          .getCollection("Opponents");
+          .getCollection(OPPONENT_COLLECTION);
       QuerySnapshot query = await opCollection.getDocuments();
 
       this._onOpponentUpdated(query);
@@ -254,7 +254,7 @@ class Team {
 
     if (_gameSnapshot == null) {
       Query gameQuery = Firestore.instance
-          .collection("Games")
+          .collection(GAMES_COLLECTION)
           .where(Game.TEAMUID, isEqualTo: uid);
       QuerySnapshot query = await gameQuery.getDocuments();
       UserDatabaseData.instance.onGameUpdated(this.uid, query);
@@ -292,7 +292,7 @@ class Team {
 
   Future<void> updateFirestore() async {
     // Add or update this record into the database.
-    CollectionReference ref = Firestore.instance.collection("Teams");
+    CollectionReference ref = Firestore.instance.collection(TEAMS_COLLECTION);
     if (uid == '' || uid == null) {
       // Add the game.
       DocumentReference doc = await ref.add(toJSON());

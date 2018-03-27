@@ -21,6 +21,7 @@ class SqlData {
   static const String INVITES_TABLE = "Invites";
   static const String OPPONENTS_TABLE = "Opponents";
   static const String PROFILE_TABLE = "Profile";
+  static const String MESSAGES_TABLE = "Messages";
 
   static const String INDEX = "fluff";
   static const String DATA = "data";
@@ -49,8 +50,18 @@ class SqlData {
   Future<void> initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     _path = join(documentsDirectory.path, _DBNAME);
-    _database = await openDatabase(_path, version: 1,
-        onCreate: (Database db, int version) async {
+    _database = await openDatabase(_path, version: 2,
+        onUpgrade: (Database db, int oldVersion, int newVersion) async {
+      if (newVersion == 2) {
+        await db.execute("CREATE TABLE IF NOT EXISTS " +
+            MESSAGES_TABLE +
+            " (" +
+            INDEX +
+            " text PRIMARY KEY, " +
+            DATA +
+            " text NOT NULL);");
+      }
+    }, onCreate: (Database db, int version) async {
       await Future.forEach(_TABLES, (String table) async {
         print('Made db $table');
         return await db.execute("CREATE TABLE IF NOT EXISTS " +

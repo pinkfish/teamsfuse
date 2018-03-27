@@ -6,7 +6,9 @@ import 'package:flutter_fuse/widgets/invites/invitecard.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/fabdialer.dart';
 import 'package:flutter_fuse/widgets/util/fabminimenuitem.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
 import 'dart:async';
 
@@ -19,6 +21,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription<UpdateReason> _subscription;
+  StreamSubscription<UpdateReason> _teamSubscription;
+  StreamSubscription<UpdateReason> _messagaesSubscription;
   FilterDetails _details = new FilterDetails();
 
   void _showInvites(BuildContext context) {
@@ -39,25 +43,96 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     Messages messages = Messages.of(context);
+    IconData badge;
+
+    switch (UserDatabaseData.instance.unreadMessageCount) {
+      case 0:
+        badge = null;
+        break;
+      case 1:
+        badge = CommunityIcons.numeric1box;
+        break;
+      case 2:
+        badge = CommunityIcons.numeric2box;
+        break;
+      case 3:
+        badge = CommunityIcons.numeric3box;
+        break;
+      case 4:
+        badge = CommunityIcons.numeric4box;
+        break;
+      case 5:
+        badge = CommunityIcons.numeric5box;
+        break;
+      case 6:
+        badge = CommunityIcons.numeric6box;
+        break;
+      case 7:
+        badge = CommunityIcons.numeric7box;
+        break;
+      case 8:
+        badge = CommunityIcons.numeric8box;
+        break;
+      default:
+        badge = CommunityIcons.numeric9plusbox;
+        break;
+    }
+    Widget messagesIcon;
+    if (badge != null) {
+      messagesIcon = new Stack(
+        children: <Widget>[
+          const Icon(
+            Icons.mail,
+            color: Colors.white,
+          ),
+          new Positioned(
+            // draw a red marble
+            top: 0.0,
+            right: 0.0,
+            child: new Icon(
+              badge,
+              size: 15.0,
+              color: Colors.redAccent,
+            ),
+          ),
+        ],
+      );
+    } else {
+      messagesIcon = const Icon(
+        Icons.mail,
+        color: Colors.white,
+      );
+    }
+    List<Widget> actions = [
+      new IconButton(
+        icon: const Icon(Icons.tune),
+        onPressed: _showFilterDialog,
+      ),
+      new FlatButton(
+        onPressed: () => Navigator.pushNamed(context, "Messages"),
+        child: messagesIcon,
+      ),
+    ];
+    if (!UserDatabaseData.instance.loadedDatabase) {
+      actions.add(
+        new CircularProgressIndicator(
+          valueColor: new AlwaysStoppedAnimation<Color>(Colors.redAccent),
+        ),
+      );
+    }
 
     return new Scaffold(
         appBar: new AppBar(
           title: new Text(messages.title),
-          leading: UserDatabaseData.instance.loading
-              ? new CircularProgressIndicator()
-              : null,
-          actions: <Widget>[
-            new IconButton(
-              icon: const Icon(Icons.tune),
-              onPressed: _showFilterDialog,
-            )
-          ],
+          actions: actions,
         ),
         drawer: new FusedDrawer(),
         body: new Column(
           children: <Widget>[
             new Expanded(
-              child: new SingleChildScrollView(child: new GameList(_details)),
+              child: new SingleChildScrollView(
+                child: new GameList(_details),
+              ),
             ),
             new GestureDetector(
               onTap: () {
@@ -69,6 +144,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         floatingActionButton: new FabDialer(
           menu: <FabMiniMenuItemWidget>[
+            new FabMiniMenuItemWidget(
+              icon: const Icon(Icons.mail),
+              fabColor: Colors.lightBlueAccent,
+              text: messages.newmail,
+              onPressed: () => Navigator.pushNamed(context, "AddMessage"),
+            ),
             new FabMiniMenuItemWidget(
               icon: const Icon(Icons.calendar_today),
               fabColor: Colors.blueAccent,
@@ -98,11 +179,26 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _subscription = UserDatabaseData.instance.gameStream
         .listen((UpdateReason reason) => setState(() {}));
+    _teamSubscription = UserDatabaseData.instance.teamStream
+        .listen((UpdateReason reason) => setState(() {}));
+    _messagaesSubscription= UserDatabaseData.instance.messagesStream
+        .listen((UpdateReason reason) => setState(() {}));
   }
 
   @override
   void dispose() {
     super.dispose();
-    _subscription.cancel();
+    if (_subscription != null) {
+      _subscription.cancel();
+      _subscription = null;
+    }
+    if (_teamSubscription != null) {
+      _teamSubscription.cancel();
+      _teamSubscription = null;
+    }
+    if (_messagaesSubscription != null) {
+      _messagaesSubscription.cancel();
+      _messagaesSubscription = null;
+    }
   }
 }

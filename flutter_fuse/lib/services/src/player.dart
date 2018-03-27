@@ -83,7 +83,7 @@ class Player {
   void setupSnap() {
     // Teams.
     CollectionReference ref = Firestore.instance
-        .collection("Seasons")
+        .collection(SEASONS_COLLECTION)
         .where(Season.PLAYERS + '.' + uid + '.' + ADDED, isEqualTo: true)
         .reference();
     UserDatabaseData.snapshotMapping[this] =
@@ -113,7 +113,7 @@ class Player {
 
   Future<void> updateFirestore() async {
     // Add or update this record into the database.
-    CollectionReference ref = Firestore.instance.collection("Players");
+    CollectionReference ref = Firestore.instance.collection(PLAYERS_COLLECTION);
     if (uid == '' || uid == null) {
       // Add the game.
       DocumentReference doc = await ref.add(toJSON());
@@ -134,7 +134,7 @@ class Player {
     Map<String, String> data = new Map<String, String>();
     data[PHOTOURL] = photoUrl;
     await Firestore.instance
-        .collection("Players")
+        .collection(PLAYERS_COLLECTION)
         .document(uid)
         .updateData(data);
     return snapshot.downloadUrl;

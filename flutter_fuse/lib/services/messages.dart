@@ -72,6 +72,15 @@ class Messages {
     );
   }
 
+  String get newmail {
+    return Intl.message("New message",
+        name: "New message in the teamfuse system");
+  }
+
+  String get newbuttontext {
+    return Intl.message("NEW", name: "New button text in the system");
+  }
+
   String get email {
     return Intl.message('Email', name: 'Email input field');
   }
@@ -108,6 +117,15 @@ class Messages {
       name: 'Edit Game',
       desc: 'Edit Game help text for button',
     );
+  }
+
+  String get where {
+    return Intl.message('Where', name: 'Where the game is');
+  }
+
+  String get subject {
+    return Intl.message("Subject",
+        name: "Subject for the message, title of input field");
   }
 
   String get gamenoteshint {
@@ -219,9 +237,9 @@ class Messages {
         name: 'Drop down for  the all teams result');
   }
 
-  String get allplayers {
-    return Intl.message("All players",
-        name: 'Drop down for  the all players result');
+  String get everyone {
+    return Intl.message("Everyone",
+        name: 'Message to mean everyone in the team (coaches + everyone)');
   }
 
   String get allgames {
@@ -856,14 +874,31 @@ class Messages {
         desc: 'In a text edit box to send a message to the team');
   }
 
+  String get includemyself {
+    return Intl.message('Send to yourself',
+        desc: 'If the message should also be sent to ourselves');
+  }
+
   String get sendmessage {
     return Intl.message('Send message',
         desc: 'In a text edit box to send a message to a user');
   }
 
+  String get sendmessagebuttontext {
+    return Intl.message('SEND', desc: 'Button to send the message');
+  }
+
   String get nomessages {
     return Intl.message('No Messages',
         desc: 'In a text edit box to send a message to the team');
+  }
+
+  String get archivemessage {
+    return Intl.message("Archive", name: "Archive message button");
+  }
+
+  String get deletemessage {
+    return Intl.message("Delete", name: "Delete message button");
   }
 
   String get gameend {
@@ -916,8 +951,7 @@ class Messages {
       return Intl.message('Practice $time - $endTime',
           desc: 'Practice title in game list');
     }
-    return Intl.message('Practice $time',
-        desc: 'Practice title in game list');
+    return Intl.message('Practice $time', desc: 'Practice title in game list');
   }
 
   String trainingtitlenow(String time, String endTime) {

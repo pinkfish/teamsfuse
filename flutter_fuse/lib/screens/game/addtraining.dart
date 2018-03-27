@@ -276,7 +276,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new TeamPicker(this._teamChanged),
+                  new TeamPicker(onChanged: this._teamChanged),
                 ],
               ),
             ),

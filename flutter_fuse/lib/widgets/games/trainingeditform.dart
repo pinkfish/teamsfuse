@@ -4,7 +4,7 @@ import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:map_view/map_view.dart';
+import 'package:flutter_fuse/services/map.dart';
 import 'package:timezone/timezone.dart';
 import 'dart:async';
 import 'package:uuid/uuid.dart';
@@ -12,8 +12,9 @@ import 'package:uuid/uuid.dart';
 class TrainingEditForm extends StatefulWidget {
   final Game game;
 
-  TrainingEditForm({this.game, GlobalKey<TrainingEditFormState> key})
-      : super(key: key);
+  TrainingEditForm({Game game, GlobalKey<TrainingEditFormState> key})
+      : this.game = new Game.copy(game),
+        super(key: key);
 
   @override
   TrainingEditFormState createState() {
@@ -57,13 +58,8 @@ class TrainingEditFormState extends State<TrainingEditForm> {
               _atDate.minute)
           .millisecondsSinceEpoch;
       widget.game.seriesId = seriesId;
-      DateTime end = new TZDateTime(
-          getLocation(widget.game.timezone),
-          _atEnd.year,
-          _atEnd.month,
-          _atEnd.day,
-          _atEnd.hour,
-          _atEnd.minute);
+      DateTime end = new TZDateTime(getLocation(widget.game.timezone),
+          _atEnd.year, _atEnd.month, _atEnd.day, _atEnd.hour, _atEnd.minute);
       if (end.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
         end.add(new Duration(days: 1));
       }
@@ -82,6 +78,18 @@ class TrainingEditFormState extends State<TrainingEditForm> {
   void _updateTimes(Duration diff) {
     _endTimeKey.currentState
         .setValue(_endTimeKey.currentState.value.subtract(diff));
+  }
+
+  void _showPlacesPicker() async {
+    LocationAndPlace place = await MapData.instance.getPlaceAndLocation();
+    if (place != null) {
+      // Yay!
+      setState(() {
+        widget.game.place.name = place.details.name;
+        widget.game.place.address = place.details.address;
+        widget.game.timezone = place.loc.name;
+      });
+    }
   }
 
   @override
@@ -135,25 +143,15 @@ class TrainingEditFormState extends State<TrainingEditForm> {
                   _atEnd = value;
                 },
               ),
-              new FlatButton(
-                onPressed: () {
-                  MapView
-                      .openPlacePickerModal()
-                      .then((Map<String, dynamic> val) {
-                    print('places ret $val');
-                  }).catchError((Object err) {
-                    print('$err Error!');
-                  });
-                },
-                child: new ListTile(
-                  leading: const Icon(Icons.place),
-                  title: new Text(widget.game.place.name == null
-                      ? messages.unknown
-                      : widget.game.place.name),
-                  subtitle: new Text(widget.game.place.address == null
-                      ? messages.unknown
-                      : widget.game.place.address),
-                ),
+              new ListTile(
+                onTap: _showPlacesPicker,
+                leading: const Icon(Icons.place),
+                title: new Text(widget.game.place.name == null
+                    ? messages.unknown
+                    : widget.game.place.name),
+                subtitle: new Text(widget.game.place.address == null
+                    ? messages.unknown
+                    : widget.game.place.address),
               ),
               new TextFormField(
                 initialValue: widget.game.notes,

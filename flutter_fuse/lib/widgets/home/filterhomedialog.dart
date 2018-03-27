@@ -93,7 +93,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     Messages messages = Messages.of(context);
     String pickerText = "";
     if (widget.details.playerUids.length == 0) {
-      pickerText = messages.allplayers;
+      pickerText = messages.everyone;
     } else {
       pickerText = widget.details.playerUids
           .map((String uid) => UserDatabaseData.instance.players[uid].name)
