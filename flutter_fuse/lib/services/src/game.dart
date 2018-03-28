@@ -32,6 +32,7 @@ class GameResultDetails {
     ptsAgainst = 0;
     ptsFor = 0;
     result = GameResult.Unknown;
+    inProgress = GameInProgress.NotStarted;
   }
 
   GameResultDetails.copy(GameResultDetails copy) {

@@ -8,14 +8,50 @@ class ShowMessageScreen extends StatelessWidget {
 
   ShowMessageScreen({this.messageUid});
 
-  void _archiveMessage(Context context) {
+  void _archiveMessage(BuildContext context) {
+    if (UserDatabaseData.instance.messages.containsKey(messageUid)) {
+      if (UserDatabaseData.instance.messages[messageUid].recipients
+          .containsKey(UserDatabaseData.instance.userUid)) {
+        UserDatabaseData.instance.messages[messageUid]
+            .recipients[UserDatabaseData.instance.userUid]
+            .updateMessageState(MessageState.Archived);
+        Navigator.pop(context);
+      }
+    }
+  }
 
+  void _deleteMessage(BuildContext context) {
+    if (UserDatabaseData.instance.messages.containsKey(messageUid)) {
+      if (UserDatabaseData.instance.messages[messageUid].recipients
+          .containsKey(UserDatabaseData.instance.userUid)) {
+        UserDatabaseData.instance.messages[messageUid]
+            .recipients[UserDatabaseData.instance.userUid]
+            .deleteRecipient();
+        Navigator.pop(context);
+      }
+    }
+  }
+
+  void _readMessage(BuildContext context) {
+    if (UserDatabaseData.instance.messages.containsKey(messageUid)) {
+      if (UserDatabaseData.instance.messages[messageUid].recipients
+          .containsKey(UserDatabaseData.instance.userUid)) {
+        if (UserDatabaseData.instance.messages[messageUid]
+                .recipients[UserDatabaseData.instance.userUid].state ==
+            MessageState.Unread) {
+          UserDatabaseData.instance.messages[messageUid]
+              .recipients[UserDatabaseData.instance.userUid]
+              .updateMessageState(MessageState.Read);
+        }
+      }
+    }
   }
 
   Widget _showMessage(BuildContext context) {
     Messages messages = Messages.of(context);
     Message mess = UserDatabaseData.instance.messages[messageUid];
     List<Widget> kids = [];
+    _readMessage(context);
     kids.add(
       new ListTile(
         leading: const Icon(Icons.subject),
@@ -65,12 +101,12 @@ class ShowMessageScreen extends StatelessWidget {
       new Row(
         children: <Widget>[
           new FlatButton(
-            onPressed: _archiveMessage,
+            onPressed: () => _archiveMessage(context),
             child: new Text(messages.archivemessage),
             textColor: Theme.of(context).accentColor,
           ),
           new FlatButton(
-            onPressed: _deleteMessage,
+            onPressed: () => _deleteMessage(context),
             child: new Text(messages.deletemessage),
             textColor: Theme.of(context).accentColor,
           ),

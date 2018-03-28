@@ -44,11 +44,11 @@ class AppRouter {
     router.define("/EditProfile/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditProfileScreen(vals["id"])));
+                new EditProfileScreen(vals["id"][0])));
     router.define("/EditPlayer/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditPlayerScreen(playerUid: vals["id"])));
+                new EditPlayerScreen(playerUid: vals["id"][0])));
     router.define("/Settings",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -64,15 +64,15 @@ class AppRouter {
     router.define("/AddInvite/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddInviteScreen(vals["id"])));
+                new AddInviteScreen(vals["id"][0])));
     router.define("/Team/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new TeamScreen(vals["id"])));
+                new TeamScreen(vals["id"][0])));
     router.define("/EditTeam/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditTeamScreen(vals["id"])));
+                new EditTeamScreen(vals["id"][0])));
     router.define("/AddPlayer/:team/:season",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -85,11 +85,11 @@ class AppRouter {
     router.define("/EditGame/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditGameScreen(vals["id"])));
+                new EditGameScreen(vals["id"][0])));
     router.define("/Game/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new GameDetailsScreen(vals["id"])));
+                new GameDetailsScreen(vals["id"][0])));
     router.define("/AddGame",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
