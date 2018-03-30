@@ -3,6 +3,8 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/games/gameeditform.dart';
+import 'package:flutter_fuse/widgets/games/gamedetails.dart';
+import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
 
 class AddGameScreen extends StatefulWidget {
   AddGameScreen();
@@ -32,7 +34,11 @@ class AddGameScreenState extends State<AddGameScreen> {
   }
 
   Widget _buildForm(BuildContext context) {
-    return new GamEditForm(_initGame, _gameFormKey);
+    return new GameEditForm(_initGame, _gameFormKey);
+  }
+
+  Widget _buildSummary(BuildContext context) {
+    return new GameDetails(_initGame, adding: true,);
   }
 
   bool _leaveCurrentState(bool backwards) {
@@ -40,7 +46,7 @@ class AddGameScreenState extends State<AddGameScreen> {
       // Check to make sure a team is picked.
       case 0:
         if (_teamUid == null) {
-          print('teamuid ${_gameFormKey.currentState.game.teamUid}');
+          print('teamuid ${_gameFormKey.currentState.widget.game.teamUid}');
           teamStepState = StepState.error;
           return false;
         }
@@ -62,6 +68,7 @@ class AddGameScreenState extends State<AddGameScreen> {
           return false;
         }
         _gameFormKey.currentState.save();
+        _initGame = _gameFormKey.currentState.finalGameResult;
         detailsStepState = StepState.complete;
         createStepStage = StepState.complete;
         break;
@@ -79,12 +86,13 @@ class AddGameScreenState extends State<AddGameScreen> {
           currentStep++;
         } else {
           // Write the game out.
-          _gameFormKey.currentState
-              .validateAndSaveToFirebase()
-              .then((bool result) {
-            if (result) {
-              Navigator.pop(context);
-            }
+          _initGame.updateFirestore().then((void h) {
+            Navigator.pop(context);
+          }).catchError((Error e) {
+            showDialog(context: context, child: new AlertDialog(
+              title: new Text("Error"),
+              content: new Text("Error saving the game"),
+            ));
           });
         }
       });
@@ -116,7 +124,7 @@ class AddGameScreenState extends State<AddGameScreen> {
     _initGame.homegame = false;
     _initGame.uniform = '';
     _initGame.notes = '';
-   }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +137,7 @@ class AddGameScreenState extends State<AddGameScreen> {
       ),
       body: new Container(
         padding: new EdgeInsets.all(16.0),
-        child: new Stepper(
+        child: new StepperAlwaysVisible(
           type: StepperType.horizontal,
           currentStep: this.currentStep,
           onStepContinue: () {
@@ -167,7 +175,7 @@ class AddGameScreenState extends State<AddGameScreen> {
               isActive: _gameFormKey != null &&
                   _gameFormKey.currentState != null &&
                   _gameFormKey.currentState.validate(),
-              content: new Text('Stuff'),
+              content: this._buildSummary(context),
             )
           ],
         ),

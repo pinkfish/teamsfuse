@@ -49,6 +49,8 @@ class InviteCardState extends State<InviteCard> {
       return card;
     }
 
-    return new Container();
+    return new Container(
+      child: new Text("Fluff"),
+    );
   }
 }

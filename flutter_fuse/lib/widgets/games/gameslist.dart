@@ -7,6 +7,7 @@ import 'dart:async';
 
 class GameList extends StatefulWidget {
   FilterDetails details;
+  DateTime nowTime = new DateTime.now();
 
   GameList(this.details);
 
@@ -16,9 +17,17 @@ class GameList extends StatefulWidget {
   }
 }
 
+class GameOrHeader {
+  GameOrHeader({this.game, this.header});
+  Game game;
+  String header;
+}
+
 class GameListState extends State<GameList> {
   StreamSubscription<UpdateReason> _updateStream;
-  Iterable<Game> _listToShow;
+  Set<num> _headerIndexes = new Set<num>();
+  List<Game> _listToShow;
+  ScrollController _scrollController = new ScrollController();
 
   @override
   void initState() {
@@ -28,19 +37,28 @@ class GameListState extends State<GameList> {
       UserDatabaseData.instance
           .getGames(widget.details)
           .then((Iterable<Game> res) {
+        List<Game> games = res.toList();
+        games.sort((a, b) => a.time.compareTo(b.time));
         setState(() {
-          _listToShow = res;
+          _listToShow = games;
+          _headerIndexes = new Set<num>();
         });
       });
     });
     UserDatabaseData.instance
         .getGames(widget.details)
         .then((Iterable<Game> res) {
+      List<Game> games = res.toList();
+      games.sort((a, b) => a.time.compareTo(b.time));
       setState(() {
-        _listToShow = res;
+        _listToShow = games;
+        _headerIndexes = new Set<num>();
       });
     });
     super.initState();
+    _scrollController.addListener(() {
+      print('scroll pos ${_scrollController.position}');
+    });
   }
 
   @override
@@ -50,66 +68,82 @@ class GameListState extends State<GameList> {
     _updateStream = null;
   }
 
-  Widget _buildGames(BuildContext context, AsyncSnapshot<UpdateReason> reason) {
-    if (_listToShow == null) {
-      return new ListTile(
-        leading: const CircularProgressIndicator(),
-        title: new Text(Messages.of(context).loading),
-      );
-    }
-
-    // Find the games.
-    List<Game> games = _listToShow.toList();
-    games.sort((a, b) => a.time.compareTo(b.time));
-    DateTime time = new DateTime.fromMicrosecondsSinceEpoch(0);
-    List<Widget> widgets = new List<Widget>();
-
-    // Only show the loading in the main bit if we have no games.
-    if (!UserDatabaseData.instance.loadedDatabase && games.length == 0) {
-      widgets.add(
-        new ListTile(
-          leading: const CircularProgressIndicator(),
-          title: new Text(Messages.of(context).loading),
-        ),
-      );
-    }
-
-    games.forEach((game) {
-      if (time.year != game.tzTime.year ||
-          time.month != game.tzTime.month ||
-          time.day != game.tzTime.day) {
-        // Put in the header.
-        String header =
-            MaterialLocalizations.of(context).formatMediumDate(game.tzTime);
-        time = game.tzTime;
-        Theme.of(context).textTheme.subhead;
-        widgets.add(new ListTile(
-          title: new Text(header, style: Theme.of(context).textTheme.headline),
-        ));
-      }
-      widgets.add(new GameCard(game));
-    });
-
-    if (games.isEmpty) {
-      if (UserDatabaseData.instance.games.length > 0) {} else {
-        widgets.add(
-          new ListTile(
-            leading: const Icon(Icons.tune),
-            title: new Text(Messages.of(context).nogamesfiltered),
-          ),
-        );
-
-        widgets.add(new EmptyGameList());
-      }
-    }
-
-    return new Column(children: widgets);
-  }
-
   @override
   Widget build(BuildContext context) {
-    return new StreamBuilder(
-        stream: UserDatabaseData.instance.gameStream,
-        builder: this._buildGames);
+    if (UserDatabaseData.instance.loadedDatabase &&
+        (_listToShow == null || _listToShow.length == 0)) {
+      return new SliverToBoxAdapter(
+        child: new EmptyGameList(),
+      );
+    }
+    return new SliverList(
+      delegate: new SliverChildBuilderDelegate(
+        (BuildContext context, int index) {
+          print('Render index $index');
+          if (_listToShow != null) {
+            int gameIndex = (index / 2).toInt();
+            if (_listToShow.length > gameIndex) {
+              Game game = _listToShow[gameIndex];
+
+              if (index % 2 == 0) {
+                // Header!
+                DateTime time = game.tzTime;
+                bool showHeader = gameIndex == 0;
+                bool showYear = false;
+                if (gameIndex > 0) {
+                  DateTime lastTime = _listToShow[gameIndex - 1].tzTime;
+                  if (lastTime.day != time.day ||
+                      lastTime.year != time.year ||
+                      lastTime.month != time.month) {
+                    showHeader = true;
+                  }
+                }
+                print('$time ${widget.nowTime}');
+                if (time.year != widget.nowTime.year) {
+                  showYear = true;
+                }
+
+                if (showHeader) {
+                  String textToShow;
+                  if (showYear) {
+                    textToShow = MaterialLocalizations
+                            .of(context)
+                            .formatMediumDate(time) +
+                        " " +
+                        MaterialLocalizations.of(context).formatYear(time);
+                  } else {
+                    textToShow = MaterialLocalizations
+                        .of(context)
+                        .formatMediumDate(time);
+                  }
+                  return new Container(
+                    margin: const EdgeInsets.only(top: 10.0),
+                    child: new Text(
+                      textToShow,
+                      style: Theme.of(context).textTheme.subhead.copyWith(
+                            color: Theme.of(context).accentColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  );
+                } else {
+                  return const SizedBox(width: 0.0);
+                }
+              } else {
+                if (index > 0) {
+                  DateTime time = game.tzTime;
+
+                  if (time.year != game.tzTime.year ||
+                      time.month != game.tzTime.month ||
+                      time.day != game.tzTime.day) {}
+
+                  return new GameCard(game);
+                }
+              }
+            }
+          }
+        },
+      ),
+    );
   }
 }

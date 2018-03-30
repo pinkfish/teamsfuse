@@ -1,13 +1,22 @@
 import 'package:map_view/map_view.dart';
 import 'package:flutter_timezone/timezone.dart';
 import 'package:timezone/timezone.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/databasedetails.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
 
 class LocationAndPlace {
   LocationAndPlace(this.details, this.loc);
+
+  LocationAndPlace.fromGame(GamePlace place, String tz)
+      : details = new PlaceDetails(
+            name: place.name,
+            address: place.address,
+            placeid: place.placeId,
+            location: new PlaceLatLong(
+                latitude: place.latitude, longitude: place.longitude)),
+        loc = getLocation(tz);
 
   PlaceDetails details;
   Location loc;

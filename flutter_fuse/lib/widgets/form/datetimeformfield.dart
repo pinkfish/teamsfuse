@@ -12,7 +12,7 @@ class DateTimeFormField extends FormField<DateTime> {
       FormFieldSetter<DateTime> onSaved,
       FormFieldValidator<DateTime> validator,
       this.hideDate = false,
-        this.hideTime = false,
+      this.hideTime = false,
       this.labelText})
       : assert(initialValue != null),
         super(
@@ -27,7 +27,9 @@ class DateTimeFormField extends FormField<DateTime> {
                   Theme.of(field.context).textTheme.title;
               final InputDecoration effectiveDecoration = (decoration ??
                       new InputDecoration(labelText: labelText))
-                  .applyDefaults(Theme.of(field.context).inputDecorationTheme);
+                  .applyDefaults(Theme.of(field.context).inputDecorationTheme)
+                  .copyWith(labelText: labelText);
+              print('label ${effectiveDecoration.labelText} ${labelText}');
 
               List<Widget> children = new List<Widget>();
               if (!hideDate && !hideTime) {
@@ -74,19 +76,19 @@ class DateTimeFormField extends FormField<DateTime> {
                   ),
                 ));
               } else {
-                  children.add(new Expanded(
-                    flex: 1,
-                    child: new InputDropdown(
-                      decoration: effectiveDecoration,
-                      valueText: new TimeOfDay.fromDateTime(field.value)
-                          .format(field.context),
-                      valueStyle: valueStyle,
-                      onPressed: () {
-                        field._selectTime(onFieldSubmitted, onFieldChanged);
-                      },
-                    ),
-                  ));
-                }
+                children.add(new Expanded(
+                  flex: 1,
+                  child: new InputDropdown(
+                    decoration: effectiveDecoration,
+                    valueText: new TimeOfDay.fromDateTime(field.value)
+                        .format(field.context),
+                    valueStyle: valueStyle,
+                    onPressed: () {
+                      field._selectTime(onFieldSubmitted, onFieldChanged);
+                    },
+                  ),
+                ));
+              }
 
               return new Row(
                   crossAxisAlignment: CrossAxisAlignment.end,

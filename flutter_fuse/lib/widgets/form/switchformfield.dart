@@ -5,34 +5,58 @@ class SwitchFormField extends FormField<bool> {
   SwitchFormField({
     Key key,
     bool initialValue: false,
-    InputDecoration decoration: const InputDecoration(),
+    IconData icon,
+    String label,
     ValueChanged<bool> onFieldSubmitted,
     FormFieldSetter<bool> onSaved,
     FormFieldValidator<bool> validator,
   })
       : assert(initialValue != null),
         super(
-            key: key,
-            initialValue: initialValue,
-            onSaved: onSaved,
-            validator: validator,
-            builder: (FormFieldState<bool> field) {
-              final _SwitchFormFieldState state = field;
-              final InputDecoration effectiveDecoration = (decoration ??
-                      const InputDecoration())
-                  .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-              return new InputDecorator(
-                  decoration:
-                      effectiveDecoration.copyWith(errorText: field.errorText),
-                  child: new Switch(
-                      value: state.value,
-                      onChanged: (bool value) {
-                        field.onChanged(value);
-                        if (onFieldSubmitted != null) {
-                          onFieldSubmitted(value);
-                        }
-                      }));
-            });
+          key: key,
+          initialValue: initialValue,
+          onSaved: onSaved,
+          validator: validator,
+          builder: (FormFieldState<bool> field) {
+            final _SwitchFormFieldState state = field;
+            InputDecorationTheme theme =
+                Theme.of(field.context).inputDecorationTheme;
+            return new Row(
+              children: <Widget>[
+                new Icon(
+                  icon,
+                  color: _getDefaultIconColor(Theme.of(field.context)),
+                ),
+                new Expanded(
+                  child: new Text(
+                    label,
+                    style: theme.prefixStyle ?? theme.hintStyle,
+                  ),
+                ),
+                new Switch(
+                  value: state.value,
+                  onChanged: (bool value) {
+                    field.onChanged(value);
+                    if (onFieldSubmitted != null) {
+                      onFieldSubmitted(value);
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
+
+  static Color _getDefaultIconColor(ThemeData themeData) {
+    switch (themeData.brightness) {
+      case Brightness.dark:
+        return Colors.white70;
+      case Brightness.light:
+        return Colors.black45;
+      default:
+        return themeData.iconTheme.color;
+    }
+  }
 
   @override
   _SwitchFormFieldState createState() => new _SwitchFormFieldState();

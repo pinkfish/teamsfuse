@@ -906,6 +906,12 @@ class Messages {
         desc: 'Title for the time drop down to choose the game end time');
   }
 
+  String get selectplace {
+    return Intl.message('Select place',
+        desc: 'Title for the drop down to say select place if nothing is selected');
+
+  }
+
   String get trainingend {
     return Intl.message('Training end',
         desc: 'Title for the time drop down to choose the training end time');

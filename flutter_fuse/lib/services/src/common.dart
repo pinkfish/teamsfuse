@@ -21,7 +21,7 @@ num getNum(dynamic data) {
 
 // shared keys.
 const String NAME = 'name';
-const String ARRIVEEARLY = 'arriveEarly';
+const String ARRIVALTIME = 'arrivalTime';
 const String NOTES = 'notes';
 const String ADDED = 'added';
 const String PHOTOURL = 'photourl';

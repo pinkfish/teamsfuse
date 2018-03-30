@@ -33,7 +33,8 @@ class SqlData {
     SEASON_TABLE,
     PLAYERS_TABLE,
     INVITES_TABLE,
-    PROFILE_TABLE
+    PROFILE_TABLE,
+    MESSAGES_TABLE
   ];
 
   static SqlData get instance {

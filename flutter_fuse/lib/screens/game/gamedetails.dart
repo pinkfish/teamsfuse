@@ -42,7 +42,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     List<Widget> actions = new List<Widget>();
 
     if (_tabIndex == 0) {
-      body = new GameDetails(gameUid);
+      body = new GameDetails(game);
     } else {
       body = new Availaility(game);
     }

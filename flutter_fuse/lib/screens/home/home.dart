@@ -24,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription<UpdateReason> _teamSubscription;
   StreamSubscription<UpdateReason> _messagaesSubscription;
   FilterDetails _details = new FilterDetails();
+  ScrollController _scrollController = new ScrollController();
 
   void _showInvites(BuildContext context) {
     print("showing invites");
@@ -122,24 +123,25 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(messages.title),
-          actions: actions,
-        ),
         drawer: new FusedDrawer(),
-        body: new Column(
-          children: <Widget>[
-            new Expanded(
-              child: new SingleChildScrollView(
-                child: new GameList(_details),
+        body: new CustomScrollView(
+          shrinkWrap: false,
+          controller: _scrollController,
+          scrollDirection: Axis.vertical,
+          slivers: <Widget>[
+            new SliverAppBar(
+              expandedHeight: 150.0,
+              title: new Text(messages.title),
+              actions: actions,
+              flexibleSpace: new GestureDetector(
+                onTap: () {
+                  _showInvites(context);
+                },
+                child: new InviteCard(),
               ),
+              primary: true,
             ),
-            new GestureDetector(
-              onTap: () {
-                _showInvites(context);
-              },
-              child: new InviteCard(),
-            ),
+            new GameList(_details),
           ],
         ),
         floatingActionButton: new FabDialer(
@@ -181,8 +183,11 @@ class _HomeScreenState extends State<HomeScreen> {
         .listen((UpdateReason reason) => setState(() {}));
     _teamSubscription = UserDatabaseData.instance.teamStream
         .listen((UpdateReason reason) => setState(() {}));
-    _messagaesSubscription= UserDatabaseData.instance.messagesStream
+    _messagaesSubscription = UserDatabaseData.instance.messagesStream
         .listen((UpdateReason reason) => setState(() {}));
+    _scrollController.addListener(() {
+      print('Scroll controller listener');
+    });
   }
 
   @override

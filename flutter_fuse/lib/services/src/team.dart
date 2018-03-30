@@ -175,7 +175,7 @@ class Team {
   void fromJSON(String teamUid, Map<String, dynamic> data) {
     uid = teamUid;
     name = getString(data[NAME]);
-    arriveEarly = getNum(data[ARRIVEEARLY]);
+    arriveEarly = getNum(data[ARRIVALTIME]);
     currentSeason = getString(data[_CURRENTSEASON]);
     league = getString(data[_LEAGUE]);
     photoUrl = getString(data[PHOTOURL]);
@@ -195,7 +195,7 @@ class Team {
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = new Map<String, dynamic>();
     ret[NAME] = name;
-    ret[ARRIVEEARLY] = arriveEarly;
+    ret[ARRIVALTIME] = arriveEarly;
     ret[_CURRENTSEASON] = currentSeason;
     ret[_LEAGUE] = league;
     ret[_GENDER] = gender.toString();

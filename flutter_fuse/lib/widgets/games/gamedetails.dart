@@ -15,25 +15,24 @@ import 'dart:async';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 
 class GameDetails extends StatefulWidget {
-  GameDetails(this.gameUid);
+  GameDetails(this.game, {this.adding = false});
 
-  final String gameUid;
+  final Game game;
+  final bool adding;
 
   @override
   GameDetailsState createState() {
-    return new GameDetailsState(gameUid);
+    return new GameDetailsState();
   }
 }
 
 class GameDetailsState extends State<GameDetails> {
-  final String gameUid;
-  Game game;
   StreamSubscription<UpdateReason> teamUpdate;
   Map<Player, Attendance> _attendence;
 
-  GameDetailsState(this.gameUid) {
-    game = UserDatabaseData.instance.games[gameUid];
-    Team team = UserDatabaseData.instance.teams[game.teamUid];
+  void initState() {
+    super.initState();
+    Team team = UserDatabaseData.instance.teams[widget.game.teamUid];
     if (team != null) {
       teamUpdate = team.thisTeamStream.listen((data) {
         setState(() {});
@@ -50,10 +49,10 @@ class GameDetailsState extends State<GameDetails> {
 
   void openNavigation() {
     String url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=" + Uri.encodeComponent(game.place.address);
-    if (game.place.placeId != null) {
-      url +=
-          "&destionation_place_id=" + Uri.encodeComponent(game.place.placeId);
+    url += "&destination=" + Uri.encodeComponent(widget.game.place.address);
+    if (widget.game.place.placeId != null) {
+      url += "&destionation_place_id=" +
+          Uri.encodeComponent(widget.game.place.placeId);
     }
     launch(url);
   }
@@ -64,7 +63,8 @@ class GameDetailsState extends State<GameDetails> {
 
   void _editResult() async {
     // Call up a dialog to edit the result.
-    await showDialog(context: context, child: new EditResultDialog(this.game));
+    await showDialog(
+        context: context, child: new EditResultDialog(widget.game));
   }
 
   void _openAttendance() async {
@@ -78,14 +78,14 @@ class GameDetailsState extends State<GameDetails> {
         child: new AttendanceDialog(current: current),
       );
       if (attend != null) {
-        game.updateFirestoreAttendence(player.uid, attend);
+        widget.game.updateFirestoreAttendence(player.uid, attend);
       }
     } else {
       Map<Player, Attendance> attend = await showDialog(
           context: context, child: new MultipleAttendanceDialog(_attendence));
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
-          game.updateFirestoreAttendence(player.uid, attend);
+          widget.game.updateFirestoreAttendence(player.uid, attend);
         });
       }
     }
@@ -100,8 +100,8 @@ class GameDetailsState extends State<GameDetails> {
         return play.playerUid == key;
       })) {
         Attendance attend = Attendance.Maybe;
-        if (game.attendance.containsKey(key)) {
-          attend = game.attendance[key];
+        if (widget.game.attendance.containsKey(key)) {
+          attend = widget.game.attendance[key];
         }
         availavilityResult[player] = attend;
         availability.add(
@@ -130,16 +130,20 @@ class GameDetailsState extends State<GameDetails> {
 
   @override
   Widget build(BuildContext context) {
-    print('lat: ${game.place.latitude} long: ${game.place.longitude}');
-    Marker marker = new Marker(game.place.placeId, game.place.address,
-        game.place.latitude.toDouble(), game.place.longitude.toDouble());
+    print(
+        'lat: ${widget.game.place.latitude} long: ${widget.game.place.longitude}');
+    Marker marker = new Marker(
+        widget.game.place.placeId,
+        widget.game.place.address,
+        widget.game.place.latitude.toDouble(),
+        widget.game.place.longitude.toDouble());
     var uri = MapData.instance.provider
         .getStaticUriWithMarkers([marker], width: 900, height: 400);
-    TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
-    TimeOfDay dayArrive = new TimeOfDay.fromDateTime(game.tzArriveTime);
-    TimeOfDay dayEnd = new TimeOfDay.fromDateTime(game.tzEndTime);
+    TimeOfDay day = new TimeOfDay.fromDateTime(widget.game.tzTime);
+    TimeOfDay dayArrive = new TimeOfDay.fromDateTime(widget.game.tzArriveTime);
+    TimeOfDay dayEnd = new TimeOfDay.fromDateTime(widget.game.tzEndTime);
     String dateStr =
-        MaterialLocalizations.of(context).formatFullDate(game.tzTime);
+        MaterialLocalizations.of(context).formatFullDate(widget.game.tzTime);
     String timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeStr =
         MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
@@ -150,9 +154,9 @@ class GameDetailsState extends State<GameDetails> {
     } else {
       arriveAttimeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
     }
-    Team team = UserDatabaseData.instance.teams[game.teamUid];
-    Opponent opponent = team.opponents[game.opponentUid];
-    Season season = team.seasons[game.seasonUid];
+    Team team = UserDatabaseData.instance.teams[widget.game.teamUid];
+    Opponent opponent = team.opponents[widget.game.opponentUid];
+    Season season = team.seasons[widget.game.seasonUid];
 
     ThemeData theme = Theme.of(context);
 
@@ -188,13 +192,13 @@ class GameDetailsState extends State<GameDetails> {
     // Team details
     body.add(
       new ListTile(
-        leading: new TeamImage(game.teamUid, width: 50.0, height: 50.0),
+        leading: new TeamImage(widget.game.teamUid, width: 50.0, height: 50.0),
         title: new Text(team.name, style: theme.textTheme.title),
-        subtitle: arriveAttimeStr != null && game.type == EventType.Game
+        subtitle: arriveAttimeStr != null && widget.game.type == EventType.Game
             ? new Text('arrive at ' + arriveAttimeStr,
                 style: theme.textTheme.subhead)
             : null,
-        trailing: game.homegame ? const Icon(Icons.home) : null,
+        trailing: widget.game.homegame ? const Icon(Icons.home) : null,
       ),
     );
 
@@ -206,70 +210,81 @@ class GameDetailsState extends State<GameDetails> {
           dateStr +
               " " +
               timeStr +
-              (game.endTime == game.time ? '' : " - " + endTimeStr),
+              (widget.game.endTime == widget.game.time
+                  ? ''
+                  : " - " + endTimeStr),
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
         ),
-        subtitle: new Text(game.place.address),
+        subtitle: new Text(widget.game.place.address),
       ),
     );
 
     // Results.
-    if (game.type == EventType.Game) {
-      String title;
-      TextStyle resultStyle;
-      if (game.result.inProgress == GameInProgress.NotStarted) {
-        if (game.trackAttendance) {
-          body.add(_buildAttendence(season));
-        }
-      }
-      // Show the live stuff if the game is close to starting.
-      if (game.time >
-          new DateTime.now()
-              .subtract(const Duration(hours: 1))
-              .millisecondsSinceEpoch) {
-        // Started.
-        switch (game.result.result) {
-          case GameResult.Unknown:
-            title = Messages.of(context).resultunknown;
-            resultStyle = theme.textTheme.subhead;
-            break;
-          case GameResult.Loss:
-            title = Messages.of(context).resultloss(game.result);
-            resultStyle =
-                theme.textTheme.subhead.copyWith(color: theme.errorColor);
-            break;
-          case GameResult.Win:
-            title = Messages.of(context).resultwin(game.result);
-            resultStyle =
-                theme.textTheme.subhead.copyWith(color: theme.accentColor);
-            break;
-          case GameResult.Tie:
-            title = Messages.of(context).resulttie(game.result);
-            resultStyle = theme.textTheme.subhead;
-            break;
-          case GameResult.InProgress:
-            title = Messages.of(context).resultinprogress(game.result);
-            resultStyle = theme.textTheme.subhead;
-            break;
-        }
+    if (widget.game.type == EventType.Game) {
+      if (widget.adding) {
         body.add(
           new ListTile(
-            onTap: this._editResult,
             leading: new Icon(CommunityIcons.bookopenvariant),
-            title: new Text(title, style: resultStyle),
+            title: new Text(Messages.of(context).gametype),
           ),
         );
+      } else {
+        String title;
+        TextStyle resultStyle;
+        if (widget.game.result.inProgress == GameInProgress.NotStarted) {
+          if (widget.game.trackAttendance) {
+            body.add(_buildAttendence(season));
+          }
+        }
+        // Show the live stuff if the game is close to starting.
+        if (widget.game.time >
+            new DateTime.now()
+                .subtract(const Duration(hours: 1))
+                .millisecondsSinceEpoch) {
+          // Started.
+          switch (widget.game.result.result) {
+            case GameResult.Unknown:
+              title = Messages.of(context).resultunknown;
+              resultStyle = theme.textTheme.subhead;
+              break;
+            case GameResult.Loss:
+              title = Messages.of(context).resultloss(widget.game.result);
+              resultStyle =
+                  theme.textTheme.subhead.copyWith(color: theme.errorColor);
+              break;
+            case GameResult.Win:
+              title = Messages.of(context).resultwin(widget.game.result);
+              resultStyle =
+                  theme.textTheme.subhead.copyWith(color: theme.accentColor);
+              break;
+            case GameResult.Tie:
+              title = Messages.of(context).resulttie(widget.game.result);
+              resultStyle = theme.textTheme.subhead;
+              break;
+            case GameResult.InProgress:
+              title = Messages.of(context).resultinprogress(widget.game.result);
+              resultStyle = theme.textTheme.subhead;
+              break;
+          }
+          body.add(
+            new ListTile(
+              onTap: this._editResult,
+              leading: new Icon(CommunityIcons.bookopenvariant),
+              title: new Text(title, style: resultStyle),
+            ),
+          );
+        }
       }
     } else {
       // Tell people this is a practice or special event.
-      if (game.type == EventType.Practice) {
+      if (widget.game.type == EventType.Practice) {
         body.add(
           new ListTile(
             leading: const Icon(Icons.train),
             title: new Text(Messages.of(context).trainingtype),
           ),
         );
-      } else if (game.type == EventType.Event) {
+      } else if (widget.game.type == EventType.Event) {
         body.add(
           new ListTile(
             leading: const Icon(Icons.plus_one),
@@ -278,8 +293,9 @@ class GameDetailsState extends State<GameDetails> {
         );
       }
       // Attendance, possibly.
-      if (game.trackAttendance &&
-          game.time >
+      if (!widget.adding &&
+          widget.game.trackAttendance &&
+          widget.game.time >
               new DateTime.now()
                   .subtract(const Duration(hours: 1))
                   .millisecondsSinceEpoch) {
@@ -288,30 +304,31 @@ class GameDetailsState extends State<GameDetails> {
     }
 
     // Uniform
-    if (game.uniform != null && game.uniform.isNotEmpty) {
+    if (widget.game.uniform != null && widget.game.uniform.isNotEmpty) {
       body.add(
         new ListTile(
           leading: const Icon(CommunityIcons.tshirtcrew),
-          title: new Text(game.uniform == null ? 'fluff' : game.uniform),
+          title: new Text(
+              widget.game.uniform == null ? 'fluff' : widget.game.uniform),
         ),
       );
     }
 
     // Notes.
-    if (game.notes != null && game.notes.isNotEmpty) {
+    if (widget.game.notes != null && widget.game.notes.isNotEmpty) {
       body.add(
         new ListTile(
           leading: const Icon(Icons.note),
-          title: new Text(game.notes),
+          title: new Text(widget.game.notes),
         ),
       );
     }
 
     // Opponent last games.
-    if (game.type == EventType.Game) {
+    if (widget.game.type == EventType.Game && !widget.adding) {
       String seasonName;
-      if (team.seasons.containsKey(game.seasonUid)) {
-        seasonName = team.seasons[game.seasonUid].name;
+      if (team.seasons.containsKey(widget.game.seasonUid)) {
+        seasonName = team.seasons[widget.game.seasonUid].name;
       } else {
         seasonName = Messages.of(context).unknown;
       }
@@ -321,9 +338,8 @@ class GameDetailsState extends State<GameDetails> {
           title: new Row(
             children: <Widget>[
               new Text(
-                Messages
-                    .of(context)
-                    .opponentwinrecord(opponent, game.seasonUid, seasonName),
+                Messages.of(context).opponentwinrecord(
+                    opponent, widget.game.seasonUid, seasonName),
               ),
             ],
           ),

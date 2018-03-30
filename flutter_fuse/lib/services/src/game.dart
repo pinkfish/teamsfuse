@@ -88,6 +88,9 @@ class GamePlace {
   GamePlace() {
     latitude = 0;
     longitude = 0;
+    address= '';
+     placeId = '';
+    notes = '';
   }
 
   GamePlace.copy(GamePlace copy) {
@@ -154,9 +157,11 @@ class Game {
   Game.copy(Game copy) {
     uid = copy.uid;
     _timezone = copy.timezone;
+    _location = copy._location;
     arriveTime = copy.arriveTime;
     endTime = copy.endTime;
     notes = copy.notes;
+    time = copy.time;
     opponentUid = copy.opponentUid;
     seasonUid = copy.seasonUid;
     teamUid = copy.teamUid;
@@ -231,7 +236,7 @@ class Game {
     uid = gameUid;
     timezone = getString(data[_TIMEZONE]);
     time = getNum(data[_TIME]);
-    arriveTime = getNum(data[ARRIVEEARLY]);
+    arriveTime = getNum(data[ARRIVALTIME]);
     if (arriveTime == 0) {
       arriveTime = time;
     }
@@ -274,7 +279,7 @@ class Game {
     ret[_TYPE] = type.toString();
     ret[_TIMEZONE] = timezone;
     ret[_TIME] = time;
-    ret[ARRIVEEARLY] = arriveTime;
+    ret[ARRIVALTIME] = arriveTime;
     ret[_ENDTIME] = endTime;
     ret[NOTES] = notes;
     ret[_OPPONENTUID] = opponentUid;

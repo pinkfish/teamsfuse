@@ -29,7 +29,9 @@ class EditGameScreenState extends State<EditGameScreen> {
   }
 
   void _savePressed(BuildContext context) async {
-    if (await _gameFormKey.currentState.validateAndSaveToFirebase()) {
+    if (await _gameFormKey.currentState.validate()) {
+      _gameFormKey.currentState.save();
+      await _gameFormKey.currentState.finalGameResult.updateFirestore();
       Navigator.pop(context);
     } else {
       _showInSnackBar(Messages.of(context).formerror);
@@ -57,7 +59,7 @@ class EditGameScreenState extends State<EditGameScreen> {
         ),
         body: new Container(
           padding: new EdgeInsets.all(16.0),
-          child: new GamEditForm(_game, _gameFormKey),
+          child: new GameEditForm(_game, _gameFormKey),
         ));
   }
 }
