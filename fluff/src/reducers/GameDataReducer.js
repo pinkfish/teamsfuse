@@ -35,13 +35,6 @@ export const GameDataReducer = (state = { loaded: 0 }, action) => {
         newState.list = {};
       }
       // Metge in the opponents.
-      for (key in newState.list) {
-        if (newState.list.hasOwnProperty(key)) {
-          if (action.payload.hasOwnProperty(key)) {
-            action.payload[key].opponents = newState.list[key].opponents;
-          }
-        }
-      }
       newState.list = action.payload;
       return newState;
   case FETCH_GAME_DATA_UPDATE:

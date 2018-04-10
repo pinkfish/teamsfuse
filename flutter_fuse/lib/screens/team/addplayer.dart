@@ -169,8 +169,10 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          new SingleChildScrollView(
-            child: new Column(children: rows),
+          new Scrollbar(
+            child: new SingleChildScrollView(
+              child: new Column(children: rows),
+            ),
           ),
           new FlatButton(
               onPressed: _handleSubmit,

@@ -96,7 +96,7 @@ class UserDatabaseData {
         .get();
     Invite invite = new Invite();
     if (doc.exists) {
-      invite.fromJSON(doc.documentID, doc.data);
+      invite.fromJSON(doc.documentID, doc.data as Map<String, dynamic>);
       return invite;
     } else {
       _invites.remove(invite.uid);
@@ -143,7 +143,7 @@ class UserDatabaseData {
         .get();
     if (ref.exists) {
       Player player = new Player();
-      player.fromJSON(playerId, ref.data);
+      player.fromJSON(playerId, ref.data as Map<String, dynamic>);
       // Fill in all the user data.
       if (withProfile) {
         await Future.forEach(player.users.values, (PlayerUser user) async {
@@ -218,12 +218,12 @@ class UserDatabaseData {
       Player player;
       if (_players.containsKey(doc.documentID)) {
         player = _players[doc.documentID];
-        player.fromJSON(doc.documentID, doc.data);
+        player.fromJSON(doc.documentID, doc.data as Map<String, dynamic>);
         player.setupSnap();
       } else {
         player = new Player();
         // Add in snapshots to find the teams associated with the player.
-        player.fromJSON(doc.documentID, doc.data);
+        player.fromJSON(doc.documentID, doc.data as Map<String, dynamic>);
         player.setupSnap();
         _players[player.uid] = player;
         print('player ' + player.uid);
@@ -249,7 +249,7 @@ class UserDatabaseData {
       MessageRecipient recipient;
       // Update in place to keep the fetched and seen times.
       recipient = new MessageRecipient();
-      recipient.fromJSON(doc.documentID, doc.data);
+      recipient.fromJSON(doc.documentID, doc.data as Map<String, dynamic>);
 
       if (messages.containsKey(recipient.messageId)) {
         Message mess = messages[recipient.messageId];
@@ -266,7 +266,7 @@ class UserDatabaseData {
         if (ref.exists) {
           Message mess = new Message();
           mess.recipients = {};
-          mess.fromJSON(ref.documentID, ref.data);
+          mess.fromJSON(ref.documentID, ref.data as Map<String, dynamic>);
           mess.recipients[recipient.userId] = recipient;
           messages[mess.uid] = mess;
           sql.updateElement(SqlData.MESSAGES_TABLE, doc.documentID,
@@ -278,7 +278,8 @@ class UserDatabaseData {
     query.documentChanges.forEach((DocumentChange change) {
       if (change.type == DocumentChangeType.removed) {
         MessageRecipient rec = new MessageRecipient();
-        rec.fromJSON(change.document.documentID, change.document.data);
+        rec.fromJSON(change.document.documentID,
+            change.document.data as Map<String, dynamic>);
         messages.remove(rec.messageId);
         sql.deleteElement(SqlData.MESSAGES_TABLE, rec.messageId);
       }
@@ -295,7 +296,7 @@ class UserDatabaseData {
       MessageRecipient recipient;
       // Update in place to keep the fetched and seen times.
       recipient = new MessageRecipient();
-      recipient.fromJSON(doc.documentID, doc.data);
+      recipient.fromJSON(doc.documentID, doc.data as Map<String, dynamic>);
 
       if (messages.containsKey(recipient.messageId)) {
         Message mess = messages[recipient.messageId];
@@ -312,7 +313,7 @@ class UserDatabaseData {
         if (ref.exists) {
           Message mess = new Message();
           mess.recipients = {};
-          mess.fromJSON(ref.documentID, ref.data);
+          mess.fromJSON(ref.documentID, ref.data as Map<String, dynamic>);
           mess.recipients[recipient.userId] = recipient;
           messages[mess.uid] = mess;
           sql.updateElement(SqlData.MESSAGES_TABLE, doc.documentID,
@@ -323,7 +324,8 @@ class UserDatabaseData {
     query.documentChanges.forEach((DocumentChange change) {
       if (change.type == DocumentChangeType.removed) {
         MessageRecipient rec = new MessageRecipient();
-        rec.fromJSON(change.document.documentID, change.document.data);
+        rec.fromJSON(change.document.documentID,
+            change.document.data as Map<String, dynamic>);
         messages.remove(rec.messageId);
         sql.deleteElement(SqlData.MESSAGES_TABLE, rec.messageId);
       }
@@ -390,7 +392,7 @@ class UserDatabaseData {
       if (game == null) {
         game = new Game();
       }
-      game.fromJSON(doc.documentID, doc.data);
+      game.fromJSON(doc.documentID, doc.data as Map<String, dynamic>);
       _games[doc.documentID] = game;
       toDeleteGames.remove(doc.documentID);
       sql.updateElement(SqlData.GAME_TABLE, doc.documentID, game.toJSON());
@@ -413,7 +415,7 @@ class UserDatabaseData {
     query.documents.forEach((DocumentSnapshot doc) {
       String uid = doc.documentID;
       Invite invite = new Invite();
-      invite.fromJSON(uid, doc.data);
+      invite.fromJSON(uid, doc.data as Map<String, dynamic>);
       newInvites[uid] = invite;
       sql.updateElement(SqlData.INVITES_TABLE, uid, invite.toJSON());
     });
@@ -447,7 +449,7 @@ class UserDatabaseData {
       await Future.forEach(data.keys, (String uid) {
         Map<String, dynamic> input = data[uid];
         Team team = new Team();
-        team.fromJSON(uid, input);
+        team.fromJSON(uid, input as Map<String, dynamic>);
         team.setupSnap();
         // Load opponents.
         newTeams[uid] = team;
@@ -460,7 +462,7 @@ class UserDatabaseData {
       Map<String, Player> newPlayers = new Map<String, Player>();
       data.forEach((String uid, Map<String, dynamic> input) {
         Player player = new Player();
-        player.fromJSON(uid, input);
+        player.fromJSON(uid, input as Map<String, dynamic>);
         newPlayers[uid] = player;
       });
       _players = newPlayers;
@@ -470,7 +472,7 @@ class UserDatabaseData {
       Map<String, Game> newGames = new Map<String, Game>();
       data.forEach((String uid, Map<String, dynamic> input) {
         Game game = new Game();
-        game.fromJSON(uid, input);
+        game.fromJSON(uid, input as Map<String, dynamic>);
         newGames[uid] = game;
       });
       _games = newGames;
@@ -480,7 +482,7 @@ class UserDatabaseData {
       Map<String, Invite> newInvites = new Map<String, Invite>();
       data.forEach((String uid, Map<String, dynamic> input) {
         Invite invite = new Invite();
-        invite.fromJSON(uid, input);
+        invite.fromJSON(uid, input as Map<String, dynamic>);
         newInvites[uid] = invite;
       });
       _invites = newInvites;
@@ -491,7 +493,7 @@ class UserDatabaseData {
       data.forEach((String uid, Map<String, dynamic> input) {
         Message mess = new Message();
         print("fluff $uid ${mess.teamUid}");
-        mess.fromJSON(uid, input);
+        mess.fromJSON(uid, input as Map<String, dynamic>);
         newMessages[uid] = mess;
       });
       _messages = newMessages;
@@ -503,6 +505,7 @@ class UserDatabaseData {
     } catch (e) {
       // Any exception and we cleanup all the data to nothing.
       print('Caught exception $e');
+      print(e.stackTrace.toString());
       _games.clear();
       _teams.clear();
       _invites.clear();

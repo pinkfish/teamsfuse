@@ -97,7 +97,7 @@ class SqlData {
         new Map<String, Map<String, dynamic>>();
     await _initialized;
 
-    List<Map<String, String>> data = await _database.query(table);
+    List<Map<String, dynamic>> data = await _database.query(table);
 
     data.forEach((Map<String, dynamic> innerData) {
       ret[innerData[INDEX]] = JSON.decode(innerData[DATA]);
@@ -148,7 +148,7 @@ class SqlData {
     Map<String, Map<String, dynamic>> ret =
         new Map<String, Map<String, dynamic>>();
 
-    List<Map<String, String>> data = await _database
+    List<Map<String, dynamic>> data = await _database
         .query(table, where: TEAMUID + " = ?", whereArgs: [teamUid]);
 
     data.forEach((Map<String, dynamic> innerData) {

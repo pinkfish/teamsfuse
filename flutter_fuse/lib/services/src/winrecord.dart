@@ -21,7 +21,7 @@ class WinRecord {
   static const String _LOSS = 'loss';
   static const String _TIE = 'tie';
 
-  void fromJSON(Map<String, dynamic> data) {
+  void fromJSON(Map<dynamic, dynamic> data) {
     win = getNum(data[_WIN]);
     loss = getNum(data[_LOSS]);
     tie = getNum(data[_TIE]);

@@ -128,10 +128,11 @@ class ShowMessageScreen extends StatelessWidget {
       ),
     );
 
-    return new SingleChildScrollView(
+    return new Scrollbar(child:new SingleChildScrollView(
       child: new Column(
         children: kids,
       ),
+    ),
     );
   }
 

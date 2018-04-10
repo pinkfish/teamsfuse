@@ -53,7 +53,7 @@ const fetchGamesLogic = createLogic({
         team.snapshotListen = gameQuery.onSnapshot(function(querySnapshot) {
           teamOnSnapshot(querySnapshot, dispatch);
         });
-        console.log('fetchihng for ', key);
+        console.log('fetching for ', key);
         gamePromise = gameQuery.get()
             .then(function(querySnapshot) {
               // Got all the teams.  Yay!

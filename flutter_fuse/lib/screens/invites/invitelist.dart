@@ -39,11 +39,13 @@ class InviteListScreenState extends State<InviteListScreen> {
       barrierDismissible: false, // user must tap button!
       child: new AlertDialog(
         title: new Text(mess.deleteinvite),
-        content: new SingleChildScrollView(
-          child: new ListBody(
-            children: <Widget>[
-              new Text(mess.confirmdelete(invite)),
-            ],
+        content: new Scrollbar(
+          child: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                new Text(mess.confirmdelete(invite)),
+              ],
+            ),
           ),
         ),
         actions: <Widget>[
@@ -90,7 +92,8 @@ class InviteListScreenState extends State<InviteListScreen> {
                 _addInvite(invite);
               },
             ),
-            title: new Text(messages.teamandseason(invite.teamName, invite.seasonName)),
+            title: new Text(
+                messages.teamandseason(invite.teamName, invite.seasonName)),
             subtitle: new Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -121,9 +124,11 @@ class InviteListScreenState extends State<InviteListScreen> {
       appBar: new AppBar(
         title: new Text(messages.title),
       ),
-      body: new SingleChildScrollView(
-        child: new Column(
-          children: invites,
+      body: new Scrollbar(
+        child: new SingleChildScrollView(
+          child: new Column(
+            children: invites,
+          ),
         ),
       ),
     );

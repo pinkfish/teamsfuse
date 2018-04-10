@@ -17,6 +17,7 @@ dependencies:
   path_provider: "^0.3.0"
   uuid: "^0.5.0"
   url_launcher: "^2.0.2"
+  csv: "^3.1.2"
   map_view: # "^0.0.10"
     path: ../../flutter_google_map_view
   flutter_timezone: # "^0.0.10"

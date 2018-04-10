@@ -214,6 +214,7 @@ class GameCard extends StatelessWidget {
         }
 
         return new Card(
+          key: new ValueKey(game),
           color: Colors.green.shade50,
           child: new ListTile(
             onTap: () {

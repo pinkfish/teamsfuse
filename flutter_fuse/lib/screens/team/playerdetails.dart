@@ -138,11 +138,13 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
       barrierDismissible: false, // user must tap button!
       child: new AlertDialog(
         title: new Text(mess.deleteplayer),
-        content: new SingleChildScrollView(
-          child: new ListBody(
-            children: <Widget>[
-              new Text(mess.confirmremovefromteam(_player.displayName)),
-            ],
+        content: new Scrollbar(
+          child: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                new Text(mess.confirmremovefromteam(_player.displayName)),
+              ],
+            ),
           ),
         ),
         actions: <Widget>[
@@ -305,7 +307,11 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
       appBar: new AppBar(
         title: new Text(messages.title),
       ),
-      body: new SingleChildScrollView(child: _buildPlayerDetails()),
+      body: new Scrollbar(
+        child: new SingleChildScrollView(
+          child: _buildPlayerDetails(),
+        ),
+      ),
     );
   }
 }

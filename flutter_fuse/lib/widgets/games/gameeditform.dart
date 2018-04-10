@@ -144,159 +144,161 @@ class GameEditFormState extends State<GameEditForm> {
         !UserDatabaseData.instance.teams.containsKey(widget.game.teamUid)) {
       return new Text('Invalid state');
     }
-    return new SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      controller: _scrollController,
-      child: new Form(
-        key: _formKey,
-        autovalidate: autovalidate,
-        child: new DropdownButtonHideUnderline(
-          child: new Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  new Expanded(
-                    flex: 1,
-                    child: new SeasonFormField(
-                      initialValue: widget.game.seasonUid,
-                      teamUid: widget.game.teamUid,
-                      onSaved: (String value) {
-                        widget.game.seasonUid = value;
-                      },
+    return new Scrollbar(
+      child: new SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        controller: _scrollController,
+        child: new Form(
+          key: _formKey,
+          autovalidate: autovalidate,
+          child: new DropdownButtonHideUnderline(
+            child: new Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    new Expanded(
+                      flex: 1,
+                      child: new SeasonFormField(
+                        initialValue: widget.game.seasonUid,
+                        teamUid: widget.game.teamUid,
+                        onSaved: (String value) {
+                          widget.game.seasonUid = value;
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12.0),
-                  new Expanded(
-                    flex: 1,
-                    child: new OpponentFormField(
-                      teamUid: widget.game.teamUid,
-                      key: _opponentState,
-                      initialValue: widget.game.opponentUid == null
-                          ? 'none'
-                          : widget.game.opponentUid,
-                      validator: (String str) {
-                        return _validations.validateOpponent(context, str);
-                      },
-                      onFieldSubmitted: (String value) {
-                        if (value == 'add') {
-                          // Open up a picker to create an opponent.
-                          _openAddOpponentDialog();
-                        }
-                      },
-                      onSaved: (String value) {
-                        widget.game.opponentUid = value;
-                      },
+                    const SizedBox(width: 12.0),
+                    new Expanded(
+                      flex: 1,
+                      child: new OpponentFormField(
+                        teamUid: widget.game.teamUid,
+                        key: _opponentState,
+                        initialValue: widget.game.opponentUid == null
+                            ? 'none'
+                            : widget.game.opponentUid,
+                        validator: (String str) {
+                          return _validations.validateOpponent(context, str);
+                        },
+                        onFieldSubmitted: (String value) {
+                          if (value == 'add') {
+                            // Open up a picker to create an opponent.
+                            _openAddOpponentDialog();
+                          }
+                        },
+                        onSaved: (String value) {
+                          widget.game.opponentUid = value;
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              new DateTimeFormField(
-                labelText: Messages.of(context).gametime,
-                initialValue: _atDate,
-                hideDate: false,
-                onSaved: (DateTime value) {
-                  _atDate = value;
-                },
-                onFieldChanged: this._changeAtTime,
-              ),
-              new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  new Expanded(
-                    flex: 4,
-                    child: new DateTimeFormField(
-                      key: _arriveByKey,
-                      labelText: Messages.of(context).arriveat,
-                      initialValue: _atArrival,
-                      hideDate: true,
-                      onSaved: (DateTime val) {
-                        _atArrival = val;
-                      },
+                  ],
+                ),
+                new DateTimeFormField(
+                  labelText: Messages.of(context).gametime,
+                  initialValue: _atDate,
+                  hideDate: false,
+                  onSaved: (DateTime value) {
+                    _atDate = value;
+                  },
+                  onFieldChanged: this._changeAtTime,
+                ),
+                new Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    new Expanded(
+                      flex: 4,
+                      child: new DateTimeFormField(
+                        key: _arriveByKey,
+                        labelText: Messages.of(context).arriveat,
+                        initialValue: _atArrival,
+                        hideDate: true,
+                        onSaved: (DateTime val) {
+                          _atArrival = val;
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12.0),
-                  new Expanded(
-                    flex: 4,
-                    child: new DateTimeFormField(
-                      key: _atEndKEy,
-                      labelText: Messages.of(context).gameend,
-                      initialValue: _atEnd,
-                      hideDate: true,
-                      onSaved: (DateTime val) {
-                        _atEnd = val;
-                      },
+                    const SizedBox(width: 12.0),
+                    new Expanded(
+                      flex: 4,
+                      child: new DateTimeFormField(
+                        key: _atEndKEy,
+                        labelText: Messages.of(context).gameend,
+                        initialValue: _atEnd,
+                        hideDate: true,
+                        onSaved: (DateTime val) {
+                          _atEnd = val;
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              new PlacesFormField(
-                initialValue: new LocationAndPlace.fromGame(
-                    widget.game.place, widget.game.timezone),
-                labelText: Messages.of(context).selectplace,
-                decoration:
-                    const InputDecoration(icon: const Icon(Icons.place)),
-                onSaved: (LocationAndPlace loc) {
-                  widget.game.place.name = loc.details.name;
-                  widget.game.place.address = loc.details.address;
-                  widget.game.place.placeId = loc.details.placeid;
-                  widget.game.timezone = loc.loc.name;
-                },
-              ),
-              new EnsureVisibleWhenFocused(
-                focusNode: _focusNode,
-                child: new TextFormField(
-                  decoration: new InputDecoration(
-                    icon: const Icon(CommunityIcons.tshirtcrew),
-                    hintText: Messages.of(context).uniformhint,
-                    labelText: Messages.of(context).uniform,
-                  ),
-                  keyboardType: TextInputType.text,
-                  obscureText: false,
-                  initialValue: widget.game.uniform,
-                  onSaved: (String value) {
-                    widget.game.uniform = value;
+                  ],
+                ),
+                new PlacesFormField(
+                  initialValue: new LocationAndPlace.fromGame(
+                      widget.game.place, widget.game.timezone),
+                  labelText: Messages.of(context).selectplace,
+                  decoration:
+                      const InputDecoration(icon: const Icon(Icons.place)),
+                  onSaved: (LocationAndPlace loc) {
+                    widget.game.place.name = loc.details.name;
+                    widget.game.place.address = loc.details.address;
+                    widget.game.place.placeId = loc.details.placeid;
+                    widget.game.timezone = loc.loc.name;
                   },
                 ),
-              ),
-              new EnsureVisibleWhenFocused(
-                focusNode: _focusNode,
-                child: new TextFormField(
-                  decoration: const InputDecoration(
-                      icon: const Icon(Icons.note),
-                      hintText: 'Game notes',
-                      labelText: 'Game notes'),
-                  keyboardType: TextInputType.text,
-                  obscureText: false,
-                  initialValue: widget.game.notes,
-                  onSaved: (String value) {
-                    widget.game.notes = value;
-                  },
-                ),
-              ),
-              new Row(
-                children: <Widget>[
-                  new Expanded(
-                    flex: 1,
-                    child: new SwitchFormField(
-                      icon: CommunityIcons.home,
-                      label: Messages.of(context).homeaway,
-                      initialValue: widget.game.homegame,
-                      onSaved: (bool value) {
-                        widget.game.homegame = value;
-                      },
+                new EnsureVisibleWhenFocused(
+                  focusNode: _focusNode,
+                  child: new TextFormField(
+                    decoration: new InputDecoration(
+                      icon: const Icon(CommunityIcons.tshirtcrew),
+                      hintText: Messages.of(context).uniformhint,
+                      labelText: Messages.of(context).uniform,
                     ),
+                    keyboardType: TextInputType.text,
+                    obscureText: false,
+                    initialValue: widget.game.uniform,
+                    onSaved: (String value) {
+                      widget.game.uniform = value;
+                    },
                   ),
-                ],
-              ),
-            ],
+                ),
+                new EnsureVisibleWhenFocused(
+                  focusNode: _focusNode,
+                  child: new TextFormField(
+                    decoration: const InputDecoration(
+                        icon: const Icon(Icons.note),
+                        hintText: 'Game notes',
+                        labelText: 'Game notes'),
+                    keyboardType: TextInputType.text,
+                    obscureText: false,
+                    initialValue: widget.game.notes,
+                    onSaved: (String value) {
+                      widget.game.notes = value;
+                    },
+                  ),
+                ),
+                new Row(
+                  children: <Widget>[
+                    new Expanded(
+                      flex: 1,
+                      child: new SwitchFormField(
+                        icon: CommunityIcons.home,
+                        label: Messages.of(context).homeaway,
+                        initialValue: widget.game.homegame,
+                        onSaved: (bool value) {
+                          widget.game.homegame = value;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

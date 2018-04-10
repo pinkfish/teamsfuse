@@ -39,6 +39,8 @@ class LoginScreenState extends State<LoginScreen> {
       form.save();
       // Login!
       print(person);
+      // Remove any spaces at the begining/end.
+      person.email = person.email.trim();
       UserAuth.instance.signIn(person).then((FirebaseUser user) {
         print('Home page');
         Navigator.of(context).pushNamed("/Home");

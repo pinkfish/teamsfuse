@@ -27,7 +27,7 @@ class SeasonPlayer {
   static const String _ROLE = 'role';
   static const String _PHOTOURL = 'photourl';
 
-  void fromJSON(Map<String, dynamic> data) {
+  void fromJSON(Map<dynamic, dynamic> data) {
     role = RoleInTeam.values.firstWhere((e) => e.toString() == data[_ROLE]);
     displayName = getString(data[NAME]);
     photoUrl = getString(data[_PHOTOURL]);
@@ -84,17 +84,17 @@ class Season {
     this.uid = uid;
     name = getString(data[NAME]);
     record = new WinRecord();
-    record.fromJSON(data[RECORD]);
+    record.fromJSON(data[RECORD]  as Map<dynamic, dynamic>);
     this.teamUid = teamUid;
     this.record = record;
     this.teamUid = data[TEAMUID];
-    Map<String, dynamic> playersData = data[PLAYERS];
+    Map<dynamic, dynamic> playersData = data[PLAYERS];
     List<SeasonPlayer> newPlayers = new List<SeasonPlayer>();
     playersData.forEach((key, val) {
       SeasonPlayer player = new SeasonPlayer();
       player.playerUid = key;
       if (val != null) {
-        player.fromJSON(val);
+        player.fromJSON(val  as Map<dynamic, dynamic>);
         newPlayers.add(player);
       }
     });
@@ -160,7 +160,7 @@ class Season {
     if (snapshot.documents.length > 0) {
       Invite invite = new Invite();
       invite.fromJSON(
-          snapshot.documents[0].documentID, snapshot.documents[0].data);
+          snapshot.documents[0].documentID, snapshot.documents[0].data  as Map<String, dynamic>);
       invite.playerName.add(playername);
       invite.seasonName = name;
       invite.teamName = team.name;
@@ -203,7 +203,7 @@ class Season {
 
       query.documents.forEach((DocumentSnapshot doc) {
         Invite invite = new Invite();
-        invite.fromJSON(doc.documentID, doc.data);
+        invite.fromJSON(doc.documentID, doc.data  as Map<String, dynamic>);
         ret.add(invite);
       });
       _invites = ret;

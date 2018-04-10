@@ -136,11 +136,13 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
       );
     });
 
-    return new SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: new Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: cols,
+    return new Scrollbar(
+      child: new SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: cols,
+        ),
       ),
     );
   }

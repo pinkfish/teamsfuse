@@ -37,8 +37,8 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
   }
 
   Future<void> _chooseImage() async {
-    File imgFile =
-        await ImagePicker.pickImage(maxHeight: 150.0, maxWidth: 150.0);
+    File imgFile = await ImagePicker.pickImage(
+        source: ImageSource.gallery, maxHeight: 150.0, maxWidth: 150.0);
 
     if (imgFile != null) {
       setState(() {
@@ -120,13 +120,15 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
           ),
         ],
       ),
-      body: new SingleChildScrollView(
-        child: new Form(
-          autovalidate: _autoValidate,
-          key: _formKey,
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: _buildPlayerData(),
+      body: new Scrollbar(
+        child: new SingleChildScrollView(
+          child: new Form(
+            autovalidate: _autoValidate,
+            key: _formKey,
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _buildPlayerData(),
+            ),
           ),
         ),
       ),

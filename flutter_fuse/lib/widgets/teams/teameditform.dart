@@ -58,7 +58,7 @@ class TeamEditFormState extends State<TeamEditForm> {
 
   void _selectImage() async {
     File imgFile =
-        await ImagePicker.pickImage(maxHeight: 150.0, maxWidth: 150.0);
+        await ImagePicker.pickImage(source: ImageSource.gallery, maxHeight: 150.0, maxWidth: 150.0);
 
     if (imgFile != null) {
       setState(() {

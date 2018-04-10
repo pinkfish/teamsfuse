@@ -122,7 +122,7 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
           picked.year, picked.month, picked.day, value.hour, value.minute);
       Duration diff = value.difference(newTime);
 
-      onChanged(newTime);
+      didChange(newTime);
       if (onFieldSubmitted != null) {
         onFieldSubmitted(newTime);
       }
@@ -143,7 +143,7 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
       DateTime newTime = new DateTime(
           value.year, value.month, value.day, picked.hour, picked.minute);
       Duration diff = value.difference(newTime);
-      onChanged(newTime);
+      didChange(newTime);
       if (onFieldSubmitted != null) {
         onFieldSubmitted(newTime);
       }

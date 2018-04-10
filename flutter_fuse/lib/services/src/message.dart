@@ -135,7 +135,7 @@ class Message {
       this.recipients = {};
       data[_RECIPIENTS].forEach((String str, Map<String, dynamic> data) {
         MessageRecipient rec = new MessageRecipient();
-        rec.fromJSON(str, data);
+        rec.fromJSON(str, data  as Map<String, dynamic>);
         this.recipients[rec.userId] = rec;
       });
     }

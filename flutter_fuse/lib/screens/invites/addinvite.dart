@@ -147,11 +147,13 @@ class AddInviteScreenState extends State<AddInviteScreen> {
       barrierDismissible: false, // user must tap button!
       child: new AlertDialog(
         title: new Text(mess.deleteinvite),
-        content: new SingleChildScrollView(
-          child: new ListBody(
-            children: <Widget>[
-              new Text(mess.confirmdelete(_invite)),
-            ],
+        content: new Scrollbar(
+          child: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                new Text(mess.confirmdelete(_invite)),
+              ],
+            ),
           ),
         ),
         actions: <Widget>[
@@ -323,18 +325,20 @@ class AddInviteScreenState extends State<AddInviteScreen> {
           ),
         ],
       ),
-      body: new SingleChildScrollView(
-        child: new Form(
-          key: _formKey,
-          child: new Column(
-            children: <Widget>[
-                  new ListTile(
-                    leading: const Icon(CommunityIcons.tshirtcrew),
-                    title: new Text(_invite.teamName),
-                    subtitle: new Text(_invite.seasonName),
-                  )
-                ] +
-                players,
+      body: new Scrollbar(
+        child: new SingleChildScrollView(
+          child: new Form(
+            key: _formKey,
+            child: new Column(
+              children: <Widget>[
+                    new ListTile(
+                      leading: const Icon(CommunityIcons.tshirtcrew),
+                      title: new Text(_invite.teamName),
+                      subtitle: new Text(_invite.seasonName),
+                    )
+                  ] +
+                  players,
+            ),
           ),
         ),
       ),

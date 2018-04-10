@@ -6,8 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 
-
-
 const TextStyle _kStepStyle = const TextStyle(
   fontSize: 12.0,
   color: Colors.white,

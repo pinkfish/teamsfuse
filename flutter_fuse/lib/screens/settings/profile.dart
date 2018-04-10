@@ -178,10 +178,13 @@ class ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      body: new SingleChildScrollView(
-        child: new Column(
+      body: new Scrollbar(
+        child: new SingleChildScrollView(
+          child: new Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: _buildPlayerData()),
+            children: _buildPlayerData(),
+          ),
+        ),
       ),
     );
   }

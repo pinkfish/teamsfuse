@@ -74,7 +74,7 @@ class PlacesFormFieldState extends FormFieldState<LocationAndPlace> {
     final LocationAndPlace picked =
         await MapData.instance.getPlaceAndLocation();
     if (picked != null) {
-      onChanged(picked);
+      didChange(picked);
       if (onFieldSubmitted != null) {
         onFieldSubmitted(picked);
       }

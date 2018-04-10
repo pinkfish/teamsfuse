@@ -36,7 +36,7 @@ class SwitchFormField extends FormField<bool> {
                 new Switch(
                   value: state.value,
                   onChanged: (bool value) {
-                    field.onChanged(value);
+                    field.didChange(value);
                     if (onFieldSubmitted != null) {
                       onFieldSubmitted(value);
                     }

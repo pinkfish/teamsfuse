@@ -47,7 +47,7 @@ class GameResultDetails {
   static const String _RESULT = 'result';
   static const String _INPROGRESS = 'inProgress';
 
-  void fromJSON(Map<String, dynamic> data) {
+  void fromJSON(Map<dynamic, dynamic> data) {
     ptsFor = getNum(data[_PTS_FOR]);
     ptsAgainst = getNum(data[_PTS_AGAINST]);
     if (data[_INPROGRESS] == null) {
@@ -107,7 +107,7 @@ class GamePlace {
   static const String _LONGITUDE = 'longitude';
   static const String _LATITUDE = 'latitude';
 
-  void fromJSON(Map<String, dynamic> data) {
+  void fromJSON(Map<dynamic, dynamic> data) {
     name = getString(data[NAME]);
     placeId = getString(data[_PLACEID]);
     address = getString(data[_ADDRESS]);
@@ -255,19 +255,19 @@ class Game {
         data[_TRACKATTENDANCE] == null || getBool(data[_TRACKATTENDANCE]);
     type = EventType.values.firstWhere((e) => e.toString() == data[_TYPE]);
     GameResultDetails details = new GameResultDetails();
-    details.fromJSON(data[_RESULT]);
+    details.fromJSON(data[_RESULT] as Map<dynamic, dynamic>);
     result = details;
     GamePlace place = new GamePlace();
-    place.fromJSON(data[_PLACE]);
+    place.fromJSON(data[_PLACE] as Map<dynamic, dynamic>);
     this.place = place;
 
     print('Update Game $uid');
     // Work out attendance.
     Map<String, Attendance> newAttendanceData = new Map<String, Attendance>();
-    Map<String, dynamic> attendanceData = data[_ATTENDANCE];
+    Map<dynamic, dynamic> attendanceData = data[_ATTENDANCE] as Map<dynamic, dynamic>;
     if (attendanceData != null) {
-      attendanceData.forEach((String key, dynamic data) {
-        newAttendanceData[key] = Attendance.values
+      attendanceData.forEach((dynamic key, dynamic data) {
+        newAttendanceData[key.toString()] = Attendance.values
             .firstWhere((e) => e.toString() == data[_ATTENDANCEVALUE]);
       });
     }

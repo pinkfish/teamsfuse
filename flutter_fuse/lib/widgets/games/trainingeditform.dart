@@ -96,85 +96,87 @@ class TrainingEditFormState extends State<TrainingEditForm> {
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
     print("${widget.game.toJSON()}");
-    return new SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      controller: _scrollController,
-      child: new Form(
-        key: _formState,
-        autovalidate: autoValidate,
-        child: new DropdownButtonHideUnderline(
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              new SeasonFormField(
-                decoration: new InputDecoration(
-                  icon: const Icon(CommunityIcons.calendarquestion),
-                  labelText: messages.season,
+    return new Scrollbar(
+      child: new SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        controller: _scrollController,
+        child: new Form(
+          key: _formState,
+          autovalidate: autoValidate,
+          child: new DropdownButtonHideUnderline(
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                new SeasonFormField(
+                  decoration: new InputDecoration(
+                    icon: const Icon(CommunityIcons.calendarquestion),
+                    labelText: messages.season,
+                  ),
+                  initialValue: widget.game.seasonUid,
+                  teamUid: widget.game.teamUid,
+                  onSaved: (String value) {
+                    widget.game.seasonUid = value;
+                  },
                 ),
-                initialValue: widget.game.seasonUid,
-                teamUid: widget.game.teamUid,
-                onSaved: (String value) {
-                  widget.game.seasonUid = value;
-                },
-              ),
-              new DateTimeFormField(
-                labelText: Messages.of(context).gametime,
-                decoration: new InputDecoration(
-                  icon: const Icon(Icons.calendar_today),
+                new DateTimeFormField(
+                  labelText: Messages.of(context).gametime,
+                  decoration: new InputDecoration(
+                    icon: const Icon(Icons.calendar_today),
+                  ),
+                  initialValue: _atDate,
+                  hideDate: false,
+                  onFieldChanged: _updateTimes,
+                  onSaved: (DateTime value) {
+                    _atDate = value;
+                  },
                 ),
-                initialValue: _atDate,
-                hideDate: false,
-                onFieldChanged: _updateTimes,
-                onSaved: (DateTime value) {
-                  _atDate = value;
-                },
-              ),
-              new DateTimeFormField(
-                labelText: Messages.of(context).trainingend,
-                key: _endTimeKey,
-                decoration: new InputDecoration(
-                  icon: const Icon(CommunityIcons.calendarrange),
+                new DateTimeFormField(
+                  labelText: Messages.of(context).trainingend,
+                  key: _endTimeKey,
+                  decoration: new InputDecoration(
+                    icon: const Icon(CommunityIcons.calendarrange),
+                  ),
+                  initialValue: _atEnd,
+                  hideDate: false,
+                  onSaved: (DateTime value) {
+                    _atEnd = value;
+                  },
                 ),
-                initialValue: _atEnd,
-                hideDate: false,
-                onSaved: (DateTime value) {
-                  _atEnd = value;
-                },
-              ),
-              new ListTile(
-                onTap: _showPlacesPicker,
-                leading: const Icon(Icons.place),
-                title: new Text(widget.game.place.name == null
-                    ? messages.unknown
-                    : widget.game.place.name),
-                subtitle: new Text(widget.game.place.address == null
-                    ? messages.unknown
-                    : widget.game.place.address),
-              ),
-              new TextFormField(
-                initialValue: widget.game.notes,
-                decoration: new InputDecoration(
-                  hintText: messages.trainingnoteshint,
-                  labelText: messages.trainingnotes,
-                  icon: const Icon(Icons.note),
+                new ListTile(
+                  onTap: _showPlacesPicker,
+                  leading: const Icon(Icons.place),
+                  title: new Text(widget.game.place.name == null
+                      ? messages.unknown
+                      : widget.game.place.name),
+                  subtitle: new Text(widget.game.place.address == null
+                      ? messages.unknown
+                      : widget.game.place.address),
                 ),
-                onSaved: (String value) {
-                  widget.game.notes = value;
-                },
-              ),
-              new TextFormField(
-                initialValue: widget.game.uniform,
-                decoration: new InputDecoration(
-                    hintText: messages.uniformhint,
-                    labelText: messages.uniform,
-                    icon: const Icon(CommunityIcons.tshirtcrew)),
-                onSaved: (String value) {
-                  widget.game.uniform = value;
-                },
-              ),
-            ],
+                new TextFormField(
+                  initialValue: widget.game.notes,
+                  decoration: new InputDecoration(
+                    hintText: messages.trainingnoteshint,
+                    labelText: messages.trainingnotes,
+                    icon: const Icon(Icons.note),
+                  ),
+                  onSaved: (String value) {
+                    widget.game.notes = value;
+                  },
+                ),
+                new TextFormField(
+                  initialValue: widget.game.uniform,
+                  decoration: new InputDecoration(
+                      hintText: messages.uniformhint,
+                      labelText: messages.uniform,
+                      icon: const Icon(CommunityIcons.tshirtcrew)),
+                  onSaved: (String value) {
+                    widget.game.uniform = value;
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

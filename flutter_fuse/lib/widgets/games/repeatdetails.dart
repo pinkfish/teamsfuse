@@ -17,7 +17,8 @@ class RepeatDetailsWidget extends StatefulWidget {
   final TZDateTime startTime;
   final RepeatData repeat;
 
-  RepeatDetailsWidget(this.startTime, this.repeat, {GlobalKey<RepeatDetailsState> key})
+  RepeatDetailsWidget(this.startTime, this.repeat,
+      {GlobalKey<RepeatDetailsState> key})
       : super(key: key);
 
   @override
@@ -30,7 +31,6 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
   ScrollController _scrollController = new ScrollController();
   bool autoValidate = false;
   GlobalKey<FormState> _formState = new GlobalKey<FormState>();
-
 
   void initState() {
     widget.repeat.dayRepeats[widget.startTime.weekday] = true;
@@ -54,15 +54,18 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
     // Normalize to 0.
     TZDateTime startOfWeek = start.subtract(new Duration(days: start.weekday));
     if (widget.repeat.period != RepeatPeriod.None) {
-      if (widget.repeat.repeatUntil || widget.repeat.period == RepeatPeriod.Monthly) {
+      if (widget.repeat.repeatUntil ||
+          widget.repeat.period == RepeatPeriod.Monthly) {
         print("Interval ${widget.repeat.repeatInterval}");
         for (int i = 0; i < widget.repeat.repeatInterval; i++) {
           if (widget.repeat.period == RepeatPeriod.Monthly) {
-            newDates.add(new TZDateTime(start.location, start.year, start.month + i, start.day,
-                start.hour, start.minute));
+            newDates.add(new TZDateTime(start.location, start.year,
+                start.month + i, start.day, start.hour, start.minute));
           } else {
             DateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
-            for (int dayNum = 0; dayNum < widget.repeat.dayRepeats.length; dayNum++) {
+            for (int dayNum = 0;
+                dayNum < widget.repeat.dayRepeats.length;
+                dayNum++) {
               if (widget.repeat.dayRepeats[dayNum]) {
                 newDates.add(newWeek.add(new Duration(days: dayNum)));
               }
@@ -71,13 +74,18 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
         }
       } else {
         int i = 0;
-        TZDateTime end =
-            new TZDateTime(widget.repeat.endRepeat.location, widget.repeat.endRepeat.year, widget.repeat.endRepeat.month, widget.repeat.endRepeat.day)
-                .add(new Duration(days: 1));
+        TZDateTime end = new TZDateTime(
+                widget.repeat.endRepeat.location,
+                widget.repeat.endRepeat.year,
+                widget.repeat.endRepeat.month,
+                widget.repeat.endRepeat.day)
+            .add(new Duration(days: 1));
         while (
             startOfWeek.millisecondsSinceEpoch < end.millisecondsSinceEpoch) {
           DateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
-          for (int dayNum = 0; dayNum < widget.repeat.dayRepeats.length; dayNum++) {
+          for (int dayNum = 0;
+              dayNum < widget.repeat.dayRepeats.length;
+              dayNum++) {
             if (widget.repeat.dayRepeats[dayNum]) {
               TZDateTime newTime = newWeek.add(new Duration(days: dayNum));
               if (newTime.millisecondsSinceEpoch < end.millisecondsSinceEpoch) {
@@ -194,7 +202,8 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
               child: new GestureDetector(
                 onTap: () {
                   setState(() {
-                    widget.repeat.dayRepeats[pos] = !widget.repeat.dayRepeats[pos];
+                    widget.repeat.dayRepeats[pos] =
+                        !widget.repeat.dayRepeats[pos];
                   });
                 },
                 child: new Chip(
@@ -243,18 +252,20 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return new SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      controller: _scrollController,
-      child: new Form(
-        key: _formState,
-        autovalidate: autoValidate,
-        child: new DropdownButtonHideUnderline(
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: _buildItems(),
+    return new Scrollbar(
+      child: new SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        controller: _scrollController,
+        child: new Form(
+          key: _formState,
+          autovalidate: autoValidate,
+          child: new DropdownButtonHideUnderline(
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: _buildItems(),
+            ),
           ),
         ),
       ),

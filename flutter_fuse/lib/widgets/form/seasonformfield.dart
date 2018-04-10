@@ -34,7 +34,7 @@ class SeasonFormField extends FormField<String> {
                       items: state._buildItems(state.context),
                       onChanged: (dynamic val) {
                         state.setValue(val);
-                        field.onChanged(val);
+                        field.didChange(val);
                         if (onFieldSubmitted != null) {
                           onFieldSubmitted(val);
                         }

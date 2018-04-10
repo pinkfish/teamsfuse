@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
 import 'package:flutter_fuse/widgets/games/gameslist.dart';
+import 'package:flutter_fuse/widgets/games/ganeslistcalendar.dart';
+import 'package:flutter_fuse/widgets/calendar/calendar.dart';
 import 'package:flutter_fuse/widgets/invites/invitecard.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/fabdialer.dart';
 import 'package:flutter_fuse/widgets/util/fabminimenuitem.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
-import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
 import 'dart:async';
 
@@ -24,10 +25,11 @@ class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription<UpdateReason> _teamSubscription;
   StreamSubscription<UpdateReason> _messagaesSubscription;
   FilterDetails _details = new FilterDetails();
-  ScrollController _scrollController = new ScrollController();
+  GameListCalendarState _calendarState = new GameListCalendarState();
+  ScrollController _scrollController =
+      new ScrollController(initialScrollOffset: 300.0);
 
   void _showInvites(BuildContext context) {
-    print("showing invites");
     Navigator.pushNamed(context, "Invites");
   }
 
@@ -36,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       child: new FilterHomeDialog(_details),
     );
+    //setState(() {});
+    await _calendarState.loadGames(_details);
     setState(() {});
   }
 
@@ -121,29 +125,126 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }
+    return new Scaffold(
+      drawer: new FusedDrawer(),
+      body: new CustomScrollView(
+        shrinkWrap: false,
+        controller: _scrollController,
+        scrollDirection: Axis.vertical,
+        slivers: <Widget>[
+          new SliverAppBar(
+            title: new Text(messages.title),
+            actions: actions,
+            flexibleSpace: new GestureDetector(
+              onTap: () {
+                _showInvites(context);
+              },
+              child: new InviteCard(),
+            ),
+            primary: true,
+            pinned: true,
+          ),
+          new GameList(_details),
+        ],
+      ),
+      floatingActionButton: new FabDialer(
+        menu: <FabMiniMenuItemWidget>[
+          new FabMiniMenuItemWidget(
+            icon: const Icon(Icons.mail),
+            fabColor: Colors.lightBlueAccent,
+            text: messages.newmail,
+            onPressed: () => Navigator.pushNamed(context, "AddMessage"),
+          ),
+          new FabMiniMenuItemWidget(
+            icon: const Icon(Icons.calendar_today),
+            fabColor: Colors.blueAccent,
+            text: messages.addevent,
+            onPressed: () => Navigator.pushNamed(context, "AddEvent"),
+          ),
+          new FabMiniMenuItemWidget(
+            icon: const Icon(Icons.people),
+            fabColor: Colors.blueGrey,
+            text: messages.addtraining,
+            onPressed: () => Navigator.pushNamed(context, "AddTraining"),
+          ),
+          new FabMiniMenuItemWidget(
+            icon: const Icon(Icons.gamepad),
+            fabColor: theme.accentColor,
+            text: messages.addgame,
+            onPressed: () => Navigator.pushNamed(context, "AddGame"),
+          ),
+        ],
+        color: theme.accentColor,
+        icon: new Icon(Icons.add),
+      ),
+    );
+/*
+    return new Scaffold(
+      drawer: new FusedDrawer(),
+      appBar: new AppBar(
+        title: new Text(Messages.of(context).title),
+        actions: actions,
+      ),
+      floatingActionButton: new FabDialer(
+        menu: <FabMiniMenuItemWidget>[
+          new FabMiniMenuItemWidget(
+            icon: const Icon(Icons.mail),
+            fabColor: Colors.lightBlueAccent,
+            text: messages.newmail,
+            onPressed: () => Navigator.pushNamed(context, "AddMessage"),
+          ),
+          new FabMiniMenuItemWidget(
+            icon: const Icon(Icons.calendar_today),
+            fabColor: Colors.blueAccent,
+            text: messages.addevent,
+            onPressed: () => Navigator.pushNamed(context, "AddEvent"),
+          ),
+          new FabMiniMenuItemWidget(
+            icon: const Icon(Icons.people),
+            fabColor: Colors.blueGrey,
+            text: messages.addtraining,
+            onPressed: () => Navigator.pushNamed(context, "AddTraining"),
+          ),
+          new FabMiniMenuItemWidget(
+            icon: const Icon(Icons.gamepad),
+            fabColor: theme.accentColor,
+            text: messages.addgame,
+            onPressed: () => Navigator.pushNamed(context, "AddGame"),
+          ),
+        ],
+        color: theme.accentColor,
+        icon: new Icon(Icons.add),
+      ),
+      body: new CustomScrollView(
+        slivers: <Widget>[
+          new SliverListCalendar(
+              initialDate: new DateTime.now(), source: _calendarState),
+        ],
+      ),
+    );
 
     return new Scaffold(
         drawer: new FusedDrawer(),
         body: new CustomScrollView(
-          shrinkWrap: false,
-          controller: _scrollController,
-          scrollDirection: Axis.vertical,
-          slivers: <Widget>[
-            new SliverAppBar(
-              expandedHeight: 150.0,
-              title: new Text(messages.title),
-              actions: actions,
-              flexibleSpace: new GestureDetector(
-                onTap: () {
-                  _showInvites(context);
-                },
-                child: new InviteCard(),
+            shrinkWrap: false,
+            controller: _scrollController,
+            scrollDirection: Axis.vertical,
+            slivers: <Widget>[
+              new SliverAppBar(
+                title: new Text(messages.title),
+                actions: actions,
+                flexibleSpace: new GestureDetector(
+                  onTap: () {
+                    _showInvites(context);
+                  },
+                  child: new InviteCard(),
+                ),
+                primary: true,
+                pinned: true,
               ),
-              primary: true,
-            ),
-            new GameList(_details),
-          ],
-        ),
+              new GameList(_details),
+            ],
+          ),
         floatingActionButton: new FabDialer(
           menu: <FabMiniMenuItemWidget>[
             new FabMiniMenuItemWidget(
@@ -174,6 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: theme.accentColor,
           icon: new Icon(Icons.add),
         ));
+        */
   }
 
   @override
@@ -187,6 +289,9 @@ class _HomeScreenState extends State<HomeScreen> {
         .listen((UpdateReason reason) => setState(() {}));
     _scrollController.addListener(() {
       print('Scroll controller listener');
+    });
+    _calendarState.loadGames(_details).then((void d) {
+      setState(() {});
     });
   }
 

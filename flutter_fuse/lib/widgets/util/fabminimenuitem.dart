@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 typedef void OnFabMiniMenuItemPressed();
 
@@ -10,21 +11,18 @@ class FabMiniMenuItemWidget extends StatelessWidget {
       this.textColor,
       this.tooltip,
       this.text,
-      this.icon,
+      @required this.icon,
       this.index,
-      this.fabColor,
+      @required this.fabColor,
       this.chipColor,
       this.controller,
-      this.onPressed})
+      @required this.onPressed})
       : super(key: key);
   final double elevation;
   final String text;
-  @required
   final Icon icon;
   int index;
-  @required
   final Color fabColor;
-  @required
   final OnFabMiniMenuItemPressed onPressed;
   AnimationController controller;
 

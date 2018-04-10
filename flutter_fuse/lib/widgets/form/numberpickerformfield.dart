@@ -32,7 +32,7 @@ class NumberPickerFormField extends FormField<num> {
                     minValue: minValue,
                     maxValue: maxValue,
                     onChanged: (num value) {
-                      field.onChanged(value);
+                      field.didChange(value);
                       onFieldSubmitted(value);
                     }));
           });

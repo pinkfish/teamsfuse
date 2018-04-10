@@ -10,11 +10,14 @@ import 'package:flutter_fuse/screens/login/signup.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
-import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
 import 'package:flutter_timezone/timezone.dart';
+
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'dart:async';
 
 class Routes {
   UserData _currentUser;
@@ -60,7 +63,13 @@ class Routes {
       setLocalLocation(getLocation(currentTimeZone));
       UserDatabaseData.load(user.uid, user.email);
       print('$currentTimeZone ${local.toString()}');
-
+      Directory dir = await getApplicationDocumentsDirectory();
+      Stream<FileSystemEntity> files = dir.list(recursive: true);
+      print('Getting files');
+      files
+        .forEach((FileSystemEntity e) {
+          print(e.path);
+        });
     } else {
       UserDatabaseData.clear();
     }

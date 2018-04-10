@@ -361,6 +361,8 @@ class GameDetailsState extends State<GameDetails> {
     }
 
     return new Column(
-        mainAxisAlignment: MainAxisAlignment.start, children: body);
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: body,
+    );
   }
 }

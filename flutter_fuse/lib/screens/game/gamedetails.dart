@@ -58,32 +58,34 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
                   .copyWith(color: Colors.white))));
     }
 
-
     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(Messages.of(context).gametitlevs(opponent.name)),
-          actions: actions,
-        ),
-        bottomNavigationBar: new BottomNavigationBar(
+      appBar: new AppBar(
+        title: new Text(Messages.of(context).gametitlevs(opponent.name)),
+        actions: actions,
+      ),
+      bottomNavigationBar: new BottomNavigationBar(
           onTap: (int index) {
             setState(() {
               _tabIndex = index;
             });
           },
-            currentIndex: _tabIndex,
-            items: [
-          new BottomNavigationBarItem(
-            icon: const Icon(Icons.gamepad),
-            title: new Text(Messages.of(context).gamedetails),
-          ),
-          new BottomNavigationBarItem(
-              icon: const Icon(Icons.people),
-              title: new Text(Messages.of(context).gameavailability))
-        ]),
-        body: new SingleChildScrollView(
+          currentIndex: _tabIndex,
+          items: [
+            new BottomNavigationBarItem(
+              icon: const Icon(Icons.gamepad),
+              title: new Text(Messages.of(context).gamedetails),
+            ),
+            new BottomNavigationBarItem(
+                icon: const Icon(Icons.people),
+                title: new Text(Messages.of(context).gameavailability))
+          ]),
+      body: new Scrollbar(
+        child: new SingleChildScrollView(
           scrollDirection: Axis.vertical,
           controller: _scrollController,
           child: body,
-        ));
+        ),
+      ),
+    );
   }
 }

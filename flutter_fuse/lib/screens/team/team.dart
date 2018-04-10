@@ -22,7 +22,11 @@ class TeamScreenState extends State<TeamScreen> {
 
   Widget _buildBody() {
     if (_tabIndex == 0) {
-      return new SingleChildScrollView(child:new TeamDetails(widget.teamUid));
+      return new Scrollbar(
+        child: new SingleChildScrollView(
+          child: new TeamDetails(widget.teamUid),
+        ),
+      );
     }
     return new TeamPlayers(widget.teamUid);
   }
@@ -36,17 +40,21 @@ class TeamScreenState extends State<TeamScreen> {
     List<Widget> actions = new List<Widget>();
     if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
       if (UserDatabaseData.instance.teams[widget.teamUid].isAdmin()) {
-        actions.add(new FlatButton(
+        actions.add(
+          new FlatButton(
             onPressed: () {
               this._onEditTeam(context);
             },
-            child: new Text(Messages.of(context).editbuttontext,
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .subhead
-                    .copyWith(color: Colors.white))),
-          );
+            child: new Text(
+              Messages.of(context).editbuttontext,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .subhead
+                  .copyWith(color: Colors.white),
+            ),
+          ),
+        );
       }
     }
     return new Scaffold(

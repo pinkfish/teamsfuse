@@ -18,7 +18,7 @@ class PlayerUser {
 
   static const String _RELATIONSHIP = 'relationship';
 
-  void fromJSON(Map<String, dynamic> data) {
+  void fromJSON(Map<dynamic, dynamic> data) {
     try {
       relationship = Relationship.values
           .firstWhere((e) => e.toString() == data[_RELATIONSHIP]);
@@ -68,13 +68,13 @@ class Player {
     photoUrl = data[PHOTOURL];
 
     Map<String, PlayerUser> newUsers = new Map<String, PlayerUser>();
-    Map<String, dynamic> usersData = data[USERS];
+    Map<dynamic, dynamic> usersData = data[USERS] as Map<dynamic, dynamic>;
     if (usersData != null) {
-      usersData.forEach((String key, dynamic data) {
+      usersData.forEach((dynamic key, dynamic data) {
         PlayerUser mapToUser = new PlayerUser();
-        mapToUser.userUid = key;
-        mapToUser.fromJSON(data);
-        newUsers[key] = mapToUser;
+        mapToUser.userUid = key.toString();
+        mapToUser.fromJSON(data as Map<dynamic, dynamic>);
+        newUsers[key.toString()] = mapToUser;
       });
     }
     users = newUsers;

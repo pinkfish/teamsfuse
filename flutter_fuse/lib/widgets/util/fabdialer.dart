@@ -16,14 +16,20 @@ class FabDialer extends StatefulWidget {
 class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
   FabDialerState();
 
+
   int _angle = 90;
   bool _isRotated = true;
 
   AnimationController _controller;
 
   @override
+  void deactivate() {
+    //closeDialer();
+  }
+
+  @override
   void initState() {
-    _controller = new AnimationController(
+     _controller = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 180),
     );
@@ -31,6 +37,14 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
     _controller.reverse();
 
     super.initState();
+  }
+
+  void closeDialer() {
+    if (_isRotated) {
+      setState(() {
+        _isRotated = false;
+      });
+    }
   }
 
   void _rotate() {

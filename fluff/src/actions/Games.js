@@ -27,7 +27,7 @@ export function fetchGameData() {
 
 export function fetchGameDataAdd(game) {
   return { type: FETCH_GAME_DATA_ADD, payload: game }
-}
+}a
 
 export function fetchGameDataDelete(game) {
   return { type: FETCH_GAME_DATA_DELETE, payload: game }

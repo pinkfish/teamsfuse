@@ -58,8 +58,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void _selectImage() async {
-    File imgFile =
-        await ImagePicker.pickImage(maxHeight: 150.0, maxWidth: 150.0);
+    File imgFile = await ImagePicker.pickImage(
+        source: ImageSource.gallery, maxHeight: 150.0, maxWidth: 150.0);
 
     if (imgFile != null) {
       setState(() {
@@ -120,69 +120,71 @@ class EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ],
       ),
-      body: new SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        controller: _scrollController,
-        child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Form(
-              key: _formKey,
-              autovalidate: _autovalidate,
-              child: new DropdownButtonHideUnderline(
-                child: new Column(
-                  children: <Widget>[
-                    new IconButton(
-                      onPressed: this._selectImage,
-                      iconSize: (screenSize.width < 500)
-                          ? 120.0
-                          : (screenSize.width / 4) + 12.0,
-                      icon: this._buildImage(),
-                    ),
-                    new EnsureVisibleWhenFocused(
-                      focusNode: _focusNode,
-                      child: new TextFormField(
-                        decoration: new InputDecoration(
-                          icon: const Icon(Icons.person),
-                          hintText: Messages.of(context).displayname,
-                          labelText: Messages.of(context).displaynamehint,
-                        ),
-                        initialValue: user.profile.displayName,
-                        keyboardType: TextInputType.text,
-                        obscureText: false,
-                        validator: (String name) {
-                          return _validations.validateName(context, name);
-                        },
-                        onSaved: (String value) {
-                          user.profile.displayName = value;
-                        },
+      body: new Scrollbar(
+        child: new SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          controller: _scrollController,
+          child: new Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new Form(
+                key: _formKey,
+                autovalidate: _autovalidate,
+                child: new DropdownButtonHideUnderline(
+                  child: new Column(
+                    children: <Widget>[
+                      new IconButton(
+                        onPressed: this._selectImage,
+                        iconSize: (screenSize.width < 500)
+                            ? 120.0
+                            : (screenSize.width / 4) + 12.0,
+                        icon: this._buildImage(),
                       ),
-                    ),
-                    new EnsureVisibleWhenFocused(
-                      focusNode: _focusNode,
-                      child: new TextFormField(
-                        decoration: new InputDecoration(
-                          icon: const Icon(Icons.phone),
-                          hintText: Messages.of(context).phonenumber,
-                          labelText: Messages.of(context).phonenumberhint,
+                      new EnsureVisibleWhenFocused(
+                        focusNode: _focusNode,
+                        child: new TextFormField(
+                          decoration: new InputDecoration(
+                            icon: const Icon(Icons.person),
+                            hintText: Messages.of(context).displayname,
+                            labelText: Messages.of(context).displaynamehint,
+                          ),
+                          initialValue: user.profile.displayName,
+                          keyboardType: TextInputType.text,
+                          obscureText: false,
+                          validator: (String name) {
+                            return _validations.validateName(context, name);
+                          },
+                          onSaved: (String value) {
+                            user.profile.displayName = value;
+                          },
                         ),
-                        initialValue: user.profile.phoneNumber,
-                        keyboardType: TextInputType.text,
-                        obscureText: false,
-                        validator: (String phone) {
-                          return _validations.validatePhone(context, phone);
-                        },
-                        onSaved: (String value) {
-                          user.profile.displayName = value;
-                        },
                       ),
-                    ),
-                  ],
+                      new EnsureVisibleWhenFocused(
+                        focusNode: _focusNode,
+                        child: new TextFormField(
+                          decoration: new InputDecoration(
+                            icon: const Icon(Icons.phone),
+                            hintText: Messages.of(context).phonenumber,
+                            labelText: Messages.of(context).phonenumberhint,
+                          ),
+                          initialValue: user.profile.phoneNumber,
+                          keyboardType: TextInputType.text,
+                          obscureText: false,
+                          validator: (String phone) {
+                            return _validations.validatePhone(context, phone);
+                          },
+                          onSaved: (String value) {
+                            user.profile.displayName = value;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

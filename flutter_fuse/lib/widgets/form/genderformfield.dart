@@ -32,7 +32,7 @@ class GenderFormField extends FormField<String> {
                 value: state.value,
                 onChanged: (dynamic val) {
                   state.setValue(val);
-                  field.onChanged(val);
+                  field.didChange(val);
                   if (onFieldSubmitted != null) {
                     onFieldSubmitted(val);
                   }

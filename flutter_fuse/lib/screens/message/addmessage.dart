@@ -195,7 +195,8 @@ class AddMessageScreenState extends State<AddMessageScreen> {
                   if (toAdd) {
                     _message.recipients[player.playerUid] =
                         new MessageRecipient(
-                            playerId: player.playerUid, name: player.displayName);
+                            playerId: player.playerUid,
+                            name: player.displayName);
                   } else {
                     _message.recipients.remove(player.playerUid);
                   }
@@ -253,20 +254,22 @@ class AddMessageScreenState extends State<AddMessageScreen> {
           ),
         ],
       ),
-      body: new SingleChildScrollView(
-        child: new DropdownButtonHideUnderline(
-          child: new Form(
-            key: _formKey,
-            child: new Column(
-              children: <Widget>[
-                    new ListTile(
-                      leading: const Icon(CommunityIcons.tshirtcrew),
-                      title: new TeamPicker(
-                        onChanged: _changeTeam,
+      body: new Scrollbar(
+        child: new SingleChildScrollView(
+          child: new DropdownButtonHideUnderline(
+            child: new Form(
+              key: _formKey,
+              child: new Column(
+                children: <Widget>[
+                      new ListTile(
+                        leading: const Icon(CommunityIcons.tshirtcrew),
+                        title: new TeamPicker(
+                          onChanged: _changeTeam,
+                        ),
                       ),
-                    ),
-                  ] +
-                  _buildPlayerPicker(),
+                    ] +
+                    _buildPlayerPicker(),
+              ),
             ),
           ),
         ),
