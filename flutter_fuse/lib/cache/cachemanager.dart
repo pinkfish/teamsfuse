@@ -61,7 +61,7 @@ class CacheManager {
     var jsonCacheString = _prefs.getString(_keyCacheData);
     _cacheData = new Map();
     if (jsonCacheString != null) {
-      Map jsonCache = JSON.decode(jsonCacheString);
+      Map jsonCache = json.decode(jsonCacheString);
       jsonCache.forEach((key, data) {
         _cacheData[key] = new CacheObject.fromMap(key, data);
       });
@@ -101,16 +101,16 @@ class CacheManager {
   }
 
   _saveDataInPrefs() async {
-    Map<String, dynamic> json = new Map();
+    Map<String, dynamic> jsonMap = new Map();
 
     await synchronized(_lock, () {
       _cacheData.forEach((key, cache) {
-        if (json[key] != null) {
-          json[key] = cache.toMap();
+        if (jsonMap[key] != null) {
+          jsonMap[key] = cache.toMap();
         }
       });
     });
-    _prefs.setString(_keyCacheData, JSON.encode(json));
+    _prefs.setString(_keyCacheData, json.encode(jsonMap));
 
     if (await _shouldSaveAgain()) {
       await _saveDataInPrefs();
@@ -283,7 +283,7 @@ class CacheManager {
     var response;
     try {
       if (useFirebase) {
-        FirebaseStorage.instance.ref().child(url).getDownlodUrl();
+        FirebaseStorage.instance.ref().child(url).getDownloadURL();
       } else {
         response = await http.get(url, headers: headers);
       }

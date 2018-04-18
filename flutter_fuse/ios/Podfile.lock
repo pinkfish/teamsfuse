@@ -80,8 +80,13 @@ PODS:
     - FirebaseCore (~> 4.0)
     - GTMSessionFetcher/Core (~> 1.1)
   - Flutter (1.0.0)
-  - flutter_timezone (0.0.1):
+  - flutter_native_timezone (1.0.0):
     - Flutter
+  - flutter_places_dialog (0.0.1):
+    - Flutter
+    - GoogleMaps
+    - GooglePlacePicker
+    - GooglePlaces
   - FMDB (2.7.2):
     - FMDB/standard (= 2.7.2)
   - FMDB/standard (2.7.2)
@@ -90,6 +95,11 @@ PODS:
   - GoogleMaps/Base (2.6.0)
   - GoogleMaps/Maps (2.6.0):
     - GoogleMaps/Base
+  - GooglePlacePicker (2.6.0):
+    - GoogleMaps (= 2.6.0)
+    - GooglePlaces (= 2.6.0)
+  - GooglePlaces (2.6.0):
+    - GoogleMaps/Base (= 2.6.0)
   - GoogleToolboxForMac/DebugUtils (2.1.3):
     - GoogleToolboxForMac/Defines (= 2.1.3)
   - GoogleToolboxForMac/Defines (2.1.3)
@@ -150,9 +160,10 @@ DEPENDENCIES:
   - firebase_auth (from `Pods/.symlinks/plugins/firebase_auth-0.4.7/ios`)
   - firebase_core (from `Pods/.symlinks/plugins/firebase_core-0.0.7/ios`)
   - firebase_messaging (from `Pods/.symlinks/plugins/firebase_messaging-0.2.1/ios`)
-  - firebase_storage (from `Pods/.symlinks/plugins/firebase_storage-0.1.4/ios`)
+  - firebase_storage (from `Pods/.symlinks/plugins/firebase_storage-0.2.2/ios`)
   - Flutter (from `Pods/.symlinks/flutter/ios`)
-  - flutter_timezone (from `Pods/.symlinks/plugins/flutter_timezone/ios`)
+  - flutter_native_timezone (from `Pods/.symlinks/plugins/flutter_native_timezone/ios`)
+  - flutter_places_dialog (from `Pods/.symlinks/plugins/flutter_places_dialog/ios`)
   - image_picker (from `Pods/.symlinks/plugins/image_picker-0.4.1/ios`)
   - map_view (from `Pods/.symlinks/plugins/flutter_google_map_view/ios`)
   - path_provider (from `Pods/.symlinks/plugins/path_provider-0.3.1/ios`)
@@ -172,11 +183,13 @@ EXTERNAL SOURCES:
   firebase_messaging:
     :path: Pods/.symlinks/plugins/firebase_messaging-0.2.1/ios
   firebase_storage:
-    :path: Pods/.symlinks/plugins/firebase_storage-0.1.4/ios
+    :path: Pods/.symlinks/plugins/firebase_storage-0.2.2/ios
   Flutter:
     :path: Pods/.symlinks/flutter/ios
-  flutter_timezone:
-    :path: Pods/.symlinks/plugins/flutter_timezone/ios
+  flutter_native_timezone:
+    :path: Pods/.symlinks/plugins/flutter_native_timezone/ios
+  flutter_places_dialog:
+    :path: Pods/.symlinks/plugins/flutter_places_dialog/ios
   image_picker:
     :path: Pods/.symlinks/plugins/image_picker-0.4.1/ios
   map_view:
@@ -198,7 +211,7 @@ SPEC CHECKSUMS:
   firebase_auth: 499d5bfb249606a276f6bddf292a3b2d44139f75
   firebase_core: eb181e4f329c1806efdf2aed9e59ea98fe924ef5
   firebase_messaging: cd056e1b7baf9adddec56402c3de4158aac3c5fa
-  firebase_storage: 1cce0976d0b4f144e8241662255ade6f84aa0577
+  firebase_storage: e34d30ff8bb57e691191b70e9d255ec2eba2351f
   FirebaseAnalytics: 388b630c15713f5dbf364071f5f3d6077fb52f4e
   FirebaseAuth: aaaf68d5064a6c8fec435758f83a43b8db26ccaa
   FirebaseCore: 3bd047463058fa6b5d312c97502c52e45401cdfb
@@ -208,9 +221,12 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 2bafab2d0f3ab3dfd753101c2c32995c2051b5da
   FirebaseStorage: 181bb543d39ee3c53e0558de7ba86b1286a0427f
   Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
-  flutter_timezone: 8217e34aa8eb0b6aa2998948764e9b5164dadc9d
+  flutter_native_timezone: 8a240238f0e3aaddcc8018aa5621158c8eb1f480
+  flutter_places_dialog: cbbfeaa16565999b5bbd8874b05ce8e8484a97ab
   FMDB: 6198a90e7b6900cfc046e6bc0ef6ebb7be9236aa
   GoogleMaps: 42f91c68b7fa2f84d5c86597b18ceb99f5414c7f
+  GooglePlacePicker: e4488625effb006f59de49e14b7a603e463e4261
+  GooglePlaces: f6ddf33b75cef69e888907d9947c57198ed845f3
   GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
   gRPC: 58828d611419d49da19ad02a60679ffa10a10a87
   gRPC-Core: 66413bf1f2d038a6221bc7bfcbeeaa5a117cee29
@@ -227,6 +243,6 @@ SPEC CHECKSUMS:
   sqflite: d1612813fa7db7c667bed9f1d1b508deffc56999
   url_launcher: 92b89c1029a0373879933c21642958c874539095
 
-PODFILE CHECKSUM: 0420ab312a523ae0eecfb1fc19ea51dd82cc17c7
+PODFILE CHECKSUM: 92da071ea603c16e3b236b3ee60e046f477e36e6
 
 COCOAPODS: 1.4.0

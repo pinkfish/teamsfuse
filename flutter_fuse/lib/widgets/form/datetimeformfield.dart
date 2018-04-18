@@ -29,7 +29,7 @@ class DateTimeFormField extends FormField<DateTime> {
                       new InputDecoration(labelText: labelText))
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme)
                   .copyWith(labelText: labelText);
-              print('label ${effectiveDecoration.labelText} ${labelText}');
+              print('label ${effectiveDecoration.labelText} $labelText');
 
               List<Widget> children = new List<Widget>();
               if (!hideDate && !hideTime) {

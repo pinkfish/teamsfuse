@@ -1,7 +1,6 @@
 import 'common.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:timezone/timezone.dart';
 
 enum MessageState { Read, Unread, Archived }
@@ -85,7 +84,6 @@ class Message {
   static const String _FROMIUD = 'fromUid';
   static const String _FROMNAME = 'fromName';
   static const String _TEAMUID = 'teamUid';
-  static const String _MESSAGE = 'message';
   static const String TIMESENT = 'timeSent';
   static const String _SUBJECT = 'subject';
   static const String _BODY = 'body';
@@ -94,14 +92,14 @@ class Message {
   static const String _RECIPIENTS = 'recipients';
 
   Map<String, dynamic> toJSON(
-      {@required bool includeMessage = false, bool forSQL = false}) {
+      {bool includeMessage = false, bool forSQL = false}) {
     Map<String, dynamic> data = new Map<String, dynamic>();
     data[_TEAMUID] = teamUid;
     data[_FROMIUD] = fromUid;
     data[_FROMNAME] = fromName;
     data[_SUBJECT] = subject;
     if (includeMessage) {
-      data[_MESSAGE] = message;
+      data[_BODY] = message;
     }
     data[TIMESENT] = timeSent;
     if (forSQL) {
@@ -121,7 +119,7 @@ class Message {
     teamUid = getString(data[_TEAMUID]);
     fromUid = getString(data[_FROMIUD]);
     fromName = getString(data[_FROMNAME]);
-    message = getString(data[_MESSAGE]);
+    message = getString(data[_BODY]);
     timeSent = getNum(data[TIMESENT]);
     subject = getString(data[_SUBJECT]);
     if (data.containsKey(_LASTSEEN)) {
@@ -135,7 +133,7 @@ class Message {
       this.recipients = {};
       data[_RECIPIENTS].forEach((String str, Map<String, dynamic> data) {
         MessageRecipient rec = new MessageRecipient();
-        rec.fromJSON(str, data  as Map<String, dynamic>);
+        rec.fromJSON(str, data);
         this.recipients[rec.userId] = rec;
       });
     }
@@ -167,7 +165,7 @@ class Message {
         return rec.uid;
       });
       Map<String, dynamic> messageData = {};
-      messageData[_MESSAGE] = message;
+      messageData[_BODY] = message;
       await messageRef.setData(messageData);
     } else {
       // Update the message.
@@ -183,7 +181,7 @@ class Message {
         .document(uid);
     DocumentSnapshot snap = await ref.get();
     if (snap.exists) {
-      message = snap.data[_MESSAGE];
+      message = snap.data[_BODY];
       messagesLoaded = true;
       return message;
     }

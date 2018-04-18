@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
 import 'package:flutter_fuse/widgets/games/gameslist.dart';
 import 'package:flutter_fuse/widgets/games/ganeslistcalendar.dart';
-import 'package:flutter_fuse/widgets/calendar/calendar.dart';
 import 'package:flutter_fuse/widgets/invites/invitecard.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/fabdialer.dart';
@@ -36,7 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showFilterDialog() async {
     await showDialog(
       context: context,
-      child: new FilterHomeDialog(_details),
+      builder: (BuildContext context) {
+        return new FilterHomeDialog(_details);
+      },
     );
     //setState(() {});
     await _calendarState.loadGames(_details);

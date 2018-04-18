@@ -3,7 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'fabminimenuitem.dart';
 
 class FabDialer extends StatefulWidget {
-  const FabDialer({@required this.menu, @required this.color, @required this.icon});
+  const FabDialer(
+      {@required this.menu, @required this.color, @required this.icon});
 
   final List<FabMiniMenuItemWidget> menu;
   final Color color;
@@ -16,25 +17,25 @@ class FabDialer extends StatefulWidget {
 class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
   FabDialerState();
 
-
   int _angle = 90;
   bool _isRotated = true;
 
-  AnimationController _controller;
+  AnimationController controller;
 
   @override
   void deactivate() {
     //closeDialer();
+    super.deactivate();
   }
 
   @override
   void initState() {
-     _controller = new AnimationController(
+    controller = new AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 180),
     );
 
-    _controller.reverse();
+    controller.reverse();
 
     super.initState();
   }
@@ -52,23 +53,27 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
       if (_isRotated) {
         _angle = 45;
         _isRotated = false;
-        _controller.forward();
+        controller.forward();
       } else {
         _angle = 90;
         _isRotated = true;
-        _controller.reverse();
+        controller.reverse();
       }
     });
   }
 
+  int getIndex(FabMiniMenuItemWidget fabwidget) {
+    return widget.menu.indexOf(fabwidget);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Update all the menu items.
     int index = 0;
     widget.menu.forEach((FabMiniMenuItemWidget widget) {
-      widget.index = index++;
-      widget.updateAnimationController(_controller);
+      widget.details.controller = controller;
+      widget.details.index = index++;
     });
+    // Update all the menu items.
     return new Container(
       margin: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       child: new Column(

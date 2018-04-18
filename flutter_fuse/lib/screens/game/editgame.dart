@@ -29,7 +29,7 @@ class EditGameScreenState extends State<EditGameScreen> {
   }
 
   void _savePressed(BuildContext context) async {
-    if (await _gameFormKey.currentState.validate()) {
+    if (_gameFormKey.currentState.validate()) {
       _gameFormKey.currentState.save();
       await _gameFormKey.currentState.finalGameResult.updateFirestore();
       Navigator.pop(context);

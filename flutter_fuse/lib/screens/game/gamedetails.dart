@@ -57,10 +57,15 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
                   .subhead
                   .copyWith(color: Colors.white))));
     }
+    String opponentName;
+    if (opponent != null) {
+      opponentName = opponent.name;
+    }
+    opponentName = Messages.of(context).unknown;
 
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).gametitlevs(opponent.name)),
+        title: new Text(Messages.of(context).gametitlevs(opponentName)),
         actions: actions,
       ),
       bottomNavigationBar: new BottomNavigationBar(

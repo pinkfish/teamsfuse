@@ -24,11 +24,11 @@ class EditResultDialogState extends State<EditResultDialog> {
   Debouncer<bool> debouncer;
   int _ptsFor;
   int _ptsAgainst;
+  GameResultPerPeriod _finalPeriod;
 
   EditResultDialogState() {
     _details = new GameResultDetails.copy(widget.game.result);
-    _ptsFor = _details.ptsFor;
-    _ptsAgainst = _details.ptsAgainst;
+    _finalPeriod = new GameResultPerPeriod.copy(_details.scores.firstWhere((GameResultPerPeriod p) => p.period == GameInProgress.Final));
     _team = UserDatabaseData.instance.teams[widget.game.teamUid];
     if (_team == null) {
       _team = new Team();
@@ -52,25 +52,35 @@ class EditResultDialogState extends State<EditResultDialog> {
       // Ask if they are sure
       bool ret = await showDialog(
         context: context,
-        child: new AlertDialog(
-          title: new Text(Messages.of(context).startgame),
-          content: new Text(Messages.of(context).startgamebody),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-            ),
-            new FlatButton(
-              child:
-                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
-              onPressed: () {
-                Navigator.pop(context, false);
-              },
-            )
-          ],
-        ),
+          builder: (BuildContext context) {
+            return new AlertDialog(
+              title: new Text(Messages
+                  .of(context)
+                  .startgame),
+              content: new Text(Messages
+                  .of(context)
+                  .startgamebody),
+              actions: <Widget>[
+                new FlatButton(
+                  child: new Text(MaterialLocalizations
+                      .of(context)
+                      .okButtonLabel),
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                ),
+                new FlatButton(
+                  child:
+                  new Text(MaterialLocalizations
+                      .of(context)
+                      .cancelButtonLabel),
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                )
+              ],
+            );
+          }
       );
       if (ret != null && ret == true) {
         // Save the state update.
@@ -84,35 +94,43 @@ class EditResultDialogState extends State<EditResultDialog> {
         result == GameInProgress.Final) {
       // Finalize game?
       GameResult gameResult;
-      if (_details.ptsFor > _details.ptsAgainst) {
+      if (_finalPeriod.ptsFor > _finalPeriod.ptsAgainst) {
         gameResult = GameResult.Win;
-      } else if (_details.ptsFor < _details.ptsAgainst) {
+      } else if (_finalPeriod.ptsFor < _finalPeriod.ptsAgainst) {
         gameResult = GameResult.Loss;
       } else {
         gameResult = GameResult.Tie;
       }
       bool ret = await showDialog(
         context: context,
-        child: new AlertDialog(
-          title: new Text(Messages.of(context).finalscore),
-          content: new Text(Messages.of(context).finalscorebody(
-              _details.ptsFor, _details.ptsAgainst, gameResult.toString())),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-            ),
-            new FlatButton(
-              child:
-                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
-              onPressed: () {
-                Navigator.pop(context, false);
-              },
-            )
-          ],
-        ),
+          builder: (BuildContext context) {
+            return new AlertDialog(
+              title: new Text(Messages
+                  .of(context)
+                  .finalscore),
+              content: new Text(Messages.of(context).finalscorebody(
+                  _finalPeriod.ptsFor, _finalPeriod.ptsAgainst, gameResult.toString())),
+              actions: <Widget>[
+                new FlatButton(
+                  child: new Text(MaterialLocalizations
+                      .of(context)
+                      .okButtonLabel),
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                ),
+                new FlatButton(
+                  child:
+                  new Text(MaterialLocalizations
+                      .of(context)
+                      .cancelButtonLabel),
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                )
+              ],
+            );
+          }
       );
       if (ret != null && ret == true) {
         // Save the state update.
@@ -137,8 +155,8 @@ class EditResultDialogState extends State<EditResultDialog> {
 
   void _updateScore() {
     setState(() {
-      _details.ptsAgainst = _ptsAgainst;
-      _details.ptsFor = _ptsFor;
+      _finalPeriod.ptsAgainst = _ptsAgainst;
+      _finalPeriod.ptsFor = _ptsFor;
     });
     debouncer.debounce(true);
   }
@@ -185,7 +203,7 @@ class EditResultDialogState extends State<EditResultDialog> {
                         child: new NumberPicker.integer(
                           disabled:
                               _details.inProgress == GameInProgress.NotStarted,
-                          initialValue: _details.ptsFor,
+                          initialValue: _finalPeriod.ptsFor,
                           minValue: 0,
                           maxValue: 10000,
                           onChanged: (num val) {
@@ -258,7 +276,7 @@ class EditResultDialogState extends State<EditResultDialog> {
                         child: new NumberPicker.integer(
                           disabled:
                               _details.inProgress == GameInProgress.NotStarted,
-                          initialValue: _details.ptsAgainst,
+                          initialValue: _finalPeriod.ptsAgainst,
                           minValue: 0,
                           maxValue: 10000,
                           onChanged: (num val) {

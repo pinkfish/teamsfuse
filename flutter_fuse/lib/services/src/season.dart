@@ -160,7 +160,7 @@ class Season {
     if (snapshot.documents.length > 0) {
       Invite invite = new Invite();
       invite.fromJSON(
-          snapshot.documents[0].documentID, snapshot.documents[0].data  as Map<String, dynamic>);
+          snapshot.documents[0].documentID, snapshot.documents[0].data);
       invite.playerName.add(playername);
       invite.seasonName = name;
       invite.teamName = team.name;
@@ -203,7 +203,7 @@ class Season {
 
       query.documents.forEach((DocumentSnapshot doc) {
         Invite invite = new Invite();
-        invite.fromJSON(doc.documentID, doc.data  as Map<String, dynamic>);
+        invite.fromJSON(doc.documentID, doc.data);
         ret.add(invite);
       });
       _invites = ret;

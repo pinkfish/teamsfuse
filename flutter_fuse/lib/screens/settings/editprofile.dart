@@ -28,18 +28,23 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   FocusNode _focusNode = new FocusNode();
   File _imageFile;
   bool _changedImage = false;
-  UserData user;
+  UserData _user;
   StreamSubscription streamListen;
   final Player me;
 
   EditProfileScreenState(String meUid)
-      : me = new Player.copy(UserDatabaseData.instance.players[meUid]) {
+      : me = new Player.copy(UserDatabaseData.instance.players[meUid]);
+
+  void initState() {
+    super.initState();
     UserAuth.instance.currentUser().then((UserData data) {
-      this.user = new UserData.copy(data);
+      setState(() {
+        _user = data;
+      });
     });
     streamListen = UserAuth.instance.onAuthChanged().listen((UserData data) {
       setState(() {
-        this.user = new UserData.copy(data);
+        _user = data;
       });
     });
   }
@@ -95,7 +100,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Widget build(BuildContext context) {
-    if (user == null) {
+    if (_user == null) {
       return new Text('Invalid state');
     }
 
@@ -149,14 +154,14 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                             hintText: Messages.of(context).displayname,
                             labelText: Messages.of(context).displaynamehint,
                           ),
-                          initialValue: user.profile.displayName,
+                          initialValue: _user.profile.displayName,
                           keyboardType: TextInputType.text,
                           obscureText: false,
                           validator: (String name) {
                             return _validations.validateName(context, name);
                           },
                           onSaved: (String value) {
-                            user.profile.displayName = value;
+                            _user.profile.displayName = value;
                           },
                         ),
                       ),
@@ -168,14 +173,14 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                             hintText: Messages.of(context).phonenumber,
                             labelText: Messages.of(context).phonenumberhint,
                           ),
-                          initialValue: user.profile.phoneNumber,
+                          initialValue: _user.profile.phoneNumber,
                           keyboardType: TextInputType.text,
                           obscureText: false,
                           validator: (String phone) {
                             return _validations.validatePhone(context, phone);
                           },
                           onSaved: (String value) {
-                            user.profile.displayName = value;
+                            _user.profile.displayName = value;
                           },
                         ),
                       ),

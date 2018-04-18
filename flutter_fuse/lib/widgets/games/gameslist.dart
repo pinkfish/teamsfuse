@@ -6,8 +6,8 @@ import 'dart:async';
 import 'package:flutter_fuse/widgets/util/sliverlistcenter.dart';
 
 class GameList extends StatefulWidget {
-  FilterDetails details;
-  DateTime nowTime = new DateTime.now();
+  final FilterDetails details;
+  final DateTime nowTime = new DateTime.now();
 
   GameList(this.details);
 
@@ -26,8 +26,8 @@ class GameOrHeader {
 class GameListState extends State<GameList> {
   StreamSubscription<UpdateReason> _updateStream;
   List<Game> _listToShow;
-  int _startIndex = 0;
   ScrollController _scrollController = new ScrollController();
+  int _startIndex;
 
   @override
   void initState() {
@@ -79,11 +79,12 @@ class GameListState extends State<GameList> {
       );
     }
     return new SliverListCenter(
+      startIndex: _startIndex,
       delegate:
           new SliverChildBuilderDelegate((BuildContext context, int index) {
         print('Render index $index');
         if (_listToShow != null) {
-          int gameIndex = (index / 2).toInt();
+          int gameIndex = index ~/ 2;
           if (_listToShow.length > gameIndex) {
             Game game = _listToShow[gameIndex];
 

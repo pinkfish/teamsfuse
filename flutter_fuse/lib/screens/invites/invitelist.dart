@@ -37,34 +37,40 @@ class InviteListScreenState extends State<InviteListScreen> {
     bool result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      child: new AlertDialog(
-        title: new Text(mess.deleteinvite),
-        content: new Scrollbar(
-          child: new SingleChildScrollView(
-            child: new ListBody(
-              children: <Widget>[
-                new Text(mess.confirmdelete(invite)),
-              ],
+        builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text(mess.deleteinvite),
+            content: new Scrollbar(
+              child: new SingleChildScrollView(
+                child: new ListBody(
+                  children: <Widget>[
+                    new Text(mess.confirmdelete(invite)),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
-        actions: <Widget>[
-          new FlatButton(
-            child: new Text(MaterialLocalizations.of(context).okButtonLabel),
-            onPressed: () {
-              // Do the delete.
-              Navigator.of(context).pop(true);
-            },
-          ),
-          new FlatButton(
-            child:
-                new Text(MaterialLocalizations.of(context).cancelButtonLabel),
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-          ),
-        ],
-      ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text(MaterialLocalizations
+                    .of(context)
+                    .okButtonLabel),
+                onPressed: () {
+                  // Do the delete.
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              new FlatButton(
+                child:
+                new Text(MaterialLocalizations
+                    .of(context)
+                    .cancelButtonLabel),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+            ],
+          );
+        }
     );
     if (result) {
       await invite.firestoreDelete();

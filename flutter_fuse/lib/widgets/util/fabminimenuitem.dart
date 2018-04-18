@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter/foundation.dart';
+import 'fabdialer.dart';
 
 typedef void OnFabMiniMenuItemPressed();
+
+class MenuDetails {
+  int index;
+  AnimationController controller;
+}
 
 class FabMiniMenuItemWidget extends StatelessWidget {
   FabMiniMenuItemWidget(
@@ -12,29 +18,20 @@ class FabMiniMenuItemWidget extends StatelessWidget {
       this.tooltip,
       this.text,
       @required this.icon,
-      this.index,
       @required this.fabColor,
       this.chipColor,
-      this.controller,
       @required this.onPressed})
       : super(key: key);
   final double elevation;
   final String text;
   final Icon icon;
-  int index;
   final Color fabColor;
   final OnFabMiniMenuItemPressed onPressed;
-  AnimationController controller;
+  final MenuDetails details = new MenuDetails();
 
   final Color chipColor;
   final String tooltip;
   final Color textColor;
-
-  void updateAnimationController(AnimationController controller) {
-    if (this.controller == null) {
-      this.controller = controller;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +43,7 @@ class FabMiniMenuItemWidget extends StatelessWidget {
     if (textColor == null) {
       textColor = Theme.of(context).textTheme.body1.color;
     }
+
     return new Container(
       margin: new EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
       child: new Row(
@@ -55,9 +53,9 @@ class FabMiniMenuItemWidget extends StatelessWidget {
             margin: new EdgeInsets.symmetric(horizontal: 8.0),
             child: new ScaleTransition(
               scale: new CurvedAnimation(
-                parent: controller,
+                parent: details.controller,
                 curve: new Interval(
-                  ((index + 1) / 10),
+                  ((details.index + 1) / 10),
                   1.0,
                   curve: Curves.linear,
                 ),
@@ -78,15 +76,15 @@ class FabMiniMenuItemWidget extends StatelessWidget {
           ),
           new ScaleTransition(
             scale: new CurvedAnimation(
-              parent: controller,
-              curve:
-                  new Interval(((index + 1) / 10), 1.0, curve: Curves.linear),
+              parent: details.controller,
+              curve: new Interval(((details.index + 1) / 10), 1.0,
+                  curve: Curves.linear),
             ),
             child: new FloatingActionButton(
               elevation: elevation,
               mini: true,
               backgroundColor: fabColor,
-              heroTag: "Inner fab " + index.toString(),
+              heroTag: "Inner fab " + details.index.toString(),
               tooltip: tooltip,
               child: icon,
               onPressed: onPressed,

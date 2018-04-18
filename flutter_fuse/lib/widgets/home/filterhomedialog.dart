@@ -35,10 +35,12 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     });
     showDialog(
       context: context,
-      child: new SimpleDialog(
-        title: new Text(messages.teamselect),
-        children: teams,
-      ),
+        builder: (BuildContext context) {
+          return new SimpleDialog(
+            title: new Text(messages.teamselect),
+            children: teams,
+          );
+        },
     );
   }
 
@@ -82,10 +84,12 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     });
     showDialog(
       context: context,
-      child: new SimpleDialog(
-        title: new Text(messages.teamselect),
-        children: teams,
-      ),
+        builder: (BuildContext context) {
+          return new SimpleDialog(
+            title: new Text(messages.teamselect),
+            children: teams,
+          );
+        },
     );
   }
 

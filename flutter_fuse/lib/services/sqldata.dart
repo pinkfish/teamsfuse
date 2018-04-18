@@ -100,7 +100,7 @@ class SqlData {
     List<Map<String, dynamic>> data = await _database.query(table);
 
     data.forEach((Map<String, dynamic> innerData) {
-      ret[innerData[INDEX]] = JSON.decode(innerData[DATA]);
+      ret[innerData[INDEX]] = json.decode(innerData[DATA]);
     });
 
     return ret;
@@ -117,13 +117,13 @@ class SqlData {
       return null;
     }
 
-    return JSON.decode(data[0][DATA]);
+    return json.decode(data[0][DATA]);
   }
 
   Future<void> updateElement(
       String tableId, String key, Map<String, dynamic> data) async {
     await _initialized;
-    String json = JSON.encode(data);
+    String myJson = json.encode(data);
 
     await _database.execute(
         "insert or replace into " +
@@ -133,7 +133,7 @@ class SqlData {
             ", " +
             DATA +
             ") values (?, ?)",
-        [key, json]);
+        [key, myJson]);
   }
 
   Future<int> deleteElement(String tableId, String key) async {
@@ -152,7 +152,7 @@ class SqlData {
         .query(table, where: TEAMUID + " = ?", whereArgs: [teamUid]);
 
     data.forEach((Map<String, dynamic> innerData) {
-      ret[innerData[INDEX]] = JSON.decode(innerData[DATA]);
+      ret[innerData[INDEX]] = json.decode(innerData[DATA]);
     });
 
     return ret;
@@ -161,7 +161,7 @@ class SqlData {
   Future<void> updateTeamElement(String tableId, String key, String teamUid,
       Map<String, dynamic> data) async {
     await _initialized;
-    String json = JSON.encode(data);
+    String myJson = json.encode(data);
 
     await _database.execute(
         "insert or replace into " +
@@ -173,7 +173,7 @@ class SqlData {
             ", " +
             DATA +
             ") values (?, ?, ?)",
-        [key, teamUid, json]);
+        [key, teamUid, myJson]);
   }
 
   void clearTable(String tableId) {

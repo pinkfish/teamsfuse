@@ -64,7 +64,11 @@ class GameDetailsState extends State<GameDetails> {
   void _editResult() async {
     // Call up a dialog to edit the result.
     await showDialog(
-        context: context, child: new EditResultDialog(widget.game));
+      context: context,
+      builder: (BuildContext context) {
+        return new EditResultDialog(widget.game);
+      },
+    );
   }
 
   void _openAttendance() async {
@@ -74,15 +78,20 @@ class GameDetailsState extends State<GameDetails> {
       Attendance current = _attendence[player];
 
       Attendance attend = await showDialog<Attendance>(
-        context: context,
-        child: new AttendanceDialog(current: current),
-      );
+          context: context,
+          builder: (BuildContext context) {
+            return new AttendanceDialog(current: current);
+          });
       if (attend != null) {
         widget.game.updateFirestoreAttendence(player.uid, attend);
       }
     } else {
       Map<Player, Attendance> attend = await showDialog(
-          context: context, child: new MultipleAttendanceDialog(_attendence));
+        context: context,
+        builder: (BuildContext context) {
+          return new MultipleAttendanceDialog(_attendence);
+        },
+      );
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
           widget.game.updateFirestoreAttendence(player.uid, attend);
@@ -131,7 +140,7 @@ class GameDetailsState extends State<GameDetails> {
   @override
   Widget build(BuildContext context) {
     print(
-        'lat: ${widget.game.place.latitude} long: ${widget.game.place.longitude}');
+        'lat: ${widget.game.place.latitude} long: ${widget.game.place.longitude} ${widget.game.uid}');
     Marker marker = new Marker(
         widget.game.place.placeId,
         widget.game.place.address,
@@ -240,40 +249,39 @@ class GameDetailsState extends State<GameDetails> {
         if (widget.game.time >
             new DateTime.now()
                 .subtract(const Duration(hours: 1))
-                .millisecondsSinceEpoch) {
-          // Started.
-          switch (widget.game.result.result) {
-            case GameResult.Unknown:
-              title = Messages.of(context).resultunknown;
-              resultStyle = theme.textTheme.subhead;
-              break;
-            case GameResult.Loss:
-              title = Messages.of(context).resultloss(widget.game.result);
-              resultStyle =
-                  theme.textTheme.subhead.copyWith(color: theme.errorColor);
-              break;
-            case GameResult.Win:
-              title = Messages.of(context).resultwin(widget.game.result);
-              resultStyle =
-                  theme.textTheme.subhead.copyWith(color: theme.accentColor);
-              break;
-            case GameResult.Tie:
-              title = Messages.of(context).resulttie(widget.game.result);
-              resultStyle = theme.textTheme.subhead;
-              break;
-            case GameResult.InProgress:
-              title = Messages.of(context).resultinprogress(widget.game.result);
-              resultStyle = theme.textTheme.subhead;
-              break;
-          }
-          body.add(
-            new ListTile(
-              onTap: this._editResult,
-              leading: new Icon(CommunityIcons.bookopenvariant),
-              title: new Text(title, style: resultStyle),
-            ),
-          );
+                .millisecondsSinceEpoch) {}
+        // Started.
+        switch (widget.game.result.result) {
+          case GameResult.Unknown:
+            title = Messages.of(context).resultunknown;
+            resultStyle = theme.textTheme.subhead;
+            break;
+          case GameResult.Loss:
+            title = Messages.of(context).resultloss(widget.game.result);
+            resultStyle =
+                theme.textTheme.subhead.copyWith(color: theme.errorColor);
+            break;
+          case GameResult.Win:
+            title = Messages.of(context).resultwin(widget.game.result);
+            resultStyle =
+                theme.textTheme.subhead.copyWith(color: theme.accentColor);
+            break;
+          case GameResult.Tie:
+            title = Messages.of(context).resulttie(widget.game.result);
+            resultStyle = theme.textTheme.subhead;
+            break;
+          case GameResult.InProgress:
+            title = Messages.of(context).resultinprogress(widget.game.result);
+            resultStyle = theme.textTheme.subhead;
+            break;
         }
+        body.add(
+          new ListTile(
+            onTap: this._editResult,
+            leading: new Icon(CommunityIcons.bookopenvariant),
+            title: new Text(title, style: resultStyle),
+          ),
+        );
       }
     } else {
       // Tell people this is a practice or special event.
@@ -335,8 +343,12 @@ class GameDetailsState extends State<GameDetails> {
       body.add(
         new ExpansionTile(
           onExpansionChanged: this._opponentExpansionChanged,
-          title: new Row(
+          title: new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              new Text(
+                Messages.of(context).opponentseason(opponent, seasonName),
+              ),
               new Text(
                 Messages.of(context).opponentwinrecord(
                     opponent, widget.game.seasonUid, seasonName),

@@ -21,17 +21,17 @@ class GooglePlacesAutocompleteWidget extends StatefulWidget {
 
   GooglePlacesAutocompleteWidget(
       {this.apiKey = MapData.APIKEY,
-        this.mode = Mode.fullscreen,
-        this.hint = "Search",
-        this.offset,
-        this.location,
-        this.radius,
-        this.language,
-        this.types,
-        this.components,
-        this.strictbounds,
-        this.onError,
-        Key key})
+      this.mode = Mode.fullscreen,
+      this.hint = "Search",
+      this.offset,
+      this.location,
+      this.radius,
+      this.language,
+      this.types,
+      this.components,
+      this.strictbounds,
+      this.onError,
+      Key key})
       : super(key: key);
 
   @override
@@ -52,7 +52,7 @@ class _GooglePlacesAutocompleteScaffoldState
   Widget build(BuildContext context) {
     final appBar = new AppBar(title: new AppBarPlacesAutoCompleteTextField());
     final body =
-    new GooglePlacesAutocompleteResult(onTap: Navigator.of(context).pop);
+        new GooglePlacesAutocompleteResult(onTap: Navigator.of(context).pop);
     return new Scaffold(appBar: appBar, body: body);
   }
 }
@@ -79,14 +79,14 @@ class _GooglePlacesAutocompleteOverlayState
               ),
               new Expanded(
                   child: new Padding(
-                    child: _textField(),
-                    padding: const EdgeInsets.only(right: 8.0),
-                  )),
+                child: _textField(),
+                padding: const EdgeInsets.only(right: 8.0),
+              )),
             ],
           )),
       new Divider(
-        //height: 1.0,
-      )
+          //height: 1.0,
+          )
     ]);
 
     var body;
@@ -116,7 +116,7 @@ class _GooglePlacesAutocompleteOverlayState
               child: new ListBody(
                   children: response.predictions
                       .map((p) => new PredictionTile(
-                      prediction: p, onTap: Navigator.of(context).pop))
+                          prediction: p, onTap: Navigator.of(context).pop))
                       .toList())));
     }
 
@@ -139,14 +139,14 @@ class _GooglePlacesAutocompleteOverlayState
       : new Icon(Icons.arrow_back);
 
   Widget _textField() => new TextField(
-    controller: query,
-    autofocus: true,
-    decoration: new InputDecoration(
-        hintText: widget.hint,
-        hintStyle: new TextStyle(color: Colors.black54, fontSize: 16.0),
-        border: null),
-    onChanged: search,
-  );
+        controller: query,
+        autofocus: true,
+        decoration: new InputDecoration(
+            hintText: widget.hint,
+            hintStyle: new TextStyle(color: Colors.black54, fontSize: 16.0),
+            border: null),
+        onChanged: search,
+      );
 }
 
 class _Loader extends StatelessWidget {
@@ -252,7 +252,7 @@ class PredictionsListView extends StatelessWidget {
     return new ListView(
         children: predictions
             .map((Prediction p) =>
-        new PredictionTile(prediction: p, onTap: onTap))
+                new PredictionTile(prediction: p, onTap: onTap))
             .toList());
   }
 }
@@ -279,30 +279,35 @@ class PredictionTile extends StatelessWidget {
 
 Future<Prediction> showGooglePlacesAutocomplete(
     {@required BuildContext context,
-      Mode mode = Mode.fullscreen,
-      String hint = "Search",
-      num offset,
-      Location location,
-      num radius,
-      String language,
-      List<String> types,
-      List<Component> components,
-      bool strictbounds,
-      ValueChanged<PlacesAutocompleteResponse> onError}) {
+    Mode mode = Mode.fullscreen,
+    String hint = "Search",
+    num offset,
+    Location location,
+    num radius,
+    String language,
+    List<String> types,
+    List<Component> components,
+    bool strictbounds,
+    ValueChanged<PlacesAutocompleteResponse> onError}) {
   final builder = (BuildContext ctx) => new GooglePlacesAutocompleteWidget(
-    mode: mode,
-    language: language,
-    components: components,
-    types: types,
-    location: location,
-    strictbounds: strictbounds,
-    offset: offset,
-    hint: hint,
-    onError: onError,
-  );
+        mode: mode,
+        language: language,
+        components: components,
+        types: types,
+        location: location,
+        strictbounds: strictbounds,
+        offset: offset,
+        hint: hint,
+        onError: onError,
+      );
 
   if (mode == Mode.overlay) {
-    return showDialog(context: context, child: builder(context));
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return builder(context);
+      },
+    );
   }
   return Navigator.push(context, new MaterialPageRoute(builder: builder));
 }

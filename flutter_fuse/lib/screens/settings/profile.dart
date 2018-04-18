@@ -20,6 +20,10 @@ class ProfileScreenState extends State<ProfileScreen> {
   Player me;
 
   ProfileScreenState() {
+  }
+
+  void initState() {
+    super.initState();
     UserAuth.instance.currentUser().then((UserData data) {
       setState(() {
         user = data;
@@ -156,7 +160,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   void _editProfile() {
     // Open up the edit profile dialog.
-    Navigator.pushNamed(context, "EditProfile");
+    Navigator.pushNamed(context, "EditProfile/" + me.uid);
   }
 
   @override

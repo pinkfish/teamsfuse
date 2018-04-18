@@ -153,7 +153,7 @@ class Team {
       } else {
         opponent = new Opponent();
       }
-      opponent.fromJSON(doc.documentID, uid, doc.data  as Map<String, dynamic>);
+      opponent.fromJSON(doc.documentID, uid, doc.data);
       opponents[doc.documentID] = opponent;
       toDeleteOpponents.remove(doc.documentID);
       sql.updateTeamElement(
@@ -210,7 +210,7 @@ class Team {
   }
 
   void _onTeamUpdated(DocumentSnapshot snap) {
-    fromJSON(snap.documentID, snap.data  as Map<String, dynamic>);
+    fromJSON(snap.documentID, snap.data);
     print('team ' + uid);
     _updateThisTeam.add(UpdateReason.Update);
     SqlData.instance.updateElement(SqlData.TEAMS_TABLE, uid, toJSON());
@@ -220,10 +220,10 @@ class Team {
     Season season;
     if (seasons.containsKey(doc.documentID)) {
       season = seasons[doc.documentID];
-      season.fromJSON(doc.documentID, doc.data  as Map<String, dynamic>);
+      season.fromJSON(doc.documentID, doc.data);
     } else {
       season = new Season();
-      season.fromJSON(doc.documentID, doc.data  as Map<String, dynamic>);
+      season.fromJSON(doc.documentID, doc.data);
       seasons[doc.documentID] = season;
     }
     SqlData.instance.updateElement(SqlData.SEASON_TABLE, doc.documentID,
@@ -271,7 +271,7 @@ class Team {
     Map<String, Opponent> ops = new Map<String, Opponent>();
     opps.forEach((String opUid, Map<String, dynamic> data) {
       Opponent op = new Opponent();
-      op.fromJSON(opUid, uid, data  as Map<String, dynamic>);
+      op.fromJSON(opUid, uid, data);
       ops[opUid] = op;
     });
     this.opponents = ops;

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
@@ -123,18 +122,6 @@ class GameEditFormState extends State<GameEditForm> {
 
     if (save != null) {
       _opponentState.currentState.setValue(save);
-    }
-  }
-
-  void _showPlacesPicker() async {
-    LocationAndPlace place = await MapData.instance.getPlaceAndLocation();
-    if (place != null) {
-      // Yay!
-      setState(() {
-        widget.game.place.name = place.details.name;
-        widget.game.place.address = place.details.address;
-        widget.game.timezone = place.loc.name;
-      });
     }
   }
 

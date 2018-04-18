@@ -13,7 +13,7 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
-import 'package:flutter_timezone/timezone.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -43,7 +43,7 @@ class Routes {
 
   MaterialApp app;
 
-  Route<Null> _buildRoute(RouteSettings routeSettings) {
+  PageRoute<dynamic> _buildRoute(RouteSettings routeSettings) {
     print(routeSettings.name);
     if (_currentUser != null) {
       if (_currentUser.isEmailVerified) {
@@ -58,8 +58,8 @@ class Routes {
     _currentUser = user;
     if (user != null) {
       final data = await rootBundle.load('assets/timezone/2018c.tzf');
-      final String currentTimeZone = await Timezone.getLocalTimezone();
-      await initializeDatabase(data.buffer.asUint8List());
+      final String currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
+      initializeDatabase(data.buffer.asUint8List());
       setLocalLocation(getLocation(currentTimeZone));
       UserDatabaseData.load(user.uid, user.email);
       print('$currentTimeZone ${local.toString()}');

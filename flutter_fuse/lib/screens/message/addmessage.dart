@@ -180,8 +180,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
         } else {
           // Show the list of players with checkboxes.
           Team team = UserDatabaseData.instance.teams[_message.teamUid];
-          Season season = UserDatabaseData
-              .instance.teams[_message.teamUid].seasons[_seasonUid];
+          Season season = team.seasons[_seasonUid];
 
           season.players.forEach((SeasonPlayer player) {
             ret.add(

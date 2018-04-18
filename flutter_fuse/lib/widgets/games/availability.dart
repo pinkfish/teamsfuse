@@ -19,9 +19,10 @@ class AvailabityState extends State<Availaility> {
 
   void _updateAttendance(SeasonPlayer player, Attendance current) async {
     Attendance attend = await showDialog(
-      context: context,
-      child: new AttendanceDialog(current: current),
-    );
+        context: context,
+        builder: (BuildContext context) {
+          return new AttendanceDialog(current: current);
+        });
     if (attend != null) {
       widget._game.updateFirestoreAttendence(player.playerUid, attend);
     }
@@ -42,7 +43,18 @@ class AvailabityState extends State<Availaility> {
     return new AttendanceIcon(widget._game.attendance[player.playerUid]);
   }
 
-  Iterable<Widget> _buildChildren() {
+  void _showPlayer(BuildContext context, String playerUid) {
+    Navigator.pushNamed(
+        context,
+        "PlayerDetails/" +
+            widget._game.teamUid +
+            "/" +
+            widget._game.seasonUid +
+            "/" +
+            playerUid);
+  }
+
+  Iterable<Widget> _buildChildren(BuildContext context) {
     Team team = UserDatabaseData.instance.teams[widget._game.teamUid];
     Season season = team.seasons[widget._game.seasonUid];
     ThemeData theme = Theme.of(context);
@@ -51,6 +63,7 @@ class AvailabityState extends State<Availaility> {
       bool canEdit =
           UserDatabaseData.instance.players.containsKey(player.playerUid);
       return new ListTile(
+        onTap: () => _showPlayer(context, player.playerUid),
         leading: canEdit
             ? new Icon(Icons.person, color: theme.accentColor)
             : const Icon(Icons.person),
@@ -62,6 +75,8 @@ class AvailabityState extends State<Availaility> {
 
   @override
   Widget build(BuildContext context) {
-    return new ListBody(children: _buildChildren().toList());
+    return new ListBody(
+      children: _buildChildren(context).toList(),
+    );
   }
 }

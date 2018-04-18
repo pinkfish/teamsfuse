@@ -20,17 +20,19 @@ class GameCard extends StatelessWidget {
       Attendance current = attendence[player];
 
       Attendance attend = await showDialog<Attendance>(
-        context: context,
-        child: new AttendanceDialog(current: current),
-      );
+          context: context,
+          builder: (BuildContext context) {
+            return new AttendanceDialog(current: current);
+          });
       if (attend != null) {
         game.updateFirestoreAttendence(player.uid, attend);
       }
     } else {
       Map<Player, Attendance> attend = await showDialog(
-        context: context,
-        child: new MultipleAttendanceDialog(attendence),
-      );
+          context: context,
+          builder: (BuildContext context) {
+            return new MultipleAttendanceDialog(attendence);
+          });
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
           game.updateFirestoreAttendence(player.uid, attend);
@@ -80,16 +82,54 @@ class GameCard extends StatelessWidget {
 
   Widget _buildInProgress(BuildContext context) {
     if (game.result.inProgress == GameInProgress.Final) {
-      return new Column(
-        children: <Widget>[
-          new Text(
-            Messages.of(context).gameresult(game.result.result),
-          ),
-          new Text(
-            "${game.result.ptsFor} - ${game.result.ptsAgainst}",
-          ),
-        ],
-      );
+      GameResultPerPeriod finalResult = game.result.scores.firstWhere(
+          (GameResultPerPeriod p) => p.period == GameInProgress.Final);
+      Iterable<GameResultPerPeriod> temp = game.result.scores.where(
+          (GameResultPerPeriod p) => p.period == GameInProgress.Overtime);
+      GameResultPerPeriod overtimeResult;
+      if (temp.isNotEmpty) {
+        overtimeResult = temp.first;
+      }
+      temp = game.result.scores
+          .where((GameResultPerPeriod p) => p.period == GameInProgress.Penalty);
+      GameResultPerPeriod penaltyResult;
+      if (temp.isNotEmpty) {
+        overtimeResult = penaltyResult;
+      }
+      switch (game.result.result) {
+        case GameResult.Win:
+        case GameResult.Tie:
+        case GameResult.Loss:
+          List<Widget> children = [];
+          children.add(
+            new Text(
+              Messages.of(context).gameresult(game.result.result),
+            ),
+          );
+          children.add(
+            new Text("${finalResult.ptsFor} - ${finalResult.ptsAgainst}"),
+          );
+          if (overtimeResult != null) {
+            children.add(
+              new Text(
+                  "OT ${overtimeResult.ptsFor} - ${overtimeResult.ptsAgainst}"),
+            );
+          }
+          if (penaltyResult != null) {
+            children.add(
+              new Text(
+                  "PT ${penaltyResult.ptsFor} - ${penaltyResult.ptsAgainst}"),
+            );
+          }
+          return new Column(
+            children: children,
+          );
+
+        case GameResult.InProgress:
+        case GameResult.Unknown:
+          // Do the in progress in this case.
+          break;
+      }
     }
     return new Column(
       children: <Widget>[
@@ -97,7 +137,7 @@ class GameCard extends StatelessWidget {
           Messages.of(context).gameinprogress(game.result.inProgress),
         ),
         new Text(
-          "${game.result.ptsFor} - ${game.result.ptsAgainst}",
+          Messages.of(context).resultinprogress(game.result),
         ),
       ],
     );

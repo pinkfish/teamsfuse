@@ -56,7 +56,7 @@ class Player {
   }
 
   // ignore
-  StreamSubscription<QuerySnapshot> get snapshot {
+  StreamSubscription<QuerySnapshot> get _snapshot {
     return UserDatabaseData.snapshotMapping[this];
   }
 

@@ -122,7 +122,9 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
   void _changeRole() async {
     RoleInTeam role = await showDialog(
       context: context,
-      child: new _RoleInTeamAlertDialog(_player.role),
+      builder: (BuildContext context) {
+        return new _RoleInTeamAlertDialog(_player.role);
+      },
     );
     if (role != null) {
       _season.updateRoleInTeam(_player, role);
@@ -136,34 +138,40 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     bool result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      child: new AlertDialog(
-        title: new Text(mess.deleteplayer),
-        content: new Scrollbar(
-          child: new SingleChildScrollView(
-            child: new ListBody(
-              children: <Widget>[
-                new Text(mess.confirmremovefromteam(_player.displayName)),
-              ],
+        builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text(mess.deleteplayer),
+            content: new Scrollbar(
+              child: new SingleChildScrollView(
+                child: new ListBody(
+                  children: <Widget>[
+                    new Text(mess.confirmremovefromteam(_player.displayName)),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
-        actions: <Widget>[
-          new FlatButton(
-            child: new Text(MaterialLocalizations.of(context).okButtonLabel),
-            onPressed: () {
-              // Do the delete.
-              Navigator.of(context).pop(true);
-            },
-          ),
-          new FlatButton(
-            child:
-                new Text(MaterialLocalizations.of(context).cancelButtonLabel),
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-          ),
-        ],
-      ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text(MaterialLocalizations
+                    .of(context)
+                    .okButtonLabel),
+                onPressed: () {
+                  // Do the delete.
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              new FlatButton(
+                child:
+                new Text(MaterialLocalizations
+                    .of(context)
+                    .cancelButtonLabel),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+            ],
+          );
+        }
     );
     if (result) {
       _season.removePlayer(_player);
@@ -182,7 +190,6 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     UserDatabaseData.instance
         .getPlayer(_player.playerUid, withProfile: true)
         .then((Player player) {
-      print('got player ${player.toJSON()}');
       setState(() {
         _playerDetails = player;
       });

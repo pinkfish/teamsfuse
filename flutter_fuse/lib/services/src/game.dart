@@ -19,37 +19,73 @@ enum GameInProgress {
   Nineth,
   Tenth,
   Half,
+  Penalty,
+  Overtime,
   Final
 }
 
-class GameResultDetails {
+class GameResultPerPeriod {
+  GameResultPerPeriod({this.period, this.ptsFor, this.ptsAgainst});
+  GameResultPerPeriod.copy(GameResultPerPeriod res) {
+    period = res.period;
+    ptsAgainst = res.ptsAgainst;
+    ptsFor = res.ptsFor;
+    print("copy ${res} ${toString()}");
+
+  }
+  GameInProgress period;
   num ptsFor;
   num ptsAgainst;
+
+  String toString() {
+    return "GameResultPerPeriod[ $period, ptsFor: $ptsFor, ptsAgainst: $ptsAgainst]";
+  }
+}
+
+class GameResultDetails {
   GameResult result;
   GameInProgress inProgress;
+  List<GameResultPerPeriod> scores;
 
   GameResultDetails() {
-    ptsAgainst = 0;
-    ptsFor = 0;
     result = GameResult.Unknown;
     inProgress = GameInProgress.NotStarted;
+    scores = [
+      new GameResultPerPeriod(
+          period: GameInProgress.Final, ptsAgainst: 0, ptsFor: 0)
+    ];
   }
 
   GameResultDetails.copy(GameResultDetails copy) {
-    ptsAgainst = copy.ptsAgainst;
-    ptsFor = copy.ptsFor;
     result = copy.result;
     inProgress = copy.inProgress;
+    scores = copy.scores
+        .map((GameResultPerPeriod p) => new GameResultPerPeriod.copy(p))
+        .toList();
   }
 
+  static const String _SCORES = "scores";
   static const String _PTS_FOR = 'ptsFor';
   static const String _PTS_AGAINST = 'ptsAgainst';
   static const String _RESULT = 'result';
   static const String _INPROGRESS = 'inProgress';
 
   void fromJSON(Map<dynamic, dynamic> data) {
-    ptsFor = getNum(data[_PTS_FOR]);
-    ptsAgainst = getNum(data[_PTS_AGAINST]);
+    if (data.containsKey(_SCORES)) {
+      Map<dynamic, dynamic> scoreData = data[_SCORES];
+      print("$scoreData");
+      List<GameResultPerPeriod> newResults = [];
+      scoreData.forEach((dynamic periodStd, dynamic data) {
+        GameInProgress period = GameInProgress.values
+            .firstWhere((e) => e.toString() == "GameInProgress." + periodStd);
+        num ptsFor = data[_PTS_FOR];
+        num ptsAgainst = data[_PTS_AGAINST];
+        newResults.add(new GameResultPerPeriod(
+            period: period, ptsFor: ptsFor, ptsAgainst: ptsAgainst));
+      });
+      scores = newResults;
+      print("Loaded: ${scores}");
+    }
     if (data[_INPROGRESS] == null) {
       inProgress = GameInProgress.NotStarted;
     } else {
@@ -68,9 +104,16 @@ class GameResultDetails {
   }
 
   Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = new Map<String, dynamic>();
-    ret[_PTS_FOR] = ptsFor;
-    ret[_PTS_AGAINST] = ptsAgainst;
+    Map<String, dynamic> ret = {};
+    Map<String, dynamic> retScores = {};
+    scores.forEach((GameResultPerPeriod p) {
+      Map<String, dynamic> periodExtra = {};
+      periodExtra[_PTS_AGAINST] = p.ptsAgainst;
+      periodExtra[_PTS_FOR] = p.ptsFor;
+      retScores[p.period.toString().replaceFirst("GameInProgress.", "")] =
+          periodExtra;
+    });
+    ret[_SCORES] = retScores;
     ret[_RESULT] = result.toString();
     ret[_INPROGRESS] = inProgress.toString();
     return ret;
@@ -84,13 +127,15 @@ class GamePlace {
   String notes;
   num latitude;
   num longitude;
+  bool unknown;
 
   GamePlace() {
     latitude = 0;
     longitude = 0;
-    address= '';
-     placeId = '';
+    address = '';
+    placeId = '';
     notes = '';
+    unknown = false;
   }
 
   GamePlace.copy(GamePlace copy) {
@@ -104,8 +149,9 @@ class GamePlace {
 
   static const String _PLACEID = 'placeId';
   static const String _ADDRESS = 'address';
-  static const String _LONGITUDE = 'longitude';
-  static const String _LATITUDE = 'latitude';
+  static const String _LONGITUDE = 'long';
+  static const String _LATITUDE = 'lat';
+  static const String _UNKNOWN = 'unknown';
 
   void fromJSON(Map<dynamic, dynamic> data) {
     name = getString(data[NAME]);
@@ -114,6 +160,7 @@ class GamePlace {
     notes = getString(data[NOTES]);
     longitude = getNum(data[_LONGITUDE]);
     latitude = getNum(data[_LATITUDE]);
+    unknown = getBool(data[_UNKNOWN]);
   }
 
   Map<String, dynamic> toJSON() {
@@ -124,6 +171,7 @@ class GamePlace {
     ret[NOTES] = notes;
     ret[_LATITUDE] = latitude;
     ret[_LONGITUDE] = longitude;
+    ret[_UNKNOWN] = unknown;
     return ret;
   }
 }
@@ -186,7 +234,7 @@ class Game {
     trackAttendance = true;
   }
 
-  void set timezone(String value) {
+  set timezone(String value) {
     _timezone = value;
     _location = null;
   }
@@ -264,7 +312,8 @@ class Game {
     print('Update Game $uid');
     // Work out attendance.
     Map<String, Attendance> newAttendanceData = new Map<String, Attendance>();
-    Map<dynamic, dynamic> attendanceData = data[_ATTENDANCE] as Map<dynamic, dynamic>;
+    Map<dynamic, dynamic> attendanceData =
+        data[_ATTENDANCE] as Map<dynamic, dynamic>;
     if (attendanceData != null) {
       attendanceData.forEach((dynamic key, dynamic data) {
         newAttendanceData[key.toString()] = Attendance.values

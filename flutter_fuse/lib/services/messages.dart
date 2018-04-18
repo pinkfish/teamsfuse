@@ -584,6 +584,11 @@ class Messages {
         name: 'Loading message', desc: 'Message for loading the app');
   }
 
+  String opponentseason(Opponent opponent, String seasonName) {
+    return Intl.message("${opponent.name} - $seasonName",
+        name: "Shows the opponent and season");
+  }
+
   String opponentwinrecord(
       Opponent opponent, String seasonUid, String seasonName) {
     WinRecord rec = opponent.record[seasonUid];
@@ -591,7 +596,7 @@ class Messages {
       rec = new WinRecord();
     }
     return Intl.message(
-        '${opponent.name} - $seasonName Win: ${rec.win} Loss: ${rec.loss} Tie: ${rec.tie}',
+        'Win: ${rec.win} Loss: ${rec.loss} Tie: ${rec.tie}',
         name: 'Win record for an opponent for this season',
         desc: 'Win record for an opponent for this season');
   }
@@ -713,23 +718,92 @@ class Messages {
   }
 
   String resultwin(GameResultDetails result) {
-    return Intl.message('Win ${result.ptsFor} - ${result.ptsAgainst}',
+    Iterable<GameResultPerPeriod> finalScoreList = result.scores
+        .where((GameResultPerPeriod p) => p.period == GameInProgress.Final);
+    GameResultPerPeriod finalScore;
+    if (finalScoreList.isNotEmpty) {
+      finalScore = finalScoreList.first;
+    } else {
+      finalScore = new GameResultPerPeriod(
+          period: GameInProgress.Final, ptsFor: 0, ptsAgainst: 0);
+    }
+    Iterable<GameResultPerPeriod> penaltyScoreList = result.scores
+        .where((GameResultPerPeriod p) => p.period == GameInProgress.Penalty);
+    if (penaltyScoreList.isNotEmpty) {
+      GameResultPerPeriod penaltyScore = penaltyScoreList.first;
+      finalScore = finalScoreList.first;
+      return Intl.message(
+          'Win ${finalScore.ptsFor} - ${finalScore.ptsAgainst} (Penalty ${penaltyScore.ptsFor} - ${penaltyScore.ptsAgainst})',
+          name: 'Win result details',
+          desc: 'Win result details with penalty shootout');
+    }
+    return Intl.message('Win ${finalScore.ptsFor} - ${finalScore.ptsAgainst}',
         name: 'Win result details', desc: 'Win result details');
   }
 
   String resultloss(GameResultDetails result) {
-    return Intl.message('Loss ${result.ptsFor} - ${result.ptsAgainst}',
+    Iterable<GameResultPerPeriod> finalScoreList = result.scores
+        .where((GameResultPerPeriod p) => p.period == GameInProgress.Final);
+    GameResultPerPeriod finalScore;
+    if (finalScoreList.isNotEmpty) {
+      finalScore = finalScoreList.first;
+    } else {
+      finalScore = new GameResultPerPeriod(
+          period: GameInProgress.Final, ptsFor: 0, ptsAgainst: 0);
+    }
+    Iterable<GameResultPerPeriod> penaltyScoreList = result.scores
+        .where((GameResultPerPeriod p) => p.period == GameInProgress.Penalty);
+    if (penaltyScoreList.isNotEmpty) {
+      GameResultPerPeriod penaltyScore = penaltyScoreList.first;
+      finalScore = finalScoreList.first;
+      return Intl.message(
+          'Loss ${finalScore.ptsFor} - ${finalScore.ptsAgainst} (Penalty ${penaltyScore.ptsFor} - ${penaltyScore.ptsAgainst})',
+          name: 'Win result details',
+          desc: 'Win result details with penalty shootout');
+    }
+    return Intl.message('Loss ${finalScore.ptsFor} - ${finalScore.ptsAgainst}',
         name: 'Loss result details', desc: 'Loss result details');
   }
 
   String resulttie(GameResultDetails result) {
-    return Intl.message('Tie ${result.ptsFor} - ${result.ptsAgainst}',
+    Iterable<GameResultPerPeriod> finalScoreList = result.scores
+        .where((GameResultPerPeriod p) => p.period == GameInProgress.Final);
+    GameResultPerPeriod finalScore;
+    if (finalScoreList.isNotEmpty) {
+      finalScore = finalScoreList.first;
+      print("score: ${finalScore}");
+    } else {
+      finalScore = new GameResultPerPeriod(
+          period: GameInProgress.Final, ptsFor: 0, ptsAgainst: 0);
+    }
+    return Intl.message('Tie ${finalScore.ptsFor} - ${finalScore.ptsAgainst}',
         name: 'Tie result details', desc: 'Tie result details');
   }
 
   String resultinprogress(GameResultDetails result) {
-    return Intl.message('In progress ${result.ptsFor} - ${result.ptsAgainst}',
-        name: 'In progress result details', desc: 'In progress result details');
+    Iterable<GameResultPerPeriod> finalScoreList = result.scores
+        .where((GameResultPerPeriod p) => p.period == GameInProgress.Final);
+    GameResultPerPeriod finalScore;
+    if (finalScoreList.isNotEmpty) {
+      finalScore = finalScoreList.first;
+    } else {
+      finalScore = new GameResultPerPeriod(
+          period: GameInProgress.Final, ptsFor: 0, ptsAgainst: 0);
+    }
+    Iterable<GameResultPerPeriod> penaltyScoreList = result.scores
+        .where((GameResultPerPeriod p) => p.period == GameInProgress.Penalty);
+    if (penaltyScoreList.isNotEmpty) {
+      GameResultPerPeriod penaltyScore = penaltyScoreList.first;
+      finalScore = finalScoreList.first;
+      return Intl.message(
+          'In progress ${finalScore.ptsFor} - ${finalScore.ptsAgainst} (Penalty ${penaltyScore.ptsFor} - ${penaltyScore.ptsAgainst})',
+          name: 'In progress result details',
+          desc: 'Win result details with penalty shootout');
+    }
+    return Intl.message(
+        'In progress ${finalScore.ptsFor} - ${finalScore.ptsAgainst}',
+        name: 'In progress result details',
+        desc: 'In progress result details');
   }
 
   String gametitlevs(String oppponent) {
@@ -763,6 +837,11 @@ class Messages {
         return Intl.message("Half", desc: "Game in progress Half ");
       case GameInProgress.Final:
         return Intl.message("Final", desc: "Game in finalized");
+      case GameInProgress.Penalty:
+        return Intl.message("Penalty Shootout",
+            desc: "Game in pentalty shootout");
+      case GameInProgress.Overtime:
+        return Intl.message("Overtime", desc: "Game in overtime");
       case GameInProgress.NotStarted:
         return Intl.message("Not started", desc: "Game in progress 1st period");
     }
@@ -908,8 +987,8 @@ class Messages {
 
   String get selectplace {
     return Intl.message('Select place',
-        desc: 'Title for the drop down to say select place if nothing is selected');
-
+        desc:
+            'Title for the drop down to say select place if nothing is selected');
   }
 
   String get trainingend {

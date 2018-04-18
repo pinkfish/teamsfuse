@@ -10,7 +10,7 @@ dependencies:
   cloud_firestore: "^0.2.9"
   firebase_auth: "^0.4.5"
   firebase_core: "^0.0.6"
-  firebase_storage: "^0.1.4"
+  firebase_storage: "^0.2.2"
   firebase_analytics: "^0.2.3"
   firebase_messaging: "^0.2.1"
   shared_preferences: "^0.3.3"
@@ -20,12 +20,15 @@ dependencies:
   csv: "^3.1.2"
   map_view: # "^0.0.10"
     path: ../../flutter_google_map_view
-  flutter_timezone: # "^0.0.10"
-    path: ../../flutter_timezone
+  flutter_native_timezone: # "^1.0.0"
+    path: ../../flutter_native_timezone
+  flutter_places_dialog: # "^1.0.0"
+    path: ../../flutter_places_dialog
 
   fluro: any
   image_picker: any
-  timezone: any
+  timezone:
+    path: ../../timezone
   sqflite: any
   tuple: any
   flutter_google_places_autocomplete: "^0.0.4"

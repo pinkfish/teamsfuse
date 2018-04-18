@@ -38,7 +38,10 @@ class AddGameScreenState extends State<AddGameScreen> {
   }
 
   Widget _buildSummary(BuildContext context) {
-    return new GameDetails(_initGame, adding: true,);
+    return new GameDetails(
+      _initGame,
+      adding: true,
+    );
   }
 
   bool _leaveCurrentState(bool backwards) {
@@ -89,10 +92,14 @@ class AddGameScreenState extends State<AddGameScreen> {
           _initGame.updateFirestore().then((void h) {
             Navigator.pop(context);
           }).catchError((Error e) {
-            showDialog(context: context, child: new AlertDialog(
-              title: new Text("Error"),
-              content: new Text("Error saving the game"),
-            ));
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return new AlertDialog(
+                    title: new Text("Error"),
+                    content: new Text("Error saving the game"),
+                  );
+                });
           });
         }
       });

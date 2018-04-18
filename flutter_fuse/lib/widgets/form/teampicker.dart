@@ -32,6 +32,7 @@ class TeamPickerState extends State<TeamPicker> {
       setState(() {});
     });
     _value = widget.teamUid;
+    super.initState();
   }
 
   List<DropdownMenuItem> _buildItems() {

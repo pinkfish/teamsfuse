@@ -1,5 +1,5 @@
 import 'package:map_view/map_view.dart';
-import 'package:flutter_timezone/timezone.dart';
+import 'package:flutter_places_dialog/flutter_places_dialog.dart';
 import 'package:timezone/timezone.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'dart:io';
@@ -58,17 +58,17 @@ class MapData {
     HttpClientRequest request = await httpClient.getUrl(uri);
     HttpClientResponse response = await request.close();
     if (response.statusCode == HttpStatus.OK) {
-      String responseBody = await response.transform(UTF8.decoder).join();
-      Map<String, String> data = JSON.decode(responseBody);
-      return await getLocation(data['timeZoneId']);
+      String responseBody = await response.transform(utf8.decoder).join();
+      Map<String, String> data = json.decode(responseBody);
+      return getLocation(data['timeZoneId']);
     } else {
-      print(await response.transform(UTF8.decoder).join());
+      print(await response.transform(utf8.decoder).join());
     }
     return null;
   }
 
   Future<LocationAndPlace> getPlaceAndLocation() async {
-    PlaceDetails details = await Timezone.getPlacesDialog();
+    PlaceDetails details = await FlutterPlacesDialog.getPlacesDialog();
     Location tz = await getTimezoneFromLocation(
         details.location, new DateTime.now().millisecondsSinceEpoch / 1000);
     print('tz $tz');

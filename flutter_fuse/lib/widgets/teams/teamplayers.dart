@@ -95,32 +95,34 @@ class TeamPlayersState extends State<TeamPlayers> {
     bool result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      child: new AlertDialog(
-        title: new Text(mess.deleteinvite),
-        content: new SingleChildScrollView(
-          child: new ListBody(
-            children: <Widget>[
-              new Text(mess.confirmdelete(invite)),
-            ],
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: new Text(mess.deleteinvite),
+          content: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                new Text(mess.confirmdelete(invite)),
+              ],
+            ),
           ),
-        ),
-        actions: <Widget>[
-          new FlatButton(
-            child: new Text(MaterialLocalizations.of(context).okButtonLabel),
-            onPressed: () {
-              // Do the delete.
-              Navigator.of(context).pop(true);
-            },
-          ),
-          new FlatButton(
-            child:
-                new Text(MaterialLocalizations.of(context).cancelButtonLabel),
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-          ),
-        ],
-      ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+              onPressed: () {
+                // Do the delete.
+                Navigator.of(context).pop(true);
+              },
+            ),
+            new FlatButton(
+              child:
+                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+          ],
+        );
+      },
     );
     if (result) {
       invite.firestoreDelete();
@@ -135,7 +137,16 @@ class TeamPlayersState extends State<TeamPlayers> {
     _season.players.forEach((SeasonPlayer player) {
       ret.add(
         new GestureDetector(
-          onTap: () { Navigator.pushNamed(context, "PlayerDetails/" + _team.uid + "/" + _season.uid + "/" + player.playerUid); },
+          onTap: () {
+            Navigator.pushNamed(
+                context,
+                "PlayerDetails/" +
+                    _team.uid +
+                    "/" +
+                    _season.uid +
+                    "/" +
+                    player.playerUid);
+          },
           child: new ListTile(
             leading: new PlayerImage(player.playerUid),
             title: new Text(player.displayName),
