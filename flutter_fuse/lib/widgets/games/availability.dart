@@ -24,7 +24,7 @@ class AvailabityState extends State<Availaility> {
           return new AttendanceDialog(current: current);
         });
     if (attend != null) {
-      widget._game.updateFirestoreAttendence(player.playerUid, attend);
+      widget._game.updateFirestorAttendence(player.playerUid, attend);
     }
   }
 

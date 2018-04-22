@@ -93,7 +93,7 @@ class OpponentFormFieldState extends FormFieldState<String> {
     if (teamUid != null &&
         UserDatabaseData.instance.teams.containsKey(teamUid)) {
       UserDatabaseData.instance.teams[teamUid].opponents
-          .forEach((key, opponent) {
+          .forEach((String key, Opponent opponent) {
         if (opponent.name != null) {
           ret.add(new DropdownMenuItem(
               child: new Text(opponent.name), value: opponent.uid));

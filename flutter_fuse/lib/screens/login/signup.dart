@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key key}) : super(key: key);
@@ -25,7 +26,7 @@ class SignupScreenState extends State<SignupScreen> {
 
   @override
   void initState() {
-    person.profile = new UserProfile();
+    person.profile = new FusedUserProfile();
     super.initState();
   }
 

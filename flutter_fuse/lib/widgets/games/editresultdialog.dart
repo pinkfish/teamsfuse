@@ -26,9 +26,11 @@ class EditResultDialogState extends State<EditResultDialog> {
   int _ptsAgainst;
   GameResultPerPeriod _finalPeriod;
 
-  EditResultDialogState() {
+  void initState() {
+    super.initState();
     _details = new GameResultDetails.copy(widget.game.result);
     _finalPeriod = new GameResultPerPeriod.copy(_details.scores.firstWhere((GameResultPerPeriod p) => p.period == GameInProgress.Final));
+    print("$_finalPeriod");
     _team = UserDatabaseData.instance.teams[widget.game.teamUid];
     if (_team == null) {
       _team = new Team();
@@ -43,7 +45,7 @@ class EditResultDialogState extends State<EditResultDialog> {
 
   void _sendUpdate(List<bool> results) {
     print('updating values');
-    widget.game.updateFirestoreGameResult(_details);
+    widget.game.updateFirestoreResult(_details);
   }
 
   void _selectResult(GameInProgress result) async {
@@ -155,8 +157,13 @@ class EditResultDialogState extends State<EditResultDialog> {
 
   void _updateScore() {
     setState(() {
-      _finalPeriod.ptsAgainst = _ptsAgainst;
-      _finalPeriod.ptsFor = _ptsFor;
+      if (_ptsAgainst != null) {
+        _finalPeriod.ptsAgainst = _ptsAgainst;
+      }
+      if (_ptsFor != null) {
+        _finalPeriod.ptsFor = _ptsFor;
+      }
+      print("Update score ${_finalPeriod}");
     });
     debouncer.debounce(true);
   }

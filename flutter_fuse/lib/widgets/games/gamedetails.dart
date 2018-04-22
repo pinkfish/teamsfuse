@@ -66,6 +66,7 @@ class GameDetailsState extends State<GameDetails> {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
+        print("$widget");
         return new EditResultDialog(widget.game);
       },
     );
@@ -83,7 +84,7 @@ class GameDetailsState extends State<GameDetails> {
             return new AttendanceDialog(current: current);
           });
       if (attend != null) {
-        widget.game.updateFirestoreAttendence(player.uid, attend);
+        widget.game.updateFirestorAttendence(player.uid, attend);
       }
     } else {
       Map<Player, Attendance> attend = await showDialog(
@@ -94,7 +95,7 @@ class GameDetailsState extends State<GameDetails> {
       );
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
-          widget.game.updateFirestoreAttendence(player.uid, attend);
+          widget.game.updateFirestorAttendence(player.uid, attend);
         });
       }
     }
@@ -224,7 +225,13 @@ class GameDetailsState extends State<GameDetails> {
                   : " - " + endTimeStr),
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
         ),
-        subtitle: new Text(widget.game.place.address),
+        subtitle: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            new Text(widget.game.place.name),
+            new Text(widget.game.place.address),
+          ],
+        ),
       ),
     );
 

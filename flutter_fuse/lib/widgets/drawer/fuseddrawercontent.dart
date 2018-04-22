@@ -10,18 +10,24 @@ class FusedDrawerContent extends StatelessWidget {
   Widget _buildTeamSection(BuildContext context) {
     List<Widget> data = new List<Widget>();
     UserDatabaseData.instance.teams.forEach((uid, team) {
-      data.add(new ListTile(
+      data.add(
+        new ListTile(
           leading: const Icon(Icons.group),
           title: new Text(team.name),
           onTap: () {
             AppRouter.instance.navigateTo(context, "Team/" + team.uid,
                 transition: TransitionType.inFromRight);
-          }));
+          },
+        ),
+      );
     });
-    data.add(new ListTile(
+    data.add(
+      new ListTile(
         leading: const Icon(Icons.add),
         title: const Text('Add Team'),
-        onTap: () {}));
+        onTap: () => Navigator.pushNamed(context, "AddTeam"),
+      ),
+    );
     return new Column(children: data);
   }
 
@@ -30,11 +36,11 @@ class FusedDrawerContent extends StatelessWidget {
     final children = <Widget>[
       new FusedDrawerHeader(),
       new StreamBuilder(
-          stream: UserDatabaseData.instance.teamStream,
-          builder:
-              (BuildContext context, AsyncSnapshot<UpdateReason> snapshot) {
-            return this._buildTeamSection(context);
-          }),
+        stream: UserDatabaseData.instance.teamStream,
+        builder: (BuildContext context, AsyncSnapshot<UpdateReason> snapshot) {
+          return this._buildTeamSection(context);
+        },
+      ),
       new Divider(),
       new ListTile(
         leading: const Icon(Icons.exit_to_app),

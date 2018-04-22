@@ -118,7 +118,7 @@ class GameListState extends State<GameList> {
                       MaterialLocalizations.of(context).formatMediumDate(time);
                 }
                 return new Container(
-                  margin: const EdgeInsets.only(top: 10.0),
+                  margin: const EdgeInsets.only(top: 30.0, left: 10.0),
                   child: new Text(
                     textToShow,
                     style: Theme.of(context).textTheme.subhead.copyWith(
@@ -130,6 +130,7 @@ class GameListState extends State<GameList> {
               } else {
                 return new SizedBox(
                   width: 0.0,
+                  height: 10.0,
                   key: new ValueKey(index),
                 );
               }

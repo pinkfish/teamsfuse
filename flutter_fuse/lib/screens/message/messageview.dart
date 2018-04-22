@@ -14,7 +14,7 @@ class ShowMessageScreen extends StatelessWidget {
           .containsKey(UserDatabaseData.instance.userUid)) {
         UserDatabaseData.instance.messages[messageUid]
             .recipients[UserDatabaseData.instance.userUid]
-            .updateMessageState(MessageState.Archived);
+            .updateState(MessageState.Archived);
         Navigator.pop(context);
       }
     }
@@ -26,7 +26,7 @@ class ShowMessageScreen extends StatelessWidget {
           .containsKey(UserDatabaseData.instance.userUid)) {
         UserDatabaseData.instance.messages[messageUid]
             .recipients[UserDatabaseData.instance.userUid]
-            .deleteRecipient();
+            .firestoreDelete();
         Navigator.pop(context);
       }
     }
@@ -41,7 +41,7 @@ class ShowMessageScreen extends StatelessWidget {
             MessageState.Unread) {
           UserDatabaseData.instance.messages[messageUid]
               .recipients[UserDatabaseData.instance.userUid]
-              .updateMessageState(MessageState.Read);
+              .updateState(MessageState.Read);
         }
       }
     }

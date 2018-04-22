@@ -29,6 +29,8 @@ dependencies:
   image_picker: any
   timezone:
     path: ../../timezone
+  fusemodel:
+    path: ../../fusemodel
   sqflite: any
   tuple: any
   flutter_google_places_autocomplete: "^0.0.4"

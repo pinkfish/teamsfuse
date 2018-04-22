@@ -363,12 +363,28 @@ class Messages {
     );
   }
 
+  String get seasonhint {
+    return Intl.message(
+      'Current team season',
+      name: 'Hint for the season text box',
+    );
+  }
+
   String get seasonselect {
     return Intl.message(
       'Select season',
       name: 'Select Season',
       desc: 'Title for the select season marker',
     );
+  }
+
+  String get playerselect {
+    return Intl.message("Player", name: "Label for the player drop down");
+  }
+
+  String get playerselecthint {
+    return Intl.message("Select player",
+        name: "Label for the player drop down");
   }
 
   String get opponent {
@@ -445,6 +461,11 @@ class Messages {
         desc: 'Message to say they have an empty email field');
   }
 
+  String get seasonrequired {
+    return Intl.message("Season name is required",
+        name: "The error text when the season name is required");
+  }
+
   String get invalidname {
     return Intl.message('Name can only contain alphanumerical characters.',
         name: 'Invalid user name in form',
@@ -464,6 +485,14 @@ class Messages {
     return Intl.message('Change team',
         name: 'Team editing hint',
         desc: 'Hint for the button to edit the team');
+  }
+
+  String get opponentwithresult {
+    return Intl.message('Opponents with results');
+  }
+
+  String get opponentwithnoresult {
+    return Intl.message('Opponents without results');
   }
 
   String get sportselect {
@@ -595,8 +624,7 @@ class Messages {
     if (rec == null) {
       rec = new WinRecord();
     }
-    return Intl.message(
-        'Win: ${rec.win} Loss: ${rec.loss} Tie: ${rec.tie}',
+    return Intl.message('Win: ${rec.win} Loss: ${rec.loss} Tie: ${rec.tie}',
         name: 'Win record for an opponent for this season',
         desc: 'Win record for an opponent for this season');
   }
@@ -715,6 +743,11 @@ class Messages {
             desc: 'Relationship desc for parent');
     }
     return unknown;
+  }
+
+  String get relationshipselect {
+    return Intl.message("Select relationship",
+        name: "Label to select the relatiobship from a drop down");
   }
 
   String resultwin(GameResultDetails result) {

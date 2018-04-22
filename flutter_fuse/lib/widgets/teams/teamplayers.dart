@@ -11,12 +11,11 @@ class TeamPlayers extends StatefulWidget {
 
   @override
   TeamPlayersState createState() {
-    return new TeamPlayersState(this._teamUid);
+    return new TeamPlayersState();
   }
 }
 
 class TeamPlayersState extends State<TeamPlayers> {
-  String _teamUid;
   String _seasonUid;
   Team _team;
   Season _season;
@@ -24,13 +23,12 @@ class TeamPlayersState extends State<TeamPlayers> {
   StreamSubscription<UpdateReason> _updateStream;
   StreamSubscription<List<Invite>> _inviteStream;
 
-  TeamPlayersState(this._teamUid) {
-    _team = UserDatabaseData.instance.teams[_teamUid];
-  }
+  TeamPlayersState();
 
   @override
   void initState() {
     super.initState();
+    _team = UserDatabaseData.instance.teams[widget._teamUid];
     updateSeason(_team.currentSeason);
     _updateStream = _team.thisTeamStream.listen((UpdateReason upd) {
       setState(() {});
@@ -64,9 +62,9 @@ class TeamPlayersState extends State<TeamPlayers> {
   }
 
   void updateSeason(String seasonUid) {
-    if (_team.seasons.containsKey(_team.currentSeason)) {
+    if (_team.seasons.containsKey(seasonUid)) {
       _seasonUid = _team.currentSeason;
-      _season = _team.seasons[_team.currentSeason];
+      _season = _team.seasons[seasonUid];
       // Look for the invites.
       _inviteStream = _season.inviteStream.listen((List<Invite> invites) {
         setState(() {
@@ -78,9 +76,10 @@ class TeamPlayersState extends State<TeamPlayers> {
 
   List<DropdownMenuItem> _buildItems(BuildContext context) {
     List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
-    if (_teamUid != null &&
-        UserDatabaseData.instance.teams.containsKey(_teamUid)) {
-      UserDatabaseData.instance.teams[_teamUid].seasons.forEach((key, season) {
+    if (widget._teamUid != null &&
+        UserDatabaseData.instance.teams.containsKey(widget._teamUid)) {
+      UserDatabaseData.instance.teams[widget._teamUid].seasons
+          .forEach((key, season) {
         ret.add(new DropdownMenuItem(
             child: new Text(season.name), value: season.uid));
       });
@@ -160,12 +159,14 @@ class TeamPlayersState extends State<TeamPlayers> {
             textColor: Theme.of(context).accentColor,
             onPressed: () {
               Navigator.pushNamed(
-                  context, "AddPlayer/" + _teamUid + "/" + _seasonUid);
+                  context, "AddPlayer/" + widget._teamUid + "/" + _seasonUid);
             },
             child: new Text(Messages.of(context).addplayer))));
 
     // Put in an expansion bar if there are pending invites.
-    if (_invites != null && _invites.length > 0 && _team.isAdmin()) {
+    if (_invites != null &&
+        _invites.length > 0 &&
+        _team.isAdmin(UserDatabaseData.instance.players)) {
       List<Widget> kids = new List<Widget>();
       _invites.forEach((Invite inv) {
         kids.add(

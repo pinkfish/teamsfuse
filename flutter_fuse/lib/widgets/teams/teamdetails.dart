@@ -46,17 +46,8 @@ class TeamDetailsState extends State<TeamDetails> {
     List<Widget> ret = new List<Widget>();
 
     team.seasons.forEach((key, season) {
-      Iterable<Game> games = season.getGames();
-      List<Widget> newData = new List<Widget>();
-
-      games.forEach((game) {
-        newData.add(new GameCard(game));
-      });
-      if (games.length == 0) {
-        newData.add(new Text(Messages.of(context).nogames));
-      }
-
       ret.add(new ExpansionTile(
+        key: new PageStorageKey<Season>(season),
         title: new Text(season.name +
             " W:" +
             season.record.win.toString() +
@@ -64,8 +55,37 @@ class TeamDetailsState extends State<TeamDetails> {
             season.record.loss.toString() +
             " T:" +
             season.record.tie.toString()),
-        children: newData,
-        initiallyExpanded: season.uid == team.currentSeason,
+        children: <Widget>[
+          new FutureBuilder(
+              future: season.getGames(),
+              builder:
+                  (BuildContext context, AsyncSnapshot<Iterable<Game>> games) {
+                if (!games.hasData) {
+                  return new Center(
+                    child: new Text(Messages.of(context).loading),
+                  );
+                }
+                if (games.data.length == 0) {
+                  return new Center(
+                    child: new Text(Messages.of(context).nogames),
+                  );
+                } else {
+                  List<Widget> newData = new List<Widget>();
+                  games.data.forEach((Game game) {
+                    if (game.type == EventType.Game) {
+                      newData.add(new GameCard(game));
+                    }
+                  });
+                  if (newData.length == 0) {
+                    newData.add(new Text(Messages.of(context).nogames));
+                  }
+                  return new Column(
+                    children: newData,
+                  );
+                }
+              }),
+        ],
+        initiallyExpanded: false,
       ));
     });
     return new Column(

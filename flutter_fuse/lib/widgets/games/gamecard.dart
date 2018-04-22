@@ -25,7 +25,7 @@ class GameCard extends StatelessWidget {
             return new AttendanceDialog(current: current);
           });
       if (attend != null) {
-        game.updateFirestoreAttendence(player.uid, attend);
+        game.updateFirestorAttendence(player.uid, attend);
       }
     } else {
       Map<Player, Attendance> attend = await showDialog(
@@ -35,7 +35,7 @@ class GameCard extends StatelessWidget {
           });
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
-          game.updateFirestoreAttendence(player.uid, attend);
+          game.updateFirestorAttendence(player.uid, attend);
         });
       }
     }
@@ -161,7 +161,12 @@ class GameCard extends StatelessWidget {
 
   Widget build(BuildContext context) {
     Team team = UserDatabaseData.instance.teams[game.teamUid];
-    Opponent op = team.opponents[game.opponentUid];
+    Opponent op;
+    if (team == null) {
+      op = new Opponent(name: Messages.of(context).unknown);
+    } else {
+      op = team.opponents[game.opponentUid];
+    }
 
     TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
     String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
@@ -182,11 +187,17 @@ class GameCard extends StatelessWidget {
     Duration dur = time.difference(game.tzTime).abs();
     String subtitle;
     if (arriveFormat != null) {
-      subtitle = Messages
-          .of(context)
-          .gameaddressarriveat(arriveFormat, game.place.address);
+      String addr = game.place.address;
+      if (game.place.name.isNotEmpty) {
+        addr = game.place.name;
+      }
+      subtitle = Messages.of(context).gameaddressarriveat(arriveFormat, addr);
     } else {
-      subtitle = game.place.address;
+      if (game.place.name.isNotEmpty) {
+        subtitle = game.place.name;
+      } else {
+        subtitle = game.place.address;
+      }
     }
     switch (game.type) {
       case EventType.Game:
@@ -205,6 +216,7 @@ class GameCard extends StatelessWidget {
           title = Messages.of(context).gametitle(format, endTimeFormat, opName);
         }
         return new Card(
+          color: Colors.green.shade50,
           child: new ListTile(
             onTap: () {
               Navigator.pushNamed(context, "/Game/" + game.uid);
@@ -248,14 +260,13 @@ class GameCard extends StatelessWidget {
       case EventType.Practice:
         String title;
         if (dur.inMinutes < 60) {
-          title = Messages.of(context).trainingtitle(format, endTimeFormat);
-        } else {
           title = Messages.of(context).trainingtitlenow(format, endTimeFormat);
+        } else {
+          title = Messages.of(context).trainingtitle(format, endTimeFormat);
         }
 
         return new Card(
           key: new ValueKey(game),
-          color: Colors.green.shade50,
           child: new ListTile(
             onTap: () {
               Navigator.pushNamed(context, "/Game/" + game.uid);

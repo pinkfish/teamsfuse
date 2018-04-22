@@ -41,6 +41,11 @@ class Validations {
     return null;
   }
 
+  String validateSeason(BuildContext context, String value) {
+    if (value.isEmpty) return Messages.of(context).seasonrequired;
+    return null;
+  }
+
   String validateRoleInTeam(BuildContext context, String value) {
     if (value == 'none' || value == 'add') {
       return Messages.of(context).needtoselectrole;

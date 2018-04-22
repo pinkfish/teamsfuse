@@ -2,45 +2,16 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_fuse/services/sqldata.dart';
+import 'package:fusemodel/fusemodel.dart';
 
-class UserProfile {
-  String displayName;
-  String email;
-  String phoneNumber;
 
-  UserProfile({this.displayName, this.email, this.phoneNumber});
-
-  UserProfile.copy(UserProfile copy) {
-    this.displayName = copy.displayName;
-    this.email = copy.email;
-    this.phoneNumber = copy.phoneNumber;
-  }
-
-  static const String _NAME = "name";
-  static const String _EMAIL = "email";
-  static const String _PHONE = "phone";
-
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = new Map<String, dynamic>();
-    ret[_NAME] = displayName;
-    ret[_EMAIL] = email;
-    ret[_PHONE] = phoneNumber;
-    return ret;
-  }
-
-  void fromJSON(Map<String, dynamic> data) {
-    displayName = data[_NAME];
-    email = data[_EMAIL];
-    phoneNumber = data[_PHONE];
-  }
-}
 
 class UserData {
   String _email;
   String uid;
   String password;
   bool isEmailVerified;
-  UserProfile profile;
+  FusedUserProfile profile;
 
   UserData({this.profile, String email, this.uid, this.password})
       : _email = email;
@@ -57,7 +28,7 @@ class UserData {
   }
 
   UserData.copy(UserData copy) {
-    this.profile = new UserProfile.copy(copy.profile);
+    this.profile = new FusedUserProfile.copy(copy.profile);
     this.email = copy.email;
     this.uid = copy.uid;
     this.password = copy.password;
@@ -155,11 +126,11 @@ class UserAuth {
     await ref.updateData(user.profile.toJSON());
   }
 
-  Future<UserProfile> getProfile(String userId) async {
+  Future<FusedUserProfile> getProfile(String userId) async {
     DocumentSnapshot ref =
         await Firestore.instance.collection("UserData").document(userId).get();
     if (ref.exists) {
-      UserProfile profile = new UserProfile();
+      FusedUserProfile profile = new FusedUserProfile();
       profile.fromJSON(ref.data);
       return profile;
     }
@@ -170,7 +141,7 @@ class UserAuth {
     if (doc.exists) {
       SqlData.instance
           .updateElement(SqlData.PROFILE_TABLE, doc.documentID, doc.data);
-      UserProfile profile = new UserProfile();
+      FusedUserProfile profile = new FusedUserProfile();
       profile.fromJSON(doc.data);
       _currentUser.profile = profile;
     }
@@ -199,7 +170,7 @@ class UserAuth {
         // Update when ready.
         ref.then((DocumentSnapshot doc) {
           print('Loaded from firestore');
-          UserProfile profile = new UserProfile();
+          FusedUserProfile profile = new FusedUserProfile();
           profile.fromJSON(doc.data);
           user.profile = profile;
           SqlData.instance
@@ -209,7 +180,7 @@ class UserAuth {
       print('loaded from firestore $data');
     }
     if (data != null) {
-      UserProfile profile = new UserProfile();
+      FusedUserProfile profile = new FusedUserProfile();
       profile.fromJSON(data);
       user.profile = profile;
     }

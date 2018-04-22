@@ -47,7 +47,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
       body = new Availaility(game);
     }
 
-    if (team.isAdmin()) {
+    if (team.isAdmin(UserDatabaseData.instance.players)) {
       actions.add(new FlatButton(
           onPressed: this._editGame,
           child: new Text(Messages.of(context).editbuttontext,

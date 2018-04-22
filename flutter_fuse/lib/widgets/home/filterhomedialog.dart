@@ -35,12 +35,12 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     });
     showDialog(
       context: context,
-        builder: (BuildContext context) {
-          return new SimpleDialog(
-            title: new Text(messages.teamselect),
-            children: teams,
-          );
-        },
+      builder: (BuildContext context) {
+        return new SimpleDialog(
+          title: new Text(messages.teamselect),
+          children: teams,
+        );
+      },
     );
   }
 
@@ -84,12 +84,12 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     });
     showDialog(
       context: context,
-        builder: (BuildContext context) {
-          return new SimpleDialog(
-            title: new Text(messages.teamselect),
-            children: teams,
-          );
-        },
+      builder: (BuildContext context) {
+        return new SimpleDialog(
+          title: new Text(messages.teamselect),
+          children: teams,
+        );
+      },
     );
   }
 
@@ -237,16 +237,25 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
                   new InkWell(
                     child: new Text(
                       MaterialLocalizations
-                          .of(context)
-                          .formatMediumDate(widget.details.startDate),
+                              .of(context)
+                              .formatMediumDate(widget.details.startDate) +
+                          " " +
+                          MaterialLocalizations
+                              .of(context)
+                              .formatYear(widget.details.startDate),
                     ),
                     onTap: _selectStartDate,
                   ),
+                  new Text("to"),
                   new InkWell(
                     child: new Text(
                       MaterialLocalizations
-                          .of(context)
-                          .formatMediumDate(widget.details.endDate),
+                              .of(context)
+                              .formatMediumDate(widget.details.endDate) +
+                          " " +
+                          MaterialLocalizations
+                              .of(context)
+                              .formatYear(widget.details.startDate),
                     ),
                     onTap: _selectEndDate,
                   ),

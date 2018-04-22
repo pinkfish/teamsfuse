@@ -283,7 +283,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
       }
     });
 
-    if (_team.isAdmin()) {
+    if (_team.isAdmin(UserDatabaseData.instance.players)) {
       ret.add(
         new Row(
           children: <Widget>[
