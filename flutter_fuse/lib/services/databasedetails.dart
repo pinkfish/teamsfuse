@@ -11,7 +11,8 @@ class FilterDetails {
   GameResult result;
   EventType eventType;
   bool allGames = false;
-  TZDateTime startDate = new TZDateTime.now(local).subtract(new Duration(days: 2));
+  TZDateTime startDate =
+      new TZDateTime.now(local).subtract(new Duration(days: 2));
   TZDateTime endDate = new TZDateTime.now(local).add(new Duration(days: 120));
 }
 
@@ -53,15 +54,15 @@ class UserDatabaseData {
   bool get loadedMessages => _loadedReadMessages && _loadedUnreadMessages;
 
   StreamController<UpdateReason> _teamController =
-  new StreamController<UpdateReason>();
+      new StreamController<UpdateReason>();
   StreamController<UpdateReason> _playerController =
-  new StreamController<UpdateReason>();
+      new StreamController<UpdateReason>();
   StreamController<UpdateReason> _gameController =
-  new StreamController<UpdateReason>();
+      new StreamController<UpdateReason>();
   StreamController<UpdateReason> _inviteController =
-  new StreamController<UpdateReason>();
+      new StreamController<UpdateReason>();
   StreamController<UpdateReason> _messageController =
-  new StreamController<UpdateReason>();
+      new StreamController<UpdateReason>();
 
   // From firebase.
   StreamSubscription<QuerySnapshot> _playerSnapshot;
@@ -82,6 +83,11 @@ class UserDatabaseData {
     playerStream = _playerController.stream.asBroadcastStream();
     inviteStream = _inviteController.stream.asBroadcastStream();
     messagesStream = _messageController.stream.asBroadcastStream();
+  }
+
+  Player get mePlayer {
+    return _players.values.firstWhere(
+        (Player play) => play.users[userUid].relationship == Relationship.Me);
   }
 
   Future<Invite> getInvite(String inviteUid) async {
@@ -192,7 +198,8 @@ class UserDatabaseData {
           print('not in range');
           return false;
         }
-        print("In range ${game.uid} ${game.tzTime} ${details.endDate} ${details.startDate}");
+        print(
+            "In range ${game.uid} ${game.tzTime} ${details.endDate} ${details.startDate}");
       }
       return true;
     });
@@ -272,8 +279,7 @@ class UserDatabaseData {
     query.documentChanges.forEach((DocumentChange change) {
       if (change.type == DocumentChangeType.removed) {
         MessageRecipient rec = new MessageRecipient();
-        rec.fromJSON(change.document.documentID,
-            change.document.data);
+        rec.fromJSON(change.document.documentID, change.document.data);
         messages.remove(rec.messageId);
         sql.deleteElement(SqlData.MESSAGES_TABLE, rec.messageId);
       }
@@ -318,15 +324,14 @@ class UserDatabaseData {
     query.documentChanges.forEach((DocumentChange change) {
       if (change.type == DocumentChangeType.removed) {
         MessageRecipient rec = new MessageRecipient();
-        rec.fromJSON(change.document.documentID,
-            change.document.data);
+        rec.fromJSON(change.document.documentID, change.document.data);
         messages.remove(rec.messageId);
         sql.deleteElement(SqlData.MESSAGES_TABLE, rec.messageId);
       }
     });
     unreadMessageCount = messages.keys
         .where((String key) =>
-    messages[key].recipients[userUid].state == MessageState.Unread)
+            messages[key].recipients[userUid].state == MessageState.Unread)
         .length;
     _loadedReadMessages = true;
     print('Loaded read');
@@ -438,7 +443,7 @@ class UserDatabaseData {
     try {
       SqlData sql = SqlData.instance;
       Map<String, Map<String, dynamic>> data =
-      await sql.getAllElements(SqlData.TEAMS_TABLE);
+          await sql.getAllElements(SqlData.TEAMS_TABLE);
       Map<String, Team> newTeams = new Map<String, Team>();
       await Future.forEach(data.keys, (String uid) {
         Map<String, dynamic> input = data[uid];
@@ -493,7 +498,7 @@ class UserDatabaseData {
       _messages = newMessages;
       unreadMessageCount = _messages.keys
           .where((String key) =>
-      _messages[key].recipients[userUid].state == MessageState.Unread)
+              _messages[key].recipients[userUid].state == MessageState.Unread)
           .length;
       _messageController.add(UpdateReason.Update);
     } catch (e) {
@@ -524,7 +529,7 @@ class UserDatabaseData {
         .collection(MESSAGE_RECIPIENTS_COLLECTION)
         .where(MessageRecipient.USERID, isEqualTo: uid)
         .where(MessageRecipient.STATE,
-        isEqualTo: MessageState.Unread.toString());
+            isEqualTo: MessageState.Unread.toString());
     unreadQuery.getDocuments().then((QuerySnapshot results) {
       print("Got some messages $results");
       this._onUnreadMessagesUpdated(results);

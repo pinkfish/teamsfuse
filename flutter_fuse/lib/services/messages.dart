@@ -487,8 +487,17 @@ class Messages {
         desc: 'Hint for the button to edit the team');
   }
 
+  String get addseason {
+    return Intl.message('Add Season', name: 'Add a season to the team');
+  }
+
   String get opponentwithresult {
     return Intl.message('Opponents with results');
+  }
+
+  String get importplayers {
+    return Intl.message('Import players',
+        name: 'Import players from previous season');
   }
 
   String get opponentwithnoresult {

@@ -40,8 +40,11 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
   AddPlayerScreenState(this._teamUid, this._seasonUid);
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(
+      new SnackBar(
+        content: new Text(value),
+      ),
+    );
   }
 
   void _handleSubmit() async {
@@ -67,13 +70,17 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
     List<Widget> rows = new List<Widget>();
     Messages messages = Messages.of(context);
 
-    rows.add(new DropdownButtonHideUnderline(
+    rows.add(
+      new DropdownButtonHideUnderline(
         child: new SeasonFormField(
-            initialValue: _seasonUid,
-            teamUid: _teamUid,
-            onSaved: ((String value) {
-              _seasonUid = value;
-            }))));
+          initialValue: _seasonUid,
+          teamUid: _teamUid,
+          onSaved: (String value) {
+            _seasonUid = value;
+          },
+        ),
+      ),
+    );
 
     if (_emailNames.length == 0) {
       // Add in the start elements.
@@ -175,8 +182,9 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
             ),
           ),
           new FlatButton(
-              onPressed: _handleSubmit,
-              child: new Text(Messages.of(context).addplayer))
+            onPressed: _handleSubmit,
+            child: new Text(Messages.of(context).addplayer),
+          )
         ],
       ),
     );
@@ -185,6 +193,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      key: _scaffoldKey,
       appBar: new AppBar(
         title: new Text(Messages.of(context).addplayer),
       ),

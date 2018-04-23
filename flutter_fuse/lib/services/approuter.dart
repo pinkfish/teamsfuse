@@ -20,6 +20,7 @@ import 'package:flutter_fuse/screens/settings/editplayer.dart';
 import 'package:flutter_fuse/screens/message/messages.dart';
 import 'package:flutter_fuse/screens/message/addmessage.dart';
 import 'package:flutter_fuse/screens/message/messageview.dart';
+import 'package:flutter_fuse/screens/team/addseason.dart';
 
 class AppRouter {
   static Router myRouter;
@@ -77,6 +78,10 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new EditTeamScreen(vals["id"][0])));
+    router.define("/AddSeason/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new AddSeasonScreen(vals["id"][0])));
     router.define("/AddPlayer/:team/:season",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

@@ -14,7 +14,6 @@ class Validations {
     return null;
   }
 
-
   String validateEmail(BuildContext context, String value) {
     if (value.isEmpty) return Messages.of(context).emailrequired;
     final RegExp nameExp = new RegExp(r'^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$');

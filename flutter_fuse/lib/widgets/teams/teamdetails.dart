@@ -45,6 +45,16 @@ class TeamDetailsState extends State<TeamDetails> {
   Widget _buildSeasons(BuildContext context) {
     List<Widget> ret = new List<Widget>();
 
+    if (team.isAdmin(UserDatabaseData.instance.players)) {
+      ret.add(
+        new FlatButton(
+          onPressed: () => Navigator.pushNamed(context, "AddSeason/" + team.uid),
+          child: new Text(Messages.of(context).addseason),
+        ),
+      );
+    }
+
+
     team.seasons.forEach((key, season) {
       ret.add(new ExpansionTile(
         key: new PageStorageKey<Season>(season),
