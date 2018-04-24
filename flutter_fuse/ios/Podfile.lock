@@ -100,11 +100,6 @@ PODS:
     - GooglePlaces (= 2.6.0)
   - GooglePlaces (2.6.0):
     - GoogleMaps/Base (= 2.6.0)
-  - GoogleSignIn (4.1.2):
-    - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
-    - GoogleToolboxForMac/NSString+URLArguments (~> 2.1)
-    - GTMOAuth2 (~> 1.0)
-    - GTMSessionFetcher/Core (~> 1.1)
   - GoogleToolboxForMac/DebugUtils (2.1.3):
     - GoogleToolboxForMac/Defines (= 2.1.3)
   - GoogleToolboxForMac/Defines (2.1.3)
@@ -136,20 +131,10 @@ PODS:
   - gRPC/Main (1.11.0):
     - gRPC-Core (= 1.11.0)
     - gRPC-RxLibrary (= 1.11.0)
-  - GTMOAuth2 (1.1.6):
-    - GTMSessionFetcher (~> 1.1)
-  - GTMSessionFetcher (1.1.15):
-    - GTMSessionFetcher/Full (= 1.1.15)
   - GTMSessionFetcher/Core (1.1.15)
-  - GTMSessionFetcher/Full (1.1.15):
-    - GTMSessionFetcher/Core (= 1.1.15)
   - image_picker (0.0.1):
     - Flutter
   - leveldb-library (1.20)
-  - map_view (0.0.1):
-    - Flutter
-    - GoogleMaps
-    - GoogleSignIn
   - nanopb (0.3.8):
     - nanopb/decode (= 0.3.8)
     - nanopb/encode (= 0.3.8)
@@ -171,16 +156,15 @@ DEPENDENCIES:
   - firebase_analytics (from `Pods/.symlinks/plugins/firebase_analytics-0.2.3/ios`)
   - firebase_auth (from `Pods/.symlinks/plugins/firebase_auth-0.4.7/ios`)
   - firebase_core (from `Pods/.symlinks/plugins/firebase_core-0.0.7/ios`)
-  - firebase_messaging (from `Pods/.symlinks/plugins/firebase_messaging-0.2.1/ios`)
-  - firebase_storage (from `Pods/.symlinks/plugins/firebase_storage-0.2.2/ios`)
-  - Flutter (from `Pods/.symlinks/flutter/ios`)
+  - firebase_messaging (from `Pods/.symlinks/plugins/firebase_messaging-0.2.4/ios`)
+  - firebase_storage (from `Pods/.symlinks/plugins/firebase_storage-0.2.6/ios`)
+  - Flutter (from `Pods/.symlinks/flutter/ios-release`)
   - flutter_native_timezone (from `Pods/.symlinks/plugins/flutter_native_timezone/ios`)
   - flutter_places_dialog (from `Pods/.symlinks/plugins/flutter_places_dialog/ios`)
   - image_picker (from `Pods/.symlinks/plugins/image_picker-0.4.1/ios`)
-  - map_view (from `Pods/.symlinks/plugins/flutter_google_map_view/ios`)
   - path_provider (from `Pods/.symlinks/plugins/path_provider-0.3.1/ios`)
   - shared_preferences (from `Pods/.symlinks/plugins/shared_preferences-0.3.3/ios`)
-  - sqflite (from `Pods/.symlinks/plugins/sqflite-0.8.6/ios`)
+  - sqflite (from `Pods/.symlinks/plugins/sqflite-0.8.7/ios`)
   - url_launcher (from `Pods/.symlinks/plugins/url_launcher-2.0.2/ios`)
 
 EXTERNAL SOURCES:
@@ -193,25 +177,23 @@ EXTERNAL SOURCES:
   firebase_core:
     :path: Pods/.symlinks/plugins/firebase_core-0.0.7/ios
   firebase_messaging:
-    :path: Pods/.symlinks/plugins/firebase_messaging-0.2.1/ios
+    :path: Pods/.symlinks/plugins/firebase_messaging-0.2.4/ios
   firebase_storage:
-    :path: Pods/.symlinks/plugins/firebase_storage-0.2.2/ios
+    :path: Pods/.symlinks/plugins/firebase_storage-0.2.6/ios
   Flutter:
-    :path: Pods/.symlinks/flutter/ios
+    :path: Pods/.symlinks/flutter/ios-release
   flutter_native_timezone:
     :path: Pods/.symlinks/plugins/flutter_native_timezone/ios
   flutter_places_dialog:
     :path: Pods/.symlinks/plugins/flutter_places_dialog/ios
   image_picker:
     :path: Pods/.symlinks/plugins/image_picker-0.4.1/ios
-  map_view:
-    :path: Pods/.symlinks/plugins/flutter_google_map_view/ios
   path_provider:
     :path: Pods/.symlinks/plugins/path_provider-0.3.1/ios
   shared_preferences:
     :path: Pods/.symlinks/plugins/shared_preferences-0.3.3/ios
   sqflite:
-    :path: Pods/.symlinks/plugins/sqflite-0.8.6/ios
+    :path: Pods/.symlinks/plugins/sqflite-0.8.7/ios
   url_launcher:
     :path: Pods/.symlinks/plugins/url_launcher-2.0.2/ios
 
@@ -222,7 +204,7 @@ SPEC CHECKSUMS:
   firebase_analytics: ad15e54404e21983408c8b0c24a9d11247be7f33
   firebase_auth: 499d5bfb249606a276f6bddf292a3b2d44139f75
   firebase_core: eb181e4f329c1806efdf2aed9e59ea98fe924ef5
-  firebase_messaging: cd056e1b7baf9adddec56402c3de4158aac3c5fa
+  firebase_messaging: a5f5d4a9491b660f33a1f94bd0596558f820bad1
   firebase_storage: e34d30ff8bb57e691191b70e9d255ec2eba2351f
   FirebaseAnalytics: 7ef69e76a5142f643aeb47c780e1cdce4e23632e
   FirebaseAuth: bf22cacf22c60ab454bf2636f556d8892b10b53f
@@ -239,17 +221,14 @@ SPEC CHECKSUMS:
   GoogleMaps: 42f91c68b7fa2f84d5c86597b18ceb99f5414c7f
   GooglePlacePicker: e4488625effb006f59de49e14b7a603e463e4261
   GooglePlaces: f6ddf33b75cef69e888907d9947c57198ed845f3
-  GoogleSignIn: d9ef55b10f0aa401a5de2747f59b725e4b9732ac
   GoogleToolboxForMac: 2501e2ad72a52eb3dfe7bd9aee7dad11b858bd20
   gRPC: 70703dc9ba31c72341fc7f37745cc1c379edee96
   gRPC-Core: 164639cd8ae18ca8b65477fafb2efbaecf4f181a
   gRPC-ProtoRPC: bb5fddf3424aa4fad74d76736578a79fe40e244e
   gRPC-RxLibrary: 26d53d1b1f306befd4ad4e15bd6de27839a82481
-  GTMOAuth2: c77fe325e4acd453837e72d91e3b5f13116857b2
   GTMSessionFetcher: 5fa5b80fd20e439ef5f545fb2cb3ca6c6714caa2
   image_picker: ee00aab0487cedc80a304085219503cc6d0f2e22
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
-  map_view: 5279ac9683c3cb9df211c5394a525e1ab292d4b4
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   path_provider: 09407919825bfe3c2deae39453b7a5b44f467873
   Protobuf: 8a9838fba8dae3389230e1b7f8c104aa32389c03
