@@ -1,4 +1,4 @@
-import 'package:map_view/map_view.dart';
+import 'map_view/staticmapprovider.dart';
 import 'package:flutter_places_dialog/flutter_places_dialog.dart';
 import 'package:timezone/timezone.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
@@ -42,9 +42,7 @@ class MapData {
   }
 
   MapData() {
-    MapView.setApiKey(APIKEY);
-
-    _providerData = new StaticMapProvider(APIKEY);
+     _providerData = new StaticMapProvider(APIKEY);
   }
 
   Future<Location> getTimezoneFromLocation(PlaceLatLong loc, num ms) async {
@@ -75,3 +73,4 @@ class MapData {
     return new LocationAndPlace(details, tz);
   }
 }
+
