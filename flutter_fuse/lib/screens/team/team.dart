@@ -31,7 +31,7 @@ class TeamScreenState extends State<TeamScreen> {
     } else if (_tabIndex == 2) {
       return  new TeamOpponents(widget.teamUid);
     }
-    print("${_tabIndex}");
+    print("$_tabIndex");
     return new TeamPlayers(widget.teamUid);
   }
 

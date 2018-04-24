@@ -66,9 +66,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
   }
 
   Widget _buildResults(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-
-    return new Form(
+     return new Form(
       key: _formKey,
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -116,8 +114,6 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-
     return new Scaffold(
       key: _scaffoldKey,
       appBar: new AppBar(

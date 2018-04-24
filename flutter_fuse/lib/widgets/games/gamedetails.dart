@@ -260,8 +260,13 @@ class GameDetailsState extends State<GameDetails> {
         // Started.
         switch (widget.game.result.result) {
           case GameResult.Unknown:
-            title = Messages.of(context).resultunknown;
-            resultStyle = theme.textTheme.subhead;
+            if (widget.game.result.inProgress != GameInProgress.NotStarted) {
+              title = Messages.of(context).resultinprogress(widget.game.result);
+              resultStyle = theme.textTheme.subhead;
+            } else {
+              title = Messages.of(context).resultunknown;
+              resultStyle = theme.textTheme.subhead;
+            }
             break;
           case GameResult.Loss:
             title = Messages.of(context).resultloss(widget.game.result);
@@ -275,10 +280,6 @@ class GameDetailsState extends State<GameDetails> {
             break;
           case GameResult.Tie:
             title = Messages.of(context).resulttie(widget.game.result);
-            resultStyle = theme.textTheme.subhead;
-            break;
-          case GameResult.InProgress:
-            title = Messages.of(context).resultinprogress(widget.game.result);
             resultStyle = theme.textTheme.subhead;
             break;
         }

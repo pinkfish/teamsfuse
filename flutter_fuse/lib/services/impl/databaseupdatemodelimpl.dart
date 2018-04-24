@@ -74,6 +74,33 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     await doc.delete();
   }
 
+  Future<List<GameLog>> _getGameLogs(
+      Game game, Future<QuerySnapshot> query) async {
+    List<GameLog> logs = [];
+    QuerySnapshot acutalData = await query;
+    acutalData.documents.forEach((DocumentSnapshot doc) {
+      GameLog log = new GameLog();
+      log.fromJSON(doc.documentID, doc.data);
+      logs.add(log);
+    });
+    return logs;
+  }
+
+  GameLogReturnData readGameLogs(Game game) {
+    GameLogReturnData ret = new GameLogReturnData();
+    CollectionReference coll = Firestore.instance
+        .collection(GAMES_COLLECTION)
+        .document(game.uid)
+        .getCollection(GAME_LOG_COLLECTION);
+    Future<QuerySnapshot> query = coll.getDocuments();
+    ret.logs = _getGameLogs(game, query);
+
+    ret.myLogStream = coll.snapshots.listen((QuerySnapshot snap) async {
+      game.updateLogs(await _getGameLogs(game, query));
+    });
+    return ret;
+  }
+
 // Message for firestore.
   Future<void> updateFirestoreMessage(Message mess) async {
     // Add or update this record into the database.
@@ -167,13 +194,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       sql.deleteElement(SqlData.OPPONENTS_TABLE, id);
       team.opponents.remove(id);
     });
-    team.updateThisTeam.add(UpdateReason.Update);
+    team.updateTeam();
   }
 
   void _onTeamUpdated(Team team, DocumentSnapshot snap) {
     team.fromJSON(snap.documentID, snap.data);
     print('team ' + team.uid);
-    team.updateThisTeam.add(UpdateReason.Update);
     SqlData.instance
         .updateElement(SqlData.TEAMS_TABLE, team.uid, team.toJSON());
   }
@@ -190,7 +216,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
     SqlData.instance.updateElement(SqlData.SEASON_TABLE, doc.documentID,
         season.toJSON(includePlayers: true));
-    team.updateThisTeam.add(UpdateReason.Update);
+    team.updateTeam();
   }
 
   Future<List<StreamSubscription<dynamic>>> setupSnapForTeam(Team team) async {

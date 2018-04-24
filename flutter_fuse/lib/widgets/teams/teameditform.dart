@@ -111,8 +111,6 @@ class TeamEditFormState extends State<TeamEditForm> {
     return new Image.file(_imageFile);
   }
 
-  void _addSeason() {}
-
   Widget build(BuildContext context) {
     if (team == null) {
       return new Text('Invalid state');

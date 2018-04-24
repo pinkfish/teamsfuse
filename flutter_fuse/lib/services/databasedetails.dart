@@ -180,9 +180,8 @@ class UserDatabaseData {
       }
       if (details.result != null) {
         if (game.result.result != details.result &&
-            !(game.result.result == GameResult.InProgress &&
-                details.result == GameResult.Unknown)) {
-          print('not result');
+            !(game.result.result == GameResult.Unknown)) {
+          print('no result');
           return false;
         }
       }

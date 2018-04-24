@@ -720,8 +720,6 @@ class Messages {
     switch (result) {
       case GameResult.Unknown:
         return unknown;
-      case GameResult.InProgress:
-        return unknown;
       case GameResult.Win:
         return Intl.message('Win', name: 'Win', desc: 'Short message for win');
       case GameResult.Tie:
@@ -760,90 +758,72 @@ class Messages {
   }
 
   String resultwin(GameResultDetails result) {
-    Iterable<GameResultPerPeriod> finalScoreList = result.scores
-        .where((GameResultPerPeriod p) => p.period == GameInProgress.Final);
     GameResultPerPeriod finalScore;
-    if (finalScoreList.isNotEmpty) {
-      finalScore = finalScoreList.first;
+    if (result.scores.containsKey(GameInProgress.Final)) {
+      finalScore = result.scores[GameInProgress.Final];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final, ptsFor: 0, ptsAgainst: 0);
+          period: GameInProgress.Final, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    Iterable<GameResultPerPeriod> penaltyScoreList = result.scores
-        .where((GameResultPerPeriod p) => p.period == GameInProgress.Penalty);
-    if (penaltyScoreList.isNotEmpty) {
-      GameResultPerPeriod penaltyScore = penaltyScoreList.first;
-      finalScore = finalScoreList.first;
+    if (result.scores.containsKey(GameInProgress.Penalty)) {
+      GameResultPerPeriod penaltyScore = result.scores[GameInProgress.Penalty];
       return Intl.message(
-          'Win ${finalScore.ptsFor} - ${finalScore.ptsAgainst} (Penalty ${penaltyScore.ptsFor} - ${penaltyScore.ptsAgainst})',
+          'Win ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
           name: 'Win result details',
           desc: 'Win result details with penalty shootout');
     }
-    return Intl.message('Win ${finalScore.ptsFor} - ${finalScore.ptsAgainst}',
+    return Intl.message('Win ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
         name: 'Win result details', desc: 'Win result details');
   }
 
   String resultloss(GameResultDetails result) {
-    Iterable<GameResultPerPeriod> finalScoreList = result.scores
-        .where((GameResultPerPeriod p) => p.period == GameInProgress.Final);
     GameResultPerPeriod finalScore;
-    if (finalScoreList.isNotEmpty) {
-      finalScore = finalScoreList.first;
+    if (result.scores.containsKey(GameInProgress.Final)) {
+      finalScore = result.scores[GameInProgress.Final];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final, ptsFor: 0, ptsAgainst: 0);
+          period: GameInProgress.Final, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    Iterable<GameResultPerPeriod> penaltyScoreList = result.scores
-        .where((GameResultPerPeriod p) => p.period == GameInProgress.Penalty);
-    if (penaltyScoreList.isNotEmpty) {
-      GameResultPerPeriod penaltyScore = penaltyScoreList.first;
-      finalScore = finalScoreList.first;
+    if (result.scores.containsKey(GameInProgress.Penalty)) {
+      GameResultPerPeriod penaltyScore = result.scores[GameInProgress.Penalty];
       return Intl.message(
-          'Loss ${finalScore.ptsFor} - ${finalScore.ptsAgainst} (Penalty ${penaltyScore.ptsFor} - ${penaltyScore.ptsAgainst})',
+          'Loss ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
           name: 'Win result details',
           desc: 'Win result details with penalty shootout');
     }
-    return Intl.message('Loss ${finalScore.ptsFor} - ${finalScore.ptsAgainst}',
+    return Intl.message('Loss ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
         name: 'Loss result details', desc: 'Loss result details');
   }
 
   String resulttie(GameResultDetails result) {
-    Iterable<GameResultPerPeriod> finalScoreList = result.scores
-        .where((GameResultPerPeriod p) => p.period == GameInProgress.Final);
     GameResultPerPeriod finalScore;
-    if (finalScoreList.isNotEmpty) {
-      finalScore = finalScoreList.first;
-      print("score: ${finalScore}");
+    if (result.scores.containsKey(GameInProgress.Final)) {
+      finalScore = result.scores[GameInProgress.Final];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final, ptsFor: 0, ptsAgainst: 0);
+          period: GameInProgress.Final, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    return Intl.message('Tie ${finalScore.ptsFor} - ${finalScore.ptsAgainst}',
+    return Intl.message('Tie ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
         name: 'Tie result details', desc: 'Tie result details');
   }
 
   String resultinprogress(GameResultDetails result) {
-    Iterable<GameResultPerPeriod> finalScoreList = result.scores
-        .where((GameResultPerPeriod p) => p.period == GameInProgress.Final);
     GameResultPerPeriod finalScore;
-    if (finalScoreList.isNotEmpty) {
-      finalScore = finalScoreList.first;
+    if (result.scores.containsKey(GameInProgress.Final)) {
+      finalScore = result.scores[GameInProgress.Final];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final, ptsFor: 0, ptsAgainst: 0);
+          period: GameInProgress.Final, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    Iterable<GameResultPerPeriod> penaltyScoreList = result.scores
-        .where((GameResultPerPeriod p) => p.period == GameInProgress.Penalty);
-    if (penaltyScoreList.isNotEmpty) {
-      GameResultPerPeriod penaltyScore = penaltyScoreList.first;
-      finalScore = finalScoreList.first;
+    if (result.scores.containsKey(GameInProgress.Penalty)) {
+      GameResultPerPeriod penaltyScore = result.scores[GameInProgress.Penalty];
       return Intl.message(
-          'In progress ${finalScore.ptsFor} - ${finalScore.ptsAgainst} (Penalty ${penaltyScore.ptsFor} - ${penaltyScore.ptsAgainst})',
+          'In progress ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
           name: 'In progress result details',
           desc: 'Win result details with penalty shootout');
     }
     return Intl.message(
-        'In progress ${finalScore.ptsFor} - ${finalScore.ptsAgainst}',
+        'In progress ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
         name: 'In progress result details',
         desc: 'In progress result details');
   }
@@ -855,28 +835,8 @@ class Messages {
 
   String gameinprogress(GameInProgress val) {
     switch (val) {
-      case GameInProgress.First:
-        return Intl.message("1st", desc: "Game in progress 1st period");
-      case GameInProgress.Second:
-        return Intl.message("2nd", desc: "Game in progress 2nd period");
-      case GameInProgress.Third:
-        return Intl.message("3nd", desc: "Game in progress 3rd period");
-      case GameInProgress.Fourth:
-        return Intl.message("4nd", desc: "Game in progress 4th period");
-      case GameInProgress.Fifth:
-        return Intl.message("5nd", desc: "Game in progress 5th period");
-      case GameInProgress.Sixth:
-        return Intl.message("6nd", desc: "Game in progress 6th period");
-      case GameInProgress.Seventh:
-        return Intl.message("7nd", desc: "Game in progress 7th period");
-      case GameInProgress.Eighth:
-        return Intl.message("8th", desc: "Game in progress 8th period");
-      case GameInProgress.Nineth:
-        return Intl.message("9th", desc: "Game in progress 9th period");
-      case GameInProgress.Tenth:
-        return Intl.message("10th", desc: "Game in progress 10th period");
-      case GameInProgress.Half:
-        return Intl.message("Half", desc: "Game in progress Half ");
+      case GameInProgress.InProgress:
+        return Intl.message("In progress", desc: "Game is in progress");
       case GameInProgress.Final:
         return Intl.message("Final", desc: "Game in finalized");
       case GameInProgress.Penalty:

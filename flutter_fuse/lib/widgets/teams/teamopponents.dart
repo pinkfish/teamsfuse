@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/playerimage.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
 import 'dart:async';
 

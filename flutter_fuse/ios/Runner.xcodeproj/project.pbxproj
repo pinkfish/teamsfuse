@@ -7,19 +7,40 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		2D5378261FAA1A9400D5DBA9 /* flutter_assets in Resources */ = {isa = PBXBuildFile; fileRef = 2D5378251FAA1A9400D5DBA9 /* flutter_assets */; };
-		2D9222451EC1E1BA007564B0 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D9222441EC1E1BA007564B0 /* GeneratedPluginRegistrant.m */; };
-		31FDAA99601CE6599CC86458 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DF08C4DB7A6653D9513F0BE3 /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		3B80C3941E831B6300D905FE /* App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; };
 		3B80C3951E831B6300D905FE /* App.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		673C8443208EB83500E2A938 /* GoogleMapsBase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 673C8442208EB83500E2A938 /* GoogleMapsBase.framework */; };
+		673C8445208EB85200E2A938 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 673C8444208EB85200E2A938 /* GoogleMaps.framework */; };
+		673C8447208EB86600E2A938 /* GoogleMapsCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 673C8446208EB86600E2A938 /* GoogleMapsCore.framework */; };
+		67C2B97D208EBAA000EA0054 /* GooglePlacePicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B97C208EBAA000EA0054 /* GooglePlacePicker.framework */; };
+		67C2B97F208EBABB00EA0054 /* FirebaseStorage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B97E208EBABB00EA0054 /* FirebaseStorage.framework */; };
+		67C2B981208EBABF00EA0054 /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B980208EBABF00EA0054 /* FirebaseMessaging.framework */; };
+		67C2B983208EBAC400EA0054 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B982208EBAC400EA0054 /* FirebaseInstanceID.framework */; };
+		67C2B985208EBAC700EA0054 /* FirebaseFirestore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B984208EBAC700EA0054 /* FirebaseFirestore.framework */; };
+		67C2B987208EBACC00EA0054 /* FirebaseDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B986208EBACC00EA0054 /* FirebaseDatabase.framework */; };
+		67C2B989208EBACF00EA0054 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B988208EBACF00EA0054 /* FirebaseCore.framework */; };
+		67C2B98B208EBAD300EA0054 /* FirebaseAuth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B98A208EBAD300EA0054 /* FirebaseAuth.framework */; };
+		67C2B98D208EBAD800EA0054 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B98C208EBAD800EA0054 /* FirebaseAnalytics.framework */; };
+		67C2B98F208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B98E208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework */; };
+		67C2B991208EBADB00EA0054 /* FirebaseNanoPB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B990208EBADB00EA0054 /* FirebaseNanoPB.framework */; };
+		67C2B993208EBAE700EA0054 /* GooglePlaces.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B992208EBAE700EA0054 /* GooglePlaces.framework */; };
+		67C2B995208EBAEB00EA0054 /* GoogleSignIn.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B994208EBAEB00EA0054 /* GoogleSignIn.framework */; };
+		67C2B997208EBB2D00EA0054 /* GTMOAuth2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B996208EBB2D00EA0054 /* GTMOAuth2.framework */; };
+		67C2B999208EBB2F00EA0054 /* GTMSessionFetcher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B998208EBB2F00EA0054 /* GTMSessionFetcher.framework */; };
+		67DE79B02046B76B00FCB169 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 67DE79AF2046B76B00FCB169 /* GoogleService-Info.plist */; };
 		9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; };
 		9705A1C71CF904A300538489 /* Flutter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9740EEB41CF90195004384FC /* Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 9740EEB21CF90195004384FC /* Debug.xcconfig */; };
+		9740EEB51CF90195004384FC /* Generated.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 9740EEB31CF90195004384FC /* Generated.xcconfig */; };
 		978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */; };
 		97C146F31CF9000F007C117D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C146F21CF9000F007C117D /* main.m */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		F53D2841936F474A10650636 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 190A7217FD56D228E4BF3A99 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,12 +59,31 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
+		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
+		190A7217FD56D228E4BF3A99 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D5378251FAA1A9400D5DBA9 /* flutter_assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = flutter_assets; path = Flutter/flutter_assets; sourceTree = SOURCE_ROOT; };
-		2D9222431EC1E1BA007564B0 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
-		2D9222441EC1E1BA007564B0 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		3B80C3931E831B6300D905FE /* App.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = App.framework; path = Flutter/App.framework; sourceTree = "<group>"; };
-		6742D7B920883D26007D2449 /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMapsBase.framework; path = Pods/GoogleMaps/Base/Frameworks/GoogleMapsBase.framework; sourceTree = "<group>"; };
+		673C8442208EB83500E2A938 /* GoogleMapsBase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMapsBase.framework; path = Pods/GoogleMaps/Base/Frameworks/GoogleMapsBase.framework; sourceTree = "<group>"; };
+		673C8444208EB85200E2A938 /* GoogleMaps.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMaps.framework; path = Pods/GoogleMaps/Maps/Frameworks/GoogleMaps.framework; sourceTree = "<group>"; };
+		673C8446208EB86600E2A938 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMapsCore.framework; path = Pods/GoogleMaps/Maps/Frameworks/GoogleMapsCore.framework; sourceTree = "<group>"; };
+		67C2B97C208EBAA000EA0054 /* GooglePlacePicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GooglePlacePicker.framework; path = Pods/GooglePlacePicker/Frameworks/GooglePlacePicker.framework; sourceTree = "<group>"; };
+		67C2B97E208EBABB00EA0054 /* FirebaseStorage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseStorage.framework; path = Pods/FirebaseStorage/Frameworks/FirebaseStorage.framework; sourceTree = "<group>"; };
+		67C2B980208EBABF00EA0054 /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMessaging.framework; path = Pods/FirebaseMessaging/Frameworks/FirebaseMessaging.framework; sourceTree = "<group>"; };
+		67C2B982208EBAC400EA0054 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Pods/FirebaseInstanceID/Frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };
+		67C2B984208EBAC700EA0054 /* FirebaseFirestore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseFirestore.framework; path = Pods/FirebaseFirestore/Frameworks/FirebaseFirestore.framework; sourceTree = "<group>"; };
+		67C2B986208EBACC00EA0054 /* FirebaseDatabase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseDatabase.framework; path = Pods/FirebaseDatabase/Frameworks/FirebaseDatabase.framework; sourceTree = "<group>"; };
+		67C2B988208EBACF00EA0054 /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCore.framework; path = Pods/FirebaseCore/Frameworks/FirebaseCore.framework; sourceTree = "<group>"; };
+		67C2B98A208EBAD300EA0054 /* FirebaseAuth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAuth.framework; path = Pods/FirebaseAuth/Frameworks/FirebaseAuth.framework; sourceTree = "<group>"; };
+		67C2B98C208EBAD800EA0054 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Pods/FirebaseAnalytics/Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
+		67C2B98E208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Pods/FirebaseAnalytics/Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
+		67C2B990208EBADB00EA0054 /* FirebaseNanoPB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseNanoPB.framework; path = Pods/FirebaseAnalytics/Frameworks/FirebaseNanoPB.framework; sourceTree = "<group>"; };
+		67C2B992208EBAE700EA0054 /* GooglePlaces.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GooglePlaces.framework; path = Pods/GooglePlaces/Frameworks/GooglePlaces.framework; sourceTree = "<group>"; };
+		67C2B994208EBAEB00EA0054 /* GoogleSignIn.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSignIn.framework; path = Pods/GoogleSignIn/Frameworks/GoogleSignIn.framework; sourceTree = "<group>"; };
+		67C2B996208EBB2D00EA0054 /* GTMOAuth2.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GTMOAuth2.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		67C2B998208EBB2F00EA0054 /* GTMSessionFetcher.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GTMSessionFetcher.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		67DE79AF2046B76B00FCB169 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		7AFFD8ED1D35381100E5BB4D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -56,7 +96,6 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DF08C4DB7A6653D9513F0BE3 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,26 +104,61 @@
 			buildActionMask = 2147483647;
 			files = (
 				9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */,
+				673C8447208EB86600E2A938 /* GoogleMapsCore.framework in Frameworks */,
+				67C2B97D208EBAA000EA0054 /* GooglePlacePicker.framework in Frameworks */,
+				673C8443208EB83500E2A938 /* GoogleMapsBase.framework in Frameworks */,
+				67C2B97F208EBABB00EA0054 /* FirebaseStorage.framework in Frameworks */,
+				67C2B98B208EBAD300EA0054 /* FirebaseAuth.framework in Frameworks */,
+				67C2B991208EBADB00EA0054 /* FirebaseNanoPB.framework in Frameworks */,
+				67C2B98D208EBAD800EA0054 /* FirebaseAnalytics.framework in Frameworks */,
+				67C2B997208EBB2D00EA0054 /* GTMOAuth2.framework in Frameworks */,
+				67C2B999208EBB2F00EA0054 /* GTMSessionFetcher.framework in Frameworks */,
+				67C2B98F208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework in Frameworks */,
+				67C2B981208EBABF00EA0054 /* FirebaseMessaging.framework in Frameworks */,
+				67C2B989208EBACF00EA0054 /* FirebaseCore.framework in Frameworks */,
+				67C2B993208EBAE700EA0054 /* GooglePlaces.framework in Frameworks */,
+				67C2B983208EBAC400EA0054 /* FirebaseInstanceID.framework in Frameworks */,
+				67C2B995208EBAEB00EA0054 /* GoogleSignIn.framework in Frameworks */,
+				67C2B987208EBACC00EA0054 /* FirebaseDatabase.framework in Frameworks */,
+				67C2B985208EBAC700EA0054 /* FirebaseFirestore.framework in Frameworks */,
+				673C8445208EB85200E2A938 /* GoogleMaps.framework in Frameworks */,
 				3B80C3941E831B6300D905FE /* App.framework in Frameworks */,
-				31FDAA99601CE6599CC86458 /* Pods_Runner.framework in Frameworks */,
+				F53D2841936F474A10650636 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0093194F557AF39A4AE6B7B4 /* Pods */ = {
+		4B8602B9BD632E7669B902D4 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Pods;
 			sourceTree = "<group>";
 		};
-		6B7624A571CEE3CCAEBB7494 /* Frameworks */ = {
+		83C674DE5E18E743E127CE15 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				6742D7B920883D26007D2449 /* GoogleMapsBase.framework */,
-				DF08C4DB7A6653D9513F0BE3 /* Pods_Runner.framework */,
+				190A7217FD56D228E4BF3A99 /* Pods_Runner.framework */,
+				673C8442208EB83500E2A938 /* GoogleMapsBase.framework */,
+				673C8446208EB86600E2A938 /* GoogleMapsCore.framework */,
+				673C8444208EB85200E2A938 /* GoogleMaps.framework */,
+				67C2B97C208EBAA000EA0054 /* GooglePlacePicker.framework */,
+				67C2B980208EBABF00EA0054 /* FirebaseMessaging.framework */,
+				67C2B98C208EBAD800EA0054 /* FirebaseAnalytics.framework */,
+				67C2B990208EBADB00EA0054 /* FirebaseNanoPB.framework */,
+				67C2B98E208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework */,
+				67C2B998208EBB2F00EA0054 /* GTMSessionFetcher.framework */,
+				67C2B996208EBB2D00EA0054 /* GTMOAuth2.framework */,
+				67C2B98A208EBAD300EA0054 /* FirebaseAuth.framework */,
+				67C2B982208EBAC400EA0054 /* FirebaseInstanceID.framework */,
+				67C2B992208EBAE700EA0054 /* GooglePlaces.framework */,
+				67C2B988208EBACF00EA0054 /* FirebaseCore.framework */,
+				67C2B994208EBAEB00EA0054 /* GoogleSignIn.framework */,
+				67C2B984208EBAC700EA0054 /* FirebaseFirestore.framework */,
+				67C2B986208EBACC00EA0054 /* FirebaseDatabase.framework */,
+				67C2B97E208EBABB00EA0054 /* FirebaseStorage.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -92,9 +166,9 @@
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
+				2D5378251FAA1A9400D5DBA9 /* flutter_assets */,
 				3B80C3931E831B6300D905FE /* App.framework */,
 				3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */,
-				2D5378251FAA1A9400D5DBA9 /* flutter_assets */,
 				9740EEBA1CF902C7004384FC /* Flutter.framework */,
 				9740EEB21CF90195004384FC /* Debug.xcconfig */,
 				7AFA3C8E1D35360C0083082E /* Release.xcconfig */,
@@ -109,8 +183,8 @@
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
-				0093194F557AF39A4AE6B7B4 /* Pods */,
-				6B7624A571CEE3CCAEBB7494 /* Frameworks */,
+				4B8602B9BD632E7669B902D4 /* Pods */,
+				83C674DE5E18E743E127CE15 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -125,8 +199,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
-				2D9222431EC1E1BA007564B0 /* GeneratedPluginRegistrant.h */,
-				2D9222441EC1E1BA007564B0 /* GeneratedPluginRegistrant.m */,
+				67DE79AF2046B76B00FCB169 /* GoogleService-Info.plist */,
 				7AFFD8ED1D35381100E5BB4D /* AppDelegate.h */,
 				7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
@@ -134,6 +207,8 @@
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
 				97C147021CF9000F007C117D /* Info.plist */,
 				97C146F11CF9000F007C117D /* Supporting Files */,
+				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
+				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -153,15 +228,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
-				1C25F2F626EEC22CCD55198C /* [CP] Check Pods Manifest.lock */,
+				A04591601DCEF3C5CF9C798F /* [CP] Check Pods Manifest.lock */,
 				9740EEB61CF901F6004384FC /* Run Script */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
-				C11F09D836F5922D764D7036 /* [CP] Embed Pods Frameworks */,
-				8F254BB4C77A9C17D7D4DE59 /* [CP] Copy Pods Resources */,
+				5E4C338B342348E734DD90B1 /* [CP] Embed Pods Frameworks */,
+				23A2E2D39040BA62B09E67AF /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -178,7 +253,7 @@
 		97C146E61CF9000F007C117D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 0910;
 				ORGANIZATIONNAME = "The Chromium Authors";
 				TargetAttributes = {
 					97C146ED1CF9000F007C117D = {
@@ -211,9 +286,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
+				67DE79B02046B76B00FCB169 /* GoogleService-Info.plist in Resources */,
+				9740EEB51CF90195004384FC /* Generated.xcconfig in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
-				2D5378261FAA1A9400D5DBA9 /* flutter_assets in Resources */,
+				9740EEB41CF90195004384FC /* Debug.xcconfig in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
+				2D5378261FAA1A9400D5DBA9 /* flutter_assets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -221,39 +299,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1C25F2F626EEC22CCD55198C /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Runner-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Thin Binary";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" thin";
-		};
-		8F254BB4C77A9C17D7D4DE59 /* [CP] Copy Pods Resources */ = {
+		23A2E2D39040BA62B09E67AF /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -277,21 +323,21 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		9740EEB61CF901F6004384FC /* Run Script */ = {
+		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Run Script";
+			name = "Thin Binary";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" thin";
 		};
-		C11F09D836F5922D764D7036 /* [CP] Embed Pods Frameworks */ = {
+		5E4C338B342348E734DD90B1 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -359,6 +405,38 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		9740EEB61CF901F6004384FC /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
+		};
+		A04591601DCEF3C5CF9C798F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Runner-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -368,7 +446,7 @@
 			files = (
 				978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */,
 				97C146F31CF9000F007C117D /* main.m in Sources */,
-				2D9222451EC1E1BA007564B0 /* GeneratedPluginRegistrant.m in Sources */,
+				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -408,14 +486,12 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -442,7 +518,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -464,14 +540,12 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -492,8 +566,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -504,22 +579,36 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				DEVELOPMENT_TEAM = 7L9UDTQJU8;
 				ENABLE_BITCODE = NO;
-				FLUTTER_BUILD_MODE = release;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
+					"$(PROJECT_DIR)/Pods/GoogleMaps/Base/Frameworks",
+					"$(PROJECT_DIR)/Pods/GoogleMaps/Maps/Frameworks",
+					"$(PROJECT_DIR)/Pods/GooglePlacePicker/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseStorage/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseMessaging/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseFirestore/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseDatabase/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseCore/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseAnalytics/Frameworks",
+					"$(PROJECT_DIR)/Pods/GooglePlaces/Frameworks",
+					"$(PROJECT_DIR)/Pods/GoogleSignIn/Frameworks",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.teamsfuse.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.teamfuse.flutterFuse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.3;
 			};
@@ -529,22 +618,36 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
+				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				DEVELOPMENT_TEAM = 7L9UDTQJU8;
 				ENABLE_BITCODE = NO;
-				FLUTTER_BUILD_MODE = release;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
+					"$(PROJECT_DIR)/Pods/GoogleMaps/Base/Frameworks",
+					"$(PROJECT_DIR)/Pods/GoogleMaps/Maps/Frameworks",
+					"$(PROJECT_DIR)/Pods/GooglePlacePicker/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseStorage/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseMessaging/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseFirestore/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseDatabase/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseCore/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseAnalytics/Frameworks",
+					"$(PROJECT_DIR)/Pods/GooglePlaces/Frameworks",
+					"$(PROJECT_DIR)/Pods/GoogleSignIn/Frameworks",
 				);
 				INFOPLIST_FILE = Runner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.teamsfuse.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.teamfuse.flutterFuse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.3;
 			};

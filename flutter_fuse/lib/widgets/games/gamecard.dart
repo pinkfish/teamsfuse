@@ -82,19 +82,14 @@ class GameCard extends StatelessWidget {
 
   Widget _buildInProgress(BuildContext context) {
     if (game.result.inProgress == GameInProgress.Final) {
-      GameResultPerPeriod finalResult = game.result.scores.firstWhere(
-          (GameResultPerPeriod p) => p.period == GameInProgress.Final);
-      Iterable<GameResultPerPeriod> temp = game.result.scores.where(
-          (GameResultPerPeriod p) => p.period == GameInProgress.Overtime);
+      GameResultPerPeriod finalResult = game.result.scores[GameInProgress.Final];
       GameResultPerPeriod overtimeResult;
-      if (temp.isNotEmpty) {
-        overtimeResult = temp.first;
+      if (game.result.scores.containsKey(GameInProgress.Overtime)) {
+       overtimeResult = game.result.scores[GameInProgress.Overtime] ;
       }
-      temp = game.result.scores
-          .where((GameResultPerPeriod p) => p.period == GameInProgress.Penalty);
       GameResultPerPeriod penaltyResult;
-      if (temp.isNotEmpty) {
-        overtimeResult = penaltyResult;
+      if (game.result.scores.containsKey(GameInProgress.Penalty)) {
+        penaltyResult = game.result.scores[GameInProgress.Penalty] ;
       }
       switch (game.result.result) {
         case GameResult.Win:
@@ -107,25 +102,24 @@ class GameCard extends StatelessWidget {
             ),
           );
           children.add(
-            new Text("${finalResult.ptsFor} - ${finalResult.ptsAgainst}"),
+            new Text("${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}"),
           );
           if (overtimeResult != null) {
             children.add(
               new Text(
-                  "OT ${overtimeResult.ptsFor} - ${overtimeResult.ptsAgainst}"),
+                  "OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score.ptsAgainst}"),
             );
           }
           if (penaltyResult != null) {
             children.add(
               new Text(
-                  "PT ${penaltyResult.ptsFor} - ${penaltyResult.ptsAgainst}"),
+                  "PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score.ptsAgainst}"),
             );
           }
           return new Column(
             children: children,
           );
 
-        case GameResult.InProgress:
         case GameResult.Unknown:
           // Do the in progress in this case.
           break;

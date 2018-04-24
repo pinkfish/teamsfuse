@@ -4,9 +4,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
-/// Created by Marcin Szałek
-
-///NumberPicker is a widget designed to pick a number between #minValue and #maxValue
 class InProgressGamePicker extends StatelessWidget {
   ///height of every list element
   static const double DEFAULT_ITEM_EXTENT = 50.0;
@@ -134,7 +131,6 @@ class InProgressGamePicker extends StatelessWidget {
       }
 
       //update selection
-
       GameInProgress newValue;
 
       //return integer value

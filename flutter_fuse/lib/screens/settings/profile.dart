@@ -19,10 +19,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   UserData user;
   Player me;
 
-  ProfileScreenState() {
-  }
-
-  void initState() {
+   void initState() {
     super.initState();
     UserAuth.instance.currentUser().then((UserData data) {
       setState(() {
