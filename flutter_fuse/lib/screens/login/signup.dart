@@ -191,12 +191,12 @@ class SignupScreenState extends State<SignupScreen> {
                         new FlatButton(
                           child: new Text(Messages.of(context).login),
                           textColor: Theme.of(context).accentColor,
-                          onPressed: () => _onPressed("/"),
+                          onPressed: () => _onPressed("/Login/Home"),
                         ),
                         new FlatButton(
                           child: new Text(Messages.of(context).forgotPassword),
                           textColor: Theme.of(context).accentColor,
-                          onPressed: () => _onPressed("/ForgotPassword"),
+                          onPressed: () => _onPressed("/Login/ForgotPassword"),
                         ),
                       ],
                     )

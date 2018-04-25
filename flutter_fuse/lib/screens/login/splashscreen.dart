@@ -17,15 +17,38 @@ class SplashScreenState extends State<SplashScreen> {
   static UserData currentUser;
   static bool loaded = false;
   static bool loadOnMounted = false;
+  StreamSubscription<UserData> _stream;
 
   SplashScreenState() {
     _startLoading();
   }
 
   void initState() {
-
     _startLoading();
     super.initState();
+    _stream = UserAuth.instance.onAuthChanged().listen(_onAuthStateChanged);
+  }
+
+  void dispose() {
+    super.dispose();
+    _stream?.cancel();
+    _stream = null;
+  }
+
+  void _onAuthStateChanged(UserData data) {
+    if (data != null) {
+      if (currentUser != null) {
+        // Nothing changed...
+        if (currentUser.uid == data.uid &&
+            currentUser.isEmailVerified == data.isEmailVerified) {
+          return;
+        }
+      }
+      setState(() => currentUser = data);
+    } else if (currentUser != null) {
+      // Logged out.
+      setState(() => currentUser = data);
+    }
   }
 
   Future<Null> _startLoading() async {

@@ -131,12 +131,12 @@ class LoginScreenState extends State<LoginScreen> {
                             new FlatButton(
                               child: const Text("Create Account"),
                               textColor: Theme.of(context).accentColor,
-                              onPressed: () => onPressed("/SignUp"),
+                              onPressed: () => onPressed("/Login/SignUp"),
                             ),
                             new FlatButton(
                                 child: const Text("Forgot Password"),
                                 textColor: Theme.of(context).accentColor,
-                                onPressed: () => onPressed("/ForgotPassword")),
+                                onPressed: () => onPressed("/Login/ForgotPassword")),
                           ],
                         )
                       ],

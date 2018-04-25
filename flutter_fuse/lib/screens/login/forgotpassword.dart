@@ -36,7 +36,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     } else {
       form.save();
       UserAuth.instance.sendPasswordResetEmail(email).then((bool user) {
-        Navigator.pushNamed(context, "/");
+        Navigator.pushNamed(context, "/Login/Home");
       }).catchError((error) {
         showInSnackBar(error);
       });
@@ -111,7 +111,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             new FlatButton(
                               child: const Text("Create Account"),
                               textColor: Theme.of(context).accentColor,
-                              onPressed: () => onPressed("/SignUp"),
+                              onPressed: () => onPressed("/Login/SignUp"),
                             ),
                             new FlatButton(
                                 child: const Text("Login"),

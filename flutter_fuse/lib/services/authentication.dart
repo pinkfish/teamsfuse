@@ -53,9 +53,11 @@ class UserAuth {
         _profileUpdates = null;
       }
       if (input == null) {
+        _currentUser = null;
         _controller.add(null);
       } else {
-        _controller.add(await _userDataFromFirestore(input, true));
+        _currentUser = await _userDataFromFirestore(input, true);
+        _controller.add(_currentUser);
         DocumentReference ref =
             Firestore.instance.collection("UserData").document(input.uid);
         _profileUpdates = ref.snapshots.listen(this._onProfileUpdates);
@@ -101,23 +103,23 @@ class UserAuth {
 
   Future<UserData> currentUser() async {
     print('Loading locally');
-    FirebaseUser fbUser = await _auth.currentUser();
-    if (fbUser != null) {
-      print('Loading from firestore');
-      UserData user = await _userDataFromFirestore(fbUser, false);
-      print('Loaded!');
-      if (_profileUpdates == null) {
-        DocumentReference ref =
-            Firestore.instance.collection("UserData").document(user.uid);
-        _profileUpdates = ref.snapshots.listen(this._onProfileUpdates);
+    if (_currentUser == null) {
+      FirebaseUser fbUser = await _auth.currentUser();
+      if (fbUser != null) {
+        print('Loading from firestore');
+        UserData user = await _userDataFromFirestore(fbUser, false);
+        print('Loaded!');
+        if (_profileUpdates == null) {
+          DocumentReference ref =
+          Firestore.instance.collection("UserData").document(user.uid);
+          _profileUpdates = ref.snapshots.listen(this._onProfileUpdates);
+        }
+        return user;
       }
-      return user;
+    } else {
+      return _currentUser;
     }
     return null;
-  }
-
-  UserData cachedCurrentUser() {
-    return _currentUser;
   }
 
   Future<void> updateProfile(UserData user) async {

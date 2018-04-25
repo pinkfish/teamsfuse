@@ -23,10 +23,10 @@ class Routes {
   UserData _currentUser;
 
   final loggedOutRoutes = <String, WidgetBuilder>{
-    "/Home": (BuildContext context) => new LoginScreen(),
-    "/ForgotPassword": (BuildContext context) => new ForgotPasswordScreen(),
-    "/SignUp": (BuildContext context) => new SignupScreen(),
-    "/Verify": (BuildContext context) => new VerifyEmailScreen(),
+    "/Login/Home": (BuildContext context) => new LoginScreen(),
+    "/Login/ForgotPassword": (BuildContext context) => new ForgotPasswordScreen(),
+    "/Login/SignUp": (BuildContext context) => new SignupScreen(),
+    "/Login/Verify": (BuildContext context) => new VerifyEmailScreen(),
   };
 
   final theme = new ThemeData(

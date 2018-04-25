@@ -91,7 +91,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     CollectionReference coll = Firestore.instance
         .collection(GAMES_COLLECTION)
         .document(game.uid)
-        .getCollection(GAME_LOG_COLLECTION);
+        .collection(GAME_LOG_COLLECTION);
     Future<QuerySnapshot> query = coll.getDocuments();
     ret.logs = _getGameLogs(game, query);
 
@@ -114,7 +114,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       DocumentReference messageRef = Firestore.instance
           .collection(MESSAGES_COLLECTION)
           .document(mess.uid)
-          .getCollection(MESSAGES_COLLECTION)
+          .collection(MESSAGES_COLLECTION)
           .document(mess.uid);
       // Add in the recipients collection.
       await Future.forEach(mess.recipients.keys, (String str) async {
@@ -142,7 +142,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentReference ref = Firestore.instance
         .collection("Messages")
         .document(mess.uid)
-        .getCollection(Message.BODY)
+        .collection(Message.BODY)
         .document(mess.uid);
     DocumentSnapshot snap = await ref.get();
     if (snap.exists) {
@@ -159,7 +159,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     CollectionReference ref = Firestore.instance
         .collection(TEAMS_COLLECTION)
         .document(opponent.teamUid)
-        .getCollection(OPPONENT_COLLECTION);
+        .collection(OPPONENT_COLLECTION);
     if (opponent.uid == '' || opponent.uid == null) {
       // Add the game.
       DocumentReference doc = await ref.add(opponent.toJSON());
@@ -230,7 +230,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     CollectionReference opCollection = Firestore.instance
         .collection(TEAMS_COLLECTION)
         .document(team.uid)
-        .getCollection(OPPONENT_COLLECTION);
+        .collection(OPPONENT_COLLECTION);
     QuerySnapshot queryOpponentSnap = await opCollection.getDocuments();
 
     this._onOpponentUpdated(team, queryOpponentSnap);
