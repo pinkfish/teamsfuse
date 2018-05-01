@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'location.dart';
 import 'marker.dart';
 

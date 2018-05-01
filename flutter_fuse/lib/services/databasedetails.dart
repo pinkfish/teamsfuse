@@ -106,21 +106,41 @@ class UserDatabaseData {
     return null;
   }
 
-  Future<bool> acceptInvite(
-      Invite invite, String playerUid, String name) async {
-    // We add ourselves to the season.
-    DocumentSnapshot doc = await Firestore.instance
-        .collection(SEASONS_COLLECTION)
-        .document(invite.seasonUid)
-        .get();
-    if (doc.exists) {
-      // Update it!  First we add to the player.
-      Map<String, dynamic> data = new Map<String, dynamic>();
-      SeasonPlayer seasonPlayer = new SeasonPlayer(
-          playerUid: playerUid, displayName: name, role: invite.role);
-      data[Season.PLAYERS + "." + playerUid] = seasonPlayer.toJSON();
-      doc.reference.updateData(data);
-      return true;
+  Future<bool> acceptInvite(Invite inputInvite, {String playerUid, String name,
+      Relationship relationship}) async {
+    if (inputInvite is InviteToTeam) {
+      InviteToTeam invite = inputInvite;
+      // We add ourselves to the season.
+      DocumentSnapshot doc = await Firestore.instance
+          .collection(SEASONS_COLLECTION)
+          .document(invite.seasonUid)
+          .get();
+      if (doc.exists) {
+        // Update it!  First we add to the player.
+        Map<String, dynamic> data = new Map<String, dynamic>();
+        SeasonPlayer seasonPlayer = new SeasonPlayer(
+            playerUid: playerUid, displayName: name, role: invite.role);
+        data[Season.PLAYERS + "." + playerUid] = seasonPlayer.toJSON();
+        doc.reference.updateData(data);
+        return true;
+      }
+    }
+    if (inputInvite is InviteToPlayer) {
+      InviteToPlayer invite = inputInvite;
+      // Add ourselves to the player.
+      DocumentSnapshot doc = await Firestore.instance
+          .collection(PLAYERS_COLLECTION)
+          .document(invite.playerUid)
+          .get();
+      if (doc.exists) {
+        // Yay!  We have a player.
+        PlayerUser playerUser =
+            new PlayerUser(userUid: userUid, relationship: relationship);
+        Map<String, dynamic> data = {};
+        data[Player.USERS + "." + userUid] = playerUser.toJSON();
+        doc.reference.updateData(data);
+        return true;
+      }
     }
     return false;
   }
@@ -412,8 +432,7 @@ class UserDatabaseData {
     sql.clearTable(SqlData.INVITES_TABLE);
     query.documents.forEach((DocumentSnapshot doc) {
       String uid = doc.documentID;
-      Invite invite = new Invite();
-      invite.fromJSON(uid, doc.data);
+      Invite invite = Invite.makeInviteFromJSON(doc.documentID, doc.data);
       newInvites[uid] = invite;
       sql.updateElement(SqlData.INVITES_TABLE, uid, invite.toJSON());
     });
@@ -516,6 +535,7 @@ class UserDatabaseData {
         .collection(PLAYERS_COLLECTION)
         .where(Player.USERS + "." + uid + "." + ADDED, isEqualTo: true);
     _playerSnapshot = collection.snapshots.listen(this._onPlayerUpdated);
+
     Query inviteCollection = Firestore.instance
         .collection(INVITE_COLLECTION)
         .where(Invite.EMAIL, isEqualTo: email);

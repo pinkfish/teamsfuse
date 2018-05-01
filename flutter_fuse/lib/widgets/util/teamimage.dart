@@ -29,6 +29,14 @@ class TeamImage extends Image {
       if (photoUrl != null && photoUrl.isNotEmpty) {
         return new CachedNetworkImageProvider(urlNow: photoUrl);
       }
+      switch (UserDatabaseData.instance.teams[teamUid].sport) {
+        case Sport.Basketball:
+          return const AssetImage("assets/sports/Sport.Basketball.png");
+        case Sport.Soccer:
+          return const AssetImage("assets/sports/Sport.Soccer.png");
+        default:
+          break;
+      }
     }
     return const AssetImage("assets/images/defaultavatar.png");
   }

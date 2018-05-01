@@ -8,6 +8,7 @@ class PlayerFormField extends FormField<String> {
     Key key,
     String initialValue: '',
     InputDecoration decoration: const InputDecoration(),
+    this.addNew = true,
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
@@ -42,6 +43,11 @@ class PlayerFormField extends FormField<String> {
             );
           },
         );
+
+  static const String ADD = 'add';
+  static const String NONE = 'none';
+
+  final bool addNew;
 
   @override
   PlayerFormFieldState createState() => new PlayerFormFieldState();
@@ -78,13 +84,17 @@ class PlayerFormFieldState extends FormFieldState<String> {
     List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
     ret.add(
       new DropdownMenuItem(
-        child: new Text(Messages.of(context).opponentselect),
-        value: 'none',
+        child: new Text(Messages.of(context).playerselect),
+        value: PlayerFormField.NONE,
       ),
     );
 
-    ret.add(new DropdownMenuItem(
-        child: new Text(Messages.of(context).addplayer), value: 'add'));
+    if (widget.addNew) {
+      ret.add(new DropdownMenuItem(
+          child: new Text(Messages
+              .of(context)
+              .addplayer), value: PlayerFormField.ADD));
+    }
 
     UserDatabaseData.instance.players.forEach((String key, Player player) {
       if (player.name != null) {

@@ -701,9 +701,41 @@ class Messages {
   }
 
   String confirmdelete(Invite invite) {
+    if (invite is InviteToTeam) {
+      InviteToTeam inviteTeam = invite;
+      return Intl.message(
+          'Do you want to delete the invite to ${inviteTeam.teamName} for ${inviteTeam.playerName}',
+          name: 'Text to delete the invite to the team in the alert dialog.');
+    }
+    if (invite is InviteToPlayer) {
+      InviteToPlayer invitePlayer = invite;
+      return Intl.message(
+          'Do you want to delete the invite to follow ${invitePlayer.playerName}',
+          name: 'Text to delete the invite to the team in the alert dialog.');
+    }
+    return unknown;
+  }
+
+  String confirmdeleteplayer(Player player) {
     return Intl.message(
-        'Do you want to delete the invite to ${invite.teamName} for ${invite.playerName}',
-        name: 'Text to delete the invite to the team in the alert dialog.');
+        "Do you want to delete your connection to ${player.name}?",
+        desc: 'Text to confirm asking if the players wants to be delete');
+  }
+
+  String nameandteam(Team team, Player player) {
+    return Intl.message("${team.name} ${player.name}",
+    desc: "Format for name and player for the team");
+
+  }
+
+  String numberofuserforplayer(int num) {
+    return Intl.message("$num users associated",
+        desc: "Number of users associated with this player");
+  }
+
+  String invitedemail(InviteToPlayer invite) {
+    return Intl.message("${invite.email} to follow",
+        desc: "Message for invited to follow the specific player");
   }
 
   String get newplayername {
@@ -763,7 +795,8 @@ class Messages {
       finalScore = result.scores[GameInProgress.Final];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+          period: GameInProgress.Final,
+          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
     if (result.scores.containsKey(GameInProgress.Penalty)) {
       GameResultPerPeriod penaltyScore = result.scores[GameInProgress.Penalty];
@@ -772,8 +805,10 @@ class Messages {
           name: 'Win result details',
           desc: 'Win result details with penalty shootout');
     }
-    return Intl.message('Win ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
-        name: 'Win result details', desc: 'Win result details');
+    return Intl.message(
+        'Win ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
+        name: 'Win result details',
+        desc: 'Win result details');
   }
 
   String resultloss(GameResultDetails result) {
@@ -782,7 +817,8 @@ class Messages {
       finalScore = result.scores[GameInProgress.Final];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+          period: GameInProgress.Final,
+          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
     if (result.scores.containsKey(GameInProgress.Penalty)) {
       GameResultPerPeriod penaltyScore = result.scores[GameInProgress.Penalty];
@@ -791,8 +827,10 @@ class Messages {
           name: 'Win result details',
           desc: 'Win result details with penalty shootout');
     }
-    return Intl.message('Loss ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
-        name: 'Loss result details', desc: 'Loss result details');
+    return Intl.message(
+        'Loss ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
+        name: 'Loss result details',
+        desc: 'Loss result details');
   }
 
   String resulttie(GameResultDetails result) {
@@ -801,10 +839,13 @@ class Messages {
       finalScore = result.scores[GameInProgress.Final];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+          period: GameInProgress.Final,
+          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    return Intl.message('Tie ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
-        name: 'Tie result details', desc: 'Tie result details');
+    return Intl.message(
+        'Tie ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
+        name: 'Tie result details',
+        desc: 'Tie result details');
   }
 
   String resultinprogress(GameResultDetails result) {
@@ -813,7 +854,8 @@ class Messages {
       finalScore = result.scores[GameInProgress.Final];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+          period: GameInProgress.Final,
+          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
     if (result.scores.containsKey(GameInProgress.Penalty)) {
       GameResultPerPeriod penaltyScore = result.scores[GameInProgress.Penalty];

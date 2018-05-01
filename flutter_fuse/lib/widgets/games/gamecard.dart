@@ -41,7 +41,8 @@ class GameCard extends StatelessWidget {
     }
   }
 
-  Widget _buildAvailability(BuildContext context) {
+  Widget _buildAvailability(
+      BuildContext context, Season season, List<Player> players) {
     print('${game.seasonUid} ${game.teamUid}');
     if (!UserDatabaseData.instance.teams.containsKey(game.teamUid)) {
       return null;
@@ -51,18 +52,12 @@ class GameCard extends StatelessWidget {
       return null;
     }
 
-    Season season =
-        UserDatabaseData.instance.teams[game.teamUid].seasons[game.seasonUid];
     // Show current availability.
-    UserDatabaseData.instance.players.forEach((String key, Player player) {
-      if (season.players.any((SeasonPlayer play) {
-        return play.playerUid == key;
-      })) {
-        if (game.attendance.containsKey(key)) {
-          attendence[player] = game.attendance[key];
-        } else {
-          attendence[player] = Attendance.Maybe;
-        }
+    players.forEach((Player player) {
+      if (game.attendance.containsKey(key)) {
+        attendence[player] = game.attendance[key];
+      } else {
+        attendence[player] = Attendance.Maybe;
       }
     });
     if (attendence.length == 0) {
@@ -82,14 +77,15 @@ class GameCard extends StatelessWidget {
 
   Widget _buildInProgress(BuildContext context) {
     if (game.result.inProgress == GameInProgress.Final) {
-      GameResultPerPeriod finalResult = game.result.scores[GameInProgress.Final];
+      GameResultPerPeriod finalResult =
+          game.result.scores[GameInProgress.Final];
       GameResultPerPeriod overtimeResult;
       if (game.result.scores.containsKey(GameInProgress.Overtime)) {
-       overtimeResult = game.result.scores[GameInProgress.Overtime] ;
+        overtimeResult = game.result.scores[GameInProgress.Overtime];
       }
       GameResultPerPeriod penaltyResult;
       if (game.result.scores.containsKey(GameInProgress.Penalty)) {
-        penaltyResult = game.result.scores[GameInProgress.Penalty] ;
+        penaltyResult = game.result.scores[GameInProgress.Penalty];
       }
       switch (game.result.result) {
         case GameResult.Win:
@@ -102,7 +98,8 @@ class GameCard extends StatelessWidget {
             ),
           );
           children.add(
-            new Text("${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}"),
+            new Text(
+                "${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}"),
           );
           if (overtimeResult != null) {
             children.add(
@@ -137,7 +134,8 @@ class GameCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTrailing(BuildContext context) {
+  Widget _buildTrailing(
+      BuildContext context, Season season, List<Player> players) {
     // Only show attendence until the game/event is over.
     if (game.result.inProgress == GameInProgress.NotStarted &&
         (game.trackAttendance &&
@@ -145,7 +143,7 @@ class GameCard extends StatelessWidget {
                 new DateTime.now()
                     .subtract(new Duration(hours: 2))
                     .millisecondsSinceEpoch)) {
-      return _buildAvailability(context);
+      return _buildAvailability(context, season, players);
     }
     if (game.result.inProgress != GameInProgress.NotStarted) {
       return _buildInProgress(context);
@@ -161,6 +159,17 @@ class GameCard extends StatelessWidget {
     } else {
       op = team.opponents[game.opponentUid];
     }
+
+    List<Player> players = [];
+    Season season =
+        UserDatabaseData.instance.teams[game.teamUid].seasons[game.seasonUid];
+    UserDatabaseData.instance.players.forEach((String key, Player player) {
+      if (season.players.any((SeasonPlayer play) {
+        return play.playerUid == key;
+      })) {
+        players.add(player);
+      }
+    });
 
     TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
     String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
@@ -179,20 +188,45 @@ class GameCard extends StatelessWidget {
 
     TZDateTime time = new TZDateTime.now(local);
     Duration dur = time.difference(game.tzTime).abs();
-    String subtitle;
+    List<TextSpan> subtitle = [];
     if (arriveFormat != null) {
       String addr = game.place.address;
       if (game.place.name.isNotEmpty) {
         addr = game.place.name;
       }
-      subtitle = Messages.of(context).gameaddressarriveat(arriveFormat, addr);
+      subtitle.add(
+        new TextSpan(
+          style: Theme.of(context).textTheme.subhead.copyWith(fontWeight: FontWeight.bold),
+          text: Messages.of(context).gameaddressarriveat(arriveFormat, addr) +
+              "\n",
+        ),
+      );
     } else {
       if (game.place.name.isNotEmpty) {
-        subtitle = game.place.name;
+        subtitle.add(
+          new TextSpan(
+            style: Theme.of(context).textTheme.subhead.copyWith(fontWeight: FontWeight.bold),
+            text: game.place.name + "\n",
+          ),
+        );
       } else {
-        subtitle = game.place.address;
+        subtitle.add(
+          new TextSpan(
+            style: Theme.of(context).textTheme.subhead.copyWith(fontWeight: FontWeight.bold),
+            text: game.place.address + "\n",
+          ),
+        );
       }
     }
+    players.forEach((Player play) {
+      subtitle.add(
+        new TextSpan(
+          style: Theme.of(context).textTheme.subhead,
+          text: Messages.of(context).nameandteam(team, play),
+        ),
+      );
+    });
+
     switch (game.type) {
       case EventType.Game:
         String opName;
@@ -221,8 +255,13 @@ class GameCard extends StatelessWidget {
               overflow: TextOverflow.clip,
               style: new TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: new Text(subtitle),
-            trailing: _buildTrailing(context),
+            subtitle: new RichText(
+              text: new TextSpan(
+                style: Theme.of(context).textTheme.subhead,
+                children: subtitle,
+              ),
+            ),
+            trailing: _buildTrailing(context, season, players),
           ),
         );
 
@@ -246,8 +285,10 @@ class GameCard extends StatelessWidget {
               overflow: TextOverflow.clip,
               style: new TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: new Text(subtitle),
-            trailing: _buildTrailing(context),
+            subtitle: new RichText(
+              text: new TextSpan(children: subtitle),
+            ),
+            trailing: _buildTrailing(context, season, players),
           ),
         );
 
@@ -273,8 +314,10 @@ class GameCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            subtitle: new Text(subtitle),
-            trailing: _buildTrailing(context),
+            subtitle: new RichText(
+              text: new TextSpan(children: subtitle),
+            ),
+            trailing: _buildTrailing(context, season, players),
           ),
         );
     }

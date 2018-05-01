@@ -51,7 +51,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
 // Invite firestore updates
-  Future<void> firestoreInviteDelete(Invite invite) {
+  Future<void> firestoreInviteToTeamDelete(InviteToTeam invite) {
+    return Firestore.instance
+        .collection(INVITE_COLLECTION)
+        .document(invite.uid)
+        .delete();
+  }
+
+  Future<void> firestoreInviteToPlayerDelete(InviteToPlayer invite) {
     return Firestore.instance
         .collection(INVITE_COLLECTION)
         .document(invite.uid)
@@ -345,6 +352,53 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return ret;
   }
 
+  // Send an invite to a user for this season and team.
+  Future<void> inviteUserToPlayer(Player player,
+      {String userId, String email}) async {
+    CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
+    // See if the invite already exists.
+    QuerySnapshot snapshot = await ref
+        .where(Invite.EMAIL, isEqualTo: email)
+        .where(Invite.TYPE, isEqualTo: InviteType.Player.toString())
+        .where(InviteToPlayer.PLAYERUID, isEqualTo: player.uid)
+        .getDocuments();
+    if (snapshot.documents.length == 0) {
+      InviteToPlayer invite = new InviteToPlayer(
+          playerUid: player.uid, email: email, playerName: player.name);
+
+      print('Adding invite');
+      return ref.add(invite.toJSON());
+    }
+  }
+
+  Future<StreamSubscription<dynamic>> getInviteForPlayerStream(
+      Player player) async {
+    CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
+    // See if the invite already exists.
+    var snap = ref
+        .where(Invite.TYPE, isEqualTo: InviteType.Player.toString())
+        .where(InviteToPlayer.PLAYERUID, isEqualTo: player.uid)
+        .snapshots
+        .listen((QuerySnapshot query) {
+      List<InviteToPlayer> ret = [];
+
+      query.documents.forEach((DocumentSnapshot doc) {
+        InviteToPlayer invite = new InviteToPlayer();
+        invite.fromJSON(doc.documentID, doc.data);
+        ret.add(invite);
+      });
+      player.setInvites(ret);
+    });
+    return snap;
+  }
+
+  Future<void> removeUserFromPlayer(Player player, String userId) {
+    DocumentReference doc =
+        Firestore.instance.collection(PLAYERS_COLLECTION).document(player.uid);
+    return doc.updateData({Player.USERS + userId: null});
+
+  }
+
   // Season updates
   Future<void> updateFirestoreSeason(Season season, bool includePlayers) async {
     // Add or update this record into the database.
@@ -390,21 +444,22 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // See if the invite already exists.
     QuerySnapshot snapshot = await ref
         .where(Invite.EMAIL, isEqualTo: email)
-        .where(Invite.SEASONUID, isEqualTo: season.uid)
-        .where(Invite.TEAMUID, isEqualTo: season.teamUid)
+        .where(Invite.TYPE, isEqualTo: InviteType.Team.toString())
+        .where(InviteToTeam.SEASONUID, isEqualTo: season.uid)
+        .where(InviteToTeam.TEAMUID, isEqualTo: season.teamUid)
         .getDocuments();
     Team team = UserDatabaseData.instance.teams[season.teamUid];
     if (snapshot.documents.length > 0) {
-      Invite invite = new Invite();
-      invite.fromJSON(
+      InviteToTeam invite = Invite.makeInviteFromJSON(
           snapshot.documents[0].documentID, snapshot.documents[0].data);
+
       invite.playerName.add(playername);
       invite.seasonName = season.name;
       invite.teamName = team.name;
       snapshot.documents[0].reference.updateData(invite.toJSON());
       print('Updating invite');
     } else {
-      Invite invite = new Invite();
+      InviteToTeam invite = new InviteToTeam();
       invite.email = email;
       invite.teamUid = season.teamUid;
       invite.seasonUid = season.uid;
@@ -423,28 +478,26 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     var snap = ref
-        .where(Invite.SEASONUID, isEqualTo: season.uid)
-        .where(Invite.TEAMUID, isEqualTo: season.teamUid)
+        .where(Invite.TYPE, isEqualTo: InviteType.Team.toString())
+        .where(InviteToTeam.SEASONUID, isEqualTo: season.uid)
+        .where(InviteToTeam.TEAMUID, isEqualTo: season.teamUid)
         .snapshots
         .listen((QuerySnapshot query) {
       List<Invite> ret = new List<Invite>();
 
       query.documents.forEach((DocumentSnapshot doc) {
-        Invite invite = new Invite();
+        InviteToTeam invite = new InviteToTeam();
         invite.fromJSON(doc.documentID, doc.data);
         ret.add(invite);
       });
       season.setInvites(ret);
-
-      //_controller.add(_invites);
-      //});
     });
     return snap;
   }
 
   Future<Iterable<Game>> getSeasonGames(Season season) async {
     CollectionReference ref = Firestore.instance.collection(GAMES_COLLECTION);
-    // See if the invite already exists.
+    // See if the games for the season.
     var snap = await ref
         .where(Game.TEAMUID, isEqualTo: season.teamUid)
         .where(Game.SEASONUID, isEqualTo: season.uid)

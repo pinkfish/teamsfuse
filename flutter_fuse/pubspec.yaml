@@ -58,6 +58,7 @@ flutter:
      - assets/images/defaultavatar2.png
      - assets/timezone/2018c.tzf
      - assets/sports/Sport.Basketball.png
+     - assets/sports/Sport.Soccer.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

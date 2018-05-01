@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
 import 'dart:async';
 
 class PlayerDetailsScreen extends StatefulWidget {
@@ -136,8 +137,8 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     Messages mess = Messages.of(context);
 
     bool result = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
+        context: context,
+        barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return new AlertDialog(
             title: new Text(mess.deleteplayer),
@@ -152,27 +153,23 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
             ),
             actions: <Widget>[
               new FlatButton(
-                child: new Text(MaterialLocalizations
-                    .of(context)
-                    .okButtonLabel),
+                child:
+                    new Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   // Do the delete.
                   Navigator.of(context).pop(true);
                 },
               ),
               new FlatButton(
-                child:
-                new Text(MaterialLocalizations
-                    .of(context)
-                    .cancelButtonLabel),
+                child: new Text(
+                    MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
               ),
             ],
           );
-        }
-    );
+        });
     if (result) {
       _season.removePlayer(_player);
       Navigator.pop(context);
@@ -206,6 +203,10 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     return logo;
   }
 
+  void _deleteInvite(BuildContext context, InviteToPlayer invite) {
+    deleteInviteDialog(context, invite);
+  }
+
   Widget _buildPlayerDetails() {
     List<Widget> ret = new List<Widget>();
     final Size screenSize = MediaQuery.of(context).size;
@@ -229,40 +230,74 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
 
     ret.add(new ListTile(
       leading: const Icon(CommunityIcons.bookopenvariant),
-      title: new Text(messages.roleingame(_player.role)),
+      title: new Text(
+        messages.roleingame(_player.role),
+      ),
     ));
 
     bool loading = false;
+
+    ret.add(
+      new StreamBuilder(
+        stream: _playerDetails.inviteStream,
+        builder:
+            (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
+          if (!snap.hasData || snap.data.length == 0) {
+            return null;
+          }
+          return new Card(
+            child: new Column(
+              children: snap.data.map((InviteToPlayer invite) {
+                return new ListTile(
+                  leading: const Icon(Icons.message),
+                  title: new Text(Messages.of(context).invitedemail(invite)),
+                  trailing: new IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => this._deleteInvite(context, invite),
+                  ),
+                );
+              }).toList(),
+            ),
+          );
+        },
+      ),
+    );
 
     if (_playerDetails != null && _playerDetails.users != null) {
       _playerDetails.users.forEach((String key, PlayerUser player) {
         if (player.profile != null) {
           if (player.profile.phoneNumber != null &&
               player.profile.phoneNumber.isNotEmpty) {
-            ret.add(new ListTile(
-              leading: const Icon(Icons.phone),
-              title: new Text(
-                messages.displaynamerelationship(
-                    player.profile.displayName, player.relationship),
+            ret.add(
+              new ListTile(
+                leading: const Icon(Icons.phone),
+                title: new Text(
+                  messages.displaynamerelationship(
+                      player.profile.displayName, player.relationship),
+                ),
+                subtitle: new Text(player.profile.phoneNumber),
               ),
-              subtitle: new Text(player.profile.phoneNumber),
-            ));
+            );
           } else {
-            ret.add(new ListTile(
-              leading: const Icon(Icons.email),
-              title: new Text(player.profile.displayName),
-              subtitle: new Text(messages.sendmessage),
-            ));
+            ret.add(
+              new ListTile(
+                leading: const Icon(Icons.email),
+                title: new Text(player.profile.displayName),
+                subtitle: new Text(messages.sendmessage),
+              ),
+            );
           }
         } else {
           loading = true;
         }
       });
     } else {
-      ret.add(new ListTile(
-        leading: const Icon(Icons.phone),
-        title: new Text(_player.displayName),
-      ));
+      ret.add(
+        new ListTile(
+          leading: const Icon(Icons.phone),
+          title: new Text(_player.displayName),
+        ),
+      );
       loading = true;
     }
     if (loading) {
@@ -307,9 +342,35 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     );
   }
 
+  void _onInvite(BuildContext context) {
+    Navigator.pushNamed(context, "AddInviteToPlayer/" + widget.playerUid);
+  }
+
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
+    List<Widget> actions = new List<Widget>();
+    if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
+      if (UserDatabaseData.instance.teams[widget.teamUid]
+          .isAdmin(UserDatabaseData.instance.players)) {
+        actions.add(
+          new FlatButton(
+            onPressed: () {
+              this._onInvite(context);
+            },
+            child: new Text(
+              Messages.of(context).addinvite,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .subhead
+                  .copyWith(color: Colors.white),
+            ),
+          ),
+        );
+      }
+    }
+
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(messages.title),

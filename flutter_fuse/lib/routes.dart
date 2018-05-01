@@ -24,7 +24,8 @@ class Routes {
 
   final loggedOutRoutes = <String, WidgetBuilder>{
     "/Login/Home": (BuildContext context) => new LoginScreen(),
-    "/Login/ForgotPassword": (BuildContext context) => new ForgotPasswordScreen(),
+    "/Login/ForgotPassword": (BuildContext context) =>
+        new ForgotPasswordScreen(),
     "/Login/SignUp": (BuildContext context) => new SignupScreen(),
     "/Login/Verify": (BuildContext context) => new VerifyEmailScreen(),
   };
@@ -58,18 +59,21 @@ class Routes {
     _currentUser = user;
     if (user != null) {
       final data = await rootBundle.load('assets/timezone/2018c.tzf');
-      final String currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
+      String currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
       initializeDatabase(data.buffer.asUint8List());
-      setLocalLocation(getLocation(currentTimeZone));
+      if (currentTimeZone == "GMT") {
+        currentTimeZone = "Europe/London";
+      } else {
+        setLocalLocation(getLocation(currentTimeZone));
+      }
       UserDatabaseData.load(user.uid, user.email);
       print('$currentTimeZone ${local.toString()}');
       Directory dir = await getApplicationDocumentsDirectory();
       Stream<FileSystemEntity> files = dir.list(recursive: true);
       print('Getting files');
-      files
-        .forEach((FileSystemEntity e) {
-          print(e.path);
-        });
+      files.forEach((FileSystemEntity e) {
+        print(e.path);
+      });
     } else {
       UserDatabaseData.clear();
     }

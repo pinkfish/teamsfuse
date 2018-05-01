@@ -19,9 +19,9 @@ class TeamPlayersState extends State<TeamPlayers> {
   String _seasonUid;
   Team _team;
   Season _season;
-  List<Invite> _invites;
+  List<InviteToTeam> _invites;
   StreamSubscription<UpdateReason> _updateStream;
-  StreamSubscription<List<Invite>> _inviteStream;
+  StreamSubscription<List<InviteToTeam>> _inviteStream;
 
   TeamPlayersState();
 
@@ -66,7 +66,7 @@ class TeamPlayersState extends State<TeamPlayers> {
       _seasonUid = _team.currentSeason;
       _season = _team.seasons[seasonUid];
       // Look for the invites.
-      _inviteStream = _season.inviteStream.listen((List<Invite> invites) {
+      _inviteStream = _season.inviteStream.listen((List<InviteToTeam> invites) {
         setState(() {
           _invites = invites;
         });
@@ -88,7 +88,7 @@ class TeamPlayersState extends State<TeamPlayers> {
     return ret;
   }
 
-  void _deleteInvite(Invite invite) async {
+  void _deleteInvite(InviteToTeam invite) async {
     Messages mess = Messages.of(context);
     // Show an alert dialog first.
     bool result = await showDialog<bool>(
@@ -154,21 +154,25 @@ class TeamPlayersState extends State<TeamPlayers> {
         ),
       );
     });
-    ret.add(new ListTile(
+    ret.add(
+      new ListTile(
         title: new FlatButton(
-            textColor: Theme.of(context).accentColor,
-            onPressed: () {
-              Navigator.pushNamed(
-                  context, "AddPlayer/" + widget._teamUid + "/" + _seasonUid);
-            },
-            child: new Text(Messages.of(context).addplayer))));
+          textColor: Theme.of(context).accentColor,
+          onPressed: () {
+            Navigator.pushNamed(
+                context, "AddPlayer/" + widget._teamUid + "/" + _seasonUid);
+          },
+          child: new Text(Messages.of(context).addplayer),
+        ),
+      ),
+    );
 
     // Put in an expansion bar if there are pending invites.
     if (_invites != null &&
         _invites.length > 0 &&
         _team.isAdmin(UserDatabaseData.instance.players)) {
       List<Widget> kids = new List<Widget>();
-      _invites.forEach((Invite inv) {
+      _invites.forEach((InviteToTeam inv) {
         kids.add(
           new ListTile(
             title: new Row(

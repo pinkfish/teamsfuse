@@ -47,7 +47,7 @@ class FusedDrawerContent extends StatelessWidget {
         title: const Text('Signout'),
         onTap: () {
           UserAuth.instance.signOut();
-          Navigator.of(context).pushNamed("/Home");
+          //Navigator.of(context).pushNamed("/Home");
         },
       ),
       new ListTile(
