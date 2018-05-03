@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'authentication.dart';
 
 class Notifications {
   static final Notifications instance = new Notifications();
@@ -15,6 +16,7 @@ class Notifications {
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.getToken().then((String token) {
       print('We have token! $token');
+      UserAuth.instance.setNotificationToken(token);
     });
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {

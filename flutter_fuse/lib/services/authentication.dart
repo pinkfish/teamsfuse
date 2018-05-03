@@ -4,8 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_fuse/services/sqldata.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-
-
 class UserData {
   String _email;
   String uid;
@@ -43,6 +41,7 @@ class UserAuth {
   StreamController<UserData> _controller = new StreamController<UserData>();
   Stream<UserData> _stream;
   StreamSubscription<DocumentSnapshot> _profileUpdates;
+  String _token;
 
   UserAuth() {
     _auth.onAuthStateChanged.listen((FirebaseUser input) async {
@@ -52,14 +51,23 @@ class UserAuth {
         _profileUpdates.cancel();
         _profileUpdates = null;
       }
+      if (_currentUser != null) {
+        // Delete the old token.
+        deleteNotificationToken();
+      }
       if (input == null) {
         _currentUser = null;
         _controller.add(null);
       } else {
         _currentUser = await _userDataFromFirestore(input, true);
         _controller.add(_currentUser);
-        DocumentReference ref =
-            Firestore.instance.collection("UserData").document(input.uid);
+        // Update the notification token.
+        if (_token != null) {
+          setNotificationToken(_token);
+        }
+        DocumentReference ref = Firestore.instance
+            .collection(USER_DATA_COLLECTION)
+            .document(input.uid);
         _profileUpdates = ref.snapshots.listen(this._onProfileUpdates);
       }
     });
@@ -71,8 +79,9 @@ class UserAuth {
         .createUserWithEmailAndPassword(
             email: userData.email, password: userData.password)
         .then((FirebaseUser user) {
-      DocumentReference ref =
-          Firestore.instance.collection("UserData").document(user.uid);
+      DocumentReference ref = Firestore.instance
+          .collection(USER_DATA_COLLECTION)
+          .document(user.uid);
       ref.updateData(userData.profile.toJSON());
     });
   }
@@ -110,8 +119,9 @@ class UserAuth {
         UserData user = await _userDataFromFirestore(fbUser, false);
         print('Loaded!');
         if (_profileUpdates == null) {
-          DocumentReference ref =
-          Firestore.instance.collection("UserData").document(user.uid);
+          DocumentReference ref = Firestore.instance
+              .collection(USER_DATA_COLLECTION)
+              .document(user.uid);
           _profileUpdates = ref.snapshots.listen(this._onProfileUpdates);
         }
         return user;
@@ -124,13 +134,15 @@ class UserAuth {
 
   Future<void> updateProfile(UserData user) async {
     DocumentReference ref =
-        Firestore.instance.collection("UserData").document(user.uid);
+        Firestore.instance.collection(USER_DATA_COLLECTION).document(user.uid);
     await ref.updateData(user.profile.toJSON());
   }
 
   Future<FusedUserProfile> getProfile(String userId) async {
-    DocumentSnapshot ref =
-        await Firestore.instance.collection("UserData").document(userId).get();
+    DocumentSnapshot ref = await Firestore.instance
+        .collection(USER_DATA_COLLECTION)
+        .document(userId)
+        .get();
     if (ref.exists) {
       FusedUserProfile profile = new FusedUserProfile();
       profile.fromJSON(ref.data);
@@ -163,8 +175,10 @@ class UserAuth {
     user.isEmailVerified = input.isEmailVerified;
     if (data == null && forceProfile) {
       print('No sql data');
-      Future<DocumentSnapshot> ref =
-          Firestore.instance.collection("UserData").document(input.uid).get();
+      Future<DocumentSnapshot> ref = Firestore.instance
+          .collection(USER_DATA_COLLECTION)
+          .document(input.uid)
+          .get();
       if (forceProfile) {
         DocumentSnapshot doc = await ref;
         data = doc.data;
@@ -188,5 +202,31 @@ class UserAuth {
     }
     _currentUser = user;
     return user;
+  }
+
+  // User profile
+  Future<void> setNotificationToken(String token) async {
+    if (_currentUser != null) {
+      Map<String, bool> data = {};
+      data["${FusedUserProfile.TOKENS}.${token}"] = true;
+      Firestore.instance
+          .collection(USER_DATA_COLLECTION)
+          .document(_currentUser.uid)
+          .updateData(data);
+    } else {
+      _token = token;
+    }
+  }
+
+  // User profile
+  Future<void> deleteNotificationToken() async {
+    if (_currentUser != null) {
+      Map<String, bool> data = {};
+      data[FusedUserProfile.TOKENS + "." + _token] = false;
+      Firestore.instance
+          .collection(USER_DATA_COLLECTION)
+          .document(_currentUser.uid)
+          .updateData(data);
+    }
   }
 }

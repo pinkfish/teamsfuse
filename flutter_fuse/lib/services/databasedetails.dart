@@ -214,11 +214,8 @@ class UserDatabaseData {
       if (!details.allGames) {
         if (game.time > details.endDate.millisecondsSinceEpoch ||
             game.time < details.startDate.millisecondsSinceEpoch) {
-          print('not in range');
           return false;
         }
-        print(
-            "In range ${game.uid} ${game.tzTime} ${details.endDate} ${details.startDate}");
       }
       return true;
     });
@@ -538,7 +535,7 @@ class UserDatabaseData {
 
     Query inviteCollection = Firestore.instance
         .collection(INVITE_COLLECTION)
-        .where(Invite.EMAIL, isEqualTo: email);
+        .where(Invite.EMAIL, isEqualTo: normalizeEmail(email));
     inviteCollection.getDocuments().then((QuerySnapshot query) {
       this._onInviteUpdated(query);
     });

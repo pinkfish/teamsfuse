@@ -48,42 +48,52 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     }
 
     if (team.isAdmin(UserDatabaseData.instance.players)) {
-      actions.add(new FlatButton(
+      actions.add(
+        new FlatButton(
           onPressed: this._editGame,
-          child: new Text(Messages.of(context).editbuttontext,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(color: Colors.white))));
+          child: new Text(
+            Messages.of(context).editbuttontext,
+            style: Theme
+                .of(context)
+                .textTheme
+                .subhead
+                .copyWith(color: Colors.white),
+          ),
+        ),
+      );
     }
     String opponentName;
     if (opponent != null) {
       opponentName = opponent.name;
+    } else {
+      opponentName = Messages
+          .of(context)
+          .unknown;
     }
-    opponentName = Messages.of(context).unknown;
 
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).gametitlevs(opponentName)),
+        title: new Text(Messages.of(context).gametitlevs(game, opponentName)),
         actions: actions,
       ),
       bottomNavigationBar: new BottomNavigationBar(
-          onTap: (int index) {
-            setState(() {
-              _tabIndex = index;
-            });
-          },
-          currentIndex: _tabIndex,
-          items: [
-            new BottomNavigationBarItem(
-              icon: const Icon(Icons.gamepad),
-              title: new Text(Messages.of(context).gamedetails),
-            ),
-            new BottomNavigationBarItem(
-                icon: const Icon(Icons.people),
-                title: new Text(Messages.of(context).gameavailability))
-          ]),
+        onTap: (int index) {
+          setState(() {
+            _tabIndex = index;
+          });
+        },
+        currentIndex: _tabIndex,
+        items: [
+          new BottomNavigationBarItem(
+            icon: const Icon(Icons.gamepad),
+            title: new Text(Messages.of(context).gamedetails),
+          ),
+          new BottomNavigationBarItem(
+            icon: const Icon(Icons.people),
+            title: new Text(Messages.of(context).gameavailability),
+          )
+        ],
+      ),
       body: new Scrollbar(
         child: new SingleChildScrollView(
           scrollDirection: Axis.vertical,

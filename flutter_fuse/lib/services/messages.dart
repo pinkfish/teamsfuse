@@ -679,7 +679,7 @@ class Messages {
   }
 
   String get addinvite {
-    return Intl.message('Add player');
+    return Intl.message('Share user');
   }
 
   String get addtraining {
@@ -724,8 +724,7 @@ class Messages {
 
   String nameandteam(Team team, Player player) {
     return Intl.message("${team.name} ${player.name}",
-    desc: "Format for name and player for the team");
-
+        desc: "Format for name and player for the team");
   }
 
   String numberofuserforplayer(int num) {
@@ -870,9 +869,18 @@ class Messages {
         desc: 'In progress result details');
   }
 
-  String gametitlevs(String oppponent) {
-    return Intl.message('Game vs $oppponent',
-        name: 'Game details title', desc: 'Game details title for the screen');
+  String gametitlevs(Game game, String oppponent) {
+    switch (game.type) {
+      case EventType.Game:
+        return Intl.message('Game vs $oppponent',
+            name: 'Game details title',
+            desc: 'Game details title for the screen');
+      case EventType.Event:
+        return Intl.message("Event");
+      case EventType.Practice:
+        return Intl.message("Practice");
+    }
+    return unknown;
   }
 
   String gameinprogress(GameInProgress val) {

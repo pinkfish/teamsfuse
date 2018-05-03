@@ -90,7 +90,7 @@ class AppRouter {
     router.define("/AddPlayer/:team/:season",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddPlayerScreen(vals["team"], vals["season"])));
+                new AddPlayerScreen(vals["team"][0], vals["season"][0])));
     router.define("/PlayerDetails/:team/:season/:player",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

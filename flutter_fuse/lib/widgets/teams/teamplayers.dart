@@ -132,7 +132,6 @@ class TeamPlayersState extends State<TeamPlayers> {
     List<Widget> ret = new List<Widget>();
     ThemeData theme = Theme.of(context);
 
-    print('players ${_season.toJSON()}');
     _season.players.forEach((SeasonPlayer player) {
       ret.add(
         new GestureDetector(
@@ -149,7 +148,9 @@ class TeamPlayersState extends State<TeamPlayers> {
           child: new ListTile(
             leading: new PlayerImage(player.playerUid),
             title: new Text(player.displayName),
-            subtitle: new Text(Messages.of(context).roleingame(player.role)),
+            subtitle: new Text(
+              Messages.of(context).roleingame(player.role),
+            ),
           ),
         ),
       );

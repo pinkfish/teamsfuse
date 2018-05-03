@@ -2,35 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 
 class PlayerImage extends CircleAvatar {
-  PlayerImage(String playerUid,
-      {Key key,
-      double width,
-      double height,
-      Color color,
-      Color backgroundColor,
-      BlendMode colorBlendMode,
-      BoxFit fit,
-      AlignmentGeometry alignment: Alignment.center,
-      ImageRepeat repeat: ImageRepeat.noRepeat,
-      Rect centerSlice,
-      bool matchTextDirection: false,
-      bool gaplessPlayback: false})
-      : super(
-            backgroundColor: backgroundColor,
-            radius: width == null ? 20.0 : (width < height ? width / 2: height / 2),
-            child: new Image(
-                image: getImageProvider(playerUid),
-                key: key,
-                width: width,
-                height: height,
-                color: color,
-                colorBlendMode: colorBlendMode,
-                fit: fit,
-                alignment: alignment,
-                repeat: repeat,
-                centerSlice: centerSlice,
-                matchTextDirection: matchTextDirection,
-                gaplessPlayback: gaplessPlayback));
+  PlayerImage(
+    String playerUid, {
+    Key key,
+    double radius = 20.0,
+    Color backgroundColor,
+  }) : super(
+          backgroundColor: backgroundColor,
+          radius: radius,
+          backgroundImage: getImageProvider(playerUid),
+        );
 
   static ImageProvider getImageProvider(String playerUid) {
     ImageProvider logo;

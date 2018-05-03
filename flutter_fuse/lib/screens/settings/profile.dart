@@ -110,13 +110,18 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   List<Widget> _buildUserList(BuildContext context, Player player) {
     List<Widget> ret = [];
+    ThemeData theme = Theme.of(context);
+
     ret.add(
       new StreamBuilder(
         stream: player.inviteStream,
         builder:
             (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
-          if (!snap.hasData || snap.data.length == 0) {
-            return null;
+          if (!snap.hasData) {
+            return new Text("");
+          }
+          if (snap.data.length == 0) {
+            return new Text("");
           }
           return new Card(
             child: new Column(
@@ -134,34 +139,52 @@ class ProfileScreenState extends State<ProfileScreen> {
         },
       ),
     );
-    ret.add(
+
+    /*
       new ListTile(
-        leading: const Icon(Icons.plus_one),
+        leading: const Icon(Icons.add),
         title: new Text(Messages.of(context).addinvite),
         onTap: () => this._onAddPlayerInvite(context, player),
       ),
-    );
+    );*/
 
     player.users.forEach((String str, PlayerUser user) {
-      ret.add(new FutureBuilder(
-        future: user.getProfile(),
-        builder:
-            (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) {
-          if (profile.hasData) {
-            return new ListTile(
-              title: new Text(Messages.of(context).displaynamerelationship(
-                  profile.data.displayName, user.relationship)),
-              subtitle: new Text(profile.data.email),
-            );
-          } else {
-            return new ListTile(
-              title: new Text(Messages.of(context).displaynamerelationship(
-                  Messages.of(context).loading, user.relationship)),
-            );
-          }
-        },
-      ));
+      ret.add(
+        new FutureBuilder(
+          future: user.getProfile(),
+          builder:
+              (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) {
+            if (profile.hasData) {
+              return new ListTile(
+                title: new Text(Messages.of(context).displaynamerelationship(
+                    profile.data.displayName, user.relationship)),
+                subtitle: new Text(profile.data.email),
+              );
+            } else {
+              return new ListTile(
+                title: new Text(Messages.of(context).displaynamerelationship(
+                    Messages.of(context).loading, user.relationship)),
+              );
+            }
+          },
+        ),
+      );
     });
+    ret.add(
+      new FlatButton(
+        onPressed: () => this._onAddPlayerInvite(context, player),
+        child: new Row(
+          children: <Widget>[
+            new Icon(Icons.add, color: Colors.blueAccent,),
+            new SizedBox(width: 10.0),
+            new Text(
+              Messages.of(context).addinvite,
+              style: theme.textTheme.button.copyWith(color: Colors.blueAccent),
+            ),
+          ],
+        ),
+      ),
+    );
     return ret;
   }
 
@@ -171,11 +194,12 @@ class ProfileScreenState extends State<ProfileScreen> {
     ThemeData theme = Theme.of(context);
     Messages messages = Messages.of(context);
 
+    double width = (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0;
+    double height = screenSize.height / 4 + 20;
     ret.add(new Center(
       child: new PlayerImage(
         me != null ? me.uid : null,
-        width: (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
-        height: screenSize.height / 4 + 20,
+        radius: width > height ? height / 2 : width / 2,
       ),
     ));
     if (user != null) {

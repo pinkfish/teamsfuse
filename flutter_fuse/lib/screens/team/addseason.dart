@@ -117,7 +117,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
     return new Scaffold(
       key: _scaffoldKey,
       appBar: new AppBar(
-        title: new Text(Messages.of(context).gametitlevs(_team.name)),
+        title: new Text(Messages.of(context).addseason),
       ),
       backgroundColor: Colors.grey.shade100,
       resizeToAvoidBottomPadding: true,

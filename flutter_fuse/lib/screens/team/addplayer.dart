@@ -133,24 +133,6 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
         );
 
         rows.add(
-          new TextFormField(
-            key: en.nameKey,
-            initialValue: '',
-            decoration: new InputDecoration(
-                icon: const Icon(Icons.person),
-                labelText: messages.displayname,
-                hintText: messages.displaynamehint),
-            validator: (String value) {
-              return _validations.validateDisplayName(context, value);
-            },
-            keyboardType: TextInputType.text,
-            onSaved: (String value) {
-              en.name = value;
-            },
-          ),
-        );
-
-        rows.add(
           new RoleInTeamFormField(
             initialValue: 'none',
             decoration: new InputDecoration(
@@ -169,23 +151,25 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
       },
     );
 
-    return new Form(
-      autovalidate: autovalidate,
-      key: _formKey,
-      child: new Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          new Scrollbar(
-            child: new SingleChildScrollView(
-              child: new Column(children: rows),
+    return new SingleChildScrollView(
+      child: new Form(
+        autovalidate: autovalidate,
+        key: _formKey,
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            new Scrollbar(
+              child: new SingleChildScrollView(
+                child: new Column(children: rows),
+              ),
             ),
-          ),
-          new FlatButton(
-            onPressed: _handleSubmit,
-            child: new Text(Messages.of(context).addplayer),
-          )
-        ],
+            new FlatButton(
+              onPressed: _handleSubmit,
+              child: new Text(Messages.of(context).addplayer),
+            )
+          ],
+        ),
       ),
     );
   }

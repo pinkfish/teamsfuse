@@ -3,6 +3,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 
 class PlayerDetailsScreen extends StatefulWidget {
@@ -228,42 +229,43 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
       ),
     );
 
-    ret.add(new ListTile(
-      leading: const Icon(CommunityIcons.bookopenvariant),
-      title: new Text(
-        messages.roleingame(_player.role),
-      ),
-    ));
-
-    bool loading = false;
-
     ret.add(
-      new StreamBuilder(
-        stream: _playerDetails.inviteStream,
-        builder:
-            (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
-          if (!snap.hasData || snap.data.length == 0) {
-            return null;
-          }
-          return new Card(
-            child: new Column(
-              children: snap.data.map((InviteToPlayer invite) {
-                return new ListTile(
-                  leading: const Icon(Icons.message),
-                  title: new Text(Messages.of(context).invitedemail(invite)),
-                  trailing: new IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => this._deleteInvite(context, invite),
-                  ),
-                );
-              }).toList(),
-            ),
-          );
-        },
+      new ListTile(
+        leading: const Icon(CommunityIcons.bookopenvariant),
+        title: new Text(
+          messages.roleingame(_player.role),
+        ),
       ),
     );
 
+    bool loading = false;
+
     if (_playerDetails != null && _playerDetails.users != null) {
+      ret.add(
+        new StreamBuilder(
+          stream: _playerDetails.inviteStream,
+          builder:
+              (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
+            if (!snap.hasData || snap.data.length == 0) {
+              return new SizedBox(height: 0.0);
+            }
+            return new Card(
+              child: new Column(
+                children: snap.data.map((InviteToPlayer invite) {
+                  return new ListTile(
+                    leading: const Icon(Icons.message),
+                    title: new Text(Messages.of(context).invitedemail(invite)),
+                    trailing: new IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () => this._deleteInvite(context, invite),
+                    ),
+                  );
+                }).toList(),
+              ),
+            );
+          },
+        ),
+      );
       _playerDetails.users.forEach((String key, PlayerUser player) {
         if (player.profile != null) {
           if (player.profile.phoneNumber != null &&
@@ -275,7 +277,25 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
                   messages.displaynamerelationship(
                       player.profile.displayName, player.relationship),
                 ),
-                subtitle: new Text(player.profile.phoneNumber),
+                subtitle: new Text(
+                    "${player.profile.phoneNumber}\n${player.profile.email}"),
+                trailing: new Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    new IconButton(
+                      icon: const Icon(Icons.sms),
+                      color: theme.accentColor,
+                      onPressed: () =>
+                          launch("sms:" + player.profile.phoneNumber),
+                    ),
+                    new IconButton(
+                      icon: const Icon(Icons.email),
+                      color: theme.accentColor,
+                      onPressed: () => launch("mailto:" + player.profile.email),
+                    )
+                  ],
+                ),
               ),
             );
           } else {
@@ -373,7 +393,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
 
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(messages.title),
+        title: new Text(_player.displayName),
       ),
       body: new Scrollbar(
         child: new SingleChildScrollView(

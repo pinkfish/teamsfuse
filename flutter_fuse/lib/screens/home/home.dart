@@ -121,8 +121,12 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
     if (!UserDatabaseData.instance.loadedDatabase) {
       actions.add(
-        new CircularProgressIndicator(
-          valueColor: new AlwaysStoppedAnimation<Color>(Colors.redAccent),
+        new SizedBox(
+          width: 20.0,
+          height: 20.0,
+          child: new CircularProgressIndicator(
+            valueColor: new AlwaysStoppedAnimation<Color>(Colors.redAccent),
+          ),
         ),
       );
     }

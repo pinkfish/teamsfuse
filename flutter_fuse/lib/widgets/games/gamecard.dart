@@ -161,8 +161,15 @@ class GameCard extends StatelessWidget {
     }
 
     List<Player> players = [];
-    Season season =
-        UserDatabaseData.instance.teams[game.teamUid].seasons[game.seasonUid];
+    Season season;
+    if (team != null) {
+      season =
+          UserDatabaseData.instance.teams[game.teamUid].seasons[game.seasonUid];
+    }
+    if (season == null) {
+      season = new Season();
+    }
+
     UserDatabaseData.instance.players.forEach((String key, Player player) {
       if (season.players.any((SeasonPlayer play) {
         return play.playerUid == key;
@@ -196,7 +203,11 @@ class GameCard extends StatelessWidget {
       }
       subtitle.add(
         new TextSpan(
-          style: Theme.of(context).textTheme.subhead.copyWith(fontWeight: FontWeight.bold),
+          style: Theme
+              .of(context)
+              .textTheme
+              .subhead
+              .copyWith(fontWeight: FontWeight.bold),
           text: Messages.of(context).gameaddressarriveat(arriveFormat, addr) +
               "\n",
         ),
@@ -205,14 +216,22 @@ class GameCard extends StatelessWidget {
       if (game.place.name.isNotEmpty) {
         subtitle.add(
           new TextSpan(
-            style: Theme.of(context).textTheme.subhead.copyWith(fontWeight: FontWeight.bold),
+            style: Theme
+                .of(context)
+                .textTheme
+                .subhead
+                .copyWith(fontWeight: FontWeight.bold),
             text: game.place.name + "\n",
           ),
         );
       } else {
         subtitle.add(
           new TextSpan(
-            style: Theme.of(context).textTheme.subhead.copyWith(fontWeight: FontWeight.bold),
+            style: Theme
+                .of(context)
+                .textTheme
+                .subhead
+                .copyWith(fontWeight: FontWeight.bold),
             text: game.place.address + "\n",
           ),
         );
