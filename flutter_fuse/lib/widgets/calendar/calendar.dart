@@ -40,9 +40,6 @@ class SliverCalendarViewState extends State<SliverListCalendar> {
   Map<int, List<CalendarEvent>> _events;
   // View index is the number of days since the epoch.
   int _startIndex;
-  ScrollController _controller = new ScrollController(
-      initialScrollOffset:
-          new DateTime.now().millisecondsSinceEpoch.toDouble());
 
   static const int _MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
   static DateFormat _MONTH_FORMAT = new DateFormat(DateFormat.ABBR_MONTH);

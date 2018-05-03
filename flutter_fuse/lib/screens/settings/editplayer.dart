@@ -74,8 +74,9 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
     ret.add(
       new TextFormField(
         decoration: new InputDecoration(
-            labelText: messages.displayname,
-            hintText: messages.displaynamehint),
+          labelText: messages.displayname,
+          hintText: messages.displaynamehint,
+        ),
         initialValue: _player.name,
         validator: (String value) => _validations.validateName(context, value),
         onSaved: (String name) => _player.name = name,

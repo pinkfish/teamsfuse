@@ -287,9 +287,9 @@ class GameCard extends StatelessWidget {
       case EventType.Event:
         String title;
         if (dur.inMinutes < 60) {
-          title = Messages.of(context).eventtitlenow(format, endTimeFormat);
+          title = Messages.of(context).eventtitlenow(format, game.name, endTimeFormat);
         } else {
-          title = Messages.of(context).eventtitle(format, endTimeFormat);
+          title = Messages.of(context).eventtitle(format, game.name, endTimeFormat);
         }
 
         return new Card(

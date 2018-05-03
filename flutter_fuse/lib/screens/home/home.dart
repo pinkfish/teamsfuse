@@ -28,10 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
   ScrollController _scrollController =
       new ScrollController(initialScrollOffset: 300.0);
 
-  void _showInvites(BuildContext context) {
-    Navigator.pushNamed(context, "Invites");
-  }
-
   void _showFilterDialog() async {
     await showDialog(
       context: context,
@@ -138,16 +134,16 @@ class _HomeScreenState extends State<HomeScreen> {
         scrollDirection: Axis.vertical,
         slivers: <Widget>[
           new SliverAppBar(
-            title: new Text(messages.title),
-            actions: actions,
-            flexibleSpace: new GestureDetector(
-              onTap: () {
-                _showInvites(context);
-              },
-              child: new InviteCard(),
+            flexibleSpace: new FlexibleSpaceBar(
+              title: new Text(messages.title),
             ),
+            actions: actions,
             primary: true,
             pinned: true,
+          ),
+          new SliverPersistentHeader(
+            pinned: true,
+            delegate: HeaderInviteDelegate(),
           ),
           new GameList(_details),
         ],
@@ -316,4 +312,28 @@ class _HomeScreenState extends State<HomeScreen> {
       _messagaesSubscription = null;
     }
   }
+}
+
+class HeaderInviteDelegate extends SliverPersistentHeaderDelegate {
+  @override
+  double get maxExtent => 200.0;
+
+  @override
+  double get minExtent => 64.0;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return new Container(
+      constraints:
+          new BoxConstraints(minHeight: minExtent, maxHeight: maxExtent),
+      child: new GestureDetector(
+        child: new InviteCard(),
+        onTap: () => Navigator.pushNamed(context, "Invites"),
+      ),
+    );
+  }
+
+  @override
+  bool shouldRebuild(HeaderInviteDelegate oldDelegate) => false;
 }

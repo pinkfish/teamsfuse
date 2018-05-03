@@ -6,9 +6,6 @@ import 'dart:async';
 
 class GameListCalendarState implements CalendarSource {
   List<Game> _listToShow;
-  ScrollController _scrollController = new ScrollController(
-      initialScrollOffset:
-          new DateTime.now().millisecondsSinceEpoch / (1000 * 60 * 60 * 24));
 
   @override
   Widget buildWidget(BuildContext context, int index) {

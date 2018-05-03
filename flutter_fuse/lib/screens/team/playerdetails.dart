@@ -379,7 +379,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
               this._onInvite(context);
             },
             child: new Text(
-              Messages.of(context).addinvite,
+              messages.addinvite,
               style: Theme
                   .of(context)
                   .textTheme

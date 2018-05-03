@@ -208,7 +208,7 @@ class UserAuth {
   Future<void> setNotificationToken(String token) async {
     if (_currentUser != null) {
       Map<String, bool> data = {};
-      data["${FusedUserProfile.TOKENS}.${token}"] = true;
+      data["${FusedUserProfile.TOKENS}.$token"] = true;
       Firestore.instance
           .collection(USER_DATA_COLLECTION)
           .document(_currentUser.uid)

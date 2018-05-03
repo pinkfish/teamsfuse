@@ -42,11 +42,11 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   void _addInviteToTeam(Invite invite) {
-    Navigator.pushNamed(context, "AddInviteToTeam/" + invite.uid);
+    Navigator.pushNamed(context, "AcceptInviteToTeam/" + invite.uid);
   }
 
   void _addInviteToPlayer(Invite invite) {
-    Navigator.pushNamed(context, "AddInviteToPlayer/" + invite.uid);
+    Navigator.pushNamed(context, "AcceptInviteToPlayer/" + invite.uid);
   }
 
   Card _buildInviteToTeam(InviteToTeam invite) {
@@ -62,7 +62,8 @@ class InviteListScreenState extends State<InviteListScreen> {
           },
         ),
         title: new Text(
-            messages.teamandseason(invite.teamName, invite.seasonName)),
+          messages.teamandseason(invite.teamName, invite.seasonName),
+        ),
         subtitle: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -86,9 +87,8 @@ class InviteListScreenState extends State<InviteListScreen> {
         ),
       ),
     );
-
   }
-  
+
   Card _buildInviteToPlayer(InviteToPlayer invite) {
     ThemeData theme = Theme.of(context);
     return new Card(
@@ -96,16 +96,13 @@ class InviteListScreenState extends State<InviteListScreen> {
         leading: new IconButton(
           icon: const Icon(Icons.add),
           color: theme.accentColor,
-          onPressed: () {
-            _addInviteToPlayer(invite);
-          },
+          onPressed: () => _addInviteToPlayer(invite),
         ),
-        title: new Text(invite.playerName),
+        onTap: () => _addInviteToPlayer(invite),
+        title: new Text(Messages.of(context).followplayer(invite.playerName)),
         trailing: new IconButton(
           icon: const Icon(Icons.delete),
-          onPressed: () {
-            _deleteInvite(invite);
-          },
+          onPressed: () => _deleteInvite(invite),
         ),
       ),
     );
@@ -125,7 +122,7 @@ class InviteListScreenState extends State<InviteListScreen> {
 
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+        title: new Text(Messages.of(context).invite),
       ),
       body: new Scrollbar(
         child: new SingleChildScrollView(

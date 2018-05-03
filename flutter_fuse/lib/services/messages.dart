@@ -883,6 +883,10 @@ class Messages {
     return unknown;
   }
 
+  String followplayer(String player) {
+    return Intl.message("Follow $player");
+  }
+
   String gameinprogress(GameInProgress val) {
     switch (val) {
       case GameInProgress.InProgress:
@@ -994,6 +998,11 @@ class Messages {
     return Intl.message("Invited: $num");
   }
 
+  String get invite {
+    return Intl.message('Invites',
+        desc: 'Title for the screen with the list of current invites');
+  }
+
   String finalscorebody(num ptsFor, num ptsAgainst, String result) {
     return Intl.message(
         'Do you want to set $ptsFor $ptsAgainst $result as the final score?',
@@ -1065,7 +1074,15 @@ class Messages {
         name: 'Game title in game list', desc: 'Game title in game list');
   }
 
-  String eventtitle(String time, String endTime) {
+  String eventtitle(String time, String name, String endTime) {
+    if (name != null && name.isNotEmpty) {
+      if (endTime != null) {
+        return Intl.message('$name $time - $endTime',
+            desc: 'Special event title in game list with name');
+      }
+      return Intl.message('$name $time',
+          desc: 'Special event title in game list with name');
+    }
     if (endTime != null) {
       return Intl.message('Event $time - $endTime',
           desc: 'Special event title in game list');
@@ -1074,7 +1091,15 @@ class Messages {
         desc: 'Special event title in game list');
   }
 
-  String eventtitlenow(String time, String endTime) {
+  String eventtitlenow(String time, String name, String endTime) {
+    if (name != null && name.isNotEmpty) {
+      if (endTime != null) {
+        return Intl.message('NOW! $name $time - $endTime',
+            desc: 'Special event title in game list');
+      }
+      return Intl.message('NOW! $name $time',
+          desc: 'Special event title in game list');
+    }
     if (endTime != null) {
       return Intl.message('NOW! Event $time - $endTime',
           desc: 'Special event title in game list');
@@ -1108,6 +1133,14 @@ class Messages {
   String get players {
     return Intl.message('Players',
         desc: 'Title in the bottom navigation tab for players');
+  }
+
+  String playerinvitedesc(String name) {
+    return Intl.message(
+        'This will follow $name and allow you to see which games they are in and ' +
+            'all the teams they are in.  Please setup your relationship with the ' +
+            'player and save.',
+        desc: 'Long description of the player invite accept path.');
   }
 }
 

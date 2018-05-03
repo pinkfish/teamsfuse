@@ -11,9 +11,12 @@ class EmptyGameList extends StatelessWidget {
         new Center(
             child: new Image(
           image: new ExactAssetImage("assets/images/abstractsport.png"),
-          width: screenSize.width < screenSize.height ? screenSize.width - 30.0 : screenSize.height - 30.0,
-
-          height: screenSize.width < screenSize.height ? screenSize.width -30.0 : screenSize.height - 30.0,
+          width: screenSize.width < screenSize.height
+              ? screenSize.width - 30.0
+              : screenSize.height - 30.0,
+          height: screenSize.width < screenSize.height
+              ? screenSize.width - 30.0
+              : screenSize.height - 30.0,
         )),
         new Text(Messages.of(context).nogames),
       ],
