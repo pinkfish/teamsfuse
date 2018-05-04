@@ -3,9 +3,15 @@ import 'package:flutter_fuse/cache/cachemanager.dart';
 import 'package:flutter_fuse/services/sqldata.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/notifications.dart';
+import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/impl/databaseupdatemodelimpl.dart';
+import 'package:sentry/sentry.dart';
+
+final SentryClient sentry = new SentryClient(
+    dsn:
+        'https://5691b440eb64430d9ba2917166fa17a1:7978cf6a0a5a4f7ab7702a51f524620a@sentry.io/1200691');
 
 void main() {
   CacheManager.getInstance().then((CacheManager man) {
@@ -21,6 +27,13 @@ void main() {
   Analytics.analytics.logAppOpen();
 
   Notifications.instance.init();
+
+  // Send error logs up to sentry.
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.dumpErrorToConsole(details);
+    sentry.captureException(
+        exception: details.exception, stackTrace: details.stack);
+  };
 
   new Routes();
 }

@@ -179,104 +179,6 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: new Icon(Icons.add),
       ),
     );
-/*
-    return new Scaffold(
-      drawer: new FusedDrawer(),
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
-        actions: actions,
-      ),
-      floatingActionButton: new FabDialer(
-        menu: <FabMiniMenuItemWidget>[
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.mail),
-            fabColor: Colors.lightBlueAccent,
-            text: messages.newmail,
-            onPressed: () => Navigator.pushNamed(context, "AddMessage"),
-          ),
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.calendar_today),
-            fabColor: Colors.blueAccent,
-            text: messages.addevent,
-            onPressed: () => Navigator.pushNamed(context, "AddEvent"),
-          ),
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.people),
-            fabColor: Colors.blueGrey,
-            text: messages.addtraining,
-            onPressed: () => Navigator.pushNamed(context, "AddTraining"),
-          ),
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.gamepad),
-            fabColor: theme.accentColor,
-            text: messages.addgame,
-            onPressed: () => Navigator.pushNamed(context, "AddGame"),
-          ),
-        ],
-        color: theme.accentColor,
-        icon: new Icon(Icons.add),
-      ),
-      body: new CustomScrollView(
-        slivers: <Widget>[
-          new SliverListCalendar(
-              initialDate: new DateTime.now(), source: _calendarState),
-        ],
-      ),
-    );
-
-    return new Scaffold(
-        drawer: new FusedDrawer(),
-        body: new CustomScrollView(
-            shrinkWrap: false,
-            controller: _scrollController,
-            scrollDirection: Axis.vertical,
-            slivers: <Widget>[
-              new SliverAppBar(
-                title: new Text(messages.title),
-                actions: actions,
-                flexibleSpace: new GestureDetector(
-                  onTap: () {
-                    _showInvites(context);
-                  },
-                  child: new InviteCard(),
-                ),
-                primary: true,
-                pinned: true,
-              ),
-              new GameList(_details),
-            ],
-          ),
-        floatingActionButton: new FabDialer(
-          menu: <FabMiniMenuItemWidget>[
-            new FabMiniMenuItemWidget(
-              icon: const Icon(Icons.mail),
-              fabColor: Colors.lightBlueAccent,
-              text: messages.newmail,
-              onPressed: () => Navigator.pushNamed(context, "AddMessage"),
-            ),
-            new FabMiniMenuItemWidget(
-              icon: const Icon(Icons.calendar_today),
-              fabColor: Colors.blueAccent,
-              text: messages.addevent,
-              onPressed: () => Navigator.pushNamed(context, "AddEvent"),
-            ),
-            new FabMiniMenuItemWidget(
-              icon: const Icon(Icons.people),
-              fabColor: Colors.blueGrey,
-              text: messages.addtraining,
-              onPressed: () => Navigator.pushNamed(context, "AddTraining"),
-            ),
-            new FabMiniMenuItemWidget(
-              icon: const Icon(Icons.gamepad),
-              fabColor: theme.accentColor,
-              text: messages.addgame,
-              onPressed: () => Navigator.pushNamed(context, "AddGame"),
-            ),
-          ],
-          color: theme.accentColor,
-          icon: new Icon(Icons.add),
-        ));
-        */
   }
 
   @override
@@ -316,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class HeaderInviteDelegate extends SliverPersistentHeaderDelegate {
   @override
-  double get maxExtent => 200.0;
+  double get maxExtent => 64.0;
 
   @override
   double get minExtent => 64.0;
