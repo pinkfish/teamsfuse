@@ -38,13 +38,15 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 class UserAuth {
   static UserAuth instance = new UserAuth();
   UserData _currentUser;
+  FirebaseUser _currentFirebaseUser;
   StreamController<UserData> _controller = new StreamController<UserData>();
   Stream<UserData> _stream;
   StreamSubscription<DocumentSnapshot> _profileUpdates;
   String _token;
+  StreamSubscription<FirebaseUser> _updateStream;
 
   UserAuth() {
-    _auth.onAuthStateChanged.listen((FirebaseUser input) async {
+    _updateStream = _auth.onAuthStateChanged.listen((FirebaseUser input) async {
       print('onAuthStateChanged');
       print(input);
       if (_profileUpdates != null) {
@@ -57,9 +59,11 @@ class UserAuth {
       }
       if (input == null) {
         _currentUser = null;
+        _currentFirebaseUser = null;
         _controller.add(null);
       } else {
         _currentUser = await _userDataFromFirestore(input, true);
+        _currentFirebaseUser = input;
         _controller.add(_currentUser);
         // Update the notification token.
         if (_token != null) {
@@ -73,33 +77,63 @@ class UserAuth {
     });
   }
 
+  void dispose() {
+    _profileUpdates?.cancel();
+    _updateStream?.cancel();
+  }
+
   // To create new User
-  FutureOr<FirebaseUser> createUser(UserData userData) {
+  Future<UserData> createUser(UserData userData) {
     return _auth
         .createUserWithEmailAndPassword(
             email: userData.email, password: userData.password)
         .then((FirebaseUser user) {
+      userData.uid = user.uid;
+      user.sendEmailVerification();
       DocumentReference ref = Firestore.instance
           .collection(USER_DATA_COLLECTION)
           .document(user.uid);
-      ref.updateData(userData.profile.toJSON());
+      return ref.setData(userData.profile.toJSON()).then((void data) async {
+        // With update uid.
+        // Create a 'me' user.
+        Player player = new Player();
+        player.name = userData.profile.displayName;
+        PlayerUser playerUser = new PlayerUser();
+        playerUser.userUid = user.uid;
+        playerUser.relationship = Relationship.Me;
+        player.users[user.uid] = playerUser;
+        await player.updateFirestore();
+        await signIn(userData);
+        return userData;
+      });
     });
   }
 
   // To verify new User
-  Future<FirebaseUser> signIn(UserData userData) {
+  Future<UserData> signIn(UserData userData) async {
     print(userData);
-    return _auth.signInWithEmailAndPassword(
+    await _auth.signInWithEmailAndPassword(
         email: userData.email, password: userData.password);
+    return currentUser();
   }
 
-  //To verify new User
-  Future<bool> sendPasswordResetEmail(String email) async {
+  // To reset the password.
+  Future<void> sendPasswordResetEmail(String email) async {
     return _auth.sendPasswordResetEmail(email: email);
   }
 
-  //To verify new User
-  Future<bool> signOut() async {
+  // New user verification email.
+  Future<bool> sendEmailVerification() async {
+    if (_currentFirebaseUser != null) {
+      await _currentFirebaseUser.sendEmailVerification();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // Sign the user out.
+  Future<void> signOut() async {
     return _auth.signOut();
   }
 
@@ -115,6 +149,7 @@ class UserAuth {
     if (_currentUser == null) {
       FirebaseUser fbUser = await _auth.currentUser();
       if (fbUser != null) {
+        _currentFirebaseUser = fbUser;
         print('Loading from firestore');
         UserData user = await _userDataFromFirestore(fbUser, false);
         print('Loaded!');
@@ -125,6 +160,8 @@ class UserAuth {
           _profileUpdates = ref.snapshots.listen(this._onProfileUpdates);
         }
         return user;
+      } else {
+        _currentFirebaseUser = null;
       }
     } else {
       return _currentUser;
@@ -158,6 +195,7 @@ class UserAuth {
       FusedUserProfile profile = new FusedUserProfile();
       profile.fromJSON(doc.data);
       _currentUser.profile = profile;
+      _controller.add(_currentUser);
     }
   }
 
@@ -173,6 +211,7 @@ class UserAuth {
     user.email = input.email;
     user.uid = input.uid;
     user.isEmailVerified = input.isEmailVerified;
+    _currentFirebaseUser = input;
     if (data == null && forceProfile) {
       print('No sql data');
       Future<DocumentSnapshot> ref = Firestore.instance
@@ -216,6 +255,11 @@ class UserAuth {
     } else {
       _token = token;
     }
+  }
+
+  // Returns the current user without a future.
+  UserData currentUserNoWait() {
+    return _currentUser;
   }
 
   // User profile

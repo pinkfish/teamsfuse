@@ -152,6 +152,7 @@ class GameListState extends State<GameList> {
 
   @override
   Widget build(BuildContext context) {
+    print("Loaded for gamelist ${UserDatabaseData.instance.loadedDatabase}");
     if (UserDatabaseData.instance.loadedDatabase &&
         (_listToShow == null || _listToShow.length == 0)) {
       return new SliverToBoxAdapter(

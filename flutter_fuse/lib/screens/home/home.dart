@@ -149,6 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       floatingActionButton: new FabDialer(
+        disabled: UserDatabaseData.instance.teams.length == 0,
         menu: <FabMiniMenuItemWidget>[
           new FabMiniMenuItemWidget(
             icon: const Icon(Icons.mail),
@@ -175,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () => Navigator.pushNamed(context, "AddGame"),
           ),
         ],
-        color: theme.accentColor,
+        color: UserDatabaseData.instance.teams.length == 0 ? theme.disabledColor : theme.accentColor,
         icon: new Icon(Icons.add),
       ),
     );

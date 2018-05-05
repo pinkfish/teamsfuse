@@ -11,6 +11,8 @@ PODS:
     - Firebase/Database
     - Firebase/Firestore
     - Flutter
+  - device_info (0.0.1):
+    - Flutter
   - Firebase/Auth (4.13.0):
     - Firebase/Core
     - FirebaseAuth (= 4.6.1)
@@ -49,14 +51,14 @@ PODS:
   - FirebaseAnalytics (4.2.0):
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
-    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
     - nanopb (~> 0.3)
   - FirebaseAuth (4.6.1):
     - FirebaseAnalytics (~> 4.2)
-    - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
     - GTMSessionFetcher/Core (~> 1.1)
   - FirebaseCore (4.0.20):
-    - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
   - FirebaseDatabase (4.1.5):
     - FirebaseAnalytics (~> 4.1)
     - FirebaseCore (~> 4.0)
@@ -105,13 +107,13 @@ PODS:
   - GoogleToolboxForMac/Defines (2.1.4)
   - GoogleToolboxForMac/Logger (2.1.4):
     - GoogleToolboxForMac/Defines (= 2.1.4)
-  - GoogleToolboxForMac/NSData+zlib (2.1.4):
+  - "GoogleToolboxForMac/NSData+zlib (2.1.4)":
     - GoogleToolboxForMac/Defines (= 2.1.4)
-  - GoogleToolboxForMac/NSDictionary+URLArguments (2.1.4):
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.1.4)":
     - GoogleToolboxForMac/DebugUtils (= 2.1.4)
     - GoogleToolboxForMac/Defines (= 2.1.4)
-    - GoogleToolboxForMac/NSString+URLArguments (= 2.1.4)
-  - GoogleToolboxForMac/NSString+URLArguments (2.1.4)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.1.4)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.1.4)"
   - gRPC (1.11.0):
     - gRPC-RxLibrary (= 1.11.0)
     - gRPC/Main (= 1.11.0)
@@ -140,6 +142,8 @@ PODS:
     - nanopb/encode (= 0.3.8)
   - nanopb/decode (0.3.8)
   - nanopb/encode (0.3.8)
+  - package_info (0.0.1):
+    - Flutter
   - path_provider (0.0.1):
     - Flutter
   - Protobuf (3.5.0)
@@ -152,34 +156,64 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - cloud_firestore (from `Pods/.symlinks/plugins/cloud_firestore-0.6.3/ios`)
-  - firebase_analytics (from `Pods/.symlinks/plugins/firebase_analytics-0.3.3/ios`)
-  - firebase_auth (from `Pods/.symlinks/plugins/firebase_auth-0.5.5/ios`)
-  - firebase_core (from `Pods/.symlinks/plugins/firebase_core-0.2.3/ios`)
-  - firebase_messaging (from `Pods/.symlinks/plugins/firebase_messaging-0.2.5/ios`)
-  - firebase_storage (from `Pods/.symlinks/plugins/firebase_storage-0.2.6/ios`)
+  - cloud_firestore (from `Pods/.symlinks/plugins/cloud_firestore/ios`)
+  - device_info (from `Pods/.symlinks/plugins/device_info/ios`)
+  - firebase_analytics (from `Pods/.symlinks/plugins/firebase_analytics/ios`)
+  - firebase_auth (from `Pods/.symlinks/plugins/firebase_auth/ios`)
+  - firebase_core (from `Pods/.symlinks/plugins/firebase_core/ios`)
+  - firebase_messaging (from `Pods/.symlinks/plugins/firebase_messaging/ios`)
+  - firebase_storage (from `Pods/.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Pods/.symlinks/flutter/ios-release`)
   - flutter_native_timezone (from `Pods/.symlinks/plugins/flutter_native_timezone/ios`)
   - flutter_places_dialog (from `Pods/.symlinks/plugins/flutter_places_dialog/ios`)
-  - image_picker (from `Pods/.symlinks/plugins/image_picker-0.4.1/ios`)
-  - path_provider (from `Pods/.symlinks/plugins/path_provider-0.3.1/ios`)
-  - shared_preferences (from `Pods/.symlinks/plugins/shared_preferences-0.3.3/ios`)
-  - sqflite (from `Pods/.symlinks/plugins/sqflite-0.8.8/ios`)
-  - url_launcher (from `Pods/.symlinks/plugins/url_launcher-2.0.2/ios`)
+  - image_picker (from `Pods/.symlinks/plugins/image_picker/ios`)
+  - package_info (from `Pods/.symlinks/plugins/package_info/ios`)
+  - path_provider (from `Pods/.symlinks/plugins/path_provider/ios`)
+  - shared_preferences (from `Pods/.symlinks/plugins/shared_preferences/ios`)
+  - sqflite (from `Pods/.symlinks/plugins/sqflite/ios`)
+  - url_launcher (from `Pods/.symlinks/plugins/url_launcher/ios`)
+
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - BoringSSL
+    - Firebase
+    - FirebaseAnalytics
+    - FirebaseAuth
+    - FirebaseCore
+    - FirebaseDatabase
+    - FirebaseFirestore
+    - FirebaseInstanceID
+    - FirebaseMessaging
+    - FirebaseStorage
+    - FMDB
+    - GoogleMaps
+    - GooglePlacePicker
+    - GooglePlaces
+    - GoogleToolboxForMac
+    - gRPC
+    - gRPC-Core
+    - gRPC-ProtoRPC
+    - gRPC-RxLibrary
+    - GTMSessionFetcher
+    - leveldb-library
+    - nanopb
+    - Protobuf
 
 EXTERNAL SOURCES:
   cloud_firestore:
-    :path: Pods/.symlinks/plugins/cloud_firestore-0.6.3/ios
+    :path: Pods/.symlinks/plugins/cloud_firestore/ios
+  device_info:
+    :path: Pods/.symlinks/plugins/device_info/ios
   firebase_analytics:
-    :path: Pods/.symlinks/plugins/firebase_analytics-0.3.3/ios
+    :path: Pods/.symlinks/plugins/firebase_analytics/ios
   firebase_auth:
-    :path: Pods/.symlinks/plugins/firebase_auth-0.5.5/ios
+    :path: Pods/.symlinks/plugins/firebase_auth/ios
   firebase_core:
-    :path: Pods/.symlinks/plugins/firebase_core-0.2.3/ios
+    :path: Pods/.symlinks/plugins/firebase_core/ios
   firebase_messaging:
-    :path: Pods/.symlinks/plugins/firebase_messaging-0.2.5/ios
+    :path: Pods/.symlinks/plugins/firebase_messaging/ios
   firebase_storage:
-    :path: Pods/.symlinks/plugins/firebase_storage-0.2.6/ios
+    :path: Pods/.symlinks/plugins/firebase_storage/ios
   Flutter:
     :path: Pods/.symlinks/flutter/ios-release
   flutter_native_timezone:
@@ -187,19 +221,22 @@ EXTERNAL SOURCES:
   flutter_places_dialog:
     :path: Pods/.symlinks/plugins/flutter_places_dialog/ios
   image_picker:
-    :path: Pods/.symlinks/plugins/image_picker-0.4.1/ios
+    :path: Pods/.symlinks/plugins/image_picker/ios
+  package_info:
+    :path: Pods/.symlinks/plugins/package_info/ios
   path_provider:
-    :path: Pods/.symlinks/plugins/path_provider-0.3.1/ios
+    :path: Pods/.symlinks/plugins/path_provider/ios
   shared_preferences:
-    :path: Pods/.symlinks/plugins/shared_preferences-0.3.3/ios
+    :path: Pods/.symlinks/plugins/shared_preferences/ios
   sqflite:
-    :path: Pods/.symlinks/plugins/sqflite-0.8.8/ios
+    :path: Pods/.symlinks/plugins/sqflite/ios
   url_launcher:
-    :path: Pods/.symlinks/plugins/url_launcher-2.0.2/ios
+    :path: Pods/.symlinks/plugins/url_launcher/ios
 
 SPEC CHECKSUMS:
   BoringSSL: 60dd24df4af296bf41d78e5841dbb95d75f88c0d
   cloud_firestore: a2d49d9c7219fce31033eb1a2ee953d7733c91d6
+  device_info: 76ce0b32e13034d1883be4a382433648f9dcee63
   Firebase: 5ec5e863d269d82d66b4bf56856726f8fb8f0fb3
   firebase_analytics: fcc60a9de4b8e07aa5af8941303a7f5fe6e0383f
   firebase_auth: 27a5a77a032d557c18f8e223aaf8ec1368f6cdbc
@@ -216,7 +253,7 @@ SPEC CHECKSUMS:
   FirebaseStorage: 0c223481c8f89ed300cf1239ddd2d9833622c65f
   Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
   flutter_native_timezone: 8a240238f0e3aaddcc8018aa5621158c8eb1f480
-  flutter_places_dialog: cbbfeaa16565999b5bbd8874b05ce8e8484a97ab
+  flutter_places_dialog: 0d92393c2b22bedcf62b0fa13c025c10bc667b37
   FMDB: 6198a90e7b6900cfc046e6bc0ef6ebb7be9236aa
   GoogleMaps: f79af95cb24d869457b1f961c93d3ce8b2f3b848
   GooglePlacePicker: 59ea44db173c58486ad6123993e81feefcbce9c3
@@ -230,12 +267,13 @@ SPEC CHECKSUMS:
   image_picker: ee00aab0487cedc80a304085219503cc6d0f2e22
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
+  package_info: d7c98b64f60add4c2908b9d94d82a45d3c8827ad
   path_provider: 09407919825bfe3c2deae39453b7a5b44f467873
   Protobuf: 8a9838fba8dae3389230e1b7f8c104aa32389c03
   shared_preferences: 5a1d487c427ee18fcd3ea1f2a131569481834b53
   sqflite: d1612813fa7db7c667bed9f1d1b508deffc56999
   url_launcher: 92b89c1029a0373879933c21642958c874539095
 
-PODFILE CHECKSUM: d8b90130f3697905c7118e25fb02da6d72443aed
+PODFILE CHECKSUM: 6e3081f70d0263650f46e1c17b0b2f5866cacb63
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.5.0

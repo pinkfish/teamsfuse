@@ -31,18 +31,22 @@ class LoginScreenState extends State<LoginScreen> {
         .showSnackBar(new SnackBar(content: new Text(value)));
   }
 
-  void _handleSubmitted() {
+  void _handleSubmitted() async {
     final FormState form = formKey.currentState;
     if (!form.validate()) {
       autovalidate = true; // Start validating on every change.
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
+
+      // Signout first...
+      await UserAuth.instance.signOut();
+
       // Login!
       print(person);
       // Remove any spaces at the begining/end.
       person.email = person.email.trim();
-      UserAuth.instance.signIn(person).then((FirebaseUser user) {
+      UserAuth.instance.signIn(person).then((UserData user) {
         print('Home page');
         Analytics.analytics.logLogin();
       }).catchError((error) {
@@ -72,14 +76,15 @@ class LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     new Center(
-                        child: new Image(
-                      image: new ExactAssetImage(
-                          "assets/images/abstractsport.png"),
-                      width: (screenSize.width < 500)
-                          ? 120.0
-                          : (screenSize.width / 4) + 12.0,
-                      height: screenSize.height / 4 + 20,
-                    ))
+                      child: new Image(
+                        image: new ExactAssetImage(
+                            "assets/images/abstractsport.png"),
+                        width: (screenSize.width < 500)
+                            ? 120.0
+                            : (screenSize.width / 4) + 12.0,
+                        height: screenSize.height / 4 + 20,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -94,26 +99,28 @@ class LoginScreenState extends State<LoginScreen> {
                       child: new Column(
                         children: <Widget>[
                           new TextFormField(
-                              decoration: const InputDecoration(
-                                icon: const Icon(Icons.email),
-                                hintText: 'Your email address',
-                                labelText: 'E-mail',
-                              ),
-                              keyboardType: TextInputType.emailAddress,
-                              obscureText: false,
-                              onSaved: (String value) {
-                                person.email = value;
-                              }),
+                            decoration: const InputDecoration(
+                              icon: const Icon(Icons.email),
+                              hintText: 'Your email address',
+                              labelText: 'E-mail',
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                            obscureText: false,
+                            onSaved: (String value) {
+                              person.email = value;
+                            },
+                          ),
                           new TextFormField(
-                              decoration: const InputDecoration(
-                                icon: const Icon(Icons.lock_open),
-                                hintText: 'Password',
-                                labelText: 'Password',
-                              ),
-                              obscureText: true,
-                              onSaved: (String password) {
-                                person.password = password;
-                              }),
+                            decoration: const InputDecoration(
+                              icon: const Icon(Icons.lock_open),
+                              hintText: 'Password',
+                              labelText: 'Password',
+                            ),
+                            obscureText: true,
+                            onSaved: (String password) {
+                              person.password = password;
+                            },
+                          ),
                           new Container(
                             child: new RaisedButton(
                                 child: const Text("Login"),
@@ -134,10 +141,10 @@ class LoginScreenState extends State<LoginScreen> {
                           onPressed: () => onPressed("/Login/SignUp"),
                         ),
                         new FlatButton(
-                            child: const Text("Forgot Password"),
-                            textColor: Theme.of(context).accentColor,
-                            onPressed: () =>
-                                onPressed("/Login/ForgotPassword")),
+                          child: const Text("Forgot Password"),
+                          textColor: Theme.of(context).accentColor,
+                          onPressed: () => onPressed("/Login/ForgotPassword"),
+                        ),
                       ],
                     )
                   ],

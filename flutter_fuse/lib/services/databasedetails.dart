@@ -4,6 +4,7 @@ import 'package:timezone/timezone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_fuse/services/sqldata.dart';
 export 'package:fusemodel/fusemodel.dart';
+import 'authentication.dart';
 
 class FilterDetails {
   Set<String> teamUids = new Set<String>();
@@ -42,6 +43,7 @@ class UserDatabaseData {
   bool _loadedInvites = false;
   bool _loadedReadMessages = false;
   bool _loadedUnreadMessages = false;
+  bool _createdMePlayer = false;
 
   Map<String, Player> get players => _players;
   Map<String, Team> get teams => _teams;
@@ -53,16 +55,11 @@ class UserDatabaseData {
   bool get loadedDatabase => _completedLoading;
   bool get loadedMessages => _loadedReadMessages && _loadedUnreadMessages;
 
-  StreamController<UpdateReason> _teamController =
-      new StreamController<UpdateReason>();
-  StreamController<UpdateReason> _playerController =
-      new StreamController<UpdateReason>();
-  StreamController<UpdateReason> _gameController =
-      new StreamController<UpdateReason>();
-  StreamController<UpdateReason> _inviteController =
-      new StreamController<UpdateReason>();
-  StreamController<UpdateReason> _messageController =
-      new StreamController<UpdateReason>();
+  StreamController<UpdateReason> _teamController;
+  StreamController<UpdateReason> _playerController;
+  StreamController<UpdateReason> _gameController;
+  StreamController<UpdateReason> _inviteController;
+  StreamController<UpdateReason> _messageController;
 
   // From firebase.
   StreamSubscription<QuerySnapshot> _playerSnapshot;
@@ -78,6 +75,11 @@ class UserDatabaseData {
   }
 
   void initStuff() {
+    _teamController = new StreamController<UpdateReason>();
+    _playerController = new StreamController<UpdateReason>();
+    _gameController = new StreamController<UpdateReason>();
+    _inviteController = new StreamController<UpdateReason>();
+    _messageController = new StreamController<UpdateReason>();
     teamStream = _teamController.stream.asBroadcastStream();
     gameStream = _gameController.stream.asBroadcastStream();
     playerStream = _playerController.stream.asBroadcastStream();
@@ -106,8 +108,8 @@ class UserDatabaseData {
     return null;
   }
 
-  Future<bool> acceptInvite(Invite inputInvite, {String playerUid, String name,
-      Relationship relationship}) async {
+  Future<bool> acceptInvite(Invite inputInvite,
+      {String playerUid, String name, Relationship relationship}) async {
     if (inputInvite is InviteToTeam) {
       InviteToTeam invite = inputInvite;
       // We add ourselves to the season.
@@ -224,25 +226,56 @@ class UserDatabaseData {
   void _updateLoading() {
     _completedLoading =
         _loadedPlayers && _loadedGames && _loadedInvites && _loadedTeams;
+    print(
+        "loading $_completedLoading $_loadedPlayers $_loadedGames $_loadedInvites $_loadedTeams");
   }
 
   void _onPlayerUpdated(QuerySnapshot query) {
+    print('_onPlayerUpdated ${query.documents.length}');
     Set<String> toDeletePlayers = new Set<String>();
     SqlData sql = SqlData.instance;
+    bool foundMe = false;
 
     toDeletePlayers.addAll(_players.keys);
-    query.documents.forEach((doc) {
+    query.documents.forEach((DocumentSnapshot doc) {
+      print('here ${doc.documentID}');
       Player player;
       if (_players.containsKey(doc.documentID)) {
         player = _players[doc.documentID];
         player.fromJSON(doc.documentID, doc.data);
         player.setupSnap();
+        if (player.users[userUid].relationship == Relationship.Me) {
+          if (foundMe) {
+            print("Player len ${player.uid}");
+            if (player.users.length <= 1) {
+              Firestore.instance
+                  .collection(PLAYERS_COLLECTION)
+                  .document(player.uid)
+                  .delete().then((val) {
+                print('Deleted ${doc.documentID}');
+              });
+            }
+          }
+          foundMe = true;
+        }
       } else {
         player = new Player();
         // Add in snapshots to find the teams associated with the player.
         player.fromJSON(doc.documentID, doc.data);
         player.setupSnap();
         _players[player.uid] = player;
+        if (player.users[userUid].relationship == Relationship.Me) {
+          if (foundMe) {
+            print("Player len ${player.users.length}");
+            if (player.users.length <= 1) {
+              Firestore.instance
+                  .collection(PLAYERS_COLLECTION)
+                  .document(player.uid)
+                  .delete();
+            }
+          }
+          foundMe = true;
+        }
         print('player ' + player.uid);
       }
       toDeletePlayers.remove(doc.documentID);
@@ -253,6 +286,35 @@ class UserDatabaseData {
       _players.remove(id);
       sql.deleteElement(SqlData.PLAYERS_TABLE, id);
     });
+    if (query.documents.length == 0) {
+      if (!foundMe && !_createdMePlayer) {
+        print('Docs are empty');
+        Player player = new Player();
+        player.name = UserAuth.instance.currentUserNoWait().profile.displayName;
+        PlayerUser playerUser = new PlayerUser();
+        playerUser.userUid = UserAuth.instance.currentUserNoWait().uid;
+        playerUser.relationship = Relationship.Me;
+        player.users[playerUser.userUid] = playerUser;
+        print('Updating firestore');
+        _createdMePlayer = true;
+        player.updateFirestore(includeUsers: true).then((void val) {
+          print('Done!');
+          _loadedGames = true;
+          _loadedTeams = true;
+          _updateLoading();
+          _gameController.add(UpdateReason.Update);
+        }).catchError((e) {
+          print('Print stuff');
+          throw e;
+        });
+      } else {
+        print('Loaded for fluff');
+        _loadedGames = true;
+        _loadedTeams = true;
+        _updateLoading();
+        _gameController.add(UpdateReason.Update);
+      }
+    }
     _loadedPlayers = true;
     _updateLoading();
     _playerController.add(UpdateReason.Update);
@@ -381,7 +443,13 @@ class UserDatabaseData {
       });
     }).then((e) {
       _loadedTeams = true;
-      _updateLoading();
+      if (_teams.length == 0) {
+        _loadedGames = true;
+        _updateLoading();
+        _gameController.add(UpdateReason.Update);
+      } else {
+        _updateLoading();
+      }
     });
     if (toDeleteSeasons != null) {
       toDeleteSeasons.forEach((String id) {
@@ -448,11 +516,8 @@ class UserDatabaseData {
 
   void _setUid(String uid, String email) async {
     _completedLoading = false;
-    if (this.userUid != uid && this.userUid != null) {
-      close();
+    if (_teamController == null) {
       initStuff();
-      print('Updating uid to $uid dropping database');
-      SqlData.instance.dropDatabase();
     }
     // Load from SQL first.
     try {
@@ -533,10 +598,12 @@ class UserDatabaseData {
         .where(Player.USERS + "." + uid + "." + ADDED, isEqualTo: true);
     _playerSnapshot = collection.snapshots.listen(this._onPlayerUpdated);
 
+    print('getting invites');
     Query inviteCollection = Firestore.instance
         .collection(INVITE_COLLECTION)
         .where(Invite.EMAIL, isEqualTo: normalizeEmail(email));
     inviteCollection.getDocuments().then((QuerySnapshot query) {
+      print("Got some invites ${query.documents.length}");
       this._onInviteUpdated(query);
     });
     _inviteSnapshot = inviteCollection.snapshots.listen(this._onInviteUpdated);
@@ -623,15 +690,20 @@ class UserDatabaseData {
     });
     _players.clear();
     _invites.clear();
+    _createdMePlayer = false;
+  }
+
+  void deletePersistentData() {
+    SqlData.instance.dropDatabase();
   }
 
   static void load(String uid, String email) {
-    print('loading data');
     instance._setUid(uid, email);
   }
 
   static void clear() {
     if (_instance != null) {
+      instance.deletePersistentData();
       instance.close();
     }
   }

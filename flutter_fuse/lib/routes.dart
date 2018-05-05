@@ -14,6 +14,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:flutter_fuse/services/loggingdata.dart';
 
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
@@ -45,7 +46,7 @@ class Routes {
   MaterialApp app;
 
   PageRoute<dynamic> _buildRoute(RouteSettings routeSettings) {
-    print(routeSettings.name);
+    LoggingData.instance.lastPath = routeSettings.name;
     if (_currentUser != null) {
       if (_currentUser.isEmailVerified) {
         return AppRouter.instance.generator(routeSettings);

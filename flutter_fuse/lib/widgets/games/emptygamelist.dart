@@ -1,10 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/databasedetails.dart';
 
 class EmptyGameList extends StatelessWidget {
+  void _addTeam(BuildContext context) {
+    Navigator.pushNamed(context, "AddTeam");
+  }
+
+  void _addGame(BuildContext context) {
+    Navigator.pushNamed(context, "AddGame");
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
+    RaisedButton button;
+    if (UserDatabaseData.instance.teams.length == 0) {
+      button = new RaisedButton(
+        onPressed: () => _addTeam(context),
+        child: new Text(Messages
+            .of(context)
+            .addteam),
+      );
+    } else {
+      button = new RaisedButton(
+        onPressed: () => _addGame(context),
+        child: new Text(Messages
+            .of(context)
+            .addgame),
+      );
+    }
 
     return new Column(
       children: <Widget>[
@@ -18,7 +43,7 @@ class EmptyGameList extends StatelessWidget {
               ? screenSize.width - 30.0
               : screenSize.height - 30.0,
         )),
-        new Text(Messages.of(context).nogames),
+        button,
       ],
     );
   }

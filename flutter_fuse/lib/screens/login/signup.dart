@@ -23,7 +23,6 @@ class SignupScreenState extends State<SignupScreen> {
   Validations validations = new Validations();
   UserData person = new UserData();
 
-
   @override
   void initState() {
     person.profile = new FusedUserProfile();
@@ -46,8 +45,25 @@ class SignupScreenState extends State<SignupScreen> {
       showInSnackBar(Messages.of(context).formerror);
     } else {
       form.save();
-      await UserAuth.instance.createUser(person);
-      Navigator.pushNamed(context, "Verify");
+      UserAuth.instance.createUser(person).then((UserData data) async {
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) => new AlertDialog(
+            content: new Text(Messages.of(context).createdaccount),
+            actions: <Widget>[
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                  child: new Text(
+                      MaterialLocalizations.of(context).okButtonLabel))
+            ],
+          ),
+        );
+        Navigator.pushNamed(context, "/Login/Verify");
+      }).catchError((Error e) {
+        showInSnackBar(Messages.of(context).errorcreatinguser);
+      });
     }
   }
 

@@ -4,11 +4,15 @@ import 'fabminimenuitem.dart';
 
 class FabDialer extends StatefulWidget {
   const FabDialer(
-      {@required this.menu, @required this.color, @required this.icon});
+      {@required this.menu,
+      @required this.color,
+      @required this.icon,
+      this.disabled = false});
 
   final List<FabMiniMenuItemWidget> menu;
   final Color color;
   final Icon icon;
+  final bool disabled;
 
   @override
   FabDialerState createState() => new FabDialerState();
@@ -49,6 +53,9 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
   }
 
   void _rotate() {
+    if (widget.disabled) {
+      return;
+    }
     setState(() {
       if (_isRotated) {
         _angle = 45;

@@ -87,8 +87,13 @@ class SqlData {
     print('out of here');
   }
 
+  // Close the database, delete everything and then reopen it.
   void dropDatabase() async {
+    _completer = new Completer<bool>();
+    _initialized = _completer.future;
+    await _database.close();
     await deleteDatabase(_path);
+    await initDatabase();
   }
 
   // Gets all the data out of the json table.

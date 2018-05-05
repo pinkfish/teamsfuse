@@ -313,16 +313,16 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   // P{layer stuff
-  Future<void> updateFirestorePlayer(Player player) async {
+  Future<void> updateFirestorePlayer(Player player, bool includeUsers) async {
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance.collection(PLAYERS_COLLECTION);
     if (player.uid == '' || player.uid == null) {
       // Add the game.
-      DocumentReference doc = await ref.add(player.toJSON());
+      DocumentReference doc = await ref.add(player.toJSON(includeUsers: includeUsers));
       player.uid = doc.documentID;
     } else {
       // Update the game.
-      await ref.document(player.uid).updateData(player.toJSON());
+      await ref.document(player.uid).updateData(player.toJSON(includeUsers: includeUsers));
     }
   }
 

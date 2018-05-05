@@ -44,6 +44,13 @@ class Messages {
     );
   }
 
+  String get logout {
+    return Intl.message(
+      'Logout',
+      name: 'Logout button text',
+    );
+  }
+
   String get forgotPassword {
     return Intl.message(
       'Forgot Password',
@@ -58,11 +65,16 @@ class Messages {
     );
   }
 
-  String get verifyexplanation {
+  String verifyexplanation(String email) {
     return Intl.message(
-      'Email address needs to be verified, please check your email or resend the verification details',
+      'Email address $email needs to be verified, please check your email or resend the verification details.',
       name: 'Button to resend the email to verify their email address',
     );
+  }
+
+  String get errorcreatinguser {
+    return Intl.message(
+        "Error creating user, maybe the email address is already used");
   }
 
   String get createnew {
@@ -70,6 +82,10 @@ class Messages {
       'Create new',
       name: 'Create new account button text',
     );
+  }
+
+  String get addteam {
+    return Intl.message("Add team", name: "Add a new team button");
   }
 
   String get newmail {
@@ -1114,6 +1130,24 @@ class Messages {
           desc: 'Practice title in game list');
     }
     return Intl.message('Practice $time', desc: 'Practice title in game list');
+  }
+
+  String get verifyemailsent {
+    return Intl.message(
+        "Sent verification email, please check your email inbox.",
+        desc:
+            "Confirmation message after requesting the email verification code");
+  }
+
+  String get createdaccount {
+    return Intl.message(
+        "Created an account, please look in your email for the verification code..",
+        desc:
+            "Confirmation message after requesting the email verification code");
+  }
+
+  String get verifyemailerror {
+    return Intl.message("No account found for email or internal error occured");
   }
 
   String trainingtitlenow(String time, String endTime) {

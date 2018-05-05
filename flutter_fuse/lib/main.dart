@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/impl/databaseupdatemodelimpl.dart';
 import 'package:sentry/sentry.dart';
+import 'package:flutter_fuse/services/loggingdata.dart';
 
 final SentryClient sentry = new SentryClient(
     dsn:
@@ -31,8 +32,14 @@ void main() {
   // Send error logs up to sentry.
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
-    sentry.captureException(
-        exception: details.exception, stackTrace: details.stack);
+    final Event event = new Event(
+      release: LoggingData.instance.packageInfo.version,
+      exception: details.exception,
+      stackTrace: details.stack,
+      extra: LoggingData.instance.extra,
+      tags: LoggingData.instance.tags
+    );
+    sentry.capture(event: event);
   };
 
   new Routes();
