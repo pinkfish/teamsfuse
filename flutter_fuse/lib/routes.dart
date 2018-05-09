@@ -64,17 +64,12 @@ class Routes {
       initializeDatabase(data.buffer.asUint8List());
       if (currentTimeZone == "GMT") {
         currentTimeZone = "Europe/London";
+        setLocalLocation(getLocation(currentTimeZone));
       } else {
         setLocalLocation(getLocation(currentTimeZone));
       }
       UserDatabaseData.load(user.uid, user.email);
       print('$currentTimeZone ${local.toString()}');
-      Directory dir = await getApplicationDocumentsDirectory();
-      Stream<FileSystemEntity> files = dir.list(recursive: true);
-      print('Getting files');
-      files.forEach((FileSystemEntity e) {
-        print(e.path);
-      });
     } else {
       UserDatabaseData.clear();
     }
@@ -84,21 +79,22 @@ class Routes {
     // Subscribe to auth changes.
     UserAuth.instance.onAuthChanged().listen(_authChanged);
     app = new MaterialApp(
-        localizationsDelegates: [
-          const MessagesDelegate(),
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate
-        ],
-        supportedLocales: [
-          const Locale('en', 'US'),
-          const Locale('en', 'UK'),
-          const Locale('en', 'AU'),
-        ],
-        title: 'Team Fuse',
-        theme: theme,
-        initialRoute: "/",
-        home: new SplashScreen(),
-        onGenerateRoute: _buildRoute);
+      localizationsDelegates: [
+        const MessagesDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: [
+        const Locale('en', 'US'),
+        const Locale('en', 'UK'),
+        const Locale('en', 'AU'),
+      ],
+      title: 'Team Fuse',
+      theme: theme,
+      initialRoute: "/",
+      home: new SplashScreen(),
+      onGenerateRoute: _buildRoute,
+    );
     runApp(app);
   }
 }

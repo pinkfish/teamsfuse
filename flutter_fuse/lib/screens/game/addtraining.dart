@@ -201,16 +201,23 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
         if (currentStep < 3) {
           currentStep++;
         } else {
-          Game myGame = _trainingFormKey.currentState.widget.game;
+          Game myGame = _initGame;
 
           // Write the game out.
-          _trainingFormKey.currentState
-              .validateAndSaveToFirebase(
-                  _repeatKey.currentState.repeatTimes(myGame.tzTime))
-              .then((bool result) {
-            if (result) {
-              Navigator.pop(context);
-            }
+          _initGame.updateFirestore().then((void y) {
+          Navigator.pop(context);
+
+          })
+          .catchError((Error e) {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return new AlertDialog(
+                    title: new Text("Error"),
+                    content: new Text("Error saving the training"),
+                  );
+                });
+
           });
         }
       });

@@ -103,7 +103,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
 
   List<DropdownMenuItem<RepeatPeriod>> _buildRepeatIntervalItems(
       BuildContext context) {
-    List<DropdownMenuItem<RepeatPeriod>> ret = new List<DropdownMenuItem>();
+    List<DropdownMenuItem<RepeatPeriod>> ret = [];
     ret.add(new DropdownMenuItem<RepeatPeriod>(
       child: new Text(Messages.of(context).noneperiod),
       value: RepeatPeriod.None,

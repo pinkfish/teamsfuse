@@ -34,7 +34,6 @@ class EditResultDialogState extends State<EditResultDialog> {
     _details = new GameResultDetails.copy(widget.game.result);
     _finalPeriod =
         new GameResultPerPeriod.copy(_details.scores[GameInProgress.Final]);
-    print("$_finalPeriod");
     _team = UserDatabaseData.instance.teams[widget.game.teamUid];
     if (_team == null) {
       _team = new Team();
@@ -51,7 +50,6 @@ class EditResultDialogState extends State<EditResultDialog> {
   }
 
   void _sendUpdate(List<bool> results) {
-    print('updating values');
     widget.game.updateFirestoreResult(_details);
   }
 
@@ -94,7 +92,6 @@ class EditResultDialogState extends State<EditResultDialog> {
               ],
             );
           });
-      print("Got out of the dialog $ret $_details");
       if (ret != null && ret == true) {
         // Save the state update.
         setState(() {

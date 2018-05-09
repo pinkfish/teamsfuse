@@ -10,6 +10,9 @@ import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'package:flutter_fuse/widgets/games/attendanceicon.dart';
 import 'package:flutter_fuse/widgets/games/attendancedialog.dart';
 import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
+import 'teamresultsstreamfuture.dart';
+import 'package:timezone/timezone.dart';
+import 'package:flutter_fuse/widgets/games/gamecard.dart';
 
 import 'dart:async';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
@@ -29,6 +32,7 @@ class GameDetails extends StatefulWidget {
 class GameDetailsState extends State<GameDetails> {
   StreamSubscription<UpdateReason> teamUpdate;
   Map<Player, Attendance> _attendence;
+  StreamSubscription<UpdateReason> _subscription;
 
   void initState() {
     super.initState();
@@ -38,11 +42,18 @@ class GameDetailsState extends State<GameDetails> {
         setState(() {});
       });
     }
+    // Refresh the details on a change (only if the game exists).
+    if (widget.game.uid != null && widget.game.thisGameStream != null) {
+      _subscription = widget.game.thisGameStream.listen((UpdateReason reason) {
+        setState(() {});
+      });
+    }
   }
 
   @override
   void dispose() {
     super.dispose();
+    _subscription.cancel();
     teamUpdate.cancel();
     teamUpdate = null;
   }
@@ -105,25 +116,27 @@ class GameDetailsState extends State<GameDetails> {
     List<Widget> availability = [];
     Map<Player, Attendance> availavilityResult = new Map<Player, Attendance>();
 
-    UserDatabaseData.instance.players.forEach((String key, Player player) {
-      if (season.players.any((SeasonPlayer play) {
-        return play.playerUid == key;
-      })) {
-        Attendance attend = Attendance.Maybe;
-        if (widget.game.attendance.containsKey(key)) {
-          attend = widget.game.attendance[key];
+    if (season != null) {
+      UserDatabaseData.instance.players.forEach((String key, Player player) {
+        if (season.players.any((SeasonPlayer play) {
+          return play.playerUid == key;
+        })) {
+          Attendance attend = Attendance.Maybe;
+          if (widget.game.attendance.containsKey(key)) {
+            attend = widget.game.attendance[key];
+          }
+          availavilityResult[player] = attend;
+          availability.add(
+            new Row(
+              children: <Widget>[
+                new Expanded(child: new Text(player.name)),
+                new AttendanceIcon(attend),
+              ],
+            ),
+          );
         }
-        availavilityResult[player] = attend;
-        availability.add(
-          new Row(
-            children: <Widget>[
-              new Expanded(child: new Text(player.name)),
-              new AttendanceIcon(attend),
-            ],
-          ),
-        );
-      }
-    });
+      });
+    }
     this._attendence = availavilityResult;
 
     // Not started, show availability.
@@ -228,8 +241,8 @@ class GameDetailsState extends State<GameDetails> {
         subtitle: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new Text(widget.game.place.name),
-            new Text(widget.game.place.address),
+            new Text(widget.game.place.name ?? ''),
+            new Text(widget.game.place.address ?? Messages.of(context).unknown),
           ],
         ),
       ),
@@ -365,16 +378,51 @@ class GameDetailsState extends State<GameDetails> {
           ),
           initiallyExpanded: false,
           leading: const Icon(Icons.people),
-          children: <Widget>[],
+          children: <Widget>[
+            new TeamResultsStreamFuture(
+              future: season.getGames(),
+              opponentUid: widget.game.opponentUid,
+            ),
+          ],
         ),
       );
       if (team.seasons.length > 1) {
+        List<Widget> cols = [];
+        for (Season otherSeason in team.seasons.values) {
+          if (otherSeason.uid != season.uid) {
+            String seasonName;
+            if (team.seasons.containsKey(otherSeason.uid)) {
+              seasonName = team.seasons[otherSeason.uid].name;
+            } else {
+              seasonName = Messages.of(context).unknown;
+            }
+
+            cols.add(
+              new Text(
+                Messages.of(context).opponentseason(opponent, seasonName),
+              ),
+            );
+            cols.add(
+              new Text(
+                Messages
+                    .of(context)
+                    .opponentwinrecord(opponent, otherSeason.uid, seasonName),
+              ),
+            );
+            cols.add(
+              new TeamResultsStreamFuture(
+                future: otherSeason.getGames(),
+                opponentUid: widget.game.opponentUid,
+              ),
+            );
+          }
+        }
         body.add(
           new ExpansionTile(
             title: new Text(Messages.of(context).previousSeasons),
             initiallyExpanded: false,
             leading: const Icon(Icons.people),
-            children: <Widget>[],
+            children: cols,
           ),
         );
       }

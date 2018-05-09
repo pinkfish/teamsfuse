@@ -110,14 +110,18 @@ class SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     if (!loaded) {
+      print('Not loaded yet');
       return _loadingScreen();
     }
     if (currentUser != null && currentUser.isEmailVerified) {
+      print('Show home screen');
       return new HomeScreen();
     }
     if (currentUser != null) {
+      print('Verify user screen');
       return new VerifyEmailScreen();
     }
+    print('Login screen');
     return new LoginScreen();
   }
 }

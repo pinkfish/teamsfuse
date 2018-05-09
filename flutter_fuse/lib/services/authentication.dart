@@ -31,6 +31,10 @@ class UserData {
     this.uid = copy.uid;
     this.password = copy.password;
   }
+
+  String toString() {
+    return "UserData [$email $uid $profile]";
+  }
 }
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -111,9 +115,10 @@ class UserAuth {
 
   // To verify new User
   Future<UserData> signIn(UserData userData) async {
-    print(userData);
-    await _auth.signInWithEmailAndPassword(
+    print('Signin $userData');
+    FirebaseUser user = await _auth.signInWithEmailAndPassword(
         email: userData.email, password: userData.password);
+    print("Got the sign in $user, now returning current user");
     return currentUser();
   }
 
@@ -130,6 +135,12 @@ class UserAuth {
     } else {
       return false;
     }
+  }
+
+  Future<void> reloadUser() async {
+    await _currentFirebaseUser.reload();
+    // Force an update once it is reloaded.
+    _userDataFromFirestore(_currentFirebaseUser, false);
   }
 
   // Sign the user out.

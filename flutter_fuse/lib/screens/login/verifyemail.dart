@@ -61,6 +61,10 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
+
+    // Reload the user when the page loads.
+    UserAuth.instance.reloadUser();
+
     this.context = context;
     final Size screenSize = MediaQuery.of(context).size;
     double width =

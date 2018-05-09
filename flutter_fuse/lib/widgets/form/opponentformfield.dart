@@ -92,13 +92,16 @@ class OpponentFormFieldState extends FormFieldState<String> {
 
     if (teamUid != null &&
         UserDatabaseData.instance.teams.containsKey(teamUid)) {
-      UserDatabaseData.instance.teams[teamUid].opponents
-          .forEach((String key, Opponent opponent) {
+      Team team = UserDatabaseData.instance.teams[teamUid];
+      List<String> uids = UserDatabaseData.instance.teams[teamUid].opponents.keys.toList();
+      uids.sort((String v1, String v2) => team.opponents[v1].name.compareTo(team.opponents[v2].name));
+      for (String opponentUid in uids) {
+        Opponent opponent = team.opponents[opponentUid];
         if (opponent.name != null) {
           ret.add(new DropdownMenuItem(
               child: new Text(opponent.name), value: opponent.uid));
         }
-      });
+      }
     }
 
     return ret;

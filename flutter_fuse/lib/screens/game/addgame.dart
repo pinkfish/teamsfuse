@@ -72,6 +72,7 @@ class AddGameScreenState extends State<AddGameScreen> {
         }
         _gameFormKey.currentState.save();
         _initGame = _gameFormKey.currentState.finalGameResult;
+        print('Saved game $_initGame');
         detailsStepState = StepState.complete;
         createStepStage = StepState.complete;
         break;

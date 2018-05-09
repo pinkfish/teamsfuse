@@ -53,13 +53,13 @@ class GameCard extends StatelessWidget {
     }
 
     // Show current availability.
-    players.forEach((Player player) {
+    for (Player player in players) {
       if (game.attendance.containsKey(key)) {
         attendence[player] = game.attendance[key];
       } else {
         attendence[player] = Attendance.Maybe;
       }
-    });
+    }
     if (attendence.length == 0) {
       return null;
     }
@@ -154,7 +154,7 @@ class GameCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Team team = UserDatabaseData.instance.teams[game.teamUid];
     Opponent op;
-    if (team == null) {
+    if (team == null || !team.opponents.containsKey(game.opponentUid)) {
       op = new Opponent(name: Messages.of(context).unknown);
     } else {
       op = team.opponents[game.opponentUid];
@@ -237,14 +237,14 @@ class GameCard extends StatelessWidget {
         );
       }
     }
-    players.forEach((Player play) {
+    for (Player play in players) {
       subtitle.add(
         new TextSpan(
           style: Theme.of(context).textTheme.subhead,
           text: Messages.of(context).nameandteam(team, play),
         ),
       );
-    });
+    }
 
     switch (game.type) {
       case EventType.Game:

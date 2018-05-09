@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
-import 'package:flutter_fuse/widgets/games/gamecard.dart';
+import 'package:flutter_fuse/widgets/games/teamresultsstreamfuture.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'dart:async';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:timezone/timezone.dart';
 
 class TeamDetails extends StatefulWidget {
   final String teamuid;
@@ -48,12 +49,12 @@ class TeamDetailsState extends State<TeamDetails> {
     if (team.isAdmin(UserDatabaseData.instance.players)) {
       ret.add(
         new FlatButton(
-          onPressed: () => Navigator.pushNamed(context, "AddSeason/" + team.uid),
+          onPressed: () =>
+              Navigator.pushNamed(context, "AddSeason/" + team.uid),
           child: new Text(Messages.of(context).addseason),
         ),
       );
     }
-
 
     team.seasons.forEach((key, season) {
       ret.add(new ExpansionTile(
@@ -66,34 +67,9 @@ class TeamDetailsState extends State<TeamDetails> {
             " T:" +
             season.record.tie.toString()),
         children: <Widget>[
-          new FutureBuilder(
-              future: season.getGames(),
-              builder:
-                  (BuildContext context, AsyncSnapshot<Iterable<Game>> games) {
-                if (!games.hasData) {
-                  return new Center(
-                    child: new Text(Messages.of(context).loading),
-                  );
-                }
-                if (games.data.length == 0) {
-                  return new Center(
-                    child: new Text(Messages.of(context).nogames),
-                  );
-                } else {
-                  List<Widget> newData = new List<Widget>();
-                  games.data.forEach((Game game) {
-                    if (game.type == EventType.Game) {
-                      newData.add(new GameCard(game));
-                    }
-                  });
-                  if (newData.length == 0) {
-                    newData.add(new Text(Messages.of(context).nogames));
-                  }
-                  return new Column(
-                    children: newData,
-                  );
-                }
-              }),
+          new TeamResultsStreamFuture(
+            future: season.getGames(),
+          ),
         ],
         initiallyExpanded: false,
       ));

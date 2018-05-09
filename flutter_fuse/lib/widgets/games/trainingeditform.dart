@@ -87,7 +87,11 @@ class TrainingEditFormState extends State<TrainingEditForm> {
       setState(() {
         widget.game.place.name = place.details.name;
         widget.game.place.address = place.details.address;
-        widget.game.timezone = place.loc.name;
+        widget.game.place.longitude = place.details.location.longitude;
+        widget.game.place.latitude = place.details.location.latitude;
+        place.loc.then((Location location) {
+          widget.game.timezone = location.name;
+        });
       });
     }
   }

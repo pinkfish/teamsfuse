@@ -131,6 +131,47 @@ class GameEditFormState extends State<GameEditForm> {
         !UserDatabaseData.instance.teams.containsKey(widget.game.teamUid)) {
       return new Text('Invalid state');
     }
+    List<Widget> firstRow = [];
+    firstRow.add(new Expanded(
+      flex: 1,
+      child: new SeasonFormField(
+        initialValue: widget.game.seasonUid,
+        teamUid: widget.game.teamUid,
+        onSaved: (String value) {
+          widget.game.seasonUid = value;
+        },
+      ),
+    ));
+    if (widget.game.type == EventType.Game) {
+      firstRow.add(
+        const SizedBox(width: 12.0),
+      );
+      firstRow.add(
+        new Expanded(
+          flex: 1,
+          child: new OpponentFormField(
+            teamUid: widget.game.teamUid,
+            key: _opponentState,
+            initialValue: widget.game.opponentUid == null
+                ? 'none'
+                : widget.game.opponentUid,
+            validator: (String str) {
+              return _validations.validateOpponent(context, str);
+            },
+            onFieldSubmitted: (String value) {
+              if (value == 'add') {
+                // Open up a picker to create an opponent.
+                _openAddOpponentDialog();
+              }
+            },
+            onSaved: (String value) {
+              widget.game.opponentUid = value;
+            },
+          ),
+        ),
+      );
+    }
+
     return new Scrollbar(
       child: new SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -148,41 +189,7 @@ class GameEditFormState extends State<GameEditForm> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    new Expanded(
-                      flex: 1,
-                      child: new SeasonFormField(
-                        initialValue: widget.game.seasonUid,
-                        teamUid: widget.game.teamUid,
-                        onSaved: (String value) {
-                          widget.game.seasonUid = value;
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12.0),
-                    new Expanded(
-                      flex: 1,
-                      child: new OpponentFormField(
-                        teamUid: widget.game.teamUid,
-                        key: _opponentState,
-                        initialValue: widget.game.opponentUid == null
-                            ? 'none'
-                            : widget.game.opponentUid,
-                        validator: (String str) {
-                          return _validations.validateOpponent(context, str);
-                        },
-                        onFieldSubmitted: (String value) {
-                          if (value == 'add') {
-                            // Open up a picker to create an opponent.
-                            _openAddOpponentDialog();
-                          }
-                        },
-                        onSaved: (String value) {
-                          widget.game.opponentUid = value;
-                        },
-                      ),
-                    ),
-                  ],
+                  children: firstRow,
                 ),
                 new DateTimeFormField(
                   labelText: Messages.of(context).gametime,
@@ -232,10 +239,16 @@ class GameEditFormState extends State<GameEditForm> {
                   decoration:
                       const InputDecoration(icon: const Icon(Icons.place)),
                   onSaved: (LocationAndPlace loc) {
+                    print('Saved location $loc');
                     widget.game.place.name = loc.details.name;
                     widget.game.place.address = loc.details.address;
                     widget.game.place.placeId = loc.details.placeid;
-                    widget.game.timezone = loc.loc.name;
+                    widget.game.place.latitude = loc.details.location.latitude;
+                    widget.game.place.longitude =
+                        loc.details.location.longitude;
+                    loc.loc.then((Location location) {
+                      widget.game.timezone = location.name;
+                    });
                   },
                 ),
                 new EnsureVisibleWhenFocused(

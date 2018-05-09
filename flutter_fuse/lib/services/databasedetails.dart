@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_fuse/services/sqldata.dart';
 export 'package:fusemodel/fusemodel.dart';
 import 'authentication.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/loggingdata.dart';
 
 class FilterDetails {
   Set<String> teamUids = new Set<String>();
@@ -44,6 +46,7 @@ class UserDatabaseData {
   bool _loadedReadMessages = false;
   bool _loadedUnreadMessages = false;
   bool _createdMePlayer = false;
+  bool _loadedFromSql = false;
 
   Map<String, Player> get players => _players;
   Map<String, Team> get teams => _teams;
@@ -54,6 +57,7 @@ class UserDatabaseData {
 
   bool get loadedDatabase => _completedLoading;
   bool get loadedMessages => _loadedReadMessages && _loadedUnreadMessages;
+  bool get loadedFromSQL => _loadedFromSql;
 
   StreamController<UpdateReason> _teamController;
   StreamController<UpdateReason> _playerController;
@@ -124,6 +128,7 @@ class UserDatabaseData {
             playerUid: playerUid, displayName: name, role: invite.role);
         data[Season.PLAYERS + "." + playerUid] = seasonPlayer.toJSON();
         doc.reference.updateData(data);
+        await invite.firestoreDelete();
         return true;
       }
     }
@@ -141,6 +146,7 @@ class UserDatabaseData {
         Map<String, dynamic> data = {};
         data[Player.USERS + "." + userUid] = playerUser.toJSON();
         doc.reference.updateData(data);
+        await invite.firestoreDelete();
         return true;
       }
     }
@@ -231,14 +237,12 @@ class UserDatabaseData {
   }
 
   void _onPlayerUpdated(QuerySnapshot query) {
-    print('_onPlayerUpdated ${query.documents.length}');
     Set<String> toDeletePlayers = new Set<String>();
     SqlData sql = SqlData.instance;
     bool foundMe = false;
 
     toDeletePlayers.addAll(_players.keys);
     query.documents.forEach((DocumentSnapshot doc) {
-      print('here ${doc.documentID}');
       Player player;
       if (_players.containsKey(doc.documentID)) {
         player = _players[doc.documentID];
@@ -246,14 +250,12 @@ class UserDatabaseData {
         player.setupSnap();
         if (player.users[userUid].relationship == Relationship.Me) {
           if (foundMe) {
-            print("Player len ${player.uid}");
             if (player.users.length <= 1) {
               Firestore.instance
                   .collection(PLAYERS_COLLECTION)
                   .document(player.uid)
-                  .delete().then((val) {
-                print('Deleted ${doc.documentID}');
-              });
+                  .delete()
+                  .then((val) {});
             }
           }
           foundMe = true;
@@ -266,7 +268,6 @@ class UserDatabaseData {
         _players[player.uid] = player;
         if (player.users[userUid].relationship == Relationship.Me) {
           if (foundMe) {
-            print("Player len ${player.users.length}");
             if (player.users.length <= 1) {
               Firestore.instance
                   .collection(PLAYERS_COLLECTION)
@@ -276,7 +277,6 @@ class UserDatabaseData {
           }
           foundMe = true;
         }
-        print('player ' + player.uid);
       }
       toDeletePlayers.remove(doc.documentID);
       sql.updateElement(
@@ -450,6 +450,7 @@ class UserDatabaseData {
       } else {
         _updateLoading();
       }
+      _cleanupInvites();
     });
     if (toDeleteSeasons != null) {
       toDeleteSeasons.forEach((String id) {
@@ -489,6 +490,39 @@ class UserDatabaseData {
     _gameController.add(UpdateReason.Update);
   }
 
+  void _cleanupInvites() {
+    for (Invite invite in _invites.values) {
+      // See if we should clean this up because we already accepted it.
+      if (invite is InviteToPlayer) {
+        InviteToPlayer playerInvite = invite;
+        if (players.containsKey(invite.playerUid)) {
+          // We already accepted it.
+          playerInvite.firestoreDelete();
+        }
+      } else if (invite is InviteToTeam) {
+        InviteToTeam teamInvite = invite;
+        if (teams.containsKey(invite.teamUid)) {
+          Team team = teams[invite.teamUid];
+          if (team.seasons.containsKey(invite.seasonUid)) {
+            Season season = team.seasons[invite.seasonUid];
+            bool notFound = false;
+            for (String name in invite.playerName) {
+              name = name.toLowerCase();
+              if (season.players.any((SeasonPlayer seasonPlayer) =>
+                  seasonPlayer.displayName.toLowerCase().compareTo(name) !=
+                  0)) {
+                notFound = true;
+              }
+            }
+            if (!notFound) {
+              invite.firestoreDelete();
+            }
+          }
+        }
+      }
+    }
+  }
+
   void _onInviteUpdated(QuerySnapshot query) {
     Map<String, Invite> newInvites = new Map<String, Invite>();
     SqlData sql = SqlData.instance;
@@ -505,6 +539,7 @@ class UserDatabaseData {
     _loadedInvites = true;
     _updateLoading();
     _inviteController.add(UpdateReason.Update);
+    _cleanupInvites();
   }
 
   static UserDatabaseData get instance {
@@ -515,6 +550,13 @@ class UserDatabaseData {
   }
 
   void _setUid(String uid, String email) async {
+    print('setUid($uid)');
+    // Already loaded.
+    if (uid == userUid) {
+      print('exiting');
+      return;
+    }
+    this.userUid = uid;
     _completedLoading = false;
     if (_teamController == null) {
       initStuff();
@@ -522,20 +564,31 @@ class UserDatabaseData {
     // Load from SQL first.
     try {
       SqlData sql = SqlData.instance;
+
+      // Opponent data is shared on teams.
       Map<String, Map<String, dynamic>> data =
           await sql.getAllElements(SqlData.TEAMS_TABLE);
       Map<String, Team> newTeams = new Map<String, Team>();
-      await Future.forEach(data.keys, (String uid) {
+      DateTime start = new DateTime.now();
+      print('Start teams ${start.difference(new DateTime.now())}');
+      await Future.forEach(data.keys, (String uid) async {
         Map<String, dynamic> input = data[uid];
         Team team = new Team();
         team.fromJSON(uid, input);
         team.setupSnap();
         // Load opponents.
         newTeams[uid] = team;
-        return team.loadOpponents();
+        Map<String, Map<String, dynamic>> opponentData =
+            await sql.getAllTeamElements(SqlData.OPPONENTS_TABLE, uid);
+        for (String key in opponentData.keys) {
+          Map<String, dynamic> innerData = opponentData[key];
+          Opponent op = new Opponent();
+          op.fromJSON(key, uid, innerData);
+          team.opponents[key] = op;
+        }
       });
       _teams = newTeams;
-      _teamController.add(UpdateReason.Update);
+      print('End teams ${start.difference(new DateTime.now())}');
 
       data = await sql.getAllElements(SqlData.PLAYERS_TABLE);
       Map<String, Player> newPlayers = new Map<String, Player>();
@@ -545,7 +598,7 @@ class UserDatabaseData {
         newPlayers[uid] = player;
       });
       _players = newPlayers;
-      _playerController.add(UpdateReason.Update);
+      print('End players ${start.difference(new DateTime.now())}');
 
       data = await sql.getAllElements(SqlData.GAME_TABLE);
       Map<String, Game> newGames = new Map<String, Game>();
@@ -555,7 +608,7 @@ class UserDatabaseData {
         newGames[uid] = game;
       });
       _games = newGames;
-      _gameController.add(UpdateReason.Update);
+      print('End games ${start.difference(new DateTime.now())}');
 
       data = await sql.getAllElements(SqlData.INVITES_TABLE);
       Map<String, Invite> newInvites = new Map<String, Invite>();
@@ -565,22 +618,34 @@ class UserDatabaseData {
         newInvites[uid] = invite;
       });
       _invites = newInvites;
-      _inviteController.add(UpdateReason.Update);
+      print('End invites ${start.difference(new DateTime.now())}');
 
       data = await sql.getAllElements(SqlData.MESSAGES_TABLE);
       Map<String, Message> newMessages = {};
       data.forEach((String uid, Map<String, dynamic> input) {
         Message mess = new Message();
-        print("fluff $uid ${mess.teamUid}");
         mess.fromJSON(uid, input);
         newMessages[uid] = mess;
       });
       _messages = newMessages;
+      print('End messages ${start.difference(new DateTime.now())}');
+
+      // Setup the team stuff after loading.
+      for (Team team in _teams.values) {
+        team.setupSnap();
+      }
+      print('Setup snap ${start.difference(new DateTime.now())}');
+
       unreadMessageCount = _messages.keys
           .where((String key) =>
               _messages[key].recipients[userUid].state == MessageState.Unread)
           .length;
+      _playerController.add(UpdateReason.Update);
+      _gameController.add(UpdateReason.Update);
+      _inviteController.add(UpdateReason.Update);
+      _teamController.add(UpdateReason.Update);
       _messageController.add(UpdateReason.Update);
+      print('End sql ${start.difference(new DateTime.now())}');
     } catch (e) {
       // Any exception and we cleanup all the data to nothing.
       print('Caught exception $e');
@@ -589,9 +654,15 @@ class UserDatabaseData {
       _teams.clear();
       _invites.clear();
       _players.clear();
-    }
 
-    this.userUid = uid;
+      // Log it through sentry.
+      FlutterErrorDetails detail =
+          new FlutterErrorDetails(exception: e, stack: StackTrace.current);
+      LoggingData.instance.logError(detail);
+    }
+    print('Finished loading from sql');
+    _loadedFromSql = true;
+
     // The uid everything is based off.
     Query collection = Firestore.instance
         .collection(PLAYERS_COLLECTION)

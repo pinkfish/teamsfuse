@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'emptygamelist.dart';
 import 'dart:async';
 import 'package:flutter_fuse/widgets/util/sliverlistcenter.dart';
@@ -153,6 +154,20 @@ class GameListState extends State<GameList> {
   @override
   Widget build(BuildContext context) {
     print("Loaded for gamelist ${UserDatabaseData.instance.loadedDatabase}");
+    if (!UserDatabaseData.instance.loadedFromSQL) {
+      return new SliverToBoxAdapter(
+        child: new Container(
+            color: Colors.white,
+            child: new Column(
+              children: <Widget>[
+                new Text(Messages.of(context).loading),
+                new CircularProgressIndicator(),
+              ],
+            ),
+
+      ),
+      );
+    }
     if (UserDatabaseData.instance.loadedDatabase &&
         (_listToShow == null || _listToShow.length == 0)) {
       return new SliverToBoxAdapter(

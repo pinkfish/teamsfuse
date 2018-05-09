@@ -134,6 +134,11 @@ class InProgressGamePicker extends StatelessWidget {
       GameInProgress newValue;
 
       //return integer value
+      if (intValueInTheMiddle < 0) {
+        intValueInTheMiddle = 0;
+      } else if (intValueInTheMiddle >= GameInProgress.values.length) {
+        intValueInTheMiddle = GameInProgress.values.length - 1;
+      }
       newValue = GameInProgress.values[intValueInTheMiddle];
 
       onChanged(newValue);
