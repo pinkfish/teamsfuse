@@ -2,11 +2,13 @@ import 'package:fusemodel/fusemodel.dart';
 import 'dart:async';
 import 'package:timezone/timezone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_fuse/services/sqldata.dart';
+import 'sqldata.dart';
 export 'package:fusemodel/fusemodel.dart';
 import 'authentication.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/loggingdata.dart';
+import 'loggingdata.dart';
+import 'package:firebase_performance/firebase_performance.dart';
+import 'analytics.dart';
 
 class FilterDetails {
   Set<String> teamUids = new Set<String>();
@@ -73,6 +75,7 @@ class UserDatabaseData {
 
   static UserDatabaseData _instance;
   static Map<Object, dynamic> snapshotMapping = new Map<Object, dynamic>();
+  Trace _loadingDataTrace;
 
   UserDatabaseData() {
     initStuff();
@@ -115,6 +118,7 @@ class UserDatabaseData {
   Future<bool> acceptInvite(Invite inputInvite,
       {String playerUid, String name, Relationship relationship}) async {
     if (inputInvite is InviteToTeam) {
+      Analytics.analytics.logSignUp(signUpMethod: "inviteToTeam");
       InviteToTeam invite = inputInvite;
       // We add ourselves to the season.
       DocumentSnapshot doc = await Firestore.instance
@@ -133,6 +137,7 @@ class UserDatabaseData {
       }
     }
     if (inputInvite is InviteToPlayer) {
+      Analytics.analytics.logSignUp(signUpMethod: "inviteToPlayer");
       InviteToPlayer invite = inputInvite;
       // Add ourselves to the player.
       DocumentSnapshot doc = await Firestore.instance
@@ -232,6 +237,11 @@ class UserDatabaseData {
   void _updateLoading() {
     _completedLoading =
         _loadedPlayers && _loadedGames && _loadedInvites && _loadedTeams;
+    if (_completedLoading) {
+      // Stop it and delete it.
+      _loadingDataTrace?.stop();
+      _loadingDataTrace = null;
+    }
     print(
         "loading $_completedLoading $_loadedPlayers $_loadedGames $_loadedInvites $_loadedTeams");
   }
@@ -243,6 +253,7 @@ class UserDatabaseData {
 
     toDeletePlayers.addAll(_players.keys);
     query.documents.forEach((DocumentSnapshot doc) {
+      _loadingDataTrace?.incrementCounter("player");
       Player player;
       if (_players.containsKey(doc.documentID)) {
         player = _players[doc.documentID];
@@ -283,6 +294,7 @@ class UserDatabaseData {
           SqlData.PLAYERS_TABLE, player.uid, player.toJSON(includeUsers: true));
     });
     toDeletePlayers.forEach((String id) {
+      _loadingDataTrace?.incrementCounter("deleteplayer");
       _players.remove(id);
       sql.deleteElement(SqlData.PLAYERS_TABLE, id);
     });
@@ -325,6 +337,7 @@ class UserDatabaseData {
 
     // Fill in all the messages.
     await Future.forEach(query.documents, (DocumentSnapshot doc) async {
+      _loadingDataTrace?.incrementCounter("message");
       MessageRecipient recipient;
       // Update in place to keep the fetched and seen times.
       recipient = new MessageRecipient();
@@ -356,6 +369,7 @@ class UserDatabaseData {
     unreadMessageCount = query.documents.length;
     query.documentChanges.forEach((DocumentChange change) {
       if (change.type == DocumentChangeType.removed) {
+        _loadingDataTrace?.incrementCounter("deletemessage");
         MessageRecipient rec = new MessageRecipient();
         rec.fromJSON(change.document.documentID, change.document.data);
         messages.remove(rec.messageId);
@@ -371,6 +385,7 @@ class UserDatabaseData {
     SqlData sql = SqlData.instance;
 
     await Future.forEach(query.documents, (DocumentSnapshot doc) async {
+      _loadingDataTrace?.incrementCounter("message");
       MessageRecipient recipient;
       // Update in place to keep the fetched and seen times.
       recipient = new MessageRecipient();
@@ -401,6 +416,7 @@ class UserDatabaseData {
     });
     query.documentChanges.forEach((DocumentChange change) {
       if (change.type == DocumentChangeType.removed) {
+        _loadingDataTrace?.incrementCounter("deletemessage");
         MessageRecipient rec = new MessageRecipient();
         rec.fromJSON(change.document.documentID, change.document.data);
         messages.remove(rec.messageId);
@@ -422,6 +438,7 @@ class UserDatabaseData {
     SqlData sql = SqlData.instance;
 
     await Future.forEach(query.documents, (DocumentSnapshot doc) async {
+      _loadingDataTrace?.incrementCounter("team");
       // Get the team from the season.
       teamUid = doc.data[Season.TEAMUID];
       Team team;
@@ -454,6 +471,7 @@ class UserDatabaseData {
     });
     if (toDeleteSeasons != null) {
       toDeleteSeasons.forEach((String id) {
+        _loadingDataTrace?.incrementCounter("deleteseason");
         _teams[teamUid].seasons.remove(id);
         sql.deleteElement(SqlData.SEASON_TABLE, id);
       });
@@ -466,9 +484,11 @@ class UserDatabaseData {
     Set<String> toDeleteGames = new Set();
     SqlData sql = SqlData.instance;
 
+
     toDeleteGames.addAll(
         _games.keys.where((String id) => _games[id].teamUid == teamuid));
     query.documents.forEach((doc) {
+      _loadingDataTrace?.incrementCounter("game");
       Game game;
       if (_games.containsKey(doc.documentID)) {
         game = _games[doc.documentID];
@@ -482,6 +502,7 @@ class UserDatabaseData {
       sql.updateElement(SqlData.GAME_TABLE, doc.documentID, game.toJSON());
     });
     toDeleteGames.forEach((String id) {
+      _loadingDataTrace?.incrementCounter("deletegame");
       _games.remove(id);
       sql.deleteElement(SqlData.GAME_TABLE, id);
     });
@@ -515,6 +536,7 @@ class UserDatabaseData {
               }
             }
             if (!notFound) {
+              _loadingDataTrace?.incrementCounter("invitedeleted");
               invite.firestoreDelete();
             }
           }
@@ -558,6 +580,8 @@ class UserDatabaseData {
     }
     this.userUid = uid;
     _completedLoading = false;
+    Trace sqlTrace = Analytics.instance.newTrace("loadDataOnStartup");
+    sqlTrace.start();
     if (_teamController == null) {
       initStuff();
     }
@@ -572,6 +596,7 @@ class UserDatabaseData {
       DateTime start = new DateTime.now();
       print('Start teams ${start.difference(new DateTime.now())}');
       await Future.forEach(data.keys, (String uid) async {
+        sqlTrace.incrementCounter("team");
         Map<String, dynamic> input = data[uid];
         Team team = new Team();
         team.fromJSON(uid, input);
@@ -581,6 +606,7 @@ class UserDatabaseData {
         Map<String, Map<String, dynamic>> opponentData =
             await sql.getAllTeamElements(SqlData.OPPONENTS_TABLE, uid);
         for (String key in opponentData.keys) {
+          sqlTrace.incrementCounter("opponent");
           Map<String, dynamic> innerData = opponentData[key];
           Opponent op = new Opponent();
           op.fromJSON(key, uid, innerData);
@@ -593,6 +619,7 @@ class UserDatabaseData {
       data = await sql.getAllElements(SqlData.PLAYERS_TABLE);
       Map<String, Player> newPlayers = new Map<String, Player>();
       data.forEach((String uid, Map<String, dynamic> input) {
+        sqlTrace.incrementCounter("player");
         Player player = new Player();
         player.fromJSON(uid, input);
         newPlayers[uid] = player;
@@ -603,6 +630,7 @@ class UserDatabaseData {
       data = await sql.getAllElements(SqlData.GAME_TABLE);
       Map<String, Game> newGames = new Map<String, Game>();
       data.forEach((String uid, Map<String, dynamic> input) {
+        sqlTrace.incrementCounter("game");
         Game game = new Game();
         game.fromJSON(uid, input);
         newGames[uid] = game;
@@ -613,6 +641,7 @@ class UserDatabaseData {
       data = await sql.getAllElements(SqlData.INVITES_TABLE);
       Map<String, Invite> newInvites = new Map<String, Invite>();
       data.forEach((String uid, Map<String, dynamic> input) {
+        sqlTrace.incrementCounter("invites");
         Invite invite = new Invite();
         invite.fromJSON(uid, input);
         newInvites[uid] = invite;
@@ -623,6 +652,7 @@ class UserDatabaseData {
       data = await sql.getAllElements(SqlData.MESSAGES_TABLE);
       Map<String, Message> newMessages = {};
       data.forEach((String uid, Map<String, dynamic> input) {
+        sqlTrace.incrementCounter("message");
         Message mess = new Message();
         mess.fromJSON(uid, input);
         newMessages[uid] = mess;
@@ -660,24 +690,29 @@ class UserDatabaseData {
           new FlutterErrorDetails(exception: e, stack: StackTrace.current);
       LoggingData.instance.logError(detail);
     }
+    sqlTrace.stop();
     print('Finished loading from sql');
     _loadedFromSql = true;
+
+    _loadingDataTrace = Analytics.instance.newTrace("loadDataFromFirebase");
+    _loadingDataTrace.start();
 
     // The uid everything is based off.
     Query collection = Firestore.instance
         .collection(PLAYERS_COLLECTION)
         .where(Player.USERS + "." + uid + "." + ADDED, isEqualTo: true);
-    _playerSnapshot = collection.snapshots.listen(this._onPlayerUpdated);
+    _playerSnapshot = collection.snapshots().listen(this._onPlayerUpdated);
 
     print('getting invites');
     Query inviteCollection = Firestore.instance
         .collection(INVITE_COLLECTION)
         .where(Invite.EMAIL, isEqualTo: normalizeEmail(email));
     inviteCollection.getDocuments().then((QuerySnapshot query) {
+      _loadingDataTrace.incrementCounter("invite");
       print("Got some invites ${query.documents.length}");
       this._onInviteUpdated(query);
     });
-    _inviteSnapshot = inviteCollection.snapshots.listen(this._onInviteUpdated);
+    _inviteSnapshot = inviteCollection.snapshots().listen(this._onInviteUpdated);
 
     Query unreadQuery = Firestore.instance
         .collection(MESSAGE_RECIPIENTS_COLLECTION)
@@ -685,22 +720,24 @@ class UserDatabaseData {
         .where(MessageRecipient.STATE,
             isEqualTo: MessageState.Unread.toString());
     unreadQuery.getDocuments().then((QuerySnapshot results) {
+      _loadingDataTrace.incrementCounter("message");
       print("Got some messages $results");
       this._onUnreadMessagesUpdated(results);
     });
     _messageSnapshot =
-        unreadQuery.snapshots.listen(this._onUnreadMessagesUpdated);
+        unreadQuery.snapshots().listen(this._onUnreadMessagesUpdated);
     Query readQuery = Firestore.instance
         .collection(MESSAGE_RECIPIENTS_COLLECTION)
         .where(MessageRecipient.USERID, isEqualTo: uid)
         .orderBy(MessageRecipient.SENTAT)
         .limit(MAX_MESSAGES);
     readQuery.getDocuments().then((QuerySnapshot results) {
+      _loadingDataTrace.incrementCounter("message");
       print("Got some read $results");
       this._onReadMessagesUpdated(results);
     });
     _readMessageSnapshot =
-        readQuery.snapshots.listen(this._onReadMessagesUpdated);
+        readQuery.snapshots().listen(this._onReadMessagesUpdated);
   }
 
   void close() {

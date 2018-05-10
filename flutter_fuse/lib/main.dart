@@ -11,6 +11,8 @@ import 'package:flutter_fuse/services/loggingdata.dart';
 
 
 void main() {
+  var trace = Analytics.instance.newTrace("startup");
+  trace.start();
   CacheManager.getInstance().then((CacheManager man) {
     print('got manager');
   }).catchError((Exception error) {
@@ -29,6 +31,8 @@ void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
     LoggingData.instance.logError(details);
   };
+
+  trace.stop();
 
   new Routes();
 }

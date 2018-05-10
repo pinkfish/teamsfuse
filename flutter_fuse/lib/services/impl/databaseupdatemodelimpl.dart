@@ -102,7 +102,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     Future<QuerySnapshot> query = coll.getDocuments();
     ret.logs = _getGameLogs(game, query);
 
-    ret.myLogStream = coll.snapshots.listen((QuerySnapshot snap) async {
+    ret.myLogStream = coll.snapshots().listen((QuerySnapshot snap) async {
       game.updateLogs(await _getGameLogs(game, query));
     });
     return ret;
@@ -231,7 +231,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     ret.add(Firestore.instance
         .collection(TEAMS_COLLECTION)
         .document(team.uid)
-        .snapshots
+        .snapshots()
         .listen((DocumentSnapshot snap) => this._onTeamUpdated(team, snap)));
 
     CollectionReference opCollection = Firestore.instance
@@ -241,7 +241,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     QuerySnapshot queryOpponentSnap = await opCollection.getDocuments();
 
     this._onOpponentUpdated(team, queryOpponentSnap);
-    ret.add(opCollection.snapshots
+    ret.add(opCollection.snapshots()
         .listen((QuerySnapshot snap) => this._onOpponentUpdated(team, snap)));
 
     Query gameQuery = Firestore.instance
@@ -249,7 +249,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(Game.TEAMUID, isEqualTo: team.uid);
     QuerySnapshot queryGameSnap = await gameQuery.getDocuments();
     UserDatabaseData.instance.onGameUpdated(team.uid, queryGameSnap);
-    ret.add(gameQuery.snapshots.listen((value) {
+    ret.add(gameQuery.snapshots().listen((value) {
       UserDatabaseData.instance.onGameUpdated(team.uid, value);
     }));
     return ret;
@@ -299,7 +299,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<Uri> updateTeamImage(Team team, File imgFile) async {
     final StorageReference ref =
         FirebaseStorage.instance.ref().child("team_" + team.uid + ".img");
-    final StorageUploadTask task = ref.put(imgFile);
+    final StorageUploadTask task = ref.putFile(imgFile);
     final UploadTaskSnapshot snapshot = (await task.future);
     team.photoUrl = snapshot.downloadUrl.toString();
     print('photurl ${team.photoUrl}');
@@ -329,7 +329,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<Uri> updatePlayerImage(Player player, File imgFile) async {
     final StorageReference ref =
         FirebaseStorage.instance.ref().child("player_" + player.uid + ".img");
-    final StorageUploadTask task = ref.put(imgFile);
+    final StorageUploadTask task = ref.putFile(imgFile);
     final UploadTaskSnapshot snapshot = (await task.future);
     player.photoUrl = snapshot.downloadUrl.toString();
     print('photurl $player.photoUrl');
@@ -348,7 +348,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     Query ref = Firestore.instance.collection(SEASONS_COLLECTION).where(
         Season.PLAYERS + "." + player.uid + "." + ADDED,
         isEqualTo: true);
-    ret.add(ref.snapshots.listen(UserDatabaseData.instance.onSeasonUpdated));
+    ret.add(ref.snapshots().listen(UserDatabaseData.instance.onSeasonUpdated));
     return ret;
   }
 
@@ -378,7 +378,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var snap = ref
         .where(Invite.TYPE, isEqualTo: InviteType.Player.toString())
         .where(InviteToPlayer.PLAYERUID, isEqualTo: player.uid)
-        .snapshots
+        .snapshots()
         .listen((QuerySnapshot query) {
       List<InviteToPlayer> ret = [];
 
@@ -481,7 +481,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(Invite.TYPE, isEqualTo: InviteType.Team.toString())
         .where(InviteToTeam.SEASONUID, isEqualTo: season.uid)
         .where(InviteToTeam.TEAMUID, isEqualTo: season.teamUid)
-        .snapshots
+        .snapshots()
         .listen((QuerySnapshot query) {
       List<InviteToTeam> ret = [];
 

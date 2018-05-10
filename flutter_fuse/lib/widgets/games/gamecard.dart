@@ -181,6 +181,11 @@ class GameCard extends StatelessWidget {
     TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
     String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeFormat;
+    String tzShortName;
+    if (game.timezone != local.name) {
+      tzShortName = getLocation(game.timezone).timeZone(game.time).abbr;
+    }
+
     if (game.time != game.endTime) {
       TimeOfDay endDay = new TimeOfDay.fromDateTime(game.tzEndTime);
       endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
@@ -257,10 +262,13 @@ class GameCard extends StatelessWidget {
         // Within an hour.
         String title;
         if (dur.inMinutes < 60) {
-          title =
-              Messages.of(context).gametitlenow(format, endTimeFormat, opName);
+          title = Messages
+              .of(context)
+              .gametitlenow(format, endTimeFormat, tzShortName, opName);
         } else {
-          title = Messages.of(context).gametitle(format, endTimeFormat, opName);
+          title = Messages
+              .of(context)
+              .gametitle(format, endTimeFormat, tzShortName, opName);
         }
         return new Card(
           color: Colors.green.shade50,
@@ -287,9 +295,13 @@ class GameCard extends StatelessWidget {
       case EventType.Event:
         String title;
         if (dur.inMinutes < 60) {
-          title = Messages.of(context).eventtitlenow(format, game.name, endTimeFormat);
+          title = Messages
+              .of(context)
+              .eventtitlenow(format, game.name, endTimeFormat, tzShortName);
         } else {
-          title = Messages.of(context).eventtitle(format, game.name, endTimeFormat);
+          title = Messages
+              .of(context)
+              .eventtitle(format, game.name, endTimeFormat, tzShortName);
         }
 
         return new Card(
@@ -314,9 +326,13 @@ class GameCard extends StatelessWidget {
       case EventType.Practice:
         String title;
         if (dur.inMinutes < 60) {
-          title = Messages.of(context).trainingtitlenow(format, endTimeFormat);
+          title = Messages
+              .of(context)
+              .trainingtitlenow(format, endTimeFormat, tzShortName);
         } else {
-          title = Messages.of(context).trainingtitle(format, endTimeFormat);
+          title = Messages
+              .of(context)
+              .trainingtitle(format, endTimeFormat, tzShortName);
         }
 
         return new Card(

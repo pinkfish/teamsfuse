@@ -15,10 +15,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:flutter_fuse/services/loggingdata.dart';
-
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'dart:async';
+import 'package:flutter_fuse/services/analytics.dart';
 
 class Routes {
   UserData _currentUser;
@@ -46,6 +43,7 @@ class Routes {
   MaterialApp app;
 
   PageRoute<dynamic> _buildRoute(RouteSettings routeSettings) {
+    Analytics.analytics.setCurrentScreen(screenName: routeSettings.name);
     LoggingData.instance.lastPath = routeSettings.name;
     if (_currentUser != null) {
       if (_currentUser.isEmailVerified) {

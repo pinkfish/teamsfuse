@@ -34,7 +34,7 @@ class AddGameScreenState extends State<AddGameScreen> {
   }
 
   Widget _buildForm(BuildContext context) {
-    return new GameEditForm(_initGame, _gameFormKey);
+    return new GameEditForm(game: _initGame, key: _gameFormKey);
   }
 
   Widget _buildSummary(BuildContext context) {
@@ -132,6 +132,7 @@ class AddGameScreenState extends State<AddGameScreen> {
     _initGame.homegame = false;
     _initGame.uniform = '';
     _initGame.notes = '';
+    _initGame.trackAttendance = teamData.trackAttendence;
   }
 
   @override

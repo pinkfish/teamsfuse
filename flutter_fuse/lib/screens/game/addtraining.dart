@@ -6,6 +6,8 @@ import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
 import 'package:flutter_fuse/widgets/games/repeatdetails.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:timezone/timezone.dart';
+import 'package:uuid/uuid.dart';
+import 'dart:async';
 
 class AddTrainingScreen extends StatefulWidget {
   AddTrainingScreen();
@@ -58,6 +60,20 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
       repeatData,
       key: _repeatKey,
     );
+  }
+
+  Future<bool> _saveTraining() async {
+    Uuid uuid = new Uuid();
+    String seriesId = uuid.v4();
+    _initGame.seriesId = seriesId;
+    _initGame.updateFirestore();
+    await Future.forEach(_repeatDates, (TZDateTime time) async {
+      Game newGame = new Game.copy(_initGame);
+      newGame.uid = null;
+      newGame.time = time.millisecondsSinceEpoch;
+      return newGame.updateFirestore();
+    });
+    return true;
   }
 
   Widget _buildRepeatSummary() {
@@ -175,6 +191,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
           return false;
         }
         _trainingFormKey.currentState.save();
+        _initGame = _trainingFormKey.currentState.finalGameResult;
         detailsStepState = StepState.complete;
         repeatStepState = StepState.editing;
         break;
@@ -201,14 +218,10 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
         if (currentStep < 3) {
           currentStep++;
         } else {
-          Game myGame = _initGame;
-
           // Write the game out.
-          _initGame.updateFirestore().then((void y) {
-          Navigator.pop(context);
-
-          })
-          .catchError((Error e) {
+          _saveTraining().then((void y) {
+            Navigator.pop(context);
+          }).catchError((Error e) {
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -217,7 +230,6 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
                     content: new Text("Error saving the training"),
                   );
                 });
-
           });
         }
       });
@@ -238,16 +250,19 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     _initGame.homegame = false;
     _initGame.uniform = '';
     _initGame.notes = '';
+    _initGame.type = EventType.Practice;
   }
 
   void _teamChanged(String str) {
     _teamUid = str;
+    _initGame.type = EventType.Practice;
     _initGame.teamUid = _teamUid;
     Team teamData = UserDatabaseData.instance.teams[_teamUid];
     DateTime start = new DateTime.now().add(const Duration(days: 0));
     _initGame.time = start.millisecondsSinceEpoch;
     _initGame.endTime = _initGame.time;
     _initGame.seasonUid = teamData.currentSeason;
+    _initGame.trackAttendance = teamData.trackAttendence;
 
     print('team changed ${_initGame.toJSON()}');
   }

@@ -732,6 +732,18 @@ class Messages {
     return unknown;
   }
 
+  String deletegame(Game game) {
+    switch (game.type) {
+      case EventType.Game:
+        return Intl.message("Delete game");
+      case EventType.Practice:
+        return Intl.message("Delete training");
+      case EventType.Event:
+        return Intl.message("Delete special event");
+    }
+    return unknown;
+  }
+
   String confirmdeleteplayer(Player player) {
     return Intl.message(
         "Do you want to delete your connection to ${player.name}?",
@@ -1073,60 +1085,124 @@ class Messages {
         desc: 'Title for the time drop down to choose the training end time');
   }
 
-  String gametitle(String time, String endTime, String opponent) {
+  String get deletebuttontext {
+    return Intl.message('DELETE', desc: 'Button text to delete an iteam');
+  }
+
+  String gametitle(
+      String time, String endTime, String tzShortName, String opponent) {
     if (endTime != null) {
+      if (tzShortName != null) {
+        return Intl.message('$time - $endTime ($tzShortName) vs $opponent',
+            desc: 'Game title in game list');
+      }
       return Intl.message('$time - $endTime vs $opponent',
+          desc: 'Game title in game list');
+    }
+    if (tzShortName != null) {
+      return Intl.message('$time ($tzShortName} vs $opponent',
           desc: 'Game title in game list');
     }
     return Intl.message('$time vs $opponent', desc: 'Game title in game list');
   }
 
-  String gametitlenow(String time, String endTime, String opponent) {
+  String gametitlenow(
+      String time, String endTime, String tzShortName, String opponent) {
     if (endTime != null) {
+      if (tzShortName != null) {
+        return Intl.message('NOW! $time - $endTime ($tzShortName} vs $opponent',
+            name: 'Game title in game list', desc: 'Game title in game list');
+      }
       return Intl.message('NOW! $time - $endTime vs $opponent',
+          name: 'Game title in game list', desc: 'Game title in game list');
+    }
+    if (tzShortName != null) {
+      return Intl.message('NOW! $time ($tzShortName) vs $opponent',
           name: 'Game title in game list', desc: 'Game title in game list');
     }
     return Intl.message('NOW! $time vs $opponent',
         name: 'Game title in game list', desc: 'Game title in game list');
   }
 
-  String eventtitle(String time, String name, String endTime) {
+  String eventtitle(
+      String time, String name, String endTime, String tzShortName) {
     if (name != null && name.isNotEmpty) {
       if (endTime != null) {
+        if (tzShortName != null) {
+          return Intl.message('$name $time - $endTime ($tzShortName)',
+              desc: 'Special event title in game list');
+        }
         return Intl.message('$name $time - $endTime',
-            desc: 'Special event title in game list with name');
+            desc: 'Special event title in game list');
+      }
+      if (tzShortName != null) {
+        return Intl.message('$name $time ($tzShortName)',
+            desc: 'Special event title in game list');
       }
       return Intl.message('$name $time',
-          desc: 'Special event title in game list with name');
+          desc: 'Special event title in game list');
     }
     if (endTime != null) {
+      if (tzShortName != null) {
+        return Intl.message('Event $time - $endTime ($tzShortName)',
+            desc: 'Special event title in game list');
+      }
       return Intl.message('Event $time - $endTime',
+          desc: 'Special event title in game list');
+    }
+    if (tzShortName != null) {
+      return Intl.message('Event $time ($tzShortName)',
           desc: 'Special event title in game list');
     }
     return Intl.message('Event $time',
         desc: 'Special event title in game list');
   }
 
-  String eventtitlenow(String time, String name, String endTime) {
+  String eventtitlenow(
+      String time, String name, String endTime, String tzShortName) {
     if (name != null && name.isNotEmpty) {
       if (endTime != null) {
+        if (tzShortName != null) {
+          return Intl.message('NOW! $name $time - $endTime ($tzShortName)',
+              desc: 'Special event title in game list');
+        }
         return Intl.message('NOW! $name $time - $endTime',
+            desc: 'Special event title in game list');
+      }
+      if (tzShortName != null) {
+        return Intl.message('NOW! $name $time ($tzShortName)',
             desc: 'Special event title in game list');
       }
       return Intl.message('NOW! $name $time',
           desc: 'Special event title in game list');
     }
     if (endTime != null) {
+      if (tzShortName != null) {
+        return Intl.message('NOW! Event $time - $endTime ($tzShortName)',
+            desc: 'Special event title in game list');
+      }
       return Intl.message('NOW! Event $time - $endTime',
+          desc: 'Special event title in game list');
+    }
+    if (tzShortName != null) {
+      return Intl.message('NOW! Event $time ($tzShortName)',
           desc: 'Special event title in game list');
     }
     return Intl.message('NOW! Event $time',
         desc: 'Special event title in game list');
   }
 
-  String trainingtitle(String time, String endTime) {
+  String trainingtitle(String time, String endTime, String tzShortName) {
     if (endTime != null) {
+      if (tzShortName != null) {
+        return Intl.message('Practice $time - $endTime ($tzShortName)',
+            desc: 'Practice title in game list');
+      }
       return Intl.message('Practice $time - $endTime',
+          desc: 'Practice title in game list');
+    }
+    if (tzShortName != null) {
+      return Intl.message('Practice $time ($tzShortName)',
           desc: 'Practice title in game list');
     }
     return Intl.message('Practice $time', desc: 'Practice title in game list');
@@ -1150,9 +1226,17 @@ class Messages {
     return Intl.message("No account found for email or internal error occured");
   }
 
-  String trainingtitlenow(String time, String endTime) {
+  String trainingtitlenow(String time, String endTime, String tzShortName) {
     if (endTime != null) {
+      if (tzShortName != null) {
+        return Intl.message('NOW! Practice $time - $endTime ($tzShortName)',
+            desc: 'Training title in game list');
+      }
       return Intl.message('NOW! Practice $time - $endTime',
+          desc: 'Training title in game list');
+    }
+    if (tzShortName != null) {
+      return Intl.message('NOW! Practice $time ($tzShortName)',
           desc: 'Training title in game list');
     }
     return Intl.message('NOW! Practice $time',

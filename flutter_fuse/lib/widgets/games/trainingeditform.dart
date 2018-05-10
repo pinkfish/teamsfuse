@@ -6,14 +6,14 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/services/map.dart';
 import 'package:timezone/timezone.dart';
-import 'dart:async';
-import 'package:uuid/uuid.dart';
+import 'editformbase.dart';
 
 class TrainingEditForm extends StatefulWidget {
   final Game game;
 
-  TrainingEditForm({Game game, GlobalKey<TrainingEditFormState> key})
-      : this.game = new Game.copy(game),
+  TrainingEditForm(
+      {@required Game game, @required GlobalKey<TrainingEditFormState> key})
+      : this.game = game,
         super(key: key);
 
   @override
@@ -22,7 +22,7 @@ class TrainingEditForm extends StatefulWidget {
   }
 }
 
-class TrainingEditFormState extends State<TrainingEditForm> {
+class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   ScrollController _scrollController = new ScrollController();
   GlobalKey<DateTimeFormFieldState> _endTimeKey =
       new GlobalKey<DateTimeFormFieldState>();
@@ -36,43 +36,8 @@ class TrainingEditFormState extends State<TrainingEditForm> {
   @override
   void initState() {
     super.initState();
-    _atDate = new DateTime.fromMillisecondsSinceEpoch(widget.game.time);
-    _atEnd = new DateTime.fromMillisecondsSinceEpoch(widget.game.endTime);
-  }
-
-  bool validate() {
-    return _formState.currentState.validate();
-  }
-
-  Future<bool> validateAndSaveToFirebase(List<DateTime> extraTimes) async {
-    if (_formState.currentState.validate()) {
-      Uuid uuid = new Uuid();
-      String seriesId = uuid.v4();
-      _formState.currentState.save();
-      widget.game.time = new TZDateTime(
-              getLocation(widget.game.timezone),
-              _atDate.year,
-              _atDate.month,
-              _atDate.day,
-              _atDate.hour,
-              _atDate.minute)
-          .millisecondsSinceEpoch;
-      widget.game.seriesId = seriesId;
-      DateTime end = new TZDateTime(getLocation(widget.game.timezone),
-          _atEnd.year, _atEnd.month, _atEnd.day, _atEnd.hour, _atEnd.minute);
-      if (end.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
-        end.add(new Duration(days: 1));
-      }
-      widget.game.endTime = end.millisecondsSinceEpoch;
-      await widget.game.updateFirestore();
-      await Future.forEach(extraTimes, (DateTime time) async {
-        Game newGame = new Game.copy(widget.game);
-        newGame.time = time.millisecondsSinceEpoch;
-        return newGame.updateFirestore();
-      });
-      return true;
-    }
-    return false;
+    _atDate = widget.game.tzTime;
+    _atEnd = widget.game.tzEndTime;
   }
 
   void _updateTimes(Duration diff) {
@@ -94,6 +59,33 @@ class TrainingEditFormState extends State<TrainingEditForm> {
         });
       });
     }
+  }
+
+  bool validate() {
+    return _formState.currentState.validate();
+  }
+
+  Game get finalGameResult {
+    _formState.currentState.save();
+    // Add the date time and the time together.
+    widget.game.time = new TZDateTime(
+            getLocation(widget.game.timezone),
+            _atDate.year,
+            _atDate.month,
+            _atDate.day,
+            _atDate.hour,
+            _atDate.minute)
+        .millisecondsSinceEpoch;
+    widget.game.arriveTime = widget.game.time;
+    DateTime end = _atEnd;
+    if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
+      end.add(new Duration(days: 1));
+    }
+    widget.game.endTime = new TZDateTime(getLocation(widget.game.timezone),
+            end.year, end.month, end.day, end.hour, end.minute)
+        .millisecondsSinceEpoch;
+    widget.game.endTime = _atEnd.millisecondsSinceEpoch;
+    return widget.game;
   }
 
   @override
@@ -132,7 +124,7 @@ class TrainingEditFormState extends State<TrainingEditForm> {
                   initialValue: _atDate,
                   hideDate: false,
                   onFieldChanged: _updateTimes,
-                  onSaved: (DateTime value) {
+                  onSaved: (TZDateTime value) {
                     _atDate = value;
                   },
                 ),
@@ -144,7 +136,7 @@ class TrainingEditFormState extends State<TrainingEditForm> {
                   ),
                   initialValue: _atEnd,
                   hideDate: false,
-                  onSaved: (DateTime value) {
+                  onSaved: (TZDateTime value) {
                     _atEnd = value;
                   },
                 ),

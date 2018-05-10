@@ -5,6 +5,7 @@ import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/form/roleinteamformfield.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'dart:async';
 
 class AddPlayerScreen extends StatefulWidget {
@@ -56,6 +57,8 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
       Season season = team.seasons[_seasonUid];
       UserData user = await UserAuth.instance.currentUser();
       await Future.forEach<EmailName>(_emailNames, (EmailName en) async {
+        Analytics.analytics
+            .logShare(contentType: 'inviteToTeam', itemId: team.uid);
         return season.inviteUser(
             email: en.email, playername: en.name, userId: user.uid);
       });

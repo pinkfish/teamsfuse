@@ -170,12 +170,23 @@ class GameDetailsState extends State<GameDetails> {
     String timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeStr =
         MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
+    String tzShortName;
+    if (widget.game.timezone != local.name) {
+      tzShortName = " (" +
+          getLocation(widget.game.timezone).timeZone(widget.game.time).abbr +
+          ")";
+    }
+    print('${widget.game.timezone} ${widget.game.tzTime}');
     String arriveAttimeStr;
     if (dayArrive.minute == day.minute && dayArrive.hour == day.hour) {
       arriveAttimeStr =
-          MaterialLocalizations.of(context).formatTimeOfDay(dayArrive);
+          MaterialLocalizations.of(context).formatTimeOfDay(dayArrive) +
+                  tzShortName ??
+              "";
     } else {
-      arriveAttimeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
+      arriveAttimeStr = MaterialLocalizations.of(context).formatTimeOfDay(day) +
+          tzShortName +
+          "";
     }
     Team team = UserDatabaseData.instance.teams[widget.game.teamUid];
     Opponent opponent = team.opponents[widget.game.opponentUid];
@@ -235,7 +246,7 @@ class GameDetailsState extends State<GameDetails> {
               timeStr +
               (widget.game.endTime == widget.game.time
                   ? ''
-                  : " - " + endTimeStr),
+                  : " - " + endTimeStr + tzShortName ?? ""),
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
         ),
         subtitle: new Column(

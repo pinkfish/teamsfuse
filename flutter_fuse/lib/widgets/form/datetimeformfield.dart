@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:timezone/timezone.dart';
 import 'dart:async';
 import 'inputdropdown.dart';
 
-class DateTimeFormField extends FormField<DateTime> {
+class DateTimeFormField extends FormField<TZDateTime> {
   DateTimeFormField(
       {Key key,
       DateTime initialValue,
       InputDecoration decoration: const InputDecoration(),
-      ValueChanged<DateTime> onFieldSubmitted,
+      ValueChanged<TZDateTime> onFieldSubmitted,
       ValueChanged<Duration> onFieldChanged,
-      FormFieldSetter<DateTime> onSaved,
-      FormFieldValidator<DateTime> validator,
+      FormFieldSetter<TZDateTime> onSaved,
+      FormFieldValidator<TZDateTime> validator,
       this.hideDate = false,
       this.hideTime = false,
       this.labelText})
@@ -20,7 +21,7 @@ class DateTimeFormField extends FormField<DateTime> {
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,
-            builder: (FormFieldState<DateTime> state) {
+            builder: (FormFieldState<TZDateTime> state) {
               DateTimeFormFieldState field = state;
 
               final TextStyle valueStyle =
@@ -51,7 +52,8 @@ class DateTimeFormField extends FormField<DateTime> {
                 children.add(new Expanded(
                   flex: 3,
                   child: new InputDropdown(
-                    valueText: new TimeOfDay.fromDateTime(field.value)
+                    valueText: new TimeOfDay(
+                            hour: field.value.hour, minute: field.value.minute)
                         .format(field.context),
                     decoration: new InputDecoration(),
                     valueStyle: valueStyle,
@@ -80,7 +82,8 @@ class DateTimeFormField extends FormField<DateTime> {
                   flex: 1,
                   child: new InputDropdown(
                     decoration: effectiveDecoration,
-                    valueText: new TimeOfDay.fromDateTime(field.value)
+                    valueText: new TimeOfDay(
+                            hour: field.value.hour, minute: field.value.minute)
                         .format(field.context),
                     valueStyle: valueStyle,
                     onPressed: () {
@@ -103,11 +106,11 @@ class DateTimeFormField extends FormField<DateTime> {
   DateTimeFormFieldState createState() => new DateTimeFormFieldState();
 }
 
-class DateTimeFormFieldState extends FormFieldState<DateTime> {
+class DateTimeFormFieldState extends FormFieldState<TZDateTime> {
   @override
   DateTimeFormField get widget => super.widget;
 
-  Future<Null> _selectDate(ValueChanged<DateTime> onFieldSubmitted,
+  Future<Null> _selectDate(ValueChanged<TZDateTime> onFieldSubmitted,
       ValueChanged<Duration> onFieldChanged) async {
     final DateTime picked = await showDatePicker(
         context: context,
@@ -118,8 +121,8 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
         (picked.day != value.day ||
             picked.month != value.month ||
             picked.year != value.year)) {
-      DateTime newTime = new DateTime(
-          picked.year, picked.month, picked.day, value.hour, value.minute);
+      TZDateTime newTime = new TZDateTime(value.location, picked.year,
+          picked.month, picked.day, value.hour, value.minute);
       Duration diff = value.difference(newTime);
 
       didChange(newTime);
@@ -132,7 +135,7 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
     }
   }
 
-  Future<Null> _selectTime(ValueChanged<DateTime> onFieldSubmitted,
+  Future<Null> _selectTime(ValueChanged<TZDateTime> onFieldSubmitted,
       ValueChanged<Duration> onFieldChanged) async {
     final TimeOfDay picked = await showTimePicker(
       context: context,
@@ -140,8 +143,8 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
     );
     if (picked != null &&
         (picked.minute != this.value.minute || picked.hour != value.hour)) {
-      DateTime newTime = new DateTime(
-          value.year, value.month, value.day, picked.hour, picked.minute);
+      TZDateTime newTime = new TZDateTime(value.location, value.year,
+          value.month, value.day, picked.hour, picked.minute);
       Duration diff = value.difference(newTime);
       didChange(newTime);
       if (onFieldSubmitted != null) {

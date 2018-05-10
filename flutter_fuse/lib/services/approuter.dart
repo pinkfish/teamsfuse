@@ -2,27 +2,28 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_fuse/screens/home/home.dart';
-import 'package:flutter_fuse/screens/settings/about.dart';
-import 'package:flutter_fuse/screens/settings/settings.dart';
-import 'package:flutter_fuse/screens/settings/profile.dart';
-import 'package:flutter_fuse/screens/team/team.dart';
+import 'package:flutter_fuse/screens/game/addevent.dart';
 import 'package:flutter_fuse/screens/game/addgame.dart';
 import 'package:flutter_fuse/screens/game/addtraining.dart';
 import 'package:flutter_fuse/screens/game/editgame.dart';
 import 'package:flutter_fuse/screens/game/gamedetails.dart';
-import 'package:flutter_fuse/screens/settings/editprofile.dart';
-import 'package:flutter_fuse/screens/team/editteam.dart';
-import 'package:flutter_fuse/screens/team/addplayer.dart';
 import 'package:flutter_fuse/screens/invites/invitelist.dart';
 import 'package:flutter_fuse/screens/invites/acceptinvitetoteam.dart';
 import 'package:flutter_fuse/screens/invites/addinvitetoplayer.dart';
 import 'package:flutter_fuse/screens/invites/acceptinvitetoplayer.dart';
-import 'package:flutter_fuse/screens/team/playerdetails.dart';
-import 'package:flutter_fuse/screens/settings/editplayer.dart';
 import 'package:flutter_fuse/screens/message/messages.dart';
 import 'package:flutter_fuse/screens/message/addmessage.dart';
 import 'package:flutter_fuse/screens/message/messageview.dart';
+import 'package:flutter_fuse/screens/settings/about.dart';
+import 'package:flutter_fuse/screens/settings/editprofile.dart';
+import 'package:flutter_fuse/screens/settings/editplayer.dart';
+import 'package:flutter_fuse/screens/settings/profile.dart';
+import 'package:flutter_fuse/screens/settings/settings.dart';
+import 'package:flutter_fuse/screens/team/addplayer.dart';
 import 'package:flutter_fuse/screens/team/addseason.dart';
+import 'package:flutter_fuse/screens/team/editteam.dart';
+import 'package:flutter_fuse/screens/team/playerdetails.dart';
+import 'package:flutter_fuse/screens/team/team.dart';
 
 class AppRouter {
   static Router myRouter;
@@ -71,11 +72,11 @@ class AppRouter {
     router.define("/AddInviteToPlayer/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AddInviteToPlayerScreen(vals["id"][0])));
+                new AddInviteToPlayerScreen(vals["id"][0])));
     router.define("/AcceptInviteToPlayer/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AcceptInviteToPlayerScreen(vals["id"][0])));
+                new AcceptInviteToPlayerScreen(vals["id"][0])));
     router.define("/Team/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -83,7 +84,7 @@ class AppRouter {
     router.define("/AddTeam",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new EditTeamScreen(null)));
+                new EditTeamScreen(null)));
     router.define("/EditTeam/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -91,7 +92,7 @@ class AppRouter {
     router.define("/AddSeason/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AddSeasonScreen(vals["id"][0])));
+                new AddSeasonScreen(vals["id"][0])));
     router.define("/AddPlayer/:team/:season",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -109,6 +110,10 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new GameDetailsScreen(vals["id"][0])));
+    router.define("/AddEvent",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new AddEventScreen()));
     router.define("/AddGame",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

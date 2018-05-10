@@ -9,12 +9,13 @@ dependencies:
 
   sentry: any
 
-  cloud_firestore: "^0.6.3"
+  cloud_firestore: "^0.7.0"
   firebase_auth: "^0.5.8"
-  firebase_core: "^0.2.2"
-  firebase_storage: "^0.2.2"
+  firebase_core: "^0.2.3"
+  firebase_storage: "^0.3.4"
   firebase_analytics: "^0.3.3"
   firebase_messaging: "^0.2.4"
+  firebase_performance: "^0.0.1"
   shared_preferences: "^0.3.3"
   package_info: "^0.3.0"
   device_info: "^0.2.0"

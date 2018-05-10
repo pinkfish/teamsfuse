@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/validations.dart';
@@ -12,11 +13,14 @@ import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:timezone/timezone.dart';
 import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_fuse/widgets/form/placesformfield.dart';
+import 'editformbase.dart';
 
 // This form has all the stuff needed to edit the main parts
 // of the game.  Does not have the add game step flow.
 class GameEditForm extends StatefulWidget {
-  GameEditForm(this.game, GlobalKey<GameEditFormState> key) : super(key: key);
+  GameEditForm(
+      {@required this.game, @required GlobalKey<GameEditFormState> key})
+      : super(key: key);
 
   final Game game;
 
@@ -25,7 +29,7 @@ class GameEditForm extends StatefulWidget {
   }
 }
 
-class GameEditFormState extends State<GameEditForm> {
+class GameEditFormState extends State<GameEditForm> with EditFormBase {
   final GlobalKey<DateTimeFormFieldState> _arriveByKey =
       new GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<DateTimeFormFieldState> _atEndKEy =
@@ -50,10 +54,9 @@ class GameEditFormState extends State<GameEditForm> {
   @override
   void initState() {
     super.initState();
-    _atArrival =
-        new DateTime.fromMillisecondsSinceEpoch(widget.game.arriveTime);
-    _atDate = new DateTime.fromMillisecondsSinceEpoch(widget.game.time);
-    _atEnd = new DateTime.fromMillisecondsSinceEpoch(widget.game.endTime);
+    _atArrival = widget.game.tzArriveTime;
+    _atDate = widget.game.tzTime;
+    _atEnd = widget.game.tzEndTime;
   }
 
   bool validate() {

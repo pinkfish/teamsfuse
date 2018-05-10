@@ -3,6 +3,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/games/gamedetails.dart';
 import 'package:flutter_fuse/widgets/games/availability.dart';
+import 'package:flutter_fuse/widgets/games/deletegamedialog.dart';
 
 class GameDetailsScreen extends StatefulWidget {
   GameDetailsScreen(this.gameUid);
@@ -34,6 +35,13 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     Navigator.pushNamed(context, "EditGame/" + gameUid);
   }
 
+  void _deleteGame() async {
+    bool deleted = await deleteGameDialog(context, game);
+    if (deleted) {
+      Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget body;
@@ -48,6 +56,19 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     }
 
     if (team.isAdmin(UserDatabaseData.instance.players)) {
+      actions.add(
+        new FlatButton(
+          onPressed: this._deleteGame,
+          child: new Text(
+            Messages.of(context).deletebuttontext,
+            style: Theme
+                .of(context)
+                .textTheme
+                .subhead
+                .copyWith(color: Colors.white),
+          ),
+        ),
+      );
       actions.add(
         new FlatButton(
           onPressed: this._editGame,
@@ -66,9 +87,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     if (opponent != null) {
       opponentName = opponent.name;
     } else {
-      opponentName = Messages
-          .of(context)
-          .unknown;
+      opponentName = Messages.of(context).unknown;
     }
 
     return new Scaffold(

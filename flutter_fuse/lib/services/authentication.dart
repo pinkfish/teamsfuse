@@ -76,7 +76,7 @@ class UserAuth {
         DocumentReference ref = Firestore.instance
             .collection(USER_DATA_COLLECTION)
             .document(input.uid);
-        _profileUpdates = ref.snapshots.listen(this._onProfileUpdates);
+        _profileUpdates = ref.snapshots().listen(this._onProfileUpdates);
       }
     });
   }
@@ -168,7 +168,7 @@ class UserAuth {
           DocumentReference ref = Firestore.instance
               .collection(USER_DATA_COLLECTION)
               .document(user.uid);
-          _profileUpdates = ref.snapshots.listen(this._onProfileUpdates);
+          _profileUpdates = ref.snapshots().listen(this._onProfileUpdates);
         }
         return user;
       } else {

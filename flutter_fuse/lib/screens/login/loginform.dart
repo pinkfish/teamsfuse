@@ -153,8 +153,7 @@ class LoginScreenState extends State<LoginScreen> {
                             textColor: Colors.white,
                             onPressed: () => _handleSubmitted(),
                           ),
-                          margin: new EdgeInsets.only(
-                              top: 20.0, bottom: 20.0),
+                          margin: new EdgeInsets.only(top: 20.0, bottom: 20.0),
                         ),
                         new Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -183,9 +182,11 @@ class LoginScreenState extends State<LoginScreen> {
           ),
           new Opacity(
             opacity: _loggingIn ? 0.7 : 0.0,
-            child: new Center(
-              child: new Container(
-                color: Colors.white,
+            child: new Container(
+              color: Colors.white,
+              // Fill the whole page.
+              constraints: new BoxConstraints.expand(),
+              child: new Center(
                 child: new Column(
                   children: <Widget>[
                     new Text(Messages.of(context).login),

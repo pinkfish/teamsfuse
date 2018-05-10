@@ -17,8 +17,8 @@ const Color _kCircleActiveDark = Colors.black87;
 const Color _kDisabledLight = Colors.black38;
 const Color _kDisabledDark = Colors.white30;
 const double _kStepSize = 24.0;
-const double _kTriangleHeight = _kStepSize * 0.866025; // Triangle height. sqrt(3.0) / 2.0
-
+const double _kTriangleHeight =
+    _kStepSize * 0.866025; // Triangle height. sqrt(3.0) / 2.0
 
 /// A material stepper widget that displays progress through a sequence of
 /// steps. Steppers are particularly useful in the case of forms where one step
@@ -49,7 +49,7 @@ class StepperAlwaysVisible extends StatefulWidget {
     this.onStepTapped,
     this.onStepContinue,
     this.onStepCancel,
-  }) : assert(steps != null),
+  })  : assert(steps != null),
         assert(type != null),
         assert(currentStep != null),
         assert(0 <= currentStep && currentStep < steps.length),
@@ -87,7 +87,8 @@ class StepperAlwaysVisible extends StatefulWidget {
   _StepperAlwaysVisibleState createState() => new _StepperAlwaysVisibleState();
 }
 
-class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with TickerProviderStateMixin {
+class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
+    with TickerProviderStateMixin {
   List<GlobalKey> _keys;
   final Map<int, StepState> _oldStates = <int, StepState>{};
 
@@ -96,11 +97,12 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
     super.initState();
     _keys = new List<GlobalKey>.generate(
       widget.steps.length,
-          (int i) => new GlobalKey(),
+      (int i) => new GlobalKey(),
     );
 
-    for (int i = 0; i < widget.steps.length; i += 1)
+    for (int i = 0; i < widget.steps.length; i += 1) {
       _oldStates[i] = widget.steps[i].state;
+    }
   }
 
   @override
@@ -137,7 +139,8 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
   }
 
   Widget _buildCircleChild(int index, bool oldState) {
-    final StepState state = oldState ? _oldStates[index] : widget.steps[index].state;
+    final StepState state =
+        oldState ? _oldStates[index] : widget.steps[index].state;
     final bool isDarkActive = _isDark() && widget.steps[index].isActive;
     assert(state != null);
     switch (state) {
@@ -145,7 +148,9 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
       case StepState.disabled:
         return new Text(
           '${index + 1}',
-          style: isDarkActive ? _kStepStyle.copyWith(color: Colors.black87) : _kStepStyle,
+          style: isDarkActive
+              ? _kStepStyle.copyWith(color: Colors.black87)
+              : _kStepStyle,
         );
       case StepState.editing:
         return new Icon(
@@ -166,9 +171,13 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
   Color _circleColor(int index) {
     final ThemeData themeData = Theme.of(context);
     if (!_isDark()) {
-      return widget.steps[index].isActive ? themeData.primaryColor : Colors.black38;
+      return widget.steps[index].isActive
+          ? themeData.primaryColor
+          : Colors.black38;
     } else {
-      return widget.steps[index].isActive ? themeData.accentColor : themeData.backgroundColor;
+      return widget.steps[index].isActive
+          ? themeData.accentColor
+          : themeData.backgroundColor;
     }
   }
 
@@ -185,7 +194,8 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
           shape: BoxShape.circle,
         ),
         child: new Center(
-          child: _buildCircleChild(index, oldState && widget.steps[index].state == StepState.error),
+          child: _buildCircleChild(
+              index, oldState && widget.steps[index].state == StepState.error),
         ),
       ),
     );
@@ -199,14 +209,17 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
       child: new Center(
         child: new SizedBox(
           width: _kStepSize,
-          height: _kTriangleHeight, // Height of 24dp-long-sided equilateral triangle.
+          height:
+              _kTriangleHeight, // Height of 24dp-long-sided equilateral triangle.
           child: new CustomPaint(
             painter: new _TrianglePainter(
               color: _isDark() ? _kErrorDark : _kErrorLight,
             ),
             child: new Align(
-              alignment: const Alignment(0.0, 0.8), // 0.8 looks better than the geometrical 0.33.
-              child: _buildCircleChild(index, oldState && widget.steps[index].state != StepState.error),
+              alignment: const Alignment(
+                  0.0, 0.8), // 0.8 looks better than the geometrical 0.33.
+              child: _buildCircleChild(index,
+                  oldState && widget.steps[index].state != StepState.error),
             ),
           ),
         ),
@@ -222,7 +235,9 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
         firstCurve: const Interval(0.0, 0.6, curve: Curves.fastOutSlowIn),
         secondCurve: const Interval(0.4, 1.0, curve: Curves.fastOutSlowIn),
         sizeCurve: Curves.fastOutSlowIn,
-        crossFadeState: widget.steps[index].state == StepState.error ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+        crossFadeState: widget.steps[index].state == StepState.error
+            ? CrossFadeState.showSecond
+            : CrossFadeState.showFirst,
         duration: kThemeAnimationDuration,
       );
     } else {
@@ -248,7 +263,8 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
     assert(cancelColor != null);
 
     final ThemeData themeData = Theme.of(context);
-    final MaterialLocalizations localizations = MaterialLocalizations.of(context);
+    final MaterialLocalizations localizations =
+        MaterialLocalizations.of(context);
 
     return new Container(
       margin: const EdgeInsets.only(top: 16.0),
@@ -258,7 +274,9 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
           children: <Widget>[
             new FlatButton(
               onPressed: widget.onStepContinue,
-              color: _isDark() ? themeData.backgroundColor : themeData.primaryColor,
+              color: _isDark()
+                  ? themeData.backgroundColor
+                  : themeData.primaryColor,
               textColor: Colors.white,
               textTheme: ButtonTextTheme.normal,
               child: new Text(localizations.continueButtonLabel),
@@ -289,13 +307,11 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
       case StepState.complete:
         return textTheme.body2;
       case StepState.disabled:
-        return textTheme.body2.copyWith(
-            color: _isDark() ? _kDisabledDark : _kDisabledLight
-        );
+        return textTheme.body2
+            .copyWith(color: _isDark() ? _kDisabledDark : _kDisabledLight);
       case StepState.error:
-        return textTheme.body2.copyWith(
-            color: _isDark() ? _kErrorDark : _kErrorLight
-        );
+        return textTheme.body2
+            .copyWith(color: _isDark() ? _kErrorDark : _kErrorLight);
     }
     return null;
   }
@@ -311,13 +327,11 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
       case StepState.complete:
         return textTheme.caption;
       case StepState.disabled:
-        return textTheme.caption.copyWith(
-            color: _isDark() ? _kDisabledDark : _kDisabledLight
-        );
+        return textTheme.caption
+            .copyWith(color: _isDark() ? _kDisabledDark : _kDisabledLight);
       case StepState.error:
-        return textTheme.caption.copyWith(
-            color: _isDark() ? _kErrorDark : _kErrorLight
-        );
+        return textTheme.caption
+            .copyWith(color: _isDark() ? _kErrorDark : _kErrorLight);
     }
     return null;
   }
@@ -348,31 +362,24 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
     return new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
-        children: children
-    );
+        children: children);
   }
 
   Widget _buildVerticalHeader(int index) {
     return new Container(
         margin: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: new Row(
-            children: <Widget>[
-              new Column(
-                  children: <Widget>[
-                    // Line parts are always added in order for the ink splash to
-                    // flood the tips of the connector lines.
-                    _buildLine(!_isFirst(index)),
-                    _buildIcon(index),
-                    _buildLine(!_isLast(index)),
-                  ]
-              ),
-              new Container(
-                  margin: const EdgeInsetsDirectional.only(start: 12.0),
-                  child: _buildHeaderText(index)
-              )
-            ]
-        )
-    );
+        child: new Row(children: <Widget>[
+          new Column(children: <Widget>[
+            // Line parts are always added in order for the ink splash to
+            // flood the tips of the connector lines.
+            _buildLine(!_isFirst(index)),
+            _buildIcon(index),
+            _buildLine(!_isLast(index)),
+          ]),
+          new Container(
+              margin: const EdgeInsetsDirectional.only(start: 12.0),
+              child: _buildHeaderText(index))
+        ]));
   }
 
   Widget _buildVerticalBody(int index) {
@@ -412,7 +419,9 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
           firstCurve: const Interval(0.0, 0.6, curve: Curves.fastOutSlowIn),
           secondCurve: const Interval(0.4, 1.0, curve: Curves.fastOutSlowIn),
           sizeCurve: Curves.fastOutSlowIn,
-          crossFadeState: _isCurrent(index) ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          crossFadeState: _isCurrent(index)
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
           duration: kThemeAnimationDuration,
         ),
       ],
@@ -423,29 +432,24 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
     final List<Widget> children = <Widget>[];
 
     for (int i = 0; i < widget.steps.length; i += 1) {
-      children.add(
-          new Column(
-              key: _keys[i],
-              children: <Widget>[
-                new InkWell(
-                    onTap: widget.steps[i].state != StepState.disabled ? () {
-                      // In the vertical case we need to scroll to the newly tapped
-                      // step.
-                      Scrollable.ensureVisible(
-                        _keys[i].currentContext,
-                        curve: Curves.fastOutSlowIn,
-                        duration: kThemeAnimationDuration,
-                      );
+      children.add(new Column(key: _keys[i], children: <Widget>[
+        new InkWell(
+            onTap: widget.steps[i].state != StepState.disabled
+                ? () {
+                    // In the vertical case we need to scroll to the newly tapped
+                    // step.
+                    Scrollable.ensureVisible(
+                      _keys[i].currentContext,
+                      curve: Curves.fastOutSlowIn,
+                      duration: kThemeAnimationDuration,
+                    );
 
-                      if (widget.onStepTapped != null)
-                        widget.onStepTapped(i);
-                    } : null,
-                    child: _buildVerticalHeader(i)
-                ),
-                _buildVerticalBody(i)
-              ]
-          )
-      );
+                    if (widget.onStepTapped != null) widget.onStepTapped(i);
+                  }
+                : null,
+            child: _buildVerticalHeader(i)),
+        _buildVerticalBody(i)
+      ]));
     }
 
     return new ListView(
@@ -460,10 +464,11 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
     for (int i = 0; i < widget.steps.length; i += 1) {
       children.add(
         new InkResponse(
-          onTap: widget.steps[i].state != StepState.disabled ? () {
-            if (widget.onStepTapped != null)
-              widget.onStepTapped(i);
-          } : null,
+          onTap: widget.steps[i].state != StepState.disabled
+              ? () {
+                  if (widget.onStepTapped != null) widget.onStepTapped(i);
+                }
+              : null,
           child: new Row(
             children: <Widget>[
               new Container(
@@ -500,8 +505,10 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
           elevation: 2.0,
           child: new Container(
             margin: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: new Row(
-              children: children,
+            child: new SingleChildScrollView(
+              child: new Row(
+                children: children,
+              ),
             ),
           ),
         ),
@@ -530,9 +537,8 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
       if (context.ancestorWidgetOfExactType(Stepper) != null)
         throw new FlutterError(
             'Steppers must not be nested. The material specification advises '
-                'that one should avoid embedding steppers within steppers. '
-                'https://material.google.com/components/steppers.html#steppers-usage\n'
-        );
+            'that one should avoid embedding steppers within steppers. '
+            'https://material.google.com/components/steppers.html#steppers-usage\n');
       return true;
     }());
     assert(widget.type != null);
@@ -549,9 +555,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible> with Ticker
 // Paints a triangle whose base is the bottom of the bounding rectangle and its
 // top vertex the middle of its top.
 class _TrianglePainter extends CustomPainter {
-  _TrianglePainter({
-    this.color
-  });
+  _TrianglePainter({this.color});
 
   final Color color;
 
