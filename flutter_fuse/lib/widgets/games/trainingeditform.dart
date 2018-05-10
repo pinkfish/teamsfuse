@@ -42,7 +42,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
 
   void _updateTimes(Duration diff) {
     _endTimeKey.currentState
-        .setValue(_endTimeKey.currentState.value.subtract(diff));
+        .updateValue(_endTimeKey.currentState.value.subtract(diff));
   }
 
   void _showPlacesPicker() async {

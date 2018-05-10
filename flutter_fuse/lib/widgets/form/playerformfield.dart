@@ -33,7 +33,7 @@ class PlayerFormField extends FormField<String> {
                 items: state._buildItems(state.context),
                 value: state.value,
                 onChanged: (dynamic val) {
-                  state.setValue(val);
+                  state.updateValue(val);
                   field.didChange(val);
                   if (onFieldSubmitted != null) {
                     onFieldSubmitted(val);
@@ -58,6 +58,11 @@ class PlayerFormFieldState extends FormFieldState<String> {
   PlayerFormField get widget => super.widget;
 
   StreamSubscription<UpdateReason> playerSubscription;
+
+  void updateValue(String val) {
+    setValue(val);
+  }
+
 
   void setTeamUid(String teamUid) {
     setState(() {

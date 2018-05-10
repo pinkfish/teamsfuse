@@ -110,6 +110,10 @@ class DateTimeFormFieldState extends FormFieldState<TZDateTime> {
   @override
   DateTimeFormField get widget => super.widget;
 
+  void updateValue(TZDateTime val) {
+    setValue(val);
+  }
+
   Future<Null> _selectDate(ValueChanged<TZDateTime> onFieldSubmitted,
       ValueChanged<Duration> onFieldChanged) async {
     final DateTime picked = await showDatePicker(

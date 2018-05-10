@@ -24,6 +24,7 @@ import 'package:flutter_fuse/screens/team/addseason.dart';
 import 'package:flutter_fuse/screens/team/editteam.dart';
 import 'package:flutter_fuse/screens/team/playerdetails.dart';
 import 'package:flutter_fuse/screens/team/team.dart';
+import 'analytics.dart';
 
 class AppRouter {
   static Router myRouter;
@@ -106,10 +107,12 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new EditGameScreen(vals["id"][0])));
-    router.define("/Game/:id",
-        handler: new Handler(
-            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new GameDetailsScreen(vals["id"][0])));
+    router.define("/Game/:id", handler: new Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> vals) {
+      Analytics.analytics.logViewItem(
+          itemId: vals["id"][0], itemName: "Game", itemCategory: "Game");
+      return new GameDetailsScreen(vals["id"][0]);
+    }));
     router.define("/AddEvent",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -130,10 +133,13 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AddMessageScreen()));
-    router.define("/ShowMessage/:id",
-        handler: new Handler(
-            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new ShowMessageScreen(messageUid: vals["id"][0])));
+    router.define("/ShowMessage/:id", handler: new Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> vals) {
+      Analytics.analytics.logViewItem(
+          itemId: vals["id"][0], itemName: "Message", itemCategory: "Message");
+
+      return new ShowMessageScreen(messageUid: vals["id"][0]);
+    }));
     router.define("/AddMessageTeam/:team",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

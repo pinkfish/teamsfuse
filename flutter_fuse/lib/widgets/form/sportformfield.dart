@@ -31,7 +31,7 @@ class SportFormField extends FormField<String> {
                       items: state._buildItems(state.context),
                       value: state.value,
                       onChanged: (dynamic val) {
-                        state.setValue(val);
+                        state.updateValue(val);
                         field.didChange(val);
                         if (onFieldSubmitted != null) {
                           onFieldSubmitted(val);
@@ -46,6 +46,11 @@ class SportFormField extends FormField<String> {
 class SportFormFieldState extends FormFieldState<String> {
   @override
   SportFormField get widget => super.widget;
+
+  void updateValue(String val) {
+    setValue(val);
+  }
+
 
   List<DropdownMenuItem> _buildItems(BuildContext context) {
     List<DropdownMenuItem> ret = new List<DropdownMenuItem>();

@@ -521,7 +521,6 @@ class UserDatabaseData {
           playerInvite.firestoreDelete();
         }
       } else if (invite is InviteToTeam) {
-        InviteToTeam teamInvite = invite;
         if (teams.containsKey(invite.teamUid)) {
           Team team = teams[invite.teamUid];
           if (team.seasons.containsKey(invite.seasonUid)) {

@@ -36,7 +36,7 @@ class OpponentFormField extends FormField<String> {
                 items: state._buildItems(state.context),
                 value: state.value,
                 onChanged: (dynamic val) {
-                  state.setValue(val);
+                  state.updateValue(val);
                   field.didChange(val);
                   if (onFieldSubmitted != null) {
                     onFieldSubmitted(val);
@@ -57,6 +57,10 @@ class OpponentFormFieldState extends FormFieldState<String> {
 
   String teamUid;
   StreamSubscription<UpdateReason> teamSubscription;
+
+  void updateValue(String val) {
+    setValue(val);
+  }
 
   void setTeamUid(String teamUid) {
     setState(() {

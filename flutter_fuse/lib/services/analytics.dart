@@ -12,6 +12,7 @@ class Analytics {
   DeviceInfoPlugin deviceInfo;
   IosDeviceInfo iosDeviceInfo;
   AndroidDeviceInfo androidDeviceInfo;
+  bool debugMode;
 
   static Analytics get instance {
     if (_instance == null) {
@@ -24,6 +25,8 @@ class Analytics {
   }
 
   void load() {
+    assert(debugMode = true);
+
     // Load the device and package info.
     packageInfo = new PackageInfo(
         version: "unknown", packageName: "unknown", buildNumber: "unknown");

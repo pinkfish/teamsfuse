@@ -18,12 +18,10 @@ class EditGameScreen extends StatefulWidget {
 }
 
 class EditGameScreenState extends State<EditGameScreen> {
-  final Game _game;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   EditFormBase _gameFormKey;
 
-  EditGameScreenState(String gameUid)
-      : _game = new Game.copy(UserDatabaseData.instance.games[gameUid]);
+  EditGameScreenState(String gameUid);
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState

@@ -109,9 +109,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
 
   void _changeAtTime(Duration diff) {
     _arriveByKey.currentState
-        .setValue(_arriveByKey.currentState.value.subtract(diff));
+        .updateValue(_arriveByKey.currentState.value.subtract(diff));
     _atEndKEy.currentState
-        .setValue(_atEndKEy.currentState.value.subtract(diff));
+        .updateValue(_atEndKEy.currentState.value.subtract(diff));
   }
 
   void _openAddOpponentDialog() async {
@@ -124,7 +124,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
             ));
 
     if (save != null) {
-      _opponentState.currentState.setValue(save);
+      _opponentState.currentState.updateValue(save);
     }
   }
 

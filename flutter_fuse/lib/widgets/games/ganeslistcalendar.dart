@@ -33,9 +33,6 @@ class GameListCalendarState implements CalendarSource {
   void _setGames(Iterable<Game> res) {
     List<Game> games = res.toList();
     games.sort((a, b) => a.time.compareTo(b.time));
-    int nowMs = new DateTime.now()
-        .subtract(new Duration(days: 7))
-        .millisecondsSinceEpoch;
 
     _listToShow = games;
   }

@@ -33,7 +33,7 @@ class SeasonFormField extends FormField<String> {
                       value: state.value,
                       items: state._buildItems(state.context),
                       onChanged: (dynamic val) {
-                        state.setValue(val);
+                        state.updateValue(val);
                         field.didChange(val);
                         if (onFieldSubmitted != null) {
                           onFieldSubmitted(val);
@@ -51,6 +51,11 @@ class SeasonFormFieldState extends FormFieldState<String> {
 
   String teamUid;
   StreamSubscription<UpdateReason> teamSubscription;
+
+  void updateValue(String val) {
+    setValue(val);
+  }
+
 
   void setTeamUid(String teamUid) {
     setState(() {

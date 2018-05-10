@@ -5,7 +5,6 @@ import 'package:flutter_fuse/widgets/games/teamresultsstreamfuture.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'dart:async';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
-import 'package:timezone/timezone.dart';
 
 class TeamDetails extends StatefulWidget {
   final String teamuid;

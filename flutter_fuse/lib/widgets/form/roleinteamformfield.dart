@@ -10,34 +10,35 @@ class RoleInTeamFormField extends FormField<String> {
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
-  })
-      : assert(initialValue != null),
+  })  : assert(initialValue != null),
         super(
-          key: key,
-          initialValue: initialValue,
-          onSaved: onSaved,
-          validator: validator,
-          builder: (FormFieldState<String> field) {
-            final RoleInTeamFormFieldState state = field;
+            key: key,
+            initialValue: initialValue,
+            onSaved: onSaved,
+            validator: validator,
+            builder: (FormFieldState<String> field) {
+              final RoleInTeamFormFieldState state = field;
 
-            final InputDecoration effectiveDecoration = (decoration ??
-                const InputDecoration())
-                .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-            return new InputDecorator(
+              final InputDecoration effectiveDecoration = (decoration ??
+                      const InputDecoration())
+                  .applyDefaults(Theme.of(field.context).inputDecorationTheme);
+              return new InputDecorator(
                 decoration:
-                effectiveDecoration.copyWith(errorText: field.errorText),
+                    effectiveDecoration.copyWith(errorText: field.errorText),
                 child: new DropdownButton(
-                    hint: new Text(Messages.of(state.context).opponentselect),
-                    items: state._buildItems(state.context),
-                    value: state.value,
-                    onChanged: (dynamic val) {
-                      state.setValue(val);
-                      field.didChange(val);
-                      if (onFieldSubmitted != null) {
-                        onFieldSubmitted(val);
-                      }
-                    }));
-          });
+                  hint: new Text(Messages.of(state.context).opponentselect),
+                  items: state._buildItems(state.context),
+                  value: state.value,
+                  onChanged: (dynamic val) {
+                    state.updateValue(val);
+                    field.didChange(val);
+                    if (onFieldSubmitted != null) {
+                      onFieldSubmitted(val);
+                    }
+                  },
+                ),
+              );
+            });
 
   @override
   RoleInTeamFormFieldState createState() => new RoleInTeamFormFieldState();
@@ -46,6 +47,10 @@ class RoleInTeamFormField extends FormField<String> {
 class RoleInTeamFormFieldState extends FormFieldState<String> {
   @override
   RoleInTeamFormField get widget => super.widget;
+
+  void updateValue(String val) {
+    setValue(val);
+  }
 
   List<DropdownMenuItem> _buildItems(BuildContext context) {
     List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
@@ -60,7 +65,6 @@ class RoleInTeamFormFieldState extends FormFieldState<String> {
         value: role.toString(),
       ));
     });
-
 
     return ret;
   }

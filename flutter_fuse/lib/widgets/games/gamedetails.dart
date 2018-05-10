@@ -12,7 +12,6 @@ import 'package:flutter_fuse/widgets/games/attendancedialog.dart';
 import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
 import 'teamresultsstreamfuture.dart';
 import 'package:timezone/timezone.dart';
-import 'package:flutter_fuse/widgets/games/gamecard.dart';
 
 import 'dart:async';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';

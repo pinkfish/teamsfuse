@@ -68,6 +68,11 @@ class Routes {
       }
       UserDatabaseData.load(user.uid, user.email);
       print('$currentTimeZone ${local.toString()}');
+      if (Analytics.instance.debugMode) {
+        Analytics.analytics.setUserProperty(name: "developer", value: "true");
+      } else {
+        Analytics.analytics.setUserProperty(name: "developer", value: "false");
+      }
     } else {
       UserDatabaseData.clear();
     }
