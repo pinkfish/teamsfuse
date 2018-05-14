@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 
 class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -7,7 +8,7 @@ class AboutScreen extends StatelessWidget {
 
     return new AboutDialog(
         applicationName: Messages.of(context).title,
-        applicationVersion: "0.8.0",
+        applicationVersion: Analytics.instance.getVersion(),
         applicationIcon: new Image(
           image: new ExactAssetImage("assets/images/abstractsport.png"),
           width:

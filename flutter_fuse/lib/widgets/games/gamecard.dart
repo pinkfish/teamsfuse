@@ -4,6 +4,8 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
 import 'package:flutter_fuse/widgets/games/attendancedialog.dart';
+import 'package:flutter_fuse/widgets/games/editresultdialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'attendanceicon.dart';
 import 'package:timezone/timezone.dart';
 
@@ -39,6 +41,16 @@ class GameCard extends StatelessWidget {
         });
       }
     }
+  }
+
+  void _editResult(BuildContext context) async {
+    // Call up a dialog to edit the result.
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return new EditResultDialog(game);
+      },
+    );
   }
 
   Widget _buildAvailability(
@@ -87,39 +99,54 @@ class GameCard extends StatelessWidget {
       if (game.result.scores.containsKey(GameInProgress.Penalty)) {
         penaltyResult = game.result.scores[GameInProgress.Penalty];
       }
-      switch (game.result.result) {
-        case GameResult.Win:
-        case GameResult.Tie:
-        case GameResult.Loss:
-          List<Widget> children = [];
+      if (game.result.result != GameResult.Unknown) {
+        TextStyle style = Theme.of(context).textTheme.body1;
+        switch (game.result.result) {
+          case GameResult.Win:
+            style = style.copyWith(color: Theme.of(context).accentColor);
+            break;
+          case GameResult.Loss:
+            style = style.copyWith(color: Theme.of(context).errorColor);
+            break;
+
+          case GameResult.Tie:
+            style = style.copyWith(color: Theme.of(context).indicatorColor);
+            break;
+          case GameResult.Unknown:
+            break;
+        }
+        List<Widget> children = [];
+        children.add(
+          new Text(
+            Messages.of(context).gameresult(game.result.result),
+            style: style,
+          ),
+        );
+        children.add(
+          new Text(
+            "${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}",
+            style: style,
+          ),
+        );
+        if (overtimeResult != null) {
           children.add(
             new Text(
-              Messages.of(context).gameresult(game.result.result),
+              "OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score.ptsAgainst}",
+              style: style,
             ),
           );
+        }
+        if (penaltyResult != null) {
           children.add(
             new Text(
-                "${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}"),
+              "PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score.ptsAgainst}",
+              style: style,
+            ),
           );
-          if (overtimeResult != null) {
-            children.add(
-              new Text(
-                  "OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score.ptsAgainst}"),
-            );
-          }
-          if (penaltyResult != null) {
-            children.add(
-              new Text(
-                  "PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score.ptsAgainst}"),
-            );
-          }
-          return new Column(
-            children: children,
-          );
-
-        case GameResult.Unknown:
-          // Do the in progress in this case.
-          break;
+        }
+        return new Column(
+          children: children,
+        );
       }
     }
     return new Column(
@@ -137,21 +164,32 @@ class GameCard extends StatelessWidget {
   Widget _buildTrailing(
       BuildContext context, Season season, List<Player> players) {
     // Only show attendence until the game/event is over.
-    if (game.result.inProgress == GameInProgress.NotStarted &&
-        (game.trackAttendance &&
-            game.time >
-                new DateTime.now()
-                    .subtract(new Duration(hours: 2))
-                    .millisecondsSinceEpoch)) {
-      return _buildAvailability(context, season, players);
-    }
-    if (game.result.inProgress != GameInProgress.NotStarted) {
+    if (game.result.inProgress == GameInProgress.NotStarted) {
+      if ((game.trackAttendance &&
+          game.time >
+              new DateTime.now()
+                  .subtract(new Duration(hours: 2))
+                  .millisecondsSinceEpoch)) {
+        return _buildAvailability(context, season, players);
+      }
+    } else if (game.result.inProgress != GameInProgress.NotStarted) {
       return _buildInProgress(context);
     }
     return null;
   }
 
+  void _showDirections(BuildContext context) {
+    String url = "https://www.google.com/maps/dir/?api=1";
+    url += "&destination=" + Uri.encodeComponent(game.place.address);
+    if (game.place.placeId != null) {
+      url +=
+          "&destionation_place_id=" + Uri.encodeComponent(game.place.placeId);
+    }
+    launch(url);
+  }
+
   Widget build(BuildContext context) {
+    List<Widget> buttons = [];
     Team team = UserDatabaseData.instance.teams[game.teamUid];
     Opponent op;
     if (team == null || !team.opponents.containsKey(game.opponentUid)) {
@@ -178,6 +216,8 @@ class GameCard extends StatelessWidget {
       }
     });
 
+    TZDateTime timeNow = new TZDateTime.now(local);
+    Duration dur = timeNow.difference(game.tzTime).abs();
     TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
     String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeFormat;
@@ -191,15 +231,43 @@ class GameCard extends StatelessWidget {
       endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
     }
     String arriveFormat;
-    // Only arrival time for games.
-    if (game.arriveTime != game.time && game.type == EventType.Game) {
+    // Only arrival time for games and only if it is before the game.
+    if (game.arriveTime != game.time &&
+        game.type == EventType.Game &&
+        timeNow.millisecondsSinceEpoch <
+            game.arriveTime + Duration.millisecondsPerHour) {
       TimeOfDay arriveDay = new TimeOfDay.fromDateTime(game.tzArriveTime);
       arriveFormat =
           MaterialLocalizations.of(context).formatTimeOfDay(arriveDay);
     }
 
-    TZDateTime time = new TZDateTime.now(local);
-    Duration dur = time.difference(game.tzTime).abs();
+    if (game.arriveTime <
+            timeNow.millisecondsSinceEpoch + Duration.millisecondsPerHour &&
+        game.arriveTime >
+            timeNow.millisecondsSinceEpoch - Duration.millisecondsPerHour * 3) {
+      // Put in directions buttons.
+      buttons.add(
+        new FlatButton(
+          onPressed: () => _showDirections(context),
+          child: new Text(
+            Messages.of(context).directionsbuttons,
+          ),
+        ),
+      );
+    }
+
+    if (game.time < new DateTime.now().millisecondsSinceEpoch &&
+        game.type == EventType.Game &&
+        game.result.result == GameResult.Unknown) {
+      // Show a result button.
+      buttons.add(
+        new FlatButton(
+          onPressed: () => _editResult(context),
+          child: new Text(Messages.of(context).addresultbutton),
+        ),
+      );
+    }
+
     List<TextSpan> subtitle = [];
     if (arriveFormat != null) {
       String addr = game.place.address;
@@ -251,6 +319,13 @@ class GameCard extends StatelessWidget {
       );
     }
 
+    Color color = Colors.white;
+    String title;
+
+    if (game.time < timeNow.millisecondsSinceEpoch && dur.inMinutes < 60) {
+      color = Colors.lightBlueAccent;
+    }
+
     switch (game.type) {
       case EventType.Game:
         String opName;
@@ -260,102 +335,80 @@ class GameCard extends StatelessWidget {
           opName = op.name;
         }
         // Within an hour.
-        String title;
-        if (dur.inMinutes < 60) {
-          title = Messages
-              .of(context)
-              .gametitlenow(format, endTimeFormat, tzShortName, opName);
-        } else {
-          title = Messages
-              .of(context)
-              .gametitle(format, endTimeFormat, tzShortName, opName);
-        }
-        return new Card(
-          color: Colors.green.shade50,
-          child: new ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, "/Game/" + game.uid);
-            },
-            leading: new TeamImage(game.teamUid),
-            title: new Text(
-              title,
-              overflow: TextOverflow.clip,
-              style: new TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: new RichText(
-              text: new TextSpan(
-                style: Theme.of(context).textTheme.subhead,
-                children: subtitle,
-              ),
-            ),
-            trailing: _buildTrailing(context, season, players),
-          ),
-        );
+        title = Messages
+            .of(context)
+            .gametitle(format, endTimeFormat, tzShortName, opName);
+
+        break;
 
       case EventType.Event:
-        String title;
-        if (dur.inMinutes < 60) {
-          title = Messages
-              .of(context)
-              .eventtitlenow(format, game.name, endTimeFormat, tzShortName);
-        } else {
-          title = Messages
-              .of(context)
-              .eventtitle(format, game.name, endTimeFormat, tzShortName);
-        }
+        title = Messages
+            .of(context)
+            .eventtitle(format, game.name, endTimeFormat, tzShortName);
 
-        return new Card(
-          color: Colors.blue.shade50,
-          child: new ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, "/Game/" + game.uid);
-            },
-            leading: new TeamImage(game.teamUid),
-            title: new Text(
-              title,
-              overflow: TextOverflow.clip,
-              style: new TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: new RichText(
-              text: new TextSpan(children: subtitle),
-            ),
-            trailing: _buildTrailing(context, season, players),
-          ),
-        );
+        break;
 
       case EventType.Practice:
-        String title;
-        if (dur.inMinutes < 60) {
-          title = Messages
-              .of(context)
-              .trainingtitlenow(format, endTimeFormat, tzShortName);
-        } else {
-          title = Messages
-              .of(context)
-              .trainingtitle(format, endTimeFormat, tzShortName);
-        }
+        title = Messages
+            .of(context)
+            .trainingtitle(format, endTimeFormat, tzShortName);
 
-        return new Card(
-          key: new ValueKey(game),
-          child: new ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, "/Game/" + game.uid);
-            },
-            leading: new TeamImage(game.teamUid),
-            title: new Text(
-              title,
-              overflow: TextOverflow.clip,
-              style: new TextStyle(
-                fontWeight: FontWeight.bold,
+        break;
+    }
+    if (buttons.length > 0) {
+      return new Card(
+        color: color,
+        child: new Column(
+          children: <Widget>[
+            new ListTile(
+              onTap: () {
+                Navigator.pushNamed(context, "/Game/" + game.uid);
+              },
+              leading: new TeamImage(game.teamUid),
+              title: new Text(
+                title,
+                overflow: TextOverflow.clip,
+                style: new TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: new RichText(
+                text: new TextSpan(
+                  style: Theme.of(context).textTheme.subhead,
+                  children: subtitle,
+                ),
+              ),
+              trailing: _buildTrailing(context, season, players),
+            ),
+            new ButtonTheme.bar(
+              // make buttons use the appropriate styles for cards
+              child: new ButtonBar(
+                children: buttons,
               ),
             ),
-            subtitle: new RichText(
-              text: new TextSpan(children: subtitle),
-            ),
-            trailing: _buildTrailing(context, season, players),
+          ],
+        ),
+      );
+    } else {
+      return new Card(
+        color: color,
+        child: new ListTile(
+          onTap: () {
+            Navigator.pushNamed(context, "/Game/" + game.uid);
+          },
+          leading: new TeamImage(game.teamUid),
+          title: new Text(
+            title,
+            overflow: TextOverflow.clip,
+            style: new TextStyle(fontWeight: FontWeight.bold),
           ),
-        );
+          subtitle: new RichText(
+            text: new TextSpan(
+              style: Theme.of(context).textTheme.subhead,
+              children: subtitle,
+            ),
+          ),
+          trailing: _buildTrailing(context, season, players),
+        ),
+      );
     }
-    return null;
   }
 }

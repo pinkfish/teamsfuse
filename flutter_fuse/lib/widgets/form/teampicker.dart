@@ -17,28 +17,28 @@ class TeamPicker extends StatefulWidget {
 
 class TeamPickerState extends State<TeamPicker> {
   String _value;
-  StreamSubscription<UpdateReason> teamStresm;
+  StreamSubscription<UpdateReason> _teamStream;
 
   TeamPickerState();
   @override
   void dispose() {
     super.dispose();
-    teamStresm.cancel();
-    teamStresm = null;
+    _teamStream?.cancel();
+    _teamStream = null;
   }
 
   void initState() {
-    teamStresm = UserDatabaseData.instance.teamStream.listen((update) {
+    _teamStream = UserDatabaseData.instance.teamStream.listen((update) {
       setState(() {});
     });
     _value = widget.teamUid;
     super.initState();
   }
 
-  List<DropdownMenuItem> _buildItems() {
-    List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
+  List<DropdownMenuItem<String>> _buildItems() {
+    List<DropdownMenuItem<String>> ret = [];
     UserDatabaseData.instance.teams.forEach((key, team) {
-      ret.add(new DropdownMenuItem(
+      ret.add(new DropdownMenuItem<String>(
         child: new Text(team.name),
         value: team.uid,
       ));
@@ -58,11 +58,11 @@ class TeamPickerState extends State<TeamPicker> {
         children: <Widget>[
           new Expanded(
             flex: 1,
-            child: new DropdownButton(
+            child: new DropdownButton<String>(
               hint: new Text(Messages.of(context).teamselect),
               items: _buildItems(),
               value: this._value,
-              onChanged: (dynamic val) {
+              onChanged: (String val) {
                 _value = val;
                 this.widget.onChanged(val);
                 return val;

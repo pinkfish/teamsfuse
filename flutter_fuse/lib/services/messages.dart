@@ -1260,6 +1260,14 @@ class Messages {
             'player and save.',
         desc: 'Long description of the player invite accept path.');
   }
+
+  String get directionsbuttons {
+    return Intl.message('DIRECTIONS');
+  }
+
+  String get addresultbutton {
+    return Intl.message('ADD RESULT');
+  }
 }
 
 class MessagesDelegate extends LocalizationsDelegate<Messages> {

@@ -6,7 +6,7 @@ import 'inputdropdown.dart';
 class DateTimeFormField extends FormField<TZDateTime> {
   DateTimeFormField(
       {Key key,
-      DateTime initialValue,
+      TZDateTime initialValue,
       InputDecoration decoration: const InputDecoration(),
       ValueChanged<TZDateTime> onFieldSubmitted,
       ValueChanged<Duration> onFieldChanged,
@@ -118,7 +118,7 @@ class DateTimeFormFieldState extends FormFieldState<TZDateTime> {
       ValueChanged<Duration> onFieldChanged) async {
     final DateTime picked = await showDatePicker(
         context: context,
-        initialDate: value,
+        initialDate: new DateTime(value.year, value.month, value.day),
         firstDate: new DateTime(2015, 8),
         lastDate: new DateTime(2101));
     if (picked != null &&

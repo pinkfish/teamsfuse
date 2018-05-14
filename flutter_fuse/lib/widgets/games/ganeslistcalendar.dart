@@ -6,22 +6,39 @@ import 'dart:async';
 
 class GameListCalendarState implements CalendarSource {
   List<Game> _listToShow;
+  StreamSubscription<UpdateReason> _listening;
 
   @override
-  Widget buildWidget(BuildContext context, int index) {
-    return new GameCard(_listToShow[index]);
+  Widget buildWidget(BuildContext context, CalendarEvent event) {
+    return new GameCard(_listToShow[event.index]);
   }
 
   @override
   List<CalendarEvent> getEvents(DateTime start, DateTime end) {
     if (_listToShow == null) {
+      _listToShow = UserDatabaseData.instance.games.values.toList();
+    }
+    if (_listToShow == null) {
       return [];
     }
-    List<CalendarEvent> events = new List<CalendarEvent>(_listToShow.length);
+    print("Get events $_listToShow");
+    List<CalendarEvent> events = new List<CalendarEvent>();
     int pos = 0;
-    _listToShow.forEach((Game g) =>
-        events.add(new CalendarEvent(instant: g.tzTime, index: pos++)));
+    _listToShow.forEach((Game g) => events.add(new CalendarEvent(
+        instant: g.tzTime, instantEnd: g.tzEndTime, index: pos++)));
     return events;
+  }
+
+  @override
+  void init(SliverListCalendarElement widget) {
+    _listToShow = UserDatabaseData.instance.games.values.toList();
+    _listening = UserDatabaseData.instance.gameStream
+        .listen((UpdateReason r) => widget.rebuild());
+  }
+
+  @override
+  void dispose() {
+    _listening.cancel();
   }
 
   Future<void> loadGames(FilterDetails details) async {

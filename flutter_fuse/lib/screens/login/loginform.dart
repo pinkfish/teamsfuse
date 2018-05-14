@@ -185,14 +185,16 @@ class LoginScreenState extends State<LoginScreen> {
             child: new Container(
               color: Colors.white,
               // Fill the whole page.
-              constraints: new BoxConstraints.expand(),
-              child: new Center(
-                child: new Column(
-                  children: <Widget>[
-                    new Text(Messages.of(context).login),
-                    new CircularProgressIndicator(),
-                  ],
-                ),
+              constraints: _loggingIn
+                  ? new BoxConstraints.expand()
+                  : new BoxConstraints.tight(const Size(0.0, 0.0)),
+              child: new Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  new Text(Messages.of(context).login),
+                  new CircularProgressIndicator(),
+                ],
               ),
             ),
           ),

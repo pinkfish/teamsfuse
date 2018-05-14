@@ -68,4 +68,14 @@ class Analytics {
     }
     return trace;
   }
+
+  String getVersion() {
+    if (Platform.isAndroid) {
+      return androidDeviceInfo.version.release;
+    }
+    if (Platform.isIOS) {
+      return iosDeviceInfo.utsname.version;
+    }
+    return packageInfo.version;
+  }
 }

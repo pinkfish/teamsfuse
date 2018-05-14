@@ -27,7 +27,8 @@ class GameOrHeader {
 class GameListState extends State<GameList> {
   StreamSubscription<UpdateReason> _updateStream;
   List<Game> _listToShow;
-  ScrollController _scrollController = new ScrollController();
+  ScrollController _scrollController =
+      new ScrollController(initialScrollOffset: 300.0);
   int _startIndex;
 
   @override
@@ -155,33 +156,38 @@ class GameListState extends State<GameList> {
   Widget build(BuildContext context) {
     print("Loaded for gamelist ${UserDatabaseData.instance.loadedDatabase}");
     if (!UserDatabaseData.instance.loadedFromSQL) {
-      return new SliverToBoxAdapter(
-        child: new Container(
-            color: Colors.white,
-            child: new Column(
-              children: <Widget>[
-                new Text(Messages.of(context).loading),
-                new CircularProgressIndicator(),
-              ],
-            ),
-
-      ),
+      return new Container(
+        color: Colors.white,
+        constraints: const BoxConstraints.expand(),
+        child: new Center(
+          child: new Column(
+            children: <Widget>[
+              new Text(Messages.of(context).loading),
+              new CircularProgressIndicator(),
+            ],
+          ),
+        ),
       );
     }
     if (UserDatabaseData.instance.loadedDatabase &&
         (_listToShow == null || _listToShow.length == 0)) {
-      return new SliverToBoxAdapter(
-        child: new EmptyGameList(),
-      );
+      return new EmptyGameList();
     }
-    return new SliverListCenter(
-      startIndex: _startIndex,
-      delegate: new SliverChildBuilderDelegate(
-        (BuildContext context, int index) {
-          return _renderSliverIndex(context, index);
-        },
-        addAutomaticKeepAlives: false,
-      ),
+    return new CustomScrollView(
+      shrinkWrap: true,
+      controller: _scrollController,
+      scrollDirection: Axis.vertical,
+      slivers: <Widget>[
+        new SliverListCenter(
+          startIndex: _startIndex,
+          delegate: new SliverChildBuilderDelegate(
+            (BuildContext context, int index) {
+              return _renderSliverIndex(context, index);
+            },
+            addAutomaticKeepAlives: false,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -19,7 +19,12 @@ class EditGameScreen extends StatefulWidget {
 
 class EditGameScreenState extends State<EditGameScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  EditFormBase _gameFormKey;
+  GlobalKey<GameEditFormState> _gameFormKey =
+      new GlobalKey<GameEditFormState>();
+  GlobalKey<TrainingEditFormState> _trainingFormKey =
+      new GlobalKey<TrainingEditFormState>();
+  GlobalKey<EventEditFormState> _eventFormKey =
+      new GlobalKey<EventEditFormState>();
 
   EditGameScreenState(String gameUid);
 
@@ -29,9 +34,22 @@ class EditGameScreenState extends State<EditGameScreen> {
   }
 
   void _savePressed(BuildContext context) async {
-    if (_gameFormKey.validate()) {
-      _gameFormKey.save();
-      await _gameFormKey.finalGameResult.updateFirestore();
+    Game game = UserDatabaseData.instance.games[widget.gameuid];
+    EditFormBase baseForm;
+    switch (game.type) {
+      case EventType.Game:
+        baseForm = _gameFormKey.currentState;
+        break;
+      case EventType.Event:
+        baseForm = _eventFormKey.currentState;
+        break;
+      case EventType.Practice:
+        baseForm = _trainingFormKey.currentState;
+        break;
+    }
+    if (baseForm.validate()) {
+      baseForm.save();
+      await baseForm.finalGameResult.updateFirestore();
       Navigator.pop(context);
     } else {
       _showInSnackBar(Messages.of(context).formerror);
@@ -44,19 +62,13 @@ class EditGameScreenState extends State<EditGameScreen> {
     Widget form;
     switch (game.type) {
       case EventType.Game:
-        var key = new GlobalKey<GameEditFormState>();
-        form = new GameEditForm(game: game, key: key);
-        _gameFormKey = key.currentState;
+        form = new GameEditForm(game: game, key: _gameFormKey);
         break;
       case EventType.Event:
-        var key = new GlobalKey<TrainingEditFormState>();
-        form = new TrainingEditForm(game: game, key: key);
-        _gameFormKey = key.currentState;
+        form = new TrainingEditForm(game: game, key: _trainingFormKey);
         break;
       case EventType.Practice:
-        var key = new GlobalKey<EventEditFormState>();
-        form = new EventEditForm(game: game, key: key);
-        _gameFormKey = key.currentState;
+        form = new EventEditForm(game: game, key: _eventFormKey);
         break;
     }
     return new Scaffold(

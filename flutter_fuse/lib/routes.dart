@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:timezone/timezone.dart';
+import 'package:firebase_analytics/observer.dart';
 
 import 'package:flutter_fuse/services/approuter.dart';
 
@@ -43,7 +44,7 @@ class Routes {
   MaterialApp app;
 
   PageRoute<dynamic> _buildRoute(RouteSettings routeSettings) {
-    Analytics.analytics.setCurrentScreen(screenName: routeSettings.name);
+    //Analytics.analytics.setCurrentScreen(screenName: routeSettings.name);
     LoggingData.instance.lastPath = routeSettings.name;
     if (_currentUser != null) {
       if (_currentUser.isEmailVerified) {
@@ -68,6 +69,7 @@ class Routes {
       }
       UserDatabaseData.load(user.uid, user.email);
       print('$currentTimeZone ${local.toString()}');
+      Analytics.analytics.setUserId(user.uid);
       if (Analytics.instance.debugMode) {
         Analytics.analytics.setUserProperty(name: "developer", value: "true");
       } else {
@@ -92,7 +94,10 @@ class Routes {
         const Locale('en', 'UK'),
         const Locale('en', 'AU'),
       ],
-      title: 'Team Fuse',
+      navigatorObservers: [
+        new FirebaseAnalyticsObserver(analytics: Analytics.analytics),
+      ],
+      title: "Team Fuse",
       theme: theme,
       initialRoute: "/",
       home: new SplashScreen(),

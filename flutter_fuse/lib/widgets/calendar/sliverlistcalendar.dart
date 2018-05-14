@@ -118,7 +118,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
           geometry = new SliverGeometry(
             scrollOffsetCorrection: -scrollOffset,
           );
-          print("Geometry correct ${childParentData.layoutOffset}");
+          //print("Geometry correct ${childParentData.layoutOffset}");
           return;
         }
       }
@@ -147,7 +147,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
         final SliverMultiBoxAdaptorParentData childParentData =
             firstChild.parentData;
         childParentData.layoutOffset = 0.0;
-        print("correctring here ${childParentData.layoutOffset} == 0.0");
+        //print("correctring here ${childParentData.layoutOffset} == 0.0");
 
         return;
       }
@@ -155,7 +155,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
       final SliverMultiBoxAdaptorParentData childParentData =
           earliestUsefulChild.parentData;
       childParentData.layoutOffset = firstChildScrollOffset;
-      print("layout offset update ${childParentData.layoutOffset} == 0.0");
+      //print("layout offset update ${childParentData.layoutOffset} == 0.0");
 
       assert(earliestUsefulChild == firstChild);
       leadingChildWithLayout = earliestUsefulChild;
@@ -220,7 +220,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
       childParentData.layoutOffset = endScrollOffset;
       assert(childParentData.index == index);
       endScrollOffset = childScrollOffset(child) + paintExtentOf(child);
-      print('froggy frogg ${childParentData.layoutOffset}');
+      //print('froggy frogg ${childParentData.layoutOffset}');
       return true;
     }
 
@@ -240,7 +240,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
           paintExtent: 0.0,
           maxPaintExtent: extent,
         );
-        print("Stuff here");
+        //print("Stuff here");
         return;
       }
     }
@@ -295,7 +295,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
       hasVisualOverflow: endScrollOffset > targetEndScrollOffset ||
           constraints.scrollOffset > 0.0,
     );
-    print('fluffy rabbits $geometry');
+    //print('fluffy rabbits $geometry');
 
     // We may have started the layout while scrolled to the end, which would not
     // expose a new child.
@@ -306,7 +306,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
 
   @override
   double childCrossAxisPosition(RenderBox child) {
-    print('render $child ${super.childCrossAxisPosition(child)}');
+    //print('render $child ${super.childCrossAxisPosition(child)}');
     return super.childCrossAxisPosition(child);
   }
 }

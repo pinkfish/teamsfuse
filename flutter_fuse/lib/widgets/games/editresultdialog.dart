@@ -105,7 +105,9 @@ class EditResultDialogState extends State<EditResultDialog> {
           _details.inProgress = GameInProgress.Final;
           _details.result = gameResult;
         });
-        debouncer.debounce(true);
+        // Save the game and exit.
+        widget.game.updateFirestoreResult(_details);
+        Navigator.pop(context);
       }
     } else {
       setState(() {
@@ -319,7 +321,7 @@ class EditResultDialogState extends State<EditResultDialog> {
                       onPressed: _updateScore,
                       color: theme.accentColor,
                       textColor: Colors.white,
-                      child: new Text("Update Score'"),
+                      child: new Text("Update Score"),
                     ),
                   ),
                 )
