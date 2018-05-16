@@ -11,7 +11,7 @@ import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
-import 'package:flutter_fuse/widgets/calendar/calendar.dart';
+import 'package:flutter_fuse/widgets/calendar/src/calendar.dart';
 import 'package:timezone/timezone.dart';
 import 'dart:async';
 
@@ -28,7 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription<UpdateReason> _messagaesSubscription;
   FilterDetails _details = new FilterDetails();
   GameListCalendarState _calendarState = new GameListCalendarState();
-  bool useNewCalendar = false;
 
   void _showFilterDialog() async {
     await showDialog(
@@ -112,19 +111,15 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: const Icon(Icons.tune),
         onPressed: _showFilterDialog,
       ),
-      new FlatButton(
+      new IconButton(
+        icon: const Icon(Icons.calendar_today, color: Colors.white),
+        onPressed: () => _calendarState.scrollToToday(new TZDateTime.now(local)),
+      ),
+      new IconButton(
         onPressed: () => Navigator.pushNamed(context, "Messages"),
-        child: messagesIcon,
+        icon: messagesIcon,
       ),
     ];
-    if (Analytics.instance.debugMode) {
-      actions.add(
-        new IconButton(
-          icon: const Icon(Icons.calendar_view_day),
-          onPressed: () => setState(() => useNewCalendar = !useNewCalendar),
-        ),
-      );
-    }
     if (!UserDatabaseData.instance.loadedDatabase &&
         UserDatabaseData.instance.loadedFromSQL) {
       actions.add(
@@ -150,82 +145,12 @@ class _HomeScreenState extends State<HomeScreen> {
             child: new InviteCard(),
             onTap: () => Navigator.pushNamed(context, "Invites"),
           ),
-          useNewCalendar
-              ? new Expanded(
-                  child: new SliverListCalendar(
-                    initialScrollOffset: new DateTime.now().millisecondsSinceEpoch.toDouble(),
-                    initialDate: new TZDateTime.now(local),
-                    source: _calendarState,
-                  ),
-                )
-              : new Expanded(
-                  child: new GameList(_details),
-                ),
-        ],
-      ),
-      floatingActionButton: new FabDialer(
-        disabled: UserDatabaseData.instance.teams.length == 0,
-        menu: <FabMiniMenuItemWidget>[
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.mail),
-            fabColor: Colors.lightBlueAccent,
-            text: messages.newmail,
-            onPressed: () => Navigator.pushNamed(context, "AddMessage"),
-          ),
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.calendar_today),
-            fabColor: Colors.blueAccent,
-            text: messages.addevent,
-            onPressed: () => Navigator.pushNamed(context, "AddEvent"),
-          ),
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.people),
-            fabColor: Colors.blueGrey,
-            text: messages.addtraining,
-            onPressed: () => Navigator.pushNamed(context, "AddTraining"),
-          ),
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.gamepad),
-            fabColor: theme.accentColor,
-            text: messages.addgame,
-            onPressed: () => Navigator.pushNamed(context, "AddGame"),
-          ),
-        ],
-        color: UserDatabaseData.instance.teams.length == 0
-            ? theme.disabledColor
-            : theme.accentColor,
-        icon: new Icon(Icons.add),
-      ),
-    );
-
-    /*
-    return new Scaffold(
-      drawer: new FusedDrawer(),
-      body: new CustomScrollView(
-        shrinkWrap: false,
-        controller: _scrollController,
-        scrollDirection: Axis.vertical,
-        slivers: <Widget>[
-          new SliverAppBar(
-            flexibleSpace: new FlexibleSpaceBar(
-              title: new Text(messages.title),
+          new Expanded(
+            child: new CalendarWidget(
+                initialDate: new TZDateTime.now(local),
+              source: _calendarState,
             ),
-            actions: actions,
-            primary: true,
-            pinned: true,
           ),
-          new SliverPersistentHeader(
-            pinned: true,
-            delegate: HeaderInviteDelegate(),
-          ),
-          useNewCalendar
-              ? new SliverFillRemaining(
-                  child: new SliverListCalendar(
-                    initialDate: _details.startDate,
-                    source: _calendarState,
-                  ),
-                )
-              : new GameList(_details),
         ],
       ),
       floatingActionButton: new FabDialer(
@@ -262,7 +187,6 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: new Icon(Icons.add),
       ),
     );
-*/
   }
 
   @override

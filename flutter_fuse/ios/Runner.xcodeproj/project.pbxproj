@@ -598,7 +598,9 @@
 					"$(PROJECT_DIR)/Pods/GooglePlaces/Frameworks",
 					"$(PROJECT_DIR)/Pods/GoogleSignIn/Frameworks",
 				);
+				GROUP = "";
 				INFOPLIST_FILE = Runner/Info.plist;
+				INSTALL_GROUP = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
@@ -640,7 +642,9 @@
 					"$(PROJECT_DIR)/Pods/GooglePlaces/Frameworks",
 					"$(PROJECT_DIR)/Pods/GoogleSignIn/Frameworks",
 				);
+				GROUP = "";
 				INFOPLIST_FILE = Runner/Info.plist;
+				INSTALL_GROUP = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (

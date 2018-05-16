@@ -9,8 +9,8 @@ dependencies:
 
   sentry: any
 
-  cloud_firestore: "^0.7.0"
-  firebase_auth: "^0.5.8"
+  cloud_firestore: "^0.7.2"
+  firebase_auth: "^0.5.10"
   firebase_core: "^0.2.3"
   firebase_storage: "^0.3.4"
   firebase_analytics: "^0.3.3"

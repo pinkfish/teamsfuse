@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
-import 'package:flutter_fuse/widgets/calendar/calendar.dart';
+import 'package:flutter_fuse/widgets/calendar/src/calendar.dart';
 import 'dart:async';
 
-class GameListCalendarState implements CalendarSource {
+class GameListCalendarState extends CalendarSource {
   List<Game> _listToShow;
   StreamSubscription<UpdateReason> _listening;
 
@@ -30,10 +30,13 @@ class GameListCalendarState implements CalendarSource {
   }
 
   @override
-  void init(SliverListCalendarElement widget) {
+  void initState() {
     _listToShow = UserDatabaseData.instance.games.values.toList();
-    _listening = UserDatabaseData.instance.gameStream
-        .listen((UpdateReason r) => widget.rebuild());
+    _listening = UserDatabaseData.instance.gameStream.listen((UpdateReason r) {
+      _listToShow = UserDatabaseData.instance.games.values.toList();
+      state.updateEvents();
+      print('doing rebuild?');
+    });
   }
 
   @override

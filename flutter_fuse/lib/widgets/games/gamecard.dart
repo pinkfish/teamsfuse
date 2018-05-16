@@ -66,12 +66,14 @@ class GameCard extends StatelessWidget {
 
     // Show current availability.
     for (Player player in players) {
-      if (game.attendance.containsKey(key)) {
-        attendence[player] = game.attendance[key];
+
+      if (game.attendance.containsKey(player.uid)) {
+        attendence[player] = game.attendance[player.uid];
       } else {
         attendence[player] = Attendance.Maybe;
       }
     }
+    print('Attend $players ${game.attendance} $attendence');
     if (attendence.length == 0) {
       return null;
     }

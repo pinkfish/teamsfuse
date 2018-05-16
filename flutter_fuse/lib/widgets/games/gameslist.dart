@@ -48,9 +48,6 @@ class GameListState extends State<GameList> {
       _setGames(res);
     });
     super.initState();
-    _scrollController.addListener(() {
-      print('scroll pos ${_scrollController.position}');
-    });
   }
 
   void _setGames(Iterable<Game> res) {
@@ -91,7 +88,6 @@ class GameListState extends State<GameList> {
               showHeader = true;
             }
           }
-          print('$time ${widget.nowTime}');
           if (time.year != widget.nowTime.year) {
             showYear = true;
           }

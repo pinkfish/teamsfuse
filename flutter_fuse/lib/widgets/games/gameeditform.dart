@@ -41,9 +41,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   Validations _validations = new Validations();
   ScrollController _scrollController = new ScrollController();
   FocusNode _focusNode = new FocusNode();
-  DateTime _atDate;
-  DateTime _atArrival;
-  DateTime _atEnd;
+  TZDateTime _atDate;
+  TZDateTime _atArrival;
+  TZDateTime _atEnd;
 
   GameEditFormState();
 
@@ -101,8 +101,6 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
       widget.game.endTime = new TZDateTime(getLocation(widget.game.timezone),
               end.year, end.month, end.day, end.hour, end.minute)
           .millisecondsSinceEpoch;
-      widget.game.arriveTime = _atArrival.millisecondsSinceEpoch;
-      widget.game.endTime = _atEnd.millisecondsSinceEpoch;
     }
     return widget.game;
   }
