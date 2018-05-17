@@ -176,12 +176,10 @@ class GameDetailsState extends State<GameDetails> {
     if (dayArrive.minute == day.minute && dayArrive.hour == day.hour) {
       arriveAttimeStr =
           MaterialLocalizations.of(context).formatTimeOfDay(dayArrive) +
-                  tzShortName ??
-              "";
+              (tzShortName ?? "");
     } else {
       arriveAttimeStr = MaterialLocalizations.of(context).formatTimeOfDay(day) +
-          tzShortName +
-          "";
+          (tzShortName ?? "");
     }
     Team team = UserDatabaseData.instance.teams[widget.game.teamUid];
     Opponent opponent = team.opponents[widget.game.opponentUid];
@@ -241,7 +239,7 @@ class GameDetailsState extends State<GameDetails> {
               timeStr +
               (widget.game.endTime == widget.game.time
                   ? ''
-                  : " - " + endTimeStr + tzShortName ?? ""),
+                  : " - " + endTimeStr + (tzShortName ?? "")),
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
         ),
         subtitle: new Column(

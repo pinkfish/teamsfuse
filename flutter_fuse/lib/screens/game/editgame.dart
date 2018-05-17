@@ -5,6 +5,7 @@ import 'package:flutter_fuse/widgets/games/gameeditform.dart';
 import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
 import 'package:flutter_fuse/widgets/games/eventeditform.dart';
 import 'package:flutter_fuse/widgets/games/editformbase.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 
 class EditGameScreen extends StatefulWidget {
   final String gameuid;
@@ -25,6 +26,7 @@ class EditGameScreenState extends State<EditGameScreen> {
       new GlobalKey<TrainingEditFormState>();
   GlobalKey<EventEditFormState> _eventFormKey =
       new GlobalKey<EventEditFormState>();
+  bool _saving = false;
 
   EditGameScreenState(String gameUid);
 
@@ -34,6 +36,7 @@ class EditGameScreenState extends State<EditGameScreen> {
   }
 
   void _savePressed(BuildContext context) async {
+    print('save pressed');
     Game game = UserDatabaseData.instance.games[widget.gameuid];
     EditFormBase baseForm;
     switch (game.type) {
@@ -48,10 +51,19 @@ class EditGameScreenState extends State<EditGameScreen> {
         break;
     }
     if (baseForm.validate()) {
+      setState(() {
+        _saving = true;
+      });
       baseForm.save();
+      print("updating firestore");
       await baseForm.finalGameResult.updateFirestore();
+      print('finished update');
+      setState(() {
+        _saving = false;
+      });
       Navigator.pop(context);
     } else {
+      print('error?');
       _showInSnackBar(Messages.of(context).formerror);
     }
   }
@@ -90,7 +102,10 @@ class EditGameScreenState extends State<EditGameScreen> {
       ),
       body: new Container(
         padding: new EdgeInsets.all(16.0),
-        child: form,
+        child: new SavingOverlay(
+          saving: _saving,
+          child: form,
+        ),
       ),
     );
   }

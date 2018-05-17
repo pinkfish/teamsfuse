@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/teams/teameditform.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 
 class EditTeamScreen extends StatefulWidget {
   final String teamUid;
@@ -16,8 +17,10 @@ class EditTeamScreen extends StatefulWidget {
 
 class EditTeamScreenState extends State<EditTeamScreen> {
   Team _team;
-  final GlobalKey<TeamEditFormState> _formKey = new GlobalKey<TeamEditFormState>();
+  final GlobalKey<TeamEditFormState> _formKey =
+      new GlobalKey<TeamEditFormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  bool saving = false;
 
   EditTeamScreenState(String teamuid) {
     print('team uid $teamuid');
@@ -40,42 +43,44 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   }
 
   void _savePressed(BuildContext context) async {
-    if (await _formKey.currentState.validateAndSaveToFirebase()) {
-      Navigator.of(context).pop(_formKey.currentState.team.uid);
-    } else {
-      _showInSnackBar(Messages.of(context).formerror);
+    saving = true;
+    try {
+      if (await _formKey.currentState.validateAndSaveToFirebase()) {
+        Navigator.of(context).pop(_formKey.currentState.team.uid);
+      } else {
+        _showInSnackBar(Messages.of(context).formerror);
+      }
+    } finally {
+      saving = false;
     }
-
   }
-
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(Messages
-              .of(context)
-              .title),
-          actions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  this._savePressed(context);
-                },
-                child: new Text(Messages
-                    .of(context)
-                    .savebuttontext,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .subhead
-                        .copyWith(color: Colors.white))),
-          ],
+      key: _scaffoldKey,
+      appBar: new AppBar(
+        title: new Text(Messages.of(context).title),
+        actions: <Widget>[
+          new FlatButton(
+              onPressed: () {
+                this._savePressed(context);
+              },
+              child: new Text(Messages.of(context).savebuttontext,
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .subhead
+                      .copyWith(color: Colors.white))),
+        ],
+      ),
+      body: new Container(
+        padding: new EdgeInsets.all(16.0),
+        child: new SavingOverlay(
+          saving: saving,
+          child: this._buildForm(context),
         ),
-        body: new Container(
-            padding: new EdgeInsets.all(16.0),
-            child: this._buildForm(context)
-        )
+      ),
     );
   }
 }

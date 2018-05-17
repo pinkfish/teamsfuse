@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_fuse/i10n/messages_all.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
+import 'dart:math';
 
 class Messages {
   static Future<Messages> load(Locale locale) async {
@@ -20,6 +21,8 @@ class Messages {
   static Messages of(BuildContext context) {
     return Localizations.of<Messages>(context, Messages);
   }
+
+  Random randomNum = Random.secure();
 
   String get title {
     return Intl.message(
@@ -1268,6 +1271,34 @@ class Messages {
   String get addresultbutton {
     return Intl.message('ADD RESULT');
   }
+
+  QuoteAndAuthor get quoteforsaving {
+    switch (randomNum.nextInt(3)) {
+      case 0:
+        return new QuoteAndAuthor(
+            quote: Intl.message("Lies, Damn Lies and Statistics"),
+            author: Intl.message("Mark Twain"));
+      case 1:
+        return new QuoteAndAuthor(
+            quote: Intl.message(
+                "I've missed more than 9000 shots in my career. "
+                "I've lost almost 300 games. 26 times, "
+                "I've been trusted to take the game winning shot and missed. "
+                "I've failed over and over and over again in my life. "
+                "And that is why I succeed."),
+            author: Intl.message("Michael Jordan"));
+      default:
+        return new QuoteAndAuthor(
+            quote: Intl.message("Don't Panic"),
+            author: Intl.message("Douglas Adams"));
+    }
+  }
+}
+
+class QuoteAndAuthor {
+  String quote;
+  String author;
+  QuoteAndAuthor({this.quote, this.author});
 }
 
 class MessagesDelegate extends LocalizationsDelegate<Messages> {
