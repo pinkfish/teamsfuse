@@ -67,10 +67,6 @@ class GameDetailsState extends State<GameDetails> {
     launch(url);
   }
 
-  void _opponentExpansionChanged(bool expansion) {
-    // Setup a call for extra stuff.
-  }
-
   void _editResult() async {
     // Call up a dialog to edit the result.
     await showDialog(
@@ -373,7 +369,6 @@ class GameDetailsState extends State<GameDetails> {
       }
       body.add(
         new ExpansionTile(
-          onExpansionChanged: this._opponentExpansionChanged,
           title: new Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

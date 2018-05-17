@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'inputdropdown.dart';
+import 'package:flutter_fuse/widgets/util/inputdropdown.dart';
 import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_fuse/services/messages.dart';
 

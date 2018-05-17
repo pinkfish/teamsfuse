@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
-import 'package:flutter_fuse/widgets/games/gameslist.dart';
 import 'package:flutter_fuse/widgets/games/ganeslistcalendar.dart';
 import 'package:flutter_fuse/widgets/invites/invitecard.dart';
 import 'package:flutter_fuse/services/messages.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_fuse/widgets/util/fabdialer.dart';
 import 'package:flutter_fuse/widgets/util/fabminimenuitem.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
-import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
 import 'package:flutter_fuse/widgets/calendar/src/calendar.dart';
 import 'package:timezone/timezone.dart';
@@ -47,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ThemeData theme = Theme.of(context);
     Messages messages = Messages.of(context);
     IconData badge;
+    TZDateTime nowTime = new TZDateTime.now(local);
 
     switch (UserDatabaseData.instance.unreadMessageCount) {
       case 0:
@@ -111,9 +110,23 @@ class _HomeScreenState extends State<HomeScreen> {
         icon: const Icon(Icons.tune),
         onPressed: _showFilterDialog,
       ),
-      new IconButton(
-        icon: const Icon(Icons.calendar_today, color: Colors.white),
-        onPressed: () => _calendarState.scrollToToday(new TZDateTime.now(local)),
+      new Stack(
+        alignment: new Alignment(0.0, 0.0),
+        children: <Widget>[
+          new IconButton(
+            icon: const Icon(Icons.calendar_today, color: Colors.white),
+            onPressed: () =>
+                _calendarState.scrollToToday(new TZDateTime.now(local)),
+          ),
+          new Positioned(
+            top: 22.0,
+            right: 17.0,
+            child: new Text(
+              nowTime.day.toString(),
+              style: theme.textTheme.button.copyWith(color: Colors.white, fontSize: 11.5),
+            ),
+          ),
+        ],
       ),
       new IconButton(
         onPressed: () => Navigator.pushNamed(context, "Messages"),
@@ -147,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           new Expanded(
             child: new CalendarWidget(
-                initialDate: new TZDateTime.now(local),
+              initialDate: new TZDateTime.now(local),
               source: _calendarState,
             ),
           ),

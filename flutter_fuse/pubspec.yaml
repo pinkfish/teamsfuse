@@ -66,6 +66,7 @@ flutter:
      - assets/sports/Sport.Basketball.png
      - assets/sports/Sport.Soccer.png
      - assets/images/calendarbanner.jpg
+     - assets/images/calendarheader.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
