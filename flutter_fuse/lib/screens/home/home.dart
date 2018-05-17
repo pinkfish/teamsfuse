@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
           new IconButton(
             icon: const Icon(Icons.calendar_today, color: Colors.white),
             onPressed: () =>
-                _calendarState.scrollToToday(new TZDateTime.now(local)),
+                _calendarState.scrollToDay(new TZDateTime.now(local)),
           ),
           new Positioned(
             top: 22.0,
