@@ -5,6 +5,7 @@ import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/games/gameeditform.dart';
 import 'package:flutter_fuse/widgets/games/gamedetails.dart';
 import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 
 class AddGameScreen extends StatefulWidget {
   AddGameScreen();
@@ -25,6 +26,7 @@ class AddGameScreenState extends State<AddGameScreen> {
   String _teamUid;
   int currentStep = 0;
   Game _initGame;
+  bool _saving = false;
 
   AddGameScreenState();
 
@@ -90,9 +92,14 @@ class AddGameScreenState extends State<AddGameScreen> {
           currentStep++;
         } else {
           // Write the game out.
+          setState(() {
+            _saving = true;
+          });
           _initGame.updateFirestore().then((void h) {
+            _saving = false;
             Navigator.pop(context);
           }).catchError((Error e) {
+            _saving = false;
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -144,49 +151,52 @@ class AddGameScreenState extends State<AddGameScreen> {
       appBar: new AppBar(
         title: new Text(messages.title),
       ),
-      body: new Container(
-        padding: new EdgeInsets.all(16.0),
-        child: new StepperAlwaysVisible(
-          type: StepperType.horizontal,
-          currentStep: this.currentStep,
-          onStepContinue: () {
-            this._onStepperContinue(context);
-          },
-          onStepCancel: () {
-            // Go back
-            Navigator.of(context).pop();
-          },
-          onStepTapped: (int step) {
-            this._onStepTapped(step);
-          },
-          steps: <Step>[
-            new Step(
-              title: new Text(messages.teamselect),
-              state: teamStepState,
-              isActive: true,
-              content: new Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  new TeamPicker(onChanged: this._teamChanged),
-                ],
+      body: new SavingOverlay(
+        saving: _saving,
+        child: new Container(
+          padding: new EdgeInsets.all(16.0),
+          child: new StepperAlwaysVisible(
+            type: StepperType.horizontal,
+            currentStep: this.currentStep,
+            onStepContinue: () {
+              this._onStepperContinue(context);
+            },
+            onStepCancel: () {
+              // Go back
+              Navigator.of(context).pop();
+            },
+            onStepTapped: (int step) {
+              this._onStepTapped(step);
+            },
+            steps: <Step>[
+              new Step(
+                title: new Text(messages.teamselect),
+                state: teamStepState,
+                isActive: true,
+                content: new Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    new TeamPicker(onChanged: this._teamChanged),
+                  ],
+                ),
               ),
-            ),
-            new Step(
-              title: new Text(messages.gamedetails),
-              state: detailsStepState,
-              isActive: _teamUid != null && _teamUid.isNotEmpty,
-              content: this._buildForm(context),
-            ),
-            new Step(
-              title: new Text(messages.gamecreate),
-              state: createStepStage,
-              isActive: _gameFormKey != null &&
-                  _gameFormKey.currentState != null &&
-                  _gameFormKey.currentState.validate(),
-              content: this._buildSummary(context),
-            )
-          ],
+              new Step(
+                title: new Text(messages.gamedetails),
+                state: detailsStepState,
+                isActive: _teamUid != null && _teamUid.isNotEmpty,
+                content: this._buildForm(context),
+              ),
+              new Step(
+                title: new Text(messages.gamecreate),
+                state: createStepStage,
+                isActive: _gameFormKey != null &&
+                    _gameFormKey.currentState != null &&
+                    _gameFormKey.currentState.validate(),
+                content: this._buildSummary(context),
+              )
+            ],
+          ),
         ),
       ),
     );

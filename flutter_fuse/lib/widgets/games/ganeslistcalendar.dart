@@ -21,7 +21,6 @@ class GameListCalendarState extends CalendarSource {
     if (_listToShow == null) {
       return [];
     }
-    print("Get events $_listToShow");
     List<CalendarEvent> events = new List<CalendarEvent>();
     int pos = 0;
     _listToShow.forEach((Game g) => events.add(new CalendarEvent(
@@ -35,7 +34,6 @@ class GameListCalendarState extends CalendarSource {
     _listening = UserDatabaseData.instance.gameStream.listen((UpdateReason r) {
       _listToShow = UserDatabaseData.instance.games.values.toList();
       state.updateEvents();
-      print('doing rebuild?');
     });
   }
 

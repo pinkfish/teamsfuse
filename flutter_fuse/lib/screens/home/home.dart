@@ -4,6 +4,7 @@ import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
 import 'package:flutter_fuse/widgets/games/ganeslistcalendar.dart';
 import 'package:flutter_fuse/widgets/invites/invitecard.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/notifications.dart';
 import 'package:flutter_fuse/widgets/util/fabdialer.dart';
 import 'package:flutter_fuse/widgets/util/fabminimenuitem.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
@@ -123,7 +124,8 @@ class _HomeScreenState extends State<HomeScreen> {
             right: 17.0,
             child: new Text(
               nowTime.day.toString(),
-              style: theme.textTheme.button.copyWith(color: Colors.white, fontSize: 11.5),
+              style: theme.textTheme.button
+                  .copyWith(color: Colors.white, fontSize: 11.5),
             ),
           ),
         ],

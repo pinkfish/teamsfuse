@@ -1273,7 +1273,7 @@ class Messages {
   }
 
   QuoteAndAuthor get quoteforsaving {
-    switch (randomNum.nextInt(3)) {
+    switch (randomNum.nextInt(4)) {
       case 0:
         return new QuoteAndAuthor(
             quote: Intl.message("Lies, Damn Lies and Statistics"),
@@ -1287,6 +1287,11 @@ class Messages {
                 "I've failed over and over and over again in my life. "
                 "And that is why I succeed."),
             author: Intl.message("Michael Jordan"));
+      case 2:
+        return new QuoteAndAuthor(
+          quote: Intl.message("I know I am getting better at golf because I am hitting fewer spectators."),
+          author: Intl.message("Gerald R. Ford"),
+        );
       default:
         return new QuoteAndAuthor(
             quote: Intl.message("Don't Panic"),

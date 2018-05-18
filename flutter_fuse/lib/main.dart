@@ -13,22 +13,23 @@ import 'package:flutter_fuse/services/appconfiguration.dart';
 void main() {
   var trace = Analytics.instance.newTrace("startup");
   trace.start();
-  CacheManager.getInstance().then((CacheManager man) {
-    print('got manager');
-  }).catchError((Exception error) {
-    print('Got error $error');
-  });
 
   DatabaseUpdateModel.instance = new DatabaseUpdateModelImpl();
 
   Future.wait([SqlData.instance.initDatabase()]);
 
-  // Start the loading, but don't block on it.
-  AppConfiguration.instance.load();
+  // Start the loading, but don't block on it,
+  // although load notifications system after it has finished.
+  AppConfiguration.instance.load().then((void a) {
+    CacheManager.getInstance().then((CacheManager man) {
+      print('got manager');
+    }).catchError((Exception error) {
+      print('Got error $error');
+    });
+    Notifications.instance.init();
+  });
 
   Analytics.analytics.logAppOpen();
-
-  Notifications.instance.init();
 
   // Send error logs up to sentry.
   FlutterError.onError = (FlutterErrorDetails details) {

@@ -4,6 +4,7 @@ import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/screens/home/home.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
+import 'package:flutter_fuse/services/notifications.dart';
 import 'loginform.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,6 +28,9 @@ class SplashScreenState extends State<SplashScreen> {
     _startLoading();
     super.initState();
     _stream = UserAuth.instance.onAuthChanged().listen(_onAuthStateChanged);
+    // Setup the notifications listen/sender.
+    Notifications.instance.initForNotification(this);
+
   }
 
   void dispose() {

@@ -9,8 +9,8 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:synchronized/synchronized.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_fuse/services/appconfiguration.dart';
 
 import 'cacheobject.dart';
 
@@ -38,7 +38,6 @@ class CacheManager {
 
   CacheManager._();
 
-  SharedPreferences _prefs;
   Map<String, CacheObject> _cacheData;
   DateTime lastCacheClean;
 
@@ -46,7 +45,6 @@ class CacheManager {
 
   ///Shared preferences is used to keep track of the information about the files
   _init() async {
-    _prefs = await SharedPreferences.getInstance();
     _getSavedCacheDataFromPreferences();
     _getLastCleanTimestampFromPreferences();
     CacheObject.initDirectory();
@@ -58,7 +56,8 @@ class CacheManager {
 
   _getSavedCacheDataFromPreferences() {
     //get saved cache data from shared prefs
-    var jsonCacheString = _prefs.getString(_keyCacheData);
+    var jsonCacheString =
+        AppConfiguration.instance.sharedPreferences.getString(_keyCacheData);
     _cacheData = new Map();
     if (jsonCacheString != null) {
       Map jsonCache = json.decode(jsonCacheString);
@@ -110,7 +109,8 @@ class CacheManager {
         }
       });
     });
-    _prefs.setString(_keyCacheData, json.encode(jsonMap));
+    AppConfiguration.instance.sharedPreferences
+        .setString(_keyCacheData, json.encode(jsonMap));
 
     if (await _shouldSaveAgain()) {
       await _saveDataInPrefs();
@@ -119,12 +119,14 @@ class CacheManager {
 
   _getLastCleanTimestampFromPreferences() {
     // Get data about when the last clean action has been performed
-    num cleanMillis = _prefs.getInt(_keyCacheCleanDate);
+    num cleanMillis =
+        AppConfiguration.instance.sharedPreferences.getInt(_keyCacheCleanDate);
     if (cleanMillis != null) {
       lastCacheClean = new DateTime.fromMillisecondsSinceEpoch(cleanMillis);
     } else {
       lastCacheClean = new DateTime.now();
-      _prefs.setInt(_keyCacheCleanDate, lastCacheClean.millisecondsSinceEpoch);
+      AppConfiguration.instance.sharedPreferences
+          .setInt(_keyCacheCleanDate, lastCacheClean.millisecondsSinceEpoch);
     }
   }
 
@@ -139,8 +141,8 @@ class CacheManager {
         await _shrinkLargeCache();
 
         lastCacheClean = new DateTime.now();
-        _prefs.setInt(
-            _keyCacheCleanDate, lastCacheClean.millisecondsSinceEpoch);
+        AppConfiguration.instance.sharedPreferences
+            .setInt(_keyCacheCleanDate, lastCacheClean.millisecondsSinceEpoch);
       });
     }
   }
