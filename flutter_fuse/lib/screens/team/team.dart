@@ -29,7 +29,7 @@ class TeamScreenState extends State<TeamScreen> {
         ),
       );
     } else if (_tabIndex == 2) {
-      return  new TeamOpponents(widget.teamUid);
+      return new TeamOpponents(widget.teamUid);
     }
     print("$_tabIndex");
     return new TeamPlayers(widget.teamUid);
@@ -42,23 +42,13 @@ class TeamScreenState extends State<TeamScreen> {
   @override
   Widget build(BuildContext context) {
     List<Widget> actions = new List<Widget>();
+    FloatingActionButton fab;
     if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
       if (UserDatabaseData.instance.teams[widget.teamUid]
           .isAdmin(UserDatabaseData.instance.players)) {
-        actions.add(
-          new FlatButton(
-            onPressed: () {
-              this._onEditTeam(context);
-            },
-            child: new Text(
-              Messages.of(context).editbuttontext,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(color: Colors.white),
-            ),
-          ),
+        fab = new FloatingActionButton(
+          onPressed: () => this._onEditTeam(context),
+          child: new Icon(Icons.edit),
         );
       }
     }
@@ -88,6 +78,8 @@ class TeamScreenState extends State<TeamScreen> {
               title: new Text(Messages.of(context).opponent),
             ),
           ]),
+      floatingActionButton: fab,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: _buildBody(),
     );
   }

@@ -22,6 +22,11 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
   int _tabIndex = 0;
   ScrollController _scrollController = new ScrollController();
 
+  void _select(String choice) {
+    // Causes the app to rebuild with the new _selectedChoice.
+    setState(() {});
+  }
+
   GameDetailsScreenState(this.gameUid) {
     game = UserDatabaseData.instance.games[gameUid];
   }
@@ -48,6 +53,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     Team team = UserDatabaseData.instance.teams[game.teamUid];
     Opponent opponent = team.opponents[game.opponentUid];
     List<Widget> actions = new List<Widget>();
+    FloatingActionButton fab;
 
     if (_tabIndex == 0) {
       body = new GameDetails(game);
@@ -57,30 +63,20 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
 
     if (team.isAdmin(UserDatabaseData.instance.players)) {
       actions.add(
-        new FlatButton(
-          onPressed: this._deleteGame,
-          child: new Text(
-            Messages.of(context).deletebuttontext,
-            style: Theme
-                .of(context)
-                .textTheme
-                .subhead
-                .copyWith(color: Colors.white),
-          ),
+        new PopupMenuButton<String>(
+          onSelected: _select,
+          itemBuilder: (BuildContext context) {
+            return [
+              new PopupMenuItem<String>(
+                  value: "delete",
+                  child: new Text(Messages.of(context).deletegame(game))),
+            ];
+          },
         ),
       );
-      actions.add(
-        new FlatButton(
-          onPressed: this._editGame,
-          child: new Text(
-            Messages.of(context).editbuttontext,
-            style: Theme
-                .of(context)
-                .textTheme
-                .subhead
-                .copyWith(color: Colors.white),
-          ),
-        ),
+      fab = new FloatingActionButton(
+        onPressed: this._editGame,
+        child: new Icon(Icons.edit),
       );
     }
     String opponentName;
@@ -113,6 +109,12 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
           )
         ],
       ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: this._editGame,
+        child: new Icon(Icons.edit),
+         //backgroundColor: Colors.orange,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: new Scrollbar(
         child: new SingleChildScrollView(
           scrollDirection: Axis.vertical,

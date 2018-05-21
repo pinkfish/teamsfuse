@@ -175,7 +175,10 @@ class ProfileScreenState extends State<ProfileScreen> {
         onPressed: () => this._onAddPlayerInvite(context, player),
         child: new Row(
           children: <Widget>[
-            new Icon(Icons.add, color: Colors.blueAccent,),
+            new Icon(
+              Icons.add,
+              color: Colors.blueAccent,
+            ),
             new SizedBox(width: 10.0),
             new Text(
               Messages.of(context).addinvite,
@@ -194,7 +197,8 @@ class ProfileScreenState extends State<ProfileScreen> {
     ThemeData theme = Theme.of(context);
     Messages messages = Messages.of(context);
 
-    double width = (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0;
+    double width =
+        (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0;
     double height = screenSize.height / 4 + 20;
     ret.add(new Center(
       child: new PlayerImage(
@@ -313,6 +317,11 @@ class ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: this._editProfile,
+        child: const Icon(Icons.edit),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: new Scrollbar(
         child: new SingleChildScrollView(
           child: new Column(

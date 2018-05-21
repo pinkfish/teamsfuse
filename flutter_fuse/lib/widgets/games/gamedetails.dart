@@ -199,19 +199,30 @@ class GameDetailsState extends State<GameDetails> {
     body.add(
       new Container(
         height: 250.0,
-        child: new InkWell(
-          onTap: openNavigation,
-          child: new Center(
-            child: new CachedNetworkImage(
-              placeholder: new Center(
-                child: new Container(
-                  padding: const EdgeInsets.all(20.0),
-                  child: loadingWidget,
+        child: new Stack(
+          children: [
+            new Center(
+              child: new CachedNetworkImage(
+                placeholder: new Center(
+                  child: new Container(
+                    padding: const EdgeInsets.all(20.0),
+                    child: loadingWidget,
+                  ),
                 ),
+                imageNow: uri.toString(),
               ),
-              imageNow: uri.toString(),
             ),
-          ),
+            new Positioned(
+              right: 20.0,
+              bottom: 0.0,
+              child: new FloatingActionButton(
+                onPressed: openNavigation,
+                child: const Icon(Icons.directions),
+                backgroundColor: Colors.orange,
+                heroTag: widget.game.uid,
+              ),
+            ),
+          ],
         ),
       ),
     );

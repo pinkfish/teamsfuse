@@ -2,9 +2,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_local_notifications/initialization_settings.dart';
-import 'package:flutter_local_notifications/platform_specifics/android/initialization_settings_android.dart';
-import 'package:flutter_local_notifications/platform_specifics/ios/initialization_settings_ios.dart';
 import 'authentication.dart';
 import 'dart:async';
 import 'databasedetails.dart';
@@ -102,7 +99,7 @@ class Notifications {
       if (gameDate.isAfter(oldest)) {
         DateTime frog =
             new DateTime.fromMillisecondsSinceEpoch(game.time).add(notifyStart);
-        print('Checking ${game.uid} ${frog} ${now}');
+        print('Checking ${game.uid} $frog $now');
         if (!_notificationMapping.containsKey(game.uid) &&
             gameDate.isBefore(newest)) {
           print('creating or updating!');
@@ -166,8 +163,10 @@ class Notifications {
         new InitializationSettingsIOS();
     InitializationSettings initializationSettings = new InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        selectNotification: _onSelectNotification);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    flutterLocalNotificationsPlugin.onSelectNotificationStream.listen((String payload) {
+      _onSelectNotification(payload);
+    });
 
     this._state = state;
     // When games are scheduled we will pull up the results for them and
