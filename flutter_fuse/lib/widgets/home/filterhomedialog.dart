@@ -114,24 +114,6 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     );
   }
 
-  Future<void> _selectStartDate() async {
-    DateTime dt = await showDatePicker(
-        context: context,
-        initialDate: widget.details.startDate,
-        firstDate: new DateTime(2015, 8),
-        lastDate: new DateTime(2101));
-    widget.details.startDate = dt;
-  }
-
-  Future<void> _selectEndDate() async {
-    DateTime dt = await showDatePicker(
-        context: context,
-        initialDate: widget.details.endDate,
-        firstDate: new DateTime(2015, 8),
-        lastDate: new DateTime(2101));
-    widget.details.endDate = dt;
-  }
-
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
@@ -218,48 +200,6 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
                     widget.details.eventType = ev;
                   });
                 },
-              ),
-            ),
-            new ListTile(
-              leading: const Icon(CommunityIcons.calendarquestion),
-              title: new ListTile(
-                leading: new Checkbox(
-                  value: widget.details.allGames,
-                  onChanged: (bool val) => widget.details.allGames = val,
-                ),
-                title: new Text(messages.allgames),
-              ),
-            ),
-            new ListTile(
-              leading: const Icon(CommunityIcons.calendarrange),
-              title: new Row(
-                children: <Widget>[
-                  new InkWell(
-                    child: new Text(
-                      MaterialLocalizations
-                              .of(context)
-                              .formatMediumDate(widget.details.startDate) +
-                          " " +
-                          MaterialLocalizations
-                              .of(context)
-                              .formatYear(widget.details.startDate),
-                    ),
-                    onTap: _selectStartDate,
-                  ),
-                  new Text("to"),
-                  new InkWell(
-                    child: new Text(
-                      MaterialLocalizations
-                              .of(context)
-                              .formatMediumDate(widget.details.endDate) +
-                          " " +
-                          MaterialLocalizations
-                              .of(context)
-                              .formatYear(widget.details.startDate),
-                    ),
-                    onTap: _selectEndDate,
-                  ),
-                ],
               ),
             ),
           ],

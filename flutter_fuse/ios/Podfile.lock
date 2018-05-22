@@ -120,6 +120,8 @@ PODS:
   - FirebaseSwizzlingUtilities/MethodSwizzling (2.0.0):
     - FirebaseCore (~> 5.0)
   - Flutter (1.0.0)
+  - flutter_local_notifications (0.0.1):
+    - Flutter
   - flutter_native_timezone (1.0.0):
     - Flutter
   - flutter_places_dialog (0.0.1):
@@ -197,6 +199,7 @@ DEPENDENCIES:
   - firebase_remote_config (from `Pods/.symlinks/plugins/firebase_remote_config/ios`)
   - firebase_storage (from `Pods/.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Pods/.symlinks/flutter/ios-release`)
+  - flutter_local_notifications (from `Pods/.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_native_timezone (from `Pods/.symlinks/plugins/flutter_native_timezone/ios`)
   - flutter_places_dialog (from `Pods/.symlinks/plugins/flutter_places_dialog/ios`)
   - image_picker (from `Pods/.symlinks/plugins/image_picker/ios`)
@@ -257,6 +260,8 @@ EXTERNAL SOURCES:
     :path: Pods/.symlinks/plugins/firebase_storage/ios
   Flutter:
     :path: Pods/.symlinks/flutter/ios-release
+  flutter_local_notifications:
+    :path: Pods/.symlinks/plugins/flutter_local_notifications/ios
   flutter_native_timezone:
     :path: Pods/.symlinks/plugins/flutter_native_timezone/ios
   flutter_places_dialog:
@@ -299,6 +304,7 @@ SPEC CHECKSUMS:
   FirebaseStorage: 7ca4bb7b58a25fa647b04f524033fc7cb7eb272b
   FirebaseSwizzlingUtilities: 6c22677c50d0b6f5f0dc637c1233f13694a3003f
   Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
+  flutter_local_notifications: 696a74904e0a0ab754e27a5f761da4a7f9153710
   flutter_native_timezone: 8a240238f0e3aaddcc8018aa5621158c8eb1f480
   flutter_places_dialog: 0d92393c2b22bedcf62b0fa13c025c10bc667b37
   FMDB: 6198a90e7b6900cfc046e6bc0ef6ebb7be9236aa

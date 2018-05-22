@@ -52,8 +52,9 @@ class GameDetailsState extends State<GameDetails> {
   @override
   void dispose() {
     super.dispose();
-    _subscription.cancel();
-    teamUpdate.cancel();
+    _subscription?.cancel();
+    _subscription = null;
+    teamUpdate?.cancel();
     teamUpdate = null;
   }
 

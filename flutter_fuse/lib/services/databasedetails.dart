@@ -16,9 +16,6 @@ class FilterDetails {
   GameResult result;
   EventType eventType;
   bool allGames = false;
-  TZDateTime startDate =
-      new TZDateTime.now(local).subtract(new Duration(days: 2));
-  TZDateTime endDate = new TZDateTime.now(local).add(new Duration(days: 120));
 }
 
 class UserDatabaseData {
@@ -221,12 +218,6 @@ class UserDatabaseData {
       if (details.eventType != null) {
         if (details.eventType != game.type) {
           print('not event');
-          return false;
-        }
-      }
-      if (!details.allGames) {
-        if (game.time > details.endDate.millisecondsSinceEpoch ||
-            game.time < details.startDate.millisecondsSinceEpoch) {
           return false;
         }
       }
@@ -484,7 +475,6 @@ class UserDatabaseData {
     Set<String> toDeleteGames = new Set();
     SqlData sql = SqlData.instance;
 
-
     toDeleteGames.addAll(
         _games.keys.where((String id) => _games[id].teamUid == teamuid));
     query.documents.forEach((doc) {
@@ -711,7 +701,8 @@ class UserDatabaseData {
       print("Got some invites ${query.documents.length}");
       this._onInviteUpdated(query);
     });
-    _inviteSnapshot = inviteCollection.snapshots().listen(this._onInviteUpdated);
+    _inviteSnapshot =
+        inviteCollection.snapshots().listen(this._onInviteUpdated);
 
     Query unreadQuery = Firestore.instance
         .collection(MESSAGE_RECIPIENTS_COLLECTION)

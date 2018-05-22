@@ -10,6 +10,8 @@ import 'notifications/gamenotification.dart';
 import 'dart:math';
 import 'appconfiguration.dart';
 import 'dart:convert';
+import 'dart:io';
+
 
 class Notifications {
   static final Notifications instance = new Notifications();
@@ -170,10 +172,14 @@ class Notifications {
 
     this._state = state;
     // When games are scheduled we will pull up the results for them and
-    // schedule notifications.
-    _gameStream =
-        UserDatabaseData.instance.gameStream.listen((UpdateReason reason) {
-      _onGamesUpdated();
-    });
+    // schedule notifications.  We only do this on android since on iOS we
+    // need to rely on remote push notifications for the details to be up to
+    // date.
+    if (Platform.isAndroid) {
+      _gameStream =
+          UserDatabaseData.instance.gameStream.listen((UpdateReason reason) {
+            _onGamesUpdated();
+          });
+    }
   }
 }

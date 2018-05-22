@@ -221,18 +221,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     super.dispose();
-    if (_subscription != null) {
-      _subscription.cancel();
-      _subscription = null;
-    }
-    if (_teamSubscription != null) {
-      _teamSubscription.cancel();
-      _teamSubscription = null;
-    }
-    if (_messagaesSubscription != null) {
-      _messagaesSubscription.cancel();
-      _messagaesSubscription = null;
-    }
+    _subscription?.cancel();
+    _subscription = null;
+    _teamSubscription?.cancel();
+    _teamSubscription = null;
+    _messagaesSubscription?.cancel();
+    _messagaesSubscription = null;
   }
 }
 
