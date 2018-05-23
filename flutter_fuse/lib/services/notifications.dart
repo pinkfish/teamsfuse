@@ -1,8 +1,6 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'authentication.dart';
 import 'dart:async';
 import 'databasedetails.dart';
 import 'messages.dart';
@@ -11,6 +9,8 @@ import 'dart:math';
 import 'appconfiguration.dart';
 import 'dart:convert';
 import 'dart:io';
+import 'firebasemessaging.dart';
+import 'authentication.dart';
 
 
 class Notifications {
@@ -42,20 +42,6 @@ class Notifications {
   void dispose() {
     _gameStream?.cancel();
     _gameStream = null;
-  }
-
-  void _handleMessage(Map<String, dynamic> data) {}
-
-  void _handleLaunch(Map<String, dynamic> data) {}
-
-  void _handleResume(Map<String, dynamic> data) {
-    if (data.containsKey(ACTION_STR)) {
-      switch (data[ACTION_STR]) {
-        case 'openGame':
-          _notificationRoutes.add("Game/" + data[GAME_UID_STR]);
-          break;
-      }
-    }
   }
 
   Future<dynamic> _onSelectNotification(String payload) async {
@@ -137,15 +123,15 @@ class Notifications {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {
         print("onMessage: $message");
-        this._handleMessage(message);
+        //this._handleMessage(message);
       },
       onLaunch: (Map<String, dynamic> message) {
-        print("onMessage: $message");
-        this._handleLaunch(message);
+        print("onLaunch: $message");
+        //this._handleLaunch(message);
       },
       onResume: (Map<String, dynamic> message) {
-        print("onMessage: $message");
-        this._handleResume(message);
+        print("onResume: $message");
+        //this._handleResume(message);
       },
     );
     //get saved cache data from shared prefs
@@ -166,9 +152,11 @@ class Notifications {
     InitializationSettings initializationSettings = new InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    /*
     flutterLocalNotificationsPlugin.onSelectNotificationStream.listen((String payload) {
       _onSelectNotification(payload);
     });
+    */
 
     this._state = state;
     // When games are scheduled we will pull up the results for them and
