@@ -424,7 +424,7 @@ class UserDatabaseData {
   }
 
   void onSeasonUpdated(QuerySnapshot query) async {
-    Set<String> toDeleteSeasons;
+    Set<String> toDeleteSeasons = new Set<String>();
     String teamUid;
     SqlData sql = SqlData.instance;
 
@@ -441,7 +441,6 @@ class UserDatabaseData {
         team.uid = teamUid;
       }
       if (toDeleteSeasons == null) {
-        toDeleteSeasons = new Set<String>();
         toDeleteSeasons.addAll(team.seasons.keys);
       }
       team.updateSeason(doc.documentID, doc.data);

@@ -27,9 +27,6 @@ PODS:
   - Firebase/Firestore (5.0.1):
     - Firebase/CoreOnly
     - FirebaseFirestore (= 0.12.1)
-  - Firebase/Messaging (5.0.1):
-    - Firebase/CoreOnly
-    - FirebaseMessaging (= 3.0.0)
   - Firebase/Performance (5.0.1):
     - Firebase/Core
     - FirebasePerformance (= 2.0.0)
@@ -48,10 +45,6 @@ PODS:
     - Flutter
   - firebase_core (0.0.1):
     - Firebase/Core
-    - Flutter
-  - firebase_messaging (0.0.1):
-    - Firebase/Core
-    - Firebase/Messaging
     - Flutter
   - firebase_performance (0.0.1):
     - Firebase/Core
@@ -92,11 +85,6 @@ PODS:
     - Protobuf (~> 3.1)
   - FirebaseInstanceID (3.0.0):
     - FirebaseCore (~> 5.0)
-  - FirebaseMessaging (3.0.0):
-    - FirebaseCore (~> 5.0)
-    - FirebaseInstanceID (~> 3.0)
-    - GoogleToolboxForMac/Logger (~> 2.1)
-    - Protobuf (~> 3.1)
   - FirebasePerformance (2.0.0):
     - FirebaseAnalytics (~> 5.0)
     - FirebaseInstanceID (~> 3.0)
@@ -194,11 +182,10 @@ DEPENDENCIES:
   - firebase_analytics (from `Pods/.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `Pods/.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `Pods/.symlinks/plugins/firebase_core/ios`)
-  - firebase_messaging (from `Pods/.symlinks/plugins/firebase_messaging/ios`)
   - firebase_performance (from `Pods/.symlinks/plugins/firebase_performance/ios`)
   - firebase_remote_config (from `Pods/.symlinks/plugins/firebase_remote_config/ios`)
   - firebase_storage (from `Pods/.symlinks/plugins/firebase_storage/ios`)
-  - Flutter (from `Pods/.symlinks/flutter/ios-release`)
+  - Flutter (from `Pods/.symlinks/flutter/ios`)
   - flutter_local_notifications (from `Pods/.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_native_timezone (from `Pods/.symlinks/plugins/flutter_native_timezone/ios`)
   - flutter_places_dialog (from `Pods/.symlinks/plugins/flutter_places_dialog/ios`)
@@ -220,7 +207,6 @@ SPEC REPOS:
     - FirebaseDatabase
     - FirebaseFirestore
     - FirebaseInstanceID
-    - FirebaseMessaging
     - FirebasePerformance
     - FirebaseRemoteConfig
     - FirebaseStorage
@@ -250,8 +236,6 @@ EXTERNAL SOURCES:
     :path: Pods/.symlinks/plugins/firebase_auth/ios
   firebase_core:
     :path: Pods/.symlinks/plugins/firebase_core/ios
-  firebase_messaging:
-    :path: Pods/.symlinks/plugins/firebase_messaging/ios
   firebase_performance:
     :path: Pods/.symlinks/plugins/firebase_performance/ios
   firebase_remote_config:
@@ -259,7 +243,7 @@ EXTERNAL SOURCES:
   firebase_storage:
     :path: Pods/.symlinks/plugins/firebase_storage/ios
   Flutter:
-    :path: Pods/.symlinks/flutter/ios-release
+    :path: Pods/.symlinks/flutter/ios
   flutter_local_notifications:
     :path: Pods/.symlinks/plugins/flutter_local_notifications/ios
   flutter_native_timezone:
@@ -287,7 +271,6 @@ SPEC CHECKSUMS:
   firebase_analytics: fcc60a9de4b8e07aa5af8941303a7f5fe6e0383f
   firebase_auth: 27a5a77a032d557c18f8e223aaf8ec1368f6cdbc
   firebase_core: c96aa8b2fcf7f5167d32f22034f502f9304952b8
-  firebase_messaging: a5f5d4a9491b660f33a1f94bd0596558f820bad1
   firebase_performance: 81c05c50761d90f15968b7421ecd97c2b00532ab
   firebase_remote_config: 237de54ea095a512fbf7ee93ff36910e175b0c7b
   firebase_storage: e34d30ff8bb57e691191b70e9d255ec2eba2351f
@@ -298,7 +281,6 @@ SPEC CHECKSUMS:
   FirebaseDatabase: 697eb53e5b4fe7cd4fa8756c1f82a9fca011345f
   FirebaseFirestore: f686b8e83f3cf8bbc37db6e98e01029a14f01f55
   FirebaseInstanceID: 83e0040351565df711a5db3d8ebe5ea21aca998a
-  FirebaseMessaging: f2360a966ecfb0d14facf0fbdf306efc2df0ddbe
   FirebasePerformance: 1ec6c40e5dad2543ca4c4f25d15168bde6322c2c
   FirebaseRemoteConfig: 3c57e4644bd6976b671ae0b725cd709f198bd1f5
   FirebaseStorage: 7ca4bb7b58a25fa647b04f524033fc7cb7eb272b

@@ -86,8 +86,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     List<GameLog> logs = [];
     QuerySnapshot acutalData = await query;
     acutalData.documents.forEach((DocumentSnapshot doc) {
-      GameLog log = new GameLog();
-      log.fromJSON(doc.documentID, doc.data);
+      GameLog log = new GameLog.fromJson(doc.documentID, doc.data);
       logs.add(log);
     });
     return logs;
@@ -106,6 +105,19 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       game.updateLogs(await _getGameLogs(game, query));
     });
     return ret;
+  }
+
+  Future<void> addFirestoreGameLog(Game game, GameLog log) {
+    CollectionReference coll = Firestore.instance
+        .collection(GAMES_COLLECTION)
+        .document(game.uid)
+        .collection(GAME_LOG_COLLECTION);
+    print('Writing game log');
+    return coll.add(log.toJSON()).then((DocumentReference ref) {
+      print("Wrote log ${ref.documentID} to ${ref.path}");
+    }).catchError((Error e) {
+      print("Got error $e");
+    });
   }
 
 // Message for firestore.
@@ -241,7 +253,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     QuerySnapshot queryOpponentSnap = await opCollection.getDocuments();
 
     this._onOpponentUpdated(team, queryOpponentSnap);
-    ret.add(opCollection.snapshots()
+    ret.add(opCollection
+        .snapshots()
         .listen((QuerySnapshot snap) => this._onOpponentUpdated(team, snap)));
 
     Query gameQuery = Firestore.instance
@@ -318,11 +331,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     CollectionReference ref = Firestore.instance.collection(PLAYERS_COLLECTION);
     if (player.uid == '' || player.uid == null) {
       // Add the game.
-      DocumentReference doc = await ref.add(player.toJSON(includeUsers: includeUsers));
+      DocumentReference doc =
+          await ref.add(player.toJSON(includeUsers: includeUsers));
       player.uid = doc.documentID;
     } else {
       // Update the game.
-      await ref.document(player.uid).updateData(player.toJSON(includeUsers: includeUsers));
+      await ref
+          .document(player.uid)
+          .updateData(player.toJSON(includeUsers: includeUsers));
     }
   }
 
@@ -353,8 +369,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   // Send an invite to a user for this season and team.
-  Future<void> inviteUserToPlayer(Player player,
-      {String email}) async {
+  Future<void> inviteUserToPlayer(Player player, {String email}) async {
     CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     QuerySnapshot snapshot = await ref
@@ -396,7 +411,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentReference doc =
         Firestore.instance.collection(PLAYERS_COLLECTION).document(player.uid);
     return doc.updateData({Player.USERS + userId: null});
-
   }
 
   // Season updates

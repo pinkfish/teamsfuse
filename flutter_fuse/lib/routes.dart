@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:timezone/timezone.dart';
 import 'package:firebase_analytics/observer.dart';
-
 import 'package:flutter_fuse/services/approuter.dart';
-
 import 'package:flutter_fuse/screens/login/loginform.dart';
 import 'package:flutter_fuse/screens/login/forgotpassword.dart';
 import 'package:flutter_fuse/screens/login/signup.dart';
@@ -14,7 +10,6 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:flutter_fuse/services/loggingdata.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 
@@ -58,17 +53,7 @@ class Routes {
   void _authChanged(UserData user) async {
     _currentUser = user;
     if (user != null) {
-      final data = await rootBundle.load('assets/timezone/2018c.tzf');
-      String currentTimeZone = await FlutterNativeTimezone.getLocalTimezone();
-      initializeDatabase(data.buffer.asUint8List());
-      if (currentTimeZone == "GMT") {
-        currentTimeZone = "Europe/London";
-        setLocalLocation(getLocation(currentTimeZone));
-      } else {
-        setLocalLocation(getLocation(currentTimeZone));
-      }
       UserDatabaseData.load(user.uid, user.email);
-      print('$currentTimeZone ${local.toString()}');
       Analytics.analytics.setUserId(user.uid);
       if (Analytics.instance.debugMode) {
         Analytics.analytics.setUserProperty(name: "developer", value: "true");

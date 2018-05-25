@@ -821,15 +821,17 @@ class Messages {
 
   String resultwin(GameResultDetails result) {
     GameResultPerPeriod finalScore;
-    if (result.scores.containsKey(GameInProgress.Final)) {
-      finalScore = result.scores[GameInProgress.Final];
+    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
+    if (result.scores.containsKey(finalReg)) {
+      finalScore = result.scores[finalReg];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final,
+          period: finalReg,
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    if (result.scores.containsKey(GameInProgress.Penalty)) {
-      GameResultPerPeriod penaltyScore = result.scores[GameInProgress.Penalty];
+    GamePeriod penaltyPeriod = new GamePeriod(type: GamePeriodType.Penalty);
+    if (result.scores.containsKey(penaltyPeriod)) {
+      GameResultPerPeriod penaltyScore = result.scores[penaltyPeriod];
       return Intl.message(
           'Win ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
           name: 'Win result details',
@@ -843,15 +845,17 @@ class Messages {
 
   String resultloss(GameResultDetails result) {
     GameResultPerPeriod finalScore;
-    if (result.scores.containsKey(GameInProgress.Final)) {
-      finalScore = result.scores[GameInProgress.Final];
+    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
+    if (result.scores.containsKey(finalReg)) {
+      finalScore = result.scores[finalReg];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final,
+          period: new GamePeriod(type: GamePeriodType.Regulation),
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    if (result.scores.containsKey(GameInProgress.Penalty)) {
-      GameResultPerPeriod penaltyScore = result.scores[GameInProgress.Penalty];
+    GamePeriod penaltyPeriod = new GamePeriod(type: GamePeriodType.Penalty);
+    if (result.scores.containsKey(penaltyPeriod)) {
+      GameResultPerPeriod penaltyScore = result.scores[penaltyPeriod];
       return Intl.message(
           'Loss ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
           name: 'Win result details',
@@ -865,11 +869,12 @@ class Messages {
 
   String resulttie(GameResultDetails result) {
     GameResultPerPeriod finalScore;
-    if (result.scores.containsKey(GameInProgress.Final)) {
-      finalScore = result.scores[GameInProgress.Final];
+    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
+    if (result.scores.containsKey(finalReg)) {
+      finalScore = result.scores[finalReg];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final,
+          period: new GamePeriod(type: GamePeriodType.Regulation),
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
     return Intl.message(
@@ -880,15 +885,17 @@ class Messages {
 
   String resultinprogress(GameResultDetails result) {
     GameResultPerPeriod finalScore;
-    if (result.scores.containsKey(GameInProgress.Final)) {
-      finalScore = result.scores[GameInProgress.Final];
+    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
+    if (result.scores.containsKey(finalReg)) {
+      finalScore = result.scores[finalReg];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: GameInProgress.Final,
+          period: new GamePeriod(type: GamePeriodType.Regulation),
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    if (result.scores.containsKey(GameInProgress.Penalty)) {
-      GameResultPerPeriod penaltyScore = result.scores[GameInProgress.Penalty];
+    GamePeriod penaltyPeriod = new GamePeriod(type: GamePeriodType.Penalty);
+    if (result.scores.containsKey(penaltyPeriod)) {
+      GameResultPerPeriod penaltyScore = result.scores[penaltyPeriod];
       return Intl.message(
           'In progress ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
           name: 'In progress result details',
@@ -899,6 +906,39 @@ class Messages {
         name: 'In progress result details',
         desc: 'In progress result details');
   }
+
+  String onlyscore(GameScore score) {
+    return Intl.message("${score.ptsFor} - ${score.ptsAgainst}");
+  }
+
+  String periodstart(GameLog period) {
+    switch (period.period.type) {
+      case GamePeriodType.Regulation:
+        return "Start period ${period.period.periodNumber} Score:  ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+      case GamePeriodType.Half:
+        return "Start half Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+      case GamePeriodType.Overtime:
+        return "Start overtime Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+      case GamePeriodType.Penalty:
+        return "Start penalty Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+    }
+    return unknown;
+  }
+
+  String periodstop(GameLog period) {
+    switch (period.period.type) {
+      case GamePeriodType.Regulation:
+        return "Stop period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+      case GamePeriodType.Half:
+        return "Stop half Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+      case GamePeriodType.Overtime:
+        return "Stop overtime Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+      case GamePeriodType.Penalty:
+        return "Stop penalty Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+   }
+    return unknown;
+  }
+
 
   String gametitlevs(Game game, String oppponent) {
     switch (game.type) {
@@ -924,11 +964,6 @@ class Messages {
         return Intl.message("In progress", desc: "Game is in progress");
       case GameInProgress.Final:
         return Intl.message("Final", desc: "Game in finalized");
-      case GameInProgress.Penalty:
-        return Intl.message("Penalty Shootout",
-            desc: "Game in pentalty shootout");
-      case GameInProgress.Overtime:
-        return Intl.message("Overtime", desc: "Game in overtime");
       case GameInProgress.NotStarted:
         return Intl.message("Not started", desc: "Game in progress 1st period");
     }

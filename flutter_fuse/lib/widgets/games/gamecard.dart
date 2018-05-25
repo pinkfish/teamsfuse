@@ -66,7 +66,6 @@ class GameCard extends StatelessWidget {
 
     // Show current availability.
     for (Player player in players) {
-
       if (game.attendance.containsKey(player.uid)) {
         attendence[player] = game.attendance[player.uid];
       } else {
@@ -91,16 +90,25 @@ class GameCard extends StatelessWidget {
 
   Widget _buildInProgress(BuildContext context) {
     if (game.result.inProgress == GameInProgress.Final) {
-      GameResultPerPeriod finalResult =
-          game.result.scores[GameInProgress.Final];
+      GameResultPerPeriod finalResult;
       GameResultPerPeriod overtimeResult;
-      if (game.result.scores.containsKey(GameInProgress.Overtime)) {
-        overtimeResult = game.result.scores[GameInProgress.Overtime];
-      }
       GameResultPerPeriod penaltyResult;
-      if (game.result.scores.containsKey(GameInProgress.Penalty)) {
-        penaltyResult = game.result.scores[GameInProgress.Penalty];
+      for (GameResultPerPeriod result in game.result.scores.values) {
+        switch (result.period.type) {
+          case GamePeriodType.Regulation:
+            finalResult = result;
+            break;
+          case GamePeriodType.Overtime:
+            overtimeResult = result;
+            break;
+          case GamePeriodType.Penalty:
+            penaltyResult = result;
+            break;
+          default:
+            break;
+        }
       }
+
       if (game.result.result != GameResult.Unknown) {
         TextStyle style = Theme.of(context).textTheme.body1;
         switch (game.result.result) {

@@ -9,14 +9,38 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/impl/databaseupdatemodelimpl.dart';
 import 'package:flutter_fuse/services/loggingdata.dart';
 import 'package:flutter_fuse/services/appconfiguration.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:timezone/timezone.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:typed_data';
 
-void main() {
+void main() async {
   var trace = Analytics.instance.newTrace("startup");
   trace.start();
 
   DatabaseUpdateModel.instance = new DatabaseUpdateModelImpl();
 
-  Future.wait([SqlData.instance.initDatabase()]);
+  String currentTimeZone;
+  ByteData loadedData;
+  await Future.wait([
+    SqlData.instance.initDatabase(),
+    rootBundle.load('assets/timezone/2018c.tzf').then((ByteData data) {
+      loadedData = data;
+      print('loaded data');
+    }),
+    FlutterNativeTimezone
+        .getLocalTimezone()
+        .then((String str) => currentTimeZone = str)
+  ]);
+
+  initializeDatabase(loadedData.buffer.asUint8List());
+  if (currentTimeZone == "GMT") {
+    currentTimeZone = "Europe/London";
+    setLocalLocation(getLocation(currentTimeZone));
+  } else {
+    setLocalLocation(getLocation(currentTimeZone));
+  }
+  print('$currentTimeZone ${local.toString()}');
 
   // Start the loading, but don't block on it,
   // although load notifications system after it has finished.

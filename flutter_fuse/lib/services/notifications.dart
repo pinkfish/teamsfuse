@@ -102,13 +102,13 @@ class Notifications {
           _createGameNotification(game, id);
         }
       } else if (_notificationMapping.containsKey(game.uid)) {
-        //flutterLocalNotificationsPlugin.cancel(_notificationMapping[game.uid]);
+        flutterLocalNotificationsPlugin.cancel(_notificationMapping[game.uid]);
         _notificationMapping.remove(game.uid);
         _updateSharedPrefs();
       }
     }
     for (String gameId in stillHere) {
-      //flutterLocalNotificationsPlugin.cancel(_notificationMapping[gameId]);
+      flutterLocalNotificationsPlugin.cancel(_notificationMapping[gameId]);
       _notificationMapping.remove(gameId);
       _updateSharedPrefs();
     }
