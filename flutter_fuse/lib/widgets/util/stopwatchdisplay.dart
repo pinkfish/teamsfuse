@@ -28,14 +28,29 @@ class _StopwatchDisplayState extends State<StopwatchDisplay> {
         (Timer t) => widget.stopwatch.isRunning ? setState(() {}) : null);
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    timer?.cancel();
+    timer = null;
+  }
+
   static String format(int milliseconds) {
     int hundreds = (milliseconds / 10).truncate();
     int seconds = (hundreds / 100).truncate();
     int minutes = (seconds / 60).truncate();
+    int hours = (minutes / 60).truncate();
+    if (hours < 0) {
+      hours = -hours;
+    }
 
-    String minutesStr = (minutes % 60).toString().padLeft(2);
     String secondsStr = (seconds % 60).toString().padLeft(2, '0');
+    if (hours > 0) {
+      String minutesStr = (minutes % 60).toString().padLeft(2, '0');
 
+      return "$hours:$minutesStr:$secondsStr";
+    }
+    String minutesStr = (minutes % 60).toString().padLeft(2);
     return "$minutesStr:$secondsStr";
   }
 

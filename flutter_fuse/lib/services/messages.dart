@@ -826,8 +826,7 @@ class Messages {
       finalScore = result.scores[finalReg];
     } else {
       finalScore = new GameResultPerPeriod(
-          period: finalReg,
-          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+          period: finalReg, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
     GamePeriod penaltyPeriod = new GamePeriod(type: GamePeriodType.Penalty);
     if (result.scores.containsKey(penaltyPeriod)) {
@@ -915,8 +914,8 @@ class Messages {
     switch (period.period.type) {
       case GamePeriodType.Regulation:
         return "Start period ${period.period.periodNumber} Score:  ${period.score.ptsFor} - ${period.score.ptsAgainst}";
-      case GamePeriodType.Half:
-        return "Start half Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+      case GamePeriodType.Break:
+        return "Stop period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
       case GamePeriodType.Overtime:
         return "Start overtime Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
       case GamePeriodType.Penalty:
@@ -929,16 +928,15 @@ class Messages {
     switch (period.period.type) {
       case GamePeriodType.Regulation:
         return "Stop period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
-      case GamePeriodType.Half:
-        return "Stop half Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+      case GamePeriodType.Break:
+        return "Stop period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
       case GamePeriodType.Overtime:
         return "Stop overtime Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
       case GamePeriodType.Penalty:
         return "Stop penalty Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
-   }
+    }
     return unknown;
   }
-
 
   String gametitlevs(Game game, String oppponent) {
     switch (game.type) {
@@ -952,6 +950,28 @@ class Messages {
         return Intl.message("Practice");
     }
     return unknown;
+  }
+
+  String get forpts {
+    return Intl.message("For",
+        desc:
+            "Title to the spinner for showing points for in the results screen");
+  }
+
+  String get againstpts {
+    return Intl.message("Against",
+        desc:
+        "Title to the spinner for showing points against in the results screen");
+  }
+  String get updatescorebutton {
+    return Intl.message("Update Score",
+        desc:
+        "Title to the button to update the score results screen");
+  }
+  String get finishgamebutton {
+    return Intl.message("Finish",
+        desc:
+        "Text for the button to finish the game in the update score screen");
   }
 
   String followplayer(String player) {
@@ -980,6 +1000,14 @@ class Messages {
         return Intl.message("Non Player", desc: "Non Player role in the team");
     }
     return unknown;
+  }
+
+  String get resettimer {
+    return Intl.message("Reset Timer");
+  }
+
+  String get resettimerbody {
+    return Intl.message("Do you want to reset the timer to zero?");
   }
 
   String get startgame {
@@ -1324,7 +1352,8 @@ class Messages {
             author: Intl.message("Michael Jordan"));
       case 2:
         return new QuoteAndAuthor(
-          quote: Intl.message("I know I am getting better at golf because I am hitting fewer spectators."),
+          quote: Intl.message(
+              "I know I am getting better at golf because I am hitting fewer spectators."),
           author: Intl.message("Gerald R. Ford"),
         );
       default:

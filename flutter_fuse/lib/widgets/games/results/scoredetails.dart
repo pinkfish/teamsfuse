@@ -60,13 +60,15 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     widget.game.loadGameLogs();
     // Setup the stop watch/
     stopwatch.resetTo(_details.currentStopwatch().inMilliseconds);
+    print("${_details.currentOffset} ${_details.currentPeriodStart}");
     if (_details.currentPeriodStart != null) {
       stopwatch.start();
     }
     _gameSubscription = widget.game.thisGameStream.listen(_updateGame);
     _scrollController = new ScrollController(
         initialScrollOffset: PeriodNumberSelector.ITEM_EXTENT *
-            (_details.currentPeriod.periodNumber - 1));
+            (_details.currentPeriod.periodNumber - 1) *
+            2);
   }
 
   @override
@@ -134,67 +136,60 @@ class _ScoreDetailsState extends State<ScoreDetails> {
   }
 
   void _updateScore() async {
-    if (_details.inProgress != GameInProgress.Final &&
-        _currentPeriodResults == GameInProgress.Final) {
-      // Finalize game?
-      GameResult gameResult;
-      if (_currentPeriodResults.score.ptsFor >
-          _currentPeriodResults.score.ptsAgainst) {
-        gameResult = GameResult.Win;
-      } else if (_currentPeriodResults.score.ptsFor <
-          _currentPeriodResults.score.ptsAgainst) {
-        gameResult = GameResult.Loss;
-      } else {
-        gameResult = GameResult.Tie;
+    setState(() {
+      if (_ptsAgainst != null) {
+        _currentPeriodResults.score.ptsAgainst = _ptsAgainst;
       }
-      bool ret = await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return new AlertDialog(
-              title: new Text(Messages.of(context).finalscore),
-              content: new Text(Messages.of(context).finalscorebody(
-                  _currentPeriodResults.score.ptsFor,
-                  _currentPeriodResults.score.ptsAgainst,
-                  gameResult.toString())),
-              actions: <Widget>[
-                new FlatButton(
-                  child:
-                      new Text(MaterialLocalizations.of(context).okButtonLabel),
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  },
-                ),
-                new FlatButton(
-                  child: new Text(
-                      MaterialLocalizations.of(context).cancelButtonLabel),
-                  onPressed: () {
-                    Navigator.pop(context, false);
-                  },
-                )
-              ],
-            );
-          });
-      if (ret != null && ret == true) {
-        // Save the state update.
-        setState(() {
-          if (_ptsAgainst != null) {
-            _currentPeriodResults.score.ptsAgainst = _ptsAgainst;
-          }
-          if (_ptsFor != null) {
-            _currentPeriodResults.score.ptsFor = _ptsFor;
-          }
-          _currentPeriodResults.period =
-              new GamePeriod(type: GamePeriodType.Regulation);
-          _details.scores[_currentPeriodResults.period] = _currentPeriodResults;
-          _details.inProgress = GameInProgress.Final;
-          _details.result = gameResult;
-          _writeLog(GameLogType.PeriodStop);
-        });
-        // Save the game and exit.
-        widget.game.updateFirestoreResult(_details);
-        Navigator.pop(context);
+      if (_ptsFor != null) {
+        _currentPeriodResults.score.ptsFor = _ptsFor;
       }
+      print("Update score $_currentPeriodResults");
+      _writeLog(GameLogType.ScoreUpdate);
+    });
+    _debouncer.debounce(true);
+  }
+
+  void _finishGame() async {
+    // Finalize game?
+    GameResult gameResult;
+    if (_currentPeriodResults.score.ptsFor >
+        _currentPeriodResults.score.ptsAgainst) {
+      gameResult = GameResult.Win;
+    } else if (_currentPeriodResults.score.ptsFor <
+        _currentPeriodResults.score.ptsAgainst) {
+      gameResult = GameResult.Loss;
     } else {
+      gameResult = GameResult.Tie;
+    }
+    bool ret = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text(Messages.of(context).finalscore),
+            content: new Text(Messages.of(context).finalscorebody(
+                _currentPeriodResults.score.ptsFor,
+                _currentPeriodResults.score.ptsAgainst,
+                gameResult.toString())),
+            actions: <Widget>[
+              new FlatButton(
+                child:
+                    new Text(MaterialLocalizations.of(context).okButtonLabel),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              ),
+              new FlatButton(
+                child: new Text(
+                    MaterialLocalizations.of(context).cancelButtonLabel),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              )
+            ],
+          );
+        });
+    if (ret != null && ret == true) {
+      // Save the state update.
       setState(() {
         if (_ptsAgainst != null) {
           _currentPeriodResults.score.ptsAgainst = _ptsAgainst;
@@ -202,14 +197,68 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         if (_ptsFor != null) {
           _currentPeriodResults.score.ptsFor = _ptsFor;
         }
-        print("Update score $_currentPeriodResults");
-        _writeLog(GameLogType.ScoreUpdate);
+        _currentPeriodResults.period =
+            new GamePeriod(type: GamePeriodType.Regulation);
+        _details.scores[_currentPeriodResults.period] = _currentPeriodResults;
+        _details.inProgress = GameInProgress.Final;
+        _details.result = gameResult;
+        _writeLog(GameLogType.PeriodStop);
       });
-      _debouncer.debounce(true);
+      // Save the game and exit.
+      widget.game.updateFirestoreResult(_details);
+      Navigator.pop(context);
     }
   }
 
-  void _startGame() async {
+  Future<void> _startGame() async {
+    if (widget.team.sport == Sport.Soccer) {
+      return _startGameSimple();
+    }
+    // Ask if they are sure
+    GameDivisionsType ret = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new SimpleDialog(
+            title: new Text(Messages.of(context).startgame),
+            children: <Widget>[
+              new Text(Messages.of(context).startgamebody),
+              new SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, GameDivisionsType.Halves);
+                },
+                child: const Text('Halves'),
+              ),
+              new SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, GameDivisionsType.Thirds);
+                },
+                child: const Text('Thirds'),
+              ),
+              new SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, GameDivisionsType.Quarters);
+                },
+                child: const Text('Quarters'),
+              ),
+            ],
+          );
+        });
+    if (ret != null) {
+      // Save the state update.
+      setState(() {
+        _details.divisions = ret;
+        _details.inProgress = GameInProgress.InProgress;
+        _details.currentPeriodStart = new TZDateTime.now(local);
+        _details.currentOffset = new Duration();
+        _details.currentPeriod =
+            new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 1);
+        _writeLog(GameLogType.PeriodStart);
+        widget.game.updateFirestoreResult(_details);
+      });
+    }
+  }
+
+  Future<void> _startGameSimple() async {
     // Ask if they are sure
     bool ret = await showDialog(
         context: context,
@@ -238,6 +287,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     if (ret != null && ret == true) {
       // Save the state update.
       setState(() {
+        _details.divisions = GameDivisionsType.Halves;
         _details.inProgress = GameInProgress.InProgress;
         _details.currentPeriodStart = new TZDateTime.now(local);
         _details.currentOffset = new Duration();
@@ -278,20 +328,48 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     widget.game.updateFirestoreResult(_details);
   }
 
-  void _resetTimer() {
-    stopwatch.reset();
-    if (stopwatch.isRunning) {
-      setState(() {
-        _details.currentPeriodStart = new TZDateTime.now(local);
-        _details.currentOffset = new Duration(milliseconds: 0);
-      });
-    } else {
-      setState(() {
-        _details.currentOffset = new Duration(milliseconds: 0);
-      });
+  void _resetTimer() async {
+    bool ret = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text(Messages.of(context).resettimer),
+            content: new Text(Messages.of(context).resettimerbody),
+            actions: <Widget>[
+              new FlatButton(
+                child:
+                    new Text(MaterialLocalizations.of(context).okButtonLabel),
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+              ),
+              new FlatButton(
+                child: new Text(
+                    MaterialLocalizations.of(context).cancelButtonLabel),
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+              )
+            ],
+          );
+        });
+    if (ret != null && ret == true) {
+      stopwatch.reset();
+      if (stopwatch.isRunning) {
+        setState(() {
+          _details.currentPeriodStart = new TZDateTime.now(local);
+          _details.currentOffset = new Duration(milliseconds: 0);
+        });
+      } else {
+        setState(() {
+          _details.currentOffset = new Duration(milliseconds: 0);
+        });
+      }
+      widget.game.updateFirestoreResult(_details);
     }
-    widget.game.updateFirestoreResult(_details);
   }
+
+  void _timerSettings() {}
 
   void _changeResult() {
     // Do something to change the result.
@@ -352,161 +430,185 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       );
     } else {
       List<Widget> children = [
+        /*
         new PeriodNumberSelector(
-            _details.currentPeriod, _periodChanged, _scrollController),
+            _details.currentPeriod, _details.divisions, _periodChanged, _scrollController),
         new PeriodTypeSelector(
             widget.team, _details.currentPeriod, _periodChanged),
+            */
+        new PeriodSelector(
+          currentPeriod: _details.currentPeriod,
+          divisionsType: _details.divisions,
+          team: widget.team,
+          onChanged: _periodChanged,
+        )
       ];
       if (MediaQuery.of(context).viewInsets.bottom == 0.0) {
-        children.add(new Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            new Expanded(
-              flex: 1,
-              child: new Container(
-                decoration: new BoxDecoration(),
-                margin: new EdgeInsets.only(bottom: 5.0),
-                child: new Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    new Text(
-                      "For",
-                      style: theme.textTheme.subhead.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.accentColor,
-                      ),
-                    ),
-                    new Container(
-                      decoration: new BoxDecoration(
-                        border: new Border.all(
-                            color: theme.dividerColor, width: 1.0),
-                        gradient: new LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.centerLeft,
-                          tileMode: TileMode.mirror,
-                          colors: [Colors.grey.shade300, Colors.white],
+        children.add(
+          new Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              new Expanded(
+                flex: 1,
+                child: new Container(
+                  decoration: new BoxDecoration(),
+                  margin: new EdgeInsets.only(bottom: 5.0),
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      new Text(
+                        Messages.of(context).forpts,
+                        style: theme.textTheme.subhead.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.accentColor,
                         ),
                       ),
-                      child: new NumberPicker.integer(
-                        key: _ptsForState,
-                        disabled:
-                            _details.inProgress == GameInProgress.NotStarted,
-                        initialValue: _currentPeriodResults.score.ptsFor,
-                        minValue: 0,
-                        maxValue: 10000,
-                        onChanged: (num val) {
-                          _ptsFor = val;
-                        },
+                      new Container(
+                        decoration: new BoxDecoration(
+                          border: new Border.all(
+                              color: theme.dividerColor, width: 1.0),
+                          gradient: new LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.centerLeft,
+                            tileMode: TileMode.mirror,
+                            colors: [Colors.grey.shade300, Colors.white],
+                          ),
+                        ),
+                        child: new NumberPicker.integer(
+                          key: _ptsForState,
+                          listViewWidth: 80.0,
+                          itemExtent: 40.0,
+                          disabled:
+                              _details.inProgress == GameInProgress.NotStarted,
+                          initialValue: _currentPeriodResults.score.ptsFor,
+                          minValue: 0,
+                          maxValue: 10000,
+                          onChanged: (num val) {
+                            _ptsFor = val;
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            new Expanded(
-              flex: 1,
-              child: new Container(
-                decoration: new BoxDecoration(),
-                margin: new EdgeInsets.only(bottom: 5.0, top: 5.0),
-                child: new Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    new Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        new IconButton(
-                          icon: const Icon(Icons.restore),
-                          onPressed: _resetTimer,
-                        ),
-                        new IconButton(
-                          icon: const Icon(Icons.settings),
-                          onPressed: _resetTimer,
-                        ),
-                      ],
-                    ),
-                    new Container(
-                      child: new StopwatchDisplay(
-                        stopwatch: stopwatch,
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .title
-                            .copyWith(fontSize: 25.0),
+              new Expanded(
+                flex: 1,
+                child: new Container(
+                  decoration: new BoxDecoration(),
+                  margin: new EdgeInsets.only(bottom: 5.0, top: 5.0),
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      new Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          new IconButton(
+                            icon: const Icon(Icons.restore),
+                            onPressed: _resetTimer,
+                          ),
+                          new IconButton(
+                            icon: const Icon(Icons.settings),
+                            onPressed: _timerSettings,
+                          ),
+                        ],
                       ),
-                    ),
-                    new IconButton(
-                      icon: stopwatch.isRunning
-                          ? const Icon(Icons.pause)
-                          : const Icon(Icons.play_arrow),
-                      onPressed: _toggleTimer,
-                      iconSize: 40.0,
-                    )
-                  ],
+                      new Container(
+                        child: new StopwatchDisplay(
+                          stopwatch: stopwatch,
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .title
+                              .copyWith(fontSize: 25.0),
+                        ),
+                      ),
+                      new IconButton(
+                        icon: stopwatch.isRunning
+                            ? const Icon(Icons.pause)
+                            : const Icon(Icons.play_arrow),
+                        onPressed: _toggleTimer,
+                        iconSize: 40.0,
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-            new Expanded(
-              flex: 1,
-              child: new Container(
-                decoration: new BoxDecoration(),
-                margin: new EdgeInsets.only(bottom: 5.0),
-                child: new Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    new Text(
-                      "Against",
-                      style: theme.textTheme.subhead.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.accentColor,
-                      ),
-                    ),
-                    new Container(
-                      decoration: new BoxDecoration(
-                        border: new Border.all(
-                            color: theme.dividerColor, width: 1.0),
-                        gradient: new LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.centerLeft,
-                          tileMode: TileMode.mirror,
-                          colors: [Colors.grey.shade300, Colors.white],
+              new Expanded(
+                flex: 1,
+                child: new Container(
+                  decoration: new BoxDecoration(),
+                  margin: new EdgeInsets.only(bottom: 5.0),
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      new Text(
+                        Messages.of(context).againstpts,
+                        style: theme.textTheme.subhead.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.accentColor,
                         ),
                       ),
-                      child: new NumberPicker.integer(
-                        key: _ptsAgainstState,
-                        disabled:
-                            _details.inProgress == GameInProgress.NotStarted,
-                        initialValue: _currentPeriodResults.score.ptsAgainst,
-                        minValue: 0,
-                        maxValue: 10000,
-                        onChanged: (num val) {
-                          _ptsAgainst = val;
-                        },
+                      new Container(
+                        decoration: new BoxDecoration(
+                          border: new Border.all(
+                              color: theme.dividerColor, width: 1.0),
+                          gradient: new LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.centerLeft,
+                            tileMode: TileMode.mirror,
+                            colors: [Colors.grey.shade300, Colors.white],
+                          ),
+                        ),
+                        child: new NumberPicker.integer(
+                          listViewWidth: 80.0,
+                          itemExtent: 40.0,
+                          key: _ptsAgainstState,
+                          disabled:
+                              _details.inProgress == GameInProgress.NotStarted,
+                          initialValue: _currentPeriodResults.score.ptsAgainst,
+                          minValue: 0,
+                          maxValue: 10000,
+                          onChanged: (num val) {
+                            _ptsAgainst = val;
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ));
+            ],
+          ),
+        );
         children.add(
           new Row(
             children: <Widget>[
               new Expanded(
                 child: new Container(
-                  margin: new EdgeInsets.all(5.0),
+                  margin:
+                      new EdgeInsets.only(left: 5.0, right: 5.0, bottom: 5.0),
                   child: new RaisedButton(
                     onPressed: _updateScore,
-                    color: theme.accentColor,
+                    color: Colors.blue,
                     textColor: Colors.white,
-                    child: new Text("Update Score"),
+                    child: new Text(Messages.of(context).updatescorebutton),
                   ),
                 ),
-              )
+              ),
+              new Container(
+                margin: new EdgeInsets.only(right: 5.0, bottom: 5.0),
+                child: new RaisedButton(
+                  onPressed: _finishGame,
+                  color: theme.accentColor,
+                  textColor: Colors.white,
+                  child: new Text(Messages.of(context).finishgamebutton),
+                ),
+              ),
             ],
           ),
         );
@@ -515,6 +617,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         key: _formKey,
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: children,
         ),
       );
