@@ -237,7 +237,7 @@ class PeriodSelector extends StatelessWidget {
 
   List<DropdownMenuItem<GamePeriodType>> _buildPeriodTypes(
       BuildContext context) {
-    return [
+    List<DropdownMenuItem<GamePeriodType>> ret = [
       new DropdownMenuItem<GamePeriodType>(
         child: new Text("Regulation"),
         value: GamePeriodType.Regulation,
@@ -246,11 +246,16 @@ class PeriodSelector extends StatelessWidget {
         child: new Text("Overtime"),
         value: GamePeriodType.Overtime,
       ),
-      new DropdownMenuItem<GamePeriodType>(
-        child: new Text("Penalty"),
-        value: GamePeriodType.Penalty,
-      )
     ];
+    if (team.sport == Sport.Soccer) {
+      ret.add(
+        new DropdownMenuItem<GamePeriodType>(
+          child: new Text("Penalty"),
+          value: GamePeriodType.Penalty,
+        ),
+      );
+    }
+    return ret;
   }
 
   DropdownMenuItem<int> _makePeriodButton(String text, int period) {
@@ -273,13 +278,18 @@ class PeriodSelector extends StatelessWidget {
   List<DropdownMenuItem<int>> _buildDurationTypes(BuildContext context) {
     List<DropdownMenuItem<int>> ret = [];
 
+    if (currentPeriod.type == GamePeriodType.Penalty) {
+      ret.add(_makePeriodButton("None", 1));
+      return ret;
+    }
+
     switch (divisionsType) {
-      case GameDivisionsType.Quarters:
+      case GameDivisionsType.Halves:
         ret.add(_makePeriodButton("First", 1));
         ret.add(_makeBreakButton("Half time", 1));
         ret.add(_makePeriodButton("Second", 2));
         break;
-      case GameDivisionsType.Halves:
+      case GameDivisionsType.Quarters:
         print("${currentPeriod}");
         ret.add(_makePeriodButton("1st Quarter", 1));
         ret.add(_makeBreakButton("End of 1st Quarter", 1));
@@ -294,6 +304,9 @@ class PeriodSelector extends StatelessWidget {
   }
 
   void _setPeriodType(GamePeriodType type) {
+    if (type == currentPeriod.type) {
+      return;
+    }
     GamePeriod period =
         new GamePeriod(type: type, periodNumber: currentPeriod.periodNumber);
     switch (type) {
@@ -313,6 +326,9 @@ class PeriodSelector extends StatelessWidget {
   }
 
   void _setPeriodNumber(int periodNumber) {
+    if (periodNumber == currentPeriod.periodNumber) {
+      return;
+    }
     GamePeriod period;
     if (currentPeriod.type == GamePeriodType.OvertimeBreak) {
       period = new GamePeriod(
@@ -357,28 +373,31 @@ class PeriodSelector extends StatelessWidget {
     }
     return new Container(
       padding: new EdgeInsets.only(left: 5.0, right: 5.0),
-      child: new Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          new Expanded(
-            flex: 1,
-            child: new DropdownButton<GamePeriodType>(
+      decoration: new BoxDecoration(color: Colors.lightBlue.shade50),
+      child: new DropdownButtonHideUnderline(
+        child: new Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            new Expanded(
+              flex: 1,
+              child: new DropdownButton<int>(
+                items: _buildDurationTypes(context),
+                value: selectedPeriod,
+                onChanged: (int val) => _setPeriodVal(val),
+              ),
+            ),
+            new SizedBox(
+              width: 10.0,
+            ),
+            new DropdownButton<GamePeriodType>(
               value: selected,
               items: _buildPeriodTypes(context),
               onChanged: (GamePeriodType ty) => _setPeriodType(ty),
             ),
-          ),
-          new SizedBox(
-            width: 10.0,
-          ),
-          new DropdownButton<int>(
-            items: _buildDurationTypes(context),
-            value: selectedPeriod,
-            onChanged: (int val) => _setPeriodVal(val),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

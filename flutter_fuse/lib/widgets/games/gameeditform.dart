@@ -188,7 +188,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
               children: <Widget>[
                 new Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: firstRow,
                 ),

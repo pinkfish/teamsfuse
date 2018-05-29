@@ -357,7 +357,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       stopwatch.reset();
       if (stopwatch.isRunning) {
         setState(() {
-          _details.currentPeriodStart = new TZDateTime.now(local);
+          _details.currentPeriodStart = new DateTime.now();
           _details.currentOffset = new Duration(milliseconds: 0);
         });
       } else {

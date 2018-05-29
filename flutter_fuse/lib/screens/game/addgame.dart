@@ -154,7 +154,7 @@ class AddGameScreenState extends State<AddGameScreen> {
       body: new SavingOverlay(
         saving: _saving,
         child: new Container(
-          padding: new EdgeInsets.all(16.0),
+          padding: new EdgeInsets.all(5.0),
           child: new StepperAlwaysVisible(
             type: StepperType.horizontal,
             currentStep: this.currentStep,
@@ -173,12 +173,17 @@ class AddGameScreenState extends State<AddGameScreen> {
                 title: new Text(messages.teamselect),
                 state: teamStepState,
                 isActive: true,
-                content: new Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    new TeamPicker(onChanged: this._teamChanged),
-                  ],
+                content: new DropdownButtonHideUnderline(
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      new TeamPicker(
+                        onChanged: this._teamChanged,
+                        teamUid: _teamUid,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               new Step(

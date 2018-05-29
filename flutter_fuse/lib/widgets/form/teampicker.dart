@@ -16,7 +16,6 @@ class TeamPicker extends StatefulWidget {
 }
 
 class TeamPickerState extends State<TeamPicker> {
-  String _value;
   StreamSubscription<UpdateReason> _teamStream;
 
   TeamPickerState();
@@ -31,7 +30,6 @@ class TeamPickerState extends State<TeamPicker> {
     _teamStream = UserDatabaseData.instance.teamStream.listen((update) {
       setState(() {});
     });
-    _value = widget.teamUid;
     super.initState();
   }
 
@@ -61,9 +59,8 @@ class TeamPickerState extends State<TeamPicker> {
             child: new DropdownButton<String>(
               hint: new Text(Messages.of(context).teamselect),
               items: _buildItems(),
-              value: this._value,
+              value: widget.teamUid,
               onChanged: (String val) {
-                _value = val;
                 this.widget.onChanged(val);
                 return val;
               },
