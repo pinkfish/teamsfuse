@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -22,6 +23,17 @@ class SignupScreenState extends State<SignupScreen> {
   bool autovalidate = false;
   Validations validations = new Validations();
   UserData person = new UserData();
+
+  // Profile details.
+  String displayName;
+  String phoneNumber;
+  String email;
+  String password;
+  FocusNode _focusNodeDisplayName = new FocusNode();
+  FocusNode _focusNodePhoneNumber = new FocusNode();
+  FocusNode _focusNodeEmail = new FocusNode();
+  FocusNode _focusNodePassword = new FocusNode();
+  FocusNode _focusNodePasswordVerify = new FocusNode();
 
   @override
   void initState() {
@@ -45,20 +57,28 @@ class SignupScreenState extends State<SignupScreen> {
       showInSnackBar(Messages.of(context).formerror);
     } else {
       form.save();
-      UserAuth.instance.createUser(person).then((UserData data) async {
+      person.email = email;
+      UserAuth.instance
+          .createUser(
+              person,
+              new FusedUserProfile(
+                  displayName: displayName,
+                  phoneNumber: phoneNumber,
+                  email: email))
+          .then((UserData data) async {
         await showDialog(
           context: context,
           builder: (BuildContext context) => new AlertDialog(
-            content: new Text(Messages.of(context).createdaccount),
-            actions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  },
-                  child: new Text(
-                      MaterialLocalizations.of(context).okButtonLabel))
-            ],
-          ),
+                content: new Text(Messages.of(context).createdaccount),
+                actions: <Widget>[
+                  new FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context, true);
+                      },
+                      child: new Text(
+                          MaterialLocalizations.of(context).okButtonLabel))
+                ],
+              ),
         );
         Navigator.pushNamed(context, "/Login/Verify");
       }).catchError((Error e) {
@@ -117,77 +137,98 @@ class SignupScreenState extends State<SignupScreen> {
                       autovalidate: autovalidate,
                       child: new Column(
                         children: <Widget>[
-                          new TextFormField(
-                            decoration: new InputDecoration(
-                                icon: const Icon(Icons.account_box),
-                                hintText: Messages.of(context).displaynamehint,
-                                labelText: Messages.of(context).displayname),
-                            keyboardType: TextInputType.text,
-                            obscureText: false,
-                            validator: (String str) {
-                              return validations.validateName(context, str);
-                            },
-                            onSaved: (String value) {
-                              person.profile.displayName = value;
-                            },
-                          ),
-                          new TextFormField(
-                            decoration: new InputDecoration(
-                              icon: const Icon(Icons.email),
-                              hintText: Messages.of(context).youremailHint,
-                              labelText: Messages.of(context).email,
+                          new EnsureVisibleWhenFocused(
+                            focusNode: _focusNodeDisplayName,
+                            child: new TextFormField(
+                              decoration: new InputDecoration(
+                                  icon: const Icon(Icons.account_box),
+                                  hintText:
+                                      Messages.of(context).displaynamehint,
+                                  labelText: Messages.of(context).displayname),
+                              keyboardType: TextInputType.text,
+                              obscureText: false,
+                              focusNode: _focusNodeDisplayName,
+                              validator: (String str) {
+                                return validations.validateName(context, str);
+                              },
+                              onSaved: (String value) {
+                                displayName = value;
+                              },
                             ),
-                            keyboardType: TextInputType.emailAddress,
-                            obscureText: false,
-                            validator: (String str) {
-                              return validations.validateEmail(context, str);
-                            },
-                            onSaved: (String value) {
-                              person.email = value;
-                            },
                           ),
-                          new TextFormField(
-                            decoration: new InputDecoration(
-                              icon: const Icon(Icons.phone),
-                              hintText:
-                                  Messages.of(context).phonenumberhintoptional,
-                              labelText: Messages.of(context).phonenumber,
+                          new EnsureVisibleWhenFocused(
+                            focusNode: _focusNodeEmail,
+                            child: new TextFormField(
+                              decoration: new InputDecoration(
+                                icon: const Icon(Icons.email),
+                                hintText: Messages.of(context).youremailHint,
+                                labelText: Messages.of(context).email,
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+                              obscureText: false,
+                              focusNode: _focusNodeEmail,
+                              validator: (String str) {
+                                return validations.validateEmail(context, str);
+                              },
+                              onSaved: (String value) {
+                                email = value;
+                              },
                             ),
-                            keyboardType: TextInputType.phone,
-                            obscureText: false,
-                            validator: (String str) {
-                              return validations.validatePhone(context, str);
-                            },
-                            onSaved: (String value) {
-                              person.profile.phoneNumber = value;
-                            },
                           ),
-                          new TextFormField(
-                            decoration: new InputDecoration(
-                              icon: const Icon(Icons.lock),
-                              hintText: Messages.of(context).password,
-                              labelText: Messages.of(context).password,
+                          new EnsureVisibleWhenFocused(
+                            focusNode: _focusNodePhoneNumber,
+                            child: new TextFormField(
+                              decoration: new InputDecoration(
+                                icon: const Icon(Icons.phone),
+                                hintText: Messages
+                                    .of(context)
+                                    .phonenumberhintoptional,
+                                labelText: Messages.of(context).phonenumber,
+                              ),
+                              keyboardType: TextInputType.phone,
+                              obscureText: false,
+                              focusNode: _focusNodePhoneNumber,
+                              validator: (String str) {
+                                return validations.validatePhone(context, str);
+                              },
+                              onSaved: (String value) {
+                                phoneNumber = value;
+                              },
                             ),
-                            obscureText: true,
-                            validator: (String str) {
-                              return validations.validatePassword(context, str);
-                            },
-                            key: _passwordFieldKey,
-                            onSaved: (String password) {
-                              person.password = password;
-                            },
                           ),
-                          new TextFormField(
-                            decoration: new InputDecoration(
-                              icon: const Icon(Icons.lock),
-                              hintText: Messages.of(context).verifypassword,
-                              labelText: Messages.of(context).verifypassword,
+                          new EnsureVisibleWhenFocused(
+                            focusNode: _focusNodePassword,
+                            child: new TextFormField(
+                              decoration: new InputDecoration(
+                                icon: const Icon(Icons.lock),
+                                hintText: Messages.of(context).password,
+                                labelText: Messages.of(context).password,
+                              ),
+                              obscureText: true,
+                              focusNode: _focusNodePassword,
+                              validator: (String str) {
+                                return validations.validatePassword(
+                                    context, str);
+                              },
+                              key: _passwordFieldKey,
+                              onSaved: (String password) {
+                                password = password;
+                              },
                             ),
-                            obscureText: true,
-                            validator: _validatePassword,
-                            onSaved: (String password) {
-                              person.password = password;
-                            },
+                          ),
+                          new EnsureVisibleWhenFocused(
+                            focusNode: _focusNodePasswordVerify,
+                            child: new TextFormField(
+                              decoration: new InputDecoration(
+                                icon: const Icon(Icons.lock),
+                                hintText: Messages.of(context).verifypassword,
+                                labelText: Messages.of(context).verifypassword,
+                              ),
+                              focusNode: _focusNodePasswordVerify,
+                              obscureText: true,
+                              validator: _validatePassword,
+                              onSaved: (String password) {},
+                            ),
                           ),
                           new Container(
                             child: new RaisedButton(

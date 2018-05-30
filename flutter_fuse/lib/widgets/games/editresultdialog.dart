@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/util/debouncer.dart';
 import 'results/gamelogview.dart';
 import 'results/messagesend.dart';
 import 'results/scoredetails.dart';
-import 'dart:async';
 
 class EditResultDialog extends StatelessWidget {
   final Game _game;

@@ -16,7 +16,7 @@ class UserData {
 
   set email(String val) {
     if (profile != null) {
-      profile.email = val;
+      profile = profile.copyWith(email: val);
     }
     _email = val;
   }
@@ -86,7 +86,7 @@ class UserAuth {
   }
 
   // To create new User
-  Future<UserData> createUser(UserData userData) {
+  Future<UserData> createUser(UserData userData, FusedUserProfile profile) {
     return _auth
         .createUserWithEmailAndPassword(
             email: userData.email, password: userData.password)
@@ -96,7 +96,7 @@ class UserAuth {
       DocumentReference ref = Firestore.instance
           .collection(USER_DATA_COLLECTION)
           .document(user.uid);
-      return ref.setData(userData.profile.toJSON()).then((void data) async {
+      return ref.setData(profile.toJSON()).then((void data) async {
         // With update uid.
         // Create a 'me' user.
         Player player = new Player();
@@ -176,10 +176,10 @@ class UserAuth {
     return null;
   }
 
-  Future<void> updateProfile(UserData user) async {
+  Future<void> updateProfile(String uid, FusedUserProfile profile) async {
     DocumentReference ref =
-        Firestore.instance.collection(USER_DATA_COLLECTION).document(user.uid);
-    await ref.updateData(user.profile.toJSON());
+        Firestore.instance.collection(USER_DATA_COLLECTION).document(uid);
+    await ref.updateData(profile.toJSON());
   }
 
   Future<FusedUserProfile> getProfile(String userId) async {
@@ -188,8 +188,7 @@ class UserAuth {
         .document(userId)
         .get();
     if (ref.exists) {
-      FusedUserProfile profile = new FusedUserProfile();
-      profile.fromJSON(ref.data);
+      FusedUserProfile profile = new FusedUserProfile.fromJSON(ref.data);
       return profile;
     }
     return null;
@@ -199,9 +198,8 @@ class UserAuth {
     if (doc.exists) {
       SqlData.instance
           .updateElement(SqlData.PROFILE_TABLE, doc.documentID, doc.data);
-      FusedUserProfile profile = new FusedUserProfile();
-      profile.fromJSON(doc.data);
-      _currentUser.profile = profile;
+      FusedUserProfile profile = new FusedUserProfile.fromJSON(doc.data);
+       _currentUser.profile = profile;
       _controller.add(_currentUser);
     }
   }
@@ -230,8 +228,7 @@ class UserAuth {
         // Update when ready.
         ref.then((DocumentSnapshot doc) {
           print('Loaded from firestore');
-          FusedUserProfile profile = new FusedUserProfile();
-          profile.fromJSON(doc.data);
+          FusedUserProfile profile = new FusedUserProfile.fromJSON(doc.data);
           user.profile = profile;
           SqlData.instance
               .updateElement(SqlData.PROFILE_TABLE, doc.documentID, data);
@@ -239,8 +236,7 @@ class UserAuth {
       }
     }
     if (data != null) {
-      FusedUserProfile profile = new FusedUserProfile();
-      profile.fromJSON(data);
+      FusedUserProfile profile = new FusedUserProfile.fromJSON(data);
       user.profile = profile;
     }
     _currentUser = user;

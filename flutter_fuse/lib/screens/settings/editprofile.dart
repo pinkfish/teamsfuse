@@ -32,6 +32,10 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   StreamSubscription streamListen;
   final Player me;
 
+  // Details to update.
+  String displayName;
+  String phoneNumber;
+
   EditProfileScreenState(String meUid)
       : me = new Player.copy(UserDatabaseData.instance.players[meUid]);
 
@@ -93,7 +97,10 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         // Only update in the me player, we don't use the built in photourl.
         await me.updateImage(_imageFile);
       }
-      Navigator.pop(context);
+      FusedUserProfile profile = _user.profile.copyWith(
+          displayName: this.displayName, phoneNumber: this.phoneNumber);
+      UserAuth.instance.updateProfile(_user.uid, profile);
+       Navigator.pop(context);
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
@@ -161,7 +168,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                             return _validations.validateName(context, name);
                           },
                           onSaved: (String value) {
-                            _user.profile.displayName = value;
+                            displayName = value;
                           },
                         ),
                       ),
@@ -180,7 +187,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                             return _validations.validatePhone(context, phone);
                           },
                           onSaved: (String value) {
-                            _user.profile.displayName = value;
+                            phoneNumber = value;
                           },
                         ),
                       ),

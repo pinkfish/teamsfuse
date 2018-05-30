@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
-import 'package:flutter_fuse/widgets/games/ganeslistcalendar.dart';
+import 'package:flutter_fuse/widgets/games/gameslistcalendar.dart';
 import 'package:flutter_fuse/widgets/invites/invitecard.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/notifications.dart';
 import 'package:flutter_fuse/widgets/util/fabdialer.dart';
 import 'package:flutter_fuse/widgets/util/fabminimenuitem.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
-import 'package:flutter_fuse/widgets/calendar/src/calendar.dart';
+import 'package:sliver_calendar/sliver_calendar.dart';
 import 'package:timezone/timezone.dart';
 import 'dart:async';
 

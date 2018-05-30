@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
-import 'package:flutter_fuse/widgets/calendar/src/calendar.dart';
+import 'package:sliver_calendar/sliver_calendar.dart';
 import 'dart:async';
 
 class GameListCalendarState extends CalendarSource {

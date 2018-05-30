@@ -1,6 +1,5 @@
 import 'package:fusemodel/fusemodel.dart';
 import 'dart:async';
-import 'package:timezone/timezone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'sqldata.dart';
 export 'package:fusemodel/fusemodel.dart';

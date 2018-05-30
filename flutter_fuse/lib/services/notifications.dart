@@ -44,12 +44,6 @@ class Notifications {
     _gameStream = null;
   }
 
-  Future<dynamic> _onSelectNotification(String payload) async {
-    print('Selected notification $payload}');
-    _notificationRoutes.add(payload);
-    return 1;
-  }
-
   int _generateNotificationId() {
     int val;
     do {

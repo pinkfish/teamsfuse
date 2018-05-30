@@ -24,18 +24,20 @@ dependencies:
   url_launcher: "^2.0.2"
   csv: "^3.1.2"
   flutter_native_timezone: # "^1.0.0"
-    path: ../../flutter_native_timezone
+    "^1.0.0"
   flutter_places_dialog: # "^1.0.0"
-    path: ../../flutter_places_dialog
+    "^1.0.3"
 
   fluro: any
   image_picker: "^0.4.1"
   timezone:
-    path: ../../timezone
+     git:
+       url: "https://github.com/pinkfish/timezone.git"
   fusemodel:
     path: ../../fusemodel
   sqflite: any
   tuple: any
+  sliver_calendar: "^0.0.2"
   flutter_local_notifications:
     git:
       url: "git://github.com/pinkfish/flutter_local_notifications.git"

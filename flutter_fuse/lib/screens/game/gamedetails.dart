@@ -53,7 +53,6 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     Team team = UserDatabaseData.instance.teams[game.teamUid];
     Opponent opponent = team.opponents[game.opponentUid];
     List<Widget> actions = new List<Widget>();
-    FloatingActionButton fab;
 
     if (_tabIndex == 0) {
       body = new GameDetails(game);
@@ -73,10 +72,6 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
             ];
           },
         ),
-      );
-      fab = new FloatingActionButton(
-        onPressed: this._editGame,
-        child: new Icon(Icons.edit),
       );
     }
     String opponentName;

@@ -338,6 +338,20 @@ class Messages {
     );
   }
 
+  String get emailonupdates {
+    return Intl.message("On updates",
+        name: 'Switch text for emailing on updates');
+  }
+
+  String get emailonupcoming {
+    return Intl.message("Upcoming",
+        name: 'Switch text for emailing on upcoming games');
+  }
+
+  String get emailheader {
+    return Intl.message("Email");
+  }
+
   String get addopponent {
     return Intl.message(
       'Add new',
@@ -922,8 +936,10 @@ class Messages {
     switch (period.period.type) {
       case GamePeriodType.Regulation:
         return "Start period ${period.period.periodNumber} Score:  ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+      case GamePeriodType.OvertimeBreak:
+        return "Start overtime period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
       case GamePeriodType.Break:
-        return "Stop period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+        return "Start period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
       case GamePeriodType.Overtime:
         return "Start overtime Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
       case GamePeriodType.Penalty:
@@ -938,6 +954,8 @@ class Messages {
         return "Stop period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
       case GamePeriodType.Break:
         return "Stop period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+      case GamePeriodType.OvertimeBreak:
+        return "Stop overtime period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
       case GamePeriodType.Overtime:
         return "Stop overtime Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
       case GamePeriodType.Penalty:

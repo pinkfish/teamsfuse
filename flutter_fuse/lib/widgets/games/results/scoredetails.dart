@@ -32,7 +32,6 @@ class _ScoreDetailsState extends State<ScoreDetails> {
   GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   GlobalKey<NumberPickerState> _ptsForState =
       new GlobalKey<NumberPickerState>();
-  ScrollController _scrollController;
   GlobalKey<NumberPickerState> _ptsAgainstState =
       new GlobalKey<NumberPickerState>();
 
@@ -65,10 +64,6 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       stopwatch.start();
     }
     _gameSubscription = widget.game.thisGameStream.listen(_updateGame);
-    _scrollController = new ScrollController(
-        initialScrollOffset: PeriodNumberSelector.itemExtent *
-            (_details.currentPeriod.periodNumber - 1) *
-            2);
   }
 
   @override
