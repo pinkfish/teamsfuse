@@ -26,8 +26,9 @@ class EditResultDialog extends StatelessWidget {
 
     return new Scaffold(
       appBar: new AppBar(
-        title:
-            new Text(Messages.of(context).gametitlevs(_game, _opponent.name)),
+        title: new Text(
+          Messages.of(context).gametitlevs(_game, _opponent.name),
+        ),
       ),
       backgroundColor: Colors.grey.shade100,
       resizeToAvoidBottomPadding: true,

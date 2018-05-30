@@ -101,7 +101,7 @@ class PeriodNumberSelector extends StatelessWidget {
   PeriodNumberSelector(
       this.currentPeriod, this.divisionsType, this.onChanged, this.controller);
 
-  static double ITEM_EXTENT = 150.0;
+  static double itemExtent = 150.0;
 
   void _setPeriodNumber(int periodNumber) {
     GamePeriod period;
@@ -127,29 +127,6 @@ class PeriodNumberSelector extends StatelessWidget {
           type: GamePeriodType.Break, periodNumber: currentPeriod.periodNumber);
     }
     onChanged(period);
-  }
-
-  Widget _buildItem(BuildContext contxt, int index) {
-    return new SizedBox(
-      height: ITEM_EXTENT - 5.0,
-      width: ITEM_EXTENT - 5.0,
-      child: new FlatButton(
-        padding: EdgeInsets.zero,
-        color: (index + 1) == currentPeriod.periodNumber
-            ? Colors.blue
-            : Colors.grey.shade200,
-        textColor: (index + 1) == currentPeriod.periodNumber
-            ? Colors.white
-            : Colors.black,
-        shape: new CircleBorder(),
-        onPressed: () => _setPeriodNumber(index),
-        child: new Center(
-          child: new Text(
-            (index + 1).toString(),
-          ),
-        ),
-      ),
-    );
   }
 
   Widget _makePeriodButton(String text, int period) {
@@ -193,8 +170,14 @@ class PeriodNumberSelector extends StatelessWidget {
         ret.add(_makeBreakButton("Half time", 1));
         ret.add(_makePeriodButton("Second", 2));
         break;
+      case GameDivisionsType.Thirds:
+        ret.add(_makePeriodButton("First", 1));
+        ret.add(_makeBreakButton("First break", 1));
+        ret.add(_makePeriodButton("Second", 2));
+        ret.add(_makeBreakButton("Second break", 2));
+        ret.add(_makePeriodButton("Third", 3));
+        break;
       case GameDivisionsType.Halves:
-        print("${currentPeriod}");
         ret.add(_makePeriodButton("1st", 1));
         ret.add(_makeBreakButton("1st break", 1));
         ret.add(_makePeriodButton("2nd", 2));
@@ -211,7 +194,7 @@ class PeriodNumberSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Container(
-      constraints: new BoxConstraints.tightFor(height: ITEM_EXTENT),
+      constraints: new BoxConstraints.tightFor(height: itemExtent),
       padding: new EdgeInsets.all(5.0),
       child: new ListView(
         scrollDirection: Axis.horizontal,
@@ -289,8 +272,14 @@ class PeriodSelector extends StatelessWidget {
         ret.add(_makeBreakButton("Half time", 1));
         ret.add(_makePeriodButton("Second", 2));
         break;
+      case GameDivisionsType.Thirds:
+        ret.add(_makePeriodButton("First", 1));
+        ret.add(_makeBreakButton("First break", 1));
+        ret.add(_makePeriodButton("Second", 2));
+        ret.add(_makeBreakButton("Second break", 2));
+        ret.add(_makePeriodButton("Third", 3));
+        break;
       case GameDivisionsType.Quarters:
-        print("${currentPeriod}");
         ret.add(_makePeriodButton("1st Quarter", 1));
         ret.add(_makeBreakButton("End of 1st Quarter", 1));
         ret.add(_makePeriodButton("2nd Quarter", 2));

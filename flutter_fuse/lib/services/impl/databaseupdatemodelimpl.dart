@@ -380,6 +380,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (snapshot.documents.length == 0) {
       InviteToPlayer invite = new InviteToPlayer(
           playerUid: player.uid, email: email, playerName: player.name);
+      invite.displayName = UserDatabaseData.instance.mePlayer.name;
 
       print('Adding invite');
       return ref.add(invite.toJSON());
@@ -453,7 +454,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   // Send an invite to a user for this season and team.
   Future<void> inviteUserToSeason(Season season,
-      {String userId, String playername, String email}) async {
+      {String userId, String playername, String email, RoleInTeam role}) async {
     CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     QuerySnapshot snapshot = await ref
@@ -470,6 +471,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       invite.playerName.add(playername);
       invite.seasonName = season.name;
       invite.teamName = team.name;
+      invite.displayName = UserDatabaseData.instance.mePlayer.name;
       snapshot.documents[0].reference.updateData(invite.toJSON());
       print('Updating invite');
     } else {
@@ -481,6 +483,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       invite.sentByUid = userId;
       invite.teamName = team.name;
       invite.seasonName = season.name;
+      invite.role = role;
+      invite.displayName = UserDatabaseData.instance.mePlayer.name;
 
       print('Adding invite');
       return ref.add(invite.toJSON());

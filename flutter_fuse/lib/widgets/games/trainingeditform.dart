@@ -5,6 +5,7 @@ import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/services/map.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:timezone/timezone.dart';
 import 'editformbase.dart';
 
@@ -30,6 +31,9 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   GlobalKey<FormState> _formState = new GlobalKey<FormState>();
   DateTime _atDate;
   DateTime _atEnd;
+  FocusNode _focusNodePlaceNotes = new FocusNode();
+  FocusNode _focusNodeNotes = new FocusNode();
+  FocusNode _focusNodeUniform = new FocusNode();
 
   void save() {}
 
@@ -150,26 +154,51 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                       ? messages.unknown
                       : widget.game.place.address),
                 ),
-                new TextFormField(
-                  initialValue: widget.game.notes,
-                  decoration: new InputDecoration(
-                    hintText: messages.trainingnoteshint,
-                    labelText: messages.trainingnotes,
-                    icon: const Icon(Icons.note),
+                new EnsureVisibleWhenFocused(
+                  focusNode: _focusNodePlaceNotes,
+                  child: new TextFormField(
+                    decoration: new InputDecoration(
+                      icon: const Icon(CommunityIcons.tshirtcrew),
+                      hintText: Messages.of(context).placesnoteshint,
+                      labelText: Messages.of(context).placesnotes,
+                    ),
+                    keyboardType: TextInputType.text,
+                    focusNode: _focusNodePlaceNotes,
+                    obscureText: false,
+                    initialValue: widget.game.place.notes,
+                    onSaved: (String value) {
+                      widget.game.place.notes = value;
+                    },
                   ),
-                  onSaved: (String value) {
-                    widget.game.notes = value;
-                  },
                 ),
-                new TextFormField(
-                  initialValue: widget.game.uniform,
-                  decoration: new InputDecoration(
-                      hintText: messages.uniformhint,
-                      labelText: messages.uniform,
-                      icon: const Icon(CommunityIcons.tshirtcrew)),
-                  onSaved: (String value) {
-                    widget.game.uniform = value;
-                  },
+                new EnsureVisibleWhenFocused(
+                  focusNode: _focusNodeUniform,
+                  child: new TextFormField(
+                    initialValue: widget.game.uniform,
+                    decoration: new InputDecoration(
+                        hintText: messages.uniformhint,
+                        labelText: messages.uniform,
+                        icon: const Icon(CommunityIcons.tshirtcrew)),
+                    onSaved: (String value) {
+                      widget.game.uniform = value;
+                    },
+                    focusNode: _focusNodeUniform,
+                  ),
+                ),
+                new EnsureVisibleWhenFocused(
+                  focusNode: _focusNodeNotes,
+                  child: new TextFormField(
+                    initialValue: widget.game.notes,
+                    decoration: new InputDecoration(
+                      hintText: messages.trainingnoteshint,
+                      labelText: messages.trainingnotes,
+                      icon: const Icon(Icons.note),
+                    ),
+                    focusNode: _focusNodeNotes,
+                    onSaved: (String value) {
+                      widget.game.notes = value;
+                    },
+                  ),
                 ),
               ],
             ),

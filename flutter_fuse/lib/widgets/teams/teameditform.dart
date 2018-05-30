@@ -31,7 +31,10 @@ class TeamEditFormState extends State<TeamEditForm> {
   bool _autovalidate = false;
   Validations _validations = new Validations();
   ScrollController _scrollController = new ScrollController();
-  FocusNode _focusNode = new FocusNode();
+  FocusNode _focusNodeName = new FocusNode();
+  FocusNode _focusNodeNotes = new FocusNode();
+  FocusNode _focusNodeSeason = new FocusNode();
+  FocusNode _focusNodeNewPlayer = new FocusNode();
   File _imageFile;
   bool _changedImage = false;
   String _seasonName = "";
@@ -124,13 +127,14 @@ class TeamEditFormState extends State<TeamEditForm> {
     if (team.uid == null) {
       // Adding a team
       seasonWidget = new EnsureVisibleWhenFocused(
-        focusNode: _focusNode,
+        focusNode: _focusNodeSeason,
         child: new TextFormField(
           decoration: new InputDecoration(
             icon: const Icon(Icons.event_note),
             hintText: Messages.of(context).season,
             labelText: Messages.of(context).seasonhint,
           ),
+          focusNode: _focusNodeSeason,
           initialValue: _seasonName,
           keyboardType: TextInputType.text,
           obscureText: false,
@@ -157,13 +161,14 @@ class TeamEditFormState extends State<TeamEditForm> {
       );
       if (_startAdmin == 'add') {
         adminNameWidget = new EnsureVisibleWhenFocused(
-          focusNode: _focusNode,
+          focusNode: _focusNodeNewPlayer,
           child: new TextFormField(
             decoration: new InputDecoration(
               icon: const Icon(Icons.event_note),
               hintText: Messages.of(context).newplayername,
               labelText: Messages.of(context).newplayernamehint,
             ),
+            focusNode: _focusNodeNewPlayer,
             initialValue: _newPlayerName,
             keyboardType: TextInputType.text,
             obscureText: false,
@@ -205,13 +210,14 @@ class TeamEditFormState extends State<TeamEditForm> {
         icon: this._buildImage(),
       ),
       new EnsureVisibleWhenFocused(
-        focusNode: _focusNode,
+        focusNode: _focusNodeName,
         child: new TextFormField(
           decoration: new InputDecoration(
             icon: const Icon(Icons.event_note),
             hintText: Messages.of(context).team,
             labelText: Messages.of(context).teamnamehint,
           ),
+          focusNode: _focusNodeName,
           initialValue: team.name,
           keyboardType: TextInputType.text,
           obscureText: false,
@@ -253,13 +259,14 @@ class TeamEditFormState extends State<TeamEditForm> {
       ),
       seasonWidget,
       new EnsureVisibleWhenFocused(
-        focusNode: _focusNode,
+        focusNode: _focusNodeNotes,
         child: new TextFormField(
           decoration: new InputDecoration(
             icon: const Icon(Icons.event_note),
             hintText: Messages.of(context).league,
             labelText: Messages.of(context).leaguehint,
           ),
+          focusNode: _focusNodeNotes,
           initialValue: team.league == null ? '' : team.league,
           keyboardType: TextInputType.text,
           obscureText: false,

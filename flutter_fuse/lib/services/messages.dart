@@ -430,6 +430,14 @@ class Messages {
     );
   }
 
+  String get placesnotes {
+    return Intl.message('Place notes, ie court #');
+  }
+
+  String get placesnoteshint {
+    return Intl.message('Details of the place');
+  }
+
   String get homeaway {
     return Intl.message(
       'Home',
@@ -961,17 +969,30 @@ class Messages {
   String get againstpts {
     return Intl.message("Against",
         desc:
-        "Title to the spinner for showing points against in the results screen");
+            "Title to the spinner for showing points against in the results screen");
   }
+
   String get updatescorebutton {
     return Intl.message("Update Score",
-        desc:
-        "Title to the button to update the score results screen");
+        desc: "Title to the button to update the score results screen");
   }
+
   String get finishgamebutton {
     return Intl.message("Finish",
         desc:
-        "Text for the button to finish the game in the update score screen");
+            "Text for the button to finish the game in the update score screen");
+  }
+
+  String get timercountup {
+    return Intl.message("Timer count up");
+  }
+
+  String get duration {
+    return Intl.message("Duration");
+  }
+
+  String get choosedivisions {
+    return Intl.message("Start Game - Breaks");
   }
 
   String followplayer(String player) {

@@ -11,8 +11,7 @@ class EnsureVisibleWhenFocused extends StatefulWidget {
     @required this.focusNode,
     this.curve: Curves.ease,
     this.duration: const Duration(milliseconds: 100),
-  })
-      : super(key: key);
+  }) : super(key: key);
 
   /// The node we will monitor to determine if the child is focused
   final FocusNode focusNode;
@@ -54,7 +53,9 @@ class EnsureVisibleWhenFocusedState extends State<EnsureVisibleWhenFocused> {
     // the need insert a delay here.
     await new Future.delayed(const Duration(milliseconds: 300));
 
-    if (!widget.focusNode.hasFocus) return;
+    if (!widget.focusNode.hasFocus) {
+      return;
+    }
 
     final RenderObject object = context.findRenderObject();
     final RenderAbstractViewport viewport = RenderAbstractViewport.of(object);

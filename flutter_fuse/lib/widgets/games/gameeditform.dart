@@ -40,7 +40,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   bool autovalidate = false;
   Validations _validations = new Validations();
   ScrollController _scrollController = new ScrollController();
-  FocusNode _focusNode = new FocusNode();
+  FocusNode _focusNodeNotes = new FocusNode();
+  FocusNode _focusNodePlaceNotes = new FocusNode();
+  FocusNode _focusNodeUniform = new FocusNode();
   TZDateTime _atDate;
   TZDateTime _atArrival;
   TZDateTime _atEnd;
@@ -253,13 +255,31 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   },
                 ),
                 new EnsureVisibleWhenFocused(
-                  focusNode: _focusNode,
+                  focusNode: _focusNodePlaceNotes,
+                  child: new TextFormField(
+                    decoration: new InputDecoration(
+                      icon: const Icon(CommunityIcons.tshirtcrew),
+                      hintText: Messages.of(context).placesnoteshint,
+                      labelText: Messages.of(context).placesnotes,
+                    ),
+                    keyboardType: TextInputType.text,
+                    focusNode: _focusNodePlaceNotes,
+                    obscureText: false,
+                    initialValue: widget.game.place.notes,
+                    onSaved: (String value) {
+                      widget.game.place.notes = value;
+                    },
+                  ),
+                ),
+                new EnsureVisibleWhenFocused(
+                  focusNode: _focusNodeUniform,
                   child: new TextFormField(
                     decoration: new InputDecoration(
                       icon: const Icon(CommunityIcons.tshirtcrew),
                       hintText: Messages.of(context).uniformhint,
                       labelText: Messages.of(context).uniform,
                     ),
+                    focusNode: _focusNodeUniform,
                     keyboardType: TextInputType.text,
                     obscureText: false,
                     initialValue: widget.game.uniform,
@@ -269,13 +289,14 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   ),
                 ),
                 new EnsureVisibleWhenFocused(
-                  focusNode: _focusNode,
+                  focusNode: _focusNodeNotes,
                   child: new TextFormField(
                     decoration: const InputDecoration(
                         icon: const Icon(Icons.note),
                         hintText: 'Game notes',
                         labelText: 'Game notes'),
                     keyboardType: TextInputType.text,
+                    focusNode: _focusNodeNotes,
                     obscureText: false,
                     initialValue: widget.game.notes,
                     onSaved: (String value) {

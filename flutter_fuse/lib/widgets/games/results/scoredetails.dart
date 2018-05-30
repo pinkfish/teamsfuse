@@ -59,14 +59,14 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     _ptsAgainst = _currentPeriodResults.score.ptsAgainst;
     widget.game.loadGameLogs();
     // Setup the stop watch/
-    stopwatch.resetTo(_details.currentStopwatch().inMilliseconds);
-    print("${_details.currentOffset} ${_details.currentPeriodStart}");
-    if (_details.currentPeriodStart != null) {
+    stopwatch.resetTo(_details.time.currentStopwatch().inMilliseconds);
+    print("${_details.time.currentOffset} ${_details.time.currentPeriodStart}");
+    if (_details.time.currentPeriodStart != null) {
       stopwatch.start();
     }
     _gameSubscription = widget.game.thisGameStream.listen(_updateGame);
     _scrollController = new ScrollController(
-        initialScrollOffset: PeriodNumberSelector.ITEM_EXTENT *
+        initialScrollOffset: PeriodNumberSelector.itemExtent *
             (_details.currentPeriod.periodNumber - 1) *
             2);
   }
@@ -219,9 +219,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         context: context,
         builder: (BuildContext context) {
           return new SimpleDialog(
-            title: new Text(Messages.of(context).startgame),
+            title: new Text(Messages.of(context).choosedivisions),
             children: <Widget>[
-              new Text(Messages.of(context).startgamebody),
               new SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context, GameDivisionsType.Halves);
@@ -248,8 +247,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       setState(() {
         _details.divisions = ret;
         _details.inProgress = GameInProgress.InProgress;
-        _details.currentPeriodStart = new TZDateTime.now(local);
-        _details.currentOffset = new Duration();
+        _details.time.currentPeriodStart = null;
+        _details.time.currentOffset = new Duration();
         _details.currentPeriod =
             new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 1);
         _writeLog(GameLogType.PeriodStart);
@@ -289,8 +288,9 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       setState(() {
         _details.divisions = GameDivisionsType.Halves;
         _details.inProgress = GameInProgress.InProgress;
-        _details.currentPeriodStart = new TZDateTime.now(local);
-        _details.currentOffset = new Duration();
+        // Timer not running.
+        _details.time.currentPeriodStart = null;
+        _details.time.currentOffset = new Duration();
         _details.currentPeriod =
             new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 1);
         _writeLog(GameLogType.PeriodStart);
@@ -314,14 +314,14 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     if (stopwatch.isRunning) {
       stopwatch.stop();
       setState(() {
-        _details.currentOffset = stopwatch.elapsed;
-        _details.currentPeriodStart = null;
+        _details.time.currentOffset = stopwatch.elapsed;
+        _details.time.currentPeriodStart = null;
       });
     } else {
       // Initialize with the duration out of the detail first.
       stopwatch.start();
       setState(() {
-        _details.currentPeriodStart = new TZDateTime.now(local);
+        _details.time.currentPeriodStart = new TZDateTime.now(local);
       });
     }
     print("Update result $_details");
@@ -357,12 +357,12 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       stopwatch.reset();
       if (stopwatch.isRunning) {
         setState(() {
-          _details.currentPeriodStart = new DateTime.now();
-          _details.currentOffset = new Duration(milliseconds: 0);
+          _details.time.currentPeriodStart = new DateTime.now();
+          _details.time.currentOffset = new Duration(milliseconds: 0);
         });
       } else {
         setState(() {
-          _details.currentOffset = new Duration(milliseconds: 0);
+          _details.time.currentOffset = new Duration(milliseconds: 0);
         });
       }
       widget.game.updateFirestoreResult(_details);

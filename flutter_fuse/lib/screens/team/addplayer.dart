@@ -7,6 +7,7 @@ import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/form/roleinteamformfield.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'dart:async';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 
 class AddPlayerScreen extends StatefulWidget {
   AddPlayerScreen(this._teamUid, this._seasonUid);
@@ -26,6 +27,8 @@ class EmailName {
   String email = '';
   String name = '';
   RoleInTeam role = RoleInTeam.NonPlayer;
+  FocusNode focusNodeEmail = new FocusNode();
+  FocusNode focusNodeName = new FocusNode();
 }
 
 class AddPlayerScreenState extends State<AddPlayerScreen> {
@@ -60,7 +63,10 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
         Analytics.analytics
             .logShare(contentType: 'inviteToTeam', itemId: team.uid);
         return season.inviteUser(
-            email: en.email, playername: en.name, userId: user.uid);
+            email: en.email,
+            playername: en.name,
+            userId: user.uid,
+            role: en.role);
       });
       Navigator.pop(context);
     } else {
@@ -89,10 +95,11 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
       // Add in the start elements.
       _emailNames.add(new EmailName());
     }
-    _emailNames.forEach(
-      (EmailName en) {
-        rows.add(
-          new TextFormField(
+    for (EmailName en in _emailNames) {
+      rows.add(
+        new EnsureVisibleWhenFocused(
+          focusNode: en.focusNodeName,
+          child: new TextFormField(
             key: en.nameKey,
             initialValue: '',
             decoration: new InputDecoration(
@@ -102,15 +109,19 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
             validator: (String value) {
               return _validations.validateDisplayName(context, value);
             },
+            focusNode: en.focusNodeName,
             keyboardType: TextInputType.text,
             onSaved: (String value) {
               en.name = value;
             },
           ),
-        );
+        ),
+      );
 
-        rows.add(
-          new TextFormField(
+      rows.add(
+        new EnsureVisibleWhenFocused(
+          focusNode: en.focusNodeEmail,
+          child: new TextFormField(
             initialValue: '',
             decoration: new InputDecoration(
                 icon: const Icon(Icons.email),
@@ -119,6 +130,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
             validator: (String value) {
               return _validations.validateEmail(context, value);
             },
+            focusNode: en.focusNodeEmail,
             keyboardType: TextInputType.emailAddress,
             onFieldSubmitted: (String value) {
               if (value.isNotEmpty &&
@@ -133,26 +145,25 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
               en.email = value;
             },
           ),
-        );
+        ),
+      );
 
-        rows.add(
-          new RoleInTeamFormField(
-            initialValue: 'none',
-            decoration: new InputDecoration(
-              icon: const Icon(Icons.message),
-              labelText: messages.roleselect,
-            ),
-            validator: (String val) {
-              _validations.validateRoleInTeam(context, val);
-            },
-            onSaved: (String val) {
-              en.role =
-                  RoleInTeam.values.firstWhere((e) => e.toString() == val);
-            },
+      rows.add(
+        new RoleInTeamFormField(
+          initialValue: 'none',
+          decoration: new InputDecoration(
+            icon: const Icon(Icons.message),
+            labelText: messages.roleselect,
           ),
-        );
-      },
-    );
+          validator: (String val) {
+            _validations.validateRoleInTeam(context, val);
+          },
+          onSaved: (String val) {
+            en.role = RoleInTeam.values.firstWhere((e) => e.toString() == val);
+          },
+        ),
+      );
+    }
 
     return new SingleChildScrollView(
       child: new Form(

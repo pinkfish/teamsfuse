@@ -4,6 +4,7 @@ import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 
 class AddMessageScreen extends StatefulWidget {
   final String teamUid;
@@ -27,6 +28,8 @@ class AddMessageScreenState extends State<AddMessageScreen> {
   List<String> _possiblePlayers = [];
   bool _allPlayers = true;
   bool _includeMyself = false;
+  FocusNode _focusNodeSubject = new FocusNode();
+  FocusNode _focusNodeBody = new FocusNode();
 
   void initState() {
     super.initState();
@@ -206,23 +209,31 @@ class AddMessageScreenState extends State<AddMessageScreen> {
         }
         // Add in the message box itself :)
         ret.add(
-          new TextFormField(
-            decoration: new InputDecoration(
-              icon: const Icon(Icons.subject),
-              labelText: Messages.of(context).subject,
+          new EnsureVisibleWhenFocused(
+            child: new TextFormField(
+              decoration: new InputDecoration(
+                icon: const Icon(Icons.subject),
+                labelText: Messages.of(context).subject,
+              ),
+              focusNode: _focusNodeSubject,
+              initialValue: _message.subject,
+              onSaved: (String val) => _message.subject = val,
             ),
-            initialValue: _message.subject,
-            onSaved: (String val) => _message.subject = val,
+            focusNode: _focusNodeSubject,
           ),
         );
         ret.add(
-          new TextFormField(
-            decoration: new InputDecoration(
-              icon: const Icon(Icons.message),
-              labelText: Messages.of(context).message,
+          new EnsureVisibleWhenFocused(
+            focusNode: _focusNodeBody,
+            child: new TextFormField(
+              decoration: new InputDecoration(
+                icon: const Icon(Icons.message),
+                labelText: Messages.of(context).message,
+              ),
+              focusNode: _focusNodeBody,
+              initialValue: _message.message,
+              onSaved: (String val) => _message.message = val,
             ),
-            initialValue: _message.message,
-            onSaved: (String val) => _message.message = val,
           ),
         );
       }
