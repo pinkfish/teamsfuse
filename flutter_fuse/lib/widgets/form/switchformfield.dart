@@ -23,14 +23,18 @@ class SwitchFormField extends FormField<bool> {
                 Theme.of(field.context).inputDecorationTheme;
             return new Row(
               children: <Widget>[
+                new Container(
+                  padding: new EdgeInsets.only(left: 5.0, right: 10.0),
+            child:
                 new Icon(
                   icon,
                   color: _getDefaultIconColor(Theme.of(field.context)),
                 ),
+                ),
                 new Expanded(
                   child: new Text(
                     label,
-                    style: theme.prefixStyle ?? theme.hintStyle,
+                    style: theme.labelStyle ?? theme.hintStyle,
                   ),
                 ),
                 new Switch(

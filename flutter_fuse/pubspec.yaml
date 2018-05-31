@@ -26,7 +26,7 @@ dependencies:
   flutter_native_timezone: # "^1.0.0"
     "^1.0.0"
   flutter_places_dialog: # "^1.0.0"
-    "^1.0.3"
+    path: ../../flutter_places_dialog
 
   fluro: any
   image_picker: "^0.4.1"

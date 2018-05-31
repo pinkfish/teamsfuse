@@ -32,6 +32,11 @@ class FabMiniMenuItemWidget extends StatelessWidget {
   final String tooltip;
   final Color textColor;
 
+  void _doPress() {
+    details.controller.animateTo(0.0);
+    onPressed();
+  }
+
   @override
   Widget build(BuildContext context) {
     Color chipColor = this.chipColor;
@@ -86,7 +91,7 @@ class FabMiniMenuItemWidget extends StatelessWidget {
               heroTag: "Inner fab " + details.index.toString(),
               tooltip: tooltip,
               child: icon,
-              onPressed: onPressed,
+              onPressed: _doPress,
             ),
           )
         ],

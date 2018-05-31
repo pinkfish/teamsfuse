@@ -52,21 +52,26 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
     }
   }
 
-  void _rotate() {
-    if (widget.disabled) {
+  void _rotateTo(bool rotate) {
+    if (widget.disabled || rotate == _isRotated) {
       return;
     }
     setState(() {
-      if (_isRotated) {
-        _angle = 45;
-        _isRotated = false;
-        controller.forward();
-      } else {
+      if (rotate) {
         _angle = 90;
         _isRotated = true;
         controller.reverse();
+      } else {
+        _angle = 45;
+        _isRotated = false;
+        controller.forward();
       }
     });
+
+  }
+
+  void _rotate() {
+    _rotateTo(!_isRotated);
   }
 
   int getIndex(FabMiniMenuItemWidget fabwidget) {
@@ -80,6 +85,10 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
       widget.details.controller = controller;
       widget.details.index = index++;
     });
+    if (controller.value == 0.0) {
+      _isRotated = true;
+      _angle = 90;
+    }
     // Update all the menu items.
     return new Container(
       margin: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),

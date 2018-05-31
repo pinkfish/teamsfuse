@@ -339,17 +339,17 @@ class Messages {
   }
 
   String get emailonupdates {
-    return Intl.message("On updates",
+    return Intl.message("On changes to games/events",
         name: 'Switch text for emailing on updates');
   }
 
   String get emailonupcoming {
-    return Intl.message("Upcoming",
+    return Intl.message("Upcoming games/events",
         name: 'Switch text for emailing on upcoming games');
   }
 
   String get emailheader {
-    return Intl.message("Email");
+    return Intl.message("Email Preferences");
   }
 
   String get addopponent {
