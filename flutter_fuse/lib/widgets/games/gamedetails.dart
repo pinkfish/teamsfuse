@@ -62,7 +62,7 @@ class GameDetailsState extends State<GameDetails> {
     String url = "https://www.google.com/maps/dir/?api=1";
     url += "&destination=" + Uri.encodeComponent(widget.game.place.address);
     if (widget.game.place.placeId != null) {
-      url += "&destionation_place_id=" +
+      url += "&destination_place_id=" +
           Uri.encodeComponent(widget.game.place.placeId);
     }
     launch(url);
