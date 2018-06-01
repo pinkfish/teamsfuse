@@ -107,6 +107,10 @@ class EditGameScreenState extends State<EditGameScreen> {
           child: form,
         ),
       ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: () => _savePressed(context),
+        child: const Icon(Icons.check),
+      ),
     );
   }
 }

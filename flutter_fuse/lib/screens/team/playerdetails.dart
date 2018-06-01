@@ -366,6 +366,10 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     Navigator.pushNamed(context, "AddInviteToPlayer/" + widget.playerUid);
   }
 
+  void _editPlayer(BuildContext context) {
+    Navigator.pushNamed(context, "EditPlayer/" + _playerDetails.uid);
+  }
+
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
@@ -391,6 +395,14 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
       }
     }
 
+    FloatingActionButton fab;
+    if (_playerDetails.users.containsKey(UserDatabaseData.instance.userUid)) {
+      // I am a member of this player, can edit them!
+      fab = new FloatingActionButton(onPressed: () => _editPlayer(context),
+        child: const Icon(Icons.edit),
+      );
+    }
+    print("${_playerDetails.users} ${UserDatabaseData.instance.userUid}");
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(_player.displayName),
@@ -400,6 +412,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
           child: _buildPlayerDetails(),
         ),
       ),
+      floatingActionButton: fab,
     );
   }
 }

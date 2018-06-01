@@ -45,7 +45,7 @@ class TeamScreenState extends State<TeamScreen> {
     FloatingActionButton fab;
     if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
       if (UserDatabaseData.instance.teams[widget.teamUid]
-          .isAdmin(UserDatabaseData.instance.players)) {
+          .isAdmin(UserDatabaseData.instance.players) && _tabIndex == 0) {
         fab = new FloatingActionButton(
           onPressed: () => this._onEditTeam(context),
           child: new Icon(Icons.edit),

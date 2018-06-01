@@ -148,7 +148,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       ),
     );*/
 
-    player.users.forEach((String str, PlayerUser user) {
+    for (PlayerUser user in player.users.values) {
       ret.add(
         new FutureBuilder(
           future: user.getProfile(),
@@ -169,7 +169,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           },
         ),
       );
-    });
+    }
     ret.add(
       new FlatButton(
         onPressed: () => this._onAddPlayerInvite(context, player),
@@ -304,18 +304,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
         actions: <Widget>[
-          new FlatButton(
-            onPressed: this._editProfile,
-            child: new Text(
-              Messages.of(context).editbuttontext,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(color: Colors.white),
-            ),
-          ),
-        ],
+            ],
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: this._editProfile,

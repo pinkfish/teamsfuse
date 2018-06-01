@@ -76,6 +76,46 @@ class TeamOpponentsState extends State<TeamOpponents> {
     return ret;
   }
 
+  void _deleteOpponent(Opponent op) async {
+    Messages mess = Messages.of(context);
+    // Show an alert dialog first.
+    bool result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: new Text(mess.deleteopponent),
+          content: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                new Text(op.name),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+              onPressed: () {
+                // Do the delete.
+                Navigator.of(context).pop(true);
+              },
+            ),
+            new FlatButton(
+              child:
+                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+          ],
+        );
+      },
+    );
+    if (result) {
+      op.deleteFromFirestore();
+    }
+  }
+
   List<Widget> _buildOpponents() {
     List<Widget> ret = new List<Widget>();
     ThemeData theme = Theme.of(context);
@@ -90,11 +130,11 @@ class TeamOpponentsState extends State<TeamOpponents> {
         ),
       ),
     );
-    _opponentKeys.forEach((String uid) {
+    for (String uid in _opponentKeys) {
       Opponent op = _team.opponents[uid];
       WinRecord record;
       if (!op.record.containsKey(_seasonUid)) {
-        return;
+        continue;
       }
       record = op.record[_seasonUid];
 
@@ -120,7 +160,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
           initiallyExpanded: false,
           children: <Widget>[
             new FutureBuilder(
-                future: games,
+                future: op.getGames(),
                 builder: (BuildContext context,
                     AsyncSnapshot<Iterable<Game>> games) {
                   if (!games.hasData) {
@@ -129,8 +169,19 @@ class TeamOpponentsState extends State<TeamOpponents> {
                     );
                   }
                   if (games.data.length == 0) {
-                    return new Center(
-                      child: new Text(Messages.of(context).nogames),
+                    return new Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        new Center(
+                          child: new Text(Messages.of(context).nogames),
+                        ),
+                        new IconButton(
+                          onPressed: () => _deleteOpponent(op),
+                          icon: const Icon(Icons.delete),
+                          color: Theme.of(context).primaryColorDark,
+                        )
+                      ],
                     );
                   } else {
                     List<Widget> newData = new List<Widget>();
@@ -152,7 +203,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
           ],
         ),
       );
-    });
+    }
     ret.add(
       new RichText(
         text: new TextSpan(
@@ -161,10 +212,10 @@ class TeamOpponentsState extends State<TeamOpponents> {
         ),
       ),
     );
-    _opponentKeys.forEach((String uid) {
+    for (String uid in _opponentKeys) {
       Opponent op = _team.opponents[uid];
       if (op.record.containsKey(_seasonUid)) {
-        return;
+        continue;
       }
 
       ret.add(
@@ -173,7 +224,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
           initiallyExpanded: false,
           children: <Widget>[
             new FutureBuilder(
-                future: games,
+                future: op.getGames(),
                 builder: (BuildContext context,
                     AsyncSnapshot<Iterable<Game>> games) {
                   if (!games.hasData) {
@@ -182,20 +233,33 @@ class TeamOpponentsState extends State<TeamOpponents> {
                     );
                   }
                   if (games.data.length == 0) {
-                    return new Center(
-                      child: new Text(Messages.of(context).nogames),
+                    return new Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        new Center(
+                          child: new Text(Messages.of(context).nogames),
+                        ),
+                        new IconButton(
+                          onPressed: () => _deleteOpponent(op),
+                          icon: const Icon(Icons.delete),
+                          color: Theme.of(context).primaryColorDark,
+                        )
+                      ],
                     );
                   } else {
                     List<Widget> newData = new List<Widget>();
-                    games.data.forEach((Game game) {
+                    for (Game game in games.data) {
                       if (game.type == EventType.Game &&
-                          game.seasonUid == _seasonUid &&
                           game.opponentUid == uid) {
-                        newData.add(new GameCard(game));
+                        if (game.seasonUid == _seasonUid) {
+                          newData.add(new GameCard(game));
+                        }
                       }
-                    });
+                    }
                     if (newData.length == 0) {
-                      newData.add(new Text(Messages.of(context).nogames));
+                      newData.add(
+                          new Text(Messages.of(context).nogamesthisseason));
                     }
                     return new Column(
                       children: newData,
@@ -205,7 +269,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
           ],
         ),
       );
-    });
+    }
 
     return ret;
   }

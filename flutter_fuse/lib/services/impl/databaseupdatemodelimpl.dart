@@ -172,7 +172,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return null;
   }
 
-// Opponent update
+  // Opponent update
   Future<String> updateFirestoreOpponent(Opponent opponent) async {
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance
@@ -188,6 +188,30 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       await ref.document(opponent.uid).updateData(opponent.toJSON());
     }
     return opponent.uid;
+  }
+
+  Future<void> deleteFirestoreOpponent(Opponent opponent) async {
+    // Add or update this record into the database.
+    return Firestore.instance
+        .collection(TEAMS_COLLECTION)
+        .document(opponent.teamUid)
+        .collection(OPPONENT_COLLECTION)
+        .document(opponent.uid)
+        .delete();
+  }
+
+  Future<Iterable<Game>> getOpponentGames(Opponent opponent) async {
+    CollectionReference ref = Firestore.instance.collection(GAMES_COLLECTION);
+    // See if the games for the season.
+    var snap = await ref
+        .where(Game.TEAMUID, isEqualTo: opponent.teamUid)
+        .where(Game.OPPONENTUID, isEqualTo: opponent.uid)
+        .getDocuments();
+    return snap.documents.map((DocumentSnapshot doc) {
+      Game game = new Game();
+      game.fromJSON(doc.documentID, doc.data);
+      return game;
+    });
   }
 
 // Team stuff

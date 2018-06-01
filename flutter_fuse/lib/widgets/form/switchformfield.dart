@@ -7,6 +7,7 @@ class SwitchFormField extends FormField<bool> {
     bool initialValue: false,
     IconData icon,
     String label,
+    Widget child,
     ValueChanged<bool> onFieldSubmitted,
     FormFieldSetter<bool> onSaved,
     FormFieldValidator<bool> validator,
@@ -32,7 +33,7 @@ class SwitchFormField extends FormField<bool> {
                 ),
                 ),
                 new Expanded(
-                  child: new Text(
+                  child: child ?? new Text(
                     label,
                     style: theme.labelStyle ?? theme.hintStyle,
                   ),

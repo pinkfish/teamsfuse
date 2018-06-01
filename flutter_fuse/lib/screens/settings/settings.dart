@@ -13,6 +13,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class SettingsScreenState extends State<SettingsScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   GlobalKey<FormState> formState = new GlobalKey<FormState>();
   bool _saving;
 
@@ -22,6 +23,11 @@ class SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+  }
+
+  void _showInSnackBar(String value) {
+    _scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(value)));
   }
 
   void _onSave() async {
@@ -37,12 +43,16 @@ class SettingsScreenState extends State<SettingsScreen> {
       setState(() {
         _saving = false;
       });
+      Navigator.pop(context);
+    } else {
+      _showInSnackBar(Messages.of(context).formerror);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      key: _scaffoldKey,
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
       ),

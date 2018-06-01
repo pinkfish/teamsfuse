@@ -122,6 +122,11 @@ class Messages {
     );
   }
 
+  String get nogamesthisseason {
+    return Intl.message('No games this season',
+        desc: 'No games played this season, but some in a previous season');
+  }
+
   String get editteam {
     return Intl.message(
       'Edit Team',
@@ -1073,13 +1078,18 @@ class Messages {
   }
 
   String get changerole {
-    return Intl.message('Change role',
+    return Intl.message('CHANGE ROLE',
         desc: 'Button to change the role of the member of the team');
   }
 
   String get deleteplayer {
-    return Intl.message('Remove from team',
+    return Intl.message('REMOVE FROM TEAM',
         desc: 'Button to change the remove a member from the team');
+  }
+
+  String get deleteopponent {
+    return Intl.message('Delete opponent',
+        desc: 'Title to the alert dialog to delete an opponent from the team');
   }
 
   String confirmremovefromteam(String name) {
@@ -1374,8 +1384,8 @@ class Messages {
     return Intl.message('ADD RESULT');
   }
 
-  QuoteAndAuthor get quoteforsaving {
-    switch (randomNum.nextInt(4)) {
+  QuoteAndAuthor quoteforsaving(int quoteId) {
+    switch (quoteId % 4) {
       case 0:
         return new QuoteAndAuthor(
             quote: Intl.message("Lies, Damn Lies and Statistics"),

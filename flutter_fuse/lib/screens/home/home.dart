@@ -9,6 +9,7 @@ import 'package:flutter_fuse/widgets/util/fabminimenuitem.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 import 'package:timezone/timezone.dart';
 import 'dart:async';
@@ -26,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription<UpdateReason> _messagaesSubscription;
   FilterDetails _details = new FilterDetails();
   GameListCalendarState _calendarState = new GameListCalendarState();
+  int quoteId = SavingOverlay.randomNum.nextInt(20000);
 
   void _showFilterDialog() async {
     await showDialog(
@@ -138,8 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
         UserDatabaseData.instance.loadedFromSQL) {
       actions.add(
         new SizedBox(
-          width: 20.0,
-          height: 20.0,
+          width: 15.0,
+          height: 15.0,
           child: new CircularProgressIndicator(
             valueColor: new AlwaysStoppedAnimation<Color>(Colors.greenAccent),
           ),
@@ -153,19 +155,23 @@ class _HomeScreenState extends State<HomeScreen> {
         title: new Text(messages.title),
         actions: actions,
       ),
-      body: new Column(
-        children: <Widget>[
-          new GestureDetector(
-            child: new InviteCard(),
-            onTap: () => Navigator.pushNamed(context, "Invites"),
-          ),
-          new Expanded(
-            child: new CalendarWidget(
-              initialDate: new TZDateTime.now(local),
-              source: _calendarState,
+      body: new SavingOverlay(
+        quoteId: quoteId,
+        saving: !UserDatabaseData.instance.loadedFromSQL && !UserDatabaseData.instance.loadedDatabase,
+        child: new Column(
+          children: <Widget>[
+            new GestureDetector(
+              child: new InviteCard(),
+              onTap: () => Navigator.pushNamed(context, "Invites"),
             ),
-          ),
-        ],
+            new Expanded(
+              child: new CalendarWidget(
+                initialDate: new TZDateTime.now(local),
+                source: _calendarState,
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: new FabDialer(
         disabled: UserDatabaseData.instance.teams.length == 0,

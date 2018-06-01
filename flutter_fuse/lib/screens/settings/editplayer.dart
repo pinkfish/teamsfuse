@@ -3,6 +3,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/validations.dart';
+import 'package:flutter_fuse/widgets/form/relationshipformfield.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'dart:io';
@@ -76,12 +77,47 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
         decoration: new InputDecoration(
           labelText: messages.displayname,
           hintText: messages.displaynamehint,
+          icon: const Icon(Icons.account_circle),
         ),
         initialValue: _player.name,
         validator: (String value) => _validations.validateName(context, value),
         onSaved: (String name) => _player.name = name,
       ),
     );
+
+    // Add in all the associated users and their relationships.
+    print("building dfor ${_player.users}");
+    for (PlayerUser user in _player.users.values) {
+      //  ret.add(new Item)
+      ret.add(
+        new DropdownButtonHideUnderline(child: new Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            new Expanded(
+              child: new FutureBuilder(
+                  future: user.getProfile(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<FusedUserProfile> data) {
+                    if (data.hasData) {
+                      return new Text(data.data.displayName,
+                      overflow: TextOverflow.clip,
+                      style: Theme.of(context).textTheme.subhead,);
+                    }
+                    return new Text(Messages.of(context).loading);
+                  }),
+            ),
+            new Flexible(
+              child: new RelationshipFormField(
+                initialValue: user.relationship,
+                onSaved: (Relationship rel) => user.relationship = rel,
+              ),
+            ),
+          ],
+        ),
+        ),
+      );
+    }
 
     return ret;
   }
@@ -121,7 +157,9 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
           ),
         ],
       ),
-      body: new Scrollbar(
+      body: new Container(
+        padding: new EdgeInsets.all(10.0),
+      child: new Scrollbar(
         child: new SingleChildScrollView(
           child: new Form(
             autovalidate: _autoValidate,
@@ -132,6 +170,11 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
             ),
           ),
         ),
+      ),
+      ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: _saveData,
+        child: const Icon(Icons.check),
       ),
     );
   }

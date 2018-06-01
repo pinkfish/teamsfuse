@@ -233,7 +233,7 @@ class UserDatabaseData {
       _loadingDataTrace = null;
     }
     print(
-        "loading $_completedLoading $_loadedPlayers $_loadedGames $_loadedInvites $_loadedTeams");
+        "loading $_completedLoading $_loadedPlayers $_loadedGames $_loadedInvites $_loadedTeams sql $_loadedFromSql");
   }
 
   void _onPlayerUpdated(QuerySnapshot query) {

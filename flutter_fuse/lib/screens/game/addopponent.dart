@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 
 class AddOpponent extends StatefulWidget {
   AddOpponent(this.teamUid);
@@ -21,13 +22,20 @@ class _AddOpponentState extends State<AddOpponent> {
   Opponent _opponent;
   FocusNode _focusNode = new FocusNode();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  bool _saving = false;
 
   _AddOpponentState(this._opponent);
 
   void _savePressed(BuildContext context) async {
     _formKey.currentState.save();
+    setState(() {
+      _saving = true;
+    });
     await _opponent.updateFirestore();
     print('updated');
+    setState(() {
+      _saving = false;
+    });
     Navigator.of(context).pop(_opponent.uid);
     print('returning?');
   }
@@ -53,7 +61,7 @@ class _AddOpponentState extends State<AddOpponent> {
           ),
         ],
       ),
-      body: new Container(
+      body: new SavingOverlay(saving: _saving, child: new Container(
         padding: new EdgeInsets.all(16.0),
         child: new Form(
           key: _formKey,
@@ -92,6 +100,7 @@ class _AddOpponentState extends State<AddOpponent> {
             ],
           ),
         ),
+      ),
       ),
     );
   }
