@@ -18,7 +18,6 @@ void main() async {
   var trace = Analytics.instance.newTrace("startup");
   trace.start();
 
-  DatabaseUpdateModel.instance = new DatabaseUpdateModelImpl();
 
   String currentTimeZone;
   ByteData loadedData;
@@ -33,6 +32,7 @@ void main() async {
         .then((String str) => currentTimeZone = str)
   ]);
 
+  // Timezone
   initializeDatabase(loadedData.buffer.asUint8List());
   if (currentTimeZone == "GMT") {
     currentTimeZone = "Europe/London";
@@ -42,8 +42,14 @@ void main() async {
   }
   print('$currentTimeZone ${local.toString()}');
 
+  // database
+  DatabaseUpdateModel.instance = new DatabaseUpdateModelImpl();
+  UserDatabaseData.instance = new UserDatabaseData(
+      Analytics.instance, LoggingData.instance, SqlData.instance);
+
+
   // Start the loading, but don't block on it,
-  // although load notifications system after it has finished.
+  // Load notifications after the app config has loaded.
   AppConfiguration.instance.load().then((void a) {
     CacheManager.getInstance().then((CacheManager man) {
       print('got manager');
@@ -57,7 +63,7 @@ void main() async {
 
   // Send error logs up to sentry.
   FlutterError.onError = (FlutterErrorDetails details) {
-    LoggingData.instance.logError(details);
+    LoggingData.instance.logFlutterError(details);
   };
 
   trace.stop();

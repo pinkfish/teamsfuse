@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/numberpicker.dart';
 import 'package:flutter_fuse/util/debouncer.dart';
 import 'package:flutter_fuse/widgets/util/stopwatchdisplay.dart';

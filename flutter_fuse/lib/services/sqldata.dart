@@ -1,11 +1,12 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
 
-class SqlData {
+class SqlData implements PersistenData {
   Database _database;
   static SqlData _instance;
   String _path;
@@ -88,7 +89,7 @@ class SqlData {
   }
 
   // Close the database, delete everything and then reopen it.
-  void dropDatabase() async {
+  Future<void> dropDatabase() async {
     _completer = new Completer<bool>();
     _initialized = _completer.future;
     await _database.close();
@@ -181,7 +182,7 @@ class SqlData {
         [key, teamUid, myJson]);
   }
 
-  void clearTable(String tableId) {
-    _database.delete(tableId);
+  Future<void> clearTable(String tableId) {
+    return _database.delete(tableId);
   }
 }

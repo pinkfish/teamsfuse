@@ -2,12 +2,13 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_fuse/services/sqldata.dart';
 import 'dart:async';
-import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 
 class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
+  static const num MAX_MESSAGES = 20;
+
   // Stuff for game updates.
   Future<void> updateFirestoreGame(Game game) async {
     // Add or update this record into the database.
@@ -65,7 +66,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .delete();
   }
 
-// Message Recipients
+  // Message Recipients
   void updateMessageRecipientState(
       MessageRecipient rec, MessageState state) async {
     DocumentReference doc = Firestore.instance
@@ -168,6 +169,17 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       mess.message = snap.data[Message.BODY];
       mess.messagesLoaded = true;
       return mess.message;
+    }
+    return null;
+  }
+
+  Future<Message> getMessage(String messageId) async {
+    DocumentSnapshot ref = await Firestore.instance
+        .collection(MESSAGES_COLLECTION)
+        .document(messageId)
+        .get();
+    if (ref.exists) {
+      return new Message.fromJSON(ref.documentID, ref.data);
     }
     return null;
   }
@@ -285,9 +297,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(GAMES_COLLECTION)
         .where(Game.TEAMUID, isEqualTo: team.uid);
     QuerySnapshot queryGameSnap = await gameQuery.getDocuments();
-    UserDatabaseData.instance.onGameUpdated(team.uid, queryGameSnap);
-    ret.add(gameQuery.snapshots().listen((value) {
-      UserDatabaseData.instance.onGameUpdated(team.uid, value);
+    UserDatabaseData.instance
+        .onGameUpdated(team.uid, _firestoreData(queryGameSnap.documents));
+    ret.add(gameQuery.snapshots().listen((QuerySnapshot value) {
+      UserDatabaseData.instance
+          .onGameUpdated(team.uid, _firestoreData(value.documents));
     }));
     return ret;
   }
@@ -388,8 +402,42 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     Query ref = Firestore.instance.collection(SEASONS_COLLECTION).where(
         Season.PLAYERS + "." + player.uid + "." + ADDED,
         isEqualTo: true);
-    ret.add(ref.snapshots().listen(UserDatabaseData.instance.onSeasonUpdated));
+    ret.add(ref.snapshots().listen((QuerySnapshot query) {
+      UserDatabaseData.instance
+          .onSeasonUpdated(_firestoreData(query.documents));
+    }));
     return ret;
+  }
+
+  @override
+  Future<bool> addUserToPlayer(String playerUid, PlayerUser player) async {
+    DocumentSnapshot doc = await Firestore.instance
+        .collection(PLAYERS_COLLECTION)
+        .document(playerUid)
+        .get();
+    if (doc.exists) {
+      // Yay!  We have a player.
+      Map<String, dynamic> data = {};
+      data[Player.USERS + "." + player.userUid] = player.toJSON();
+      doc.reference.updateData(data);
+      return true;
+    }
+    return false;
+  }
+
+  Future<String> createPlayer(Player player) async {
+    CollectionReference ref = Firestore.instance.collection(PLAYERS_COLLECTION);
+    DocumentReference doc = await ref.add(player.toJSON(includeUsers: true));
+    player.uid = doc.documentID;
+    return doc.documentID;
+  }
+
+  Future<void> deletePlayer(String playerUid) {
+    return Firestore.instance
+        .collection(PLAYERS_COLLECTION)
+        .document(playerUid)
+        .delete()
+        .then((val) {});
   }
 
   // Send an invite to a user for this season and team.
@@ -476,6 +524,28 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .updateData(data);
   }
 
+  Future<bool> playerExists(String uid) async {
+    // Add ourselves to the player.
+    DocumentSnapshot doc = await Firestore.instance
+        .collection(PLAYERS_COLLECTION)
+        .document(uid)
+        .get();
+    return doc.exists;
+  }
+
+  Future<Player> getPlayerDetails(String uid) async {
+    DocumentSnapshot doc = await Firestore.instance
+        .collection(PLAYERS_COLLECTION)
+        .document(uid)
+        .get();
+    if (doc.exists) {
+      Player player = new Player();
+      player.fromJSON(uid, doc.data);
+      return player;
+    }
+    return null;
+  }
+
   // Send an invite to a user for this season and team.
   Future<void> inviteUserToSeason(Season season,
       {String userId, String playername, String email, RoleInTeam role}) async {
@@ -549,5 +619,118 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       game.fromJSON(doc.documentID, doc.data);
       return game;
     });
+  }
+
+  Future<Season> getSeason(String seasonUid) async {
+    DocumentSnapshot doc = await Firestore.instance
+        .collection(SEASONS_COLLECTION)
+        .document(seasonUid)
+        .get();
+    if (doc.exists) {
+      Season season = new Season();
+      season.fromJSON(doc.documentID, doc.data);
+      return season;
+    }
+    return null;
+  }
+
+  Future<void> addPlayerToSeason(
+      String seasonUid, SeasonPlayer seasonPlayer) async {
+    DocumentReference doc = await Firestore.instance
+        .collection(SEASONS_COLLECTION)
+        .document(seasonUid);
+    Map<String, dynamic> data = new Map<String, dynamic>();
+    data[Season.PLAYERS + "." + seasonPlayer.playerUid] = seasonPlayer.toJSON();
+    doc.updateData(data);
+    return;
+  }
+
+  List<FirestoreWrappedData> _firestoreData(List<DocumentSnapshot> documents) {
+    List<FirestoreWrappedData> data = [];
+    for (DocumentSnapshot snap in documents) {
+      data.add(new FirestoreWrappedData(id: snap.documentID, data: snap.data));
+    }
+    return data;
+  }
+
+  List<FirestoreWrappedData> _firestoreRemovedData(
+      List<DocumentChange> documents) {
+    List<FirestoreWrappedData> data = [];
+    for (DocumentChange snap in documents) {
+      if (snap.type == DocumentChangeType.removed) {
+        data.add(new FirestoreWrappedData(
+            id: snap.document.documentID, data: snap.document.data));
+      }
+    }
+    return data;
+  }
+
+  @override
+  InitialSubscription getPlayers(String userUid) {
+    Query collection = Firestore.instance
+        .collection(PLAYERS_COLLECTION)
+        .where(Player.USERS + "." + userUid + "." + ADDED, isEqualTo: true);
+    StreamController<FirestoreChangedData> streams =
+        new StreamController<FirestoreChangedData>();
+    collection.snapshots().listen((QuerySnapshot snap) {
+      streams.add(new FirestoreChangedData(
+          newList: _firestoreData(snap.documents),
+          removed: _firestoreRemovedData(snap.documentChanges)));
+    });
+    return new InitialSubscription(
+        startData: collection
+            .getDocuments()
+            .then((QuerySnapshot query) => _firestoreData(query.documents)),
+        stream: streams.stream);
+  }
+
+  @override
+  InitialSubscription getMessages(String userUid, bool unread) {
+    Query query;
+    if (unread) {
+      query = Firestore.instance
+          .collection(MESSAGE_RECIPIENTS_COLLECTION)
+          .where(MessageRecipient.USERID, isEqualTo: userUid)
+          .where(MessageRecipient.STATE,
+              isEqualTo: MessageState.Unread.toString());
+    } else {
+      query = Firestore.instance
+          .collection(MESSAGE_RECIPIENTS_COLLECTION)
+          .where(MessageRecipient.USERID, isEqualTo: userUid)
+          .orderBy(MessageRecipient.SENTAT)
+          .limit(MAX_MESSAGES);
+    }
+    StreamController<FirestoreChangedData> streams =
+        new StreamController<FirestoreChangedData>();
+    query.snapshots().listen((QuerySnapshot snap) {
+      streams.add(new FirestoreChangedData(
+          newList: _firestoreData(snap.documents),
+          removed: _firestoreRemovedData(snap.documentChanges)));
+    });
+    return new InitialSubscription(
+        startData: query
+            .getDocuments()
+            .then((QuerySnapshot query) => _firestoreData(query.documents)),
+        stream: streams.stream);
+  }
+
+  @override
+  InitialSubscription getInvites(String email) {
+    Query inviteCollection = Firestore.instance
+        .collection(INVITE_COLLECTION)
+        .where(Invite.EMAIL, isEqualTo: normalizeEmail(email));
+
+    StreamController<FirestoreChangedData> streams =
+        new StreamController<FirestoreChangedData>();
+    inviteCollection.snapshots().listen((QuerySnapshot snap) {
+      streams.add(new FirestoreChangedData(
+          newList: _firestoreData(snap.documents),
+          removed: _firestoreRemovedData(snap.documentChanges)));
+    });
+    return new InitialSubscription(
+        startData: inviteCollection
+            .getDocuments()
+            .then((QuerySnapshot query) => _firestoreData(query.documents)),
+        stream: streams.stream);
   }
 }

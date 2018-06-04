@@ -6,12 +6,12 @@ import 'package:flutter_fuse/screens/login/forgotpassword.dart';
 import 'package:flutter_fuse/screens/login/signup.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_fuse/services/authentication.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
 import 'package:flutter_fuse/services/loggingdata.dart';
 import 'package:flutter_fuse/services/analytics.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class Routes {
   UserData _currentUser;
@@ -53,7 +53,8 @@ class Routes {
   void _authChanged(UserData user) async {
     _currentUser = user;
     if (user != null) {
-      UserDatabaseData.load(user.uid, user.email);
+      UserDatabaseData.load(
+          user.uid, user.email, UserAuth.instance.getProfile(user.uid));
       Analytics.analytics.setUserId(user.uid);
       if (Analytics.instance.debugMode) {
         Analytics.analytics.setUserProperty(name: "developer", value: "true");

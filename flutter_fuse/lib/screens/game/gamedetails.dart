@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/games/gamedetails.dart';
 import 'package:flutter_fuse/widgets/games/availability.dart';
 import 'package:flutter_fuse/widgets/games/deletegamedialog.dart';

@@ -7,7 +7,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/fabdialer.dart';
 import 'package:flutter_fuse/widgets/util/fabminimenuitem.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';

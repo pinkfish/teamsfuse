@@ -3,8 +3,9 @@ import 'package:firebase_performance/firebase_performance.dart';
 import 'package:package_info/package_info.dart';
 import 'package:device_info/device_info.dart';
 import 'dart:io';
+import 'package:fusemodel/fusemodel.dart';
 
-class Analytics {
+class Analytics extends AnalyticsSubsystem {
   static FirebaseAnalytics _analytics = new FirebaseAnalytics();
   static Analytics _instance;
 
@@ -51,11 +52,17 @@ class Analytics {
     return _analytics;
   }
 
-  Trace newTrace(String name) {
+  @override
+  void logSignUp({String signUpMethod}) {
+    _analytics.logSignUp(signUpMethod: signUpMethod);
+  }
+
+  TraceProxy newTrace(String name) {
     Trace trace = FirebasePerformance.instance.newTrace(name);
 
     trace.putAttribute("os", Platform.operatingSystem);
-    trace.putAttribute("osVersion", Platform.operatingSystemVersion.substring(0, 30));
+    trace.putAttribute(
+        "osVersion", Platform.operatingSystemVersion.substring(0, 30));
 
     trace.putAttribute("version", packageInfo.version);
     trace.putAttribute("build", packageInfo.buildNumber);
@@ -66,7 +73,7 @@ class Analytics {
       trace.putAttribute(
           "emulator", androidDeviceInfo.isPhysicalDevice.toString());
     }
-    return trace;
+    return new FirebaseTrace(trace);
   }
 
   String getVersion() {
@@ -77,5 +84,22 @@ class Analytics {
       return iosDeviceInfo.utsname.version;
     }
     return packageInfo.version;
+  }
+}
+
+class FirebaseTrace implements TraceProxy {
+  Trace trace;
+  FirebaseTrace(this.trace);
+
+  void start() {
+    trace.start();
+  }
+
+  void incrementCounter(String str) {
+    trace.incrementCounter(str);
+  }
+
+  void stop() {
+    trace.stop();
   }
 }

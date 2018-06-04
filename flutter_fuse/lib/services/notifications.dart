@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:async';
-import 'databasedetails.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'messages.dart';
 import 'notifications/gamenotification.dart';
 import 'dart:math';
@@ -11,7 +11,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'firebasemessaging.dart';
 import 'authentication.dart';
-
 
 class Notifications {
   static final Notifications instance = new Notifications();
@@ -142,7 +141,18 @@ class Notifications {
     InitializationSettingsAndroid initializationSettingsAndroid =
         new InitializationSettingsAndroid('app_icon');
     InitializationSettingsIOS initializationSettingsIOS =
-        new InitializationSettingsIOS();
+        new InitializationSettingsIOS(categorySetup: [
+      new IOSCategoryDetails(id: "GAMES", actions: [
+        new IOSActionDetails(
+          id: 'directions',
+          title: 'DIRECTIONS',
+        ),
+        new IOSActionDetails(
+          id: 'details',
+          title: 'DETAILS',
+        )
+      ])
+    ]);
     InitializationSettings initializationSettings = new InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
@@ -160,8 +170,8 @@ class Notifications {
     if (Platform.isAndroid) {
       _gameStream =
           UserDatabaseData.instance.gameStream.listen((UpdateReason reason) {
-            _onGamesUpdated();
-          });
+        _onGamesUpdated();
+      });
     }
   }
 }

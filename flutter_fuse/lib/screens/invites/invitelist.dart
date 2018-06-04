@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
 import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';

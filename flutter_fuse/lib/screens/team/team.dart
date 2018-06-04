@@ -3,7 +3,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/teams/teamplayers.dart';
 import 'package:flutter_fuse/widgets/teams/teamdetails.dart';
 import 'package:flutter_fuse/widgets/teams/teamopponents.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class TeamScreen extends StatefulWidget {
   final String teamUid;

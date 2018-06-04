@@ -1,7 +1,7 @@
 import 'map_view/staticmapprovider.dart';
 import 'package:flutter_places_dialog/flutter_places_dialog.dart';
 import 'package:timezone/timezone.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
