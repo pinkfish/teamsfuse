@@ -11,11 +11,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   // Stuff for game updates.
   Future<void> updateFirestoreGame(Game game) async {
+    print(game);
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance.collection(GAMES_COLLECTION);
-    if (game.uid == '' || game.uid == null) {
+    print(game.uid);
+    if (game.uid == null || game.uid == '') {
+      print(game.toJSON());
       // Add the game.
       DocumentReference doc = await ref.add(game.toJSON());
+      print(doc);
       game.uid = doc.documentID;
     } else {
       // Update the game.

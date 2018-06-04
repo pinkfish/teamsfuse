@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/numberpicker.dart';
 import 'package:flutter_fuse/util/debouncer.dart';
 import 'package:flutter_fuse/widgets/util/stopwatchdisplay.dart';
 import 'package:timezone/timezone.dart';
 import 'dart:async';
 import 'periodselector.dart';
+import 'timersetupdialog.dart';
 
 class ScoreDetails extends StatefulWidget {
   final Game game;
@@ -43,11 +43,16 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       _currentPeriodResults =
           widget.game.result.scores[widget.game.result.currentPeriod];
     }
+    GamePeriod periodZero = new GamePeriod(
+        type: widget.game.result.currentPeriod.type, periodNumber: 0);
+    if (_currentPeriodResults == null) {
+      _currentPeriodResults = widget.game.result.scores[periodZero];
+    }
     if (_currentPeriodResults == null) {
       _currentPeriodResults = new GameResultPerPeriod(
-          period:
-              new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 1),
-          score: new GameScore(ptsAgainst: 0, ptsFor: 0));
+          period: periodZero, score: new GameScore(ptsAgainst: 0, ptsFor: 0));
+
+      _details.scores[periodZero] = _currentPeriodResults;
     }
     if (_details.currentPeriod == null) {
       _details.currentPeriod = _currentPeriodResults.period;
@@ -76,7 +81,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
   void _updateGame(UpdateReason reason) {
     // Change scores and timers.
     GamePeriod period = new GamePeriod(
-        type: widget.game.result.currentPeriod.type, periodNumber: 1);
+        type: widget.game.result.currentPeriod.type, periodNumber: 0);
     if (widget.game.result.scores.containsKey(period)) {
       _ptsForState.currentState
           .animateInt(widget.game.result.scores[period].score.ptsFor);
@@ -138,7 +143,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       if (_ptsFor != null) {
         _currentPeriodResults.score.ptsFor = _ptsFor;
       }
-      print("Update score $_currentPeriodResults");
+      print("Update score $_currentPeriodResults $_details");
+      //widget.game.updateFirestoreResult(_details);
       _writeLog(GameLogType.ScoreUpdate);
     });
     _debouncer.debounce(true);
@@ -244,7 +250,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         _details.inProgress = GameInProgress.InProgress;
         _details.time.currentPeriodStart = null;
         _details.time.currentOffset = new Duration();
-        _details.currentPeriod =
+         _details.currentPeriod =
             new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 1);
         _writeLog(GameLogType.PeriodStart);
         widget.game.updateFirestoreResult(_details);
@@ -364,7 +370,15 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     }
   }
 
-  void _timerSettings() {}
+  void _timerSettings() async {
+    GamePeriodTime time = await timerSetupDialog(context, _details);
+    if (time != null) {
+      setState(() {
+        _details.time = time;
+      });
+      widget.game.updateFirestoreResult(_details);
+    }
+  }
 
   void _changeResult() {
     // Do something to change the result.

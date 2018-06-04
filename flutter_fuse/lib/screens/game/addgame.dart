@@ -93,7 +93,7 @@ class AddGameScreenState extends State<AddGameScreen> {
         } else {
           // Write the game out.
           setState(() {
-            _saving = true;
+            //_saving = true;
           });
           _initGame.updateFirestore().then((void h) {
             _saving = false;
@@ -123,29 +123,32 @@ class AddGameScreenState extends State<AddGameScreen> {
   }
 
   void _teamChanged(String str) {
-    _teamUid = str;
     //_gameFormKey.currentState.setTeam(str);
     _initGame = new Game.newGame(EventType.Game);
-    Team teamData = UserDatabaseData.instance.teams[_teamUid];
+    Team teamData = UserDatabaseData.instance.teams[str];
     DateTime start = new DateTime.now().add(const Duration(days: 1));
     _initGame.time = start.millisecondsSinceEpoch;
     _initGame.arriveTime = start
         .subtract(new Duration(minutes: teamData.arriveEarly))
         .millisecondsSinceEpoch;
     _initGame.endTime = _initGame.time;
-    _initGame.teamUid = _teamUid;
+    _initGame.teamUid = str;
     _initGame.seasonUid = teamData.currentSeason;
     _initGame.opponentUid = null;
     _initGame.homegame = false;
     _initGame.uniform = '';
     _initGame.notes = '';
     _initGame.trackAttendance = teamData.trackAttendence;
+    setState(() {
+      _teamUid = str;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
 
+    print(_teamUid);
     return new Scaffold(
       key: _scaffoldKey,
       appBar: new AppBar(

@@ -91,7 +91,7 @@ class GameDetailsState extends State<GameDetails> {
             return new AttendanceDialog(current: current);
           });
       if (attend != null) {
-        widget.game.updateFirestorAttendence(player.uid, attend);
+        widget.game.updateFirestoreAttendence(player.uid, attend);
       }
     } else {
       Map<Player, Attendance> attend = await showDialog(
@@ -102,7 +102,7 @@ class GameDetailsState extends State<GameDetails> {
       );
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
-          widget.game.updateFirestorAttendence(player.uid, attend);
+          widget.game.updateFirestoreAttendence(player.uid, attend);
         });
       }
     }

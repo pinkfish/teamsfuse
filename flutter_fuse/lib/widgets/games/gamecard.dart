@@ -27,7 +27,7 @@ class GameCard extends StatelessWidget {
             return new AttendanceDialog(current: current);
           });
       if (attend != null) {
-        game.updateFirestorAttendence(player.uid, attend);
+        game.updateFirestoreAttendence(player.uid, attend);
       }
     } else {
       Map<Player, Attendance> attend = await showDialog(
@@ -37,7 +37,7 @@ class GameCard extends StatelessWidget {
           });
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
-          game.updateFirestorAttendence(player.uid, attend);
+          game.updateFirestoreAttendence(player.uid, attend);
         });
       }
     }
