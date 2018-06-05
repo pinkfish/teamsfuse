@@ -582,6 +582,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				DEVELOPMENT_TEAM = 7L9UDTQJU8;
+				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -592,7 +593,6 @@
 					"$(PROJECT_DIR)/Pods/FirebaseStorage/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseMessaging/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseFirestore/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseDatabase/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseCore/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks",
@@ -626,6 +626,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				DEVELOPMENT_TEAM = 7L9UDTQJU8;
+				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = NO;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -636,7 +637,6 @@
 					"$(PROJECT_DIR)/Pods/FirebaseStorage/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseMessaging/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseFirestore/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseDatabase/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseCore/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks",

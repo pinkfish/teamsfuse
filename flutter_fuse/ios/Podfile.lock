@@ -1,10 +1,10 @@
 PODS:
-  - BoringSSL (10.0.2):
-    - BoringSSL/Implementation (= 10.0.2)
-    - BoringSSL/Interface (= 10.0.2)
-  - BoringSSL/Implementation (10.0.2):
-    - BoringSSL/Interface (= 10.0.2)
-  - BoringSSL/Interface (10.0.2)
+  - BoringSSL (10.0.3):
+    - BoringSSL/Implementation (= 10.0.3)
+    - BoringSSL/Interface (= 10.0.3)
+  - BoringSSL/Implementation (10.0.3):
+    - BoringSSL/Interface (= 10.0.3)
+  - BoringSSL/Interface (10.0.3)
   - cloud_firestore (0.0.1):
     - Firebase/Auth
     - Firebase/Core
@@ -13,27 +13,30 @@ PODS:
     - Flutter
   - device_info (0.0.1):
     - Flutter
-  - Firebase/Auth (5.0.1):
+  - Firebase/Auth (5.1.0):
     - Firebase/CoreOnly
     - FirebaseAuth (= 5.0.0)
-  - Firebase/Core (5.0.1):
+  - Firebase/Core (5.1.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (= 5.0.0)
-  - Firebase/CoreOnly (5.0.1):
-    - FirebaseCore (= 5.0.1)
-  - Firebase/Database (5.0.1):
+    - FirebaseAnalytics (= 5.0.1)
+  - Firebase/CoreOnly (5.1.0):
+    - FirebaseCore (= 5.0.2)
+  - Firebase/Database (5.1.0):
     - Firebase/CoreOnly
-    - FirebaseDatabase (= 5.0.0)
-  - Firebase/Firestore (5.0.1):
+    - FirebaseDatabase (= 5.0.1)
+  - Firebase/Firestore (5.1.0):
     - Firebase/CoreOnly
-    - FirebaseFirestore (= 0.12.1)
-  - Firebase/Performance (5.0.1):
+    - FirebaseFirestore (= 0.12.2)
+  - Firebase/Messaging (5.1.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (= 3.0.1)
+  - Firebase/Performance (5.1.0):
     - Firebase/Core
     - FirebasePerformance (= 2.0.0)
-  - Firebase/RemoteConfig (5.0.1):
+  - Firebase/RemoteConfig (5.1.0):
     - Firebase/Core
     - FirebaseRemoteConfig (= 3.0.0)
-  - Firebase/Storage (5.0.1):
+  - Firebase/Storage (5.1.0):
     - Firebase/CoreOnly
     - FirebaseStorage (= 3.0.0)
   - firebase_analytics (0.0.1):
@@ -45,6 +48,10 @@ PODS:
     - Flutter
   - firebase_core (0.0.1):
     - Firebase/Core
+    - Flutter
+  - firebase_messaging (0.0.1):
+    - Firebase/Core
+    - Firebase/Messaging
     - Flutter
   - firebase_performance (0.0.1):
     - Firebase/Core
@@ -59,7 +66,7 @@ PODS:
   - FirebaseABTesting (2.0.0):
     - FirebaseCore (~> 5.0)
     - Protobuf (~> 3.5)
-  - FirebaseAnalytics (5.0.0):
+  - FirebaseAnalytics (5.0.1):
     - FirebaseCore (~> 5.0)
     - FirebaseInstanceID (~> 3.0)
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
@@ -67,24 +74,29 @@ PODS:
   - FirebaseAuth (5.0.0):
     - FirebaseCore (~> 5.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - FirebaseCore (5.0.1):
+  - FirebaseCore (5.0.2):
     - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-  - FirebaseDatabase (5.0.0):
+  - FirebaseDatabase (5.0.1):
     - FirebaseCore (~> 5.0)
     - leveldb-library (~> 1.18)
-  - FirebaseFirestore (0.12.1):
+  - FirebaseFirestore (0.12.2):
     - FirebaseCore (~> 5.0)
-    - FirebaseFirestore/abseil-cpp (= 0.12.1)
+    - FirebaseFirestore/abseil-cpp (= 0.12.2)
     - gRPC-ProtoRPC (~> 1.0)
     - leveldb-library (~> 1.18)
     - Protobuf (~> 3.1)
-  - FirebaseFirestore/abseil-cpp (0.12.1):
+  - FirebaseFirestore/abseil-cpp (0.12.2):
     - FirebaseCore (~> 5.0)
     - gRPC-ProtoRPC (~> 1.0)
     - leveldb-library (~> 1.18)
     - Protobuf (~> 3.1)
   - FirebaseInstanceID (3.0.0):
     - FirebaseCore (~> 5.0)
+  - FirebaseMessaging (3.0.1):
+    - FirebaseCore (~> 5.0)
+    - FirebaseInstanceID (~> 3.0)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - Protobuf (~> 3.1)
   - FirebasePerformance (2.0.0):
     - FirebaseAnalytics (~> 5.0)
     - FirebaseInstanceID (~> 3.0)
@@ -182,6 +194,7 @@ DEPENDENCIES:
   - firebase_analytics (from `Pods/.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `Pods/.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `Pods/.symlinks/plugins/firebase_core/ios`)
+  - firebase_messaging (from `Pods/.symlinks/plugins/firebase_messaging/ios`)
   - firebase_performance (from `Pods/.symlinks/plugins/firebase_performance/ios`)
   - firebase_remote_config (from `Pods/.symlinks/plugins/firebase_remote_config/ios`)
   - firebase_storage (from `Pods/.symlinks/plugins/firebase_storage/ios`)
@@ -207,6 +220,7 @@ SPEC REPOS:
     - FirebaseDatabase
     - FirebaseFirestore
     - FirebaseInstanceID
+    - FirebaseMessaging
     - FirebasePerformance
     - FirebaseRemoteConfig
     - FirebaseStorage
@@ -236,6 +250,8 @@ EXTERNAL SOURCES:
     :path: Pods/.symlinks/plugins/firebase_auth/ios
   firebase_core:
     :path: Pods/.symlinks/plugins/firebase_core/ios
+  firebase_messaging:
+    :path: Pods/.symlinks/plugins/firebase_messaging/ios
   firebase_performance:
     :path: Pods/.symlinks/plugins/firebase_performance/ios
   firebase_remote_config:
@@ -264,23 +280,25 @@ EXTERNAL SOURCES:
     :path: Pods/.symlinks/plugins/url_launcher/ios
 
 SPEC CHECKSUMS:
-  BoringSSL: 60dd24df4af296bf41d78e5841dbb95d75f88c0d
+  BoringSSL: c46efb47593135382bc0934196f16d2f726f5f36
   cloud_firestore: a2d49d9c7219fce31033eb1a2ee953d7733c91d6
   device_info: 76ce0b32e13034d1883be4a382433648f9dcee63
-  Firebase: d6861c2059d8c32d1e6dd8932e22ada346d90a3a
+  Firebase: e08fb0795f35707aeb1d8a715c731c45bdf6fd56
   firebase_analytics: fcc60a9de4b8e07aa5af8941303a7f5fe6e0383f
   firebase_auth: 27a5a77a032d557c18f8e223aaf8ec1368f6cdbc
   firebase_core: c96aa8b2fcf7f5167d32f22034f502f9304952b8
-  firebase_performance: 81c05c50761d90f15968b7421ecd97c2b00532ab
+  firebase_messaging: a5f5d4a9491b660f33a1f94bd0596558f820bad1
+  firebase_performance: fdf5ed932e2996298cb2f2c4758655e49357cbe6
   firebase_remote_config: 237de54ea095a512fbf7ee93ff36910e175b0c7b
   firebase_storage: e34d30ff8bb57e691191b70e9d255ec2eba2351f
   FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
-  FirebaseAnalytics: 19812b49fa5f283dd6b23edf8a14b5d477029ab8
+  FirebaseAnalytics: b3628aea54c50464c32c393fb2ea032566e7ecc2
   FirebaseAuth: acbeef02fe7c3a26624e309849f3fe30c84115af
-  FirebaseCore: cafc814b2d84fc8733f09e653041cc2165332ad7
-  FirebaseDatabase: 697eb53e5b4fe7cd4fa8756c1f82a9fca011345f
-  FirebaseFirestore: f686b8e83f3cf8bbc37db6e98e01029a14f01f55
+  FirebaseCore: b81044df1044c0857a0737c6324678b72d4f7f00
+  FirebaseDatabase: 482bad9c2abd422bb2321194fb8c937e67426a89
+  FirebaseFirestore: 93b8bf70484c92c271ae93940fe1e2ca9e35f92b
   FirebaseInstanceID: 83e0040351565df711a5db3d8ebe5ea21aca998a
+  FirebaseMessaging: ec6fde5a77824c6da0218f9ca220feb251aa17d5
   FirebasePerformance: 1ec6c40e5dad2543ca4c4f25d15168bde6322c2c
   FirebaseRemoteConfig: 3c57e4644bd6976b671ae0b725cd709f198bd1f5
   FirebaseStorage: 7ca4bb7b58a25fa647b04f524033fc7cb7eb272b
@@ -309,6 +327,6 @@ SPEC CHECKSUMS:
   sqflite: d1612813fa7db7c667bed9f1d1b508deffc56999
   url_launcher: 92b89c1029a0373879933c21642958c874539095
 
-PODFILE CHECKSUM: 6e3081f70d0263650f46e1c17b0b2f5866cacb63
+PODFILE CHECKSUM: 60a67a253f96636f9b107d0062424f484ffc62b7
 
 COCOAPODS: 1.5.2

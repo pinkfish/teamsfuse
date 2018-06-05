@@ -940,15 +940,15 @@ class Messages {
   String periodstart(GameLog period) {
     switch (period.period.type) {
       case GamePeriodType.Regulation:
-        return "Start period ${period.period.periodNumber} Score:  ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+        return Intl.message("Start period ${period.period.periodNumber} Score:  ${period.score.ptsFor} - ${period.score.ptsAgainst}");
       case GamePeriodType.OvertimeBreak:
-        return "Start overtime period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+        return Intl.message("Start overtime period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
       case GamePeriodType.Break:
-        return "Start period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+        return Intl.message("Start period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
       case GamePeriodType.Overtime:
-        return "Start overtime Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+        return Intl.message("Start overtime Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
       case GamePeriodType.Penalty:
-        return "Start penalty Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+        return Intl.message("Start penalty Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
     }
     return unknown;
   }
@@ -965,6 +965,32 @@ class Messages {
         return "Stop overtime Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
       case GamePeriodType.Penalty:
         return "Stop penalty Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}";
+    }
+    return unknown;
+  }
+
+  String fixscore(GameLog log) {
+return Intl.message("Fix score: ${log.score.ptsFor} - ${log.score.ptsAgainst}");
+  }
+
+  String periodname(GamePeriod period) {
+    switch (period.type) {
+      case GamePeriodType.Regulation:
+        if (period.periodNumber > 0) {
+          return Intl.message("Regulation ${period.periodNumber}");
+        }
+        return Intl.message("Regulation");
+      case GamePeriodType.Break:
+        return Intl.message("Break ${period.periodNumber}");
+      case GamePeriodType.OvertimeBreak:
+        return Intl.message("Overtime break${period.periodNumber}");
+      case GamePeriodType.Overtime:
+        if (period.periodNumber > 0) {
+          return Intl.message("Overtime ${period.periodNumber}");
+        }
+        return Intl.message("Overtime");
+      case GamePeriodType.Penalty:
+        return Intl.message("Penalty");
     }
     return unknown;
   }
@@ -1382,6 +1408,24 @@ class Messages {
 
   String get addresultbutton {
     return Intl.message('ADD RESULT');
+  }
+
+  String get changescore {
+    return Intl.message('Change Score',
+        desc:
+            'Title for the dialog box to change the score after the game has finished');
+  }
+
+  String get settings {
+    return Intl.message('Settings');
+  }
+
+  String get signout {
+    return Intl.message('Signout');
+  }
+
+  String get about {
+    return Intl.message('About');
   }
 
   QuoteAndAuthor quoteforsaving(int quoteId) {

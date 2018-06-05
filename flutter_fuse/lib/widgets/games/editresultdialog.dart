@@ -21,11 +21,31 @@ class EditResultDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
+    String resultStr = "";
+
+    if (_game.result.inProgress == GameInProgress.Final) {
+      switch (_game.result.result) {
+        case GameResult.Loss:
+          resultStr = Messages.of(context).resultloss(_game.result);
+          break;
+        case GameResult.Tie:
+          resultStr = Messages.of(context).resulttie(_game.result);
+          break;
+        case GameResult.Win:
+          resultStr = Messages.of(context).resultwin(_game.result);
+          break;
+        default:
+          resultStr = Messages.of(context).gameresult(_game.result.result);
+          break;
+      }
+    }
+
 
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(
-          Messages.of(context).gametitlevs(_game, _opponent.name),
+          Messages.of(context).gametitlevs(_game, _opponent.name) + "  " + resultStr,
+          overflow: TextOverflow.clip,
         ),
       ),
       backgroundColor: Colors.grey.shade100,

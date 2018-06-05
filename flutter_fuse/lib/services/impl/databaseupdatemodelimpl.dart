@@ -4,6 +4,7 @@ import 'package:flutter_fuse/services/sqldata.dart';
 import 'dart:async';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:timezone/timezone.dart';
 import 'dart:io';
 
 class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
@@ -112,16 +113,20 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return ret;
   }
 
-  Future<void> addFirestoreGameLog(Game game, GameLog log) {
+  Future<String> addFirestoreGameLog(Game game, GameLog log) {
     CollectionReference coll = Firestore.instance
         .collection(GAMES_COLLECTION)
         .document(game.uid)
         .collection(GAME_LOG_COLLECTION);
+    log.eventTime = new TZDateTime.now(local);
     print('Writing game log');
     return coll.add(log.toJSON()).then((DocumentReference ref) {
+      log.uid = ref.documentID;
       print("Wrote log ${ref.documentID} to ${ref.path}");
+      return ref.documentID;
     }).catchError((Error e) {
       print("Got error $e");
+      return null;
     });
   }
 

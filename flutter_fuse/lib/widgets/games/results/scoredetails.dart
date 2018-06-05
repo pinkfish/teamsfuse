@@ -8,6 +8,7 @@ import 'package:timezone/timezone.dart';
 import 'dart:async';
 import 'periodselector.dart';
 import 'timersetupdialog.dart';
+import 'changescoredialog.dart';
 
 class ScoreDetails extends StatefulWidget {
   final Game game;
@@ -61,7 +62,6 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         resetOnAdd: false);
     _ptsFor = _currentPeriodResults.score.ptsFor;
     _ptsAgainst = _currentPeriodResults.score.ptsAgainst;
-    widget.game.loadGameLogs();
     // Setup the stop watch/
     stopwatch.resetTo(_details.time.currentStopwatch().inMilliseconds);
     print("${_details.time.currentOffset} ${_details.time.currentPeriodStart}");
@@ -250,7 +250,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         _details.inProgress = GameInProgress.InProgress;
         _details.time.currentPeriodStart = null;
         _details.time.currentOffset = new Duration();
-         _details.currentPeriod =
+        _details.currentPeriod =
             new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 1);
         _writeLog(GameLogType.PeriodStart);
         widget.game.updateFirestoreResult(_details);
@@ -380,8 +380,13 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     }
   }
 
-  void _changeResult() {
+  void _changeResult() async {
     // Do something to change the result.
+    GameResultDetails details = await changeScoreDialog(context, _details);
+    if (details != null) {
+      widget.game.updateFirestoreResult(details);
+      _writeLog(GameLogType.UpdateScore);
+    }
   }
 
   @override
@@ -412,13 +417,38 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         ),
       );
     } else if (_details.inProgress == GameInProgress.Final) {
+      String resultStr;
+      Color color = Colors.black;
+      switch (_details.result) {
+        case GameResult.Loss:
+          resultStr = Messages.of(context).resultloss(_details);
+          color = Theme.of(context).errorColor;
+          break;
+        case GameResult.Tie:
+          resultStr = Messages.of(context).resulttie(_details);
+          break;
+        case GameResult.Win:
+          resultStr = Messages.of(context).resultwin(_details);
+          break;
+        default:
+          resultStr = Messages.of(context).gameresult(_details.result);
+          break;
+      }
       return new Form(
         key: _formKey,
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            new Text(Messages.of(context).gameresult(_details.result)),
+            new SizedBox(height: 10.0),
+            new Text(
+              resultStr,
+              style: Theme.of(context).textTheme.title.copyWith(color: color),
+            ),
+            new SizedBox(
+              height: 10.0,
+            ),
             new Row(
               children: <Widget>[
                 new Expanded(
@@ -439,12 +469,6 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       );
     } else {
       List<Widget> children = [
-        /*
-        new PeriodNumberSelector(
-            _details.currentPeriod, _details.divisions, _periodChanged, _scrollController),
-        new PeriodTypeSelector(
-            widget.team, _details.currentPeriod, _periodChanged),
-            */
         new PeriodSelector(
           currentPeriod: _details.currentPeriod,
           divisionsType: _details.divisions,
