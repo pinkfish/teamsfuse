@@ -22,11 +22,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  StreamSubscription<UpdateReason> _subscription;
   StreamSubscription<UpdateReason> _teamSubscription;
   StreamSubscription<UpdateReason> _messagaesSubscription;
+  StreamSubscription<UpdateReason> _calendarSub;
   FilterDetails _details = new FilterDetails();
-  GameListCalendarState _calendarState = new GameListCalendarState();
+  GameListCalendarState _calendarState;
   int quoteId = SavingOverlay.randomNum.nextInt(20000);
 
   void _showFilterDialog() async {
@@ -168,6 +168,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: new CalendarWidget(
                 initialDate: new TZDateTime.now(local),
                 source: _calendarState,
+                bannerHeader: new AssetImage("assets/images/calendarheader.png"),
+                monthHeader: new AssetImage("assets/images/calendarbanner.jpg"),
               ),
             ),
           ],
@@ -212,8 +214,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _subscription = UserDatabaseData.instance.gameStream
-        .listen((UpdateReason reason) => setState(() {}));
+
+    _calendarState = new GameListCalendarState(_details);
     _teamSubscription = UserDatabaseData.instance.teamStream
         .listen((UpdateReason reason) => setState(() {}));
     _messagaesSubscription = UserDatabaseData.instance.messagesStream
@@ -221,17 +223,20 @@ class _HomeScreenState extends State<HomeScreen> {
     _calendarState.loadGames(_details).then((void d) {
       setState(() {});
     });
+    _calendarSub = _calendarState.stream.listen((UpdateReason readon) {
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    _subscription?.cancel();
-    _subscription = null;
-    _teamSubscription?.cancel();
+     _teamSubscription?.cancel();
     _teamSubscription = null;
     _messagaesSubscription?.cancel();
     _messagaesSubscription = null;
+    _calendarSub?.cancel();
+    _calendarSub = null;
   }
 }
 

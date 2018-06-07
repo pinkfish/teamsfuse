@@ -374,7 +374,11 @@ class GameCard extends StatelessWidget {
               onTap: () {
                 Navigator.pushNamed(context, "/Game/" + game.uid);
               },
-              leading: new TeamImage(game.teamUid),
+              leading: new TeamImage(
+                game.teamUid,
+                width: 50.0,
+                height: 50.0,
+              ),
               title: new Text(
                 title,
                 overflow: TextOverflow.clip,
@@ -404,7 +408,11 @@ class GameCard extends StatelessWidget {
           onTap: () {
             Navigator.pushNamed(context, "/Game/" + game.uid);
           },
-          leading: new TeamImage(game.teamUid),
+          leading: new TeamImage(
+            game.teamUid,
+            height: 50.0,
+            width: 50.0,
+          ),
           title: new Text(
             title,
             overflow: TextOverflow.clip,

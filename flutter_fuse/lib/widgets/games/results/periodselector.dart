@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 class PeriodTypeSelector extends StatelessWidget {
   final Team team;

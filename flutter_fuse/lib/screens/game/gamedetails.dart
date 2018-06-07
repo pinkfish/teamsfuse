@@ -3,7 +3,6 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/games/gamedetails.dart';
 import 'package:flutter_fuse/widgets/games/availability.dart';
-import 'package:flutter_fuse/widgets/games/deletegamedialog.dart';
 
 class GameDetailsScreen extends StatefulWidget {
   GameDetailsScreen(this.gameUid);
@@ -28,7 +27,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
   }
 
   GameDetailsScreenState(this.gameUid) {
-    game = UserDatabaseData.instance.games[gameUid];
+    game = UserDatabaseData.instance.gamesCache[gameUid];
   }
 
   @override
@@ -38,13 +37,6 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
 
   void _editGame() {
     Navigator.pushNamed(context, "EditGame/" + gameUid);
-  }
-
-  void _deleteGame() async {
-    bool deleted = await deleteGameDialog(context, game);
-    if (deleted) {
-      Navigator.pop(context);
-    }
   }
 
   @override

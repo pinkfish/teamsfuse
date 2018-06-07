@@ -119,8 +119,6 @@ class TeamOpponentsState extends State<TeamOpponents> {
   List<Widget> _buildOpponents() {
     List<Widget> ret = new List<Widget>();
     ThemeData theme = Theme.of(context);
-    Season season = _team.seasons[_seasonUid];
-    Future<Iterable<Game>> games = season.getGames();
 
     ret.add(
       new RichText(

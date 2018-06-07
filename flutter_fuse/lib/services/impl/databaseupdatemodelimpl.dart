@@ -229,8 +229,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(Game.OPPONENTUID, isEqualTo: opponent.uid)
         .getDocuments();
     return snap.documents.map((DocumentSnapshot doc) {
-      Game game = new Game();
-      game.fromJSON(doc.documentID, doc.data);
+      Game game = new Game.fromJSON(doc.documentID, doc.data);
       return game;
     });
   }
@@ -301,17 +300,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     ret.add(opCollection
         .snapshots()
         .listen((QuerySnapshot snap) => this._onOpponentUpdated(team, snap)));
-
-    Query gameQuery = Firestore.instance
-        .collection(GAMES_COLLECTION)
-        .where(Game.TEAMUID, isEqualTo: team.uid);
-    QuerySnapshot queryGameSnap = await gameQuery.getDocuments();
-    UserDatabaseData.instance
-        .onGameUpdated(team.uid, _firestoreData(queryGameSnap.documents));
-    ret.add(gameQuery.snapshots().listen((QuerySnapshot value) {
-      UserDatabaseData.instance
-          .onGameUpdated(team.uid, _firestoreData(value.documents));
-    }));
     return ret;
   }
 
@@ -364,6 +352,55 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     team.photoUrl = snapshot.downloadUrl.toString();
     print('photurl ${team.photoUrl}');
     return snapshot.downloadUrl;
+  }
+
+  // Games!
+  GameSubscription getGames(Iterable<Game> cachedGames, Set<String> teams,
+      DateTime start, DateTime end) {
+    StreamController<Iterable<Game>> controller =
+        new StreamController<Iterable<Game>>();
+    GameSubscription sub = new GameSubscription(cachedGames, controller);
+    Map<String, List<Game>> maps = {};
+    for (String teamUid in teams) {
+      Query gameQuery = Firestore.instance
+          .collection(GAMES_COLLECTION)
+          .where(Game.TEAMUID, isEqualTo: teamUid)
+          .where(Game.TIME, isGreaterThan: start.millisecondsSinceEpoch)
+          .where(Game.TIME, isLessThan: end.millisecondsSinceEpoch);
+      gameQuery.getDocuments().then((QuerySnapshot queryGameSnap) {
+        if (!controller.isClosed) {
+          List<Game> data = [];
+          for (DocumentSnapshot snap in queryGameSnap.documents) {
+            data.add(new Game.fromJSON(snap.documentID, snap.data));
+          }
+          maps[teamUid] = data;
+          if (maps.length == teams.length) {
+            List<Game> newData = [];
+
+            for (List<Game> it in maps.values) {
+              newData.addAll(it);
+            }
+            controller.add(newData);
+          }
+        }
+      });
+
+      sub.subscriptions
+          .add(gameQuery.snapshots().listen((QuerySnapshot queryGameSnap) {
+        List<Game> data = [];
+        for (DocumentSnapshot snap in queryGameSnap.documents) {
+          data.add(new Game.fromJSON(snap.documentID, snap.data));
+        }
+        maps[teamUid] = data;
+        List<Game> newData = [];
+
+        for (List<Game> it in maps.values) {
+          newData.addAll(it);
+        }
+        controller.add(newData);
+      }));
+    }
+    return sub;
   }
 
   // UserPlayer stuff
@@ -575,6 +612,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       invite.seasonName = season.name;
       invite.teamName = team.name;
       invite.displayName = UserDatabaseData.instance.mePlayer.name;
+      invite.role = role;
       snapshot.documents[0].reference.updateData(invite.toJSON());
       print('Updating invite');
     } else {
@@ -624,8 +662,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(Game.SEASONUID, isEqualTo: season.uid)
         .getDocuments();
     return snap.documents.map((DocumentSnapshot doc) {
-      Game game = new Game();
-      game.fromJSON(doc.documentID, doc.data);
+      Game game = new Game.fromJSON(doc.documentID, doc.data);
       return game;
     });
   }

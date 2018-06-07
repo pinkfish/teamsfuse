@@ -68,7 +68,7 @@ class Notifications {
   }
 
   void _onGamesUpdated() {
-    Map<String, Game> data = UserDatabaseData.instance.games;
+    Map<String, Game> data = UserDatabaseData.instance.gamesCache;
     Set<String> stillHere = _notificationMapping.keys.toSet();
     DateTime now = new DateTime.now();
     for (Game game in data.values) {
@@ -168,10 +168,12 @@ class Notifications {
     // need to rely on remote push notifications for the details to be up to
     // date.
     if (Platform.isAndroid) {
+      /*
       _gameStream =
           UserDatabaseData.instance.gameStream.listen((UpdateReason reason) {
         _onGamesUpdated();
       });
+      */
     }
   }
 }

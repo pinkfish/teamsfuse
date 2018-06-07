@@ -5,8 +5,18 @@ import 'package:sliver_calendar/sliver_calendar.dart';
 import 'dart:async';
 
 class GameListCalendarState extends CalendarSource {
+  GameSubscription _subscription;
+  StreamSubscription<Iterable<Game>> _listening;
+  StreamSubscription<UpdateReason> _teamListen;
   List<Game> _listToShow;
-  StreamSubscription<UpdateReason> _listening;
+  DateTime startPoint;
+  DateTime endPoint;
+  FilterDetails details;
+  StreamController<UpdateReason> _controller =
+      new StreamController<UpdateReason>();
+  Stream<UpdateReason> _myStream;
+
+  GameListCalendarState(this.details);
 
   @override
   Widget buildWidget(BuildContext context, CalendarEvent event) {
@@ -15,37 +25,65 @@ class GameListCalendarState extends CalendarSource {
 
   @override
   List<CalendarEvent> getEvents(DateTime start, DateTime end) {
-    if (_listToShow == null) {
-      _listToShow = UserDatabaseData.instance.games.values.toList();
+    print('Get events');
+    if (startPoint == null ||
+        endPoint == null ||
+        start.isBefore(startPoint) ||
+        end.isAfter(endPoint)) {
+      startPoint = start;
+      endPoint = end;
+      _resubscribe();
     }
-    if (_listToShow == null) {
-      return [];
-    }
+
     List<CalendarEvent> events = new List<CalendarEvent>();
     int pos = 0;
-    _listToShow.forEach((Game g) => events.add(new CalendarEvent(
-        instant: g.tzTime, instantEnd: g.tzEndTime, index: pos++)));
+    for (Game g in _listToShow) {
+      events.add(new CalendarEvent(
+          instant: g.tzTime, instantEnd: g.tzEndTime, index: pos++));
+    }
+    print("returned ${events.length}");
     return events;
+  }
+
+  Stream<UpdateReason> get stream {
+    if (_myStream == null) {
+      _myStream = _controller.stream.asBroadcastStream();
+    }
+    return _myStream;
+  }
+
+  void _resubscribe() {
+    _subscription?.dispose();
+    _subscription =
+        UserDatabaseData.instance.getGames(details, startPoint, endPoint);
+    _setGames(_subscription.games);
+    _listening?.cancel();
+    _listening = _subscription.stream.listen((Iterable<Game> games) {
+      print("Getting games $startPoint $endPoint");
+      _setGames(games);
+    });
   }
 
   @override
   void initState() {
-    _listToShow = UserDatabaseData.instance.games.values.toList();
-    _listening = UserDatabaseData.instance.gameStream.listen((UpdateReason r) {
-      _listToShow = UserDatabaseData.instance.games.values.toList();
-      state.updateEvents();
+    _teamListen =
+        UserDatabaseData.instance.teamStream.listen((UpdateReason reason) {
+      _resubscribe();
     });
   }
 
   @override
   void dispose() {
-    _listening.cancel();
+    _listening?.cancel();
+    _listening = null;
+    _teamListen?.cancel();
+    _teamListen = null;
+    _controller?.close();
+    _controller = null;
   }
 
   Future<void> loadGames(FilterDetails details) async {
-    Iterable<Game> list = await UserDatabaseData.instance.getGames(details);
-
-    _setGames(list);
+    this.details = details;
   }
 
   void _setGames(Iterable<Game> res) {
@@ -53,5 +91,7 @@ class GameListCalendarState extends CalendarSource {
     games.sort((a, b) => a.time.compareTo(b.time));
 
     _listToShow = games;
+    _controller?.add(UpdateReason.Update);
+    updateEvents();
   }
 }

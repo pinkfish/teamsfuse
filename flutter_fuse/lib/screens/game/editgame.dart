@@ -37,7 +37,7 @@ class EditGameScreenState extends State<EditGameScreen> {
 
   void _savePressed(BuildContext context) async {
     print('save pressed');
-    Game game = UserDatabaseData.instance.games[widget.gameuid];
+    Game game = UserDatabaseData.instance.gamesCache[widget.gameuid];
     EditFormBase baseForm;
     switch (game.type) {
       case EventType.Game:
@@ -70,7 +70,7 @@ class EditGameScreenState extends State<EditGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Game game = UserDatabaseData.instance.games[widget.gameuid];
+    Game game = UserDatabaseData.instance.gamesCache[widget.gameuid];
     Widget form;
     switch (game.type) {
       case EventType.Game:

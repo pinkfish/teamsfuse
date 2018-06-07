@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 class MessageSendBox extends StatelessWidget {
   final TextEditingController _textController = new TextEditingController();
