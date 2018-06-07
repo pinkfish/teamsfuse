@@ -397,6 +397,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         for (List<Game> it in maps.values) {
           newData.addAll(it);
         }
+        // Update the cache so we can find these games when the
+        // app is open.
+        UserDatabaseData.instance.doCacheGames(newData);
         controller.add(newData);
       }));
     }
