@@ -534,7 +534,7 @@ class Messages {
   }
 
   String get addseason {
-    return Intl.message('Add Season', name: 'Add a season to the team');
+    return Intl.message('ADD SEASON', name: 'Add a season to the team');
   }
 
   String get opponentwithresult {
@@ -586,6 +586,18 @@ class Messages {
             desc: 'Name for the item in a drop down for other');
     }
     return unknown;
+  }
+
+  String arrivebefore(int mins) {
+    return Intl.message('Arrive ${mins} mins before game');
+  }
+
+  String get arrivebeforehint {
+    return Intl.message('Minutes to arrive before game');
+  }
+
+  String get arrivebeforelabel {
+    return Intl.message('Minutes before game');
   }
 
   String get genderfemale {

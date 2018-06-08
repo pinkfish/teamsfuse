@@ -61,18 +61,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
       key: _scaffoldKey,
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
-        actions: <Widget>[
-          new FlatButton(
-              onPressed: () {
-                this._savePressed(context);
-              },
-              child: new Text(Messages.of(context).savebuttontext,
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .subhead
-                      .copyWith(color: Colors.white))),
-        ],
+        actions: <Widget>[],
       ),
       body: new Container(
         padding: new EdgeInsets.all(16.0),
@@ -80,6 +69,10 @@ class EditTeamScreenState extends State<EditTeamScreen> {
           saving: saving,
           child: this._buildForm(context),
         ),
+      ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: () => _savePressed(context),
+        child: const Icon(Icons.check),
       ),
     );
   }

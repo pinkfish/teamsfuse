@@ -74,6 +74,7 @@ class TeamDetailsState extends State<TeamDetails> {
       ));
     });
     return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: ret,
     );
   }
@@ -98,6 +99,9 @@ class TeamDetailsState extends State<TeamDetails> {
 
     if (team == null) {
       return new Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+
         children: <Widget>[
           new Center(
               child: new Image(
@@ -114,6 +118,8 @@ class TeamDetailsState extends State<TeamDetails> {
     }
 
     return new Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         new Center(
             child: new TeamImage(
@@ -123,10 +129,15 @@ class TeamDetailsState extends State<TeamDetails> {
           height: screenSize.height / 4 + 20,
         )),
         new ListTile(
-            title: new Text(team.name),
-            subtitle:
-                new Text(team.sport.toString() + "(" + team.league + ") "),
-            trailing: _buildGenderIcon(team.gender)),
+          leading: const Icon(Icons.people),
+          title: new Text(team.name),
+          subtitle: new Text(team.sport.toString() + "(" + team.league + ") "),
+          trailing: _buildGenderIcon(team.gender),
+        ),
+        new ListTile(
+          leading: const Icon(Icons.timer),
+          title: new Text(Messages.of(context).arrivebefore(team.arriveEarly)),
+        ),
         _buildSeasons(context)
       ],
     );

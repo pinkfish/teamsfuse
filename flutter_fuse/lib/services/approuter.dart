@@ -24,6 +24,7 @@ import 'package:flutter_fuse/screens/team/addseason.dart';
 import 'package:flutter_fuse/screens/team/editteam.dart';
 import 'package:flutter_fuse/screens/team/playerdetails.dart';
 import 'package:flutter_fuse/screens/team/team.dart';
+import 'package:flutter_fuse/screens/team/teamsettings.dart';
 import 'analytics.dart';
 
 class AppRouter {
@@ -90,6 +91,10 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new EditTeamScreen(vals["id"][0])));
+    router.define("/TeamSettings/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new TeamSettingsScreen(vals["id"][0])));
     router.define("/AddSeason/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

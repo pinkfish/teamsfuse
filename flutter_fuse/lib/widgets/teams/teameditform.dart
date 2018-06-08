@@ -35,6 +35,7 @@ class TeamEditFormState extends State<TeamEditForm> {
   FocusNode _focusNodeNotes = new FocusNode();
   FocusNode _focusNodeSeason = new FocusNode();
   FocusNode _focusNodeNewPlayer = new FocusNode();
+  FocusNode _focusNodeArriveBefore = new FocusNode();
   File _imageFile;
   bool _changedImage = false;
   String _seasonName = "";
@@ -267,6 +268,23 @@ class TeamEditFormState extends State<TeamEditForm> {
             labelText: Messages.of(context).leaguehint,
           ),
           focusNode: _focusNodeNotes,
+          initialValue: team.league == null ? '' : team.league,
+          keyboardType: TextInputType.text,
+          obscureText: false,
+          onSaved: (String value) {
+            team.league = value;
+          },
+        ),
+      ),
+      new EnsureVisibleWhenFocused(
+        focusNode: _focusNodeArriveBefore,
+        child: new TextFormField(
+          decoration: new InputDecoration(
+            icon: const Icon(Icons.timer),
+            hintText: Messages.of(context).arrivebeforehint,
+            labelText: Messages.of(context).arrivebeforelabel,
+          ),
+          focusNode: _focusNodeArriveBefore,
           initialValue: team.league == null ? '' : team.league,
           keyboardType: TextInputType.text,
           obscureText: false,
