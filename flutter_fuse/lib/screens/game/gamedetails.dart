@@ -3,6 +3,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/games/gamedetails.dart';
 import 'package:flutter_fuse/widgets/games/availability.dart';
+import 'package:flutter_fuse/widgets/games/deletegamedialog.dart';
 
 class GameDetailsScreen extends StatefulWidget {
   GameDetailsScreen(this.gameUid);
@@ -21,9 +22,16 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
   int _tabIndex = 0;
   ScrollController _scrollController = new ScrollController();
 
-  void _select(String choice) {
+  void _select(String choice) async {
     // Causes the app to rebuild with the new _selectedChoice.
     setState(() {});
+    if (choice == 'delete') {
+      // Show a dialog and then delete it!
+      bool deleted = await deleteGameDialog(context, game);
+      if (deleted) {
+        Navigator.pop(context);
+      }
+    }
   }
 
   GameDetailsScreenState(this.gameUid) {
@@ -59,8 +67,9 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
           itemBuilder: (BuildContext context) {
             return [
               new PopupMenuItem<String>(
-                  value: "delete",
-                  child: new Text(Messages.of(context).deletegame(game))),
+                value: "delete",
+                child: new Text(Messages.of(context).deletegame(game)),
+              ),
             ];
           },
         ),
@@ -99,7 +108,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
       floatingActionButton: new FloatingActionButton(
         onPressed: this._editGame,
         child: new Icon(Icons.edit),
-         //backgroundColor: Colors.orange,
+        //backgroundColor: Colors.orange,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: new Scrollbar(

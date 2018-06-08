@@ -48,6 +48,7 @@ class EditGameScreenState extends State<EditGameScreen> {
         break;
       case EventType.Practice:
         baseForm = _trainingFormKey.currentState;
+        print('${_trainingFormKey.currentState} $_eventFormKey $_gameFormKey');
         break;
     }
     if (baseForm.validate()) {
@@ -77,28 +78,17 @@ class EditGameScreenState extends State<EditGameScreen> {
         form = new GameEditForm(game: game, key: _gameFormKey);
         break;
       case EventType.Event:
-        form = new TrainingEditForm(game: game, key: _trainingFormKey);
+        form = new EventEditForm(game: game, key: _eventFormKey);
         break;
       case EventType.Practice:
-        form = new EventEditForm(game: game, key: _eventFormKey);
+        form = new TrainingEditForm(game: game, key: _trainingFormKey);
         break;
     }
     return new Scaffold(
       key: _scaffoldKey,
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
-        actions: <Widget>[
-          new FlatButton(
-              onPressed: () {
-                this._savePressed(context);
-              },
-              child: new Text(Messages.of(context).savebuttontext,
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .subhead
-                      .copyWith(color: Colors.white))),
-        ],
+        actions: <Widget>[],
       ),
       body: new Container(
         padding: new EdgeInsets.all(16.0),

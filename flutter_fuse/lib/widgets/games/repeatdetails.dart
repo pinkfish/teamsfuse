@@ -33,7 +33,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
   GlobalKey<FormState> _formState = new GlobalKey<FormState>();
 
   void initState() {
-    widget.repeat.dayRepeats[widget.startTime.weekday] = true;
+    widget.repeat.dayRepeats[widget.startTime.weekday - 1] = true;
     widget.repeat.endRepeat = widget.startTime.add(const Duration(days: 7));
     super.initState();
     print('initState $widget.repeat.endRepeat');

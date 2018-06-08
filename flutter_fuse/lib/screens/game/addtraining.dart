@@ -5,6 +5,7 @@ import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
 import 'package:flutter_fuse/widgets/games/repeatdetails.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
 import 'package:timezone/timezone.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:async';
@@ -68,6 +69,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     _initGame.seriesId = seriesId;
     _initGame.updateFirestore();
     await Future.forEach(_repeatDates, (TZDateTime time) async {
+      print('Saving for $time');
       Game newGame = new Game.copy(_initGame);
       newGame.uid = null;
       newGame.time = time.millisecondsSinceEpoch;
@@ -265,6 +267,9 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     _initGame.trackAttendance = teamData.trackAttendence;
 
     print('team changed ${_initGame.toJSON()}');
+    setState(() {
+      _teamUid = str;
+    });
   }
 
   @override
@@ -278,7 +283,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
       ),
       body: new Container(
         padding: new EdgeInsets.all(16.0),
-        child: new Stepper(
+        child: new StepperAlwaysVisible(
           type: StepperType.horizontal,
           currentStep: this.currentStep,
           onStepContinue: () {
@@ -300,7 +305,10 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new TeamPicker(onChanged: this._teamChanged),
+                  new TeamPicker(
+                    onChanged: this._teamChanged,
+                    teamUid: _teamUid,
+                  ),
                 ],
               ),
             ),
