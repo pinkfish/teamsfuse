@@ -17,7 +17,7 @@ class FilterHomeDialog extends StatefulWidget {
 class _FilterHomeDialogState extends State<FilterHomeDialog> {
   void _openTeamListWithCheckbox() {
     Messages messages = Messages.of(context);
-    List<Widget> teams = [];
+    List<Widget> teams = <Widget>[];
     UserDatabaseData.instance.teams.forEach((String str, Team team) {
       bool isOn = widget.details.teamUids.contains(str);
       teams.add(
@@ -32,7 +32,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
         ),
       );
     });
-    showDialog(
+    showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return new SimpleDialog(
@@ -66,7 +66,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
 
   void _openPlayerListWithCheckbox() {
     Messages messages = Messages.of(context);
-    List<Widget> teams = [];
+    List<Widget> teams = <Widget>[];
     UserDatabaseData.instance.players.forEach((String str, Player player) {
       bool isOn = widget.details.playerUids.contains(str);
       teams.add(
@@ -81,7 +81,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
         ),
       );
     });
-    showDialog(
+    showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return new SimpleDialog(
@@ -143,24 +143,24 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
               leading: const Icon(Icons.gamepad),
               title: new DropdownButton<GameResult>(
                 value: widget.details.result,
-                items: [
-                  new DropdownMenuItem(
+                items: <DropdownMenuItem<GameResult>>[
+                  new DropdownMenuItem<GameResult>(
                     child: new Text(messages.noresult),
                     value: null,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<GameResult>(
                     child: new Text(messages.win),
                     value: GameResult.Win,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<GameResult>(
                     child: new Text(messages.loss),
                     value: GameResult.Loss,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<GameResult>(
                     child: new Text(messages.tie),
                     value: GameResult.Tie,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<GameResult>(
                     child: new Text(messages.notfinished),
                     value: GameResult.Unknown,
                   ),
@@ -176,20 +176,20 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
               leading: const Icon(CommunityIcons.tshirtcrew),
               title: new DropdownButton<EventType>(
                 value: widget.details.eventType,
-                items: [
-                  new DropdownMenuItem(
+                items: <DropdownMenuItem<EventType>>[
+                  new DropdownMenuItem<EventType>(
                     child: new Text(messages.noevent),
                     value: null,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<EventType>(
                     child: new Text(messages.gametype),
                     value: EventType.Game,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<EventType>(
                     child: new Text(messages.trainingtype),
                     value: EventType.Practice,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<EventType>(
                     child: new Text(messages.eventtype),
                     value: EventType.Event,
                   ),

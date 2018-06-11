@@ -14,6 +14,13 @@ class UserData {
   UserData({this.profile, String email, this.uid, this.password})
       : _email = email;
 
+  UserData.copy(UserData copy) {
+    profile = new FusedUserProfile.copy(copy.profile);
+    email = copy.email;
+    uid = copy.uid;
+    password = copy.password;
+  }
+
   set email(String val) {
     if (profile != null) {
       profile = profile.copyWith(email: val);
@@ -25,13 +32,8 @@ class UserData {
     return _email;
   }
 
-  UserData.copy(UserData copy) {
-    this.profile = new FusedUserProfile.copy(copy.profile);
-    this.email = copy.email;
-    this.uid = copy.uid;
-    this.password = copy.password;
-  }
 
+  @override
   String toString() {
     return "UserData [$email $uid $profile]";
   }
@@ -75,7 +77,7 @@ class UserAuth {
         DocumentReference ref = Firestore.instance
             .collection(USER_DATA_COLLECTION)
             .document(input.uid);
-        _profileUpdates = ref.snapshots().listen(this._onProfileUpdates);
+        _profileUpdates = ref.snapshots().listen(_onProfileUpdates);
       }
     });
   }
@@ -164,7 +166,7 @@ class UserAuth {
           DocumentReference ref = Firestore.instance
               .collection(USER_DATA_COLLECTION)
               .document(user.uid);
-          _profileUpdates = ref.snapshots().listen(this._onProfileUpdates);
+          _profileUpdates = ref.snapshots().listen(_onProfileUpdates);
         }
         return user;
       } else {
@@ -183,10 +185,12 @@ class UserAuth {
   }
 
   Future<FusedUserProfile> getProfile(String userId) async {
+    print("Looking for $userId");
     DocumentSnapshot ref = await Firestore.instance
         .collection(USER_DATA_COLLECTION)
         .document(userId)
         .get();
+    print("Found $userId ${ref.data}");
     if (ref.exists) {
       FusedUserProfile profile = new FusedUserProfile.fromJSON(ref.data);
       return profile;
@@ -197,7 +201,7 @@ class UserAuth {
   void _onProfileUpdates(DocumentSnapshot doc) {
     if (doc.exists) {
       SqlData.instance
-          .updateElement(SqlData.PROFILE_TABLE, doc.documentID, doc.data);
+          .updateElement(SqlData.profileTable, doc.documentID, doc.data);
       FusedUserProfile profile = new FusedUserProfile.fromJSON(doc.data);
        _currentUser.profile = profile;
       _controller.add(_currentUser);
@@ -210,7 +214,7 @@ class UserAuth {
     // shot listener will catch the actual firebase stuff when
     // it exists.
     Map<String, dynamic> data =
-        await SqlData.instance.getElement(SqlData.PROFILE_TABLE, input.uid);
+        await SqlData.instance.getElement(SqlData.profileTable, input.uid);
     UserData user = new UserData();
     user.email = input.email;
     user.uid = input.uid;
@@ -231,7 +235,7 @@ class UserAuth {
           FusedUserProfile profile = new FusedUserProfile.fromJSON(doc.data);
           user.profile = profile;
           SqlData.instance
-              .updateElement(SqlData.PROFILE_TABLE, doc.documentID, data);
+              .updateElement(SqlData.profileTable, doc.documentID, data);
         });
       }
     }
@@ -246,7 +250,7 @@ class UserAuth {
   // User profile
   Future<void> setNotificationToken(String token) async {
     if (_currentUser != null) {
-      Map<String, bool> data = {};
+      Map<String, bool> data = <String, bool>{};
       String key = "${FusedUserProfile.TOKENS}.$token";
       if (!data.containsKey(key) || !data[key]) {
         data[key] = true;
@@ -268,7 +272,7 @@ class UserAuth {
   // User profile
   Future<void> deleteNotificationToken() async {
     if (_currentUser != null) {
-      Map<String, bool> data = {};
+      Map<String, bool> data = <String, bool>{};
       String key = "${FusedUserProfile.TOKENS}.$_token";
       if (data.containsKey(key) && data[key]) {
         data[key] = false;

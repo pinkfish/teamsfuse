@@ -30,9 +30,9 @@ class PeriodTypeSelector extends StatelessWidget {
   List<Widget> _buildNextPeriods() {
     // We use the current period as a guide to work out where we go next.
     if (currentPeriod == null) {
-      return [new Text("")];
+      return <Widget>[new Text("")];
     }
-    List<Widget> ret = [];
+    List<Widget> ret = <Widget>[];
     ret.add(
       new Container(
         padding: new EdgeInsets.only(left: 3.0, right: 3.0),
@@ -161,7 +161,7 @@ class PeriodNumberSelector extends StatelessWidget {
   }
 
   List<Widget> _buildPeriods() {
-    List<Widget> ret = [];
+    List<Widget> ret = <Widget>[];
 
     switch (divisionsType) {
       case GameDivisionsType.Quarters:
@@ -219,7 +219,8 @@ class PeriodSelector extends StatelessWidget {
 
   List<DropdownMenuItem<GamePeriodType>> _buildPeriodTypes(
       BuildContext context) {
-    List<DropdownMenuItem<GamePeriodType>> ret = [
+    List<DropdownMenuItem<GamePeriodType>> ret =
+        <DropdownMenuItem<GamePeriodType>>[
       new DropdownMenuItem<GamePeriodType>(
         child: new Text("Regulation"),
         value: GamePeriodType.Regulation,
@@ -258,7 +259,7 @@ class PeriodSelector extends StatelessWidget {
   }
 
   List<DropdownMenuItem<int>> _buildDurationTypes(BuildContext context) {
-    List<DropdownMenuItem<int>> ret = [];
+    List<DropdownMenuItem<int>> ret = <DropdownMenuItem<int>>[];
 
     if (currentPeriod.type == GamePeriodType.Penalty) {
       ret.add(_makePeriodButton("None", 1));
@@ -349,6 +350,7 @@ class PeriodSelector extends StatelessWidget {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     GamePeriodType selected = currentPeriod.type;
     int selectedPeriod = currentPeriod.periodNumber;

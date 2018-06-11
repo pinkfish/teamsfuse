@@ -50,7 +50,7 @@ class ShowMessageScreen extends StatelessWidget {
   Widget _showMessage(BuildContext context) {
     Messages messages = Messages.of(context);
     Message mess = UserDatabaseData.instance.messages[messageUid];
-    List<Widget> kids = [];
+    List<Widget> kids = <Widget>[];
     _readMessage(context);
     kids.add(
       new ListTile(
@@ -68,7 +68,7 @@ class ShowMessageScreen extends StatelessWidget {
       ),
     );
 
-    List<Widget> players = [];
+    List<Widget> players = <Widget>[];
     mess.recipients.forEach((String id, MessageRecipient rec) {
       players.add(
         new ListTile(

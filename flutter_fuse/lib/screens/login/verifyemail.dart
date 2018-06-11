@@ -10,12 +10,11 @@ class VerifyEmailScreen extends StatefulWidget {
 }
 
 class VerifyEmailScreenState extends State<VerifyEmailScreen> {
-  BuildContext context;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   ScrollController scrollController = new ScrollController();
   bool autovalidate = false;
 
-  onPressed(String routeName) {
+  void onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
   }
 
@@ -26,7 +25,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   void _handleSubmitted() {
     UserAuth.instance.sendEmailVerification().then((void user) {
-      showDialog(
+      showDialog<bool>(
         context: context,
         builder: (BuildContext context) => new AlertDialog(
               content: new Text(Messages.of(context).verifyemailsent),
@@ -41,7 +40,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
             ),
       );
       Navigator.pushNamed(context, "/");
-    }).catchError((error) {
+    }).catchError((Error error) {
       showInSnackBar(Messages.of(context).verifyemailerror);
     });
   }
@@ -65,7 +64,6 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
     // Reload the user when the page loads.
     UserAuth.instance.reloadUser();
 
-    this.context = context;
     final Size screenSize = MediaQuery.of(context).size;
     double width =
         (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0;
@@ -109,7 +107,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    new FutureBuilder(
+                    new FutureBuilder<UserData>(
                       future: UserAuth.instance.currentUser(),
                       builder:
                           (BuildContext context, AsyncSnapshot<UserData> data) {

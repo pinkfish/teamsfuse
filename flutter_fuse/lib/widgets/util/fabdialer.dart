@@ -104,7 +104,7 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
             children: <Widget>[
               new FloatingActionButton(
                 child: new RotationTransition(
-                  turns: new AlwaysStoppedAnimation(_angle / 360),
+                  turns: new AlwaysStoppedAnimation<double>(_angle / 360),
                   child: widget.icon,
                 ),
                 backgroundColor: widget.color,

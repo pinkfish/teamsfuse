@@ -53,21 +53,21 @@ class TeamScreenState extends State<TeamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> actions = new List<Widget>();
+    List<Widget> actions = <Widget>[];
     FloatingActionButton fab;
     if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
       if (UserDatabaseData.instance.teams[widget.teamUid]
               .isAdmin(UserDatabaseData.instance.players) &&
           _tabIndex == 0) {
         fab = new FloatingActionButton(
-          onPressed: () => this._onEditTeam(context),
+          onPressed: () => _onEditTeam(context),
           child: new Icon(Icons.edit),
         );
         actions.add(
           new PopupMenuButton<String>(
             onSelected: _select,
             itemBuilder: (BuildContext context) {
-              return [
+              return <PopupMenuItem<String>>[
                 new PopupMenuItem<String>(
                   value: "settings",
                   child: new Text(Messages.of(context).settings),
@@ -90,7 +90,7 @@ class TeamScreenState extends State<TeamScreen> {
             });
           },
           currentIndex: _tabIndex,
-          items: [
+          items: <BottomNavigationBarItem>[
             new BottomNavigationBarItem(
               icon: const Icon(Icons.gamepad),
               title: new Text(Messages.of(context).gamedetails),

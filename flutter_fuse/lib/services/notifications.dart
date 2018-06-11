@@ -15,7 +15,7 @@ import 'authentication.dart';
 class Notifications {
   static final Notifications instance = new Notifications();
 
-  static const _keyNotificationData = "lib_notification_data";
+  static const String _keyNotificationData = "lib_notification_data";
 
   final FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -24,12 +24,12 @@ class Notifications {
   StreamController<String> _notificationRoutes = new StreamController<String>();
   Stream<String> routeStream;
   StreamSubscription<UpdateReason> _gameStream;
-  Map<String, dynamic> _notificationMapping = {};
+  Map<String, int> _notificationMapping = <String, int>{};
   Random random = new Random.secure();
   State<SplashScreen> _state;
 
-  static const String ACTION_STR = 'action';
-  static const String GAME_UID_STR = 'gameUids';
+  static const String actionStr = 'action';
+  static const String gameUidStr = 'gameUids';
 
   static const Duration notifyStart = const Duration(days: 31);
   static const Duration timeoutNotifiation = const Duration(days: 2);
@@ -41,6 +41,8 @@ class Notifications {
   void dispose() {
     _gameStream?.cancel();
     _gameStream = null;
+    _notificationRoutes.close();
+    _notificationRoutes = null;
   }
 
   int _generateNotificationId() {
@@ -73,13 +75,13 @@ class Notifications {
     DateTime now = new DateTime.now();
     for (Game game in data.values) {
       stillHere.remove(game.uid);
-      DateTime gameDate = new DateTime.fromMillisecondsSinceEpoch(game.time);
+      DateTime gameDate = new DateTime.fromMillisecondsSinceEpoch(game.time.toInt());
       DateTime oldest = new DateTime.now().subtract(timeoutNotifiation);
       DateTime newest = new DateTime.now().add(notifyStart);
       // If it is older then 2 days, then delete it.
       if (gameDate.isAfter(oldest)) {
         DateTime frog =
-            new DateTime.fromMillisecondsSinceEpoch(game.time).add(notifyStart);
+            new DateTime.fromMillisecondsSinceEpoch(game.time.toInt()).add(notifyStart);
         print('Checking ${game.uid} $frog $now');
         if (!_notificationMapping.containsKey(game.uid) &&
             gameDate.isBefore(newest)) {
@@ -131,7 +133,9 @@ class Notifications {
     String jsonCacheString = AppConfiguration.instance.sharedPreferences
         .getString(_keyNotificationData);
     if (jsonCacheString != null) {
-      _notificationMapping = json.decode(jsonCacheString);
+      Map<String, dynamic> tmp = json.decode(jsonCacheString) as Map<String, dynamic>;
+      _notificationMapping.clear();
+      tmp.forEach((String str, dynamic val) => val is int ? _notificationMapping[str] = val as int : null);
     }
   }
 
@@ -141,8 +145,8 @@ class Notifications {
     InitializationSettingsAndroid initializationSettingsAndroid =
         new InitializationSettingsAndroid('app_icon');
     InitializationSettingsIOS initializationSettingsIOS =
-        new InitializationSettingsIOS(categorySetup: [
-      new IOSCategoryDetails(id: "GAMES", actions: [
+        new InitializationSettingsIOS(categorySetup: <IOSCategoryDetails>[
+      new IOSCategoryDetails(id: "GAMES", actions: <IOSActionDetails>[
         new IOSActionDetails(
           id: 'directions',
           title: 'DIRECTIONS',
@@ -162,7 +166,7 @@ class Notifications {
     });
     */
 
-    this._state = state;
+    _state = state;
     // When games are scheduled we will pull up the results for them and
     // schedule notifications.  We only do this on android since on iOS we
     // need to rely on remote push notifications for the details to be up to

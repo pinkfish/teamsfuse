@@ -8,9 +8,10 @@ import 'package:timezone/timezone.dart';
 import 'dart:io';
 
 class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
-  static const num MAX_MESSAGES = 20;
+  static const int maxMessages = 20;
 
   // Stuff for game updates.
+  @override
   Future<void> updateFirestoreGame(Game game) async {
     print(game);
     // Add or update this record into the database.
@@ -28,6 +29,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
+  @override
   Future<void> deleteFirestoreGame(Game game) async {
     // delete from the database.
     DocumentReference ref =
@@ -35,28 +37,31 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return ref.delete();
   }
 
+  @override
   Future<void> updateFirestoreGameAttendence(
       Game game, String playerUid, Attendance attend) async {
     DocumentReference ref =
         Firestore.instance.collection(GAMES_COLLECTION).document(game.uid);
 
-    Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = <String, dynamic>{};
     data[Game.ATTENDANCE + "." + playerUid + "." + Game.ATTENDANCEVALUE] =
         attend.toString();
     await ref.updateData(data);
   }
 
+  @override
   Future<void> updateFirestoreGameResult(
       Game game, GameResultDetails result) async {
     DocumentReference ref =
         Firestore.instance.collection(GAMES_COLLECTION).document(game.uid);
 
-    Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = <String, dynamic>{};
     data[Game.RESULT] = result.toJSON();
     await ref.updateData(data);
   }
 
-// Invite firestore updates
+  // Invite firestore updates
+  @override
   Future<void> firestoreInviteToTeamDelete(InviteToTeam invite) {
     return Firestore.instance
         .collection(INVITE_COLLECTION)
@@ -64,6 +69,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .delete();
   }
 
+  @override
   Future<void> firestoreInviteToPlayerDelete(InviteToPlayer invite) {
     return Firestore.instance
         .collection(INVITE_COLLECTION)
@@ -71,15 +77,26 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .delete();
   }
 
+  @override
+  Future<void> firestoreInviteAsAdminDelete(InviteAsAdmin invite) {
+    return Firestore.instance
+        .collection(INVITE_COLLECTION)
+        .document(invite.uid)
+        .delete();
+  }
+
   // Message Recipients
+  @override
   void updateMessageRecipientState(
       MessageRecipient rec, MessageState state) async {
     DocumentReference doc = Firestore.instance
         .collection(MESSAGE_RECIPIENTS_COLLECTION)
         .document(rec.uid);
-    await doc.updateData({MessageRecipient.STATE: state.toString()});
+    await doc
+        .updateData(<String, String>{MessageRecipient.STATE: state.toString()});
   }
 
+  @override
   void deleteRecipient(MessageRecipient rec) async {
     DocumentReference doc = Firestore.instance
         .collection(MESSAGE_RECIPIENTS_COLLECTION)
@@ -89,7 +106,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   Future<List<GameLog>> _getGameLogs(
       Game game, Future<QuerySnapshot> query) async {
-    List<GameLog> logs = [];
+    List<GameLog> logs = <GameLog>[];
     QuerySnapshot acutalData = await query;
     acutalData.documents.forEach((DocumentSnapshot doc) {
       GameLog log = new GameLog.fromJson(doc.documentID, doc.data);
@@ -98,6 +115,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return logs;
   }
 
+  @override
   GameLogReturnData readGameLogs(Game game) {
     GameLogReturnData ret = new GameLogReturnData();
     CollectionReference coll = Firestore.instance
@@ -113,6 +131,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return ret;
   }
 
+  @override
   Future<String> addFirestoreGameLog(Game game, GameLog log) {
     CollectionReference coll = Firestore.instance
         .collection(GAMES_COLLECTION)
@@ -130,7 +149,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     });
   }
 
-// Message for firestore.
+  // Message for firestore.
+  @override
   Future<void> updateFirestoreMessage(Message mess) async {
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance.collection("Messages");
@@ -156,7 +176,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         rec.uid = recRef.documentID;
         return rec.uid;
       });
-      Map<String, dynamic> messageData = {};
+      Map<String, dynamic> messageData = <String, dynamic>{};
       messageData[Message.BODY] = mess.message;
       await messageRef.updateData(messageData);
     } else {
@@ -167,6 +187,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
+  @override
   Future<String> loadMessage(Message mess) async {
     DocumentReference ref = Firestore.instance
         .collection("Messages")
@@ -175,13 +196,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(mess.uid);
     DocumentSnapshot snap = await ref.get();
     if (snap.exists) {
-      mess.message = snap.data[Message.BODY];
+      mess.message = snap.data[Message.BODY] as String;
       mess.messagesLoaded = true;
       return mess.message;
     }
     return null;
   }
 
+  @override
   Future<Message> getMessage(String messageId) async {
     DocumentSnapshot ref = await Firestore.instance
         .collection(MESSAGES_COLLECTION)
@@ -194,6 +216,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   // Opponent update
+  @override
   Future<String> updateFirestoreOpponent(Opponent opponent) async {
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance
@@ -211,6 +234,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return opponent.uid;
   }
 
+  @override
   Future<void> deleteFirestoreOpponent(Opponent opponent) async {
     // Add or update this record into the database.
     return Firestore.instance
@@ -221,10 +245,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .delete();
   }
 
+  @override
   Future<Iterable<Game>> getOpponentGames(Opponent opponent) async {
     CollectionReference ref = Firestore.instance.collection(GAMES_COLLECTION);
     // See if the games for the season.
-    var snap = await ref
+    QuerySnapshot snap = await ref
         .where(Game.TEAMUID, isEqualTo: opponent.teamUid)
         .where(Game.OPPONENTUID, isEqualTo: opponent.uid)
         .getDocuments();
@@ -234,13 +259,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     });
   }
 
-// Team stuff
+  // Team stuff
   void _onOpponentUpdated(Team team, QuerySnapshot query) {
     Set<String> toDeleteOpponents = new Set<String>();
     SqlData sql = SqlData.instance;
 
     toDeleteOpponents.addAll(team.opponents.keys);
-    query.documents.forEach((doc) {
+    for (DocumentSnapshot doc in query.documents) {
       Opponent opponent;
       if (team.opponents.containsKey(doc.documentID)) {
         opponent = team.opponents[doc.documentID];
@@ -251,20 +276,19 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       team.opponents[doc.documentID] = opponent;
       toDeleteOpponents.remove(doc.documentID);
       sql.updateTeamElement(
-          SqlData.OPPONENTS_TABLE, doc.documentID, team.uid, team.toJSON());
-    });
-    toDeleteOpponents.forEach((String id) {
-      sql.deleteElement(SqlData.OPPONENTS_TABLE, id);
+          SqlData.opponentsTable, doc.documentID, team.uid, team.toJSON());
+    }
+    for (String id in toDeleteOpponents) {
+      sql.deleteElement(SqlData.opponentsTable, id);
       team.opponents.remove(id);
-    });
+    }
     team.updateTeam();
   }
 
   void _onTeamUpdated(Team team, DocumentSnapshot snap) {
     team.fromJSON(snap.documentID, snap.data);
     print('team ' + team.uid);
-    SqlData.instance
-        .updateElement(SqlData.TEAMS_TABLE, team.uid, team.toJSON());
+    SqlData.instance.updateElement(SqlData.teamsTable, team.uid, team.toJSON());
   }
 
   void updateSeason(Team team, DocumentSnapshot doc) {
@@ -277,18 +301,19 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       season.fromJSON(doc.documentID, doc.data);
       team.seasons[doc.documentID] = season;
     }
-    SqlData.instance.updateElement(SqlData.SEASON_TABLE, doc.documentID,
+    SqlData.instance.updateElement(SqlData.seasonTable, doc.documentID,
         season.toJSON(includePlayers: true));
     team.updateTeam();
   }
 
+  @override
   Future<List<StreamSubscription<dynamic>>> setupSnapForTeam(Team team) async {
-    List<StreamSubscription<dynamic>> ret = [];
+    List<StreamSubscription<dynamic>> ret = <StreamSubscription<dynamic>>[];
     ret.add(Firestore.instance
         .collection(TEAMS_COLLECTION)
         .document(team.uid)
         .snapshots()
-        .listen((DocumentSnapshot snap) => this._onTeamUpdated(team, snap)));
+        .listen((DocumentSnapshot snap) => _onTeamUpdated(team, snap)));
 
     CollectionReference opCollection = Firestore.instance
         .collection(TEAMS_COLLECTION)
@@ -296,18 +321,19 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(OPPONENT_COLLECTION);
     QuerySnapshot queryOpponentSnap = await opCollection.getDocuments();
 
-    this._onOpponentUpdated(team, queryOpponentSnap);
+    _onOpponentUpdated(team, queryOpponentSnap);
     ret.add(opCollection
         .snapshots()
-        .listen((QuerySnapshot snap) => this._onOpponentUpdated(team, snap)));
+        .listen((QuerySnapshot snap) => _onOpponentUpdated(team, snap)));
     return ret;
   }
 
+  @override
   Future<void> loadOpponents(Team team) async {
     Map<String, Map<String, dynamic>> opps = await SqlData.instance
-        .getAllTeamElements(SqlData.OPPONENTS_TABLE, team.uid);
+        .getAllTeamElements(SqlData.opponentsTable, team.uid);
 
-    Map<String, Opponent> ops = new Map<String, Opponent>();
+    Map<String, Opponent> ops = <String, Opponent>{};
     opps.forEach((String opUid, Map<String, dynamic> data) {
       Opponent op = new Opponent();
       op.fromJSON(opUid, team.uid, data);
@@ -316,6 +342,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     team.opponents = ops;
   }
 
+  @override
   Future<void> updateFirestoreTeam(Team team, PregenUidRet pregen) async {
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance.collection(TEAMS_COLLECTION);
@@ -323,7 +350,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       // Add the game.
       DocumentReference doc;
       if (pregen != null) {
-        doc = pregen.extra;
+        doc = pregen.extra as DocumentReference;
         await doc.setData(team.toJSON());
       } else {
         doc = await ref.add(team.toJSON());
@@ -335,6 +362,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
+  @override
   PregenUidRet precreateUid(Team team) {
     PregenUidRet ret = new PregenUidRet();
     CollectionReference ref = Firestore.instance.collection(TEAMS_COLLECTION);
@@ -344,6 +372,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return ret;
   }
 
+  @override
   Future<Uri> updateTeamImage(Team team, File imgFile) async {
     final StorageReference ref =
         FirebaseStorage.instance.ref().child("team_" + team.uid + ".img");
@@ -354,13 +383,70 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return snapshot.downloadUrl;
   }
 
+  @override
+  Future<void> deleteAdmin(Team team, String uid) {
+    final DocumentReference ref =
+        Firestore.instance.collection(TEAMS_COLLECTION).document(team.uid);
+    return ref.updateData(<String, dynamic>{Team.ADMINS + "." + uid: false});
+  }
+
+  @override
+  Future<String> addAdmin(String teamUid, String uid) async {
+    final DocumentReference ref =
+        Firestore.instance.collection(TEAMS_COLLECTION).document(teamUid);
+    await ref.updateData(<String, dynamic>{Team.ADMINS + "." + uid: true});
+    return ref.documentID;
+  }
+
+  @override
+  Future<String> inviteAdminToTeam(Team team, String email) async {
+    CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
+    // See if the invite already exists.
+    QuerySnapshot snapshot = await ref
+        .where(Invite.EMAIL, isEqualTo: email)
+        .where(Invite.TYPE, isEqualTo: InviteType.Admin.toString())
+        .getDocuments();
+    if (snapshot.documents.length == 0) {
+      InviteAsAdmin invite = new InviteAsAdmin(
+          email: email,
+          teamName: team.name,
+          teamUid: team.uid,
+          sentByUid: UserDatabaseData.instance.mePlayer.uid);
+      invite.displayName = UserDatabaseData.instance.mePlayer.name;
+
+      print('Adding invite');
+      DocumentReference doc = await ref.add(invite.toJSON());
+      return doc.documentID;
+    }
+    return snapshot.documents[0].documentID;
+  }
+
+  StreamSubscription<dynamic> getInviteForTeamStream(Team team) {
+    CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
+    // See if the invite already exists.
+    StreamSubscription<QuerySnapshot> snap = ref
+        .where(Invite.TYPE, isEqualTo: InviteType.Admin.toString())
+        .where(InviteAsAdmin.TEAMUID, isEqualTo: team.uid)
+        .snapshots()
+        .listen((QuerySnapshot query) {
+      List<InviteAsAdmin> ret = <InviteAsAdmin>[];
+
+      for (DocumentSnapshot doc in query.documents) {
+        InviteAsAdmin invite = new InviteAsAdmin();
+        invite.fromJSON(doc.documentID, doc.data);
+        ret.add(invite);
+      }
+      team.setInvites(ret);
+    });
+    return snap;
+  }
+
   // Games!
+  @override
   GameSubscription getGames(Iterable<Game> cachedGames, Set<String> teams,
       DateTime start, DateTime end) {
-    StreamController<Iterable<Game>> controller =
-        new StreamController<Iterable<Game>>();
-    GameSubscription sub = new GameSubscription(cachedGames, controller);
-    Map<String, List<Game>> maps = {};
+    GameSubscription sub = new GameSubscription(cachedGames);
+    Map<String, List<Game>> maps = <String, List<Game>>{};
     for (String teamUid in teams) {
       Query gameQuery = Firestore.instance
           .collection(GAMES_COLLECTION)
@@ -368,31 +454,29 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .where(Game.TIME, isGreaterThan: start.millisecondsSinceEpoch)
           .where(Game.TIME, isLessThan: end.millisecondsSinceEpoch);
       gameQuery.getDocuments().then((QuerySnapshot queryGameSnap) {
-        if (!controller.isClosed) {
-          List<Game> data = [];
-          for (DocumentSnapshot snap in queryGameSnap.documents) {
-            data.add(new Game.fromJSON(snap.documentID, snap.data));
-          }
-          maps[teamUid] = data;
-          if (maps.length == teams.length) {
-            List<Game> newData = [];
+        List<Game> data = <Game>[];
+        for (DocumentSnapshot snap in queryGameSnap.documents) {
+          data.add(new Game.fromJSON(snap.documentID, snap.data));
+        }
+        maps[teamUid] = data;
+        if (maps.length == teams.length) {
+          List<Game> newData = <Game>[];
 
-            for (List<Game> it in maps.values) {
-              newData.addAll(it);
-            }
-            controller.add(newData);
+          for (List<Game> it in maps.values) {
+            newData.addAll(it);
           }
+          sub.addUpdate(newData);
         }
       });
 
       sub.subscriptions
           .add(gameQuery.snapshots().listen((QuerySnapshot queryGameSnap) {
-        List<Game> data = [];
+        List<Game> data = <Game>[];
         for (DocumentSnapshot snap in queryGameSnap.documents) {
           data.add(new Game.fromJSON(snap.documentID, snap.data));
         }
         maps[teamUid] = data;
-        List<Game> newData = [];
+        List<Game> newData = <Game>[];
 
         for (List<Game> it in maps.values) {
           newData.addAll(it);
@@ -400,19 +484,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         // Update the cache so we can find these games when the
         // app is open.
         UserDatabaseData.instance.doCacheGames(newData);
-        controller.add(newData);
+        sub.addUpdate(newData);
       }));
     }
     return sub;
   }
 
   // UserPlayer stuff
+  @override
   Future<FusedUserProfile> getUserProfile(PlayerUser player) async {
     player.profile = await UserAuth.instance.getProfile(player.userUid);
     return player.profile;
   }
 
-  // P{layer stuff
+  // Player stuff
+  @override
   Future<void> updateFirestorePlayer(Player player, bool includeUsers) async {
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance.collection(PLAYERS_COLLECTION);
@@ -429,6 +515,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
+  @override
   Future<Uri> updatePlayerImage(Player player, File imgFile) async {
     final StorageReference ref =
         FirebaseStorage.instance.ref().child("player_" + player.uid + ".img");
@@ -436,7 +523,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     final UploadTaskSnapshot snapshot = (await task.future);
     player.photoUrl = snapshot.downloadUrl.toString();
     print('photurl $player.photoUrl');
-    Map<String, String> data = new Map<String, String>();
+    Map<String, String> data = <String, String>{};
     data[PHOTOURL] = player.photoUrl;
     await Firestore.instance
         .collection(PLAYERS_COLLECTION)
@@ -445,8 +532,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return snapshot.downloadUrl;
   }
 
+  @override
   List<StreamSubscription<dynamic>> setupPlayerSnap(Player player) {
-    List<StreamSubscription<dynamic>> ret = [];
+    List<StreamSubscription<dynamic>> ret = <StreamSubscription<dynamic>>[];
     // Teams.
     Query ref = Firestore.instance.collection(SEASONS_COLLECTION).where(
         Season.PLAYERS + "." + player.uid + "." + ADDED,
@@ -466,7 +554,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .get();
     if (doc.exists) {
       // Yay!  We have a player.
-      Map<String, dynamic> data = {};
+      Map<String, dynamic> data = <String, dynamic>{};
       data[Player.USERS + "." + player.userUid] = player.toJSON();
       doc.reference.updateData(data);
       return true;
@@ -474,6 +562,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return false;
   }
 
+  @override
   Future<String> createPlayer(Player player) async {
     CollectionReference ref = Firestore.instance.collection(PLAYERS_COLLECTION);
     DocumentReference doc = await ref.add(player.toJSON(includeUsers: true));
@@ -481,15 +570,17 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return doc.documentID;
   }
 
+  @override
   Future<void> deletePlayer(String playerUid) {
     return Firestore.instance
         .collection(PLAYERS_COLLECTION)
         .document(playerUid)
         .delete()
-        .then((val) {});
+        .then((void val) {});
   }
 
   // Send an invite to a user for this season and team.
+  @override
   Future<void> inviteUserToPlayer(Player player, {String email}) async {
     CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
     // See if the invite already exists.
@@ -508,34 +599,37 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
+  @override
   Future<StreamSubscription<dynamic>> getInviteForPlayerStream(
       Player player) async {
     CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
     // See if the invite already exists.
-    var snap = ref
+    StreamSubscription<QuerySnapshot> snap = ref
         .where(Invite.TYPE, isEqualTo: InviteType.Player.toString())
         .where(InviteToPlayer.PLAYERUID, isEqualTo: player.uid)
         .snapshots()
         .listen((QuerySnapshot query) {
-      List<InviteToPlayer> ret = [];
+      List<InviteToPlayer> ret = <InviteToPlayer>[];
 
-      query.documents.forEach((DocumentSnapshot doc) {
+      for (DocumentSnapshot doc in query.documents) {
         InviteToPlayer invite = new InviteToPlayer();
         invite.fromJSON(doc.documentID, doc.data);
         ret.add(invite);
-      });
+      }
       player.setInvites(ret);
     });
     return snap;
   }
 
+  @override
   Future<void> removeUserFromPlayer(Player player, String userId) {
     DocumentReference doc =
         Firestore.instance.collection(PLAYERS_COLLECTION).document(player.uid);
-    return doc.updateData({Player.USERS + userId: null});
+    return doc.updateData(<String, dynamic>{Player.USERS + userId: null});
   }
 
   // Season updates
+  @override
   Future<void> updateFirestoreSeason(Season season, bool includePlayers) async {
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance.collection(SEASONS_COLLECTION);
@@ -552,18 +646,20 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
+  @override
   Future<void> removePlayerFromSeason(
       Season season, SeasonPlayer player) async {
     DocumentReference doc =
         Firestore.instance.collection(SEASONS_COLLECTION).document(season.uid);
-    Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = <String, dynamic>{};
     data[Season.PLAYERS + "." + player.playerUid] = null;
     await doc.updateData(data);
   }
 
+  @override
   Future<void> updateRoleInTeamForSeason(
       Season season, SeasonPlayer player, RoleInTeam role) async {
-    Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = <String, dynamic>{};
 
     data[Season.PLAYERS + "." + player.playerUid + "." + SeasonPlayer.ROLE] =
         role.toString();
@@ -573,6 +669,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .updateData(data);
   }
 
+  @override
   Future<bool> playerExists(String uid) async {
     // Add ourselves to the player.
     DocumentSnapshot doc = await Firestore.instance
@@ -582,6 +679,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return doc.exists;
   }
 
+  @override
   Future<Player> getPlayerDetails(String uid) async {
     DocumentSnapshot doc = await Firestore.instance
         .collection(PLAYERS_COLLECTION)
@@ -596,6 +694,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   // Send an invite to a user for this season and team.
+  @override
   Future<void> inviteUserToSeason(Season season,
       {String userId, String playername, String email, RoleInTeam role}) async {
     CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
@@ -623,7 +722,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       invite.email = email;
       invite.teamUid = season.teamUid;
       invite.seasonUid = season.uid;
-      invite.playerName = [playername];
+      invite.playerName = <String>[playername];
       invite.sentByUid = userId;
       invite.teamName = team.name;
       invite.seasonName = season.name;
@@ -635,32 +734,34 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
+  @override
   Future<StreamSubscription<dynamic>> getInviteForSeasonStream(
       Season season) async {
     CollectionReference ref = Firestore.instance.collection(INVITE_COLLECTION);
     // See if the invite already exists.
-    var snap = ref
+    StreamSubscription<QuerySnapshot> snap = ref
         .where(Invite.TYPE, isEqualTo: InviteType.Team.toString())
         .where(InviteToTeam.SEASONUID, isEqualTo: season.uid)
         .where(InviteToTeam.TEAMUID, isEqualTo: season.teamUid)
         .snapshots()
         .listen((QuerySnapshot query) {
-      List<InviteToTeam> ret = [];
+      List<InviteToTeam> ret = <InviteToTeam>[];
 
-      query.documents.forEach((DocumentSnapshot doc) {
+      for (DocumentSnapshot doc in query.documents) {
         InviteToTeam invite = new InviteToTeam();
         invite.fromJSON(doc.documentID, doc.data);
         ret.add(invite);
-      });
+      }
       season.setInvites(ret);
     });
     return snap;
   }
 
+  @override
   Future<Iterable<Game>> getSeasonGames(Season season) async {
     CollectionReference ref = Firestore.instance.collection(GAMES_COLLECTION);
     // See if the games for the season.
-    var snap = await ref
+    QuerySnapshot snap = await ref
         .where(Game.TEAMUID, isEqualTo: season.teamUid)
         .where(Game.SEASONUID, isEqualTo: season.uid)
         .getDocuments();
@@ -670,6 +771,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     });
   }
 
+  @override
   Future<Season> getSeason(String seasonUid) async {
     DocumentSnapshot doc = await Firestore.instance
         .collection(SEASONS_COLLECTION)
@@ -683,19 +785,20 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return null;
   }
 
+  @override
   Future<void> addPlayerToSeason(
       String seasonUid, SeasonPlayer seasonPlayer) async {
     DocumentReference doc = await Firestore.instance
         .collection(SEASONS_COLLECTION)
         .document(seasonUid);
-    Map<String, dynamic> data = new Map<String, dynamic>();
+    Map<String, dynamic> data = <String, dynamic>{};
     data[Season.PLAYERS + "." + seasonPlayer.playerUid] = seasonPlayer.toJSON();
     doc.updateData(data);
     return;
   }
 
   List<FirestoreWrappedData> _firestoreData(List<DocumentSnapshot> documents) {
-    List<FirestoreWrappedData> data = [];
+    List<FirestoreWrappedData> data = <FirestoreWrappedData>[];
     for (DocumentSnapshot snap in documents) {
       data.add(new FirestoreWrappedData(id: snap.documentID, data: snap.data));
     }
@@ -704,7 +807,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   List<FirestoreWrappedData> _firestoreRemovedData(
       List<DocumentChange> documents) {
-    List<FirestoreWrappedData> data = [];
+    List<FirestoreWrappedData> data = <FirestoreWrappedData>[];
     for (DocumentChange snap in documents) {
       if (snap.type == DocumentChangeType.removed) {
         data.add(new FirestoreWrappedData(
@@ -719,18 +822,16 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     Query collection = Firestore.instance
         .collection(PLAYERS_COLLECTION)
         .where(Player.USERS + "." + userUid + "." + ADDED, isEqualTo: true);
-    StreamController<FirestoreChangedData> streams =
-        new StreamController<FirestoreChangedData>();
+    InitialSubscription sub = new InitialSubscription(
+        startData: collection
+            .getDocuments()
+            .then((QuerySnapshot query) => _firestoreData(query.documents)));
     collection.snapshots().listen((QuerySnapshot snap) {
-      streams.add(new FirestoreChangedData(
+      sub.addData(new FirestoreChangedData(
           newList: _firestoreData(snap.documents),
           removed: _firestoreRemovedData(snap.documentChanges)));
     });
-    return new InitialSubscription(
-        startData: collection
-            .getDocuments()
-            .then((QuerySnapshot query) => _firestoreData(query.documents)),
-        stream: streams.stream);
+    return sub;
   }
 
   @override
@@ -747,20 +848,18 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .collection(MESSAGE_RECIPIENTS_COLLECTION)
           .where(MessageRecipient.USERID, isEqualTo: userUid)
           .orderBy(MessageRecipient.SENTAT)
-          .limit(MAX_MESSAGES);
+          .limit(maxMessages);
     }
-    StreamController<FirestoreChangedData> streams =
-        new StreamController<FirestoreChangedData>();
+    InitialSubscription sub = new InitialSubscription(
+        startData: query
+            .getDocuments()
+            .then((QuerySnapshot query) => _firestoreData(query.documents)));
     query.snapshots().listen((QuerySnapshot snap) {
-      streams.add(new FirestoreChangedData(
+      sub.addData(new FirestoreChangedData(
           newList: _firestoreData(snap.documents),
           removed: _firestoreRemovedData(snap.documentChanges)));
     });
-    return new InitialSubscription(
-        startData: query
-            .getDocuments()
-            .then((QuerySnapshot query) => _firestoreData(query.documents)),
-        stream: streams.stream);
+    return sub;
   }
 
   @override
@@ -769,17 +868,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(INVITE_COLLECTION)
         .where(Invite.EMAIL, isEqualTo: normalizeEmail(email));
 
-    StreamController<FirestoreChangedData> streams =
-        new StreamController<FirestoreChangedData>();
+    InitialSubscription sub = new InitialSubscription(
+        startData: inviteCollection
+            .getDocuments()
+            .then((QuerySnapshot query) => _firestoreData(query.documents)));
     inviteCollection.snapshots().listen((QuerySnapshot snap) {
-      streams.add(new FirestoreChangedData(
+      sub.addData(new FirestoreChangedData(
           newList: _firestoreData(snap.documents),
           removed: _firestoreRemovedData(snap.documentChanges)));
     });
-    return new InitialSubscription(
-        startData: inviteCollection
-            .getDocuments()
-            .then((QuerySnapshot query) => _firestoreData(query.documents)),
-        stream: streams.stream);
+    return sub;
   }
 }

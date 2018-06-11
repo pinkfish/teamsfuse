@@ -61,10 +61,11 @@ class GameLogView extends StatelessWidget {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     // Force the logs to load if they are not already.
     game.loadGameLogs();
-    return new StreamBuilder(
+    return new StreamBuilder<List<GameLog>>(
       stream: game.thisGameLogStream,
       builder:
           (BuildContext context, AsyncSnapshot<List<GameLog>> logs) {

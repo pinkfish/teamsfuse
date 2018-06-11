@@ -33,11 +33,12 @@ class GameDetailsState extends State<GameDetails> {
   Map<Player, Attendance> _attendence;
   StreamSubscription<UpdateReason> _subscription;
 
+  @override
   void initState() {
     super.initState();
     Team team = UserDatabaseData.instance.teams[widget.game.teamUid];
     if (team != null) {
-      teamUpdate = team.thisTeamStream.listen((data) {
+      teamUpdate = team.thisTeamStream.listen((UpdateReason data) {
         setState(() {});
       });
     }
@@ -70,7 +71,7 @@ class GameDetailsState extends State<GameDetails> {
 
   void _editResult() async {
     // Call up a dialog to edit the result.
-    await showDialog(
+    await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         print("$widget");
@@ -109,8 +110,8 @@ class GameDetailsState extends State<GameDetails> {
   }
 
   Widget _buildAttendence(Season season) {
-    List<Widget> availability = [];
-    Map<Player, Attendance> availavilityResult = new Map<Player, Attendance>();
+    List<Widget> availability = <Widget>[];
+    Map<Player, Attendance> availavilityResult = <Player, Attendance>{};
 
     if (season != null) {
       UserDatabaseData.instance.players.forEach((String key, Player player) {
@@ -133,7 +134,7 @@ class GameDetailsState extends State<GameDetails> {
         }
       });
     }
-    this._attendence = availavilityResult;
+    _attendence = availavilityResult;
 
     // Not started, show availability.
     return new ListTile(
@@ -156,8 +157,8 @@ class GameDetailsState extends State<GameDetails> {
         widget.game.place.address,
         widget.game.place.latitude.toDouble(),
         widget.game.place.longitude.toDouble());
-    var uri = MapData.instance.provider
-        .getStaticUriWithMarkers([marker], width: 900, height: 400);
+    Uri uri = MapData.instance.provider
+        .getStaticUriWithMarkers(<Marker>[marker], width: 900, height: 400);
     TimeOfDay day = new TimeOfDay.fromDateTime(widget.game.tzTime);
     TimeOfDay dayArrive = new TimeOfDay.fromDateTime(widget.game.tzArriveTime);
     TimeOfDay dayEnd = new TimeOfDay.fromDateTime(widget.game.tzEndTime);
@@ -169,7 +170,7 @@ class GameDetailsState extends State<GameDetails> {
     String tzShortName;
     if (widget.game.timezone != local.name) {
       tzShortName = " (" +
-          getLocation(widget.game.timezone).timeZone(widget.game.time).abbr +
+          getLocation(widget.game.timezone).timeZone(widget.game.time.toInt()).abbr +
           ")";
     }
     print('${widget.game.timezone} ${widget.game.tzTime}');
@@ -195,13 +196,13 @@ class GameDetailsState extends State<GameDetails> {
       ],
     );
 
-    List<Widget> body = new List<Widget>();
+    List<Widget> body = <Widget>[];
     // Map view.
     body.add(
       new Container(
         height: 250.0,
         child: new Stack(
-          children: [
+          children: <Widget>[
             new Center(
               child: new CachedNetworkImage(
                 placeholder: new Center(
@@ -314,7 +315,7 @@ class GameDetailsState extends State<GameDetails> {
         }
         body.add(
           new ListTile(
-            onTap: this._editResult,
+            onTap: _editResult,
             leading: new Icon(CommunityIcons.bookopenvariant),
             title: new Text(title, style: resultStyle),
           ),
@@ -402,7 +403,7 @@ class GameDetailsState extends State<GameDetails> {
         ),
       );
       if (team.seasons.length > 1) {
-        List<Widget> cols = [];
+        List<Widget> cols = <Widget>[];
         for (Season otherSeason in team.seasons.values) {
           if (otherSeason.uid != season.uid) {
             String seasonName;

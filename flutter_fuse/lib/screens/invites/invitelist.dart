@@ -33,7 +33,7 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   void _deleteInvite(Invite invite) async {
-    bool result = await deleteInviteDialog(this.context, invite);
+    bool result = await deleteInviteDialog(context, invite);
     if (result) {
       if (invite is InviteToTeam) {
         Navigator.pop(context);
@@ -47,6 +47,10 @@ class InviteListScreenState extends State<InviteListScreen> {
 
   void _addInviteToPlayer(Invite invite) {
     Navigator.pushNamed(context, "AcceptInviteToPlayer/" + invite.uid);
+  }
+
+  void _addInviteAsAdmin(Invite invite) {
+    Navigator.pushNamed(context, "AcceptInviteAsAdmin/" + invite.uid);
   }
 
   Card _buildInviteToTeam(InviteToTeam invite) {
@@ -89,6 +93,30 @@ class InviteListScreenState extends State<InviteListScreen> {
     );
   }
 
+
+  Card _buildInviteAsAdmin(InviteAsAdmin invite) {
+    Messages messages = Messages.of(context);
+    ThemeData theme = Theme.of(context);
+    return new Card(
+      child: new ListTile(
+        leading: new IconButton(
+          icon: const Icon(Icons.add),
+          color: theme.accentColor,
+          onPressed: () {
+            _addInviteAsAdmin(invite);
+          },
+        ),
+        title: new Text(invite.teamName),
+        trailing: new IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () {
+            _deleteInvite(invite);
+          },
+        ),
+      ),
+    );
+  }
+
   Card _buildInviteToPlayer(InviteToPlayer invite) {
     ThemeData theme = Theme.of(context);
     return new Card(
@@ -110,13 +138,16 @@ class InviteListScreenState extends State<InviteListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> invites = new List<Widget>();
+    List<Widget> invites = <Widget>[];
     UserDatabaseData.instance.invites.forEach((String key, Invite invite) {
       if (invite is InviteToTeam) {
         invites.add(_buildInviteToTeam(invite));
       }
       if (invite is InviteToPlayer) {
         invites.add(_buildInviteToPlayer(invite));
+      }
+      if (invite is InviteAsAdmin) {
+        invites.add(_buildInviteAsAdmin(invite));
       }
     });
 

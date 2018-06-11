@@ -11,7 +11,7 @@ import 'package:timezone/timezone.dart';
 
 class GameCard extends StatelessWidget {
   final Game game;
-  final Map<Player, Attendance> attendence = new Map<Player, Attendance>();
+  final Map<Player, Attendance> attendence = <Player, Attendance>{};
 
   GameCard(this.game);
 
@@ -45,7 +45,7 @@ class GameCard extends StatelessWidget {
 
   void _editResult(BuildContext context) async {
     // Call up a dialog to edit the result.
-    await showDialog(
+    await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return new EditResultDialog(game);
@@ -76,13 +76,13 @@ class GameCard extends StatelessWidget {
     if (attendence.length == 0) {
       return null;
     }
-    List<Widget> widgets = new List<Widget>();
+    List<Widget> widgets = <Widget>[];
     attendence.forEach((Player player, Attendance attend) {
       widgets.add(new AttendanceIcon(attend));
     });
     return new GestureDetector(
       onTap: () {
-        this._openAttendance(context);
+        _openAttendance(context);
       },
       child: new Column(children: widgets),
     );
@@ -125,7 +125,7 @@ class GameCard extends StatelessWidget {
           case GameResult.Unknown:
             break;
         }
-        List<Widget> children = [];
+        List<Widget> children = <Widget>[];
         children.add(
           new Text(
             Messages.of(context).gameresult(game.result.result),
@@ -198,8 +198,9 @@ class GameCard extends StatelessWidget {
     launch(url);
   }
 
+  @override
   Widget build(BuildContext context) {
-    List<Widget> buttons = [];
+    List<Widget> buttons = <Widget>[];
     Team team = UserDatabaseData.instance.teams[game.teamUid];
     Opponent op;
     if (team == null || !team.opponents.containsKey(game.opponentUid)) {
@@ -208,7 +209,7 @@ class GameCard extends StatelessWidget {
       op = team.opponents[game.opponentUid];
     }
 
-    List<Player> players = [];
+    List<Player> players = <Player>[];
     Season season;
     if (team != null) {
       season =
@@ -233,7 +234,7 @@ class GameCard extends StatelessWidget {
     String endTimeFormat;
     String tzShortName;
     if (game.timezone != local.name) {
-      tzShortName = getLocation(game.timezone).timeZone(game.time).abbr;
+      tzShortName = getLocation(game.timezone).timeZone(game.time.toInt()).abbr;
     }
 
     if (game.time != game.endTime) {
@@ -278,7 +279,7 @@ class GameCard extends StatelessWidget {
       );
     }
 
-    List<TextSpan> subtitle = [];
+    List<TextSpan> subtitle = <TextSpan>[];
     if (arriveFormat != null) {
       String addr = game.place.address;
       if (game.place.name.isNotEmpty) {

@@ -53,7 +53,7 @@ class EditResultDialog extends StatelessWidget {
       body: new Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: <Widget>[
           new Expanded(
             child: new Container(
               constraints: new BoxConstraints(),

@@ -513,14 +513,18 @@ class CachedNetworkImageProvider
     assert(key == this);
 
     final Uint8List bytes = await file.readAsBytes();
-    if (bytes.lengthInBytes == 0) return null;
+    if (bytes.lengthInBytes == 0) {
+      return null;
+    }
 
     return await ui.instantiateImageCodec(bytes);
   }
 
   @override
   bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
     final CachedNetworkImageProvider typedOther = other;
     return urlNow == typedOther.urlNow && scale == typedOther.scale;
   }

@@ -9,7 +9,7 @@ import 'package:fluro/fluro.dart';
 
 class FusedDrawerContent extends StatelessWidget {
   Widget _buildTeamSection(BuildContext context) {
-    List<Widget> data = new List<Widget>();
+    List<Widget> data = <Widget>[];
     UserDatabaseData.instance.teams.forEach((String uid, Team team) {
       WinRecord record;
       String seasonName = "";
@@ -28,7 +28,7 @@ class FusedDrawerContent extends StatelessWidget {
                   .textTheme
                   .subhead
                   .copyWith(fontWeight: FontWeight.bold, fontSize: 17.0),
-              children: [
+              children: <TextSpan>[
                 new TextSpan(text: "  "),
                 new TextSpan(
                     text: seasonName,
@@ -62,12 +62,12 @@ class FusedDrawerContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final children = <Widget>[
+    final List<Widget> children = <Widget>[
       new FusedDrawerHeader(),
-      new StreamBuilder(
+      new StreamBuilder<UpdateReason>(
         stream: UserDatabaseData.instance.teamStream,
         builder: (BuildContext context, AsyncSnapshot<UpdateReason> snapshot) {
-          return this._buildTeamSection(context);
+          return _buildTeamSection(context);
         },
       ),
       new Divider(),

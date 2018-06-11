@@ -100,7 +100,7 @@ class AddGameScreenState extends State<AddGameScreen> {
             Navigator.pop(context);
           }).catchError((Error e) {
             _saving = false;
-            showDialog(
+            showDialog<bool>(
                 context: context,
                 builder: (BuildContext context) {
                   return new AlertDialog(
@@ -129,7 +129,7 @@ class AddGameScreenState extends State<AddGameScreen> {
     DateTime start = new DateTime.now().add(const Duration(days: 1));
     _initGame.time = start.millisecondsSinceEpoch;
     _initGame.arriveTime = start
-        .subtract(new Duration(minutes: teamData.arriveEarly))
+        .subtract(new Duration(minutes: teamData.arriveEarly.toInt()))
         .millisecondsSinceEpoch;
     _initGame.endTime = _initGame.time;
     _initGame.teamUid = str;
@@ -160,16 +160,16 @@ class AddGameScreenState extends State<AddGameScreen> {
           padding: new EdgeInsets.all(5.0),
           child: new StepperAlwaysVisible(
             type: StepperType.horizontal,
-            currentStep: this.currentStep,
+            currentStep: currentStep,
             onStepContinue: () {
-              this._onStepperContinue(context);
+              _onStepperContinue(context);
             },
             onStepCancel: () {
               // Go back
               Navigator.of(context).pop();
             },
             onStepTapped: (int step) {
-              this._onStepTapped(step);
+              _onStepTapped(step);
             },
             steps: <Step>[
               new Step(
@@ -182,7 +182,7 @@ class AddGameScreenState extends State<AddGameScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       new TeamPicker(
-                        onChanged: this._teamChanged,
+                        onChanged: _teamChanged,
                         teamUid: _teamUid,
                       ),
                     ],
@@ -193,7 +193,7 @@ class AddGameScreenState extends State<AddGameScreen> {
                 title: new Text(messages.gamedetails),
                 state: detailsStepState,
                 isActive: _teamUid != null && _teamUid.isNotEmpty,
-                content: this._buildForm(context),
+                content: _buildForm(context),
               ),
               new Step(
                 title: new Text(messages.gamecreate),
@@ -201,7 +201,7 @@ class AddGameScreenState extends State<AddGameScreen> {
                 isActive: _gameFormKey != null &&
                     _gameFormKey.currentState != null &&
                     _gameFormKey.currentState.validate(),
-                content: this._buildSummary(context),
+                content: _buildSummary(context),
               )
             ],
           ),

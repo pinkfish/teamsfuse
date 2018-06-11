@@ -16,7 +16,7 @@ import 'package:fusemodel/fusemodel.dart';
 class Routes {
   UserData _currentUser;
 
-  final loggedOutRoutes = <String, WidgetBuilder>{
+  final Map<String, WidgetBuilder> loggedOutRoutes = <String, WidgetBuilder>{
     "/Login/Home": (BuildContext context) => new LoginScreen(),
     "/Login/ForgotPassword": (BuildContext context) =>
         new ForgotPasswordScreen(),
@@ -24,7 +24,7 @@ class Routes {
     "/Login/Verify": (BuildContext context) => new VerifyEmailScreen(),
   };
 
-  final theme = new ThemeData(
+  final ThemeData theme = new ThemeData(
     // This is the theme of your application.
     //
     // Try running your application with "flutter run". You'll see the
@@ -38,7 +38,33 @@ class Routes {
 
   MaterialApp app;
 
-  PageRoute<dynamic> _buildRoute(RouteSettings routeSettings) {
+  Routes() {
+    // Subscribe to auth changes.
+    UserAuth.instance.onAuthChanged().listen(_authChanged);
+    app = new MaterialApp(
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        const MessagesDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
+      supportedLocales: const <Locale>[
+        const Locale('en', 'US'),
+        const Locale('en', 'UK'),
+        const Locale('en', 'AU'),
+      ],
+      navigatorObservers: <NavigatorObserver>[
+        new FirebaseAnalyticsObserver(analytics: Analytics.analytics),
+      ],
+      title: "Team Fuse",
+      theme: theme,
+      initialRoute: "/",
+      home: new SplashScreen(),
+      onGenerateRoute: _buildRoute,
+    );
+    runApp(app);
+  }
+
+  Route<dynamic> _buildRoute(RouteSettings routeSettings) {
     //Analytics.analytics.setCurrentScreen(screenName: routeSettings.name);
     LoggingData.instance.lastPath = routeSettings.name;
     if (_currentUser != null) {
@@ -66,29 +92,4 @@ class Routes {
     }
   }
 
-  Routes() {
-    // Subscribe to auth changes.
-    UserAuth.instance.onAuthChanged().listen(_authChanged);
-    app = new MaterialApp(
-      localizationsDelegates: [
-        const MessagesDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      supportedLocales: [
-        const Locale('en', 'US'),
-        const Locale('en', 'UK'),
-        const Locale('en', 'AU'),
-      ],
-      navigatorObservers: [
-        new FirebaseAnalyticsObserver(analytics: Analytics.analytics),
-      ],
-      title: "Team Fuse",
-      theme: theme,
-      initialRoute: "/",
-      home: new SplashScreen(),
-      onGenerateRoute: _buildRoute,
-    );
-    runApp(app);
-  }
 }

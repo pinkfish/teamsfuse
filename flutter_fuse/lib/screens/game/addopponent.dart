@@ -12,7 +12,7 @@ class AddOpponent extends StatefulWidget {
   @override
   State createState() {
     Opponent opponent = new Opponent();
-    opponent.teamUid = this.teamUid;
+    opponent.teamUid = teamUid;
 
     return new _AddOpponentState(opponent);
   }
@@ -48,7 +48,7 @@ class _AddOpponentState extends State<AddOpponent> {
         actions: <Widget>[
           new FlatButton(
             onPressed: () {
-              this._savePressed(context);
+              _savePressed(context);
             },
             child: new Text(
               Messages.of(context).savebuttontext,

@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int quoteId = SavingOverlay.randomNum.nextInt(20000);
 
   void _showFilterDialog() async {
-    await showDialog(
+    await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return new FilterHomeDialog(_details);
@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Colors.white,
       );
     }
-    List<Widget> actions = [
+    List<Widget> actions = <Widget>[
       new IconButton(
         icon: const Icon(Icons.tune),
         onPressed: _showFilterDialog,

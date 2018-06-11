@@ -15,7 +15,7 @@ class EditProfileScreen extends StatefulWidget {
 
   @override
   EditProfileScreenState createState() {
-    return new EditProfileScreenState(this.meUid);
+    return new EditProfileScreenState(meUid);
   }
 }
 
@@ -29,7 +29,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   File _imageFile;
   bool _changedImage = false;
   UserData _user;
-  StreamSubscription streamListen;
+  StreamSubscription<UserData> streamListen;
   final Player me;
 
   // Details to update.
@@ -39,6 +39,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   EditProfileScreenState(String meUid)
       : me = new Player.copy(UserDatabaseData.instance.players[meUid]);
 
+  @override
   void initState() {
     super.initState();
     UserAuth.instance.currentUser().then((UserData data) {
@@ -53,6 +54,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     });
   }
 
+  @override
   void dispose() {
     super.dispose();
     streamListen.cancel();
@@ -98,7 +100,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         await me.updateImage(_imageFile);
       }
       FusedUserProfile profile = _user.profile.copyWith(
-          displayName: this.displayName, phoneNumber: this.phoneNumber);
+          displayName: displayName, phoneNumber: phoneNumber);
       UserAuth.instance.updateProfile(_user.uid, profile);
        Navigator.pop(context);
     } else {
@@ -106,6 +108,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     if (_user == null) {
       return new Text('Invalid state');
@@ -119,7 +122,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         actions: <Widget>[
           new FlatButton(
             onPressed: () {
-              this._savePressed(context);
+              _savePressed(context);
             },
             child: new Text(
               Messages.of(context).savebuttontext,
@@ -147,11 +150,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   child: new Column(
                     children: <Widget>[
                       new IconButton(
-                        onPressed: this._selectImage,
+                        onPressed: _selectImage,
                         iconSize: (screenSize.width < 500)
                             ? 120.0
                             : (screenSize.width / 4) + 12.0,
-                        icon: this._buildImage(),
+                        icon: _buildImage(),
                       ),
                       new EnsureVisibleWhenFocused(
                         focusNode: _focusNode,

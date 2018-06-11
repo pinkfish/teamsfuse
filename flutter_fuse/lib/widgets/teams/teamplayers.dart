@@ -74,13 +74,13 @@ class TeamPlayersState extends State<TeamPlayers> {
     }
   }
 
-  List<DropdownMenuItem> _buildItems(BuildContext context) {
-    List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
+  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     if (widget._teamUid != null &&
         UserDatabaseData.instance.teams.containsKey(widget._teamUid)) {
       UserDatabaseData.instance.teams[widget._teamUid].seasons
-          .forEach((key, season) {
-        ret.add(new DropdownMenuItem(
+          .forEach((String key, Season season) {
+        ret.add(new DropdownMenuItem<String>(
             child: new Text(season.name), value: season.uid));
       });
     }
@@ -129,7 +129,7 @@ class TeamPlayersState extends State<TeamPlayers> {
   }
 
   List<Widget> _buildPlayers() {
-    List<Widget> ret = new List<Widget>();
+    List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
 
     _season.players.forEach((SeasonPlayer player) {
@@ -172,7 +172,7 @@ class TeamPlayersState extends State<TeamPlayers> {
     if (_invites != null &&
         _invites.length > 0 &&
         _team.isAdmin(UserDatabaseData.instance.players)) {
-      List<Widget> kids = new List<Widget>();
+      List<Widget> kids = <Widget>[];
       _invites.forEach((InviteToTeam inv) {
         kids.add(
           new ListTile(
@@ -222,11 +222,11 @@ class TeamPlayersState extends State<TeamPlayers> {
       children: <Widget>[
         new Row(
           children: <Widget>[
-            new DropdownButton(
+            new DropdownButton<String>(
               hint: new Text(messsages.seasonselect),
               value: _seasonUid,
               items: _buildItems(context),
-              onChanged: (dynamic val) {
+              onChanged: (String val) {
                 print('changed $val');
                 setState(() {
                   _seasonUid = val;

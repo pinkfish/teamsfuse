@@ -20,7 +20,7 @@ class AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  static const String NEW = 'new';
+  static const String newAddInvite = 'new';
 
   @override
   void initState() {
@@ -58,7 +58,7 @@ class AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
         actions: <Widget>[
           new FlatButton(
             onPressed: () {
-              this._savePressed();
+              _savePressed();
             },
             child: new Text(
               Messages.of(context).savebuttontext,

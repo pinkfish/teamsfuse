@@ -56,7 +56,7 @@ class SettingsScreenState extends State<SettingsScreen> {
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
       ),
-      body: new FutureBuilder(
+      body: new FutureBuilder<FusedUserProfile>(
           future: UserAuth.instance.currentUser().then((UserData data) {
             return UserAuth.instance.getProfile(data.uid);
           }),

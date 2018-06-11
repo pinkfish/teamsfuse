@@ -57,6 +57,7 @@ class Analytics extends AnalyticsSubsystem {
     _analytics.logSignUp(signUpMethod: signUpMethod);
   }
 
+  @override
   TraceProxy newTrace(String name) {
     Trace trace = FirebasePerformance.instance.newTrace(name);
 
@@ -91,14 +92,17 @@ class FirebaseTrace implements TraceProxy {
   Trace trace;
   FirebaseTrace(this.trace);
 
+  @override
   void start() {
     trace.start();
   }
 
+  @override
   void incrementCounter(String str) {
     trace.incrementCounter(str);
   }
 
+  @override
   void stop() {
     trace.stop();
   }

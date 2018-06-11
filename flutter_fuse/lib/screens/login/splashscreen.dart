@@ -24,6 +24,7 @@ class SplashScreenState extends State<SplashScreen> {
     _startLoading();
   }
 
+  @override
   void initState() {
     _startLoading();
     super.initState();
@@ -33,6 +34,7 @@ class SplashScreenState extends State<SplashScreen> {
 
   }
 
+  @override
   void dispose() {
     super.dispose();
     _stream?.cancel();

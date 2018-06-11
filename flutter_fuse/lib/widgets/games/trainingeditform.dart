@@ -13,9 +13,8 @@ class TrainingEditForm extends StatefulWidget {
   final Game game;
 
   TrainingEditForm(
-      {@required Game game, @required GlobalKey<TrainingEditFormState> key})
-      : this.game = game,
-        super(key: key);
+      {@required this.game, @required GlobalKey<TrainingEditFormState> key})
+      : super(key: key);
 
   @override
   TrainingEditFormState createState() {
@@ -35,7 +34,10 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   FocusNode _focusNodeNotes = new FocusNode();
   FocusNode _focusNodeUniform = new FocusNode();
 
-  void save() {}
+  @override
+  void save() {
+    _formState.currentState.save();
+  }
 
   @override
   void initState() {
@@ -65,10 +67,12 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
     }
   }
 
+  @override
   bool validate() {
     return _formState.currentState.validate();
   }
 
+  @override
   Game get finalGameResult {
     _formState.currentState.save();
     // Add the date time and the time together.
@@ -128,7 +132,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                   initialValue: _atDate,
                   hideDate: false,
                   onFieldChanged: _updateTimes,
-                  onSaved: (TZDateTime value) {
+                  onSaved: (DateTime value) {
                     _atDate = value;
                   },
                 ),
@@ -140,7 +144,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                   ),
                   initialValue: _atEnd,
                   hideDate: false,
-                  onSaved: (TZDateTime value) {
+                  onSaved: (DateTime value) {
                     _atEnd = value;
                   },
                 ),

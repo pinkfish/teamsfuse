@@ -14,23 +14,26 @@ class MessageList extends StatefulWidget {
 class MessageListState extends State<MessageList> {
   String _myUid = UserDatabaseData.instance.userUid;
   DateTime _dayCutoff = new DateTime.now().subtract(const Duration(days: 1));
-  List<Message> _sortedList = [];
+  List<Message> _sortedList = <Message>[];
 
   StreamSubscription<UpdateReason> _messageStream;
 
+  @override
   void initState() {
     super.initState();
     _sortedList = UserDatabaseData.instance.messages.values.toList();
-    _sortedList.sort((Message m1, Message m2) => m1.timeSent = m2.timeSent);
+    _sortedList.sort(
+        (Message m1, Message m2) => m1.timeSent.toInt() - m2.timeSent.toInt());
 
     _messageStream = UserDatabaseData.instance.messagesStream
         .listen((UpdateReason reason) => setState(() {
               _sortedList = UserDatabaseData.instance.messages.values.toList();
-              _sortedList
-                  .sort((Message m1, Message m2) => m1.timeSent - m2.timeSent);
+              _sortedList.sort((Message m1, Message m2) =>
+                  m1.timeSent.toInt() - m2.timeSent.toInt());
             }));
   }
 
+  @override
   void dispose() {
     super.dispose();
     _messageStream.cancel();
@@ -94,7 +97,7 @@ class MessageListState extends State<MessageList> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> messages = [];
+    List<Widget> messages = <Widget>[];
     if (_sortedList.length == 0) {
       // No messages
       return new Center(

@@ -15,11 +15,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
-  StreamSubscription streamListen;
-  StreamSubscription playersListen;
+  StreamSubscription<UserData> streamListen;
+  StreamSubscription<UpdateReason> playersListen;
   UserData user;
   Player me;
 
+  @override
   void initState() {
     super.initState();
     UserAuth.instance.currentUser().then((UserData data) {
@@ -29,7 +30,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     });
     streamListen = UserAuth.instance.onAuthChanged().listen((UserData data) {
       setState(() {
-        this.user = data;
+        user = data;
       });
     });
     playersListen =
@@ -48,6 +49,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  @override
   void dispose() {
     super.dispose();
     streamListen.cancel();
@@ -109,11 +111,11 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   List<Widget> _buildUserList(BuildContext context, Player player) {
-    List<Widget> ret = [];
+    List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
 
     ret.add(
-      new StreamBuilder(
+      new StreamBuilder<List<InviteToPlayer>>(
         stream: player.inviteStream,
         builder:
             (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
@@ -131,7 +133,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                   title: new Text(Messages.of(context).invitedemail(invite)),
                   trailing: new IconButton(
                       icon: const Icon(Icons.delete),
-                      onPressed: () => this._deleteInvite(context, invite)),
+                      onPressed: () => _deleteInvite(context, invite)),
                 );
               }).toList(),
             ),
@@ -150,7 +152,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
     for (PlayerUser user in player.users.values) {
       ret.add(
-        new FutureBuilder(
+        new FutureBuilder<FusedUserProfile>(
           future: user.getProfile(),
           builder:
               (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) {
@@ -172,7 +174,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
     ret.add(
       new FlatButton(
-        onPressed: () => this._onAddPlayerInvite(context, player),
+        onPressed: () => _onAddPlayerInvite(context, player),
         child: new Row(
           children: <Widget>[
             new Icon(
@@ -193,7 +195,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   List<Widget> _buildPlayerData() {
     final Size screenSize = MediaQuery.of(context).size;
-    List<Widget> ret = new List<Widget>();
+    List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
     Messages messages = Messages.of(context);
 
@@ -227,7 +229,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       if (UserDatabaseData.instance.players.length > 0) {
         // We have some extra players!
         UserDatabaseData.instance.players.forEach((String key, Player player) {
-          List<Widget> teamNames = [];
+          List<Widget> teamNames = <Widget>[];
           // List the teams they are in.
           UserDatabaseData.instance.teams.forEach((String key, Team team) {
             team.seasons.forEach((String key, Season season) {
@@ -247,7 +249,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                       ),
                       trailing: new IconButton(
                         onPressed: () {
-                          this._deletePlayer(player);
+                          _deletePlayer(player);
                         },
                         icon: const Icon(Icons.delete),
                       ),
@@ -303,11 +305,9 @@ class ProfileScreenState extends State<ProfileScreen> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
-        actions: <Widget>[
-            ],
       ),
       floatingActionButton: new FloatingActionButton(
-        onPressed: this._editProfile,
+        onPressed: _editProfile,
         child: const Icon(Icons.edit),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

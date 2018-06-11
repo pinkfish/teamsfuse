@@ -6,19 +6,19 @@ import 'package:flutter_fuse/services/messages.dart';
 
 class InProgressGamePicker extends StatelessWidget {
   ///height of every list element
-  static const double DEFAULT_ITEM_EXTENT = 50.0;
+  static const double defaultItemExtent = 50.0;
 
   ///width of list view
-  static const double DEFUALT_LISTVIEW_WIDTH = 100.0;
+  static const double defaultListViewWidth = 100.0;
 
   ///constructor for integer number picker
   InProgressGamePicker({
-    Key key,
     @required this.initialValue,
     @required this.onChanged,
+    Key key,
     this.disabled = false,
-    this.itemExtent = DEFAULT_ITEM_EXTENT,
-    this.listViewWidth = DEFUALT_LISTVIEW_WIDTH,
+    this.itemExtent = defaultItemExtent,
+    this.listViewWidth = defaultListViewWidth,
   })
       : assert(initialValue != null),
         scrollController = new ScrollController(
@@ -53,7 +53,7 @@ class InProgressGamePicker extends StatelessWidget {
   //----------------------------- PUBLIC ------------------------------
   //
 
-  animateMove(GameInProgress valueToSelect) {
+  void animateMove(GameInProgress valueToSelect) {
     _animate(scrollController, (valueToSelect.index) * itemExtent);
   }
 
@@ -155,7 +155,7 @@ class InProgressGamePicker extends StatelessWidget {
   }
 
    ///scroll to selected value
-  _animate(ScrollController scrollController, double value) {
+  void _animate(ScrollController scrollController, double value) {
     scrollController.animateTo(value,
         duration: new Duration(seconds: 1), curve: new ElasticOutCurve());
   }

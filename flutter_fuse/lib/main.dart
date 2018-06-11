@@ -15,21 +15,21 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'dart:typed_data';
 
 void main() async {
-  var trace = Analytics.instance.newTrace("startup");
+  TraceProxy trace = Analytics.instance.newTrace("startup");
   trace.start();
 
 
   String currentTimeZone;
   ByteData loadedData;
-  await Future.wait([
+  await Future.wait<dynamic>(<Future<dynamic>>[
     SqlData.instance.initDatabase(),
-    rootBundle.load('assets/timezone/2018c.tzf').then((ByteData data) {
+    rootBundle.load('assets/timezone/2018c.tzf').then<ByteData>((ByteData data) {
       loadedData = data;
       print('loaded data');
     }),
     FlutterNativeTimezone
         .getLocalTimezone()
-        .then((String str) => currentTimeZone = str)
+        .then<String>((String str) => currentTimeZone = str)
   ]);
 
   // Timezone

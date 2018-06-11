@@ -17,7 +17,7 @@ class AddPlayerScreen extends StatefulWidget {
 
   @override
   AddPlayerScreenState createState() {
-    return new AddPlayerScreenState(this._teamUid, this._seasonUid);
+    return new AddPlayerScreenState();
   }
 }
 
@@ -32,16 +32,19 @@ class EmailName {
 }
 
 class AddPlayerScreenState extends State<AddPlayerScreen> {
-  final String _teamUid;
-  String _seasonUid;
   final Validations _validations = new Validations();
-  List<EmailName> _emailNames = new List<EmailName>();
+  List<EmailName> _emailNames = <EmailName>[];
   bool autovalidate = false;
+  String _curSeasonUid;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
-  AddPlayerScreenState(this._teamUid, this._seasonUid);
+  @override
+  void initState() {
+    super.initState();
+    _curSeasonUid = widget._seasonUid;
+  }
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(
@@ -56,8 +59,8 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
       _formKey.currentState.save();
       // Send the invite, cloud functions will handle the email
       // part of this.
-      Team team = UserDatabaseData.instance.teams[_teamUid];
-      Season season = team.seasons[_seasonUid];
+      Team team = UserDatabaseData.instance.teams[widget._teamUid];
+      Season season = team.seasons[_curSeasonUid];
       UserData user = await UserAuth.instance.currentUser();
       await Future.forEach<EmailName>(_emailNames, (EmailName en) async {
         Analytics.analytics
@@ -76,16 +79,16 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
   }
 
   Widget _buildForm() {
-    List<Widget> rows = new List<Widget>();
+    List<Widget> rows = <Widget>[];
     Messages messages = Messages.of(context);
 
     rows.add(
       new DropdownButtonHideUnderline(
         child: new SeasonFormField(
-          initialValue: _seasonUid,
-          teamUid: _teamUid,
+          initialValue: _curSeasonUid,
+          teamUid: widget._teamUid,
           onSaved: (String value) {
-            _seasonUid = value;
+            _curSeasonUid = value;
           },
         ),
       ),
@@ -159,7 +162,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
             _validations.validateRoleInTeam(context, val);
           },
           onSaved: (String val) {
-            en.role = RoleInTeam.values.firstWhere((e) => e.toString() == val);
+            en.role = RoleInTeam.values.firstWhere((RoleInTeam e) => e.toString() == val);
           },
         ),
       );

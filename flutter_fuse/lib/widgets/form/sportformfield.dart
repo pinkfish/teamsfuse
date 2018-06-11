@@ -10,8 +10,7 @@ class SportFormField extends FormField<String> {
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
-  })
-      : assert(initialValue != null),
+  })  : assert(initialValue != null),
         super(
             key: key,
             initialValue: initialValue,
@@ -26,11 +25,11 @@ class SportFormField extends FormField<String> {
               return new InputDecorator(
                   decoration:
                       effectiveDecoration.copyWith(errorText: field.errorText),
-                  child: new DropdownButton(
+                  child: new DropdownButton<String>(
                       hint: new Text(Messages.of(state.context).opponentselect),
                       items: state._buildItems(state.context),
                       value: state.value,
-                      onChanged: (dynamic val) {
+                      onChanged: (String val) {
                         state.updateValue(val);
                         field.didChange(val);
                         if (onFieldSubmitted != null) {
@@ -44,23 +43,19 @@ class SportFormField extends FormField<String> {
 }
 
 class SportFormFieldState extends FormFieldState<String> {
-  @override
-  SportFormField get widget => super.widget;
-
   void updateValue(String val) {
     setValue(val);
   }
 
-
-  List<DropdownMenuItem> _buildItems(BuildContext context) {
-    List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
-    ret.add(new DropdownMenuItem(
+  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    ret.add(new DropdownMenuItem<String>(
       child: new Text(Messages.of(context).sportselect),
       value: 'none',
     ));
 
     Sport.values.forEach((Sport sport) {
-      ret.add(new DropdownMenuItem(
+      ret.add(new DropdownMenuItem<String>(
         child: new Text(Messages.of(context).sportname(sport)),
         value: sport.toString(),
       ));

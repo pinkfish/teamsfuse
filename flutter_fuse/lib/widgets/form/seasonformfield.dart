@@ -5,15 +5,14 @@ import 'package:flutter_fuse/services/messages.dart';
 
 class SeasonFormField extends FormField<String> {
   SeasonFormField({
+    @required String teamUid,
     Key key,
-    String teamUid,
     String initialValue: '',
     InputDecoration decoration: const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
-  })
-      : assert(initialValue != null),
+  })  : assert(initialValue != null),
         assert(teamUid != null),
         super(
             key: key,
@@ -28,11 +27,11 @@ class SeasonFormField extends FormField<String> {
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme);
               return new InputDecorator(
                   decoration: effectiveDecoration,
-                  child: new DropdownButton(
+                  child: new DropdownButton<String>(
                       hint: new Text(Messages.of(state.context).seasonselect),
                       value: state.value,
                       items: state._buildItems(state.context),
-                      onChanged: (dynamic val) {
+                      onChanged: (String val) {
                         state.updateValue(val);
                         field.didChange(val);
                         if (onFieldSubmitted != null) {
@@ -46,16 +45,12 @@ class SeasonFormField extends FormField<String> {
 }
 
 class SeasonFormFieldState extends FormFieldState<String> {
-  @override
-  SeasonFormField get widget => super.widget;
-
   String teamUid;
   StreamSubscription<UpdateReason> teamSubscription;
 
   void updateValue(String val) {
     setValue(val);
   }
-
 
   void setTeamUid(String teamUid) {
     setState(() {
@@ -70,7 +65,6 @@ class SeasonFormFieldState extends FormFieldState<String> {
     });
   }
 
-
   @override
   void dispose() {
     super.dispose();
@@ -80,12 +74,13 @@ class SeasonFormFieldState extends FormFieldState<String> {
     }
   }
 
-  List<DropdownMenuItem> _buildItems(BuildContext context) {
-    List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
+  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     if (teamUid != null &&
         UserDatabaseData.instance.teams.containsKey(teamUid)) {
-      UserDatabaseData.instance.teams[teamUid].seasons.forEach((key, season) {
-        ret.add(new DropdownMenuItem(
+      UserDatabaseData.instance.teams[teamUid].seasons
+          .forEach((String key, Season season) {
+        ret.add(new DropdownMenuItem<String>(
             child: new Text(season.name), value: season.uid));
       });
     }

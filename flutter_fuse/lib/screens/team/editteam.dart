@@ -11,7 +11,7 @@ class EditTeamScreen extends StatefulWidget {
 
   @override
   EditTeamScreenState createState() {
-    return new EditTeamScreenState(this.teamUid);
+    return new EditTeamScreenState();
   }
 }
 
@@ -22,14 +22,15 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool saving = false;
 
-  EditTeamScreenState(String teamuid) {
-    print('team uid $teamuid');
-    if (UserDatabaseData.instance.teams.containsKey(teamuid)) {
-      this._team = new Team.copy(UserDatabaseData.instance.teams[teamuid]);
+  @override
+  void initState() {
+    super.initState();
+    if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
+      _team = new Team.copy(UserDatabaseData.instance.teams[widget.teamUid]);
       print('Existing team uid ${_team.toJSON()}');
     } else {
-      this._team = new Team();
-      this._team.uid = teamuid;
+      _team = new Team();
+      _team.uid = widget.teamUid;
     }
   }
 
@@ -46,7 +47,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
     saving = true;
     try {
       if (await _formKey.currentState.validateAndSaveToFirebase()) {
-        Navigator.of(context).pop(_formKey.currentState.team.uid);
+        Navigator.of(context).pop(_formKey.currentState.widget.team.uid);
       } else {
         _showInSnackBar(Messages.of(context).formerror);
       }
@@ -61,13 +62,12 @@ class EditTeamScreenState extends State<EditTeamScreen> {
       key: _scaffoldKey,
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
-        actions: <Widget>[],
       ),
       body: new Container(
         padding: new EdgeInsets.all(16.0),
         child: new SavingOverlay(
           saving: saving,
-          child: this._buildForm(context),
+          child: _buildForm(context),
         ),
       ),
       floatingActionButton: new FloatingActionButton(

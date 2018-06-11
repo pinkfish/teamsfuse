@@ -42,8 +42,8 @@ class StepperAlwaysVisible extends StatefulWidget {
   ///
   /// The [steps], [type], and [currentStep] arguments must not be null.
   StepperAlwaysVisible({
-    Key key,
     @required this.steps,
+    Key key,
     this.type: StepperType.vertical,
     this.currentStep: 0,
     this.onStepTapped,
@@ -444,7 +444,9 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
                       duration: kThemeAnimationDuration,
                     );
 
-                    if (widget.onStepTapped != null) widget.onStepTapped(i);
+                    if (widget.onStepTapped != null) {
+                      widget.onStepTapped(i);
+                    }
                   }
                 : null,
             child: _buildVerticalHeader(i)),
@@ -466,7 +468,9 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
         new InkResponse(
           onTap: widget.steps[i].state != StepState.disabled
               ? () {
-                  if (widget.onStepTapped != null) widget.onStepTapped(i);
+                  if (widget.onStepTapped != null) {
+                    widget.onStepTapped(i);
+                  }
                 }
               : null,
           child: new Row(

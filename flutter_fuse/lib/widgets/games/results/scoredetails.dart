@@ -27,8 +27,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
   StreamSubscription<UpdateReason> _gameSubscription;
   GameResultPerPeriod _currentPeriodResults;
   GameResultDetails _details;
-  int _ptsFor;
-  int _ptsAgainst;
+  num _ptsFor;
+  num _ptsAgainst;
   Debouncer<bool> _debouncer;
   GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   GlobalKey<NumberPickerState> _ptsForState =
@@ -84,9 +84,9 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         type: widget.game.result.currentPeriod.type, periodNumber: 0);
     if (widget.game.result.scores.containsKey(period)) {
       _ptsForState.currentState
-          .animateInt(widget.game.result.scores[period].score.ptsFor);
+          .animateInt(widget.game.result.scores[period].score.ptsFor.toInt());
       _ptsAgainstState.currentState
-          .animateInt(widget.game.result.scores[period].score.ptsFor);
+          .animateInt(widget.game.result.scores[period].score.ptsAgainst.toInt());
     }
 
     // If the period changed, update stuff.
@@ -468,7 +468,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         ),
       );
     } else {
-      List<Widget> children = [
+      List<Widget> children = <Widget>[
         new PeriodSelector(
           currentPeriod: _details.currentPeriod,
           divisionsType: _details.divisions,
@@ -505,7 +505,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                             begin: Alignment.topLeft,
                             end: Alignment.centerLeft,
                             tileMode: TileMode.mirror,
-                            colors: [Colors.grey.shade300, Colors.white],
+                            colors: <Color>[Colors.grey.shade300, Colors.white],
                           ),
                         ),
                         child: new NumberPicker.integer(
@@ -514,7 +514,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                           itemExtent: 40.0,
                           disabled:
                               _details.inProgress == GameInProgress.NotStarted,
-                          initialValue: _currentPeriodResults.score.ptsFor,
+                          initialValue: _currentPeriodResults.score.ptsFor.toInt(),
                           minValue: 0,
                           maxValue: 10000,
                           onChanged: (num val) {
@@ -594,7 +594,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                             begin: Alignment.topLeft,
                             end: Alignment.centerLeft,
                             tileMode: TileMode.mirror,
-                            colors: [Colors.grey.shade300, Colors.white],
+                            colors: <Color>[Colors.grey.shade300, Colors.white],
                           ),
                         ),
                         child: new NumberPicker.integer(
@@ -603,7 +603,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                           key: _ptsAgainstState,
                           disabled:
                               _details.inProgress == GameInProgress.NotStarted,
-                          initialValue: _currentPeriodResults.score.ptsAgainst,
+                          initialValue: _currentPeriodResults.score.ptsAgainst.toInt(),
                           minValue: 0,
                           maxValue: 10000,
                           onChanged: (num val) {

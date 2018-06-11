@@ -15,7 +15,7 @@ class Debouncer<Val> {
   bool atBegin;
   bool resetOnAdd;
 
-  List<Val> _data = new List<Val>();
+  List<Val> _data = <Val>[];
 
   Debouncer(this._delay, this._callback, {this.atBegin = false, this.resetOnAdd});
 

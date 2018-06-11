@@ -14,7 +14,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
-  BuildContext context;
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   ScrollController scrollController = new ScrollController();
@@ -24,7 +23,7 @@ class LoginScreenState extends State<LoginScreen> {
   String errorText = '';
   bool _loggingIn = false;
 
-  onPressed(String routeName) {
+  void onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
   }
 
@@ -63,7 +62,7 @@ class LoginScreenState extends State<LoginScreen> {
         setState(() {
           _loggingIn = false;
         });
-      }).catchError((error) {
+      }).catchError((Error error) {
         print('Right here $error');
         setState(() {
           errorText = "Invaid password or difficulty logging on";
@@ -78,7 +77,6 @@ class LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    this.context = context;
     final Size screenSize = MediaQuery.of(context).size;
 
     return new Scaffold(

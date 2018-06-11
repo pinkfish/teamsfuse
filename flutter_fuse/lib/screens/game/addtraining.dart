@@ -99,7 +99,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
           .of(context)
           .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.tzTime));
     }
-    List<Widget> cols = [
+    List<Widget> cols = <Widget>[
       new RaisedButton(
         child: new Text(Messages.of(context).createnew),
         color: Theme.of(context).accentColor,
@@ -224,7 +224,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
           _saveTraining().then((void y) {
             Navigator.pop(context);
           }).catchError((Error e) {
-            showDialog(
+            showDialog<bool>(
                 context: context,
                 builder: (BuildContext context) {
                   return new AlertDialog(
@@ -285,16 +285,16 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
         padding: new EdgeInsets.all(16.0),
         child: new StepperAlwaysVisible(
           type: StepperType.horizontal,
-          currentStep: this.currentStep,
+          currentStep: currentStep,
           onStepContinue: () {
-            this._onStepperContinue(context);
+            _onStepperContinue(context);
           },
           onStepCancel: () {
             // Go back
             Navigator.of(context).pop();
           },
           onStepTapped: (int step) {
-            this._onStepTapped(step);
+            _onStepTapped(step);
           },
           steps: <Step>[
             new Step(
@@ -306,7 +306,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   new TeamPicker(
-                    onChanged: this._teamChanged,
+                    onChanged: _teamChanged,
                     teamUid: _teamUid,
                   ),
                 ],
@@ -316,13 +316,13 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
               title: new Text(messages.gamedetails),
               state: detailsStepState,
               isActive: _teamUid != null && _teamUid.isNotEmpty,
-              content: this._buildForm(context),
+              content: _buildForm(context),
             ),
             new Step(
               title: new Text(messages.repeat),
               state: repeatStepState,
               isActive: _teamUid != null && _teamUid.isNotEmpty,
-              content: this._buildRepeat(context),
+              content: _buildRepeat(context),
             ),
             new Step(
               title: new Text(messages.gamecreate),

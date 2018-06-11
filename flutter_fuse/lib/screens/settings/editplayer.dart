@@ -51,7 +51,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
 
   List<Widget> _buildPlayerData() {
     final Size screenSize = MediaQuery.of(context).size;
-    List<Widget> ret = new List<Widget>();
+    List<Widget> ret = <Widget>[];
     Messages messages = Messages.of(context);
 
     ImageProvider provider;
@@ -95,7 +95,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             new Expanded(
-              child: new FutureBuilder(
+              child: new FutureBuilder<FusedUserProfile>(
                   future: user.getProfile(),
                   builder: (BuildContext context,
                       AsyncSnapshot<FusedUserProfile> data) {
@@ -145,7 +145,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
         title: new Text(Messages.of(context).title),
         actions: <Widget>[
           new FlatButton(
-            onPressed: this._saveData,
+            onPressed: _saveData,
             child: new Text(
               Messages.of(context).savebuttontext,
               style: Theme

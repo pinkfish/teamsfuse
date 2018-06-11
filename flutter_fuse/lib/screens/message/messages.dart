@@ -16,7 +16,7 @@ class MessagesScreen extends StatelessWidget {
         title: new Text(messages.message),
       ),
       floatingActionButton: new FloatingActionButton(
-        onPressed: () => this._newMessage(context),
+        onPressed: () => _newMessage(context),
         child: const Icon(Icons.message),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

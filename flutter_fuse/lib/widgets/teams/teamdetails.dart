@@ -29,7 +29,7 @@ class TeamDetailsState extends State<TeamDetails> {
     super.initState();
     team = UserDatabaseData.instance.teams[widget.teamuid];
     if (team != null) {
-      teamUpdate = team.thisTeamStream.listen((data) {
+      teamUpdate = team.thisTeamStream.listen((UpdateReason data) {
         setState(() {});
       });
     }
@@ -43,7 +43,7 @@ class TeamDetailsState extends State<TeamDetails> {
   }
 
   Widget _buildSeasons(BuildContext context) {
-    List<Widget> ret = new List<Widget>();
+    List<Widget> ret = <Widget>[];
 
     if (team.isAdmin(UserDatabaseData.instance.players)) {
       ret.add(
@@ -55,7 +55,7 @@ class TeamDetailsState extends State<TeamDetails> {
       );
     }
 
-    team.seasons.forEach((key, season) {
+    team.seasons.forEach((String key, Season season) {
       ret.add(new ExpansionTile(
         key: new PageStorageKey<Season>(season),
         title: new Text(season.name +
@@ -136,7 +136,7 @@ class TeamDetailsState extends State<TeamDetails> {
         ),
         new ListTile(
           leading: const Icon(Icons.timer),
-          title: new Text(Messages.of(context).arrivebefore(team.arriveEarly)),
+          title: new Text(Messages.of(context).arrivebefore(team.arriveEarly.toInt())),
         ),
         _buildSeasons(context)
       ],

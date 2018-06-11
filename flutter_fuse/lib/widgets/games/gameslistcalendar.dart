@@ -35,7 +35,7 @@ class GameListCalendarState extends CalendarSource {
       _resubscribe();
     }
 
-    List<CalendarEvent> events = new List<CalendarEvent>();
+    List<CalendarEvent> events = <CalendarEvent>[];
     int pos = 0;
     for (Game g in _listToShow) {
       events.add(new CalendarEvent(
@@ -88,7 +88,7 @@ class GameListCalendarState extends CalendarSource {
 
   void _setGames(Iterable<Game> res) {
     List<Game> games = res.toList();
-    games.sort((a, b) => a.time.compareTo(b.time));
+    games.sort((Game a, Game b) => a.time.compareTo(b.time));
 
     _listToShow = games;
     _controller?.add(UpdateReason.Update);

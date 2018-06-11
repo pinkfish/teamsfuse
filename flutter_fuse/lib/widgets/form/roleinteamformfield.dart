@@ -25,11 +25,11 @@ class RoleInTeamFormField extends FormField<String> {
               return new InputDecorator(
                 decoration:
                     effectiveDecoration.copyWith(errorText: field.errorText),
-                child: new DropdownButton(
+                child: new DropdownButton<String>(
                   hint: new Text(Messages.of(state.context).opponentselect),
                   items: state._buildItems(state.context),
                   value: state.value,
-                  onChanged: (dynamic val) {
+                  onChanged: (String val) {
                     state.updateValue(val);
                     field.didChange(val);
                     if (onFieldSubmitted != null) {
@@ -45,22 +45,19 @@ class RoleInTeamFormField extends FormField<String> {
 }
 
 class RoleInTeamFormFieldState extends FormFieldState<String> {
-  @override
-  RoleInTeamFormField get widget => super.widget;
-
   void updateValue(String val) {
     setValue(val);
   }
 
-  List<DropdownMenuItem> _buildItems(BuildContext context) {
-    List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
-    ret.add(new DropdownMenuItem(
+  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    ret.add(new DropdownMenuItem<String>(
       child: new Text(Messages.of(context).roleselect),
       value: 'none',
     ));
 
     RoleInTeam.values.forEach((RoleInTeam role) {
-      ret.add(new DropdownMenuItem(
+      ret.add(new DropdownMenuItem<String>(
         child: new Text(Messages.of(context).roleingame(role)),
         value: role.toString(),
       ));

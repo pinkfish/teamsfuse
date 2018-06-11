@@ -42,10 +42,11 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
 
-    List<DropdownMenuItem<RoleInTeam>> widgets = [];
+    List<DropdownMenuItem<RoleInTeam>> widgets =
+        <DropdownMenuItem<RoleInTeam>>[];
     RoleInTeam.values.forEach((RoleInTeam role) {
       widgets.add(
-        new DropdownMenuItem(
+        new DropdownMenuItem<RoleInTeam>(
           child: new Text(
             messages.roleingame(role),
           ),
@@ -209,7 +210,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
   }
 
   Widget _buildPlayerDetails() {
-    List<Widget> ret = new List<Widget>();
+    List<Widget> ret = <Widget>[];
     final Size screenSize = MediaQuery.of(context).size;
     Messages messages = Messages.of(context);
     ThemeData theme = Theme.of(context);
@@ -242,7 +243,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
 
     if (_playerDetails != null && _playerDetails.users != null) {
       ret.add(
-        new StreamBuilder(
+        new StreamBuilder<List<InviteToPlayer>>(
           stream: _playerDetails.inviteStream,
           builder:
               (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
@@ -257,7 +258,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
                     title: new Text(Messages.of(context).invitedemail(invite)),
                     trailing: new IconButton(
                       icon: const Icon(Icons.delete),
-                      onPressed: () => this._deleteInvite(context, invite),
+                      onPressed: () => _deleteInvite(context, invite),
                     ),
                   );
                 }).toList(),
@@ -373,14 +374,14 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
-    List<Widget> actions = new List<Widget>();
+    List<Widget> actions = <Widget>[];
     if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
       if (UserDatabaseData.instance.teams[widget.teamUid]
           .isAdmin(UserDatabaseData.instance.players)) {
         actions.add(
           new FlatButton(
             onPressed: () {
-              this._onInvite(context);
+              _onInvite(context);
             },
             child: new Text(
               messages.addinvite,
@@ -398,7 +399,8 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     FloatingActionButton fab;
     if (_playerDetails.users.containsKey(UserDatabaseData.instance.userUid)) {
       // I am a member of this player, can edit them!
-      fab = new FloatingActionButton(onPressed: () => _editPlayer(context),
+      fab = new FloatingActionButton(
+        onPressed: () => _editPlayer(context),
         child: const Icon(Icons.edit),
       );
     }

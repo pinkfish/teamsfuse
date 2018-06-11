@@ -21,13 +21,13 @@ class Marker {
   int get hashCode => id.hashCode;
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       "id": id,
       "title": title,
       "latitude": latitude,
       "longitude": longitude,
       "type": "pin",
-      "color": {
+      "color": <String, int>{
         "r": color.red,
         "g": color.green,
         "b": color.blue,

@@ -11,15 +11,15 @@ class MenuDetails {
 
 class FabMiniMenuItemWidget extends StatelessWidget {
   FabMiniMenuItemWidget(
-      {Key key,
+      {@required this.icon,
+      @required this.fabColor,
+      @required this.onPressed,
+      Key key,
       this.elevation = 1.0,
       this.textColor,
       this.tooltip,
       this.text,
-      @required this.icon,
-      @required this.fabColor,
-      this.chipColor,
-      @required this.onPressed})
+      this.chipColor})
       : super(key: key);
   final double elevation;
   final String text;

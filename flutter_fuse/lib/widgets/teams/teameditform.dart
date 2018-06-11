@@ -21,12 +21,11 @@ class TeamEditForm extends StatefulWidget {
 
   @override
   TeamEditFormState createState() {
-    return new TeamEditFormState(this.team);
+    return new TeamEditFormState();
   }
 }
 
 class TeamEditFormState extends State<TeamEditForm> {
-  Team team;
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool _autovalidate = false;
   Validations _validations = new Validations();
@@ -43,8 +42,6 @@ class TeamEditFormState extends State<TeamEditForm> {
   String _newPlayerName = "";
   Relationship _newPlayerRelationship = Relationship.Friend;
 
-  TeamEditFormState(this.team);
-
   void save() {
     _formKey.currentState.save();
   }
@@ -59,7 +56,7 @@ class TeamEditFormState extends State<TeamEditForm> {
     } else {
       _formKey.currentState.save();
 
-      if (team.uid == null) {
+      if (widget.team.uid == null) {
         // If it says to add a new player, then do that.
         Player player;
         if (_startAdmin == 'add') {
@@ -74,11 +71,11 @@ class TeamEditFormState extends State<TeamEditForm> {
         } else {
           player = UserDatabaseData.instance.players[_startAdmin];
         }
-        team.admins.add(_startAdmin);
+        widget.team.admins.add(_startAdmin);
         Season season = new Season();
         season.name = _seasonName;
         season.record = new WinRecord();
-        season.teamUid = team.precreateUid();
+        season.teamUid = widget.team.precreateUid();
         SeasonPlayer seasonPlayer = new SeasonPlayer();
         seasonPlayer.playerUid = _startAdmin;
         seasonPlayer.role = RoleInTeam.Player;
@@ -86,11 +83,11 @@ class TeamEditFormState extends State<TeamEditForm> {
         seasonPlayer.photoUrl = player.photoUrl;
         season.players.add(seasonPlayer);
         await season.updateFirestore(includePlayers: true);
-        team.currentSeason = season.uid;
+        widget.team.currentSeason = season.uid;
       }
-      await team.updateFirestore();
+      await widget.team.updateFirestore();
       if (_changedImage) {
-        await team.updateImage(_imageFile);
+        await widget.team.updateImage(_imageFile);
       }
     }
     return true;
@@ -110,13 +107,14 @@ class TeamEditFormState extends State<TeamEditForm> {
 
   Widget _buildImage() {
     if (!_changedImage) {
-      return new TeamImage(team.uid);
+      return new TeamImage(widget.team.uid);
     }
     return new Image.file(_imageFile);
   }
 
+  @override
   Widget build(BuildContext context) {
-    if (team == null) {
+    if (widget.team == null) {
       return new Text('Invalid state');
     }
 
@@ -125,7 +123,7 @@ class TeamEditFormState extends State<TeamEditForm> {
     Widget adminWidget;
     Widget adminRelationshipWidget;
     Widget adminNameWidget;
-    if (team.uid == null) {
+    if (widget.team.uid == null) {
       // Adding a team
       seasonWidget = new EnsureVisibleWhenFocused(
         focusNode: _focusNodeSeason,
@@ -177,7 +175,7 @@ class TeamEditFormState extends State<TeamEditForm> {
               return _validations.validateName(context, value);
             },
             onSaved: (String value) {
-              team.name = value;
+              widget.team.name = value;
             },
           ),
         );
@@ -195,20 +193,20 @@ class TeamEditFormState extends State<TeamEditForm> {
           hintText: Messages.of(context).seasonselect,
           labelText: Messages.of(context).seasonselect,
         ),
-        teamUid: team.uid,
-        initialValue: team.currentSeason,
+        teamUid: widget.team.uid,
+        initialValue: widget.team.currentSeason,
         onSaved: (String value) {
-          team.currentSeason = value;
+          widget.team.currentSeason = value;
         },
       );
     }
 
     List<Widget> fields = <Widget>[
       new IconButton(
-        onPressed: this._selectImage,
+        onPressed: _selectImage,
         iconSize:
             (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
-        icon: this._buildImage(),
+        icon: _buildImage(),
       ),
       new EnsureVisibleWhenFocused(
         focusNode: _focusNodeName,
@@ -219,14 +217,14 @@ class TeamEditFormState extends State<TeamEditForm> {
             labelText: Messages.of(context).teamnamehint,
           ),
           focusNode: _focusNodeName,
-          initialValue: team.name,
+          initialValue: widget.team.name,
           keyboardType: TextInputType.text,
           obscureText: false,
           validator: (String value) {
             return _validations.validateDisplayName(context, value);
           },
           onSaved: (String value) {
-            team.name = value;
+            widget.team.name = value;
           },
         ),
       ),
@@ -236,12 +234,12 @@ class TeamEditFormState extends State<TeamEditForm> {
           hintText: Messages.of(context).sportselect,
           labelText: Messages.of(context).sportselect,
         ),
-        initialValue: team.sport.toString(),
+        initialValue: widget.team.sport.toString(),
         validator: (String value) {
           return _validations.validateSport(context, value);
         },
         onSaved: (String value) {
-          team.sport = Sport.values.firstWhere((e) => e.toString() == value);
+          widget.team.sport = Sport.values.firstWhere((Sport e) => e.toString() == value);
         },
       ),
       new GenderFormField(
@@ -250,12 +248,9 @@ class TeamEditFormState extends State<TeamEditForm> {
           hintText: Messages.of(context).genderselect,
           labelText: Messages.of(context).genderselect,
         ),
-        initialValue: team.gender.toString(),
-        validator: (String value) {
-          return _validations.validateGender(context, value);
-        },
-        onSaved: (String value) {
-          team.gender = Gender.values.firstWhere((e) => e.toString() == value);
+        initialValue: widget.team.gender,
+        onSaved: (Gender value) {
+          widget.team.gender = value;
         },
       ),
       seasonWidget,
@@ -268,11 +263,11 @@ class TeamEditFormState extends State<TeamEditForm> {
             labelText: Messages.of(context).leaguehint,
           ),
           focusNode: _focusNodeNotes,
-          initialValue: team.league == null ? '' : team.league,
+          initialValue: widget.team.league == null ? '' : widget.team.league,
           keyboardType: TextInputType.text,
           obscureText: false,
           onSaved: (String value) {
-            team.league = value;
+            widget.team.league = value;
           },
         ),
       ),
@@ -285,11 +280,11 @@ class TeamEditFormState extends State<TeamEditForm> {
             labelText: Messages.of(context).arrivebeforelabel,
           ),
           focusNode: _focusNodeArriveBefore,
-          initialValue: team.league == null ? '' : team.league,
-          keyboardType: TextInputType.text,
+          initialValue: widget.team.arriveEarly.toString(),
+          keyboardType: TextInputType.number,
           obscureText: false,
           onSaved: (String value) {
-            team.league = value;
+            widget.team.arriveEarly = int.parse(value);
           },
         ),
       ),
@@ -302,7 +297,7 @@ class TeamEditFormState extends State<TeamEditForm> {
       fields.add(adminRelationshipWidget);
     }
 
-    print('uid ${team.toJSON()}');
+    print('uid ${widget.team.toJSON()}');
     return new SingleChildScrollView(
       scrollDirection: Axis.vertical,
       controller: _scrollController,

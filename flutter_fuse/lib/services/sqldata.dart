@@ -13,30 +13,34 @@ class SqlData implements PersistenData {
   Completer<bool> _completer = new Completer<bool>();
   Future<bool> _initialized;
 
-  static const String _DBNAME = "teamfuse.db";
+  static const String _dbName = "teamfuse.db";
 
-  static const String GAME_TABLE = "Games";
-  static const String TEAMS_TABLE = "Teams";
-  static const String SEASON_TABLE = "Seasons";
-  static const String PLAYERS_TABLE = "Players";
-  static const String INVITES_TABLE = "Invites";
-  static const String OPPONENTS_TABLE = "Opponents";
-  static const String PROFILE_TABLE = "Profile";
-  static const String MESSAGES_TABLE = "Messages";
+  static const String gameTable = "Games";
+  static const String teamsTable = "Teams";
+  static const String seasonTable = "Seasons";
+  static const String playersTable = "Players";
+  static const String invitesTable = "Invites";
+  static const String opponentsTable = "Opponents";
+  static const String profileTable = "Profile";
+  static const String messagesTable = "Messages";
 
-  static const String INDEX = "fluff";
-  static const String DATA = "data";
-  static const String TEAMUID = "teamuid";
+  static const String indexColumn = "fluff";
+  static const String dataColumn = "data";
+  static const String teamUidColumn = "teamuid";
 
-  static const List<String> _TABLES = const [
-    GAME_TABLE,
-    TEAMS_TABLE,
-    SEASON_TABLE,
-    PLAYERS_TABLE,
-    INVITES_TABLE,
-    PROFILE_TABLE,
-    MESSAGES_TABLE
+  static const List<String> _tables = const <String>[
+    gameTable,
+    teamsTable,
+    seasonTable,
+    playersTable,
+    invitesTable,
+    profileTable,
+    messagesTable
   ];
+
+  SqlData() {
+    _initialized = _completer.future;
+  }
 
   static SqlData get instance {
     if (_instance == null) {
@@ -45,43 +49,39 @@ class SqlData implements PersistenData {
     return _instance;
   }
 
-  SqlData() {
-    _initialized = _completer.future;
-  }
-
   Future<void> initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    _path = join(documentsDirectory.path, _DBNAME);
+    _path = join(documentsDirectory.path, _dbName);
     _database = await openDatabase(_path, version: 2,
         onUpgrade: (Database db, int oldVersion, int newVersion) async {
       if (newVersion == 2) {
         await db.execute("CREATE TABLE IF NOT EXISTS " +
-            MESSAGES_TABLE +
+            messagesTable +
             " (" +
-            INDEX +
+            indexColumn +
             " text PRIMARY KEY, " +
-            DATA +
+            dataColumn +
             " text NOT NULL);");
       }
     }, onCreate: (Database db, int version) async {
-      await Future.forEach(_TABLES, (String table) async {
+      await Future.forEach(_tables, (String table) async {
         print('Made db $table');
         return await db.execute("CREATE TABLE IF NOT EXISTS " +
             table +
             " (" +
-            INDEX +
+            indexColumn +
             " text PRIMARY KEY, " +
-            DATA +
+            dataColumn +
             " text NOT NULL);");
       });
       await db.execute("CREATE TABLE IF NOT EXISTS " +
-          OPPONENTS_TABLE +
+          opponentsTable +
           "(" +
-          INDEX +
+          indexColumn +
           " text PRIMARY KEY, " +
-          TEAMUID +
+          teamUidColumn +
           " text NOT NULL, " +
-          DATA +
+          dataColumn +
           " text NOT NULL);");
     });
     _completer.complete(true);
@@ -89,6 +89,7 @@ class SqlData implements PersistenData {
   }
 
   // Close the database, delete everything and then reopen it.
+  @override
   Future<void> dropDatabase() async {
     _completer = new Completer<bool>();
     _initialized = _completer.future;
@@ -98,34 +99,37 @@ class SqlData implements PersistenData {
   }
 
   // Gets all the data out of the json table.
+  @override
   Future<Map<String, Map<String, dynamic>>> getAllElements(String table) async {
-    Map<String, Map<String, dynamic>> ret =
-        new Map<String, Map<String, dynamic>>();
+    Map<String, Map<String, dynamic>> ret = <String, Map<String, dynamic>>{};
     await _initialized;
 
     List<Map<String, dynamic>> data = await _database.query(table);
 
-    data.forEach((Map<String, dynamic> innerData) {
-      ret[innerData[INDEX]] = json.decode(innerData[DATA]);
-    });
+    for (Map<String, dynamic> innerData in data) {
+      ret[innerData[indexColumn].toString()] =
+          json.decode(innerData[dataColumn].toString()) as Map<String, dynamic>;
+    }
 
     return ret;
   }
 
+  @override
   Future<Map<String, dynamic>> getElement(String tableId, String key) async {
     await _initialized;
-    Map<String, String> updateData = new Map<String, String>();
-    updateData[INDEX] = key;
+    Map<String, String> updateData = <String, String>{};
+    updateData[indexColumn] = key;
 
-    List<Map<String, dynamic>> data =
-        await _database.query(tableId, where: INDEX + " = ?", whereArgs: [key]);
+    List<Map<String, dynamic>> data = await _database
+        .query(tableId, where: indexColumn + " = ?", whereArgs: <String>[key]);
     if (data == null || data.length == 0) {
       return null;
     }
 
-    return json.decode(data[0][DATA]);
+    return json.decode(data[0][dataColumn].toString()) as Map<String, dynamic>;
   }
 
+  @override
   Future<void> updateElement(
       String tableId, String key, Map<String, dynamic> data) async {
     await _initialized;
@@ -135,35 +139,39 @@ class SqlData implements PersistenData {
         "insert or replace into " +
             tableId +
             " (" +
-            INDEX +
+            indexColumn +
             ", " +
-            DATA +
+            dataColumn +
             ") values (?, ?)",
-        [key, myJson]);
+        <String>[key, myJson]);
   }
 
+  @override
   Future<int> deleteElement(String tableId, String key) async {
     await _initialized;
-    return _database.delete(tableId, where: INDEX + " = ?", whereArgs: [key]);
+    return _database
+        .delete(tableId, where: indexColumn + " = ?", whereArgs: <String>[key]);
   }
 
   // Gets all the data out of the json table.
+  @override
   Future<Map<String, Map<String, dynamic>>> getAllTeamElements(
       String table, String teamUid) async {
     await _initialized;
-    Map<String, Map<String, dynamic>> ret =
-        new Map<String, Map<String, dynamic>>();
+    Map<String, Map<String, dynamic>> ret = <String, Map<String, dynamic>>{};
 
-    List<Map<String, dynamic>> data = await _database
-        .query(table, where: TEAMUID + " = ?", whereArgs: [teamUid]);
+    List<Map<String, dynamic>> data = await _database.query(table,
+        where: teamUidColumn + " = ?", whereArgs: <String>[teamUid]);
 
-    data.forEach((Map<String, dynamic> innerData) {
-      ret[innerData[INDEX]] = json.decode(innerData[DATA]);
-    });
+    for (Map<String, dynamic> innerData in data) {
+      ret[innerData[indexColumn].toString()] =
+          json.decode(innerData[dataColumn].toString()) as Map<String, dynamic>;
+    }
 
     return ret;
   }
 
+  @override
   Future<void> updateTeamElement(String tableId, String key, String teamUid,
       Map<String, dynamic> data) async {
     await _initialized;
@@ -173,15 +181,16 @@ class SqlData implements PersistenData {
         "insert or replace into " +
             tableId +
             " (" +
-            INDEX +
+            indexColumn +
             ", " +
-            TEAMUID +
+            teamUidColumn +
             ", " +
-            DATA +
+            dataColumn +
             ") values (?, ?, ?)",
-        [key, teamUid, myJson]);
+        <String>[key, teamUid, myJson]);
   }
 
+  @override
   Future<void> clearTable(String tableId) {
     return _database.delete(tableId);
   }

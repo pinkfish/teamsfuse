@@ -6,9 +6,9 @@ import 'package:flutter/rendering.dart';
 /// A widget that ensures it is always visible when focused.
 class EnsureVisibleWhenFocused extends StatefulWidget {
   const EnsureVisibleWhenFocused({
-    Key key,
     @required this.child,
     @required this.focusNode,
+    Key key,
     this.curve: Curves.ease,
     this.duration: const Duration(milliseconds: 100),
   }) : super(key: key);
@@ -29,6 +29,7 @@ class EnsureVisibleWhenFocused extends StatefulWidget {
   /// Defaults to 100 milliseconds.
   final Duration duration;
 
+  @override
   EnsureVisibleWhenFocusedState createState() =>
       new EnsureVisibleWhenFocusedState();
 }
@@ -51,7 +52,7 @@ class EnsureVisibleWhenFocusedState extends State<EnsureVisibleWhenFocused> {
     // TODO: position doesn't seem to notify listeners when metrics change,
     // perhaps a NotificationListener around the scrollable could avoid
     // the need insert a delay here.
-    await new Future.delayed(const Duration(milliseconds: 300));
+    await new Future<Duration>.delayed(const Duration(milliseconds: 300));
 
     if (!widget.focusNode.hasFocus) {
       return;
@@ -84,5 +85,6 @@ class EnsureVisibleWhenFocusedState extends State<EnsureVisibleWhenFocused> {
     );
   }
 
+  @override
   Widget build(BuildContext context) => widget.child;
 }

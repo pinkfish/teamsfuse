@@ -25,12 +25,13 @@ class AddMessageScreenState extends State<AddMessageScreen> {
   Message _message;
   String _seasonUid;
   String _sendAs;
-  List<String> _possiblePlayers = [];
+  List<String> _possiblePlayers = <String>[];
   bool _allPlayers = true;
   bool _includeMyself = false;
   FocusNode _focusNodeSubject = new FocusNode();
   FocusNode _focusNodeBody = new FocusNode();
 
+  @override
   void initState() {
     super.initState();
     _message = new Message();
@@ -39,7 +40,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
     _message.message = '';
     _seasonUid = widget.seasonUid;
     if (widget.playerUid != null) {
-      Map<String, MessageRecipient> recips = {};
+      Map<String, MessageRecipient> recips = <String, MessageRecipient>{};
       Season season =
           UserDatabaseData.instance.teams[_message.teamUid].seasons[_seasonUid];
 
@@ -54,12 +55,12 @@ class AddMessageScreenState extends State<AddMessageScreen> {
       _message.recipients = recips;
       _setupSendAs();
     } else {
-      _message.recipients = {};
+      _message.recipients = <String, MessageRecipient>{};
     }
   }
 
   void _setupSendAs() {
-    _possiblePlayers = [];
+    _possiblePlayers = <String>[];
     // Find the intersection of team and player.
     UserDatabaseData
         .instance.teams[_message.teamUid].seasons[_seasonUid].players
@@ -118,7 +119,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
   }
 
   List<Widget> _buildPlayerPicker() {
-    List<Widget> ret = [];
+    List<Widget> ret = <Widget>[];
 
     if (_message.teamUid != null) {
       // Build the rest of the form.
@@ -141,7 +142,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
               title: new DropdownButton<String>(
                   value: _sendAs,
                   items: _possiblePlayers.map((String str) {
-                    return new DropdownMenuItem(
+                    return new DropdownMenuItem<String>(
                         child: new Text(
                             UserDatabaseData.instance.players[str].name),
                         value: str);
@@ -252,7 +253,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
         title: new Text(messages.title),
         actions: <Widget>[
           new FlatButton(
-            onPressed: this._sendMessage,
+            onPressed: _sendMessage,
             child: new Text(
               Messages.of(context).sendmessagebuttontext,
               style: Theme

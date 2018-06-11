@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
 
-Future<bool> deleteInviteDialog(BuildContext context, InviteToPlayer invite) async {
+Future<bool> deleteInviteDialog(BuildContext context, Invite invite) async {
   Messages mess = Messages.of(context);
 
   bool result = await showDialog<bool>(

@@ -13,7 +13,7 @@ class TeamSettingsScreen extends StatelessWidget {
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
       ),
-      body: new TeamSettings(this.teamUid),
+      body: new TeamSettings(teamUid),
     );
   }
 }

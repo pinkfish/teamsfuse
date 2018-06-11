@@ -18,6 +18,7 @@ class TeamSettings extends StatefulWidget {
 class TeamSettingsState extends State<TeamSettings> {
   Team _team;
   StreamSubscription<UpdateReason> _updateStream;
+  bool _addAdminDisplayed = false;
 
   @override
   void initState() {
@@ -42,7 +43,7 @@ class TeamSettingsState extends State<TeamSettings> {
     super.dispose();
   }
 
-  void _deleteAdmin(String adminUid) async {
+  void _deleteAdmin(String adminUid, String name) async {
     Messages mess = Messages.of(context);
     // Show an alert dialog first.
     bool result = await showDialog<bool>(
@@ -50,11 +51,11 @@ class TeamSettingsState extends State<TeamSettings> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return new AlertDialog(
-          title: new Text(mess.deleteopponent),
+          title: new Text(mess.deleteadmin),
           content: new SingleChildScrollView(
             child: new ListBody(
               children: <Widget>[
-                new Text(adminUid),
+                new Text(name),
               ],
             ),
           ),
@@ -78,11 +79,53 @@ class TeamSettingsState extends State<TeamSettings> {
       },
     );
     if (result) {
-      //op.deleteFromFirestore();
-    }
+      _team.deleteAdmin(adminUid);
+     }
   }
 
-  void _addAdmin() {}
+   void _deleteInvite(InviteAsAdmin adm) async {
+     Messages mess = Messages.of(context);
+     // Show an alert dialog first.
+     bool result = await showDialog<bool>(
+       context: context,
+       barrierDismissible: false, // user must tap button!
+       builder: (BuildContext context) {
+         return new AlertDialog(
+           title: new Text(mess.deleteadmininvite),
+           content: new SingleChildScrollView(
+             child: new ListBody(
+               children: <Widget>[
+                 new Text(adm.email),
+               ],
+             ),
+           ),
+           actions: <Widget>[
+             new FlatButton(
+               child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+               onPressed: () {
+                 // Do the delete.
+                 Navigator.of(context).pop(true);
+               },
+             ),
+             new FlatButton(
+               child:
+               new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+               onPressed: () {
+                 Navigator.of(context).pop(false);
+               },
+             ),
+           ],
+         );
+       },
+     );
+     if (result) {
+       adm.firestoreDelete();
+     }
+   }
+
+  void _addAdmin() {
+    Navigator.pushNamed(context, "TeamAddAdmin/" + _team.uid);
+  }
 
   List<Widget> _buildAdmins(List<Widget> ret) {
     ThemeData theme = Theme.of(context);
@@ -92,17 +135,19 @@ class TeamSettingsState extends State<TeamSettings> {
     for (String uid in _team.admins) {
       print('$uid');
       ret.add(
-        new FutureBuilder(
-          future: UserAuth.instance.getProfile(uid),
-          builder:
-              (BuildContext context, AsyncSnapshot<FusedUserProfile> data) {
+        new FutureBuilder<Player>(
+          future: UserDatabaseData.instance.getPlayer(uid, withProfile: true),
+          builder: (BuildContext context, AsyncSnapshot<Player> data) {
             if (data.hasData) {
               return new ListTile(
                 leading: const Icon(Icons.person),
-                title: new Text(data.data.displayName),
+                title: new Text(data.data.name),
                 trailing: new IconButton(
                   icon: const Icon(Icons.delete),
-                  onPressed: () => _deleteAdmin(uid),
+                  onPressed:
+                      data.data.uid == UserDatabaseData.instance.mePlayer.uid
+                          ? null
+                          : () => _deleteAdmin(uid, data.data.name),
                 ),
               );
             }
@@ -125,11 +170,42 @@ class TeamSettingsState extends State<TeamSettings> {
         textColor: Theme.of(context).accentColor,
       ),
     );
+    ret.add(new StreamBuilder(
+      stream: _team.inviteStream,
+      builder: (BuildContext context,
+          AsyncSnapshot<Iterable<InviteAsAdmin>> admins) {
+        Iterable<InviteAsAdmin> invites = _team.invites;
+        if (admins.hasData) {
+          // Do stuff
+          invites = admins.data;
+        }
+        // Load the existing stuff.
+        if (invites != null && invites.length > 0) {
+          return new ExpansionTile(
+            title: new Text("Pending invites: ${invites.length}"),
+            children: invites
+                .map(
+                  (InviteAsAdmin adm) => new ListTile(
+                        leading: const Icon(Icons.person_add),
+                        title: new Text(adm.email),
+                        subtitle: new Text("By " + adm.displayName),
+                        trailing: new IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _deleteInvite(adm),
+                        ),
+                      ),
+                )
+                .toList(),
+          );
+        }
+        return SizedBox(height: 1.0);
+      },
+    ));
     return ret;
   }
 
   List<Widget> _buildBody() {
-    List<Widget> ret = [];
+    List<Widget> ret = <Widget>[];
 
     _buildAdmins(ret);
     ret.add(

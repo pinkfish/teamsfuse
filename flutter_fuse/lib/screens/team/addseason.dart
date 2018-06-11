@@ -26,6 +26,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   Validations _validations = new Validations();
 
+  @override
   void initState() {
     super.initState();
     _team = UserDatabaseData.instance.teams[widget.teamUid];
@@ -46,9 +47,9 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
       // Make a new season.
       Season season = new Season(teamUid: widget.teamUid, name: _seasonName);
       if (_importPlayers) {
-        season.players = new List.from(_seasonSelect.players);
+        season.players = new List<SeasonPlayer>.from(_seasonSelect.players);
       } else {
-        season.players = [
+        season.players = <SeasonPlayer>[
           new SeasonPlayer(
               playerUid: UserDatabaseData.instance.mePlayer.uid,
               displayName: UserDatabaseData.instance.mePlayer.name,
@@ -124,11 +125,11 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
       body: new Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: <Widget>[
           new Flexible(
             fit: FlexFit.tight,
             flex: 0,
-            child: this._buildResults(context),
+            child: _buildResults(context),
           )
         ],
       ),

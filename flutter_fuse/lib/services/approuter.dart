@@ -25,6 +25,7 @@ import 'package:flutter_fuse/screens/team/editteam.dart';
 import 'package:flutter_fuse/screens/team/playerdetails.dart';
 import 'package:flutter_fuse/screens/team/team.dart';
 import 'package:flutter_fuse/screens/team/teamsettings.dart';
+import 'package:flutter_fuse/screens/team/addadmin.dart';
 import 'analytics.dart';
 
 class AppRouter {
@@ -50,11 +51,11 @@ class AppRouter {
     router.define("/EditProfile/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditProfileScreen(vals["id"][0])));
+                new EditProfileScreen(vals["id"][0].toString())));
     router.define("/EditPlayer/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditPlayerScreen(playerUid: vals["id"][0])));
+                new EditPlayerScreen(playerUid: vals["id"][0].toString())));
     router.define("/Settings",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -70,19 +71,19 @@ class AppRouter {
     router.define("/AcceptInviteToTeam/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AcceptInviteToTeamScreen(vals["id"][0])));
+                new AcceptInviteToTeamScreen(vals["id"][0].toString())));
     router.define("/AddInviteToPlayer/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddInviteToPlayerScreen(vals["id"][0])));
+                new AddInviteToPlayerScreen(vals["id"][0].toString())));
     router.define("/AcceptInviteToPlayer/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AcceptInviteToPlayerScreen(vals["id"][0])));
+                new AcceptInviteToPlayerScreen(vals["id"][0].toString())));
     router.define("/Team/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new TeamScreen(vals["id"][0])));
+                new TeamScreen(vals["id"][0].toString())));
     router.define("/AddTeam",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -90,33 +91,42 @@ class AppRouter {
     router.define("/EditTeam/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditTeamScreen(vals["id"][0])));
+                new EditTeamScreen(vals["id"][0].toString())));
     router.define("/TeamSettings/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new TeamSettingsScreen(vals["id"][0])));
+                new TeamSettingsScreen(vals["id"][0].toString())));
+    router.define("/TeamAddAdmin/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new AddAdminScreen(vals["id"][0].toString())));
     router.define("/AddSeason/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddSeasonScreen(vals["id"][0])));
+                new AddSeasonScreen(vals["id"][0].toString())));
     router.define("/AddPlayer/:team/:season",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddPlayerScreen(vals["team"][0], vals["season"][0])));
+                new AddPlayerScreen(
+                    vals["team"][0].toString(), vals["season"][0].toString())));
     router.define("/PlayerDetails/:team/:season/:player",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new PlayerDetailsScreen(
-                    vals["team"][0], vals["season"][0], vals["player"][0])));
+                    vals["team"][0].toString(),
+                    vals["season"][0].toString(),
+                    vals["player"][0].toString())));
     router.define("/EditGame/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditGameScreen(vals["id"][0])));
+                new EditGameScreen(vals["id"][0].toString())));
     router.define("/Game/:id", handler: new Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> vals) {
       Analytics.analytics.logViewItem(
-          itemId: vals["id"][0], itemName: "Game", itemCategory: "Game");
-      return new GameDetailsScreen(vals["id"][0]);
+          itemId: vals["id"][0].toString(),
+          itemName: "Game",
+          itemCategory: "Game");
+      return new GameDetailsScreen(vals["id"][0].toString());
     }));
     router.define("/AddEvent",
         handler: new Handler(
@@ -141,21 +151,23 @@ class AppRouter {
     router.define("/ShowMessage/:id", handler: new Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> vals) {
       Analytics.analytics.logViewItem(
-          itemId: vals["id"][0], itemName: "Message", itemCategory: "Message");
+          itemId: vals["id"][0].toString(),
+          itemName: "Message",
+          itemCategory: "Message");
 
-      return new ShowMessageScreen(messageUid: vals["id"][0]);
+      return new ShowMessageScreen(messageUid: vals["id"][0].toString());
     }));
     router.define("/AddMessageTeam/:team",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddMessageScreen(teamUid: vals["team"])));
+                new AddMessageScreen(teamUid: vals["team"].toString())));
     router.define("/AddMessagePlayer/:team/:season/:player",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AddMessageScreen(
-                  teamUid: vals["team"],
-                  seasonUid: vals["season"],
-                  playerUid: vals["player"],
+                  teamUid: vals["team"].toString(),
+                  seasonUid: vals["season"].toString(),
+                  playerUid: vals["player"].toString(),
                 )));
     return router;
   }

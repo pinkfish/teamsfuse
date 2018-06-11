@@ -12,15 +12,21 @@ class GameDetailsScreen extends StatefulWidget {
 
   @override
   GameDetailsScreenState createState() {
-    return new GameDetailsScreenState(gameUid);
+    return new GameDetailsScreenState();
   }
 }
 
 class GameDetailsScreenState extends State<GameDetailsScreen> {
-  final String gameUid;
   Game game;
   int _tabIndex = 0;
   ScrollController _scrollController = new ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    game = UserDatabaseData.instance.gamesCache[widget.gameUid];
+  }
+
 
   void _select(String choice) async {
     // Causes the app to rebuild with the new _selectedChoice.
@@ -34,17 +40,13 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     }
   }
 
-  GameDetailsScreenState(this.gameUid) {
-    game = UserDatabaseData.instance.gamesCache[gameUid];
-  }
-
   @override
   void dispose() {
     super.dispose();
   }
 
   void _editGame() {
-    Navigator.pushNamed(context, "EditGame/" + gameUid);
+    Navigator.pushNamed(context, "EditGame/" + widget.gameUid);
   }
 
   @override
@@ -52,7 +54,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     Widget body;
     Team team = UserDatabaseData.instance.teams[game.teamUid];
     Opponent opponent = team.opponents[game.opponentUid];
-    List<Widget> actions = new List<Widget>();
+    List<Widget> actions = <Widget>[];
 
     if (_tabIndex == 0) {
       body = new GameDetails(game);
@@ -65,7 +67,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
         new PopupMenuButton<String>(
           onSelected: _select,
           itemBuilder: (BuildContext context) {
-            return [
+            return <PopupMenuItem<String>>[
               new PopupMenuItem<String>(
                 value: "delete",
                 child: new Text(Messages.of(context).deletegame(game)),
@@ -94,7 +96,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
           });
         },
         currentIndex: _tabIndex,
-        items: [
+        items: <BottomNavigationBarItem>[
           new BottomNavigationBarItem(
             icon: const Icon(Icons.gamepad),
             title: new Text(Messages.of(context).gamedetails),
@@ -106,7 +108,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
         ],
       ),
       floatingActionButton: new FloatingActionButton(
-        onPressed: this._editGame,
+        onPressed: _editGame,
         child: new Icon(Icons.edit),
         //backgroundColor: Colors.orange,
       ),

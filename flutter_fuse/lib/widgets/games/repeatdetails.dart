@@ -9,8 +9,8 @@ class RepeatData {
   RepeatPeriod period;
   num repeatInterval = 1;
   bool repeatUntil = false;
-  TZDateTime endRepeat;
-  List<bool> dayRepeats = [false, false, false, false, false, false, false];
+  DateTime endRepeat;
+  List<bool> dayRepeats = <bool>[false, false, false, false, false, false, false];
 }
 
 class RepeatDetailsWidget extends StatefulWidget {
@@ -32,6 +32,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
   bool autoValidate = false;
   GlobalKey<FormState> _formState = new GlobalKey<FormState>();
 
+  @override
   void initState() {
     widget.repeat.dayRepeats[widget.startTime.weekday - 1] = true;
     widget.repeat.endRepeat = widget.startTime.add(const Duration(days: 7));
@@ -50,7 +51,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
   //// List of date times that are based around the start point
   //// given the current repeat stuff.
   List<TZDateTime> repeatTimes(final TZDateTime start) {
-    List<TZDateTime> newDates = [];
+    List<TZDateTime> newDates = <TZDateTime>[];
     // Normalize to 0.
     TZDateTime startOfWeek = start.subtract(new Duration(days: start.weekday));
     if (widget.repeat.period != RepeatPeriod.None) {
@@ -62,7 +63,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
             newDates.add(new TZDateTime(start.location, start.year,
                 start.month + i, start.day, start.hour, start.minute));
           } else {
-            DateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
+            TZDateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
             for (int dayNum = 0;
                 dayNum < widget.repeat.dayRepeats.length;
                 dayNum++) {
@@ -75,7 +76,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
       } else {
         int i = 0;
         TZDateTime end = new TZDateTime(
-                widget.repeat.endRepeat.location,
+                start.location,
                 widget.repeat.endRepeat.year,
                 widget.repeat.endRepeat.month,
                 widget.repeat.endRepeat.day)
@@ -103,7 +104,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
 
   List<DropdownMenuItem<RepeatPeriod>> _buildRepeatIntervalItems(
       BuildContext context) {
-    List<DropdownMenuItem<RepeatPeriod>> ret = [];
+    List<DropdownMenuItem<RepeatPeriod>> ret = <DropdownMenuItem<RepeatPeriod>>[];
     ret.add(new DropdownMenuItem<RepeatPeriod>(
       child: new Text(Messages.of(context).noneperiod),
       value: RepeatPeriod.None,
@@ -124,7 +125,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
 
   List<Widget> _buildItems() {
     Messages messages = Messages.of(context);
-    List<Widget> ret = [];
+    List<Widget> ret = <Widget>[];
     ret.add(
       new DropdownButton<RepeatPeriod>(
         hint: new Text(messages.repeat),
@@ -148,13 +149,13 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
             new DropdownButton<bool>(
               value: widget.repeat.repeatUntil,
               items: <DropdownMenuItem<bool>>[
-                new DropdownMenuItem(
+                new DropdownMenuItem<bool>(
                   child: new Text(
                     messages.repeat,
                   ),
                   value: true,
                 ),
-                new DropdownMenuItem(
+                new DropdownMenuItem<bool>(
                   child: new Text(
                     messages.until,
                   ),
@@ -191,7 +192,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
         ));
         List<String> days = MaterialLocalizations.of(context).narrowWeekdays;
         int first = MaterialLocalizations.of(context).firstDayOfWeekIndex;
-        List<Widget> daysWidgets = [];
+        List<Widget> daysWidgets = <Widget>[];
         print("$days");
         daysWidgets.add(const Icon(Icons.calendar_today));
         for (int i = first; i < first + days.length; i++) {

@@ -14,7 +14,7 @@ class EditGameScreen extends StatefulWidget {
 
   @override
   EditGameScreenState createState() {
-    return new EditGameScreenState(this.gameuid);
+    return new EditGameScreenState();
   }
 }
 
@@ -28,7 +28,7 @@ class EditGameScreenState extends State<EditGameScreen> {
       new GlobalKey<EventEditFormState>();
   bool _saving = false;
 
-  EditGameScreenState(String gameUid);
+  EditGameScreenState();
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
@@ -88,7 +88,6 @@ class EditGameScreenState extends State<EditGameScreen> {
       key: _scaffoldKey,
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
-        actions: <Widget>[],
       ),
       body: new Container(
         padding: new EdgeInsets.all(16.0),

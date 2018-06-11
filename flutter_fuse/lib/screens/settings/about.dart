@@ -3,6 +3,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 
 class AboutScreen extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
 

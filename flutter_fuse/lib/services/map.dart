@@ -16,20 +16,25 @@ class LocationAndPlace {
             placeid: place.placeId,
             location: new PlaceLatLong(
                 latitude: place.latitude, longitude: place.longitude)),
-        loc = Future.value(getLocation(tz));
+        loc = Future<Location>.value(getLocation(tz));
 
   PlaceDetails details;
   Future<Location> loc;
 }
 
 class MapData {
-  static const String APIKEY = "AIzaSyC0nzXvh-NqEV5c1Qoa-DCUY6iVXG0HcGQ";
-  static const String IOS_APIKEY = "AIzaSyBVJ6DGEqQv4lRicySx0siZTCk-9lXY6lY";
-  static const String URL_AUTH = "maps.googleapis.com";
-  static const String URL_PATH = "/maps/api/timezone/json";
+  static const String apiKey = "AIzaSyC0nzXvh-NqEV5c1Qoa-DCUY6iVXG0HcGQ";
+  static const String iosApiKey = "AIzaSyBVJ6DGEqQv4lRicySx0siZTCk-9lXY6lY";
+  static const String urlAuth = "maps.googleapis.com";
+  static const String urlPath = "/maps/api/timezone/json";
 
   static MapData _instance;
   StaticMapProvider _providerData;
+
+  MapData() {
+    _providerData = new StaticMapProvider(apiKey);
+    FlutterPlacesDialog.setGoogleApiKey(iosApiKey);
+  }
 
   static MapData get instance {
     if (_instance == null) {
@@ -42,18 +47,14 @@ class MapData {
     return _providerData;
   }
 
-  MapData() {
-     _providerData = new StaticMapProvider(APIKEY);
-     FlutterPlacesDialog.setGoogleApiKey(IOS_APIKEY);
-  }
 
   Future<Location> getTimezoneFromLocation(PlaceLatLong loc, num ms) async {
-    Map<String, String> query = {
+    Map<String, String> query = <String, String>{
       'location': loc.latitude.toString() + "," + loc.longitude.toString(),
       'timestamp': ms.toString(),
-      'key': APIKEY
+      'key': apiKey
     };
-    Uri uri = new Uri.https(URL_AUTH, URL_PATH, query);
+    Uri uri = new Uri.https(urlAuth, urlPath, query);
     HttpClient httpClient = new HttpClient();
     HttpClientRequest request = await httpClient.getUrl(uri);
     HttpClientResponse response = await request.close();
@@ -62,7 +63,7 @@ class MapData {
       String responseBody = await response.transform(utf8.decoder).join();
       Map<String, dynamic> data = json.decode(responseBody);
       print("ResponseBody $data");
-      return getLocation(data['timeZoneId']);
+      return getLocation(data['timeZoneId'].toString());
     } else {
       print(await response.transform(utf8.decoder).join());
     }

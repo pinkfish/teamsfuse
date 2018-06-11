@@ -11,7 +11,6 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  BuildContext context;
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   ScrollController scrollController = new ScrollController();
@@ -19,7 +18,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Validations validations = new Validations();
   String email = '';
 
-  onPressed(String routeName) {
+  void onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
   }
 
@@ -38,7 +37,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       UserAuth.instance.sendPasswordResetEmail(email).then((void nothing) {
         // Show a dialog saying we sent the email.
         Navigator.pushNamed(context, "/Login/Home");
-      }).catchError((error) {
+      }).catchError((Error error) {
         showInSnackBar(error.toString());
       });
     }
@@ -46,7 +45,6 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    this.context = context;
     final Size screenSize = MediaQuery.of(context).size;
     return new Scaffold(
         key: _scaffoldKey,

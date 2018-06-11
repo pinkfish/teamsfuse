@@ -10,6 +10,7 @@ class TeamPicker extends StatefulWidget {
 
   TeamPicker({ @required this.onChanged,this.teamUid});
 
+  @override
   TeamPickerState createState() {
     return new TeamPickerState();
   }
@@ -26,16 +27,17 @@ class TeamPickerState extends State<TeamPicker> {
     _teamStream = null;
   }
 
+  @override
   void initState() {
-    _teamStream = UserDatabaseData.instance.teamStream.listen((update) {
+    _teamStream = UserDatabaseData.instance.teamStream.listen((UpdateReason update) {
       setState(() {});
     });
     super.initState();
   }
 
   List<DropdownMenuItem<String>> _buildItems() {
-    List<DropdownMenuItem<String>> ret = [];
-    UserDatabaseData.instance.teams.forEach((key, team) {
+    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    UserDatabaseData.instance.teams.forEach((String key, Team team) {
       ret.add(new DropdownMenuItem<String>(
         child: new Text(team.name),
         value: team.uid,
@@ -61,7 +63,7 @@ class TeamPickerState extends State<TeamPicker> {
               items: _buildItems(),
               value: widget.teamUid,
               onChanged: (String val) {
-                this.widget.onChanged(val);
+                widget.onChanged(val);
                 return val;
               },
             ),

@@ -22,12 +22,12 @@ class FusedDrawerHeaderState extends State<FusedDrawerHeader> {
     print('initState');
     UserAuth.instance.currentUser().then((UserData data) {
       setState(() {
-        this.user = data;
+        user = data;
       });
     });
     streamListen = UserAuth.instance.onAuthChanged().listen((UserData data) {
       setState(() {
-        this.user = data;
+        user = data;
       });
     });
   }

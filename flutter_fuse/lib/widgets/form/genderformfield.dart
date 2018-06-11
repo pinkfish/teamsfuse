@@ -2,22 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
-class GenderFormField extends FormField<String> {
+class GenderFormField extends FormField<Gender> {
   GenderFormField({
+    @required Gender initialValue,
     Key key,
-    String initialValue,
     InputDecoration decoration: const InputDecoration(),
-    ValueChanged<String> onFieldSubmitted,
-    FormFieldSetter<String> onSaved,
-    FormFieldValidator<String> validator,
-  })
-      : assert(initialValue != null),
+    ValueChanged<Gender> onFieldSubmitted,
+    FormFieldSetter<Gender> onSaved,
+    FormFieldValidator<Gender> validator,
+  })  : assert(initialValue != null),
         super(
           key: key,
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,
-          builder: (FormFieldState<String> field) {
+          builder: (FormFieldState<Gender> field) {
             final GenderFormFieldState state = field;
 
             final InputDecoration effectiveDecoration = (decoration ??
@@ -26,11 +25,11 @@ class GenderFormField extends FormField<String> {
             return new InputDecorator(
               decoration:
                   effectiveDecoration.copyWith(errorText: field.errorText),
-              child: new DropdownButton(
+              child: new DropdownButton<Gender>(
                 hint: new Text(Messages.of(state.context).genderselect),
                 items: state._buildItems(state.context),
                 value: state.value,
-                onChanged: (dynamic val) {
+                onChanged: (Gender val) {
                   state.updateValue(val);
                   field.didChange(val);
                   if (onFieldSubmitted != null) {
@@ -46,34 +45,37 @@ class GenderFormField extends FormField<String> {
   GenderFormFieldState createState() => new GenderFormFieldState();
 }
 
-class GenderFormFieldState extends FormFieldState<String> {
+class GenderFormFieldState extends FormFieldState<Gender> {
   @override
-  GenderFormField get widget => super.widget;
+  GenderFormField get widget {
+    GenderFormField field = super.widget;
+    return field;
+  }
 
-  void updateValue(String str) {
+  void updateValue(Gender str) {
     setValue(str);
   }
 
-  List<DropdownMenuItem> _buildItems(BuildContext context) {
-    List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
-    ret.add(new DropdownMenuItem(
+  List<DropdownMenuItem<Gender>> _buildItems(BuildContext context) {
+    List<DropdownMenuItem<Gender>> ret = <DropdownMenuItem<Gender>>[];
+    ret.add(new DropdownMenuItem<Gender>(
       child: new Text(Messages.of(context).genderfemale),
-      value: Gender.Female.toString(),
+      value: Gender.Female,
     ));
 
-    ret.add(new DropdownMenuItem(
+    ret.add(new DropdownMenuItem<Gender>(
       child: new Text(Messages.of(context).gendermale),
-      value: Gender.Male.toString(),
+      value: Gender.Male,
     ));
 
-    ret.add(new DropdownMenuItem(
+    ret.add(new DropdownMenuItem<Gender>(
       child: new Text(Messages.of(context).gendercoed),
-      value: Gender.Coed.toString(),
+      value: Gender.Coed,
     ));
 
-    ret.add(new DropdownMenuItem(
+    ret.add(new DropdownMenuItem<Gender>(
       child: new Text(Messages.of(context).genderna),
-      value: Gender.NA.toString(),
+      value: Gender.NA,
     ));
 
     return ret;

@@ -24,6 +24,7 @@ class GameEditForm extends StatefulWidget {
 
   final Game game;
 
+  @override
   GameEditFormState createState() {
     return new GameEditFormState();
   }
@@ -43,12 +44,13 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   FocusNode _focusNodeNotes = new FocusNode();
   FocusNode _focusNodePlaceNotes = new FocusNode();
   FocusNode _focusNodeUniform = new FocusNode();
-  TZDateTime _atDate;
-  TZDateTime _atArrival;
-  TZDateTime _atEnd;
+  DateTime _atDate;
+  DateTime _atArrival;
+  DateTime _atEnd;
 
   GameEditFormState();
 
+  @override
   void save() {
     _formKey.currentState.save();
   }
@@ -61,6 +63,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
     _atEnd = widget.game.tzEndTime;
   }
 
+  @override
   bool validate() {
     if (_formKey.currentState == null) {
       return false;
@@ -68,6 +71,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
     return _formKey.currentState.validate();
   }
 
+  @override
   Game get finalGameResult {
     if (!_formKey.currentState.validate()) {
       autovalidate = true;
@@ -118,7 +122,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
     String save =
         await Navigator.of(context).push(new MaterialPageRoute<String>(
               builder: (BuildContext context) {
-                return new AddOpponent(this.widget.game.teamUid);
+                return new AddOpponent(widget.game.teamUid);
               },
               fullscreenDialog: true,
             ));
@@ -134,7 +138,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
         !UserDatabaseData.instance.teams.containsKey(widget.game.teamUid)) {
       return new Text('Invalid state');
     }
-    List<Widget> firstRow = [];
+    List<Widget> firstRow = <Widget>[];
     firstRow.add(new Expanded(
       flex: 1,
       child: new SeasonFormField(
@@ -201,7 +205,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   onSaved: (DateTime value) {
                     _atDate = value;
                   },
-                  onFieldChanged: this._changeAtTime,
+                  onFieldChanged: _changeAtTime,
                 ),
                 new Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

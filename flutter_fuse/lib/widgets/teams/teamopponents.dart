@@ -62,13 +62,13 @@ class TeamOpponentsState extends State<TeamOpponents> {
     }
   }
 
-  List<DropdownMenuItem> _buildItems(BuildContext context) {
-    List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
+  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     if (widget._teamUid != null &&
         UserDatabaseData.instance.teams.containsKey(widget._teamUid)) {
       UserDatabaseData.instance.teams[widget._teamUid].seasons
-          .forEach((key, season) {
-        ret.add(new DropdownMenuItem(
+          .forEach((String key, Season season) {
+        ret.add(new DropdownMenuItem<String>(
             child: new Text(season.name), value: season.uid));
       });
     }
@@ -117,7 +117,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
   }
 
   List<Widget> _buildOpponents() {
-    List<Widget> ret = new List<Widget>();
+    List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
 
     ret.add(
@@ -157,7 +157,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
           ),
           initiallyExpanded: false,
           children: <Widget>[
-            new FutureBuilder(
+            new FutureBuilder<Iterable<Game>>(
                 future: op.getGames(),
                 builder: (BuildContext context,
                     AsyncSnapshot<Iterable<Game>> games) {
@@ -182,7 +182,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
                       ],
                     );
                   } else {
-                    List<Widget> newData = new List<Widget>();
+                    List<Widget> newData = <Widget>[];
                     games.data.forEach((Game game) {
                       if (game.type == EventType.Game &&
                           game.seasonUid == _seasonUid &&
@@ -221,7 +221,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
           title: new Text(op.name),
           initiallyExpanded: false,
           children: <Widget>[
-            new FutureBuilder(
+            new FutureBuilder<Iterable<Game>>(
                 future: op.getGames(),
                 builder: (BuildContext context,
                     AsyncSnapshot<Iterable<Game>> games) {
@@ -246,7 +246,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
                       ],
                     );
                   } else {
-                    List<Widget> newData = new List<Widget>();
+                    List<Widget> newData = <Widget>[];
                     for (Game game in games.data) {
                       if (game.type == EventType.Game &&
                           game.opponentUid == uid) {
@@ -281,11 +281,11 @@ class TeamOpponentsState extends State<TeamOpponents> {
       children: <Widget>[
         new Row(
           children: <Widget>[
-            new DropdownButton(
+            new DropdownButton<String>(
               hint: new Text(messsages.seasonselect),
               value: _seasonUid,
               items: _buildItems(context),
-              onChanged: (dynamic val) {
+              onChanged: (String val) {
                 print('changed $val');
                 setState(() {
                   _seasonUid = val;

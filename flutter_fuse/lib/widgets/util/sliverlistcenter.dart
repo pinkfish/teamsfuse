@@ -19,10 +19,16 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
   CenterSliverMultiBoxAdaptorElement(SliverListCenter widget) : super(widget);
 
   @override
-  SliverListCenter get widget => super.widget;
+  SliverListCenter get widget {
+    SliverListCenter bing = super.widget;
+    return bing;
+  }
 
   @override
-  RenderSliverMultiBoxAdaptor get renderObject => super.renderObject;
+  RenderSliverMultiBoxAdaptor get renderObject {
+    RenderSliverMultiBoxAdaptor frog = super.renderObject;
+    return frog;
+  }
 
   @override
   void update(covariant SliverListCenter newWidget) {
@@ -32,7 +38,9 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
     final SliverChildDelegate oldDelegate = oldWidget.delegate;
     if (newDelegate != oldDelegate &&
         (newDelegate.runtimeType != oldDelegate.runtimeType ||
-            newDelegate.shouldRebuild(oldDelegate))) performRebuild();
+            newDelegate.shouldRebuild(oldDelegate))) {
+      performRebuild();
+    }
   }
 
   // We inflate widgets at two different times:
@@ -68,7 +76,8 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
             updateChild(_childElementsMe[index], _build(index), index);
         if (newChild != null) {
           _childElementsMe[index] = newChild;
-          _currentBeforeChildMe = newChild.renderObject;
+          RenderBox box = newChild.renderObject;
+          _currentBeforeChildMe = box;
         } else {
           _childElementsMe.remove(index);
         }
@@ -89,8 +98,9 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
     owner.buildScope(this, () {
       final bool insertFirst = after == null;
       assert(insertFirst || _childElementsMe[index - 1] != null);
-      _currentBeforeChildMe =
+      RenderBox box =
           insertFirst ? null : _childElementsMe[index - 1].renderObject;
+      _currentBeforeChildMe = box;
       Element newChild;
       try {
         _currentlyUpdatingChildIndex = index;
@@ -141,8 +151,12 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
     double trailingScrollOffset,
   ) {
     final int childCount = this.childCount;
-    if (childCount == null) return double.infinity;
-    if (lastIndex == childCount - 1) return trailingScrollOffset;
+    if (childCount == null) {
+      return double.infinity;
+    }
+    if (lastIndex == childCount - 1) {
+      return trailingScrollOffset;
+    }
     final int reifiedCount = lastIndex - firstIndex + 1;
     final double averageExtent =
         (trailingScrollOffset - leadingScrollOffset) / reifiedCount;
@@ -217,7 +231,8 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
     print('$_currentlyUpdatingChildIndex $slot');
     assert(_currentlyUpdatingChildIndex == slot);
     assert(renderObject.debugValidateChild(child));
-    renderObject.insert(child, after: _currentBeforeChildMe);
+    RenderBox box = child;
+    renderObject.insert(box, after: _currentBeforeChildMe);
     assert(() {
       final SliverMultiBoxAdaptorParentData childParentData = child.parentData;
       assert(slot == childParentData.index);
@@ -235,7 +250,8 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
   @override
   void removeChildRenderObject(covariant RenderObject child) {
     assert(_currentlyUpdatingChildIndex != null);
-    renderObject.remove(child);
+    RenderBox box = child;
+    renderObject.remove(box);
   }
 
   @override
@@ -436,9 +452,13 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
       // returns true if we advanced, false if we have no more children
       // This function is used in two different places below, to avoid code duplication.
       assert(child != null);
-      if (child == trailingChildWithLayout) inLayoutRange = false;
+      if (child == trailingChildWithLayout) {
+        inLayoutRange = false;
+      }
       child = childAfter(child);
-      if (child == null) inLayoutRange = false;
+      if(child == null) {
+        inLayoutRange = false;
+      }
       index += 1;
       if (!inLayoutRange) {
         if (child == null || indexOf(child) != index) {
@@ -558,10 +578,11 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
 class SliverListCenter extends RenderObjectWidget {
   /// Creates a sliver that places box children in a linear array.
   const SliverListCenter({
+    @required this.delegate,
     Key key,
-    @required SliverChildDelegate delegate,
     this.startIndex = 0
-  })  : this.delegate = delegate,
+
+  })  :
         super(key: key);
 
   final num startIndex;

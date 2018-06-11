@@ -5,9 +5,9 @@ import 'package:flutter_fuse/services/messages.dart';
 
 class OpponentFormField extends FormField<String> {
   OpponentFormField({
+    @required String teamUid,
     Key key,
     String initialValue: '',
-    String teamUid,
     InputDecoration decoration: const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
@@ -30,12 +30,12 @@ class OpponentFormField extends FormField<String> {
               decoration: effectiveDecoration.copyWith(
                 errorText: field.errorText,
               ),
-              child: new DropdownButton(
+              child: new DropdownButton<String>(
                 hint: new Text(Messages.of(state.context).opponentselect,
                     overflow: TextOverflow.clip),
                 items: state._buildItems(state.context),
                 value: state.value,
-                onChanged: (dynamic val) {
+                onChanged: (String val) {
                   state.updateValue(val);
                   field.didChange(val);
                   if (onFieldSubmitted != null) {
@@ -52,9 +52,6 @@ class OpponentFormField extends FormField<String> {
 }
 
 class OpponentFormFieldState extends FormFieldState<String> {
-  @override
-  OpponentFormField get widget => super.widget;
-
   String teamUid;
   StreamSubscription<UpdateReason> teamSubscription;
 
@@ -84,9 +81,9 @@ class OpponentFormFieldState extends FormFieldState<String> {
     }
   }
 
-  List<DropdownMenuItem> _buildItems(BuildContext context) {
-    List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
-    ret.add(new DropdownMenuItem(
+  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    ret.add(new DropdownMenuItem<String>(
       child: new Text(
         Messages.of(context).opponentselect,
         overflow: TextOverflow.clip,
@@ -95,7 +92,7 @@ class OpponentFormFieldState extends FormFieldState<String> {
     ));
 
     ret.add(
-      new DropdownMenuItem(
+      new DropdownMenuItem<String>(
           child: new Text(Messages.of(context).addopponent,
               overflow: TextOverflow.clip),
           value: 'add'),
@@ -111,7 +108,7 @@ class OpponentFormFieldState extends FormFieldState<String> {
       for (String opponentUid in uids) {
         Opponent opponent = team.opponents[opponentUid];
         if (opponent.name != null) {
-          ret.add(new DropdownMenuItem(
+          ret.add(new DropdownMenuItem<String>(
               child: new Text(opponent.name, overflow: TextOverflow.clip),
               value: opponent.uid));
         }

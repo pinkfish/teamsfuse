@@ -14,7 +14,6 @@ class SignupScreen extends StatefulWidget {
 }
 
 class SignupScreenState extends State<SignupScreen> {
-  BuildContext context;
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormFieldState<String>> _passwordFieldKey =
@@ -66,7 +65,7 @@ class SignupScreenState extends State<SignupScreen> {
                   phoneNumber: phoneNumber,
                   email: email))
           .then((UserData data) async {
-        await showDialog(
+        await showDialog<bool>(
           context: context,
           builder: (BuildContext context) => new AlertDialog(
                 content: new Text(Messages.of(context).createdaccount),
@@ -97,7 +96,6 @@ class SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    this.context = context;
     final Size screenSize = MediaQuery.of(context).size;
     //print(context.widget.toString());
     Validations validations = new Validations();

@@ -68,6 +68,4 @@ class SwitchFormField extends FormField<bool> {
 }
 
 class _SwitchFormFieldState extends FormFieldState<bool> {
-  @override
-  SwitchFormField get widget => super.widget;
 }

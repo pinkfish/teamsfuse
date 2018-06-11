@@ -57,7 +57,7 @@ class _ChangeScoreState extends State<_ChangeScore> {
   }
 
   List<Widget> _buildScores() {
-    List<Widget> ret = [];
+    List<Widget> ret = <Widget>[];
     for (GameResultPerPeriod result in widget._details.scores.values) {
       ret.add(new Text(
         Messages.of(context).periodname(result.period),

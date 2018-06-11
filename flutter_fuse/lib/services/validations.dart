@@ -3,26 +3,40 @@ import 'messages.dart';
 
 class Validations {
   String validateName(BuildContext context, String value) {
-    if (value.isEmpty) return Messages.of(context).namerequired;
+    if (value.isEmpty) {
+      return Messages.of(context).namerequired;
+    }
     final RegExp nameExp = new RegExp(r'^[A-za-z ]+$');
-    if (!nameExp.hasMatch(value)) return Messages.of(context).invalidname;
+    if (!nameExp.hasMatch(value)) {
+      return Messages
+          .of(context)
+          .invalidname;
+    }
     return null;
   }
 
   String validateDisplayName(BuildContext context, String value) {
-    if (value.isEmpty) return Messages.of(context).namerequired;
+    if (value.isEmpty) {
+      return Messages.of(context).namerequired;
+    }
     return null;
   }
 
   String validateEmail(BuildContext context, String value) {
-    if (value.isEmpty) return Messages.of(context).emailrequired;
+    if (value.isEmpty) {
+      return Messages.of(context).emailrequired;
+    }
     final RegExp nameExp = new RegExp(r'^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$');
-    if (!nameExp.hasMatch(value)) return Messages.of(context).invalidemail;
+    if (!nameExp.hasMatch(value)) {
+      return Messages.of(context).invalidemail;
+    }
     return null;
   }
 
   String validatePassword(BuildContext context, String value) {
-    if (value.isEmpty) return Messages.of(context).emptypassword;
+    if (value.isEmpty) {
+      return Messages.of(context).emptypassword;
+    }
     return null;
   }
 
@@ -41,7 +55,9 @@ class Validations {
   }
 
   String validateSeason(BuildContext context, String value) {
-    if (value.isEmpty) return Messages.of(context).seasonrequired;
+    if (value.isEmpty) {
+      return Messages.of(context).seasonrequired;
+    }
     return null;
   }
 
@@ -51,7 +67,6 @@ class Validations {
     }
     return null;
   }
-
 
   String validateGender(BuildContext context, String value) {
     if (value == 'none') {

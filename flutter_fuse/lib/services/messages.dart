@@ -24,6 +24,10 @@ class Messages {
 
   Random randomNum = Random.secure();
 
+  String get deleteadmin {
+    return Intl.message("Delete Admin");
+  }
+
   String get title {
     return Intl.message(
       'Team Fuse',
@@ -680,6 +684,11 @@ class Messages {
         name: 'Loading message', desc: 'Message for loading the app');
   }
 
+  String get addadmin {
+    return Intl.message('Add Admin',
+        desc: 'Message to show as the title for the admin adding screen');
+  }
+
   String opponentseason(Opponent opponent, String seasonName) {
     return Intl.message("${opponent.name} - $seasonName",
         name: "Shows the opponent and season");
@@ -752,6 +761,10 @@ class Messages {
   String get deleteinvite {
     return Intl.message('Delete invite',
         name: 'Title for the dialog to delete an invite');
+  }
+
+  String get deleteadmininvite {
+    return Intl.message('Delete admin invite');
   }
 
   String get gamecreate {
@@ -952,15 +965,20 @@ class Messages {
   String periodstart(GameLog period) {
     switch (period.period.type) {
       case GamePeriodType.Regulation:
-        return Intl.message("Start period ${period.period.periodNumber} Score:  ${period.score.ptsFor} - ${period.score.ptsAgainst}");
+        return Intl.message(
+            "Start period ${period.period.periodNumber} Score:  ${period.score.ptsFor} - ${period.score.ptsAgainst}");
       case GamePeriodType.OvertimeBreak:
-        return Intl.message("Start overtime period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
+        return Intl.message(
+            "Start overtime period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
       case GamePeriodType.Break:
-        return Intl.message("Start period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
+        return Intl.message(
+            "Start period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
       case GamePeriodType.Overtime:
-        return Intl.message("Start overtime Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
+        return Intl.message(
+            "Start overtime Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
       case GamePeriodType.Penalty:
-        return Intl.message("Start penalty Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
+        return Intl.message(
+            "Start penalty Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}");
     }
     return unknown;
   }
@@ -982,7 +1000,8 @@ class Messages {
   }
 
   String fixscore(GameLog log) {
-return Intl.message("Fix score: ${log.score.ptsFor} - ${log.score.ptsAgainst}");
+    return Intl
+        .message("Fix score: ${log.score.ptsFor} - ${log.score.ptsAgainst}");
   }
 
   String periodname(GamePeriod period) {
