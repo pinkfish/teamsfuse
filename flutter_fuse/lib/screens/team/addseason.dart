@@ -52,8 +52,6 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
         season.players = <SeasonPlayer>[
           new SeasonPlayer(
               playerUid: UserDatabaseData.instance.mePlayer.uid,
-              displayName: UserDatabaseData.instance.mePlayer.name,
-              photoUrl: UserDatabaseData.instance.mePlayer.photoUrl,
               role: RoleInTeam.NonPlayer)
         ];
       }

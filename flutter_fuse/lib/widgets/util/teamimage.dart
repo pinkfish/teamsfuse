@@ -40,18 +40,4 @@ class TeamImage extends Image {
     }
     return const AssetImage("assets/images/defaultavatar.png");
   }
-
-  static Widget getPlaceholderImage(String teamUid, Color color, BlendMode colorBlendMode) {
-     Widget placeholder;
-
-    if (UserDatabaseData.instance.teams.containsKey(teamUid)) {
-      Team team = UserDatabaseData.instance.teams[teamUid];
-      placeholder =
-        new Image(image: new AssetImage('assets/sports/' + team.sport.toString() + '.png'), color: color, colorBlendMode: colorBlendMode);
-      } else {
-      placeholder =  new Image(image: const AssetImage('assets/images/defaultavatar.png'), color: color, colorBlendMode: colorBlendMode);
-    }
-
-    return placeholder;
-  }
 }

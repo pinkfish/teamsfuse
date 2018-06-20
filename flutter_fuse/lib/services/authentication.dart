@@ -32,7 +32,6 @@ class UserData {
     return _email;
   }
 
-
   @override
   String toString() {
     return "UserData [$email $uid $profile]";
@@ -192,7 +191,8 @@ class UserAuth {
         .get();
     print("Found $userId ${ref.data}");
     if (ref.exists) {
-      FusedUserProfile profile = new FusedUserProfile.fromJSON(ref.data);
+      FusedUserProfile profile =
+          new FusedUserProfile.fromJSON(ref.documentID, ref.data);
       return profile;
     }
     return null;
@@ -201,9 +201,10 @@ class UserAuth {
   void _onProfileUpdates(DocumentSnapshot doc) {
     if (doc.exists) {
       SqlData.instance
-          .updateElement(SqlData.profileTable, doc.documentID, doc.data);
-      FusedUserProfile profile = new FusedUserProfile.fromJSON(doc.data);
-       _currentUser.profile = profile;
+          .updateElement(PersistenData.profileTable, doc.documentID, doc.data);
+      FusedUserProfile profile =
+          new FusedUserProfile.fromJSON(doc.documentID, doc.data);
+      _currentUser.profile = profile;
       _controller.add(_currentUser);
     }
   }
@@ -213,8 +214,8 @@ class UserAuth {
     // Read from sql for the profile details first, assume the snap
     // shot listener will catch the actual firebase stuff when
     // it exists.
-    Map<String, dynamic> data =
-        await SqlData.instance.getElement(SqlData.profileTable, input.uid);
+    Map<String, dynamic> data = await SqlData.instance
+        .getElement(PersistenData.profileTable, input.uid);
     UserData user = new UserData();
     user.email = input.email;
     user.uid = input.uid;
@@ -232,15 +233,16 @@ class UserAuth {
         // Update when ready.
         ref.then((DocumentSnapshot doc) {
           print('Loaded from firestore');
-          FusedUserProfile profile = new FusedUserProfile.fromJSON(doc.data);
+          FusedUserProfile profile =
+              new FusedUserProfile.fromJSON(doc.documentID, doc.data);
           user.profile = profile;
           SqlData.instance
-              .updateElement(SqlData.profileTable, doc.documentID, data);
+              .updateElement(PersistenData.profileTable, doc.documentID, data);
         });
       }
     }
     if (data != null) {
-      FusedUserProfile profile = new FusedUserProfile.fromJSON(data);
+      FusedUserProfile profile = new FusedUserProfile.fromJSON(input.uid, data);
       user.profile = profile;
     }
     _currentUser = user;

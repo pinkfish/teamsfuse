@@ -62,7 +62,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
       body = new Availaility(game);
     }
 
-    if (team.isAdmin(UserDatabaseData.instance.players)) {
+    if (team.isAdmin()) {
       actions.add(
         new PopupMenuButton<String>(
           onSelected: _select,

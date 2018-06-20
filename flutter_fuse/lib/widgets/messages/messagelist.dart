@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'dart:async';
 
@@ -65,8 +66,8 @@ class MessageListState extends State<MessageList> {
             child: new Container(
               margin: new EdgeInsets.only(top: 3.0),
               alignment: AlignmentDirectional.centerStart,
-              child: new Text(
-                mess.fromName,
+              child: new PlayerName(
+                playerUid: mess.fromUid,
                 style: mess.recipients[_myUid].state == MessageState.Unread
                     ? theme.textTheme.subhead
                         .copyWith(fontWeight: FontWeight.bold)

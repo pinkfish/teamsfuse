@@ -139,6 +139,48 @@ class Messages {
     );
   }
 
+  String teamnumbers(int num) {
+    return Intl.message("{num} club teams", desc: 'How many teams in the club');
+  }
+
+  String get clubdetails {
+    return Intl.message('Details');
+  }
+
+  String get members {
+    return Intl.message('Members');
+  }
+
+  String get teams {
+    return Intl.message('Teams');
+  }
+
+  String trackattendence(bool attend) {
+    if (attend == null) {
+      return Intl.message('Team set attendence');
+    }
+    if (attend) {
+      return Intl.message('Track attendence');
+    }
+    return Intl.message('Don\'t track attendence');
+  }
+
+  String get deletemember {
+    return Intl.message('Delete member');
+  }
+
+  String confirmdeletemember(FusedUserProfile profile) {
+    return Intl.message('Delete club member ${profile.displayName}?');
+  }
+
+  String get administrator {
+    return Intl.message('Adminstrator');
+  }
+
+  String get needtobeadmin {
+    return Intl.message('Need to be an administrator');
+  }
+
   String get editgame {
     return Intl.message(
       'Edit Game',
@@ -775,14 +817,26 @@ class Messages {
     if (invite is InviteToTeam) {
       InviteToTeam inviteTeam = invite;
       return Intl.message(
-          'Do you want to delete the invite to ${inviteTeam.teamName} for ${inviteTeam.playerName}',
+          'Do you want to delete the invite to ${inviteTeam.teamName} for ${inviteTeam.playerName}?',
           name: 'Text to delete the invite to the team in the alert dialog.');
     }
     if (invite is InviteToPlayer) {
       InviteToPlayer invitePlayer = invite;
       return Intl.message(
-          'Do you want to delete the invite to follow ${invitePlayer.playerName}',
+          'Do you want to delete the invite to follow ${invitePlayer.playerName}?',
           name: 'Text to delete the invite to the team in the alert dialog.');
+    }
+    if (invite is InviteAsAdmin) {
+      InviteAsAdmin inviteAdmin = invite;
+      return Intl.message(
+          'Do you want to delete the invite to be admin for the team ${inviteAdmin.teamName}?',
+          name: 'Text to delete the invite to be an admin in the alert dialog.');
+    }
+    if (invite is InviteToClub) {
+      InviteToClub inviteClub = invite;
+      return Intl.message(
+          'Do you want to delete the invite to be in the club ${inviteClub.clubName}?',
+          name: 'Text to delete the invite to the club in the alert dialog.');
     }
     return unknown;
   }
@@ -1201,6 +1255,16 @@ class Messages {
   String get invite {
     return Intl.message('Invites',
         desc: 'Title for the screen with the list of current invites');
+  }
+
+  String pendinginvites(int num) {
+    return Intl.message('Pending Invites: $num',
+        desc: 'Header showing the number of pending invites');
+  }
+
+  String invitedby(String by) {
+    return Intl.message('By $by',
+        desc: 'Who did the invite to this team/player');
   }
 
   String finalscorebody(num ptsFor, num ptsAgainst, String result) {

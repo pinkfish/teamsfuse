@@ -5,19 +5,19 @@ import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
 
 // Shows the current invites pending for this user.
-class AcceptInviteAsAdminScreen extends StatefulWidget {
+class AcceptInviteToClubScreen extends StatefulWidget {
   final String _inviteUid;
 
-  AcceptInviteAsAdminScreen(this._inviteUid);
+  AcceptInviteToClubScreen(this._inviteUid);
 
   @override
-  AcceptInviteAsAdminScreenState createState() {
-    return new AcceptInviteAsAdminScreenState();
+  AcceptInviteToClubScreenState createState() {
+    return new AcceptInviteToClubScreenState();
   }
 }
 
-class AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
-  InviteAsAdmin _invite;
+class AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
+  InviteToClub _invite;
 
   static const String newInvite = 'new';
 
@@ -25,11 +25,11 @@ class AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
   void initState() {
     super.initState();
     // Default to empty.
-    _invite = new InviteAsAdmin();
-    _invite.teamName = '';
+    _invite = new InviteToClub();
+    _invite.clubName = '';
     if (UserDatabaseData.instance.invites.containsKey(widget._inviteUid)) {
       _invite =
-          UserDatabaseData.instance.invites[widget._inviteUid] as InviteAsAdmin;
+      UserDatabaseData.instance.invites[widget._inviteUid] as InviteToClub;
     } else {
       // Get out of here.
       Navigator.pop(context);
@@ -68,7 +68,7 @@ class AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
             actions: <Widget>[
               new FlatButton(
                 child:
-                    new Text(MaterialLocalizations.of(context).okButtonLabel),
+                new Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   // Do the delete.
                   Navigator.of(context).pop(true);
@@ -105,8 +105,8 @@ class AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
           child: new Column(
             children: <Widget>[
               new ListTile(
-                leading: const Icon(CommunityIcons.tshirtcrew),
-                title: new Text(_invite.teamName),
+                leading: const Icon(CommunityIcons.houzz),
+                title: new Text(_invite.clubName),
                 subtitle: new ByUserNameComponent(userId: _invite.sentByUid),
               ),
               new Row(

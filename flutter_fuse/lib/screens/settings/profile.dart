@@ -204,7 +204,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     double height = screenSize.height / 4 + 20;
     ret.add(new Center(
       child: new PlayerImage(
-        me != null ? me.uid : null,
+        playerUid: me != null ? me.uid : null,
         radius: width > height ? height / 2 : width / 2,
       ),
     ));

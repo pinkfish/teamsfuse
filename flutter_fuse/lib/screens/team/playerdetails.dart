@@ -3,6 +3,8 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:flutter_fuse/widgets/util/playerimage.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 
@@ -148,7 +150,18 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
               child: new SingleChildScrollView(
                 child: new ListBody(
                   children: <Widget>[
-                    new Text(mess.confirmremovefromteam(_player.displayName)),
+                    new FutureBuilder<Player>(
+                        future: UserDatabaseData.instance
+                            .getPlayer(_player.playerUid),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<Player> player) {
+                          if (player.hasData) {
+                            return new Text(
+                                mess.confirmremovefromteam(player.data.name));
+                          }
+                          return new Text(
+                              mess.confirmremovefromteam(mess.loading));
+                        }),
                   ],
                 ),
               ),
@@ -195,16 +208,6 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     });
   }
 
-  ImageProvider _playerImage() {
-    ImageProvider logo;
-    if (_player.photoUrl != null && _player.photoUrl.isNotEmpty) {
-      logo = new NetworkImage(_player.photoUrl);
-    } else {
-      logo = const AssetImage("assets/images/defaultavatar2.png");
-    }
-    return logo;
-  }
-
   void _deleteInvite(BuildContext context, InviteToPlayer invite) {
     deleteInviteDialog(context, invite);
   }
@@ -220,13 +223,9 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     double height = screenSize.height / 4 + 20;
 
     ret.add(
-      new CircleAvatar(
-        child: new Image(
-          image: _playerImage(),
-          width: width,
-          height: height,
-        ),
-        radius: (width > height) ? width / 2 : height / 2,
+      new PlayerImage(
+        playerUid: _player.playerUid,
+        radius: width > height ? height / 2 : width / 2,
       ),
     );
 
@@ -316,7 +315,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
       ret.add(
         new ListTile(
           leading: const Icon(Icons.phone),
-          title: new Text(_player.displayName),
+          title: new PlayerName(playerUid: _player.playerUid),
         ),
       );
       loading = true;
@@ -339,7 +338,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
       }
     });
 
-    if (_team.isAdmin(UserDatabaseData.instance.players)) {
+    if (_team.isAdmin()) {
       ret.add(
         new Row(
           children: <Widget>[
@@ -376,8 +375,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     Messages messages = Messages.of(context);
     List<Widget> actions = <Widget>[];
     if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
-      if (UserDatabaseData.instance.teams[widget.teamUid]
-          .isAdmin(UserDatabaseData.instance.players)) {
+      if (UserDatabaseData.instance.teams[widget.teamUid].isAdmin()) {
         actions.add(
           new FlatButton(
             onPressed: () {
@@ -407,7 +405,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     print("${_playerDetails.users} ${UserDatabaseData.instance.userUid}");
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(_player.displayName),
+        title: new PlayerName(playerUid: _player.playerUid),
       ),
       body: new Scrollbar(
         child: new SingleChildScrollView(

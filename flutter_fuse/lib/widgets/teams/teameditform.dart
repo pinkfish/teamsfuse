@@ -5,8 +5,6 @@ import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/form/genderformfield.dart';
 import 'package:flutter_fuse/widgets/form/sportformfield.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/form/playerformfield.dart';
-import 'package:flutter_fuse/widgets/form/relationshipformfield.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
@@ -33,14 +31,10 @@ class TeamEditFormState extends State<TeamEditForm> {
   FocusNode _focusNodeName = new FocusNode();
   FocusNode _focusNodeNotes = new FocusNode();
   FocusNode _focusNodeSeason = new FocusNode();
-  FocusNode _focusNodeNewPlayer = new FocusNode();
   FocusNode _focusNodeArriveBefore = new FocusNode();
   File _imageFile;
   bool _changedImage = false;
   String _seasonName = "";
-  String _startAdmin = "";
-  String _newPlayerName = "";
-  Relationship _newPlayerRelationship = Relationship.Friend;
 
   void save() {
     _formKey.currentState.save();
@@ -57,31 +51,12 @@ class TeamEditFormState extends State<TeamEditForm> {
       _formKey.currentState.save();
 
       if (widget.team.uid == null) {
-        // If it says to add a new player, then do that.
-        Player player;
-        if (_startAdmin == 'add') {
-          player = new Player();
-          player.name = _newPlayerName;
-          PlayerUser playerUser = new PlayerUser();
-          playerUser.userUid = UserDatabaseData.instance.userUid;
-          playerUser.relationship = _newPlayerRelationship;
-          player.users[UserDatabaseData.instance.userUid] = playerUser;
-          await player.updateFirestore();
-          _startAdmin = player.uid;
-        } else {
-          player = UserDatabaseData.instance.players[_startAdmin];
-        }
-        widget.team.admins.add(_startAdmin);
+        // Add the current user as the admin.
+        widget.team.admins.add(UserDatabaseData.instance.userUid);
         Season season = new Season();
         season.name = _seasonName;
         season.record = new WinRecord();
         season.teamUid = widget.team.precreateUid();
-        SeasonPlayer seasonPlayer = new SeasonPlayer();
-        seasonPlayer.playerUid = _startAdmin;
-        seasonPlayer.role = RoleInTeam.Player;
-        seasonPlayer.displayName = player.name;
-        seasonPlayer.photoUrl = player.photoUrl;
-        season.players.add(seasonPlayer);
         await season.updateFirestore(includePlayers: true);
         widget.team.currentSeason = season.uid;
       }
@@ -145,47 +120,6 @@ class TeamEditFormState extends State<TeamEditForm> {
           },
         ),
       );
-      Map<String, Player> players = UserDatabaseData.instance.players;
-      adminWidget = new PlayerFormField(
-        decoration: new InputDecoration(
-          icon: const Icon(Icons.person),
-          hintText: Messages.of(context).playerselecthint,
-          labelText: Messages.of(context).playerselect,
-        ),
-        initialValue: players[players.keys.first].uid,
-        validator: (String str) => null,
-        onSaved: (String value) {
-          _startAdmin = value;
-        },
-      );
-      if (_startAdmin == 'add') {
-        adminNameWidget = new EnsureVisibleWhenFocused(
-          focusNode: _focusNodeNewPlayer,
-          child: new TextFormField(
-            decoration: new InputDecoration(
-              icon: const Icon(Icons.event_note),
-              hintText: Messages.of(context).newplayername,
-              labelText: Messages.of(context).newplayernamehint,
-            ),
-            focusNode: _focusNodeNewPlayer,
-            initialValue: _newPlayerName,
-            keyboardType: TextInputType.text,
-            obscureText: false,
-            validator: (String value) {
-              return _validations.validateName(context, value);
-            },
-            onSaved: (String value) {
-              widget.team.name = value;
-            },
-          ),
-        );
-        adminRelationshipWidget = new RelationshipFormField(
-          initialValue: Relationship.Friend,
-          onSaved: (Relationship rel) {
-            _newPlayerRelationship = rel;
-          },
-        );
-      }
     } else {
       seasonWidget = new SeasonFormField(
         decoration: new InputDecoration(

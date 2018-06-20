@@ -82,7 +82,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildImage() {
     if (!_changedImage) {
-      return new PlayerImage(me.uid);
+      return new PlayerImage(playerUid: me.uid);
     }
     return new Image.file(_imageFile);
   }

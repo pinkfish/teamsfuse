@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
 import 'attendanceicon.dart';
 import 'attendancedialog.dart';
 
@@ -67,7 +68,7 @@ class AvailabityState extends State<Availaility> {
         leading: canEdit
             ? new Icon(Icons.person, color: theme.accentColor)
             : const Icon(Icons.person),
-        title: new Text(player.displayName),
+        title: new PlayerName(playerUid: player.playerUid),
         trailing: _buildAvailability(player),
       );
     });

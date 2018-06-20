@@ -5,6 +5,7 @@ import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
 
 class AddMessageScreen extends StatefulWidget {
   final String teamUid;
@@ -49,7 +50,6 @@ class AddMessageScreenState extends State<AddMessageScreen> {
       if (player != null) {
         recips[widget.playerUid] = new MessageRecipient(
           playerId: widget.playerUid,
-          name: player.displayName,
         );
       }
       _message.recipients = recips;
@@ -98,14 +98,12 @@ class AddMessageScreenState extends State<AddMessageScreen> {
           if (_includeMyself || play.playerUid != _sendAs) {
             _message.recipients[play.playerUid] = new MessageRecipient(
               playerId: play.playerUid,
-              name: play.displayName,
               state: MessageState.Unread,
             );
           }
         });
       }
       if (_message.recipients.length > 0) {
-        _message.fromName = UserDatabaseData.instance.players[_sendAs].name;
         _message.fromUid = _sendAs;
         _message.timeSent = new DateTime.now().millisecondsSinceEpoch;
         _message.updateFirestore();
@@ -189,17 +187,14 @@ class AddMessageScreenState extends State<AddMessageScreen> {
           season.players.forEach((SeasonPlayer player) {
             ret.add(
               new CheckboxListTile(
-                title: new Text(player.displayName +
-                    " (" +
-                    Messages.of(context).roleingame(player.role) +
-                    ")"),
+                title: new PlayerName(playerUid: player.playerUid),
+                subtitle: new Text(Messages.of(context).roleingame(player.role)),
                 value: _message.recipients.containsKey(player.playerUid),
                 onChanged: (bool toAdd) {
                   if (toAdd) {
                     _message.recipients[player.playerUid] =
                         new MessageRecipient(
-                            playerId: player.playerUid,
-                            name: player.displayName);
+                            playerId: player.playerUid);
                   } else {
                     _message.recipients.remove(player.playerUid);
                   }

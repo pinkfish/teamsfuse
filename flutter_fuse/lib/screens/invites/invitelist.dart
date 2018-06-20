@@ -53,6 +53,10 @@ class InviteListScreenState extends State<InviteListScreen> {
     Navigator.pushNamed(context, "AcceptInviteAsAdmin/" + invite.uid);
   }
 
+  void _addInviteToClub(Invite invite) {
+    Navigator.pushNamed(context, "AcceptInviteToClub/" + invite.uid);
+  }
+
   Card _buildInviteToTeam(InviteToTeam invite) {
     Messages messages = Messages.of(context);
     ThemeData theme = Theme.of(context);
@@ -117,6 +121,29 @@ class InviteListScreenState extends State<InviteListScreen> {
     );
   }
 
+  Card _buildInviteToClub(InviteToClub invite) {
+    Messages messages = Messages.of(context);
+    ThemeData theme = Theme.of(context);
+    return new Card(
+      child: new ListTile(
+        leading: new IconButton(
+          icon: const Icon(Icons.add),
+          color: theme.accentColor,
+          onPressed: () {
+            _addInviteToClub(invite);
+          },
+        ),
+        title: new Text(invite.clubName),
+        trailing: new IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () {
+            _deleteInvite(invite);
+          },
+        ),
+      ),
+    );
+  }
+
   Card _buildInviteToPlayer(InviteToPlayer invite) {
     ThemeData theme = Theme.of(context);
     return new Card(
@@ -148,6 +175,9 @@ class InviteListScreenState extends State<InviteListScreen> {
       }
       if (invite is InviteAsAdmin) {
         invites.add(_buildInviteAsAdmin(invite));
+      }
+      if (invite is InviteToClub) {
+        invites.add(_buildInviteToClub(invite));
       }
     });
 

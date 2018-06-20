@@ -15,27 +15,20 @@ class SqlData implements PersistenData {
 
   static const String _dbName = "teamfuse.db";
 
-  static const String gameTable = "Games";
-  static const String teamsTable = "Teams";
-  static const String seasonTable = "Seasons";
-  static const String playersTable = "Players";
-  static const String invitesTable = "Invites";
-  static const String opponentsTable = "Opponents";
-  static const String profileTable = "Profile";
-  static const String messagesTable = "Messages";
 
   static const String indexColumn = "fluff";
   static const String dataColumn = "data";
   static const String teamUidColumn = "teamuid";
 
   static const List<String> _tables = const <String>[
-    gameTable,
-    teamsTable,
-    seasonTable,
-    playersTable,
-    invitesTable,
-    profileTable,
-    messagesTable
+    PersistenData.gameTable,
+    PersistenData.teamsTable,
+    PersistenData.seasonTable,
+    PersistenData.playersTable,
+    PersistenData.invitesTable,
+    PersistenData.profileTable,
+    PersistenData.messagesTable,
+    PersistenData.clubsTable
   ];
 
   SqlData() {
@@ -52,11 +45,11 @@ class SqlData implements PersistenData {
   Future<void> initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     _path = join(documentsDirectory.path, _dbName);
-    _database = await openDatabase(_path, version: 2,
+    _database = await openDatabase(_path, version: 3,
         onUpgrade: (Database db, int oldVersion, int newVersion) async {
-      if (newVersion == 2) {
+      if (newVersion == 3) {
         await db.execute("CREATE TABLE IF NOT EXISTS " +
-            messagesTable +
+            PersistenData.clubsTable +
             " (" +
             indexColumn +
             " text PRIMARY KEY, " +
@@ -75,7 +68,7 @@ class SqlData implements PersistenData {
             " text NOT NULL);");
       });
       await db.execute("CREATE TABLE IF NOT EXISTS " +
-          opponentsTable +
+          PersistenData.opponentsTable +
           "(" +
           indexColumn +
           " text PRIMARY KEY, " +

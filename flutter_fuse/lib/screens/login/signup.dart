@@ -36,7 +36,7 @@ class SignupScreenState extends State<SignupScreen> {
 
   @override
   void initState() {
-    person.profile = new FusedUserProfile();
+    person.profile = new FusedUserProfile(null);
     super.initState();
   }
 
@@ -60,7 +60,7 @@ class SignupScreenState extends State<SignupScreen> {
       UserAuth.instance
           .createUser(
               person,
-              new FusedUserProfile(
+              new FusedUserProfile(null,
                   displayName: displayName,
                   phoneNumber: phoneNumber,
                   email: email))

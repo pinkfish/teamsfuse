@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:flutter_fuse/widgets/util/byusername.dart';
 import 'dart:async';
 
 class TeamSettings extends StatefulWidget {
@@ -80,48 +80,48 @@ class TeamSettingsState extends State<TeamSettings> {
     );
     if (result) {
       _team.deleteAdmin(adminUid);
-     }
+    }
   }
 
-   void _deleteInvite(InviteAsAdmin adm) async {
-     Messages mess = Messages.of(context);
-     // Show an alert dialog first.
-     bool result = await showDialog<bool>(
-       context: context,
-       barrierDismissible: false, // user must tap button!
-       builder: (BuildContext context) {
-         return new AlertDialog(
-           title: new Text(mess.deleteadmininvite),
-           content: new SingleChildScrollView(
-             child: new ListBody(
-               children: <Widget>[
-                 new Text(adm.email),
-               ],
-             ),
-           ),
-           actions: <Widget>[
-             new FlatButton(
-               child: new Text(MaterialLocalizations.of(context).okButtonLabel),
-               onPressed: () {
-                 // Do the delete.
-                 Navigator.of(context).pop(true);
-               },
-             ),
-             new FlatButton(
-               child:
-               new Text(MaterialLocalizations.of(context).cancelButtonLabel),
-               onPressed: () {
-                 Navigator.of(context).pop(false);
-               },
-             ),
-           ],
-         );
-       },
-     );
-     if (result) {
-       adm.firestoreDelete();
-     }
-   }
+  void _deleteInvite(InviteAsAdmin adm) async {
+    Messages mess = Messages.of(context);
+    // Show an alert dialog first.
+    bool result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: new Text(mess.deleteadmininvite),
+          content: new SingleChildScrollView(
+            child: new ListBody(
+              children: <Widget>[
+                new Text(adm.email),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+              onPressed: () {
+                // Do the delete.
+                Navigator.of(context).pop(true);
+              },
+            ),
+            new FlatButton(
+              child:
+                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+          ],
+        );
+      },
+    );
+    if (result) {
+      adm.firestoreDelete();
+    }
+  }
 
   void _addAdmin() {
     Navigator.pushNamed(context, "TeamAddAdmin/" + _team.uid);
@@ -182,13 +182,15 @@ class TeamSettingsState extends State<TeamSettings> {
         // Load the existing stuff.
         if (invites != null && invites.length > 0) {
           return new ExpansionTile(
-            title: new Text("Pending invites: ${invites.length}"),
+            title:
+                new Text(Messages.of(context).pendinginvites(invites.length)),
             children: invites
                 .map(
                   (InviteAsAdmin adm) => new ListTile(
                         leading: const Icon(Icons.person_add),
                         title: new Text(adm.email),
-                        subtitle: new Text("By " + adm.displayName),
+                        subtitle:
+                            new ByUserNameComponent(userId: adm.sentByUid),
                         trailing: new IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () => _deleteInvite(adm),

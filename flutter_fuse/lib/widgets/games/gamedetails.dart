@@ -396,7 +396,8 @@ class GameDetailsState extends State<GameDetails> {
           leading: const Icon(Icons.people),
           children: <Widget>[
             new TeamResultsStreamFuture(
-              future: season.getGames(),
+              teamUid: team.uid,
+              seasonUid: season.uid,
               opponentUid: widget.game.opponentUid,
             ),
           ],
@@ -427,7 +428,8 @@ class GameDetailsState extends State<GameDetails> {
             );
             cols.add(
               new TeamResultsStreamFuture(
-                future: otherSeason.getGames(),
+                teamUid: team.uid,
+                seasonUid: season.uid,
                 opponentUid: widget.game.opponentUid,
               ),
             );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
 import 'dart:async';
 
 class TeamPlayers extends StatefulWidget {
@@ -146,8 +147,8 @@ class TeamPlayersState extends State<TeamPlayers> {
                     player.playerUid);
           },
           child: new ListTile(
-            leading: new PlayerImage(player.playerUid),
-            title: new Text(player.displayName),
+            leading: new PlayerImage(playerUid: player.playerUid),
+            title: new PlayerName(playerUid: player.playerUid),
             subtitle: new Text(
               Messages.of(context).roleingame(player.role),
             ),
@@ -171,7 +172,7 @@ class TeamPlayersState extends State<TeamPlayers> {
     // Put in an expansion bar if there are pending invites.
     if (_invites != null &&
         _invites.length > 0 &&
-        _team.isAdmin(UserDatabaseData.instance.players)) {
+        _team.isAdmin()) {
       List<Widget> kids = <Widget>[];
       _invites.forEach((InviteToTeam inv) {
         kids.add(

@@ -11,6 +11,7 @@ import 'package:flutter_fuse/screens/invites/invitelist.dart';
 import 'package:flutter_fuse/screens/invites/acceptinvitetoteam.dart';
 import 'package:flutter_fuse/screens/invites/addinvitetoplayer.dart';
 import 'package:flutter_fuse/screens/invites/acceptinvitetoplayer.dart';
+import 'package:flutter_fuse/screens/invites/acceptinvitetoclub.dart';
 import 'package:flutter_fuse/screens/message/messages.dart';
 import 'package:flutter_fuse/screens/message/addmessage.dart';
 import 'package:flutter_fuse/screens/message/messageview.dart';
@@ -26,6 +27,10 @@ import 'package:flutter_fuse/screens/team/playerdetails.dart';
 import 'package:flutter_fuse/screens/team/team.dart';
 import 'package:flutter_fuse/screens/team/teamsettings.dart';
 import 'package:flutter_fuse/screens/team/addadmin.dart';
+import 'package:flutter_fuse/screens/clubs/clubdetails.dart';
+import 'package:flutter_fuse/screens/clubs/editclub.dart';
+import 'package:flutter_fuse/screens/clubs/addclub.dart';
+import 'package:flutter_fuse/screens/clubs/addmember.dart';
 import 'analytics.dart';
 
 class AppRouter {
@@ -80,6 +85,10 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AcceptInviteToPlayerScreen(vals["id"][0].toString())));
+    router.define("/AcceptInviteToClub/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new AcceptInviteToClubScreen(vals["id"][0].toString())));
     router.define("/Team/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -169,6 +178,23 @@ class AppRouter {
                   seasonUid: vals["season"].toString(),
                   playerUid: vals["player"].toString(),
                 )));
+
+    router.define("/Club/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new ClubDetailsScreen(vals["id"][0].toString())));
+    router.define("/EditClub/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new EditClubScreen(vals["id"][0].toString())));
+    router.define("/AddClubMember/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new AddMemberScreen(vals["id"][0].toString())));
+    router.define("/AddClub",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new AddClubScreen()));
     return router;
   }
 }

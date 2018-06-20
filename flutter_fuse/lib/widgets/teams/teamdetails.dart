@@ -45,7 +45,7 @@ class TeamDetailsState extends State<TeamDetails> {
   Widget _buildSeasons(BuildContext context) {
     List<Widget> ret = <Widget>[];
 
-    if (team.isAdmin(UserDatabaseData.instance.players)) {
+    if (team.isAdmin()) {
       ret.add(
         new FlatButton(
           onPressed: () =>
@@ -67,7 +67,8 @@ class TeamDetailsState extends State<TeamDetails> {
             season.record.tie.toString()),
         children: <Widget>[
           new TeamResultsStreamFuture(
-            future: season.getGames(),
+            teamUid: team.uid,
+            seasonUid: season.uid,
           ),
         ],
         initiallyExpanded: false,
@@ -101,16 +102,16 @@ class TeamDetailsState extends State<TeamDetails> {
       return new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
-
         children: <Widget>[
           new Center(
-              child: new Image(
-            image: new ExactAssetImage("assets/images/abstractsport.png"),
-            width: (screenSize.width < 500)
-                ? 120.0
-                : (screenSize.width / 4) + 12.0,
-            height: screenSize.height / 4 + 20,
-          )),
+            child: new Image(
+              image: new ExactAssetImage("assets/images/abstractsport.png"),
+              width: (screenSize.width < 500)
+                  ? 120.0
+                  : (screenSize.width / 4) + 12.0,
+              height: screenSize.height / 4 + 20,
+            ),
+          ),
           new ListTile(title: new Text(Messages.of(context).unknown)),
           _buildSeasons(context)
         ],
@@ -122,12 +123,14 @@ class TeamDetailsState extends State<TeamDetails> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         new Center(
-            child: new TeamImage(
-          team.uid,
-          width:
-              (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
-          height: screenSize.height / 4 + 20,
-        )),
+          child: new TeamImage(
+            team.uid,
+            width: (screenSize.width < 500)
+                ? 120.0
+                : (screenSize.width / 4) + 12.0,
+            height: screenSize.height / 4 + 20,
+          ),
+        ),
         new ListTile(
           leading: const Icon(Icons.people),
           title: new Text(team.name),
@@ -136,7 +139,8 @@ class TeamDetailsState extends State<TeamDetails> {
         ),
         new ListTile(
           leading: const Icon(Icons.timer),
-          title: new Text(Messages.of(context).arrivebefore(team.arriveEarly.toInt())),
+          title: new Text(
+              Messages.of(context).arrivebefore(team.arriveEarly.toInt())),
         ),
         _buildSeasons(context)
       ],

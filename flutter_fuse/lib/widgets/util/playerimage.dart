@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'cachednetworkimage.dart';
 
-class PlayerImage extends CircleAvatar {
-  PlayerImage(
-    String playerUid, {
+class PlayerImage extends ClipOval {
+  PlayerImage({
+    @required String playerUid,
     Key key,
     double radius = 20.0,
     Color backgroundColor,
   }) : super(
-          backgroundColor: backgroundColor,
-          radius: radius,
-          backgroundImage: getImageProvider(playerUid),
+          child: new SizedBox(
+            width: radius * 2,
+            height: radius * 2,
+            child: new FadeInImage(
+              placeholder: const AssetImage("assets/images/defaultavatar2.png"),
+              image: getImageProvider(playerUid),
+            ),
+          ),
         );
 
   static ImageProvider getImageProvider(String playerUid) {
@@ -23,8 +30,15 @@ class PlayerImage extends CircleAvatar {
         logo = const AssetImage("assets/images/defaultavatar2.png");
       }
     } else {
-      // Lookup the player image, show the defaultavatar and then
-      // transform to it.
+      logo = new CachedNetworkImageProvider(
+          urlFuture: UserDatabaseData.instance
+              .getPlayer(playerUid)
+              .then((Player player) {
+        if (player.photoUrl != null && player.photoUrl.isNotEmpty) {
+          return player.photoUrl;
+        }
+        return null;
+      }));
     }
     if (logo == null) {
       logo = const AssetImage("assets/images/defaultavatar2.png");

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/teams/teamtile.dart';
 
 import 'fuseddrawerheader.dart';
 import 'package:flutter_fuse/services/approuter.dart';
@@ -10,50 +12,50 @@ import 'package:fluro/fluro.dart';
 class FusedDrawerContent extends StatelessWidget {
   Widget _buildTeamSection(BuildContext context) {
     List<Widget> data = <Widget>[];
-    UserDatabaseData.instance.teams.forEach((String uid, Team team) {
-      WinRecord record;
-      String seasonName = "";
-      if (team.seasons.containsKey(team.currentSeason)) {
-        record = team.seasons[team.currentSeason].record;
-        seasonName = team.seasons[team.currentSeason].name;
-      }
-      data.add(
-        new ListTile(
-          leading: const Icon(Icons.group),
-          title: new RichText(
-            text: new TextSpan(
-              text: team.name,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(fontWeight: FontWeight.bold, fontSize: 17.0),
-              children: <TextSpan>[
-                new TextSpan(text: "  "),
-                new TextSpan(
-                    text: seasonName,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .subhead
-                        .copyWith(fontStyle: FontStyle.italic, fontSize: 15.0)),
-              ],
+    // If we are specifically in a club, list that here.
+    for (Club club in UserDatabaseData.instance.clubs.values) {
+      if (club.isMember()) {
+        data.add(
+          new ListTile(
+            leading: const Icon(CommunityIcons.details),
+            title: new RichText(
+              text: new TextSpan(
+                text: club.name,
+                style: Theme
+                    .of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(fontWeight: FontWeight.bold, fontSize: 17.0),
+              ),
             ),
+            subtitle: new StreamBuilder<Iterable<Team>>(
+                stream: club.teamStream,
+                builder:
+                    (BuildContext context, AsyncSnapshot<Iterable<Team>> snap) {
+                  if (snap.hasData) {
+                    return new Text(
+                      Messages.of(context).teamnumbers(snap.data.length),
+                    );
+                  }
+                  return new Text(Messages.of(context).loading);
+                }),
+            onTap: () {
+              AppRouter.instance.navigateTo(context, "Club/" + club.uid,
+                  transition: TransitionType.inFromRight);
+            },
           ),
-          isThreeLine: false,
-          dense: false,
-          subtitle: new Text(record != null ? Messages.of(context).winrecord(record) : ""),
-          onTap: () {
-            AppRouter.instance.navigateTo(context, "Team/" + team.uid,
-                transition: TransitionType.inFromRight);
-          },
-        ),
+        );
+      }
+    }
+    UserDatabaseData.instance.teams.forEach((String uid, Team team) {
+       data.add(
+        new TeamTile(team),
       );
     });
     data.add(
       new ListTile(
         leading: const Icon(Icons.add),
-        title: const Text('Add Team'),
+        title: new Text(Messages.of(context).addteam),
         onTap: () => Navigator.pushNamed(context, "AddTeam"),
       ),
     );

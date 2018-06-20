@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
 
 class ShowMessageScreen extends StatelessWidget {
   final String messageUid;
@@ -73,7 +74,7 @@ class ShowMessageScreen extends StatelessWidget {
       players.add(
         new ListTile(
           leading: const Icon(Icons.person),
-          title: new Text(rec.name),
+          title: new PlayerName(playerUid: rec.playerId),
         ),
       );
     });
