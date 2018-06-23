@@ -75,13 +75,13 @@ class Notifications {
     DateTime now = new DateTime.now();
     for (Game game in data.values) {
       stillHere.remove(game.uid);
-      DateTime gameDate = new DateTime.fromMillisecondsSinceEpoch(game.time.toInt());
+      DateTime gameDate = new DateTime.fromMillisecondsSinceEpoch(game.sharedData.time.toInt());
       DateTime oldest = new DateTime.now().subtract(timeoutNotifiation);
       DateTime newest = new DateTime.now().add(notifyStart);
       // If it is older then 2 days, then delete it.
       if (gameDate.isAfter(oldest)) {
         DateTime frog =
-            new DateTime.fromMillisecondsSinceEpoch(game.time.toInt()).add(notifyStart);
+            new DateTime.fromMillisecondsSinceEpoch(game.sharedData.time.toInt()).add(notifyStart);
         print('Checking ${game.uid} $frog $now');
         if (!_notificationMapping.containsKey(game.uid) &&
             gameDate.isBefore(newest)) {
@@ -135,7 +135,7 @@ class Notifications {
     if (jsonCacheString != null) {
       Map<String, dynamic> tmp = json.decode(jsonCacheString) as Map<String, dynamic>;
       _notificationMapping.clear();
-      tmp.forEach((String str, dynamic val) => val is int ? _notificationMapping[str] = val as int : null);
+      tmp.forEach((String str, dynamic val) => val is int ? _notificationMapping[str] = val : null);
     }
   }
 

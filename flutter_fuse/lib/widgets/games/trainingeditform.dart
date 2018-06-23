@@ -42,8 +42,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   @override
   void initState() {
     super.initState();
-    _atDate = widget.game.tzTime;
-    _atEnd = widget.game.tzEndTime;
+    _atDate = widget.game.sharedData.tzTime;
+    _atEnd = widget.game.sharedData.tzEndTime;
   }
 
   void _updateTimes(Duration diff) {
@@ -56,12 +56,12 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
     if (place != null) {
       // Yay!
       setState(() {
-        widget.game.place.name = place.details.name;
-        widget.game.place.address = place.details.address;
-        widget.game.place.longitude = place.details.location.longitude;
-        widget.game.place.latitude = place.details.location.latitude;
+        widget.game.sharedData.place.name = place.details.name;
+        widget.game.sharedData.place.address = place.details.address;
+        widget.game.sharedData.place.longitude = place.details.location.longitude;
+        widget.game.sharedData.place.latitude = place.details.location.latitude;
         place.loc.then((Location location) {
-          widget.game.timezone = location.name;
+          widget.game.sharedData.timezone = location.name;
         });
       });
     }
@@ -76,23 +76,23 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   Game get finalGameResult {
     _formState.currentState.save();
     // Add the date time and the time together.
-    widget.game.time = new TZDateTime(
-            getLocation(widget.game.timezone),
+    widget.game.sharedData.time = new TZDateTime(
+            getLocation(widget.game.sharedData.timezone),
             _atDate.year,
             _atDate.month,
             _atDate.day,
             _atDate.hour,
             _atDate.minute)
         .millisecondsSinceEpoch;
-    widget.game.arriveTime = widget.game.time;
+    widget.game.arriveTime = widget.game.sharedData.time;
     DateTime end = _atEnd;
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
       end.add(new Duration(days: 1));
     }
-    widget.game.endTime = new TZDateTime(getLocation(widget.game.timezone),
+    widget.game.sharedData.endTime = new TZDateTime(getLocation(widget.game.sharedData.timezone),
             end.year, end.month, end.day, end.hour, end.minute)
         .millisecondsSinceEpoch;
-    widget.game.endTime = _atEnd.millisecondsSinceEpoch;
+    widget.game.sharedData.endTime = _atEnd.millisecondsSinceEpoch;
     return widget.game;
   }
 
@@ -115,7 +115,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
               children: <Widget>[
                 new SeasonFormField(
                   decoration: new InputDecoration(
-                    icon: const Icon(CommunityIcons.calendarquestion),
+                    icon: const Icon(CommunityIcons.calendarQuestion),
                     labelText: messages.season,
                   ),
                   initialValue: widget.game.seasonUid,
@@ -140,7 +140,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                   labelText: Messages.of(context).trainingend,
                   key: _endTimeKey,
                   decoration: new InputDecoration(
-                    icon: const Icon(CommunityIcons.calendarrange),
+                    icon: const Icon(CommunityIcons.calendarRange),
                   ),
                   initialValue: _atEnd,
                   hideDate: false,
@@ -151,27 +151,27 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                 new ListTile(
                   onTap: _showPlacesPicker,
                   leading: const Icon(Icons.place),
-                  title: new Text(widget.game.place.name == null
+                  title: new Text(widget.game.sharedData.place.name == null
                       ? messages.unknown
-                      : widget.game.place.name),
-                  subtitle: new Text(widget.game.place.address == null
+                      : widget.game.sharedData.place.name),
+                  subtitle: new Text(widget.game.sharedData.place.address == null
                       ? messages.unknown
-                      : widget.game.place.address),
+                      : widget.game.sharedData.place.address),
                 ),
                 new EnsureVisibleWhenFocused(
                   focusNode: _focusNodePlaceNotes,
                   child: new TextFormField(
                     decoration: new InputDecoration(
-                      icon: const Icon(CommunityIcons.tshirtcrew),
+                      icon: const Icon(CommunityIcons.tshirtCrew),
                       hintText: Messages.of(context).placesnoteshint,
                       labelText: Messages.of(context).placesnotes,
                     ),
                     keyboardType: TextInputType.text,
                     focusNode: _focusNodePlaceNotes,
                     obscureText: false,
-                    initialValue: widget.game.place.notes,
+                    initialValue: widget.game.sharedData.place.notes,
                     onSaved: (String value) {
-                      widget.game.place.notes = value;
+                      widget.game.sharedData.place.notes = value;
                     },
                   ),
                 ),
@@ -182,7 +182,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     decoration: new InputDecoration(
                         hintText: messages.uniformhint,
                         labelText: messages.uniform,
-                        icon: const Icon(CommunityIcons.tshirtcrew)),
+                        icon: const Icon(CommunityIcons.tshirtCrew)),
                     onSaved: (String value) {
                       widget.game.uniform = value;
                     },

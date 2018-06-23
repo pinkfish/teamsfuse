@@ -49,6 +49,9 @@ class TeamScreenState extends State<TeamScreen> {
       // Show a dialog and then delete it!
       Navigator.pushNamed(context, "TeamSettings/" + widget.teamUid);
     }
+    if (choice == "club") {
+      Navigator.pushNamed(context, "TeamClub/" + widget.teamUid);
+    }
   }
 
   @override
@@ -56,8 +59,7 @@ class TeamScreenState extends State<TeamScreen> {
     List<Widget> actions = <Widget>[];
     FloatingActionButton fab;
     if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
-      if (UserDatabaseData.instance.teams[widget.teamUid]
-              .isAdmin() &&
+      if (UserDatabaseData.instance.teams[widget.teamUid].isAdmin() &&
           _tabIndex == 0) {
         fab = new FloatingActionButton(
           onPressed: () => _onEditTeam(context),
@@ -72,6 +74,10 @@ class TeamScreenState extends State<TeamScreen> {
                   value: "settings",
                   child: new Text(Messages.of(context).settings),
                 ),
+                new PopupMenuItem<String>(
+                  value: "club",
+                  child: new Text(Messages.of(context).club),
+                )
               ];
             },
           ),
@@ -80,7 +86,11 @@ class TeamScreenState extends State<TeamScreen> {
     }
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+        title: new Text(
+          Messages
+              .of(context)
+              .titlewith(UserDatabaseData.instance.teams[widget.teamUid].name),
+        ),
         actions: actions,
       ),
       bottomNavigationBar: new BottomNavigationBar(

@@ -18,7 +18,6 @@ class TeamSettings extends StatefulWidget {
 class TeamSettingsState extends State<TeamSettings> {
   Team _team;
   StreamSubscription<UpdateReason> _updateStream;
-  bool _addAdminDisplayed = false;
 
   @override
   void initState() {
@@ -170,7 +169,7 @@ class TeamSettingsState extends State<TeamSettings> {
         textColor: Theme.of(context).accentColor,
       ),
     );
-    ret.add(new StreamBuilder(
+    ret.add(new StreamBuilder<Iterable<InviteAsAdmin>>(
       stream: _team.inviteStream,
       builder: (BuildContext context,
           AsyncSnapshot<Iterable<InviteAsAdmin>> admins) {

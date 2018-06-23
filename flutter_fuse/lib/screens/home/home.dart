@@ -54,31 +54,31 @@ class _HomeScreenState extends State<HomeScreen> {
         badge = null;
         break;
       case 1:
-        badge = CommunityIcons.numeric1box;
+        badge = CommunityIcons.numeric1Box;
         break;
       case 2:
-        badge = CommunityIcons.numeric2box;
+        badge = CommunityIcons.numeric2Box;
         break;
       case 3:
-        badge = CommunityIcons.numeric3box;
+        badge = CommunityIcons.numeric3Box;
         break;
       case 4:
-        badge = CommunityIcons.numeric4box;
+        badge = CommunityIcons.numeric4Box;
         break;
       case 5:
-        badge = CommunityIcons.numeric5box;
+        badge = CommunityIcons.numeric5Box;
         break;
       case 6:
-        badge = CommunityIcons.numeric6box;
+        badge = CommunityIcons.numeric6Box;
         break;
       case 7:
-        badge = CommunityIcons.numeric7box;
+        badge = CommunityIcons.numeric7Box;
         break;
       case 8:
-        badge = CommunityIcons.numeric8box;
+        badge = CommunityIcons.numeric8Box;
         break;
       default:
-        badge = CommunityIcons.numeric9plusbox;
+        badge = CommunityIcons.numeric9PlusBox;
         break;
     }
     Widget messagesIcon;

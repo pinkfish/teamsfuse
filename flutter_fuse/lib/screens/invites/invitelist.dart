@@ -99,7 +99,6 @@ class InviteListScreenState extends State<InviteListScreen> {
 
 
   Card _buildInviteAsAdmin(InviteAsAdmin invite) {
-    Messages messages = Messages.of(context);
     ThemeData theme = Theme.of(context);
     return new Card(
       child: new ListTile(
@@ -122,7 +121,6 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   Card _buildInviteToClub(InviteToClub invite) {
-    Messages messages = Messages.of(context);
     ThemeData theme = Theme.of(context);
     return new Card(
       child: new ListTile(

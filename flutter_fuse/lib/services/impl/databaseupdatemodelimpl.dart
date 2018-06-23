@@ -12,20 +12,37 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   // Stuff for game updates.
   @override
-  Future<void> updateFirestoreGame(Game game) async {
+  Future<void> updateFirestoreGame(Game game, bool sharedData) async {
     print(game);
     // Add or update this record into the database.
     CollectionReference ref = Firestore.instance.collection(GAMES_COLLECTION);
+    CollectionReference refShared =
+        Firestore.instance.collection(GAMES_SHARED_COLLECTION);
     print(game.uid);
     if (game.uid == null || game.uid == '') {
       print(game.toJSON());
+      // Add the shared stuff, then the game.
+      DocumentReference sharedDoc =
+          await refShared.add(game.sharedData.toJSON());
+      game.sharedDataUid = sharedDoc.documentID;
       // Add the game.
       DocumentReference doc = await ref.add(game.toJSON());
       print(doc);
       game.uid = doc.documentID;
     } else {
+      if (sharedData) {
+        if (game.sharedDataUid.isEmpty) {
+          DocumentReference sharedDoc =
+              await refShared.add(game.sharedData.toJSON());
+          game.sharedDataUid = sharedDoc.documentID;
+        } else {
+          refShared
+              .document(game.sharedDataUid)
+              .updateData(game.sharedData.toJSON());
+        }
+      }
       // Update the game.
-      await ref.document(game.uid).updateData(game.toJSON());
+      return ref.document(game.uid).updateData(game.toJSON());
     }
   }
 
@@ -39,14 +56,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> updateFirestoreGameAttendence(
-      Game game, String playerUid, Attendance attend) async {
+      Game game, String playerUid, Attendance attend) {
     DocumentReference ref =
         Firestore.instance.collection(GAMES_COLLECTION).document(game.uid);
 
     Map<String, dynamic> data = <String, dynamic>{};
-    data[Game.ATTENDANCE + "." + playerUid + "." + Game.ATTENDANCEVALUE] =
-        attend.toString();
-    await ref.updateData(data);
+    data[Game.ATTENDANCE + "." + playerUid] = <String, dynamic>{
+      Game.ATTENDANCEVALUE: attend.toString()
+    };
+    return ref.updateData(data).then((void a) => print('Done stuff'));
   }
 
   @override
@@ -234,13 +252,27 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     CollectionReference ref = Firestore.instance.collection(GAMES_COLLECTION);
     // See if the games for the season.
     QuerySnapshot snap = await ref
-        .where(Game.TEAMUID, isEqualTo: opponent.teamUid)
-        .where(Game.OPPONENTUID, isEqualTo: opponent.uid)
+        .where(Game.TEAMUID + "." + opponent.teamUid + "." + ADDED,
+            isEqualTo: true)
+        .where(Game.TEAMUID + "." + opponent.uid + "." + ADDED, isEqualTo: true)
         .getDocuments();
-    return snap.documents.map((DocumentSnapshot doc) {
-      Game game = new Game.fromJSON(doc.documentID, doc.data);
+    return Future.wait(snap.documents.map((DocumentSnapshot doc) async {
+      String sharedGameUid = doc.data[Game.SHAREDDATAUID];
+      GameSharedData sharedData;
+      if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
+        // Load the shared stuff too.
+        DocumentSnapshot doc = await Firestore.instance
+            .collection(GAMES_SHARED_COLLECTION)
+            .document(sharedGameUid)
+            .get();
+        sharedData = new GameSharedData.fromJSON(doc.documentID, doc.data);
+      } else {
+        sharedData = new GameSharedData.fromJSON(sharedGameUid, doc.data);
+      }
+      Game game = new Game.fromJSON(
+          opponent.teamUid, doc.documentID, doc.data, sharedData);
       return game;
-    });
+    }));
   }
 
   // Team stuff
@@ -402,45 +434,121 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   GameSubscription _getGamesInternal(Iterable<Game> cachedGames,
       Set<String> teams, String seasonUid, DateTime start, DateTime end) {
     GameSubscription sub = new GameSubscription(cachedGames);
-    Map<String, List<Game>> maps = <String, List<Game>>{};
+    Map<String, Set<Game>> maps = <String, Set<Game>>{};
     for (String teamUid in teams) {
       Query gameQuery = Firestore.instance
           .collection(GAMES_COLLECTION)
           .where(Game.TEAMUID, isEqualTo: teamUid);
       if (start != null) {
         gameQuery = gameQuery
-            .where(Game.TIME, isGreaterThan: start.millisecondsSinceEpoch)
-            .where(Game.TIME, isLessThan: end.millisecondsSinceEpoch);
+            .where(ARRIVALTIME, isGreaterThan: start.millisecondsSinceEpoch)
+            .where(ARRIVALTIME, isLessThan: end.millisecondsSinceEpoch);
       }
       if (seasonUid != null) {
         gameQuery = gameQuery.where(Game.SEASONUID, isEqualTo: seasonUid);
       }
-      gameQuery.getDocuments().then((QuerySnapshot queryGameSnap) {
-        List<Game> data = <Game>[];
+      gameQuery.getDocuments().then((QuerySnapshot queryGameSnap) async {
+        Set<Game> data = new Set<Game>();
         for (DocumentSnapshot snap in queryGameSnap.documents) {
-          data.add(new Game.fromJSON(snap.documentID, snap.data));
+          String sharedGameUid = snap.data[Game.SHAREDDATAUID];
+          GameSharedData sharedData;
+          if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
+            DocumentReference sharedRef = Firestore.instance
+                .collection(GAMES_SHARED_COLLECTION)
+                .document(sharedGameUid);
+            DocumentSnapshot snapShared = await sharedRef.get();
+            sharedData = new GameSharedData.fromJSON(
+                snapShared.documentID, snapShared.data);
+            // Add in a subscription to this shared game stuff and listen to it.
+            sub.subscriptions.add(
+                sharedRef.snapshots().listen((DocumentSnapshot snapUpdate) {
+              GameSharedData newData = GameSharedData.fromJSON(
+                  snapUpdate.documentID, snapUpdate.data);
+              if (maps.containsKey(teamUid)) {
+                Game g = maps[teamUid].lookup(snap.documentID);
+                if (g != null) {
+                  g.sharedData.updateFrom(newData);
+                  g.markGameChanged();
+                }
+              }
+            }));
+          } else {
+            sharedData = new GameSharedData.fromJSON(sharedGameUid, snap.data);
+          }
+          data.add(new Game.fromJSON(
+              teamUid, snap.documentID, snap.data, sharedData));
         }
-        maps[teamUid] = data;
+        if (!maps.containsKey(teamUid)) {
+          maps[teamUid] = new Set<Game>();
+        }
+        maps[teamUid].addAll(data);
         if (maps.length == teams.length) {
           List<Game> newData = <Game>[];
 
-          for (List<Game> it in maps.values) {
+          for (Set<Game> it in maps.values) {
             newData.addAll(it);
           }
           sub.addUpdate(newData);
         }
       });
 
-      sub.subscriptions
-          .add(gameQuery.snapshots().listen((QuerySnapshot queryGameSnap) {
-        List<Game> data = <Game>[];
+      sub.subscriptions.add(
+          gameQuery.snapshots().listen((QuerySnapshot queryGameSnap) async {
+        Set<Game> data = new Set<Game>();
+        if (!maps.containsKey(teamUid)) {
+          maps[teamUid] = new Set<Game>();
+        }
         for (DocumentSnapshot snap in queryGameSnap.documents) {
-          data.add(new Game.fromJSON(snap.documentID, snap.data));
+          String sharedGameUid;
+          Map<String, dynamic> sharedGameStuff;
+          Game g = maps[teamUid].lookup(snap.documentID);
+          GameSharedData sharedData;
+          if (g == null) {
+            sharedGameUid = snap.data[Game.SHAREDDATAUID] as String;
+            if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
+              DocumentReference sharedRef = Firestore.instance
+                  .collection(GAMES_SHARED_COLLECTION)
+                  .document(sharedGameUid);
+              DocumentSnapshot snapShared = await sharedRef.get();
+              sharedData = new GameSharedData.fromJSON(
+                  snapShared.documentID, snapShared.data);
+              // Listen to changes too.
+              sub.subscriptions.add(
+                  sharedRef.snapshots().listen((DocumentSnapshot snapUpdate) {
+                GameSharedData newData = GameSharedData.fromJSON(
+                    snapUpdate.documentID, snapUpdate.data);
+                if (maps.containsKey(teamUid)) {
+                  Game g = maps[teamUid].lookup(snap.documentID);
+                  if (g != null) {
+                    g.sharedData.updateFrom(newData);
+                    g.markGameChanged();
+                  }
+                }
+              }));
+            } else {
+              sharedData =
+                  new GameSharedData.fromJSON(sharedGameUid, snap.data);
+            }
+          } else {
+            sharedData = g.sharedData;
+          }
+
+          Game newGame = new Game.fromJSON(
+              teamUid, snap.documentID, snap.data, sharedData);
+
+          // If we have a game already, update that.
+          if (g != null) {
+            g.updateFrom(newGame);
+            newGame.sharedData = g.sharedData;
+            data.add(g);
+          } else {
+            data.add(newGame);
+          }
         }
         maps[teamUid] = data;
-        List<Game> newData = <Game>[];
+        Set<Game> newData = new Set<Game>();
 
-        for (List<Game> it in maps.values) {
+        for (Set<Game> it in maps.values) {
           newData.addAll(it);
         }
         // Update the cache so we can find these games when the
@@ -830,7 +938,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<String> updateClub(Club club, {bool includeMembers}) async {
+  Future<String> updateClub(Club club, {bool includeMembers = false}) async {
     Map<String, dynamic> data = club.toJson(includeMembers: includeMembers);
     if (club.uid == null) {
       DocumentReference ref =
@@ -864,6 +972,18 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .updateData(<String, dynamic>{
       Club.MEMBERS + "." + memberUid + "." + ADDED: false
     });
+  }
+
+  @override
+  Future<Club> getClubData(String clubUid) async {
+    DocumentSnapshot snap = await Firestore.instance
+        .collection(CLUB_COLLECTION)
+        .document(clubUid)
+        .get();
+    if (snap.exists) {
+      return new Club.fromJson(snap.documentID, snap.data);
+    }
+    return null;
   }
 
   // Initial data

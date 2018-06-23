@@ -38,7 +38,7 @@ class InviteCardState extends State<InviteCard> {
       Widget card = new Card(
         color: Colors.limeAccent,
         child: new ListTile(
-          leading: const Icon(CommunityIcons.emailopen),
+          leading: const Icon(CommunityIcons.emailOpen),
           title: new Text(
             Messages
                 .of(context)

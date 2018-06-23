@@ -15,7 +15,6 @@ class SqlData implements PersistenData {
 
   static const String _dbName = "teamfuse.db";
 
-
   static const String indexColumn = "fluff";
   static const String dataColumn = "data";
   static const String teamUidColumn = "teamuid";
@@ -29,6 +28,10 @@ class SqlData implements PersistenData {
     PersistenData.profileTable,
     PersistenData.messagesTable,
     PersistenData.clubsTable
+  ];
+  static const List<String> _teamSpecificTables = const <String>[
+    PersistenData.opponentsTable,
+    PersistenData.gameTable
   ];
 
   SqlData() {
@@ -45,7 +48,7 @@ class SqlData implements PersistenData {
   Future<void> initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     _path = join(documentsDirectory.path, _dbName);
-    _database = await openDatabase(_path, version: 3,
+    _database = await openDatabase(_path, version: 4,
         onUpgrade: (Database db, int oldVersion, int newVersion) async {
       if (newVersion == 3) {
         await db.execute("CREATE TABLE IF NOT EXISTS " +
@@ -53,6 +56,24 @@ class SqlData implements PersistenData {
             " (" +
             indexColumn +
             " text PRIMARY KEY, " +
+            dataColumn +
+            " text NOT NULL);");
+      } else if (newVersion == 4 && oldVersion <= 3) {
+        await db.execute("CREATE TABLE IF NOT EXISTS " +
+            PersistenData.clubsTable +
+            " (" +
+            indexColumn +
+            " text PRIMARY KEY, " +
+            dataColumn +
+            " text NOT NULL);");
+        await db.execute("DROP TABLE " + PersistenData.gameTable);
+        return db.execute("CREATE TABLE IF NOT EXISTS " +
+            PersistenData.gameTable +
+            "(" +
+            indexColumn +
+            " text PRIMARY KEY, " +
+            teamUidColumn +
+            " text NOT NULL, " +
             dataColumn +
             " text NOT NULL);");
       }
@@ -67,15 +88,17 @@ class SqlData implements PersistenData {
             dataColumn +
             " text NOT NULL);");
       });
-      await db.execute("CREATE TABLE IF NOT EXISTS " +
-          PersistenData.opponentsTable +
-          "(" +
-          indexColumn +
-          " text PRIMARY KEY, " +
-          teamUidColumn +
-          " text NOT NULL, " +
-          dataColumn +
-          " text NOT NULL);");
+      await Future.forEach(_teamSpecificTables, (String table) async {
+        return db.execute("CREATE TABLE IF NOT EXISTS " +
+            table +
+            "(" +
+            indexColumn +
+            " text PRIMARY KEY, " +
+            teamUidColumn +
+            " text NOT NULL, " +
+            dataColumn +
+            " text NOT NULL);");
+      });
     });
     _completer.complete(true);
     print('out of here');

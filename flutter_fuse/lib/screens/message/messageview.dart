@@ -62,7 +62,10 @@ class ShowMessageScreen extends StatelessWidget {
 
     kids.add(
       new ListTile(
-        leading: new TeamImage(mess.teamUid, width: 30.0),
+        leading: new TeamImage(
+          team: UserDatabaseData.instance.teams[mess.teamUid],
+          width: 30.0,
+        ),
         title: new Text(
           UserDatabaseData.instance.teams[mess.teamUid].name,
         ),
@@ -129,11 +132,12 @@ class ShowMessageScreen extends StatelessWidget {
       ),
     );
 
-    return new Scrollbar(child:new SingleChildScrollView(
-      child: new Column(
-        children: kids,
+    return new Scrollbar(
+      child: new SingleChildScrollView(
+        child: new Column(
+          children: kids,
+        ),
       ),
-    ),
     );
   }
 

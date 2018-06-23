@@ -37,8 +37,7 @@ class CachedNetworkImage extends StatefulWidget {
     this.alignment: Alignment.center,
     this.repeat: ImageRepeat.noRepeat,
     this.matchTextDirection: false,
-  })
-      : assert(imageFuture != null || imageNow != null),
+  })  : assert(imageFuture != null || imageNow != null),
         assert(fadeOutDuration != null),
         assert(fadeOutCurve != null),
         assert(fadeInDuration != null),
@@ -492,6 +491,11 @@ class CachedNetworkImageProvider
 
     if (urlFuture != null) {
       url = await urlFuture;
+    }
+    if (url == null) {
+      // Never finish loading.
+      completer.complete(null);
+      return;
     }
     try {
       CacheManager manager = await CacheManager.getInstance();

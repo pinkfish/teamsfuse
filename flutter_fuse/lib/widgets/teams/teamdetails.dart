@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/games/teamresultsstreamfuture.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'dart:async';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:flutter_fuse/widgets/util/gendericon.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
 
 class TeamDetails extends StatefulWidget {
   final String teamuid;
@@ -80,18 +81,10 @@ class TeamDetailsState extends State<TeamDetails> {
     );
   }
 
-  Widget _buildGenderIcon(Gender gender) {
-    switch (gender) {
-      case Gender.Female:
-        return const Icon(CommunityIcons.genderfemale);
-      case Gender.Male:
-        return const Icon(CommunityIcons.gendermale);
-      case Gender.Coed:
-        return const Icon(CommunityIcons.gendermalefemale);
-      case Gender.NA:
-        return const Icon(CommunityIcons.blank);
+  void _openClub() {
+    if (team.clubUid != null) {
+      Navigator.pushNamed(context, "Club/" + team.clubUid);
     }
-    return const Icon(CommunityIcons.blank);
   }
 
   @override
@@ -118,13 +111,31 @@ class TeamDetailsState extends State<TeamDetails> {
       );
     }
 
+    Widget club;
+    if (team.clubUid != null) {
+      club = new FutureBuilder<Club>(
+        future: UserDatabaseData.instance.getClub(team.clubUid),
+        builder: (BuildContext context, AsyncSnapshot<Club> club) {
+          if (club.hasData) {
+            if (club.data != null) {
+              return new Text(club.data.name);
+            }
+            return new Text(Messages.of(context).noclub);
+          }
+          return new Text(Messages.of(context).loading);
+        },
+      );
+    } else {
+      club = new Text(Messages.of(context).noclub);
+    }
+
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         new Center(
           child: new TeamImage(
-            team.uid,
+            team: team,
             width: (screenSize.width < 500)
                 ? 120.0
                 : (screenSize.width / 4) + 12.0,
@@ -135,12 +146,27 @@ class TeamDetailsState extends State<TeamDetails> {
           leading: const Icon(Icons.people),
           title: new Text(team.name),
           subtitle: new Text(team.sport.toString() + "(" + team.league + ") "),
-          trailing: _buildGenderIcon(team.gender),
+          trailing: new GenderIcon(team.gender),
+        ),
+        new ListTile(
+          leading: const Icon(CommunityIcons.cardsClub),
+          title: club,
+          onTap: _openClub,
         ),
         new ListTile(
           leading: const Icon(Icons.timer),
           title: new Text(
-              Messages.of(context).arrivebefore(team.arriveEarly.toInt())),
+            Messages.of(context).arrivebefore(
+                  team.arriveEarly.toInt(),
+                ),
+          ),
+        ),
+        new ListTile(
+          leading: const Icon(CommunityIcons.trafficLight),
+          title: new Text(
+            Messages.of(context).trackattendence(
+                team.trackAttendence ? Tristate.Yes : Tristate.No),
+          ),
         ),
         _buildSeasons(context)
       ],

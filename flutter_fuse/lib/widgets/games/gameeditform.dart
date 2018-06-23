@@ -59,8 +59,8 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   void initState() {
     super.initState();
     _atArrival = widget.game.tzArriveTime;
-    _atDate = widget.game.tzTime;
-    _atEnd = widget.game.tzEndTime;
+    _atDate = widget.game.sharedData.tzTime;
+    _atEnd = widget.game.sharedData.tzEndTime;
   }
 
   @override
@@ -79,8 +79,8 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
     } else {
       _formKey.currentState.save();
       // Add the date time and the time together.
-      widget.game.time = new TZDateTime(
-              getLocation(widget.game.timezone),
+      widget.game.sharedData.time = new TZDateTime(
+              getLocation(widget.game.sharedData.timezone),
               _atDate.year,
               _atDate.month,
               _atDate.day,
@@ -93,7 +93,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
         arrival.add(new Duration(days: 1));
       }
       widget.game.arriveTime = new TZDateTime(
-              getLocation(widget.game.timezone),
+              getLocation(widget.game.sharedData.timezone),
               arrival.year,
               arrival.month,
               arrival.day,
@@ -104,7 +104,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
       if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
         end.add(new Duration(days: 1));
       }
-      widget.game.endTime = new TZDateTime(getLocation(widget.game.timezone),
+      widget.game.sharedData.endTime = new TZDateTime(getLocation(widget.game.sharedData.timezone),
               end.year, end.month, end.day, end.hour, end.minute)
           .millisecondsSinceEpoch;
     }
@@ -149,7 +149,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
         },
       ),
     ));
-    if (widget.game.type == EventType.Game) {
+    if (widget.game.sharedData.type == EventType.Game) {
       firstRow.add(
         const SizedBox(width: 12.0),
       );
@@ -159,9 +159,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
           child: new OpponentFormField(
             teamUid: widget.game.teamUid,
             key: _opponentState,
-            initialValue: widget.game.opponentUid == null
+            initialValue: widget.game.opponentUids.length == 0
                 ? 'none'
-                : widget.game.opponentUid,
+                : widget.game.opponentUids[0],
             validator: (String str) {
               return _validations.validateOpponent(context, str);
             },
@@ -172,7 +172,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
               }
             },
             onSaved: (String value) {
-              widget.game.opponentUid = value;
+              widget.game.opponentUids = [value];
             },
           ),
         ),
@@ -241,20 +241,20 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                 ),
                 new PlacesFormField(
                   initialValue: new LocationAndPlace.fromGame(
-                      widget.game.place, widget.game.timezone),
+                      widget.game.sharedData.place, widget.game.sharedData.timezone),
                   labelText: Messages.of(context).selectplace,
                   decoration:
                       const InputDecoration(icon: const Icon(Icons.place)),
                   onSaved: (LocationAndPlace loc) {
                     print('Saved location $loc');
-                    widget.game.place.name = loc.details.name;
-                    widget.game.place.address = loc.details.address;
-                    widget.game.place.placeId = loc.details.placeid;
-                    widget.game.place.latitude = loc.details.location.latitude;
-                    widget.game.place.longitude =
+                    widget.game.sharedData.place.name = loc.details.name;
+                    widget.game.sharedData.place.address = loc.details.address;
+                    widget.game.sharedData.place.placeId = loc.details.placeid;
+                    widget.game.sharedData.place.latitude = loc.details.location.latitude;
+                    widget.game.sharedData.place.longitude =
                         loc.details.location.longitude;
                     loc.loc.then((Location location) {
-                      widget.game.timezone = location.name;
+                      widget.game.sharedData.timezone = location.name;
                     });
                   },
                 ),
@@ -262,16 +262,16 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   focusNode: _focusNodePlaceNotes,
                   child: new TextFormField(
                     decoration: new InputDecoration(
-                      icon: const Icon(CommunityIcons.tshirtcrew),
+                      icon: const Icon(CommunityIcons.tshirtCrew),
                       hintText: Messages.of(context).placesnoteshint,
                       labelText: Messages.of(context).placesnotes,
                     ),
                     keyboardType: TextInputType.text,
                     focusNode: _focusNodePlaceNotes,
                     obscureText: false,
-                    initialValue: widget.game.place.notes,
+                    initialValue: widget.game.sharedData.place.notes,
                     onSaved: (String value) {
-                      widget.game.place.notes = value;
+                      widget.game.sharedData.place.notes = value;
                     },
                   ),
                 ),
@@ -279,7 +279,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   focusNode: _focusNodeUniform,
                   child: new TextFormField(
                     decoration: new InputDecoration(
-                      icon: const Icon(CommunityIcons.tshirtcrew),
+                      icon: const Icon(CommunityIcons.tshirtCrew),
                       hintText: Messages.of(context).uniformhint,
                       labelText: Messages.of(context).uniform,
                     ),

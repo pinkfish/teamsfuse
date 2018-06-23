@@ -3,6 +3,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/teams/teameditform.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'dart:io';
 
 class EditTeamScreen extends StatefulWidget {
   final String teamUid;
@@ -46,7 +47,13 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   void _savePressed(BuildContext context) async {
     saving = true;
     try {
-      if (await _formKey.currentState.validateAndSaveToFirebase()) {
+      Team team = _formKey.currentState.validateAndCreate();
+      if (team != null) {
+        File imageFile = _formKey.currentState.getImageFile();
+        if (imageFile != null) {
+          await team.updateImage(imageFile);
+        }
+        await team.updateFirestore();
         Navigator.of(context).pop(_formKey.currentState.widget.team.uid);
       } else {
         _showInSnackBar(Messages.of(context).formerror);
@@ -61,7 +68,11 @@ class EditTeamScreenState extends State<EditTeamScreen> {
     return new Scaffold(
       key: _scaffoldKey,
       appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+        title: new Text(
+          Messages
+              .of(context)
+              .titlewith(UserDatabaseData.instance.teams[widget.teamUid].name),
+        ),
       ),
       body: new Container(
         padding: new EdgeInsets.all(16.0),

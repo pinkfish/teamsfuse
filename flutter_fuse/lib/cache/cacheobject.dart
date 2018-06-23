@@ -5,6 +5,7 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:synchronized/synchronized.dart';
 
 ///Cache information of one file
 class CacheObject {
@@ -19,11 +20,11 @@ class CacheObject {
   String eTag;
   DateTime touched;
   String url;
-  Object lock;
+  Lock lock;
 
   CacheObject(this.url) {
     touch();
-    lock = new Object();
+    lock = new Lock();
   }
 
   CacheObject.fromMap(this.url, Map<dynamic, dynamic> map) {
@@ -44,7 +45,7 @@ class CacheObject {
       touch();
     }
 
-    lock = new Object();
+    lock = new Lock();
   }
 
   static void initDirectory() async {

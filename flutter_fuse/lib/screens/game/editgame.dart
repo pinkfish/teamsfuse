@@ -39,7 +39,7 @@ class EditGameScreenState extends State<EditGameScreen> {
     print('save pressed');
     Game game = UserDatabaseData.instance.gamesCache[widget.gameuid];
     EditFormBase baseForm;
-    switch (game.type) {
+    switch (game.sharedData.type) {
       case EventType.Game:
         baseForm = _gameFormKey.currentState;
         break;
@@ -57,7 +57,7 @@ class EditGameScreenState extends State<EditGameScreen> {
       });
       baseForm.save();
       print("updating firestore");
-      await baseForm.finalGameResult.updateFirestore();
+      await baseForm.finalGameResult.updateFirestore(true);
       print('finished update');
       setState(() {
         _saving = false;
@@ -73,7 +73,7 @@ class EditGameScreenState extends State<EditGameScreen> {
   Widget build(BuildContext context) {
     Game game = UserDatabaseData.instance.gamesCache[widget.gameuid];
     Widget form;
-    switch (game.type) {
+    switch (game.sharedData.type) {
       case EventType.Game:
         form = new GameEditForm(game: game, key: _gameFormKey);
         break;

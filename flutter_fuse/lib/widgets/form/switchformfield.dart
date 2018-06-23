@@ -5,14 +5,14 @@ class SwitchFormField extends FormField<bool> {
   SwitchFormField({
     Key key,
     bool initialValue: false,
+    bool enabled: true,
     IconData icon,
     String label,
     Widget child,
     ValueChanged<bool> onFieldSubmitted,
     FormFieldSetter<bool> onSaved,
     FormFieldValidator<bool> validator,
-  })
-      : assert(initialValue != null),
+  })  : assert(initialValue != null),
         super(
           key: key,
           initialValue: initialValue,
@@ -22,30 +22,40 @@ class SwitchFormField extends FormField<bool> {
             final _SwitchFormFieldState state = field;
             InputDecorationTheme theme =
                 Theme.of(field.context).inputDecorationTheme;
-            return new Row(
-              children: <Widget>[
-                new Container(
-                  padding: new EdgeInsets.only(left: 5.0, right: 10.0),
-            child:
-                new Icon(
-                  icon,
-                  color: _getDefaultIconColor(Theme.of(field.context)),
-                ),
-                ),
-                new Expanded(
-                  child: child ?? new Text(
-                    label,
-                    style: theme.labelStyle ?? theme.hintStyle,
-                  ),
-                ),
-                new Switch(
-                  value: state.value,
-                  onChanged: (bool value) {
+            ValueChanged<bool> onChanged = enabled
+                ? (bool value) {
                     field.didChange(value);
                     if (onFieldSubmitted != null) {
                       onFieldSubmitted(value);
                     }
-                  },
+                  }
+                : null;
+
+            TextStyle textStyle = (theme.labelStyle ?? theme.hintStyle);
+            if (!enabled) {
+              textStyle = textStyle.copyWith(
+                  color: Theme.of(field.context).disabledColor);
+            }
+
+            return new Row(
+              children: <Widget>[
+                new Container(
+                  padding: new EdgeInsets.only(left: 5.0, right: 10.0),
+                  child: new Icon(
+                    icon,
+                    color: _getDefaultIconColor(Theme.of(field.context)),
+                  ),
+                ),
+                new Expanded(
+                  child: child ??
+                      new Text(
+                        label,
+                        style: textStyle,
+                      ),
+                ),
+                new Switch(
+                  value: state.value,
+                  onChanged: onChanged,
                 ),
               ],
             );
@@ -67,5 +77,4 @@ class SwitchFormField extends FormField<bool> {
   _SwitchFormFieldState createState() => new _SwitchFormFieldState();
 }
 
-class _SwitchFormFieldState extends FormFieldState<bool> {
-}
+class _SwitchFormFieldState extends FormFieldState<bool> {}

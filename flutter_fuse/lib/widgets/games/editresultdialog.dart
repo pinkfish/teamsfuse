@@ -13,7 +13,7 @@ class EditResultDialog extends StatelessWidget {
   EditResultDialog(this._game)
       : _team = UserDatabaseData.instance.teams[_game.teamUid] ?? new Team(),
         _opponent = UserDatabaseData
-                .instance.teams[_game.teamUid]?.opponents[_game.opponentUid] ??
+                .instance.teams[_game.teamUid]?.opponents[_game.opponentUids[0]] ??
             new Opponent() {
     _game.loadGameLogs();
   }

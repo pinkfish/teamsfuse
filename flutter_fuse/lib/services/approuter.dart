@@ -20,13 +20,15 @@ import 'package:flutter_fuse/screens/settings/editprofile.dart';
 import 'package:flutter_fuse/screens/settings/editplayer.dart';
 import 'package:flutter_fuse/screens/settings/profile.dart';
 import 'package:flutter_fuse/screens/settings/settings.dart';
+import 'package:flutter_fuse/screens/team/addadmin.dart';
 import 'package:flutter_fuse/screens/team/addplayer.dart';
 import 'package:flutter_fuse/screens/team/addseason.dart';
+import 'package:flutter_fuse/screens/team/addteam.dart';
 import 'package:flutter_fuse/screens/team/editteam.dart';
 import 'package:flutter_fuse/screens/team/playerdetails.dart';
 import 'package:flutter_fuse/screens/team/team.dart';
+import 'package:flutter_fuse/screens/team/clubsettings.dart';
 import 'package:flutter_fuse/screens/team/teamsettings.dart';
-import 'package:flutter_fuse/screens/team/addadmin.dart';
 import 'package:flutter_fuse/screens/clubs/clubdetails.dart';
 import 'package:flutter_fuse/screens/clubs/editclub.dart';
 import 'package:flutter_fuse/screens/clubs/addclub.dart';
@@ -96,7 +98,7 @@ class AppRouter {
     router.define("/AddTeam",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditTeamScreen(null)));
+                new AddTeamScreen()));
     router.define("/EditTeam/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -109,6 +111,10 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AddAdminScreen(vals["id"][0].toString())));
+    router.define("/TeamClub/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new ClubSettingsScreen(vals["id"][0].toString())));
     router.define("/AddSeason/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

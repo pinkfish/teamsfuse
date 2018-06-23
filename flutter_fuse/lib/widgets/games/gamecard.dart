@@ -72,7 +72,7 @@ class GameCard extends StatelessWidget {
         attendence[player] = Attendance.Maybe;
       }
     }
-    print('Attend $players ${game.attendance} $attendence');
+    print('Attend ${game.uid} $players ${game.attendance} $attendence');
     if (attendence.length == 0) {
       return null;
     }
@@ -176,7 +176,7 @@ class GameCard extends StatelessWidget {
     // Only show attendence until the game/event is over.
     if (game.result.inProgress == GameInProgress.NotStarted) {
       if ((game.trackAttendance &&
-          game.time >
+          game.sharedData.time >
               new DateTime.now()
                   .subtract(new Duration(hours: 2))
                   .millisecondsSinceEpoch)) {
@@ -190,10 +190,10 @@ class GameCard extends StatelessWidget {
 
   void _showDirections(BuildContext context) {
     String url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=" + Uri.encodeComponent(game.place.address);
-    if (game.place.placeId != null) {
+    url += "&destination=" + Uri.encodeComponent(game.sharedData.place.address);
+    if (game.sharedData.place.placeId != null) {
       url +=
-          "&destionation_place_id=" + Uri.encodeComponent(game.place.placeId);
+          "&destionation_place_id=" + Uri.encodeComponent(game.sharedData.place.placeId);
     }
     launch(url);
   }
@@ -203,10 +203,12 @@ class GameCard extends StatelessWidget {
     List<Widget> buttons = <Widget>[];
     Team team = UserDatabaseData.instance.teams[game.teamUid];
     Opponent op;
-    if (team == null || !team.opponents.containsKey(game.opponentUid)) {
-      op = new Opponent(name: Messages.of(context).unknown);
+    if (game.sharedData.type == EventType.Game &&
+        game.opponentUids.length > 0 &&
+        team.opponents.containsKey(game.opponentUids[0])) {
+      op = team.opponents[game.opponentUids[0]];
     } else {
-      op = team.opponents[game.opponentUid];
+      op = new Opponent(name: Messages.of(context).unknown);
     }
 
     List<Player> players = <Player>[];
@@ -228,23 +230,23 @@ class GameCard extends StatelessWidget {
     });
 
     TZDateTime timeNow = new TZDateTime.now(local);
-    Duration dur = timeNow.difference(game.tzTime).abs();
-    TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
+    Duration dur = timeNow.difference(game.sharedData.tzTime).abs();
+    TimeOfDay day = new TimeOfDay.fromDateTime(game.sharedData.tzTime);
     String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeFormat;
     String tzShortName;
-    if (game.timezone != local.name) {
-      tzShortName = getLocation(game.timezone).timeZone(game.time.toInt()).abbr;
+    if (game.sharedData.timezone != local.name) {
+      tzShortName = getLocation(game.sharedData.timezone).timeZone(game.sharedData.time.toInt()).abbr;
     }
 
-    if (game.time != game.endTime) {
-      TimeOfDay endDay = new TimeOfDay.fromDateTime(game.tzEndTime);
+    if (game.sharedData.time != game.sharedData.endTime) {
+      TimeOfDay endDay = new TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
       endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
     }
     String arriveFormat;
     // Only arrival time for games and only if it is before the game.
-    if (game.arriveTime != game.time &&
-        game.type == EventType.Game &&
+    if (game.arriveTime != game.sharedData.time &&
+        game.sharedData.type == EventType.Game &&
         timeNow.millisecondsSinceEpoch <
             game.arriveTime + Duration.millisecondsPerHour) {
       TimeOfDay arriveDay = new TimeOfDay.fromDateTime(game.tzArriveTime);
@@ -267,8 +269,8 @@ class GameCard extends StatelessWidget {
       );
     }
 
-    if (game.time < new DateTime.now().millisecondsSinceEpoch &&
-        game.type == EventType.Game &&
+    if (game.sharedData.time < new DateTime.now().millisecondsSinceEpoch &&
+        game.sharedData.type == EventType.Game &&
         game.result.result == GameResult.Unknown) {
       // Show a result button.
       buttons.add(
@@ -281,9 +283,9 @@ class GameCard extends StatelessWidget {
 
     List<TextSpan> subtitle = <TextSpan>[];
     if (arriveFormat != null) {
-      String addr = game.place.address;
-      if (game.place.name.isNotEmpty) {
-        addr = game.place.name;
+      String addr = game.sharedData.place.address;
+      if (game.sharedData.place.name.isNotEmpty) {
+        addr = game.sharedData.place.name;
       }
       subtitle.add(
         new TextSpan(
@@ -297,7 +299,7 @@ class GameCard extends StatelessWidget {
         ),
       );
     } else {
-      if (game.place.name.isNotEmpty) {
+      if (game.sharedData.place.name.isNotEmpty) {
         subtitle.add(
           new TextSpan(
             style: Theme
@@ -305,7 +307,7 @@ class GameCard extends StatelessWidget {
                 .textTheme
                 .subhead
                 .copyWith(fontWeight: FontWeight.bold),
-            text: game.place.name + "\n",
+            text: game.sharedData.place.name + "\n",
           ),
         );
       } else {
@@ -316,7 +318,7 @@ class GameCard extends StatelessWidget {
                 .textTheme
                 .subhead
                 .copyWith(fontWeight: FontWeight.bold),
-            text: game.place.address + "\n",
+            text: game.sharedData.place.address + "\n",
           ),
         );
       }
@@ -333,11 +335,11 @@ class GameCard extends StatelessWidget {
     Color color = Colors.white;
     String title;
 
-    if (game.time < timeNow.millisecondsSinceEpoch && dur.inMinutes < 60) {
+    if (game.sharedData.time < timeNow.millisecondsSinceEpoch && dur.inMinutes < 60) {
       color = Colors.lightBlueAccent;
     }
 
-    switch (game.type) {
+    switch (game.sharedData.type) {
       case EventType.Game:
         String opName;
         if (op == null) {
@@ -355,7 +357,7 @@ class GameCard extends StatelessWidget {
       case EventType.Event:
         title = Messages
             .of(context)
-            .eventtitle(format, game.name, endTimeFormat, tzShortName);
+            .eventtitle(format, game.sharedData.name, endTimeFormat, tzShortName);
 
         break;
 
@@ -376,7 +378,7 @@ class GameCard extends StatelessWidget {
                 Navigator.pushNamed(context, "/Game/" + game.uid);
               },
               leading: new TeamImage(
-                game.teamUid,
+                team: UserDatabaseData.instance.teams[game.teamUid],
                 width: 50.0,
                 height: 50.0,
               ),
@@ -410,7 +412,7 @@ class GameCard extends StatelessWidget {
             Navigator.pushNamed(context, "/Game/" + game.uid);
           },
           leading: new TeamImage(
-            game.teamUid,
+            team: UserDatabaseData.instance.teams[game.teamUid],
             height: 50.0,
             width: 50.0,
           ),

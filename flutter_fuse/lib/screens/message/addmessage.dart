@@ -268,7 +268,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
               child: new Column(
                 children: <Widget>[
                       new ListTile(
-                        leading: const Icon(CommunityIcons.tshirtcrew),
+                        leading: const Icon(CommunityIcons.tshirtCrew),
                         title: new TeamPicker(
                           onChanged: _changeTeam,
                         ),

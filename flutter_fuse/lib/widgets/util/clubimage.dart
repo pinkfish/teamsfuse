@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'cachednetworkimage.dart';
+import 'dart:async';
 
-class ClubImage extends Image {
-  ClubImage(Club club,
-      {Key key,
+class ClubImage extends CachedNetworkImage {
+  ClubImage(
+      {@required String clubUid,
+      Key key,
       double width,
       double height,
       Color color,
@@ -14,7 +16,10 @@ class ClubImage extends Image {
       ImageRepeat repeat: ImageRepeat.noRepeat,
       bool matchTextDirection: false})
       : super(
-            image: getImageURL(club),
+            imageFuture: getImageURL(clubUid),
+            placeholder: new Image(
+              image: const AssetImage("assets/images/defaultavatar.png"),
+            ),
             key: key,
             width: width,
             height: height,
@@ -23,11 +28,14 @@ class ClubImage extends Image {
             repeat: repeat,
             matchTextDirection: matchTextDirection);
 
-  static ImageProvider getImageURL(Club club) {
-    String photoUrl = club.photoUrl;
-    if (photoUrl != null && photoUrl.isNotEmpty) {
-      return new CachedNetworkImageProvider(urlNow: photoUrl);
+  static Future<String> getImageURL(String clubUid) async {
+    Club club = await UserDatabaseData.instance.getClub(clubUid);
+    if (club != null) {
+      String photoUrl = club.photoUrl;
+      if (photoUrl != null && photoUrl.isNotEmpty) {
+        return photoUrl;
+      }
     }
-    return const AssetImage("assets/images/defaultavatar.png");
+    return null;
   }
 }

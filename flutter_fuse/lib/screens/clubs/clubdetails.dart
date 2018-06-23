@@ -23,10 +23,17 @@ class ClubDetailsScreenState extends State<ClubDetailsScreen> {
 
   ClubDetailsScreenState();
 
+  @override
   void initState() {
     super.initState();
     _clubUpdates = UserDatabaseData.instance.clubStream
         .listen((UpdateReason reason) => setState(() => false));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _clubUpdates.cancel();
   }
 
   Widget _buildBody() {

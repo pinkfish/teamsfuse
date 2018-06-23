@@ -105,7 +105,7 @@ class AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
           child: new Column(
             children: <Widget>[
               new ListTile(
-                leading: const Icon(CommunityIcons.tshirtcrew),
+                leading: const Icon(CommunityIcons.tshirtCrew),
                 title: new Text(_invite.teamName),
                 subtitle: new ByUserNameComponent(userId: _invite.sentByUid),
               ),

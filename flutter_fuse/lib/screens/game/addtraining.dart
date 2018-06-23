@@ -57,7 +57,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
 
   Widget _buildRepeat(BuildContext context) {
     return new RepeatDetailsWidget(
-      _initGame.tzTime,
+      _initGame.sharedData.tzTime,
       repeatData,
       key: _repeatKey,
     );
@@ -67,13 +67,13 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     Uuid uuid = new Uuid();
     String seriesId = uuid.v4();
     _initGame.seriesId = seriesId;
-    _initGame.updateFirestore();
+    _initGame.updateFirestore(false);
     await Future.forEach(_repeatDates, (TZDateTime time) async {
       print('Saving for $time');
       Game newGame = new Game.copy(_initGame);
       newGame.uid = null;
-      newGame.time = time.millisecondsSinceEpoch;
-      return newGame.updateFirestore();
+      newGame.sharedData.time = time.millisecondsSinceEpoch;
+      return newGame.updateFirestore(false);
     });
     return true;
   }
@@ -85,19 +85,19 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     }
     Game myGame = _initGame;
     String timeStr;
-    print("game -- ${myGame.time} ${myGame.endTime}");
-    if (myGame.time != myGame.endTime) {
+    print("game -- ${myGame.sharedData.time} ${myGame.sharedData.endTime}");
+    if (myGame.sharedData.time != myGame.sharedData.endTime) {
       timeStr = MaterialLocalizations
               .of(context)
-              .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.tzTime)) +
+              .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.sharedData.tzTime)) +
           " - " +
           MaterialLocalizations
               .of(context)
-              .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.tzEndTime));
+              .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
     } else {
       timeStr = MaterialLocalizations
           .of(context)
-          .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.tzTime));
+          .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
     }
     List<Widget> cols = <Widget>[
       new RaisedButton(
@@ -109,14 +109,14 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
       new ListTile(
         leading: const Icon(Icons.calendar_today),
         title: new Text(
-            MaterialLocalizations.of(context).formatFullDate(myGame.tzTime)),
+            MaterialLocalizations.of(context).formatFullDate(myGame.sharedData.tzTime)),
         subtitle: new Text(timeStr),
       ),
       new ListTile(
         leading: const Icon(Icons.place),
-        title: new Text(myGame.place.name != null ? myGame.place.name : ""),
+        title: new Text(myGame.sharedData.place.name != null ? myGame.sharedData.place.name : ""),
         subtitle:
-            new Text(myGame.place.address != null ? myGame.place.address : ""),
+            new Text(myGame.sharedData.place.address != null ? myGame.sharedData.place.address : ""),
       ),
     ];
 
@@ -131,7 +131,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     if (myGame.uniform.isNotEmpty) {
       cols.add(
         new ListTile(
-          leading: const Icon(CommunityIcons.tshirtcrew),
+          leading: const Icon(CommunityIcons.tshirtCrew),
           title: new Text(myGame.uniform),
         ),
       );
@@ -146,7 +146,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     _repeatDates.forEach((DateTime t) {
       cols.add(
         new ListTile(
-          leading: const Icon(CommunityIcons.calendarplus),
+          leading: const Icon(CommunityIcons.calendarPlus),
           title: new Text(
             MaterialLocalizations.of(context).formatFullDate(t),
           ),
@@ -205,7 +205,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
         _repeatKey.currentState.save();
         repeatStepState = StepState.complete;
         createStepStage = StepState.complete;
-        _repeatDates = _repeatKey.currentState.repeatTimes(_initGame.tzTime);
+        _repeatDates = _repeatKey.currentState.repeatTimes(_initGame.sharedData.tzTime);
         break;
       case 3:
         createStepStage = StepState.disabled;
@@ -247,22 +247,22 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   void newGame() {
-    _initGame = new Game.newGame(EventType.Practice);
-    _initGame.opponentUid = null;
+    GameSharedData sharedGameData = new GameSharedData(type: EventType.Practice);
+    _initGame = new Game(sharedData: sharedGameData);
+    _initGame.opponentUids = <String>[];
     _initGame.homegame = false;
     _initGame.uniform = '';
     _initGame.notes = '';
-    _initGame.type = EventType.Practice;
+    _initGame.sharedData.type = EventType.Practice;
   }
 
   void _teamChanged(String str) {
     _teamUid = str;
-    _initGame.type = EventType.Practice;
     _initGame.teamUid = _teamUid;
     Team teamData = UserDatabaseData.instance.teams[_teamUid];
     DateTime start = new DateTime.now().add(const Duration(days: 0));
-    _initGame.time = start.millisecondsSinceEpoch;
-    _initGame.endTime = _initGame.time;
+    _initGame.sharedData.time = start.millisecondsSinceEpoch;
+    _initGame.sharedData.endTime = _initGame.sharedData.time;
     _initGame.seasonUid = teamData.currentSeason;
     _initGame.trackAttendance = teamData.trackAttendence;
 

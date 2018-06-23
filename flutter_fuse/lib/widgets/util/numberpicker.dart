@@ -313,6 +313,7 @@ class NumberPickerState extends State<NumberPicker> {
       ScrollController scrollController) {
     return notification is UserScrollNotification &&
         notification.direction == ScrollDirection.idle &&
+        // ignore: invalid_use_of_protected_member
         scrollController.position.activity is! HoldScrollActivity;
   }
 

@@ -53,7 +53,10 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
   Widget build(BuildContext context) {
     Widget body;
     Team team = UserDatabaseData.instance.teams[game.teamUid];
-    Opponent opponent = team.opponents[game.opponentUid];
+    Opponent opponent;
+    if (game.sharedData.type == EventType.Game && game.opponentUids.length > 0) {
+      opponent = team.opponents[game.opponentUids[0]];
+    }
     List<Widget> actions = <Widget>[];
 
     if (_tabIndex == 0) {

@@ -36,6 +36,15 @@ class Messages {
     );
   }
 
+  String titlewith(String str) {
+    return Intl.message(
+      'Team Fuse ($str)',
+      name: 'title',
+      desc: 'Title for the Team Fuse application with some context',
+    );
+  }
+
+
   String get unknown {
     return Intl.message(
       'Unknown',
@@ -92,7 +101,18 @@ class Messages {
   }
 
   String get addteam {
-    return Intl.message("Add team", name: "Add a new team button");
+    return Intl.message("ADD TEAM", name: "Add a new team button");
+  }
+
+  String get addclub {
+    return Intl.message("ADD CLUB", name: "Add a new club button");
+  }
+
+  String get clubsettingdescription {
+    return Intl.message('To setup a club for a team you need to be an '
+        'administrator for both the club and for the team.  This will let you '
+        'connect the both together.  Once connected all administators of the '
+        'club will also be adminstragtors for the team.');
   }
 
   String get newmail {
@@ -140,11 +160,19 @@ class Messages {
   }
 
   String teamnumbers(int num) {
-    return Intl.message("{num} club teams", desc: 'How many teams in the club');
+    return Intl.message("${num} club teams", desc: 'How many teams in the club');
   }
 
   String get clubdetails {
     return Intl.message('Details');
+  }
+
+  String get setclub {
+    return Intl.message('SET CLUB');
+  }
+
+  String get noteams {
+    return Intl.message('No teams');
   }
 
   String get members {
@@ -155,11 +183,11 @@ class Messages {
     return Intl.message('Teams');
   }
 
-  String trackattendence(bool attend) {
-    if (attend == null) {
-      return Intl.message('Team set attendence');
+  String trackattendence(Tristate attend) {
+    if (attend == Tristate.Unset) {
+      return Intl.message('Attendence is from team');
     }
-    if (attend) {
+    if (attend == Tristate.Yes) {
       return Intl.message('Track attendence');
     }
     return Intl.message('Don\'t track attendence');
@@ -171,6 +199,18 @@ class Messages {
 
   String confirmdeletemember(FusedUserProfile profile) {
     return Intl.message('Delete club member ${profile.displayName}?');
+  }
+
+  String get club {
+    return Intl.message('Club');
+  }
+
+  String get selectclub {
+    return Intl.message('Select club');
+  }
+
+  String get noclub {
+    return Intl.message('No club');
   }
 
   String get administrator {
@@ -722,12 +762,12 @@ class Messages {
   }
 
   String get addplayer {
-    return Intl.message('Add Player',
+    return Intl.message('ADD PLAYER',
         name: 'Loading message', desc: 'Message for loading the app');
   }
 
   String get addadmin {
-    return Intl.message('Add Admin',
+    return Intl.message('ADD ADMIN',
         desc: 'Message to show as the title for the admin adding screen');
   }
 
@@ -830,7 +870,8 @@ class Messages {
       InviteAsAdmin inviteAdmin = invite;
       return Intl.message(
           'Do you want to delete the invite to be admin for the team ${inviteAdmin.teamName}?',
-          name: 'Text to delete the invite to be an admin in the alert dialog.');
+          name:
+              'Text to delete the invite to be an admin in the alert dialog.');
     }
     if (invite is InviteToClub) {
       InviteToClub inviteClub = invite;
@@ -842,7 +883,7 @@ class Messages {
   }
 
   String deletegame(Game game) {
-    switch (game.type) {
+    switch (game.sharedData.type) {
       case EventType.Game:
         return Intl.message("Delete game");
       case EventType.Practice:
@@ -1081,7 +1122,7 @@ class Messages {
   }
 
   String gametitlevs(Game game, String oppponent) {
-    switch (game.type) {
+    switch (game.sharedData.type) {
       case EventType.Game:
         return Intl.message('Game vs $oppponent',
             name: 'Game details title',

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter/foundation.dart';
+import 'fabdialer.dart';
 
 typedef void OnFabMiniMenuItemPressed();
 
 class MenuDetails {
   int index;
   AnimationController controller;
+  FabDialerState dialer;
 }
 
 class FabMiniMenuItemWidget extends StatelessWidget {
@@ -34,6 +36,7 @@ class FabMiniMenuItemWidget extends StatelessWidget {
 
   void _doPress() {
     details.controller.animateTo(0.0);
+    details.dialer.closeDialer();
     onPressed();
   }
 

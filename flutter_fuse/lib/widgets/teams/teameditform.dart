@@ -5,6 +5,7 @@ import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/form/genderformfield.dart';
 import 'package:flutter_fuse/widgets/form/sportformfield.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
+import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
@@ -42,6 +43,28 @@ class TeamEditFormState extends State<TeamEditForm> {
 
   bool validate() {
     return _formKey.currentState.validate();
+  }
+
+  Team validateAndCreate() {
+    if (!_formKey.currentState.validate()) {
+      return null;
+    } else {
+      _formKey.currentState.save();
+
+      if (widget.team.uid == null) {
+        // Add the current user as the admin.
+        widget.team.admins.add(UserDatabaseData.instance.userUid);
+        Season season = new Season();
+        season.name = _seasonName;
+        season.record = new WinRecord();
+        season.teamUid = widget.team.precreateUid();
+      }
+    }
+    return widget.team;
+  }
+
+  File getImageFile() {
+    return _imageFile;
   }
 
   Future<bool> validateAndSaveToFirebase() async {
@@ -82,7 +105,7 @@ class TeamEditFormState extends State<TeamEditForm> {
 
   Widget _buildImage() {
     if (!_changedImage) {
-      return new TeamImage(widget.team.uid);
+      return new TeamImage(team: widget.team);
     }
     return new Image.file(_imageFile);
   }
@@ -93,6 +116,10 @@ class TeamEditFormState extends State<TeamEditForm> {
       return new Text('Invalid state');
     }
 
+    Club club;
+    if (widget.team.clubUid != null) {
+      club = UserDatabaseData.instance.clubs[widget.team.clubUid];
+    }
     final Size screenSize = MediaQuery.of(context).size;
     Widget seasonWidget;
     Widget adminWidget;
@@ -104,7 +131,7 @@ class TeamEditFormState extends State<TeamEditForm> {
         focusNode: _focusNodeSeason,
         child: new TextFormField(
           decoration: new InputDecoration(
-            icon: const Icon(Icons.event_note),
+            icon: const Icon(Icons.calendar_today),
             hintText: Messages.of(context).season,
             labelText: Messages.of(context).seasonhint,
           ),
@@ -173,12 +200,13 @@ class TeamEditFormState extends State<TeamEditForm> {
           return _validations.validateSport(context, value);
         },
         onSaved: (String value) {
-          widget.team.sport = Sport.values.firstWhere((Sport e) => e.toString() == value);
+          widget.team.sport =
+              Sport.values.firstWhere((Sport e) => e.toString() == value);
         },
       ),
       new GenderFormField(
         decoration: new InputDecoration(
-          icon: const Icon(CommunityIcons.gendermalefemale),
+          icon: const Icon(CommunityIcons.genderMaleFemale),
           hintText: Messages.of(context).genderselect,
           labelText: Messages.of(context).genderselect,
         ),
@@ -221,6 +249,13 @@ class TeamEditFormState extends State<TeamEditForm> {
             widget.team.arriveEarly = int.parse(value);
           },
         ),
+      ),
+      new SwitchFormField(
+        initialValue: widget.team.trackAttendence,
+        icon: CommunityIcons.trafficLight,
+        enabled: club != null ? club.trackAttendence != null : true,
+        label: Messages.of(context).trackattendence(Tristate.Yes),
+        onSaved: (bool value) => widget.team.trackAttendence = value,
       ),
     ];
     if (adminWidget != null) {

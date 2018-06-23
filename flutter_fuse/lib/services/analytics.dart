@@ -13,7 +13,7 @@ class Analytics extends AnalyticsSubsystem {
   DeviceInfoPlugin deviceInfo;
   IosDeviceInfo iosDeviceInfo;
   AndroidDeviceInfo androidDeviceInfo;
-  bool debugMode;
+  bool debugMode = false;
 
   static Analytics get instance {
     if (_instance == null) {

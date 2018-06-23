@@ -56,7 +56,10 @@ class MessageListState extends State<MessageList> {
 
     return new ListTile(
       onTap: () => Navigator.pushNamed(context, "/ShowMessage/" + mess.uid),
-      leading: new TeamImage(mess.teamUid, width: 30.0),
+      leading: new TeamImage(
+        team: UserDatabaseData.instance.teams[mess.teamUid],
+        width: 30.0,
+      ),
       subtitle: new Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,

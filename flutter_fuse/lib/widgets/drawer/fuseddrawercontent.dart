@@ -17,7 +17,7 @@ class FusedDrawerContent extends StatelessWidget {
       if (club.isMember()) {
         data.add(
           new ListTile(
-            leading: const Icon(CommunityIcons.details),
+            leading: const Icon(CommunityIcons.cardsClub),
             title: new RichText(
               text: new TextSpan(
                 text: club.name,
@@ -37,6 +37,11 @@ class FusedDrawerContent extends StatelessWidget {
                       Messages.of(context).teamnumbers(snap.data.length),
                     );
                   }
+                  if (club.cachedTeams != null) {
+                    return new Text(
+                      Messages.of(context).teamnumbers(club.cachedTeams.length),
+                    );
+                  }
                   return new Text(Messages.of(context).loading);
                 }),
             onTap: () {
@@ -48,14 +53,17 @@ class FusedDrawerContent extends StatelessWidget {
       }
     }
     UserDatabaseData.instance.teams.forEach((String uid, Team team) {
-       data.add(
+      data.add(
         new TeamTile(team),
       );
     });
     data.add(
       new ListTile(
         leading: const Icon(Icons.add),
-        title: new Text(Messages.of(context).addteam),
+        title: new Text(
+          Messages.of(context).addteam,
+          style: Theme.of(context).textTheme.button,
+        ),
         onTap: () => Navigator.pushNamed(context, "AddTeam"),
       ),
     );

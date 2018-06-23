@@ -173,7 +173,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
               ),
             ),
             new ListTile(
-              leading: const Icon(CommunityIcons.tshirtcrew),
+              leading: const Icon(CommunityIcons.tshirtCrew),
               title: new DropdownButton<EventType>(
                 value: widget.details.eventType,
                 items: <DropdownMenuItem<EventType>>[

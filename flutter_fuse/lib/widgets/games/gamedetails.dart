@@ -61,10 +61,10 @@ class GameDetailsState extends State<GameDetails> {
 
   void openNavigation() {
     String url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=" + Uri.encodeComponent(widget.game.place.address);
-    if (widget.game.place.placeId != null) {
+    url += "&destination=" + Uri.encodeComponent(widget.game.sharedData.place.address);
+    if (widget.game.sharedData.place.placeId != null) {
       url += "&destination_place_id=" +
-          Uri.encodeComponent(widget.game.place.placeId);
+          Uri.encodeComponent(widget.game.sharedData.place.placeId);
     }
     launch(url);
   }
@@ -138,7 +138,7 @@ class GameDetailsState extends State<GameDetails> {
 
     // Not started, show availability.
     return new ListTile(
-      leading: const Icon(CommunityIcons.bookopenvariant),
+      leading: const Icon(CommunityIcons.bookOpenVariant),
       title: new GestureDetector(
         onTap: _openAttendance,
         child: new Column(
@@ -151,29 +151,31 @@ class GameDetailsState extends State<GameDetails> {
   @override
   Widget build(BuildContext context) {
     print(
-        'lat: ${widget.game.place.latitude} long: ${widget.game.place.longitude} ${widget.game.uid}');
+        'lat: ${widget.game.sharedData.place.latitude} long: ${widget.game.sharedData.place.longitude} ${widget.game.uid}');
     Marker marker = new Marker(
-        widget.game.place.placeId,
-        widget.game.place.address,
-        widget.game.place.latitude.toDouble(),
-        widget.game.place.longitude.toDouble());
+        widget.game.sharedData.place.placeId,
+        widget.game.sharedData.place.address,
+        widget.game.sharedData.place.latitude.toDouble(),
+        widget.game.sharedData.place.longitude.toDouble());
     Uri uri = MapData.instance.provider
         .getStaticUriWithMarkers(<Marker>[marker], width: 900, height: 400);
-    TimeOfDay day = new TimeOfDay.fromDateTime(widget.game.tzTime);
+    TimeOfDay day = new TimeOfDay.fromDateTime(widget.game.sharedData.tzTime);
     TimeOfDay dayArrive = new TimeOfDay.fromDateTime(widget.game.tzArriveTime);
-    TimeOfDay dayEnd = new TimeOfDay.fromDateTime(widget.game.tzEndTime);
+    TimeOfDay dayEnd = new TimeOfDay.fromDateTime(widget.game.sharedData.tzEndTime);
     String dateStr =
-        MaterialLocalizations.of(context).formatFullDate(widget.game.tzTime);
+        MaterialLocalizations.of(context).formatFullDate(widget.game.sharedData.tzTime);
     String timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeStr =
         MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
     String tzShortName;
-    if (widget.game.timezone != local.name) {
+    if (widget.game.sharedData.timezone != local.name) {
       tzShortName = " (" +
-          getLocation(widget.game.timezone).timeZone(widget.game.time.toInt()).abbr +
+          getLocation(widget.game.sharedData.timezone)
+              .timeZone(widget.game.sharedData.time.toInt())
+              .abbr +
           ")";
     }
-    print('${widget.game.timezone} ${widget.game.tzTime}');
+    print('${widget.game.sharedData.timezone} ${widget.game.sharedData.tzTime}');
     String arriveAttimeStr;
     if (dayArrive.minute == day.minute && dayArrive.hour == day.hour) {
       arriveAttimeStr =
@@ -184,7 +186,7 @@ class GameDetailsState extends State<GameDetails> {
           (tzShortName ?? "");
     }
     Team team = UserDatabaseData.instance.teams[widget.game.teamUid];
-    Opponent opponent = team.opponents[widget.game.opponentUid];
+    Opponent opponent = team.opponents[widget.game.opponentUids[0]];
     Season season = team.seasons[widget.game.seasonUid];
 
     ThemeData theme = Theme.of(context);
@@ -232,9 +234,13 @@ class GameDetailsState extends State<GameDetails> {
     // Team details
     body.add(
       new ListTile(
-        leading: new TeamImage(widget.game.teamUid, width: 50.0, height: 50.0),
+        leading: new TeamImage(
+          team: UserDatabaseData.instance.teams[widget.game.teamUid],
+          width: 50.0,
+          height: 50.0,
+        ),
         title: new Text(team.name, style: theme.textTheme.title),
-        subtitle: arriveAttimeStr != null && widget.game.type == EventType.Game
+        subtitle: arriveAttimeStr != null && widget.game.sharedData.type == EventType.Game
             ? new Text('arrive at ' + arriveAttimeStr,
                 style: theme.textTheme.subhead)
             : null,
@@ -250,7 +256,7 @@ class GameDetailsState extends State<GameDetails> {
           dateStr +
               " " +
               timeStr +
-              (widget.game.endTime == widget.game.time
+              (widget.game.sharedData.endTime == widget.game.sharedData.time
                   ? ''
                   : " - " + endTimeStr + (tzShortName ?? "")),
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
@@ -258,19 +264,19 @@ class GameDetailsState extends State<GameDetails> {
         subtitle: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new Text(widget.game.place.name ?? ''),
-            new Text(widget.game.place.address ?? Messages.of(context).unknown),
+            new Text(widget.game.sharedData.place.name ?? ''),
+            new Text(widget.game.sharedData.place.address ?? Messages.of(context).unknown),
           ],
         ),
       ),
     );
 
     // Results.
-    if (widget.game.type == EventType.Game) {
+    if (widget.game.sharedData.type == EventType.Game) {
       if (widget.adding) {
         body.add(
           new ListTile(
-            leading: new Icon(CommunityIcons.bookopenvariant),
+            leading: new Icon(CommunityIcons.bookOpenVariant),
             title: new Text(Messages.of(context).gametype),
           ),
         );
@@ -283,7 +289,7 @@ class GameDetailsState extends State<GameDetails> {
           }
         }
         // Show the live stuff if the game is close to starting.
-        if (widget.game.time >
+        if (widget.game.sharedData.time >
             new DateTime.now()
                 .subtract(const Duration(hours: 1))
                 .millisecondsSinceEpoch) {}
@@ -316,21 +322,21 @@ class GameDetailsState extends State<GameDetails> {
         body.add(
           new ListTile(
             onTap: _editResult,
-            leading: new Icon(CommunityIcons.bookopenvariant),
+            leading: new Icon(CommunityIcons.bookOpenVariant),
             title: new Text(title, style: resultStyle),
           ),
         );
       }
     } else {
       // Tell people this is a practice or special event.
-      if (widget.game.type == EventType.Practice) {
+      if (widget.game.sharedData.type == EventType.Practice) {
         body.add(
           new ListTile(
             leading: const Icon(Icons.train),
             title: new Text(Messages.of(context).trainingtype),
           ),
         );
-      } else if (widget.game.type == EventType.Event) {
+      } else if (widget.game.sharedData.type == EventType.Event) {
         body.add(
           new ListTile(
             leading: const Icon(Icons.plus_one),
@@ -341,7 +347,7 @@ class GameDetailsState extends State<GameDetails> {
       // Attendance, possibly.
       if (!widget.adding &&
           widget.game.trackAttendance &&
-          widget.game.time >
+          widget.game.sharedData.time >
               new DateTime.now()
                   .subtract(const Duration(hours: 1))
                   .millisecondsSinceEpoch) {
@@ -353,7 +359,7 @@ class GameDetailsState extends State<GameDetails> {
     if (widget.game.uniform != null && widget.game.uniform.isNotEmpty) {
       body.add(
         new ListTile(
-          leading: const Icon(CommunityIcons.tshirtcrew),
+          leading: const Icon(CommunityIcons.tshirtCrew),
           title: new Text(
               widget.game.uniform == null ? 'fluff' : widget.game.uniform),
         ),
@@ -371,7 +377,7 @@ class GameDetailsState extends State<GameDetails> {
     }
 
     // Opponent last games.
-    if (widget.game.type == EventType.Game && !widget.adding) {
+    if (widget.game.sharedData.type == EventType.Game && !widget.adding) {
       String seasonName;
       if (team.seasons.containsKey(widget.game.seasonUid)) {
         seasonName = team.seasons[widget.game.seasonUid].name;
@@ -398,7 +404,7 @@ class GameDetailsState extends State<GameDetails> {
             new TeamResultsStreamFuture(
               teamUid: team.uid,
               seasonUid: season.uid,
-              opponentUid: widget.game.opponentUid,
+              opponentUid: widget.game.opponentUids[0],
             ),
           ],
         ),
@@ -430,7 +436,7 @@ class GameDetailsState extends State<GameDetails> {
               new TeamResultsStreamFuture(
                 teamUid: team.uid,
                 seasonUid: season.uid,
-                opponentUid: widget.game.opponentUid,
+                opponentUid: widget.game.opponentUids[0],
               ),
             );
           }

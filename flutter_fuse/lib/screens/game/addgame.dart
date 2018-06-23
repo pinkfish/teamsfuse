@@ -51,7 +51,6 @@ class AddGameScreenState extends State<AddGameScreen> {
       // Check to make sure a team is picked.
       case 0:
         if (_teamUid == null) {
-          print('teamuid ${_gameFormKey.currentState.widget.game.teamUid}');
           teamStepState = StepState.error;
           return false;
         }
@@ -95,7 +94,7 @@ class AddGameScreenState extends State<AddGameScreen> {
           setState(() {
             //_saving = true;
           });
-          _initGame.updateFirestore().then((void h) {
+          _initGame.updateFirestore(true).then((void h) {
             _saving = false;
             Navigator.pop(context);
           }).catchError((Error e) {
@@ -124,17 +123,18 @@ class AddGameScreenState extends State<AddGameScreen> {
 
   void _teamChanged(String str) {
     //_gameFormKey.currentState.setTeam(str);
-    _initGame = new Game.newGame(EventType.Game);
+    GameSharedData sharedGameData = new GameSharedData(type: EventType.Game);
+    _initGame = new Game(sharedData: sharedGameData);
     Team teamData = UserDatabaseData.instance.teams[str];
     DateTime start = new DateTime.now().add(const Duration(days: 1));
-    _initGame.time = start.millisecondsSinceEpoch;
+    _initGame.sharedData.time = start.millisecondsSinceEpoch;
     _initGame.arriveTime = start
         .subtract(new Duration(minutes: teamData.arriveEarly.toInt()))
         .millisecondsSinceEpoch;
-    _initGame.endTime = _initGame.time;
+    _initGame.sharedData.endTime = _initGame.sharedData.time;
     _initGame.teamUid = str;
     _initGame.seasonUid = teamData.currentSeason;
-    _initGame.opponentUid = null;
+    _initGame.opponentUids = <String>[];
     _initGame.homegame = false;
     _initGame.uniform = '';
     _initGame.notes = '';

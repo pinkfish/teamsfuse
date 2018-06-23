@@ -72,7 +72,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
         children: <Widget>[
           new SeasonFormField(
             decoration: new InputDecoration(
-              icon: const Icon(CommunityIcons.tshirtcrew),
+              icon: const Icon(CommunityIcons.tshirtCrew),
               labelText: Messages.of(context).season,
             ),
             teamUid: widget.teamUid,

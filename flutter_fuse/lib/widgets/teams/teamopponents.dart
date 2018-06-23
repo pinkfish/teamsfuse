@@ -184,9 +184,9 @@ class TeamOpponentsState extends State<TeamOpponents> {
                   } else {
                     List<Widget> newData = <Widget>[];
                     games.data.forEach((Game game) {
-                      if (game.type == EventType.Game &&
+                      if (game.sharedData.type == EventType.Game &&
                           game.seasonUid == _seasonUid &&
-                          game.opponentUid == uid) {
+                          game.opponentUids.contains(uid)) {
                         newData.add(new GameCard(game));
                       }
                     });
@@ -248,8 +248,8 @@ class TeamOpponentsState extends State<TeamOpponents> {
                   } else {
                     List<Widget> newData = <Widget>[];
                     for (Game game in games.data) {
-                      if (game.type == EventType.Game &&
-                          game.opponentUid == uid) {
+                      if (game.sharedData.type == EventType.Game &&
+                          game.opponentUids.contains(uid)) {
                         if (game.seasonUid == _seasonUid) {
                           newData.add(new GameCard(game));
                         }

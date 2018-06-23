@@ -39,7 +39,7 @@ class GameListCalendarState extends CalendarSource {
     int pos = 0;
     for (Game g in _listToShow) {
       events.add(new CalendarEvent(
-          instant: g.tzTime, instantEnd: g.tzEndTime, index: pos++));
+          instant: g.sharedData.tzTime, instantEnd: g.sharedData.tzEndTime, index: pos++));
     }
     print("returned ${events.length}");
     return events;
@@ -88,7 +88,7 @@ class GameListCalendarState extends CalendarSource {
 
   void _setGames(Iterable<Game> res) {
     List<Game> games = res.toList();
-    games.sort((Game a, Game b) => a.time.compareTo(b.time));
+    games.sort((Game a, Game b) => a.sharedData.time.compareTo(b.sharedData.time));
 
     _listToShow = games;
     _controller?.add(UpdateReason.Update);

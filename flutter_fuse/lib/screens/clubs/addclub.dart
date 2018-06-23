@@ -24,6 +24,15 @@ class AddClubScreenState extends State<AddClubScreen> {
   Club _clubToAdd;
   File _imageFileToAdd;
 
+  @override
+  void initState() {
+    super.initState();
+    _clubToAdd = new Club();
+    _clubToAdd.name = "";
+    _clubToAdd.arriveBeforeGame = 0;
+    _clubToAdd.trackAttendence = Tristate.Unset;
+  }
+
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(value)));
@@ -40,7 +49,7 @@ class AddClubScreenState extends State<AddClubScreen> {
               .updateClubImage(_clubToAdd, _imageFileToAdd);
           _clubToAdd.photoUrl = uri.toString();
         }
-        await _clubToAdd.updateFirestore();
+        await _clubToAdd.updateFirestore(includeMembers: true);
         Navigator.pop(context);
       } else {
         _showInSnackBar(Messages.of(context).formerror);
@@ -63,23 +72,31 @@ class AddClubScreenState extends State<AddClubScreen> {
           return true;
         }
         if (!_formKey.currentState.validate()) {
-          _detailsStepState = StepState.error;
-          _createStepStage = StepState.disabled;
+          setState(() {
+            _detailsStepState = StepState.error;
+            _createStepStage = StepState.disabled;
+          });
           _showInSnackBar(Messages.of(context).formerror);
           return false;
         }
         _clubToAdd = _formKey.currentState.validateAndCreate();
         if (_clubToAdd == null) {
-          _detailsStepState = StepState.error;
-          _createStepStage = StepState.disabled;
+          setState(() {
+            _detailsStepState = StepState.error;
+            _createStepStage = StepState.disabled;
+          });
           _showInSnackBar(Messages.of(context).formerror);
           return false;
         }
         _imageFileToAdd = _formKey.currentState.getImageFile();
-        _detailsStepState = StepState.complete;
+        setState(() {
+          _detailsStepState = StepState.complete;
+        });
         break;
       case 2:
-        _createStepStage = StepState.disabled;
+        setState(() {
+          _createStepStage = StepState.disabled;
+        });
         break;
     }
     return true;
@@ -109,13 +126,14 @@ class AddClubScreenState extends State<AddClubScreen> {
   Widget _buildImage() {
     if (_imageFileToAdd == null) {
       return new ClubImage(
-        _clubToAdd,
+        clubUid: _clubToAdd.uid,
       );
     }
     return new Image.file(_imageFileToAdd);
   }
 
   Widget _buildSummary() {
+    print('$_clubToAdd');
     return new SingleChildScrollView(
       child: new Column(
         children: <Widget>[
@@ -166,7 +184,7 @@ class AddClubScreenState extends State<AddClubScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                new EditClubDetailsForm(new Club(), _formKey),
+                new EditClubDetailsForm(_clubToAdd, _formKey),
               ],
             ),
           ),

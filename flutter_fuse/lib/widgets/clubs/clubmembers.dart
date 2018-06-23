@@ -76,7 +76,7 @@ class ClubMembers extends StatelessWidget {
 
     for (String adminUid in club.adminsUids) {
       members.add(
-        new FutureBuilder(
+        new FutureBuilder<FusedUserProfile>(
           future: UserAuth.instance.getProfile(adminUid),
           builder:
               (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) =>
@@ -86,7 +86,7 @@ class ClubMembers extends StatelessWidget {
     }
     for (String memberUid in club.members) {
       members.add(
-        new FutureBuilder(
+        new FutureBuilder<FusedUserProfile>(
           future: UserAuth.instance.getProfile(memberUid),
           builder:
               (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) =>

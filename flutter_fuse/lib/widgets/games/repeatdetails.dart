@@ -3,7 +3,14 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
 import 'package:timezone/timezone.dart';
 
-enum RepeatPeriod { None, Weekly, Monthly }
+enum RepeatPeriod {
+  // ignore: camel_case_types, constant_identifier_names
+  None,
+  // ignore: camel_case_types, constant_identifier_names
+  Weekly,
+  // ignore: camel_case_types, constant_identifier_names
+  Monthly,
+}
 
 class RepeatData {
   RepeatPeriod period;

@@ -231,7 +231,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
 
     ret.add(
       new ListTile(
-        leading: const Icon(CommunityIcons.bookopenvariant),
+        leading: const Icon(CommunityIcons.bookOpenVariant),
         title: new Text(
           messages.roleingame(_player.role),
         ),
@@ -331,7 +331,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
           (SeasonPlayer player) => player.playerUid == _player.playerUid)) {
         ret.add(
           new ListTile(
-            leading: const Icon(CommunityIcons.tshirtcrew),
+            leading: const Icon(CommunityIcons.tshirtCrew),
             title: new Text(season.name),
           ),
         );

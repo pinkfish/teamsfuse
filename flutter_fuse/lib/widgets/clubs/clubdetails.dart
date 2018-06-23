@@ -19,7 +19,7 @@ class ClubDetails extends StatelessWidget {
         children: <Widget>[
           new Center(
             child: new ClubImage(
-              club,
+              clubUid: club.uid,
               width: (screenSize.width < 500)
                   ? 120.0
                   : (screenSize.width / 4) + 12.0,

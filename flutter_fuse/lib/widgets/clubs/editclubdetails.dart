@@ -3,10 +3,9 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:flutter_fuse/widgets/util/clubimage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'dart:async';
 
 class EditClubDetailsForm extends StatefulWidget {
   final Club club;
@@ -30,7 +29,14 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
   bool _changedImage = false;
   String _clubName;
   int _clubArriveBefore;
-  bool _clubTrackAttendence;
+  Tristate _clubTrackAttendence = Tristate.Unset;
+
+  void initState() {
+    super.initState();
+    _clubTrackAttendence = widget.club.trackAttendence;
+    _clubName = widget.club.name;
+    _clubArriveBefore = widget.club.arriveBeforeGame;
+  }
 
   void save() {
     _formKey.currentState.save();
@@ -73,7 +79,7 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
 
   Widget _buildImage() {
     if (!_changedImage) {
-      return new TeamImage(widget.club.uid);
+      return new ClubImage(clubUid: widget.club.uid);
     }
     return new Image.file(_imageFile);
   }
@@ -132,8 +138,7 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
       ),
     ];
 
-    print('uid ${widget.club.toJson()}');
-    return new SingleChildScrollView(
+     return new SingleChildScrollView(
       scrollDirection: Axis.vertical,
       controller: _scrollController,
       child: new Column(
