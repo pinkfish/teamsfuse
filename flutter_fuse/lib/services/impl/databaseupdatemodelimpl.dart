@@ -61,9 +61,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         Firestore.instance.collection(GAMES_COLLECTION).document(game.uid);
 
     Map<String, dynamic> data = <String, dynamic>{};
-    data[Game.ATTENDANCE + "." + playerUid] = <String, dynamic>{
-      Game.ATTENDANCEVALUE: attend.toString()
-    };
+    data[Game.ATTENDANCE + "." + playerUid + "." + Game.ATTENDANCEVALUE] =
+        attend.toString();
+
     return ref.updateData(data).then((void a) => print('Done stuff'));
   }
 
