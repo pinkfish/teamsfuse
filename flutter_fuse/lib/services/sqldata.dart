@@ -20,7 +20,6 @@ class SqlData implements PersistenData {
   static const String teamUidColumn = "teamuid";
 
   static const List<String> _tables = const <String>[
-    PersistenData.gameTable,
     PersistenData.teamsTable,
     PersistenData.seasonTable,
     PersistenData.playersTable,
@@ -48,7 +47,7 @@ class SqlData implements PersistenData {
   Future<void> initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     _path = join(documentsDirectory.path, _dbName);
-    _database = await openDatabase(_path, version: 4,
+    _database = await openDatabase(_path, version: 5,
         onUpgrade: (Database db, int oldVersion, int newVersion) async {
       if (newVersion == 3) {
         await db.execute("CREATE TABLE IF NOT EXISTS " +
@@ -66,6 +65,17 @@ class SqlData implements PersistenData {
             " text PRIMARY KEY, " +
             dataColumn +
             " text NOT NULL);");
+        await db.execute("DROP TABLE " + PersistenData.gameTable);
+        return db.execute("CREATE TABLE IF NOT EXISTS " +
+            PersistenData.gameTable +
+            "(" +
+            indexColumn +
+            " text PRIMARY KEY, " +
+            teamUidColumn +
+            " text NOT NULL, " +
+            dataColumn +
+            " text NOT NULL);");
+      } else if (newVersion == 5) {
         await db.execute("DROP TABLE " + PersistenData.gameTable);
         return db.execute("CREATE TABLE IF NOT EXISTS " +
             PersistenData.gameTable +

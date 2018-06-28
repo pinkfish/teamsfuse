@@ -22,7 +22,7 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
   FabDialerState();
 
   int _angle = 90;
-  bool _isRotated = false;
+  bool _isRotated = true;
 
   AnimationController controller;
 
@@ -91,13 +91,7 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
       widget.details.index = index++;
       widget.details.dialer = this;
     });
-    /*
-    if (controller.value == 0.0) {
-      print('Force ${controller.value}');
-      _isRotated = true;
-      _angle = 90;
-    }
-    */
+
     // Update all the menu items.
     return new Container(
       margin: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),

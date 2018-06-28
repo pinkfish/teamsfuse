@@ -7,8 +7,9 @@ import 'package:flutter_fuse/services/messages.dart';
 class TeamPicker extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final String teamUid;
+  bool disabled;
 
-  TeamPicker({ @required this.onChanged,this.teamUid});
+  TeamPicker({@required this.onChanged, this.teamUid, this.disabled = false});
 
   @override
   TeamPickerState createState() {
@@ -29,7 +30,8 @@ class TeamPickerState extends State<TeamPicker> {
 
   @override
   void initState() {
-    _teamStream = UserDatabaseData.instance.teamStream.listen((UpdateReason update) {
+    _teamStream =
+        UserDatabaseData.instance.teamStream.listen((UpdateReason update) {
       setState(() {});
     });
     super.initState();
@@ -58,15 +60,24 @@ class TeamPickerState extends State<TeamPicker> {
         children: <Widget>[
           new Expanded(
             flex: 1,
-            child: new DropdownButton<String>(
-              hint: new Text(Messages.of(context).teamselect),
-              items: _buildItems(),
-              value: widget.teamUid,
-              onChanged: (String val) {
-                widget.onChanged(val);
-                return val;
-              },
-            ),
+            child: widget.disabled
+                ? new Text(
+                    Messages.of(context).teamselect,
+                    style: Theme
+                        .of(context)
+                        .textTheme
+                        .body1
+                        .copyWith(color: Theme.of(context).disabledColor),
+                  )
+                : new DropdownButton<String>(
+                    hint: new Text(Messages.of(context).teamselect),
+                    items: _buildItems(),
+                    value: widget.teamUid,
+                    onChanged: (String val) {
+                      widget.onChanged(val);
+                      return val;
+                    },
+                  ),
           ),
         ],
       ),

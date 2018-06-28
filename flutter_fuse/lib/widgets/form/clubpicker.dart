@@ -8,7 +8,7 @@ class ClubPicker extends StatelessWidget {
   final String clubUid;
   final bool adminOnly;
 
-  ClubPicker({@required this.onChanged, this.clubUid, this.adminOnly});
+  ClubPicker({@required this.onChanged, this.clubUid, this.adminOnly = true});
 
   static const String noClub = "noClub";
 

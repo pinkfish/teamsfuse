@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/form/teampicker.dart';
+import 'package:flutter_fuse/widgets/teams/teamselection.dart';
 import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
 import 'package:flutter_fuse/widgets/games/repeatdetails.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
@@ -29,7 +29,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   StepState detailsStepState = StepState.disabled;
   StepState repeatStepState = StepState.disabled;
   StepState createStepStage = StepState.disabled;
-  String _teamUid;
+  Team _team;
   Game _initGame;
   RepeatData repeatData = new RepeatData();
   int currentStep = 0;
@@ -87,17 +87,14 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     String timeStr;
     print("game -- ${myGame.sharedData.time} ${myGame.sharedData.endTime}");
     if (myGame.sharedData.time != myGame.sharedData.endTime) {
-      timeStr = MaterialLocalizations
-              .of(context)
-              .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.sharedData.tzTime)) +
+      timeStr = MaterialLocalizations.of(context).formatTimeOfDay(
+              new TimeOfDay.fromDateTime(myGame.sharedData.tzTime)) +
           " - " +
-          MaterialLocalizations
-              .of(context)
-              .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
+          MaterialLocalizations.of(context).formatTimeOfDay(
+              new TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
     } else {
-      timeStr = MaterialLocalizations
-          .of(context)
-          .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
+      timeStr = MaterialLocalizations.of(context).formatTimeOfDay(
+          new TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
     }
     List<Widget> cols = <Widget>[
       new RaisedButton(
@@ -108,15 +105,19 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
       ),
       new ListTile(
         leading: const Icon(Icons.calendar_today),
-        title: new Text(
-            MaterialLocalizations.of(context).formatFullDate(myGame.sharedData.tzTime)),
+        title: new Text(MaterialLocalizations
+            .of(context)
+            .formatFullDate(myGame.sharedData.tzTime)),
         subtitle: new Text(timeStr),
       ),
       new ListTile(
         leading: const Icon(Icons.place),
-        title: new Text(myGame.sharedData.place.name != null ? myGame.sharedData.place.name : ""),
-        subtitle:
-            new Text(myGame.sharedData.place.address != null ? myGame.sharedData.place.address : ""),
+        title: new Text(myGame.sharedData.place.name != null
+            ? myGame.sharedData.place.name
+            : ""),
+        subtitle: new Text(myGame.sharedData.place.address != null
+            ? myGame.sharedData.place.address
+            : ""),
       ),
     ];
 
@@ -169,7 +170,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     switch (currentStep) {
       // Check to make sure a team is picked.
       case 0:
-        if (_teamUid == null) {
+        if (_team == null) {
           teamStepState = StepState.error;
           return false;
         }
@@ -205,7 +206,8 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
         _repeatKey.currentState.save();
         repeatStepState = StepState.complete;
         createStepStage = StepState.complete;
-        _repeatDates = _repeatKey.currentState.repeatTimes(_initGame.sharedData.tzTime);
+        _repeatDates =
+            _repeatKey.currentState.repeatTimes(_initGame.sharedData.tzTime);
         break;
       case 3:
         createStepStage = StepState.disabled;
@@ -247,7 +249,8 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   void newGame() {
-    GameSharedData sharedGameData = new GameSharedData(type: EventType.Practice);
+    GameSharedData sharedGameData =
+        new GameSharedData(type: EventType.Practice);
     _initGame = new Game(sharedData: sharedGameData);
     _initGame.opponentUids = <String>[];
     _initGame.homegame = false;
@@ -256,19 +259,17 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     _initGame.sharedData.type = EventType.Practice;
   }
 
-  void _teamChanged(String str) {
-    _teamUid = str;
-    _initGame.teamUid = _teamUid;
-    Team teamData = UserDatabaseData.instance.teams[_teamUid];
+  void _teamChanged(Team team) {
+    _initGame.teamUid = team.uid;
     DateTime start = new DateTime.now().add(const Duration(days: 0));
     _initGame.sharedData.time = start.millisecondsSinceEpoch;
     _initGame.sharedData.endTime = _initGame.sharedData.time;
-    _initGame.seasonUid = teamData.currentSeason;
-    _initGame.trackAttendance = teamData.trackAttendence;
+    _initGame.seasonUid = team.currentSeason;
+    _initGame.trackAttendance = team.trackAttendence;
 
     print('team changed ${_initGame.toJSON()}');
     setState(() {
-      _teamUid = str;
+      _team = team;
     });
   }
 
@@ -301,27 +302,21 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
               title: new Text(messages.team),
               state: teamStepState,
               isActive: true,
-              content: new Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  new TeamPicker(
-                    onChanged: _teamChanged,
-                    teamUid: _teamUid,
-                  ),
-                ],
+              content: new TeamSelection(
+                onChanged: _teamChanged,
+                initialTeam: _team,
               ),
             ),
             new Step(
               title: new Text(messages.gamedetails),
               state: detailsStepState,
-              isActive: _teamUid != null && _teamUid.isNotEmpty,
+              isActive: _team != null && _team?.uid?.isNotEmpty,
               content: _buildForm(context),
             ),
             new Step(
               title: new Text(messages.repeat),
               state: repeatStepState,
-              isActive: _teamUid != null && _teamUid.isNotEmpty,
+              isActive: _team != null && _team?.uid?.isNotEmpty,
               content: _buildRepeat(context),
             ),
             new Step(

@@ -58,7 +58,7 @@ class GameListCalendarState extends CalendarSource {
     _subscription?.dispose();
     _subscription =
         UserDatabaseData.instance.getGames(details, startPoint, endPoint);
-    _setGames(_subscription.games);
+    _setGames(_subscription.initialData);
     _listening?.cancel();
     _listening = _subscription.stream.listen((Iterable<Game> games) {
       print("Getting games $startPoint $endPoint");
@@ -93,8 +93,11 @@ class GameListCalendarState extends CalendarSource {
     games.sort(
         (Game a, Game b) => a.sharedData.time.compareTo(b.sharedData.time));
 
-    _listToShow = games;
-    _controller?.add(UpdateReason.Update);
-    updateEvents();
+    if (games.length > 0 || _listToShow == null) {
+      _listToShow = games;
+
+      _controller?.add(UpdateReason.Update);
+      updateEvents();
+    }
   }
 }

@@ -500,7 +500,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         }
         for (DocumentSnapshot snap in queryGameSnap.documents) {
           String sharedGameUid;
-          Map<String, dynamic> sharedGameStuff;
           Game g = maps[teamUid].lookup(snap.documentID);
           GameSharedData sharedData;
           if (g == null) {
@@ -888,28 +887,45 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return data;
   }
 
+  Future<Team> _loadTeamFromClub(DocumentSnapshot snap) async {
+    if (UserDatabaseData.instance.teams.containsKey(snap.documentID)) {
+      // Team in here should always be up to date.
+      return UserDatabaseData.instance.teams[snap.documentID];
+    } else {
+      final Team team = new Team();
+      team.fromJSON(snap.documentID, snap.data);
+      // Find the seasons for the team.
+      QuerySnapshot query = await Firestore.instance
+          .collection(SEASONS_COLLECTION)
+          .where(Season.TEAMUID, isEqualTo: snap.documentID)
+          .getDocuments();
+      for (DocumentSnapshot doc in query.documents) {
+        Season season = new Season();
+        season.fromJSON(doc.documentID, doc.data);
+        team.seasons[season.uid] = season;
+      }
+      return team;
+    }
+  }
+
   // clubs!
   @override
-  TeamSubscription getTeams(String uid) {
+  TeamSubscription getClubTeams(String uid) {
     TeamSubscription sub = new TeamSubscription();
     Query query = Firestore.instance
         .collection(TEAMS_COLLECTION)
         .where(Team.CLUBUID, isEqualTo: uid);
-    query.getDocuments().then((QuerySnapshot snap) {
+    query.getDocuments().then((QuerySnapshot snap) async {
       List<Team> teams = <Team>[];
       for (DocumentSnapshot snap in snap.documents) {
-        Team team = new Team();
-        team.fromJSON(snap.documentID, snap.data);
-        teams.add(team);
+        teams.add(await _loadTeamFromClub(snap));
       }
       sub.addUpdate(teams);
     });
-    sub.subscriptions.add(query.snapshots().listen((QuerySnapshot snap) {
+    sub.subscriptions.add(query.snapshots().listen((QuerySnapshot snap) async {
       List<Team> teams = <Team>[];
       for (DocumentSnapshot snap in snap.documents) {
-        Team team = new Team();
-        team.fromJSON(snap.documentID, snap.data);
-        teams.add(team);
+        teams.add(await _loadTeamFromClub(snap));
       }
       sub.addUpdate(teams);
     }));
@@ -982,6 +998,112 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .get();
     if (snap.exists) {
       return new Club.fromJson(snap.documentID, snap.data);
+    }
+    return null;
+  }
+
+  // leagues!
+  @override
+  LeagueOrTournmentTeamSubscription getLeagueTeams(String uid) {
+    LeagueOrTournmentTeamSubscription sub =
+        new LeagueOrTournmentTeamSubscription();
+    Query query = Firestore.instance
+        .collection(TOURNAMENT_TEAM_COLLECTON)
+        .where(LeagueOrTournmentTeam.LEAGUEORTOURNMENTUID, isEqualTo: uid);
+    query.getDocuments().then((QuerySnapshot snap) {
+      List<LeagueOrTournmentTeam> teams = <LeagueOrTournmentTeam>[];
+      for (DocumentSnapshot snap in snap.documents) {
+        LeagueOrTournmentTeam team =
+            new LeagueOrTournmentTeam.fromJson(snap.documentID, snap.data);
+        teams.add(team);
+      }
+      sub.addUpdate(teams);
+    });
+    sub.subscriptions.add(query.snapshots().listen((QuerySnapshot snap) {
+      List<LeagueOrTournmentTeam> teams = <LeagueOrTournmentTeam>[];
+      for (DocumentSnapshot snap in snap.documents) {
+        LeagueOrTournmentTeam team =
+            new LeagueOrTournmentTeam.fromJson(snap.documentID, snap.data);
+        teams.add(team);
+      }
+      sub.addUpdate(teams);
+    }));
+    return sub;
+  }
+
+  @override
+  GameSubscription getLeagueGames(String leagueUid) {
+    // TODO: Write this.
+    return null;
+  }
+
+  @override
+  Future<void> addUserToLeague(String leagueUid, String userUid, bool admin) {
+    return Firestore.instance
+        .collection(LEAGUE_COLLECTON)
+        .document(leagueUid)
+        .updateData(<String, dynamic>{
+      Club.MEMBERS + "." + userUid: <String, dynamic>{
+        ADDED: true,
+        Club.ADMIN: admin
+      }
+    });
+  }
+
+  @override
+  Future<String> inviteUserToLeague(InviteToLeague invite) async {
+    DocumentReference ref = await Firestore.instance
+        .collection(INVITE_COLLECTION)
+        .add(invite.toJSON());
+    return ref.documentID;
+  }
+
+  @override
+  Future<String> updateLeague(LeagueOrTournament league,
+      {bool includeMembers = false}) async {
+    Map<String, dynamic> data = league.toJson(includeMembers: includeMembers);
+    if (league.uid == null) {
+      DocumentReference ref =
+          await Firestore.instance.collection(LEAGUE_COLLECTON).add(data);
+      league.uid = ref.documentID;
+    } else {
+      await Firestore.instance
+          .collection(LEAGUE_COLLECTON)
+          .document(league.uid)
+          .updateData(data);
+    }
+    return league.uid;
+  }
+
+  @override
+  Future<Uri> updateLeagueImage(LeagueOrTournament league, File imgFile) async {
+    final StorageReference ref =
+        FirebaseStorage.instance.ref().child("league_" + league.uid + ".img");
+    final StorageUploadTask task = ref.putFile(imgFile);
+    final UploadTaskSnapshot snapshot = (await task.future);
+    league.photoUrl = snapshot.downloadUrl.toString();
+    print('photurl ${league.photoUrl}');
+    return snapshot.downloadUrl;
+  }
+
+  @override
+  Future<void> deleteLeagueMember(LeagueOrTournament league, String memberUid) {
+    return Firestore.instance
+        .collection(LEAGUE_COLLECTON)
+        .document(league.uid)
+        .updateData(<String, dynamic>{
+      Club.MEMBERS + "." + memberUid + "." + ADDED: false
+    });
+  }
+
+  @override
+  Future<LeagueOrTournament> getLeagueData(String leagueUid) async {
+    DocumentSnapshot snap = await Firestore.instance
+        .collection(LEAGUE_COLLECTON)
+        .document(leagueUid)
+        .get();
+    if (snap.exists) {
+      return new LeagueOrTournament.fromJson(snap.documentID, snap.data);
     }
     return null;
   }

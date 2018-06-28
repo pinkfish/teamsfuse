@@ -59,6 +59,10 @@ class ClubDetailsScreenState extends State<ClubDetailsScreen> {
     Navigator.pushNamed(context, "ClubAddMember/" + widget.clubUid);
   }
 
+  void _onAddTeam() {
+    Navigator.pushNamed(context, "ClubAddTeam/" + widget.clubUid);
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> actions = <Widget>[];
@@ -71,6 +75,9 @@ class ClubDetailsScreenState extends State<ClubDetailsScreen> {
             child: const Icon(Icons.edit),
           );
         } else if (_tabIndex == 2) {
+          fab = FloatingActionButton(
+              onPressed: _onAddTeam, child: const Icon(Icons.add));
+        } else if (_tabIndex == 3) {
           fab = FloatingActionButton(
               onPressed: _onAddMember, child: const Icon(Icons.add));
         }

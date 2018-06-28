@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/form/teampicker.dart';
+import 'package:flutter_fuse/widgets/teams/teamselection.dart';
 import 'package:flutter_fuse/widgets/games/gameeditform.dart';
 import 'package:flutter_fuse/widgets/games/gamedetails.dart';
 import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 
+///
+/// Screen to display when doing a game add sequence.
+///
 class AddGameScreen extends StatefulWidget {
   AddGameScreen();
 
@@ -23,7 +26,7 @@ class AddGameScreenState extends State<AddGameScreen> {
   StepState teamStepState = StepState.editing;
   StepState detailsStepState = StepState.disabled;
   StepState createStepStage = StepState.disabled;
-  String _teamUid;
+  Team _team;
   int currentStep = 0;
   Game _initGame;
   bool _saving = false;
@@ -50,7 +53,7 @@ class AddGameScreenState extends State<AddGameScreen> {
     switch (currentStep) {
       // Check to make sure a team is picked.
       case 0:
-        if (_teamUid == null) {
+        if (_team == null) {
           teamStepState = StepState.error;
           return false;
         }
@@ -121,26 +124,26 @@ class AddGameScreenState extends State<AddGameScreen> {
     }
   }
 
-  void _teamChanged(String str) {
+  void _teamChanged(Team team) {
+    print('Team $team');
     //_gameFormKey.currentState.setTeam(str);
     GameSharedData sharedGameData = new GameSharedData(type: EventType.Game);
     _initGame = new Game(sharedData: sharedGameData);
-    Team teamData = UserDatabaseData.instance.teams[str];
     DateTime start = new DateTime.now().add(const Duration(days: 1));
     _initGame.sharedData.time = start.millisecondsSinceEpoch;
     _initGame.arriveTime = start
-        .subtract(new Duration(minutes: teamData.arriveEarly.toInt()))
+        .subtract(new Duration(minutes: team.arriveEarly.toInt()))
         .millisecondsSinceEpoch;
     _initGame.sharedData.endTime = _initGame.sharedData.time;
-    _initGame.teamUid = str;
-    _initGame.seasonUid = teamData.currentSeason;
+    _initGame.teamUid = team.uid;
+    _initGame.seasonUid = team.currentSeason;
     _initGame.opponentUids = <String>[];
     _initGame.homegame = false;
     _initGame.uniform = '';
     _initGame.notes = '';
-    _initGame.trackAttendance = teamData.trackAttendence;
+    _initGame.trackAttendance = team.trackAttendence;
     setState(() {
-      _teamUid = str;
+      _team = team;
     });
   }
 
@@ -148,7 +151,7 @@ class AddGameScreenState extends State<AddGameScreen> {
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
 
-    print(_teamUid);
+    print(_team);
     return new Scaffold(
       key: _scaffoldKey,
       appBar: new AppBar(
@@ -176,23 +179,15 @@ class AddGameScreenState extends State<AddGameScreen> {
                 title: new Text(messages.teamselect),
                 state: teamStepState,
                 isActive: true,
-                content: new DropdownButtonHideUnderline(
-                  child: new Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      new TeamPicker(
-                        onChanged: _teamChanged,
-                        teamUid: _teamUid,
-                      ),
-                    ],
-                  ),
+                content: new TeamSelection(
+                  onChanged: _teamChanged,
+                  initialTeam: _team,
                 ),
               ),
               new Step(
                 title: new Text(messages.gamedetails),
                 state: detailsStepState,
-                isActive: _teamUid != null && _teamUid.isNotEmpty,
+                isActive: _team != null,
                 content: _buildForm(context),
               ),
               new Step(
