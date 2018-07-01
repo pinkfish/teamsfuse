@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
 
@@ -20,12 +21,12 @@ class FusedDrawerHeaderState extends State<FusedDrawerHeader> {
   void initState() {
     super.initState();
     print('initState');
-    UserAuth.instance.currentUser().then((UserData data) {
+    UserDatabaseData.instance.userAuth.currentUser().then((UserData data) {
       setState(() {
         user = data;
       });
     });
-    streamListen = UserAuth.instance.onAuthChanged().listen((UserData data) {
+    streamListen = UserDatabaseData.instance.userAuth.onAuthChanged().listen((UserData data) {
       setState(() {
         user = data;
       });

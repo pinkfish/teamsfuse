@@ -6,7 +6,7 @@ import 'package:flutter_fuse/services/notifications.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/impl/databaseupdatemodelimpl.dart';
+import 'package:flutter_fuse/services/firestore/firestore.dart' as fs;
 import 'package:flutter_fuse/services/loggingdata.dart';
 import 'package:flutter_fuse/services/appconfiguration.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
@@ -18,12 +18,13 @@ void main() async {
   TraceProxy trace = Analytics.instance.newTrace("startup");
   trace.start();
 
-
   String currentTimeZone;
   ByteData loadedData;
   await Future.wait<dynamic>(<Future<dynamic>>[
     SqlData.instance.initDatabase(),
-    rootBundle.load('assets/timezone/2018c.tzf').then<ByteData>((ByteData data) {
+    rootBundle
+        .load('assets/timezone/2018c.tzf')
+        .then<ByteData>((ByteData data) {
       loadedData = data;
       print('loaded data');
     }),
@@ -43,10 +44,9 @@ void main() async {
   print('$currentTimeZone ${local.toString()}');
 
   // database
-  DatabaseUpdateModel.instance = new DatabaseUpdateModelImpl();
-  UserDatabaseData.instance = new UserDatabaseData(
-      Analytics.instance, LoggingData.instance, SqlData.instance);
-
+  print('Making stuff in here');
+  UserDatabaseData.instance = new UserDatabaseData(Analytics.instance,
+      LoggingData.instance, SqlData.instance, new fs.Firestore());
 
   // Start the loading, but don't block on it,
   // Load notifications after the app config has loaded.

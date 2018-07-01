@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/screens/home/home.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
@@ -28,10 +29,11 @@ class SplashScreenState extends State<SplashScreen> {
   void initState() {
     _startLoading();
     super.initState();
-    _stream = UserAuth.instance.onAuthChanged().listen(_onAuthStateChanged);
+    _stream = UserDatabaseData.instance.userAuth
+        .onAuthChanged()
+        .listen(_onAuthStateChanged);
     // Setup the notifications listen/sender.
     Notifications.instance.initForNotification(this);
-
   }
 
   @override
@@ -60,7 +62,7 @@ class SplashScreenState extends State<SplashScreen> {
   Future<Null> _startLoading() async {
     print('Loading...');
     if (!loaded) {
-      currentUser = await UserAuth.instance.currentUser();
+      currentUser = await UserDatabaseData.instance.userAuth.currentUser();
     }
     print('Got current user $currentUser');
     setState(() {

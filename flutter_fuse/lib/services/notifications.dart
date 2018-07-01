@@ -10,7 +10,6 @@ import 'appconfiguration.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'firebasemessaging.dart';
-import 'authentication.dart';
 
 class Notifications {
   static final Notifications instance = new Notifications();
@@ -113,7 +112,7 @@ class Notifications {
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.getToken().then((String token) {
       print('We have token! $token');
-      UserAuth.instance.setNotificationToken(token);
+      UserDatabaseData.instance.userAuth.setNotificationToken(token);
     });
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {

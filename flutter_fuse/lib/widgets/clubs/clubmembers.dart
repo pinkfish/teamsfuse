@@ -1,7 +1,7 @@
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:flutter_fuse/widgets/util/userimage.dart';
 
 class ClubMembers extends StatelessWidget {
@@ -77,7 +77,7 @@ class ClubMembers extends StatelessWidget {
     for (String adminUid in club.adminsUids) {
       members.add(
         new FutureBuilder<FusedUserProfile>(
-          future: UserAuth.instance.getProfile(adminUid),
+          future: UserDatabaseData.instance.userAuth.getProfile(adminUid),
           builder:
               (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) =>
                   _buildFromFuture(context, profile, true),
@@ -87,7 +87,7 @@ class ClubMembers extends StatelessWidget {
     for (String memberUid in club.members) {
       members.add(
         new FutureBuilder<FusedUserProfile>(
-          future: UserAuth.instance.getProfile(memberUid),
+          future: UserDatabaseData.instance.userAuth.getProfile(memberUid),
           builder:
               (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) =>
                   _buildFromFuture(context, profile, false),

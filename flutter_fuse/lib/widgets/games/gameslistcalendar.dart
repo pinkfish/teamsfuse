@@ -90,10 +90,11 @@ class GameListCalendarState extends CalendarSource {
 
   void _setGames(Iterable<Game> res) {
     List<Game> games = res.toList();
-    games.sort(
-        (Game a, Game b) => a.sharedData.time.compareTo(b.sharedData.time));
 
     if (games.length > 0 || _listToShow == null) {
+      games.sort(
+          (Game a, Game b) => a.sharedData.time.compareTo(b.sharedData.time));
+
       _listToShow = games;
 
       _controller?.add(UpdateReason.Update);

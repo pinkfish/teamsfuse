@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/form/switchformfield.dart';
@@ -36,10 +36,10 @@ class SettingsScreenState extends State<SettingsScreen> {
       setState(() {
         _saving = true;
       });
-      UserData user = await UserAuth.instance.currentUser();
+      UserData user = await UserDatabaseData.instance.userAuth.currentUser();
       FusedUserProfile profile = user.profile.copyWith(
           emailUpcomingGames: emailOnUpcoming, emailNewEvents: emailOnUpdate);
-      UserAuth.instance.updateProfile(user.uid, profile);
+      UserDatabaseData.instance.userAuth.updateProfile(user.uid, profile);
       setState(() {
         _saving = false;
       });
@@ -57,8 +57,8 @@ class SettingsScreenState extends State<SettingsScreen> {
         title: new Text(Messages.of(context).title),
       ),
       body: new FutureBuilder<FusedUserProfile>(
-          future: UserAuth.instance.currentUser().then((UserData data) {
-            return UserAuth.instance.getProfile(data.uid);
+          future: UserDatabaseData.instance.userAuth.currentUser().then((UserData data) {
+            return UserDatabaseData.instance.userAuth.getProfile(data.uid);
           }),
           builder:
               (BuildContext context, AsyncSnapshot<FusedUserProfile> data) {

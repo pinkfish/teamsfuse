@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/form/roleinteamformfield.dart';
 import 'package:flutter_fuse/services/analytics.dart';
@@ -61,7 +61,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
       // part of this.
       Team team = UserDatabaseData.instance.teams[widget._teamUid];
       Season season = team.seasons[_curSeasonUid];
-      UserData user = await UserAuth.instance.currentUser();
+      UserData user = await UserDatabaseData.instance.userAuth.currentUser();
       await Future.forEach<EmailName>(_emailNames, (EmailName en) async {
         Analytics.analytics
             .logShare(contentType: 'inviteToTeam', itemId: team.uid);

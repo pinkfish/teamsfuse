@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
@@ -85,7 +85,7 @@ class FusedDrawerContent extends StatelessWidget {
         leading: const Icon(Icons.exit_to_app),
         title: new Text(Messages.of(context).signout),
         onTap: () {
-          UserAuth.instance.signOut();
+          UserDatabaseData.instance.userAuth.signOut();
           //Navigator.of(context).pushNamed("/Home");
         },
       ),

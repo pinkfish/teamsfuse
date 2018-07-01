@@ -35,7 +35,7 @@ class EditClubScreenState extends State<EditClubScreen> {
       File imageFile = _formKey.currentState.getImageFile();
       if (club != null) {
         if (imageFile != null) {
-          Uri uri = await DatabaseUpdateModel.instance
+          Uri uri = await UserDatabaseData.instance.updateModel
               .updateClubImage(club, imageFile);
           club.photoUrl = uri.toString();
         }

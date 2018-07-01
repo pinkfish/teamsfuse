@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
 import 'dart:async';
@@ -23,12 +23,12 @@ class ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    UserAuth.instance.currentUser().then((UserData data) {
+    UserDatabaseData.instance.userAuth.currentUser().then((UserData data) {
       setState(() {
         user = data;
       });
     });
-    streamListen = UserAuth.instance.onAuthChanged().listen((UserData data) {
+    streamListen = UserDatabaseData.instance.userAuth.onAuthChanged().listen((UserData data) {
       setState(() {
         user = data;
       });

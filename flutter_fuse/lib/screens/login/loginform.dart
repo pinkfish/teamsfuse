@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
@@ -54,9 +55,9 @@ class LoginScreenState extends State<LoginScreen> {
       // Remove any spaces at the begining/end.
       person.email = person.email.trim();
       print('Doing login');
-      UserAuth.instance.signIn(person).then((UserData user) async {
+      UserDatabaseData.instance.userAuth.signIn(person).then((UserData user) async {
         print('Home page');
-        await UserAuth.instance.reloadUser();
+        await UserDatabaseData.instance.userAuth.reloadUser();
         print('reloaded user');
         Analytics.analytics.logLogin();
         setState(() {

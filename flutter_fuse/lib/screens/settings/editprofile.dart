@@ -4,7 +4,7 @@ import 'package:flutter_fuse/services/validations.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
@@ -42,12 +42,14 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    UserAuth.instance.currentUser().then((UserData data) {
+    UserDatabaseData.instance.userAuth.currentUser().then((UserData data) {
       setState(() {
         _user = data;
       });
     });
-    streamListen = UserAuth.instance.onAuthChanged().listen((UserData data) {
+    streamListen = UserDatabaseData.instance.userAuth
+        .onAuthChanged()
+        .listen((UserData data) {
       setState(() {
         _user = data;
       });
@@ -99,10 +101,10 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         // Only update in the me player, we don't use the built in photourl.
         await me.updateImage(_imageFile);
       }
-      FusedUserProfile profile = _user.profile.copyWith(
-          displayName: displayName, phoneNumber: phoneNumber);
-      UserAuth.instance.updateProfile(_user.uid, profile);
-       Navigator.pop(context);
+      FusedUserProfile profile = _user.profile
+          .copyWith(displayName: displayName, phoneNumber: phoneNumber);
+      UserDatabaseData.instance.userAuth.updateProfile(_user.uid, profile);
+      Navigator.pop(context);
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }

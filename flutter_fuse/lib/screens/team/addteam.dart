@@ -63,7 +63,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
           _teamToAdd.clubUid = _clubUid;
         }
         if (_imageFileToAdd != null) {
-          Uri uri = await DatabaseUpdateModel.instance
+          Uri uri = await UserDatabaseData.instance.updateModel
               .updateTeamImage(_teamToAdd, _imageFileToAdd);
           _teamToAdd.photoUrl = uri.toString();
         }

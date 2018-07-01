@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
@@ -24,7 +25,9 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   void _handleSubmitted() {
-    UserAuth.instance.sendEmailVerification().then((void user) {
+    UserDatabaseData.instance.userAuth
+        .sendEmailVerification()
+        .then((void user) {
       showDialog<bool>(
         context: context,
         builder: (BuildContext context) => new AlertDialog(
@@ -46,13 +49,13 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   void _onLogout(BuildContext context) async {
-    await UserAuth.instance.signOut();
+    await UserDatabaseData.instance.userAuth.signOut();
     // Now navigate back to the login screen.
     Navigator.pushNamed(context, "/Login/Home");
   }
 
   void _onSignup(BuildContext context) async {
-    await UserAuth.instance.signOut();
+    await UserDatabaseData.instance.userAuth.signOut();
     // Now navigate back to the signup screen.
     Navigator.pushNamed(context, "/Login/SignUp");
   }
@@ -62,7 +65,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
     Messages messages = Messages.of(context);
 
     // Reload the user when the page loads.
-    UserAuth.instance.reloadUser();
+    UserDatabaseData.instance.userAuth.reloadUser();
 
     final Size screenSize = MediaQuery.of(context).size;
     double width =
@@ -92,7 +95,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     new Center(
                       child: new CircleAvatar(
                         radius: width / 2,
-                        child: new Text(UserAuth.instance
+                        child: new Text(UserDatabaseData.instance.userAuth
                                 .currentUserNoWait()
                                 ?.profile
                                 ?.initials() ??
@@ -108,7 +111,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     new FutureBuilder<UserData>(
-                      future: UserAuth.instance.currentUser(),
+                      future: UserDatabaseData.instance.userAuth.currentUser(),
                       builder:
                           (BuildContext context, AsyncSnapshot<UserData> data) {
                         if (!data.hasData) {

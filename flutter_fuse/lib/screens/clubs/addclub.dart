@@ -45,7 +45,7 @@ class AddClubScreenState extends State<AddClubScreen> {
     try {
       if (_clubToAdd != null) {
         if (_imageFileToAdd != null) {
-          Uri uri = await DatabaseUpdateModel.instance
+          Uri uri = await UserDatabaseData.instance.updateModel
               .updateClubImage(_clubToAdd, _imageFileToAdd);
           _clubToAdd.photoUrl = uri.toString();
         }

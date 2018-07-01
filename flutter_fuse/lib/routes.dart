@@ -5,13 +5,13 @@ import 'package:flutter_fuse/screens/login/loginform.dart';
 import 'package:flutter_fuse/screens/login/forgotpassword.dart';
 import 'package:flutter_fuse/screens/login/signup.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
-import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
 import 'package:flutter_fuse/services/loggingdata.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/firestore.dart';
 
 class Routes {
   UserData _currentUser;
@@ -40,7 +40,7 @@ class Routes {
 
   Routes() {
     // Subscribe to auth changes.
-    UserAuth.instance.onAuthChanged().listen(_authChanged);
+    UserDatabaseData.instance.userAuth.onAuthChanged().listen(_authChanged);
     app = new MaterialApp(
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         const MessagesDelegate(),
@@ -80,7 +80,7 @@ class Routes {
     _currentUser = user;
     if (user != null) {
       UserDatabaseData.load(
-          user.uid, user.email, UserAuth.instance.getProfile(user.uid));
+          user.uid, user.email, UserDatabaseData.instance.userAuth.getProfile(user.uid));
       Analytics.analytics.setUserId(user.uid);
       if (Analytics.instance.debugMode) {
         Analytics.analytics.setUserProperty(name: "developer", value: "true");

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/authentication.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
 class ByUserNameComponent extends FutureBuilder<FusedUserProfile> {
   ByUserNameComponent({@required String userId})
       : super(
-          future: UserAuth.instance.getProfile(userId),
+          future: UserDatabaseData.instance.userAuth.getProfile(userId),
           builder:
               (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) {
             if (profile.hasData) {
