@@ -39,6 +39,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
   @override
   void initState() {
     super.initState();
+    print('init this state');
     _details = new GameResultDetails.copy(widget.game.result);
     if (widget.game.result.currentPeriod != null) {
       _currentPeriodResults =
@@ -85,8 +86,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     if (widget.game.result.scores.containsKey(period)) {
       _ptsForState.currentState
           .animateInt(widget.game.result.scores[period].score.ptsFor.toInt());
-      _ptsAgainstState.currentState
-          .animateInt(widget.game.result.scores[period].score.ptsAgainst.toInt());
+      _ptsAgainstState.currentState.animateInt(
+          widget.game.result.scores[period].score.ptsAgainst.toInt());
     }
 
     // If the period changed, update stuff.
@@ -393,6 +394,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
+    print("Stuff in here ${_details.inProgress}");
+
     if (_details.inProgress == GameInProgress.NotStarted) {
       return new Form(
         key: _formKey,
@@ -407,7 +410,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                       onPressed: _startGame,
                       color: theme.accentColor,
                       textColor: Colors.white,
-                      child: new Text("Start Game"),
+                      child: new Text(Messages.of(context).startgame),
                     ),
                   ),
                 )
@@ -514,7 +517,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                           itemExtent: 40.0,
                           disabled:
                               _details.inProgress == GameInProgress.NotStarted,
-                          initialValue: _currentPeriodResults.score.ptsFor.toInt(),
+                          initialValue:
+                              _currentPeriodResults.score.ptsFor.toInt(),
                           minValue: 0,
                           maxValue: 10000,
                           onChanged: (num val) {
@@ -603,7 +607,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                           key: _ptsAgainstState,
                           disabled:
                               _details.inProgress == GameInProgress.NotStarted,
-                          initialValue: _currentPeriodResults.score.ptsAgainst.toInt(),
+                          initialValue:
+                              _currentPeriodResults.score.ptsAgainst.toInt(),
                           minValue: 0,
                           maxValue: 10000,
                           onChanged: (num val) {
