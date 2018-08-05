@@ -8,17 +8,28 @@ class Auth extends wfs.AuthWrapper {
   }
 
   @override
-  Future<Function> signOut() {}
+  Future<void> signOut() {
+    return fa.FirebaseAuth.instance.signOut();
+  }
 
   @override
-  Future<Function> sendPasswordResetEmail({String email}) {}
+  Future<void> sendPasswordResetEmail({String email}) {
+    return fa.FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  }
 
   @override
-  Future<wfs.FirebaseUserWrapper> currentUser() {}
+  Future<wfs.FirebaseUserWrapper> currentUser() async {
+    fa.FirebaseUser user = await fa.FirebaseAuth.instance.currentUser();
+    return new FirebaseUser(user);
+  }
 
   @override
   Future<wfs.FirebaseUserWrapper> signInWithEmailAndPassword(
-      {String email, String password}) {}
+      {String email, String password}) async {
+    fa.FirebaseUser user = await fa.FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password);
+    return new FirebaseUser(user);
+  }
 
   @override
   Future<wfs.FirebaseUserWrapper> createUserWithEmailAndPassword(
@@ -30,9 +41,10 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
 
   FirebaseUser(this._user)
       : super(
-            email: _user.email,
-            isEmailVerified: _user.isEmailVerified,
-            uid: _user.uid);
+            email: _user?.email,
+            isEmailVerified: _user?.isEmailVerified,
+            uid: _user?.uid,
+            loggedIn: _user != null);
 
   @override
   Future<void> reload() {
@@ -81,6 +93,7 @@ class UserTransformer
    */
 
   void onData(fa.FirebaseUser data) {
+    print('Adding $data');
     _controller.add(new FirebaseUser(data));
   }
 

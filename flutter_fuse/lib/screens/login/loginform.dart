@@ -55,24 +55,23 @@ class LoginScreenState extends State<LoginScreen> {
       // Remove any spaces at the begining/end.
       person.email = person.email.trim();
       print('Doing login');
-      UserDatabaseData.instance.userAuth.signIn(person).then((UserData user) async {
-        print('Home page');
+      try {
+        UserData user = await UserDatabaseData.instance.userAuth.signIn(person);
+        print('Home page $user');
         await UserDatabaseData.instance.userAuth.reloadUser();
         print('reloaded user');
         Analytics.analytics.logLogin();
         setState(() {
           _loggingIn = false;
         });
-      }).catchError((Error error) {
+      } catch (error) {
         print('Right here $error');
         setState(() {
           errorText = "Invaid password or difficulty logging on";
-        });
-        showInSnackBar(errorText);
-        setState(() {
           _loggingIn = false;
         });
-      });
+        showInSnackBar(errorText);
+      }
     }
   }
 

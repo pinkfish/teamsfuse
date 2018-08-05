@@ -70,7 +70,7 @@ class _TeamSelectionState extends State<TeamSelection> {
 
   @override
   Widget build(BuildContext context) {
-    new DropdownButtonHideUnderline(
+    return new DropdownButtonHideUnderline(
       child: new Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
