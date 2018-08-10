@@ -8,6 +8,10 @@ import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
 import 'dart:async';
 
 class ProfileScreen extends StatefulWidget {
+  bool onlyPlayer;
+
+  ProfileScreen({this.onlyPlayer = false});
+
   @override
   ProfileScreenState createState() {
     return new ProfileScreenState();
@@ -28,7 +32,9 @@ class ProfileScreenState extends State<ProfileScreen> {
         user = data;
       });
     });
-    streamListen = UserDatabaseData.instance.userAuth.onAuthChanged().listen((UserData data) {
+    streamListen = UserDatabaseData.instance.userAuth
+        .onAuthChanged()
+        .listen((UserData data) {
       setState(() {
         user = data;
       });
@@ -202,30 +208,34 @@ class ProfileScreenState extends State<ProfileScreen> {
     double width =
         (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0;
     double height = screenSize.height / 4 + 20;
-    ret.add(new Center(
-      child: new PlayerImage(
-        playerUid: me != null ? me.uid : null,
-        radius: width > height ? height / 2 : width / 2,
-      ),
-    ));
+    if (!widget.onlyPlayer) {
+      ret.add(new Center(
+        child: new PlayerImage(
+          playerUid: me != null ? me.uid : null,
+          radius: width > height ? height / 2 : width / 2,
+        ),
+      ));
+    }
     if (user != null) {
-      ret.add(
-          new Text(user.profile.displayName, style: theme.textTheme.headline));
-      ret.add(
-        new ListTile(
-          leading: const Icon(Icons.email),
-          title: new Text(user.email),
-        ),
-      );
-      ret.add(
-        new ListTile(
-          leading: const Icon(Icons.phone),
-          title: new Text(user.profile.phoneNumber),
-        ),
-      );
-      ret.add(new Divider());
-      ret.add(new Text(messages.players,
-          style: theme.textTheme.subhead.copyWith(color: theme.accentColor)));
+      if (!widget.onlyPlayer) {
+        ret.add(new Text(user.profile.displayName,
+            style: theme.textTheme.headline));
+        ret.add(
+          new ListTile(
+            leading: const Icon(Icons.email),
+            title: new Text(user.email),
+          ),
+        );
+        ret.add(
+          new ListTile(
+            leading: const Icon(Icons.phone),
+            title: new Text(user.profile.phoneNumber),
+          ),
+        );
+        ret.add(new Divider());
+        ret.add(new Text(messages.players,
+            style: theme.textTheme.subhead.copyWith(color: theme.accentColor)));
+      }
       if (UserDatabaseData.instance.players.length > 0) {
         // We have some extra players!
         UserDatabaseData.instance.players.forEach((String key, Player player) {
@@ -268,25 +278,31 @@ class ProfileScreenState extends State<ProfileScreen> {
           ret.add(
             new Card(
               child: new Column(
-                  children: <Widget>[
-                        new ListTile(
-                          leading: new CircleAvatar(backgroundImage: leading),
-                          trailing: new IconButton(
-                            onPressed: () {
-                              _editPlayer(player.uid);
-                            },
-                            icon: const Icon(Icons.edit),
-                          ),
-                          title: new Text(player.name),
-                        ),
-                        new ExpansionTile(
-                          title: new Text(messages
-                              .numberofuserforplayer(player.users.length)),
-                          initiallyExpanded: false,
-                          children: _buildUserList(context, player),
-                        )
-                      ] +
-                      teamNames),
+                children: <Widget>[
+                  new ListTile(
+                    leading: new CircleAvatar(backgroundImage: leading),
+                    trailing: new IconButton(
+                      onPressed: () {
+                        _editPlayer(player.uid);
+                      },
+                      icon: const Icon(Icons.edit),
+                    ),
+                    title: new Text(player.name),
+                  ),
+                  new ExpansionTile(
+                    title: new Text(
+                        messages.numberofuserforplayer(player.users.length)),
+                    initiallyExpanded: false,
+                    children: _buildUserList(context, player),
+                  ),
+                  new ExpansionTile(
+                    title: new Text(
+                        messages.numberofteamsforplayer(teamNames.length)),
+                    initiallyExpanded: false,
+                    children: teamNames,
+                  )
+                ],
+              ),
             ),
           );
         });
@@ -304,7 +320,11 @@ class ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+        title: new Text(
+          widget.onlyPlayer
+              ? Messages.of(context).players
+              : Messages.of(context).title,
+        ),
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: _editProfile,

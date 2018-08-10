@@ -12,6 +12,7 @@ import 'package:flutter_fuse/screens/invites/acceptinvitetoteam.dart';
 import 'package:flutter_fuse/screens/invites/addinvitetoplayer.dart';
 import 'package:flutter_fuse/screens/invites/acceptinvitetoplayer.dart';
 import 'package:flutter_fuse/screens/invites/acceptinvitetoclub.dart';
+import 'package:flutter_fuse/screens/invites/acceptinviteasadmin.dart';
 import 'package:flutter_fuse/screens/message/messages.dart';
 import 'package:flutter_fuse/screens/message/addmessage.dart';
 import 'package:flutter_fuse/screens/message/messageview.dart';
@@ -54,7 +55,15 @@ class AppRouter {
     router.define("/Profile",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new ProfileScreen()));
+                new ProfileScreen(
+                  onlyPlayer: false,
+                )));
+    router.define("/Players",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new ProfileScreen(
+                  onlyPlayer: true,
+                )));
     router.define("/EditProfile/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -87,10 +96,14 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AcceptInviteToPlayerScreen(vals["id"][0].toString())));
+    router.define("/AcceptInviteAsAdmin/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new AcceptInviteAsAdminScreen(vals["id"][0].toString())));
     router.define("/AcceptInviteToClub/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AcceptInviteToClubScreen(vals["id"][0].toString())));
+                new AcceptInviteToClubScreen(vals["id"][0].toString())));
     router.define("/Team/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -114,7 +127,7 @@ class AppRouter {
     router.define("/TeamClub/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new ClubSettingsScreen(vals["id"][0].toString())));
+                new ClubSettingsScreen(vals["id"][0].toString())));
     router.define("/AddSeason/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -180,9 +193,9 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AddMessageScreen(
-                  teamUid: vals["team"].toString(),
-                  seasonUid: vals["season"].toString(),
-                  playerUid: vals["player"].toString(),
+                  teamUid: vals["team"][0].toString(),
+                  seasonUid: vals["season"][0].toString(),
+                  playerUid: vals["player"][0].toString(),
                 )));
 
     router.define("/Club/:id",
@@ -192,15 +205,15 @@ class AppRouter {
     router.define("/EditClub/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new EditClubScreen(vals["id"][0].toString())));
+                new EditClubScreen(vals["id"][0].toString())));
     router.define("/AddClubMember/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AddMemberScreen(vals["id"][0].toString())));
+                new AddMemberScreen(vals["id"][0].toString())));
     router.define("/AddClub",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AddClubScreen()));
+                new AddClubScreen()));
     return router;
   }
 }

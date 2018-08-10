@@ -238,8 +238,6 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
       ),
     );
 
-    bool loading = false;
-
     if (_playerDetails != null && _playerDetails.users != null) {
       ret.add(
         new StreamBuilder<List<InviteToPlayer>>(
@@ -267,62 +265,67 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
         ),
       );
       _playerDetails.users.forEach((String key, PlayerUser player) {
-        if (player.profile != null) {
-          if (player.profile.phoneNumber != null &&
-              player.profile.phoneNumber.isNotEmpty) {
-            ret.add(
-              new ListTile(
-                leading: const Icon(Icons.phone),
-                title: new Text(
-                  messages.displaynamerelationship(
-                      player.profile.displayName, player.relationship),
-                ),
-                subtitle: new Text(
-                    "${player.profile.phoneNumber}\n${player.profile.email}"),
-                trailing: new Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    new IconButton(
-                      icon: const Icon(Icons.sms),
-                      color: theme.accentColor,
-                      onPressed: () =>
-                          launch("sms:" + player.profile.phoneNumber),
-                    ),
-                    new IconButton(
-                      icon: const Icon(Icons.email),
-                      color: theme.accentColor,
-                      onPressed: () => launch("mailto:" + player.profile.email),
-                    )
-                  ],
-                ),
-              ),
-            );
-          } else {
-            ret.add(
-              new ListTile(
-                leading: const Icon(Icons.email),
-                title: new Text(player.profile.displayName),
-                subtitle: new Text(messages.sendmessage),
-              ),
-            );
-          }
-        } else {
-          loading = true;
-        }
+        ret.add(new FutureBuilder<FusedUserProfile>(
+            future: player.getProfile(),
+            builder: (BuildContext context,
+                AsyncSnapshot<FusedUserProfile> profile) {
+              if (!profile.hasData) {
+                return new Text(messages.loading);
+              }
+
+              if (profile.data.phoneNumber != null &&
+                  profile.data.phoneNumber.isNotEmpty) {
+                return new ListTile(
+                  leading: const Icon(Icons.phone),
+                  title: new Text(
+                    messages.displaynamerelationship(
+                        profile.data.displayName, player.relationship),
+                  ),
+                  subtitle: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      new Text(
+                          "${profile.data.phoneNumber}\n${profile.data.email}"),
+                      new Row(
+                        children: <Widget>[
+                          new IconButton(
+                            icon: const Icon(Icons.sms),
+                            color: Theme.of(context).primaryColorDark,
+                            onPressed: () =>
+                                launch("sms:" + profile.data.phoneNumber),
+                          ),
+                          new IconButton(
+                            icon: const Icon(Icons.email),
+                            color: Theme.of(context).primaryColorDark,
+                            onPressed: () =>
+                                launch("mailto:" + profile.data.email),
+                          ),
+                          new IconButton(
+                            icon: const Icon(Icons.message),
+                            color: Theme.of(context).primaryColorDark,
+                            onPressed: () => Navigator.pushNamed(
+                                context,
+                                "/AddMessagePlayer/" +
+                                    widget.teamUid +
+                                    "/" +
+                                    widget.seasonUid +
+                                    "/" +
+                                    widget.playerUid),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                );
+              } else {
+                return new ListTile(
+                  leading: const Icon(Icons.email),
+                  title: new Text(profile.data.displayName),
+                  subtitle: new Text(messages.sendmessage),
+                );
+              }
+            }));
       });
-    } else {
-      ret.add(
-        new ListTile(
-          leading: const Icon(Icons.phone),
-          title: new PlayerName(playerUid: _player.playerUid),
-        ),
-      );
-      loading = true;
-    }
-    if (loading) {
-      ret.add(new Text(messages.loading));
-      ret.add(new CircularProgressIndicator());
     }
 
     // Find which seasons they are in.

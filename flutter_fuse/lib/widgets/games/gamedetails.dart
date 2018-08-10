@@ -213,7 +213,7 @@ class GameDetailsState extends State<GameDetails> {
                     child: loadingWidget,
                   ),
                 ),
-                imageNow: uri.toString(),
+                imageUrl: uri.toString(),
               ),
             ),
             new Positioned(

@@ -17,7 +17,12 @@ class TeamSelection extends StatefulWidget {
   /// The initialTeam
   final Team initialTeam;
 
-  TeamSelection({@required this.onChanged, @required this.initialTeam});
+  final Club club;
+
+  TeamSelection(
+      {@required this.onChanged,
+      @required this.initialTeam,
+      @required this.club});
 
   @override
   _TeamSelectionState createState() {
@@ -42,7 +47,15 @@ class _TeamSelectionState extends State<TeamSelection> {
           new Expanded(
             child: new Card(
               child: new ListTile(
-                  title: new Text(Messages.of(context).teamselect)),
+                title: new Text(
+                  Messages.of(context).team,
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .caption
+                      .copyWith(color: Theme.of(context).hintColor),
+                ),
+              ),
             ),
           )
         ],
@@ -58,40 +71,41 @@ class _TeamSelectionState extends State<TeamSelection> {
     widget.onChanged(team);
   }
 
-  void _updateClub(String clubUid) {
-    setState(() {
-      if (clubUid == ClubPicker.noClub) {
-        _clubUid = null;
-      } else {
-        _clubUid = clubUid;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    List<Widget> widgets = <Widget>[];
+    print('$_clubUid');
+    if (widget.club == null) {
+      widgets.add(
+        new TeamPicker(
+          onChanged: (String str) =>
+              _teamChanged(UserDatabaseData.instance.teams[str]),
+          teamUid: _team?.uid,
+          disabled: _clubUid != null,
+          selectedTitle: _team != null,
+        ),
+      );
+    } else {
+      widgets.add(new ClubTeamPicker(
+        onChanged: _teamChanged,
+        team: _team,
+        clubUid: widget.club.uid,
+      ));
+    }
+    widgets.addAll([
+      new SizedBox(height: 20.0),
+      new Text(
+        Messages.of(context).teamselected,
+        style: Theme.of(context).textTheme.subhead.copyWith(
+            fontWeight: FontWeight.bold, color: Theme.of(context).accentColor),
+      ),
+      _buildCurrentTeam(context),
+    ]);
     return new DropdownButtonHideUnderline(
       child: new Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          _buildCurrentTeam(context),
-          new TeamPicker(
-            onChanged: (String str) =>
-                _teamChanged(UserDatabaseData.instance.teams[str]),
-            teamUid: _team?.uid,
-            disabled: _clubUid != null,
-          ),
-          new ClubPicker(
-            onChanged: _updateClub,
-            clubUid: _clubUid,
-          ),
-          new ClubTeamPicker(
-            onChanged: _teamChanged,
-            team: _team,
-            clubUid: _clubUid,
-          )
-        ],
+        children: widgets,
       ),
     );
   }

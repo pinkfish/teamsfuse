@@ -50,6 +50,7 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   void _addInviteAsAdmin(Invite invite) {
+    print('$invite');
     Navigator.pushNamed(context, "AcceptInviteAsAdmin/" + invite.uid);
   }
 
@@ -97,7 +98,6 @@ class InviteListScreenState extends State<InviteListScreen> {
     );
   }
 
-
   Card _buildInviteAsAdmin(InviteAsAdmin invite) {
     ThemeData theme = Theme.of(context);
     return new Card(
@@ -110,6 +110,7 @@ class InviteListScreenState extends State<InviteListScreen> {
           },
         ),
         title: new Text(invite.teamName),
+        subtitle: new Text(Messages.of(context).administrator),
         trailing: new IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
@@ -164,20 +165,32 @@ class InviteListScreenState extends State<InviteListScreen> {
   @override
   Widget build(BuildContext context) {
     List<Widget> invites = <Widget>[];
-    UserDatabaseData.instance.invites.forEach((String key, Invite invite) {
-      if (invite is InviteToTeam) {
-        invites.add(_buildInviteToTeam(invite));
-      }
-      if (invite is InviteToPlayer) {
-        invites.add(_buildInviteToPlayer(invite));
-      }
-      if (invite is InviteAsAdmin) {
-        invites.add(_buildInviteAsAdmin(invite));
-      }
-      if (invite is InviteToClub) {
-        invites.add(_buildInviteToClub(invite));
-      }
-    });
+    if (UserDatabaseData.instance.invites.length == 0) {
+      invites.add(new SizedBox(height: 50.0));
+      invites.add(
+        new Center(
+          child: new Text(
+            Messages.of(context).noinvites,
+            style: Theme.of(context).textTheme.display1,
+          ),
+        ),
+      );
+    } else {
+      UserDatabaseData.instance.invites.forEach((String key, Invite invite) {
+        if (invite is InviteToTeam) {
+          invites.add(_buildInviteToTeam(invite));
+        }
+        if (invite is InviteToPlayer) {
+          invites.add(_buildInviteToPlayer(invite));
+        }
+        if (invite is InviteAsAdmin) {
+          invites.add(_buildInviteAsAdmin(invite));
+        }
+        if (invite is InviteToClub) {
+          invites.add(_buildInviteToClub(invite));
+        }
+      });
+    }
 
     return new Scaffold(
       appBar: new AppBar(

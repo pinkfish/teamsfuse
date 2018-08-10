@@ -44,7 +44,11 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   ///
   /// If no document exists, the read will return null.
   Future<wfs.DocumentSnapshotWrapper> get() async {
-    return new DocumentSnapshot(doc: await _doc.get());
+    fs.DocumentSnapshot snap = await _doc.get();
+    if (snap != null) {
+      return new DocumentSnapshot(doc: snap);
+    }
+    return null;
   }
 
   /// Deletes the document referred to by this [DocumentReference].

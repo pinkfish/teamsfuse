@@ -26,6 +26,17 @@ class FusedDrawerContent extends StatelessWidget {
                     .textTheme
                     .subhead
                     .copyWith(fontWeight: FontWeight.bold, fontSize: 17.0),
+                children: [
+                  new TextSpan(
+                      text: club.isAdmin()
+                          ? "\n" + Messages.of(context).administrator
+                          : "",
+                      style: Theme.of(context).textTheme.subhead.copyWith(
+                            fontStyle: FontStyle.italic,
+                            fontSize: 10.0,
+                            color: Theme.of(context).primaryColorDark,
+                          )),
+                ],
               ),
             ),
             subtitle: new StreamBuilder<Iterable<Team>>(
@@ -81,6 +92,11 @@ class FusedDrawerContent extends StatelessWidget {
         },
       ),
       new Divider(),
+      new ListTile(leading: const Icon(Icons.people_outline),
+      title: new Text(Messages.of(context).players),
+      onTap: () {
+        Navigator.popAndPushNamed(context, "/Players");
+      },),
       new ListTile(
         leading: const Icon(Icons.exit_to_app),
         title: new Text(Messages.of(context).signout),

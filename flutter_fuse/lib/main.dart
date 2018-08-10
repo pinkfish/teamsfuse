@@ -67,6 +67,6 @@ void main() async {
   };
 
   trace.stop();
-
+ 
   new Routes();
 }

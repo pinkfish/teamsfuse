@@ -146,6 +146,18 @@ class Messages {
     );
   }
 
+  String get copyseasonfrom {
+    return Intl.message('Copy details from');
+  }
+
+  String get newseasonhint {
+    return Intl.message('New Season Name');
+  }
+
+  String get unabletoloadgames {
+    return Intl.message('Unable to load games');
+  }
+
   String get nogamesthisseason {
     return Intl.message('No games this season',
         desc: 'No games played this season, but some in a previous season');
@@ -181,6 +193,10 @@ class Messages {
 
   String get teams {
     return Intl.message('Teams');
+  }
+
+  String get teamselected {
+    return Intl.message('Team Selected');
   }
 
   String trackattendence(Tristate attend) {
@@ -824,15 +840,15 @@ class Messages {
   }
 
   String get addgame {
-    return Intl.message('Add game', name: 'Button to add a game');
+    return Intl.message('ADD GAME', name: 'Button to add a game');
   }
 
   String get addinvite {
-    return Intl.message('Share user');
+    return Intl.message('SHARE PLAYER');
   }
 
   String get addtraining {
-    return Intl.message('Add training',
+    return Intl.message('ADD TRAINING',
         name: 'Button to add a training to a team');
   }
 
@@ -843,6 +859,19 @@ class Messages {
   String get deleteinvite {
     return Intl.message('Delete invite',
         name: 'Title for the dialog to delete an invite');
+  }
+
+  String get acceptinviteasadmin {
+    return Intl.message('Invited as an Administrator');
+  }
+
+  String get deleteinvitebutton {
+    return Intl.message('DELETE INVITE',
+        name: 'Title for the dialog to delete an invite');
+  }
+
+  String get noinvites {
+    return Intl.message('No invites');
   }
 
   String get deleteadmininvite {
@@ -906,8 +935,24 @@ class Messages {
   }
 
   String numberofuserforplayer(int num) {
-    return Intl.message("$num users associated",
-        desc: "Number of users associated with this player");
+    if (num > 1) {
+      return Intl.message("$num users",
+          desc: "Number of users associated with this player");
+    }
+    return Intl.message("One user",
+        desc: "Number of user associated with this player");
+  }
+
+  String numberofteamsforplayer(int num) {
+    if (num ==0 ) {
+      return Intl.message("No teams");
+    }
+    if (num > 1) {
+      return Intl.message("$num teams",
+          desc: "Number of teams associated with this player");
+    }
+    return Intl.message("One team",
+        desc: "Number of teams associated with this player");
   }
 
   String invitedemail(InviteToPlayer invite) {

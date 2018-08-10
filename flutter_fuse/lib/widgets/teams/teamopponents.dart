@@ -172,13 +172,8 @@ class TeamOpponentsState extends State<TeamOpponents> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         new Center(
-                          child: new Text(Messages.of(context).nogames),
+                          child: new Text(Messages.of(context).unabletoloadgames),
                         ),
-                        new IconButton(
-                          onPressed: () => _deleteOpponent(op),
-                          icon: const Icon(Icons.delete),
-                          color: Theme.of(context).primaryColorDark,
-                        )
                       ],
                     );
                   } else {

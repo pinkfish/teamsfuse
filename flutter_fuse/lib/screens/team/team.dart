@@ -59,6 +59,7 @@ class TeamScreenState extends State<TeamScreen> {
     List<Widget> actions = <Widget>[];
     FloatingActionButton fab;
     if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
+      print('tean stuff ${UserDatabaseData.instance.teams[widget.teamUid].isAdmin()}');
       if (UserDatabaseData.instance.teams[widget.teamUid].isAdmin() &&
           _tabIndex == 0) {
         fab = new FloatingActionButton(

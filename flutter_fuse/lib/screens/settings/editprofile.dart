@@ -110,6 +110,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     if (_user == null) {
@@ -199,8 +200,8 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   ),
                 ),
-              )
-            ],
+              ),
+             ],
           ),
         ),
       ),

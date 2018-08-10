@@ -59,13 +59,15 @@ class TeamDetailsState extends State<TeamDetails> {
     team.seasons.forEach((String key, Season season) {
       ret.add(new ExpansionTile(
         key: new PageStorageKey<Season>(season),
-        title: new Text(season.name +
-            " W:" +
-            season.record.win.toString() +
-            " L:" +
-            season.record.loss.toString() +
-            " T:" +
-            season.record.tie.toString()),
+        title: new Text(
+          season.name +
+              " W:" +
+              season.record.win.toString() +
+              " L:" +
+              season.record.loss.toString() +
+              " T:" +
+              season.record.tie.toString(),
+        ),
         children: <Widget>[
           new TeamResultsStreamFuture(
             teamUid: team.uid,

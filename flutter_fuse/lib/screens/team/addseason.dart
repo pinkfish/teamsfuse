@@ -65,33 +65,16 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
   }
 
   Widget _buildResults(BuildContext context) {
-     return new Form(
+    return new Form(
       key: _formKey,
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          new SeasonFormField(
-            decoration: new InputDecoration(
-              icon: const Icon(CommunityIcons.tshirtCrew),
-              labelText: Messages.of(context).season,
-            ),
-            teamUid: widget.teamUid,
-            initialValue: _team.currentSeason,
-            onSaved: (String seasonUid) {
-              _seasonSelect = _team.seasons[seasonUid];
-            },
-          ),
-          new SwitchFormField(
-            initialValue: false,
-            icon: Icons.import_contacts,
-            onSaved: (bool b) => _importPlayers = b,
-            label: Messages.of(context).importplayers,
-          ),
           new TextFormField(
             decoration: new InputDecoration(
               icon: const Icon(Icons.event_note),
               hintText: Messages.of(context).season,
-              labelText: Messages.of(context).seasonhint,
+              labelText: Messages.of(context).newseasonhint,
             ),
             validator: (String s) =>
                 _validations.validateDisplayName(context, s),
@@ -100,6 +83,24 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
             obscureText: false,
             onSaved: (String value) {
               _seasonName = value;
+            },
+          ),
+          new SizedBox(height: 40.0),
+          new SwitchFormField(
+            initialValue: false,
+            icon: Icons.import_contacts,
+            onSaved: (bool b) => _importPlayers = b,
+            label: Messages.of(context).importplayers,
+          ),
+          new SeasonFormField(
+            decoration: new InputDecoration(
+              icon: const Icon(CommunityIcons.tshirtCrew),
+              labelText: Messages.of(context).copyseasonfrom,
+            ),
+            teamUid: widget.teamUid,
+            initialValue: _team.currentSeason,
+            onSaved: (String seasonUid) {
+              _seasonSelect = _team.seasons[seasonUid];
             },
           ),
           new FlatButton(

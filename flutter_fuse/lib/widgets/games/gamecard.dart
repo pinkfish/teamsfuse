@@ -120,7 +120,7 @@ class GameCard extends StatelessWidget {
             break;
 
           case GameResult.Tie:
-            style = style.copyWith(color: Theme.of(context).indicatorColor);
+            style = style.copyWith(color: Colors.blueAccent);
             break;
           case GameResult.Unknown:
             break;

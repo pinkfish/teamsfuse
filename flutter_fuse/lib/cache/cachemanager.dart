@@ -80,7 +80,7 @@ class CacheManager {
   }
 
   Future<bool> _canSave() async {
-    return _storeLock. synchronized(() {
+    return _storeLock.synchronized(() {
       if (_isStoringData) {
         _shouldStoreDataAgain = true;
         return false;
@@ -138,7 +138,7 @@ class CacheManager {
     if (force ||
         sinceLastClean > inBetweenCleans ||
         _cacheData.length > maxNrOfCacheObjects) {
-      await _lock.synchronized( () async {
+      await _lock.synchronized(() async {
         await _removeOldObjectsFromCache();
         await _shrinkLargeCache();
 
@@ -203,21 +203,27 @@ class CacheManager {
 
   ///Get the file from the cache or online. Depending on availability and age
   ///If it fails, will return null
-  Future<File> getFile(String url, {bool useFirebase = false}) async {
+  Future<File> getFile(String url,
+      {bool useFirebase = false, Map<String, String> headers}) async {
     print("[Flutter Cache Manager] Loading $url");
     String log;
-    if (!_cacheData.containsKey(url)) {
-      await _lock.synchronized( () {
-        if (!_cacheData.containsKey(url)) {
+    if (!_cacheData.containsKey(url) || _cacheData[url] == null) {
+      await _lock.synchronized(() {
+        if (!_cacheData.containsKey(url) || _cacheData[url] == null) {
           _cacheData[url] = new CacheObject(url);
         }
       });
     }
 
     CacheObject cacheObject = _cacheData[url];
-    await cacheObject.lock.synchronized( () async {
+    await cacheObject.lock.synchronized(() async {
       // Set touched date to show that this object is being used recently
       cacheObject.touch();
+
+      // Headers.
+      if (headers == null) {
+        headers = new Map<String, String>();
+      }
 
       String filePath = cacheObject.getFilePath();
       //If we have never downloaded this file, do download
@@ -225,7 +231,7 @@ class CacheManager {
         print("[Flutter Cache Manager] Download first $url");
 
         log = "$log\nDownloading for first time.";
-        _cacheData[url] = await downloadFile(url, useFirebase);
+        _cacheData[url] = await downloadFile(url, useFirebase, headers);
         return;
       }
       //If file is removed from the cache storage, download again
@@ -233,7 +239,7 @@ class CacheManager {
       bool cachedFileExists = await cachedFile.exists();
       if (!cachedFileExists) {
         log = "$log\nDownloading because file does not exist.";
-        _cacheData[url] = await downloadFile(url, useFirebase,
+        _cacheData[url] = await downloadFile(url, useFirebase, headers,
             relativePath: cacheObject.relativePath);
 
         log =
@@ -244,7 +250,7 @@ class CacheManager {
       if (cacheObject.validTill == null ||
           cacheObject.validTill.isBefore(new DateTime.now())) {
         log = "$log\nUpdating file in cache.";
-        CacheObject newCacheData = await downloadFile(url, useFirebase,
+        CacheObject newCacheData = await downloadFile(url, useFirebase, headers,
             relativePath: cacheObject.relativePath, eTag: cacheObject.eTag);
         if (newCacheData != null) {
           _cacheData[url] = newCacheData;
@@ -274,12 +280,12 @@ class CacheManager {
   }
 
   ///Download the file from the url
-  Future<CacheObject> downloadFile(String url, bool useFirebase,
+  Future<CacheObject> downloadFile(
+      String url, bool useFirebase, Map<String, String> headers,
       {String relativePath, String eTag}) async {
     print("[Flutter Cache Manager] Download file $url");
     CacheObject newCache = new CacheObject(url);
     newCache.setRelativePath(relativePath);
-    Map<String, String> headers = <String, String>{};
     if (eTag != null) {
       headers["If-None-Match"] = eTag;
     }

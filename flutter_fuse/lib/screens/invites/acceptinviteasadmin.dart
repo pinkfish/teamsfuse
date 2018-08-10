@@ -3,6 +3,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
+import 'package:flutter_fuse/widgets/teams/teamtile.dart';
 
 // Shows the current invites pending for this user.
 class AcceptInviteAsAdminScreen extends StatefulWidget {
@@ -103,33 +104,48 @@ class AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
       body: new Scrollbar(
         child: new SingleChildScrollView(
           child: new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              new Padding(
+                padding: EdgeInsets.all(10.0),
+                child: new Text(
+                  Messages.of(context).acceptinviteasadmin,
+                  style: Theme.of(context).textTheme.subhead.copyWith(
+                      color: Theme.of(context).accentColor,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
               new ListTile(
                 leading: const Icon(CommunityIcons.tshirtCrew),
                 title: new Text(_invite.teamName),
-                subtitle: new ByUserNameComponent(userId: _invite.sentByUid),
+                subtitle: new Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    new Text(Messages.of(context).administrator),
+                    new ByUserNameComponent(userId: _invite.sentByUid),
+                  ],
+                ),
               ),
+              new SizedBox(height: 75.0),
+              new Divider(),
               new Row(
                 children: <Widget>[
+                  new SizedBox(width: 5.0),
                   new RaisedButton(
                     onPressed: _savePressed,
-                    child: new Text(messages.addinvite),
+                    child: new Text(messages.addadmin),
                     color: theme.accentColor,
                     textColor: Colors.white,
                   ),
                   new FlatButton(
                     onPressed: _deletePressed,
-                    child: new Text(messages.deleteinvite),
+                    child: new Text(messages.deleteinvitebutton),
                   ),
                 ],
               ),
             ],
           ),
         ),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () => _savePressed(),
-        child: const Icon(Icons.check),
       ),
     );
   }

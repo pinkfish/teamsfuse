@@ -31,12 +31,23 @@ class TeamTile extends StatelessWidget {
           children: <TextSpan>[
             new TextSpan(text: "  "),
             new TextSpan(
-                text: seasonName,
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .subhead
-                    .copyWith(fontStyle: FontStyle.italic, fontSize: 15.0)),
+              text: seasonName,
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .subhead
+                  .copyWith(fontStyle: FontStyle.italic, fontSize: 15.0),
+            ),
+            new TextSpan(
+              text: team.isAdmin()
+                  ? "\n" + Messages.of(context).administrator
+                  : "",
+              style: Theme.of(context).textTheme.subhead.copyWith(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 10.0,
+                    color: Theme.of(context).primaryColorDark,
+                  ),
+            ),
           ],
         ),
       ),
@@ -50,6 +61,4 @@ class TeamTile extends StatelessWidget {
       },
     );
   }
-
-
 }

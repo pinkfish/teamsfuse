@@ -8,6 +8,7 @@ class SeasonFormField extends FormField<String> {
     @required String teamUid,
     Key key,
     String initialValue: '',
+    bool enabled : true,
     InputDecoration decoration: const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
@@ -31,13 +32,13 @@ class SeasonFormField extends FormField<String> {
                       hint: new Text(Messages.of(state.context).seasonselect),
                       value: state.value,
                       items: state._buildItems(state.context),
-                      onChanged: (String val) {
+                      onChanged: enabled ? (String val) {
                         state.updateValue(val);
                         field.didChange(val);
                         if (onFieldSubmitted != null) {
                           onFieldSubmitted(val);
                         }
-                      }));
+                      } : null));
             });
 
   @override

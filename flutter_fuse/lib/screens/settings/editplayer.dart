@@ -49,6 +49,10 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
     }
   }
 
+  void _onAddPlayerInvite(BuildContext context) {
+    Navigator.pushNamed(context, "AddInviteToPlayer/" + widget.playerUid);
+  }
+
   List<Widget> _buildPlayerData() {
     final Size screenSize = MediaQuery.of(context).size;
     List<Widget> ret = <Widget>[];
@@ -90,34 +94,46 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
     for (PlayerUser user in _player.users.values) {
       //  ret.add(new Item)
       ret.add(
-        new DropdownButtonHideUnderline(child: new Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            new Expanded(
-              child: new FutureBuilder<FusedUserProfile>(
-                  future: user.getProfile(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<FusedUserProfile> data) {
-                    if (data.hasData) {
-                      return new Text(data.data.displayName,
-                      overflow: TextOverflow.clip,
-                      style: Theme.of(context).textTheme.subhead,);
-                    }
-                    return new Text(Messages.of(context).loading);
-                  }),
-            ),
-            new Flexible(
-              child: new RelationshipFormField(
-                initialValue: user.relationship,
-                onSaved: (Relationship rel) => user.relationship = rel,
+        new DropdownButtonHideUnderline(
+          child: new Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              new Expanded(
+                child: new FutureBuilder<FusedUserProfile>(
+                    future: user.getProfile(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<FusedUserProfile> data) {
+                      if (data.hasData) {
+                        return new Text(
+                          data.data.displayName,
+                          overflow: TextOverflow.clip,
+                          style: Theme.of(context).textTheme.subhead,
+                        );
+                      }
+                      return new Text(Messages.of(context).loading);
+                    }),
               ),
-            ),
-          ],
-        ),
+              new Flexible(
+                child: new RelationshipFormField(
+                  initialValue: user.relationship,
+                  onSaved: (Relationship rel) => user.relationship = rel,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
+
+    ret.add(new Divider());
+    ret.add(
+      new FlatButton(
+        onPressed: () => _onAddPlayerInvite(context),
+        color: Theme.of(context).highlightColor,
+        child: new Text(Messages.of(context).addinvite),
+      ),
+    );
 
     return ret;
   }
@@ -159,18 +175,18 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
       ),
       body: new Container(
         padding: new EdgeInsets.all(10.0),
-      child: new Scrollbar(
-        child: new SingleChildScrollView(
-          child: new Form(
-            autovalidate: _autoValidate,
-            key: _formKey,
-            child: new Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _buildPlayerData(),
+        child: new Scrollbar(
+          child: new SingleChildScrollView(
+            child: new Form(
+              autovalidate: _autoValidate,
+              key: _formKey,
+              child: new Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _buildPlayerData(),
+              ),
             ),
           ),
         ),
-      ),
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: _saveData,

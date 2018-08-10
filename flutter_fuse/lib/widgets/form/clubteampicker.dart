@@ -9,8 +9,14 @@ class ClubTeamPicker extends StatefulWidget {
   final ValueChanged<Team> onChanged;
   final String clubUid;
   final Team team;
+  final bool selectedTitle;
 
-  ClubTeamPicker({@required this.onChanged, this.clubUid, this.team});
+  ClubTeamPicker({
+    @required this.onChanged,
+    this.clubUid,
+    this.team,
+    this.selectedTitle = false,
+  });
 
   @override
   ClubTeamPickerState createState() {
@@ -67,6 +73,7 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
         ));
       });
     }
+    print('$ret');
     return ret;
   }
 
@@ -109,6 +116,8 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
     return new InputDecorator(
       decoration: new InputDecoration(
         labelText: Messages.of(context).team,
+        labelStyle:
+            widget.selectedTitle ? Theme.of(context).textTheme.subhead.copyWith(fontWeight: FontWeight.bold) : null,
       ),
       child: new Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

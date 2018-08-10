@@ -7,8 +7,14 @@ class ClubPicker extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final String clubUid;
   final bool adminOnly;
+  final bool selectedTitle;
 
-  ClubPicker({@required this.onChanged, this.clubUid, this.adminOnly = true});
+  ClubPicker({
+    @required this.onChanged,
+    this.clubUid,
+    this.adminOnly = true,
+    this.selectedTitle = false,
+  });
 
   static const String noClub = "noClub";
 
@@ -38,6 +44,13 @@ class ClubPicker extends StatelessWidget {
     return new InputDecorator(
       decoration: new InputDecoration(
         labelText: Messages.of(context).club,
+        labelStyle: selectedTitle
+            ? Theme
+                .of(context)
+                .textTheme
+                .subhead
+                .copyWith(fontWeight: FontWeight.bold)
+            : null,
       ),
       child: new Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
