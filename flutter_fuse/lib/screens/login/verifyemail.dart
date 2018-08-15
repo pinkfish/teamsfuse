@@ -125,6 +125,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                       child: new RaisedButton(
                           child: new Text(messages.resendverify),
                           color: Theme.of(context).primaryColor,
+                          textColor: Colors.white,
                           onPressed: _handleSubmitted),
                       margin: new EdgeInsets.only(top: 20.0, bottom: 20.0),
                     ),

@@ -22,6 +22,12 @@ class AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
 
   static const String newAddInvite = 'new';
 
+
+  void showInSnackBar(String value) {
+    _scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(value)));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -42,8 +48,12 @@ class AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       UserDatabaseData.instance.players[_invite.playerUid]
-          .inviteUser(email: _invite.email);
-      Navigator.pop(context);
+          .inviteUser(email: _invite.email).then((void e) {
+        Navigator.pop(context);
+      }).catchError((dynamic e) {
+        print(e);
+        showInSnackBar("Error " + e.toString());
+      });
     }
   }
 

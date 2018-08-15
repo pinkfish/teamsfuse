@@ -239,31 +239,6 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     );
 
     if (_playerDetails != null && _playerDetails.users != null) {
-      ret.add(
-        new StreamBuilder<List<InviteToPlayer>>(
-          stream: _playerDetails.inviteStream,
-          builder:
-              (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
-            if (!snap.hasData || snap.data.length == 0) {
-              return new SizedBox(height: 0.0);
-            }
-            return new Card(
-              child: new Column(
-                children: snap.data.map((InviteToPlayer invite) {
-                  return new ListTile(
-                    leading: const Icon(Icons.message),
-                    title: new Text(Messages.of(context).invitedemail(invite)),
-                    trailing: new IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _deleteInvite(context, invite),
-                    ),
-                  );
-                }).toList(),
-              ),
-            );
-          },
-        ),
-      );
       _playerDetails.users.forEach((String key, PlayerUser player) {
         ret.add(new FutureBuilder<FusedUserProfile>(
             future: player.getProfile(),
@@ -326,6 +301,33 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
               }
             }));
       });
+      ret.add(
+        new StreamBuilder<List<InviteToPlayer>>(
+          stream: _playerDetails.inviteStream,
+          builder:
+              (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
+            List<InviteToPlayer> invites = _playerDetails.cachedInvites;
+            if (invites == null || invites.length == 0) {
+              if (!snap.hasData || snap.data.length == 0) {
+                return new SizedBox(height: 0.0);
+              }
+            }
+
+            return new Column(
+              children: invites.map((InviteToPlayer invite) {
+                return new ListTile(
+                  leading: const Icon(Icons.person_add),
+                  title: new Text(Messages.of(context).invitedemail(invite)),
+                  trailing: new IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _deleteInvite(context, invite),
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        ),
+      );
     }
 
     // Find which seasons they are in.
@@ -398,14 +400,14 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     }
 
     FloatingActionButton fab;
-    if (_playerDetails.users.containsKey(UserDatabaseData.instance.userUid)) {
+    if (_playerDetails != null &&
+        _playerDetails.users.containsKey(UserDatabaseData.instance.userUid)) {
       // I am a member of this player, can edit them!
       fab = new FloatingActionButton(
         onPressed: () => _editPlayer(context),
         child: const Icon(Icons.edit),
       );
     }
-    print("${_playerDetails.users} ${UserDatabaseData.instance.userUid}");
     return new Scaffold(
       appBar: new AppBar(
         title: new PlayerName(playerUid: _player.playerUid),

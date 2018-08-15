@@ -5,6 +5,7 @@ import 'package:fusemodel/firestore.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key key}) : super(key: key);
@@ -14,20 +15,21 @@ class SignupScreen extends StatefulWidget {
 }
 
 class SignupScreenState extends State<SignupScreen> {
-  final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormFieldState<String>> _passwordFieldKey =
       new GlobalKey<FormFieldState<String>>();
-  ScrollController scrollController = new ScrollController();
-  bool autovalidate = false;
-  Validations validations = new Validations();
-  UserData person = new UserData();
+  ScrollController _scrollController = new ScrollController();
+  bool _autovalidate = false;
+  Validations _validations = new Validations();
+  UserData _person = new UserData();
 
   // Profile details.
-  String displayName;
-  String phoneNumber;
-  String email;
-  String password;
+  String _displayName;
+  String _phoneNumber;
+  String _email;
+  String _password;
+  bool _saving = false;
   FocusNode _focusNodeDisplayName = new FocusNode();
   FocusNode _focusNodePhoneNumber = new FocusNode();
   FocusNode _focusNodeEmail = new FocusNode();
@@ -36,7 +38,7 @@ class SignupScreenState extends State<SignupScreen> {
 
   @override
   void initState() {
-    person.profile = new FusedUserProfile(null);
+    _person.profile = new FusedUserProfile(null);
     super.initState();
   }
 
@@ -50,21 +52,25 @@ class SignupScreenState extends State<SignupScreen> {
   }
 
   void _handleSubmitted() async {
-    final FormState form = formKey.currentState;
+    final FormState form = _formKey.currentState;
     if (!form.validate()) {
-      autovalidate = true; // Start validating on every change.
+      _autovalidate = true; // Start validating on every change.
       showInSnackBar(Messages.of(context).formerror);
     } else {
+      _saving = true;
       form.save();
-      person.email = email;
+      _person.email = _email;
+      _person.password = _password;
+
       UserDatabaseData.instance.userAuth
           .createUser(
-              person,
+              _person,
               new FusedUserProfile(null,
-                  displayName: displayName,
-                  phoneNumber: phoneNumber,
-                  email: email))
+                  displayName: _displayName,
+                  phoneNumber: _phoneNumber,
+                  email: _email))
           .then((UserData data) async {
+            _saving = false;
         await showDialog<bool>(
           context: context,
           builder: (BuildContext context) => new AlertDialog(
@@ -80,7 +86,9 @@ class SignupScreenState extends State<SignupScreen> {
               ),
         );
         Navigator.pushNamed(context, "/Login/Verify");
-      }).catchError((Error e) {
+      }).catchError((dynamic e) {
+        print(e);
+        _saving = false;
         showInSnackBar(Messages.of(context).errorcreatinguser);
       });
     }
@@ -101,8 +109,8 @@ class SignupScreenState extends State<SignupScreen> {
     Validations validations = new Validations();
     return new Scaffold(
       key: _scaffoldKey,
-      body: new SingleChildScrollView(
-        controller: scrollController,
+      body: new SavingOverlay(saving: _saving, child: new SingleChildScrollView(
+        controller: _scrollController,
         child: new Container(
           padding: new EdgeInsets.all(16.0),
           //decoration: new BoxDecoration(image: backgroundImage),
@@ -131,8 +139,8 @@ class SignupScreenState extends State<SignupScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     new Form(
-                      key: formKey,
-                      autovalidate: autovalidate,
+                      key: _formKey,
+                      autovalidate: _autovalidate,
                       child: new Column(
                         children: <Widget>[
                           new EnsureVisibleWhenFocused(
@@ -150,7 +158,7 @@ class SignupScreenState extends State<SignupScreen> {
                                 return validations.validateName(context, str);
                               },
                               onSaved: (String value) {
-                                displayName = value;
+                                _displayName = value;
                               },
                             ),
                           ),
@@ -169,7 +177,7 @@ class SignupScreenState extends State<SignupScreen> {
                                 return validations.validateEmail(context, str);
                               },
                               onSaved: (String value) {
-                                email = value;
+                                _email = value;
                               },
                             ),
                           ),
@@ -190,7 +198,7 @@ class SignupScreenState extends State<SignupScreen> {
                                 return validations.validatePhone(context, str);
                               },
                               onSaved: (String value) {
-                                phoneNumber = value;
+                                _phoneNumber = value;
                               },
                             ),
                           ),
@@ -210,7 +218,7 @@ class SignupScreenState extends State<SignupScreen> {
                               },
                               key: _passwordFieldKey,
                               onSaved: (String password) {
-                                password = password;
+                                _password = password;
                               },
                             ),
                           ),
@@ -233,6 +241,7 @@ class SignupScreenState extends State<SignupScreen> {
                                 child: new Text(
                                     Messages.of(context).createaccount),
                                 color: Theme.of(context).primaryColor,
+                                textColor: Colors.white,
                                 onPressed: _handleSubmitted),
                             margin:
                                 new EdgeInsets.only(top: 20.0, bottom: 20.0),
@@ -262,6 +271,6 @@ class SignupScreenState extends State<SignupScreen> {
           ),
         ),
       ),
-    );
+    ), );
   }
 }

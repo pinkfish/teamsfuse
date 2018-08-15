@@ -55,28 +55,28 @@ class Messages {
 
   String get login {
     return Intl.message(
-      'Login',
+      'LOGIN',
       name: 'Login button text',
     );
   }
 
   String get logout {
     return Intl.message(
-      'Logout',
+      'LOGOUT',
       name: 'Logout button text',
     );
   }
 
   String get forgotPassword {
     return Intl.message(
-      'Forgot Password',
+      'FORGOT PASSWORD',
       name: 'Forgot password button text',
     );
   }
 
   String get resendverify {
     return Intl.message(
-      'Resend email',
+      'RESEND EMAIL',
       name: 'Button to resend the email to verify their email address',
     );
   }
@@ -956,7 +956,7 @@ class Messages {
   }
 
   String invitedemail(InviteToPlayer invite) {
-    return Intl.message("${invite.email} to follow",
+    return Intl.message("${invite.email}",
         desc: "Message for invited to follow the specific player");
   }
 
@@ -1326,7 +1326,7 @@ class Messages {
   }
 
   String get createaccount {
-    return Intl.message('Create', desc: 'Create account button text');
+    return Intl.message('CREATE', desc: 'Create account button text');
   }
 
   String get passwordsnotmatching {

@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ];
     if (!UserDatabaseData.instance.loadedDatabase &&
-        UserDatabaseData.instance.loadedFromSQL) {
+        !UserDatabaseData.instance.loadedFromSQL) {
       actions.add(
         new SizedBox(
           width: 15.0,
@@ -157,7 +157,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: new SavingOverlay(
         quoteId: quoteId,
-        saving: !UserDatabaseData.instance.loadedFromSQL && !UserDatabaseData.instance.loadedDatabase,
+        saving: !UserDatabaseData.instance.loadedFromSQL &&
+            !UserDatabaseData.instance.loadedDatabase,
         child: new Column(
           children: <Widget>[
             new GestureDetector(
@@ -168,7 +169,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: new CalendarWidget(
                 initialDate: new TZDateTime.now(local),
                 source: _calendarState,
-                bannerHeader: new AssetImage("assets/images/calendarheader.png"),
+                bannerHeader:
+                    new AssetImage("assets/images/calendarheader.png"),
                 monthHeader: new AssetImage("assets/images/calendarbanner.jpg"),
               ),
             ),
@@ -231,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     super.dispose();
-     _teamSubscription?.cancel();
+    _teamSubscription?.cancel();
     _teamSubscription = null;
     _messagaesSubscription?.cancel();
     _messagaesSubscription = null;

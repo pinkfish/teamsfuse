@@ -33,7 +33,11 @@ class Auth extends wfs.AuthWrapper {
 
   @override
   Future<wfs.FirebaseUserWrapper> createUserWithEmailAndPassword(
-      {String email, String password}) {}
+      {String email, String password}) async {
+    fa.FirebaseUser user = await fa.FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password);
+    return new FirebaseUser(user);
+  }
 }
 
 class FirebaseUser extends wfs.FirebaseUserWrapper {

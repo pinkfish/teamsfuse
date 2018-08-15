@@ -125,24 +125,26 @@ class ProfileScreenState extends State<ProfileScreen> {
         stream: player.inviteStream,
         builder:
             (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
-          if (!snap.hasData) {
+          List<InviteToPlayer> invites = player.cachedInvites;
+          if (snap.hasData) {
+            invites = snap.data;
+          }
+          if (invites == null) {
             return new Text("");
           }
-          if (snap.data.length == 0) {
+          if (invites.length == 0) {
             return new Text("");
           }
-          return new Card(
-            child: new Column(
-              children: snap.data.map((InviteToPlayer invite) {
-                return new ListTile(
-                  leading: const Icon(Icons.message),
-                  title: new Text(Messages.of(context).invitedemail(invite)),
-                  trailing: new IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _deleteInvite(context, invite)),
-                );
-              }).toList(),
-            ),
+          return new Column(
+            children: invites.map((InviteToPlayer invite) {
+              return new ListTile(
+                leading: const Icon(Icons.person_add),
+                title: new Text(Messages.of(context).invitedemail(invite)),
+                trailing: new IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _deleteInvite(context, invite)),
+              );
+            }).toList(),
           );
         },
       ),
@@ -164,6 +166,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) {
             if (profile.hasData) {
               return new ListTile(
+                leading: const Icon(Icons.person),
                 title: new Text(Messages.of(context).displaynamerelationship(
                     profile.data.displayName, user.relationship)),
                 subtitle: new Text(profile.data.email),
