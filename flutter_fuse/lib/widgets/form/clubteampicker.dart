@@ -50,7 +50,6 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
     _teamStream = _club?.teamStream?.listen((Iterable<Team> data) {
       print('new teams!');
       setState(() {});
-      return data;
     });
   }
 
@@ -108,7 +107,6 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
         onChanged: widget.clubUid != null
             ? (Team val) {
                 widget.onChanged(val);
-                return val;
               }
             : null,
       );

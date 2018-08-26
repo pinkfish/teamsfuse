@@ -67,7 +67,6 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
           setState(() {
             _myRole = role;
           });
-          return role;
         },
       ),
       actions: <Widget>[

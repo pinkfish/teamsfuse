@@ -30,13 +30,13 @@ class AddGameScreenState extends State<AddGameScreen> {
   StepState clubStepState = StepState.disabled;
   Team _team;
   Club _club;
-  String _clubUid;
   int _currentStep = 1;
   Game _initGame;
   bool _saving = false;
 
   AddGameScreenState();
 
+  @override
   void initState() {
     if (UserDatabaseData.instance.clubs.values
         .any((Club club) => club.isAdmin())) {
@@ -44,6 +44,7 @@ class AddGameScreenState extends State<AddGameScreen> {
       clubStepState = StepState.editing;
       teamStepState = StepState.disabled;
     }
+    super.initState();
   }
 
   void _showInSnackBar(String value) {
@@ -175,9 +176,6 @@ class AddGameScreenState extends State<AddGameScreen> {
   void _clubChanged(Club club) {
     setState((() {
       _club = club;
-      if (club != null) {
-        _clubUid = club.uid;
-      }
     }));
   }
 

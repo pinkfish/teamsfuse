@@ -84,7 +84,6 @@ class TeamPickerState extends State<TeamPicker> {
                     value: widget.teamUid,
                     onChanged: (String val) {
                       widget.onChanged(val);
-                      return val;
                     },
                   ),
           ),

@@ -64,7 +64,6 @@ class ClubPicker extends StatelessWidget {
               value: clubUid,
               onChanged: (String val) {
                 onChanged(val);
-                return val;
               },
             ),
           ),

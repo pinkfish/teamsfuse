@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:synchronized/synchronized.dart';
+import 'dart:async';
 
 ///Cache information of one file
 class CacheObject {
@@ -73,7 +74,7 @@ class CacheObject {
     touched = new DateTime.now();
   }
 
-  void setDataFromHeaders(Map<String, String> headers) async {
+  Future<void> setDataFromHeaders(Map<String, String> headers) async {
     //Without a cache-control header we keep the file for a week
     Duration ageDuration = new Duration(days: 7);
 

@@ -45,7 +45,7 @@ class CacheManager {
   static Lock _lock = new Lock();
 
   ///Shared preferences is used to keep track of the information about the files
-  void _init() async {
+  Future<void> _init() async {
     _getSavedCacheDataFromPreferences();
     _getLastCleanTimestampFromPreferences();
     CacheObject.initDirectory();
@@ -101,7 +101,7 @@ class CacheManager {
     });
   }
 
-  void _saveDataInPrefs() async {
+  Future<void> _saveDataInPrefs() async {
     Map<String, dynamic> jsonMap = <String, dynamic>{};
 
     await _lock.synchronized(() {
@@ -132,7 +132,7 @@ class CacheManager {
     }
   }
 
-  void _cleanCache({bool force: false}) async {
+  Future<void> _cleanCache({bool force: false}) async {
     Duration sinceLastClean = new DateTime.now().difference(lastCacheClean);
 
     if (force ||
@@ -149,7 +149,7 @@ class CacheManager {
     }
   }
 
-  void _removeOldObjectsFromCache() async {
+  Future<void> _removeOldObjectsFromCache() async {
     DateTime oldestDateAllowed = new DateTime.now().subtract(maxAgeCacheObject);
 
     //Remove old objects
@@ -160,7 +160,7 @@ class CacheManager {
     }
   }
 
-  void _shrinkLargeCache() async {
+  Future<void> _shrinkLargeCache() async {
     //Remove oldest objects when cache contains to many items
     if (_cacheData.length > maxNrOfCacheObjects) {
       List<CacheObject> allValues = _cacheData.values.toList();
@@ -174,7 +174,7 @@ class CacheManager {
     }
   }
 
-  void _removeFile(CacheObject cacheObject) async {
+  Future<void> _removeFile(CacheObject cacheObject) async {
     //Ensure the file has been downloaded
     if (cacheObject.relativePath == null) {
       return;

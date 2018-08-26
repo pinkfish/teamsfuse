@@ -27,6 +27,7 @@ void main() async {
         .then<ByteData>((ByteData data) {
       loadedData = data;
       print('loaded data');
+      return data;
     }),
     FlutterNativeTimezone
         .getLocalTimezone()
