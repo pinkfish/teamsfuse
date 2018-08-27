@@ -6,6 +6,7 @@ import 'package:flutter_fuse/services/notifications.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:flutter_fuse/services/firestore/firestore.dart' as fs;
 import 'package:flutter_fuse/services/loggingdata.dart';
 import 'package:flutter_fuse/services/appconfiguration.dart';
@@ -67,7 +68,10 @@ void main() async {
     LoggingData.instance.logFlutterError(details);
   };
 
+  // Wait till the user has loaded from firebase.
+  UserData data = await UserDatabaseData.instance.userAuth.currentUser();
+
   trace.stop();
  
-  new Routes();
+  new Routes(data);
 }

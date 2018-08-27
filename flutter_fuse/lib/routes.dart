@@ -38,9 +38,12 @@ class Routes {
 
   MaterialApp app;
 
-  Routes() {
+  Routes(UserData data) {
     // Subscribe to auth changes.
     UserDatabaseData.instance.userAuth.onAuthChanged().listen(_authChanged);
+    // Start loading stuff.
+    _authChanged(data);
+    // Setup the app and do exciting things.
     app = new MaterialApp(
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         const MessagesDelegate(),
