@@ -35,7 +35,7 @@ dependencies:
      git:
        url: "https://github.com/pinkfish/timezone.git"
   fusemodel:
-    path: ../../fusemodel
+    path: ../fusemodel
   sqflite: any
   tuple: any
   sliver_calendar:
