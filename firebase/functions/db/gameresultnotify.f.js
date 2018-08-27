@@ -104,11 +104,11 @@ exports = module.exports = functions.firestore.document("/Games/{gameid}")
                     inProgress = " in penalty shootout";
                 }
                 if (result === 0) {
-                    mess = "Game score tied " + inProgress;
+                    mess = "Game tied" + inProgress;
                 } else if (result === 1) {
-                    mess = "Game score winning " + inProgress;
+                    mess = "Winning game" + inProgress;
                 } else {
-                    mess = "Game score losing " + inProgress;
+                    mess = "Losing game" + inProgress;
                 }
             }
 

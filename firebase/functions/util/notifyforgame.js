@@ -153,6 +153,7 @@ exports.notifyForGame = (game, payload, excludeUser, onlyGames) => {
                         } else {
                             sendPayload['data']['gameUid'] = game.id
                         }
+                        sendPayload['data']['click_action'] = 'FLUTTER_NOTIFICATION_CLICK';
 
                         if (sendPayload.notification) {
                             if (sendPayload.notification.title) {
