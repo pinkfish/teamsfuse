@@ -1,0 +1,29 @@
+<div>
+    <material-list *deferredContent size="small">
+        <div group class="mat-drawer-spacer"></div>
+        <div id="user-name" *ifFirebaseAuth="true; let currentUser = currentUser">
+            <img src="{{profileUrl}}" width="40" height="40" style="vertical-align: middle">
+            {{currentUser.profile.displayName}}</div>
+        <div id="user-name-signout" *ifFirebaseAuth="false">Not logged in</div>
+        <div group>
+            <div>Calendar</div>
+            <material-list-item (trigger)="openToday()">
+                <material-icon icon="calendar_today"></material-icon>Today
+            </material-list-item>
+        </div>
+        <div group>
+            <div>Teams</div>
+            <drawer-team *ngFor="let fluff of teams | async; trackBy: trackByTeams" [team]="fluff">
+            </drawer-team>
+
+        </div>
+        <div group>
+            <material-list-item>
+                <material-icon icon="settings"></material-icon>Settings
+            </material-list-item>
+            <material-list-item>
+                <material-icon icon="exit"></material-icon>Signout
+            </material-list-item>
+        </div>
+    </material-list>
+</div>

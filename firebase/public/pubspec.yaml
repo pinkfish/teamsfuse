@@ -1,0 +1,30 @@
+name: teamfuse
+description: A web app that uses AngularDart with lots of fun
+version: 0.0.1
+
+environment:
+  sdk: '>=1.9.0 <2.0.0'
+
+dependencies:
+  angular: ^5.0.0-alpha
+  angular_components: ^0.9.0-alpha
+  firebase: ^4.0.0
+  pwa: "^0.1.10"
+  angular_forms: "^2.0.0-alpha"
+  angular_router: "^2.0.0-alpha"
+  csv: "^3.1.2"
+  google_maps: ">=3.0.0 <4.0.0"
+  timezone:
+    git:
+      url: "https://github.com/pinkfish/timezone.git"
+  fusemodel:
+    path: ../../fusemodel
+
+
+dev_dependencies:
+  sass_builder: ^1.2.0
+  angular_test: ^2.0.0-alpha
+  build_runner: ^0.8.8
+  build_test: ^0.10.2
+  build_web_compilers: ^0.4.0
+  test: ^0.12.30

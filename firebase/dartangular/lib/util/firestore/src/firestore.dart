@@ -1,0 +1,31 @@
+part of firestore_web;
+
+///
+/// The entry point for accessing a Firestore, this is generic for web vs
+/// mobile.
+///
+class Firestore extends wfs.FirestoreWrapper {
+  wfs.AuthWrapper authWrapper;
+
+  /// Gets a [CollectionReference] for the specified Firestore path.
+  wfs.CollectionReferenceWrapper collection(String path) {
+    return new CollectionReference(fb.firestore().collection(path));
+  }
+
+  /// Gets a [DocumentReference] for the specified Firestore path.
+  wfs.DocumentReferenceWrapper document(String path) {
+    return new DocumentReference(fb.firestore().doc(path));
+  }
+
+  @override
+  wfs.StorageReferenceWrapper storageRef() {
+    return new StorageReference(fb.storage().ref());
+  }
+
+  wfs.AuthWrapper get auth {
+    if (authWrapper == null) {
+      authWrapper = new Auth();
+    }
+    return authWrapper;
+  }
+}

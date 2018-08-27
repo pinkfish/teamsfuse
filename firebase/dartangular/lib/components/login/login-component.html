@@ -1,0 +1,37 @@
+<div class="login-section">
+    <div class="login-container">
+        <form (ngSubmit)="onSubmit()" #heroForm="ngForm">
+            <div class="row">
+                 <material-input label="Email"
+                                type="email"
+                                required
+                                requiredErrorMsg="You need an email to login!"
+                        #name="ngForm"
+                       [(ngModel)]="model.email"
+                       ngControl="email">
+                </material-input>
+            </div>
+            <div class="row">
+                <material-input label="Password"
+                                type="password"
+                                required
+                                requiredErrorMsg="You need a password to login!"
+                                #name="ngForm"
+                                [(ngModel)]="model.password"
+                                ngControl="password">
+                </material-input>
+            </div>
+            <div [hidden]="error">
+                <div class="error-text">
+                    Incorrect username/password.
+                </div>
+            </div>
+             <div class="row">
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+             </div>
+
+        </form>
+    </div>
+</div>

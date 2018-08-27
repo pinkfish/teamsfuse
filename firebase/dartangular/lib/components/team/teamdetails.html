@@ -1,0 +1,27 @@
+<div *ngIf="team != null">
+    <img  src="{{teamUrl}}" width="100" height="100" style="float: right">
+
+    <h2>
+        {{team.name}} <i class="mdi mdi-{{genderIcon}}"></i>
+    </h2>
+    <table>
+
+        <tr>
+            <td><b>Gender</b></td><td>{{gender}}</td>
+        </tr>
+        <tr>
+            <td><b>League</b></td> <td>{{team.league}}</td>
+        </tr>
+        <tr>
+            <td><b>Sport</b></td> <td>{{sportDetails}}</td>
+        </tr>
+        <tr>
+            <td><b>Track Attendence</b></td> <td>{{team.trackAttendence}}</td>
+        </tr>
+        <tr>
+            <td><b>Arrive Early</b></td> <td>{{team.arriveEarly}} minutes</td>
+        </tr>
+    </table>
+    <season-expansionpanel *ngFor="let fluff of team.seasons.values; trackBy: trackBySeason" [team]="team" [season]="fluff">
+    </season-expansionpanel>
+</div>

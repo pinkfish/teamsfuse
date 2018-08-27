@@ -1,0 +1,94 @@
+:host {
+  display: block;
+  margin: 16px;
+  position: relative;
+}
+
+.controls {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-width[persistent], .custom-width[permanent] {
+  width: 50%;
+}
+.custom-width[persistent]:not([end]) ~ material-content,
+.custom-width[persistent]:not([end]) ~ .material-content, .custom-width[permanent]:not([end]) ~ material-content,
+.custom-width[permanent]:not([end]) ~ .material-content {
+  margin-left: 50%;
+}
+.custom-width[persistent][end] ~ material-content,
+.custom-width[persistent][end] ~ .material-content, .custom-width[permanent][end] ~ material-content,
+.custom-width[permanent][end] ~ .material-content {
+  margin-right: 50%;
+}
+.custom-width[persistent].mat-drawer-collapsed:not([end]) {
+  transform: translateX(-100%);
+}
+.custom-width[persistent].mat-drawer-collapsed:not([end]) ~ material-content,
+.custom-width[persistent].mat-drawer-collapsed:not([end]) ~ .material-content {
+  margin-left: 0;
+}
+.custom-width[persistent].mat-drawer-collapsed[end] {
+  transform: translateX(100%);
+}
+.custom-width[persistent].mat-drawer-collapsed[end] ~ material-content,
+.custom-width[persistent].mat-drawer-collapsed[end] ~ .material-content {
+  margin-right: 0;
+}
+.custom-width ::ng-deep > .drawer-content {
+  left: -50%;
+  width: 50%;
+}
+.custom-width.mat-drawer-expanded ::ng-deep > .drawer-content {
+  transform: translateX(100%);
+}
+.custom-width[end] ::ng-deep > .drawer-content {
+  left: initial;
+  right: -50%;
+}
+.custom-width[end].mat-drawer-expanded ::ng-deep > .drawer-content {
+  transform: translateX(-100%);
+}
+
+.teamname {
+  font-style: italic;
+  display: inline;
+  margin-left: 30px;
+}
+
+.details {
+  float: left;
+}
+
+.teamimg {
+  width: 50px;
+  float: left;
+}
+
+.card {
+  float: none;
+  clear: both;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+  height: 50px;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.address {
+  font-size: 70%;
+}
+
+.month {
+  font-size: 200%;
+  background: #369;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+  width: 100%;
+  padding: 10px;
+}
