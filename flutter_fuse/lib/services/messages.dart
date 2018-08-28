@@ -1088,13 +1088,37 @@ class Messages {
     if (result.scores.containsKey(penaltyPeriod)) {
       GameResultPerPeriod penaltyScore = result.scores[penaltyPeriod];
       return Intl.message(
-          'In progress ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+          'Playing ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
           name: 'In progress result details',
           desc: 'Win result details with penalty shootout');
     }
     return Intl.message(
-        'In progress ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
+        'Playing ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
         name: 'In progress result details',
+        desc: 'In progress result details');
+  }
+
+  String cardresultinprogress(GameResultDetails result) {
+    GameResultPerPeriod finalScore;
+    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
+    if (result.scores.containsKey(finalReg)) {
+      finalScore = result.scores[finalReg];
+    } else {
+      finalScore = new GameResultPerPeriod(
+          period: new GamePeriod(type: GamePeriodType.Regulation),
+          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+    }
+    GamePeriod penaltyPeriod = new GamePeriod(type: GamePeriodType.Penalty);
+    if (result.scores.containsKey(penaltyPeriod)) {
+      GameResultPerPeriod penaltyScore = result.scores[penaltyPeriod];
+      return Intl.message(
+          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+          name: 'In progress result details in the card',
+          desc: 'Win result details with penalty shootout');
+    }
+    return Intl.message(
+        '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
+        name: 'In progress result details in the card',
         desc: 'In progress result details');
   }
 
@@ -1222,7 +1246,7 @@ class Messages {
   String gameinprogress(GameInProgress val) {
     switch (val) {
       case GameInProgress.InProgress:
-        return Intl.message("In progress", desc: "Game is in progress");
+        return Intl.message("Playing", desc: "Game is in progress");
       case GameInProgress.Final:
         return Intl.message("Final", desc: "Game in finalized");
       case GameInProgress.NotStarted:

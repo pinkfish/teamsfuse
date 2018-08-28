@@ -90,6 +90,7 @@ class GameListCalendarState extends CalendarSource {
 
   void _setGames(Iterable<Game> res) {
     List<Game> games = res.toList();
+    print('_setGames');
 
     if (games.length > 0 || _listToShow == null) {
       games.sort(

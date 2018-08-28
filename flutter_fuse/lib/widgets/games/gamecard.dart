@@ -165,7 +165,7 @@ class GameCard extends StatelessWidget {
           Messages.of(context).gameinprogress(game.result.inProgress),
         ),
         new Text(
-          Messages.of(context).resultinprogress(game.result),
+          Messages.of(context).cardresultinprogress(game.result),
         ),
       ],
     );

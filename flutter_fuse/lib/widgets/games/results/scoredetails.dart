@@ -59,8 +59,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     if (_details.currentPeriod == null) {
       _details.currentPeriod = _currentPeriodResults.period;
     }
-    _debouncer = new Debouncer<bool>(new Duration(minutes: 2), _sendUpdate,
-        resetOnAdd: false);
+    _debouncer = new Debouncer<bool>(new Duration(seconds: 1), _sendUpdate,
+        resetOnAdd: false, atBegin: true);
     _ptsFor = _currentPeriodResults.score.ptsFor;
     _ptsAgainst = _currentPeriodResults.score.ptsAgainst;
     // Setup the stop watch/
@@ -128,11 +128,13 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       );
     }
     setState(() {
+      _currentPeriodResults = _details.scores[newScoreUpdate];
       _currentPeriodResults.period = newPeriod;
     });
   }
 
   void _sendUpdate(List<bool> results) {
+    print('Writing update to firestore ${_details}');
     widget.game.updateFirestoreResult(_details);
   }
 
@@ -144,6 +146,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       if (_ptsFor != null) {
         _currentPeriodResults.score.ptsFor = _ptsFor;
       }
+      _details.scores[_currentPeriodResults.period] = _currentPeriodResults;
       print("Update score $_currentPeriodResults $_details");
       //widget.game.updateFirestoreResult(_details);
       _writeLog(GameLogType.ScoreUpdate);

@@ -445,6 +445,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         gameQuery = gameQuery.where(Game.SEASONUID, isEqualTo: seasonUid);
       }
       gameQuery.getDocuments().then((QuerySnapshotWrapper queryGameSnap) async {
+        print('First doc read');
         Set<Game> data = new Set<Game>();
         for (DocumentSnapshotWrapper snap in queryGameSnap.documents) {
           String sharedGameUid = snap.data[Game.SHAREDDATAUID];
@@ -493,10 +494,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       sub.subscriptions.add(gameQuery
           .snapshots()
           .listen((QuerySnapshotWrapper queryGameSnap) async {
+        print('Games updated $teamUid');
         Set<Game> data = new Set<Game>();
         if (!maps.containsKey(teamUid)) {
           maps[teamUid] = new Set<Game>();
         }
+        print('Games updated $queryGameSnap.documents');
         for (DocumentSnapshotWrapper snap in queryGameSnap.documents) {
           String sharedGameUid;
           Game g = maps[teamUid].lookup(snap.documentID);
@@ -532,6 +535,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             sharedData = g.sharedData;
           }
 
+          print('Making game {snap.documentID} from ${snap.data}');
+
           Game newGame = new Game.fromJSON(
               teamUid, snap.documentID, snap.data, sharedData);
 
@@ -544,12 +549,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             data.add(newGame);
           }
         }
+        print('Data $data');
         maps[teamUid] = data;
         Set<Game> newData = new Set<Game>();
 
         for (Set<Game> it in maps.values) {
           newData.addAll(it);
         }
+        print('Games updated $newData');
         // Update the cache so we can find these games when the
         // app is open.
         UserDatabaseData.instance.doCacheGames(newData);
