@@ -4,7 +4,6 @@ import 'package:angular_router/angular_router.dart';
 
 import 'route_paths.dart' as paths;
 import 'login-component.template.dart' as lctd;
-import 'notfound-component.template.dart' as nfct;
 
 
 @Injectable()

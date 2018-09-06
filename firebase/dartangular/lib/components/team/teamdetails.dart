@@ -1,12 +1,7 @@
-// Copyright (c) 2016, the Dart project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
 import 'package:angular/angular.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:angular_components/material_expansionpanel/material_expansionpanel.dart';
 import 'package:teamfuse/components/games/gamecard-component.dart';
-import 'dart:async';
 
 import 'seasonexpansionpanel.dart';
 
@@ -19,7 +14,7 @@ import 'seasonexpansionpanel.dart';
     GameCardComponent,
     SeasonExpansionPanelComponent,
   ],
-  templateUrl: 'teamdetails.html',
+  templateUrl: 'clubdetails.html',
   pipes: const [AsyncPipe],
   styleUrls: const [
     'package:angular_components/app_layout/layout.scss.css',
@@ -51,6 +46,7 @@ class TeamDetailsComponent implements OnDestroy, OnInit {
       case Gender.NA:
         return "help";
     }
+    return "help";
   }
 
   String get gender {
@@ -64,6 +60,7 @@ class TeamDetailsComponent implements OnDestroy, OnInit {
       case Gender.NA:
         return "N/A";
     }
+    return "Unknown";
   }
 
   String get teamUrl {

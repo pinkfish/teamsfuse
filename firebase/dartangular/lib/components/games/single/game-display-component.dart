@@ -8,8 +8,6 @@ import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart';
-import 'package:google_maps/google_maps_places.dart';
 
 class TimeStuff {
   num hour;
@@ -53,9 +51,8 @@ class GameDisplayComponent {
   Uri.parse("https://maps.googleapis.com/maps/api/place/textsearch/json");
   @ViewChild('mapArea')
   ElementRef mapAreaRef;
-  final Router _router;
 
-  GameDisplayComponent(this._router);
+  GameDisplayComponent();
 
   Opponent get opponent {
     return UserDatabaseData
@@ -117,7 +114,6 @@ class GameDisplayComponent {
     }
     place[1] = place[1].substring(0, place[1].length - 2).trim();
     ret.minute = int.parse(place[1]);
-    print("$str => $ret");
     return ret;
   }
 }

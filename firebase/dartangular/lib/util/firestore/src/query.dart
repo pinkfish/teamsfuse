@@ -30,7 +30,18 @@ class Query extends wfs.QueryWrapper {
     );
   }
 
-  static wfs.DocumentChangeTypeWrapper getType(String str) {}
+  static wfs.DocumentChangeTypeWrapper getType(String str) {
+    switch (str) {
+      case "added":
+    return wfs.DocumentChangeTypeWrapper.added;
+      case "modified":
+        return wfs.DocumentChangeTypeWrapper.modified;
+      case "removed":
+        return wfs.DocumentChangeTypeWrapper.removed;
+      default:
+        return wfs.DocumentChangeTypeWrapper.modified;
+    }
+  }
 
   /// Creates and returns a new [Query] with additional filter on specified
   /// [field].

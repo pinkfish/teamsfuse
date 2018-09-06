@@ -7,6 +7,7 @@ import 'package:teamfuse/components/games/games-component.template.dart' as gctd
 import 'package:teamfuse/components/team/deletegamesfromteam.template.dart' as dgfttd;
 import 'package:teamfuse/components/team/team.template.dart' as gcttd;
 import 'package:teamfuse/components/games/single/game-component.template.dart' as sgtd;
+import 'package:teamfuse/components/club/club.template.dart' as ccttd;
 
 
 @Injectable()
@@ -20,9 +21,13 @@ class Routes {
       routePath: paths.deletegamesfromteam,
       component: dgfttd.DeleteGamesFromTeamComponentNgFactory,
   );
-  static final _teams = new RouteDefinition(
-    routePath: paths.teams,
+  static final _team = new RouteDefinition(
+    routePath: paths.team,
     component: gcttd.TeamComponentNgFactory,
+  );
+  static final _club = new RouteDefinition(
+    routePath: paths.club,
+    component: ccttd.ClubComponentNgFactory,
   );
 
   static final _gameDisplay = new RouteDefinition(
@@ -36,7 +41,8 @@ class Routes {
   final List<RouteDefinition> all = [
     _games,
     _deleteGamesFromTeam,
-    _teams,
-    _gameDisplay
+    _team,
+    _gameDisplay,
+    _club
   ];
 }

@@ -12,6 +12,12 @@
             </material-list-item>
         </div>
         <div group>
+            <div>Clubs</div>
+            <drawer-club *ngFor="let froggy of clubs | async; trackBy: trackByClubs" [club]="froggy">
+            </drawer-club>
+
+        </div>
+        <div group>
             <div>Teams</div>
             <drawer-team *ngFor="let fluff of teams | async; trackBy: trackByTeams" [team]="fluff">
             </drawer-team>

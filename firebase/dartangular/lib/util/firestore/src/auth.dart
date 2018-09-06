@@ -7,21 +7,35 @@ class Auth extends wfs.AuthWrapper {
   }
 
   @override
-  Future<Function> signOut() {}
+  Future<Function> signOut() {
+    return fb.auth().signOut();
+  }
 
   @override
-  Future<Function> sendPasswordResetEmail({String email}) {}
+  Future<Function> sendPasswordResetEmail({String email}) {
+    return fb.auth().sendPasswordResetEmail(email);
+  }
 
   @override
-  Future<wfs.FirebaseUserWrapper> currentUser() {}
+  Future<wfs.FirebaseUserWrapper> currentUser() async {
+    fb.User user = fb.auth().currentUser;
+    return new FirebaseUser(user);
+  }
 
   @override
   Future<wfs.FirebaseUserWrapper> signInWithEmailAndPassword(
-      {String email, String password}) {}
+      {String email, String password}) async {
+    fb.User user = await fb.auth().signInWithEmailAndPassword(email, password);
+    return new FirebaseUser(user);
+  }
 
   @override
   Future<wfs.FirebaseUserWrapper> createUserWithEmailAndPassword(
-      {String email, String password}) {}
+      {String email, String password}) async {
+    fb.User user =
+        await fb.auth().createUserWithEmailAndPassword(email, password);
+    return new FirebaseUser(user);
+  }
 }
 
 class FirebaseUser extends wfs.FirebaseUserWrapper {
@@ -29,9 +43,10 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
 
   FirebaseUser(this._user)
       : super(
-            email: _user.email,
-            isEmailVerified: _user.emailVerified,
-            uid: _user.uid);
+            email: _user?.email,
+            isEmailVerified: _user?.emailVerified,
+            uid: _user?.uid,
+            loggedIn: _user != null);
 
   @override
   Future<void> reload() {

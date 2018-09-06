@@ -1,4 +1,7 @@
-<div class="card">
+<div class="card" *ngIf="game == null">
+    Loading...
+</div>
+<div class="card" *ngIf="game != null">
     <div class="teamimg">
         <img src="{{teamUrl}}" width="50" height="50" style="padding-right: 10px"/>
     </div>

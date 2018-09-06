@@ -8,7 +8,6 @@ import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart';
-import 'package:http/http.dart';
 import 'package:google_maps/google_maps_places.dart';
 import 'inputdata.dart';
 
@@ -45,7 +44,6 @@ class GameCardComponent {
   @Input()
   Game game;
   List<String> files;
-  final Client _http;
   static DateFormat dateFormat = DateFormat.yMMMMEEEEd();
   static DateFormat dateWithTimeFormat =
       new DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY);
@@ -58,7 +56,7 @@ class GameCardComponent {
   ElementRef mapAreaRef;
   final Router _router;
 
-  GameCardComponent(this._http, this._router);
+  GameCardComponent(this._router);
 
   Opponent get opponent {
     return UserDatabaseData

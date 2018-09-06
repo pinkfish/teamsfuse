@@ -34,7 +34,25 @@ class StorageReference extends wfs.StorageReferenceWrapper {
   }
 
   @override
-  Future<wfs.StorageMetadata> getMetadata() {}
+  Future<wfs.StorageMetadata> getMetadata() async {
+    fb.FullMetadata metadata = await _ref.getMetadata();
+    return new wfs.StorageMetadata(
+        bucket: metadata.bucket,
+        name: metadata.name,
+        path: metadata.fullPath,
+        md5Hash: metadata.md5Hash,
+        metadataGeneration: metadata.generation,
+        customMetadata: metadata.customMetadata,
+        updatedTimeMillis: metadata.updated.millisecondsSinceEpoch,
+        contentLanguage: metadata.contentLanguage,
+        contentDisposition: metadata.contentDisposition,
+        contentEncoding: metadata.contentEncoding,
+        contentType: metadata.contentType,
+        cacheControl: metadata.cacheControl,
+        creationTimeMillis: metadata.timeCreated.millisecondsSinceEpoch,
+        generation: metadata.generation,
+        sizeBytes: metadata.size);
+  }
 
   @override
   Future<Function> delete() {

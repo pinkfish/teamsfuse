@@ -17,7 +17,6 @@ import 'routes.dart';
   ''')
 class NeedAuthComponent  {
   final Routes routes;
-  final Router _router;
 
-  NeedAuthComponent(this._router, this.routes);
+  NeedAuthComponent(this.routes);
 }

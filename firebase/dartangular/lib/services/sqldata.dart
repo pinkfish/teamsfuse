@@ -17,16 +17,6 @@ class SqlData implements PersistenData {
   static const String DATA = "data";
   static const String TEAMUID = "teamuid";
 
-  static const List<String> _TABLES = const [
-    GAME_TABLE,
-    TEAMS_TABLE,
-    SEASON_TABLE,
-    PLAYERS_TABLE,
-    INVITES_TABLE,
-    PROFILE_TABLE,
-    MESSAGES_TABLE
-  ];
-
   static SqlData get instance {
     if (_instance == null) {
       _instance = new SqlData();

@@ -33,15 +33,6 @@ void main() async {
       messagingSenderId: "400199897683");
   UserDatabaseData.instance = new UserDatabaseData(new WebAnalytics(),
       new WebLogging(), SqlData.instance, new fs.Firestore());
-  /*
-    var auth = fb.auth();
-    if (auth.currentUser == null) {
-      // We need to do the login phase.
-      print('Current user frog == null');
-      _router.navigate("/" + login.path);
-      print("Navigated... ${login.path}");
-    }
-    */
   await findSystemLocale();
   await initializeTimeZone();
   print('Startup checking user');
@@ -52,7 +43,8 @@ void main() async {
       .listen((UserData user) {
     data.complete(user);
   });
-  UserData stuff = await data.future;
+  await data.future;
+  print('Loaded user');
   // We should now have the current user setup correctly/
   sub.cancel();
   print('Loaded!');

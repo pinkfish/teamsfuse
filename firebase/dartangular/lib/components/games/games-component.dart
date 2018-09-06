@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart';
 import 'dart:async';
 import 'gamecard-component.dart';
-import 'package:stream_transform/stream_transform.dart';
 
 @Component(
   selector: 'games-list',
