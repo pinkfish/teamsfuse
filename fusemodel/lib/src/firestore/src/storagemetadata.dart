@@ -4,44 +4,22 @@ part of firestore_wrapper;
 /// size and content type.
 class StorageMetadata {
   StorageMetadata({
+    this.bucket,
+    this.generation,
+    this.metadataGeneration,
+    this.name,
+    this.path,
+    this.sizeBytes,
+    this.creationTimeMillis,
+    this.updatedTimeMillis,
+    this.md5Hash,
+    this.customMetadata,
     this.cacheControl,
     this.contentDisposition,
     this.contentEncoding,
     this.contentLanguage,
     this.contentType,
-    Map<String, String> customMetadata,
-  })  : bucket = null,
-        generation = null,
-        metadataGeneration = null,
-        path = null,
-        name = null,
-        sizeBytes = null,
-        creationTimeMillis = null,
-        updatedTimeMillis = null,
-        md5Hash = null,
-        customMetadata = customMetadata == null
-            ? null
-            : Map<String, String>.unmodifiable(customMetadata);
-
-  StorageMetadata._fromMap(Map<dynamic, dynamic> map)
-      : bucket = map['bucket'],
-        generation = map['generation'],
-        metadataGeneration = map['metadataGeneration'],
-        path = map['path'],
-        name = map['name'],
-        sizeBytes = map['sizeBytes'],
-        creationTimeMillis = map['creationTimeMillis'],
-        updatedTimeMillis = map['updatedTimeMillis'],
-        md5Hash = map['md5Hash'],
-        cacheControl = map['cacheControl'],
-        contentDisposition = map['contentDisposition'],
-        contentLanguage = map['contentLanguage'],
-        contentType = map['contentType'],
-        contentEncoding = map['contentEncoding'],
-        customMetadata = map['customMetadata'] == null
-            ? null
-            : new Map<String, String>.unmodifiable(
-            map['customMetadata'].cast<String, String>());
+  });
 
   /// The owning Google Cloud Storage bucket for the [StorageReference].
   final String bucket;

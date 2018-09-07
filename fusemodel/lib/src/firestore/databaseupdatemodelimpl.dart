@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:timezone/timezone.dart';
 import 'dart:io';
 import 'firestore.dart';
-import 'authentication.dart';
 
 class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   static const int maxMessages = 20;
@@ -15,12 +14,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   // Stuff for game updates.
   @override
   Future<void> updateFirestoreGame(Game game, bool sharedData) async {
-    print(game);
     // Add or update this record into the database.
     CollectionReferenceWrapper ref = wrapper.collection(GAMES_COLLECTION);
     CollectionReferenceWrapper refShared =
         wrapper.collection(GAMES_SHARED_COLLECTION);
-    print(game.uid);
     if (game.uid == null || game.uid == '') {
       print(game.toJSON());
       // Add the shared stuff, then the game.
@@ -499,7 +496,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         if (!maps.containsKey(teamUid)) {
           maps[teamUid] = new Set<Game>();
         }
-        print('Games updated $queryGameSnap.documents');
         for (DocumentSnapshotWrapper snap in queryGameSnap.documents) {
           String sharedGameUid;
           Game g = maps[teamUid].lookup(snap.documentID);
@@ -535,8 +531,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             sharedData = g.sharedData;
           }
 
-          print('Making game {snap.documentID} from ${snap.data}');
-
           Game newGame = new Game.fromJSON(
               teamUid, snap.documentID, snap.data, sharedData);
 
@@ -549,14 +543,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             data.add(newGame);
           }
         }
-        print('Data $data');
         maps[teamUid] = data;
         Set<Game> newData = new Set<Game>();
 
         for (Set<Game> it in maps.values) {
           newData.addAll(it);
         }
-        print('Games updated $newData');
         // Update the cache so we can find these games when the
         // app is open.
         UserDatabaseData.instance.doCacheGames(newData);
@@ -910,16 +902,16 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(Team.CLUBUID, isEqualTo: uid);
     query.getDocuments().then((QuerySnapshotWrapper snap) async {
       List<Team> teams = <Team>[];
-      for (DocumentSnapshotWrapper snap in snap.documents) {
-        teams.add(await _loadTeamFromClub(snap));
+      for (DocumentSnapshotWrapper mySnap in snap.documents) {
+        teams.add(await _loadTeamFromClub(mySnap));
       }
       sub.addUpdate(teams);
     });
     sub.subscriptions
         .add(query.snapshots().listen((QuerySnapshotWrapper snap) async {
       List<Team> teams = <Team>[];
-      for (DocumentSnapshotWrapper snap in snap.documents) {
-        teams.add(await _loadTeamFromClub(snap));
+      for (DocumentSnapshotWrapper mySnap in snap.documents) {
+        teams.add(await _loadTeamFromClub(mySnap));
       }
       sub.addUpdate(teams);
     }));
@@ -999,18 +991,18 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(LeagueOrTournmentTeam.LEAGUEORTOURNMENTUID, isEqualTo: uid);
     query.getDocuments().then((QuerySnapshotWrapper snap) {
       List<LeagueOrTournmentTeam> teams = <LeagueOrTournmentTeam>[];
-      for (DocumentSnapshotWrapper snap in snap.documents) {
+      for (DocumentSnapshotWrapper mySnap in snap.documents) {
         LeagueOrTournmentTeam team =
-            new LeagueOrTournmentTeam.fromJson(snap.documentID, snap.data);
+            new LeagueOrTournmentTeam.fromJson(mySnap.documentID, mySnap.data);
         teams.add(team);
       }
       sub.addUpdate(teams);
     });
     sub.subscriptions.add(query.snapshots().listen((QuerySnapshotWrapper snap) {
       List<LeagueOrTournmentTeam> teams = <LeagueOrTournmentTeam>[];
-      for (DocumentSnapshotWrapper snap in snap.documents) {
+      for (DocumentSnapshotWrapper mySnap in snap.documents) {
         LeagueOrTournmentTeam team =
-            new LeagueOrTournmentTeam.fromJson(snap.documentID, snap.data);
+            new LeagueOrTournmentTeam.fromJson(mySnap.documentID, mySnap.data);
         teams.add(team);
       }
       sub.addUpdate(teams);

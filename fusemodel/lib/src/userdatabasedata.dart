@@ -299,7 +299,7 @@ class UserDatabaseData {
       if (!foundMe && !_createdMePlayer) {
         print('Docs are empty');
         Player player = new Player();
-        player.name = _profile.displayName;
+        player.name = _profile?.displayName ?? "Frog";
         PlayerUser playerUser = new PlayerUser();
         playerUser.userUid = userUid;
         playerUser.relationship = Relationship.Me;

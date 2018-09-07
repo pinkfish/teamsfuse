@@ -65,7 +65,7 @@ class UserTransformer
     extends StreamTransformerBase<fa.FirebaseUser, wfs.FirebaseUserWrapper> {
   StreamController<wfs.FirebaseUserWrapper> _controller;
 
-  StreamSubscription _subscription;
+  StreamSubscription<fa.FirebaseUser> _subscription;
 
   // Original Stream
   Stream<fa.FirebaseUser> _stream;
@@ -92,20 +92,21 @@ class UserTransformer
     _subscription = null;
   }
 
-  /**
-   * Transformation
-   */
+  ///
+  /// Transformation
+  ///
 
   void onData(fa.FirebaseUser data) {
     print('Adding $data');
     _controller.add(new FirebaseUser(data));
   }
 
-  /**
-   * Bind
-   */
+  ///
+  ///Bind
+  ///
+  @override
   Stream<wfs.FirebaseUserWrapper> bind(Stream<fa.FirebaseUser> stream) {
-    this._stream = stream;
+    _stream = stream;
     return _controller.stream;
   }
 }

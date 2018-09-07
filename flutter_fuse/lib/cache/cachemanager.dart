@@ -222,7 +222,7 @@ class CacheManager {
 
       // Headers.
       if (headers == null) {
-        headers = new Map<String, String>();
+        headers = <String, String>{};
       }
 
       String filePath = cacheObject.getFilePath();

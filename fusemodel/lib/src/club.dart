@@ -18,6 +18,12 @@ class Club {
   String name;
   String photoUrl;
 
+  /// Some text describing what the club is about.
+  String about;
+
+  // The sport associated with this club.
+  Sport sport;
+
   /// This pulls through to all the teams in a club as a default and overrides
   /// the team specific settings, if this is not null.
   Tristate trackAttendence = Tristate.Unset;
@@ -44,6 +50,8 @@ class Club {
       {this.uid,
       this.name,
       this.photoUrl,
+        this.about,
+      this.sport = Sport.Basketball,
       this.trackAttendence = Tristate.Unset,
       List<String> adminUids,
       List<String> members,
@@ -54,10 +62,12 @@ class Club {
   Club.copy(Club club) {
     uid = club.uid;
     name = club.name;
+    sport = club.sport;
     photoUrl = club.photoUrl;
     trackAttendence = club.trackAttendence;
     adminsUids = club.adminsUids;
     members = club.members;
+    about = club.about;
     arriveBeforeGame = club.arriveBeforeGame;
   }
 
@@ -68,9 +78,14 @@ class Club {
     uid = myUid;
     name = data[NAME];
     photoUrl = data[PHOTOURL];
+    if (data.containsKey(_SPORT)) {
+      sport =
+          Sport.values.firstWhere((Sport s) => s.toString() == data[_SPORT]);
+    }
     arriveBeforeGame = data[_ARRIVEBEFOREGAME];
     adminsUids = [];
     members = [];
+    about = data[_ABOUT];
     print(data[MEMBERS]);
     for (String adminUid in data[MEMBERS].keys) {
       Map<dynamic, dynamic> adminData = data[MEMBERS][adminUid];
@@ -89,6 +104,8 @@ class Club {
   static const String _TRACKATTENDENCE = "trackAttendence";
   static const String MEMBERS = "members";
   static const String _ARRIVEBEFOREGAME = "arriveBefore";
+  static const String _SPORT = "sport";
+  static const String _ABOUT = "about";
   static const String ADMIN = "admin";
 
   ///
@@ -99,6 +116,8 @@ class Club {
     ret[NAME] = name;
     ret[PHOTOURL] = photoUrl;
     ret[_TRACKATTENDENCE] = trackAttendence.toString();
+    ret[_SPORT] = sport.toString();
+    ret[_ABOUT] = about;
     Map<String, dynamic> data = <String, dynamic>{};
     if (includeMembers) {
       for (String admin in adminsUids) {

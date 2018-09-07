@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/clubpicker.dart';
 import 'dart:async';
 
 class ClubSettings extends StatefulWidget {
@@ -18,7 +17,6 @@ class ClubSettings extends StatefulWidget {
 class ClubSettingsState extends State<ClubSettings> {
   Team _team;
   Club _club;
-  String _clubUid;
   StreamSubscription<UpdateReason> _updateStream;
 
   @override
@@ -97,7 +95,6 @@ class ClubSettingsState extends State<ClubSettings> {
   }
 
   void _updateClub(String clubUid) {
-    _clubUid = clubUid;
     _club = UserDatabaseData.instance.clubs[clubUid];
     if (_club == null) {
       // Load it.

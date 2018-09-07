@@ -9,10 +9,12 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   CollectionReference(this._doc);
 
   /// ID of the referenced collection.
+  @override
   String get id => _doc.id;
 
   /// A string containing the slash-separated path to this  CollectionReference
   /// (relative to the root of the database).
+  @override
   String get path => _doc.path;
 
   /// Returns a `DocumentReference` with the provided path.
@@ -21,6 +23,7 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   ///
   /// The unique key generated is prefixed with a client-generated timestamp
   /// so that the resulting list will be chronologically-sorted.
+  @override
   wfs.DocumentReferenceWrapper document([String path]) {
     return new DocumentReference(_doc.document(path));
   }
@@ -30,6 +33,7 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   ///
   /// The unique key generated is prefixed with a client-generated timestamp
   /// so that the resulting list will be chronologically-sorted.
+  @override
   Future<wfs.DocumentReferenceWrapper> add(Map<String, dynamic> data) async {
     return new DocumentReference(await _doc.add(data));
   }
@@ -93,7 +97,7 @@ class QuerySnapshotStreamTransformer
     extends StreamTransformerBase<fs.QuerySnapshot, wfs.QuerySnapshotWrapper> {
   StreamController<wfs.QuerySnapshotWrapper> _controller;
 
-  StreamSubscription _subscription;
+  StreamSubscription<fs.QuerySnapshot> _subscription;
 
   // Original Stream
   Stream<fs.QuerySnapshot> _stream;
@@ -120,9 +124,9 @@ class QuerySnapshotStreamTransformer
     _subscription = null;
   }
 
-  /**
-   * Transformation
-   */
+  ///
+  /// Transformation
+  ///
 
   void onData(fs.QuerySnapshot data) {
     _controller.add(new wfs.QuerySnapshotWrapper(
@@ -142,11 +146,12 @@ class QuerySnapshotStreamTransformer
     ));
   }
 
-  /**
-   * Bind
-   */
+  ///
+  /// Bind
+  ///
+  @override
   Stream<wfs.QuerySnapshotWrapper> bind(Stream<fs.QuerySnapshot> stream) {
-    this._stream = stream;
+    _stream = stream;
     return _controller.stream;
   }
 }

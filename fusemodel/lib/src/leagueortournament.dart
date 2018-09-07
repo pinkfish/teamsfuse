@@ -10,7 +10,10 @@ import 'invite.dart';
 ///
 /// The type of the league or tournment.
 ///
-enum LeagueOrTournmentType { Tournament, League }
+enum LeagueOrTournmentType {
+  Tournament,
+  League,
+}
 
 ///
 /// Keeps track of the league details.
@@ -152,7 +155,7 @@ class LeagueOrTournament {
   }
 
   ///
-  /// Updates the club from another club.
+  /// Updates the leageu/tournament from another league/tournament
   ///
   void updateFrom(LeagueOrTournament club) {
     name = club.name;

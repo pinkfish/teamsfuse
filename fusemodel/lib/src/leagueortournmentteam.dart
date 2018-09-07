@@ -14,6 +14,7 @@ class LeagueOrTournmentTeam {
   /// The uid of the league/tourment itself.
   String leagueOrTournmentUid;
 
+  /// Name of the team in respect to this tournament/league.
   String name;
 
   /// The person who this is an invite too, if it is not yet accepted.

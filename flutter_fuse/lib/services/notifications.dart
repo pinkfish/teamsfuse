@@ -3,8 +3,6 @@ import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:async';
 import 'package:fusemodel/fusemodel.dart';
-import 'messages.dart';
-import 'notifications/gamenotification.dart';
 import 'dart:math';
 import 'appconfiguration.dart';
 import 'dart:convert';
@@ -25,7 +23,7 @@ class Notifications {
   StreamSubscription<UpdateReason> _gameStream;
   Map<String, int> _notificationMapping = <String, int>{};
   Random random = new Random.secure();
-  State<SplashScreen> _state;
+  //State<SplashScreen> _state;
 
   static const String actionStr = 'action';
   static const String gameUidStr = 'gameUids';
@@ -43,7 +41,7 @@ class Notifications {
     _notificationRoutes.close();
     _notificationRoutes = null;
   }
-
+/*
   int _generateNotificationId() {
     int val;
     do {
@@ -62,11 +60,13 @@ class Notifications {
     _updateSharedPrefs();
   }
 
+
   void _updateSharedPrefs() {
     String data = json.encode(_notificationMapping);
     AppConfiguration.instance.sharedPreferences
         .setString(_keyNotificationData, data);
   }
+
 
   void _onGamesUpdated() {
     Map<String, Game> data = UserDatabaseData.instance.gamesCache;
@@ -107,6 +107,7 @@ class Notifications {
       _updateSharedPrefs();
     }
   }
+  */
 
   void init() {
     _firebaseMessaging.requestNotificationPermissions();
@@ -118,14 +119,17 @@ class Notifications {
       onMessage: (Map<String, dynamic> message) {
         print("onMessage: $message");
         //this._handleMessage(message);
+        return;
       },
       onLaunch: (Map<String, dynamic> message) {
         print("onLaunch: $message");
         //this._handleLaunch(message);
+        return;
       },
       onResume: (Map<String, dynamic> message) {
         print("onResume: $message");
         //this._handleResume(message);
+        return;
       },
     );
     //get saved cache data from shared prefs
@@ -165,7 +169,7 @@ class Notifications {
     });
     */
 
-    _state = state;
+    //_state = state;
     // When games are scheduled we will pull up the results for them and
     // schedule notifications.  We only do this on android since on iOS we
     // need to rely on remote push notifications for the details to be up to

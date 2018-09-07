@@ -1672,7 +1672,7 @@ class MessagesDelegate extends LocalizationsDelegate<Messages> {
   const MessagesDelegate();
 
   @override
-  bool isSupported(Locale locale) => ['en', 'es'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'es'].contains(locale.languageCode);
 
   @override
   Future<Messages> load(Locale locale) => Messages.load(locale);

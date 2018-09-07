@@ -1,7 +1,6 @@
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/firestore.dart';
 import 'package:flutter_fuse/widgets/util/userimage.dart';
 
 class ClubMembers extends StatelessWidget {

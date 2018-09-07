@@ -303,6 +303,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
               state: teamStepState,
               isActive: true,
               content: new TeamSelection(
+                club:  null,
                 onChanged: _teamChanged,
                 initialTeam: _team,
               ),
@@ -310,13 +311,13 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
             new Step(
               title: new Text(messages.gamedetails),
               state: detailsStepState,
-              isActive: _team != null && _team?.uid?.isNotEmpty,
+              isActive: _team != null ? _team?.uid?.isNotEmpty : false,
               content: _buildForm(context),
             ),
             new Step(
               title: new Text(messages.repeat),
               state: repeatStepState,
-              isActive: _team != null && _team?.uid?.isNotEmpty,
+              isActive: _team != null ? _team?.uid?.isNotEmpty : false,
               content: _buildRepeat(context),
             ),
             new Step(

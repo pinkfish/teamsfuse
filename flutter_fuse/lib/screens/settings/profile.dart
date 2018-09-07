@@ -8,7 +8,7 @@ import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
 import 'dart:async';
 
 class ProfileScreen extends StatefulWidget {
-  bool onlyPlayer;
+  final bool onlyPlayer;
 
   ProfileScreen({this.onlyPlayer = false});
 

@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 
 class ClubTeamPicker extends StatefulWidget {
   final ValueChanged<Team> onChanged;

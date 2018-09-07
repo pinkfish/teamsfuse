@@ -3,7 +3,6 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
-import 'package:flutter_fuse/widgets/teams/teamtile.dart';
 
 // Shows the current invites pending for this user.
 class AcceptInviteAsAdminScreen extends StatefulWidget {

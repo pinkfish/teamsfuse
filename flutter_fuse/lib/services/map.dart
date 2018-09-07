@@ -59,7 +59,7 @@ class MapData {
     HttpClientRequest request = await httpClient.getUrl(uri);
     HttpClientResponse response = await request.close();
     print("Response $response");
-    if (response.statusCode == HttpStatus.OK) {
+    if (response.statusCode == HttpStatus.ok) {
       String responseBody = await response.transform(utf8.decoder).join();
       Map<String, dynamic> data = json.decode(responseBody);
       print("ResponseBody $data");

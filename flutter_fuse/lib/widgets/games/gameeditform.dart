@@ -172,7 +172,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
               }
             },
             onSaved: (String value) {
-              widget.game.opponentUids = [value];
+              widget.game.opponentUids = <String>[value];
             },
           ),
         ),

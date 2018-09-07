@@ -9,6 +9,7 @@ import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
@@ -36,6 +37,7 @@ class TeamEditFormState extends State<TeamEditForm> {
   File _imageFile;
   bool _changedImage = false;
   String _seasonName = "";
+  bool _saving = false;
 
   void save() {
     _formKey.currentState.save();
@@ -72,20 +74,28 @@ class TeamEditFormState extends State<TeamEditForm> {
       return false;
     } else {
       _formKey.currentState.save();
-
-      if (widget.team.uid == null) {
-        // Add the current user as the admin.
-        widget.team.admins.add(UserDatabaseData.instance.userUid);
-        Season season = new Season();
-        season.name = _seasonName;
-        season.record = new WinRecord();
-        season.teamUid = widget.team.precreateUid();
-        await season.updateFirestore(includePlayers: true);
-        widget.team.currentSeason = season.uid;
-      }
-      await widget.team.updateFirestore();
-      if (_changedImage) {
-        await widget.team.updateImage(_imageFile);
+      setState(() {
+        _saving = true;
+      });
+      try {
+        if (widget.team.uid == null) {
+          // Add the current user as the admin.
+          widget.team.admins.add(UserDatabaseData.instance.userUid);
+          Season season = new Season();
+          season.name = _seasonName;
+          season.record = new WinRecord();
+          season.teamUid = widget.team.precreateUid();
+          await season.updateFirestore(includePlayers: true);
+          widget.team.currentSeason = season.uid;
+        }
+        await widget.team.updateFirestore();
+        if (_changedImage) {
+          await widget.team.updateImage(_imageFile);
+        }
+      } finally {
+        setState(() {
+          _saving = false;
+        });
       }
     }
     return true;
@@ -267,21 +277,24 @@ class TeamEditFormState extends State<TeamEditForm> {
     }
 
     print('uid ${widget.team.toJSON()}');
-    return new SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      controller: _scrollController,
-      child: new Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          new Form(
-            key: _formKey,
-            autovalidate: _autovalidate,
-            child: new DropdownButtonHideUnderline(
-              child: new Column(children: fields),
+    return SavingOverlay(
+      saving: _saving,
+      child: new SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        controller: _scrollController,
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Form(
+              key: _formKey,
+              autovalidate: _autovalidate,
+              child: new DropdownButtonHideUnderline(
+                child: new Column(children: fields),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

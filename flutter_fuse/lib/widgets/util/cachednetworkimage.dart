@@ -10,13 +10,13 @@ import 'dart:ui' as ui show instantiateImageCodec, Codec;
 
 import 'package:flutter_fuse/cache/cachemanager.dart';
 
-/**
- *  CachedNetworkImage for Flutter
- *
- *  Copyright (c) 2017 Rene Floor
- *
- *  Released under MIT License.
- */
+///
+/// CachedNetworkImage for Flutter
+///
+/// Copyright (c) 2017 Rene Floor
+///
+/// Released under MIT License.
+///
 
 class CachedNetworkImage extends StatefulWidget {
   static List<Object> _registeredErrors = <Object>[];
@@ -296,7 +296,9 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
   void _resolveImage() {
     _imageResolver.resolve(_imageProvider);
 
-    if (_phase == ImagePhase.start) _updatePhase();
+    if (_phase == ImagePhase.start) {
+      _updatePhase();
+    }
   }
 
   void _updatePhase() {
@@ -497,7 +499,7 @@ class CachedNetworkImageProvider
   void _internalLoadAsync(
       CachedNetworkImageProvider key, Completer<ui.Codec> completer) async {
     print("Stuff");
-    var cacheManager = await CacheManager.getInstance();
+    CacheManager cacheManager = await CacheManager.getInstance();
     String myUrl = urlNow;
     print('Before this $myUrl');
     if (urlNow == null) {
@@ -511,7 +513,7 @@ class CachedNetworkImageProvider
         throw new Exception("Couldn't download or retreive file.");
       }
     }
-    var file = await cacheManager.getFile(myUrl, headers: headers);
+    File file = await cacheManager.getFile(myUrl, headers: headers);
     if (file == null) {
       if (errorListener != null) {
         errorListener();
@@ -530,8 +532,11 @@ class CachedNetworkImageProvider
     final Uint8List bytes = await file.readAsBytes();
 
     if (bytes.lengthInBytes == 0) {
-      if (errorListener != null) errorListener();
-      throw new Exception("File was empty");
+      if (errorListener != null) {
+        errorListener();
+      }
+        throw new Exception("File was empty");
+
     }
 
     return await ui.instantiateImageCodec(bytes);
@@ -539,11 +544,14 @@ class CachedNetworkImageProvider
 
   @override
   bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
-    final CachedNetworkImageProvider typedOther = other;
-    return urlNow == typedOther.urlNow &&
-        urlFuture == typedOther.urlFuture &&
-        scale == typedOther.scale;
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+      final CachedNetworkImageProvider typedOther = other;
+      return urlNow == typedOther.urlNow &&
+          urlFuture == typedOther.urlFuture &&
+          scale == typedOther.scale;
+
   }
 
   @override

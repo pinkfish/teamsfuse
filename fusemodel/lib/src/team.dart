@@ -10,9 +10,14 @@ import 'invite.dart';
 import 'userdatabasedata.dart';
 import 'persistendata.dart';
 
+/// The sport the team is involved in
 enum Sport { Basketball, Softball, Soccer, Other }
+/// The gender associated with the team.
 enum Gender { Female, Male, Coed, NA }
 
+///
+/// An opponent for a team with all the opponent metadata associated with it.
+///
 class Opponent {
   String name;
   String teamUid;
@@ -86,11 +91,19 @@ class Opponent {
   }
 }
 
+///
+/// Used to pre-create an id before we write to the db.  This lets us put this
+/// id into other places when we do the submit.
+///
 class PregenUidRet {
   String uid;
   dynamic extra;
 }
 
+///
+/// Represents a team in the system.  All the data associated with the team
+/// and the database manipulation for the team.
+///
 class Team {
   String name;
 
@@ -127,12 +140,13 @@ class Team {
   // Firebase subscriptions
   List<StreamSubscription<dynamic>> _snapshots = [];
 
+  /// Create a team with all the basic defaults set.
   Team(
       {this.name,
       num arriveEarly = 0,
       this.currentSeason,
       this.gender: Gender.NA,
-      this.league,
+      this.league = "",
       this.sport: Sport.Other,
       this.uid,
       this.photoUrl,
@@ -143,6 +157,7 @@ class Team {
     thisTeamStream = _updateThisTeam.stream.asBroadcastStream();
   }
 
+  /// Make a copy of the team to do updates on it.
   Team.copy(Team copy) {
     name = copy.name;
     _arriveEarly = copy._arriveEarly;
@@ -177,6 +192,7 @@ class Team {
   static const String CLUBUID = 'clubUid';
   static const String LEAGUEUID = 'leagueuid';
 
+  /// Deserialize the team.
   void fromJSON(String teamUid, Map<String, dynamic> data) {
     uid = teamUid;
     name = getString(data[NAME]);
@@ -202,6 +218,7 @@ class Team {
     }
   }
 
+  /// Serialize the team.
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = new Map<String, dynamic>();
     ret[NAME] = name;
@@ -235,6 +252,10 @@ class Team {
     admins.clear();
   }
 
+  ///
+  /// Triggers the update method to tell everyone watching this team that
+  /// something changed.
+  ///
   void updateTeam() {
     _updateThisTeam.add(UpdateReason.Update);
   }
@@ -299,6 +320,10 @@ class Team {
         await UserDatabaseData.instance.updateModel.setupSnapForTeam(this);
   }
 
+  ///
+  /// Called when an opponent details are updated.  Handles adding/deleting
+  /// opponents.
+  ///
   void onOpponentUpdated(List<FirestoreWrappedData> data) {
     Set<String> toDeleteOpponents = new Set<String>();
     PersistenData sql = UserDatabaseData.instance.persistentData;
@@ -401,10 +426,12 @@ class Team {
         UserDatabaseData.instance.updateModel.getInviteForTeamStream(this));
   }
 
+  /// Set the invites for this team.
   void setInvites(List<InviteAsAdmin> invites) {
     _invites = invites;
   }
 
+  /// Update the season details for this team.
   Season updateSeason(String seasonUid, Map<String, dynamic> data) {
     Season season;
     if (seasons.containsKey(seasonUid)) {
@@ -419,6 +446,9 @@ class Team {
     return season;
   }
 
+  ///
+  /// Makes a pretty string for the team.
+  ///
   @override
   String toString() {
     return 'Team{name: $name, arriveEarly: $_arriveEarly, '

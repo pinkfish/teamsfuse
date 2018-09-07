@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'teamtile.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/clubpicker.dart';
 import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/form/clubteampicker.dart';
 
@@ -92,7 +91,7 @@ class _TeamSelectionState extends State<TeamSelection> {
         clubUid: widget.club.uid,
       ));
     }
-    widgets.addAll([
+    widgets.addAll(<Widget>[
       new SizedBox(height: 20.0),
       new Text(
         Messages.of(context).teamselected,

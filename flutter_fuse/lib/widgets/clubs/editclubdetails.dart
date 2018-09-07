@@ -31,6 +31,7 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
   int _clubArriveBefore;
   Tristate _clubTrackAttendence = Tristate.Unset;
 
+  @override
   void initState() {
     super.initState();
     _clubTrackAttendence = widget.club.trackAttendence;

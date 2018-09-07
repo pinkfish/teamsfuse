@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart' as fa;
 import 'package:firebase_storage/firebase_storage.dart' as st;
 import 'dart:async';
 import 'package:fusemodel/firestore.dart' as wfs;
-import 'package:collection/collection.dart';
 import 'dart:io';
 import 'dart:typed_data';
 

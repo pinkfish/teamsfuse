@@ -170,7 +170,7 @@ class NumberPickerState extends State<NumberPicker> {
 
     int itemCount = widget.maxValue - widget.minValue + 3;
 
-    return new NotificationListener(
+    return new NotificationListener<Notification>(
       child: new Container(
         height: widget._listViewHeight,
         width: widget.listViewWidth,
@@ -208,7 +208,7 @@ class NumberPickerState extends State<NumberPicker> {
     int itemCount =
     widget.initialValue == widget.maxValue ? 3 : pow(10, widget.decimalPlaces) + 2;
 
-    return new NotificationListener(
+    return new NotificationListener<Notification>(
       child: new Container(
         height: widget._listViewHeight,
         width: widget.listViewWidth,

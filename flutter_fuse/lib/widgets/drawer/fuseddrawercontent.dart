@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/firestore.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
@@ -26,7 +25,7 @@ class FusedDrawerContent extends StatelessWidget {
                     .textTheme
                     .subhead
                     .copyWith(fontWeight: FontWeight.bold, fontSize: 17.0),
-                children: [
+                children: <TextSpan>[
                   new TextSpan(
                       text: club.isAdmin()
                           ? "\n" + Messages.of(context).administrator

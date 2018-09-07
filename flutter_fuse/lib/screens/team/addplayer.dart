@@ -159,10 +159,11 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
             labelText: messages.roleselect,
           ),
           validator: (String val) {
-            _validations.validateRoleInTeam(context, val);
+            return _validations.validateRoleInTeam(context, val);
           },
           onSaved: (String val) {
-            en.role = RoleInTeam.values.firstWhere((RoleInTeam e) => e.toString() == val);
+            en.role = RoleInTeam.values
+                .firstWhere((RoleInTeam e) => e.toString() == val);
           },
         ),
       );

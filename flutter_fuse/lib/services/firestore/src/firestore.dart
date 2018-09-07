@@ -8,11 +8,13 @@ class Firestore extends wfs.FirestoreWrapper {
   wfs.AuthWrapper authWrapper;
 
   /// Gets a [CollectionReference] for the specified Firestore path.
+  @override
   wfs.CollectionReferenceWrapper collection(String path) {
     return new CollectionReference(fs.Firestore.instance.collection(path));
   }
 
   /// Gets a [DocumentReference] for the specified Firestore path.
+  @override
   wfs.DocumentReferenceWrapper document(String path) {
     return new DocumentReference(fs.Firestore.instance.document(path));
   }
@@ -22,6 +24,7 @@ class Firestore extends wfs.FirestoreWrapper {
     return new StorageReference(st.FirebaseStorage.instance.ref());
   }
 
+  @override
   wfs.AuthWrapper get auth {
     if (authWrapper == null) {
       authWrapper = new Auth();

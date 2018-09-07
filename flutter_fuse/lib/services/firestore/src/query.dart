@@ -7,12 +7,13 @@ class Query extends wfs.QueryWrapper {
   Query(this._doc);
 
   /// Notifies of query results at this location
-  // TODO(jackson): Reduce code duplication with [DocumentReference]
+  @override
   Stream<wfs.QuerySnapshotWrapper> snapshots() {
     return _doc.snapshots().transform(new QuerySnapshotStreamTransformer());
   }
 
   /// Fetch the documents for this query
+  @override
   Future<wfs.QuerySnapshotWrapper> getDocuments() async {
     fs.QuerySnapshot query = await _doc.getDocuments();
     return new wfs.QuerySnapshotWrapper(
@@ -41,6 +42,7 @@ class Query extends wfs.QueryWrapper {
       case fs.DocumentChangeType.modified:
         return wfs.DocumentChangeTypeWrapper.modified;
     }
+    return null;
   }
 
   /// Creates and returns a new [Query] with additional filter on specified
@@ -48,6 +50,7 @@ class Query extends wfs.QueryWrapper {
   ///
   /// Only documents satisfying provided condition are included in the result
   /// set.
+  @override
   wfs.QueryWrapper where(
     String field, {
     dynamic isEqualTo,
@@ -67,6 +70,7 @@ class Query extends wfs.QueryWrapper {
 
   /// Creates and returns a new [Query] that's additionally sorted by the specified
   /// [field].
+  @override
   wfs.QueryWrapper orderBy(String field, {bool descending: false}) {
     return new Query(_doc.orderBy(field, descending: descending));
   }
