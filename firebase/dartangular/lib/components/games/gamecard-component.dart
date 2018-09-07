@@ -101,14 +101,21 @@ class GameCardComponent {
     }
 
 
-    String ret = "${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}";
-    if (overtimeResult != null) {
-      ret += " OT: ${overtimeResult.score.ptsFor} - ${overtimeResult.score.ptsAgainst}";
+    if (finalResult != null) {
+      String ret = "${finalResult.score.ptsFor} - ${finalResult.score
+          .ptsAgainst}";
+      if (overtimeResult != null) {
+        ret += " OT: ${overtimeResult.score.ptsFor} - ${overtimeResult.score
+            .ptsAgainst}";
+      }
+      if (penaltyResult != null) {
+        ret += " Penalty: ${penaltyResult.score.ptsFor} - ${penaltyResult.score
+            .ptsAgainst}";
+      }
+      return ret;
+    } else {
+      return "Unknown score";
     }
-    if (penaltyResult != null) {
-      ret += " Penalty: ${penaltyResult.score.ptsFor} - ${penaltyResult.score.ptsAgainst}";
-    }
-    return ret;
   }
 
   /*

@@ -1,6 +1,6 @@
 import 'package:angular/angular.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:angular_components/material_expansionpanel/material_expansionpanel.dart';
+import 'package:angular_components/material_expansionpanel/material_expansionpanel_set.dart';
 import 'package:teamfuse/components/games/gamecard-component.dart';
 
 import 'seasonexpansionpanel.dart';
@@ -10,11 +10,11 @@ import 'seasonexpansionpanel.dart';
   directives: const [
     NgIf,
     NgFor,
-    MaterialExpansionPanel,
     GameCardComponent,
     SeasonExpansionPanelComponent,
+    MaterialExpansionPanelSet,
   ],
-  templateUrl: 'clubdetails.html',
+  templateUrl: 'teamdetails.html',
   pipes: const [AsyncPipe],
   styleUrls: const [
     'package:angular_components/app_layout/layout.scss.css',
@@ -23,12 +23,14 @@ import 'seasonexpansionpanel.dart';
 class TeamDetailsComponent implements OnDestroy, OnInit {
   @Input()
   Team team;
+  @Input()
+  bool noDefaultIcon = false;
 
   TeamDetailsComponent();
 
   @override
   void ngOnInit() {
-    print('New details');
+    print('New team details ${team?.seasons}');
   }
 
   String get sportDetails {
@@ -69,6 +71,10 @@ class TeamDetailsComponent implements OnDestroy, OnInit {
     }
     // Default asset.
     return "assets/" + team.sport.toString() + ".png";
+  }
+
+  bool get displayIcon {
+    return (team.photoUrl != null && !team.photoUrl.isEmpty) || !noDefaultIcon;
   }
 
   void ngOnDestroy() {

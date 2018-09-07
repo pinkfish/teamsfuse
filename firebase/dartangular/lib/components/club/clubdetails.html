@@ -3,13 +3,29 @@
 </div>
 
 <div *ngIf="club != null">
-    <img  src="{{clubUrl}}" width="100" height="100" style="float: right">
+    <img  src="{{clubUrl}}" width="100px" height="100px" style="float: right">
 
     <h2>
         {{club.name}}
     </h2>
     <table>
-
-
+        <tr *ngIf="club.arriveBeforeGame != null">
+            <td><b>Arrive Early</b></td>
+            <td>
+                {{arriveEarly}}
+            </td>
+        </tr>
+        <tr *ngIf="isAttendenceVisible">
+            <td><b>Track game attendence</b></td><td>{{trackAttendence}}</td>
+        </tr>
+        <tr>
+            <td><b>Sport</b></td> <td>{{sportDetails}}</td>
+        </tr>
     </table>
+    <br clear="both"/>
+
+    <material-expansion-panel-set>
+        <team-expansionpanel *ngFor="let fluff of teamsCached; trackBy: trackByTeam" [club]="club" [team]="fluff">
+        </team-expansionpanel>
+    </material-expansion-panel-set>
  </div>

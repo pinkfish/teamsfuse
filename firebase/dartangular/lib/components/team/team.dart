@@ -15,7 +15,7 @@ import 'teamdetails.dart';
   templateUrl: 'team.html',
   styleUrls: const [],
 )
-class TeamComponent implements OnInit, OnActivate, OnDestroy {
+class TeamComponent implements OnInit, OnActivate, OnDestroy, OnChanges {
   Stream<Team> team;
   String _curTeamId;
   final StreamController<Team> _controller = new StreamController<Team>();
@@ -26,7 +26,6 @@ class TeamComponent implements OnInit, OnActivate, OnDestroy {
   }
 
   Future<Null> ngOnInit() async {
-    print('team $team!');
     _sub = UserDatabaseData.instance.teamStream.listen((UpdateReason reason) {
       if (UserDatabaseData.instance.teams.containsKey(_curTeamId)) {
         _controller.add(UserDatabaseData.instance.teams[_curTeamId]);
@@ -39,9 +38,14 @@ class TeamComponent implements OnInit, OnActivate, OnDestroy {
     _sub?.cancel();
   }
 
+
+  @override
+  void ngOnChanges(Map<String, SimpleChange> changes) {
+    print('on team changed $changes');
+  }
+
   @override
   void onActivate(RouterState previous, RouterState current) {
-    print('activate! ${current.parameters} ${current.queryParameters}');
     _curTeamId = current.parameters['id'];
     if (_curTeamId == null) {
       _curTeamId = current.queryParameters['id'];

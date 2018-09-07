@@ -1,12 +1,4 @@
-<material-expansionpanel name="{{season.name}}" [showSaveCancel]="false" style="margin-top: 10px">
-    <div value>
-        <i style="font-size:75%; align-items: stretch; line-height: 16px; margin-left: 24px; color: #9e9e9e;">
-            Win: {{season.record.win}}
-            Loss: {{season.record.loss}}
-            Tie: {{season.record.tie}}
-        </i>
-    </div>
-
+<material-expansionpanel name="{{season.name}}" secondaryText="Win: {{season.record.win}} Loss: {{season.record.loss}} Tie: {{season.record.tie}}" [showSaveCancel]="false" style="margin-top: 10px">
     <ng-template  matExpansionPanelContent>
         <game-card *ngFor="let frog of games | async; trackBy: trackByGame" [game]="frog">
 

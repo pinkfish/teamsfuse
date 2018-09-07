@@ -1,6 +1,7 @@
 import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:teamfuse/services/asyncnotnull.dart';
 import 'dart:async';
 import 'clubdetails.dart';
 
@@ -10,18 +11,19 @@ import 'clubdetails.dart';
     routerDirectives,
     NgIf,
     ClubDetailsComponent,
+    AsyncNotNullDirective,
   ],
   pipes: const [AsyncPipe],
   templateUrl: 'club.html',
   styleUrls: const [],
 )
-class ClubComponent implements OnInit, OnActivate, OnDestroy {
+class ClubComponent implements OnInit, OnActivate, OnDestroy, OnChanges {
   Stream<Club> club;
   String _curClubId;
   final StreamController<Club> _controller = new StreamController<Club>();
   StreamSubscription<UpdateReason> _sub;
 
-  TeamComponent() {
+  ClubComponent() {
     club = _controller.stream.asBroadcastStream();
   }
 
@@ -40,15 +42,19 @@ class ClubComponent implements OnInit, OnActivate, OnDestroy {
   }
 
   @override
+  void ngOnChanges(Map<String, SimpleChange> changes) {
+    print('on club changed $changes');
+  }
+
+  @override
   void onActivate(RouterState previous, RouterState current) {
     _curClubId = current.parameters['id'];
-    print('activate! ${current.parameters} ${current.queryParameters} $_curClubId');
+    print('activate clubs');
     if (_curClubId == null) {
       _curClubId = current.queryParameters['id'];
     }
-    print('$_curClubId -- ${UserDatabaseData.instance.clubs[_curClubId]}');
     if (_curClubId != null) {
-      print('Adding club');
+      print('Adding club ${UserDatabaseData.instance.clubs[_curClubId]}');
       _controller.add(UserDatabaseData.instance.clubs[_curClubId]);
     }
   }

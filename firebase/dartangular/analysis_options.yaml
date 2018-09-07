@@ -15,4 +15,21 @@ linter:
     - list_remove_unrelated_type
     - test_types_in_equals
     - unrelated_type_equality_checks
+    - prefer_collection_literals
+    - prefer_const_literals_to_create_immutables
+    - prefer_initializing_formals
     - valid_regexps
+    - close_sinks
+    - always_declare_return_types
+    - camel_case_types
+    - empty_constructor_bodies
+    - annotate_overrides
+    - slash_for_doc_comments
+    - always_put_control_body_on_new_line
+    - always_put_required_named_parameters_first
+    - always_require_non_null_named_parameters
+    - recursive_getters
+    - super_goes_last
+    - unnecessary_overrides
+    - unnecessary_this
+    - use_string_buffers

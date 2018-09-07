@@ -37,7 +37,6 @@ class SeasonExpansionPanelComponent implements OnDestroy, OnInit {
   }
 
   void ngOnDestroy() {
-    print('Destroy them my robots');
     _subscription.dispose();
   }
 
