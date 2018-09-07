@@ -425,6 +425,25 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return snap;
   }
 
+  @override
+  SeasonSubscription getAllSeasons(String teamUid) {
+    SeasonSubscription seasonSubscription = new SeasonSubscription();
+    seasonSubscription.subscriptions.add(wrapper
+        .collection(SEASONS_COLLECTION)
+        .where(Season.TEAMUID, isEqualTo: teamUid)
+        .snapshots()
+        .listen((QuerySnapshotWrapper wrap) {
+      List<Season> seasons = <Season>[];
+      for (DocumentSnapshotWrapper doc in wrap.documents) {
+        Season s = new Season();
+        s.fromJSON(doc.documentID, doc.data);
+        seasons.add(s);
+      }
+      seasonSubscription.addUpdate(seasons);
+    }));
+    return seasonSubscription;
+  }
+
   GameSubscription _getGamesInternal(Iterable<Game> cachedGames,
       Set<String> teams, String seasonUid, DateTime start, DateTime end) {
     GameSubscription sub = new GameSubscription(cachedGames);

@@ -10,12 +10,14 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart';
 import 'package:google_maps/google_maps_places.dart';
 import 'inputdata.dart';
+import 'dart:html';
 
 class TimeStuff {
   num hour;
   num minute;
   bool am;
 
+  @override
   String toString() => "TimeStuff [$hour:$minute $am]";
 }
 
@@ -53,7 +55,7 @@ class GameCardComponent {
       Uri.parse("https://maps.googleapis.com/maps/api/place/textsearch/json");
   Map<String, PlaceResult> placesResults = InputData.getDefaultPlaceResult();
   @ViewChild('mapArea')
-  ElementRef mapAreaRef;
+  HtmlElement mapAreaRef;
   final Router _router;
 
   GameCardComponent(this._router);

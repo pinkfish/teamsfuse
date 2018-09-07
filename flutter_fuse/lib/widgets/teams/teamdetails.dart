@@ -43,6 +43,28 @@ class TeamDetailsState extends State<TeamDetails> {
     teamUpdate = null;
   }
 
+  Widget _buildSeasonExpansionTitle(Season season) {
+    return new ExpansionTile(
+      key: new PageStorageKey<Season>(season),
+      title: new Text(
+        season.name +
+            " W:" +
+            season.record.win.toString() +
+            " L:" +
+            season.record.loss.toString() +
+            " T:" +
+            season.record.tie.toString(),
+      ),
+      children: <Widget>[
+        new TeamResultsStreamFuture(
+          teamUid: team.uid,
+          seasonUid: season.uid,
+        ),
+      ],
+      initiallyExpanded: false,
+    );
+  }
+
   Widget _buildSeasons(BuildContext context) {
     List<Widget> ret = <Widget>[];
 
@@ -55,28 +77,29 @@ class TeamDetailsState extends State<TeamDetails> {
         ),
       );
     }
+    // Show all the seasons here, not just the ones we know.
+    ret.add(new FutureBuilder<Iterable<Season>>(
+        future: team.getAllSeasons(),
+        builder: (BuildContext context, AsyncSnapshot<Iterable<Season>> data) {
+          List<Widget> happyData = <Widget>[];
 
-    team.seasons.forEach((String key, Season season) {
-      ret.add(new ExpansionTile(
-        key: new PageStorageKey<Season>(season),
-        title: new Text(
-          season.name +
-              " W:" +
-              season.record.win.toString() +
-              " L:" +
-              season.record.loss.toString() +
-              " T:" +
-              season.record.tie.toString(),
-        ),
-        children: <Widget>[
-          new TeamResultsStreamFuture(
-            teamUid: team.uid,
-            seasonUid: season.uid,
-          ),
-        ],
-        initiallyExpanded: false,
-      ));
-    });
+          if (data.hasData) {
+            for (Season season in data.data) {
+              happyData.add(_buildSeasonExpansionTitle(season));
+            }
+          } else {
+            // Show the ones we currently know about.
+            for (Season season in team.seasons.values) {
+              happyData.add(_buildSeasonExpansionTitle(season));
+            }
+            // Also mark we are still loading.
+            happyData.add(new Text(Messages.of(context).loading));
+          }
+          return new Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: happyData,
+          );
+        }));
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: ret,
@@ -159,8 +182,8 @@ class TeamDetailsState extends State<TeamDetails> {
           leading: const Icon(Icons.timer),
           title: new Text(
             Messages.of(context).arrivebefore(
-                  team.arriveEarly.toInt(),
-                ),
+              team.arriveEarly.toInt(),
+            ),
           ),
         ),
         new ListTile(

@@ -33,5 +33,6 @@ class TeamExpansionPanelComponent implements OnDestroy, OnInit {
     return "${season.name} Win: ${season.record.win} Loss: ${season.record.loss} Tie: ${season.record.tie}";
   }
 
+  @override
   void ngOnDestroy() {}
 }

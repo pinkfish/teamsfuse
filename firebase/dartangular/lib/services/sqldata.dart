@@ -24,47 +24,54 @@ class SqlData implements PersistenData {
     return _instance;
   }
 
-  SqlData() {
-  }
+  SqlData();
 
   Future<void> initDatabase() async {}
 
+  @override
   Future<void> dropDatabase() async {}
 
   // Gets all the data out of the json table.
+  @override
   Future<Map<String, Map<String, dynamic>>> getAllElements(String table) async {
     Map<String, Map<String, dynamic>> ret =
-        new Map<String, Map<String, dynamic>>();
+        <String, Map<String, dynamic>>{};
 
     return ret;
   }
 
+  @override
   Future<Map<String, dynamic>> getElement(String tableId, String key) async {
     Map<String, Map<String, dynamic>> ret =
-        new Map<String, Map<String, dynamic>>();
+        <String, Map<String, dynamic>>{};
 
     return ret;
   }
 
+  @override
   Future<void> updateElement(
       String tableId, String key, Map<String, dynamic> data) async {
   }
 
+  @override
   Future<int> deleteElement(String tableId, String key) async {
     return 0;
   }
 
   // Gets all the data out of the json table.
+  @override
   Future<Map<String, Map<String, dynamic>>> getAllTeamElements(
       String table, String teamUid) async {
 
     return {};
   }
 
+  @override
   Future<void> updateTeamElement(String tableId, String key, String teamUid,
       Map<String, dynamic> data) async {
   }
 
+  @override
   Future<void> clearTable(String tableId) {
     return null;
   }

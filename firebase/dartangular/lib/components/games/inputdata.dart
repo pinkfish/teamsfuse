@@ -568,7 +568,7 @@ class InputData {
 
   static PlaceResult makePlaceResult(Map<String, dynamic> data) {
     PlaceResult tmp = new PlaceResult.created(new JsObject.jsify(data));
-    tmp.geometry.location = new LatLng(data['geometry']['location']['lat'], data['geometry']['location']['lng']);
+    tmp.geometry.location = new LatLng(data['geometry']['location']['lat'] as num, data['geometry']['location']['lng'] as num);
     return tmp;
   }
 

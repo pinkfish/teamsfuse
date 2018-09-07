@@ -27,6 +27,7 @@ class ClubComponent implements OnInit, OnActivate, OnDestroy, OnChanges {
     club = _controller.stream.asBroadcastStream();
   }
 
+  @override
   Future<Null> ngOnInit() async {
     print('club $club! $_curClubId');
     _sub = UserDatabaseData.instance.clubStream.listen((UpdateReason reason) {

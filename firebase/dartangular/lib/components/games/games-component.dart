@@ -43,6 +43,7 @@ class GamesComponent implements OnInit, OnDestroy {
 
   MonthDetails get currentMonthDetails => _curMonth;
 
+  @override
   void ngOnInit() {
     TZDateTime tmp = new TZDateTime.now(local);
     TZDateTime currentMonth = new TZDateTime(local, tmp.year, tmp.month, 1);
@@ -79,6 +80,7 @@ class GamesComponent implements OnInit, OnDestroy {
 
   Object trackByGames(int index, dynamic game) => game is Game ? game.uid : "";
 
+  @override
   void ngOnDestroy() {
     print('Destroy them my robots');
     _curMonth?.dispose();

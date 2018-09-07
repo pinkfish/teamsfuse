@@ -9,10 +9,12 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   CollectionReference(this._doc);
 
   /// ID of the referenced collection.
+  @override
   String get id => _doc.id;
 
   /// A string containing the slash-separated path to this  CollectionReference
   /// (relative to the root of the database).
+  @override
   String get path => _doc.path;
 
   /// Returns a `DocumentReference` with the provided path.
@@ -21,6 +23,7 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   ///
   /// The unique key generated is prefixed with a client-generated timestamp
   /// so that the resulting list will be chronologically-sorted.
+  @override
   wfs.DocumentReferenceWrapper document([String path]) {
     return new DocumentReference(_doc.doc(path));
   }
@@ -30,6 +33,7 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   ///
   /// The unique key generated is prefixed with a client-generated timestamp
   /// so that the resulting list will be chronologically-sorted.
+  @override
   Future<wfs.DocumentReferenceWrapper> add(Map<String, dynamic> data) async {
     return new DocumentReference(await _doc.add(data));
   }
@@ -92,8 +96,8 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
           .map(
             (fs.DocumentChange change) => new wfs.DocumentChangeWrapper(
                   document: new DocumentSnapshot(doc: change.doc),
-                  oldIndex: change.oldIndex,
-                  newIndex: change.newIndex,
+                  oldIndex: change.oldIndex.toInt(),
+                  newIndex: change.newIndex.toInt(),
                   type: Query.getType(change.type),
                 ),
           )
@@ -138,10 +142,6 @@ class QuerySnapshotStreamTransformer
     _subscription = null;
   }
 
-  /**
-   * Transformation
-   */
-
   void onData(fs.QuerySnapshot data) {
     _controller.add(new wfs.QuerySnapshotWrapper(
       documents: data.docs
@@ -151,8 +151,8 @@ class QuerySnapshotStreamTransformer
           .map(
             (fs.DocumentChange change) => new wfs.DocumentChangeWrapper(
                   document: new DocumentSnapshot(doc: change.doc),
-                  oldIndex: change.oldIndex,
-                  newIndex: change.newIndex,
+                  oldIndex: change.oldIndex.toInt(),
+                  newIndex: change.newIndex.toInt(),
                   type: Query.getType(change.type),
                 ),
           )
@@ -160,11 +160,9 @@ class QuerySnapshotStreamTransformer
     ));
   }
 
-  /**
-   * Bind
-   */
+  @override
   Stream<wfs.QuerySnapshotWrapper> bind(Stream<fs.QuerySnapshot> stream) {
-    this._stream = stream;
+    _stream = stream;
     return _controller.stream;
   }
 }

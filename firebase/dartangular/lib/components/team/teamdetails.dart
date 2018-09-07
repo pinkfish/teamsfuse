@@ -77,6 +77,7 @@ class TeamDetailsComponent implements OnDestroy, OnInit {
     return (team.photoUrl != null && !team.photoUrl.isEmpty) || !noDefaultIcon;
   }
 
+  @override
   void ngOnDestroy() {
     print('Destroy them my robots');
   }

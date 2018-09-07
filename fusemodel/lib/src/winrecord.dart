@@ -28,7 +28,7 @@ class WinRecord {
   }
 
   Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = new Map<String, dynamic>();
+    Map<String, dynamic> ret = <String, dynamic>{};
     ret[_TIE] = tie;
     ret[_LOSS] = loss;
     ret[_WIN] = win;

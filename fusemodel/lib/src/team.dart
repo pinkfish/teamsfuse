@@ -12,6 +12,7 @@ import 'persistendata.dart';
 
 /// The sport the team is involved in
 enum Sport { Basketball, Softball, Soccer, Other }
+
 /// The gender associated with the team.
 enum Gender { Female, Male, Coed, NA }
 
@@ -129,6 +130,8 @@ class Team {
   Map<String, Opponent> opponents = {};
   Map<String, Season> seasons = {};
 
+  Iterable<Season> _completeSeasonsCached;
+
   Stream<UpdateReason> opponentStream;
   Stream<UpdateReason> thisTeamStream;
 
@@ -174,6 +177,10 @@ class Team {
     });
     seasons = seasons.map((String key, Season season) {
       return new MapEntry(key, new Season.copy(season));
+    });
+    _completeSeasonsCached =
+        _completeSeasonsCached.map((Season season) {
+      return new Season.copy(season);
     });
     _trackAttendence = copy._trackAttendence;
   }
@@ -248,6 +255,8 @@ class Team {
       season.dispose();
     });
     seasons.clear();
+    _completeSeasonsCached.forEach((Season s) => s.dispose());
+    _completeSeasonsCached = <Season>[];
     opponents.clear();
     admins.clear();
   }
@@ -444,6 +453,26 @@ class Team {
     }
     _updateThisTeam.add(UpdateReason.Update);
     return season;
+  }
+
+  ///
+  /// This returns the complete season cache.  We don't worry about getting
+  /// this in all cases.
+  ///
+  Future<Iterable<Season>> getAllSeasons() async {
+    if (_completeSeasonsCached != null) {
+      return _completeSeasonsCached;
+    }
+    SeasonSubscription sub =
+        UserDatabaseData.instance.updateModel.getAllSeasons(uid);
+    _snapshots.addAll(sub.subscriptions);
+    Iterable<Season> seasons = await sub.stream.single;
+    _snapshots.add(sub.stream.listen((Iterable<Season> update) {
+      _completeSeasonsCached = update;
+      updateTeam();
+    }));
+    _completeSeasonsCached = seasons;
+    return _completeSeasonsCached;
   }
 
   ///

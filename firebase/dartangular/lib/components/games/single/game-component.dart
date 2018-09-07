@@ -25,6 +25,7 @@ class SingleGameComponent implements OnInit, OnActivate, OnDestroy {
     game = _controller.stream.asBroadcastStream();
   }
 
+  @override
   Future<Null> ngOnInit() async {
     _sub = UserDatabaseData.instance.teamStream.listen((UpdateReason reason) {
       if (UserDatabaseData.instance.gamesCache.containsKey(_curGameId)) {

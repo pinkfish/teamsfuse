@@ -55,7 +55,7 @@ class StorageReference extends wfs.StorageReferenceWrapper {
   }
 
   @override
-  Future<Function> delete() {
+  Future<void> delete() {
     return _ref.delete();
   }
 
@@ -109,8 +109,9 @@ class StorageUploadTask extends wfs.StorageUploadTaskWrapper {
 
   @override
   Future<wfs.UploadTaskSnapshotWrapper> get future {
-    return _task.future.then((fb.UploadTaskSnapshot f) {
-      return new wfs.UploadTaskSnapshotWrapper(downloadUrl: f.downloadURL);
+    return _task.future.then((fb.UploadTaskSnapshot f) async {
+      return new wfs.UploadTaskSnapshotWrapper(
+          downloadUrl: await f.ref.getDownloadURL());
     });
   }
 }

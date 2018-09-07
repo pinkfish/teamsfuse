@@ -104,6 +104,12 @@ class GameSubscription extends IterableSubscription<Game> {
 }
 
 ///
+/// Specialization of the iterable subscription that handles seasons.
+///
+class SeasonSubscription extends IterableSubscription<Season> {
+}
+
+///
 /// Details the games can be filtered on.
 ///
 class FilterDetails {
@@ -117,7 +123,7 @@ class FilterDetails {
 ///
 /// abstract interface to handle talking to firestore, handling the
 /// differences between the web and mobile.
-/// 
+///
 abstract class DatabaseUpdateModel {
   // Stuff for game updates.
   Future<void> updateFirestoreGame(Game game, bool allTeams);
@@ -155,6 +161,7 @@ abstract class DatabaseUpdateModel {
   Future<void> deleteAdmin(Team team, String uid);
   Future<String> addAdmin(String teamUid, String uid);
   StreamSubscription<dynamic> getInviteForTeamStream(Team team);
+  SeasonSubscription getAllSeasons(String teamUid);
 
   // Player stuff.
   Future<void> updateFirestorePlayer(Player player, bool includeUsers);

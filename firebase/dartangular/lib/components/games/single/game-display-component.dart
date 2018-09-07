@@ -8,12 +8,14 @@ import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart';
+import 'dart:html';
 
 class TimeStuff {
   num hour;
   num minute;
   bool am;
 
+  @override
   String toString() => "TimeStuff [$hour:$minute $am]";
 }
 
@@ -50,7 +52,7 @@ class GameDisplayComponent {
   static Uri GOOGLE_PLACE_SEARCH =
   Uri.parse("https://maps.googleapis.com/maps/api/place/textsearch/json");
   @ViewChild('mapArea')
-  ElementRef mapAreaRef;
+  HtmlElement mapAreaRef;
 
   GameDisplayComponent();
 

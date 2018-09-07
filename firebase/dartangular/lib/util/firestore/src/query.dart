@@ -6,11 +6,13 @@ class Query extends wfs.QueryWrapper {
 
   Query(this._doc);
 
+  @override
   Stream<wfs.QuerySnapshotWrapper> snapshots() {
-    return this._doc.onSnapshot.transform(new QuerySnapshotStreamTransformer());
+    return _doc.onSnapshot.transform(new QuerySnapshotStreamTransformer());
   }
 
   /// Fetch the documents for this query
+  @override
   Future<wfs.QuerySnapshotWrapper> getDocuments() async {
     fs.QuerySnapshot query = await _doc.get();
     return new wfs.QuerySnapshotWrapper(
@@ -21,8 +23,8 @@ class Query extends wfs.QueryWrapper {
           .map(
             (fs.DocumentChange change) => new wfs.DocumentChangeWrapper(
                   document: new DocumentSnapshot(doc: change.doc),
-                  oldIndex: change.oldIndex,
-                  newIndex: change.newIndex,
+                  oldIndex: change.oldIndex.toInt(),
+                  newIndex: change.newIndex.toInt(),
                   type: getType(change.type),
                 ),
           )
@@ -33,7 +35,7 @@ class Query extends wfs.QueryWrapper {
   static wfs.DocumentChangeTypeWrapper getType(String str) {
     switch (str) {
       case "added":
-    return wfs.DocumentChangeTypeWrapper.added;
+        return wfs.DocumentChangeTypeWrapper.added;
       case "modified":
         return wfs.DocumentChangeTypeWrapper.modified;
       case "removed":
@@ -48,6 +50,7 @@ class Query extends wfs.QueryWrapper {
   ///
   /// Only documents satisfying provided condition are included in the result
   /// set.
+  @override
   wfs.QueryWrapper where(
     String field, {
     dynamic isEqualTo,
@@ -88,6 +91,7 @@ class Query extends wfs.QueryWrapper {
 
   /// Creates and returns a new [Query] that's additionally sorted by the specified
   /// [field].
+  @override
   wfs.QueryWrapper orderBy(String field, {bool descending: false}) {
     return new Query(_doc.orderBy(field, descending ? "desc" : "asc"));
   }

@@ -41,7 +41,7 @@ class LoginComponent  {
     UserDatabaseData.instance.userAuth.signIn(model).then((UserData user) {
       print('signed in $user');
       // Navigate away!
-      this._router.navigate("/a/games");
+      _router.navigate("/a/games");
       print('Navigate away');
     })
     .catchError((Object e) {
@@ -51,9 +51,13 @@ class LoginComponent  {
   }
 
   String emailValidator(String inputText) {
-    if (inputText.isEmpty) return null;
+    if (inputText.isEmpty) {
+      return null;
+    }
 
-    if (!inputText.contains('@')) return 'Need an @ in an email address.';
+    if (!inputText.contains('@')) {
+      return 'Need an @ in an email address.';
+    }
 
     return null;
   }

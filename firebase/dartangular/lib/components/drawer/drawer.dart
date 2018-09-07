@@ -50,6 +50,7 @@ class Drawer implements OnInit, OnDestroy {
   Object trackByTeams(int index, dynamic team) => team is Team ? team.uid : "";
   Object trackByClubs(int index, dynamic club) => club is Club ? club.uid : "";
 
+  @override
   void ngOnInit() {
     teams = _teamController.stream.asBroadcastStream();
     _teamController.add(UserDatabaseData.instance.teams.values);
@@ -66,6 +67,7 @@ class Drawer implements OnInit, OnDestroy {
     });
   }
 
+  @override
   void ngOnDestroy() {
     _sub?.cancel();
     _clubSub?.cancel();

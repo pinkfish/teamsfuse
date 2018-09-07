@@ -12,5 +12,6 @@ class DocumentSnapshot extends wfs.DocumentSnapshotWrapper {
       : super(documentID: doc.id, data: doc.data(), exists: doc.exists);
 
   /// The reference that produced this snapshot
+  @override
   DocumentReference get reference => new DocumentReference(doc.ref);
 }

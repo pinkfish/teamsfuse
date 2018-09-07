@@ -61,6 +61,7 @@ class ClubDetailsComponent implements OnDestroy, OnInit {
       case Tristate.No:
         return "Never";
     }
+    return "Unknown";
   }
 
   String get arriveEarly {
@@ -76,6 +77,7 @@ class ClubDetailsComponent implements OnDestroy, OnInit {
 
   Object trackByTeam(int index, dynamic team) => team is Team ? team.uid : "";
 
+  @override
   void ngOnDestroy() {
     print('Destroy them my club robots');
     _sub.cancel();

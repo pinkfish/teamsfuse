@@ -18,9 +18,11 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   int get hashCode;
 
   /// Slash-delimited path representing the database location of this query.
+  @override
   String get path => _doc.path;
 
   /// This document's given or generated ID in the collection.
+  @override
   String get documentID => _doc.id;
 
   /// Writes to the document referred to by this [DocumentReference].
@@ -29,6 +31,7 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   ///
   /// If [merge] is true, the provided data will be merged into an
   /// existing document instead of overwriting.
+  @override
   Future<void> setData(Map<String, dynamic> data, {bool merge: false}) {
     fs.SetOptions opt = new fs.SetOptions(merge: merge);
     return _doc.set(data, opt);
@@ -37,6 +40,7 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   /// Updates fields in the document referred to by this [DocumentReference].
   ///
   /// If no document exists yet, the update will fail.
+  @override
   Future<void> updateData(Map<String, dynamic> data) {
     return setData(data, merge: true);
   }
@@ -44,23 +48,26 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   /// Reads the document referenced by this [DocumentReference].
   ///
   /// If no document exists, the read will return null.
+  @override
   Future<wfs.DocumentSnapshotWrapper> get() async {
     return new DocumentSnapshot(doc: await _doc.get());
   }
 
   /// Deletes the document referred to by this [DocumentReference].
+  @override
   Future<void> delete() {
     return _doc.delete();
   }
 
   /// Returns the reference of a collection contained inside of this
   /// document.
+  @override
   wfs.CollectionReferenceWrapper collection(String collectionPath) {
     return new CollectionReference(_doc.collection(collectionPath));
   }
 
   /// Notifies of documents at this location
-  // TODO(jackson): Reduce code duplication with [Query]
+  @override
   Stream<wfs.DocumentSnapshotWrapper> snapshots() {
     return _doc.onSnapshot.transform(new DocumentSnapshotStreamTransformer());
   }
@@ -97,19 +104,13 @@ class DocumentSnapshotStreamTransformer extends StreamTransformerBase<
     _subscription = null;
   }
 
-  /**
-   * Transformation
-   */
-
   void onData(fs.DocumentSnapshot data) {
     _controller.add(new DocumentSnapshot(doc: data));
   }
 
-  /**
-   * Bind
-   */
+  @override
   Stream<wfs.DocumentSnapshotWrapper> bind(Stream<fs.DocumentSnapshot> stream) {
-    this._stream = stream;
+    _stream = stream;
     return _controller.stream;
   }
 }

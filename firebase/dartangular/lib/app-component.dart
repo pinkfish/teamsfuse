@@ -38,7 +38,7 @@ class AppComponent implements OnInit {
   AppComponent(this.routes, this._router);
 
   @override
-  ngOnInit() async {
+  void ngOnInit() async {
     UserData data =
         await UserDatabaseData.instance.userAuth.currentUserNoWait();
     if (data == null) {
@@ -55,7 +55,7 @@ class AppComponent implements OnInit {
       if (u != null) {
         UserDatabaseData.load(u.uid, u.email,
             UserDatabaseData.instance.userAuth.getProfile(u.uid));
-        this._router.navigate("/a/games");
+        _router.navigate("/a/games");
       } else {
         UserDatabaseData.clear();
       }

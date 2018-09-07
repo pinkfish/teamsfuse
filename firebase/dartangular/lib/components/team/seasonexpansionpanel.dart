@@ -36,6 +36,7 @@ class SeasonExpansionPanelComponent implements OnDestroy, OnInit {
     });
   }
 
+  @override
   void ngOnDestroy() {
     _subscription.dispose();
   }

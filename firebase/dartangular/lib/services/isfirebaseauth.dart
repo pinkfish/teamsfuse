@@ -60,14 +60,18 @@ class IfFirebaseAuthDirective implements OnDestroy, OnInit {
   }
 
   void _signedIn() {
-    if (_lastCondition == true) return;
+    if (_lastCondition == true) {
+      return;
+    }
     _viewContainerRef.createEmbeddedView(_templateRef).setLocal(
         'currentUser', UserDatabaseData.instance.userAuth.currentUserNoWait());
     _lastCondition = true;
   }
 
   void _signedOut() {
-    if (_lastCondition == false) return;
+    if (_lastCondition == false) {
+      return;
+    }
     _viewContainerRef.clear();
     _lastCondition = false;
   }

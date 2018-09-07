@@ -27,7 +27,7 @@
         </tr>
     </table>
     <material-expansion-panel-set>
-        <season-expansionpanel *ngFor="let fluff of team.seasons.values; trackBy: trackBySeason" [team]="team" [season]="fluff">
+        <season-expansionpanel *ngFor="let fluff of team.getAllSeasons() | async; trackBy: trackBySeason" [team]="team" [season]="fluff">
         </season-expansionpanel>
     </material-expansion-panel-set>
 </div>

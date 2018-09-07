@@ -7,12 +7,12 @@ class Auth extends wfs.AuthWrapper {
   }
 
   @override
-  Future<Function> signOut() {
+  Future<void> signOut() {
     return fb.auth().signOut();
   }
 
   @override
-  Future<Function> sendPasswordResetEmail({String email}) {
+  Future<void> sendPasswordResetEmail({String email}) {
     return fb.auth().sendPasswordResetEmail(email);
   }
 
@@ -90,19 +90,13 @@ class UserTransformer
     _subscription = null;
   }
 
-  /**
-   * Transformation
-   */
-
   void onData(fb.User data) {
     _controller.add(new FirebaseUser(data));
   }
 
-  /**
-   * Bind
-   */
+  @override
   Stream<wfs.FirebaseUserWrapper> bind(Stream<fb.User> stream) {
-    this._stream = stream;
+    _stream = stream;
     return _controller.stream;
   }
 }
