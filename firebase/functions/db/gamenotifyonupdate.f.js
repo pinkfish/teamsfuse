@@ -26,8 +26,7 @@ exports = module.exports = functions.firestore.document("/Games/{gameid}")
                 previousData.place = {}
             }
             var bing = true;
-            if (data.place.address !== previousData.place.address ||
-                data.uniform !== previousData.uniform ||
+            if (data.uniform !== previousData.uniform ||
                 data.opponentUid !== previousData.opponentUid || bing) {
                 if (data.type === 'EventType.Practice') {
                     payload = {

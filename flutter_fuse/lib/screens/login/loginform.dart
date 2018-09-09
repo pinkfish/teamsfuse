@@ -55,15 +55,9 @@ class LoginScreenState extends State<LoginScreen> {
       // Remove any spaces at the begining/end.
       person.email = person.email.trim();
       print('Doing login');
+      UserData user;
       try {
-        UserData user = await UserDatabaseData.instance.userAuth.signIn(person);
-        print('Home page $user');
-        await UserDatabaseData.instance.userAuth.reloadUser();
-        print('reloaded user');
-        Analytics.analytics.logLogin();
-        setState(() {
-          _loggingIn = false;
-        });
+        user = await UserDatabaseData.instance.userAuth.signIn(person);
       } catch (error) {
         print('Right here $error');
         setState(() {
@@ -71,7 +65,17 @@ class LoginScreenState extends State<LoginScreen> {
           _loggingIn = false;
         });
         showInSnackBar(errorText);
+        return;
       }
+      print('Home page $user');
+      await UserDatabaseData.instance.userAuth.reloadUser();
+      print('reloaded user');
+      Analytics.analytics.logLogin();
+      setState(() {
+        _loggingIn = false;
+      });
+      Navigator.pushNamedAndRemoveUntil(
+          context, '/Home', ModalRoute.withName('/Home'));
     }
   }
 

@@ -60,6 +60,8 @@ class TeamEditFormState extends State<TeamEditForm> {
         season.name = _seasonName;
         season.record = new WinRecord();
         season.teamUid = widget.team.precreateUid();
+        widget.team.seasons[season.precreateUid()] = season;
+        widget.team.currentSeason = season.precreateUid();
       }
     }
     return widget.team;

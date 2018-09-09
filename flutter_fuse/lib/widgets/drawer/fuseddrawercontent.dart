@@ -20,8 +20,7 @@ class FusedDrawerContent extends StatelessWidget {
             title: new RichText(
               text: new TextSpan(
                 text: club.name,
-                style: Theme
-                    .of(context)
+                style: Theme.of(context)
                     .textTheme
                     .subhead
                     .copyWith(fontWeight: FontWeight.bold, fontSize: 17.0),
@@ -91,17 +90,40 @@ class FusedDrawerContent extends StatelessWidget {
         },
       ),
       new Divider(),
-      new ListTile(leading: const Icon(Icons.people_outline),
-      title: new Text(Messages.of(context).players),
-      onTap: () {
-        Navigator.popAndPushNamed(context, "/Players");
-      },),
+      new ListTile(
+        leading: const Icon(Icons.people_outline),
+        title: new Text(Messages.of(context).players),
+        onTap: () {
+          Navigator.popAndPushNamed(context, "/Players");
+        },
+      ),
       new ListTile(
         leading: const Icon(Icons.exit_to_app),
         title: new Text(Messages.of(context).signout),
-        onTap: () {
-          UserDatabaseData.instance.userAuth.signOut();
-          //Navigator.of(context).pushNamed("/Home");
+        onTap: () async {
+          OverlayState overlayState = Overlay.of(context);
+          OverlayEntry overlayEntry = new OverlayEntry(builder: (BuildContext context) {
+            return new Positioned(
+              top: 50.0,
+              left: 50.0,
+              child: new Material(
+                color: Colors.transparent,
+                child: new Icon(Icons.warning, color: Colors.purple),
+              ),
+            );
+          });
+
+          overlayState.insert(overlayEntry);
+
+          // Pre-emptively clear the user data stuff, otherwise we end
+          // erroring all over the place when the subscriptions fail
+          UserDatabaseData.instance.close();
+          await UserDatabaseData.instance.userAuth.signOut();
+
+          await overlayEntry.remove();
+
+          Navigator.pushNamedAndRemoveUntil(
+              context, "/Login/Home", (Route<dynamic> d) => false);
         },
       ),
       new ListTile(

@@ -33,7 +33,7 @@ abstract class PersistenData {
   Future<void> updateTeamElement(String tableId, String key, String teamUid,
       Map<String, dynamic> data) ;
 
-  Future<void> dropDatabase();
+  Future<void> recreateDatabase();
 
   Future<void> clearTable(String name);
 }

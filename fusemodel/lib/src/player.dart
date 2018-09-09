@@ -108,11 +108,14 @@ class Player {
   }
 
   void dispose() {
-    _subscriptions.forEach((StreamSubscription<dynamic> sub) {
+    _subscriptions?.forEach((StreamSubscription<dynamic> sub) {
       sub.cancel();
     });
-    _controller.close();
-    _invites.clear();
+    _subscriptions = null;
+    _controller?.close();
+    _controller = null;
+    _invites?.clear();
+    _invites = null;
   }
 
   Future<void> updateFirestore({bool includeUsers = false}) async {

@@ -92,7 +92,7 @@ class LoggingData extends LoggingDataBase {
   String get lastPath => extra["lastPath"].toString();
 
   void logFlutterError(FlutterErrorDetails details) {
-    FlutterError.dumpErrorToConsole(details);
+    FlutterError.dumpErrorToConsole(details, forceReport: true);
     // Don't capture on emulators.
     if (realDevice && !debugMode) {
       final Event event = new Event(

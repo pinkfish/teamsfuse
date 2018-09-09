@@ -34,6 +34,10 @@ import 'package:flutter_fuse/screens/clubs/clubdetails.dart';
 import 'package:flutter_fuse/screens/clubs/editclub.dart';
 import 'package:flutter_fuse/screens/clubs/addclub.dart';
 import 'package:flutter_fuse/screens/clubs/addmember.dart';
+import 'package:flutter_fuse/screens/login/loginform.dart';
+import 'package:flutter_fuse/screens/login/signup.dart';
+import 'package:flutter_fuse/screens/login/forgotpassword.dart';
+import 'package:flutter_fuse/screens/login/verifyemail.dart';
 import 'analytics.dart';
 
 class AppRouter {
@@ -214,6 +218,24 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AddClubScreen()));
+
+    // The login router.
+    router.define("/Login/Home",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new LoginScreen()));
+    router.define("/Login/Verify",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new VerifyEmailScreen()));
+    router.define("/Login/SignUp",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new SignupScreen()));
+    router.define("/Login/ForgotPassword",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new ForgotPasswordScreen()));
     return router;
   }
 }

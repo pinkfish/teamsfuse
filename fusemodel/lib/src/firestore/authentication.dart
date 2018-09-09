@@ -50,7 +50,7 @@ class UserAuthImpl {
   UserAuthImpl(this.wrapper, this.persistenData) {
     _updateStream = wrapper.auth.onAuthStateChanged
         .listen((FirebaseUserWrapper input) async {
-      print('onAuthStateChanged');
+      print('onAuthStateChanged $input');
       if (_profileUpdates != null) {
         _profileUpdates.cancel();
         _profileUpdates = null;
@@ -60,7 +60,7 @@ class UserAuthImpl {
         deleteNotificationToken();
       }
       if (input == null || !input.loggedIn) {
-        _currentUser = null;
+         _currentUser = null;
         _currentFirebaseUser = null;
         _controller.add(null);
       } else {
@@ -75,6 +75,7 @@ class UserAuthImpl {
             wrapper.collection(USER_DATA_COLLECTION).document(input.uid);
         _profileUpdates = ref.snapshots().listen(_onProfileUpdates);
       }
+      print('end onAuthStateChanged $input');
     });
   }
 
@@ -146,7 +147,10 @@ class UserAuthImpl {
 
   // Sign the user out.
   Future<void> signOut() async {
-    return wrapper.auth.signOut();
+    return wrapper.auth.signOut().then((void a) {
+      _profileUpdates?.cancel();
+      _profileUpdates = null;
+    });
   }
 
   Stream<UserData> onAuthChanged() {

@@ -177,7 +177,7 @@ class AddClubScreenState extends State<AddClubScreen> {
         },
         steps: <Step>[
           new Step(
-            title: new Text(messages.gamedetails),
+            title: new Text(messages.details),
             state: _detailsStepState,
             isActive: true,
             content: new Column(
@@ -189,7 +189,7 @@ class AddClubScreenState extends State<AddClubScreen> {
             ),
           ),
           new Step(
-            title: new Text(messages.gamecreate),
+            title: new Text(messages.create),
             state: _createStepStage,
             isActive: true,
             content: _buildSummary(),

@@ -271,10 +271,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   // Team stuff
   void _onTeamUpdated(Team team, DocumentSnapshotWrapper snap) {
-    team.fromJSON(snap.documentID, snap.data);
-    print('team ' + team.uid);
-    persistenData.updateElement(
-        PersistenData.teamsTable, team.uid, team.toJSON());
+    if (snap.exists) {
+      team.fromJSON(snap.documentID, snap.data);
+      print('team ' + team.uid);
+      persistenData.updateElement(
+          PersistenData.teamsTable, team.uid, team.toJSON());
+    }
   }
 
   @override
@@ -477,13 +479,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             sub.subscriptions.add(sharedRef
                 .snapshots()
                 .listen((DocumentSnapshotWrapper snapUpdate) {
-              GameSharedData newData = GameSharedData.fromJSON(
-                  snapUpdate.documentID, snapUpdate.data);
-              if (maps.containsKey(teamUid)) {
-                Game g = maps[teamUid].lookup(snap.documentID);
-                if (g != null) {
-                  g.sharedData.updateFrom(newData);
-                  g.markGameChanged();
+              if (snapUpdate.exists) {
+                GameSharedData newData = GameSharedData.fromJSON(
+                    snapUpdate.documentID, snapUpdate.data);
+                if (maps.containsKey(teamUid)) {
+                  Game g = maps[teamUid].lookup(snap.documentID);
+                  if (g != null) {
+                    g.sharedData.updateFrom(newData);
+                    g.markGameChanged();
+                  }
                 }
               }
             }));
@@ -532,13 +536,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
               sub.subscriptions.add(sharedRef
                   .snapshots()
                   .listen((DocumentSnapshotWrapper snapUpdate) {
-                GameSharedData newData = GameSharedData.fromJSON(
-                    snapUpdate.documentID, snapUpdate.data);
-                if (maps.containsKey(teamUid)) {
-                  Game g = maps[teamUid].lookup(snap.documentID);
-                  if (g != null) {
-                    g.sharedData.updateFrom(newData);
-                    g.markGameChanged();
+                if (snapUpdate.exists) {
+                  GameSharedData newData = GameSharedData.fromJSON(
+                      snapUpdate.documentID, snapUpdate.data);
+                  if (maps.containsKey(teamUid)) {
+                    Game g = maps[teamUid].lookup(snap.documentID);
+                    if (g != null) {
+                      g.sharedData.updateFrom(newData);
+                      g.markGameChanged();
+                    }
                   }
                 }
               }));
@@ -718,13 +724,19 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   // Season updates
   @override
-  Future<void> updateFirestoreSeason(Season season, bool includePlayers) async {
+  Future<void> updateFirestoreSeason(
+      Season season, bool includePlayers, PregenUidRet pregen) async {
     // Add or update this record into the database.
     CollectionReferenceWrapper ref = wrapper.collection(SEASONS_COLLECTION);
     if (season.uid == '' || season.uid == null) {
       // Add the game.
-      DocumentReferenceWrapper doc =
-          await ref.add(season.toJSON(includePlayers: includePlayers));
+      DocumentReferenceWrapper doc;
+      if (pregen != null) {
+        doc = pregen.extra as DocumentReferenceWrapper;
+        await doc.setData(season.toJSON(includePlayers: includePlayers));
+      } else {
+        doc = await ref.add(season.toJSON(includePlayers: includePlayers));
+      }
       season.uid = doc.documentID;
     } else {
       // Update the game.
@@ -732,6 +744,16 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .document(season.uid)
           .updateData(season.toJSON(includePlayers: includePlayers));
     }
+  }
+
+  @override
+  PregenUidRet precreateUidSeason(Season season) {
+    PregenUidRet ret = new PregenUidRet();
+    CollectionReferenceWrapper ref = wrapper.collection(SEASONS_COLLECTION);
+    DocumentReferenceWrapper docRef = ref.document();
+    ret.uid = docRef.documentID;
+    ret.extra = docRef;
+    return ret;
   }
 
   @override

@@ -29,7 +29,7 @@ class PlayerFormField extends FormField<String> {
                 errorText: field.errorText,
               ),
               child: new DropdownButton<String>(
-                hint: new Text(Messages.of(state.context).opponentselect),
+                hint: new Text(Messages.of(state.context).playerselecthint),
                 items: state._buildItems(state.context),
                 value: state.value,
                 onChanged: (String val) {

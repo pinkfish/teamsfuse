@@ -178,7 +178,7 @@ abstract class DatabaseUpdateModel {
   Future<void> deletePlayer(String playerUid);
 
   // Season updates
-  Future<void> updateFirestoreSeason(Season season, bool includePlayers);
+  Future<void> updateFirestoreSeason(Season season, bool includePlayers, PregenUidRet pregen);
   Future<void> removePlayerFromSeason(Season season, SeasonPlayer player);
   Future<void> updateRoleInTeamForSeason(
       Season season, SeasonPlayer player, RoleInTeam role);
@@ -189,6 +189,7 @@ abstract class DatabaseUpdateModel {
       {String userId, String playername, String email, RoleInTeam role});
   Future<Season> getSeason(String seasonUid);
   Future<void> addPlayerToSeason(String seasonUid, SeasonPlayer player);
+  PregenUidRet precreateUidSeason(Season team);
 
   // Games!
   GameSubscription getGames(Iterable<Game> cachedGames, Set<String> teams,

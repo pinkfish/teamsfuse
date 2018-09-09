@@ -75,7 +75,6 @@ class UserDatabaseData {
   GameSubscription _basicGames;
 
   static UserDatabaseData _instance;
-  static Map<Object, dynamic> snapshotMapping = new Map<Object, dynamic>();
   TraceProxy _loadingDataTrace;
   AnalyticsSubsystem _analytics;
   FusedUserProfile _profile;
@@ -472,7 +471,7 @@ class UserDatabaseData {
         persistentData.deleteElement(PersistenData.seasonTable, id);
       }
     }
-    _teamController.add(UpdateReason.Update);
+    _teamController?.add(UpdateReason.Update);
   }
 
   void _onBasicGamesUpdated(Iterable<Game> query) {
@@ -622,6 +621,7 @@ class UserDatabaseData {
       print('Start teams ${start.difference(new DateTime.now())}');
       await Future.forEach(data.keys, (String uid) async {
         sqlTrace.incrementCounter("team");
+        teamsTrace.incrementCounter("team");
         Map<String, dynamic> input = data[uid];
         Team team = new Team();
         team.fromJSON(uid, input);
@@ -632,6 +632,7 @@ class UserDatabaseData {
             .getAllTeamElements(PersistenData.opponentsTable, uid);
         for (String key in opponentData.keys) {
           sqlTrace.incrementCounter("opponent");
+          teamsTrace.incrementCounter("opponent");
           Map<String, dynamic> innerData = opponentData[key];
           Opponent op = new Opponent();
           op.fromJSON(key, uid, innerData);
@@ -648,6 +649,7 @@ class UserDatabaseData {
       Map<String, Player> newPlayers = new Map<String, Player>();
       data.forEach((String uid, Map<String, dynamic> input) {
         sqlTrace.incrementCounter("player");
+        playerTrace.incrementCounter("player");
         Player player = new Player();
         player.fromJSON(uid, input);
         newPlayers[uid] = player;
@@ -665,6 +667,7 @@ class UserDatabaseData {
         for (String uid in data.keys) {
           Map<String, dynamic> input = data[uid];
           sqlTrace.incrementCounter("game");
+          gamesTrace.incrementCounter("game");
           String sharedDataUid = input[Game.SHAREDDATAUID];
           GameSharedData sharedData;
           if (sharedDataUid.isNotEmpty) {
@@ -690,6 +693,7 @@ class UserDatabaseData {
       Map<String, Invite> newInvites = new Map<String, Invite>();
       data.forEach((String uid, Map<String, dynamic> input) {
         sqlTrace.incrementCounter("invites");
+        invitesTrace.incrementCounter("invites");
         Invite invite = new Invite();
         invite.fromJSON(uid, input);
         newInvites[uid] = invite;
@@ -806,36 +810,23 @@ class UserDatabaseData {
 
   void close() {
     _completedLoading = false;
+
+    // Snapshots first.
     _playerSnapshot?.cancel();
     _playerSnapshot = null;
     playerStream = null;
     _inviteSnapshot?.cancel();
     _inviteSnapshot = null;
-    inviteStream = null;
     _messageSnapshot?.cancel();
     _messageSnapshot = null;
     _readMessageSnapshot?.cancel();
     _readMessageSnapshot = null;
-    _teamController?.close();
-    teamStream = null;
-    _teamController = null;
-    _playerController?.close();
-    playerStream = null;
-    _playerController = null;
-    _inviteController?.close();
-    inviteStream = null;
-    _inviteController = null;
-    _messageController?.close();
-    _messageController = null;
-    messagesStream = null;
-    _gameSubecription?.cancel();
-    _gameSubecription = null;
-    clubStream = null;
-    _clubController?.close();
-    _clubController = null;
-    _clubSnapshot?.cancel();
-    _clubSnapshot = null;
 
+    // Then the data in memory.
+    _players.forEach((String key, Player value) {
+      value.dispose();
+    });
+    _players.clear();
     _teams.forEach((String key, Team value) {
       value.dispose();
     });
@@ -844,15 +835,13 @@ class UserDatabaseData {
       value.close();
     });
     _gamesCache.clear();
-    _players.forEach((String key, Player value) {
-      value.dispose();
-    });
     for (Club club in _clubs.values) {
       club.dispose();
     }
-    _players.clear();
-    _invites.clear();
     _clubs.clear();
+    _invites.clear();
+
+    // Everything else.  Bang!
     _createdMePlayer = false;
     _messageInitialData?.dispose();
     _messageInitialData = null;
@@ -864,10 +853,34 @@ class UserDatabaseData {
     _inviteInitialData = null;
     _clubInitialData?.dispose();
     _clubInitialData = null;
+
+    // Assert everything is gone.
+    assert(_players.length == 0);
+    assert(_clubs.length == 0);
+    assert(_invites.length == 0);
+    assert(_gamesCache.length == 0);
+    assert(_teams.length == 0);
+    assert(_messages.length == 0);
+
+    // Reinitialize stuff so we are ready for the next login.
+    _completedLoading = false;
+    _loadedPlayers = false;
+    _loadedTeams = false;
+    _loadedGames = false;
+    _loadedInvites = false;
+    _loadedReadMessages = false;
+    _loadedUnreadMessages = false;
+    _loadedClubs = false;
+    _createdMePlayer = false;
+    _loadedFromSql = false;
+    unreadMessageCount = 0;
+    userUid = null;
+
+    deletePersistentData();
   }
 
   void deletePersistentData() {
-    persistentData.dropDatabase();
+    persistentData.recreateDatabase();
   }
 
   static void load(String uid, String email, Future<FusedUserProfile> profile) {

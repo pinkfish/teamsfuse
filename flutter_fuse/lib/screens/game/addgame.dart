@@ -227,13 +227,13 @@ class AddGameScreenState extends State<AddGameScreen> {
                 ),
               ),
               new Step(
-                title: new Text(messages.gamedetails),
+                title: new Text(messages.details),
                 state: detailsStepState,
                 isActive: _team != null,
                 content: _buildForm(context),
               ),
               new Step(
-                title: new Text(messages.gamecreate),
+                title: new Text(messages.create),
                 state: createStepStage,
                 isActive: _gameFormKey != null &&
                     _gameFormKey.currentState != null &&

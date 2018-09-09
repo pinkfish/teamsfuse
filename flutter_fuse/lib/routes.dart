@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter_fuse/services/approuter.dart';
-import 'package:flutter_fuse/screens/login/loginform.dart';
-import 'package:flutter_fuse/screens/login/forgotpassword.dart';
-import 'package:flutter_fuse/screens/login/signup.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/screens/login/verifyemail.dart';
 import 'package:flutter_fuse/services/loggingdata.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -15,14 +11,6 @@ import 'package:fusemodel/firestore.dart';
 
 class Routes {
   UserData _currentUser;
-
-  final Map<String, WidgetBuilder> loggedOutRoutes = <String, WidgetBuilder>{
-    "/Login/Home": (BuildContext context) => new LoginScreen(),
-    "/Login/ForgotPassword": (BuildContext context) =>
-        new ForgotPasswordScreen(),
-    "/Login/SignUp": (BuildContext context) => new SignupScreen(),
-    "/Login/Verify": (BuildContext context) => new VerifyEmailScreen(),
-  };
 
   final ThemeData theme = new ThemeData(
     // This is the theme of your application.
@@ -60,7 +48,9 @@ class Routes {
       ],
       title: "Team Fuse",
       theme: theme,
-      initialRoute: "/",
+      initialRoute: _currentUser == null || !_currentUser.isEmailVerified
+          ? "Login/Home"
+          : "Home",
       home: new SplashScreen(),
       onGenerateRoute: _buildRoute,
     );
@@ -70,20 +60,14 @@ class Routes {
   Route<dynamic> _buildRoute(RouteSettings routeSettings) {
     //Analytics.analytics.setCurrentScreen(screenName: routeSettings.name);
     LoggingData.instance.lastPath = routeSettings.name;
-    if (_currentUser != null) {
-      if (_currentUser.isEmailVerified) {
-        return AppRouter.instance.generator(routeSettings);
-      }
-    }
-    return new MaterialPageRoute<Null>(
-        settings: routeSettings, builder: loggedOutRoutes[routeSettings.name]);
+    return AppRouter.instance.generator(routeSettings);
   }
 
   void _authChanged(UserData user) async {
     _currentUser = user;
     if (user != null) {
-      UserDatabaseData.load(
-          user.uid, user.email, UserDatabaseData.instance.userAuth.getProfile(user.uid));
+      UserDatabaseData.load(user.uid, user.email,
+          UserDatabaseData.instance.userAuth.getProfile(user.uid));
       Analytics.analytics.setUserId(user.uid);
       if (Analytics.instance.debugMode) {
         Analytics.analytics.setUserProperty(name: "developer", value: "true");

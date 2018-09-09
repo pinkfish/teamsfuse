@@ -241,13 +241,13 @@ class AddEventScreenState extends State<AddEventScreen> {
               ),
             ),
             new Step(
-              title: new Text(messages.gamedetails),
+              title: new Text(messages.details),
               state: detailsStepState,
               isActive: _team != null && ((_team?.uid?.isNotEmpty) ?? false),
               content: _buildForm(context),
             ),
             new Step(
-              title: new Text(messages.gamecreate),
+              title: new Text(messages.create),
               state: createStepStage,
               isActive: _eventFormKey != null &&
                   _eventFormKey.currentState != null &&

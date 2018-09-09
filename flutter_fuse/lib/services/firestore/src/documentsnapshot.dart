@@ -9,7 +9,7 @@ class DocumentSnapshot extends wfs.DocumentSnapshotWrapper {
   fs.DocumentSnapshot doc;
 
   DocumentSnapshot({this.doc})
-      : super(documentID: doc.documentID, data: doc.data, exists: doc.exists);
+      : super(documentID: doc.exists ? doc.documentID : null, data: doc.exists ? doc.data : null, exists: doc.exists);
 
   /// The reference that produced this snapshot
   @override

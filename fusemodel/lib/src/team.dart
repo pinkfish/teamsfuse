@@ -255,8 +255,8 @@ class Team {
       season.dispose();
     });
     seasons.clear();
-    _completeSeasonsCached.forEach((Season s) => s.dispose());
-    _completeSeasonsCached = <Season>[];
+    _completeSeasonsCached?.forEach((Season s) => s.dispose());
+    _completeSeasonsCached = null;
     opponents.clear();
     admins.clear();
   }

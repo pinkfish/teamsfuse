@@ -8,6 +8,7 @@ import 'package:flutter_fuse/widgets/util/clubimage.dart';
 import 'package:flutter_fuse/widgets/util/gendericon.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/form/clubpicker.dart';
+import 'package:flutter_fuse/widgets/form/playerformfield.dart';
 import 'dart:io';
 
 class AddTeamScreen extends StatefulWidget {
@@ -18,17 +19,20 @@ class AddTeamScreen extends StatefulWidget {
 }
 
 class AddTeamScreenState extends State<AddTeamScreen> {
-  final GlobalKey<TeamEditFormState> _formKey =
+  final GlobalKey<TeamEditFormState> _formKeyTeam =
       new GlobalKey<TeamEditFormState>();
+  final GlobalKey<FormState> _formKeyPlayer = new GlobalKey<FormState>();
   bool _saving = false;
   int _currentStep;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  StepState _detailsStepState = StepState.editing;
+  StepState _detailsStepState = StepState.disabled;
   StepState _createStepStage = StepState.disabled;
-  StepState _clubStepState = StepState.editing;
+  StepState _clubStepState = StepState.disabled;
+  StepState _playerStepState = StepState.editing;
   Team _teamToAdd = new Team();
   File _imageFileToAdd;
   String _clubUid;
+  String _playerUid;
 
   @override
   void initState() {
@@ -67,7 +71,14 @@ class AddTeamScreenState extends State<AddTeamScreen> {
               .updateTeamImage(_teamToAdd, _imageFileToAdd);
           _teamToAdd.photoUrl = uri.toString();
         }
+        // Create the season too.
+        Season season = _teamToAdd.seasons[_teamToAdd.currentSeason];
+        season.players.add(new SeasonPlayer(
+          playerUid: _playerUid,
+          role: RoleInTeam.Player,
+        ));
         await _teamToAdd.updateFirestore();
+        await _teamToAdd.seasons[_teamToAdd.currentSeason].updateFirestore(includePlayers: true);
         Navigator.pop(context);
       } else {
         _showInSnackBar(Messages.of(context).formerror);
@@ -85,32 +96,49 @@ class AddTeamScreenState extends State<AddTeamScreen> {
         _clubStepState = StepState.complete;
         _detailsStepState = StepState.editing;
         break;
-      // Check to make sure a team is picked.
       case 1:
+        if (backwards) {
+          // Can always leave this step.
+          _detailsStepState = StepState.editing;
+          return true;
+        }
+        // Verify a player has been picked.
+        _formKeyPlayer.currentState.save();
+        if (_playerUid == PlayerFormField.nonePlayer) {
+          _playerStepState = StepState.error;
+          _detailsStepState = StepState.disabled;
+          _showInSnackBar(Messages.of(context).formerror);
+          return false;
+        }
+        _playerStepState = StepState.complete;
+        _detailsStepState = StepState.editing;
+        return true;
+      // Check to make sure a team is picked.
+      case 2:
         // Verify the form is correct.
         if (backwards) {
           // Can always leave this step.
           _detailsStepState = StepState.editing;
           return true;
         }
-        if (!_formKey.currentState.validate()) {
+        if (!_formKeyTeam.currentState.validate()) {
           _detailsStepState = StepState.error;
           _createStepStage = StepState.disabled;
           _showInSnackBar(Messages.of(context).formerror);
           return false;
         }
-        _teamToAdd = _formKey.currentState.validateAndCreate();
+        _teamToAdd = _formKeyTeam.currentState.validateAndCreate();
         if (_teamToAdd == null) {
           _detailsStepState = StepState.error;
           _createStepStage = StepState.disabled;
           _showInSnackBar(Messages.of(context).formerror);
           return false;
         }
-        _imageFileToAdd = _formKey.currentState.getImageFile();
+        _imageFileToAdd = _formKeyTeam.currentState.getImageFile();
         _detailsStepState = StepState.complete;
         _createStepStage = StepState.editing;
         break;
-      case 2:
+      case 3:
         _createStepStage = StepState.disabled;
         break;
     }
@@ -120,7 +148,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   void _onStepperContinue(BuildContext context) {
     if (_leaveCurrentState(false)) {
       setState(() {
-        if (_currentStep < 2) {
+        if (_currentStep < 3) {
           _currentStep++;
         } else {
           // Write the game out.
@@ -200,15 +228,13 @@ class AddTeamScreenState extends State<AddTeamScreen> {
           ),
           new ListTile(
             leading: const Icon(Icons.timer),
-            title: new Text(Messages
-                .of(context)
+            title: new Text(Messages.of(context)
                 .arrivebefore(_teamToAdd.arriveEarly.toInt())),
           ),
           new ListTile(
             leading: const Icon(CommunityIcons.trafficLight),
-            title: new Text(Messages
-                .of(context)
-                .trackattendence(_teamToAdd.trackAttendence ? Tristate.Yes : Tristate.No)),
+            title: new Text(Messages.of(context).trackattendence(
+                _teamToAdd.trackAttendence ? Tristate.Yes : Tristate.No)),
           )
         ],
       ),
@@ -243,18 +269,30 @@ class AddTeamScreenState extends State<AddTeamScreen> {
             ),
           ),
           new Step(
-            title: new Text(messages.gamedetails),
+            title: new Text(messages.player),
+            state: _playerStepState,
+            isActive: true,
+            content: new Form(
+              key: _formKeyPlayer,
+              child: new PlayerFormField(
+                initialValue: PlayerFormField.nonePlayer,
+                onSaved: (String player) => _playerUid = player,
+              ),
+            ),
+          ),
+          new Step(
+            title: new Text(messages.team),
             state: _detailsStepState,
             isActive: true,
             content: new SingleChildScrollView(
               child: new TeamEditForm(
                 _teamToAdd,
-                _formKey,
+                _formKeyTeam,
               ),
             ),
           ),
           new Step(
-            title: new Text(messages.gamecreate),
+            title: new Text(messages.create),
             state: _createStepStage,
             isActive: true,
             content: _buildSummary(),

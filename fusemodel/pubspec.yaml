@@ -5,7 +5,7 @@ author: David Bennett <pinkfishfrog@gmail.com>
 homepage: http://www.whelksoft.com
 
 environment:
-  sdk: '>=1.9.0 <2.0.0'
+  sdk: '>=1.9.0 <3.0.0'
 
 dependencies:
   timezone:

@@ -7,9 +7,7 @@ part of firestore_wrapper;
 /// syntax to access a specific field.
 abstract class DocumentSnapshotWrapper {
   DocumentSnapshotWrapper({this.documentID, this.data, this.exists})
-      : assert(documentID != null),
-
-        assert(exists != null);
+      : assert(exists != null);
 
   /// The reference that produced this snapshot
   DocumentReferenceWrapper get reference;

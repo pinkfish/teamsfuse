@@ -192,8 +192,8 @@ class GameCard extends StatelessWidget {
     String url = "https://www.google.com/maps/dir/?api=1";
     url += "&destination=" + Uri.encodeComponent(game.sharedData.place.address);
     if (game.sharedData.place.placeId != null) {
-      url +=
-          "&destionation_place_id=" + Uri.encodeComponent(game.sharedData.place.placeId);
+      url += "&destionation_place_id=" +
+          Uri.encodeComponent(game.sharedData.place.placeId);
     }
     launch(url);
   }
@@ -205,6 +205,7 @@ class GameCard extends StatelessWidget {
     Opponent op;
     if (game.sharedData.type == EventType.Game &&
         game.opponentUids.length > 0 &&
+        team != null &&
         team.opponents.containsKey(game.opponentUids[0])) {
       op = team.opponents[game.opponentUids[0]];
     } else {
@@ -236,7 +237,9 @@ class GameCard extends StatelessWidget {
     String endTimeFormat;
     String tzShortName;
     if (game.sharedData.timezone != local.name) {
-      tzShortName = getLocation(game.sharedData.timezone).timeZone(game.sharedData.time.toInt()).abbr;
+      tzShortName = getLocation(game.sharedData.timezone)
+          .timeZone(game.sharedData.time.toInt())
+          .abbr;
     }
 
     if (game.sharedData.time != game.sharedData.endTime) {
@@ -289,8 +292,7 @@ class GameCard extends StatelessWidget {
       }
       subtitle.add(
         new TextSpan(
-          style: Theme
-              .of(context)
+          style: Theme.of(context)
               .textTheme
               .subhead
               .copyWith(fontWeight: FontWeight.bold),
@@ -302,8 +304,7 @@ class GameCard extends StatelessWidget {
       if (game.sharedData.place.name.isNotEmpty) {
         subtitle.add(
           new TextSpan(
-            style: Theme
-                .of(context)
+            style: Theme.of(context)
                 .textTheme
                 .subhead
                 .copyWith(fontWeight: FontWeight.bold),
@@ -313,8 +314,7 @@ class GameCard extends StatelessWidget {
       } else {
         subtitle.add(
           new TextSpan(
-            style: Theme
-                .of(context)
+            style: Theme.of(context)
                 .textTheme
                 .subhead
                 .copyWith(fontWeight: FontWeight.bold),
@@ -335,7 +335,8 @@ class GameCard extends StatelessWidget {
     Color color = Colors.white;
     String title;
 
-    if (game.sharedData.time < timeNow.millisecondsSinceEpoch && dur.inMinutes < 60) {
+    if (game.sharedData.time < timeNow.millisecondsSinceEpoch &&
+        dur.inMinutes < 60) {
       color = Colors.lightBlueAccent;
     }
 
@@ -348,22 +349,19 @@ class GameCard extends StatelessWidget {
           opName = op.name;
         }
         // Within an hour.
-        title = Messages
-            .of(context)
+        title = Messages.of(context)
             .gametitle(format, endTimeFormat, tzShortName, opName);
 
         break;
 
       case EventType.Event:
-        title = Messages
-            .of(context)
-            .eventtitle(format, game.sharedData.name, endTimeFormat, tzShortName);
+        title = Messages.of(context).eventtitle(
+            format, game.sharedData.name, endTimeFormat, tzShortName);
 
         break;
 
       case EventType.Practice:
-        title = Messages
-            .of(context)
+        title = Messages.of(context)
             .trainingtitle(format, endTimeFormat, tzShortName);
 
         break;

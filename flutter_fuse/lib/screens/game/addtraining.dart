@@ -309,7 +309,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
               ),
             ),
             new Step(
-              title: new Text(messages.gamedetails),
+              title: new Text(messages.details),
               state: detailsStepState,
               isActive: _team != null ? _team?.uid?.isNotEmpty : false,
               content: _buildForm(context),
@@ -321,7 +321,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
               content: _buildRepeat(context),
             ),
             new Step(
-              title: new Text(messages.gamecreate),
+              title: new Text(messages.create),
               state: createStepStage,
               isActive: _trainingFormKey != null &&
                   _trainingFormKey.currentState != null &&

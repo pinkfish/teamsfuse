@@ -102,7 +102,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
         items: <BottomNavigationBarItem>[
           new BottomNavigationBarItem(
             icon: const Icon(Icons.gamepad),
-            title: new Text(Messages.of(context).gamedetails),
+            title: new Text(Messages.of(context).details),
           ),
           new BottomNavigationBarItem(
             icon: const Icon(Icons.people),

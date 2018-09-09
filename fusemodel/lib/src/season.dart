@@ -68,6 +68,7 @@ class Season {
   StreamSubscription<dynamic> inviteSnapshot;
   Stream<List<InviteToTeam>> _stream;
   List<InviteToTeam> _invites;
+  PregenUidRet _pregen;
 
   Season({this.name, this.uid, this.teamUid, this.record, this.players}) {
     if (players == null) {
@@ -134,7 +135,7 @@ class Season {
 
   Future<void> updateFirestore({bool includePlayers = false}) async {
     return UserDatabaseData.instance.updateModel
-        .updateFirestoreSeason(this, includePlayers);
+        .updateFirestoreSeason(this, includePlayers, _pregen);
   }
 
   Future<void> removePlayer(SeasonPlayer player) async {
@@ -175,6 +176,15 @@ class Season {
     inviteSnapshot =
         await UserDatabaseData.instance.updateModel.getInviteForSeasonStream(this);
   }
+
+  /// This will make the uid for this without doing a query to the backend.
+  String precreateUid() {
+    if (_pregen == null) {
+      _pregen = UserDatabaseData.instance.updateModel.precreateUidSeason(this);
+    }
+    return _pregen.uid;
+  }
+
 
   ///
   /// Cleanup all the bits for this class.

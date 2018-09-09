@@ -70,14 +70,17 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   }
 
   /// Notifies of documents at this location
-   @override
+  @override
   Stream<wfs.DocumentSnapshotWrapper> snapshots() {
-    return _doc.snapshots().transform(new DocumentSnapshotStreamTransformer());
+    return _doc
+        .snapshots()
+        .transform(new DocumentSnapshotStreamTransformer(this));
   }
 }
 
 class DocumentSnapshotStreamTransformer extends StreamTransformerBase<
     fs.DocumentSnapshot, wfs.DocumentSnapshotWrapper> {
+  final DocumentReference ref;
   StreamController<wfs.DocumentSnapshotWrapper> _controller;
 
   StreamSubscription<fs.DocumentSnapshot> _subscription;
@@ -85,7 +88,7 @@ class DocumentSnapshotStreamTransformer extends StreamTransformerBase<
   // Original Stream
   Stream<fs.DocumentSnapshot> _stream;
 
-  DocumentSnapshotStreamTransformer() {
+  DocumentSnapshotStreamTransformer(this.ref) {
     _controller = new StreamController<wfs.DocumentSnapshotWrapper>(
         onListen: _onListen,
         onCancel: _onCancel,

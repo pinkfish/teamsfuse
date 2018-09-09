@@ -44,7 +44,6 @@ class Messages {
     );
   }
 
-
   String get unknown {
     return Intl.message(
       'Unknown',
@@ -116,7 +115,7 @@ class Messages {
   }
 
   String get newmail {
-    return Intl.message("New message",
+    return Intl.message("NEW MESSAGE",
         name: "New message in the teamfuse system");
   }
 
@@ -172,7 +171,8 @@ class Messages {
   }
 
   String teamnumbers(int num) {
-    return Intl.message("${num} club teams", desc: 'How many teams in the club');
+    return Intl.message("${num} club teams",
+        desc: 'How many teams in the club');
   }
 
   String get clubdetails {
@@ -822,10 +822,10 @@ class Messages {
         desc: 'Wear uniform in a game desc');
   }
 
-  String get gamedetails {
+  String get details {
     return Intl.message('Details',
-        name: 'Details for the game',
-        desc: 'Details for the game, botton tab bar title');
+        name: 'Details in a stepper for a game or team',
+        desc: 'Details fin a stepper for a game or team');
   }
 
   String get gameavailability {
@@ -853,7 +853,7 @@ class Messages {
   }
 
   String get addevent {
-    return Intl.message('Add event', name: 'Button to add an event to a team');
+    return Intl.message('ADD EVENT', name: 'Button to add an event to a team');
   }
 
   String get deleteinvite {
@@ -878,8 +878,9 @@ class Messages {
     return Intl.message('Delete admin invite');
   }
 
-  String get gamecreate {
-    return Intl.message('Create', name: 'Title for the step to create a game');
+  String get create {
+    return Intl.message('Create',
+        name: 'Title for the step to create a game or team in a stepper');
   }
 
   String confirmdelete(Invite invite) {
@@ -944,7 +945,7 @@ class Messages {
   }
 
   String numberofteamsforplayer(int num) {
-    if (num ==0 ) {
+    if (num == 0) {
       return Intl.message("No teams");
     }
     if (num > 1) {
@@ -1164,8 +1165,8 @@ class Messages {
   }
 
   String fixscore(GameLog log) {
-    return Intl
-        .message("Fix score: ${log.score.ptsFor} - ${log.score.ptsAgainst}");
+    return Intl.message(
+        "Fix score: ${log.score.ptsFor} - ${log.score.ptsAgainst}");
   }
 
   String periodname(GamePeriod period) {
@@ -1599,6 +1600,12 @@ class Messages {
         desc: 'Title in the bottom navigation tab for players');
   }
 
+  String get player {
+    return Intl.message('Player',
+        desc: 'Title in team stepper to select a player');
+  }
+
+
   String playerinvitedesc(String name) {
     return Intl.message(
         'This will follow $name and allow you to see which games they are in and ' +
@@ -1672,7 +1679,8 @@ class MessagesDelegate extends LocalizationsDelegate<Messages> {
   const MessagesDelegate();
 
   @override
-  bool isSupported(Locale locale) => <String>['en', 'es'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      <String>['en', 'es'].contains(locale.languageCode);
 
   @override
   Future<Messages> load(Locale locale) => Messages.load(locale);

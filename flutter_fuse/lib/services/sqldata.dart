@@ -12,6 +12,7 @@ class SqlData implements PersistenData {
   String _path;
   Completer<bool> _completer = new Completer<bool>();
   Future<bool> _initialized;
+  bool _recreating = false;
 
   static const String _dbName = "teamfuse.db";
 
@@ -116,12 +117,20 @@ class SqlData implements PersistenData {
 
   // Close the database, delete everything and then reopen it.
   @override
-  Future<void> dropDatabase() async {
-    _completer = new Completer<bool>();
-    _initialized = _completer.future;
-    await _database.close();
-    await deleteDatabase(_path);
-    await initDatabase();
+  Future<void> recreateDatabase() async {
+    if (_recreating) {
+      return;
+    }
+    _recreating = true;
+    try {
+      _completer = new Completer<bool>();
+      _initialized = _completer.future;
+      await _database.close();
+      await deleteDatabase(_path);
+      await initDatabase();
+    } finally {
+      _recreating = false;
+    }
   }
 
   // Gets all the data out of the json table.

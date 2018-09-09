@@ -13,6 +13,7 @@ import 'package:flutter_fuse/services/appconfiguration.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:timezone/timezone.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/foundation.dart';
 import 'dart:typed_data';
 
 void main() async {
@@ -30,8 +31,7 @@ void main() async {
       print('loaded data');
       return data;
     }),
-    FlutterNativeTimezone
-        .getLocalTimezone()
+    FlutterNativeTimezone.getLocalTimezone()
         .then<String>((String str) => currentTimeZone = str)
   ]);
 
@@ -71,7 +71,12 @@ void main() async {
   // Wait till the user has loaded from firebase.
   UserData data = await UserDatabaseData.instance.userAuth.currentUser();
 
+  // License for the freepik picture.
+  LicenseRegistry.addLicense(() async* {
+    yield const LicenseEntryWithLineBreaks(
+        null, "Designed by FreePik\nwww.freepik.com ");
+  });
   trace.stop();
- 
+
   new Routes(data);
 }
