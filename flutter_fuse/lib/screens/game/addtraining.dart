@@ -69,11 +69,14 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     _initGame.seriesId = seriesId;
     _initGame.updateFirestore(false);
     await Future.forEach(_repeatDates, (TZDateTime time) async {
-      print('Saving for $time');
-      Game newGame = new Game.copy(_initGame);
-      newGame.uid = null;
-      newGame.sharedData.time = time.millisecondsSinceEpoch;
-      return newGame.updateFirestore(false);
+      // Only save times that are not the same as the initial setup.
+      if (_initGame.sharedData.time != time.millisecondsSinceEpoch) {
+        print('Saving for $time');
+        Game newGame = new Game.copy(_initGame);
+        newGame.uid = null;
+        newGame.sharedData.time = time.millisecondsSinceEpoch;
+        return newGame.updateFirestore(false);
+      }
     });
     return true;
   }

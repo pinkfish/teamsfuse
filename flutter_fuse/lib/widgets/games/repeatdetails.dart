@@ -13,7 +13,7 @@ enum RepeatPeriod {
 }
 
 class RepeatData {
-  RepeatPeriod period;
+  RepeatPeriod period = RepeatPeriod.None;
   num repeatInterval = 1;
   bool repeatUntil = false;
   DateTime endRepeat;
@@ -82,6 +82,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
         }
       } else {
         int i = 0;
+        int curSpins = 0;
         TZDateTime end = new TZDateTime(
                 start.location,
                 widget.repeat.endRepeat.year,
@@ -89,7 +90,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                 widget.repeat.endRepeat.day)
             .add(new Duration(days: 1));
         while (
-            startOfWeek.millisecondsSinceEpoch < end.millisecondsSinceEpoch) {
+            startOfWeek.millisecondsSinceEpoch < end.millisecondsSinceEpoch && curSpins < 100) {
           DateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
           for (int dayNum = 0;
               dayNum < widget.repeat.dayRepeats.length;
@@ -100,6 +101,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                 newDates.add(newTime);
               }
             }
+            curSpins++;
           }
         }
       }

@@ -100,6 +100,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
       (int i) => new GlobalKey(),
     );
 
+ 
     for (int i = 0; i < widget.steps.length; i += 1) {
       _oldStates[i] = widget.steps[i].state;
     }
@@ -110,8 +111,15 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
     super.didUpdateWidget(oldWidget);
     assert(widget.steps.length == oldWidget.steps.length);
 
-    for (int i = 0; i < oldWidget.steps.length; i += 1)
+    for (int i = 0; i < oldWidget.steps.length; i += 1) {
       _oldStates[i] = oldWidget.steps[i].state;
+    }
+
+    if (oldWidget.currentStep != widget.currentStep) {
+      // Make sure we scroll the list view to make this step
+      // visible.
+
+    }
   }
 
   bool _isFirst(int index) {
@@ -368,18 +376,20 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
   Widget _buildVerticalHeader(int index) {
     return new Container(
         margin: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: new Row(children: <Widget>[
-          new Column(children: <Widget>[
-            // Line parts are always added in order for the ink splash to
-            // flood the tips of the connector lines.
-            _buildLine(!_isFirst(index)),
-            _buildIcon(index),
-            _buildLine(!_isLast(index)),
-          ]),
-          new Container(
-              margin: const EdgeInsetsDirectional.only(start: 12.0),
-              child: _buildHeaderText(index))
-        ]));
+        child: new SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: new Row(children: <Widget>[
+              new Column(children: <Widget>[
+                // Line parts are always added in order for the ink splash to
+                // flood the tips of the connector lines.
+                _buildLine(!_isFirst(index)),
+                _buildIcon(index),
+                _buildLine(!_isLast(index)),
+              ]),
+              new Container(
+                  margin: const EdgeInsetsDirectional.only(start: 12.0),
+                  child: _buildHeaderText(index))
+            ])));
   }
 
   Widget _buildVerticalBody(int index) {
@@ -492,13 +502,13 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
 
       if (!_isLast(i)) {
         children.add(
-          new Expanded(
-            child: new Container(
+          /*new Expanded(
+            child: */new Container(
               margin: const EdgeInsets.symmetric(horizontal: 8.0),
               height: 1.0,
               color: Colors.grey.shade400,
             ),
-          ),
+          //),
         );
       }
     }
@@ -508,16 +518,18 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
         new Material(
           elevation: 2.0,
           child: new Container(
+            height: 72.0,
             margin: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: new SingleChildScrollView(
-              child: new Row(
-                children: children,
-              ),
+            child: new ListView(
+              scrollDirection: Axis.horizontal,
+              children: children,
             ),
           ),
         ),
         new Expanded(
-          child: new ListView(
+          child: new Scrollbar(
+            child:new ListView(
+
             padding: const EdgeInsets.all(24.0),
             children: <Widget>[
               new AnimatedSize(
@@ -528,7 +540,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
               ),
             ],
           ),
-        ),
+        ),),
         _buildVerticalControls(),
       ],
     );

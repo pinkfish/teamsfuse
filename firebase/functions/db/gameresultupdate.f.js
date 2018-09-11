@@ -15,10 +15,11 @@ exports = module.exports = functions.firestore.document("/Games/{gameid}")
             : null;
 
         // Created with this, or updates with this result.
-        if (data.result.inProgress === "GameInProgress.Final" &&
+        if (data.result !== null &&
+            (data.result.inProgress === "GameInProgress.Final" &&
             (previousData === null ||
             data.result.inProgress !== previousData.result.inProgress ||
-            data.result.result !== previousData.result.result)) {
+            data.result.result !== previousData.result.result))) {
             console.log('Updating ' + data.teamUid);
             var bits = [];
             bits.push(db.collection('Games')

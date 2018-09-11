@@ -5,8 +5,7 @@ import 'package:flutter_fuse/widgets/util/inputdropdown.dart';
 class DateTimeFormField extends FormField<DateTime> {
   DateTimeFormField(
       {@required DateTime initialValue,
-        Key key,
-
+      Key key,
       InputDecoration decoration: const InputDecoration(),
       ValueChanged<DateTime> onFieldSubmitted,
       ValueChanged<Duration> onFieldChanged,
@@ -39,10 +38,9 @@ class DateTimeFormField extends FormField<DateTime> {
                   child: new InputDropdown(
                     decoration: effectiveDecoration,
                     errorText: field.errorText,
-                    valueText: MaterialLocalizations
-                        .of(field.context)
+                    valueText: MaterialLocalizations.of(field.context)
                         .formatMediumDate(field.value),
-                    valueStyle: valueStyle,
+                    valueStyle: valueStyle.copyWith(fontSize: 17.0),
                     onPressed: () {
                       field._selectDate(onFieldSubmitted, onFieldChanged);
                     },
@@ -53,8 +51,9 @@ class DateTimeFormField extends FormField<DateTime> {
                   flex: 3,
                   child: new InputDropdown(
                     valueText: new TimeOfDay(
-                            hour: field.value.hour, minute: field.value.minute)
-                        .format(field.context),
+                      hour: field.value.hour,
+                      minute: field.value.minute,
+                    ).format(field.context),
                     decoration: new InputDecoration(),
                     valueStyle: valueStyle,
                     onPressed: () {
@@ -68,8 +67,7 @@ class DateTimeFormField extends FormField<DateTime> {
                   child: new InputDropdown(
                     decoration: effectiveDecoration,
                     errorText: field.errorText,
-                    valueText: MaterialLocalizations
-                        .of(field.context)
+                    valueText: MaterialLocalizations.of(field.context)
                         .formatMediumDate(field.value),
                     valueStyle: valueStyle,
                     onPressed: () {
@@ -109,8 +107,8 @@ class DateTimeFormField extends FormField<DateTime> {
 class DateTimeFormFieldState extends FormFieldState<DateTime> {
   @override
   DateTimeFormField get widget {
-     DateTimeFormField val = super.widget;
-     return val;
+    DateTimeFormField val = super.widget;
+    return val;
   }
 
   void updateValue(DateTime val) {
@@ -128,8 +126,8 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
         (picked.day != value.day ||
             picked.month != value.month ||
             picked.year != value.year)) {
-      DateTime newTime = new DateTime(picked.year,
-          picked.month, picked.day, value.hour, value.minute);
+      DateTime newTime = new DateTime(
+          picked.year, picked.month, picked.day, value.hour, value.minute);
       Duration diff = value.difference(newTime);
 
       didChange(newTime);
@@ -150,8 +148,8 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
     );
     if (picked != null &&
         (picked.minute != value.minute || picked.hour != value.hour)) {
-      DateTime newTime = new DateTime(value.year,
-          value.month, value.day, picked.hour, picked.minute);
+      DateTime newTime = new DateTime(
+          value.year, value.month, value.day, picked.hour, picked.minute);
       Duration diff = value.difference(newTime);
       didChange(newTime);
       if (onFieldSubmitted != null) {

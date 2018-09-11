@@ -21,35 +21,35 @@ exports = module.exports =
             .where("arrivalTime", "<", now.valueOf())
             .get()
             .then(snapshot => {
-                var promiseSeasons = [snapshot.docs];
+                var promiseSeasons = [];
+                var sharedGames = [];
                 for (var index in snapshot.docs) {
                     if (snapshot.docs.hasOwnProperty(index)) {
                         var doc = snapshot.docs[index];
                         console.log('Processing game ' + doc.id);
                         if (doc.data().notifiedHour) {
                             console.log('Already notified about ' + doc.id);
+                            sharedGame.push(null);
                             continue;
                         }
                         // Get the shared data for the game too.
                         var sharedGame = db.collection("GamesShared")
                                     .doc(doc.data().sharedDataUid)
                                     .get();
-                        promiseSeasons.push(index);
-                        promiseSeasons.push(sharedGame);
+                        sharedGames.push(Promise.all([doc, sharedGame]));
                     }
                 }
-                return Promise.all(promiseSeasons);
+                return Promise.all(sharedGames);
             }).then(results => {
-                var games = results[0];
-                var promiseSeasons = [games];
+                var promiseSeasons = [];
                 for (var index in results) {
-                    if (results.hasOwnProperty(index) && index > 1 && index % 2 === 0) {
-                        var gameIndex = results[index];
-                        var doc = games[gameIndex];
-                        var sharedGame = results[index+1];
-                        console.log('Games index ' + gameIndex + ' ' + index);
-                        console.log(games);
-                        console.log(results[index + 1]);
+                    if (results.hasOwnProperty(index) && sharedGames[index] !== null) {
+                        var doc = games[index][0];
+                        var sharedGame = games[index][1];
+                        console.log('Games index ' + index);
+                        console.log(games[index]);
+                        console.log(sharedGame);
+                        console.log(doc);
 
                         // Send notification to users, get all the players.
                         // Get all the players users.
@@ -104,14 +104,16 @@ exports = module.exports =
                             console.log(payload);
                             promiseSeasons.push(notifyforgame.notifyForGame(doc, payload, null));
                         }
+                        promiseSeasons.push(doc);
+                    } else {
+                        console.log('Already notified for index ' + index);
                     }
                 }
                 return Promise.all(promiseSeasons);
             }).then(results => {
-                var games = results[0];
                 var allRets = [];
-                for (gameId in games) {
-                    if (games.hasOwnProperty(gameId)) {
+                for (gameId in results) {
+                    if (results.hasOwnProperty(gameId)) {
                         game = games[gameId];
                         // Mark this as notified.
                         allRets.push(db.collection("Games").doc(game.id).update({notifiedHour: true}));
