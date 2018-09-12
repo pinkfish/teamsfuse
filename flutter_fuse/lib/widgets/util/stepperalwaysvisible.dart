@@ -100,7 +100,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
       (int i) => new GlobalKey(),
     );
 
- 
+
     for (int i = 0; i < widget.steps.length; i += 1) {
       _oldStates[i] = widget.steps[i].state;
     }
