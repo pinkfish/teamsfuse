@@ -1,8 +1,10 @@
 'use strict';
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
+const settings = {timestampsInSnapshots: true};
 
 admin.initializeApp();
+admin.firestore().settings(settings);
 
 const glob = require("glob");
 const camelCase = require("camelcase");

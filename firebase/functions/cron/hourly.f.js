@@ -43,11 +43,11 @@ exports = module.exports =
             }).then(results => {
                 var promiseSeasons = [];
                 for (var index in results) {
-                    if (results.hasOwnProperty(index) && sharedGames[index] !== null) {
-                        var doc = games[index][0];
-                        var sharedGame = games[index][1];
+                    if (results.hasOwnProperty(index) && results[index] !== null) {
+                        var doc = results[index][0];
+                        var sharedGame = results[index][1];
                         console.log('Games index ' + index);
-                        console.log(games[index]);
+                        console.log(results[index]);
                         console.log(sharedGame);
                         console.log(doc);
 
@@ -90,7 +90,7 @@ exports = module.exports =
                             p: sharedGame.data().place.placeId,
                         }
                         notification['clickAction'] = 'GAME'
-                        notification['tag'] = inputData.after.id
+                        notification['tag'] = doc.id
                         payload['notification'] = notification;
 
                         if (sharedGame.data().place !== null) {
