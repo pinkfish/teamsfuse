@@ -10,7 +10,7 @@ var db = admin.firestore();
 // This notifies everyone following the game of the specific payload.
 // The game here is a DocumentSnapshot from firebase.
 // It returns a promise with the evaluation chain.
-exports.notifyForGame = (game, payload, excludeUser, onlyGames) => {
+exports.notifyForGame = (game, payload, excludeUser, onlyGames, sharedGameData) => {
     console.log('Processing game ' + game.id);
     // Send notification to users, get all the players.
     // Get all the players users.
@@ -21,8 +21,7 @@ exports.notifyForGame = (game, payload, excludeUser, onlyGames) => {
     const teamRef = db.collection("Teams")
         .doc(game.data().teamUid);
     const sharedGameRef = db.collection("GamesShared")
-        .doc(game.data().sharedDataUid)
-        .get();
+        .doc(game.data().sharedDataUid);
 
     var opponent = null;
     if (payload.notification && payload.notification.title) {
@@ -43,7 +42,10 @@ exports.notifyForGame = (game, payload, excludeUser, onlyGames) => {
         "click_action": "FLUTTER_NOTIFICATION_CLICK"
     }
 
-    return Promise.all([teamRef.get(), opponent, seasonRef, sharedGameRef])
+    // If we already have a shared game, don't reload it.
+    var sharedGame = sharedGameData === null ? sharedGameRef.get() : sharedGameData;
+
+    return Promise.all([teamRef.get(), opponent, seasonRef, sharedGame])
         .then(data => {
             var team = data[0];
             var opponent = data[1]

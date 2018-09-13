@@ -55,17 +55,17 @@ exports = module.exports =
                         // Get all the players users.
                         // Send notifications.
                         var notification = {}
-                        if (doc.data().type === 'EventType.Practice') {
+                        if (sharedGame.data().type === 'EventType.Practice') {
                             notification = {
                                 title: 'Practice for {{team.name}}',
                                 body: 'Starting at {{arrivalTime}} to {{endTime}}',
                             }
-                        } else if (doc.data().type === 'EventType.Game') {
+                        } else if (sharedGame.data().type === 'EventType.Game') {
                             notification = {
                                 title: 'Game vs {{opponent.name}} for {{team.name}}',
                                 body: 'Arrive by {{arrivalTime}}, game at {{gameTime}}',
                             }
-                        } else if (doc.data().type === 'EventType.Event') {
+                        } else if (sharedGame.data().type === 'EventType.Event') {
                             notification = {
                                 title: 'Event for {{team.name}}',
                                 body: 'Arrive by {{arrivalTime}}',
@@ -102,7 +102,9 @@ exports = module.exports =
 
                         if (payload) {
                             console.log(payload);
-                            promiseSeasons.push(notifyforgame.notifyForGame(doc, payload, null));
+                            promiseSeasons.push(
+                                notifyforgame.notifyForGame(
+                                    doc, payload, null, false, sharedGame));
                         }
                         promiseSeasons.push(doc);
                     } else {
@@ -112,7 +114,7 @@ exports = module.exports =
                 return Promise.all(promiseSeasons);
             }).then(results => {
                 var allRets = [];
-                for (gameId in results) {
+                for (var gameId in results) {
                     if (results.hasOwnProperty(gameId)) {
                         game = games[gameId];
                         // Mark this as notified.
