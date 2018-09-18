@@ -11,4 +11,5 @@ export 'databaseupdatemodel.dart';
 export 'club.dart';
 export 'leagueortournament.dart';
 export 'leagueortournmentteam.dart';
+export 'leagueortournamentdivision.dart';
 export 'division.dart';

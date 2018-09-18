@@ -6,6 +6,49 @@ import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
 
 // Shows the current invites pending for this user.
 class InviteListScreen extends StatefulWidget {
+  static void deletePressed(BuildContext context, Invite invite) async {
+    Messages mess = Messages.of(context);
+
+    bool result = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text(mess.deleteinvite),
+            content: new Scrollbar(
+              child: new SingleChildScrollView(
+                child: new ListBody(
+                  children: <Widget>[
+                    new Text(mess.confirmdelete(invite)),
+                  ],
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child:
+                    new Text(MaterialLocalizations.of(context).okButtonLabel),
+                onPressed: () {
+                  // Do the delete.
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              new FlatButton(
+                child: new Text(
+                    MaterialLocalizations.of(context).cancelButtonLabel),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+            ],
+          );
+        });
+    if (result) {
+      await invite.firestoreDelete();
+      Navigator.pop(context);
+    }
+  }
+
   @override
   InviteListScreenState createState() {
     return new InviteListScreenState();
@@ -50,8 +93,11 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   void _addInviteAsAdmin(Invite invite) {
-    print('$invite');
     Navigator.pushNamed(context, "AcceptInviteAsAdmin/" + invite.uid);
+  }
+
+  void _addInviteToLeague(Invite invite) {
+    Navigator.pushNamed(context, "AcceptInviteToLeague/" + invite.uid);
   }
 
   void _addInviteToClub(Invite invite) {
@@ -162,6 +208,29 @@ class InviteListScreenState extends State<InviteListScreen> {
     );
   }
 
+  Card _buildInviteToLeague(InviteToLeagueAsAdmin invite) {
+    ThemeData theme = Theme.of(context);
+    return new Card(
+      child: new ListTile(
+        leading: new IconButton(
+          icon: const Icon(Icons.add),
+          color: theme.accentColor,
+          onPressed: () {
+            _addInviteToLeague(invite);
+          },
+        ),
+        title: new Text(invite.leagueName),
+        subtitle: Text(Messages.of(context).leaguetournament),
+        trailing: new IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () {
+            _deleteInvite(invite);
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> invites = <Widget>[];
@@ -188,6 +257,9 @@ class InviteListScreenState extends State<InviteListScreen> {
         }
         if (invite is InviteToClub) {
           invites.add(_buildInviteToClub(invite));
+        }
+        if (invite is InviteToLeagueAsAdmin) {
+          invites.add(_buildInviteToLeague(invite));
         }
       });
     }

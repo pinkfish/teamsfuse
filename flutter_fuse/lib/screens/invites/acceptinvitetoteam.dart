@@ -4,6 +4,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
+import 'dialog/deleteinvite.dart';
 
 // Shows the current invites pending for this user.
 class AcceptInviteToTeamScreen extends StatefulWidget {
@@ -34,10 +35,8 @@ class AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   void initState() {
     super.initState();
     // Default to empty.
-    _invite = new InviteToTeam();
+    _invite = new InviteToTeam(teamName: '', seasonName: '');
     _invite.playerName = <String>[];
-    _invite.teamName = '';
-    _invite.seasonName = '';
     _checked = new Set<String>();
     _data = <String, String>{};
     if (UserDatabaseData.instance.invites.containsKey(widget._inviteUid)) {
@@ -136,49 +135,6 @@ class AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
             .acceptInvite(inv, playerUid: uid, name: _data[name]);
       });
       await inv.firestoreDelete();
-      Navigator.pop(context);
-    }
-  }
-
-  void _deletePressed() async {
-    Messages mess = Messages.of(context);
-
-    bool result = await showDialog<bool>(
-        context: context,
-        barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text(mess.deleteinvite),
-            content: new Scrollbar(
-              child: new SingleChildScrollView(
-                child: new ListBody(
-                  children: <Widget>[
-                    new Text(mess.confirmdelete(_invite)),
-                  ],
-                ),
-              ),
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                child:
-                    new Text(MaterialLocalizations.of(context).okButtonLabel),
-                onPressed: () {
-                  // Do the delete.
-                  Navigator.of(context).pop(true);
-                },
-              ),
-              new FlatButton(
-                child: new Text(
-                    MaterialLocalizations.of(context).cancelButtonLabel),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              ),
-            ],
-          );
-        });
-    if (result) {
-      await _invite.firestoreDelete();
       Navigator.pop(context);
     }
   }
@@ -304,7 +260,7 @@ class AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
             textColor: Colors.white,
           ),
           new FlatButton(
-            onPressed: _deletePressed,
+            onPressed: () => showDeleteInvite(context, _invite),
             child: new Text(messages.deleteinvite),
           ),
         ],
@@ -321,8 +277,7 @@ class AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
             },
             child: new Text(
               Messages.of(context).savebuttontext,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .subhead
                   .copyWith(color: Colors.white),

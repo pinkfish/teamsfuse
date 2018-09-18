@@ -15,3 +15,6 @@ export 'src/persistendata.dart';
 export 'src/analytics.dart';
 export 'src/fusederrordetails.dart';
 export 'src/club.dart';
+export 'src/leagueortournamentdivision.dart';
+export 'src/leagueortournmentteam.dart';
+import 'src/leagueortournament.dart';

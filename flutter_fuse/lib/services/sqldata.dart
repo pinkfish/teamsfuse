@@ -27,7 +27,8 @@ class SqlData implements PersistenData {
     PersistenData.invitesTable,
     PersistenData.profileTable,
     PersistenData.messagesTable,
-    PersistenData.clubsTable
+    PersistenData.clubsTable,
+    PersistenData.leagueOrTournamentTable,
   ];
   static const List<String> _teamSpecificTables = const <String>[
     PersistenData.opponentsTable,
@@ -46,26 +47,13 @@ class SqlData implements PersistenData {
   }
 
   Future<void> initDatabase() async {
+    print('_initDatabase()');
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     _path = join(documentsDirectory.path, _dbName);
-    _database = await openDatabase(_path, version: 5,
+    _database = await openDatabase(_path, version: 6,
         onUpgrade: (Database db, int oldVersion, int newVersion) async {
-      if (newVersion == 3) {
-        await db.execute("CREATE TABLE IF NOT EXISTS " +
-            PersistenData.clubsTable +
-            " (" +
-            indexColumn +
-            " text PRIMARY KEY, " +
-            dataColumn +
-            " text NOT NULL);");
-      } else if (newVersion == 4 && oldVersion <= 3) {
-        await db.execute("CREATE TABLE IF NOT EXISTS " +
-            PersistenData.clubsTable +
-            " (" +
-            indexColumn +
-            " text PRIMARY KEY, " +
-            dataColumn +
-            " text NOT NULL);");
+      print('Upgrading db $oldVersion $newVersion');
+      if (newVersion == 5) {
         await db.execute("DROP TABLE " + PersistenData.gameTable);
         return db.execute("CREATE TABLE IF NOT EXISTS " +
             PersistenData.gameTable +
@@ -76,10 +64,10 @@ class SqlData implements PersistenData {
             " text NOT NULL, " +
             dataColumn +
             " text NOT NULL);");
-      } else if (newVersion == 5) {
-        await db.execute("DROP TABLE " + PersistenData.gameTable);
+      } else if (newVersion == 6) {
+        print('Making league table');
         return db.execute("CREATE TABLE IF NOT EXISTS " +
-            PersistenData.gameTable +
+            PersistenData.leagueOrTournamentTable +
             "(" +
             indexColumn +
             " text PRIMARY KEY, " +
@@ -88,6 +76,7 @@ class SqlData implements PersistenData {
             dataColumn +
             " text NOT NULL);");
       }
+      print('Finish upgrade');
     }, onCreate: (Database db, int version) async {
       await Future.forEach(_tables, (String table) async {
         print('Made db $table');

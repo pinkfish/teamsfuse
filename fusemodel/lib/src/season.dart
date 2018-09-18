@@ -5,6 +5,7 @@ import 'winrecord.dart';
 import 'userdatabasedata.dart';
 import 'databaseupdatemodel.dart';
 import 'team.dart';
+import 'leagueortournmentteam.dart';
 
 ///
 /// What role the user has in the team.
@@ -21,11 +22,7 @@ class SeasonPlayer {
   String jerseyNumber;
   String position;
 
-  SeasonPlayer(
-      {this.playerUid,
-      this.role,
-      this.jerseyNumber,
-      this.position});
+  SeasonPlayer({this.playerUid, this.role, this.jerseyNumber, this.position});
 
   ///
   /// Make a copy of the season player.
@@ -70,6 +67,12 @@ class Season {
   List<InviteToTeam> _invites;
   PregenUidRet _pregen;
 
+  LeagueOrTournmentTeamSubscription _teamsSub;
+  Iterable<LeagueOrTournamentTeam> _cachedLeagueTeams;
+  Stream<Iterable<LeagueOrTournamentTeam>> _teamsStream;
+  StreamController<Iterable<LeagueOrTournamentTeam>> _teamsController =
+      new StreamController<Iterable<LeagueOrTournamentTeam>>();
+
   Season({this.name, this.uid, this.teamUid, this.record, this.players}) {
     if (players == null) {
       players = new List<SeasonPlayer>();
@@ -98,8 +101,7 @@ class Season {
   void fromJSON(String uid, Map<String, dynamic> data) {
     this.uid = uid;
     name = getString(data[NAME]);
-    record = new WinRecord();
-    record.fromJSON(data[RECORD] as Map<dynamic, dynamic>);
+    record = new WinRecord.fromJSON(data[RECORD] as Map<dynamic, dynamic>);
     this.teamUid = teamUid;
     this.record = record;
     this.teamUid = data[TEAMUID];
@@ -139,7 +141,8 @@ class Season {
   }
 
   Future<void> removePlayer(SeasonPlayer player) async {
-    return UserDatabaseData.instance.updateModel.removePlayerFromSeason(this, player);
+    return UserDatabaseData.instance.updateModel
+        .removePlayerFromSeason(this, player);
   }
 
   Future<void> updateRoleInTeam(SeasonPlayer player, RoleInTeam role) async {
@@ -173,8 +176,8 @@ class Season {
   }
 
   Future<void> _doInviteQuery() async {
-    inviteSnapshot =
-        await UserDatabaseData.instance.updateModel.getInviteForSeasonStream(this);
+    inviteSnapshot = await UserDatabaseData.instance.updateModel
+        .getInviteForSeasonStream(this);
   }
 
   /// This will make the uid for this without doing a query to the backend.
@@ -185,6 +188,22 @@ class Season {
     return _pregen.uid;
   }
 
+  Iterable<LeagueOrTournamentTeam> get cacheLeagueOrTournamentTeams =>
+      _cachedLeagueTeams;
+
+  /// Get the teams for this league.
+  Stream<Iterable<LeagueOrTournamentTeam>> get leagueOrTournamentTeams {
+    if (_teamsSub == null) {
+      _teamsSub = UserDatabaseData.instance.updateModel
+          .getLeagueTeamsForTeamSeason(uid);
+      _teamsSub.stream.listen((Iterable<LeagueOrTournamentTeam> teams) {
+        _cachedLeagueTeams = teams;
+        _teamsController.add(_cachedLeagueTeams);
+      });
+      _teamsStream = _teamsController.stream.asBroadcastStream();
+    }
+    return _teamsStream;
+  }
 
   ///
   /// Cleanup all the bits for this class.
@@ -198,6 +217,11 @@ class Season {
     }
     inviteSnapshot?.cancel();
     inviteSnapshot = null;
+
+    _teamsSub?.dispose();
+    _teamsSub = null;
+    _teamsController.close();
+    _teamsController = null;
   }
 
   ///

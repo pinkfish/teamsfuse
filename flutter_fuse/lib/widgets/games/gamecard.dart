@@ -366,33 +366,34 @@ class GameCard extends StatelessWidget {
 
         break;
     }
+    ListTile tile = new ListTile(
+      onTap: () {
+        Navigator.pushNamed(context, "/Game/" + game.uid);
+      },
+      leading: new TeamImage(
+        team: UserDatabaseData.instance.teams[game.teamUid],
+        width: 50.0,
+        height: 50.0,
+      ),
+      title: new Text(
+        title,
+        overflow: TextOverflow.clip,
+        style: new TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: new RichText(
+        text: new TextSpan(
+          style: Theme.of(context).textTheme.subhead,
+          children: subtitle,
+        ),
+      ),
+      trailing: _buildTrailing(context, season, players),
+    );
     if (buttons.length > 0) {
       return new Card(
         color: color,
         child: new Column(
           children: <Widget>[
-            new ListTile(
-              onTap: () {
-                Navigator.pushNamed(context, "/Game/" + game.uid);
-              },
-              leading: new TeamImage(
-                team: UserDatabaseData.instance.teams[game.teamUid],
-                width: 50.0,
-                height: 50.0,
-              ),
-              title: new Text(
-                title,
-                overflow: TextOverflow.clip,
-                style: new TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: new RichText(
-                text: new TextSpan(
-                  style: Theme.of(context).textTheme.subhead,
-                  children: subtitle,
-                ),
-              ),
-              trailing: _buildTrailing(context, season, players),
-            ),
+            tile,
             new ButtonTheme.bar(
               // make buttons use the appropriate styles for cards
               child: new ButtonBar(
@@ -405,28 +406,7 @@ class GameCard extends StatelessWidget {
     } else {
       return new Card(
         color: color,
-        child: new ListTile(
-          onTap: () {
-            Navigator.pushNamed(context, "/Game/" + game.uid);
-          },
-          leading: new TeamImage(
-            team: UserDatabaseData.instance.teams[game.teamUid],
-            height: 50.0,
-            width: 50.0,
-          ),
-          title: new Text(
-            title,
-            overflow: TextOverflow.clip,
-            style: new TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: new RichText(
-            text: new TextSpan(
-              style: Theme.of(context).textTheme.subhead,
-              children: subtitle,
-            ),
-          ),
-          trailing: _buildTrailing(context, season, players),
-        ),
+        child: tile,
       );
     }
   }

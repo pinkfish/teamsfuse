@@ -92,6 +92,14 @@ class FusedDrawerContent extends StatelessWidget {
       new Divider(),
       new ListTile(
         leading: const Icon(Icons.people_outline),
+        title: new Text(Messages.of(context).leaguetournament),
+        onTap: () {
+          Navigator.popAndPushNamed(context, "/League/Home");
+        },
+      ),
+      new Divider(),
+      new ListTile(
+        leading: const Icon(Icons.people_outline),
         title: new Text(Messages.of(context).players),
         onTap: () {
           Navigator.popAndPushNamed(context, "/Players");

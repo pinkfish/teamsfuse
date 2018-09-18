@@ -38,7 +38,13 @@ import 'package:flutter_fuse/screens/login/loginform.dart';
 import 'package:flutter_fuse/screens/login/signup.dart';
 import 'package:flutter_fuse/screens/login/forgotpassword.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
+import 'package:flutter_fuse/screens/league/league.dart';
+import 'package:flutter_fuse/screens/league/leaguedivison.dart';
+import 'package:flutter_fuse/screens/league/leagueteam.dart';
+import 'package:flutter_fuse/screens/league/addleague.dart';
+import 'package:flutter_fuse/screens/league/home.dart';
 import 'analytics.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AppRouter {
   static Router myRouter;
@@ -218,6 +224,38 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AddClubScreen()));
+
+    // League screens.
+    router.define('/League/Home',
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new LeagueHomeScreen()));
+    router.define('/League/AddLeague',
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new AddLeagueScreen(LeagueOrTournamentType.League)));
+    router.define('/League/AddTournament',
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new AddLeagueScreen(LeagueOrTournamentType.League)));
+    router.define("/League/Main/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new LeagueScreen(vals["id"][0].toString())));
+    router.define("/League/Divison/:id/:season/:divison",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new LeagueDivisonScreen(
+                  vals["id"][0].toString(),
+                  vals["season"][0].toString(),
+                  vals["divison"][0].toString(),
+                )));
+    router.define("/League/Team/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new LeagueTeamScreen(
+                  vals["id"][0].toString(),
+                )));
 
     // The login router.
     router.define("/Login/Home",

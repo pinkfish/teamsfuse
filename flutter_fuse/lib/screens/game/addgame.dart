@@ -153,8 +153,8 @@ class AddGameScreenState extends State<AddGameScreen> {
   void _teamChanged(Team team) {
     print('Team $team');
     //_gameFormKey.currentState.setTeam(str);
-    GameSharedData sharedGameData = new GameSharedData(type: EventType.Game);
-    _initGame = new Game(sharedData: sharedGameData);
+    GameSharedData sharedGameData = new GameSharedData(team.uid, null, type: EventType.Game);
+    _initGame = new Game(team.uid, null, sharedData: sharedGameData);
     DateTime start = new DateTime.now().add(const Duration(days: 1));
     _initGame.sharedData.time = start.millisecondsSinceEpoch;
     _initGame.arriveTime = start

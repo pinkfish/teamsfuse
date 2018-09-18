@@ -183,8 +183,8 @@ class AddEventScreenState extends State<AddEventScreen> {
   }
 
   void newGame() {
-    GameSharedData sharedGameData = new GameSharedData(type: EventType.Event);
-    _initGame = new Game(sharedData: sharedGameData);
+    GameSharedData sharedGameData = new GameSharedData(_team.uid, null, type: EventType.Event);
+    _initGame = new Game(_team.uid, null, sharedData: sharedGameData);
     _initGame.opponentUids = <String>[];
     _initGame.homegame = false;
     _initGame.uniform = '';

@@ -3,6 +3,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/form/relationshipformfield.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
+import 'dialog/deleteinvite.dart';
 
 // Shows the current invites pending for this user.
 class AcceptInviteToPlayerScreen extends StatefulWidget {
@@ -61,8 +62,7 @@ class AcceptInviteToPlayerScreenState
             },
             child: new Text(
               messages.savebuttontext,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .subhead
                   .copyWith(color: Colors.white),
@@ -99,9 +99,17 @@ class AcceptInviteToPlayerScreenState
                   ),
                   new Container(
                     padding: new EdgeInsets.only(top: 20.0),
-                    child: new RaisedButton(
-                      onPressed: _savePressed,
-                      child: new Text(messages.addplayer),
+                    child: ButtonBar(
+                      children: <Widget>[
+                        new RaisedButton(
+                          onPressed: _savePressed,
+                          child: new Text(messages.addplayer),
+                        ),
+                        new FlatButton(
+                          onPressed: () => showDeleteInvite(context, _invite),
+                          child: new Text(messages.deleteinvite),
+                        ),
+                      ],
                     ),
                   ),
                 ],

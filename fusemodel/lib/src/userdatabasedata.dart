@@ -21,12 +21,14 @@ class UserDatabaseData {
   Map<String, Invite> _invites = {};
   Map<String, Message> _messages = {};
   Map<String, Club> _clubs = {};
+  Map<String, LeagueOrTournament> _leagueOrTournaments = {};
 
   Stream<UpdateReason> teamStream;
   Stream<UpdateReason> playerStream;
   Stream<UpdateReason> inviteStream;
   Stream<UpdateReason> messagesStream;
   Stream<UpdateReason> clubStream;
+  Stream<UpdateReason> leagueOrTournamentStream;
 
   // Current loading status.
   bool _completedLoading = false;
@@ -39,6 +41,7 @@ class UserDatabaseData {
   bool _loadedClubs = false;
   bool _createdMePlayer = false;
   bool _loadedFromSql = false;
+  bool _loadedLeagueOrTournment = false;
 
   Map<String, Player> get players => _players;
   Map<String, Team> get teams => _teams;
@@ -46,6 +49,8 @@ class UserDatabaseData {
   Map<String, Invite> get invites => _invites;
   Map<String, Message> get messages => _messages;
   Map<String, Club> get clubs => _clubs;
+  Map<String, LeagueOrTournament> get leagueOrTournments =>
+      _leagueOrTournaments;
   int unreadMessageCount = 0;
 
   bool get loadedDatabase => _completedLoading;
@@ -57,12 +62,14 @@ class UserDatabaseData {
   StreamController<UpdateReason> _inviteController;
   StreamController<UpdateReason> _messageController;
   StreamController<UpdateReason> _clubController;
+  StreamController<UpdateReason> _leagueOrTournamentController;
 
   // From firebase.
   StreamSubscription<FirestoreChangedData> _playerSnapshot;
   StreamSubscription<FirestoreChangedData> _inviteSnapshot;
   StreamSubscription<FirestoreChangedData> _messageSnapshot;
   StreamSubscription<FirestoreChangedData> _readMessageSnapshot;
+  StreamSubscription<FirestoreChangedData> _leagueOrTournamentSnapshot;
   StreamSubscription<FirestoreChangedData> _clubSnapshot;
   StreamSubscription<Iterable<Game>> _gameSubecription;
   InitialSubscription _playersInitialData;
@@ -70,6 +77,7 @@ class UserDatabaseData {
   InitialSubscription _messageInitialData;
   InitialSubscription _unreadMessageInitialData;
   InitialSubscription _clubInitialData;
+  InitialSubscription _leagueOrTournamentInitialData;
 
   // Game details.
   GameSubscription _basicGames;
@@ -100,6 +108,7 @@ class UserDatabaseData {
   }
 
   void initStuff() {
+    _leagueOrTournamentController = new StreamController<UpdateReason>();
     _teamController = new StreamController<UpdateReason>();
     _playerController = new StreamController<UpdateReason>();
     _inviteController = new StreamController<UpdateReason>();
@@ -110,6 +119,8 @@ class UserDatabaseData {
     inviteStream = _inviteController.stream.asBroadcastStream();
     messagesStream = _messageController.stream.asBroadcastStream();
     clubStream = _clubController.stream.asBroadcastStream();
+    leagueOrTournamentStream =
+        _leagueOrTournamentController.stream.asBroadcastStream();
   }
 
   Player get mePlayer {
@@ -188,6 +199,9 @@ class UserDatabaseData {
     return null;
   }
 
+  ///
+  /// Lookup the club and read from the firebase or the cache.
+  ///
   Future<Club> getClub(String clubUid) async {
     if (clubs.containsKey(clubUid)) {
       return clubs[clubUid];
@@ -195,7 +209,19 @@ class UserDatabaseData {
     return updateModel.getClubData(clubUid);
   }
 
-  // Filter the games down.
+  ///
+  /// Lookup the tournament and read from firebase or from the cache.
+  ///
+  Future<LeagueOrTournament> getLegueOrTournament(String tournmentUid) async {
+    if (leagueOrTournments.containsKey(tournmentUid)) {
+      return leagueOrTournments[tournmentUid];
+    }
+    return updateModel.getLeagueData(tournmentUid);
+  }
+
+  ///
+  /// Filter the games down and return a subscription to the games.
+  ///
   GameSubscription getGames(
       FilterDetails details, DateTime start, DateTime end) {
     // Do the time range with the filter, or if no time range then
@@ -240,6 +266,7 @@ class UserDatabaseData {
         _loadedGames &&
         _loadedInvites &&
         _loadedTeams &&
+        _loadedLeagueOrTournment &&
         _loadedClubs;
     if (_completedLoading) {
       // Stop it and delete it.
@@ -247,7 +274,7 @@ class UserDatabaseData {
       _loadingDataTrace = null;
     }
     print(
-        "loading $_completedLoading $_loadedPlayers $_loadedGames $_loadedInvites $_loadedTeams $_loadedClubs sql $_loadedFromSql");
+        "loading $_completedLoading $_loadedPlayers $_loadedGames $_loadedInvites $_loadedTeams $_loadedClubs $_loadedLeagueOrTournment sql $_loadedFromSql");
   }
 
   void _onPlayerUpdated(List<FirestoreWrappedData> query) {
@@ -524,6 +551,25 @@ class UserDatabaseData {
     _clubController.add(UpdateReason.Update);
   }
 
+  void _onLeagueOrTournamentUpdated(
+      List<FirestoreWrappedData> newList, List<FirestoreWrappedData> removed) {
+    for (FirestoreWrappedData data in newList) {
+      LeagueOrTournament league =
+          new LeagueOrTournament.fromJson(data.id, data.data);
+      if (_leagueOrTournaments.containsKey(data.id)) {
+        _leagueOrTournaments[data.id].updateFrom(league);
+      } else {
+        _leagueOrTournaments[data.id] = league;
+      }
+    }
+    for (FirestoreWrappedData toRemove in removed) {
+      _leagueOrTournaments.remove(toRemove.id);
+    }
+    _loadedLeagueOrTournment = true;
+    _updateLoading();
+    _leagueOrTournamentController.add(UpdateReason.Update);
+  }
+
   void doCacheGames(Iterable<Game> query) {
     for (Game g in query) {
       if (_gamesCache.containsKey(g.uid)) {
@@ -578,6 +624,16 @@ class UserDatabaseData {
     }
   }
 
+  void onTournamentOrLeagueUpdated(FirestoreWrappedData data) {
+    LeagueOrTournament leagueOrTournament =
+        new LeagueOrTournament.fromJson(data.id, data.data);
+    if (_leagueOrTournaments.containsKey(data.id)) {
+      _leagueOrTournaments[data.id].updateFrom(leagueOrTournament);
+    } else {
+      _leagueOrTournaments[data.id] = leagueOrTournament;
+    }
+  }
+
   void _setUid(
       String uid, String email, Future<FusedUserProfile> profile) async {
     print('setUid($uid)');
@@ -623,8 +679,7 @@ class UserDatabaseData {
         sqlTrace.incrementCounter("team");
         teamsTrace.incrementCounter("team");
         Map<String, dynamic> input = data[uid];
-        Team team = new Team();
-        team.fromJSON(uid, input);
+        Team team = new Team.fromJSON(uid, input);
         team.setupSnap();
         // Load opponents.
         newTeams[uid] = team;
@@ -694,8 +749,7 @@ class UserDatabaseData {
       data.forEach((String uid, Map<String, dynamic> input) {
         sqlTrace.incrementCounter("invites");
         invitesTrace.incrementCounter("invites");
-        Invite invite = new Invite();
-        invite.fromJSON(uid, input);
+        Invite invite = Invite.makeInviteFromJSON(uid, input);
         newInvites[uid] = invite;
       });
       _invites = newInvites;
@@ -714,6 +768,23 @@ class UserDatabaseData {
       _messages = newMessages;
       print('End messages ${start.difference(new DateTime.now())}');
       messagesTrace.stop();
+
+      // League or tournament data;
+      TraceProxy leagueTrace = _analytics.newTrace("leagueOrTournamentData");
+      leagueTrace.start();
+      Map<String, Map<String, dynamic>> leagueData = await persistentData
+          .getAllElements(PersistenData.leagueOrTournamentTable);
+      Map<String, LeagueOrTournament> newLeague =
+          new Map<String, LeagueOrTournament>();
+      leagueData.forEach((String uid, Map<String, dynamic> input) {
+        sqlTrace.incrementCounter("league");
+        LeagueOrTournament league = new LeagueOrTournament.fromJson(uid, input);
+        newLeague[uid] = league;
+      });
+      _leagueOrTournaments = newLeague;
+      print(
+          'End LeagueOrTournament ${start.difference(new DateTime.now())} ${_leagueOrTournaments.length}');
+      leagueTrace.stop();
 
       // Setup the team stuff after loading.
       TraceProxy setupSnapTrace = _analytics.newTrace("setupSnaps");
@@ -764,6 +835,17 @@ class UserDatabaseData {
     });
     _clubSnapshot = _clubInitialData.stream.listen((FirestoreChangedData data) {
       _onClubsUpdated(data.newList, data.removed);
+    });
+
+    _leagueOrTournamentInitialData =
+        updateModel.getMainLeagueOrTournaments(userUid);
+    _leagueOrTournamentInitialData.startData
+        .then((List<FirestoreWrappedData> data) {
+      _onLeagueOrTournamentUpdated(data, []);
+    });
+    _leagueOrTournamentSnapshot = _leagueOrTournamentInitialData.stream
+        .listen((FirestoreChangedData data) {
+      _onLeagueOrTournamentUpdated(data.newList, data.removed);
     });
 
     // The uid everything is based off.
@@ -821,6 +903,10 @@ class UserDatabaseData {
     _messageSnapshot = null;
     _readMessageSnapshot?.cancel();
     _readMessageSnapshot = null;
+    _leagueOrTournamentSnapshot?.cancel();
+    _leagueOrTournamentSnapshot = null;
+    _clubSnapshot?.cancel();
+    _clubSnapshot = null;
 
     // Then the data in memory.
     _players.forEach((String key, Player value) {
@@ -840,6 +926,10 @@ class UserDatabaseData {
     }
     _clubs.clear();
     _invites.clear();
+    for (LeagueOrTournament tournament in _leagueOrTournaments.values) {
+      tournament.dispose();
+    }
+    _leagueOrTournaments.clear();
 
     // Everything else.  Bang!
     _createdMePlayer = false;
@@ -853,6 +943,8 @@ class UserDatabaseData {
     _inviteInitialData = null;
     _clubInitialData?.dispose();
     _clubInitialData = null;
+    _leagueOrTournamentInitialData?.dispose();
+    _leagueOrTournamentInitialData = null;
 
     // Assert everything is gone.
     assert(_players.length == 0);
@@ -861,6 +953,7 @@ class UserDatabaseData {
     assert(_gamesCache.length == 0);
     assert(_teams.length == 0);
     assert(_messages.length == 0);
+    assert(_leagueOrTournaments.length == 0);
 
     // Reinitialize stuff so we are ready for the next login.
     _completedLoading = false;
@@ -871,6 +964,7 @@ class UserDatabaseData {
     _loadedReadMessages = false;
     _loadedUnreadMessages = false;
     _loadedClubs = false;
+    _loadedLeagueOrTournment = false;
     _createdMePlayer = false;
     _loadedFromSql = false;
     unreadMessageCount = 0;

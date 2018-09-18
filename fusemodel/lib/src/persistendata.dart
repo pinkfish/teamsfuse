@@ -11,6 +11,7 @@ abstract class PersistenData {
   static const String messagesTable = "Messages";
   static const String clubsTable = "Clubs";
   static const String sharedGameTable = "SharedGameTable";
+  static const String leagueOrTournamentTable = "LeagueOrTournamentTable";
 
   static const String INDEX = "fluff";
   static const String DATA = "data";

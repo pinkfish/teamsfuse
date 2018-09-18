@@ -33,11 +33,8 @@ class AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
     super.initState();
     _player = UserDatabaseData.instance.players[widget._playerUid];
     // Default to empty.
-    _invite = new InviteToPlayer();
-    _invite.playerName = _player.name;
-    _invite.email = '';
-    _invite.playerUid = widget._playerUid;
-  }
+    _invite = new InviteToPlayer(playerName: _player.name, playerUid: widget._playerUid, email: '');
+   }
 
   @override
   void dispose() {

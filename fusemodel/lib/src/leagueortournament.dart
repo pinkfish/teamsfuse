@@ -1,16 +1,15 @@
 import 'common.dart';
 import 'userdatabasedata.dart';
 import 'databaseupdatemodel.dart';
-import 'leagueortournmentteam.dart';
-import 'game.dart';
 import 'dart:async';
 import 'dart:io';
 import 'invite.dart';
+import 'leagueortournamentdivision.dart';
 
 ///
 /// The type of the league or tournment.
 ///
-enum LeagueOrTournmentType {
+enum LeagueOrTournamentType {
   Tournament,
   League,
 }
@@ -22,7 +21,10 @@ class LeagueOrTournament {
   String uid;
   String name;
   String photoUrl;
-  LeagueOrTournmentType type;
+  String currentSeason;
+  String shortDescription;
+  String longDescription;
+  final LeagueOrTournamentType type;
 
   /// List of admin user ids. This is all user ids (not players)
   List<String> adminsUids = [];
@@ -30,46 +32,50 @@ class LeagueOrTournament {
   /// List of member user ids.  This is all user ids (not players)
   List<String> members = [];
 
-  // Cached list of teams.
-  Iterable<LeagueOrTournmentTeam> _teams;
-
-  /// Cached list of games.
-  Iterable<Game> _games;
-
-  LeagueOrTournmentTeamSubscription _teamSub;
-  Stream<Iterable<LeagueOrTournmentTeam>> _teamStream;
-  StreamController<Iterable<LeagueOrTournmentTeam>> _teamController =
-      new StreamController<Iterable<LeagueOrTournmentTeam>>();
-
-  GameSubscription _gameSub;
-  Stream<Iterable<Game>> _gameStream;
-  StreamController<Iterable<Game>> _gameController =
-      new StreamController<Iterable<Game>>();
+  LeagueOrTournamentSeasonSubscription _seasonSub;
+  Iterable<LeagueOrTournamentSeason> _cachedSeasons;
+  Stream<Iterable<LeagueOrTournamentSeason>> _seasonStream;
+  StreamController<Iterable<LeagueOrTournamentSeason>> _seasonController =
+      new StreamController<Iterable<LeagueOrTournamentSeason>>();
 
   LeagueOrTournament(
       {this.uid,
       this.name,
       this.photoUrl,
+      this.currentSeason,
+      this.shortDescription,
+      this.longDescription,
+      this.type,
       List<String> adminUids,
       List<String> members})
       : adminsUids = adminUids ?? [],
         members = members ?? [];
 
-  LeagueOrTournament.copy(LeagueOrTournament club) {
-    uid = club.uid;
-    name = club.name;
-    photoUrl = club.photoUrl;
-    adminsUids = club.adminsUids;
-    members = club.members;
+  LeagueOrTournament.copy(LeagueOrTournament league)
+      : uid = league.uid,
+        type = league.type {
+    name = league.name;
+    photoUrl = league.photoUrl;
+    adminsUids = league.adminsUids;
+    members = league.members;
+    currentSeason = league.currentSeason;
+    shortDescription = league.shortDescription;
+    longDescription = league.longDescription;
   }
 
   ///
   /// Load this from the wire format.
   ///
-  LeagueOrTournament.fromJson(String myUid, Map<String, dynamic> data) {
-    uid = myUid;
-    name = data[NAME];
-    photoUrl = data[PHOTOURL];
+  LeagueOrTournament.fromJson(String myUid, Map<String, dynamic> data)
+      : uid = myUid,
+        name = data[NAME],
+        photoUrl = data[PHOTOURL],
+        currentSeason = data[_CURRENTSEASON],
+        shortDescription = data[SHORTDESCRIPTION],
+        longDescription = data[LONGDESCRIPTION],
+        type = LeagueOrTournamentType.values.firstWhere(
+            (LeagueOrTournamentType t) => t.toString() == data[TYPE],
+            orElse: () => LeagueOrTournamentType.League) {
     adminsUids = [];
     members = [];
     print(data[MEMBERS]);
@@ -85,8 +91,12 @@ class LeagueOrTournament {
     }
   }
 
+  static const String TYPE = "type";
+  static const String SHORTDESCRIPTION = "shortDescription";
+  static const String LONGDESCRIPTION = "description";
   static const String MEMBERS = "members";
   static const String ADMIN = "admin";
+  static const String _CURRENTSEASON = "currentSeason";
 
   ///
   /// Convrt this league into the format to use to send over the wire.
@@ -95,6 +105,10 @@ class LeagueOrTournament {
     Map<String, dynamic> ret = <String, dynamic>{};
     ret[NAME] = name;
     ret[PHOTOURL] = photoUrl;
+    ret[SHORTDESCRIPTION] = shortDescription;
+    ret[LONGDESCRIPTION] = longDescription;
+    ret[_CURRENTSEASON] = currentSeason;
+    ret[TYPE] = type.toString();
     Map<String, dynamic> data = <String, dynamic>{};
     if (includeMembers) {
       for (String admin in adminsUids) {
@@ -126,32 +140,19 @@ class LeagueOrTournament {
     return isUserAdmin(UserDatabaseData.instance.userUid);
   }
 
-  Iterable<LeagueOrTournmentTeam> get cachedTeams => _teams;
+  Iterable<LeagueOrTournamentSeason> get cacheSeasons => _cachedSeasons;
 
   /// Get the teams for this league.
-  Stream<Iterable<LeagueOrTournmentTeam>> get teamStream {
-    if (_teamSub == null) {
-      _teamSub = UserDatabaseData.instance.updateModel.getLeagueTeams(uid);
-      _teamSub.stream.listen((Iterable<LeagueOrTournmentTeam> teams) {
-        _teams = teams;
-        _teamController.add(_teams);
+  Stream<Iterable<LeagueOrTournamentSeason>> get seasonStream {
+    if (_seasonSub == null) {
+      _seasonSub = UserDatabaseData.instance.updateModel.getLeagueSeasons(uid);
+      _seasonSub.stream.listen((Iterable<LeagueOrTournamentSeason> teams) {
+        _cachedSeasons = teams;
+        _seasonController.add(_cachedSeasons);
       });
-      _teamStream = _teamController.stream.asBroadcastStream();
+      _seasonStream = _seasonController.stream.asBroadcastStream();
     }
-    return _teamStream;
-  }
-
-  /// Get the games for this league.
-  Stream<Iterable<Game>> get gameStream {
-    if (_gameSub == null) {
-      _gameSub = UserDatabaseData.instance.updateModel.getLeagueGames(uid);
-      _gameSub.stream.listen((Iterable<Game> teams) {
-        _games = teams;
-        _gameController.add(_games);
-      });
-      _teamStream = _teamController.stream.asBroadcastStream();
-    }
-    return _gameStream;
+    return _seasonStream;
   }
 
   ///
@@ -165,10 +166,10 @@ class LeagueOrTournament {
 
   /// Close everything.
   void dispose() {
-    _teamController?.close();
-    _teamController = null;
-    _teamSub?.dispose();
-    _teamSub = null;
+    _seasonController?.close();
+    _seasonController = null;
+    _seasonSub?.dispose();
+    _seasonSub = null;
   }
 
   Future<String> updateFirestore({bool includeMembers = false}) {
@@ -195,13 +196,12 @@ class LeagueOrTournament {
   }
 
   ///
-  /// Sends the invite to this club.
+  /// Sends the invite to this league as an admin.
   ///
-  Future<String> invite(String email, bool asAdmin) {
-    InviteToLeague inviteToClub = new InviteToLeague(
+  Future<String> invite(String email) {
+    InviteToLeagueAsAdmin inviteToClub = new InviteToLeagueAsAdmin(
         sentByUid: UserDatabaseData.instance.userUid,
         email: email,
-        admin: asAdmin,
         leagueUid: uid,
         leagueName: name);
     return UserDatabaseData.instance.updateModel

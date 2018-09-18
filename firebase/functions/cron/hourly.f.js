@@ -54,7 +54,8 @@ exports = module.exports =
                         // Send notification to users, get all the players.
                         // Get all the players users.
                         // Send notifications.
-                        var notification = {}
+                        var notification = {};
+                        var timeToLive = 7200;
                         if (sharedGame.data().type === 'EventType.Practice') {
                             notification = {
                                 title: 'Practice for {{team.name}}',
@@ -78,7 +79,7 @@ exports = module.exports =
                             notification.body += ' wear {{game.uniform}}';
                         }
                         payload['options'] = {
-                            timeToLive: 1080,
+                            timeToLive: timeToLive,
                             collapseKey: doc.id
                         }
                         payload['data'] = {

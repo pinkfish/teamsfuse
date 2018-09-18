@@ -3,7 +3,7 @@ import 'common.dart';
 import 'season.dart';
 import 'userdatabasedata.dart';
 
-enum InviteType { Player, Team, Admin, Club }
+enum InviteType { Player, Team, Admin, Club, LeagueAdmin, LeagueTeam }
 
 ///
 /// Base class for all invites.
@@ -16,9 +16,10 @@ class Invite {
   String uid;
 
   /// The type of the invite.
-  InviteType type;
+  final InviteType type;
+
   // Who sent the invite.
-  String sentByUid;
+  final String sentByUid;
 
   static const String EMAIL = 'email';
   static const String TYPE = 'type';
@@ -26,18 +27,18 @@ class Invite {
 
   Invite({this.uid, this.email, this.type, this.sentByUid});
 
-  Invite.copy(Invite invite) {
-    this.email = invite.email;
-    this.uid = invite.uid;
-  }
+  Invite.copy(Invite invite)
+      : email = invite.email,
+        uid = invite.uid,
+        sentByUid = invite.sentByUid,
+        type = invite.type;
 
-  void fromJSON(String uid, Map<String, dynamic> data) {
-    email = getString(data[EMAIL]);
-    type = InviteType.values
-        .firstWhere((InviteType ty) => ty.toString() == data[TYPE]);
-    this.uid = uid;
-    sentByUid = getString(data[SENTBYUID]);
-  }
+  Invite.fromJSON(String myUid, Map<String, dynamic> data)
+      : email = getString(data[EMAIL]),
+        type = InviteType.values
+            .firstWhere((InviteType ty) => ty.toString() == data[TYPE]),
+        uid = myUid,
+        sentByUid = getString(data[SENTBYUID]);
 
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = new Map<String, dynamic>();
@@ -53,20 +54,23 @@ class Invite {
         .firstWhere((InviteType ty) => ty.toString() == data[TYPE]);
     switch (type) {
       case InviteType.Player:
-        InviteToPlayer ret = new InviteToPlayer();
-        ret.fromJSON(uid, data);
+        InviteToPlayer ret = new InviteToPlayer.fromJSON(uid, data);
         return ret;
       case InviteType.Team:
-        InviteToTeam ret = new InviteToTeam();
-        ret.fromJSON(uid, data);
+        InviteToTeam ret = new InviteToTeam.fromJSON(uid, data);
         return ret;
       case InviteType.Admin:
-        InviteAsAdmin ret = new InviteAsAdmin();
-        ret.fromJSON(uid, data);
+        InviteAsAdmin ret = new InviteAsAdmin.fromJSON(uid, data);
         return ret;
       case InviteType.Club:
-        InviteToClub ret = new InviteToClub();
-        ret.fromJSON(uid, data);
+        InviteToClub ret = new InviteToClub.fromJSON(uid, data);
+        return ret;
+      case InviteType.LeagueAdmin:
+        InviteToLeagueAsAdmin ret =
+            new InviteToLeagueAsAdmin.fromJSON(uid, data);
+        return ret;
+      case InviteType.LeagueTeam:
+        InviteToLeagueTeam ret = new InviteToLeagueTeam.fromJSON(uid, data);
         return ret;
       default:
         throw new FormatException();
@@ -81,19 +85,17 @@ class Invite {
   String toString() {
     return 'Invite{email: $email, uid: $uid, type: $type, sentByUid: $sentByUid}';
   }
-
-
 }
 
 ///
 /// Invited to the team.
 ///
 class InviteToTeam extends Invite {
-  String teamName;
-  String seasonName;
-  String teamUid;
-  String seasonUid;
-  RoleInTeam role;
+  final String teamName;
+  final String seasonName;
+  final String teamUid;
+  final String seasonUid;
+  final RoleInTeam role;
   List<String> playerName;
 
   InviteToTeam(
@@ -104,22 +106,22 @@ class InviteToTeam extends Invite {
       this.teamName,
       this.seasonName,
       this.seasonUid,
-      this.playerName})
+      this.playerName,
+      this.role = RoleInTeam.Player})
       : super(
             email: email,
             uid: uid,
             type: InviteType.Team,
             sentByUid: sentByUid);
 
-  InviteToTeam.copy(InviteToTeam invite) : super.copy(invite) {
-    teamName = invite.teamName;
-    seasonName = invite.seasonName;
-    teamUid = invite.teamUid;
-    seasonUid = invite.seasonUid;
-    sentByUid = invite.sentByUid;
-    playerName = new List<String>.from(invite.playerName);
-    role = invite.role;
-  }
+  InviteToTeam.copy(InviteToTeam invite)
+      : teamName = invite.teamName,
+        seasonName = invite.seasonName,
+        teamUid = invite.teamUid,
+        seasonUid = invite.seasonUid,
+        playerName = new List<String>.from(invite.playerName),
+        role = invite.role,
+        super.copy(invite) {}
 
   static const String TEAMUID = 'teamUid';
   static const String TEAMNAME = 'teamName';
@@ -127,9 +129,14 @@ class InviteToTeam extends Invite {
   static const String SEASONUID = 'seasonUid';
   static const String ROLE = 'role';
 
-  void fromJSON(String uid, Map<String, dynamic> data) {
-    super.fromJSON(uid, data);
-    teamUid = getString(data[TEAMUID]);
+  InviteToTeam.fromJSON(String uid, Map<String, dynamic> data)
+      : teamUid = getString(data[TEAMUID]),
+        seasonUid = getString(data[SEASONUID]),
+        teamName = getString(data[TEAMNAME]),
+        seasonName = getString(data[SEASONNAME]),
+        role = RoleInTeam.values.firstWhere((e) => e.toString() == data[ROLE],
+            orElse: () => RoleInTeam.NonPlayer),
+        super.fromJSON(uid, data) {
     if (data.containsKey(NAME) && data[NAME] is List) {
       List<dynamic> nameList = data[NAME];
       playerName = nameList.map((dynamic d) => d is String ? d : "").toList();
@@ -138,14 +145,6 @@ class InviteToTeam extends Invite {
     }
     if (playerName == null) {
       playerName = new List<String>();
-    }
-    seasonUid = getString(data[SEASONUID]);
-    teamName = getString(data[TEAMNAME]);
-    seasonName = getString(data[SEASONNAME]);
-    try {
-      role = RoleInTeam.values.firstWhere((e) => e.toString() == data[ROLE]);
-    } catch (e) {
-      role = RoleInTeam.NonPlayer;
     }
   }
 
@@ -165,8 +164,8 @@ class InviteToTeam extends Invite {
 /// Invited as a player to the team
 ///
 class InviteToPlayer extends Invite {
-  String playerUid;
-  String playerName;
+  final String playerUid;
+  final String playerName;
 
   InviteToPlayer(
       {this.playerUid,
@@ -180,17 +179,17 @@ class InviteToPlayer extends Invite {
             type: InviteType.Player,
             sentByUid: sentByUid);
 
-  InviteToPlayer.copy(InviteToPlayer player) : super.copy(player) {
-    playerUid = player.playerUid;
-  }
+  InviteToPlayer.copy(InviteToPlayer player)
+      : playerUid = player.playerUid,
+        playerName = player.playerName,
+        super.copy(player);
 
   static const String PLAYERUID = 'playerUid';
 
-  void fromJSON(String uid, Map<String, dynamic> data) {
-    super.fromJSON(uid, data);
-    playerUid = getString(data[PLAYERUID]);
-    playerName = getString(data[NAME]);
-  }
+  InviteToPlayer.fromJSON(String uid, Map<String, dynamic> data)
+      : playerUid = getString(data[PLAYERUID]),
+        playerName = getString(data[NAME]),
+        super.fromJSON(uid, data);
 
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = super.toJSON();
@@ -204,15 +203,14 @@ class InviteToPlayer extends Invite {
   String toString() {
     return 'InviteToPlayer{${super.toString()} playerUid: $playerUid, playerName: $playerName}';
   }
-
 }
 
 ///
 /// Invited as an admin to the team.
 ///
 class InviteAsAdmin extends Invite {
-  String teamName;
-  String teamUid;
+  final String teamName;
+  final String teamUid;
 
   InviteAsAdmin(
       {String sentByUid, String email, String uid, this.teamUid, this.teamName})
@@ -222,10 +220,10 @@ class InviteAsAdmin extends Invite {
             type: InviteType.Admin,
             sentByUid: sentByUid);
 
-  InviteAsAdmin.copy(InviteAsAdmin invite) : super.copy(invite) {
-    teamName = invite.teamName;
-    teamUid = invite.teamUid;
-  }
+  InviteAsAdmin.copy(InviteAsAdmin invite)
+      : teamName = invite.teamName,
+        teamUid = invite.teamUid,
+        super.copy(invite);
 
   static const String TEAMUID = 'teamUid';
   static const String TEAMNAME = 'teamName';
@@ -235,11 +233,10 @@ class InviteAsAdmin extends Invite {
         .addAdmin(teamUid, UserDatabaseData.instance.userUid);
   }
 
-  void fromJSON(String uid, Map<String, dynamic> data) {
-    super.fromJSON(uid, data);
-    teamUid = getString(data[TEAMUID]);
-    teamName = getString(data[TEAMNAME]);
-  }
+  InviteAsAdmin.fromJSON(String uid, Map<String, dynamic> data)
+      : teamUid = getString(data[TEAMUID]),
+        teamName = getString(data[TEAMNAME]),
+        super.fromJSON(uid, data);
 
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = super.toJSON();
@@ -258,9 +255,9 @@ class InviteAsAdmin extends Invite {
 /// Invited to a club.
 ///
 class InviteToClub extends Invite {
-  String clubName;
-  String clubUid;
-  bool admin;
+  final String clubName;
+  final String clubUid;
+  final bool admin;
 
   InviteToClub(
       {String sentByUid,
@@ -275,10 +272,11 @@ class InviteToClub extends Invite {
             type: InviteType.Club,
             sentByUid: sentByUid);
 
-  InviteToClub.copy(InviteToClub invite) : super.copy(invite) {
-    clubName = invite.clubName;
-    clubUid = invite.clubUid;
-  }
+  InviteToClub.copy(InviteToClub invite)
+      : clubName = invite.clubName,
+        clubUid = invite.clubUid,
+        admin = invite.admin,
+        super.copy(invite);
 
   static const String CLUBUID = 'clubUid';
   static const String CLUBNAME = 'clubName';
@@ -289,12 +287,11 @@ class InviteToClub extends Invite {
         .addUserToClub(clubUid, UserDatabaseData.instance.userUid, admin);
   }
 
-  void fromJSON(String uid, Map<String, dynamic> data) {
-    super.fromJSON(uid, data);
-    clubUid = getString(data[CLUBUID]);
-    clubName = getString(data[CLUBNAME]);
-    admin = getBool(data[ADMIN]);
-  }
+  InviteToClub.fromJSON(String uid, Map<String, dynamic> data)
+      : clubUid = getString(data[CLUBUID]),
+        clubName = getString(data[CLUBNAME]),
+        admin = getBool(data[ADMIN]),
+        super.fromJSON(uid, data);
 
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = super.toJSON();
@@ -308,50 +305,147 @@ class InviteToClub extends Invite {
 ///
 /// Invited to a league.
 ///
-class InviteToLeague extends Invite {
-  String leagueName;
-  String leagueUid;
-  bool admin;
+class InviteToLeagueAsAdmin extends Invite {
+  final String leagueName;
 
-  InviteToLeague(
+  /// If this is not null, invite as the league admin/
+  final String leagueUid;
+
+  /// If this is not null invite as the divison admin.
+  final String leagueDivisonUid;
+
+  /// If this is not null, invite as the season admin.
+  final String leagueSeasonUid;
+
+  InviteToLeagueAsAdmin(
       {String sentByUid,
       String email,
       String uid,
+      this.leagueDivisonUid,
+      this.leagueSeasonUid,
       this.leagueUid,
-      this.leagueName,
-      this.admin})
+      this.leagueName})
       : super(
             email: email,
             uid: uid,
-            type: InviteType.Club,
-            sentByUid: sentByUid);
-
-  InviteToLeague.copy(InviteToLeague invite) : super.copy(invite) {
-    leagueName = invite.leagueName;
-    leagueUid = invite.leagueUid;
+            type: InviteType.LeagueAdmin,
+            sentByUid: sentByUid) {
+    assert((leagueUid != null &&
+            leagueDivisonUid == null &&
+            leagueSeasonUid == null) ||
+        leagueUid == null);
+    assert((leagueDivisonUid != null &&
+            leagueUid == null &&
+            leagueSeasonUid == null) ||
+        leagueDivisonUid == null);
+    assert((leagueSeasonUid != null &&
+            leagueDivisonUid == null &&
+            leagueUid == null) ||
+        leagueSeasonUid == null);
   }
+
+  InviteToLeagueAsAdmin.copy(InviteToLeagueAsAdmin invite)
+      : leagueName = invite.leagueName,
+        leagueUid = invite.leagueUid,
+        leagueSeasonUid = invite.leagueSeasonUid,
+        leagueDivisonUid = invite.leagueDivisonUid,
+        super.copy(invite) {}
 
   static const String LEAGUEUID = 'leagueUid';
+  static const String LEAGUESEASONUID = 'leagueSeasonUid';
+  static const String LEAGUEDIVISONUID = 'leagueDivisonUid';
   static const String LEAGUENAME = 'leagueName';
-  static const String ADMIN = 'admin';
 
   Future<void> acceptInvite() {
-    return UserDatabaseData.instance.updateModel
-        .addUserToLeague(leagueUid, UserDatabaseData.instance.userUid, admin);
+    if (leagueUid != null) {
+      return UserDatabaseData.instance.updateModel
+          .addUserToLeague(leagueUid, UserDatabaseData.instance.userUid, true);
+    }
+    if (leagueSeasonUid != null) {
+      return UserDatabaseData.instance.updateModel.addUserToLeagueSeason(
+          leagueUid, UserDatabaseData.instance.userUid, true);
+    }
+    if (leagueDivisonUid != null) {
+      return UserDatabaseData.instance.updateModel.addUserToLeagueDivison(
+          leagueUid, UserDatabaseData.instance.userUid, true);
+    }
   }
 
-  void fromJSON(String uid, Map<String, dynamic> data) {
-    super.fromJSON(uid, data);
-    leagueUid = getString(data[LEAGUEUID]);
-    leagueName = getString(data[LEAGUENAME]);
-    admin = getBool(data[ADMIN]);
-  }
+  InviteToLeagueAsAdmin.fromJSON(String uid, Map<String, dynamic> data)
+      : leagueUid = getString(data[LEAGUEUID]),
+        leagueName = getString(data[LEAGUENAME]),
+        leagueDivisonUid = data[LEAGUEDIVISONUID] ?? "",
+        leagueSeasonUid = data[LEAGUESEASONUID] ?? "",
+        super.fromJSON(uid, data) {}
 
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = super.toJSON();
     ret[LEAGUENAME] = leagueName;
     ret[LEAGUEUID] = leagueUid;
-    ret[ADMIN] = admin;
+    ret[LEAGUESEASONUID] = leagueSeasonUid;
+    ret[LEAGUEDIVISONUID] = leagueDivisonUid;
+    return ret;
+  }
+}
+
+///
+/// Invited to a league team.
+///
+class InviteToLeagueTeam extends Invite {
+  final String leagueName;
+  final String leagueTeamName;
+  final String leagueTeamUid;
+  final String leagueDivisonUid;
+
+  InviteToLeagueTeam(
+      {String sentByUid,
+      String email,
+      String uid,
+      this.leagueTeamUid,
+      this.leagueDivisonUid,
+      this.leagueTeamName,
+      this.leagueName})
+      : super(
+            email: email,
+            uid: uid,
+            type: InviteType.LeagueTeam,
+            sentByUid: sentByUid);
+
+  InviteToLeagueTeam.copy(InviteToLeagueTeam invite)
+      : leagueName = invite.leagueName,
+        leagueTeamUid = invite.leagueTeamUid,
+        leagueDivisonUid = invite.leagueDivisonUid,
+        leagueTeamName = invite.leagueTeamName,
+        super.copy(invite);
+
+  static const String LEAGUETEAMUID = 'leagueTeamUid';
+  static const String LEAGUENAME = 'leagueName';
+  static const String LEAGUETEAMNAME = 'leagueTeamName';
+  static const String LEAGUEDIVISONUID = 'leagueDivisonUid';
+
+  ///
+  /// This accepts the invite connecting the specified team to the matching
+  /// season
+  ///
+  Future<void> acceptInvite(Season season) {
+    return UserDatabaseData.instance.updateModel.connectLeagueTeamToSeason(
+        leagueTeamUid, UserDatabaseData.instance.userUid, season);
+  }
+
+  /// Create a new invite from the json.
+  InviteToLeagueTeam.fromJSON(String uid, Map<String, dynamic> data)
+      : leagueTeamUid = getString(data[LEAGUETEAMUID]),
+        leagueName = getString(data[LEAGUENAME]),
+        leagueDivisonUid = data[LEAGUEDIVISONUID] ?? "",
+        leagueTeamName = data[LEAGUETEAMNAME] ?? "",
+        super.fromJSON(uid, data);
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = super.toJSON();
+    ret[LEAGUENAME] = leagueName;
+    ret[LEAGUETEAMUID] = leagueTeamUid;
+    ret[LEAGUEDIVISONUID] = leagueDivisonUid;
+    ret[LEAGUETEAMNAME] = leagueTeamName;
     return ret;
   }
 }

@@ -11,6 +11,7 @@ enum GameInProgress { NotStarted, InProgress, Final }
 enum GamePeriodType { Break, Overtime, Penalty, Regulation, OvertimeBreak }
 enum GameLogType { ScoreUpdate, Message, PeriodStart, PeriodStop, UpdateScore }
 enum GameDivisionsType { Halves, Quarters, Thirds }
+enum OfficalResult { HomeTeamWon, AwayTeamWon, Tie, NotStarted, InProgress }
 
 class GamePeriod {
   GamePeriodType type;
@@ -306,6 +307,76 @@ class GamePeriodTime {
   }
 }
 
+///
+/// The offical results we have for this game.  This only exists when the
+/// game is in a tournament or a league.
+///
+class GameOfficalResults {
+  final CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> scores =
+      new CanonicalizedMap((GamePeriod p) => p.toIndex());
+
+  /// The team uid, this pointed to a leagueortourneamentteam data.
+  String homeTeamLeagueUid;
+  /// The team uid, this pointed to a leagueortourneamentteam data.
+  String awayTeamLeagueUid;
+
+  final OfficalResult result;
+
+  static const String _OFFICALRESULT = 'officalResult';
+  static const String _SCORES = 'scores';
+  static const String _INPROGRESS = 'inProgress';
+  static const String _HOMETEAMUID = 'homeTeamUid';
+  static const String _AWAYTEAMUID = 'awayTeamUid';
+
+  GameOfficalResults(this.homeTeamLeagueUid, this.awayTeamLeagueUid,
+      {this.result});
+
+  GameOfficalResults.copy(GameOfficalResults copy)
+      : homeTeamLeagueUid = copy.homeTeamLeagueUid,
+        awayTeamLeagueUid = copy.awayTeamLeagueUid,
+        result = copy.result {
+    for (GamePeriod p in copy.scores.keys) {
+      scores[p] = GameResultPerPeriod.copy(copy.scores[p]);
+    }
+  }
+
+  GameOfficalResults.fromJSON(Map<dynamic, dynamic> data)
+      : result = OfficalResult.values.firstWhere((e) =>
+            e.toString() == data[_OFFICALRESULT] ??
+            OfficalResult.NotStarted.toString(), orElse: () => OfficalResult.NotStarted),
+        homeTeamLeagueUid = data[_HOMETEAMUID],
+        awayTeamLeagueUid = data[_AWAYTEAMUID] {
+    if (data.containsKey(_SCORES)) {
+      Map<dynamic, dynamic> scoreData = data[_SCORES];
+      CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> newResults =
+          new CanonicalizedMap((GamePeriod p) => p.toIndex());
+      scoreData.forEach((dynamic periodStd, dynamic data) {
+        GamePeriod period = GamePeriod.fromIndex(periodStd);
+        GameResultPerPeriod newResult =
+            new GameResultPerPeriod.fromJSON(period, data);
+
+        newResults[period] = newResult;
+      });
+      scores.addAll(newResults);
+    }
+    ;
+  }
+
+  Map<String, dynamic> toJSON() {
+    Map<String, dynamic> ret = {};
+    Map<String, dynamic> retScores = {};
+    for (GameResultPerPeriod p in scores.values) {
+      Map<String, dynamic> periodExtra = p.toJSON();
+      retScores[p.period.toIndex()] = periodExtra;
+    }
+    ret[_SCORES] = retScores;
+    ret[_OFFICALRESULT] = result.toString();
+    ret[_AWAYTEAMUID] = awayTeamLeagueUid;
+    ret[_AWAYTEAMUID] = homeTeamLeagueUid;
+    return ret;
+  }
+}
+
 class GameResultDetails {
   CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> scores =
       new CanonicalizedMap((GamePeriod p) => p.toIndex());
@@ -484,30 +555,33 @@ class GamePlace {
 class GameSharedData {
   // This is only valid in a special event.
   String name;
-  String hometeam;
   String uid;
   num time;
   String _timezone;
   num endTime;
   EventType type;
   GamePlace place;
-  GameResultDetails officalResults;
+  GameOfficalResults officalResults;
+  String leagueUid;
+  String leagueDivisionUid;
 
   // Derived data
   Location _location;
 
-  GameSharedData(
-      {this.hometeam = "",
-      this.name = "",
+  GameSharedData(String homeTeamUid, String awayTeamUid,
+      {this.name = "",
       this.uid,
       num time,
       num endTime,
       GamePlace place,
       GameResultDetails officalResults,
       String timezone,
-      this.type})
+      this.type,
+      this.leagueUid,
+      this.leagueDivisionUid})
       : this.place = place ?? new GamePlace(),
-        this.officalResults = officalResults ?? new GameResultDetails(),
+        this.officalResults =
+            officalResults ?? new GameOfficalResults(homeTeamUid, awayTeamUid),
         this.time = time ?? new DateTime.now().millisecondsSinceEpoch,
         this.endTime = endTime ?? new DateTime.now().millisecondsSinceEpoch,
         _timezone = timezone ?? local.toString();
@@ -517,12 +591,13 @@ class GameSharedData {
     time = copy.time;
     _timezone = copy._timezone;
     _location = copy._location;
+    leagueUid = copy.leagueUid;
     endTime = copy.endTime;
     type = copy.type;
     place = new GamePlace.copy(copy.place);
     name = copy.name;
-    hometeam = copy.hometeam;
-    officalResults = new GameResultDetails.copy(copy.officalResults);
+    leagueDivisionUid = copy.leagueDivisionUid;
+    officalResults = new GameOfficalResults.copy(copy.officalResults);
   }
 
   GameSharedData.fromJSON(String uid, Map<String, dynamic> data) {
@@ -538,12 +613,13 @@ class GameSharedData {
     GamePlace place =
         new GamePlace.fromJSON(data[_PLACE] as Map<dynamic, dynamic>);
     this.place = place;
-    hometeam = getString(data[_HOMETEAM]);
     name = getString(data[NAME]);
     if (data.containsKey(_OFFICALRESULT)) {
-      officalResults = new GameResultDetails();
-      officalResults.fromJSON(data[_OFFICALRESULT]);
+      officalResults = new GameOfficalResults.fromJSON(data[_OFFICALRESULT]);
     }
+
+    leagueUid = data[_LEAGUEUID];
+    leagueDivisionUid = data[LEAGUEDIVISIONUID];
   }
 
   Map<String, dynamic> toJSON() {
@@ -553,8 +629,9 @@ class GameSharedData {
     data[_PLACE] = place.toJSON();
     data[TYPE] = type.toString();
     data[NAME] = name;
-    data[_HOMETEAM] = hometeam;
     data[_TIMEZONE] = _timezone;
+    data[_LEAGUEUID] = leagueUid;
+    data[LEAGUEDIVISIONUID] = leagueDivisionUid;
     if (officalResults != null) {
       data[_OFFICALRESULT] = officalResults.toJSON();
     }
@@ -586,8 +663,9 @@ class GameSharedData {
     type = copy.type;
     place = new GamePlace.copy(copy.place);
     name = copy.name;
-    hometeam = copy.hometeam;
-    officalResults = new GameResultDetails.copy(copy.officalResults);
+    leagueDivisionUid = copy.leagueDivisionUid;
+    leagueUid = copy.leagueUid;
+    officalResults = new GameOfficalResults.copy(copy.officalResults);
   }
 
   TZDateTime get tzTime =>
@@ -602,12 +680,15 @@ class GameSharedData {
   static const String _PLACE = 'place';
   static const String _TIMEZONE = 'timezone';
   static const String _HOMETEAM = 'hometeam';
+  static const String _LEAGUEUID = 'leagueUid';
+  static const String LEAGUEDIVISIONUID = 'leagueDivisionUid';
 
   @override
   String toString() {
     return 'GameSharedData{uid: $uid, time: $tzTime, _timezone: $_timezone, '
-        'endTime: $tzEndTime, '
-        'name: $name, type: $type, hometeam: $hometeam, '
+        'endTime: $tzEndTime, leagueUid: $leagueUid, '
+        'leagueDivisionUid: $leagueDivisionUid, '
+        'name: $name, type: $type, officalResults: $officalResults, '
         'officalResult: $officalResults, place: $place}';
   }
 }
@@ -624,7 +705,6 @@ class Game {
   List<String> opponentUids;
   String seasonUid;
   String teamUid;
-  String leagueUid;
   List<String> allTeamUids;
   String uniform;
   String seriesId;
@@ -642,7 +722,7 @@ class Game {
   StreamController<List<GameLog>> _updateThisLogGame =
       new StreamController<List<GameLog>>();
 
-  Game(
+  Game(String homeTeamUid, String awayTeamUid,
       {this.uid,
       num arriveTime,
       GameSharedData sharedData,
@@ -652,7 +732,8 @@ class Game {
       this.seriesId,
       GameResultDetails result,
       Map<String, Attendance> attendance})
-      : this.sharedData = sharedData ?? new GameSharedData(),
+      : this.sharedData =
+            sharedData ?? new GameSharedData(homeTeamUid, awayTeamUid),
         this.result = result ?? new GameResultDetails(),
         this.attendance = attendance ?? <String, Attendance>{},
         this.arriveTime =
@@ -671,7 +752,6 @@ class Game {
     teamUid = copy.teamUid;
     uniform = copy.uniform;
     seriesId = copy.seriesId;
-    leagueUid = copy.leagueUid;
     result = new GameResultDetails.copy(copy.result);
     attendance = new Map<String, Attendance>.from(copy.attendance);
     trackAttendance = copy.trackAttendance;
@@ -745,10 +825,15 @@ class Game {
     }
   }
 
-  bool get homegame => sharedData.hometeam == teamUid;
+  bool get homegame => sharedData.officalResults.homeTeamLeagueUid == teamUid;
   set homegame(bool val) => val
-      ? sharedData.hometeam = teamUid
-      : sharedData.hometeam = opponentUids.length > 0 ? opponentUids[0] : "";
+      ? sharedData.leagueUid != null
+          ? sharedData.officalResults.homeTeamLeagueUid = teamUid
+          : null
+      : sharedData.leagueUid != null
+          ? sharedData.officalResults.homeTeamLeagueUid =
+              opponentUids.length > 0 ? opponentUids[0] : ""
+          : null;
 
   List<GameLog> get logs => _gameLogs ?? [];
 
@@ -762,7 +847,6 @@ class Game {
   static const String ATTENDANCEVALUE = 'value';
   static const String TEAMUID = 'teamUid';
   static const String _SERIESID = 'seriesId';
-  static const String _LEAGUEUID = 'leagueUid';
   static const String _TRACKATTENDANCE = 'trackAttendance';
   static const String _OPPONENTUID = 'opponentUid';
   static const String SHAREDDATAUID = 'sharedDataUid';
@@ -781,7 +865,6 @@ class Game {
     ret[TEAMUID] = teamUid;
     // Set the team specific values.
     ret[NOTES] = notes;
-    ret[_LEAGUEUID] = leagueUid;
     ret[_TRACKATTENDANCE] = trackAttendance;
     ret[RESULT] = result.toJSON();
     ret[SHAREDDATAUID] = sharedDataUid;
@@ -816,7 +899,8 @@ class Game {
   }
 
   Future<void> updateFirestore(bool sharedData) {
-    return UserDatabaseData.instance.updateModel.updateFirestoreGame(this, sharedData);
+    return UserDatabaseData.instance.updateModel
+        .updateFirestoreGame(this, sharedData);
   }
 
   Future<void> updateFirestoreAttendence(String playerUid, Attendance attend) {
@@ -825,7 +909,8 @@ class Game {
   }
 
   Future<void> updateFirestoreResult(GameResultDetails result) {
-    return UserDatabaseData.instance.updateModel.updateFirestoreGameResult(this, result);
+    return UserDatabaseData.instance.updateModel
+        .updateFirestoreGameResult(this, result);
   }
 
   Future<void> deleteFromFirestore() {
@@ -840,7 +925,8 @@ class Game {
     if (_gameLogs != null) {
       return _gameLogs;
     }
-    GameLogReturnData data = UserDatabaseData.instance.updateModel.readGameLogs(this);
+    GameLogReturnData data =
+        UserDatabaseData.instance.updateModel.readGameLogs(this);
     _gameLogSubcription = data.myLogStream;
     List<GameLog> logs = await data.logs;
     _gameLogs = logs;
@@ -851,7 +937,7 @@ class Game {
   @override
   String toString() {
     return 'Game{uid: $uid, '
-        'arriveTime: $tzArriveTime, leagueUid: $leagueUid, '
+        'arriveTime: $tzArriveTime, '
         'notes: $notes, opponentUids: $opponentUids, seasonUid: $seasonUid, '
         'teamUid: $teamUid, uniform: $uniform, seriesId: $seriesId, '
         'result: $result, attendance: $attendance, sharedData: $sharedData}';

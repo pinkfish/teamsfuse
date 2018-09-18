@@ -54,8 +54,7 @@ class Opponent {
           data[_SEASONS] as Map<dynamic, dynamic>;
       // Load the seasons.
       innerSeason.forEach((dynamic seasonUid, dynamic value) {
-        WinRecord newData = new WinRecord();
-        newData.fromJSON(value as Map<dynamic, dynamic>);
+        WinRecord newData = new WinRecord.fromJSON(value as Map<dynamic, dynamic>);
         newRecord[seasonUid.toString()] = newData;
       });
     }
@@ -121,6 +120,9 @@ class Team {
   /// If this is not null signifies that this team is a member of a club.
   String clubUid;
 
+  /// If we can only see public details of this team.
+  final bool publicOnly;
+
   /// If we should track attendecne for games in this team.  This is
   /// overridden by the club potentially.
   bool _trackAttendence;
@@ -154,6 +156,7 @@ class Team {
       this.uid,
       this.photoUrl,
       this.clubUid,
+      this.publicOnly = false,
       trackAttendence = true})
       : _arriveEarly = arriveEarly,
         _trackAttendence = trackAttendence {
@@ -161,28 +164,30 @@ class Team {
   }
 
   /// Make a copy of the team to do updates on it.
-  Team.copy(Team copy) {
-    name = copy.name;
-    _arriveEarly = copy._arriveEarly;
-    currentSeason = copy.currentSeason;
-    gender = copy.gender;
-    league = copy.league;
-    sport = copy.sport;
-    uid = copy.uid;
-    photoUrl = copy.photoUrl;
-    clubUid = copy.clubUid;
-    admins = new List<String>.from(admins);
-    opponents = opponents.map((String key, Opponent op) {
-      return new MapEntry(key, new Opponent.copy(op));
-    });
-    seasons = seasons.map((String key, Season season) {
-      return new MapEntry(key, new Season.copy(season));
-    });
-    _completeSeasonsCached =
-        _completeSeasonsCached.map((Season season) {
-      return new Season.copy(season);
-    });
-    _trackAttendence = copy._trackAttendence;
+  Team.copy(Team copy)
+      : publicOnly = copy.publicOnly,
+        name = copy.name,
+        _arriveEarly = copy._arriveEarly,
+        currentSeason = copy.currentSeason,
+        gender = copy.gender,
+        league = copy.league,
+        sport = copy.sport,
+        uid = copy.uid,
+        photoUrl = copy.photoUrl,
+        clubUid = copy.clubUid,
+        admins = new List<String>.from(copy.admins),
+        opponents = copy.opponents.map((String key, Opponent op) {
+          return new MapEntry(key, new Opponent.copy(op));
+        }),
+        seasons = copy.seasons.map((String key, Season season) {
+          return new MapEntry(key, new Season.copy(season));
+        }),
+        _trackAttendence = copy._trackAttendence,
+        _completeSeasonsCached =
+            copy._completeSeasonsCached.map((Season season) {
+          return new Season.copy(season);
+        }) {
+    thisTeamStream = _updateThisTeam.stream.asBroadcastStream();
   }
 
   // Handle invirtes.
@@ -200,33 +205,16 @@ class Team {
   static const String LEAGUEUID = 'leagueuid';
 
   /// Deserialize the team.
-  void fromJSON(String teamUid, Map<String, dynamic> data) {
-    uid = teamUid;
-    name = getString(data[NAME]);
-    _arriveEarly = getNum(data[ARRIVALTIME]);
-    currentSeason = getString(data[_CURRENTSEASON]);
-    league = getString(data[_LEAGUE]);
-    photoUrl = getString(data[PHOTOURL]);
-    clubUid = data[CLUBUID];
-    gender = Gender.values.firstWhere((e) => e.toString() == data[_GENDER]);
-    sport = Sport.values.firstWhere((e) => e.toString() == data[_SPORT]);
-    _trackAttendence = getBool(data[_TRACKATTENDENDCE], defaultValue: true);
-    if (data[ADMINS] != null) {
-      List<String> newAdmin = new List<String>();
-      data[ADMINS].forEach((dynamic key, dynamic data) {
-        if (data is bool && data) {
-          newAdmin.add(key as String);
-        }
-      });
-      admins = newAdmin;
-    }
-    if (_updateThisTeam != null) {
-      _updateThisTeam.add(UpdateReason.Update);
-    }
+  Team.fromJSON(String teamUid, Map<String, dynamic> data,
+      {this.publicOnly = false})
+      : uid = teamUid {
+    updateFromJSON(data);
+    thisTeamStream = _updateThisTeam.stream.asBroadcastStream();
   }
 
   /// Serialize the team.
   Map<String, dynamic> toJSON() {
+    assert(!publicOnly);
     Map<String, dynamic> ret = new Map<String, dynamic>();
     ret[NAME] = name;
     ret[ARRIVALTIME] = _arriveEarly;
@@ -243,6 +231,32 @@ class Team {
     });
     ret[ADMINS] = adminMap;
     return ret;
+  }
+
+  void updateFromJSON(Map<String, dynamic> data) {
+    name = getString(data[NAME]);
+    _arriveEarly = getNum(data[ARRIVALTIME]);
+    currentSeason = getString(data[_CURRENTSEASON]);
+    league = getString(data[_LEAGUE]);
+    photoUrl = getString(data[PHOTOURL]);
+    clubUid = data[CLUBUID];
+    gender = Gender.values.firstWhere((e) => e.toString() == data[_GENDER]);
+    sport = Sport.values.firstWhere((e) => e.toString() == data[_SPORT]);
+    _trackAttendence = getBool(data[_TRACKATTENDENDCE], defaultValue: true);
+    if (!publicOnly) {
+      if (data[ADMINS] != null) {
+        List<String> newAdmin = new List<String>();
+        data[ADMINS].forEach((dynamic key, dynamic data) {
+          if (data is bool && data) {
+            newAdmin.add(key as String);
+          }
+        });
+        admins = newAdmin;
+      }
+    }
+    if (_updateThisTeam != null) {
+      _updateThisTeam.add(UpdateReason.Update);
+    }
   }
 
   void dispose() {
@@ -289,6 +303,9 @@ class Team {
 
   /// Get the early arrive, using the club value if this is 0.
   num get arriveEarly {
+    if (publicOnly) {
+      return 0;
+    }
     if (_arriveEarly == 0 && clubUid != null) {
       num ret = UserDatabaseData.instance.clubs[clubUid].arriveBeforeGame;
       if (ret != null) {
@@ -305,6 +322,9 @@ class Team {
   /// Is the current user an admin for this team.
   ///
   bool isUserAdmin(String userId) {
+    if (publicOnly) {
+      return false;
+    }
     return admins.contains(userId);
   }
 
@@ -312,6 +332,9 @@ class Team {
   /// Check if the current user is an admin
   ///
   bool isAdmin() {
+    if (publicOnly) {
+      return false;
+    }
     if (clubUid != null &&
         UserDatabaseData.instance.clubs.containsKey(clubUid)) {
       return isUserAdmin(UserDatabaseData.instance.userUid) ||
@@ -362,6 +385,9 @@ class Team {
   /// Loads the opponents from the database.
   ///
   Future<void> loadOpponents() {
+    if (publicOnly) {
+      return new Future.value(null);
+    }
     return UserDatabaseData.instance.updateModel.loadOpponents(this);
   }
 
@@ -377,6 +403,9 @@ class Team {
   /// Updates firstore with the changed data in this team.
   ///
   Future<void> updateFirestore() {
+    if (publicOnly) {
+      return new Future.value(null);
+    }
     return UserDatabaseData.instance.updateModel
         .updateFirestoreTeam(this, _pregen);
   }
@@ -386,6 +415,9 @@ class Team {
   /// updates the photoUrl
   ///
   Future<Uri> updateImage(File imgFile) {
+    if (publicOnly) {
+      return new Future.value(null);
+    }
     return UserDatabaseData.instance.updateModel.updateTeamImage(this, imgFile);
   }
 
@@ -393,6 +425,9 @@ class Team {
   /// Deletes the admin from firestore.
   ///
   Future<void> deleteAdmin(String uid) {
+    if (publicOnly) {
+      return new Future.value(null);
+    }
     return UserDatabaseData.instance.updateModel.deleteAdmin(this, uid);
   }
 
@@ -401,6 +436,9 @@ class Team {
   /// till a firestore update happens.
   ///
   Future<String> addAdmin(String uid) {
+    if (publicOnly) {
+      return new Future.value(null);
+    }
     return UserDatabaseData.instance.updateModel.addAdmin(this.uid, uid);
   }
 
@@ -408,6 +446,9 @@ class Team {
   /// Returns the uid for the invite.
   ///
   Future<String> inviteAsAdmin(String email) {
+    if (publicOnly) {
+      return new Future.value(null);
+    }
     return UserDatabaseData.instance.updateModel.inviteAdminToTeam(this, email);
   }
 
@@ -431,6 +472,9 @@ class Team {
   List<InviteAsAdmin> get invites => _invites;
 
   void _doInviteQuery() {
+    if (publicOnly) {
+      return;
+    }
     _snapshots.add(
         UserDatabaseData.instance.updateModel.getInviteForTeamStream(this));
   }
@@ -442,6 +486,9 @@ class Team {
 
   /// Update the season details for this team.
   Season updateSeason(String seasonUid, Map<String, dynamic> data) {
+    if (publicOnly) {
+      return null;
+    }
     Season season;
     if (seasons.containsKey(seasonUid)) {
       season = seasons[seasonUid];
@@ -462,6 +509,10 @@ class Team {
   Future<Iterable<Season>> getAllSeasons() async {
     if (_completeSeasonsCached != null) {
       return _completeSeasonsCached;
+    }
+    if (publicOnly) {
+      _completeSeasonsCached = <Season>[];
+      return new Future.value(null);
     }
     SeasonSubscription sub =
         UserDatabaseData.instance.updateModel.getAllSeasons(uid);

@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
+import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'dialog/deleteinvite.dart';
 
-// Shows the current invites pending for this user.
-class AcceptInviteToClubScreen extends StatefulWidget {
+class AcceptInviteToLeagueScreen extends StatefulWidget {
   final String _inviteUid;
 
-  AcceptInviteToClubScreen(this._inviteUid);
+  AcceptInviteToLeagueScreen(this._inviteUid);
 
   @override
-  AcceptInviteToClubScreenState createState() {
-    return new AcceptInviteToClubScreenState();
+  _AcceptInviteToLeagueScreenState createState() {
+    return new _AcceptInviteToLeagueScreenState();
   }
 }
 
-class AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
-  InviteToClub _invite;
+class _AcceptInviteToLeagueScreenState
+    extends State<AcceptInviteToLeagueScreen> {
+  InviteToLeagueAsAdmin _invite;
 
   static const String newInvite = 'new';
 
@@ -26,12 +26,13 @@ class AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
   void initState() {
     super.initState();
     // Default to empty.
-    _invite = new InviteToClub(clubName: '');
     if (UserDatabaseData.instance.invites.containsKey(widget._inviteUid)) {
-      _invite =
-      UserDatabaseData.instance.invites[widget._inviteUid] as InviteToClub;
+      _invite = UserDatabaseData.instance.invites[widget._inviteUid]
+          as InviteToLeagueAsAdmin;
     } else {
       // Get out of here.
+      _invite = new InviteToLeagueAsAdmin(leagueUid: '');
+
       Navigator.pop(context);
     }
   }
@@ -47,6 +48,7 @@ class AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
     Navigator.pop(context);
   }
 
+
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
@@ -55,18 +57,20 @@ class AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
 
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+        title: new Text(Messages.of(context).league),
       ),
       body: new Scrollbar(
         child: new SingleChildScrollView(
           child: new Column(
             children: <Widget>[
               new ListTile(
-                leading: const Icon(CommunityIcons.houzz),
-                title: new Text(_invite.clubName),
+                leading: LeagueImage(
+                  leagueOrTournamentUid: _invite.leagueUid,
+                ),
+                title: new Text(_invite.leagueName),
                 subtitle: new ByUserNameComponent(userId: _invite.sentByUid),
               ),
-              new Row(
+              new ButtonBar(
                 children: <Widget>[
                   new RaisedButton(
                     onPressed: _savePressed,
@@ -77,6 +81,11 @@ class AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
                   new FlatButton(
                     onPressed: () => showDeleteInvite(context, _invite),
                     child: new Text(messages.deleteinvite),
+                  ),
+                  new FlatButton(
+                    onPressed: () => Navigator.pushNamed(
+                        context, "/League/Main/" + _invite.leagueUid),
+                    child: Text(messages.openbutton),
                   ),
                 ],
               ),

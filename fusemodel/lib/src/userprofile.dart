@@ -9,14 +9,16 @@ class FusedUserProfile {
   final String phoneNumber;
   final bool emailUpcomingGame;
   final bool emailOnUpdates;
+  final bool notifyOnlyForGames;
   final String uid;
 
   FusedUserProfile(this.uid,
       {this.displayName,
       this.email,
       this.phoneNumber,
-      this.emailUpcomingGame,
-      this.emailOnUpdates});
+      this.emailUpcomingGame = false,
+      this.emailOnUpdates = false,
+      this.notifyOnlyForGames = true});
 
   FusedUserProfile.copy(FusedUserProfile copy)
       : uid = copy.uid,
@@ -24,7 +26,8 @@ class FusedUserProfile {
         email = copy.email,
         phoneNumber = copy.phoneNumber,
         emailOnUpdates = copy.emailOnUpdates,
-        emailUpcomingGame = copy.emailUpcomingGame;
+        emailUpcomingGame = copy.emailUpcomingGame,
+        notifyOnlyForGames = copy.notifyOnlyForGames;
 
   /// Load from the json
   FusedUserProfile.fromJSON(String uid, Map<String, dynamic> data)
@@ -33,7 +36,8 @@ class FusedUserProfile {
         email = data[_EMAIL],
         phoneNumber = data[_PHONE],
         emailOnUpdates = getBool(data[_EMAIL_ON_UPDATES]),
-        emailUpcomingGame = getBool(data[_EMAIL_UPCOMING]);
+        emailUpcomingGame = getBool(data[_EMAIL_UPCOMING]),
+        notifyOnlyForGames = getBool(data[_ONLY_FOR_GAMES] ?? true);
 
   /// Copy with specific things changed.
   FusedUserProfile copyWith(
@@ -62,6 +66,7 @@ class FusedUserProfile {
   static const String _PHONE = "phone";
   static const String _EMAIL_UPCOMING = "emailUpcoming";
   static const String _EMAIL_ON_UPDATES = "emailOnUpdates";
+  static const String _ONLY_FOR_GAMES = "notifyOnlyForGames";
   static const String TOKENS = "tokens";
 
   Map<String, dynamic> toJSON() {
@@ -69,8 +74,9 @@ class FusedUserProfile {
     ret[_NAME] = displayName;
     ret[_EMAIL] = email;
     ret[_PHONE] = phoneNumber;
-    ret[_EMAIL_ON_UPDATES] = emailOnUpdates;
-    ret[_EMAIL_UPCOMING] = emailUpcomingGame;
+    ret[_EMAIL_ON_UPDATES] = emailOnUpdates ?? false;
+    ret[_EMAIL_UPCOMING] = emailUpcomingGame ?? false;
+    ret[_ONLY_FOR_GAMES] = notifyOnlyForGames ?? true;
     return ret;
   }
 

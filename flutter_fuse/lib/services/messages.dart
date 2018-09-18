@@ -153,6 +153,18 @@ class Messages {
     return Intl.message('New Season Name');
   }
 
+  String get divison {
+    return Intl.message('Divison');
+  }
+
+  String get openbutton {
+    return Intl.message('OPEN');
+  }
+
+  String get newdivisonhint {
+    return Intl.message('New Divison Name');
+  }
+
   String get unabletoloadgames {
     return Intl.message('Unable to load games');
   }
@@ -567,6 +579,23 @@ class Messages {
     );
   }
 
+  String get noseasons {
+    return Intl.message("No seasons");
+  }
+
+  String get nodivisons {
+    return Intl.message("No divisions",
+        name: "Divisons inside the season for a league/tournament");
+  }
+
+  String get home {
+    return Intl.message("home");
+  }
+
+  String get away {
+    return Intl.message("away");
+  }
+
   String get needtoselectopponent {
     return Intl.message('Please choose an opponent.',
         name: 'Message to suggest they need to select an oppoent',
@@ -637,6 +666,11 @@ class Messages {
 
   String get addseason {
     return Intl.message('ADD SEASON', name: 'Add a season to the team');
+  }
+
+  String get adddivison {
+    return Intl.message('ADD DIVISON',
+        name: 'Add a division inside a league/tournament');
   }
 
   String get opponentwithresult {
@@ -741,6 +775,53 @@ class Messages {
     return Intl.message('League the team is playing in',
         name: 'League the team is playing in',
         desc: 'League the team is playing in');
+  }
+
+  String get leaguetournament {
+    return Intl.message('League/Tournaments',
+        name: 'Link to the league/tournament section');
+  }
+
+  String get tournament {
+    return Intl.message('Tournament');
+  }
+
+  String get addleague {
+    return Intl.message('Add League');
+  }
+
+  String get addtournament {
+    return Intl.message('Add Tournamwent');
+  }
+
+  String get shortDescription {
+    return Intl.message('Summary',
+        name: 'Short description of a tournament/league to display in the ux');
+  }
+
+  String get shortDescriptionHint {
+    return Intl.message('Short Description',
+        name: 'Short description of a tournament/league to display in the ux');
+  }
+
+  String get longDescription {
+    return Intl.message('Description',
+        name:
+            'Long description of a tournament/league to display on the league page');
+  }
+
+  String get longDescriptionHint {
+    return Intl.message('Detailed Description',
+        name:
+            'Long description of a tournament/league to display on the league/tournament page');
+  }
+
+  String get noleagues {
+    return Intl.message('No leagues');
+  }
+
+  String get notournaments {
+    return Intl.message('No tournaments');
   }
 
   String get formerror {
@@ -908,6 +989,19 @@ class Messages {
       return Intl.message(
           'Do you want to delete the invite to be in the club ${inviteClub.clubName}?',
           name: 'Text to delete the invite to the club in the alert dialog.');
+    }
+    if (invite is InviteToLeagueAsAdmin) {
+      InviteToLeagueAsAdmin inviteLeague = invite;
+      return Intl.message(
+          'Do you want to delete the invite to be in the league ${inviteLeague.leagueName}?',
+          name: 'Text to delete the invite to the league in the alert dialog.');
+    }
+    if (invite is InviteToLeagueTeam) {
+      InviteToLeagueTeam inviteLeagueTeam = invite;
+      return Intl.message(
+          'Do you want to delete the invite to be in the league ${inviteLeagueTeam.leagueName} with team '
+              '${inviteLeagueTeam.leagueTeamName}?',
+          name: 'Text to delete the invite to the league in the team in the alert dialog.');
     }
     return unknown;
   }
@@ -1097,6 +1191,68 @@ class Messages {
         'Playing ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
         name: 'In progress result details',
         desc: 'In progress result details');
+  }
+
+  String gameofficalinprogress(GameOfficalResults offical) {
+    switch (offical.result) {
+      case OfficalResult.NotStarted:
+        return Intl.message('Not started',
+            name: 'Offical result - not started');
+      case OfficalResult.InProgress:
+        return Intl.message('In progress',
+            name: 'Offical result - in progress');
+      case OfficalResult.AwayTeamWon:
+        return Intl.message('Away team won');
+      case OfficalResult.HomeTeamWon:
+        return Intl.message('Home team won');
+      case OfficalResult.Tie:
+        return Intl.message('Tie');
+    }
+  }
+
+  String gameofficalinprogressscore(GameOfficalResults offical) {
+    GameResultPerPeriod finalScore;
+    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
+    if (offical.scores.containsKey(finalReg)) {
+      finalScore = offical.scores[finalReg];
+    } else {
+      finalScore = new GameResultPerPeriod(
+          period: finalReg, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+    }
+    GamePeriod overtimePeriod = new GamePeriod(type: GamePeriodType.Overtime);
+    GameResultPerPeriod overtimeScore;
+    if (offical.scores.containsKey(overtimePeriod)) {
+      overtimeScore = offical.scores[overtimePeriod];
+    }
+    GamePeriod penaltyPeriod = new GamePeriod(type: GamePeriodType.Penalty);
+    GameResultPerPeriod penaltyScore;
+    if (offical.scores.containsKey(penaltyPeriod)) {
+      penaltyScore = offical.scores[penaltyPeriod];
+    }
+    if (penaltyScore != null && overtimeScore == null) {
+      return Intl.message(
+          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}\m(Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+          name: 'Offical result details',
+          desc: 'Offical result details with penalty shootout');
+    }
+
+    if (penaltyScore != null && overtimeScore != null) {
+      return Intl.message(
+          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}\n(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})\n(Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+          name: 'Offical result details',
+          desc: 'Offical result details with penalty shootout and overtime');
+    }
+    if (overtimeScore != null) {
+      return Intl.message(
+          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}\n(Penalty ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})',
+          name: 'Offical result details',
+          desc: 'Offical result details with overtime');
+    }
+
+    return Intl.message(
+        '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
+        name: 'Offical result details',
+        desc: 'Offical result details');
   }
 
   String cardresultinprogress(GameResultDetails result) {
@@ -1604,7 +1760,6 @@ class Messages {
     return Intl.message('Player',
         desc: 'Title in team stepper to select a player');
   }
-
 
   String playerinvitedesc(String name) {
     return Intl.message(
