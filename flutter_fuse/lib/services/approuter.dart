@@ -7,6 +7,7 @@ import 'package:flutter_fuse/screens/game/addgame.dart';
 import 'package:flutter_fuse/screens/game/addtraining.dart';
 import 'package:flutter_fuse/screens/game/editgame.dart';
 import 'package:flutter_fuse/screens/game/gamedetails.dart';
+import 'package:flutter_fuse/screens/game/sharedgamedetails.dart';
 import 'package:flutter_fuse/screens/invites/invitelist.dart';
 import 'package:flutter_fuse/screens/invites/acceptinvitetoteam.dart';
 import 'package:flutter_fuse/screens/invites/addinvitetoplayer.dart';
@@ -166,6 +167,15 @@ class AppRouter {
           itemCategory: "Game");
       return new GameDetailsScreen(vals["id"][0].toString());
     }));
+    router.define("/SharedGame/:id", handler: new Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> vals) {
+          Analytics.analytics.logViewItem(
+              itemId: vals["id"][0].toString(),
+              itemName: "Game",
+              itemCategory: "Game");
+          return new SharedGameDetailsScreen(vals["id"][0].toString());
+        }));
+
     router.define("/AddEvent",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

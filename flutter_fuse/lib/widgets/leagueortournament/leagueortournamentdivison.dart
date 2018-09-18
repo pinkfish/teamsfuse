@@ -5,6 +5,7 @@ import 'leagueortournamentteamcard.dart';
 import 'package:flutter_fuse/widgets/games/gamesharedcard.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'addteamdialog.dart';
 
 ///
 /// The details section to display on a page in the app about the
@@ -45,6 +46,11 @@ class _LeagueOrTournamentDivisonDetailsState
             s.uid == widget.leagueOrTournamentDivisonUid);
   }
 
+  void _addGame(String uid) {
+    Navigator.pushNamed(
+        context, "/AddSharedGame/" + leagueOrTournament.uid + "/" + uid);
+  }
+
   Widget _buildGamesList() {
     if (!_tileExpanded) {
       return Text("closed");
@@ -61,11 +67,36 @@ class _LeagueOrTournamentDivisonDetailsState
           return Text(Messages.of(context).loading);
         }
         if (games.length == 0) {
-          return Container(
-              margin: EdgeInsets.only(left: 5.0, right: 5.0, bottom: 5.0),
-              alignment: Alignment.topLeft,
-              child: Text(Messages.of(context).nogames));
+          if (leagueOrTournament.isAdmin()) {
+            return Container(
+              margin: EdgeInsets.all(5.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Text(Messages.of(context).nogames),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: FlatButton(
+                      onPressed: () => _addGame(leagueOrTournmentDivison.uid),
+                      child: Text(Messages.of(context).addgame,
+                          style: Theme.of(context)
+                              .textTheme
+                              .button
+                              .copyWith(color: Theme.of(context).accentColor)),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return Container(
+              margin: EdgeInsets.all(5.0),
+              child: Text(Messages.of(context).nogames),
+            );
+          }
         }
+
         games = snap.data;
         List<GameSharedData> sortedGames = snap.data.toList();
         sortedGames.sort((GameSharedData g1, GameSharedData g2) =>
@@ -75,13 +106,19 @@ class _LeagueOrTournamentDivisonDetailsState
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: sortedGames.map((GameSharedData g) {
-              return GameSharedCard(g);
-            }).toList(),
+            children: sortedGames.map(
+              (GameSharedData g) {
+                return GameSharedCard(g);
+              },
+            ).toList(),
           ),
         );
       },
     );
+  }
+
+  void _addTeam() {
+    AddTeamDialog.showTeamDialog(context, widget.leagueOrTournamentDivisonUid);
   }
 
   Widget build(BuildContext context) {
@@ -109,8 +146,9 @@ class _LeagueOrTournamentDivisonDetailsState
               style: Theme.of(context).textTheme.headline,
             ),
             subtitle: Text(
-                "${leagueOrTournmentSeason.name} ${leagueOrTournmentDivison.name}",
-                style: Theme.of(context).textTheme.subhead),
+              "${leagueOrTournmentSeason.name} ${leagueOrTournmentDivison.name}",
+              style: Theme.of(context).textTheme.subhead,
+            ),
           ),
           StreamBuilder(
               stream: leagueOrTournmentDivison.teamStream,
@@ -128,22 +166,65 @@ class _LeagueOrTournamentDivisonDetailsState
                   );
                 }
                 if (teams.length == 0) {
-                  return Container(
+                  if (leagueOrTournament.isAdmin()) {
+
+                    return Container(
                       margin: EdgeInsets.all(5.0),
-                      child: Text(Messages.of(context).noteams));
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Text(Messages.of(context).noteams),
+                          FlatButton(
+                            onPressed: () => _addTeam(),
+                            child: Text(
+                              Messages.of(context).addteam,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .button
+                                  .copyWith(color: Theme.of(context).accentColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else {
+                    return Container(
+                      margin: EdgeInsets.all(5.0),
+                      child: Text(Messages.of(context).noteams),
+                    );
+                  }
+                }
+                List<Widget> children = teams
+                    .map((LeagueOrTournamentTeam team) =>
+                        LeagueOrTournamentTeamCard(
+                          team,
+                          admin: leagueOrTournament.isAdmin(),
+                        ))
+                    .toList();
+                if (leagueOrTournament.isAdmin()) {
+                  children.add(new SizedBox(height: 10.0));
+                  children.add(
+                    FlatButton(
+                      onPressed: () => _addTeam(),
+                      child: Text(
+                        Messages.of(context).addteam,
+                        style: Theme.of(context)
+                            .textTheme
+                            .button
+                            .copyWith(color: Theme.of(context).accentColor),
+                      ),
+                    ),
+                  );
                 }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: teams
-                      .map((LeagueOrTournamentTeam team) =>
-                          LeagueOrTournamentTeamCard(team))
-                      .toList(),
+                  children: children,
                 );
               }),
           ExpansionPanelList(
             expansionCallback: (int pos, bool opened) {
-              print('Expando $pos $opened');
               setState(() {
                 _tileExpanded = !opened;
               });

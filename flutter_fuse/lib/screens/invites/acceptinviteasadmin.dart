@@ -12,12 +12,12 @@ class AcceptInviteAsAdminScreen extends StatefulWidget {
   AcceptInviteAsAdminScreen(this._inviteUid);
 
   @override
-  AcceptInviteAsAdminScreenState createState() {
-    return new AcceptInviteAsAdminScreenState();
+  _AcceptInviteAsAdminScreenState createState() {
+    return new _AcceptInviteAsAdminScreenState();
   }
 }
 
-class AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
+class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
   InviteAsAdmin _invite;
 
   static const String newInvite = 'new';

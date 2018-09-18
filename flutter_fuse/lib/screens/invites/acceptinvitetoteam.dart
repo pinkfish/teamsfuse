@@ -6,19 +6,21 @@ import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
 import 'dialog/deleteinvite.dart';
 
-// Shows the current invites pending for this user.
+///
+/// Shows the invite the team screen.
+///
 class AcceptInviteToTeamScreen extends StatefulWidget {
   final String _inviteUid;
 
   AcceptInviteToTeamScreen(this._inviteUid);
 
   @override
-  AcceptInviteToTeamScreenState createState() {
-    return new AcceptInviteToTeamScreenState();
+  _AcceptInviteToTeamScreenState createState() {
+    return new _AcceptInviteToTeamScreenState();
   }
 }
 
-class AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
+class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   InviteToTeam _invite;
   Set<String> _checked;
   Map<String, String> _data;

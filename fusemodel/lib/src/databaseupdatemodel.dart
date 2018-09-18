@@ -128,6 +128,7 @@ class SharedGameSubscription extends IterableSubscription<GameSharedData> {}
 ///
 class SeasonSubscription extends IterableSubscription<Season> {}
 
+
 ///
 /// Details the games can be filtered on.
 ///
@@ -146,12 +147,15 @@ class FilterDetails {
 abstract class DatabaseUpdateModel {
   // Stuff for game updates.
   Future<void> updateFirestoreGame(Game game, bool allTeams);
+  Future<String> updateFirestoreSharedGame(GameSharedData game);
   Future<void> deleteFirestoreGame(Game game);
+  Future<void> deleteFirestoreSharedGame(GameSharedData game);
   Future<void> updateFirestoreGameAttendence(
       Game game, String playerUid, Attendance attend);
   Future<void> updateFirestoreGameResult(Game game, GameResultDetails result);
   GameLogReturnData readGameLogs(Game game);
   Future<String> addFirestoreGameLog(Game game, GameLog log);
+  SharedGameSubscription getSharedGame(String sharedGameUid);
 
   // Invite firestore updates
   Future<void> firestoreInviteDelete(Invite invite);
@@ -247,6 +251,10 @@ abstract class DatabaseUpdateModel {
   Future<void> updateLeagueTeam(LeagueOrTournamentTeam team);
   Future<void> updateLeagueTeamRecord(
       LeagueOrTournamentTeam team, String season);
+  Future<void> inviteUserToLeagueTeam(LeagueOrTournament league,
+      LeagueOrTournamentTeam leagueTeam, String email);
+  StreamSubscription<dynamic> getLeagueOrTournmentTeamInvitesStream(
+      LeagueOrTournamentTeam leagueOrTournmentTeam);
 
   // League Season/Division.
   Future<LeagueOrTournamentDivison> getLeagueDivisionData(

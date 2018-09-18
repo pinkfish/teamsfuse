@@ -73,7 +73,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
             return <PopupMenuItem<String>>[
               new PopupMenuItem<String>(
                 value: "delete",
-                child: new Text(Messages.of(context).deletegame(game)),
+                child: new Text(Messages.of(context).deletegame(game.sharedData)),
               ),
             ];
           },

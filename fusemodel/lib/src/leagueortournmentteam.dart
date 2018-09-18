@@ -1,6 +1,8 @@
 import 'common.dart';
 import 'winrecord.dart';
 import 'userdatabasedata.dart';
+import 'dart:async';
+import 'invite.dart';
 
 ///
 /// Team associated with a league or tournament.  A single team can
@@ -25,32 +27,37 @@ class LeagueOrTournamentTeam {
   /// Name of the team in respect to this tournament/league.
   String name;
 
-  /// The person who this is an invite too, if it is not yet accepted.
-  String inviteEmail;
-
   /// The win record of this team in the divison indexed by the season.
   WinRecord record;
+
+  // Invites
+  List<InviteToLeagueTeam> _inviteTeams;
+  StreamSubscription<dynamic> _inviteSub;
+  Stream<LeagueOrTournamentTeam> _thisTeamStream;
+
+  StreamController<LeagueOrTournamentTeam> _updateThisTeam;
 
   static const String TEAMUID = "teamUid";
   static const String SEASONUID = "seasonUid";
   static const String LEAGUEORTOURNMENTDIVISONUID = "leagueDivisonUid";
-  static const String INVITEEMAIL = "inviteEmail";
   static const String WINRECORD = "record";
 
   ///
   /// Create a nice new league or tournament.
   ///
-  LeagueOrTournamentTeam(
-      {this.uid,
-      this.seasonUid,
-      this.teamUid,
-      this.leagueOrTournamentDivisonUid,
-      this.name,
-      this.inviteEmail})
-      : record = WinRecord() {
+  LeagueOrTournamentTeam({
+    this.uid,
+    this.seasonUid,
+    this.teamUid,
+    this.leagueOrTournamentDivisonUid,
+    this.name,
+  }) : record = WinRecord() {
     // Cannot be both set, one must be set.
-    assert(this.inviteEmail != null || this.seasonUid != null);
-    assert(this.inviteEmail == null || this.seasonUid == null);
+  }
+
+  void dispose() {
+    _inviteSub?.cancel();
+    _inviteSub = null;
   }
 
   ///
@@ -60,10 +67,32 @@ class LeagueOrTournamentTeam {
     Map<String, dynamic> ret = <String, dynamic>{};
     ret[NAME] = name;
     ret[SEASONUID] = seasonUid;
-    ret[INVITEEMAIL] = inviteEmail;
     ret[TEAMUID] = teamUid;
     ret[LEAGUEORTOURNMENTDIVISONUID] = leagueOrTournamentDivisonUid;
     return ret;
+  }
+
+  ///
+  /// Starts the loading process for this team.
+  ///
+  void loadInvites() {
+    if (_inviteSub == null) {
+      _inviteSub = UserDatabaseData.instance.updateModel
+          .getLeagueOrTournmentTeamInvitesStream(this);
+    }
+  }
+
+  ///
+  /// Gets the currently cached set of invites.
+  ///
+  Iterable<InviteToLeagueTeam> get cachedInvites => _inviteTeams;
+
+  ///
+  /// Set the current invites to this team.
+  ///
+  void setInvites(List<InviteToLeagueTeam> invites) {
+    _inviteTeams = invites;
+    _updateThisTeam.add(this);
   }
 
   ///
@@ -75,8 +104,18 @@ class LeagueOrTournamentTeam {
         seasonUid = data[SEASONUID],
         name = data[NAME],
         uid = myUid,
-        inviteEmail = data[INVITEEMAIL],
         leagueOrTournamentDivisonUid = data[LEAGUEORTOURNMENTDIVISONUID];
+
+  ///
+  /// Stream to let people know when this team changes.
+  ///
+  Stream<LeagueOrTournamentTeam> get thisTeamStream {
+    if (_updateThisTeam == null) {
+      _updateThisTeam= new StreamController<LeagueOrTournamentTeam>();
+      _thisTeamStream = _updateThisTeam.stream.asBroadcastStream();
+    }
+    return _thisTeamStream;
+  }
 
   /// Update the league team into the database.
   void firebaseUpdate() {
@@ -86,4 +125,11 @@ class LeagueOrTournamentTeam {
   void updateWinRecord(String season) {
     UserDatabaseData.instance.updateModel.updateLeagueTeamRecord(this, season);
   }
+
+  @override
+  String toString() {
+    return 'LeagueOrTournamentTeam{uid: $uid, seasonUid: $seasonUid, teamUid: $teamUid, leagueOrTournamentDivisonUid: $leagueOrTournamentDivisonUid, name: $name, record: $record}';
+  }
+
+
 }

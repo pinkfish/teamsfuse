@@ -49,11 +49,46 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
+  Future<String> updateFirestoreSharedGame(GameSharedData game) async {
+    // Add or update this record into the database.
+    CollectionReferenceWrapper refShared =
+        wrapper.collection(GAMES_SHARED_COLLECTION);
+    if (game.uid == null || game.uid == '') {
+      print(game.toJSON());
+      // Add the shared stuff, then the game.
+      DocumentReferenceWrapper sharedDoc = await refShared.add(game.toJSON());
+      // Add the game.
+      game.uid = sharedDoc.documentID;
+      return sharedDoc.documentID;
+    } else {
+      await refShared.document(game.uid).updateData(game.toJSON());
+
+      // Update the game.
+      return game.uid;
+    }
+  }
+
+  @override
   Future<void> deleteFirestoreGame(Game game) async {
     // delete from the database.
     DocumentReferenceWrapper ref =
         wrapper.collection(GAMES_COLLECTION).document(game.uid);
     return ref.delete();
+  }
+
+  Future<void> deleteFirestoreSharedGame(GameSharedData game) async {
+    DocumentReferenceWrapper ref =
+        wrapper.collection(GAMES_SHARED_COLLECTION).document(game.uid);
+    await ref.delete();
+    QuerySnapshotWrapper snap = await wrapper
+        .collection(GAMES_COLLECTION)
+        .where(Game.SHAREDDATAUID, isEqualTo: game.uid)
+        .getDocuments();
+
+    for (DocumentSnapshotWrapper doc in snap.documents) {
+      await doc.reference.delete();
+    }
+    return;
   }
 
   @override
@@ -604,6 +639,23 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return _getGamesInternal(cachedGames, teams, null, start, end);
   }
 
+  SharedGameSubscription getSharedGame(String sharedGameUid) {
+    DocumentReferenceWrapper ref =
+        wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
+    SharedGameSubscription sub = new SharedGameSubscription();
+    sub.subscriptions
+        .add(ref.snapshots().listen((DocumentSnapshotWrapper snap) {
+      GameSharedData gameSharedData =
+          new GameSharedData.fromJSON(snap.documentID, snap.data);
+      sub.addUpdate([gameSharedData]);
+    }));
+    ref.get().then((DocumentSnapshotWrapper snap) {
+      GameSharedData gameSharedData =
+          new GameSharedData.fromJSON(snap.documentID, snap.data);
+      sub.addUpdate([gameSharedData]);
+    });
+  }
+
   // Player stuff
   @override
   Future<void> updateFirestorePlayer(Player player, bool includeUsers) async {
@@ -1147,6 +1199,41 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return ref.documentID;
   }
 
+  Future<void> inviteUserToLeagueTeam(LeagueOrTournament league,
+      LeagueOrTournamentTeam leagueTeam, String email) async {
+    InviteToLeagueTeam teamInvite = new InviteToLeagueTeam(
+        leagueName: league.name,
+        sentByUid: UserDatabaseData.instance.userUid,
+        leagueDivisonUid: leagueTeam.leagueOrTournamentDivisonUid,
+        leagueTeamName: leagueTeam.name,
+        leagueTeamUid: leagueTeam.uid);
+    // Write it out to firestore.  Yay.
+    return wrapper.collection(INVITE_COLLECTION).add(teamInvite.toJSON());
+  }
+
+  @override
+  StreamSubscription<dynamic> getLeagueOrTournmentTeamInvitesStream(
+      LeagueOrTournamentTeam leagueOrTournmentTeam) {
+    CollectionReferenceWrapper ref = wrapper.collection(INVITE_COLLECTION);
+    // See if the invite already exists.
+    StreamSubscription<QuerySnapshotWrapper> snap = ref
+        .where(Invite.TYPE, isEqualTo: InviteType.LeagueTeam.toString())
+        .where(InviteToLeagueTeam.LEAGUETEAMUID,
+            isEqualTo: leagueOrTournmentTeam.uid)
+        .snapshots()
+        .listen((QuerySnapshotWrapper query) {
+      List<InviteToLeagueTeam> ret = <InviteToLeagueTeam>[];
+
+      for (DocumentSnapshotWrapper doc in query.documents) {
+        InviteToLeagueTeam invite =
+            new InviteToLeagueTeam.fromJSON(doc.documentID, doc.data);
+        ret.add(invite);
+      }
+      leagueOrTournmentTeam.setInvites(ret);
+    });
+    return snap;
+  }
+
   @override
   Future<String> updateLeague(LeagueOrTournament league,
       {bool includeMembers = false}) async {
@@ -1177,8 +1264,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> deleteLeagueMember(LeagueOrTournament league, String memberUid) {
-    return wrapper.collection(LEAGUE_COLLECTON).document(league.uid).updateData(
-        <String, dynamic>{LeagueOrTournament.MEMBERS + "." + memberUid + "." + ADDED: false});
+    return wrapper
+        .collection(LEAGUE_COLLECTON)
+        .document(league.uid)
+        .updateData(<String, dynamic>{
+      LeagueOrTournament.MEMBERS + "." + memberUid + "." + ADDED: false
+    });
   }
 
   @override
@@ -1331,6 +1422,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> updateLeagueTeam(LeagueOrTournamentTeam team) async {
+    print('Here we go $team');
     if (team.uid == null) {
       DocumentReferenceWrapper doc =
           await wrapper.collection(LEAGUE_TEAM_COLLECTION).add(team.toJSON());

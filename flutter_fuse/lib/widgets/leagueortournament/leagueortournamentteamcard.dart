@@ -9,14 +9,35 @@ import 'package:flutter_fuse/widgets/util/teamimage.dart';
 ///
 class LeagueOrTournamentTeamCard extends StatelessWidget {
   final LeagueOrTournamentTeam team;
+  final bool admin;
 
-  LeagueOrTournamentTeamCard(this.team);
+  LeagueOrTournamentTeamCard(this.team, {this.admin = false});
 
   Widget build(BuildContext context) {
+    Widget subtitle;
+
+    if (admin) {
+      subtitle = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Text(Messages.of(context).winrecord(team.record)),
+          ButtonBar(
+            children: <Widget>[
+              FlatButton(
+                child: Text(Messages.of(context).addteam),
+              )
+            ],
+          )
+        ],
+      );
+    } else {
+      subtitle = Text(Messages.of(context).winrecord(team.record));
+    }
     return Card(
       child: ListTile(
         onTap: () =>
-            Navigator.pushNamed(context, "/LeagueTeam/" + team.teamUid),
+            Navigator.pushNamed(context, "/League/Team/" + team.teamUid),
         leading: team.teamUid != null
             ? TeamImage(
                 width: 50.0,
@@ -28,7 +49,7 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
                 size: 50.0,
               ),
         title: LeagueOrTournamentTeamName(team.uid),
-        subtitle: Text(Messages.of(context).winrecord(team.record)),
+        subtitle: subtitle,
       ),
     );
   }

@@ -9,12 +9,12 @@ class AddInviteToPlayerScreen extends StatefulWidget {
   AddInviteToPlayerScreen(this._playerUid);
 
   @override
-  AddInviteToPlayerScreenState createState() {
-    return new AddInviteToPlayerScreenState();
+  _AddInviteToPlayerScreenState createState() {
+    return new _AddInviteToPlayerScreenState();
   }
 }
 
-class AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
+class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
   InviteToPlayer _invite;
   Player _player;
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();

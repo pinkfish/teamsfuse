@@ -317,6 +317,7 @@ class GameOfficalResults {
 
   /// The team uid, this pointed to a leagueortourneamentteam data.
   String homeTeamLeagueUid;
+
   /// The team uid, this pointed to a leagueortourneamentteam data.
   String awayTeamLeagueUid;
 
@@ -341,9 +342,11 @@ class GameOfficalResults {
   }
 
   GameOfficalResults.fromJSON(Map<dynamic, dynamic> data)
-      : result = OfficalResult.values.firstWhere((e) =>
-            e.toString() == data[_OFFICALRESULT] ??
-            OfficalResult.NotStarted.toString(), orElse: () => OfficalResult.NotStarted),
+      : result = OfficalResult.values.firstWhere(
+            (e) =>
+                e.toString() == data[_OFFICALRESULT] ??
+                OfficalResult.NotStarted.toString(),
+            orElse: () => OfficalResult.NotStarted),
         homeTeamLeagueUid = data[_HOMETEAMUID],
         awayTeamLeagueUid = data[_AWAYTEAMUID] {
     if (data.containsKey(_SCORES)) {
@@ -568,18 +571,20 @@ class GameSharedData {
   // Derived data
   Location _location;
 
-  GameSharedData(String homeTeamUid, String awayTeamUid,
-      {this.name = "",
-      this.uid,
-      num time,
-      num endTime,
-      GamePlace place,
-      GameResultDetails officalResults,
-      String timezone,
-      this.type,
-      this.leagueUid,
-      this.leagueDivisionUid})
-      : this.place = place ?? new GamePlace(),
+  GameSharedData(
+    String homeTeamUid,
+    String awayTeamUid, {
+    this.name = "",
+    this.uid,
+    num time,
+    num endTime,
+    GamePlace place,
+    GameResultDetails officalResults,
+    String timezone,
+    this.type,
+    this.leagueUid,
+    this.leagueDivisionUid,
+  })  : this.place = place ?? new GamePlace(),
         this.officalResults =
             officalResults ?? new GameOfficalResults(homeTeamUid, awayTeamUid),
         this.time = time ?? new DateTime.now().millisecondsSinceEpoch,
@@ -679,9 +684,17 @@ class GameSharedData {
   static const String TYPE = 'type';
   static const String _PLACE = 'place';
   static const String _TIMEZONE = 'timezone';
-  static const String _HOMETEAM = 'hometeam';
   static const String _LEAGUEUID = 'leagueUid';
   static const String LEAGUEDIVISIONUID = 'leagueDivisionUid';
+
+  Future<void> deleteCompletelyFromFirestore() {
+    return UserDatabaseData.instance.updateModel.deleteFirestoreSharedGame(this);
+  }
+
+  Future<String> updateFirestore() {
+    return UserDatabaseData.instance.updateModel.updateFirestoreSharedGame(this);
+  }
+
 
   @override
   String toString() {

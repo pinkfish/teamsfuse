@@ -5,19 +5,21 @@ import 'package:flutter_fuse/widgets/form/relationshipformfield.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
 import 'dialog/deleteinvite.dart';
 
-// Shows the current invites pending for this user.
+///
+/// Accepts the invite to the player.
+///
 class AcceptInviteToPlayerScreen extends StatefulWidget {
   final String _inviteUid;
 
   AcceptInviteToPlayerScreen(this._inviteUid);
 
   @override
-  AcceptInviteToPlayerScreenState createState() {
-    return new AcceptInviteToPlayerScreenState();
+  _AcceptInviteToPlayerScreenState createState() {
+    return new _AcceptInviteToPlayerScreenState();
   }
 }
 
-class AcceptInviteToPlayerScreenState
+class _AcceptInviteToPlayerScreenState
     extends State<AcceptInviteToPlayerScreen> {
   InviteToPlayer _invite;
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();

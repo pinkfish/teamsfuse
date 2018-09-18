@@ -4,6 +4,8 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/games/gamesharedcard.dart';
 import 'package:flutter/foundation.dart';
 import 'leagueortournamentteamname.dart';
+import 'dart:async';
+import 'addinvitetoteamdialog.dart';
 
 ///
 /// The details to display in the app about the team in a league or
@@ -22,11 +24,11 @@ class LeagueOrTournamentTeamDetails extends StatefulWidget {
 
 class _LeagueOrTournamentTeamDetailsState
     extends State<LeagueOrTournamentTeamDetails> {
-  bool _tileExpanded;
-  Game leagueOrTournament;
+  LeagueOrTournament leagueOrTournament;
   LeagueOrTournamentSeason leagueOrTournmentSeason;
   LeagueOrTournamentDivison leagueOrTournmentDivison;
   LeagueOrTournamentTeam leagueOrTournamentTeam;
+  StreamSubscription<LeagueOrTournamentTeam> _sub;
 
   void initState() {
     super.initState();
@@ -41,6 +43,11 @@ class _LeagueOrTournamentTeamDetailsState
     setState(() => true);
 
     if (leagueOrTournamentTeam != null) {
+      leagueOrTournamentTeam.loadInvites();
+      _sub = leagueOrTournamentTeam.thisTeamStream
+          .listen((LeagueOrTournamentTeam t) {
+        setState(() {});
+      });
       // load a bit more stuff.
       leagueOrTournmentDivison = await UserDatabaseData.instance.updateModel
           .getLeagueDivisionData(
@@ -55,6 +62,14 @@ class _LeagueOrTournamentTeamDetailsState
               leagueOrTournmentDivison.leagueOrTournmentSeasonUid);
       setState(() => true);
     }
+    if (leagueOrTournmentSeason != null) {
+      leagueOrTournament = await UserDatabaseData.instance.updateModel
+          .getLeagueData(leagueOrTournmentSeason.leagueOrTournmentUid);
+    }
+  }
+
+  void dispose() {
+    _sub?.cancel();
   }
 
   String _seasonName() {
@@ -113,10 +128,39 @@ class _LeagueOrTournamentTeamDetailsState
 
             sortedGames.sort((GameSharedData g1, GameSharedData g2) =>
                 (g1.time - g2.time).toInt());
+            List<Widget> children = sortedGames
+                .map((GameSharedData g) => GameSharedCard(g))
+                .toList();
+            if (leagueOrTournamentTeam.teamUid == null &&
+                leagueOrTournament.isAdmin()) {
+              children.add(new ExpansionTile(
+                title: Text(
+                  Messages.of(context).invitedpeople(
+                      leagueOrTournamentTeam.cachedInvites?.length ?? 0),
+                ),
+                children: leagueOrTournamentTeam.cachedInvites
+                    .map((InviteToLeagueTeam invite) {
+                  return ListTile(
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                    ),
+                    title: Text(
+                      invite.email,
+                    ),
+                  );
+                }).toList(),
+              ));
+              children.add(
+                FlatButton(
+                  onPressed: () =>
+                      AddInviteToTeamDialog.showAddTeamInviteDialog(
+                          context, leagueOrTournament, leagueOrTournamentTeam),
+                  child: Text(Messages.of(context).addinvite),
+                ),
+              );
+            }
             return Column(
-              children: sortedGames
-                  .map((GameSharedData g) => GameSharedCard(g))
-                  .toList(),
+              children: children,
             );
           },
         ),

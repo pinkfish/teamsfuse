@@ -21,6 +21,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
   String _openedPanel;
 
   Widget _buildSeason(LeagueOrTournamentSeason season, bool admin) {
+    print('Buidling ${season.uid}');
     if (season.uid == _openedPanel) {
       // Show all the divisions and details.
       return new StreamBuilder(
@@ -199,32 +200,36 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                         return c1.name.compareTo(c2.name);
                       });
                       return ExpansionPanelList.radio(
-                        initialOpenPanelValue: data.data.currentSeason,
+                        initialOpenPanelValue:
+                            data.data.currentSeason ?? seasonSorted[0],
                         expansionCallback: (int pos, bool opened) {
                           print('Opening $pos $opened');
                           if (!opened) {
                             _openedPanel = seasonSorted[pos].uid;
+                            setState(() {
+
+                            });
                           }
                         },
                         children: seasonSorted.map(
                           (LeagueOrTournamentSeason season) {
                             return ExpansionPanelRadio(
-                                body: _buildSeason(season, data.data.isAdmin()),
-                                value: season.uid,
-                                headerBuilder:
-                                    (BuildContext context, bool expanded) {
-                                  return Container(
-                                    alignment: Alignment.centerLeft,
-                                    margin: EdgeInsets.only(
-                                        left: 10.0, right: 10.0),
-                                    child: Text(
-                                      season.name,
-                                      style:
-                                          Theme.of(context).textTheme.subhead,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  );
-                                });
+                              body: _buildSeason(season, data.data.isAdmin()),
+                              value: season.uid,
+                              headerBuilder:
+                                  (BuildContext context, bool expanded) {
+                                return Container(
+                                  alignment: Alignment.centerLeft,
+                                  margin:
+                                      EdgeInsets.only(left: 10.0, right: 10.0),
+                                  child: Text(
+                                    season.name,
+                                    style: Theme.of(context).textTheme.subhead,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                );
+                              },
+                            );
                           },
                         ).toList(),
                       );

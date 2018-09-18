@@ -170,6 +170,9 @@ class LeagueOrTournament {
     _seasonController = null;
     _seasonSub?.dispose();
     _seasonSub = null;
+    for (LeagueOrTournamentSeason season in _cachedSeasons) {
+      season.dispose();
+    }
   }
 
   Future<String> updateFirestore({bool includeMembers = false}) {

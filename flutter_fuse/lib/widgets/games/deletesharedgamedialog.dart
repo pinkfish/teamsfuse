@@ -1,10 +1,10 @@
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'gamecard.dart';
+import 'gamesharedcard.dart';
 import 'dart:async';
 
-Future<bool> deleteGameDialog(BuildContext context, Game game) async {
+Future<bool> deleteSharedGameDialog(BuildContext context, GameSharedData game) async {
   Messages mess = Messages.of(context);
 
   bool result = await showDialog<bool>(
@@ -12,10 +12,10 @@ Future<bool> deleteGameDialog(BuildContext context, Game game) async {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return new AlertDialog(
-          title: new Text(mess.deletegame(game.sharedData)),
+          title: new Text(mess.deletegame(game)),
           content: new Scrollbar(
             child: new SingleChildScrollView(
-              child: new GameCard(game),
+              child: new GameSharedCard(game),
             ),
           ),
           actions: <Widget>[
@@ -37,7 +37,7 @@ Future<bool> deleteGameDialog(BuildContext context, Game game) async {
         );
       });
   if (result) {
-    await game.deleteFromFirestore();
+    await game.deleteCompletelyFromFirestore();
   }
   return result;
 }

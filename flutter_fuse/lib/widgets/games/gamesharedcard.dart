@@ -7,8 +7,11 @@ import 'package:timezone/timezone.dart';
 
 class GameSharedCard extends StatelessWidget {
   final GameSharedData game;
+  final LeagueOrTournament leagueOrTournament;
 
-  GameSharedCard(this.game);
+  GameSharedCard(this.game)
+      : leagueOrTournament =
+            UserDatabaseData.instance.leagueOrTournments[game.leagueUid];
 
   void _editResult(BuildContext context) async {
     // Call up a dialog to edit the result.
@@ -71,7 +74,8 @@ class GameSharedCard extends StatelessWidget {
 
     if (game.time < new DateTime.now().millisecondsSinceEpoch &&
         game.type == EventType.Game &&
-        game.officalResults == OfficalResult.NotStarted) {
+        game.officalResults == OfficalResult.NotStarted &&
+        leagueOrTournament?.isAdmin() ?? false) {
       // Show a result button (if an admin).
       buttons.add(
         new FlatButton(

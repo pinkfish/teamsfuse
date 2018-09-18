@@ -12,12 +12,12 @@ class AcceptInviteToClubScreen extends StatefulWidget {
   AcceptInviteToClubScreen(this._inviteUid);
 
   @override
-  AcceptInviteToClubScreenState createState() {
-    return new AcceptInviteToClubScreenState();
+  _AcceptInviteToClubScreenState createState() {
+    return new _AcceptInviteToClubScreenState();
   }
 }
 
-class AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
+class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
   InviteToClub _invite;
 
   static const String newInvite = 'new';
@@ -29,7 +29,7 @@ class AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
     _invite = new InviteToClub(clubName: '');
     if (UserDatabaseData.instance.invites.containsKey(widget._inviteUid)) {
       _invite =
-      UserDatabaseData.instance.invites[widget._inviteUid] as InviteToClub;
+          UserDatabaseData.instance.invites[widget._inviteUid] as InviteToClub;
     } else {
       // Get out of here.
       Navigator.pop(context);

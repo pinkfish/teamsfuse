@@ -1006,8 +1006,8 @@ class Messages {
     return unknown;
   }
 
-  String deletegame(Game game) {
-    switch (game.sharedData.type) {
+  String deletegame(GameSharedData game) {
+    switch (game.type) {
       case EventType.Game:
         return Intl.message("Delete game");
       case EventType.Practice:

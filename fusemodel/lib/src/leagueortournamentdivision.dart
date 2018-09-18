@@ -65,7 +65,6 @@ class LeagueOrTournamentDivison {
   static const String MEMBERS = "members";
   static const String ADMIN = "admin";
 
-
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = <String, dynamic>{};
 
@@ -115,11 +114,18 @@ class LeagueOrTournamentDivison {
     _teamSub = null;
     _teamController.close();
     _teamController = null;
+    // Dispose all the teams too.
+    for (LeagueOrTournamentTeam team in _cachedTeams) {
+      team.dispose();
+    }
+    _cachedTeams = [];
 
     _gameController?.close();
     _gameController = null;
     _gameSub?.dispose();
     _gameSub = null;
+    // Dispose all the games too.
+    _games = [];
   }
 }
 
@@ -138,7 +144,6 @@ class LeagueOrTournamentSeason {
 
   /// List of member user ids.  This is all user ids (not players)
   List<String> members = [];
-
 
   LeagueOrTournamentDivisonSubscription _divisonSub;
   Iterable<LeagueOrTournamentDivison> _cachedDivisons;
@@ -183,8 +188,8 @@ class LeagueOrTournamentSeason {
   /// Get the teams for this league.
   Stream<Iterable<LeagueOrTournamentDivison>> get divisonStream {
     if (_divisonSub == null) {
-      _divisonSub = UserDatabaseData.instance.updateModel
-          .getLeagueDivisonsForSeason(uid);
+      _divisonSub =
+          UserDatabaseData.instance.updateModel.getLeagueDivisonsForSeason(uid);
       _divisonSub.stream.listen((Iterable<LeagueOrTournamentDivison> divisons) {
         _cachedDivisons = divisons;
         _divisonController.add(_cachedDivisons);
@@ -203,5 +208,10 @@ class LeagueOrTournamentSeason {
     _divisonSub = null;
     _divisonController.close();
     _divisonController = null;
+
+    for (LeagueOrTournamentDivison div in _cachedDivisons) {
+      div.dispose();
+    }
+    _cachedDivisons = [];
   }
 }
