@@ -58,7 +58,6 @@ const String GAME_LOG_COLLECTION = "Logs";
 const String USER_DATA_COLLECTION = "UserData";
 const String CLUB_COLLECTION = "Clubs";
 const String LEAGUE_COLLECTON = "League";
-const String TOURNAMENT_TEAM_COLLECTON = "TeamLeague";
 const String LEAGUE_DIVISION_COLLECTION = "LeagueDivision";
 const String LEAGUE_SEASON_COLLECTION = "LeagueSeason";
 const String LEAGUE_TEAM_COLLECTION = "LeagueTeam";

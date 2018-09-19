@@ -122,12 +122,17 @@ class LeagueHomeScreen extends StatelessWidget {
                 new PopupMenuItem<String>(
                   value: "tournament",
                   child: new Text(Messages.of(context).addtournament),
+                ),
+                new PopupMenuItem(
+                  value: 'edit',
+                  child: Text(Messages.of(context).editbuttontext),
                 )
               ];
             },
           ),
         ],
       ),
+      drawer: new FusedDrawer(DrawerMode.League),
       body: Scrollbar(
         child: SingleChildScrollView(
           child: _buildBody(context),

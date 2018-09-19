@@ -928,6 +928,10 @@ class Messages {
     return Intl.message('SHARE PLAYER');
   }
 
+  String get addteamadmin {
+    return Intl.message('SHARE TEAM');
+  }
+
   String get addtraining {
     return Intl.message('ADD TRAINING',
         name: 'Button to add a training to a team');
@@ -1608,6 +1612,24 @@ class Messages {
     }
     return Intl.message('$time vs $opponent', desc: 'Game title in game list');
   }
+
+  String gametitleshared(
+      String time, String endTime, String tzShortName) {
+    if (endTime != null) {
+      if (tzShortName != null) {
+        return Intl.message('$time - $endTime ($tzShortName)',
+            desc: 'Game title in game list');
+      }
+      return Intl.message('$time - $endTime',
+          desc: 'Game title in game list');
+    }
+    if (tzShortName != null) {
+      return Intl.message('$time ($tzShortName}',
+          desc: 'Game title in game list');
+    }
+    return Intl.message('$time', desc: 'Game title in game list');
+  }
+
 
   String gametitlenow(
       String time, String endTime, String tzShortName, String opponent) {

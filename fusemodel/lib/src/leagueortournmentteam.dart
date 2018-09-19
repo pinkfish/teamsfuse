@@ -69,6 +69,7 @@ class LeagueOrTournamentTeam {
     ret[SEASONUID] = seasonUid;
     ret[TEAMUID] = teamUid;
     ret[LEAGUEORTOURNMENTDIVISONUID] = leagueOrTournamentDivisonUid;
+    ret[WINRECORD] = record.toJSON();
     return ret;
   }
 
@@ -99,7 +100,7 @@ class LeagueOrTournamentTeam {
   /// Load this from the wire format.
   ///
   LeagueOrTournamentTeam.fromJSON(String myUid, Map<String, dynamic> data)
-      : record = WinRecord.fromJSON(data[WINRECORD]),
+      : record = WinRecord.fromJSON(data[WINRECORD] ?? {}),
         teamUid = data[TEAMUID],
         seasonUid = data[SEASONUID],
         name = data[NAME],
@@ -111,7 +112,7 @@ class LeagueOrTournamentTeam {
   ///
   Stream<LeagueOrTournamentTeam> get thisTeamStream {
     if (_updateThisTeam == null) {
-      _updateThisTeam= new StreamController<LeagueOrTournamentTeam>();
+      _updateThisTeam = new StreamController<LeagueOrTournamentTeam>();
       _thisTeamStream = _updateThisTeam.stream.asBroadcastStream();
     }
     return _thisTeamStream;
@@ -130,6 +131,4 @@ class LeagueOrTournamentTeam {
   String toString() {
     return 'LeagueOrTournamentTeam{uid: $uid, seasonUid: $seasonUid, teamUid: $teamUid, leagueOrTournamentDivisonUid: $leagueOrTournamentDivisonUid, name: $name, record: $record}';
   }
-
-
 }

@@ -21,24 +21,17 @@ class _SharedGameDetailsScreenState extends State<SharedGameDetailsScreen> {
   SharedGameSubscription _gameSub;
   GameSharedData _game;
   LeagueOrTournament _league;
-  StreamSubscription<Iterable<GameSharedData>> _gameStream;
 
   @override
   void initState() {
     super.initState();
     _gameSub = UserDatabaseData.instance.updateModel
         .getSharedGame(widget.sharedGameUid);
-    _gameStream = _gameSub.stream.listen((Iterable<GameSharedData> games) {
-      if (games.length > 0) {
-        _game = games.first;
-      }
-    });
   }
 
   void dispose() {
     super.dispose();
     _gameSub?.dispose();
-    _gameStream?.cancel();
   }
 
   void _select(String choice) async {
@@ -63,11 +56,18 @@ class _SharedGameDetailsScreenState extends State<SharedGameDetailsScreen> {
     List<Widget> actions = <Widget>[];
     FloatingActionButton fab;
 
-    if (_game == null) {
-      body = Center(child: Text(Messages.of(context).loading));
-    } else {
-      body = new GameSharedDetails(_game);
-    }
+    body = StreamBuilder(
+        stream: _gameSub.stream,
+        builder: (BuildContext context,
+            AsyncSnapshot<Iterable<GameSharedData>> snap) {
+          if (snap.hasData && snap.data.length > 0) {
+            _game = snap.data.first;
+          }
+          if (_game != null) {
+            return GameSharedDetails(_game);
+          }
+          return Center(child: Text(Messages.of(context).loading));
+        });
 
     if (_league != null && _league.isAdmin() && _game != null) {
       actions.add(

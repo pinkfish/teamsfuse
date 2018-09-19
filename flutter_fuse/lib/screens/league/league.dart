@@ -4,17 +4,25 @@ import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.d
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdetails.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/addseasondialog.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/addinvitetoleaguedialog.dart';
 
 class LeagueScreen extends StatelessWidget {
   final String leagueUid;
 
   LeagueScreen(this.leagueUid);
 
-  void _onEditLeague(BuildContext context) {}
+  void _onEditLeague(BuildContext context) {
+    Navigator.pushNamed(context, "/League/Edit/" + leagueUid);
+  }
 
   void _doAction(BuildContext context, String action) {
     if (action == "season") {
       _addSeason(context);
+    }
+    if (action == "admin") {
+      AddInviteToLeagueDialog.showAddLeagueOrTournamentInviteDialog(
+          context, UserDatabaseData.instance.leagueOrTournments[leagueUid]);
     }
   }
 
@@ -29,11 +37,7 @@ class LeagueScreen extends StatelessWidget {
       print(
           'league stuff ${UserDatabaseData.instance.leagueOrTournments[leagueUid].isAdmin()}');
       if (UserDatabaseData.instance.leagueOrTournments[leagueUid].isAdmin()) {
-        fab = new FloatingActionButton(
-          onPressed: () => _onEditLeague(context),
-          child: new Icon(Icons.edit),
-        );
-        actions.add(
+             actions.add(
           new PopupMenuButton<String>(
             onSelected: (String str) => _doAction(context, str),
             itemBuilder: (BuildContext context) {
@@ -41,6 +45,10 @@ class LeagueScreen extends StatelessWidget {
                 new PopupMenuItem<String>(
                   value: "season",
                   child: new Text(Messages.of(context).addseason),
+                ),
+                new PopupMenuItem<String>(
+                  child: new Text(Messages.of(context).addadmin),
+                  value: "admin",
                 ),
               ];
             },
@@ -53,6 +61,7 @@ class LeagueScreen extends StatelessWidget {
         title: new LeagueOrTournamentName(leagueUid),
         actions: actions,
       ),
+      drawer: new FusedDrawer(DrawerMode.League),
       floatingActionButton: fab,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Scrollbar(

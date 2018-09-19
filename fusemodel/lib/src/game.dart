@@ -330,7 +330,7 @@ class GameOfficalResults {
   static const String _AWAYTEAMUID = 'awayTeamUid';
 
   GameOfficalResults(this.homeTeamLeagueUid, this.awayTeamLeagueUid,
-      {this.result});
+      {this.result = OfficalResult.NotStarted});
 
   GameOfficalResults.copy(GameOfficalResults copy)
       : homeTeamLeagueUid = copy.homeTeamLeagueUid,
@@ -375,7 +375,7 @@ class GameOfficalResults {
     ret[_SCORES] = retScores;
     ret[_OFFICALRESULT] = result.toString();
     ret[_AWAYTEAMUID] = awayTeamLeagueUid;
-    ret[_AWAYTEAMUID] = homeTeamLeagueUid;
+    ret[_HOMETEAMUID] = homeTeamLeagueUid;
     return ret;
   }
 }
@@ -496,14 +496,14 @@ class GamePlace {
   num longitude;
   bool unknown;
 
-  GamePlace() {
-    latitude = 0;
-    longitude = 0;
-    address = '';
-    placeId = '';
-    notes = '';
-    unknown = true;
-  }
+  GamePlace(
+      {this.name,
+      this.placeId = '',
+      this.address = '',
+      this.notes = '',
+      this.unknown = true,
+      this.latitude = 0,
+      this.longitude = 0});
 
   GamePlace.copy(GamePlace copy) {
     name = copy.name;
@@ -579,7 +579,7 @@ class GameSharedData {
     num time,
     num endTime,
     GamePlace place,
-    GameResultDetails officalResults,
+    GameOfficalResults officalResults,
     String timezone,
     this.type,
     this.leagueUid,
@@ -614,7 +614,8 @@ class GameSharedData {
       endTime = time;
     }
 
-    type = EventType.values.firstWhere((e) => e.toString() == data[TYPE]);
+    type = EventType.values.firstWhere((e) => e.toString() == data[TYPE],
+        orElse: () => EventType.Game);
     GamePlace place =
         new GamePlace.fromJSON(data[_PLACE] as Map<dynamic, dynamic>);
     this.place = place;
@@ -676,7 +677,7 @@ class GameSharedData {
   TZDateTime get tzTime =>
       new TZDateTime.fromMillisecondsSinceEpoch(location, time);
   TZDateTime get tzEndTime =>
-      new TZDateTime.fromMillisecondsSinceEpoch(location, time);
+      new TZDateTime.fromMillisecondsSinceEpoch(location, endTime);
 
   static const String _OFFICALRESULT = 'officialresult';
   static const String _TIME = 'time';
@@ -688,13 +689,14 @@ class GameSharedData {
   static const String LEAGUEDIVISIONUID = 'leagueDivisionUid';
 
   Future<void> deleteCompletelyFromFirestore() {
-    return UserDatabaseData.instance.updateModel.deleteFirestoreSharedGame(this);
+    return UserDatabaseData.instance.updateModel
+        .deleteFirestoreSharedGame(this);
   }
 
   Future<String> updateFirestore() {
-    return UserDatabaseData.instance.updateModel.updateFirestoreSharedGame(this);
+    return UserDatabaseData.instance.updateModel
+        .updateFirestoreSharedGame(this);
   }
-
 
   @override
   String toString() {

@@ -84,10 +84,11 @@ class LeagueOrTournamentDivison {
     if (_teamSub == null) {
       _teamSub =
           UserDatabaseData.instance.updateModel.getLeagueDivisionTeams(uid);
-      _teamSub.stream.listen((Iterable<LeagueOrTournamentTeam> teams) {
+      _teamSub.subscriptions
+          .add(_teamSub.stream.listen((Iterable<LeagueOrTournamentTeam> teams) {
         _cachedTeams = teams;
         _teamController.add(_cachedTeams);
-      });
+      }));
       _teamStream = _teamController.stream.asBroadcastStream();
     }
     return _teamStream;
@@ -100,10 +101,11 @@ class LeagueOrTournamentDivison {
     if (_gameSub == null) {
       _gameSub =
           UserDatabaseData.instance.updateModel.getLeagueGamesForDivison(uid);
-      _gameSub.stream.listen((Iterable<GameSharedData> games) {
+      _gameSub.subscriptions
+          .add(_gameSub.stream.listen((Iterable<GameSharedData> games) {
         _games = games;
         _gameController.add(_games);
-      });
+      }));
       _gameStream = _gameController.stream.asBroadcastStream();
     }
     return _gameStream;
@@ -190,10 +192,11 @@ class LeagueOrTournamentSeason {
     if (_divisonSub == null) {
       _divisonSub =
           UserDatabaseData.instance.updateModel.getLeagueDivisonsForSeason(uid);
-      _divisonSub.stream.listen((Iterable<LeagueOrTournamentDivison> divisons) {
+      _divisonSub.subscriptions.add(_divisonSub.stream
+          .listen((Iterable<LeagueOrTournamentDivison> divisons) {
         _cachedDivisons = divisons;
         _divisonController.add(_cachedDivisons);
-      });
+      }));
       _divisonStream = _divisonController.stream.asBroadcastStream();
     }
     return _divisonStream;

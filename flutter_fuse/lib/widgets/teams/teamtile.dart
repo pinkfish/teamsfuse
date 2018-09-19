@@ -6,8 +6,9 @@ import 'package:fluro/fluro.dart';
 
 class TeamTile extends StatelessWidget {
   final Team team;
+  final bool popBeforeNavigate;
 
-  TeamTile(this.team);
+  TeamTile(this.team, {this.popBeforeNavigate = false});
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +57,9 @@ class TeamTile extends StatelessWidget {
       subtitle: new Text(
           record != null ? Messages.of(context).winrecord(record) : ""),
       onTap: () {
+        if (popBeforeNavigate) {
+          Navigator.pop(context);
+        }
         AppRouter.instance.navigateTo(context, "Team/" + team.uid,
             transition: TransitionType.inFromRight);
       },

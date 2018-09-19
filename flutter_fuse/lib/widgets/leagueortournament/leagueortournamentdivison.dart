@@ -6,6 +6,8 @@ import 'package:flutter_fuse/widgets/games/gamesharedcard.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'addteamdialog.dart';
+import 'package:timezone/timezone.dart';
+import 'package:intl/intl.dart';
 
 ///
 /// The details section to display on a page in the app about the
@@ -29,10 +31,18 @@ class LeagueOrTournamentDivisonDetails extends StatefulWidget {
 
 class _LeagueOrTournamentDivisonDetailsState
     extends State<LeagueOrTournamentDivisonDetails> {
-  bool _tileExpanded = false;
+  bool _gameExpanded = true;
+  bool _teamExpanded = false;
   LeagueOrTournament leagueOrTournament;
   LeagueOrTournamentSeason leagueOrTournmentSeason;
   LeagueOrTournamentDivison leagueOrTournmentDivison;
+
+  static DateFormat monthFormat = new DateFormat(DateFormat.ABBR_MONTH);
+  static DateFormat dayOfWeekFormat = new DateFormat(DateFormat.ABBR_WEEKDAY);
+  static DateFormat dayOfMonthFormat =
+      new DateFormat(DateFormat.ABBR_MONTH_DAY);
+  static const double widthFirst = 40.0;
+  static const double inset = 5.0;
 
   void initState() {
     super.initState();
@@ -52,7 +62,7 @@ class _LeagueOrTournamentDivisonDetailsState
   }
 
   Widget _buildGamesList() {
-    if (!_tileExpanded) {
+    if (!_gameExpanded) {
       return Text("closed");
     }
     return StreamBuilder(
@@ -97,20 +107,69 @@ class _LeagueOrTournamentDivisonDetailsState
           }
         }
 
-        games = snap.data;
-        List<GameSharedData> sortedGames = snap.data.toList();
+        List<GameSharedData> sortedGames = games.toList();
         sortedGames.sort((GameSharedData g1, GameSharedData g2) =>
             (g1.time - g2.time).toInt());
+
+        List<Widget> children = <Widget>[];
+
+        TextStyle style = Theme.of(context).textTheme.subhead.copyWith(
+              fontWeight: FontWeight.w300,
+            );
+        List<Widget> displayEvents = [];
+        DateTime day = new DateTime(1970);
+        final Size screenSize = MediaQuery.of(context).size;
+        double widthSecond = screenSize.width - widthFirst - inset - 20.0;
+
+        for (GameSharedData g in sortedGames) {
+          displayEvents.add(GameSharedCard(g));
+          if (day.month != g.tzTime.month || day.day != g.tzTime.day) {
+            children.add(new Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                new Container(
+                  constraints: new BoxConstraints.tightFor(width: widthFirst),
+                  margin: new EdgeInsets.only(top: 5.0, left: inset),
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      new Text(
+                        dayOfWeekFormat.format(day),
+                        style: style,
+                      ),
+                      new Text(
+                        dayOfMonthFormat.format(day),
+                        style: style.copyWith(fontSize: 10.0),
+                      ),
+                    ],
+                  ),
+                ),
+                new Container(
+                  constraints: new BoxConstraints.tightFor(width: widthSecond),
+                  margin: new EdgeInsets.only(top: 10.0),
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: displayEvents,
+                  ),
+                ),
+              ],
+            ));
+            day = new DateTime(g.tzTime.year, g.tzTime.month, g.tzTime.day);
+            displayEvents = [];
+          }
+        }
         return Container(
           margin: EdgeInsets.all(5.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: sortedGames.map(
-              (GameSharedData g) {
-                return GameSharedCard(g);
-              },
-            ).toList(),
+            children: children,
           ),
         );
       },
@@ -167,7 +226,6 @@ class _LeagueOrTournamentDivisonDetailsState
                 }
                 if (teams.length == 0) {
                   if (leagueOrTournament.isAdmin()) {
-
                     return Container(
                       margin: EdgeInsets.all(5.0),
                       child: Column(
@@ -182,7 +240,8 @@ class _LeagueOrTournamentDivisonDetailsState
                               style: Theme.of(context)
                                   .textTheme
                                   .button
-                                  .copyWith(color: Theme.of(context).accentColor),
+                                  .copyWith(
+                                      color: Theme.of(context).accentColor),
                             ),
                           ),
                         ],
@@ -196,7 +255,7 @@ class _LeagueOrTournamentDivisonDetailsState
                   }
                 }
                 List<Widget> children = teams
-                    .map((LeagueOrTournamentTeam team) =>
+                    .map<Widget>((LeagueOrTournamentTeam team) =>
                         LeagueOrTournamentTeamCard(
                           team,
                           admin: leagueOrTournament.isAdmin(),
@@ -217,32 +276,33 @@ class _LeagueOrTournamentDivisonDetailsState
                     ),
                   );
                 }
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: children,
-                );
+                return ExpansionPanelList(
+                    expansionCallback: (int pos, bool opened) {
+                      setState(() {
+                        _teamExpanded = !opened;
+                      });
+                    },
+                    children: [
+                      ExpansionPanel(
+                        isExpanded: _teamExpanded,
+                        headerBuilder: (BuildContext context, bool opened) {
+                          return Container(
+                            margin: EdgeInsets.only(left: 5.0, right: 5.0),
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                                Messages.of(context).teamnumbers(teams.length)),
+                          );
+                        },
+                        body: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: children,
+                        ),
+                      )
+                    ]);
               }),
-          ExpansionPanelList(
-            expansionCallback: (int pos, bool opened) {
-              setState(() {
-                _tileExpanded = !opened;
-              });
-            },
-            children: [
-              ExpansionPanel(
-                isExpanded: _tileExpanded,
-                headerBuilder: (BuildContext context, bool expanded) =>
-                    Container(
-                      margin: EdgeInsets.only(left: 5.0, right: 5.0),
-                      child: Text(Messages.of(context).allgames,
-                          style: Theme.of(context).textTheme.subhead),
-                      alignment: Alignment.centerLeft,
-                    ),
-                body: _buildGamesList(),
-              )
-            ],
-          ),
+           _buildGamesList(),
+
         ],
       ),
     );

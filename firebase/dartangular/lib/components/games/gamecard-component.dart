@@ -55,7 +55,7 @@ class GameCardComponent {
       Uri.parse("https://maps.googleapis.com/maps/api/place/textsearch/json");
   Map<String, PlaceResult> placesResults = InputData.getDefaultPlaceResult();
   @ViewChild('mapArea')
-  HtmlElement mapAreaRef;
+  ElementRef mapAreaRef;
   final Router _router;
 
   GameCardComponent(this._router);

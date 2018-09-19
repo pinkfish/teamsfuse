@@ -80,7 +80,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                         season.uid +
                         "/" +
                         divison.uid),
-                leading: const Icon(CommunityIcons.snowflake),
+                leading: const Icon(CommunityIcons.accountGroup),
                 title: Text(divison.name),
               );
             },

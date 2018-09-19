@@ -7,8 +7,13 @@ import 'package:flutter_fuse/widgets/teams/teamtile.dart';
 import 'fuseddrawerheader.dart';
 import 'package:flutter_fuse/services/approuter.dart';
 import 'package:fluro/fluro.dart';
+import 'fuseddrawer.dart';
 
 class FusedDrawerContent extends StatelessWidget {
+  DrawerMode mode;
+
+  FusedDrawerContent({this.mode = DrawerMode.GameList});
+
   Widget _buildTeamSection(BuildContext context) {
     List<Widget> data = <Widget>[];
     // If we are specifically in a club, list that here.
@@ -54,6 +59,7 @@ class FusedDrawerContent extends StatelessWidget {
                   return new Text(Messages.of(context).loading);
                 }),
             onTap: () {
+              Navigator.pop(context);
               AppRouter.instance.navigateTo(context, "Club/" + club.uid,
                   transition: TransitionType.inFromRight);
             },
@@ -63,7 +69,10 @@ class FusedDrawerContent extends StatelessWidget {
     }
     UserDatabaseData.instance.teams.forEach((String uid, Team team) {
       data.add(
-        new TeamTile(team),
+        new TeamTile(
+          team,
+          popBeforeNavigate: true,
+        ),
       );
     });
     data.add(
@@ -73,7 +82,7 @@ class FusedDrawerContent extends StatelessWidget {
           Messages.of(context).addteam,
           style: Theme.of(context).textTheme.button,
         ),
-        onTap: () => Navigator.pushNamed(context, "AddTeam"),
+        onTap: () => Navigator.popAndPushNamed(context, "AddTeam"),
       ),
     );
     return new Column(children: data);
@@ -90,11 +99,18 @@ class FusedDrawerContent extends StatelessWidget {
         },
       ),
       new Divider(),
+      mode == DrawerMode.GameList ?
       new ListTile(
         leading: const Icon(Icons.people_outline),
         title: new Text(Messages.of(context).leaguetournament),
         onTap: () {
           Navigator.popAndPushNamed(context, "/League/Home");
+        },
+      ) : new ListTile(
+        leading: const Icon(Icons.list),
+        title: new Text(Messages.of(context).allgames),
+        onTap: () {
+          Navigator.popAndPushNamed(context, "/Home");
         },
       ),
       new Divider(),
@@ -110,7 +126,8 @@ class FusedDrawerContent extends StatelessWidget {
         title: new Text(Messages.of(context).signout),
         onTap: () async {
           OverlayState overlayState = Overlay.of(context);
-          OverlayEntry overlayEntry = new OverlayEntry(builder: (BuildContext context) {
+          OverlayEntry overlayEntry =
+              new OverlayEntry(builder: (BuildContext context) {
             return new Positioned(
               top: 50.0,
               left: 50.0,

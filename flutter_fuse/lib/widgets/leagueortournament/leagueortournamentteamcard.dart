@@ -3,6 +3,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'leagueortournamentteamname.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
 
 ///
 /// Card showing details of a team inside a league/tournament.
@@ -16,28 +17,12 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget subtitle;
 
-    if (admin) {
-      subtitle = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Text(Messages.of(context).winrecord(team.record)),
-          ButtonBar(
-            children: <Widget>[
-              FlatButton(
-                child: Text(Messages.of(context).addteam),
-              )
-            ],
-          )
-        ],
-      );
-    } else {
-      subtitle = Text(Messages.of(context).winrecord(team.record));
-    }
+    subtitle = Text(Messages.of(context).winrecord(team.record));
+
     return Card(
       child: ListTile(
         onTap: () =>
-            Navigator.pushNamed(context, "/League/Team/" + team.teamUid),
+            Navigator.pushNamed(context, "/League/Team/" + team.uid),
         leading: team.teamUid != null
             ? TeamImage(
                 width: 50.0,
@@ -45,7 +30,7 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
                 teamUid: team.teamUid,
               )
             : const Icon(
-                Icons.device_unknown,
+                CommunityIcons.basketball,
                 size: 50.0,
               ),
         title: LeagueOrTournamentTeamName(team.uid),

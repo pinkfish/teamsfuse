@@ -34,24 +34,21 @@ class SqlData implements PersistenData {
   // Gets all the data out of the json table.
   @override
   Future<Map<String, Map<String, dynamic>>> getAllElements(String table) async {
-    Map<String, Map<String, dynamic>> ret =
-        <String, Map<String, dynamic>>{};
+    Map<String, Map<String, dynamic>> ret = <String, Map<String, dynamic>>{};
 
     return ret;
   }
 
   @override
   Future<Map<String, dynamic>> getElement(String tableId, String key) async {
-    Map<String, Map<String, dynamic>> ret =
-        <String, Map<String, dynamic>>{};
+    Map<String, Map<String, dynamic>> ret = <String, Map<String, dynamic>>{};
 
     return ret;
   }
 
   @override
   Future<void> updateElement(
-      String tableId, String key, Map<String, dynamic> data) async {
-  }
+      String tableId, String key, Map<String, dynamic> data) async {}
 
   @override
   Future<int> deleteElement(String tableId, String key) async {
@@ -62,17 +59,20 @@ class SqlData implements PersistenData {
   @override
   Future<Map<String, Map<String, dynamic>>> getAllTeamElements(
       String table, String teamUid) async {
-
     return {};
   }
 
   @override
   Future<void> updateTeamElement(String tableId, String key, String teamUid,
-      Map<String, dynamic> data) async {
-  }
+      Map<String, dynamic> data) async {}
 
   @override
   Future<void> clearTable(String tableId) {
+    return null;
+  }
+
+  @override
+  Future<void> recreateDatabase() {
     return null;
   }
 }

@@ -9,6 +9,7 @@ import 'package:flutter_fuse/widgets/util/leagueteamimage.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
 import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'package:timezone/timezone.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
 
 import 'dart:async';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
@@ -60,6 +61,10 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
       builder: (BuildContext context) {
         print("$widget");
         //return new EditResultDialog(widget.game);
+        return FlatButton(
+          child: Text("Adding results"),
+          onPressed: () => Navigator.pop(context, false),
+        );
       },
     );
   }
@@ -136,16 +141,74 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
 
     // League details
     body.add(
-      new ListTile(
-        leading: new LeagueImage(
-          leagueOrTournamentUid: widget.game.leagueUid,
-          width: 50.0,
-          height: 50.0,
+      Container(
+        margin: EdgeInsets.only(left: 5.0, right: 5.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: LeagueTeamImage(
+                      leagueOrTeamUid:
+                          widget.game.officalResults.homeTeamLeagueUid,
+                      width: 50.0,
+                      height: 50.0,
+                    ),
+                  ),
+                  LeagueOrTournamentTeamName(
+                      widget.game.officalResults.homeTeamLeagueUid,
+                      style: theme.textTheme.subhead)
+                ],
+              ),
+            ),
+            Container(
+              alignment: Alignment.center,
+              height: 50.0,
+              child: Text(
+                'vs',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.title,
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: LeagueTeamImage(
+                      leagueOrTeamUid:
+                          widget.game.officalResults.awayTeamLeagueUid,
+                      width: 50.0,
+                      height: 50.0,
+                    ),
+                  ),
+                  LeagueOrTournamentTeamName(
+                    widget.game.officalResults.awayTeamLeagueUid,
+                    style: theme.textTheme.subhead,
+                    textAlign: TextAlign.end,
+                  )
+                ],
+              ),
+            ),
+          ],
         ),
-        title: new LeagueOrTournamentTeamName(widget.game.leagueUid,
-            style: theme.textTheme.title),
       ),
     );
+
+    body.add(SizedBox(height: 10.0));
 
     // Map details
     body.add(
@@ -219,13 +282,13 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
         body.add(
           new ListTile(
             onTap: _editResult,
-            leading: LeagueTeamImage(
-              leagueOrTeamUid: widget.game.officalResults.homeTeamLeagueUid,
+            leading: LeagueImage(
+              leagueOrTournamentUid: widget.game.leagueUid,
+              width: 50.0,
+              height: 50.0,
             ),
-            title: new Text(title, style: resultStyle),
-            trailing: LeagueTeamImage(
-              leagueOrTeamUid: widget.game.officalResults.awayTeamLeagueUid,
-            ),
+            title: LeagueOrTournamentName(widget.game.leagueUid),
+            subtitle: new Text(title),
           ),
         );
       }
@@ -250,6 +313,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
 
     return new Column(
       mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: body,
     );
   }

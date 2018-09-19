@@ -5,8 +5,9 @@ import 'package:flutter_fuse/services/messages.dart';
 class LeagueOrTournamentName extends StatelessWidget {
   final String leagueOrTournamentUid;
   final TextStyle style;
+  final TextAlign textAlign;
 
-  LeagueOrTournamentName(this.leagueOrTournamentUid, {this.style});
+  LeagueOrTournamentName(this.leagueOrTournamentUid, {this.style, this.textAlign});
   Widget build(BuildContext context) {
     return new FutureBuilder(
         future: UserDatabaseData.instance
@@ -17,11 +18,13 @@ class LeagueOrTournamentName extends StatelessWidget {
             return Text(
               data.data.name,
               style: style,
+              textAlign: textAlign,
             );
           }
           return Text(
             Messages.of(context).loading,
             style: style,
+            textAlign: textAlign,
           );
         });
   }

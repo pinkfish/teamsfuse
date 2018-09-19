@@ -63,7 +63,8 @@ class LeagueTeamImage extends StatelessWidget {
     if (lookupTeam.seasonUid == null) {
       return const AssetImage("assets/images/defaultavatar2.png");
     }
-    Season season = await UserDatabaseData.instance.updateModel.getSeason(lookupTeam.seasonUid);
+    Season season = await UserDatabaseData.instance.updateModel
+        .getSeason(lookupTeam.seasonUid);
     if (season == null) {
       return const AssetImage("assets/images/defaultavatar2.png");
     }
@@ -107,23 +108,27 @@ class LeagueTeamImage extends StatelessWidget {
       height: height,
       child: Stack(
         children: <Widget>[
+          futureBuilder,
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.black45,
+                color: Colors.blue.shade200.withOpacity(0.7),
               ),
+              width: width,
               child: Text(
-                overlay == HomeAwayOverlay.Away ? Messages.of(context).away : Messages.of(context).home,
+                overlay == HomeAwayOverlay.Away
+                    ? Messages.of(context).away
+                    : Messages.of(context).home,
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 20.0,
+                  fontSize: height / 5,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
             ),
           ),
-          futureBuilder
         ],
       ),
     );

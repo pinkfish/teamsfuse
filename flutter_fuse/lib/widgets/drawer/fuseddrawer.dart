@@ -2,16 +2,21 @@ import 'package:flutter/material.dart';
 
 import 'fuseddrawercontent.dart';
 
-class FusedDrawer extends StatefulWidget {
-  FusedDrawer();
-
-  @override
-  _FusedDrawerState createState() => new _FusedDrawerState();
+enum DrawerMode {
+  GameList,
+  League,
 }
 
-class _FusedDrawerState extends State<FusedDrawer> {
+
+///
+/// The drawer to display in the ux.
+///
+class FusedDrawer extends StatelessWidget {
+  final DrawerMode mode;
+  FusedDrawer(this.mode);
+
   @override
   Widget build(BuildContext context) {
-    return new Drawer(child: new FusedDrawerContent());
+    return new Drawer(child: new FusedDrawerContent(mode: mode));
   }
 }

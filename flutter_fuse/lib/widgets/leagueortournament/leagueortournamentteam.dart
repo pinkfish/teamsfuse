@@ -3,7 +3,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/games/gamesharedcard.dart';
 import 'package:flutter/foundation.dart';
-import 'leagueortournamentteamname.dart';
+import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'dart:async';
 import 'addinvitetoteamdialog.dart';
 
@@ -33,16 +33,20 @@ class _LeagueOrTournamentTeamDetailsState
   void initState() {
     super.initState();
     // Start trying to load the team.
-    loadDetails();
   }
 
-  void loadDetails() async {
-    leagueOrTournamentTeam = await UserDatabaseData.instance.updateModel
-        .getLeagueTeamData(widget.leagueOrTournamentTeamUid);
+  ///
+  /// Load the details but only do so once.
+  ///
+  Future<LeagueOrTournamentSeason> _loadDetails() async {
+    if (leagueOrTournamentTeam == null) {
+      leagueOrTournamentTeam = await UserDatabaseData.instance.updateModel
+          .getLeagueTeamData(widget.leagueOrTournamentTeamUid);
+    }
     // Update the UX.
     setState(() => true);
 
-    if (leagueOrTournamentTeam != null) {
+    if (leagueOrTournamentTeam != null && leagueOrTournmentDivison == null) {
       leagueOrTournamentTeam.loadInvites();
       _sub = leagueOrTournamentTeam.thisTeamStream
           .listen((LeagueOrTournamentTeam t) {
@@ -55,17 +59,18 @@ class _LeagueOrTournamentTeamDetailsState
       setState(() => true);
     }
 
-    if (leagueOrTournmentDivison != null) {
+    if (leagueOrTournmentDivison != null && leagueOrTournmentSeason == null) {
       // Load the rest.
       leagueOrTournmentSeason = await UserDatabaseData.instance.updateModel
           .getLeagueSeasonData(
               leagueOrTournmentDivison.leagueOrTournmentSeasonUid);
       setState(() => true);
     }
-    if (leagueOrTournmentSeason != null) {
+    if (leagueOrTournmentSeason != null && leagueOrTournament == null) {
       leagueOrTournament = await UserDatabaseData.instance.updateModel
           .getLeagueData(leagueOrTournmentSeason.leagueOrTournmentUid);
     }
+    return leagueOrTournmentSeason;
   }
 
   void dispose() {
@@ -87,84 +92,124 @@ class _LeagueOrTournamentTeamDetailsState
   }
 
   Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
     // We must have the league/season loaded to have got in here.  If not
     // this is an error.
-    assert(leagueOrTournmentSeason != null);
-    assert(leagueOrTournmentDivison != null);
-    assert(leagueOrTournament != null);
 
-    return new Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        LeagueOrTournamentTeamName(
-          widget.leagueOrTournamentTeamUid,
-          style: Theme.of(context).textTheme.headline,
-        ),
-        Text("${_seasonName()} ${_divisonName()}",
-            style: Theme.of(context).textTheme.subhead),
-        StreamBuilder(
-          stream: leagueOrTournmentDivison != null
-              ? leagueOrTournmentDivison.gameStream
-              : null,
-          builder: (BuildContext context,
-              AsyncSnapshot<Iterable<GameSharedData>> snap) {
-            Iterable<GameSharedData> games =
-                leagueOrTournmentDivison.cachedGames;
-            if (snap.hasData) {
-              games = snap.data;
-            }
-            if (games == null) {
-              return Text(Messages.of(context).loading);
-            }
-            List<GameSharedData> sortedGames = games.where((GameSharedData g) =>
-                g.officalResults.homeTeamLeagueUid ==
-                    widget.leagueOrTournamentTeamUid ||
-                g.officalResults.awayTeamLeagueUid ==
-                    widget.leagueOrTournamentTeamUid);
-            if (sortedGames.length == 0) {
-              return Text(Messages.of(context).nogames);
-            }
+    return Container(
+      margin: EdgeInsets.all(5.0),
+      child: FutureBuilder(
+        future: _loadDetails(),
+        builder: (BuildContext context,
+            AsyncSnapshot<LeagueOrTournamentSeason> snap) {
+          if (!snap.hasData) {
+            return Center(child: Text(Messages.of(context).loading));
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              LeagueImage(
+                leagueOrTournament: leagueOrTournament,
+                width: (screenSize.width < 500)
+                    ? 120.0
+                    : (screenSize.width / 4) + 12.0,
+                height: screenSize.height / 4 + 20,
+              ),
+              Text(
+                leagueOrTournament.name,
+                style: Theme.of(context).textTheme.headline,
+              ),
+              Text("${_seasonName()}",
+                  style: Theme.of(context)
+                      .textTheme
+                      .subhead
+                      .copyWith(fontWeight: FontWeight.bold)),
+              Text("${_divisonName()}",
+                  style: Theme.of(context).textTheme.subhead),
+              StreamBuilder(
+                stream: leagueOrTournmentDivison != null
+                    ? leagueOrTournmentDivison.gameStream
+                    : null,
+                builder: (BuildContext context,
+                    AsyncSnapshot<Iterable<GameSharedData>> snap) {
+                  Iterable<GameSharedData> games =
+                      leagueOrTournmentDivison.cachedGames;
+                  if (snap.hasData) {
+                    games = snap.data;
+                  }
+                  if (games == null) {
+                    return Text(Messages.of(context).loading);
+                  }
+                  List<GameSharedData> sortedGames = games
+                      .where((GameSharedData g) =>
+                          g.officalResults.homeTeamLeagueUid ==
+                              widget.leagueOrTournamentTeamUid ||
+                          g.officalResults.awayTeamLeagueUid ==
+                              widget.leagueOrTournamentTeamUid)
+                      .toList();
+                  if (sortedGames.length == 0) {
+                    return Text(Messages.of(context).nogames);
+                  }
 
-            sortedGames.sort((GameSharedData g1, GameSharedData g2) =>
-                (g1.time - g2.time).toInt());
-            List<Widget> children = sortedGames
-                .map((GameSharedData g) => GameSharedCard(g))
-                .toList();
-            if (leagueOrTournamentTeam.teamUid == null &&
-                leagueOrTournament.isAdmin()) {
-              children.add(new ExpansionTile(
-                title: Text(
-                  Messages.of(context).invitedpeople(
-                      leagueOrTournamentTeam.cachedInvites?.length ?? 0),
-                ),
-                children: leagueOrTournamentTeam.cachedInvites
-                    .map((InviteToLeagueTeam invite) {
-                  return ListTile(
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                    ),
-                    title: Text(
-                      invite.email,
-                    ),
+                  sortedGames.sort((GameSharedData g1, GameSharedData g2) =>
+                      (g1.time - g2.time).toInt());
+                  List<Widget> children = sortedGames
+                      .map<Widget>((GameSharedData g) => GameSharedCard(g))
+                      .toList();
+                  if (leagueOrTournamentTeam.teamUid == null &&
+                      leagueOrTournament.isAdmin()) {
+                    children.add(new ExpansionTile(
+                      title: Text(
+                        Messages.of(context).invitedpeople(
+                            leagueOrTournamentTeam.cachedInvites?.length ?? 0),
+                      ),
+                      children: leagueOrTournamentTeam.cachedInvites
+                          .map((InviteToLeagueTeam invite) {
+                        return ListTile(
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                          ),
+                          title: Text(
+                            invite.email,
+                          ),
+                        );
+                      }).toList(),
+                    ));
+                    children.add(
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: ButtonBar(
+                          children: [
+                            FlatButton(
+                              onPressed: () =>
+                                  AddInviteToTeamDialog.showAddTeamInviteDialog(
+                                      context,
+                                      leagueOrTournament,
+                                      leagueOrTournamentTeam),
+                              child: Text(
+                                Messages.of(context).addteamadmin,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .button
+                                    .copyWith(
+                                        color: Theme.of(context).accentColor),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return Column(
+                    children: children,
                   );
-                }).toList(),
-              ));
-              children.add(
-                FlatButton(
-                  onPressed: () =>
-                      AddInviteToTeamDialog.showAddTeamInviteDialog(
-                          context, leagueOrTournament, leagueOrTournamentTeam),
-                  child: Text(Messages.of(context).addinvite),
-                ),
-              );
-            }
-            return Column(
-              children: children,
-            );
-          },
-        ),
-      ],
+                },
+              )
+            ],
+          );
+        },
+      ),
     );
   }
 }

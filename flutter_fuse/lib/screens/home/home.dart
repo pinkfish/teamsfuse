@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return new Scaffold(
-      drawer: new FusedDrawer(),
+      drawer: new FusedDrawer(DrawerMode.GameList),
       appBar: new AppBar(
         title: new Text(messages.title),
         actions: actions,

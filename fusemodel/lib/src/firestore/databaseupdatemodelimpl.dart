@@ -639,6 +639,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return _getGamesInternal(cachedGames, teams, null, start, end);
   }
 
+  @override
   SharedGameSubscription getSharedGame(String sharedGameUid) {
     DocumentReferenceWrapper ref =
         wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
@@ -654,6 +655,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           new GameSharedData.fromJSON(snap.documentID, snap.data);
       sub.addUpdate([gameSharedData]);
     });
+    return sub;
   }
 
   // Player stuff
@@ -1098,7 +1100,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String leagueDivisonUid) {
     LeagueOrTournmentTeamSubscription sub =
         new LeagueOrTournmentTeamSubscription();
-    QueryWrapper query = wrapper.collection(TOURNAMENT_TEAM_COLLECTON).where(
+    print('Looking for teams with $leagueDivisonUid');
+    QueryWrapper query = wrapper.collection(LEAGUE_TEAM_COLLECTION).where(
         LeagueOrTournamentTeam.LEAGUEORTOURNMENTDIVISONUID,
         isEqualTo: leagueDivisonUid);
     query.getDocuments().then((QuerySnapshotWrapper snap) {
@@ -1341,7 +1344,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     LeagueOrTournmentTeamSubscription sub =
         new LeagueOrTournmentTeamSubscription();
     QueryWrapper query = wrapper
-        .collection(TOURNAMENT_TEAM_COLLECTON)
+        .collection(LEAGUE_TEAM_COLLECTION)
         .where(LeagueOrTournamentTeam.SEASONUID, isEqualTo: teamSeasonUid);
     query.getDocuments().then((QuerySnapshotWrapper snap) {
       List<LeagueOrTournamentTeam> teams = <LeagueOrTournamentTeam>[];
@@ -1427,6 +1430,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       DocumentReferenceWrapper doc =
           await wrapper.collection(LEAGUE_TEAM_COLLECTION).add(team.toJSON());
       team.uid = doc.documentID;
+      print('Created with ${doc.documentID}');
       return new Future.value(null);
     }
     return wrapper

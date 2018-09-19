@@ -4,6 +4,7 @@ import 'package:teamfuse/app-component.template.dart' as fluff;
 import 'package:http/browser_client.dart';
 import 'package:http/http.dart';
 import 'package:firebase/firebase.dart' as fb;
+import 'package:firebase/firestore.dart' as fbs;
 import 'package:fusemodel/fusemodel.dart';
 import 'package:teamfuse/services/webanalytics.dart';
 import 'package:teamfuse/services/weblogging.dart';
@@ -48,6 +49,16 @@ void main() async {
   // We should now have the current user setup correctly/
   sub.cancel();
   print('Loaded!');
+
+  fb
+      .firestore()
+      .collection(LEAGUE_TEAM_COLLECTION)
+      .where(LeagueOrTournamentTeam.LEAGUEORTOURNMENTDIVISONUID, '==',
+          '-LMdoHjreeCYgWtCB4Sp')
+      .get()
+      .then((fbs.QuerySnapshot snap) {
+    print('Loaded from the world $LEAGUE_TEAM_COLLECTION ${snap.docs.length} ${LeagueOrTournamentTeam.LEAGUEORTOURNMENTDIVISONUID}');
+  });
 
   runApp(fluff.AppComponentNgFactory, createInjector: injector);
 }
