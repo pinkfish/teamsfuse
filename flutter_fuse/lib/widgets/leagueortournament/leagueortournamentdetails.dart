@@ -20,9 +20,10 @@ class LeagueOrTournamentDetails extends StatefulWidget {
 class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
   String _openedPanel;
 
-  Widget _buildSeason(LeagueOrTournamentSeason season, bool admin) {
+  Widget _buildSeason(
+      LeagueOrTournamentSeason season, bool admin, LeagueOrTournament league) {
     print('Buidling ${season.uid}');
-    if (season.uid == _openedPanel) {
+    if (season.uid == _openedPanel || season.uid == league.currentSeason) {
       // Show all the divisions and details.
       return new StreamBuilder(
         stream: season.divisonStream,
@@ -206,15 +207,14 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                           print('Opening $pos $opened');
                           if (!opened) {
                             _openedPanel = seasonSorted[pos].uid;
-                            setState(() {
-
-                            });
+                            setState(() {});
                           }
                         },
                         children: seasonSorted.map(
                           (LeagueOrTournamentSeason season) {
                             return ExpansionPanelRadio(
-                              body: _buildSeason(season, data.data.isAdmin()),
+                              body: _buildSeason(
+                                  season, data.data.isAdmin(), data.data),
                               value: season.uid,
                               headerBuilder:
                                   (BuildContext context, bool expanded) {

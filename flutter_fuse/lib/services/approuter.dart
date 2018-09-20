@@ -14,6 +14,7 @@ import 'package:flutter_fuse/screens/invites/addinvitetoplayer.dart';
 import 'package:flutter_fuse/screens/invites/acceptinvitetoplayer.dart';
 import 'package:flutter_fuse/screens/invites/acceptinvitetoclub.dart';
 import 'package:flutter_fuse/screens/invites/acceptinviteasadmin.dart';
+import 'package:flutter_fuse/screens/invites/acceptinvitetoleague.dart';
 import 'package:flutter_fuse/screens/message/messages.dart';
 import 'package:flutter_fuse/screens/message/addmessage.dart';
 import 'package:flutter_fuse/screens/message/messageview.dart';
@@ -115,7 +116,15 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AcceptInviteToClubScreen(vals["id"][0].toString())));
-    router.define("/Team/:id",
+    router.define("/AcceptInviteToClub/:id",
+            handler: new Handler(
+                handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new AcceptInviteToClubScreen(vals["id"][0].toString())));
+    router.define("/AcceptInviteToLeague/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new AcceptInviteToLeagueScreen(vals["id"][0].toString())));
+     router.define("/Team/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new TeamScreen(vals["id"][0].toString())));

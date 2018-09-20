@@ -3,8 +3,10 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/leagueteamimage.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
+import 'package:flutter_fuse/widgets/games/officalresultdialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:timezone/timezone.dart';
+import 'dart:async';
 
 class GameSharedCard extends StatelessWidget {
   final GameSharedData game;
@@ -16,16 +18,17 @@ class GameSharedCard extends StatelessWidget {
 
   void _editResult(BuildContext context) async {
     // Call up a dialog to edit the result.
-    await showDialog<bool>(
+    await fullScreenDialog(
       context: context,
       builder: (BuildContext context) {
-        return SizedBox(
-          height: 0.0,
-          width: 0.0,
-        );
-        //return new EditResultDialog(game);
+        return new OfficialResultDialog(game);
       },
     );
+  }
+
+  Future<bool> fullScreenDialog({BuildContext context, WidgetBuilder builder}) {
+    return Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute<bool>(builder: builder, fullscreenDialog: true));
   }
 
   void _showDirections(BuildContext context) {
@@ -52,7 +55,8 @@ class GameSharedCard extends StatelessWidget {
       tzShortName = getLocation(game.timezone).timeZone(game.time.toInt()).abbr;
     }
 
-    print("Times: ${game.time} ${game.endTime} ${game.tzTime} ${game.tzEndTime}");
+    print(
+        "Times: ${game.time} ${game.endTime} ${game.tzTime} ${game.tzEndTime}");
     if (game.time != game.endTime) {
       TimeOfDay endDay = new TimeOfDay.fromDateTime(game.tzEndTime);
       endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
@@ -76,7 +80,7 @@ class GameSharedCard extends StatelessWidget {
 
     if (game.time < new DateTime.now().millisecondsSinceEpoch &&
             game.type == EventType.Game &&
-            game.officalResults == OfficalResult.NotStarted &&
+            game.officalResults.result == OfficalResult.NotStarted &&
             leagueOrTournament?.isAdmin() ??
         false) {
       // Show a result button (if an admin).
@@ -112,11 +116,86 @@ class GameSharedCard extends StatelessWidget {
       color = Colors.lightBlueAccent;
     }
 
+    TextStyle homeStyle = Theme.of(context).textTheme.body1;
+    TextStyle awayStyle = Theme.of(context).textTheme.body1;
+
+    if (game.officalResults.result == OfficalResult.AwayTeamWon) {
+      awayStyle =
+          awayStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w600);
+    }
+    if (game.officalResults.result == OfficalResult.HomeTeamWon) {
+      homeStyle =
+          homeStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w700);
+    }
+
+    List<Widget> homeTeamDetails = <Widget>[
+      LeagueOrTournamentTeamName(
+        game.officalResults.homeTeamLeagueUid,
+        textAlign: TextAlign.start,
+        overflow: TextOverflow.ellipsis,
+        style: homeStyle,
+      ),
+    ];
+    List<Widget> awayTeamDetails = <Widget>[
+      LeagueOrTournamentTeamName(
+        game.officalResults.awayTeamLeagueUid,
+        textAlign: TextAlign.start,
+        overflow: TextOverflow.ellipsis,
+        style: awayStyle,
+      ),
+    ];
+
     switch (game.type) {
       case EventType.Game:
         title = Messages.of(context)
             .gametitleshared(format, endTimeFormat, tzShortName);
 
+        // Add in the offical results.
+        if (game.officalResults.result != OfficalResult.NotStarted) {
+          TextStyle homeStyle = Theme.of(context)
+              .textTheme
+              .display1.copyWith(fontSize: 25.0);
+          TextStyle awayStyle = Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
+          if (game.officalResults.result == OfficalResult.AwayTeamWon) {
+            awayStyle = awayStyle.copyWith(color: Colors.green);
+          }
+          if (game.officalResults.result == OfficalResult.HomeTeamWon) {
+            homeStyle = homeStyle.copyWith(color: Colors.green);
+          }
+          if (game.officalResults.scores.containsKey(GamePeriod.regulation)) {
+            TextStyle tmpHomeStyle = homeStyle;
+            TextStyle tmpAwayStyle = awayStyle;
+            if (game.officalResults.scores.length > 1) {
+              tmpHomeStyle = homeStyle.copyWith(fontSize: 20.0);
+              tmpAwayStyle = awayStyle.copyWith(fontSize: 20.0);
+            }
+            homeTeamDetails.add(Text(
+                game.officalResults.scores[GamePeriod.regulation].score.ptsFor
+                    .toString(),
+                style: tmpHomeStyle));
+            awayTeamDetails.add(Text(
+                game.officalResults.scores[GamePeriod.regulation].score
+                    .ptsAgainst
+                    .toString(),
+                style: tmpAwayStyle));
+          }
+          if (game.officalResults.scores.containsKey(GamePeriod.overtime)) {
+            homeTeamDetails.add(Text(
+                "OT ${game.officalResults.scores[GamePeriod.overtime].score.ptsFor}",
+                style: homeStyle));
+            awayTeamDetails.add(Text(
+                "OT ${game.officalResults.scores[GamePeriod.overtime].score.ptsAgainst}",
+                style: awayStyle));
+          }
+          if (game.officalResults.scores.containsKey(GamePeriod.penalty)) {
+            homeTeamDetails.add(Text(
+                "PT ${game.officalResults.scores[GamePeriod.penalty].score.ptsFor}",
+                style: homeStyle));
+            awayTeamDetails.add(Text(
+                "PT ${game.officalResults.scores[GamePeriod.penalty].score.ptsAgainst}",
+                style: awayStyle));
+          }
+        }
         break;
 
       case EventType.Event:
@@ -131,62 +210,70 @@ class GameSharedCard extends StatelessWidget {
 
         break;
     }
-    Widget tile = Column(
-      children: [
-        ListTile(
-          onTap: () {
-            Navigator.pushNamed(context, "/SharedGame/" + game.uid);
-          },
-          leading: new LeagueTeamImage(
-            leagueOrTeamUid: game.officalResults.homeTeamLeagueUid,
-            width: 50.0,
-            height: 50.0,
-            overlay: HomeAwayOverlay.Home,
-          ),
-          title: new Text(
-            title,
-            overflow: TextOverflow.clip,
-            style: new TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: new RichText(
-            text: new TextSpan(
-              //style: Theme.of(context).textTheme.subhead,
-              children: subtitle,
+    Widget tile = Container(
+      child: Column(
+        children: [
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            onTap: () {
+              Navigator.pushNamed(context, "/SharedGame/" + game.uid);
+            },
+            leading: new LeagueTeamImage(
+              leagueOrTeamUid: game.officalResults.homeTeamLeagueUid,
+              width: 50.0,
+              height: 50.0,
+              overlay: HomeAwayOverlay.Home,
             ),
-          ),
-          trailing: new LeagueTeamImage(
-            leagueOrTeamUid: game.officalResults.awayTeamLeagueUid,
-            width: 50.0,
-            height: 50.0,
-            overlay: HomeAwayOverlay.Away,
-          ),
-        ),
-        Row(
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: LeagueOrTournamentTeamName(
-                  game.officalResults.homeTeamLeagueUid,
-                textAlign: TextAlign.start,
-                overflow: TextOverflow.ellipsis,
+            title: new Text(
+              title,
+              overflow: TextOverflow.clip,
+              style: new TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: new RichText(
+              text: new TextSpan(
+                //style: Theme.of(context).textTheme.subhead,
+                children: subtitle,
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: LeagueOrTournamentTeamName(
-                game.officalResults.awayTeamLeagueUid,
-                textAlign: TextAlign.end,
-                overflow: TextOverflow.ellipsis,
+            trailing: new LeagueTeamImage(
+              leagueOrTeamUid: game.officalResults.awayTeamLeagueUid,
+              width: 50.0,
+              height: 50.0,
+              overlay: HomeAwayOverlay.Away,
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: homeTeamDetails,
+                ),
               ),
-            )
-          ],
-        )
-      ],
+              Expanded(
+                flex: 1,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: awayTeamDetails,
+                ),
+              )
+            ],
+          )
+        ],
+      ),
     );
     if (buttons.length > 0) {
       return new Card(
         color: color,
         child: new Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             tile,
             new ButtonTheme.bar(

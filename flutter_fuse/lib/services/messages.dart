@@ -932,6 +932,10 @@ class Messages {
     return Intl.message('SHARE TEAM');
   }
 
+  String get joinleague {
+    return Intl.message('JOIN LEAGUE');
+  }
+
   String get addtraining {
     return Intl.message('ADD TRAINING',
         name: 'Button to add a training to a team');
@@ -1004,8 +1008,9 @@ class Messages {
       InviteToLeagueTeam inviteLeagueTeam = invite;
       return Intl.message(
           'Do you want to delete the invite to be in the league ${inviteLeagueTeam.leagueName} with team '
-              '${inviteLeagueTeam.leagueTeamName}?',
-          name: 'Text to delete the invite to the league in the team in the alert dialog.');
+          '${inviteLeagueTeam.leagueTeamName}?',
+          name:
+              'Text to delete the invite to the league in the team in the alert dialog.');
     }
     return unknown;
   }
@@ -1197,8 +1202,8 @@ class Messages {
         desc: 'In progress result details');
   }
 
-  String gameofficalinprogress(GameOfficalResults offical) {
-    switch (offical.result) {
+  String gameofficalinprogress(OfficalResult offical) {
+    switch (offical) {
       case OfficalResult.NotStarted:
         return Intl.message('Not started',
             name: 'Offical result - not started');
@@ -1349,6 +1354,69 @@ class Messages {
         return Intl.message("Penalty");
     }
     return unknown;
+  }
+
+  String finalofficalscorebody(GameOfficalResults result) {
+    GamePeriod regulationPeriod =
+        new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 0);
+    GamePeriod overtimePeriod =
+        new GamePeriod(type: GamePeriodType.Overtime, periodNumber: 0);
+    GamePeriod penaltyPeriod =
+        new GamePeriod(type: GamePeriodType.Penalty, periodNumber: 0);
+
+    GameResultPerPeriod regulationPeriodResult =
+        result.scores[regulationPeriod];
+    String resultString;
+    switch (result.result) {
+      case OfficalResult.NotStarted:
+        resultString = Intl.message("Not started");
+        break;
+      case OfficalResult.Tie:
+        resultString = tie;
+        break;
+      case OfficalResult.HomeTeamWon:
+        resultString = Intl.message("Home team won");
+        break;
+      case OfficalResult.AwayTeamWon:
+        resultString = Intl.message("Away team won");
+        break;
+      case OfficalResult.InProgress:
+        resultString = Intl.message("In progress");
+        break;
+    }
+    if (result.scores.containsKey(overtimePeriod)) {
+      GameResultPerPeriod overtimePeriodResult = result.scores[overtimePeriod];
+      if (result.scores.containsKey(penaltyPeriod)) {
+        GameResultPerPeriod penaltyPeriodResult = result.scores[penaltyPeriod];
+        return Intl.message(
+            "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} Away: ${regulationPeriodResult.score.ptsAgainst}\n"
+            "Overtime Home:  ${overtimePeriodResult.score.ptsFor} Away: ${overtimePeriodResult.score.ptsAgainst}\n"
+            "Penalty Home: ${penaltyPeriodResult.score.ptsFor} Away: ${penaltyPeriodResult.score.ptsAgainst}");
+      }
+      return Intl.message(
+          "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} Away: ${regulationPeriodResult.score.ptsAgainst}\n"
+          "Overtime Home:  ${overtimePeriodResult.score.ptsFor} Away: ${overtimePeriodResult.score.ptsAgainst}\n");
+    }
+    if (result.scores.containsKey(penaltyPeriod)) {
+      GameResultPerPeriod penaltyPeriodResult = result.scores[penaltyPeriod];
+      return Intl.message(
+          "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} Away: ${regulationPeriodResult.score.ptsAgainst}\n"
+          "Penalty Home: ${penaltyPeriodResult.score.ptsFor} Away: ${penaltyPeriodResult.score.ptsAgainst}");
+    }
+    return Intl.message(
+        "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} Away: ${regulationPeriodResult.score.ptsAgainst}");
+  }
+
+  String get regulationperiod {
+    return Intl.message('Regulation');
+  }
+
+  String get overtimeperiod {
+    return Intl.message('Overtime');
+  }
+
+  String get penaltyperiod {
+    return Intl.message('Penalty');
   }
 
   String gametitlevs(Game game, String oppponent) {
@@ -1613,15 +1681,13 @@ class Messages {
     return Intl.message('$time vs $opponent', desc: 'Game title in game list');
   }
 
-  String gametitleshared(
-      String time, String endTime, String tzShortName) {
+  String gametitleshared(String time, String endTime, String tzShortName) {
     if (endTime != null) {
       if (tzShortName != null) {
         return Intl.message('$time - $endTime ($tzShortName)',
             desc: 'Game title in game list');
       }
-      return Intl.message('$time - $endTime',
-          desc: 'Game title in game list');
+      return Intl.message('$time - $endTime', desc: 'Game title in game list');
     }
     if (tzShortName != null) {
       return Intl.message('$time ($tzShortName}',
@@ -1629,7 +1695,6 @@ class Messages {
     }
     return Intl.message('$time', desc: 'Game title in game list');
   }
-
 
   String gametitlenow(
       String time, String endTime, String tzShortName, String opponent) {

@@ -66,6 +66,8 @@ class _AcceptInviteToLeagueScreenState
               new ListTile(
                 leading: LeagueImage(
                   leagueOrTournamentUid: _invite.leagueUid,
+                  width: 50.0,
+                  height: 50.0,
                 ),
                 title: new Text(_invite.leagueName),
                 subtitle: new ByUserNameComponent(userId: _invite.sentByUid),
@@ -74,18 +76,18 @@ class _AcceptInviteToLeagueScreenState
                 children: <Widget>[
                   new RaisedButton(
                     onPressed: _savePressed,
-                    child: new Text(messages.addinvite),
+                    child: new Text(messages.joinleague),
                     color: theme.accentColor,
                     textColor: Colors.white,
-                  ),
-                  new FlatButton(
-                    onPressed: () => showDeleteInvite(context, _invite),
-                    child: new Text(messages.deleteinvite),
                   ),
                   new FlatButton(
                     onPressed: () => Navigator.pushNamed(
                         context, "/League/Main/" + _invite.leagueUid),
                     child: Text(messages.openbutton),
+                  ),
+                  new FlatButton(
+                    onPressed: () => showDeleteInvite(context, _invite),
+                    child: new Icon(Icons.delete),
                   ),
                 ],
               ),

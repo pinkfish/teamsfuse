@@ -9,21 +9,21 @@ class PeriodTypeSelector extends StatelessWidget {
   PeriodTypeSelector(this.team, this.currentPeriod, this.onChanged);
 
   void _setPeriodType(GamePeriodType type) {
-    GamePeriod period =
-        new GamePeriod(type: type, periodNumber: currentPeriod.periodNumber);
+    int periodNumber = currentPeriod.periodNumber;
     switch (type) {
       case GamePeriodType.Regulation:
         break;
       case GamePeriodType.Overtime:
-        period.periodNumber = 1;
+        periodNumber = 1;
         break;
       case GamePeriodType.Penalty:
-        period.periodNumber = 1;
+        periodNumber = 1;
         break;
       default:
-        period.periodNumber = 1;
+        periodNumber = 1;
         break;
     }
+    GamePeriod period = new GamePeriod(type: type, periodNumber: periodNumber);
     onChanged(period);
   }
 
@@ -296,21 +296,21 @@ class PeriodSelector extends StatelessWidget {
     if (type == currentPeriod.type) {
       return;
     }
-    GamePeriod period =
-        new GamePeriod(type: type, periodNumber: currentPeriod.periodNumber);
+    int periodNumber = currentPeriod.periodNumber;
     switch (type) {
       case GamePeriodType.Regulation:
         break;
       case GamePeriodType.Overtime:
-        period.periodNumber = 1;
+        periodNumber = 1;
         break;
       case GamePeriodType.Penalty:
-        period.periodNumber = 1;
+        periodNumber = 1;
         break;
       default:
-        period.periodNumber = 1;
+        periodNumber = 1;
         break;
     }
+    GamePeriod period = new GamePeriod(type: type, periodNumber: periodNumber);
     onChanged(period);
   }
 
