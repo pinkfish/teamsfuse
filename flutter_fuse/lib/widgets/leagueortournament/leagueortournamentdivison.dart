@@ -31,7 +31,6 @@ class LeagueOrTournamentDivisonDetails extends StatefulWidget {
 
 class _LeagueOrTournamentDivisonDetailsState
     extends State<LeagueOrTournamentDivisonDetails> {
-  bool _gameExpanded = true;
   bool _teamExpanded = false;
   LeagueOrTournament leagueOrTournament;
   LeagueOrTournamentSeason leagueOrTournmentSeason;
@@ -62,9 +61,6 @@ class _LeagueOrTournamentDivisonDetailsState
   }
 
   Widget _buildGamesList() {
-    if (!_gameExpanded) {
-      return Text("closed");
-    }
     return StreamBuilder(
       stream: leagueOrTournmentDivison.gameStream,
       builder:
@@ -180,6 +176,32 @@ class _LeagueOrTournamentDivisonDetailsState
     AddTeamDialog.showTeamDialog(context, widget.leagueOrTournamentDivisonUid);
   }
 
+  int _sortTeams(LeagueOrTournamentTeam t1, LeagueOrTournamentTeam t2) {
+    if (!t1.record.containsKey(leagueOrTournmentDivison.uid)) {
+      if (!t2.record.containsKey(leagueOrTournmentDivison.uid)) {
+        return t1.name.compareTo(t2.name);
+      } else {
+        return 1;
+      }
+    }
+    if (!t2.record.containsKey(leagueOrTournmentDivison.uid)) {
+      return -1;
+    }
+    if (t1.record[leagueOrTournmentDivison.uid].win ==
+        t2.record[leagueOrTournmentDivison.uid].win) {
+      if (t1.record[leagueOrTournmentDivison.uid].loss ==
+          t2.record[leagueOrTournmentDivison.uid].loss) {
+        return t1.name.compareTo(t2.name);
+      }
+      return (t1.record[leagueOrTournmentDivison.uid].loss -
+              t2.record[leagueOrTournmentDivison.uid].loss)
+          .toInt();
+    }
+    return (t2.record[leagueOrTournmentDivison.uid].win -
+            t1.record[leagueOrTournmentDivison.uid].win)
+        .toInt();
+  }
+
   Widget build(BuildContext context) {
     // We must have the league/season loaded to have got in here.  If not
     // this is an error.
@@ -254,11 +276,14 @@ class _LeagueOrTournamentDivisonDetailsState
                     );
                   }
                 }
-                List<Widget> children = teams
+                List<LeagueOrTournamentTeam> sortedTeams = teams.toList();
+                sortedTeams.sort(_sortTeams);
+                List<Widget> children = sortedTeams
                     .map<Widget>((LeagueOrTournamentTeam team) =>
                         LeagueOrTournamentTeamCard(
                           team,
                           admin: leagueOrTournament.isAdmin(),
+                          divison: leagueOrTournmentDivison,
                         ))
                     .toList();
                 if (leagueOrTournament.isAdmin()) {
@@ -289,8 +314,12 @@ class _LeagueOrTournamentDivisonDetailsState
                           return Container(
                             margin: EdgeInsets.only(left: 5.0, right: 5.0),
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                                Messages.of(context).teamnumbers(teams.length)),
+                            child: GestureDetector(
+                              onTap: () => setState(
+                                  () => _teamExpanded = !_teamExpanded),
+                              child: Text(Messages.of(context)
+                                  .teamnumbers(teams.length)),
+                            ),
                           );
                         },
                         body: Column(
@@ -301,8 +330,7 @@ class _LeagueOrTournamentDivisonDetailsState
                       )
                     ]);
               }),
-           _buildGamesList(),
-
+          _buildGamesList(),
         ],
       ),
     );

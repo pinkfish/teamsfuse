@@ -144,11 +144,11 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     TextStyle homeStyle = Theme.of(context).textTheme.subhead;
     TextStyle awayStyle = Theme.of(context).textTheme.subhead;
 
-    if (widget.game.officalResults.result == OfficalResult.AwayTeamWon) {
+    if (widget.game.officalResults.result == OfficialResult.AwayTeamWon) {
       awayStyle =
           awayStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w600);
     }
-    if (widget.game.officalResults.result == OfficalResult.HomeTeamWon) {
+    if (widget.game.officalResults.result == OfficialResult.HomeTeamWon) {
       homeStyle =
           homeStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w700);
     }
@@ -186,15 +186,15 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     ];
 
     if (widget.game.type == EventType.Game &&
-        widget.game.officalResults.result != OfficalResult.NotStarted) {
+        widget.game.officalResults.result != OfficialResult.NotStarted) {
       TextStyle homeStyle =
           Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
       TextStyle awayStyle =
           Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
-      if (widget.game.officalResults.result == OfficalResult.AwayTeamWon) {
+      if (widget.game.officalResults.result == OfficialResult.AwayTeamWon) {
         awayStyle = awayStyle.copyWith(color: Colors.green);
       }
-      if (widget.game.officalResults.result == OfficalResult.HomeTeamWon) {
+      if (widget.game.officalResults.result == OfficialResult.HomeTeamWon) {
         homeStyle = homeStyle.copyWith(color: Colors.green);
       }
       if (widget.game.officalResults.scores
@@ -325,13 +325,13 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
 
         // Started.
         switch (widget.game.officalResults.result) {
-          case OfficalResult.NotStarted:
+          case OfficialResult.NotStarted:
             title = Messages.of(context)
                 .gameofficalinprogress(widget.game.officalResults.result);
             resultStyle = theme.textTheme.subhead;
             break;
-          case OfficalResult.InProgress:
-            if (widget.game.officalResults.result != OfficalResult.NotStarted) {
+          case OfficialResult.InProgress:
+            if (widget.game.officalResults.result != OfficialResult.NotStarted) {
               title = Messages.of(context)
                   .gameofficalinprogress(widget.game.officalResults.result);
               resultStyle = theme.textTheme.subhead;
@@ -340,17 +340,17 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
               resultStyle = theme.textTheme.subhead;
             }
             break;
-          case OfficalResult.HomeTeamWon:
+          case OfficialResult.HomeTeamWon:
             title = Messages.of(context)
                 .gameofficalinprogress(widget.game.officalResults.result);
             resultStyle = theme.textTheme.subhead;
             break;
-          case OfficalResult.AwayTeamWon:
+          case OfficialResult.AwayTeamWon:
             title = Messages.of(context)
                 .gameofficalinprogress(widget.game.officalResults.result);
             resultStyle = theme.textTheme.subhead;
             break;
-          case OfficalResult.Tie:
+          case OfficialResult.Tie:
             title = Messages.of(context)
                 .gameofficalinprogress(widget.game.officalResults.result);
             resultStyle = theme.textTheme.subhead;

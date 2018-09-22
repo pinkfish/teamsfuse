@@ -39,7 +39,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
 
   Future<void> _chooseImage() async {
     File imgFile = await ImagePicker.pickImage(
-        source: ImageSource.gallery, maxHeight: 150.0, maxWidth: 150.0);
+        source: ImageSource.gallery, maxHeight: 200.0, maxWidth: 200.0);
 
     if (imgFile != null) {
       setState(() {
@@ -164,8 +164,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
             onPressed: _saveData,
             child: new Text(
               Messages.of(context).savebuttontext,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .subhead
                   .copyWith(color: Colors.white),

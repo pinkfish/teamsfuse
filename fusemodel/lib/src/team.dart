@@ -9,6 +9,7 @@ import 'game.dart';
 import 'invite.dart';
 import 'userdatabasedata.dart';
 import 'persistendata.dart';
+import 'hasuidcomparable.dart';
 
 /// The sport the team is involved in
 enum Sport { Basketball, Softball, Soccer, Other }
@@ -24,9 +25,16 @@ class Opponent {
   String teamUid;
   String contact;
   String uid;
+  List<String> leagueTeamUid;
   Map<String, WinRecord> record;
 
-  Opponent({this.record, this.name, this.teamUid, this.contact, this.uid}) {
+  Opponent(
+      {this.record,
+      this.name,
+      this.teamUid,
+      this.contact,
+      this.uid,
+      this.leagueTeamUid}) {
     if (record == null) {
       record = new Map<String, WinRecord>();
     }
@@ -37,24 +45,38 @@ class Opponent {
     teamUid = copy.teamUid;
     contact = copy.contact;
     uid = copy.uid;
+    leagueTeamUid = copy.leagueTeamUid;
     record = new Map<String, WinRecord>.from(copy.record);
   }
 
   static const String _CONTACT = 'contact';
   static const String _SEASONS = 'seasons';
+  static const String _LEAGUETEAMUIO = 'leagueTeamUid';
 
   void fromJSON(String uid, String teamUid, Map<String, dynamic> data) {
     this.uid = uid;
     this.teamUid = teamUid;
     name = getString(data[NAME]);
     contact = getString(data[_CONTACT]);
+    if (data[_LEAGUETEAMUIO] != null) {
+      List<String> newLeagues = new List<String>();
+      data[_LEAGUETEAMUIO].forEach((dynamic key, dynamic data) {
+        if (data is Map<dynamic, dynamic>) {
+          if (data[ADDED]) {
+            newLeagues.add(key as String);
+          }
+        }
+      });
+      leagueTeamUid = newLeagues;
+    }
     Map<String, WinRecord> newRecord = new Map<String, WinRecord>();
     if (data[_SEASONS] != null) {
       Map<dynamic, dynamic> innerSeason =
           data[_SEASONS] as Map<dynamic, dynamic>;
       // Load the seasons.
       innerSeason.forEach((dynamic seasonUid, dynamic value) {
-        WinRecord newData = new WinRecord.fromJSON(value as Map<dynamic, dynamic>);
+        WinRecord newData =
+            new WinRecord.fromJSON(value as Map<dynamic, dynamic>);
         newRecord[seasonUid.toString()] = newData;
       });
     }
@@ -65,6 +87,13 @@ class Opponent {
     Map<String, dynamic> ret = new Map<String, dynamic>();
     ret[NAME] = name;
     ret[_CONTACT] = contact;
+    Map<String, Map<String, dynamic>> fluff = <String, Map<String, dynamic>>{};
+    for (String league in leagueTeamUid) {
+      fluff[league] = <String, dynamic>{
+        ADDED: true,
+      };
+    }
+    ret[_LEAGUETEAMUIO] = fluff;
     Map<String, dynamic> recordSection = new Map<String, dynamic>();
     record.forEach((String key, WinRecord record) {
       recordSection[key] = record.toJSON();
@@ -104,7 +133,7 @@ class PregenUidRet {
 /// Represents a team in the system.  All the data associated with the team
 /// and the database manipulation for the team.
 ///
-class Team {
+class Team extends HasUIDComparable {
   String name;
 
   /// How early people should arrive for the game by default.  This is
@@ -470,6 +499,17 @@ class Team {
   /// The current cached invite set
   ///
   List<InviteAsAdmin> get invites => _invites;
+
+  ///
+  /// Compares to another team.
+  ///
+  int compareTo(HasUIDComparable t) {
+    if (t is Team) {
+      Team tTeam = t as Team;
+      return name.compareTo(tTeam.name);
+    }
+    return uid.compareTo(t.uid);
+  }
 
   void _doInviteQuery() {
     if (publicOnly) {

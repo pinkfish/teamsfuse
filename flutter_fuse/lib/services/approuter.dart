@@ -32,6 +32,7 @@ import 'package:flutter_fuse/screens/team/playerdetails.dart';
 import 'package:flutter_fuse/screens/team/team.dart';
 import 'package:flutter_fuse/screens/team/clubsettings.dart';
 import 'package:flutter_fuse/screens/team/teamsettings.dart';
+import 'package:flutter_fuse/screens/team/teamhome.dart';
 import 'package:flutter_fuse/screens/clubs/clubdetails.dart';
 import 'package:flutter_fuse/screens/clubs/editclub.dart';
 import 'package:flutter_fuse/screens/clubs/addclub.dart';
@@ -45,6 +46,7 @@ import 'package:flutter_fuse/screens/league/leaguedivison.dart';
 import 'package:flutter_fuse/screens/league/leagueteam.dart';
 import 'package:flutter_fuse/screens/league/addleague.dart';
 import 'package:flutter_fuse/screens/league/home.dart';
+import 'package:flutter_fuse/screens/league/editleague.dart';
 import 'analytics.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -132,6 +134,10 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AddTeamScreen()));
+    router.define("/AllTeams",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new TeamHomeScreen()));
     router.define("/EditTeam/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -261,6 +267,10 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new LeagueScreen(vals["id"][0].toString())));
+    router.define("/League/Edit/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+            new EditLeagueScreen(vals["id"][0].toString())));
     router.define("/League/Divison/:id/:season/:divison",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

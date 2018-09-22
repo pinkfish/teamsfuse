@@ -27,8 +27,8 @@ class LeagueOrTournamentTeam {
   /// Name of the team in respect to this tournament/league.
   String name;
 
-  /// The win record of this team in the divison indexed by the season.
-  WinRecord record;
+  /// The win record of this team indexed by the divison.
+  Map<String, WinRecord> record;
 
   // Invites
   List<InviteToLeagueTeam> _inviteTeams;
@@ -51,7 +51,7 @@ class LeagueOrTournamentTeam {
     this.teamUid,
     this.leagueOrTournamentDivisonUid,
     this.name,
-  }) : record = WinRecord() {
+  }) : record = <String, WinRecord>{} {
     // Cannot be both set, one must be set.
   }
 
@@ -69,7 +69,11 @@ class LeagueOrTournamentTeam {
     ret[SEASONUID] = seasonUid;
     ret[TEAMUID] = teamUid;
     ret[LEAGUEORTOURNMENTDIVISONUID] = leagueOrTournamentDivisonUid;
-    ret[WINRECORD] = record.toJSON();
+    Map<String, dynamic> inner = {};
+    for (String str in record.keys) {
+      inner[str] = record[str].toJSON();
+    }
+    ret[WINRECORD] = inner;
     return ret;
   }
 
@@ -100,12 +104,22 @@ class LeagueOrTournamentTeam {
   /// Load this from the wire format.
   ///
   LeagueOrTournamentTeam.fromJSON(String myUid, Map<String, dynamic> data)
-      : record = WinRecord.fromJSON(data[WINRECORD] ?? {}),
+      :
         teamUid = data[TEAMUID],
         seasonUid = data[SEASONUID],
         name = data[NAME],
         uid = myUid,
-        leagueOrTournamentDivisonUid = data[LEAGUEORTOURNMENTDIVISONUID];
+        leagueOrTournamentDivisonUid = data[LEAGUEORTOURNMENTDIVISONUID] {
+    record = {};
+    if (data[WINRECORD] is Map<dynamic, dynamic>) {
+      Map<dynamic, dynamic> stuff = data[WINRECORD] as Map<dynamic, dynamic>;
+      for (String key in stuff.keys) {
+        if (stuff[key] is Map<dynamic, dynamic>) {
+          record[key] = WinRecord.fromJSON(stuff[key]);
+        }
+      }
+    }
+  }
 
   ///
   /// Stream to let people know when this team changes.

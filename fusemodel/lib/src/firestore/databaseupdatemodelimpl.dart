@@ -105,14 +105,23 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<void> updateFirestoreGameResult(
-      Game game, GameResultDetails result) async {
+  Future<void> updateFirestoreGameResult(Game game, GameResultDetails result) {
     DocumentReferenceWrapper ref =
         wrapper.collection(GAMES_COLLECTION).document(game.uid);
 
     Map<String, dynamic> data = <String, dynamic>{};
     data[Game.RESULT] = result.toJSON();
-    await ref.updateData(data);
+    return ref.updateData(data);
+  }
+
+  Future<void> updateFirestoreOfficalGameResult(
+      GameSharedData game, GameOfficialResults result) {
+    DocumentReferenceWrapper ref =
+        wrapper.collection(GAMES_SHARED_COLLECTION).document(game.uid);
+
+    Map<String, dynamic> data = <String, dynamic>{};
+    data[GameSharedData.OFFICIALRESULT] = result.toJSON();
+    return ref.updateData(data);
   }
 
   // Invite firestore updates
@@ -1441,11 +1450,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> updateLeagueTeamRecord(
-      LeagueOrTournamentTeam team, String season) async {
+      LeagueOrTournamentTeam team, String divison) async {
     DocumentReferenceWrapper doc =
         await wrapper.collection(LEAGUE_TEAM_COLLECTION).document(team.uid);
     Map<String, dynamic> data = <String, dynamic>{};
-    data[LeagueOrTournamentTeam.WINRECORD] = team.record.toJSON();
+    data[LeagueOrTournamentTeam.WINRECORD + "." + divison] =
+        team.record[divison].toJSON();
     doc.updateData(data);
   }
 

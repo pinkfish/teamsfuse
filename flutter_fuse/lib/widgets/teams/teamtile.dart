@@ -3,6 +3,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/approuter.dart';
 import 'package:fluro/fluro.dart';
+import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 
 class TeamTile extends StatelessWidget {
   final Team team;
@@ -20,7 +21,12 @@ class TeamTile extends StatelessWidget {
     }
 
     return new ListTile(
-      leading: const Icon(Icons.group),
+      leading: team.photoUrl != null ? CachedNetworkImage(
+        imageUrl: team.photoUrl,
+        placeholder: const Icon(Icons.group),
+        width: 50.0,
+        height: 50.0,
+      ) : const Icon(Icons.group),
       title: new RichText(
         text: new TextSpan(
           text: team.name,

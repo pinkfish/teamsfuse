@@ -375,6 +375,11 @@ class Messages {
         name: 'Drop down for  the all teams result');
   }
 
+  String get allteamsbbutton {
+    return Intl.message("ALL TEAMS",
+        name: 'Drop down for  the all teams result');
+  }
+
   String get everyone {
     return Intl.message("Everyone",
         name: 'Message to mean everyone in the team (coaches + everyone)');
@@ -1202,24 +1207,24 @@ class Messages {
         desc: 'In progress result details');
   }
 
-  String gameofficalinprogress(OfficalResult offical) {
+  String gameofficalinprogress(OfficialResult offical) {
     switch (offical) {
-      case OfficalResult.NotStarted:
+      case OfficialResult.NotStarted:
         return Intl.message('Not started',
             name: 'Offical result - not started');
-      case OfficalResult.InProgress:
+      case OfficialResult.InProgress:
         return Intl.message('In progress',
             name: 'Offical result - in progress');
-      case OfficalResult.AwayTeamWon:
+      case OfficialResult.AwayTeamWon:
         return Intl.message('Away team won');
-      case OfficalResult.HomeTeamWon:
+      case OfficialResult.HomeTeamWon:
         return Intl.message('Home team won');
-      case OfficalResult.Tie:
+      case OfficialResult.Tie:
         return Intl.message('Tie');
     }
   }
 
-  String gameofficalinprogressscore(GameOfficalResults offical) {
+  String gameofficalinprogressscore(GameOfficialResults offical) {
     GameResultPerPeriod finalScore;
     GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
     if (offical.scores.containsKey(finalReg)) {
@@ -1356,7 +1361,7 @@ class Messages {
     return unknown;
   }
 
-  String finalofficalscorebody(GameOfficalResults result) {
+  String finalofficalscorebody(GameOfficialResults result) {
     GamePeriod regulationPeriod =
         new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 0);
     GamePeriod overtimePeriod =
@@ -1368,19 +1373,19 @@ class Messages {
         result.scores[regulationPeriod];
     String resultString;
     switch (result.result) {
-      case OfficalResult.NotStarted:
+      case OfficialResult.NotStarted:
         resultString = Intl.message("Not started");
         break;
-      case OfficalResult.Tie:
+      case OfficialResult.Tie:
         resultString = tie;
         break;
-      case OfficalResult.HomeTeamWon:
+      case OfficialResult.HomeTeamWon:
         resultString = Intl.message("Home team won");
         break;
-      case OfficalResult.AwayTeamWon:
+      case OfficialResult.AwayTeamWon:
         resultString = Intl.message("Away team won");
         break;
-      case OfficalResult.InProgress:
+      case OfficialResult.InProgress:
         resultString = Intl.message("In progress");
         break;
     }
@@ -1446,14 +1451,23 @@ class Messages {
   }
 
   String get updatescorebutton {
-    return Intl.message("Update Score",
+    return Intl.message("UPDATE SCORE",
         desc: "Title to the button to update the score results screen");
   }
 
   String get finishgamebutton {
-    return Intl.message("Finish",
+    return Intl.message("FINISH",
         desc:
             "Text for the button to finish the game in the update score screen");
+  }
+
+  String get useofficialresultbutton {
+    return Intl.message('USE OFFICAL',
+        name: 'Button to pull the offical results in from the shared game');
+  }
+
+  String get editimagebutton {
+    return Intl.message('EDIT IMAGE', name: 'Button to edit the image');
   }
 
   String get timercountup {

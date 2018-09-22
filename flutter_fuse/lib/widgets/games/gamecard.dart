@@ -53,6 +53,17 @@ class GameCard extends StatelessWidget {
     );
   }
 
+  void _officalResult(BuildContext context) async {
+    // Call up a dialog to edit the result.
+    await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return new EditResultDialog(game);
+      },
+    );
+  }
+
+
   Widget _buildAvailability(
       BuildContext context, Season season, List<Player> players) {
     print('${game.seasonUid} ${game.teamUid}');
@@ -199,15 +210,19 @@ class GameCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget _buildMain(BuildContext context, LeagueOrTournamentTeam leagueTeam) {
     List<Widget> buttons = <Widget>[];
     Team team = UserDatabaseData.instance.teams[game.teamUid];
     Opponent op;
+    // Use the opponent from the main list before the league one if it is
+    // set.
     if (game.sharedData.type == EventType.Game &&
         game.opponentUids.length > 0 &&
         team != null &&
         team.opponents.containsKey(game.opponentUids[0])) {
       op = team.opponents[game.opponentUids[0]];
+    } else if (game.sharedData.type == EventType.Game && leagueTeam != null) {
+      op = new Opponent(name: leagueTeam.name);
     } else {
       op = new Opponent(name: Messages.of(context).unknown);
     }
@@ -275,6 +290,15 @@ class GameCard extends StatelessWidget {
     if (game.sharedData.time < new DateTime.now().millisecondsSinceEpoch &&
         game.sharedData.type == EventType.Game &&
         game.result.result == GameResult.Unknown) {
+      if (game.sharedData.officalResults.result != OfficialResult.InProgress &&
+          game.sharedData.officalResults.result != OfficialResult.NotStarted) {
+        buttons.add(
+          new FlatButton(
+            onPressed: () => _officalResult(context),
+            child: new Text(Messages.of(context).useofficialresultbutton),
+          )
+        );
+      }
       // Show a result button.
       buttons.add(
         new FlatButton(
@@ -409,5 +433,24 @@ class GameCard extends StatelessWidget {
         child: tile,
       );
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (game.leagueOpponentUid != null && game.leagueOpponentUid.isNotEmpty) {
+      // Show this in a future.
+      return FutureBuilder(
+        future: UserDatabaseData.instance.updateModel
+            .getLeagueTeamData(game.leagueOpponentUid),
+        builder:
+            (BuildContext context, AsyncSnapshot<LeagueOrTournamentTeam> team) {
+          if (team.hasData) {
+            return _buildMain(context, team.data);
+          }
+          return _buildMain(context, null);
+        },
+      );
+    }
+    return _buildMain(context, null);
   }
 }

@@ -13,12 +13,12 @@ class StorageReference extends wfs.StorageReferenceWrapper {
   @override
   Future<wfs.StorageMetadata> updateMetadata(wfs.StorageMetadata metadata) {
     st.StorageMetadata newMetadata = new st.StorageMetadata(
-      cacheControl: metadata.cacheControl,
-      contentDisposition: metadata.contentDisposition,
-      contentEncoding: metadata.contentEncoding,
-      contentLanguage: metadata.contentLanguage,
-      contentType: metadata.contentType,
-      customMetadata: metadata.customMetadata,
+      cacheControl: metadata?.cacheControl,
+      contentDisposition: metadata?.contentDisposition,
+      contentEncoding: metadata?.contentEncoding,
+      contentLanguage: metadata?.contentLanguage,
+      contentType: metadata?.contentType,
+      customMetadata: metadata?.customMetadata,
     );
     return _ref
         .updateMetadata(newMetadata)
@@ -37,21 +37,21 @@ class StorageReference extends wfs.StorageReferenceWrapper {
   Future<wfs.StorageMetadata> getMetadata() async {
     st.StorageMetadata meta = await _ref.getMetadata();
     return wfs.StorageMetadata(
-        name: meta.name,
-        path: meta.path,
-        bucket: meta.bucket,
-        generation: meta.generation,
-        metadataGeneration: meta.metadataGeneration,
-        sizeBytes: meta.sizeBytes,
-        creationTimeMillis: meta.creationTimeMillis,
-        updatedTimeMillis: meta.updatedTimeMillis,
-        md5Hash: meta.md5Hash,
-        customMetadata: meta.customMetadata,
-        cacheControl: meta.cacheControl,
-        contentDisposition: meta.contentDisposition,
-        contentEncoding: meta.contentEncoding,
-        contentLanguage: meta.contentLanguage,
-        contentType: meta.contentType);
+        name: meta?.name,
+        path: meta?.path,
+        bucket: meta?.bucket,
+        generation: meta?.generation,
+        metadataGeneration: meta?.metadataGeneration,
+        sizeBytes: meta?.sizeBytes,
+        creationTimeMillis: meta?.creationTimeMillis,
+        updatedTimeMillis: meta?.updatedTimeMillis,
+        md5Hash: meta?.md5Hash,
+        customMetadata: meta?.customMetadata,
+        cacheControl: meta?.cacheControl,
+        contentDisposition: meta?.contentDisposition,
+        contentEncoding: meta?.contentEncoding,
+        contentLanguage: meta?.contentLanguage,
+        contentType: meta?.contentType);
   }
 
   @override
@@ -90,28 +90,32 @@ class StorageReference extends wfs.StorageReferenceWrapper {
       [wfs.StorageMetadata metadata]) {
     return new StorageUploadTask(_ref.putFile(
         file,
-        st.StorageMetadata(
-          cacheControl: metadata.cacheControl,
-          contentType: metadata.contentType,
-          contentLanguage: metadata.contentLanguage,
-          contentEncoding: metadata.contentEncoding,
-          contentDisposition: metadata.contentDisposition,
-          customMetadata: metadata.customMetadata,
-        )));
+        metadata != null
+            ? st.StorageMetadata(
+                cacheControl: metadata?.cacheControl,
+                contentType: metadata?.contentType,
+                contentLanguage: metadata?.contentLanguage,
+                contentEncoding: metadata?.contentEncoding,
+                contentDisposition: metadata?.contentDisposition,
+                customMetadata: metadata?.customMetadata,
+              )
+            : null));
   }
 
   @override
   wfs.StorageUploadTaskWrapper put(File file, [wfs.StorageMetadata metadata]) {
     return new StorageUploadTask(_ref.putFile(
         file,
-        st.StorageMetadata(
-          cacheControl: metadata.cacheControl,
-          contentType: metadata.contentType,
-          contentLanguage: metadata.contentLanguage,
-          contentEncoding: metadata.contentEncoding,
-          contentDisposition: metadata.contentDisposition,
-          customMetadata: metadata.customMetadata,
-        )));
+        metadata != null
+            ? st.StorageMetadata(
+                cacheControl: metadata?.cacheControl,
+                contentType: metadata?.contentType,
+                contentLanguage: metadata?.contentLanguage,
+                contentEncoding: metadata?.contentEncoding,
+                contentDisposition: metadata?.contentDisposition,
+                customMetadata: metadata?.customMetadata,
+              )
+            : null));
   }
 
   @override

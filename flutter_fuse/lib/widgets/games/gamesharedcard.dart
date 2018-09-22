@@ -80,7 +80,7 @@ class GameSharedCard extends StatelessWidget {
 
     if (game.time < new DateTime.now().millisecondsSinceEpoch &&
             game.type == EventType.Game &&
-            game.officalResults.result == OfficalResult.NotStarted &&
+            game.officalResults.result == OfficialResult.NotStarted &&
             leagueOrTournament?.isAdmin() ??
         false) {
       // Show a result button (if an admin).
@@ -119,11 +119,11 @@ class GameSharedCard extends StatelessWidget {
     TextStyle homeStyle = Theme.of(context).textTheme.body1;
     TextStyle awayStyle = Theme.of(context).textTheme.body1;
 
-    if (game.officalResults.result == OfficalResult.AwayTeamWon) {
+    if (game.officalResults.result == OfficialResult.AwayTeamWon) {
       awayStyle =
           awayStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w600);
     }
-    if (game.officalResults.result == OfficalResult.HomeTeamWon) {
+    if (game.officalResults.result == OfficialResult.HomeTeamWon) {
       homeStyle =
           homeStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w700);
     }
@@ -151,15 +151,15 @@ class GameSharedCard extends StatelessWidget {
             .gametitleshared(format, endTimeFormat, tzShortName);
 
         // Add in the offical results.
-        if (game.officalResults.result != OfficalResult.NotStarted) {
+        if (game.officalResults.result != OfficialResult.NotStarted) {
           TextStyle homeStyle = Theme.of(context)
               .textTheme
               .display1.copyWith(fontSize: 25.0);
           TextStyle awayStyle = Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
-          if (game.officalResults.result == OfficalResult.AwayTeamWon) {
+          if (game.officalResults.result == OfficialResult.AwayTeamWon) {
             awayStyle = awayStyle.copyWith(color: Colors.green);
           }
-          if (game.officalResults.result == OfficalResult.HomeTeamWon) {
+          if (game.officalResults.result == OfficialResult.HomeTeamWon) {
             homeStyle = homeStyle.copyWith(color: Colors.green);
           }
           if (game.officalResults.scores.containsKey(GamePeriod.regulation)) {
@@ -222,7 +222,7 @@ class GameSharedCard extends StatelessWidget {
               leagueOrTeamUid: game.officalResults.homeTeamLeagueUid,
               width: 50.0,
               height: 50.0,
-              overlay: HomeAwayOverlay.Home,
+              overlay: HomeAwayOverlay.None,
             ),
             title: new Text(
               title,
@@ -239,7 +239,7 @@ class GameSharedCard extends StatelessWidget {
               leagueOrTeamUid: game.officalResults.awayTeamLeagueUid,
               width: 50.0,
               height: 50.0,
-              overlay: HomeAwayOverlay.Away,
+              overlay: HomeAwayOverlay.None,
             ),
           ),
           Row(

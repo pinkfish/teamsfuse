@@ -415,8 +415,8 @@ class HomeComponent implements OnInit, OnDestroy, OnChanges {
           place.longitude = gen.where.geometry.location.lng;
           place.latitude = gen.where.geometry.location.lat;
         }
-        GameOfficalResults results =
-        GameOfficalResults(homeTeamUid.uid, awayTeamUid.uid);
+        GameOfficialResults results =
+        GameOfficialResults(homeTeamUid.uid, awayTeamUid.uid);
         GameSharedData newGame = new GameSharedData(
             homeTeamUid.uid, awayTeamUid.uid,
             officalResults: results,

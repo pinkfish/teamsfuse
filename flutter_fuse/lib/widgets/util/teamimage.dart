@@ -87,6 +87,7 @@ class TeamImage extends StatelessWidget {
             height: height,
             width: width,
             alignment: alignment,
+            child: Center(child: CircularProgressIndicator()),
           );
         },
       ),

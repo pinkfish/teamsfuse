@@ -6,23 +6,35 @@ import 'package:flutter_fuse/widgets/leagueortournament/addseasondialog.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/addinvitetoleaguedialog.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'dart:async';
 
 class LeagueScreen extends StatelessWidget {
   final String leagueUid;
 
   LeagueScreen(this.leagueUid);
 
-  void _onEditLeague(BuildContext context) {
-    Navigator.pushNamed(context, "/League/Edit/" + leagueUid);
-  }
-
-  void _doAction(BuildContext context, String action) {
+  void _doAction(BuildContext context, String action) async {
     if (action == "season") {
       _addSeason(context);
     }
     if (action == "admin") {
       AddInviteToLeagueDialog.showAddLeagueOrTournamentInviteDialog(
           context, UserDatabaseData.instance.leagueOrTournments[leagueUid]);
+    }
+    if (action == "image") {
+      File imgFile = await ImagePicker.pickImage(
+          source: ImageSource.gallery, maxHeight: 200.0, maxWidth: 200.0);
+      if (imgFile != null) {
+        LeagueOrTournament league =
+            await UserDatabaseData.instance.getLegueOrTournament(leagueUid);
+        UserDatabaseData.instance.updateModel
+            .updateLeagueImage(league, imgFile);
+      }
+    }
+    if (action == "edit") {
+      Navigator.pushNamed(context, "/League/Edit/" + leagueUid);
     }
   }
 
@@ -37,7 +49,7 @@ class LeagueScreen extends StatelessWidget {
       print(
           'league stuff ${UserDatabaseData.instance.leagueOrTournments[leagueUid].isAdmin()}');
       if (UserDatabaseData.instance.leagueOrTournments[leagueUid].isAdmin()) {
-             actions.add(
+        actions.add(
           new PopupMenuButton<String>(
             onSelected: (String str) => _doAction(context, str),
             itemBuilder: (BuildContext context) {
@@ -50,6 +62,14 @@ class LeagueScreen extends StatelessWidget {
                   child: new Text(Messages.of(context).addadmin),
                   value: "admin",
                 ),
+                new PopupMenuItem<String>(
+                  child: new Text(Messages.of(context).editimagebutton),
+                  value: "image",
+                ),
+                new PopupMenuItem<String>(
+                  value: 'edit',
+                  child: Text(Messages.of(context).editbuttontext),
+                )
               ];
             },
           ),

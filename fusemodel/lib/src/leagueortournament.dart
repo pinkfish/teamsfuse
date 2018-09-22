@@ -76,6 +76,7 @@ class LeagueOrTournament {
         type = LeagueOrTournamentType.values.firstWhere(
             (LeagueOrTournamentType t) => t.toString() == data[TYPE],
             orElse: () => LeagueOrTournamentType.League) {
+    print('fromJSON $data');
     adminsUids = [];
     members = [];
     print(data[MEMBERS]);
@@ -213,7 +214,7 @@ class LeagueOrTournament {
 
   @override
   String toString() {
-    return 'Club{uid: $uid, name: $name, photoUrl: $photoUrl, '
-        'adminsUids: $adminsUids, members: $members}';
+    return 'LeagueOrTournament{uid: $uid, name: $name, photoUrl: $photoUrl, currentSeason: $currentSeason, shortDescription: $shortDescription, longDescription: $longDescription, type: $type, adminsUids: $adminsUids, members: $members}';
   }
+
 }

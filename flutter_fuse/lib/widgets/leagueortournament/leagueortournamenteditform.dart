@@ -126,7 +126,7 @@ class LeagueOrTournamentEditFormState
                   focusNode: _focusNodeName,
                   child: new TextFormField(
                     decoration: new InputDecoration(
-                      icon: const Icon(CommunityIcons.group),
+                      icon: const Icon(CommunityIcons.textbox),
                       hintText: Messages.of(context).league,
                     ),
                     keyboardType: TextInputType.text,

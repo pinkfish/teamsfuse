@@ -5,8 +5,6 @@ import 'cachednetworkimage.dart';
 import 'dart:async';
 import 'package:flutter_fuse/services/messages.dart';
 
-enum HomeAwayOverlay { Home, Away, None }
-
 class LeagueImage extends StatelessWidget {
   final String leagueOrTournamentUid;
   final LeagueOrTournament leagueOrTournament;
@@ -18,7 +16,6 @@ class LeagueImage extends StatelessWidget {
   final ImageRepeat repeat;
   final bool matchTextDirection;
   final BlendMode colorBlendMode;
-  final HomeAwayOverlay overlay;
 
   LeagueImage(
       {this.leagueOrTournamentUid,
@@ -29,7 +26,6 @@ class LeagueImage extends StatelessWidget {
       this.color,
       this.colorBlendMode,
       this.fit,
-      this.overlay = HomeAwayOverlay.None,
       this.alignment: Alignment.center,
       this.repeat: ImageRepeat.noRepeat,
       this.matchTextDirection: false})
@@ -43,7 +39,7 @@ class LeagueImage extends StatelessWidget {
       return new CachedNetworkImageProvider(urlNow: photoUrl);
     }
 
-    return const AssetImage("assets/images/defaultavatar2.png");
+    return const AssetImage("assets/images/defaultavatar.png");
   }
 
   Future<ImageProvider> get imageUrl async {
@@ -81,44 +77,17 @@ class LeagueImage extends StatelessWidget {
           height: height,
           width: width,
           alignment: alignment,
+          child: Center(child: CircularProgressIndicator()),
         );
       },
     );
-    if (overlay == HomeAwayOverlay.None) {
-      return SizedBox(width: width, height: height, child: futureBuilder);
-    }
-    return SizedBox(
-      width: width,
-      height: height,
-      child: Stack(
-        children: <Widget>[
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black45,
-              ),
-              child: Text(
-                overlay == HomeAwayOverlay.Away
-                    ? Messages.of(context).away
-                    : Messages.of(context).home,
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          futureBuilder
-        ],
-      ),
-    );
+
+    return SizedBox(width: width, height: height, child: futureBuilder);
   }
 
   static ImageProvider getImageURL(Team team) {
     if (team == null) {
-      return const AssetImage("assets/images/defaultavatar2.png");
+      return const AssetImage("assets/images/defaultavatar.png");
     }
     String photoUrl = team.photoUrl;
     if (photoUrl != null && photoUrl.isNotEmpty) {
@@ -132,6 +101,6 @@ class LeagueImage extends StatelessWidget {
       default:
         break;
     }
-    return const AssetImage("assets/images/defaultavatar2.png");
+    return const AssetImage("assets/images/defaultavatar.png");
   }
 }

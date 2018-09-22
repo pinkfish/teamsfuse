@@ -17,4 +17,5 @@ export 'src/fusederrordetails.dart';
 export 'src/club.dart';
 export 'src/leagueortournamentdivision.dart';
 export 'src/leagueortournmentteam.dart';
-import 'src/leagueortournament.dart';
+export 'src/leagueortournament.dart';
+export 'src/hasuidcomparable.dart';

@@ -153,6 +153,7 @@ abstract class DatabaseUpdateModel {
   Future<void> updateFirestoreGameAttendence(
       Game game, String playerUid, Attendance attend);
   Future<void> updateFirestoreGameResult(Game game, GameResultDetails result);
+  Future<void> updateFirestoreOfficalGameResult(GameSharedData game, GameOfficialResults result);
   GameLogReturnData readGameLogs(Game game);
   Future<String> addFirestoreGameLog(Game game, GameLog log);
   SharedGameSubscription getSharedGame(String sharedGameUid);

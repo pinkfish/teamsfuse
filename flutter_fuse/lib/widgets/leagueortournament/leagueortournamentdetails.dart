@@ -142,24 +142,64 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  ListTile(
-                    leading: LeagueImage(
-                      leagueOrTournament: data.data,
-                      width: 50.0,
-                      height: 50.0,
+                  Container(
+                    margin: EdgeInsets.only(
+                        left: 5.0, right: 5.0, top: 5.0, bottom: 10.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(right: 10.0),
+                          child: LeagueImage(
+                            leagueOrTournament: data.data,
+                            width: 100.0,
+                            height: 100.0,
+                          ),
+                        ),
+                        Flexible(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Flexible(
+                                child: Text(data.data.name,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .primaryColorDark)),
+                              ),
+                              data.data.shortDescription.isEmpty
+                                  ? SizedBox(
+                                      height: 0.0,
+                                    )
+                                  : Flexible(
+                                      child: Text(data.data.shortDescription,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .subhead
+                                              .copyWith(
+                                                  fontWeight: FontWeight.w500)),
+                                    ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    title: Text(data.data.name,
-                        style: Theme.of(context).textTheme.headline),
-                    subtitle: data.data.shortDescription.isEmpty
-                        ? null
-                        : Text(data.data.shortDescription),
                   ),
                   data.data.longDescription.isEmpty
                       ? SizedBox(height: 0.0)
                       : Container(
-                          color: Colors.lightBlue.shade50,
+                          padding: EdgeInsets.only(
+                              left: 15.0, bottom: 5.0, right: 5.0),
                           child: RichText(
-                              text: TextSpan(text: data.data.longDescription))),
+                              text: TextSpan(
+                                  text: data.data.longDescription,
+                                  style: Theme.of(context).textTheme.subhead))),
                   StreamBuilder(
                     stream: data.data.seasonStream,
                     builder: (BuildContext context,

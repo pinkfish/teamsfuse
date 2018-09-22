@@ -10,19 +10,26 @@ import 'package:flutter_fuse/widgets/util/communityicons.dart';
 ///
 class LeagueOrTournamentTeamCard extends StatelessWidget {
   final LeagueOrTournamentTeam team;
+  final LeagueOrTournamentDivison divison;
   final bool admin;
 
-  LeagueOrTournamentTeamCard(this.team, {this.admin = false});
+  LeagueOrTournamentTeamCard(this.team, {this.admin = false, this.divison});
 
   Widget build(BuildContext context) {
     Widget subtitle;
-
-    subtitle = Text(Messages.of(context).winrecord(team.record));
+    if (divison != null) {
+      if (team.record.containsKey(divison.uid)) {
+        subtitle =
+            Text(Messages.of(context).winrecord(team.record[divison.uid]));
+      } else {
+        WinRecord record = WinRecord();
+        subtitle = Text(Messages.of(context).winrecord(record));
+      }
+    }
 
     return Card(
       child: ListTile(
-        onTap: () =>
-            Navigator.pushNamed(context, "/League/Team/" + team.uid),
+        onTap: () => Navigator.pushNamed(context, "/League/Team/" + team.uid),
         leading: team.teamUid != null
             ? TeamImage(
                 width: 50.0,

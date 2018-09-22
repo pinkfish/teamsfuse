@@ -5,8 +5,14 @@ import 'cachednetworkimage.dart';
 import 'dart:async';
 import 'package:flutter_fuse/services/messages.dart';
 
+/// Some overlay text onto the team to say home/away.
 enum HomeAwayOverlay { Home, Away, None }
 
+///
+/// Looks up the league team from the database and then uses that to display
+/// the image for team.  It has default behavior and shows a progress indicator
+/// while loading.
+///
 class LeagueTeamImage extends StatelessWidget {
   final String leagueOrTeamUid;
   final LeagueOrTournamentTeam team;
@@ -50,7 +56,7 @@ class LeagueTeamImage extends StatelessWidget {
       default:
         break;
     }
-    return const AssetImage("assets/images/defaultavatar2.png");
+    return const AssetImage("assets/images/leagueteam.png");
   }
 
   Future<ImageProvider> get imageUrl async {
@@ -61,12 +67,12 @@ class LeagueTeamImage extends StatelessWidget {
     }
     // Team uid, lookup the team first.
     if (lookupTeam.seasonUid == null) {
-      return const AssetImage("assets/images/defaultavatar2.png");
+      return const AssetImage("assets/images/leagueteam.png");
     }
     Season season = await UserDatabaseData.instance.updateModel
         .getSeason(lookupTeam.seasonUid);
     if (season == null) {
-      return const AssetImage("assets/images/defaultavatar2.png");
+      return const AssetImage("assets/images/leagueteam.png");
     }
     Team publicTeam = await UserDatabaseData.instance.updateModel
         .getPublicTeamDetails(lookupTeam.teamUid);
@@ -97,6 +103,7 @@ class LeagueTeamImage extends StatelessWidget {
           height: height,
           width: width,
           alignment: alignment,
+          child: Center(child: CircularProgressIndicator()),
         );
       },
     );
@@ -136,7 +143,7 @@ class LeagueTeamImage extends StatelessWidget {
 
   static ImageProvider getImageURL(Team team) {
     if (team == null) {
-      return const AssetImage("assets/images/defaultavatar2.png");
+      return const AssetImage("assets/images/leagueteam.png");
     }
     String photoUrl = team.photoUrl;
     if (photoUrl != null && photoUrl.isNotEmpty) {
@@ -150,6 +157,6 @@ class LeagueTeamImage extends StatelessWidget {
       default:
         break;
     }
-    return const AssetImage("assets/images/defaultavatar2.png");
+    return const AssetImage("assets/images/leagueteam.png");
   }
 }

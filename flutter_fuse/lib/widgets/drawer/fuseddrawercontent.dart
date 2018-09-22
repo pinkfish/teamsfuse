@@ -3,6 +3,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/teams/teamtile.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
 
 import 'fuseddrawerheader.dart';
 import 'package:flutter_fuse/services/approuter.dart';
@@ -77,12 +78,12 @@ class FusedDrawerContent extends StatelessWidget {
     });
     data.add(
       new ListTile(
-        leading: const Icon(Icons.add),
+        leading: const Icon(CommunityIcons.naturePeople),
         title: new Text(
-          Messages.of(context).addteam,
+          Messages.of(context).allteamsbbutton,
           style: Theme.of(context).textTheme.button,
         ),
-        onTap: () => Navigator.popAndPushNamed(context, "AddTeam"),
+        onTap: () => Navigator.popAndPushNamed(context, "AllTeams"),
       ),
     );
     return new Column(children: data);

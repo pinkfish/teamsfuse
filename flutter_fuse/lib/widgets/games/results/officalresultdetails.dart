@@ -21,7 +21,7 @@ class OfficalScoreDetails extends StatefulWidget {
 }
 
 class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
-  GameOfficalResults _results;
+  GameOfficialResults _results;
   DetailsState _currentState;
   bool _startedAsFinal = false;
   TextEditingController _regulationHomePts;
@@ -38,10 +38,10 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
     super.initState();
     print('init this state');
     // Make our own copy of it.
-    _results = new GameOfficalResults.copy(widget.game.officalResults);
-    if (_results.result == OfficalResult.NotStarted) {
+    _results = new GameOfficialResults.copy(widget.game.officalResults);
+    if (_results.result == OfficialResult.NotStarted) {
       _currentState = DetailsState.NotStarted;
-    } else if (_results.result == OfficalResult.InProgress) {
+    } else if (_results.result == OfficialResult.InProgress) {
       _currentState = DetailsState.InProgress;
     } else {
       _currentState = DetailsState.Final;
@@ -151,18 +151,18 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
     }
 
     if (_currentState == DetailsState.NotStarted) {
-      _results.result = OfficalResult.NotStarted;
+      _results.result = OfficialResult.NotStarted;
     } else if (_currentState == DetailsState.InProgress) {
-      _results.result = OfficalResult.InProgress;
+      _results.result = OfficialResult.InProgress;
     } else {
-      OfficalResult gameResult = OfficalResult.Tie;
+      OfficialResult gameResult = OfficialResult.Tie;
       for (GameResultPerPeriod p in _results.scores.values) {
         // Lets see if we can get the right result out of here.
         if (p.score.ptsFor > p.score.ptsAgainst) {
-          gameResult = OfficalResult.HomeTeamWon;
+          gameResult = OfficialResult.HomeTeamWon;
         }
         if (p.score.ptsAgainst > p.score.ptsFor) {
-          gameResult = OfficalResult.AwayTeamWon;
+          gameResult = OfficialResult.AwayTeamWon;
         }
       }
       _results.result = gameResult;
@@ -283,14 +283,14 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                     groupValue: _currentState,
                     value: DetailsState.NotStarted,
                     title: Text(Messages.of(context)
-                        .gameofficalinprogress(OfficalResult.NotStarted)),
+                        .gameofficalinprogress(OfficialResult.NotStarted)),
                     onChanged: _updateState,
                   ),
                   RadioListTile<DetailsState>(
                     groupValue: _currentState,
                     value: DetailsState.InProgress,
                     title: Text(Messages.of(context)
-                        .gameofficalinprogress(OfficalResult.InProgress)),
+                        .gameofficalinprogress(OfficialResult.InProgress)),
                     onChanged: _updateState,
                   ),
                   RadioListTile<DetailsState>(
