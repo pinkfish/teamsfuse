@@ -21,8 +21,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (game.uid == null || game.uid == '') {
       print(game.toJSON());
       // Add the shared stuff, then the game.
-      if (game.sharedData.officalResults.homeTeamLeagueUid == null) {
-        game.sharedData.officalResults.homeTeamLeagueUid = game.teamUid;
+      if (game.sharedData.officialResults.homeTeamLeagueUid == null) {
+        game.sharedData.officialResults.homeTeamLeagueUid = game.teamUid;
       }
       DocumentReferenceWrapper sharedDoc =
           await refShared.add(game.sharedData.toJSON());
@@ -504,8 +504,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return null;
   }
 
-  GameSubscription _getGamesInternal(Iterable<Game> cachedGames,
-      Set<String> teams, String seasonUid, DateTime start, DateTime end) {
+  GameSubscription _getGamesInternal(
+      Iterable<Game> cachedGames,
+      Set<String> teams,
+      String seasonUid,
+      DateTime start,
+      DateTime end,
+      FilterDetails details) {
     GameSubscription sub = new GameSubscription(cachedGames);
     Map<String, Set<Game>> maps = <String, Set<Game>>{};
     for (String teamUid in teams) {
@@ -552,8 +557,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           } else {
             sharedData = new GameSharedData.fromJSON(sharedGameUid, snap.data);
           }
-          data.add(new Game.fromJSON(
-              teamUid, snap.documentID, snap.data, sharedData));
+          Game g = new Game.fromJSON(
+              teamUid, snap.documentID, snap.data, sharedData);
+          Season season;
+          if (UserDatabaseData.instance.teams.containsKey(g.teamUid)) {
+            if (UserDatabaseData.instance.teams[g.teamUid].seasons
+                .containsKey(g.seasonUid)) {
+              season = UserDatabaseData
+                  .instance.teams[g.teamUid].seasons[g.seasonUid];
+            }
+          }
+          if (details == null || details.isIncluded(g, season)) {
+            data.add(g);
+          } else {
+            print('Ignoring $g');
+          }
         }
         if (!maps.containsKey(teamUid)) {
           maps[teamUid] = new Set<Game>();
@@ -616,13 +634,27 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
           Game newGame = new Game.fromJSON(
               teamUid, snap.documentID, snap.data, sharedData);
+          bool include = true;
+          Season season;
+          if (UserDatabaseData.instance.teams.containsKey(g.teamUid)) {
+            if (UserDatabaseData.instance.teams[g.teamUid].seasons
+                .containsKey(g.seasonUid)) {
+              season = UserDatabaseData
+                  .instance.teams[g.teamUid].seasons[g.seasonUid];
+            }
+          }
+          if (details != null && details.isIncluded(newGame, season)){
+            include = false;
+          }
 
           // If we have a game already, update that.
           if (g != null) {
             g.updateFrom(newGame);
             newGame.sharedData = g.sharedData;
-            data.add(g);
-          } else {
+            if (include) {
+              data.add(g);
+            }
+          } else if (include) {
             data.add(newGame);
           }
         }
@@ -644,8 +676,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   // Games!
   @override
   GameSubscription getGames(Iterable<Game> cachedGames, Set<String> teams,
-      DateTime start, DateTime end) {
-    return _getGamesInternal(cachedGames, teams, null, start, end);
+      DateTime start, DateTime end, FilterDetails details) {
+    return _getGamesInternal(cachedGames, teams, null, start, end, details);
   }
 
   @override
@@ -948,7 +980,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   GameSubscription getSeasonGames(Iterable<Game> games, Season season) {
     Set<String> teams = new Set<String>();
     teams.add(season.teamUid);
-    return _getGamesInternal(games, teams, season.uid, null, null);
+    return _getGamesInternal(games, teams, season.uid, null, null, null);
   }
 
   @override

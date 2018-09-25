@@ -18,12 +18,11 @@ class LeagueTeamImage extends StatelessWidget {
   final LeagueOrTournamentTeam team;
   final double width;
   final double height;
-  final Color color;
   final BoxFit fit;
+  final Color color;
   final AlignmentGeometry alignment;
   final ImageRepeat repeat;
   final bool matchTextDirection;
-  final BlendMode colorBlendMode;
   final HomeAwayOverlay overlay;
 
   LeagueTeamImage(
@@ -33,7 +32,6 @@ class LeagueTeamImage extends StatelessWidget {
       this.width,
       this.height,
       this.color,
-      this.colorBlendMode,
       this.fit,
       this.overlay = HomeAwayOverlay.None,
       this.alignment: Alignment.center,
@@ -84,9 +82,10 @@ class LeagueTeamImage extends StatelessWidget {
     FutureBuilder<ImageProvider> futureBuilder = FutureBuilder<ImageProvider>(
       future: imageUrl,
       builder: (BuildContext context, AsyncSnapshot<ImageProvider> snap) {
+        Widget inner;
         if (snap.hasData) {
           // Yay!
-          return Image(
+          inner = FadeInImage(
             image: snap.data,
             height: height,
             width: width,
@@ -94,16 +93,18 @@ class LeagueTeamImage extends StatelessWidget {
             alignment: alignment,
             repeat: repeat,
             matchTextDirection: matchTextDirection,
-            color: color,
-            colorBlendMode: colorBlendMode,
+            placeholder: AssetImage("assets/images/leagueteam.png"),
           );
+        } else {
+          inner = Center(child: CircularProgressIndicator());
         }
-        return Container(
+        return AnimatedContainer(
+          duration: Duration(milliseconds: 500),
           color: color,
           height: height,
           width: width,
           alignment: alignment,
-          child: Center(child: CircularProgressIndicator()),
+          child: inner,
         );
       },
     );

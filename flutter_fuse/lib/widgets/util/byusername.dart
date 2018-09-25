@@ -8,11 +8,17 @@ class ByUserNameComponent extends FutureBuilder<FusedUserProfile> {
           future: UserDatabaseData.instance.userAuth.getProfile(userId),
           builder:
               (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) {
+            Widget inner;
             if (profile.hasData) {
-              return new Text(
+              inner = Text(
                   Messages.of(context).invitedby(profile.data.displayName));
+            } else {
+              inner = Text(Messages.of(context).loading);
             }
-            return new Text(Messages.of(context).loading);
+            return AnimatedSwitcher(
+              duration: Duration(milliseconds: 200),
+              child: inner,
+            );
           },
         );
 }

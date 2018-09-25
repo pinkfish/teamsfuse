@@ -119,14 +119,14 @@ class AppRouter {
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AcceptInviteToClubScreen(vals["id"][0].toString())));
     router.define("/AcceptInviteToClub/:id",
-            handler: new Handler(
-                handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AcceptInviteToClubScreen(vals["id"][0].toString())));
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new AcceptInviteToClubScreen(vals["id"][0].toString())));
     router.define("/AcceptInviteToLeague/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AcceptInviteToLeagueScreen(vals["id"][0].toString())));
-     router.define("/Team/:id",
+                new AcceptInviteToLeagueScreen(vals["id"][0].toString())));
+    router.define("/Team/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new TeamScreen(vals["id"][0].toString())));
@@ -137,7 +137,7 @@ class AppRouter {
     router.define("/AllTeams",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new TeamHomeScreen()));
+                new TeamHomeScreen()));
     router.define("/EditTeam/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -184,12 +184,12 @@ class AppRouter {
     }));
     router.define("/SharedGame/:id", handler: new Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> vals) {
-          Analytics.analytics.logViewItem(
-              itemId: vals["id"][0].toString(),
-              itemName: "Game",
-              itemCategory: "Game");
-          return new SharedGameDetailsScreen(vals["id"][0].toString());
-        }));
+      Analytics.analytics.logViewItem(
+          itemId: vals["id"][0].toString(),
+          itemName: "Game",
+          itemCategory: "Game");
+      return new SharedGameDetailsScreen(vals["id"][0].toString());
+    }));
 
     router.define("/AddEvent",
         handler: new Handler(
@@ -258,11 +258,11 @@ class AppRouter {
     router.define('/League/AddLeague',
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AddLeagueScreen(LeagueOrTournamentType.League)));
+                new AddLeagueScreen(LeagueOrTournamentType.League)));
     router.define('/League/AddTournament',
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AddLeagueScreen(LeagueOrTournamentType.League)));
+                new AddLeagueScreen(LeagueOrTournamentType.League)));
     router.define("/League/Main/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -270,7 +270,7 @@ class AppRouter {
     router.define("/League/Edit/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new EditLeagueScreen(vals["id"][0].toString())));
+                new EditLeagueScreen(vals["id"][0].toString())));
     router.define("/League/Divison/:id/:season/:divison",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -279,10 +279,11 @@ class AppRouter {
                   vals["season"][0].toString(),
                   vals["divison"][0].toString(),
                 )));
-    router.define("/League/Team/:id",
+    router.define("/League/Team/:league/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new LeagueTeamScreen(
+                  vals["league"][0].toString(),
                   vals["id"][0].toString(),
                 )));
 

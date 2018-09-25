@@ -207,6 +207,14 @@ class Messages {
     return Intl.message('Teams');
   }
 
+  String get offical {
+    return Intl.message('Offical');
+  }
+
+  String get games {
+    return Intl.message('Games');
+  }
+
   String get teamselected {
     return Intl.message('Team Selected');
   }

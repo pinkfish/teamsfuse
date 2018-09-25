@@ -21,6 +21,25 @@ class AddInviteToTeamDialog extends Dialog {
     return true;
   }
 
+  static Future<bool> showAddTeamInviteDialogByUid(
+      BuildContext context, String leagueUid, String leagueTeamUid) async {
+    String email = await showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => new AddInviteToTeamDialog());
+    if (email == null) {
+      return false;
+    }
+    // Lookup the team and league.
+    LeagueOrTournament league =
+        await UserDatabaseData.instance.getLegueOrTournament(leagueUid);
+    LeagueOrTournamentTeam leagueTeam = await UserDatabaseData
+        .instance.updateModel
+        .getLeagueTeamData(leagueTeamUid);
+    await UserDatabaseData.instance.updateModel
+        .inviteUserToLeagueTeam(league, leagueTeam, email);
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> children = <Widget>[];

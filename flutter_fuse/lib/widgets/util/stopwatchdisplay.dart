@@ -56,9 +56,10 @@ class _StopwatchDisplayState extends State<StopwatchDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    return new Text(
-      format(widget.stopwatch.elapsedMilliseconds),
-      style: widget.style,
+    return new AnimatedSwitcher(
+      duration: Duration(milliseconds: 100),
+      child: Text(format(widget.stopwatch.elapsedMilliseconds),
+          style: widget.style),
     );
   }
 }

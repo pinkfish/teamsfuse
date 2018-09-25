@@ -228,36 +228,16 @@ class UserDatabaseData {
     // the team filter.  Do the rest in code.
     // Filter the games locally.
     Iterable<Game> cachedGames = _gamesCache.values.where((Game game) {
-      if (details.teamUids.length != 0) {
-        if (!details.teamUids.contains(game.teamUid)) {
-          return false;
-        }
-      }
-      if (details.playerUids.length > 0) {
-        Season season = UserDatabaseData
-            .instance.teams[game.teamUid].seasons[game.seasonUid];
-
-        if (!details.playerUids
-            .any((String str) => season.players.contains(str))) {
-          return false;
-        }
-      }
-      if (details.result != null) {
-        if (game.result.result != details.result &&
-            !(game.result.result == GameResult.Unknown)) {
-          return false;
-        }
-      }
-      if (details.eventType != null) {
-        if (details.eventType != game.sharedData.type) {
-          return false;
-        }
+      Season season = UserDatabaseData
+          .instance.teams[game.teamUid].seasons[game.seasonUid];
+      if (!details.isIncluded(game, season)) {
+        return false;
       }
       return game.sharedData.tzEndTime.isAfter(start) &&
           game.sharedData.tzEndTime.isBefore(end);
     });
     GameSubscription sub =
-        updateModel.getGames(cachedGames, _teams.keys.toSet(), start, end);
+        updateModel.getGames(cachedGames, _teams.keys.toSet(), start, end, details);
     return sub;
   }
 

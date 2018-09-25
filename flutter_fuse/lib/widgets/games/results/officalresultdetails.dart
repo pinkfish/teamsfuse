@@ -38,7 +38,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
     super.initState();
     print('init this state');
     // Make our own copy of it.
-    _results = new GameOfficialResults.copy(widget.game.officalResults);
+    _results = new GameOfficialResults.copy(widget.game.officialResults);
     if (_results.result == OfficialResult.NotStarted) {
       _currentState = DetailsState.NotStarted;
     } else if (_results.result == OfficialResult.InProgress) {
@@ -88,8 +88,8 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
       _finishGame();
     } else {
       setState(() {
-        print("Update score ${widget.game.officalResults}");
-        widget.game.updateFirestoreResult(widget.game.officalResults);
+        print("Update score ${widget.game.officialResults}");
+        widget.game.updateFirestoreResult(widget.game.officialResults);
       });
     }
   }

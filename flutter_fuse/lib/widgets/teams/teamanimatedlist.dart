@@ -3,6 +3,9 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'teamtile.dart';
 
+///
+/// The list of teams that animated teams in and out.  Nifty.
+///
 class TeamAnimatedList extends StatefulWidget {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
@@ -16,6 +19,7 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
   List<Team> _currentData;
   GlobalKey<AnimatedListState> _listState = new GlobalKey<AnimatedListState>();
 
+  @override
   void initState() {
     super.initState();
     _currentData = UserDatabaseData.instance.teams.values.toList();
@@ -24,41 +28,57 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
 
   Widget _buildItem(
       BuildContext context, int index, Animation<double> animation) {
-    return new TeamTile(
-      _currentData[index],
-      popBeforeNavigate: true,
+    return SizeTransition(
+      axis: Axis.vertical,
+      sizeFactor: animation,
+      child: TeamTile(
+        _currentData[index],
+        popBeforeNavigate: true,
+      ),
     );
   }
 
-  void updateList(List<Team> newList) {
+
+  void _updateTeams(List<Team> newTeams) {
     List<Team> oldList = _currentData;
-    _currentData = newList;
+    _currentData = newTeams;
+    if (oldList == null || _listState.currentState == null) {
+      //  Build the new layout.
+      return;
+    }
 
     // Re-read the list and see what changed.
     int i = 0;
     int j = 0;
-    while (i < newList.length && j < oldList.length) {
-      if (newList[i].uid == oldList[i].uid) {
+    while (i < _currentData.length && j < oldList.length) {
+      if (_currentData[i].uid == oldList[j].uid) {
         i++;
         j++;
       } else {
-        int diff = newList[i].compareTo(oldList[i]);
+        int diff = _currentData[i].compareTo(oldList[j]);
         if (diff < 0) {
           i++;
           _listState.currentState.insertItem(i);
         } else {
-          j++;
-          _listState.currentState.removeItem(i,
-              (BuildContext context, Animation<double> animation) {
-            // Nailed it.
-            return _AnimatedListItem(
-              item: TeamTile(oldList[j]),
-            );
-          });
+          print("${_listState.currentState}");
+          Team myTeam = oldList[j];
+          _listState.currentState.removeItem(j,
+                  (BuildContext context, Animation<double> animation) {
+                // Nailed it.
+                return SizeTransition(
+                  axis: Axis.vertical,
+                  sizeFactor: animation,
+                  child: TeamTile(
+                    myTeam,
+                    popBeforeNavigate: true,
+                  ),
+                );
+              });
+          oldList.removeAt(j);
         }
       }
     }
-    while (i < newList.length) {
+    while (i < _currentData.length) {
       i++;
       _listState.currentState.insertItem(i);
     }
@@ -66,13 +86,14 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<UpdateReason>(
       stream: UserDatabaseData.instance.teamStream,
       builder: (BuildContext context, AsyncSnapshot<UpdateReason> reason) {
         if (UserDatabaseData.instance.teams.length == 0) {
           return Text(Messages.of(context).noteams);
         }
         List<Team> teamSorted = UserDatabaseData.instance.teams.values.toList();
+        _updateTeams(teamSorted);
         teamSorted.sort((Team a, Team b) => a.compareTo(b));
           return AnimatedList(
           key: _listState,
@@ -81,29 +102,6 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
             shrinkWrap: true,
         );
       },
-    );
-  }
-}
-
-class _AnimatedListItem extends StatelessWidget {
-  const _AnimatedListItem(
-      {Key key, @required this.animation, @required this.item})
-      : assert(animation != null),
-        assert(item != null),
-        super(key: key);
-
-  final Animation<double> animation;
-  final Widget item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(2.0),
-      child: SizeTransition(
-        axis: Axis.vertical,
-        sizeFactor: animation,
-        child: item,
-      ),
     );
   }
 }

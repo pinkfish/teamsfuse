@@ -14,7 +14,6 @@ class TeamImage extends StatelessWidget {
   final AlignmentGeometry alignment;
   final ImageRepeat repeat;
   final bool matchTextDirection;
-  final BlendMode colorBlendMode;
 
   TeamImage(
       {this.team,
@@ -23,7 +22,6 @@ class TeamImage extends StatelessWidget {
       this.width,
       this.height,
       this.color,
-      this.colorBlendMode,
       this.fit,
       this.alignment: Alignment.center,
       this.repeat: ImageRepeat.noRepeat,
@@ -68,9 +66,10 @@ class TeamImage extends StatelessWidget {
       child: new FutureBuilder(
         future: imageUrl,
         builder: (BuildContext context, AsyncSnapshot<ImageProvider> snap) {
+          Widget inner;
           if (snap.hasData) {
             // Yay!
-            return Image(
+            inner = FadeInImage(
               image: snap.data,
               height: height,
               width: width,
@@ -78,16 +77,17 @@ class TeamImage extends StatelessWidget {
               alignment: alignment,
               repeat: repeat,
               matchTextDirection: matchTextDirection,
-              color: color,
-              colorBlendMode: colorBlendMode,
+              placeholder: AssetImage("assets/images/defaultavatar2.png"),
             );
+          } else {
+            inner = Center(child: CircularProgressIndicator());
           }
           return Container(
             color: color,
             height: height,
             width: width,
             alignment: alignment,
-            child: Center(child: CircularProgressIndicator()),
+            child: inner,
           );
         },
       ),

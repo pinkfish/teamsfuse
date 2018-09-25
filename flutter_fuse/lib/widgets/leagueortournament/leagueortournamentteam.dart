@@ -74,6 +74,7 @@ class _LeagueOrTournamentTeamDetailsState
   }
 
   void dispose() {
+    super.dispose();
     _sub?.cancel();
   }
 
@@ -143,9 +144,9 @@ class _LeagueOrTournamentTeamDetailsState
                   }
                   List<GameSharedData> sortedGames = games
                       .where((GameSharedData g) =>
-                          g.officalResults.homeTeamLeagueUid ==
+                          g.officialResults.homeTeamLeagueUid ==
                               widget.leagueOrTournamentTeamUid ||
-                          g.officalResults.awayTeamLeagueUid ==
+                          g.officialResults.awayTeamLeagueUid ==
                               widget.leagueOrTournamentTeamUid)
                       .toList();
                   if (sortedGames.length == 0) {
@@ -164,6 +165,7 @@ class _LeagueOrTournamentTeamDetailsState
                         Messages.of(context).invitedpeople(
                             leagueOrTournamentTeam.cachedInvites?.length ?? 0),
                       ),
+                      initiallyExpanded: false,
                       children: leagueOrTournamentTeam.cachedInvites
                           .map((InviteToLeagueTeam invite) {
                         return ListTile(

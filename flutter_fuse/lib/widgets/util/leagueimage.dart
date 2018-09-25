@@ -3,8 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'cachednetworkimage.dart';
 import 'dart:async';
-import 'package:flutter_fuse/services/messages.dart';
 
+///
+/// Image for the league, handling the fade in/out and caching of the
+/// image itself in the local cache.
+///
 class LeagueImage extends StatelessWidget {
   final String leagueOrTournamentUid;
   final LeagueOrTournament leagueOrTournament;
@@ -58,9 +61,10 @@ class LeagueImage extends StatelessWidget {
     FutureBuilder<ImageProvider> futureBuilder = FutureBuilder<ImageProvider>(
       future: imageUrl,
       builder: (BuildContext context, AsyncSnapshot<ImageProvider> snap) {
+        Widget inner;
         if (snap.hasData) {
           // Yay!
-          return Image(
+          inner = FadeInImage(
             image: snap.data,
             height: height,
             width: width,
@@ -68,16 +72,18 @@ class LeagueImage extends StatelessWidget {
             alignment: alignment,
             repeat: repeat,
             matchTextDirection: matchTextDirection,
-            color: color,
-            colorBlendMode: colorBlendMode,
+            placeholder: AssetImage("assets/images/defaultavatar.png"),
           );
+        } else {
+          inner = Center(child: CircularProgressIndicator());
         }
-        return Container(
+        return AnimatedContainer(
+          duration: Duration(milliseconds: 500),
           color: color,
           height: height,
           width: width,
           alignment: alignment,
-          child: Center(child: CircularProgressIndicator()),
+          child: inner,
         );
       },
     );

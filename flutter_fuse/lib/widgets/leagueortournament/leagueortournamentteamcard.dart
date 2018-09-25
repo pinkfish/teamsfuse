@@ -11,9 +11,11 @@ import 'package:flutter_fuse/widgets/util/communityicons.dart';
 class LeagueOrTournamentTeamCard extends StatelessWidget {
   final LeagueOrTournamentTeam team;
   final LeagueOrTournamentDivison divison;
+  final String leagueUid;
   final bool admin;
 
-  LeagueOrTournamentTeamCard(this.team, {this.admin = false, this.divison});
+  LeagueOrTournamentTeamCard(this.leagueUid, this.team,
+      {this.admin = false, this.divison});
 
   Widget build(BuildContext context) {
     Widget subtitle;
@@ -29,7 +31,8 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
 
     return Card(
       child: ListTile(
-        onTap: () => Navigator.pushNamed(context, "/League/Team/" + team.uid),
+        onTap: () => Navigator.pushNamed(
+            context, "/League/Team/" + leagueUid + "/" + team.uid),
         leading: team.teamUid != null
             ? TeamImage(
                 width: 50.0,
@@ -40,7 +43,13 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
                 CommunityIcons.basketball,
                 size: 50.0,
               ),
-        title: LeagueOrTournamentTeamName(team.uid),
+        title: Container(
+          alignment: Alignment.topLeft,
+          child: LeagueOrTournamentTeamName(
+            team.uid,
+            textAlign: TextAlign.start,
+          ),
+        ),
         subtitle: subtitle,
       ),
     );

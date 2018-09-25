@@ -144,11 +144,11 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     TextStyle homeStyle = Theme.of(context).textTheme.subhead;
     TextStyle awayStyle = Theme.of(context).textTheme.subhead;
 
-    if (widget.game.officalResults.result == OfficialResult.AwayTeamWon) {
+    if (widget.game.officialResults.result == OfficialResult.AwayTeamWon) {
       awayStyle =
           awayStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w600);
     }
-    if (widget.game.officalResults.result == OfficialResult.HomeTeamWon) {
+    if (widget.game.officialResults.result == OfficialResult.HomeTeamWon) {
       homeStyle =
           homeStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w700);
     }
@@ -156,13 +156,13 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
       Align(
         alignment: Alignment.topRight,
         child: LeagueTeamImage(
-          leagueOrTeamUid: widget.game.officalResults.homeTeamLeagueUid,
+          leagueOrTeamUid: widget.game.officialResults.homeTeamLeagueUid,
           width: 50.0,
           height: 50.0,
         ),
       ),
       LeagueOrTournamentTeamName(
-        widget.game.officalResults.homeTeamLeagueUid,
+        widget.game.officialResults.homeTeamLeagueUid,
         style: homeStyle,
         textAlign: TextAlign.end,
         overflow: TextOverflow.ellipsis,
@@ -173,72 +173,72 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
       Align(
         alignment: Alignment.topLeft,
         child: LeagueTeamImage(
-          leagueOrTeamUid: widget.game.officalResults.awayTeamLeagueUid,
+          leagueOrTeamUid: widget.game.officialResults.awayTeamLeagueUid,
           width: 50.0,
           height: 50.0,
         ),
       ),
       LeagueOrTournamentTeamName(
-        widget.game.officalResults.awayTeamLeagueUid,
+        widget.game.officialResults.awayTeamLeagueUid,
         style: awayStyle,
         overflow: TextOverflow.ellipsis,
       )
     ];
 
     if (widget.game.type == EventType.Game &&
-        widget.game.officalResults.result != OfficialResult.NotStarted) {
+        widget.game.officialResults.result != OfficialResult.NotStarted) {
       TextStyle homeStyle =
           Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
       TextStyle awayStyle =
           Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
-      if (widget.game.officalResults.result == OfficialResult.AwayTeamWon) {
+      if (widget.game.officialResults.result == OfficialResult.AwayTeamWon) {
         awayStyle = awayStyle.copyWith(color: Colors.green);
       }
-      if (widget.game.officalResults.result == OfficialResult.HomeTeamWon) {
+      if (widget.game.officialResults.result == OfficialResult.HomeTeamWon) {
         homeStyle = homeStyle.copyWith(color: Colors.green);
       }
-      if (widget.game.officalResults.scores
+      if (widget.game.officialResults.scores
           .containsKey(GamePeriod.regulation)) {
         TextStyle tmpHomeStyle = homeStyle;
         TextStyle tmpAwayStyle = awayStyle;
-        if (widget.game.officalResults.scores.length > 1) {
+        if (widget.game.officialResults.scores.length > 1) {
           tmpHomeStyle = homeStyle.copyWith(fontSize: 20.0);
           tmpAwayStyle = awayStyle.copyWith(fontSize: 20.0);
         }
         homeTeamDetails.add(Text(
-          widget.game.officalResults.scores[GamePeriod.regulation].score.ptsFor
+          widget.game.officialResults.scores[GamePeriod.regulation].score.ptsFor
               .toString(),
           style: tmpHomeStyle,
           textAlign: TextAlign.end,
         ));
         awayTeamDetails.add(Text(
-          widget.game.officalResults.scores[GamePeriod.regulation].score
+          widget.game.officialResults.scores[GamePeriod.regulation].score
               .ptsAgainst
               .toString(),
           style: tmpAwayStyle,
           textAlign: TextAlign.start,
         ));
       }
-      if (widget.game.officalResults.scores.containsKey(GamePeriod.overtime)) {
+      if (widget.game.officialResults.scores.containsKey(GamePeriod.overtime)) {
         homeTeamDetails.add(Text(
-          "OT ${widget.game.officalResults.scores[GamePeriod.overtime].score.ptsFor}",
+          "OT ${widget.game.officialResults.scores[GamePeriod.overtime].score.ptsFor}",
           style: homeStyle,
           textAlign: TextAlign.end,
         ));
         awayTeamDetails.add(Text(
-          "OT ${widget.game.officalResults.scores[GamePeriod.overtime].score.ptsAgainst}",
+          "OT ${widget.game.officialResults.scores[GamePeriod.overtime].score.ptsAgainst}",
           style: awayStyle,
           textAlign: TextAlign.start,
         ));
       }
-      if (widget.game.officalResults.scores.containsKey(GamePeriod.penalty)) {
+      if (widget.game.officialResults.scores.containsKey(GamePeriod.penalty)) {
         homeTeamDetails.add(Text(
-          "PT ${widget.game.officalResults.scores[GamePeriod.penalty].score.ptsFor}",
+          "PT ${widget.game.officialResults.scores[GamePeriod.penalty].score.ptsFor}",
           style: homeStyle,
           textAlign: TextAlign.end,
         ));
         awayTeamDetails.add(Text(
-          "PT ${widget.game.officalResults.scores[GamePeriod.penalty].score.ptsAgainst}",
+          "PT ${widget.game.officialResults.scores[GamePeriod.penalty].score.ptsAgainst}",
           style: awayStyle,
           textAlign: TextAlign.start,
         ));
@@ -324,16 +324,17 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
         TextStyle resultStyle;
 
         // Started.
-        switch (widget.game.officalResults.result) {
+        switch (widget.game.officialResults.result) {
           case OfficialResult.NotStarted:
             title = Messages.of(context)
-                .gameofficalinprogress(widget.game.officalResults.result);
+                .gameofficalinprogress(widget.game.officialResults.result);
             resultStyle = theme.textTheme.subhead;
             break;
           case OfficialResult.InProgress:
-            if (widget.game.officalResults.result != OfficialResult.NotStarted) {
+            if (widget.game.officialResults.result !=
+                OfficialResult.NotStarted) {
               title = Messages.of(context)
-                  .gameofficalinprogress(widget.game.officalResults.result);
+                  .gameofficalinprogress(widget.game.officialResults.result);
               resultStyle = theme.textTheme.subhead;
             } else {
               title = Messages.of(context).resultunknown;
@@ -342,17 +343,17 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
             break;
           case OfficialResult.HomeTeamWon:
             title = Messages.of(context)
-                .gameofficalinprogress(widget.game.officalResults.result);
+                .gameofficalinprogress(widget.game.officialResults.result);
             resultStyle = theme.textTheme.subhead;
             break;
           case OfficialResult.AwayTeamWon:
             title = Messages.of(context)
-                .gameofficalinprogress(widget.game.officalResults.result);
+                .gameofficalinprogress(widget.game.officialResults.result);
             resultStyle = theme.textTheme.subhead;
             break;
           case OfficialResult.Tie:
             title = Messages.of(context)
-                .gameofficalinprogress(widget.game.officalResults.result);
+                .gameofficalinprogress(widget.game.officialResults.result);
             resultStyle = theme.textTheme.subhead;
             break;
         }
@@ -361,11 +362,17 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
             onTap: _editResult,
             leading: LeagueImage(
               leagueOrTournamentUid: widget.game.leagueUid,
-              width: 50.0,
-              height: 50.0,
+              width: 40.0,
+              height: 40.0,
             ),
-            title: LeagueOrTournamentName(widget.game.leagueUid),
-            subtitle: new Text(title),
+            title: LeagueOrTournamentName(
+              widget.game.leagueUid,
+              textAlign: TextAlign.start,
+            ),
+            subtitle: new Text(
+              title,
+              textAlign: TextAlign.start,
+            ),
           ),
         );
         if (UserDatabaseData.instance.leagueOrTournments[widget.game.leagueUid]

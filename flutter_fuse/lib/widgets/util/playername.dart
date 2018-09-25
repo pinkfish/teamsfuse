@@ -16,13 +16,24 @@ class PlayerName extends FutureBuilder<Player> {
             return new Player();
           }),
           builder: (BuildContext context, AsyncSnapshot<Player> player) {
+            Widget widgetOne;
+            Widget widgetTwo;
+            CrossFadeState state = CrossFadeState.showFirst;
+
+            widgetTwo = new Text(Messages.of(context).unknown, style: style);
             if (player.hasData) {
-              if (player.data.name == null) {
-                return new Text(Messages.of(context).unknown, style: style);
+              if (player.data.name != null) {
+                widgetTwo = new Text(player.data.name, style: style);
               }
-              return new Text(player.data.name, style: style);
+              state = CrossFadeState.showSecond;
             }
-            return new Text(Messages.of(context).loading, style: style);
+            widgetOne = new Text(Messages.of(context).loading, style: style);
+            return AnimatedCrossFade(
+              firstChild: widgetOne,
+              secondChild: widgetTwo,
+              duration: Duration(milliseconds: 500),
+              crossFadeState: state,
+            );
           },
         );
 }

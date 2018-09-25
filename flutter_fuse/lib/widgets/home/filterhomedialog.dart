@@ -20,18 +20,21 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     List<Widget> teams = <Widget>[];
     UserDatabaseData.instance.teams.forEach((String str, Team team) {
       bool isOn = widget.details.teamUids.contains(str);
-      teams.add(
-        new ListTile(
-          leading: new Checkbox(
-            value: isOn,
-            onChanged: (bool val) => val
-                ? widget.details.teamUids.add(str)
-                : widget.details.teamUids.remove(str),
-          ),
-          title: new Text(team.name),
-        ),
-      );
+      teams.add(_CheckboxDialogItem(
+          initialValue: isOn,
+          title: team.name,
+          onChanged: (bool val) => val
+              ? widget.details.teamUids.add(str)
+              : widget.details.teamUids.remove(str)));
     });
+    teams.add(ButtonBar(
+      children: <Widget>[
+        FlatButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(MaterialLocalizations.of(context).okButtonLabel),
+        ),
+      ],
+    ));
     showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -40,7 +43,9 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
           children: teams,
         );
       },
-    );
+    ).then((bool closed) {
+      setState(() {});
+    });
   }
 
   Widget _showTeamPicker() {
@@ -66,30 +71,36 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
 
   void _openPlayerListWithCheckbox() {
     Messages messages = Messages.of(context);
-    List<Widget> teams = <Widget>[];
+    List<Widget> players = <Widget>[];
     UserDatabaseData.instance.players.forEach((String str, Player player) {
       bool isOn = widget.details.playerUids.contains(str);
-      teams.add(
-        new ListTile(
-          leading: new Checkbox(
-            value: isOn,
-            onChanged: (bool val) => val
-                ? widget.details.playerUids.add(str)
-                : widget.details.playerUids.remove(str),
-          ),
-          title: new Text(player.name),
-        ),
-      );
+      players.add(_CheckboxDialogItem(
+          initialValue: isOn,
+          title: player.name,
+          onChanged: (bool val) => val
+              ? widget.details.playerUids.add(str)
+              : widget.details.playerUids.remove(str)));
     });
+    players.add(ButtonBar(
+      children: <Widget>[
+        FlatButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(MaterialLocalizations.of(context).okButtonLabel),
+        ),
+      ],
+    ));
     showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return new SimpleDialog(
-          title: new Text(messages.teamselect),
-          children: teams,
+          title: new Text(messages.playerselect),
+          children: players,
         );
       },
-    );
+    ).then((bool closed) {
+      setState(() {});
+    });
+    ;
   }
 
   Widget _showPlayerPicker() {
@@ -120,12 +131,12 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(messages.title),
-        actions: <Widget>[
-          new FlatButton(
-            child: new Text(messages.savebuttontext),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
+        actions: <Widget>[],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Icon(Icons.check),
       ),
       body: new SingleChildScrollView(
         child: new Column(
@@ -204,6 +215,41 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _CheckboxDialogItem extends StatefulWidget {
+  final ValueChanged<bool> onChanged;
+  final bool initialValue;
+  final String title;
+
+  _CheckboxDialogItem({this.initialValue = false, this.onChanged, this.title});
+
+  @override
+  State createState() {
+    return _CheckboxDialogItemState();
+  }
+}
+
+class _CheckboxDialogItemState extends State<_CheckboxDialogItem> {
+  bool _isOn;
+
+  void initState() {
+    super.initState();
+    _isOn = widget.initialValue;
+  }
+
+  Widget build(BuildContext context) {
+    return new ListTile(
+      leading: new Checkbox(
+        value: _isOn,
+        onChanged: (bool val) => setState(() {
+              _isOn = val;
+              widget.onChanged(val);
+            }),
+      ),
+      title: Text(widget.title),
     );
   }
 }

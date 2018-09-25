@@ -240,7 +240,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                         }
                         return c1.name.compareTo(c2.name);
                       });
-                      return ExpansionPanelList.radio(
+                      Widget expansionList = ExpansionPanelList.radio(
                         initialOpenPanelValue:
                             data.data.currentSeason ?? seasonSorted[0],
                         expansionCallback: (int pos, bool opened) {
@@ -273,6 +273,30 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                           },
                         ).toList(),
                       );
+                      if (data.data.isAdmin()) {
+                        return Column(
+                          children: <Widget>[
+                            ButtonBar(
+                              children: [
+                                FlatButton(
+                                  onPressed: _addSeason,
+                                  child: Text(
+                                    Messages.of(context).addseason,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .button
+                                        .copyWith(
+                                            color:
+                                                Theme.of(context).accentColor),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            expansionList,
+                          ],
+                        );
+                      }
+                      return expansionList;
                     },
                   ),
                 ],

@@ -570,7 +570,7 @@ class GameSharedData {
   num endTime;
   EventType type;
   GamePlace place;
-  GameOfficialResults officalResults;
+  GameOfficialResults officialResults;
   String leagueUid;
   String leagueDivisionUid;
 
@@ -591,7 +591,7 @@ class GameSharedData {
     this.leagueUid,
     this.leagueDivisionUid,
   })  : this.place = place ?? new GamePlace(),
-        this.officalResults =
+        this.officialResults =
             officalResults ?? new GameOfficialResults(homeTeamUid, awayTeamUid),
         this.time = time ?? new DateTime.now().millisecondsSinceEpoch,
         this.endTime = endTime ?? new DateTime.now().millisecondsSinceEpoch,
@@ -608,7 +608,7 @@ class GameSharedData {
     place = new GamePlace.copy(copy.place);
     name = copy.name;
     leagueDivisionUid = copy.leagueDivisionUid;
-    officalResults = new GameOfficialResults.copy(copy.officalResults);
+    officialResults = new GameOfficialResults.copy(copy.officialResults);
   }
 
   GameSharedData.fromJSON(String uid, Map<String, dynamic> data) {
@@ -627,7 +627,9 @@ class GameSharedData {
     this.place = place;
     name = getString(data[NAME]);
     if (data.containsKey(OFFICIALRESULT)) {
-      officalResults = new GameOfficialResults.fromJSON(data[OFFICIALRESULT]);
+      officialResults = new GameOfficialResults.fromJSON(data[OFFICIALRESULT]);
+    } else {
+      officialResults = new GameOfficialResults(null, null);
     }
 
     leagueUid = data[_LEAGUEUID];
@@ -644,8 +646,8 @@ class GameSharedData {
     data[_TIMEZONE] = _timezone;
     data[_LEAGUEUID] = leagueUid;
     data[LEAGUEDIVISIONUID] = leagueDivisionUid;
-    if (officalResults != null) {
-      data[OFFICIALRESULT] = officalResults.toJSON();
+    if (officialResults != null) {
+      data[OFFICIALRESULT] = officialResults.toJSON();
     }
     return data;
   }
@@ -677,7 +679,7 @@ class GameSharedData {
     name = copy.name;
     leagueDivisionUid = copy.leagueDivisionUid;
     leagueUid = copy.leagueUid;
-    officalResults = new GameOfficialResults.copy(copy.officalResults);
+    officialResults = new GameOfficialResults.copy(copy.officialResults);
   }
 
   TZDateTime get tzTime =>
@@ -715,8 +717,8 @@ class GameSharedData {
     return 'GameSharedData{uid: $uid, time: $tzTime, _timezone: $_timezone, '
         'endTime: $tzEndTime, leagueUid: $leagueUid, '
         'leagueDivisionUid: $leagueDivisionUid, '
-        'name: $name, type: $type, officalResults: $officalResults, '
-        'officalResult: $officalResults, place: $place}';
+        'name: $name, type: $type, officalResults: $officialResults, '
+        'officalResult: $officialResults, place: $place}';
   }
 }
 
@@ -855,13 +857,13 @@ class Game {
     }
   }
 
-  bool get homegame => sharedData.officalResults.homeTeamLeagueUid == teamUid;
+  bool get homegame => sharedData.officialResults.homeTeamLeagueUid == teamUid;
   set homegame(bool val) => val
       ? sharedData.leagueUid != null
-          ? sharedData.officalResults.homeTeamLeagueUid = teamUid
+          ? sharedData.officialResults.homeTeamLeagueUid = teamUid
           : null
       : sharedData.leagueUid != null
-          ? sharedData.officalResults.homeTeamLeagueUid =
+          ? sharedData.officialResults.homeTeamLeagueUid =
               opponentUids.length > 0 ? opponentUids[0] : ""
           : null;
 

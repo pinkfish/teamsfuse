@@ -26,8 +26,10 @@ class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription<UpdateReason> _messagaesSubscription;
   StreamSubscription<UpdateReason> _calendarSub;
   FilterDetails _details = new FilterDetails();
-  GameListCalendarState _calendarState;
+  GlobalKey<CalendarWidgetState> _calendarState =
+      new GlobalKey<CalendarWidgetState>();
   int quoteId = SavingOverlay.randomNum.nextInt(20000);
+  GameListCalendarState _calendarEvents;
 
   void _showFilterDialog() async {
     await showDialog<bool>(
@@ -36,9 +38,15 @@ class _HomeScreenState extends State<HomeScreen> {
         return new FilterHomeDialog(_details);
       },
     );
-    //setState(() {});
-    await _calendarState.loadGames(_details);
+
+    await _calendarEvents.loadGames(_details);
     setState(() {});
+  }
+
+
+  @override
+  void didChangeDependencies() {
+    _calendarEvents.state = _calendarState;
   }
 
   // This widget is the root of your application.
@@ -117,8 +125,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           new IconButton(
             icon: const Icon(Icons.calendar_today, color: Colors.white),
-            onPressed: () =>
-                _calendarState.scrollToDay(new TZDateTime.now(local)),
+            onPressed: () => _calendarState.currentState
+                .scrollToDay(new TZDateTime.now(local)),
           ),
           new Positioned(
             top: 22.0,
@@ -168,7 +176,9 @@ class _HomeScreenState extends State<HomeScreen> {
             new Expanded(
               child: new CalendarWidget(
                 initialDate: new TZDateTime.now(local),
-                source: _calendarState,
+                key: _calendarState,
+                getEvents: _calendarEvents.getEvents,
+                buildItem: _calendarEvents.buildWidget,
                 bannerHeader:
                     new AssetImage("assets/images/calendarheader.png"),
                 monthHeader: new AssetImage("assets/images/calendarbanner.jpg"),
@@ -217,15 +227,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    _calendarState = new GameListCalendarState(_details);
     _teamSubscription = UserDatabaseData.instance.teamStream
         .listen((UpdateReason reason) => setState(() {}));
     _messagaesSubscription = UserDatabaseData.instance.messagesStream
         .listen((UpdateReason reason) => setState(() {}));
-    _calendarState.loadGames(_details).then((void d) {
+    _calendarEvents =
+        new GameListCalendarState(_details, _calendarState);
+    _calendarEvents.loadGames(_details).then((void d) {
       setState(() {});
     });
-    _calendarSub = _calendarState.stream.listen((UpdateReason readon) {
+    _calendarSub = _calendarEvents.stream.listen((UpdateReason readon) {
       setState(() {});
     });
   }

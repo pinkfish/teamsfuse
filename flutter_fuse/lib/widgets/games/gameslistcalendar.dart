@@ -4,7 +4,7 @@ import 'package:flutter_fuse/widgets/games/gamecard.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 import 'dart:async';
 
-class GameListCalendarState extends CalendarSource {
+class GameListCalendarState {
   GameSubscription _subscription;
   StreamSubscription<Iterable<Game>> _listening;
   StreamSubscription<UpdateReason> _teamListen;
@@ -15,8 +15,9 @@ class GameListCalendarState extends CalendarSource {
   StreamController<UpdateReason> _controller =
       new StreamController<UpdateReason>();
   Stream<UpdateReason> _myStream;
+  GlobalKey<CalendarWidgetState> state;
 
-  GameListCalendarState(this.details);
+  GameListCalendarState(this.details, this.state);
 
   @override
   Widget buildWidget(BuildContext context, CalendarEvent event) {
@@ -55,13 +56,14 @@ class GameListCalendarState extends CalendarSource {
   }
 
   void _resubscribe() {
+    print('resubscribe $details');
     _subscription?.dispose();
     _subscription =
         UserDatabaseData.instance.getGames(details, startPoint, endPoint);
     _setGames(_subscription.initialData);
     _listening?.cancel();
     _listening = _subscription.stream.listen((Iterable<Game> games) {
-      print("Getting games $startPoint $endPoint");
+      print("Getting games $startPoint $endPoint $details");
       _setGames(games);
     });
   }
@@ -86,6 +88,7 @@ class GameListCalendarState extends CalendarSource {
 
   Future<void> loadGames(FilterDetails details) async {
     this.details = details;
+    _resubscribe();
   }
 
   void _setGames(Iterable<Game> res) {
@@ -99,7 +102,7 @@ class GameListCalendarState extends CalendarSource {
       _listToShow = games;
 
       _controller?.add(UpdateReason.Update);
-      updateEvents();
+      state.currentState.updateEvents();
     }
   }
 }

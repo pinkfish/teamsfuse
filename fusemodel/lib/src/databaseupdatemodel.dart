@@ -128,7 +128,6 @@ class SharedGameSubscription extends IterableSubscription<GameSharedData> {}
 ///
 class SeasonSubscription extends IterableSubscription<Season> {}
 
-
 ///
 /// Details the games can be filtered on.
 ///
@@ -138,6 +137,40 @@ class FilterDetails {
   GameResult result;
   EventType eventType;
   bool allGames = false;
+
+  bool isIncluded(Game game, Season season) {
+    if (teamUids.length != 0) {
+      if (!teamUids.contains(game.teamUid)) {
+        return false;
+      }
+    }
+    if (playerUids.length > 0) {
+      if (season == null) {
+        return false;
+      }
+
+      if (!playerUids.any((String str) => season.players.contains(str))) {
+        return false;
+      }
+    }
+    if (result != null) {
+      if (game.result.result != result &&
+          !(game.result.result == GameResult.Unknown)) {
+        return false;
+      }
+    }
+    if (eventType != null) {
+      if (eventType != game.sharedData.type) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @override
+  String toString() {
+    return 'FilterDetails{teamUids: $teamUids, playerUids: $playerUids, result: $result, eventType: $eventType, allGames: $allGames}';
+  }
 }
 
 ///
@@ -153,7 +186,8 @@ abstract class DatabaseUpdateModel {
   Future<void> updateFirestoreGameAttendence(
       Game game, String playerUid, Attendance attend);
   Future<void> updateFirestoreGameResult(Game game, GameResultDetails result);
-  Future<void> updateFirestoreOfficalGameResult(GameSharedData game, GameOfficialResults result);
+  Future<void> updateFirestoreOfficalGameResult(
+      GameSharedData game, GameOfficialResults result);
   GameLogReturnData readGameLogs(Game game);
   Future<String> addFirestoreGameLog(Game game, GameLog log);
   SharedGameSubscription getSharedGame(String sharedGameUid);
@@ -220,7 +254,7 @@ abstract class DatabaseUpdateModel {
 
   // Games!
   GameSubscription getGames(Iterable<Game> cachedGames, Set<String> teams,
-      DateTime start, DateTime end);
+      DateTime start, DateTime end, FilterDetails filterDetails);
 
   // Clubs and stuff.
   TeamSubscription getClubTeams(String clubUid);

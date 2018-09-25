@@ -63,7 +63,6 @@ class GameCard extends StatelessWidget {
     );
   }
 
-
   Widget _buildAvailability(
       BuildContext context, Season season, List<Player> players) {
     print('${game.seasonUid} ${game.teamUid}');
@@ -99,6 +98,60 @@ class GameCard extends StatelessWidget {
     );
   }
 
+  List<Widget> _buildResultColumn(
+      BuildContext context,
+      GameResultPerPeriod finalResult,
+      GameResultPerPeriod overtimeResult,
+      GameResultPerPeriod penaltyResult,
+      GameResult result,
+      bool switchResult) {
+    TextStyle style = Theme.of(context).textTheme.body1;
+    switch (result) {
+      case GameResult.Win:
+        style = style.copyWith(color: Theme.of(context).accentColor);
+        break;
+      case GameResult.Loss:
+        style = style.copyWith(color: Theme.of(context).errorColor);
+        break;
+
+      case GameResult.Tie:
+        style = style.copyWith(color: Colors.blueAccent);
+        break;
+      case GameResult.Unknown:
+        break;
+    }
+    List<Widget> children = <Widget>[];
+    children.add(
+      new Text(
+        Messages.of(context).gameresult(result),
+        style: style,
+      ),
+    );
+    children.add(
+      new Text(
+        "${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}",
+        style: style,
+      ),
+    );
+    if (overtimeResult != null) {
+      children.add(
+        new Text(
+          "OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score.ptsAgainst}",
+          style: style,
+        ),
+      );
+    }
+    if (penaltyResult != null) {
+      children.add(
+        new Text(
+          "PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score.ptsAgainst}",
+          style: style,
+        ),
+      );
+    }
+    return children;
+  }
+
   Widget _buildInProgress(BuildContext context) {
     if (game.result.inProgress == GameInProgress.Final) {
       GameResultPerPeriod finalResult;
@@ -121,51 +174,42 @@ class GameCard extends StatelessWidget {
       }
 
       if (game.result.result != GameResult.Unknown) {
-        TextStyle style = Theme.of(context).textTheme.body1;
-        switch (game.result.result) {
-          case GameResult.Win:
-            style = style.copyWith(color: Theme.of(context).accentColor);
-            break;
-          case GameResult.Loss:
-            style = style.copyWith(color: Theme.of(context).errorColor);
-            break;
-
-          case GameResult.Tie:
-            style = style.copyWith(color: Colors.blueAccent);
-            break;
-          case GameResult.Unknown:
-            break;
-        }
-        List<Widget> children = <Widget>[];
-        children.add(
-          new Text(
-            Messages.of(context).gameresult(game.result.result),
-            style: style,
-          ),
-        );
-        children.add(
-          new Text(
-            "${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}",
-            style: style,
-          ),
-        );
-        if (overtimeResult != null) {
-          children.add(
-            new Text(
-              "OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score.ptsAgainst}",
-              style: style,
-            ),
-          );
-        }
-        if (penaltyResult != null) {
-          children.add(
-            new Text(
-              "PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score.ptsAgainst}",
-              style: style,
-            ),
-          );
-        }
+        List<Widget> children = _buildResultColumn(context, finalResult,
+            overtimeResult, penaltyResult, game.result.result, false);
         return new Column(
+          children: children,
+        );
+      }
+    } else {
+      // See if there is an offical result.
+      if (game.sharedData.officialResults.result != OfficialResult.InProgress &&
+          game.sharedData.officialResults.result != OfficialResult.NotStarted) {
+        bool homeTeam = game.sharedData.officialResults.awayTeamLeagueUid ==
+            game.leagueOpponentUid;
+        GameResult result;
+        GameResultPerPeriod finalResult;
+        GameResultPerPeriod overtimeResult;
+        GameResultPerPeriod penaltyResult;
+
+        finalResult =
+            game.sharedData.officialResults.scores[GamePeriod.regulation];
+        if (game.sharedData.officialResults.scores
+            .containsKey(GamePeriod.overtime)) {
+          overtimeResult =
+              game.sharedData.officialResults.scores[GamePeriod.overtime];
+        }
+        if (game.sharedData.officialResults.scores
+            .containsKey(GamePeriod.penalty)) {
+          penaltyResult =
+              game.sharedData.officialResults.scores[GamePeriod.penalty];
+        }
+        if (game.sharedData.officialResults.result == OfficialResult.Tie) {
+          result = GameResult.Tie;
+        }
+        List<Widget> children = _buildResultColumn(context, finalResult,
+            overtimeResult, penaltyResult, result, !homeTeam);
+        children.insert(0, Text(Messages.of(context).offical));
+        return Column(
           children: children,
         );
       }
@@ -212,7 +256,11 @@ class GameCard extends StatelessWidget {
   @override
   Widget _buildMain(BuildContext context, LeagueOrTournamentTeam leagueTeam) {
     List<Widget> buttons = <Widget>[];
-    Team team = UserDatabaseData.instance.teams[game.teamUid];
+    Team team;
+    //print('Trying ${game.teamUid}');
+    if (UserDatabaseData.instance.teams.containsKey(game.teamUid)) {
+      team = UserDatabaseData.instance.teams[game.teamUid];
+    }
     Opponent op;
     // Use the opponent from the main list before the league one if it is
     // set.
@@ -227,7 +275,6 @@ class GameCard extends StatelessWidget {
       op = new Opponent(name: Messages.of(context).unknown);
     }
 
-    List<Player> players = <Player>[];
     Season season;
     if (team != null) {
       season =
@@ -236,14 +283,6 @@ class GameCard extends StatelessWidget {
     if (season == null) {
       season = new Season();
     }
-
-    UserDatabaseData.instance.players.forEach((String key, Player player) {
-      if (season.players.any((SeasonPlayer play) {
-        return play.playerUid == key;
-      })) {
-        players.add(player);
-      }
-    });
 
     TZDateTime timeNow = new TZDateTime.now(local);
     Duration dur = timeNow.difference(game.sharedData.tzTime).abs();
@@ -290,14 +329,13 @@ class GameCard extends StatelessWidget {
     if (game.sharedData.time < new DateTime.now().millisecondsSinceEpoch &&
         game.sharedData.type == EventType.Game &&
         game.result.result == GameResult.Unknown) {
-      if (game.sharedData.officalResults.result != OfficialResult.InProgress &&
-          game.sharedData.officalResults.result != OfficialResult.NotStarted) {
-        buttons.add(
-          new FlatButton(
-            onPressed: () => _officalResult(context),
-            child: new Text(Messages.of(context).useofficialresultbutton),
-          )
-        );
+      if (game.sharedData.officialResults != null &&
+          game.sharedData.officialResults.result != OfficialResult.InProgress &&
+          game.sharedData.officialResults.result != OfficialResult.NotStarted) {
+        buttons.add(new FlatButton(
+          onPressed: () => _officalResult(context),
+          child: new Text(Messages.of(context).useofficialresultbutton),
+        ));
       }
       // Show a result button.
       buttons.add(
@@ -347,6 +385,14 @@ class GameCard extends StatelessWidget {
         );
       }
     }
+    List<Player> players = <Player>[];
+    if (season != null) {
+      players = UserDatabaseData.instance.players.values
+          .where((Player p) =>
+              season.players.any((SeasonPlayer sp) => sp.playerUid == p.uid))
+          .toList();
+    }
+
     for (Player play in players) {
       subtitle.add(
         new TextSpan(
@@ -395,7 +441,7 @@ class GameCard extends StatelessWidget {
         Navigator.pushNamed(context, "/Game/" + game.uid);
       },
       leading: new TeamImage(
-        team: UserDatabaseData.instance.teams[game.teamUid],
+        team: team,
         width: 50.0,
         height: 50.0,
       ),

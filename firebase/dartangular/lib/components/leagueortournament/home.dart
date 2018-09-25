@@ -395,13 +395,13 @@ class HomeComponent implements OnInit, OnDestroy, OnChanges {
       bool found = false;
       for (GameSharedData g in _gamesForDiv[divison.uid]) {
         if (g.time == gen.start.millisecondsSinceEpoch) {
-          print('Time match ${g.officalResults.homeTeamLeagueUid} ${g.officalResults.awayTeamLeagueUid}');
-          if (g.officalResults.homeTeamLeagueUid == homeTeamUid &&
-              g.officalResults.awayTeamLeagueUid == awayTeamUid) {
+          print('Time match ${g.officialResults.homeTeamLeagueUid} ${g.officialResults.awayTeamLeagueUid}');
+          if (g.officialResults.homeTeamLeagueUid == homeTeamUid &&
+              g.officialResults.awayTeamLeagueUid == awayTeamUid) {
             // Found it, update the data and save this instead.
             g.timezone = "America/Los_Angeles";
-            g.officalResults.awayTeamLeagueUid = awayTeamUid.uid;
-            g.officalResults.homeTeamLeagueUid= homeTeamUid.uid;
+            g.officialResults.awayTeamLeagueUid = awayTeamUid.uid;
+            g.officialResults.homeTeamLeagueUid= homeTeamUid.uid;
             await g.updateFirestore();
             found = true;
           }

@@ -10,5 +10,5 @@ class UserImage extends CircleAvatar {
   }) : super(
             backgroundColor: backgroundColor,
             radius: radius,
-            child: new Text(profile.initials()));
+            child: Text(profile.initials()));
 }

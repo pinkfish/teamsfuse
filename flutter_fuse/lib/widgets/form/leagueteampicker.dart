@@ -14,13 +14,17 @@ class TournamentOrLeagueTeamPicker extends StatefulWidget {
   final bool disabled;
   final bool selectedTitle;
   final String initialTeamUid;
+  final bool includeAll;
 
   TournamentOrLeagueTeamPicker(
       {@required this.onChanged,
       @required this.tournamentOrLeagueDivisonUid,
       this.initialTeamUid,
       this.disabled = false,
-      this.selectedTitle = false});
+      this.selectedTitle = false,
+      this.includeAll = false});
+
+  static const String all = 'all';
 
   @override
   _TournamentOrLeagueTeamPickerState createState() {
@@ -47,8 +51,15 @@ class _TournamentOrLeagueTeamPickerState
         .getLeagueDivisionTeams(widget.tournamentOrLeagueDivisonUid);
   }
 
-  List<DropdownMenuItem<String>> _buildItems(Iterable<LeagueOrTournamentTeam> teams) {
+  List<DropdownMenuItem<String>> _buildItems(
+      Iterable<LeagueOrTournamentTeam> teams) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    if (widget.includeAll) {
+      ret.add(new DropdownMenuItem<String>(
+        child: Text(Messages.of(context).allteams),
+        value: TournamentOrLeagueTeamPicker.all,
+      ));
+    }
     for (LeagueOrTournamentTeam team in teams) {
       ret.add(new DropdownMenuItem<String>(
         child: new Text(team.name),
@@ -79,14 +90,12 @@ class _TournamentOrLeagueTeamPickerState
                 return Text(
                   Messages.of(context).teamselect,
                   style: Theme.of(context).textTheme.body1.copyWith(
-                      color: Theme.of(context).disabledColor,
-                      height: 3.0),
+                      color: Theme.of(context).disabledColor, height: 3.0),
                 );
               }
               return new Text(
                 Messages.of(context).loading,
-                style: Theme.of(context).textTheme.body1.copyWith(
-                     height: 3.0),
+                style: Theme.of(context).textTheme.body1.copyWith(height: 3.0),
               );
             }
             return new Row(
