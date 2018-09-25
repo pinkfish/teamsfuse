@@ -32,7 +32,13 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
     return Card(
       child: ListTile(
         onTap: () => Navigator.pushNamed(
-            context, "/League/Team/" + leagueUid + "/" + team.uid),
+            context,
+            "/League/Team/" +
+                leagueUid +
+                "/" +
+                divison.leagueOrTournmentSeasonUid +
+                "/" +
+                team.uid),
         leading: team.teamUid != null
             ? TeamImage(
                 width: 50.0,

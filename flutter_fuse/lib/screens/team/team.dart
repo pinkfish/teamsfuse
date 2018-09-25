@@ -52,6 +52,11 @@ class TeamScreenState extends State<TeamScreen> {
     if (choice == "club") {
       Navigator.pushNamed(context, "TeamClub/" + widget.teamUid);
     }
+    if (choice == 'archive') {
+      Team team = UserDatabaseData.instance.teams[widget.teamUid];
+      team.archived = !team.archived;
+      await team.updateFirestore();
+    }
   }
 
   @override
@@ -59,7 +64,8 @@ class TeamScreenState extends State<TeamScreen> {
     List<Widget> actions = <Widget>[];
     FloatingActionButton fab;
     if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
-      print('tean stuff ${UserDatabaseData.instance.teams[widget.teamUid].isAdmin()}');
+      print(
+          'tean stuff ${UserDatabaseData.instance.teams[widget.teamUid].isAdmin()}');
       if (UserDatabaseData.instance.teams[widget.teamUid].isAdmin() &&
           _tabIndex == 0) {
         fab = new FloatingActionButton(
@@ -78,6 +84,10 @@ class TeamScreenState extends State<TeamScreen> {
                 new PopupMenuItem<String>(
                   value: "club",
                   child: new Text(Messages.of(context).club),
+                ),
+                new PopupMenuItem(
+                  value: 'archive',
+                  child: Text(Messages.of(context).archiveteam),
                 )
               ];
             },
@@ -88,8 +98,7 @@ class TeamScreenState extends State<TeamScreen> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(
-          Messages
-              .of(context)
+          Messages.of(context)
               .titlewith(UserDatabaseData.instance.teams[widget.teamUid].name),
         ),
         actions: actions,

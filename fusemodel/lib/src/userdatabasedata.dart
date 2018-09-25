@@ -42,6 +42,7 @@ class UserDatabaseData {
   bool _createdMePlayer = false;
   bool _loadedFromSql = false;
   bool _loadedLeagueOrTournment = false;
+  bool _loadedTeamAdmins = false;
 
   Map<String, Player> get players => _players;
   Map<String, Team> get teams => _teams;
@@ -71,6 +72,7 @@ class UserDatabaseData {
   StreamSubscription<FirestoreChangedData> _readMessageSnapshot;
   StreamSubscription<FirestoreChangedData> _leagueOrTournamentSnapshot;
   StreamSubscription<FirestoreChangedData> _clubSnapshot;
+  StreamSubscription<FirestoreChangedData> _teamAdminSnapshot;
   StreamSubscription<Iterable<Game>> _gameSubecription;
   InitialSubscription _playersInitialData;
   InitialSubscription _inviteInitialData;
@@ -78,6 +80,7 @@ class UserDatabaseData {
   InitialSubscription _unreadMessageInitialData;
   InitialSubscription _clubInitialData;
   InitialSubscription _leagueOrTournamentInitialData;
+  InitialSubscription _teamAdminInitialData;
 
   // Game details.
   GameSubscription _basicGames;
@@ -228,16 +231,16 @@ class UserDatabaseData {
     // the team filter.  Do the rest in code.
     // Filter the games locally.
     Iterable<Game> cachedGames = _gamesCache.values.where((Game game) {
-      Season season = UserDatabaseData
-          .instance.teams[game.teamUid].seasons[game.seasonUid];
+      Season season =
+          UserDatabaseData.instance.teams[game.teamUid].seasons[game.seasonUid];
       if (!details.isIncluded(game, season)) {
         return false;
       }
       return game.sharedData.tzEndTime.isAfter(start) &&
           game.sharedData.tzEndTime.isBefore(end);
     });
-    GameSubscription sub =
-        updateModel.getGames(cachedGames, _teams.keys.toSet(), start, end, details);
+    GameSubscription sub = updateModel.getGames(
+        cachedGames, _teams.keys.toSet(), start, end, details);
     return sub;
   }
 
@@ -255,6 +258,31 @@ class UserDatabaseData {
     }
     print(
         "loading $_completedLoading $_loadedPlayers $_loadedGames $_loadedInvites $_loadedTeams $_loadedClubs $_loadedLeagueOrTournment sql $_loadedFromSql");
+  }
+
+  void _onTeamAdminsUpdate(FirestoreChangedData change) {
+    print('onTeamAdminsUpdated');
+    for (FirestoreWrappedData doc in change.newList) {
+      _loadingDataTrace?.incrementCounter("adminTeam");
+      if (_teams.containsKey(doc.id)) {
+        _teams[doc.id].updateFromJSON(doc.data);
+        persistentData.updateElement(
+            PersistenData.teamsTable, doc.id, _teams[doc.id].toJSON());
+      } else {
+        Team team = new Team.fromJSON(doc.id, doc.data);
+        _teams[team.uid] = team;
+        persistentData.updateElement(
+            PersistenData.teamsTable, team.uid, team.toJSON());
+      }
+    }
+    for (FirestoreWrappedData doc in change.removed) {
+      if (_teams[doc.id].seasons.length == 0) {
+        _teams.remove(doc.id);
+        persistentData.deleteElement(PersistenData.teamsTable, doc.id);
+      }
+    }
+    _loadedTeamAdmins = true;
+    _teamController.add(UpdateReason.Update);
   }
 
   void _onPlayerUpdated(List<FirestoreWrappedData> query) {
@@ -430,6 +458,9 @@ class UserDatabaseData {
         team.uid = teamUid;
         snapping = true;
       }
+      persistentData.updateElement(
+          PersistenData.teamsTable, team.uid, team.toJSON());
+
       if (toDeleteSeasons == null) {
         toDeleteSeasons.addAll(team.seasons.keys);
       }
@@ -475,6 +506,11 @@ class UserDatabaseData {
       for (String id in toDeleteSeasons) {
         _loadingDataTrace?.incrementCounter("deleteseason");
         _teams[teamUid].seasons.remove(id);
+        if (_teams[teamUid].seasons.length == 0 && !_teams[teamUid].isAdmin()) {
+          // Remove the team from our list too.
+          _teams.remove(teamUid);
+          persistentData.deleteElement(PersistenData.teamsTable, teamUid);
+        }
         persistentData.deleteElement(PersistenData.seasonTable, id);
       }
     }
@@ -541,9 +577,13 @@ class UserDatabaseData {
       } else {
         _leagueOrTournaments[data.id] = league;
       }
+      persistentData.updateElement(PersistenData.leagueOrTournamentTable,
+          league.uid, league.toJson(includeMembers: true));
     }
     for (FirestoreWrappedData toRemove in removed) {
       _leagueOrTournaments.remove(toRemove.id);
+      persistentData.deleteElement(
+          PersistenData.leagueOrTournamentTable, toRemove.id);
     }
     _loadedLeagueOrTournment = true;
     _updateLoading();
@@ -850,6 +890,33 @@ class UserDatabaseData {
       this._onInviteUpdated(data.newList);
     });
 
+    _teamAdminInitialData = updateModel.getTeamAdmins(userUid);
+    _teamAdminInitialData.startData.then((List<FirestoreWrappedData> data) {
+      _loadingDataTrace?.incrementCounter("teamAdmin");
+
+      this._onTeamAdminsUpdate(
+          FirestoreChangedData(newList: data, removed: []));
+      // Cleanup.
+      for (Team t in _teams.values) {
+        if (t.seasons.length == 0 && !t.isAdmin()) {
+          _teams.remove(t.uid);
+          persistentData.deleteElement(PersistenData.teamsTable, t.uid);
+        }
+      }
+    });
+    for (Team t in _teams.values) {
+      if (t.seasons.length == 0 && !t.isAdmin()) {
+        _teams.remove(t.uid);
+        persistentData.deleteElement(PersistenData.teamsTable, t.uid);
+      }
+    }
+
+    _teamAdminSnapshot =
+        _teamAdminInitialData.stream.listen((FirestoreChangedData data) {
+      print('team admin $data');
+      this._onTeamAdminsUpdate(data);
+    });
+
     _unreadMessageInitialData = updateModel.getMessages(userUid, true);
     _unreadMessageInitialData.startData.then((List<FirestoreWrappedData> data) {
       _loadingDataTrace?.incrementCounter("message");
@@ -885,6 +952,8 @@ class UserDatabaseData {
     _readMessageSnapshot = null;
     _leagueOrTournamentSnapshot?.cancel();
     _leagueOrTournamentSnapshot = null;
+    _teamAdminSnapshot?.cancel();
+    _teamAdminSnapshot = null;
     _clubSnapshot?.cancel();
     _clubSnapshot = null;
 
@@ -925,6 +994,8 @@ class UserDatabaseData {
     _clubInitialData = null;
     _leagueOrTournamentInitialData?.dispose();
     _leagueOrTournamentInitialData = null;
+    _teamAdminInitialData.dispose();
+    _teamAdminInitialData = null;
 
     // Assert everything is gone.
     assert(_players.length == 0);
@@ -947,6 +1018,7 @@ class UserDatabaseData {
     _loadedLeagueOrTournment = false;
     _createdMePlayer = false;
     _loadedFromSql = false;
+    _loadedTeamAdmins = false;
     unreadMessageCount = 0;
     userUid = null;
 

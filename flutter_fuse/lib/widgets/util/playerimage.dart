@@ -16,10 +16,10 @@ class PlayerImage extends ClipOval {
     double radius = 20.0,
     Color backgroundColor,
   }) : super(
-          child: new SizedBox(
+          child: SizedBox(
             width: radius * 2,
             height: radius * 2,
-            child: new FittedBox(
+            child: FittedBox(
               fit: BoxFit.cover,
               child: new CachedNetworkImage(
                 placeholder: new Image(

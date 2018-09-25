@@ -179,6 +179,10 @@ class TeamDetailsState extends State<TeamDetails> {
           onTap: _openClub,
         ),
         new ListTile(
+          leading: const Icon(Icons.archive),
+          title: team.archived ? Text(Messages.of(context).archived) : Text(Messages.of(context).notarchived),
+        ),
+        new ListTile(
           leading: const Icon(Icons.timer),
           title: new Text(
             Messages.of(context).arrivebefore(

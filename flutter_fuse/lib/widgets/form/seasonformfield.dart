@@ -4,11 +4,16 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
 class SeasonFormField extends FormField<String> {
+  final bool includeNone;
+  final bool includeNew;
+
   SeasonFormField({
     @required String teamUid,
     Key key,
-    String initialValue: '',
-    bool enabled : true,
+    String initialValue: none,
+    bool enabled: true,
+    this.includeNone: false,
+    this.includeNew: false,
     InputDecoration decoration: const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
@@ -22,7 +27,7 @@ class SeasonFormField extends FormField<String> {
             validator: validator,
             builder: (FormFieldState<String> field) {
               final SeasonFormFieldState state = field;
-              state.teamUid = teamUid;
+              state._teamUid = teamUid;
               final InputDecoration effectiveDecoration = (decoration ??
                       const InputDecoration())
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme);
@@ -32,22 +37,32 @@ class SeasonFormField extends FormField<String> {
                       hint: new Text(Messages.of(state.context).seasonselect),
                       value: state.value,
                       items: state._buildItems(state.context),
-                      onChanged: enabled ? (String val) {
-                        state.updateValue(val);
-                        field.didChange(val);
-                        if (onFieldSubmitted != null) {
-                          onFieldSubmitted(val);
-                        }
-                      } : null));
+                      onChanged: enabled
+                          ? (String val) {
+                              state.updateValue(val);
+                              field.didChange(val);
+                              if (onFieldSubmitted != null) {
+                                onFieldSubmitted(val);
+                              }
+                            }
+                          : null));
             });
 
+  static const String none = 'none';
+  static const String createNew = 'new';
+
   @override
-  SeasonFormFieldState createState() => new SeasonFormFieldState();
+  SeasonFormFieldState createState() =>
+      new SeasonFormFieldState(includeNone, includeNew);
 }
 
 class SeasonFormFieldState extends FormFieldState<String> {
-  String teamUid;
-  StreamSubscription<UpdateReason> teamSubscription;
+  String _teamUid;
+  StreamSubscription<UpdateReason> _teamSubscription;
+  bool _includeNone;
+  bool _includeNew;
+
+  SeasonFormFieldState(this._includeNone, this._includeNew);
 
   void updateValue(String val) {
     setValue(val);
@@ -55,11 +70,12 @@ class SeasonFormFieldState extends FormFieldState<String> {
 
   void setTeamUid(String teamUid) {
     setState(() {
-      this.teamUid = teamUid;
-      if (teamSubscription != null) {
-        teamSubscription.cancel();
+      this._teamUid = teamUid;
+      if (_teamSubscription != null) {
+        _teamSubscription.cancel();
       }
-      teamSubscription = UserDatabaseData.instance.teams[teamUid].thisTeamStream
+      _teamSubscription = UserDatabaseData
+          .instance.teams[teamUid].thisTeamStream
           .listen((UpdateReason value) {
         setState(() {});
       });
@@ -69,17 +85,29 @@ class SeasonFormFieldState extends FormFieldState<String> {
   @override
   void dispose() {
     super.dispose();
-    if (teamSubscription != null) {
-      teamSubscription.cancel();
-      teamSubscription = null;
+    if (_teamSubscription != null) {
+      _teamSubscription.cancel();
+      _teamSubscription = null;
     }
   }
 
   List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
-    if (teamUid != null &&
-        UserDatabaseData.instance.teams.containsKey(teamUid)) {
-      UserDatabaseData.instance.teams[teamUid].seasons
+    if (_teamUid != null &&
+        UserDatabaseData.instance.teams.containsKey(_teamUid)) {
+      if (_includeNone) {
+        ret.add(new DropdownMenuItem(
+          child: Text(Messages.of(context).noseasons),
+          value: SeasonFormField.none,
+        ));
+      }
+      if (_includeNew) {
+        ret.add(new DropdownMenuItem(
+          child: Text(Messages.of(context).addseason),
+          value: SeasonFormField.createNew,
+        ));
+      }
+      UserDatabaseData.instance.teams[_teamUid].seasons
           .forEach((String key, Season season) {
         ret.add(new DropdownMenuItem<String>(
             child: new Text(season.name), value: season.uid));

@@ -8,13 +8,14 @@ import 'package:flutter_fuse/widgets/leagueortournament/addinvitetoteamdialog.da
 class LeagueTeamScreen extends StatelessWidget {
   final String leagueTeamUid;
   final String leagueUid;
+  final String leagueSeasonUid;
 
-  LeagueTeamScreen(this.leagueUid, this.leagueTeamUid);
+  LeagueTeamScreen(this.leagueUid, this.leagueSeasonUid, this.leagueTeamUid);
 
   void _doAction(BuildContext context, String action) {
     if (action == "invite") {
       AddInviteToTeamDialog.showAddTeamInviteDialogByUid(
-          context, leagueUid, leagueTeamUid);
+          context, leagueUid, leagueSeasonUid, leagueTeamUid);
     }
   }
 

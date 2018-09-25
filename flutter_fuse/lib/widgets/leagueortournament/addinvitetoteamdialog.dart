@@ -8,8 +8,11 @@ class AddInviteToTeamDialog extends Dialog {
   final TextEditingController _controller = new TextEditingController();
   final Validations validations = Validations();
 
-  static Future<bool> showAddTeamInviteDialog(BuildContext context,
-      LeagueOrTournament league, LeagueOrTournamentTeam leagueTeam) async {
+  static Future<bool> showAddTeamInviteDialog(
+      BuildContext context,
+      LeagueOrTournament league,
+      LeagueOrTournamentSeason season,
+      LeagueOrTournamentTeam leagueTeam) async {
     String email = await showDialog<String>(
         context: context,
         builder: (BuildContext context) => new AddInviteToTeamDialog());
@@ -17,12 +20,12 @@ class AddInviteToTeamDialog extends Dialog {
       return false;
     }
     await UserDatabaseData.instance.updateModel
-        .inviteUserToLeagueTeam(league, leagueTeam, email);
+        .inviteUserToLeagueTeam(league, season, leagueTeam, email);
     return true;
   }
 
-  static Future<bool> showAddTeamInviteDialogByUid(
-      BuildContext context, String leagueUid, String leagueTeamUid) async {
+  static Future<bool> showAddTeamInviteDialogByUid(BuildContext context,
+      String leagueUid, String leagueSeasonUid, String leagueTeamUid) async {
     String email = await showDialog<String>(
         context: context,
         builder: (BuildContext context) => new AddInviteToTeamDialog());
@@ -35,8 +38,11 @@ class AddInviteToTeamDialog extends Dialog {
     LeagueOrTournamentTeam leagueTeam = await UserDatabaseData
         .instance.updateModel
         .getLeagueTeamData(leagueTeamUid);
-    await UserDatabaseData.instance.updateModel
-        .inviteUserToLeagueTeam(league, leagueTeam, email);
+    LeagueOrTournamentSeason leagueOrTournamentSeason = await UserDatabaseData
+        .instance.updateModel
+        .getLeagueSeasonData(leagueSeasonUid);
+    await UserDatabaseData.instance.updateModel.inviteUserToLeagueTeam(
+        league, leagueOrTournamentSeason, leagueTeam, email);
     return true;
   }
 

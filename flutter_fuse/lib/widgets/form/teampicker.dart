@@ -9,10 +9,12 @@ class TeamPicker extends StatefulWidget {
   final String teamUid;
   final bool disabled;
   final bool selectedTitle;
+  final bool includeCreateNew;
 
   TeamPicker(
       {@required this.onChanged,
       this.teamUid,
+        this.includeCreateNew = false,
       this.disabled = false,
       this.selectedTitle = false});
 
@@ -20,6 +22,8 @@ class TeamPicker extends StatefulWidget {
   TeamPickerState createState() {
     return new TeamPickerState();
   }
+
+  static const String createNew = 'new';
 }
 
 class TeamPickerState extends State<TeamPicker> {
@@ -44,6 +48,12 @@ class TeamPickerState extends State<TeamPicker> {
 
   List<DropdownMenuItem<String>> _buildItems() {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    if (widget.includeCreateNew) {
+      ret.add(DropdownMenuItem<String>(
+        child: Text(Messages.of(context).addteam),
+        value: TeamPicker.createNew,
+      ));
+    }
     UserDatabaseData.instance.teams.forEach((String key, Team team) {
       ret.add(new DropdownMenuItem<String>(
         child: new Text(team.name),

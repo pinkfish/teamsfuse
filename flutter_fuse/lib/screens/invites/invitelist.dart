@@ -100,6 +100,10 @@ class InviteListScreenState extends State<InviteListScreen> {
     Navigator.pushNamed(context, "AcceptInviteToLeague/" + invite.uid);
   }
 
+  void _addInviteToLeagueTeam(Invite invite) {
+    Navigator.pushNamed(context, "AcceptInviteToLeagueTeam/" + invite.uid);
+  }
+
   void _addInviteToClub(Invite invite) {
     Navigator.pushNamed(context, "AcceptInviteToClub/" + invite.uid);
   }
@@ -231,6 +235,35 @@ class InviteListScreenState extends State<InviteListScreen> {
     );
   }
 
+  Card _buildInviteToLeagueTeam(InviteToLeagueTeam invite) {
+    ThemeData theme = Theme.of(context);
+    return new Card(
+      child: new ListTile(
+        leading: new IconButton(
+          icon: const Icon(Icons.add),
+          color: theme.accentColor,
+          onPressed: () {
+            _addInviteToLeagueTeam(invite);
+          },
+        ),
+        title: new Text(invite.leagueTeamName),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(invite.leagueName),
+            Text(Messages.of(context).leaguetournament),
+          ],
+        ),
+        trailing: new IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () {
+            _deleteInvite(invite);
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> invites = <Widget>[];
@@ -260,6 +293,9 @@ class InviteListScreenState extends State<InviteListScreen> {
         }
         if (invite is InviteToLeagueAsAdmin) {
           invites.add(_buildInviteToLeague(invite));
+        }
+        if (invite is InviteToLeagueTeam) {
+          invites.add(_buildInviteToLeagueTeam(invite));
         }
       });
     }

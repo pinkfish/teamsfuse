@@ -287,6 +287,7 @@ abstract class DatabaseUpdateModel {
   Future<void> updateLeagueTeamRecord(
       LeagueOrTournamentTeam team, String season);
   Future<void> inviteUserToLeagueTeam(LeagueOrTournament league,
+      LeagueOrTournamentSeason season,
       LeagueOrTournamentTeam leagueTeam, String email);
   StreamSubscription<dynamic> getLeagueOrTournmentTeamInvitesStream(
       LeagueOrTournamentTeam leagueOrTournmentTeam);
@@ -310,4 +311,5 @@ abstract class DatabaseUpdateModel {
   InitialSubscription getPlayers(String userUid);
   InitialSubscription getInvites(String userUid);
   InitialSubscription getMessages(String userUid, bool unread);
+  InitialSubscription getTeamAdmins(String userUid);
 }

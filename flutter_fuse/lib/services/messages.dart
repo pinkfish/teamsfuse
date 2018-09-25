@@ -1569,6 +1569,13 @@ class Messages {
         desc: 'Dialog text to confirm removing a user from the team');
   }
 
+  String confirmcreateteamforleague(
+      String teamName, String season, String league) {
+    return Intl.message(
+        'Are you sure you want to create a team $teamName with a season of $season '
+        'for the league $league.  This is not possible to undo?');
+  }
+
   String displaynamerelationship(String name, Relationship relationship) {
     String rel = relationships(relationship);
     return Intl.message('$name ($rel)',
@@ -1578,6 +1585,22 @@ class Messages {
   String get phonenumber {
     return Intl.message('Phone Number',
         desc: 'Phone number for the edit box to edit the phone number');
+  }
+
+  String get archiveteam {
+    return Intl.message('Archive Team');
+  }
+
+  String get archivedteams {
+    return Intl.message('Archived Teams');
+  }
+
+  String get archived {
+    return Intl.message('Archived');
+  }
+
+  String get notarchived {
+    return Intl.message('Not archived');
   }
 
   String get phonenumberhint {

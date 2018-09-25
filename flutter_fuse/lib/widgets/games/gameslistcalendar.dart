@@ -102,7 +102,7 @@ class GameListCalendarState {
       _listToShow = games;
 
       _controller?.add(UpdateReason.Update);
-      state.currentState.updateEvents();
+      state.currentState?.updateEvents();
     }
   }
 }

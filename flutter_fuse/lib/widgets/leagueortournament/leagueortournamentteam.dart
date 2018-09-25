@@ -188,6 +188,7 @@ class _LeagueOrTournamentTeamDetailsState
                                   AddInviteToTeamDialog.showAddTeamInviteDialog(
                                       context,
                                       leagueOrTournament,
+                                      leagueOrTournmentSeason,
                                       leagueOrTournamentTeam),
                               child: Text(
                                 Messages.of(context).addteamadmin,

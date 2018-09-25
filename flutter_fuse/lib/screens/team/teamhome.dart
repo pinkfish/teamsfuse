@@ -18,8 +18,27 @@ class TeamHomeScreen extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            TeamAnimatedList(),
+            TeamAnimatedList(
+              archived: false,
+            ),
+            Container(
+              margin: EdgeInsets.all(5.0),
+              child: Text(
+                Messages.of(context).archivedteams,
+                textAlign: TextAlign.start,
+                style: Theme.of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+            TeamAnimatedList(
+              archived: true,
+            ),
             ButtonBar(
               children: [
                 FlatButton(

@@ -3,7 +3,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/approuter.dart';
 import 'package:fluro/fluro.dart';
-import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
+import 'package:flutter_fuse/widgets/util/teamimage.dart';
 
 class TeamTile extends StatelessWidget {
   final Team team;
@@ -21,17 +21,16 @@ class TeamTile extends StatelessWidget {
     }
 
     return new ListTile(
-      leading: team.photoUrl != null ? CachedNetworkImage(
-        imageUrl: team.photoUrl,
-        placeholder: const Icon(Icons.group),
-        width: 50.0,
-        height: 50.0,
-      ) : const Icon(Icons.group),
+      leading: TeamImage(
+        width: 40.0,
+        height: 40.0,
+        teamUid: team.uid,
+        alignment: Alignment.centerLeft,
+      ),
       title: new RichText(
         text: new TextSpan(
           text: team.name,
-          style: Theme
-              .of(context)
+          style: Theme.of(context)
               .textTheme
               .subhead
               .copyWith(fontWeight: FontWeight.bold, fontSize: 17.0),
@@ -39,8 +38,7 @@ class TeamTile extends StatelessWidget {
             new TextSpan(text: "  "),
             new TextSpan(
               text: seasonName,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .subhead
                   .copyWith(fontStyle: FontStyle.italic, fontSize: 15.0),
@@ -59,7 +57,7 @@ class TeamTile extends StatelessWidget {
         ),
       ),
       isThreeLine: false,
-      dense: false,
+      dense: true,
       subtitle: new Text(
           record != null ? Messages.of(context).winrecord(record) : ""),
       onTap: () {

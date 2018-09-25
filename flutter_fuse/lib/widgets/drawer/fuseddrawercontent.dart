@@ -69,12 +69,14 @@ class FusedDrawerContent extends StatelessWidget {
       }
     }
     UserDatabaseData.instance.teams.forEach((String uid, Team team) {
-      data.add(
-        new TeamTile(
-          team,
-          popBeforeNavigate: true,
-        ),
-      );
+      if (!team.archived) {
+        data.add(
+          new TeamTile(
+            team,
+            popBeforeNavigate: true,
+          ),
+        );
+      }
     });
     data.add(
       new ListTile(

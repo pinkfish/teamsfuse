@@ -807,7 +807,7 @@ class Game {
     seasonUid = getString(data[SEASONUID]);
     uniform = getString(data[_UNIFORM]);
     teamUid = getString(data[TEAMUID]);
-    opponentUids = [getString(data[_OPPONENTUID])];
+    opponentUids = [getString(data[OPPONENTUID])];
     allTeamUids = [teamUid, opponentUids[0]];
     arriveTime = getNum(data[ARRIVALTIME]);
     notes = getString(data[NOTES]);
@@ -880,7 +880,7 @@ class Game {
   static const String TEAMUID = 'teamUid';
   static const String _SERIESID = 'seriesId';
   static const String _TRACKATTENDANCE = 'trackAttendance';
-  static const String _OPPONENTUID = 'opponentUid';
+  static const String OPPONENTUID = 'opponentUid';
   static const String SHAREDDATAUID = 'sharedDataUid';
   static const String LEAGUEOPPONENTUID = 'leagueOpponentUid';
 
@@ -903,7 +903,7 @@ class Game {
     ret[RESULT] = result.toJSON();
     ret[SHAREDDATAUID] = sharedDataUid;
     if (opponentUids.length > 0) {
-      ret[_OPPONENTUID] = opponentUids[0];
+      ret[OPPONENTUID] = opponentUids[0];
     }
 
     ret[_SERIESID] = seriesId;

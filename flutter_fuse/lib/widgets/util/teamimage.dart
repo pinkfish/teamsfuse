@@ -22,7 +22,7 @@ class TeamImage extends StatelessWidget {
       this.width,
       this.height,
       this.color,
-      this.fit,
+      this.fit = BoxFit.cover,
       this.alignment: Alignment.center,
       this.repeat: ImageRepeat.noRepeat,
       this.matchTextDirection: false})
@@ -60,37 +60,49 @@ class TeamImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new SizedBox(
-      width: width,
-      height: height,
-      child: new FutureBuilder(
-        future: imageUrl,
-        builder: (BuildContext context, AsyncSnapshot<ImageProvider> snap) {
-          Widget inner;
-          if (snap.hasData) {
-            // Yay!
-            inner = FadeInImage(
-              image: snap.data,
-              height: height,
-              width: width,
-              fit: fit,
-              alignment: alignment,
-              repeat: repeat,
-              matchTextDirection: matchTextDirection,
-              placeholder: AssetImage("assets/images/defaultavatar2.png"),
-            );
-          } else {
-            inner = Center(child: CircularProgressIndicator());
-          }
-          return Container(
-            color: color,
-            height: height,
-            width: width,
-            alignment: alignment,
-            child: inner,
+    return new FutureBuilder<Team>(
+      future: team != null
+          ? Future.value(team)
+          : UserDatabaseData.instance.updateModel.getPublicTeamDetails(teamUid),
+      builder: (BuildContext context, AsyncSnapshot<Team> snap) {
+        Widget inner;
+        print('Loading image ${teamUid} ${team} ${snap.data}');
+        if (snap.hasData &&
+            (snap.data.photoUrl != null && snap.data.photoUrl.isNotEmpty ||
+                width > 50.0)) {
+          // Yay!
+          inner = ClipOval(
+            child: SizedBox(
+              width: width < height ? width : height,
+              height: width < height ? width : height,
+              child: FittedBox(
+                fit: fit,
+                child: FadeInImage(
+                  fadeInDuration: Duration(milliseconds: 200),
+                  fadeOutDuration: Duration(milliseconds: 200),
+                  image: _providerFromTeam(snap.data),
+                  alignment: alignment,
+                  repeat: repeat,
+                  matchTextDirection: matchTextDirection,
+                  placeholder: AssetImage("assets/images/defaultavatar2.png"),
+                ),
+              ),
+            ),
           );
-        },
-      ),
+        } else {
+          inner = const Icon(Icons.group);
+        }
+        return Container(
+          color: color,
+          height: height,
+          width: width,
+          alignment: alignment,
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 200),
+            child: inner,
+          ),
+        );
+      },
     );
   }
 

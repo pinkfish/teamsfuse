@@ -145,6 +145,7 @@ class Team extends HasUIDComparable {
   Sport sport;
   String uid;
   String photoUrl;
+  bool archived;
 
   /// If this is not null signifies that this team is a member of a club.
   String clubUid;
@@ -185,6 +186,7 @@ class Team extends HasUIDComparable {
       this.uid,
       this.photoUrl,
       this.clubUid,
+      this.archived = false,
       this.publicOnly = false,
       trackAttendence = true})
       : _arriveEarly = arriveEarly,
@@ -204,6 +206,7 @@ class Team extends HasUIDComparable {
         uid = copy.uid,
         photoUrl = copy.photoUrl,
         clubUid = copy.clubUid,
+        archived = copy.archived,
         admins = new List<String>.from(copy.admins),
         opponents = copy.opponents.map((String key, Opponent op) {
           return new MapEntry(key, new Opponent.copy(op));
@@ -232,6 +235,7 @@ class Team extends HasUIDComparable {
   static const String _TRACKATTENDENDCE = 'trackAttendence';
   static const String CLUBUID = 'clubUid';
   static const String LEAGUEUID = 'leagueuid';
+  static const String ARCHIVED = 'archived';
 
   /// Deserialize the team.
   Team.fromJSON(String teamUid, Map<String, dynamic> data,
@@ -254,6 +258,7 @@ class Team extends HasUIDComparable {
     ret[PHOTOURL] = photoUrl;
     ret[_TRACKATTENDENDCE] = _trackAttendence;
     ret[CLUBUID] = clubUid;
+    ret[ARCHIVED + "." + UserDatabaseData.instance.userUid] = archived;
     Map<String, bool> adminMap = new Map<String, bool>();
     admins.forEach((String key) {
       adminMap[key] = true;
@@ -268,9 +273,18 @@ class Team extends HasUIDComparable {
     currentSeason = getString(data[_CURRENTSEASON]);
     league = getString(data[_LEAGUE]);
     photoUrl = getString(data[PHOTOURL]);
+    archived = false;
+    if (data[ARCHIVED] != null) {
+      if (data[ARCHIVED] is Map<dynamic, dynamic>) {
+        Map<dynamic, dynamic> stuff = data[ARCHIVED] as Map<dynamic, dynamic>;
+        archived = getBool(stuff[UserDatabaseData.instance.userUid]);
+      }
+    }
     clubUid = data[CLUBUID];
-    gender = Gender.values.firstWhere((e) => e.toString() == data[_GENDER]);
-    sport = Sport.values.firstWhere((e) => e.toString() == data[_SPORT]);
+    gender = Gender.values.firstWhere((e) => e.toString() == data[_GENDER],
+        orElse: () => Gender.NA);
+    sport = Sport.values.firstWhere((e) => e.toString() == data[_SPORT],
+        orElse: () => Sport.Other);
     _trackAttendence = getBool(data[_TRACKATTENDENDCE], defaultValue: true);
     if (!publicOnly) {
       if (data[ADMINS] != null) {

@@ -40,8 +40,8 @@ class SeasonPlayer {
 
   void fromJSON(Map<dynamic, dynamic> data) {
     role = RoleInTeam.values.firstWhere((e) => e.toString() == data[ROLE]);
-    position = getString(data[_POSITION]);
-    jerseyNumber = getString(data[_JERSEY]);
+    position = getString(data[_POSITION]) ?? "";
+    jerseyNumber = getString(data[_JERSEY]) ?? "";
   }
 
   Map<String, dynamic> toJSON() {
@@ -107,6 +107,9 @@ class Season {
     this.teamUid = data[TEAMUID];
     Map<dynamic, dynamic> playersData = data[PLAYERS];
     List<SeasonPlayer> newPlayers = new List<SeasonPlayer>();
+    if (playersData == null) {
+      playersData = {};
+    }
     playersData.forEach((dynamic key, dynamic val) {
       String playerUid = key;
       SeasonPlayer player = new SeasonPlayer();
