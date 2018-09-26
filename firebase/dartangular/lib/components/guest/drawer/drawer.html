@@ -1,0 +1,19 @@
+<div>
+    <material-list *deferredContent size="small">
+        <div group class="mat-drawer-spacer"></div>
+        <div id="user-name">
+            <img src="{{profileUrl}}" width="40" height="40" style="vertical-align: middle">
+            Guest</div>
+        <div group>
+            <div>Leagues</div>
+            <material-list-item (trigger)="openInfo()">
+                <material-icon icon="calendar_today"></material-icon>Today
+            </material-list-item>
+        </div>
+        <div group>
+            <material-list-item>
+                <material-icon icon="login"></material-icon>Login
+            </material-list-item>
+        </div>
+    </material-list>
+</div>

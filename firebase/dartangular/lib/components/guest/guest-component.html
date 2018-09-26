@@ -1,0 +1,17 @@
+<div class="material-content">
+    <header class="material-header shadow">
+        <div class="material-header-row">
+            <span class="material-header-title">Team Fuse</span>
+            <div class="material-spacer"></div>
+        </div>
+    </header>
+    <material-tab-strip (beforeTabChange)="onBeforeTabChange($event)"
+                        (tabChange)="onTabChange($event)"
+                        [tabLabels]="tabLabels"
+                        [activeTabIndex]="tabIndex">
+    </material-tab-strip>
+
+    <div>
+        <router-outlet [routes]="routes.all"></router-outlet>
+    </div>
+</div>

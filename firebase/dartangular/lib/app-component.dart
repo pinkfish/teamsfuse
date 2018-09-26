@@ -43,8 +43,8 @@ class AppComponent implements OnInit {
         await UserDatabaseData.instance.userAuth.currentUserNoWait();
     if (data == null) {
       print('Current user frog == null');
-      _router.navigate("/" + login.path + "/login");
-      print("Navigated... ${login.path}");
+      _router.navigate("/" + guest.path + "/guesthome");
+      print("Navigated... ${guest.path}/home");
     } else {
       // Authenticated, stay at the old url.
       UserDatabaseData.load(data.uid, data.email,

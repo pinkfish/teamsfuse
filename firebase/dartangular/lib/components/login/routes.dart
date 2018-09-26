@@ -5,7 +5,6 @@ import 'package:angular_router/angular_router.dart';
 import 'route_paths.dart' as paths;
 import 'login-component.template.dart' as lctd;
 
-
 @Injectable()
 class Routes {
   static final _login = new RouteDefinition(

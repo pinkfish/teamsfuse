@@ -30,8 +30,8 @@
             <material-list-item>
                 <material-icon icon="settings"></material-icon>Settings
             </material-list-item>
-            <material-list-item>
-                <material-icon icon="exit"></material-icon>Signout
+            <material-list-item (trigger)="signOut()">
+                <material-icon icon="exit" ></material-icon>Signout
             </material-list-item>
         </div>
     </material-list>

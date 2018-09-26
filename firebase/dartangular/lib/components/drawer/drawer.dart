@@ -84,6 +84,13 @@ class Drawer implements OnInit, OnDestroy {
   }
 
   void openLeague() {
-    _router.navigate("a/league/home");
+    //_router.navigate("a/league/home");
+  }
+
+  void signOut() async {
+    print('Starting signout');
+    await UserDatabaseData.instance.userAuth.signOut();
+    _router.navigate("/g/home");
+    print('Ended signout');
   }
 }
