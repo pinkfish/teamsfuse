@@ -50,6 +50,10 @@ class LoginComponent  {
     });
   }
 
+  void cancel() {
+    _router.navigate("/g/guesthome");
+  }
+
   String emailValidator(String inputText) {
     if (inputText.isEmpty) {
       return null;

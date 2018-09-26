@@ -90,7 +90,7 @@ class Drawer implements OnInit, OnDestroy {
   void signOut() async {
     print('Starting signout');
     await UserDatabaseData.instance.userAuth.signOut();
-    _router.navigate("/g/home");
+    _router.navigate("/g/guesthome");
     print('Ended signout');
   }
 }

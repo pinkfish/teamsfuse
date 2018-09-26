@@ -1,6 +1,6 @@
 <div class="login-section">
     <div class="login-container">
-        <form (ngSubmit)="onSubmit()" #heroForm="ngForm">
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
             <div class="row">
                  <material-input label="Email"
                                 type="email"
@@ -27,9 +27,21 @@
                 </div>
             </div>
              <div class="row">
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
+                 <button type="submit" style="-webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 0;
+    padding: 0;
+    font-size: inherit;
+    background: transparent;">
+                    <material-button (trigger)="loginForm.onSubmit($event)">
+                     LOGIN
+                     </material-button>
+                 </button>
+
+                 <material-button (trigger)="cancel()">
+                     CANCEL
+                 </material-button>
              </div>
 
         </form>

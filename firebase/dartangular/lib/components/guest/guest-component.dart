@@ -30,6 +30,7 @@ import 'package:angular_components/material_tab/tab_change_event.dart';
   ],
   styleUrls: const [
     'package:angular_components/app_layout/layout.scss.css',
+    'guest-component.css',
   ],
   //providers: const [HeroService],
 )
@@ -65,6 +66,14 @@ class GuestComponent implements OnActivate {
 
   List<String> get tabLabels =>
       _tabLabelsInner.map((_LabelStuff l) => l.label).toList();
+
+  void signIn() {
+    _router.navigate("/login");
+  }
+
+  void createAccount() {
+    _router.navigate("/createAccount");
+  }
 
   GuestComponent(this._router, this.routes);
 }

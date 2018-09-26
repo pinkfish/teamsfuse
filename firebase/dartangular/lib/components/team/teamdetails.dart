@@ -82,5 +82,6 @@ class TeamDetailsComponent implements OnDestroy, OnInit {
     print('Destroy them my robots');
   }
 
-  Object trackBySeason(int index, dynamic season) => season is Season ? season.uid : "";
+  Object trackBySeason(int index, dynamic season) =>
+      season is Season ? season.uid : "";
 }

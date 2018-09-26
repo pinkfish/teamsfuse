@@ -18,8 +18,15 @@ import 'package:angular_components/content/deferred_content.dart';
     MaterialListComponent,
     MaterialListItemComponent,
   ],
+  styleUrls: const [
+     'home.css',
+  ],
 )
 class HomeComponent {
+
+  String get calendarUrl {
+    return "assets/screenshot/calendarview.png";
+  }
 
   HomeComponent();
 }
