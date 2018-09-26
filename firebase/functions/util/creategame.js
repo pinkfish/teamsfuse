@@ -15,7 +15,7 @@ exports.createGameFromShared = (sharedGameDoc, leagueTeamDoc) => {
         // Setup the arrival time based on the team details.
         var arrivalTime = sharedGameDoc.data().time - (teamDoc.data().arrivalTime * 60 * 1000);
         var opponentLeagueUid = '';
-        if (sharedGameDoc.officialResult.homeTeamUid == leagueTeamDoc.id) {
+        if (sharedGameDoc.officialResult.homeTeamUid === leagueTeamDoc.id) {
             opponentLeagueUid = sharedGameDoc.officialResult.awayTeamUid;
         } else {
             opponentLeagueUid = sharedGameDoc.officialResult.homeTeamUid;
@@ -57,32 +57,32 @@ exports.createGameFromShared = (sharedGameDoc, leagueTeamDoc) => {
         } else {
             ret = [ null, opponentUid ];
         }
-        return Promises.all(ret).then(snap => {
-            var opponentUid = snap[1];
-            if (snap[0] !== null) {
-                opponentUid = snap[0].id;
-            }
-            var snap = {
-                 'notes': '',
-                'arrivalTime': arrivalTime,
-                // Don't create an opponent by default, team members can setup the mapping if they want.
-                'opponentUid': opponentUid,
-                'leagueOpponentUid': opponentLeagueUid,
-                'result': {
-                   'inProgress': 'GameInProgress.NotStarted',
-                   'result': 'GameResult.Unknown',
-                },
-                'seasonUid': leagueTeamDoc.data().seasonUid,
-                'seriesId': '',
-                'sharedDataUid': sharedGameUid,
-                'teamUid': teamDoc.id,
-                'uniform': '',
-                'trackAttendance': teamDoc.data().trackAttendance,
-            };
+        return Promises.all(ret);
+    })).then(snap => {
+       var opponentUid = snap[1];
+       if (snap[0] !== null) {
+           opponentUid = snap[0].id;
+       }
+       var newGame = {
+            'notes': '',
+           'arrivalTime': arrivalTime,
+           // Don't create an opponent by default, team members can setup the mapping if they want.
+           'opponentUid': opponentUid,
+           'leagueOpponentUid': opponentLeagueUid,
+           'result': {
+              'inProgress': 'GameInProgress.NotStarted',
+              'result': 'GameResult.Unknown',
+           },
+           'seasonUid': leagueTeamDoc.data().seasonUid,
+           'seriesId': '',
+           'sharedDataUid': sharedGameUid,
+           'teamUid': teamDoc.id,
+           'uniform': '',
+           'trackAttendance': teamDoc.data().trackAttendance,
+       };
 
-            return db.collection('Games').add(snap);
-        });
-    });
+       return db.collection('Games').add(newGame);
+   });
 }
 
 exports.createOpponentForShared = (sharedGameUid, leagueTeamDoc, teamDoc, opponentTeamDoc) => {

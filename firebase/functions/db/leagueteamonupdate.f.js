@@ -1,4 +1,4 @@
-use strict';
+'use strict';
 
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
@@ -17,15 +17,15 @@ exports = module.exports = functions.firestore.document("/LeagueTeam/{teamId}")
             : null;
 
         // See if we added in a seasonUid into the setup.
-        if (data.seasonUid !=== null &&
-          (beforeData == null ||
-           beforeData.seasonUid !=== data.seasonUid) {
+        if (data.seasonUid !== null &&
+          (beforeData === null ||
+           beforeData.seasonUid !== data.seasonUid)) {
             // The season changed.  Make sure it is not
             // an empty strind and that we have a team uid
             // too.
-            if (data.seasonUid !=== ''
-                && data.teamUid !=== null
-                && data.teamUid !=== '') {
+            if (data.seasonUid !== ''
+                && data.teamUid !== null
+                && data.teamUid !== '') {
                 // Look for all the games with this leagueteam setup
                 // on them.
                 finalRet.push(db.collection('GamesShared')
@@ -44,7 +44,7 @@ exports = module.exports = functions.firestore.document("/LeagueTeam/{teamId}")
                             );
                         }
                         return Promise.all(ret);
-                    });
+                    })
                 );
                 // Do the home teams too.
                 finalRet.push(db.collection('GamesShared')
@@ -63,7 +63,7 @@ exports = module.exports = functions.firestore.document("/LeagueTeam/{teamId}")
                             );
                         }
                         return Promise.all(retHome);
-                    });
+                    })
                 );
 
             }
