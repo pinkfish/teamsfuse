@@ -16,7 +16,7 @@ exports = module.exports = functions.firestore.document("/LeagueTeam/{teamId}")
             ? inputData.before.data()
             : null;
 
-        // See if we added in a teamUid into the setup.
+        // See if we added in a seasonUid into the setup.
         if (data.seasonUid !=== null &&
           (beforeData == null ||
            beforeData.seasonUid !=== data.seasonUid) {

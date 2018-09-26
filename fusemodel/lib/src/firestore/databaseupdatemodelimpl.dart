@@ -351,6 +351,27 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     ret.add(opCollection.snapshots().listen((QuerySnapshotWrapper snap) =>
         team.onOpponentUpdated(_firestoreData(snap.documents))));
 
+    if (team.isAdmin()) {
+      QueryWrapper query = wrapper
+          .collection(SEASONS_COLLECTION)
+          .where(Season.TEAMUID, isEqualTo: team.uid);
+      // Get all the seasons.
+      query.getDocuments().then((QuerySnapshotWrapper query) {
+        for (DocumentSnapshotWrapper doc in query.documents) {
+          team.updateSeason(doc.documentID, doc.data);
+        }
+      });
+      ret.add(query.snapshots().listen((QuerySnapshotWrapper query) {
+        for (DocumentSnapshotWrapper doc in query.documents) {
+          team.updateSeason(doc.documentID, doc.data);
+        }
+        for (DocumentChangeWrapper change in query.documentChanges) {
+          if (change.type == DocumentChangeTypeWrapper.removed) {
+            team.seasons.remove(change.document.documentID);
+          }
+        }
+      }));
+    }
     return ret;
   }
 

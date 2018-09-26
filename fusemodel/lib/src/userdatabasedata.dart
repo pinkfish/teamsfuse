@@ -236,6 +236,11 @@ class UserDatabaseData {
       if (!details.isIncluded(game, season)) {
         return false;
       }
+      if (_teams.containsKey(game.teamUid)) {
+        if (_teams[game.teamUid].archived) {
+          return false;
+        }
+      }
       return game.sharedData.tzEndTime.isAfter(start) &&
           game.sharedData.tzEndTime.isBefore(end);
     });

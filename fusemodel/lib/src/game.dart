@@ -386,7 +386,20 @@ class GameOfficialResults {
   }
 }
 
-class GameResultDetails {
+///
+/// Abstract class used by both the offical result setup and
+/// the results to return consistent data about regulation/overtime and
+/// penalty results.
+///
+abstract class GameResultSharedDetails {
+  GameResult get result;
+  GameResultPerPeriod get regulationResult;
+  GameResultPerPeriod get overtimeResult;
+  GameResultPerPeriod get penaltyResult;
+  bool get isGameFinished;
+}
+
+class GameResultDetails extends GameResultSharedDetails {
   CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> scores =
       new CanonicalizedMap((GamePeriod p) => p.toIndex());
   GameResult result;
@@ -451,7 +464,8 @@ class GameResultDetails {
             .firstWhere((e) => e.toString() == data[_INPROGRESS]);
       }
     }
-    result = GameResult.values.firstWhere((e) => e.toString() == data[_RESULT], orElse: () => GameResult.Unknown);
+    result = GameResult.values.firstWhere((e) => e.toString() == data[_RESULT],
+        orElse: () => GameResult.Unknown);
     if (result == null) {
       result = GameResult.Unknown;
     }
@@ -485,6 +499,37 @@ class GameResultDetails {
         divisions?.toString() ?? GameDivisionsType.Halves.toString();
     return ret;
   }
+
+  ///
+  /// Result for the regulation period.
+  /// (can be null!)
+  ///
+  GameResultPerPeriod get regulationResult =>
+      scores.containsKey(GamePeriod.regulation)
+          ? scores[GamePeriod.regulation]
+          : null;
+  ///
+  /// Result for the overtime period.
+  /// (can be null!)
+  ///
+  GameResultPerPeriod get overtimeResult =>
+      scores.containsKey(GamePeriod.overtime)
+          ? scores[GamePeriod.overtime]
+          : null;
+  ///
+  /// Result for the penalty period.
+  /// (can be null!)
+  ///
+  GameResultPerPeriod get penaltyResult =>
+      scores.containsKey(GamePeriod.penalty)
+          ? scores[GamePeriod.penalty]
+          : null;
+
+  ///
+  /// If this game is currently finished.
+  ///
+  bool get isGameFinished =>
+      inProgress == GameInProgress.Final;
 
   @override
   String toString() {

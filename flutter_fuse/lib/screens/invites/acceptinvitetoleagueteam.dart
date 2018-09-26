@@ -108,19 +108,28 @@ class _AcceptInviteToLeagueTeamScreenState
           await team.updateFirestore();
           _currentTeamUid = team.uid;
           season = new Season(
-            name: _seasonName,
-            teamUid: team.uid,
-            record: WinRecord(),
-            players: <SeasonPlayer>[
-              SeasonPlayer(
-                playerUid: UserDatabaseData.instance.mePlayer.uid,
-                role: RoleInTeam.NonPlayer,
-              )
-            ]
-          );
-          await season.updateFirestore();
-          team.currentSeason = season.uid;
-          await team.updateFirestore();
+              name: _seasonName,
+              teamUid: team.uid,
+              record: WinRecord(),
+              players: <SeasonPlayer>[
+                SeasonPlayer(
+                  playerUid: UserDatabaseData.instance.mePlayer.uid,
+                  role: RoleInTeam.NonPlayer,
+                )
+              ]);
+          team.currentSeason = season.precreateUid();
+          LeagueOrTournamentTeam leagueTeam = await UserDatabaseData
+              .instance.updateModel
+              .getLeagueTeamData(_invite.leagueTeamUid);
+          if (leagueTeam.seasonUid != null) {
+            // Someone beat them to it!
+//TODO: Say someone beat them to it.
+          } else {
+            leagueTeam.seasonUid = season.precreateUid();
+            await season.updateFirestore();
+            await leagueTeam.firebaseUpdate();
+            await team.updateFirestore();
+          }
         } else if (_seasonSelected == SeasonFormField.createNew) {
           season = new Season(
             name: _seasonName,

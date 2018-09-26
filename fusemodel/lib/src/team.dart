@@ -51,16 +51,16 @@ class Opponent {
 
   static const String _CONTACT = 'contact';
   static const String _SEASONS = 'seasons';
-  static const String _LEAGUETEAMUIO = 'leagueTeamUid';
+  static const String _LEAGUETEAMUID = 'leagueTeamUid';
 
   void fromJSON(String uid, String teamUid, Map<String, dynamic> data) {
     this.uid = uid;
     this.teamUid = teamUid;
     name = getString(data[NAME]);
     contact = getString(data[_CONTACT]);
-    if (data[_LEAGUETEAMUIO] != null) {
+    if (data[_LEAGUETEAMUID] != null) {
       List<String> newLeagues = new List<String>();
-      data[_LEAGUETEAMUIO].forEach((dynamic key, dynamic data) {
+      data[_LEAGUETEAMUID].forEach((dynamic key, dynamic data) {
         if (data is Map<dynamic, dynamic>) {
           if (data[ADDED]) {
             newLeagues.add(key as String);
@@ -93,7 +93,7 @@ class Opponent {
         ADDED: true,
       };
     }
-    ret[_LEAGUETEAMUIO] = fluff;
+    ret[_LEAGUETEAMUID] = fluff;
     Map<String, dynamic> recordSection = new Map<String, dynamic>();
     record.forEach((String key, WinRecord record) {
       recordSection[key] = record.toJSON();
@@ -571,12 +571,13 @@ class Team extends HasUIDComparable {
     SeasonSubscription sub =
         UserDatabaseData.instance.updateModel.getAllSeasons(uid);
     _snapshots.addAll(sub.subscriptions);
-    Iterable<Season> seasons = await sub.stream.single;
+    Completer<bool> complete = new Completer<bool>();
     _snapshots.add(sub.stream.listen((Iterable<Season> update) {
       _completeSeasonsCached = update;
       updateTeam();
+      complete.complete(true);
     }));
-    _completeSeasonsCached = seasons;
+    await complete.future;
     return _completeSeasonsCached;
   }
 

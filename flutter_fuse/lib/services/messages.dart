@@ -1128,18 +1128,33 @@ class Messages {
         name: "Label to select the relatiobship from a drop down");
   }
 
-  String resultwin(GameResultDetails result) {
-    GameResultPerPeriod finalScore;
-    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
-    if (result.scores.containsKey(finalReg)) {
-      finalScore = result.scores[finalReg];
-    } else {
+  String resultwin(GameResultSharedDetails result) {
+    GameResultPerPeriod finalScore = result.regulationResult;
+    if (finalScore == null) {
       finalScore = new GameResultPerPeriod(
-          period: finalReg, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+          period: GamePeriod.regulation,
+          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    GamePeriod penaltyPeriod = new GamePeriod(type: GamePeriodType.Penalty);
-    if (result.scores.containsKey(penaltyPeriod)) {
-      GameResultPerPeriod penaltyScore = result.scores[penaltyPeriod];
+    if (result.overtimeResult != null) {
+      GameResultPerPeriod overtimeScore = result.overtimeResult;
+      if (result.penaltyResult != null) {
+        GameResultPerPeriod penaltyScore = result.penaltyResult;
+        return Intl.message(
+            'Win ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+            '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})'
+            '(Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+            name: 'In progress result details',
+            desc: 'Win result details with penalty shootout');
+      }
+      return Intl.message(
+          'Win ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+          '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})',
+          name: 'In progress result details',
+          desc: 'Win result details in overtime');
+    }
+
+    if (result.penaltyResult != null) {
+      GameResultPerPeriod penaltyScore = result.penaltyResult;
       return Intl.message(
           'Win ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
           name: 'Win result details',
@@ -1151,23 +1166,37 @@ class Messages {
         desc: 'Win result details');
   }
 
-  String resultloss(GameResultDetails result) {
-    GameResultPerPeriod finalScore;
-    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
-    if (result.scores.containsKey(finalReg)) {
-      finalScore = result.scores[finalReg];
-    } else {
+  String resultloss(GameResultSharedDetails result) {
+    GameResultPerPeriod finalScore = result.regulationResult;
+    if (finalScore == null) {
       finalScore = new GameResultPerPeriod(
           period: new GamePeriod(type: GamePeriodType.Regulation),
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    GamePeriod penaltyPeriod = new GamePeriod(type: GamePeriodType.Penalty);
-    if (result.scores.containsKey(penaltyPeriod)) {
-      GameResultPerPeriod penaltyScore = result.scores[penaltyPeriod];
+    if (result.overtimeResult != null) {
+      GameResultPerPeriod overtimeScore = result.overtimeResult;
+      if (result.penaltyResult != null) {
+        GameResultPerPeriod penaltyScore = result.penaltyResult;
+        return Intl.message(
+            'Loss ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+            '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})'
+            '(Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+            name: 'In progress result details',
+            desc: 'Loss result details with penalty shootout');
+      }
+      return Intl.message(
+          'Loss ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+          '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})',
+          name: 'In progress result details',
+          desc: 'Loss result details in overtime');
+    }
+
+    if (result.penaltyResult != null) {
+      GameResultPerPeriod penaltyScore = result.penaltyResult;
       return Intl.message(
           'Loss ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
-          name: 'Win result details',
-          desc: 'Win result details with penalty shootout');
+          name: 'Loss result details',
+          desc: 'Loss result details with penalty shootout');
     }
     return Intl.message(
         'Loss ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
@@ -1175,15 +1204,37 @@ class Messages {
         desc: 'Loss result details');
   }
 
-  String resulttie(GameResultDetails result) {
-    GameResultPerPeriod finalScore;
-    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
-    if (result.scores.containsKey(finalReg)) {
-      finalScore = result.scores[finalReg];
-    } else {
+  String resulttie(GameResultSharedDetails result) {
+    GameResultPerPeriod finalScore = result.regulationResult;
+    if (finalScore == null) {
       finalScore = new GameResultPerPeriod(
           period: new GamePeriod(type: GamePeriodType.Regulation),
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+    }
+    if (result.overtimeResult != null) {
+      GameResultPerPeriod overtimeScore = result.overtimeResult;
+      if (result.penaltyResult != null) {
+        GameResultPerPeriod penaltyScore = result.penaltyResult;
+        return Intl.message(
+            'Tie ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+            '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})'
+            '(Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+            name: 'In progress result details',
+            desc: 'Tie result details with penalty shootout');
+      }
+      return Intl.message(
+          'Tie ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+          '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})',
+          name: 'In progress result details',
+          desc: 'Tie result details in overtime');
+    }
+
+    if (result.penaltyResult != null) {
+      GameResultPerPeriod penaltyScore = result.penaltyResult;
+      return Intl.message(
+          'Tie ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+          name: 'Tie result details',
+          desc: 'Tie details with penalty shootout');
     }
     return Intl.message(
         'Tie ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
@@ -1191,19 +1242,34 @@ class Messages {
         desc: 'Tie result details');
   }
 
-  String resultinprogress(GameResultDetails result) {
+  String resultinprogress(GameResultSharedDetails result) {
     GameResultPerPeriod finalScore;
-    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
-    if (result.scores.containsKey(finalReg)) {
-      finalScore = result.scores[finalReg];
+    if (result.regulationResult != null) {
+      finalScore = result.regulationResult;
     } else {
       finalScore = new GameResultPerPeriod(
           period: new GamePeriod(type: GamePeriodType.Regulation),
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    GamePeriod penaltyPeriod = new GamePeriod(type: GamePeriodType.Penalty);
-    if (result.scores.containsKey(penaltyPeriod)) {
-      GameResultPerPeriod penaltyScore = result.scores[penaltyPeriod];
+    if (result.overtimeResult != null) {
+      GameResultPerPeriod overtimeScore = result.overtimeResult;
+      if (result.penaltyResult != null) {
+        GameResultPerPeriod penaltyScore = result.penaltyResult;
+        return Intl.message(
+            'Playing ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+            '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})'
+            '(Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+            name: 'In progress result details',
+            desc: 'Win result details with penalty shootout');
+      }
+      return Intl.message(
+          'Playing ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+          '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})',
+          name: 'In progress result details',
+          desc: 'Win result details with penalty shootout');
+    }
+    if (result.penaltyResult != null) {
+      GameResultPerPeriod penaltyScore = result.penaltyResult;
       return Intl.message(
           'Playing ${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
           name: 'In progress result details',
@@ -1232,6 +1298,7 @@ class Messages {
     }
   }
 
+  /*
   String gameofficalinprogressscore(GameOfficialResults offical) {
     GameResultPerPeriod finalScore;
     GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
@@ -1276,24 +1343,38 @@ class Messages {
         name: 'Offical result details',
         desc: 'Offical result details');
   }
+*/
 
-  String cardresultinprogress(GameResultDetails result) {
-    GameResultPerPeriod finalScore;
-    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
-    if (result.scores.containsKey(finalReg)) {
-      finalScore = result.scores[finalReg];
-    } else {
+  String cardresultinprogress(GameResultSharedDetails result) {
+    GameResultPerPeriod finalScore = result.regulationResult;
+    if (finalScore == null) {
       finalScore = new GameResultPerPeriod(
           period: new GamePeriod(type: GamePeriodType.Regulation),
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    GamePeriod penaltyPeriod = new GamePeriod(type: GamePeriodType.Penalty);
-    if (result.scores.containsKey(penaltyPeriod)) {
-      GameResultPerPeriod penaltyScore = result.scores[penaltyPeriod];
+    if (result.overtimeResult != null) {
+      GameResultPerPeriod overtimeScore = result.overtimeResult;
+      if (result.penaltyResult != null) {
+        GameResultPerPeriod penaltyScore = result.penaltyResult;
+        return Intl.message(
+            '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+            '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})'
+            '(Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+            name: 'In progress result details',
+            desc: 'Win result details with penalty shootout');
+      }
+      return Intl.message(
+          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+          '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})',
+          name: 'In progress result details',
+          desc: 'Win result details with penalty shootout');
+    }
+    if (result.penaltyResult != null) {
+      GameResultPerPeriod penaltyScore = result.penaltyResult;
       return Intl.message(
           '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
           name: 'In progress result details in the card',
-          desc: 'Win result details with penalty shootout');
+          desc: 'In progress result details with penalty shootout');
     }
     return Intl.message(
         '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
@@ -1472,6 +1553,15 @@ class Messages {
   String get useofficialresultbutton {
     return Intl.message('USE OFFICAL',
         name: 'Button to pull the offical results in from the shared game');
+  }
+
+  String get useofficialresultdialog {
+    return Intl.message('Use the results of the offical game for '
+        'this game?');
+  }
+
+  String get officialdontmatch {
+    return Intl.message('Offical results don\'t match');
   }
 
   String get editimagebutton {

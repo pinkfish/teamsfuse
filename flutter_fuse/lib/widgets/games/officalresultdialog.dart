@@ -10,8 +10,6 @@ class OfficialResultDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(

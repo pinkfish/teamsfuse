@@ -14,7 +14,7 @@ class LeagueOrTournamentTeam {
   /// The uid of the season of the team associated with this league.
   /// This will only be set if there is a team associated.  At this point
   /// the inviteEmail will be cleared.
-  final String seasonUid;
+  String seasonUid;
 
   /// The UID for the real team this is associated with.
   final String teamUid;

@@ -12,6 +12,8 @@ import 'package:flutter_fuse/widgets/games/attendancedialog.dart';
 import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
 import 'teamresultsstreamfuture.dart';
 import 'package:timezone/timezone.dart';
+import 'results/gamefromofficial.dart';
+import 'officalresultdialog.dart';
 
 import 'dart:async';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
@@ -61,7 +63,8 @@ class GameDetailsState extends State<GameDetails> {
 
   void openNavigation() {
     String url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=" + Uri.encodeComponent(widget.game.sharedData.place.address);
+    url += "&destination=" +
+        Uri.encodeComponent(widget.game.sharedData.place.address);
     if (widget.game.sharedData.place.placeId != null) {
       url += "&destination_place_id=" +
           Uri.encodeComponent(widget.game.sharedData.place.placeId);
@@ -148,6 +151,134 @@ class GameDetailsState extends State<GameDetails> {
     );
   }
 
+  Widget _buildGameResult(bool official, GameResultSharedDetails details,
+      bool inProgress, bool dontMatch) {
+    // Started.
+    TextSpan title;
+    TextStyle resultStyle;
+    ThemeData theme = Theme.of(context);
+    switch (details.result) {
+      case GameResult.Unknown:
+        if (inProgress) {
+          title = TextSpan(
+              text: Messages.of(context).resultinprogress(details),
+              style: theme.textTheme.subhead);
+        } else {
+          title = TextSpan(
+              text: Messages.of(context).resultunknown,
+              style: theme.textTheme.subhead);
+        }
+        break;
+      case GameResult.Loss:
+        title = TextSpan(
+            text: Messages.of(context).resultloss(details),
+            style: theme.textTheme.subhead.copyWith(color: theme.errorColor));
+        break;
+      case GameResult.Win:
+        title = TextSpan(
+            text: Messages.of(context).resultwin(details),
+            style: theme.textTheme.subhead.copyWith(color: theme.accentColor));
+        break;
+      case GameResult.Tie:
+        title = TextSpan(
+            text: Messages.of(context).resulttie(details),
+            style: theme.textTheme.subhead);
+        break;
+    }
+
+    if (official) {
+      title = TextSpan(
+          text: Messages.of(context).offical + "\n",
+          style: theme.textTheme.subhead.copyWith(fontWeight: FontWeight.w600),
+          children: <TextSpan>[title]);
+    }
+
+    return ListTile(
+      onTap: official ? () => _editOfficialResult(details) : _editResult,
+      leading: official
+          ? (dontMatch
+              ? Icon(Icons.error, color: theme.errorColor)
+              : Icon(CommunityIcons.bookOpen))
+          : Icon(CommunityIcons.bookOpenVariant),
+      title: new RichText(text: title),
+      subtitle: dontMatch
+          ? Text(
+              Messages.of(context).officialdontmatch,
+              style: Theme.of(context)
+                  .textTheme
+                  .body1
+                  .copyWith(color: theme.errorColor),
+            )
+          : null,
+    );
+  }
+
+  ///
+  /// Try and edit the offical results, this is only possible if the
+  /// user is an admin for the league itself.  Otherwise we can
+  /// ask if they want to copy the results.
+  ///
+  void _editOfficialResult(GameResultSharedDetails offical) {
+    if (UserDatabaseData.instance.leagueOrTournments
+        .containsKey(widget.game.sharedData.leagueUid)) {
+      if (UserDatabaseData
+          .instance.leagueOrTournments[widget.game.sharedData.leagueUid]
+          .isAdmin()) {
+        // Show it and forget it.
+        showDialog<bool>(
+            context: context,
+            builder: (BuildContext context) =>
+                OfficialResultDialog(widget.game.sharedData));
+        return;
+      }
+    }
+    _copyOfficialResult(offical);
+  }
+
+  ///
+  /// Copy the current score/stuff from the official results.
+  ///
+  void _copyOfficialResult(GameResultSharedDetails details) async {
+    bool ret = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(Messages.of(context).useofficialresultbutton),
+            content: RichText(
+                text: TextSpan(
+                    text: Messages.of(context).useofficialresultdialog,
+                    children: [
+                  TextSpan(text: Messages.of(context).resultinprogress(details))
+                ])),
+            actions: <Widget>[
+              FlatButton(
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
+                onPressed: () => Navigator.pop(context, true),
+              ),
+              FlatButton(
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
+                onPressed: () => Navigator.pop(context, false),
+              ),
+            ],
+          );
+        });
+    if (ret != null && ret) {
+      // Copy the result over and save.
+      GameResultDetails newResult =
+          new GameResultDetails.copy(widget.game.result);
+      newResult.scores[GamePeriod.regulation] = details.regulationResult;
+      if (details.overtimeResult != null) {
+        newResult.scores[GamePeriod.overtime] = details.overtimeResult;
+      }
+      if (details.penaltyResult != null) {
+        newResult.scores[GamePeriod.penalty] = details.penaltyResult;
+      }
+      newResult.result = details.result;
+      await widget.game.updateFirestoreResult(newResult);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print(
@@ -161,9 +292,10 @@ class GameDetailsState extends State<GameDetails> {
         .getStaticUriWithMarkers(<Marker>[marker], width: 900, height: 400);
     TimeOfDay day = new TimeOfDay.fromDateTime(widget.game.sharedData.tzTime);
     TimeOfDay dayArrive = new TimeOfDay.fromDateTime(widget.game.tzArriveTime);
-    TimeOfDay dayEnd = new TimeOfDay.fromDateTime(widget.game.sharedData.tzEndTime);
-    String dateStr =
-        MaterialLocalizations.of(context).formatFullDate(widget.game.sharedData.tzTime);
+    TimeOfDay dayEnd =
+        new TimeOfDay.fromDateTime(widget.game.sharedData.tzEndTime);
+    String dateStr = MaterialLocalizations.of(context)
+        .formatFullDate(widget.game.sharedData.tzTime);
     String timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeStr =
         MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
@@ -175,7 +307,8 @@ class GameDetailsState extends State<GameDetails> {
               .abbr +
           ")";
     }
-    print('${widget.game.sharedData.timezone} ${widget.game.sharedData.tzTime}');
+    print(
+        '${widget.game.sharedData.timezone} ${widget.game.sharedData.tzTime}');
     String arriveAttimeStr;
     if (dayArrive.minute == day.minute && dayArrive.hour == day.hour) {
       arriveAttimeStr =
@@ -240,7 +373,8 @@ class GameDetailsState extends State<GameDetails> {
           height: 50.0,
         ),
         title: new Text(team.name, style: theme.textTheme.title),
-        subtitle: arriveAttimeStr != null && widget.game.sharedData.type == EventType.Game
+        subtitle: arriveAttimeStr != null &&
+                widget.game.sharedData.type == EventType.Game
             ? new Text('arrive at ' + arriveAttimeStr,
                 style: theme.textTheme.subhead)
             : null,
@@ -265,7 +399,8 @@ class GameDetailsState extends State<GameDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             new Text(widget.game.sharedData.place.name ?? ''),
-            new Text(widget.game.sharedData.place.address ?? Messages.of(context).unknown),
+            new Text(widget.game.sharedData.place.address ??
+                Messages.of(context).unknown),
           ],
         ),
       ),
@@ -281,51 +416,48 @@ class GameDetailsState extends State<GameDetails> {
           ),
         );
       } else {
-        String title;
-        TextStyle resultStyle;
         if (widget.game.result.inProgress == GameInProgress.NotStarted) {
           if (widget.game.trackAttendance) {
             body.add(_buildAttendence(season));
           }
         }
         // Show the live stuff if the game is close to starting.
+        body.add(_buildGameResult(false, widget.game.result,
+            widget.game.result.inProgress == GameInProgress.InProgress, false));
         if (widget.game.sharedData.time >
-            new DateTime.now()
-                .subtract(const Duration(hours: 1))
-                .millisecondsSinceEpoch) {}
-        // Started.
-        switch (widget.game.result.result) {
-          case GameResult.Unknown:
-            if (widget.game.result.inProgress != GameInProgress.NotStarted) {
-              title = Messages.of(context).resultinprogress(widget.game.result);
-              resultStyle = theme.textTheme.subhead;
-            } else {
-              title = Messages.of(context).resultunknown;
-              resultStyle = theme.textTheme.subhead;
-            }
-            break;
-          case GameResult.Loss:
-            title = Messages.of(context).resultloss(widget.game.result);
-            resultStyle =
-                theme.textTheme.subhead.copyWith(color: theme.errorColor);
-            break;
-          case GameResult.Win:
-            title = Messages.of(context).resultwin(widget.game.result);
-            resultStyle =
-                theme.textTheme.subhead.copyWith(color: theme.accentColor);
-            break;
-          case GameResult.Tie:
-            title = Messages.of(context).resulttie(widget.game.result);
-            resultStyle = theme.textTheme.subhead;
-            break;
+                new DateTime.now()
+                    .subtract(const Duration(hours: 1))
+                    .millisecondsSinceEpoch &&
+            !widget.game.result.isGameFinished) {
+          body.add(ButtonBar(
+            children: [
+              FlatButton(
+                child: Text(Messages.of(context).addresultbutton),
+                onPressed: _editResult,
+              ),
+            ],
+          ));
         }
-        body.add(
-          new ListTile(
-            onTap: _editResult,
-            leading: new Icon(CommunityIcons.bookOpenVariant),
-            title: new Text(title, style: resultStyle),
-          ),
-        );
+
+        // Official results.
+        GameFromOfficial officalData =
+            GameFromOfficial(widget.game, widget.game.leagueOpponentUid);
+        body.add(_buildGameResult(
+            true,
+            officalData,
+            widget.game.sharedData.officialResults.result ==
+                OfficialResult.InProgress,
+            officalData.isSameAs(widget.game.result)));
+        if (!officalData.isSameAs(widget.game.result)) {
+          body.add(ButtonBar(
+            children: [
+              FlatButton(
+                child: Text(Messages.of(context).useofficialresultbutton),
+                onPressed: () => _copyOfficialResult(officalData),
+              ),
+            ],
+          ));
+        }
       }
     } else {
       // Tell people this is a practice or special event.
@@ -427,8 +559,7 @@ class GameDetailsState extends State<GameDetails> {
             );
             cols.add(
               new Text(
-                Messages
-                    .of(context)
+                Messages.of(context)
                     .opponentwinrecord(opponent, otherSeason.uid, seasonName),
               ),
             );

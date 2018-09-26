@@ -8,6 +8,7 @@ import 'package:flutter_fuse/widgets/games/editresultdialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'attendanceicon.dart';
 import 'package:timezone/timezone.dart';
+import 'results/gamefromofficial.dart';
 
 class GameCard extends StatelessWidget {
   final Game game;
@@ -55,12 +56,14 @@ class GameCard extends StatelessWidget {
 
   void _officalResult(BuildContext context) async {
     // Call up a dialog to edit the result.
+    /*
     await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return new EditResultDialog(game);
       },
     );
+    */
   }
 
   Widget _buildAvailability(
@@ -103,8 +106,7 @@ class GameCard extends StatelessWidget {
       GameResultPerPeriod finalResult,
       GameResultPerPeriod overtimeResult,
       GameResultPerPeriod penaltyResult,
-      GameResult result,
-      bool switchResult) {
+      GameResult result) {
     TextStyle style = Theme.of(context).textTheme.body1;
     switch (result) {
       case GameResult.Win:
@@ -153,6 +155,8 @@ class GameCard extends StatelessWidget {
   }
 
   Widget _buildInProgress(BuildContext context) {
+    GameFromOfficial officalData =
+        GameFromOfficial(game, game.leagueOpponentUid);
     if (game.result.inProgress == GameInProgress.Final) {
       GameResultPerPeriod finalResult;
       GameResultPerPeriod overtimeResult;
@@ -175,39 +179,27 @@ class GameCard extends StatelessWidget {
 
       if (game.result.result != GameResult.Unknown) {
         List<Widget> children = _buildResultColumn(context, finalResult,
-            overtimeResult, penaltyResult, game.result.result, false);
+            overtimeResult, penaltyResult, game.result.result);
+        // If there is an offical result and it is different, mark this.
+        if (officalData.isGameFinished) {
+          if (!officalData.isSameAs(game.result)) {
+            children
+                .add(Icon(Icons.error, color: Theme.of(context).errorColor));
+          }
+        }
         return new Column(
           children: children,
         );
       }
     } else {
       // See if there is an offical result.
-      if (game.sharedData.officialResults.result != OfficialResult.InProgress &&
-          game.sharedData.officialResults.result != OfficialResult.NotStarted) {
-        bool homeTeam = game.sharedData.officialResults.awayTeamLeagueUid ==
-            game.leagueOpponentUid;
-        GameResult result;
-        GameResultPerPeriod finalResult;
-        GameResultPerPeriod overtimeResult;
-        GameResultPerPeriod penaltyResult;
-
-        finalResult =
-            game.sharedData.officialResults.scores[GamePeriod.regulation];
-        if (game.sharedData.officialResults.scores
-            .containsKey(GamePeriod.overtime)) {
-          overtimeResult =
-              game.sharedData.officialResults.scores[GamePeriod.overtime];
-        }
-        if (game.sharedData.officialResults.scores
-            .containsKey(GamePeriod.penalty)) {
-          penaltyResult =
-              game.sharedData.officialResults.scores[GamePeriod.penalty];
-        }
-        if (game.sharedData.officialResults.result == OfficialResult.Tie) {
-          result = GameResult.Tie;
-        }
-        List<Widget> children = _buildResultColumn(context, finalResult,
-            overtimeResult, penaltyResult, result, !homeTeam);
+      if (officalData.isGameFinished) {
+        List<Widget> children = _buildResultColumn(
+            context,
+            officalData.regulationResult,
+            officalData.overtimeResult,
+            officalData.penaltyResult,
+            officalData.result);
         children.insert(0, Text(Messages.of(context).offical));
         return Column(
           children: children,
