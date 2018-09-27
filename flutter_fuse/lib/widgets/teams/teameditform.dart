@@ -207,13 +207,12 @@ class TeamEditFormState extends State<TeamEditForm> {
           hintText: Messages.of(context).sportselect,
           labelText: Messages.of(context).sportselect,
         ),
-        initialValue: widget.team.sport.toString(),
-        validator: (String value) {
+        initialValue: widget.team.sport,
+        validator: (Sport value) {
           return _validations.validateSport(context, value);
         },
-        onSaved: (String value) {
-          widget.team.sport =
-              Sport.values.firstWhere((Sport e) => e.toString() == value);
+        onSaved: (Sport value) {
+          widget.team.sport = value;
         },
       ),
       new GenderFormField(

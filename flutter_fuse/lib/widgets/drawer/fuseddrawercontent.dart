@@ -74,6 +74,7 @@ class FusedDrawerContent extends StatelessWidget {
           new TeamTile(
             team,
             popBeforeNavigate: true,
+            showIconForTeam: true,
           ),
         );
       }

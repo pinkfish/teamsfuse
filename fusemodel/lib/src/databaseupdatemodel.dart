@@ -1,6 +1,12 @@
 import 'dart:io';
 import 'dart:async';
-import 'model.dart';
+import 'game.dart';
+import 'leagueortournament.dart';
+import 'team.dart';
+import 'invite.dart';
+import 'message.dart';
+import 'player.dart';
+import 'club.dart';
 
 ///
 /// Wraps up the firestore data to make it easier to use in the main

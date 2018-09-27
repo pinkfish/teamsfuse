@@ -1,0 +1,51 @@
+// Copyright (c) 2016, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+@import 'package:angular_components/app_layout/mixins';
+
+:host {
+  display: block;
+  margin: 16px;
+  position: relative;
+}
+
+.leaguename {
+  display: inline;
+  margin-left: 30px;
+  font-weight: bold;
+}
+
+.details {
+  flex-grow: 1;
+}
+
+.column {
+  float: left;
+  margin: 5px;
+}
+
+.trailing {
+   width: 100px;
+
+}
+
+.leagueimg {
+   width: 60px;
+   padding: 5px;
+   padding-right: 10px;
+}
+
+.card {
+  float:none;
+  clear: both;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  height: 60px;
+  display: flex;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}

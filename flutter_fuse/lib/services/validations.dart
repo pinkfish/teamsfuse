@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class Validations {
   String validateName(BuildContext context, String value) {
@@ -47,8 +48,8 @@ class Validations {
     return null;
   }
 
-  String validateSport(BuildContext context, String value) {
-    if (value == 'none' || value == 'add') {
+  String validateSport(BuildContext context, Sport value) {
+    if (value == Sport.None) {
       return Messages.of(context).needtoselectsport;
     }
     return null;

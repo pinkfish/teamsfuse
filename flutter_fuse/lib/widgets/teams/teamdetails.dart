@@ -78,22 +78,26 @@ class TeamDetailsState extends State<TeamDetails> {
       );
     }
     // Show all the seasons here, not just the ones we know.
-    ret.add(new FutureBuilder<Iterable<Season>>(
-        future: team.getAllSeasons(),
+    ret.add(new StreamBuilder<Iterable<Season>>(
+        stream: team.getAllSeasons(),
         builder: (BuildContext context, AsyncSnapshot<Iterable<Season>> data) {
           List<Widget> happyData = <Widget>[];
 
+          Iterable<Season> seasons;
           if (data.hasData) {
+            seasons = data.data;
+          } else {
+            seasons = team.cachedCompleteSeasons;
+            if (seasons == null) {
+              return Text(Messages.of(context).loading);
+            }
+          }
+          if (seasons != null && seasons.length > 0) {
             for (Season season in data.data) {
               happyData.add(_buildSeasonExpansionTitle(season));
             }
           } else {
-            // Show the ones we currently know about.
-            for (Season season in team.seasons.values) {
-              happyData.add(_buildSeasonExpansionTitle(season));
-            }
-            // Also mark we are still loading.
-            happyData.add(new Text(Messages.of(context).loading));
+            happyData.add(Text(Messages.of(context).noseasons));
           }
           return new Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,7 +184,9 @@ class TeamDetailsState extends State<TeamDetails> {
         ),
         new ListTile(
           leading: const Icon(Icons.archive),
-          title: team.archived ? Text(Messages.of(context).archived) : Text(Messages.of(context).notarchived),
+          title: team.archived
+              ? Text(Messages.of(context).archived)
+              : Text(Messages.of(context).notarchived),
         ),
         new ListTile(
           leading: const Icon(Icons.timer),

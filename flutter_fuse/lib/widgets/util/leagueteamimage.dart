@@ -42,6 +42,9 @@ class LeagueTeamImage extends StatelessWidget {
         ) {}
 
   ImageProvider _providerFromTeam(Team team) {
+    if (team == null) {
+      return const AssetImage("assets/images/leagueteam.png");
+    }
     String photoUrl = team.photoUrl;
     if (photoUrl != null && photoUrl.isNotEmpty) {
       return new CachedNetworkImageProvider(urlNow: photoUrl);
@@ -98,12 +101,8 @@ class LeagueTeamImage extends StatelessWidget {
         } else {
           inner = Center(child: CircularProgressIndicator());
         }
-        return AnimatedContainer(
+        return AnimatedSwitcher(
           duration: Duration(milliseconds: 500),
-          color: color,
-          height: height,
-          width: width,
-          alignment: alignment,
           child: inner,
         );
       },

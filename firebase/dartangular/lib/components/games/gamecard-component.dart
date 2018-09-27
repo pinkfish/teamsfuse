@@ -69,6 +69,8 @@ class GameCardComponent {
     return UserDatabaseData.instance.teams[game.teamUid];
   }
 
+  String get teamNamw => team?.name ?? "Unknown";
+
   String get teamUrl {
     if (team.photoUrl != null && !team.photoUrl.isEmpty) {
       return team.photoUrl;

@@ -14,6 +14,7 @@ class TeamImage extends StatelessWidget {
   final AlignmentGeometry alignment;
   final ImageRepeat repeat;
   final bool matchTextDirection;
+  final bool showIcon;
 
   TeamImage(
       {this.team,
@@ -22,6 +23,7 @@ class TeamImage extends StatelessWidget {
       this.width,
       this.height,
       this.color,
+      this.showIcon = false,
       this.fit = BoxFit.cover,
       this.alignment: Alignment.center,
       this.repeat: ImageRepeat.noRepeat,
@@ -66,10 +68,10 @@ class TeamImage extends StatelessWidget {
           : UserDatabaseData.instance.updateModel.getPublicTeamDetails(teamUid),
       builder: (BuildContext context, AsyncSnapshot<Team> snap) {
         Widget inner;
-        print('Loading image ${teamUid} ${team} ${snap.data}');
         if (snap.hasData &&
             (snap.data.photoUrl != null && snap.data.photoUrl.isNotEmpty ||
-                width > 50.0)) {
+                width > 50.0 ||
+                !showIcon)) {
           // Yay!
           inner = ClipOval(
             child: SizedBox(

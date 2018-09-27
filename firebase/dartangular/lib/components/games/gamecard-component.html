@@ -1,4 +1,8 @@
-<div class="card" (click)="openDetails()">
+<div *ngIf="game == null">
+    Loading...
+</div>
+
+<div *ngIf="game != null" class="card" (click)="openDetails()">
     <div class="teamimg">
         <img src="{{teamUrl}}" width="50" height="50" style="padding-right: 10px"/>
     </div>
@@ -16,7 +20,7 @@
             <template ngSwitchDefault>
                 {{game.sharedData.type.toString() == 'EventType.Game'}}
             </template>
-            <div class="teamname">{{team.name}}</div>
+            <div class="teamname">{{teamName}}</div>
             <div *ngIf="game.result.inProgress.toString() == 'GameInProgress.InProgress'">
                 {{gameResult()}}
             </div>

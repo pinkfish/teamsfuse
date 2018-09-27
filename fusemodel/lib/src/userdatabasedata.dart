@@ -5,6 +5,9 @@ import 'loggingdata.dart';
 import 'analytics.dart';
 import 'fusederrordetails.dart';
 import 'club.dart';
+import 'team.dart';
+import 'invite.dart';
+import 'game.dart';
 import 'firestore/authentication.dart';
 import 'firestore/databaseupdatemodelimpl.dart';
 import 'firestore/firestore.dart';
@@ -628,7 +631,7 @@ class UserDatabaseData {
     persistentData.clearTable(PersistenData.invitesTable);
     query.forEach((FirestoreWrappedData doc) {
       String uid = doc.id;
-      Invite invite = Invite.makeInviteFromJSON(uid, doc.data);
+      Invite invite = InviteFactory.makeInviteFromJSON(uid, doc.data);
       newInvites[uid] = invite;
       persistentData.updateElement(
           PersistenData.invitesTable, uid, invite.toJSON());
@@ -774,7 +777,7 @@ class UserDatabaseData {
       data.forEach((String uid, Map<String, dynamic> input) {
         sqlTrace.incrementCounter("invites");
         invitesTrace.incrementCounter("invites");
-        Invite invite = Invite.makeInviteFromJSON(uid, input);
+        Invite invite = InviteFactory.makeInviteFromJSON(uid, input);
         newInvites[uid] = invite;
       });
       _invites = newInvites;
@@ -999,7 +1002,7 @@ class UserDatabaseData {
     _clubInitialData = null;
     _leagueOrTournamentInitialData?.dispose();
     _leagueOrTournamentInitialData = null;
-    _teamAdminInitialData.dispose();
+    _teamAdminInitialData?.dispose();
     _teamAdminInitialData = null;
 
     // Assert everything is gone.

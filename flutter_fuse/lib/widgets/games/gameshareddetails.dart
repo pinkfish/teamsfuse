@@ -321,40 +321,33 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
         );
       } else {
         String title;
-        TextStyle resultStyle;
 
         // Started.
         switch (widget.game.officialResults.result) {
           case OfficialResult.NotStarted:
             title = Messages.of(context)
                 .gameofficalinprogress(widget.game.officialResults.result);
-            resultStyle = theme.textTheme.subhead;
             break;
           case OfficialResult.InProgress:
             if (widget.game.officialResults.result !=
                 OfficialResult.NotStarted) {
               title = Messages.of(context)
                   .gameofficalinprogress(widget.game.officialResults.result);
-              resultStyle = theme.textTheme.subhead;
             } else {
               title = Messages.of(context).resultunknown;
-              resultStyle = theme.textTheme.subhead;
             }
             break;
           case OfficialResult.HomeTeamWon:
             title = Messages.of(context)
                 .gameofficalinprogress(widget.game.officialResults.result);
-            resultStyle = theme.textTheme.subhead;
             break;
           case OfficialResult.AwayTeamWon:
             title = Messages.of(context)
                 .gameofficalinprogress(widget.game.officialResults.result);
-            resultStyle = theme.textTheme.subhead;
             break;
           case OfficialResult.Tie:
             title = Messages.of(context)
                 .gameofficalinprogress(widget.game.officialResults.result);
-            resultStyle = theme.textTheme.subhead;
             break;
         }
         body.add(
@@ -365,9 +358,12 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
               width: 40.0,
               height: 40.0,
             ),
-            title: LeagueOrTournamentName(
-              widget.game.leagueUid,
-              textAlign: TextAlign.start,
+            title: Align(
+              alignment: Alignment.centerLeft,
+              child: LeagueOrTournamentName(
+                widget.game.leagueUid,
+                textAlign: TextAlign.start,
+              ),
             ),
             subtitle: new Text(
               title,

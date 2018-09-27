@@ -1,7 +1,7 @@
 import 'common.dart';
 import 'userdatabasedata.dart';
 import 'databaseupdatemodel.dart';
-import 'team.dart';
+import 'package:fusemodel/src/team/team.dart';
 import 'dart:async';
 import 'dart:io';
 import 'invite.dart';

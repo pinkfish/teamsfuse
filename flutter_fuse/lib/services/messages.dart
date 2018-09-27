@@ -145,6 +145,10 @@ class Messages {
     );
   }
 
+  String get game {
+    return Intl.message("Game");
+  }
+
   String get copyseasonfrom {
     return Intl.message('Copy details from');
   }
@@ -733,6 +737,11 @@ class Messages {
         return Intl.message('Other sport',
             name: 'Other sport',
             desc: 'Name for the item in a drop down for other');
+      case Sport.None:
+        return Intl.message('None',
+            name: 'No sport',
+            desc:
+                'Name for the item in a drop down for none as the sport type');
     }
     return unknown;
   }
@@ -1513,8 +1522,8 @@ class Messages {
     return Intl.message('Penalty');
   }
 
-  String gametitlevs(Game game, String oppponent) {
-    switch (game.sharedData.type) {
+  String gametitlevs(GameSharedData game, String oppponent) {
+    switch (game.type) {
       case EventType.Game:
         return Intl.message('Game vs $oppponent',
             name: 'Game details title',

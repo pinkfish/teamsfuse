@@ -7,9 +7,11 @@ import 'package:flutter_fuse/widgets/util/teamimage.dart';
 
 class TeamTile extends StatelessWidget {
   final Team team;
+  final bool showIconForTeam;
   final bool popBeforeNavigate;
 
-  TeamTile(this.team, {this.popBeforeNavigate = false});
+  TeamTile(this.team,
+      {this.popBeforeNavigate = false, this.showIconForTeam = false});
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,7 @@ class TeamTile extends StatelessWidget {
         height: 40.0,
         teamUid: team.uid,
         alignment: Alignment.centerLeft,
+        showIcon: showIconForTeam,
       ),
       title: new RichText(
         text: new TextSpan(

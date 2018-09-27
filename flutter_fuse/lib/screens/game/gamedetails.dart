@@ -89,7 +89,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
 
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).gametitlevs(game, opponentName)),
+        title: new Text(Messages.of(context).gametitlevs(game.sharedData, opponentName)),
         actions: actions,
       ),
       bottomNavigationBar: new BottomNavigationBar(

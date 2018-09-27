@@ -84,7 +84,7 @@ class Drawer implements OnInit, OnDestroy {
   }
 
   void openLeague() {
-    //_router.navigate("a/league/home");
+    _router.navigate("a/league/home");
   }
 
   void signOut() async {

@@ -930,7 +930,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .getDocuments();
     Team team = UserDatabaseData.instance.teams[season.teamUid];
     if (snapshot.documents.length > 0) {
-      InviteToTeam invite = Invite.makeInviteFromJSON(
+      InviteToTeam invite = InviteFactory.makeInviteFromJSON(
           snapshot.documents[0].documentID, snapshot.documents[0].data);
 
       invite.playerName.add(playername);

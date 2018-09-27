@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
-class SportFormField extends FormField<String> {
+class SportFormField extends FormField<Sport> {
   SportFormField({
     Key key,
-    String initialValue: 'none',
+    Sport initialValue: Sport.Other,
     InputDecoration decoration: const InputDecoration(),
-    ValueChanged<String> onFieldSubmitted,
-    FormFieldSetter<String> onSaved,
-    FormFieldValidator<String> validator,
+    ValueChanged<Sport> onFieldSubmitted,
+    FormFieldSetter<Sport> onSaved,
+    FormFieldValidator<Sport> validator,
   })  : assert(initialValue != null),
         super(
             key: key,
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,
-            builder: (FormFieldState<String> field) {
+            builder: (FormFieldState<Sport> field) {
               final SportFormFieldState state = field;
 
               final InputDecoration effectiveDecoration = (decoration ??
@@ -25,11 +25,11 @@ class SportFormField extends FormField<String> {
               return new InputDecorator(
                   decoration:
                       effectiveDecoration.copyWith(errorText: field.errorText),
-                  child: new DropdownButton<String>(
+                  child: new DropdownButton<Sport>(
                       hint: new Text(Messages.of(state.context).opponentselect),
                       items: state._buildItems(state.context),
                       value: state.value,
-                      onChanged: (String val) {
+                      onChanged: (Sport val) {
                         state.updateValue(val);
                         field.didChange(val);
                         if (onFieldSubmitted != null) {
@@ -42,22 +42,18 @@ class SportFormField extends FormField<String> {
   SportFormFieldState createState() => new SportFormFieldState();
 }
 
-class SportFormFieldState extends FormFieldState<String> {
-  void updateValue(String val) {
+class SportFormFieldState extends FormFieldState<Sport> {
+  void updateValue(Sport val) {
     setValue(val);
   }
 
-  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
-    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
-    ret.add(new DropdownMenuItem<String>(
-      child: new Text(Messages.of(context).sportselect),
-      value: 'none',
-    ));
+  List<DropdownMenuItem<Sport>> _buildItems(BuildContext context) {
+    List<DropdownMenuItem<Sport>> ret = <DropdownMenuItem<Sport>>[];
 
     Sport.values.forEach((Sport sport) {
-      ret.add(new DropdownMenuItem<String>(
+      ret.add(new DropdownMenuItem<Sport>(
         child: new Text(Messages.of(context).sportname(sport)),
-        value: sport.toString(),
+        value: sport,
       ));
     });
 

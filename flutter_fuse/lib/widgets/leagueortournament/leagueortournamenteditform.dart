@@ -6,6 +6,8 @@ import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'package:flutter_fuse/widgets/form/sportformfield.dart';
+import 'package:flutter_fuse/widgets/form/genderformfield.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -81,13 +83,13 @@ class LeagueOrTournamentEditFormState
     return null;
   }
 
-
   LeagueOrTournament get finalLeagueOrTournamentResult {
     if (!_formKey.currentState.validate()) {
       autovalidate = true;
       return null;
     } else {
       _formKey.currentState.save();
+      print(widget.leagueOrTournament);
       // Add the date time and the time together.
       return widget.leagueOrTournament;
     }
@@ -118,8 +120,9 @@ class LeagueOrTournamentEditFormState
               children: <Widget>[
                 new IconButton(
                   onPressed: _selectImage,
-                  iconSize:
-                  (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
+                  iconSize: (screenSize.width < 500)
+                      ? 120.0
+                      : (screenSize.width / 4) + 12.0,
                   icon: _buildImage(),
                 ),
                 new EnsureVisibleWhenFocused(
@@ -132,12 +135,32 @@ class LeagueOrTournamentEditFormState
                     keyboardType: TextInputType.text,
                     focusNode: _focusNodeName,
                     obscureText: false,
-                    validator: (String str) => _validations.validateName(context, str),
+                    validator: (String str) =>
+                        _validations.validateName(context, str),
                     initialValue: widget.leagueOrTournament.name,
                     onSaved: (String value) {
                       widget.leagueOrTournament.name = value;
                     },
                   ),
+                ),
+                new GenderFormField(
+                  decoration: InputDecoration(
+                    icon: const Icon(CommunityIcons.genderTransgender),
+                    hintText: Messages.of(context).needtoselectgender,
+                  ),
+                  initialValue: widget.leagueOrTournament.gender,
+                  onSaved: (Gender g) {
+                    widget.leagueOrTournament.gender = g;
+                  },
+                ),
+                new SportFormField(
+                  decoration: InputDecoration(
+                    icon: const Icon(CommunityIcons.basketball),
+                  ),
+                  initialValue: widget.leagueOrTournament.sport,
+                  onSaved: (Sport s) {
+                    widget.leagueOrTournament.sport = s;
+                  },
                 ),
                 new EnsureVisibleWhenFocused(
                   focusNode: _focusNodeShortDescription,

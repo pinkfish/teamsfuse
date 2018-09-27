@@ -5,6 +5,7 @@ import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'addseasondialog.dart';
 import 'adddivisondialog.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'package:flutter_fuse/widgets/util/gendericon.dart';
 
 class LeagueOrTournamentDetails extends StatefulWidget {
   final String leagueOrTournamentUid;
@@ -22,7 +23,6 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
 
   Widget _buildSeason(
       LeagueOrTournamentSeason season, bool admin, LeagueOrTournament league) {
-    print('Buidling ${season.uid}');
     if (season.uid == _openedPanel || season.uid == league.currentSeason) {
       // Show all the divisions and details.
       return new StreamBuilder(
@@ -185,6 +185,29 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                                               .copyWith(
                                                   fontWeight: FontWeight.w500)),
                                     ),
+                              SizedBox(height: 5.0),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                      Messages.of(context)
+                                          .sportname(data.data.sport),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .body1
+                                          .copyWith(
+                                              color: Colors.black54,
+                                              fontStyle: FontStyle.italic)),
+                                  Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: GenderIcon(data.data.gender,
+                                          size: 20.0),
+                                    ),
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         ),

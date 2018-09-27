@@ -1,8 +1,8 @@
-import 'common.dart';
-import 'winrecord.dart';
-import 'userdatabasedata.dart';
+import '../common.dart';
+import '../winrecord.dart';
+import '../userdatabasedata.dart';
 import 'dart:async';
-import 'invite.dart';
+import '../invite/invitetoleagueteam.dart';
 
 ///
 /// Team associated with a league or tournament.  A single team can

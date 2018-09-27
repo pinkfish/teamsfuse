@@ -12,8 +12,8 @@ class EditResultDialog extends StatelessWidget {
 
   EditResultDialog(this._game)
       : _team = UserDatabaseData.instance.teams[_game.teamUid] ?? new Team(),
-        _opponent = UserDatabaseData
-                .instance.teams[_game.teamUid]?.opponents[_game.opponentUids[0]] ??
+        _opponent = UserDatabaseData.instance.teams[_game.teamUid]
+                ?.opponents[_game.opponentUids[0]] ??
             new Opponent() {
     _game.loadGameLogs();
   }
@@ -40,11 +40,12 @@ class EditResultDialog extends StatelessWidget {
       }
     }
 
-
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(
-          Messages.of(context).gametitlevs(_game, _opponent.name) + "  " + resultStr,
+          Messages.of(context).gametitlevs(_game.sharedData, _opponent.name) +
+              "  " +
+              resultStr,
           overflow: TextOverflow.clip,
         ),
       ),

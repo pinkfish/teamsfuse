@@ -6,7 +6,8 @@ import 'communityicons.dart';
 /// Shwows an icon based on the gender passed in
 ///
 class GenderIcon extends Icon {
-  GenderIcon(Gender gender) : super(_getIcon(gender));
+  GenderIcon(Gender gender, {double size})
+      : super(_getIcon(gender), size: size);
 
   static IconData _getIcon(Gender gender) {
     switch (gender) {
@@ -17,7 +18,8 @@ class GenderIcon extends Icon {
       case Gender.Coed:
         return CommunityIcons.genderMaleFemale;
       case Gender.NA:
-        return CommunityIcons.nullIcon;
+        return Icons.person;
+
     }
     return CommunityIcons.nullIcon;
   }

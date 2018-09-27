@@ -92,7 +92,7 @@ class _SharedGameDetailsScreenState extends State<SharedGameDetailsScreen> {
 
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).gamenotes),
+        title: Text(Messages.of(context).game),
         actions: actions,
       ),
       floatingActionButton: fab,
