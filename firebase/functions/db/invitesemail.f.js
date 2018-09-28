@@ -42,12 +42,12 @@ function mailToSender(inviteDoc, sentByDoc) {
     var attachments = [
         {
             filename: 'apple-store-badge.png',
-            path: 'templates/invites/img/apple-store-badge.png',
+            path: 'db/templates/invites/img/apple-store-badge.png',
             cid: 'apple-store',
          },
          {
             filename: 'google-store-badge.png',
-            path: 'templates/invites/img/google-play-badge.png',
+            path: 'db/templates/invites/img/google-play-badge.png',
             cid: 'google-store',
         }
     ]
@@ -56,11 +56,12 @@ function mailToSender(inviteDoc, sentByDoc) {
     var payloadHtml = handlebars.compile(fs.readFileSync('db/templates/invites/' + data.type + '.html', 'utf8'))
 
     var mailOptions = {
-        from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
-        to: data.email
+        from: '"' + sentByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
+        to: data.email,
+        attachments: attachments
     };
     var context = {
-        sendBy: sendByDoc.data(),
+        sentBy: sentByDoc.data(),
         invite: inviteDoc.data(),
     }
 
@@ -77,11 +78,11 @@ function mailToSender(inviteDoc, sentByDoc) {
                     if (teamData.photoUrl === null) {
                         url = teamData.photoUrl;
                     } else {
-                        url = 'templates/invites/img/defaultteam.jpg';
+                        url = 'db/templates/invites/img/defaultteam.jpg';
                     }
 
                     // Building Email message.
-                    context.teamurl = url;
+                    context.teamimg = 'cid:teamurl';
                     context.team = teamData;
                     if (data.type === 'InviteType.Team') {
                         mailOptions.subject = "Invitation to join " + data.teamName;
@@ -109,19 +110,14 @@ function mailToSender(inviteDoc, sentByDoc) {
                  if (snapshot.exists) {
                     const playerData = snapshot.data();
 
-                    var mailOptions = {
-                        from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
-                        to: data.email
-                    };
-
                     var url;
                     if (playerData.photoUrl === null) {
                         url = playerData.photoUrl;
                     } else {
-                        url = 'templates/invites/img/defaultplayer.jpg';
+                        url = 'db/templates/invites/img/defaultplayer.jpg';
                     }
 
-                     mailOptions.attachments.push(
+                    mailOptions.attachments.push(
                         {
                             filename: 'player.png',
                             path: url,
@@ -130,7 +126,7 @@ function mailToSender(inviteDoc, sentByDoc) {
                     );
 
                     context.player = playerData;
-                    context.playerurl = url;
+                    context.playerimg = 'cid:playerimg';
 
                     mailOptions.subject = "Invitation to join " + playerData.name
                     mailOptions.text = payloadTxt(context) + footerTxt(context);
@@ -147,25 +143,25 @@ function mailToSender(inviteDoc, sentByDoc) {
             .doc(data.leagueUid)
             .get().then(snapshot => {
             if (snapshot.exists) {
-                var mailOptionsLeagueAdmin = {
-                    from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
-                    to: data.email
-                };
-
                 var url;
-                if (playerData.photoUrl === null) {
-                    url = playerData.photoUrl;
+                if (snapshot.data().photoUrl === null) {
+                    url = snapshot.data().photoUrl;
                 } else {
-                    url = 'templates/invites/img/defaultleague.jpg';
+                    url = 'db/templates/invites/img/defaultleague.jpg';
                 }
 
-                 mailOptions.attachments.push(
+                mailOptions.attachments.push(
                     {
                         filename: 'league.png',
                         path: url,
                         cid: 'leagueimg',
                     }
                 );
+
+                context.league = snapshot.data();
+                context.leagueimg = 'cid:leagueimg';
+                context.league.gender = context.league.gender.replace('Gender.').toLowerCase();
+                context.league.sport = context.league.sport.replace('Sport.').toLowerCase();
 
                 if (data.type === 'InviteType.LeagueAdmin') {
                     mailOptions.subject = "Invitation to join Leguae " + data.leagueName
@@ -183,31 +179,30 @@ function mailToSender(inviteDoc, sentByDoc) {
         return db.collection("Club")
                     .doc(data.clubUid)
                     .get().then(snapshot => {
-            var mailOptionsClub = {
-                from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
-                to: data.email
-            };
 
             var url;
-            if (playerData.photoUrl === null) {
-                url = playerData.photoUrl;
+            if (snapshot.data().photoUrl === null) {
+                url = snapshot.data().photoUrl;
             } else {
-                url = 'templates/invites/img/defaultclub.jpg';
+                url = 'db/templates/invites/img/defaultclub.jpg';
             }
 
              mailOptions.attachments.push(
                 {
                     filename: 'cluv.png',
                     path: url,
-                    cid: 'cluvimg',
+                    cid: 'clubimg',
                 }
             );
 
-            mailOptionsClub.subject = "Invitation to join club " + data.clubName
+            context.club = snapshot.data();
+            context.clubimg = 'cid:clubimg';
+
+            mailOptions.subject = "Invitation to join club " + data.clubName
             mailOptions.text = payloadTxt(context) + footerTxt(context);
             mailOptions.html = payloadHtml(context) + footerHtml(context);
 
-            return mailTransport.sendMail(mailOptionsClub);
+            return mailTransport.sendMail(mailOptions);
         });
     }
 

@@ -1,5 +1,6 @@
 
 
+-----
 TeamsFuse is an app to help organize your sports teams.
 http://www.teamsfuse.com
 
