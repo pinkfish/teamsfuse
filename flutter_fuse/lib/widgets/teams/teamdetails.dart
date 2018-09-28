@@ -93,7 +93,7 @@ class TeamDetailsState extends State<TeamDetails> {
             }
           }
           if (seasons != null && seasons.length > 0) {
-            for (Season season in data.data) {
+            for (Season season in seasons) {
               happyData.add(_buildSeasonExpansionTitle(season));
             }
           } else {

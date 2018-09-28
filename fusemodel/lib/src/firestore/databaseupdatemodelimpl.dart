@@ -426,6 +426,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     final StorageUploadTaskWrapper task = ref.putFile(imgFile);
     final UploadTaskSnapshotWrapper snapshot = await task.future;
     team.photoUrl = snapshot.downloadUrl.toString();
+    await wrapper
+        .collection(TEAMS_COLLECTION)
+        .document(team.uid)
+        .updateData({PHOTOURL: team.photoUrl});
     return snapshot.downloadUrl;
   }
 
@@ -1121,6 +1125,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     final StorageUploadTaskWrapper task = ref.putFile(imgFile);
     final UploadTaskSnapshotWrapper snapshot = (await task.future);
     club.photoUrl = snapshot.downloadUrl.toString();
+    await wrapper
+        .collection(CLUB_COLLECTION)
+        .document(club.uid)
+        .updateData({PHOTOURL: club.photoUrl});
+
     print('photurl ${club.photoUrl}');
     return snapshot.downloadUrl;
   }
@@ -1309,10 +1318,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<Uri> updateLeagueImage(LeagueOrTournament league, File imgFile) async {
     final StorageReferenceWrapper ref =
-        wrapper.storageRef().child("league_" + league.uid + ".img");
+        wrapper.storageRef().child("league_" + league.uid + ".jpg");
     final StorageUploadTaskWrapper task = ref.putFile(imgFile);
     final UploadTaskSnapshotWrapper snapshot = (await task.future);
     league.photoUrl = snapshot.downloadUrl.toString();
+    // Update the reference in the class.
+    await wrapper
+        .collection(LEAGUE_COLLECTON)
+        .document(league.uid)
+        .updateData({PHOTOURL: league.photoUrl});
     print('photurl ${league.photoUrl}');
     return snapshot.downloadUrl;
   }

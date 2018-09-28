@@ -3,7 +3,6 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/teams/teamtile.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 
 import 'fuseddrawerheader.dart';
 import 'package:flutter_fuse/services/approuter.dart';
@@ -70,18 +69,21 @@ class FusedDrawerContent extends StatelessWidget {
     }
     UserDatabaseData.instance.teams.forEach((String uid, Team team) {
       if (!team.archived) {
-        data.add(
-          new TeamTile(
-            team,
-            popBeforeNavigate: true,
-            showIconForTeam: true,
-          ),
-        );
+        if (team.clubUid == null ||
+            !UserDatabaseData.instance.clubs.containsKey(team.clubUid)) {
+          data.add(
+            new TeamTile(
+              team,
+              popBeforeNavigate: true,
+              showIconForTeam: true,
+            ),
+          );
+        }
       }
     });
     data.add(
       new ListTile(
-        leading: const Icon(CommunityIcons.naturePeople),
+        leading: const Icon(CommunityIcons.teamviewer),
         title: new Text(
           Messages.of(context).allteamsbbutton,
           style: Theme.of(context).textTheme.button,

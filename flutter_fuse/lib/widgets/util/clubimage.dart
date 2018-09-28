@@ -17,7 +17,12 @@ class ClubImage extends CachedNetworkImage {
       bool matchTextDirection: false})
       : super(
             imageFuture: getImageURL(clubUid),
-            placeholder: new Image.asset("assets/images/defaultavatar.png"),
+            placeholder: new Image.asset(
+              "assets/images/defaultavatar.png",
+              width: width,
+              height: height,
+              fit: fit,
+            ),
             key: key,
             width: width,
             height: height,

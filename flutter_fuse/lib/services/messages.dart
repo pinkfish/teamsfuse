@@ -44,6 +44,10 @@ class Messages {
     );
   }
 
+  String get addclubmemebertitle {
+    return Intl.message('Add club member');
+  }
+
   String get unknown {
     return Intl.message(
       'Unknown',

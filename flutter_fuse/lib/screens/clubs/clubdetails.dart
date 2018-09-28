@@ -18,7 +18,7 @@ class ClubDetailsScreen extends StatefulWidget {
 }
 
 class ClubDetailsScreenState extends State<ClubDetailsScreen> {
-  int _tabIndex = 0;
+  int _tabIndex = 1;
   StreamSubscription<UpdateReason> _clubUpdates;
 
   ClubDetailsScreenState();
@@ -51,41 +51,66 @@ class ClubDetailsScreenState extends State<ClubDetailsScreen> {
     return new ClubMembers(club);
   }
 
-  void _onEditClub() {
-    Navigator.pushNamed(context, "EditClub/" + widget.clubUid);
-  }
-
-  void _onAddMember() {
-    Navigator.pushNamed(context, "ClubAddMember/" + widget.clubUid);
-  }
-
-  void _onAddTeam() {
-    Navigator.pushNamed(context, "ClubAddTeam/" + widget.clubUid);
+  void _select(String value) {
+    if (value == "addadmin") {
+      Navigator.pushNamed(context, "AddClubMember/" + widget.clubUid);
+    } else if (value == "addteam") {
+      Navigator.pushNamed(context, "AddClubTeam/" + widget.clubUid);
+    } else if (value == "editclub") {
+      Navigator.pushNamed(context, "EditClub/" + widget.clubUid);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     List<Widget> actions = <Widget>[];
     FloatingActionButton fab;
+    String title;
     if (UserDatabaseData.instance.clubs.containsKey(widget.clubUid)) {
+      title = UserDatabaseData.instance.clubs[widget.clubUid].name;
       if (UserDatabaseData.instance.clubs[widget.clubUid].isAdmin()) {
+        actions.add(
+          new PopupMenuButton<String>(
+            onSelected: _select,
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuItem<String>>[
+                new PopupMenuItem<String>(
+                  value: "editclub",
+                  child: new Text(Messages.of(context).editbuttontext),
+                ),
+                new PopupMenuItem<String>(
+                  value: "addteam",
+                  child: new Text(Messages.of(context).addteam),
+                ),
+                new PopupMenuItem(
+                  value: 'addadmin',
+                  child: Text(Messages.of(context).addadmin),
+                )
+              ];
+            },
+          ),
+        );
+        /*
         if (_tabIndex == 0) {
           fab = new FloatingActionButton(
             onPressed: _onEditClub,
             child: const Icon(Icons.edit),
           );
-        } else if (_tabIndex == 2) {
+        } else if (_tabIndex == 1) {
           fab = FloatingActionButton(
               onPressed: _onAddTeam, child: const Icon(Icons.add));
-        } else if (_tabIndex == 3) {
+        } else if (_tabIndex == 2) {
           fab = FloatingActionButton(
               onPressed: _onAddMember, child: const Icon(Icons.add));
         }
+        */
       }
+    } else {
+      title = Messages.of(context).title;
     }
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+        title: new Text(title),
         actions: actions,
       ),
       bottomNavigationBar: new BottomNavigationBar(

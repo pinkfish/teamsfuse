@@ -5,6 +5,7 @@ import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:flutter_fuse/widgets/util/clubimage.dart';
 
 class AddMemberScreen extends StatefulWidget {
   final String clubUid;
@@ -26,6 +27,12 @@ class AddMemberScreenState extends State<AddMemberScreen> {
   bool _saving = false;
   String _emailToInvite;
   bool _inviteAsAdmin;
+  Club _club;
+
+  void initState() {
+    super.initState();
+    _club = UserDatabaseData.instance.clubs[widget.clubUid];
+  }
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(
@@ -74,6 +81,18 @@ class AddMemberScreenState extends State<AddMemberScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               new ListTile(
+                leading: ClubImage(
+                  width: 40.0,
+                  height: 40.0,
+                  clubUid: widget.clubUid,
+                ),
+                title: Text(_club.name,
+                    style: Theme.of(context)
+                        .textTheme
+                        .subhead
+                        .copyWith(fontWeight: FontWeight.bold)),
+              ),
+              new ListTile(
                 leading: const Icon(Icons.email),
                 title: new EnsureVisibleWhenFocused(
                   child: new TextFormField(
@@ -89,6 +108,7 @@ class AddMemberScreenState extends State<AddMemberScreen> {
                 ),
               ),
               new SwitchFormField(
+                icon:  Icons.person_add,
                 child: new Text(Messages.of(context).administrator),
                 initialValue: false,
                 onSaved: (bool value) => _inviteAsAdmin = value,
@@ -105,7 +125,7 @@ class AddMemberScreenState extends State<AddMemberScreen> {
     return new Scaffold(
       key: _scaffoldKey,
       appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+        title: new Text(Messages.of(context).addclubmemebertitle),
       ),
       floatingActionButton: new FloatingActionButton(
         onPressed: _savePressed,

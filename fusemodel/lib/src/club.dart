@@ -51,11 +51,11 @@ class Club {
       this.name,
       this.photoUrl,
         this.about,
-      this.sport = Sport.Basketball,
+      this.sport = Sport.Other,
       this.trackAttendence = Tristate.Unset,
       List<String> adminUids,
       List<String> members,
-      this.arriveBeforeGame})
+      this.arriveBeforeGame = 0})
       : adminsUids = adminUids ?? [],
         members = members ?? [];
 
@@ -82,7 +82,7 @@ class Club {
       sport =
           Sport.values.firstWhere((Sport s) => s.toString() == data[_SPORT]);
     }
-    arriveBeforeGame = data[_ARRIVEBEFOREGAME];
+    arriveBeforeGame = data[_ARRIVEBEFOREGAME] ?? 0;
     adminsUids = [];
     members = [];
     about = data[_ABOUT];
@@ -118,6 +118,7 @@ class Club {
     ret[_TRACKATTENDENCE] = trackAttendence.toString();
     ret[_SPORT] = sport.toString();
     ret[_ABOUT] = about;
+    ret[_ARRIVEBEFOREGAME] = arriveBeforeGame;
     Map<String, dynamic> data = <String, dynamic>{};
     if (includeMembers) {
       for (String admin in adminsUids) {

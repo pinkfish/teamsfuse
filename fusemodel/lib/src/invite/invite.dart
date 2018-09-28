@@ -2,6 +2,7 @@ import 'dart:async';
 import '../common.dart';
 import '../userdatabasedata.dart';
 
+/// The type of the invite.
 enum InviteType { Player, Team, Admin, Club, LeagueAdmin, LeagueTeam }
 
 ///

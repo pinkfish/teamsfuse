@@ -2,7 +2,20 @@
 
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
+const nodemailer = require('nodemailer');
+const request = require('request');
+
 const mailTransport = require('../util/mailgun')
+/*
+const mailTransport = nodemailer.createTransport({
+    host: 'smtp.ethereal.email',
+        port: 587,
+        auth: {
+            user: 'sajca5nyi7mtjhr5@ethereal.email',
+            pass: 'uqNgHtqJDyqtnbpSY3'
+        }
+});
+*/
 const handlebars = require('handlebars');
 var fs = require('fs');
 
@@ -75,8 +88,8 @@ function mailToSender(inviteDoc, sentByDoc) {
                     const teamData = snapshot.data();
 
                     var url;
-                    if (teamData.photoUrl === null) {
-                        url = teamData.photoUrl;
+                    if (teamData.photourl) {
+                        url = teamData.photourl;
                     } else {
                         url = 'db/templates/invites/img/defaultteam.jpg';
                     }
@@ -93,9 +106,10 @@ function mailToSender(inviteDoc, sentByDoc) {
                     mailOptions.html = payloadHtml(context) + footerHtml(context);
                     mailOptions.attachments.push(
                         {
-                            filename: 'team.png',
+                            filename: 'team.jpg',
                             path: url,
                             cid: 'teamimg',
+                            image: 'image/jpg',
                         }
                     );
 
@@ -111,17 +125,18 @@ function mailToSender(inviteDoc, sentByDoc) {
                     const playerData = snapshot.data();
 
                     var url;
-                    if (playerData.photoUrl === null) {
-                        url = playerData.photoUrl;
+                    if (playerData.photourl) {
+                        url = playerData.photourl;
                     } else {
                         url = 'db/templates/invites/img/defaultplayer.jpg';
                     }
 
                     mailOptions.attachments.push(
                         {
-                            filename: 'player.png',
+                            filename: 'player.jpg',
                             path: url,
                             cid: 'playerimg',
+                            contentType: 'image/jpg',
                         }
                     );
 
@@ -144,24 +159,26 @@ function mailToSender(inviteDoc, sentByDoc) {
             .get().then(snapshot => {
             if (snapshot.exists) {
                 var url;
-                if (snapshot.data().photoUrl === null) {
-                    url = snapshot.data().photoUrl;
+                if (snapshot.data().photourl) {
+                    url = snapshot.data().photourl;
                 } else {
                     url = 'db/templates/invites/img/defaultleague.jpg';
                 }
 
                 mailOptions.attachments.push(
                     {
-                        filename: 'league.png',
-                        path: url,
+                        filename: 'league.jpg',
+                        content: request.get(url),
                         cid: 'leagueimg',
+                        contentType: 'image/jpeg',
                     }
                 );
+                console.log('The url for the league ' + url);
 
                 context.league = snapshot.data();
                 context.leagueimg = 'cid:leagueimg';
-                context.league.gender = context.league.gender.replace('Gender.').toLowerCase();
-                context.league.sport = context.league.sport.replace('Sport.').toLowerCase();
+                context.league.gender = context.league.gender.replace('Gender.', '').toLowerCase();
+                context.league.sport = context.league.sport.replace('Sport.', '').toLowerCase();
 
                 if (data.type === 'InviteType.LeagueAdmin') {
                     mailOptions.subject = "Invitation to join Leguae " + data.leagueName
@@ -181,17 +198,18 @@ function mailToSender(inviteDoc, sentByDoc) {
                     .get().then(snapshot => {
 
             var url;
-            if (snapshot.data().photoUrl === null) {
-                url = snapshot.data().photoUrl;
+            if (snapshot.data().photourl) {
+                url = snapshot.data().photourl;
             } else {
                 url = 'db/templates/invites/img/defaultclub.jpg';
             }
 
              mailOptions.attachments.push(
                 {
-                    filename: 'cluv.png',
+                    filename: 'club.jpg',
                     path: url,
                     cid: 'clubimg',
+                    image: 'image/jpg'
                 }
             );
 

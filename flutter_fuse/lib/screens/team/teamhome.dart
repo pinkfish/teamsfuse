@@ -6,7 +6,9 @@ import 'package:flutter_fuse/widgets/teams/teamanimatedlist.dart';
 class TeamHomeScreen extends StatelessWidget {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
-  Widget _addTeam() {}
+  Widget _addTeam(BuildContext context) {
+    Navigator.pushNamed(context, "/AddTeam");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class TeamHomeScreen extends StatelessWidget {
               children: [
                 FlatButton(
                   child: Text(Messages.of(context).addteam),
-                  onPressed: _addTeam,
+                  onPressed: () => _addTeam(context),
                 ),
               ],
             ),

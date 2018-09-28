@@ -130,7 +130,7 @@ class AppRouter {
     router.define("/AcceptInviteToLeagueTeam/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-            new AcceptInviteToLeagueTeamScreen(vals["id"][0].toString())));
+                new AcceptInviteToLeagueTeamScreen(vals["id"][0].toString())));
     router.define("/Team/:id",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
@@ -250,6 +250,10 @@ class AppRouter {
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
                 new AddMemberScreen(vals["id"][0].toString())));
+    router.define("/AddClubTeam/:id",
+        handler: new Handler(
+            handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
+                new AddTeamScreen(clubUid: vals["id"][0].toString())));
     router.define("/AddClub",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

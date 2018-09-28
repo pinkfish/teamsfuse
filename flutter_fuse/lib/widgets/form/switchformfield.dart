@@ -40,7 +40,7 @@ class SwitchFormField extends FormField<bool> {
             return new Row(
               children: <Widget>[
                 new Container(
-                  padding: new EdgeInsets.only(left: 5.0, right: 10.0),
+                  padding: new EdgeInsets.only(left: 15.0, right: 30.0),
                   child: new Icon(
                     icon,
                     color: _getDefaultIconColor(Theme.of(field.context)),

@@ -12,6 +12,10 @@ import 'package:flutter_fuse/widgets/form/playerformfield.dart';
 import 'dart:io';
 
 class AddTeamScreen extends StatefulWidget {
+  final String clubUid;
+
+  AddTeamScreen({this.clubUid});
+
   @override
   AddTeamScreenState createState() {
     return new AddTeamScreenState();
@@ -41,6 +45,12 @@ class AddTeamScreenState extends State<AddTeamScreen> {
       _currentStep = 0;
       _detailsStepState = StepState.disabled;
       _clubStepState = StepState.editing;
+      if (widget.clubUid != null) {
+        _clubUid = widget.clubUid;
+        _currentStep = 1;
+        _clubStepState = StepState.complete;
+        _detailsStepState = StepState.editing;
+      }
     } else {
       _currentStep = 1;
       _clubStepState = StepState.disabled;
@@ -78,7 +88,8 @@ class AddTeamScreenState extends State<AddTeamScreen> {
           role: RoleInTeam.Player,
         ));
         await _teamToAdd.updateFirestore();
-        await _teamToAdd.seasons[_teamToAdd.currentSeason].updateFirestore(includePlayers: true);
+        await _teamToAdd.seasons[_teamToAdd.currentSeason]
+            .updateFirestore(includePlayers: true);
         Navigator.pop(context);
       } else {
         _showInSnackBar(Messages.of(context).formerror);
@@ -88,6 +99,13 @@ class AddTeamScreenState extends State<AddTeamScreen> {
         _saving = false;
       });
     }
+  }
+
+  String _seasonName() {
+    if (_teamToAdd.seasons.containsKey(_teamToAdd.currentSeason)) {
+      return _teamToAdd.seasons[_teamToAdd.currentSeason].name;
+    }
+    return Messages.of(context).noseasons;
   }
 
   bool _leaveCurrentState(bool backwards) {
@@ -206,14 +224,14 @@ class AddTeamScreenState extends State<AddTeamScreen> {
           ),
           new ListTile(
             leading: const Icon(Icons.calendar_today),
-            title: new Text(_teamToAdd.currentSeason),
+            title: new Text(_seasonName()),
           ),
           new ListTile(
             leading: const Icon(CommunityIcons.group),
             title: _clubUid != null && _clubUid != ClubPicker.noClub
                 ? new Text(
                     UserDatabaseData.instance.clubs[_teamToAdd.clubUid].name)
-                : new Text(""),
+                : new Text(Messages.of(context).noclub),
             trailing: _clubUid != null && _clubUid != ClubPicker.noClub
                 ? new ClubImage(
                     clubUid: _clubUid,
