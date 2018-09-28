@@ -3,6 +3,9 @@
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
 const mailTransport = require('../util/mailgun')
+const handlebars = require('handlebars');
+var fs = require('fs');
+
 var db = admin.firestore();
 
 const teamsFuseFooterHtml = "<p><i><a href='http://www.teamsfuse.com'>TeamsFuse</a></i> is an app to " +
@@ -20,171 +23,193 @@ exports = module.exports = functions.firestore.document('/Invites/{id}').onWrite
     }
     // lookup the person that sent the invite to get
     // their profile details.
-    var userSentPromise =  db.collection('UserData').doc(data.sentbyUid).get();
+    return db.collection('UserData').doc(data.sentbyUid).get()
+        .then(sentByDoc => {
+            return mailToSender(inputData.after, sentByDoc);
+        }).then((stuff) => {
+            console.log("Sent email to " + data.email);
+            return db.collection("Invites").doc(inputData.after.id).update({emailedInvite: true});
+        })
+        .catch((error) => console.error("There was an error while sending the email:", error));
 
-        if (data.type === 'InviteType.Team') {
-            // Find the team details.
-            return Promises.all([db.collection("Teams")
-                .doc(data.teamUid)
-                .get(),
-                userSentPromise
-                ]).then(stuff => {
-                    var snapshot = stuff[0];
-                    var sendByDoc = stuff[1];
-                    if (snapshot.exists) {
-                        const teamData = snapshot.data();
-                        var mailOptions = {
-                            from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
-                            to: data.email
-                        };
+});
 
-                        var url;
-                        if (teamData.photoUrl === null) {
-                            url = teamData.photoUrl;
-                        } else {
-                            url = 'http://www.teamsfuse.com/photos/abstractphotos.jpg';
+
+function mailToSender(inviteDoc, sentByDoc) {
+    var data = inviteDoc.data()
+    var footerTxt = handlebars.compile(fs.readFileSync('db/templates/invites/footer.txt', 'utf8'))
+    var footerHtml = handlebars.compile(fs.readFileSync('db/templates/invites/footer.html', 'utf8'))
+    var attachments = [
+        {
+            filename: 'apple-store-badge.png',
+            path: 'templates/invites/img/apple-store-badge.png',
+            cid: 'apple-store',
+         },
+         {
+            filename: 'google-store-badge.png',
+            path: 'templates/invites/img/google-play-badge.png',
+            cid: 'google-store',
+        }
+    ]
+
+    var payloadTxt = handlebars.compile(fs.readFileSync('db/templates/invites/' + data.type + '.txt', 'utf8'))
+    var payloadHtml = handlebars.compile(fs.readFileSync('db/templates/invites/' + data.type + '.html', 'utf8'))
+
+    var mailOptions = {
+        from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
+        to: data.email
+    };
+    var context = {
+        sendBy: sendByDoc.data(),
+        invite: inviteDoc.data(),
+    }
+
+    if (data.type === 'InviteType.Team'||
+        data.type === 'InviteType.Admin') {
+       // Find the team details.
+        return db.collection("Teams")
+            .doc(data.teamUid)
+            .get().then(snapshot => {
+                if (snapshot.exists) {
+                    const teamData = snapshot.data();
+
+                    var url;
+                    if (teamData.photoUrl === null) {
+                        url = teamData.photoUrl;
+                    } else {
+                        url = 'templates/invites/img/defaultteam.jpg';
+                    }
+
+                    // Building Email message.
+                    context.teamurl = url;
+                    context.team = teamData;
+                    if (data.type === 'InviteType.Team') {
+                        mailOptions.subject = "Invitation to join " + data.teamName;
+                    } else {
+                        mailOptions.subject = "Invitation to be an admin for " + teamData.name
+                    }
+                    mailOptions.text = payloadTxt(context) + footerTxt(context);
+                    mailOptions.html = payloadHtml(context) + footerHtml(context);
+                    mailOptions.attachments.push(
+                        {
+                            filename: 'team.png',
+                            path: url,
+                            cid: 'teamimg',
                         }
+                    );
 
-                        // Building Email message.
-                        mailOptions.subject = "Invitation to join " + data.teamName
-                        mailOptions.text = "You are invited to join " + data.teamName +
-                            " for season " + data.seasonName +
-                            " by " + sendByDoc.data().name + "." + teamsFuseFooterPlain
-                        mailOptions.html = "<img src=\"" + url + "\">You are invited to join <b>" + data.teamName +
-                            "</b> for season " + data.seasonName +
-                            "</b> by " + sendByDoc.data().name + ". " + teamsFuseFooterHtml;
+                    return mailTransport.sendMail(mailOptions);
+                } else {
+                    return null;
+                }
+            });
+    } else if (data.type === 'InviteType.Player') {
+        return db.collection("Players").doc(data.playerUid).get()
+            .then(snapshot => {
+                 if (snapshot.exists) {
+                    const playerData = snapshot.data();
 
-                        return mailTransport.sendMail(mailOptions);
+                    var mailOptions = {
+                        from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
+                        to: data.email
+                    };
+
+                    var url;
+                    if (playerData.photoUrl === null) {
+                        url = playerData.photoUrl;
                     } else {
-                        return 12;
+                        url = 'templates/invites/img/defaultplayer.jpg';
                     }
-                })
-                .then((stuff) => {
-                    console.log("Sent email to " + data.email);
-                    return db.collection("Invites").doc(inputData.after.id).update({emailedInvite: true});
-                })
-                .catch((error) => console.error("There was an error while sending the email:", error));
-        } else if (data.type === 'InviteType.Player') {
-            return Promises.all([
-            db.collection("Players").doc(data.playerUid)
-                .get(),
-                userSentPromise]).then((stuff) => {
-                    var snapshot = stuff[0];
-                    var sendByDoc = stuff[1];
-                    if (snapshot.exists) {
-                        const playerData = snapshot.data();
 
-                        var mailOptions = {
-                            from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
-                            to: data.email
-                        };
+                     mailOptions.attachments.push(
+                        {
+                            filename: 'player.png',
+                            path: url,
+                            cid: 'playerimg',
+                        }
+                    );
 
-                        mailOptions.subject = "Invitation to join " + playerData.name
-                        mailOptions.text = "You are invited to join " + playerData.name +
-                            " by " + sendByDoc.data().name + ".  " + teamsFuseFooterPlain
-                        mailOptions.html = "You are invited to join <b>" + playerData.name +
-                            "</b> by " + sendByDoc.data().name + ".  " + teamsFuseFooterHtml;
+                    context.player = playerData;
+                    context.playerurl = url;
 
-                        return mailTransport.sendMail(mailOptions);
-                    } else {
-                        return 12;
-                    }
-                })
-                .then((stuff) => {
-                    console.log("Sent email to " + data.email);
-                    return db.collection("Invites").doc(inputData.after.id).update({emailedInvite: true});
-                })
-                .catch((error) => console.error("There was an error while sending the email:", error));
-        } else if (data.type === 'InviteType.LeagueAdmin') {
-            userSentPromise.then(sendByDoc => {
+                    mailOptions.subject = "Invitation to join " + playerData.name
+                    mailOptions.text = payloadTxt(context) + footerTxt(context);
+                    mailOptions.html = payloadHtml(context) + footerHtml(context);
+
+                    return mailTransport.sendMail(mailOptions);
+                } else {
+                    return null;
+                }
+            })
+    } else if (data.type === 'InviteType.LeagueAdmin' ||
+               data.type === 'InviteType.LeagueTeam') {
+        return db.collection("League")
+            .doc(data.leagueUid)
+            .get().then(snapshot => {
+            if (snapshot.exists) {
                 var mailOptionsLeagueAdmin = {
                     from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
                     to: data.email
                 };
-                mailOptionsLeagueAdmin.subject = "Invitation to join TeamsFuse"
-                mailOptionsLeagueAdmin.text = "You are invited to join the league " + data.leagueName +
-                    " as an admin by " + sendByDoc.data().name + ".  " + teamsFuseFooterPlain;
-                mailOptionsLeagueAdmin.html = "You are invited to join the league <b>" + data.leagueName +
-                    "</b> as an admin by " + sendByDoc.data().name + ".  " + teamsFuseFooterHtml;
 
-                return mailTransport.sendMail(mailOptionsLeagueAdmin)
-            }).then((stuff) => {
-                console.log("Sent email to " + data.email);
-                return db.collection("Invites").doc(inputData.after.id).update({emailedInvite: true});
-            })
-            .catch((error) => console.error("There was an error while sending the email:", error));
-        } else if (data.type === 'InviteType.Club') {
-                userSentPromise.then(sendByDoc => {
-                var mailOptionsClub = {
-                    from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
-                    to: data.email
-                };
+                var url;
+                if (playerData.photoUrl === null) {
+                    url = playerData.photoUrl;
+                } else {
+                    url = 'templates/invites/img/defaultleague.jpg';
+                }
 
-                mailOptionsClub.subject = "Invitation to join club " + data.clubName
-                mailOptionsClub.text = "You are invited to join club" + data.clubName +
-                    (data.admin ? " as an admin:" : "") +
-                    " by " + sendByDoc.data().name +".  " + teamsFuseFooterPlain
-                mailOptionsClub.html = "You are invited to join club <b>" + data.clubName +
-                    (data.admin ? "</b> as an admin:" : "</b>") +
-                    " by " + sendByDoc.data().name + ".  " + teamsFuseFooterHtml;
-
-                return mailTransport.sendMail(mailOptionsClub)
-            }).then((stuff) => {
-                console.log("Sent email to " + data.email);
-                return db.collection("Invites").doc(inputData.after.id).update({emailedInvite: true});
-            })
-            .catch((error) => console.error("There was an error while sending the email:", error));
-        } else if (data.type === 'InviteType.LeagueTeam') {
-            userSentPromise.then(sendByDoc => {
-                var mailOptionsLeagueTeam = {
-                    from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
-                    to: data.email
-                };
-
-                mailOptionsLeagueTeam.subject = "Invitation to join league team " + data.leagueName + ' ' + data.leagueTeamName
-                mailOptionsLeagueTeam.text = "You are invited to join league team " + data.leagueName + ' ' + data.leagueTeamName +
-                    " by " + sendByDoc.data().name + ".  " + teamsFuseFooterPlain
-                mailOptionsLeagueTeam.html = "You are invited to join league team <b>" + data.leagueName + ' ' + data.leagueTeamName +
-                    "</b> by " + sendByDoc.data().name + ". " + teamsFuseFooterHtml;
-
-                return mailTransport.sendMail(mailOptionsLeagueTeam)
-            }).then((stuff) => {
-                console.log("Sent email to " + data.email);
-                return db.collection("Invites").doc(inputData.after.id).update({emailedInvite: true});
-            })
-            .catch((error) => console.error("There was an error while sending the email:", error));
-        } else if (data.type === 'InviteType.Admin') {
-            return Promises.all([db.collection("Teams").doc(data.teamUid)
-                .get(),
-                userSentPromise]).then((stuff) => {
-                    var snapshot = stuff[0];
-                    var sentByDoc = stuff[1];
-                    if (snapshot.exists) {
-                        const teamData = snapshot.data();
-
-                        var mailOptions = {
-                            from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
-                            to: data.email
-                        };
-
-                        mailOptions.subject = "Invitation to be an admin for " + teamData.name
-                        mailOptions.text = "You are invited to be an admin for " + teamData.name +
-                            " by " + sendByDoc.data().name + ".  " + teamsFuseFooterPlain
-                        mailOptions.html = "You are invited to be an admin for <b>" + teamData.name +
-                            " by " + sendByDoc.data().name + ". " + teamsFuseFooterHtml;
-
-                        return mailTransport.sendMail(mailOptions);
-                    } else {
-                        return 12;
+                 mailOptions.attachments.push(
+                    {
+                        filename: 'league.png',
+                        path: url,
+                        cid: 'leagueimg',
                     }
-                })
-                .then((stuff) => {
-                    console.log("Sent email to " + data.email);
-                    return db.collection("Invites").doc(inputData.after.id).update({emailedInvite: true});
-                })
-                .catch((error) => console.error("There was an error while sending the email:", error));
-        }
+                );
 
-        return data;
+                if (data.type === 'InviteType.LeagueAdmin') {
+                    mailOptions.subject = "Invitation to join Leguae " + data.leagueName
+                } else {
+                    mailOptions.subject = "Invitation to join league team " + data.leagueName + ' ' + data.leagueTeamName
+                }
+                mailOptions.text = payloadTxt(context) + footerTxt(context);
+                mailOptions.html = payloadHtml(context) + footerHtml(context);
+                return mailTransport.sendMail(mailOptions);
+            } else {
+                return null;
+            }
+        });
+    } else if (data.type === 'InviteType.Club') {
+        return db.collection("Club")
+                    .doc(data.clubUid)
+                    .get().then(snapshot => {
+            var mailOptionsClub = {
+                from: '"' + sendByDoc.data().name + '" <' + data.sentbyUid + '@email.teamsfuse.com>',
+                to: data.email
+            };
 
-});
+            var url;
+            if (playerData.photoUrl === null) {
+                url = playerData.photoUrl;
+            } else {
+                url = 'templates/invites/img/defaultclub.jpg';
+            }
+
+             mailOptions.attachments.push(
+                {
+                    filename: 'cluv.png',
+                    path: url,
+                    cid: 'cluvimg',
+                }
+            );
+
+            mailOptionsClub.subject = "Invitation to join club " + data.clubName
+            mailOptions.text = payloadTxt(context) + footerTxt(context);
+            mailOptions.html = payloadHtml(context) + footerHtml(context);
+
+            return mailTransport.sendMail(mailOptionsClub);
+        });
+    }
+
+    return data;
+}

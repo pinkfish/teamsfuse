@@ -1,0 +1,2 @@
+You are invited to join the league {{invite.leagueName}}
+as an admin by {{sentBy.name}}.
