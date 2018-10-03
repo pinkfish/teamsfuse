@@ -113,6 +113,35 @@ class Team extends HasUIDComparable {
     thisTeamStream = _updateThisTeam.stream.asBroadcastStream();
   }
 
+  void updateFrom(Team team) {
+    if (publicOnly != team.publicOnly) {
+      return;
+    }
+
+    name = team.name;
+    _arriveEarly = team._arriveEarly;
+    currentSeason = team.currentSeason;
+    gender = team.gender;
+    league = team.league;
+    sport = team.sport;
+    uid = team.uid;
+    photoUrl = team.photoUrl;
+    clubUid = team.clubUid;
+    archived = team.archived;
+    admins = new List<String>.from(team.admins);
+    opponents = team.opponents.map((String key, Opponent op) {
+      return new MapEntry(key, new Opponent.copy(op));
+    });
+    seasons = team.seasons.map(
+        (String key, Season season) => MapEntry(key, new Season.copy(season)));
+    _trackAttendence = team._trackAttendence;
+    if (team._completeSeasonsCached != null) {
+      _completeSeasonsCached =
+          team._completeSeasonsCached.map((Season season) =>
+              Season.copy(season));
+    }
+  }
+
   // Handle invirtes.
   StreamController<List<InviteAsAdmin>> _controller;
   Stream<List<InviteAsAdmin>> _stream;

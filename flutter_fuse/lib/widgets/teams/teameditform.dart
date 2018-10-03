@@ -14,10 +14,20 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
 
+enum StartSection { Start, End, All }
+
+///
+/// Shows the edit form for the team.  Splits up the team into two
+/// sections, the first one shows the start bits and the second the
+/// other bits.
+///
 class TeamEditForm extends StatefulWidget {
   final Team team;
+  final StartSection startSection;
 
-  TeamEditForm(this.team, GlobalKey<TeamEditFormState> key) : super(key: key);
+  TeamEditForm(this.team, GlobalKey<TeamEditFormState> key,
+      {this.startSection = StartSection.All})
+      : super(key: key);
 
   @override
   TeamEditFormState createState() {
@@ -174,101 +184,108 @@ class TeamEditFormState extends State<TeamEditForm> {
       );
     }
 
-    List<Widget> fields = <Widget>[
-      new IconButton(
-        onPressed: _selectImage,
-        iconSize:
-            (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
-        icon: _buildImage(),
-      ),
-      new EnsureVisibleWhenFocused(
-        focusNode: _focusNodeName,
-        child: new TextFormField(
-          decoration: new InputDecoration(
-            icon: const Icon(Icons.event_note),
-            hintText: Messages.of(context).team,
-            labelText: Messages.of(context).teamnamehint,
-          ),
+    List<Widget> fields = <Widget>[];
+    if (widget.startSection != StartSection.End) {
+      fields.addAll(<Widget>[
+        new IconButton(
+          onPressed: _selectImage,
+          iconSize:
+              (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
+          icon: _buildImage(),
+        ),
+        new EnsureVisibleWhenFocused(
           focusNode: _focusNodeName,
-          initialValue: widget.team.name,
-          keyboardType: TextInputType.text,
-          obscureText: false,
-          validator: (String value) {
-            return _validations.validateDisplayName(context, value);
-          },
-          onSaved: (String value) {
-            widget.team.name = value;
-          },
-        ),
-      ),
-      new SportFormField(
-        decoration: new InputDecoration(
-          icon: const Icon(Icons.people),
-          hintText: Messages.of(context).sportselect,
-          labelText: Messages.of(context).sportselect,
-        ),
-        initialValue: widget.team.sport,
-        validator: (Sport value) {
-          return _validations.validateSport(context, value);
-        },
-        onSaved: (Sport value) {
-          widget.team.sport = value;
-        },
-      ),
-      new GenderFormField(
-        decoration: new InputDecoration(
-          icon: const Icon(CommunityIcons.genderMaleFemale),
-          hintText: Messages.of(context).genderselect,
-          labelText: Messages.of(context).genderselect,
-        ),
-        initialValue: widget.team.gender,
-        onSaved: (Gender value) {
-          widget.team.gender = value;
-        },
-      ),
-      seasonWidget,
-      new EnsureVisibleWhenFocused(
-        focusNode: _focusNodeNotes,
-        child: new TextFormField(
-          decoration: new InputDecoration(
-            icon: const Icon(Icons.event_note),
-            hintText: Messages.of(context).league,
-            labelText: Messages.of(context).leaguehint,
+          child: new TextFormField(
+            decoration: new InputDecoration(
+              icon: const Icon(Icons.event_note),
+              hintText: Messages.of(context).team,
+              labelText: Messages.of(context).teamnamehint,
+            ),
+            focusNode: _focusNodeName,
+            initialValue: widget.team.name,
+            keyboardType: TextInputType.text,
+            obscureText: false,
+            validator: (String value) {
+              return _validations.validateDisplayName(context, value);
+            },
+            onSaved: (String value) {
+              widget.team.name = value;
+            },
           ),
+        ),
+        new SportFormField(
+          decoration: new InputDecoration(
+            icon: const Icon(Icons.people),
+            hintText: Messages.of(context).sportselect,
+            labelText: Messages.of(context).sportselect,
+          ),
+          initialValue: widget.team.sport,
+          validator: (Sport value) {
+            return _validations.validateSport(context, value);
+          },
+          onSaved: (Sport value) {
+            widget.team.sport = value;
+          },
+        ),
+        new GenderFormField(
+          decoration: new InputDecoration(
+            icon: const Icon(CommunityIcons.genderMaleFemale),
+            hintText: Messages.of(context).genderselect,
+            labelText: Messages.of(context).genderselect,
+          ),
+          initialValue: widget.team.gender,
+          onSaved: (Gender value) {
+            widget.team.gender = value;
+          },
+        ),
+        seasonWidget,
+      ]);
+    }
+    if (widget.startSection != StartSection.Start) {
+      fields.addAll(<Widget>[
+        new EnsureVisibleWhenFocused(
           focusNode: _focusNodeNotes,
-          initialValue: widget.team.league == null ? '' : widget.team.league,
-          keyboardType: TextInputType.text,
-          obscureText: false,
-          onSaved: (String value) {
-            widget.team.league = value;
-          },
-        ),
-      ),
-      new EnsureVisibleWhenFocused(
-        focusNode: _focusNodeArriveBefore,
-        child: new TextFormField(
-          decoration: new InputDecoration(
-            icon: const Icon(Icons.timer),
-            hintText: Messages.of(context).arrivebeforehint,
-            labelText: Messages.of(context).arrivebeforelabel,
+          child: new TextFormField(
+            decoration: new InputDecoration(
+              icon: const Icon(Icons.event_note),
+              hintText: Messages.of(context).league,
+              labelText: Messages.of(context).leaguehint,
+            ),
+            focusNode: _focusNodeNotes,
+            initialValue: widget.team.league == null ? '' : widget.team.league,
+            keyboardType: TextInputType.text,
+            obscureText: false,
+            onSaved: (String value) {
+              widget.team.league = value;
+            },
           ),
-          focusNode: _focusNodeArriveBefore,
-          initialValue: widget.team.arriveEarly.toString(),
-          keyboardType: TextInputType.number,
-          obscureText: false,
-          onSaved: (String value) {
-            widget.team.arriveEarly = int.parse(value);
-          },
         ),
-      ),
-      new SwitchFormField(
-        initialValue: widget.team.trackAttendence,
-        icon: CommunityIcons.trafficLight,
-        enabled: club != null ? club.trackAttendence != null : true,
-        label: Messages.of(context).trackattendence(Tristate.Yes),
-        onSaved: (bool value) => widget.team.trackAttendence = value,
-      ),
-    ];
+        new EnsureVisibleWhenFocused(
+          focusNode: _focusNodeArriveBefore,
+          child: new TextFormField(
+            decoration: new InputDecoration(
+              icon: const Icon(Icons.timer),
+              hintText: Messages.of(context).arrivebeforehint,
+              labelText: Messages.of(context).arrivebeforelabel,
+            ),
+            focusNode: _focusNodeArriveBefore,
+            initialValue: widget.team.arriveEarly.toString(),
+            keyboardType: TextInputType.number,
+            obscureText: false,
+            onSaved: (String value) {
+              widget.team.arriveEarly = int.parse(value);
+            },
+          ),
+        ),
+        new SwitchFormField(
+          initialValue: widget.team.trackAttendence,
+          icon: CommunityIcons.trafficLight,
+          enabled: club != null ? club.trackAttendence != null : true,
+          label: Messages.of(context).trackattendence(Tristate.Yes),
+          onSaved: (bool value) => widget.team.trackAttendence = value,
+        ),
+      ]);
+    }
     if (adminWidget != null) {
       fields.add(adminWidget);
     }

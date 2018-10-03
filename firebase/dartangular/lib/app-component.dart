@@ -12,6 +12,8 @@ import 'package:angular_components/content/deferred_content.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:fusemodel/firestore.dart';
 
+import 'package:firebase/firebase.dart' as fb;
+
 @Component(
   selector: 'my-app',
   template: '''

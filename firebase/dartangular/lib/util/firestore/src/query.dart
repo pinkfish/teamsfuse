@@ -19,7 +19,7 @@ class Query extends wfs.QueryWrapper {
       documents: query.docs
           .map((fs.DocumentSnapshot snap) => new DocumentSnapshot(doc: snap))
           .toList(),
-      documentChanges: query.docChanges
+      documentChanges: query.docChanges()
           .map(
             (fs.DocumentChange change) => new wfs.DocumentChangeWrapper(
                   document: new DocumentSnapshot(doc: change.doc),

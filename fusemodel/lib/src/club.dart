@@ -155,7 +155,7 @@ class Club {
   /// Get the teams for this club.
   Stream<Iterable<Team>> get teamStream {
     if (_teamSub == null) {
-      _teamSub = UserDatabaseData.instance.updateModel.getClubTeams(uid);
+      _teamSub = UserDatabaseData.instance.updateModel.getClubTeams(this);
       _teamSub.stream.listen((Iterable<Team> teams) {
         _teams = teams;
         _teamController.add(_teams);

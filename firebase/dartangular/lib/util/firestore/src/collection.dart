@@ -92,7 +92,7 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
       documents: snap.docs
           .map((fs.DocumentSnapshot snap) => new DocumentSnapshot(doc: snap))
           .toList(),
-      documentChanges: snap.docChanges
+      documentChanges: snap.docChanges()
           .map(
             (fs.DocumentChange change) => new wfs.DocumentChangeWrapper(
                   document: new DocumentSnapshot(doc: change.doc),
@@ -147,7 +147,7 @@ class QuerySnapshotStreamTransformer
       documents: data.docs
           .map((fs.DocumentSnapshot snap) => new DocumentSnapshot(doc: snap))
           .toList(),
-      documentChanges: data.docChanges
+      documentChanges: data.docChanges()
           .map(
             (fs.DocumentChange change) => new wfs.DocumentChangeWrapper(
                   document: new DocumentSnapshot(doc: change.doc),

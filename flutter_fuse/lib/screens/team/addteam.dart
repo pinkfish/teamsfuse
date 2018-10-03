@@ -9,6 +9,7 @@ import 'package:flutter_fuse/widgets/util/gendericon.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/form/clubpicker.dart';
 import 'package:flutter_fuse/widgets/form/playerformfield.dart';
+import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
 import 'dart:io';
 
 class AddTeamScreen extends StatefulWidget {
@@ -30,6 +31,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   int _currentStep;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   StepState _detailsStepState = StepState.disabled;
+  StepState _secondDetailsStepState = StepState.disabled;
   StepState _createStepStage = StepState.disabled;
   StepState _clubStepState = StepState.disabled;
   StepState _playerStepState = StepState.editing;
@@ -64,7 +66,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+        ?.showSnackBar(new SnackBar(content: new Text(value)));
   }
 
   void _savePressed() async {
@@ -141,22 +143,47 @@ class AddTeamScreenState extends State<AddTeamScreen> {
         }
         if (!_formKeyTeam.currentState.validate()) {
           _detailsStepState = StepState.error;
-          _createStepStage = StepState.disabled;
+          _secondDetailsStepState = StepState.disabled;
           _showInSnackBar(Messages.of(context).formerror);
           return false;
         }
         _teamToAdd = _formKeyTeam.currentState.validateAndCreate();
         if (_teamToAdd == null) {
           _detailsStepState = StepState.error;
-          _createStepStage = StepState.disabled;
+          _secondDetailsStepState = StepState.disabled;
           _showInSnackBar(Messages.of(context).formerror);
           return false;
         }
         _imageFileToAdd = _formKeyTeam.currentState.getImageFile();
         _detailsStepState = StepState.complete;
+        _secondDetailsStepState = StepState.editing;
+        break;
+      // Check to make sure a team is picked.
+      case 3:
+        // Verify the form is correct.
+        if (backwards) {
+          // Can always leave this step.
+          _secondDetailsStepState = StepState.editing;
+          return true;
+        }
+        if (!_formKeyTeam.currentState.validate()) {
+          _secondDetailsStepState = StepState.error;
+          _createStepStage = StepState.disabled;
+          _showInSnackBar(Messages.of(context).formerror);
+          return false;
+        }
+        _teamToAdd = _formKeyTeam.currentState.validateAndCreate();
+        if (_teamToAdd == null) {
+          _secondDetailsStepState = StepState.error;
+          _createStepStage = StepState.disabled;
+          _showInSnackBar(Messages.of(context).formerror);
+          return false;
+        }
+        _imageFileToAdd = _formKeyTeam.currentState.getImageFile();
+        _secondDetailsStepState = StepState.complete;
         _createStepStage = StepState.editing;
         break;
-      case 3:
+      case 4:
         _createStepStage = StepState.disabled;
         break;
     }
@@ -166,7 +193,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   void _onStepperContinue(BuildContext context) {
     if (_leaveCurrentState(false)) {
       setState(() {
-        if (_currentStep < 3) {
+        if (_currentStep < 4) {
           _currentStep++;
         } else {
           // Write the game out.
@@ -229,8 +256,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
           new ListTile(
             leading: const Icon(CommunityIcons.group),
             title: _clubUid != null && _clubUid != ClubPicker.noClub
-                ? new Text(
-                    UserDatabaseData.instance.clubs[_teamToAdd.clubUid].name)
+                ? new Text(UserDatabaseData.instance.clubs[_clubUid].name)
                 : new Text(Messages.of(context).noclub),
             trailing: _clubUid != null && _clubUid != ClubPicker.noClub
                 ? new ClubImage(
@@ -263,7 +289,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
     Messages messages = Messages.of(context);
     return new SavingOverlay(
       saving: _saving,
-      child: new Stepper(
+      child: new StepperAlwaysVisible(
         type: StepperType.horizontal,
         currentStep: _currentStep,
         onStepContinue: () {
@@ -283,7 +309,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
             isActive: isActiveClub(),
             content: new ClubPicker(
               clubUid: _clubUid,
-              onChanged: (String val) => _clubUid = val,
+              onChanged: (String val) => setState(() => _clubUid = val),
             ),
           ),
           new Step(
@@ -306,6 +332,19 @@ class AddTeamScreenState extends State<AddTeamScreen> {
               child: new TeamEditForm(
                 _teamToAdd,
                 _formKeyTeam,
+                startSection: StartSection.Start,
+              ),
+            ),
+          ),
+          new Step(
+            title: new Text(messages.details),
+            state: _detailsStepState,
+            isActive: true,
+            content: new SingleChildScrollView(
+              child: new TeamEditForm(
+                _teamToAdd,
+                _formKeyTeam,
+                startSection: StartSection.End,
               ),
             ),
           ),
@@ -326,7 +365,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
       ),
-      floatingActionButton: _currentStep == 1
+      floatingActionButton: _currentStep == 4
           ? new FloatingActionButton(
               onPressed: () => _savePressed(),
               child: const Icon(Icons.check),

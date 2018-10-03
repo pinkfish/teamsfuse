@@ -263,7 +263,7 @@ abstract class DatabaseUpdateModel {
       DateTime start, DateTime end, FilterDetails filterDetails);
 
   // Clubs and stuff.
-  TeamSubscription getClubTeams(String clubUid);
+  TeamSubscription getClubTeams(Club club);
   Future<String> updateClub(Club club, {bool includeMembers});
   Future<Uri> updateClubImage(Club club, File imageFile);
   Future<void> addUserToClub(String clubUid, String userId, bool admin);

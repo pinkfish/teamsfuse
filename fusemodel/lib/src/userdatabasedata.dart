@@ -55,6 +55,7 @@ class UserDatabaseData {
   Map<String, Club> get clubs => _clubs;
   Map<String, LeagueOrTournament> get leagueOrTournments =>
       _leagueOrTournaments;
+  Map<String, StreamSubscription<Iterable<Team>>> _clubSubscription = {};
   int unreadMessageCount = 0;
 
   bool get loadedDatabase => _completedLoading;
@@ -479,6 +480,8 @@ class UserDatabaseData {
         Team myTeamStuff = team;
         newSnaps.add(team.setupSnap().then((dynamic n) async {
           _teams[myTeamUid] = myTeamStuff;
+        }).catchError((Error e) {
+          print('Setting up snap with teams');
         }));
       }
     }
@@ -493,7 +496,7 @@ class UserDatabaseData {
       // Load the basic game set.
       if (_gameSubecription == null) {
         DateTime start = new DateTime.now().subtract(new Duration(days: 60));
-        DateTime end = new DateTime.now().add(new Duration(days: 120));
+        DateTime end = new DateTime.now().add(new Duration(days: 240));
         _basicGames = getGames(new FilterDetails(), start, end);
         _gameSubecription = _basicGames.stream.listen((Iterable<Game> it) {
           print('Loaded basic games ${it.length}');
@@ -565,6 +568,35 @@ class UserDatabaseData {
         _clubs[data.id].updateFrom(club);
       } else {
         _clubs[data.id] = club;
+        if (_clubSubscription.containsKey(data.id)) {
+          _clubSubscription[data.id].cancel();
+          _clubSubscription.remove(data.id);
+        }
+        _clubSubscription[data.id] =
+            _clubs[data.id].teamStream.listen((Iterable<Team> teams) {
+          // Add in all the teams in the list to the teams list and
+          // filter out any that have a club on them that now don't
+          // exist.
+          Set<String> toDeleteTeams = _teams.values
+              .where((Team t) => t.clubUid == data.id)
+              .map((Team t) => t.uid)
+              .toSet();
+          for (Team t in teams) {
+            toDeleteTeams.remove(t.uid);
+            if (_teams.containsKey(t.uid)) {
+              _teams[t.uid].updateFrom(t);
+            } else {
+              _teams[t.uid] = t;
+            }
+            persistentData.updateElement(
+                PersistenData.teamsTable, t.uid, t.toJSON());
+          }
+          // Remove teams associated with the club that are no longer in the
+          // list.
+          for (String t in toDeleteTeams) {
+            _teams.remove(t);
+          }
+        });
       }
     }
     for (FirestoreWrappedData toRemove in removed) {
@@ -964,6 +996,11 @@ class UserDatabaseData {
     _teamAdminSnapshot = null;
     _clubSnapshot?.cancel();
     _clubSnapshot = null;
+
+    for (StreamSubscription<Iterable<Team>> str in _clubSubscription.values) {
+      str?.cancel();
+    }
+    _clubSubscription.clear();
 
     // Then the data in memory.
     _players.forEach((String key, Player value) {

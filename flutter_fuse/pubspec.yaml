@@ -9,14 +9,14 @@ dependencies:
 
   sentry: any
 
-  cloud_firestore: "^0.7.2"
-  firebase_auth: "^0.5.10"
-  firebase_core: "^0.2.3"
-  firebase_storage: "^0.3.4"
-  firebase_analytics: "^1.0.0"
-  firebase_performance: "^0.0.1"
-  firebase_remote_config: "^0.0.2"
-  firebase_messaging: "^1.0.2"
+  cloud_firestore: "^0.8.1"
+  firebase_auth: "^0.5.20"
+  firebase_core: "^0.2.5"
+  firebase_storage: "^1.0.2"
+  firebase_analytics: "^1.0.3"
+  firebase_performance: "^0.0.8"
+  firebase_remote_config: "^0.0.5"
+  firebase_messaging: "^2.0.0"
   shared_preferences: "^0.4.2"
   package_info: "^0.3.0"
   device_info: "^0.2.0"

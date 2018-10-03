@@ -27,7 +27,7 @@
     @include shadow-elevation();
 
     .caption {
-      @include mat-type-caption();
+      @include mat-font-caption();
     }
   }
 

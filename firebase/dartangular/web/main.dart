@@ -50,15 +50,5 @@ void main() async {
   sub.cancel();
   print('Loaded!');
 
-  fb
-      .firestore()
-      .collection(LEAGUE_TEAM_COLLECTION)
-      .where(LeagueOrTournamentTeam.LEAGUEORTOURNMENTDIVISONUID, '==',
-          '-LMdoHjreeCYgWtCB4Sp')
-      .get()
-      .then((fbs.QuerySnapshot snap) {
-    print('Loaded from the world $LEAGUE_TEAM_COLLECTION ${snap.docs.length} ${LeagueOrTournamentTeam.LEAGUEORTOURNMENTDIVISONUID}');
-  });
-
   runApp(fluff.AppComponentNgFactory, createInjector: injector);
 }

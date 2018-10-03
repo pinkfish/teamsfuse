@@ -25,16 +25,17 @@ class Auth extends wfs.AuthWrapper {
   @override
   Future<wfs.FirebaseUserWrapper> signInWithEmailAndPassword(
       {String email, String password}) async {
-    fb.User user = await fb.auth().signInWithEmailAndPassword(email, password);
-    return new FirebaseUser(user);
+    fb.UserCredential user =
+        await fb.auth().signInWithEmailAndPassword(email, password);
+    return new FirebaseUser(user.user);
   }
 
   @override
   Future<wfs.FirebaseUserWrapper> createUserWithEmailAndPassword(
       {String email, String password}) async {
-    fb.User user =
+    fb.UserCredential user =
         await fb.auth().createUserWithEmailAndPassword(email, password);
-    return new FirebaseUser(user);
+    return new FirebaseUser(user.user);
   }
 }
 

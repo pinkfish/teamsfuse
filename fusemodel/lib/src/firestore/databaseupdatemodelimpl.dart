@@ -1037,12 +1037,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return data;
   }
 
-  Future<Team> _loadTeamFromClub(DocumentSnapshotWrapper snap) async {
+  Future<Team> _loadTeamFromClub(
+      DocumentSnapshotWrapper snap, Club club) async {
     if (UserDatabaseData.instance.teams.containsKey(snap.documentID)) {
       // Team in here should always be up to date.
       return UserDatabaseData.instance.teams[snap.documentID];
     } else {
-      final Team team = new Team.fromJSON(snap.documentID, snap.data);
+      final Team team = new Team.fromJSON(snap.documentID, snap.data,
+          publicOnly: !club.isAdmin());
       // Find the seasons for the team.
       QuerySnapshotWrapper query = await wrapper
           .collection(SEASONS_COLLECTION)
@@ -1059,15 +1061,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   // clubs!
   @override
-  TeamSubscription getClubTeams(String uid) {
+  TeamSubscription getClubTeams(Club club) {
     TeamSubscription sub = new TeamSubscription();
     QueryWrapper query = wrapper
         .collection(TEAMS_COLLECTION)
-        .where(Team.CLUBUID, isEqualTo: uid);
+        .where(Team.CLUBUID, isEqualTo: club.uid);
     query.getDocuments().then((QuerySnapshotWrapper snap) async {
       List<Team> teams = <Team>[];
       for (DocumentSnapshotWrapper mySnap in snap.documents) {
-        teams.add(await _loadTeamFromClub(mySnap));
+        teams.add(await _loadTeamFromClub(mySnap, club));
       }
       sub.addUpdate(teams);
     });
@@ -1075,7 +1077,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .add(query.snapshots().listen((QuerySnapshotWrapper snap) async {
       List<Team> teams = <Team>[];
       for (DocumentSnapshotWrapper mySnap in snap.documents) {
-        teams.add(await _loadTeamFromClub(mySnap));
+        teams.add(await _loadTeamFromClub(mySnap, club));
       }
       sub.addUpdate(teams);
     }));
