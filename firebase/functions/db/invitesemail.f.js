@@ -3,9 +3,8 @@
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
-const request = require('request');
-
-const mailTransport = require('../util/mailgun')
+const requestpromise = require('request-promise-native');
+const mailTransport = require('../util/mailgun');
 /*
 const mailTransport = nodemailer.createTransport({
     host: 'smtp.ethereal.email',
@@ -29,6 +28,8 @@ const teamsFuseFooterPlain = "\n\nTeamsFuse is an app to " +
 // Sends an email confirmation when a user changes his mailing list subscription.
 exports = module.exports = functions.firestore.document('/Invites/{id}').onWrite((inputData, context) => {
     const data = inputData.after.data();
+
+    require('request').debug = true;
 
     // Already emailed about this invite.
     if (data.emailedInvite) {
@@ -165,16 +166,6 @@ function mailToSender(inviteDoc, sentByDoc) {
                     url = 'db/templates/invites/img/defaultleague.jpg';
                 }
 
-                mailOptions.attachments.push(
-                    {
-                        filename: 'league.jpg',
-                        content: request.get(url).read(),
-                        cid: 'leagueimg',
-                        contentType: 'image/jpeg',
-                    }
-                );
-                console.log('The url for the league ' + url);
-
                 context.league = snapshot.data();
                 context.leagueimg = 'cid:leagueimg';
                 context.league.gender = context.league.gender.replace('Gender.', '').toLowerCase();
@@ -187,7 +178,23 @@ function mailToSender(inviteDoc, sentByDoc) {
                 }
                 mailOptions.text = payloadTxt(context) + footerTxt(context);
                 mailOptions.html = payloadHtml(context) + footerHtml(context);
-                return mailTransport.sendMail(mailOptions);
+                const getImageOptions = {
+                  url: url,
+                  encoding: null,
+                  resolveWithFullResponse: true
+                };
+                return requestpromise(getImageOptions).then(res => {
+                    mailOptions.attachments.push(
+                                    {
+                                        filename: 'league.jpg',
+                                        content: Buffer.from(res.body).toString('base64'),
+                                        cid: 'leagueimg',
+                                        contentType: res.headers['content-type'],
+                                        encoding: 'base64',
+                                    }
+                                );
+                    return mailTransport.sendMail(mailOptions);
+                });
             } else {
                 return null;
             }
