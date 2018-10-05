@@ -5,16 +5,6 @@ const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
 const requestpromise = require('request-promise-native');
 const mailTransport = require('../util/mailgun');
-/*
-const mailTransport = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-        port: 587,
-        auth: {
-            user: 'sajca5nyi7mtjhr5@ethereal.email',
-            pass: 'uqNgHtqJDyqtnbpSY3'
-        }
-});
-*/
 const handlebars = require('handlebars');
 var fs = require('fs');
 
@@ -29,7 +19,13 @@ const teamsFuseFooterPlain = "\n\nTeamsFuse is an app to " +
 exports = module.exports = functions.firestore.document('/Invites/{id}').onWrite((inputData, context) => {
     const data = inputData.after.data();
 
+    if (data === null) {
+         // Delete...
+         return null;
+    }
+
     require('request').debug = true;
+
 
     // Already emailed about this invite.
     if (data.emailedInvite) {
@@ -105,20 +101,30 @@ function mailToSender(inviteDoc, sentByDoc) {
                     }
                     mailOptions.text = payloadTxt(context) + footerTxt(context);
                     mailOptions.html = payloadHtml(context) + footerHtml(context);
-                    mailOptions.attachments.push(
-                        {
-                            filename: 'team.jpg',
-                            path: url,
-                            cid: 'teamimg',
-                            image: 'image/jpg',
-                        }
-                    );
 
-                    return mailTransport.sendMail(mailOptions);
+                    return Promise.all([mailOptions, getImageFromUrl(url)])
                 } else {
                     return null;
                 }
-            });
+            }).then(data => {
+                  if (data === null) {
+                      return null;
+                  }
+                  var res = data[1];
+                  var mailOptions = data[0];
+
+                  mailOptions.attachments.push(
+                      {
+                          filename: 'team.jpg',
+                          path: Buffer.from(res.body).toString('base64'),
+                          cid: 'teamimg',
+                          contentType: getContentType(res),
+                          encoding: 'base64',
+                      }
+                  );
+                  return mailTransport.sendMail(mailOptions);
+
+              });
     } else if (data.type === 'InviteType.Player') {
         return db.collection("Players").doc(data.playerUid).get()
             .then(snapshot => {
@@ -132,14 +138,7 @@ function mailToSender(inviteDoc, sentByDoc) {
                         url = 'db/templates/invites/img/defaultplayer.jpg';
                     }
 
-                    mailOptions.attachments.push(
-                        {
-                            filename: 'player.jpg',
-                            path: url,
-                            cid: 'playerimg',
-                            contentType: 'image/jpg',
-                        }
-                    );
+
 
                     context.player = playerData;
                     context.playerimg = 'cid:playerimg';
@@ -148,11 +147,29 @@ function mailToSender(inviteDoc, sentByDoc) {
                     mailOptions.text = payloadTxt(context) + footerTxt(context);
                     mailOptions.html = payloadHtml(context) + footerHtml(context);
 
-                    return mailTransport.sendMail(mailOptions);
+                    return Promise.all([mailOptions, getImageFromUrl(url)])
                 } else {
                     return null;
                 }
-            })
+            }).then(data => {
+                if (data === null) {
+                    return null;
+                }
+                var res = data[1];
+                var mailOptions = data[0];
+
+                mailOptions.attachments.push(
+                    {
+                        filename: 'player.jpg',
+                        path: Buffer.from(res.body).toString('base64'),
+                        cid: 'playerimg',
+                        contentType: getContentType(res),
+                        encoding: 'base64',
+                    }
+                );
+                return mailTransport.sendMail(mailOptions);
+
+            });
     } else if (data.type === 'InviteType.LeagueAdmin' ||
                data.type === 'InviteType.LeagueTeam') {
         return db.collection("League")
@@ -178,26 +195,28 @@ function mailToSender(inviteDoc, sentByDoc) {
                 }
                 mailOptions.text = payloadTxt(context) + footerTxt(context);
                 mailOptions.html = payloadHtml(context) + footerHtml(context);
-                const getImageOptions = {
-                  url: url,
-                  encoding: null,
-                  resolveWithFullResponse: true
-                };
-                return requestpromise(getImageOptions).then(res => {
-                    mailOptions.attachments.push(
-                                    {
-                                        filename: 'league.jpg',
-                                        content: Buffer.from(res.body).toString('base64'),
-                                        cid: 'leagueimg',
-                                        contentType: res.headers['content-type'],
-                                        encoding: 'base64',
-                                    }
-                                );
-                    return mailTransport.sendMail(mailOptions);
-                });
+                return Promise.all([mailOptions, getImageFromUrl(url)])
             } else {
                 return null;
             }
+        }).then(data => {
+            if (data === null) {
+                console.log('No league');
+                return null;
+            }
+            var mailOptions = data[0];
+            var res = data[1];
+
+            mailOptions.attachments.push(
+                            {
+                                filename: 'league.jpg',
+                                content: Buffer.from(res.body).toString('base64'),
+                                cid: 'leagueimg',
+                                contentType: getContentType(res),
+                                encoding: 'base64',
+                            }
+                        );
+            return mailTransport.sendMail(mailOptions);
         });
     } else if (data.type === 'InviteType.Club') {
         return db.collection("Club")
@@ -211,15 +230,6 @@ function mailToSender(inviteDoc, sentByDoc) {
                 url = 'db/templates/invites/img/defaultclub.jpg';
             }
 
-             mailOptions.attachments.push(
-                {
-                    filename: 'club.jpg',
-                    path: url,
-                    cid: 'clubimg',
-                    image: 'image/jpg'
-                }
-            );
-
             context.club = snapshot.data();
             context.clubimg = 'cid:clubimg';
 
@@ -227,9 +237,44 @@ function mailToSender(inviteDoc, sentByDoc) {
             mailOptions.text = payloadTxt(context) + footerTxt(context);
             mailOptions.html = payloadHtml(context) + footerHtml(context);
 
-            return mailTransport.sendMail(mailOptions);
-        });
+            return Promise.all([mailOptions, getImageFromUrl(url)])
+        }).then(data => {
+              if (data === null) {
+                  console.log('No league');
+                  return null;
+              }
+              var mailOptions = data[0];
+              var res = data[1];
+
+              mailOptions.attachments.push(
+                  {
+                      filename: 'club.jpg',
+                      content: Buffer.from(res.body).toString('base64'),
+                      cid: 'clubimg',
+                      contentType: getContentType(res),
+                      encoding: 'base64',
+                  }
+              );
+              return mailTransport.sendMail(mailOptions);
+          });
     }
 
     return data;
+}
+
+function getImageFromUrl(url) {
+    const getImageOptions = {
+        url: url,
+        encoding: null,
+        resolveWithFullResponse: true
+    };
+    return requestpromise(getImageOptions);
+}
+
+function getContentType(fullBody) {
+    var contentType = res.headers['content-type'];
+    if (contentType === 'application/octet-stream') {
+        return 'image/jpeg';
+    }
+    return contentType;
 }
