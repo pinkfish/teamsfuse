@@ -1,0 +1,7 @@
+<material-expansionpanel name="{{season.name}}" [showSaveCancel]="false" style="margin-top: 10px">
+    <ng-template matExpansionPanelContent>
+        <divison-expansionpanel *ngFor="let frog of divisonStream | async; trackBy: trackByDivison" [divison]="frog" [season]="season" [league]="league">
+
+        </divison-expansionpanel>
+    </ng-template>
+</material-expansionpanel>

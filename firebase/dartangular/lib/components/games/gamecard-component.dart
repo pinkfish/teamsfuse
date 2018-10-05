@@ -49,7 +49,7 @@ class GameCardComponent {
   static DateFormat dateFormat = DateFormat.yMMMMEEEEd();
   static DateFormat dateWithTimeFormat =
       new DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY);
-  static DateFormat justTimeFormat = new DateFormat(DateFormat.HOUR_MINUTE_TZ);
+  static DateFormat justTimeFormat = new DateFormat(DateFormat.HOUR_MINUTE);
   static const String API_KEY = "AIzaSyCP22ZMhWoQuzH9qIEnxYL7C_XfjWjo6tI";
   static Uri GOOGLE_PLACE_SEARCH =
       Uri.parse("https://maps.googleapis.com/maps/api/place/textsearch/json");

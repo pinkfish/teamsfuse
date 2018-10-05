@@ -1,0 +1,9 @@
+<img src="{{teamUrl}}" width="50" height="50" style="padding-right: 10px"/>
+<div *ngIf="(team | async) != null">
+    <div class="teamname">
+        {{teamName}}
+    </div>
+    <div class="teamresult">
+        {{gameResult()}}
+    </div>
+</div>

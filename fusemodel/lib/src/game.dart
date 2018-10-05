@@ -5,3 +5,5 @@ export 'game/gameperiod.dart';
 export 'game/gameresult.dart';
 export 'game/gamescore.dart';
 export 'game/gamesharedata.dart';
+export 'game/gameresultshareddetails.dart';
+export 'game/gamefromofficial.dart';

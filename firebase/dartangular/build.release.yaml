@@ -10,6 +10,7 @@ targets:
             - --fast-startup
             - --minify
             - --trust-type-annotations
+            - -Dprod=true
             # Consult https://webdev.dartlang.org/tools/dart2js#size-and-speed-options
             # before enabling the following option:
             # - --trust-primitives

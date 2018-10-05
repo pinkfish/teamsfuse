@@ -1,0 +1,7 @@
+<material-expansionpanel name="{{divison.name}}"  [showSaveCancel]="false" style="margin-top: 10px">
+    <ng-template matExpansionPanelContent>
+        <game-shared-card *ngFor="let frog of gameStream | async; trackBy: trackByGame" [game]="frog">
+
+        </game-shared-card>
+    </ng-template>
+</material-expansionpanel>

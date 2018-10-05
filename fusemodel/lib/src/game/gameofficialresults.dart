@@ -1,6 +1,7 @@
 import 'gameperiod.dart';
 import 'gameresult.dart';
 import 'package:collection/collection.dart';
+import 'gameresultshareddetails.dart';
 
 enum OfficialResult { HomeTeamWon, AwayTeamWon, Tie, NotStarted, InProgress }
 
@@ -22,7 +23,6 @@ class GameOfficialResults {
 
   static const String _OFFICIALRESULT = 'officialResult';
   static const String _SCORES = 'scores';
-  static const String _INPROGRESS = 'inProgress';
   static const String _HOMETEAMUID = 'homeTeamUid';
   static const String _AWAYTEAMUID = 'awayTeamUid';
 

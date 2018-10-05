@@ -35,10 +35,11 @@ service cloud.firestore {
 
     match /League/{club} {
       allow read: if isSignedIn();
-      allow update, delete: if isSignedIn();
+      allow update, delete: if isSignedIn() &&
+          request.resource.data.members[request.auth.uid].admin == true;
       // Only allow a create if they are set as an admin.
       allow create: if isSignedIn() &&
-          request.resource.data.members[request.auth.uid].admin;
+          request.resource.data.members[request.auth.uid].admin == true;
     }
 
     match /LeagueDivision/{club} {
@@ -48,7 +49,7 @@ service cloud.firestore {
           exists(/databases/$(database)/documents/LeagueSeason/$(request.resource.data.seasonUid));
     }
 
-    match /LegaueSeason/{club} {
+    match /LeagueSeason/{club} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
       allow create: if isSignedIn() &&
@@ -98,8 +99,9 @@ service cloud.firestore {
     // UserData table (profile details).
     match /UserData/{userId} {
       allow read, update, delete: if isSignedIn() &&
-          request.auth.uid == resource.data.userId;
-      allow create: if isSignedIn() && request.auth.uid != null;
+          request.auth.uid == resource.id;
+      allow create: if isSignedIn() && request.auth.uid != null &&
+          request.resource.id == request.auth.uid;
     }
 
     match /Players/{player} {

@@ -9,6 +9,7 @@ import 'package:teamfuse/components/team/team.template.dart' as gcttd;
 import 'package:teamfuse/components/games/single/game-component.template.dart' as sgtd;
 import 'package:teamfuse/components/club/club.template.dart' as ccttd;
 import 'package:teamfuse/components/leagueortournament/home.template.dart' as lotht;
+import 'package:teamfuse/components/leagueortournament/league.template.dart' as lotlt;
 
 
 @Injectable()
@@ -41,6 +42,11 @@ class Routes {
     component: lotht.HomeComponentNgFactory,
   );
 
+  static final _leagueDetails = new RouteDefinition(
+    routePath: paths.leagueDetails,
+    component: lotlt.LeagueComponentNgFactory
+  );
+
 
   RouteDefinition get games => _games;
   RouteDefinition get deleteGamesFromTeam => _deleteGamesFromTeam;
@@ -51,6 +57,7 @@ class Routes {
     _team,
     _gameDisplay,
     _club,
-    _leagueHome
+    _leagueHome,
+    _leagueDetails
   ];
 }

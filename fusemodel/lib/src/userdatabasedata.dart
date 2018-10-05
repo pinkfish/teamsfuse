@@ -354,9 +354,9 @@ class UserDatabaseData {
           _loadedGames = true;
           _loadedTeams = true;
           _updateLoading();
-        }).catchError((e) {
-          print('Print stuff');
-          throw e;
+        }).catchError((dynamic e, StackTrace trace) {
+          print('Setting up snap with players $trace');
+          return e;
         });
       } else {
         print('Loaded for fluff');
@@ -480,8 +480,9 @@ class UserDatabaseData {
         Team myTeamStuff = team;
         newSnaps.add(team.setupSnap().then((dynamic n) async {
           _teams[myTeamUid] = myTeamStuff;
-        }).catchError((Error e) {
-          print('Setting up snap with teams');
+        }).catchError((dynamic e, StackTrace trace) {
+          print('Setting up snap with teams $trace');
+          return e;
         }));
       }
     }

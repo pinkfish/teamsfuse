@@ -168,7 +168,7 @@ function mailToSender(inviteDoc, sentByDoc) {
                 mailOptions.attachments.push(
                     {
                         filename: 'league.jpg',
-                        content: request.get(url),
+                        content: request.get(url).read(),
                         cid: 'leagueimg',
                         contentType: 'image/jpeg',
                     }

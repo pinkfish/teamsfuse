@@ -12,7 +12,7 @@ import 'package:flutter_fuse/widgets/games/attendancedialog.dart';
 import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
 import 'teamresultsstreamfuture.dart';
 import 'package:timezone/timezone.dart';
-import 'results/gamefromofficial.dart';
+import 'package:fusemodel/src/game/gamefromofficial.dart';
 import 'officalresultdialog.dart';
 
 import 'dart:async';
@@ -441,7 +441,7 @@ class GameDetailsState extends State<GameDetails> {
 
         // Official results.
         GameFromOfficial officalData =
-            GameFromOfficial(widget.game, widget.game.leagueOpponentUid);
+            GameFromOfficial(widget.game.sharedData, widget.game.leagueOpponentUid);
         body.add(_buildGameResult(
             true,
             officalData,

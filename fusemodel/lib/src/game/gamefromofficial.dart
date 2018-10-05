@@ -1,11 +1,16 @@
-import 'package:fusemodel/fusemodel.dart';
+import 'gamesharedata.dart';
+import 'gameresult.dart';
+import 'gameperiod.dart';
+import 'gameofficialresults.dart';
+import 'gameresultshareddetails.dart';
+import 'gamescore.dart';
 
 ///
 /// This class converts from the offical results on a game
 /// to the results for this specific team.
 ///
 class GameFromOfficial extends GameResultSharedDetails{
-  final Game game;
+  final GameSharedData game;
   final String awayTeamLeageUid;
 
   final GameResultPerPeriod _finalResult;
@@ -14,29 +19,29 @@ class GameFromOfficial extends GameResultSharedDetails{
 
   GameFromOfficial(this.game, this.awayTeamLeageUid)
       : _finalResult = _swapResult(
-            game.sharedData.officialResults.scores,
+            game.officialResults.scores,
             GamePeriod.regulation,
-            game.sharedData.officialResults.homeTeamLeagueUid !=
+            game.officialResults.homeTeamLeagueUid !=
                 awayTeamLeageUid),
         _overtimeResult = _swapResult(
-            game.sharedData.officialResults.scores,
+            game.officialResults.scores,
             GamePeriod.overtime,
-            game.sharedData.officialResults.homeTeamLeagueUid !=
+            game.officialResults.homeTeamLeagueUid !=
                 awayTeamLeageUid),
         _penaltyResult = _swapResult(
-            game.sharedData.officialResults.scores,
+            game.officialResults.scores,
             GamePeriod.penalty,
-            game.sharedData.officialResults.homeTeamLeagueUid !=
+            game.officialResults.homeTeamLeagueUid !=
                 awayTeamLeageUid);
 
   /// If the game is finished.
   bool get isGameFinished =>
-      game.sharedData.officialResults.result != OfficialResult.InProgress &&
-      game.sharedData.officialResults.result != OfficialResult.NotStarted;
+      game.officialResults.result != OfficialResult.InProgress &&
+      game.officialResults.result != OfficialResult.NotStarted;
 
   /// Is this a home game?
   bool get isHomeGame =>
-      game.sharedData.officialResults.homeTeamLeagueUid != awayTeamLeageUid;
+      game.officialResults.homeTeamLeagueUid != awayTeamLeageUid;
 
   /// The regulation result for the game
   GameResultPerPeriod get regulationResult => _finalResult;
@@ -100,7 +105,7 @@ class GameFromOfficial extends GameResultSharedDetails{
   }
 
   GameResult get result {
-    switch (game.sharedData.officialResults.result) {
+    switch (game.officialResults.result) {
       case OfficialResult.HomeTeamWon:
         if (isHomeGame) {
           return GameResult.Win;

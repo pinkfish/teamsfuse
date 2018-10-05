@@ -8,7 +8,7 @@ import 'package:flutter_fuse/widgets/games/editresultdialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'attendanceicon.dart';
 import 'package:timezone/timezone.dart';
-import 'results/gamefromofficial.dart';
+import 'package:fusemodel/src/game/gamefromofficial.dart';
 
 class GameCard extends StatelessWidget {
   final Game game;
@@ -156,7 +156,7 @@ class GameCard extends StatelessWidget {
 
   Widget _buildInProgress(BuildContext context) {
     GameFromOfficial officalData =
-        GameFromOfficial(game, game.leagueOpponentUid);
+        GameFromOfficial(game.sharedData, game.leagueOpponentUid);
     if (game.result.inProgress == GameInProgress.Final) {
       GameResultPerPeriod finalResult;
       GameResultPerPeriod overtimeResult;

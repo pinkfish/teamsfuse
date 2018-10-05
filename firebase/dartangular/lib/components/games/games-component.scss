@@ -5,9 +5,6 @@
 @import 'package:angular_components/app_layout/mixins';
 
 :host {
-  display: block;
-  margin: 16px;
-  position: relative;
 }
 
 .controls {
@@ -36,9 +33,13 @@
   margin: 5px;
 }
 
+.leading {
+   width: 100px;
+   margin: 0px;
+}
+
 .trailing {
    width: 100px;
-
 }
 
 .resultWin {
@@ -66,11 +67,26 @@
 .card {
   float:none;
   clear: both;
-  margin-bottom: 25px;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
   height: 60px;
   display: flex;
+    margin: 16px;
+    position: relative;
+  margin-bottom: 25px;
+
+}
+
+.cardshared {
+  float:none;
+  clear: both;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  display: flex;
+    margin: 16px;
+    position: relative;
+  margin-bottom: 25px;
+
 }
 
 .card:hover {
@@ -88,4 +104,14 @@
   font-family: Arial, Helvetica, sans-serif;
   width: 100%;
   padding: 10px;
+}
+
+.teamname {
+  font-size: 70%;
+  margin-left: 0px;
+}
+
+.teamresult {
+  font-size: 100%;
+  margin-left: 0px;
 }

@@ -9,3 +9,4 @@ targets:
           dart2js_args:
             - --enable-asserts
             - --preview-dart-2
+            - -Dprod=false

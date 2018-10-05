@@ -1,10 +1,7 @@
-import '../common.dart';
-import 'dart:async';
-import 'package:timezone/timezone.dart';
-import '../userdatabasedata.dart';
 import 'gameperiod.dart';
 import 'gamescore.dart';
 import 'package:collection/collection.dart';
+import 'gameresultshareddetails.dart';
 
 enum GameResult { Win, Loss, Tie, Unknown }
 enum GameInProgress { NotStarted, InProgress, Final }
@@ -34,20 +31,6 @@ class GameResultPerPeriod {
   String toString() {
     return "GameResultPerPeriod[ $period, $score]";
   }
-}
-
-
-///
-/// Abstract class used by both the offical result setup and
-/// the results to return consistent data about regulation/overtime and
-/// penalty results.
-///
-abstract class GameResultSharedDetails {
-  GameResult get result;
-  GameResultPerPeriod get regulationResult;
-  GameResultPerPeriod get overtimeResult;
-  GameResultPerPeriod get penaltyResult;
-  bool get isGameFinished;
 }
 
 class GameResultDetails extends GameResultSharedDetails {

@@ -15,6 +15,6 @@ const mailTransport = mailgunTransport(mailgunOptions)
 
 exports.sendMail = (mailOptions) => {
     var emailClient = nodemailer.createTransport(mailTransport)
-    console.log(mailOptions)
+    console.log(mailOptions);
     return emailClient.sendMail(mailOptions)
 }
