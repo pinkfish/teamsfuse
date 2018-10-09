@@ -54,18 +54,12 @@ class AppComponent implements OnInit, OnDestroy {
       // Authenticated, stay at the old url.
       UserDatabaseData.load(data.uid, data.email,
           UserDatabaseData.instance.userAuth.getProfile(data.uid));
-      if (_router.current == null ||
-              !_router?.current?.path?.startsWith(guest.path) ??
-          false) {
-        _router.navigate("/a/games");
-      }
     }
     UserDatabaseData.instance.userAuth.onAuthChanged().listen((UserData u) {
       print('onAuthStateChanged $u');
       if (u != null) {
         UserDatabaseData.load(u.uid, u.email,
             UserDatabaseData.instance.userAuth.getProfile(u.uid));
-        //_router.navigate("/a/games");
       } else {
         UserDatabaseData.clear();
       }
@@ -82,11 +76,7 @@ class AppComponent implements OnInit, OnDestroy {
       print('ROuter state ${state.path}');
       // Logged out.
       if (!state.path.startsWith(guest.path)) {
-        _router.navigate("/" + guest.path + "/guesthome");
-      } else {
-        if (state.path == '/') {
-          _router.navigate("/" + guest.path + "/guesthome");
-        }
+        _router.navigate("/" + guest.path + "/g/guesthome");
       }
     }
   }

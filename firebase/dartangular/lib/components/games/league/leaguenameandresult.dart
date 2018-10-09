@@ -25,7 +25,7 @@ class LeagueNameAndResult implements OnInit, OnDestroy {
   @Input()
   GameSharedData game;
   @Input()
-  String  leagueTeamUid;
+  String leagueTeamUid;
   @Input()
   bool homeTeam;
 
@@ -47,12 +47,12 @@ class LeagueNameAndResult implements OnInit, OnDestroy {
         .getLeagueTeamData(leagueTeamUid)
         .then((LeagueOrTournamentTeam team) {
       _team = team;
-      _teamController.add(team);
+      _teamController?.add(team);
       UserDatabaseData.instance.updateModel
           .getPublicTeamDetails(team.teamUid)
           .then((Team t) {
         mainTeam = t;
-        _teamController.add(team);
+        _teamController?.add(team);
       });
     });
   }
@@ -99,5 +99,25 @@ class LeagueNameAndResult implements OnInit, OnDestroy {
       return _team.name;
     }
     return "Unknown";
+  }
+
+  String get resultclass {
+    switch (result.result) {
+      case GameResult.Win:
+        return "win";
+      case GameResult.Loss:
+        return "loss";
+      case GameResult.Tie:
+        return "tie";
+      case GameResult.Unknown:
+        return "";
+    }
+  }
+
+  String get float {
+    if (homeTeam) {
+      return "right";
+    }
+    return "left";
   }
 }

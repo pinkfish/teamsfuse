@@ -13,6 +13,7 @@
 .leaguename {
   font-weight: bold;
   font-size: 110%;
+  width: max-content;
 }
 
 .leagueshortdesc {
@@ -23,6 +24,7 @@
 
 .details {
   flex-grow: 1;
+  width: max-content;
 }
 
 .column {

@@ -6,6 +6,7 @@ import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart';
 import 'league/leaguenameandresult.dart';
+import 'package:google_maps/google_maps.dart';
 
 @Component(
   selector: 'game-shared-card',
@@ -30,10 +31,10 @@ import 'league/leaguenameandresult.dart';
 class GameSharedCardComponent {
   @Input()
   GameSharedData game;
-  static DateFormat dateFormat = DateFormat.yMMMMEEEEd();
+  static DateFormat dateFormat = DateFormat.MEd();
   static DateFormat dateWithTimeFormat = new DateFormat(
       DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY);
-      static DateFormat timeFormat = DateFormat.Hms();
+      static DateFormat timeFormat = DateFormat.jm();
   static const String API_KEY = "AIzaSyCP22ZMhWoQuzH9qIEnxYL7C_XfjWjo6tI";
   static Uri GOOGLE_PLACE_SEARCH =
       Uri.parse("https://maps.googleapis.com/maps/api/place/textsearch/json");
@@ -42,6 +43,6 @@ class GameSharedCardComponent {
   GameSharedCardComponent(this._router);
 
   void openDetails() {
-    _router.navigate("/a/game/shared/" + game.uid);
+    _router.navigate("/a/gameshared/" + game.uid);
    }
 }

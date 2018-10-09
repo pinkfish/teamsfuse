@@ -13,14 +13,14 @@
             <template [ngSwitchCase]="'EventType.Game'">
                 {{GameSharedCardComponent.dateFormat.format(game.tzTime)}}
                 {{GameSharedCardComponent.timeFormat.format(game.tzTime)}}
-                <div *ngIf="game.time != game.endTime">
+                <div *ngIf="game.time != game.endTime" style="display:inline">
                     - {{GameSharedCardComponent.timeFormat.format(game.tzEndTime)}}
                 </div>
             </template>
             <template [ngSwitchCase]="'EventType.Practice'">
                 {{GameSharedCardComponent.dateFormat.format(game.tzTime)}}
                 {{GameSharedCardComponent.timeFormat.format(game.tzTime)}}
-                <div *ngIf="game.time != game.endTime">
+                <div *ngIf="game.time != game.endTime" style="display:inline">
                     - {{GameSharedCardComponent.timeFormat.format(game.tzEndTime)}}
                 </div>
                 practice
@@ -28,7 +28,7 @@
             <template [ngSwitchCase]="'EventType.Event'">
                 {{GameSharedCardComponent.dateFormat.format(game.tzTime)}}
                 {{GameSharedCardComponent.timeFormat.format(game.tzTime)}}
-                <div *ngIf="game.time != game.endTime">
+                <div *ngIf="game.time != game.endTime" style="display: inline">
                     - {{GameSharedCardComponent.timeFormat.format(game.tzEndTime)}}
                 </div>
                 event

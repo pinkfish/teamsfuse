@@ -17,12 +17,12 @@ class GamePlace {
 
   GamePlace(
       {this.name,
-        this.placeId = '',
-        this.address = '',
-        this.notes = '',
-        this.unknown = true,
-        this.latitude = 0,
-        this.longitude = 0});
+      this.placeId = '',
+      this.address = '',
+      this.notes = '',
+      this.unknown = true,
+      this.latitude = 0,
+      this.longitude = 0});
 
   GamePlace.copy(GamePlace copy) {
     name = copy.name;
@@ -91,19 +91,19 @@ class GameSharedData {
   Location _location;
 
   GameSharedData(
-      String homeTeamUid,
-      String awayTeamUid, {
-        this.name = "",
-        this.uid,
-        num time,
-        num endTime,
-        GamePlace place,
-        GameOfficialResults officalResults,
-        String timezone,
-        this.type,
-        this.leagueUid,
-        this.leagueDivisionUid,
-      })  : this.place = place ?? new GamePlace(),
+    String homeTeamUid,
+    String awayTeamUid, {
+    this.name = "",
+    this.uid,
+    num time,
+    num endTime,
+    GamePlace place,
+    GameOfficialResults officalResults,
+    String timezone,
+    this.type,
+    this.leagueUid,
+    this.leagueDivisionUid,
+  })  : this.place = place ?? new GamePlace(),
         this.officialResults =
             officalResults ?? new GameOfficialResults(homeTeamUid, awayTeamUid),
         this.time = time ?? new DateTime.now().millisecondsSinceEpoch,
@@ -136,7 +136,7 @@ class GameSharedData {
     type = EventType.values.firstWhere((e) => e.toString() == data[TYPE],
         orElse: () => EventType.Game);
     GamePlace place =
-    new GamePlace.fromJSON(data[_PLACE] as Map<dynamic, dynamic>);
+        new GamePlace.fromJSON(data[_PLACE] as Map<dynamic, dynamic>);
     this.place = place;
     name = getString(data[NAME]);
     if (data.containsKey(OFFICIALRESULT)) {

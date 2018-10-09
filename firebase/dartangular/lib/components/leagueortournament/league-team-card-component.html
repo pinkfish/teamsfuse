@@ -1,0 +1,19 @@
+<div *ngIf="leagueOrTournamentTeam == null">
+    Loading...
+</div>
+
+<div *ngIf="leagueOrTournamentTeam != null" class="card" (click)="openDetails()">
+    <div class="teamimg">
+        <img src="{{teamUrl}}" width="50" height="50" class="leagueimg" />
+    </div>
+    <div class="details">
+        <div class="leaguename">
+            {{leagueOrTournamentTeam.name}}
+        </div>
+        <div class="leaguedetails">
+            Win: {{record.win}}
+            Loss: {{record.loss}}
+            Tie: {{record.tie}}
+        </div>
+    </div>
+</div>

@@ -24,32 +24,32 @@ class LeagueDetailsComponent
     implements OnDestroy, OnInit, OnActivate, OnChanges {
   @Input()
   LeagueOrTournament league;
+  Iterable<LeagueOrTournamentSeason> seasons;
   StreamSubscription<Iterable<LeagueOrTournamentSeason>> _seasonSub;
-  StreamController<Iterable<LeagueOrTournamentSeason>> _seasonController;
-  Stream<Iterable<LeagueOrTournamentSeason>> seasonStream;
+  String currentSeason;
 
-  LeagueDetailsComponent();
+  final Location _location;
+
+  LeagueDetailsComponent(this._location);
 
   @override
-  void ngOnInit() {
-    _seasonController =
-        new StreamController<Iterable<LeagueOrTournamentSeason>>();
-    seasonStream = _seasonController.stream.asBroadcastStream();
+  void ngOnInit() {}
+
+  @override
+  void onActivate(RouterState previous, RouterState current) {
+    currentSeason = current.parameters['season'];
   }
-
-  @override
-  void onActivate(RouterState previous, RouterState current) {}
 
   @override
   void ngOnChanges(Map<String, SimpleChange> changes) {
     if (changes.containsKey('league')) {
       LeagueOrTournament league = changes['league'].currentValue;
-      _seasonController.add(league.cacheSeasons ?? []);
       _seasonSub?.cancel();
       _seasonSub = league.seasonStream
           .listen((Iterable<LeagueOrTournamentSeason> newSeasons) {
-        _seasonController.add(newSeasons);
+        seasons = newSeasons;
       });
+      seasons = league.cacheSeasons ?? [];
     }
   }
 
@@ -90,12 +90,12 @@ class LeagueDetailsComponent
       return league.photoUrl;
     }
     // Default asset.
-    return "assets/" + league.sport.toString() + ".png";
+    return _location
+        .normalizePath("/assets/" + league.sport.toString() + ".png");
   }
 
   @override
   void ngOnDestroy() {
-    _seasonController?.close();
     _seasonSub?.cancel();
   }
 

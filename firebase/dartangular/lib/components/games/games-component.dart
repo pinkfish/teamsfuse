@@ -30,7 +30,8 @@ import 'gamecard-component.dart';
   ],
 )
 class GamesComponent implements OnInit, OnDestroy {
-  static DateFormat dateFormat = new DateFormat(DateFormat.YEAR_MONTH);
+  static DateFormat dateFormat = DateFormat.MMMMEEEEd();
+  static DateFormat timeFormat = DateFormat.jm();
   FilterDetails _details = new FilterDetails();
   MonthDetails _curMonth;
   MonthDetails _nextMonth;
@@ -39,7 +40,7 @@ class GamesComponent implements OnInit, OnDestroy {
   StreamController<Iterable<Game>> _gameController =
       new StreamController<Iterable<Game>>();
 
-   String get currentMonth => dateFormat.format(_curMonth.start);
+  String get currentMonth => dateFormat.format(_curMonth.start);
 
   MonthDetails get currentMonthDetails => _curMonth;
 

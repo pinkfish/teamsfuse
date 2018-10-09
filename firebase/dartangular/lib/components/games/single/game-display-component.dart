@@ -8,7 +8,6 @@ import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart';
-import 'dart:html';
 
 class TimeStuff {
   num hour;
@@ -25,13 +24,10 @@ class TimeStuff {
     DeferredContentDirective,
     MaterialButtonComponent,
     MaterialIconComponent,
-    MaterialListComponent,
-    MaterialListItemComponent,
     NgIf,
     NgSwitch,
     NgSwitchDefault,
     NgSwitchWhen,
-    formDirectives,
     RouterLink
   ],
   templateUrl: 'game-display-component.html',
@@ -48,11 +44,6 @@ class GameDisplayComponent {
   static DateFormat dateWithTimeFormat =
   new DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY);
   static DateFormat justTimeFormat = new DateFormat(DateFormat.HOUR_MINUTE_TZ);
-  static const String API_KEY = "AIzaSyCP22ZMhWoQuzH9qIEnxYL7C_XfjWjo6tI";
-  static Uri GOOGLE_PLACE_SEARCH =
-  Uri.parse("https://maps.googleapis.com/maps/api/place/textsearch/json");
-  @ViewChild('mapArea')
-  HtmlElement mapAreaRef;
 
   GameDisplayComponent();
 

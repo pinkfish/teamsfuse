@@ -1,7 +1,6 @@
 import 'gameperiod.dart';
 import 'gameresult.dart';
 import 'package:collection/collection.dart';
-import 'gameresultshareddetails.dart';
 
 enum OfficialResult { HomeTeamWon, AwayTeamWon, Tie, NotStarted, InProgress }
 
@@ -11,7 +10,7 @@ enum OfficialResult { HomeTeamWon, AwayTeamWon, Tie, NotStarted, InProgress }
 ///
 class GameOfficialResults {
   final CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> scores =
-  new CanonicalizedMap((GamePeriod p) => p.toIndex());
+      new CanonicalizedMap((GamePeriod p) => p.toIndex());
 
   /// The team uid, this pointed to a leagueortourneamentteam data.
   String homeTeamLeagueUid;
@@ -40,20 +39,20 @@ class GameOfficialResults {
 
   GameOfficialResults.fromJSON(Map<dynamic, dynamic> data)
       : result = OfficialResult.values.firstWhere(
-          (e) =>
-      e.toString() == data[_OFFICIALRESULT] ??
-          OfficialResult.NotStarted.toString(),
-      orElse: () => OfficialResult.NotStarted),
+            (e) =>
+                e.toString() == data[_OFFICIALRESULT] ??
+                OfficialResult.NotStarted.toString(),
+            orElse: () => OfficialResult.NotStarted),
         homeTeamLeagueUid = data[_HOMETEAMUID],
         awayTeamLeagueUid = data[_AWAYTEAMUID] {
     if (data.containsKey(_SCORES)) {
       Map<dynamic, dynamic> scoreData = data[_SCORES];
       CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> newResults =
-      new CanonicalizedMap((GamePeriod p) => p.toIndex());
+          new CanonicalizedMap((GamePeriod p) => p.toIndex());
       scoreData.forEach((dynamic periodStd, dynamic data) {
         GamePeriod period = GamePeriod.fromIndex(periodStd);
         GameResultPerPeriod newResult =
-        new GameResultPerPeriod.fromJSON(period, data);
+            new GameResultPerPeriod.fromJSON(period, data);
 
         newResults[period] = newResult;
       });
