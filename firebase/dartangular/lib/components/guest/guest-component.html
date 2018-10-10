@@ -18,6 +18,15 @@
     <div>
         <router-outlet [routes]="routes.all"></router-outlet>
     </div>
+    <div style="display: flex">
+        <a href="https://testflight.apple.com/join/zTHlWVWv" style="flex-shrink:1">
+            <img src="cid:apple-store" width="160" height="54">
+        </a>
+        &nbsp;&nbsp;
+        <a href="https://play.google.com/apps/testing/com.teamfuse.flutterfuse" style="flex-shrink:1">
+            <img src="cid:google-store" width="153" height="46">
+        </a>
+    </div>
     <div>
         <material-button raised (trigger)="createAccount()" class="green">
             <material-icon icon="add"></material-icon>Sign up now!

@@ -7,7 +7,7 @@ import 'package:angular_components/material_tab/material_tab_panel.dart';
 import 'package:angular_components/material_tab/material_tab.dart';
 import 'package:angular_components/material_tab/tab_change_event.dart';
 import 'package:angular_components/content/deferred_content.dart';
-import 'league-team-card-component.dart';
+import '../common/league-team-card-component.dart';
 import 'package:angular_router/angular_router.dart';
 
 @Component(
@@ -25,7 +25,7 @@ import 'package:angular_router/angular_router.dart';
   templateUrl: 'divisonexpansionpanel.html',
   pipes: const [AsyncPipe],
   styleUrls: const [
-    '../../util/grid.css',
+    '../../../util/grid.css',
     'package:angular_components/app_layout/layout.scss.css',
   ],
 )
@@ -78,6 +78,7 @@ class DivisonExpansionPanelComponent implements OnDestroy, OnInit {
     });
 
     expanded = _router.current.queryParameters['divison'] == divison.uid;
+    tabIndex = int.tryParse(_router.current.queryParameters['t']) ?? 0;
     print('Making panel $expanded ${_router.current.queryParameters}');
   }
 
@@ -131,14 +132,20 @@ class DivisonExpansionPanelComponent implements OnDestroy, OnInit {
   void onTabChange(TabChangeEvent event) {
     tabIndex = event.newIndex;
     print('Updated index to $tabIndex');
+    updateUrl();
   }
 
   void openPanel() {
-    List<String> bits = _location.path().split('?');
-    _location.replaceState(
-        bits[0], 'season=${season.uid}&divison=${divison.uid}');
+    updateUrl();
     expanded = true;
   }
+
+  void updateUrl() {
+    List<String> bits = _location.path().split('?');
+    _location.replaceState(
+        bits[0], 'season=${season.uid}&divison=${divison.uid}&t=${tabIndex}');
+  }
+
 
   void closePanel() {
     print('closePanel');

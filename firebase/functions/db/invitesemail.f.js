@@ -10,11 +10,6 @@ var fs = require('fs');
 
 var db = admin.firestore();
 
-const teamsFuseFooterHtml = "<p><i><a href='http://www.teamsfuse.com'>TeamsFuse</a></i> is an app to " +
-    "help organize your sports teams.<p>";
-const teamsFuseFooterPlain = "\n\nTeamsFuse is an app to " +
-    "help organize your sports teams.\nhttp://www.teamsfuse.com";
-
 // Sends an email confirmation when a user changes his mailing list subscription.
 exports = module.exports = functions.firestore.document('/Invites/{id}').onWrite((inputData, context) => {
     const data = inputData.after.data();

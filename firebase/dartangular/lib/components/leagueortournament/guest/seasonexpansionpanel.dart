@@ -2,7 +2,7 @@ import 'package:angular/angular.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:angular_components/material_expansionpanel/material_expansionpanel.dart';
 import 'dart:async';
-import 'divisonexpansionpanel.dart';
+import 'package:teamfuse/components/leagueortournament/guest/divisonexpansionpanel.dart';
 import 'package:angular_components/content/deferred_content.dart';
 import 'package:angular_router/angular_router.dart';
 

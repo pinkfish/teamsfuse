@@ -1,7 +1,9 @@
 <material-expansionpanel name="{{season.name}}" secondaryText="Win: {{season.record.win}} Loss: {{season.record.loss}} Tie: {{season.record.tie}}" [showSaveCancel]="false" style="margin-top: 10px">
     <ng-template  matExpansionPanelContent>
-        <game-card *ngFor="let frog of games | async; trackBy: trackByGame" [game]="frog">
+        <div *deferredContent>
+            <game-card *ngFor="let frog of games | async; trackBy: trackByGame" [game]="frog">
 
-        </game-card>
+            </game-card>
+        </div>
     </ng-template>
 </material-expansionpanel>

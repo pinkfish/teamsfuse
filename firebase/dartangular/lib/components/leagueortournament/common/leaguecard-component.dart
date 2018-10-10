@@ -48,6 +48,6 @@ class LeagueCardComponent {
 
   void openDetails() {
     print('Doing exciting stuff');
-    _router.navigate("/a/league/detail/" + leagueOrTournament.uid);
+    _router.navigate("/g/league/detail/" + leagueOrTournament.uid);
   }
 }

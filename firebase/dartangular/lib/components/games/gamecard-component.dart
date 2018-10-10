@@ -42,7 +42,7 @@ class TimeStuff {
     'package:angular_components/app_layout/layout.scss.css',
   ],
 )
-class GameCardComponent {
+class GameCardComponent implements OnInit {
   @Input()
   Game game;
   List<String> files;
@@ -57,12 +57,28 @@ class GameCardComponent {
   @ViewChild('mapArea')
   HtmlElement mapAreaRef;
   final Router _router;
+  Opponent opponent;
 
   GameCardComponent(this._router);
 
-  Opponent get opponent {
-    return UserDatabaseData
-        .instance.teams[game.teamUid].opponents[game.opponentUids[0]];
+  @override
+  void ngOnInit() {
+    UserDatabaseData.instance.teams[game.teamUid]
+        .loadOpponents()
+        .then((void v) {
+      updateOpponent();
+    });
+    updateOpponent();
+  }
+
+  void updateOpponent() {
+    if (game.opponentUids.length > 0 &&
+        UserDatabaseData.instance.teams[game.teamUid].opponents
+            .containsKey(game.opponentUids[0])) {
+    } else if (opponent == null) {
+      opponent = new Opponent();
+      opponent.name = 'unknown';
+    }
   }
 
   Team get team {
@@ -104,17 +120,16 @@ class GameCardComponent {
       }
     }
 
-
     if (finalResult != null) {
-      String ret = "${finalResult.score.ptsFor} - ${finalResult.score
-          .ptsAgainst}";
+      String ret =
+          "${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}";
       if (overtimeResult != null) {
-        ret += " OT: ${overtimeResult.score.ptsFor} - ${overtimeResult.score
-            .ptsAgainst}";
+        ret +=
+            " OT: ${overtimeResult.score.ptsFor} - ${overtimeResult.score.ptsAgainst}";
       }
       if (penaltyResult != null) {
-        ret += " Penalty: ${penaltyResult.score.ptsFor} - ${penaltyResult.score
-            .ptsAgainst}";
+        ret +=
+            " Penalty: ${penaltyResult.score.ptsFor} - ${penaltyResult.score.ptsAgainst}";
       }
       return ret;
     } else {

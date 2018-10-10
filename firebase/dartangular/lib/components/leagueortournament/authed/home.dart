@@ -3,7 +3,9 @@ import 'package:angular_router/angular_router.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'dart:async';
 import 'package:angular_components/material_button/material_button.dart';
-import 'leaguecard-component.dart';
+import '../common/leaguecard-component.dart';
+import '../../../util/algolia/algolia.dart';
+import '../../../util/algolia/searchresult.dart';
 
 class TimeStuff {
   num hour;
@@ -31,7 +33,12 @@ class HomeComponent implements OnInit, OnDestroy, OnChanges {
   HomeComponent() {}
 
   @override
-  Future<Null> ngOnInit() async {}
+  Future<Null> ngOnInit() async {
+    SearchRequest req = new SearchRequest('leagues', 'eastside');
+    Algolia algolia =
+        new Algolia('588269MZO8', '32b210cdab0b0eb11b2b1f35a89b7b38');
+    algolia.search(req).then((SearchResult result) => print(result));
+  }
 
   @override
   void ngOnDestroy() {}
@@ -56,16 +63,5 @@ class HomeComponent implements OnInit, OnDestroy, OnChanges {
       t is LeagueOrTournament ? t.uid : "";
 
   @override
-  void onActivate(RouterState previous, RouterState current) {
-    /*
-    _curTeamId = current.parameters['id'];
-    if (_curTeamId == null) {
-      _curTeamId = current.queryParameters['id'];
-    }
-    print('$_curTeamId -- ${UserDatabaseData.instance.teams[_curTeamId]}');
-    if (_curTeamId != null) {
-      _controller.add(UserDatabaseData.instance.teams[_curTeamId]);
-    }
-    */
-  }
+  void onActivate(RouterState previous, RouterState current) {}
 }

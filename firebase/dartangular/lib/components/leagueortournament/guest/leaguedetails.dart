@@ -3,7 +3,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:angular_components/material_expansionpanel/material_expansionpanel_set.dart';
 import 'package:angular_router/angular_router.dart';
 import 'dart:async';
-import 'seasonexpansionpanel.dart';
+import 'package:teamfuse/components/leagueortournament/guest/seasonexpansionpanel.dart';
 
 @Component(
   selector: 'league-details',

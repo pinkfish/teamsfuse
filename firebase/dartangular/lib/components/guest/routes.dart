@@ -7,26 +7,27 @@ import 'route_paths.dart' as paths;
 import 'home/home.template.dart' as hcgl;
 import 'league/league.template.dart' as lcgl;
 import 'tournaments/tournaments.template.dart' as tcgl;
-
+import 'package:teamfuse/components/leagueortournament/guest/league.template.dart'
+    as lotlt;
 
 @Injectable()
 class Routes {
   static final _guestHome = new RouteDefinition(
       routePath: paths.home,
       component: hcgl.HomeComponentNgFactory,
-      useAsDefault: true
-  );
+      useAsDefault: true);
   static final _league = new RouteDefinition(
       routePath: paths.league,
       component: lcgl.LeagueComponentNgFactory,
-      useAsDefault: false
-  );
+      useAsDefault: false);
   static final _tournaments = new RouteDefinition(
       routePath: paths.tournaments,
       component: tcgl.TournamentsComponentNgFactory,
-      useAsDefault: false
-  );
+      useAsDefault: false);
 
+  static final _leagueDetails = new RouteDefinition(
+      routePath: paths.leagueDetails,
+      component: lotlt.LeagueComponentNgFactory);
 
   RouteDefinition get guestHome => _guestHome;
 
@@ -34,5 +35,6 @@ class Routes {
     _guestHome,
     _league,
     _tournaments,
+    _leagueDetails
   ];
 }

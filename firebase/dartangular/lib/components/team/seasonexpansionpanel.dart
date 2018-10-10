@@ -2,6 +2,7 @@ import 'package:angular/angular.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:angular_components/material_expansionpanel/material_expansionpanel.dart';
 import 'package:teamfuse/components/games/gamecard-component.dart';
+import 'package:angular_components/content/deferred_content.dart';
 import 'dart:async';
 
 @Component(
@@ -11,6 +12,7 @@ import 'dart:async';
     NgFor,
     MaterialExpansionPanel,
     GameCardComponent,
+    DeferredContentDirective
   ],
   templateUrl: 'seasonexpansionpanel.html',
   pipes: const [AsyncPipe],

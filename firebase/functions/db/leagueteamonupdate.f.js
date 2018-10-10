@@ -3,6 +3,7 @@
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
 const createGame = require('../util/creategame');
+const algolia = require('../util/algolia');
 
 var db = admin.firestore();
 
@@ -18,8 +19,8 @@ exports = module.exports = functions.firestore.document("/LeagueTeam/{teamId}")
 
         // See if we added in a seasonUid into the setup.
         if (data.seasonUid !== null &&
-          (beforeData === null ||
-           beforeData.seasonUid !== data.seasonUid)) {
+          (previousData === null ||
+           previousData.seasonUid !== data.seasonUid)) {
             // The season changed.  Make sure it is not
             // an empty strind and that we have a team uid
             // too.
@@ -67,7 +68,11 @@ exports = module.exports = functions.firestore.document("/LeagueTeam/{teamId}")
                 );
 
             }
-
         }
 
+        // See if the name changed.
+        if (previousData === null ||
+            (previousData.name !== data.name)) {
+            algolia.updateLeagueTeam(inputData.after);
+        }
 })

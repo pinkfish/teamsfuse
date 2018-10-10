@@ -32,19 +32,21 @@ exports = module.exports = functions.firestore.document("/GamesShared/{gameid}")
                         .document(data.officialResult.awayTeamUid)
                         .get(),
                     db.collection("LeagueTeam")
-                                            .document(data.officialResult.homeTeamUid)
-                                            .get()
+                        .document(data.officialResult.homeTeamUid)
+                        .get()
                 ]).then(teams => {
                     var ret = [teams];
                     if (teams[0].exists) {
                         ret.push(db.collection("Games")
                             .where('sharedDataUid', '==', inputData.id)
-                            .where('teamUid', '==', teams[0].id));
+                            .where('teamUid', '==', teams[0].id)
+                            .get());
                     }
                     if (teams[1].exists) {
                         ret.push(db.collection("Games")
                             .where('sharedDataUid', '==', inputData.id)
-                            .where('teamUid', '==', teams[0].id));
+                            .where('teamUid', '==', teams[1].id)
+                            .get());
                     }
                     return Promise.all(ret);
                 }).then(games => {
@@ -59,8 +61,20 @@ exports = module.exports = functions.firestore.document("/GamesShared/{gameid}")
                     if (games[0][1].exists) {
                         awayDoc = games[0][1];
                     }
-                    for (var i = 1; i < games.length; i++) {
-                        for (var doc in games[i].docs) {
+                    for (var i = 0; i < games[1].docs.length; i++) {
+                        for (var index in games[1].docs) {
+                            var doc = games[1].docs[index];
+                            if (homeDoc !== null && doc.teamUid === homeDoc.data().teamUid) {
+                                foundHome = true;
+                            }
+                            if (awayDoc !== null && doc.teamUid === awayDoc.data().teamUid) {
+                                foundAway = true;
+                            }
+                        }
+                    }
+                    for (i = 0; i < games[2].docs.length; i++) {
+                        for (index in games[2].docs) {
+                            doc = games[2].docs[index];
                             if (homeDoc !== null && doc.teamUid === homeDoc.data().teamUid) {
                                 foundHome = true;
                             }

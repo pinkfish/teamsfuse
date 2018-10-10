@@ -1,0 +1,10 @@
+<div class="container">
+    <form class="row" (ngSubmit)="onSubmit()" #searchForm="ngForm">
+        <div class="col-sm">
+            <input type="text" class="form-control" id="search" placeholder="Search" required [(ngModel)]="search" ngControl="Search">
+        </div>
+        <div >
+            <button [disabled]="!searchForm.form.valid" type="submit" class="btn btn-primary">Go</button>
+        </div>
+    </form>
+</div>

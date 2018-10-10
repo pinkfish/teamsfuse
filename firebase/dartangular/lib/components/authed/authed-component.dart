@@ -9,6 +9,7 @@ import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
 import 'package:angular_components/content/deferred_content.dart';
 import 'package:teamfuse/components/drawer/drawer.dart';
+import '../common/search.dart';
 
 @Component(
   selector: 'my-app',
@@ -25,6 +26,7 @@ import 'package:teamfuse/components/drawer/drawer.dart';
             </material-button>
             <span class="material-header-title">Team Fuse</span>
             <div class="material-spacer"></div>
+            <search-form></search-form>
         </div>
     </header>
     
@@ -36,6 +38,7 @@ import 'package:teamfuse/components/drawer/drawer.dart';
   directives: [
     RouterLink,
     RouterOutlet,
+    SearchComponent,
     DeferredContentDirective,
     MaterialPersistentDrawerDirective,
     MaterialButtonComponent,
