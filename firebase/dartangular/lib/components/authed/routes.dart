@@ -15,6 +15,8 @@ import 'package:teamfuse/components/games/single/shared-game-component.template.
 import 'package:teamfuse/components/club/club.template.dart' as ccttd;
 import 'package:teamfuse/components/leagueortournament/authed/home.template.dart'
     as lotht;
+import 'package:teamfuse/components/leagueortournament/guest/league.template.dart'
+    as lotlt;
 
 @Injectable()
 class Routes {
@@ -50,6 +52,9 @@ class Routes {
     component: lotht.HomeComponentNgFactory,
   );
 
+  static final _leagueDetails = new RouteDefinition(
+      routePath: paths.leagueDetails,
+      component: lotlt.LeagueComponentNgFactory);
 
   RouteDefinition get games => _games;
   RouteDefinition get deleteGamesFromTeam => _deleteGamesFromTeam;
@@ -61,6 +66,7 @@ class Routes {
     _gameDisplay,
     _club,
     _leagueHome,
-    _gameSharedDisplay
+    _gameSharedDisplay,
+    _leagueDetails,
   ];
 }

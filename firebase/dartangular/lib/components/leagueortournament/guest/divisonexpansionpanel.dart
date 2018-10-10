@@ -154,6 +154,11 @@ class DivisonExpansionPanelComponent implements OnDestroy, OnInit {
     _location.replaceState(bits[0], 'season=${season.uid}');
   }
 
+  void tabChange(TabChangeEvent e) {
+    tabIndex = e.newIndex;
+    updateUrl();
+  }
+
   List<String> get tabLabels => ["Games", "Teams"];
 
   Object trackByGame(int index, dynamic game) =>

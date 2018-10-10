@@ -1,7 +1,7 @@
 <material-expansionpanel name="{{divison.name}}"  [showSaveCancel]="false" style="margin-top: 10px"
                          (open)="openPanel()" (close)="closePanel()" [expanded]="expanded">
 
-    <material-tab-panel [activeTabIndex]="0">
+    <material-tab-panel [activeTabIndex]="0" (tabChange)="tabChange($event)">
 
         <material-tab label="Games">
             <div *deferredContent>

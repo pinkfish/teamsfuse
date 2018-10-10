@@ -1,0 +1,9 @@
+    <material-tab-strip (beforeTabChange)="onBeforeTabChange($event)"
+                        (tabChange)="onTabChange($event)"
+                        [tabLabels]="tabLabels"
+                        [activeTabIndex]="tabIndex">
+    </material-tab-strip>
+
+    <div>
+        <router-outlet [routes]="routes.all"></router-outlet>
+    </div>

@@ -3,17 +3,17 @@
 </div>
 
 <div *ngIf="leagueOrTournamentTeam != null" class="card" (click)="openDetails()">
-    <div class="teamimg">
-        <img src="{{teamUrl}}" width="50" height="50" class="leagueimg" />
-    </div>
-    <div class="details">
-        <div class="leaguename">
-            {{leagueOrTournamentTeam.name}}
-        </div>
-        <div class="leaguedetails">
-            Win: {{record.win}}
-            Loss: {{record.loss}}
-            Tie: {{record.tie}}
+    <div class="row" style="min-width: 350px">
+        <img src="{{teamUrl}}" width="50" height="50" class="rounded float-left" style="margin-left: 20px"/>
+        <div class="col">
+            <h5>
+                {{leagueOrTournamentTeam.name}}
+            </h5>
+            <small>
+                Win: {{record.win}}
+                Loss: {{record.loss}}
+                Tie: {{record.tie}}
+            </small>
         </div>
     </div>
 </div>

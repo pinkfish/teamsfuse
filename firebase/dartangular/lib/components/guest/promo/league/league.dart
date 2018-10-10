@@ -1,40 +1,41 @@
 import 'package:angular/angular.dart';
 
-import 'package:angular_router/angular_router.dart';
-import 'routes.dart';
 import 'package:angular_components/app_layout/material_persistent_drawer.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
 import 'package:angular_components/content/deferred_content.dart';
-import 'package:teamfuse/components/drawer/drawer.dart';
-import '../common/search.dart';
+import '../../../../util/algolia/algolia.dart';
+import '../../../../util/algolia/searchresult.dart';
 
 @Component(
-  selector: 'my-app',
-  templateUrl: 'authed-component.html',
+  selector: 'my-league',
+  templateUrl: 'league.html',
   directives: [
-    RouterLink,
-    RouterOutlet,
-    SearchComponent,
     DeferredContentDirective,
     MaterialPersistentDrawerDirective,
     MaterialButtonComponent,
     MaterialIconComponent,
     MaterialListComponent,
     MaterialListItemComponent,
-    Drawer
-  ],
-  providers: [
-    const ClassProvider(Routes),
   ],
   styleUrls: const [
-    'package:angular_components/app_layout/layout.scss.css',
+    'league.css',
   ],
 )
-class AuthedComponent {
-  final Routes routes;
+class LeagueComponent implements OnInit {
+  LeagueComponent();
 
-  AuthedComponent(this.routes);
+  @override
+  void ngOnInit() {
+    SearchRequest req = new SearchRequest('leagues', 'bing');
+    Algolia algolia =
+        new Algolia('588269MZO8', '32b210cdab0b0eb11b2b1f35a89b7b38');
+    algolia
+        .search(req)
+        .then((SearchResult result) => print(result));
+  }
+
+  void search(String text) {}
 }

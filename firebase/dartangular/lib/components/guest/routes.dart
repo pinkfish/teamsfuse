@@ -4,37 +4,25 @@ import 'package:angular_router/angular_router.dart';
 
 import 'route_paths.dart' as paths;
 
-import 'home/home.template.dart' as hcgl;
-import 'league/league.template.dart' as lcgl;
-import 'tournaments/tournaments.template.dart' as tcgl;
+import 'promo/promo-component.template.dart' as pctl;
 import 'package:teamfuse/components/leagueortournament/guest/league.template.dart'
     as lotlt;
 
 @Injectable()
 class Routes {
-  static final _guestHome = new RouteDefinition(
-      routePath: paths.home,
-      component: hcgl.HomeComponentNgFactory,
-      useAsDefault: true);
-  static final _league = new RouteDefinition(
-      routePath: paths.league,
-      component: lcgl.LeagueComponentNgFactory,
-      useAsDefault: false);
-  static final _tournaments = new RouteDefinition(
-      routePath: paths.tournaments,
-      component: tcgl.TournamentsComponentNgFactory,
-      useAsDefault: false);
 
   static final _leagueDetails = new RouteDefinition(
       routePath: paths.leagueDetails,
       component: lotlt.LeagueComponentNgFactory);
 
-  RouteDefinition get guestHome => _guestHome;
+  static final _promo = new RouteDefinition(
+    routePath: paths.promo,
+    component: pctl.PromoComponentNgFactory,
+    useAsDefault: true,
+  );
 
   final List<RouteDefinition> all = [
-    _guestHome,
-    _league,
-    _tournaments,
-    _leagueDetails
+    _promo,
+    _leagueDetails,
   ];
 }
