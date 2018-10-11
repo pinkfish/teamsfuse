@@ -63,7 +63,8 @@ class InitialSubscription {
 ///
 class IterableSubscription<T> {
   Stream<Iterable<T>> _stream;
-  final Iterable<T> initialData;
+  Iterable<T> initialData;
+  bool loaded = false;
   final StreamController<Iterable<T>> _controller =
       new StreamController<Iterable<T>>();
 

@@ -231,6 +231,7 @@ class UserDatabaseData {
   ///
   GameSubscription getGames(
       FilterDetails details, DateTime start, DateTime end) {
+    print('getGames($start, $end) ${teams.length}');
     // Do the time range with the filter, or if no time range then
     // the team filter.  Do the rest in code.
     // Filter the games locally.

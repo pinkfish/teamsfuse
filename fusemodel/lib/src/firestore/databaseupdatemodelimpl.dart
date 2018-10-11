@@ -333,11 +333,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(team.uid)
         .collection(OPPONENT_COLLECTION);
     QuerySnapshotWrapper queryOpponentSnap = await opCollection.getDocuments();
+    team.onOpponentUpdated(_firestoreData(queryOpponentSnap.documents));
+    ret.add(opCollection.snapshots().listen((QuerySnapshotWrapper snap) =>
+        team.onOpponentUpdated(_firestoreData(snap.documents))));
+    print('Loaded ops ${team.uid} ${queryOpponentSnap.documents.length}');
 
     // If there is a club for this team, load that too.
     if (team.clubUid != null) {
       DocumentReferenceWrapper ref =
-          wrapper.collection(CLUB_COLLECTION).document(team.clubUid);
+      wrapper.collection(CLUB_COLLECTION).document(team.clubUid);
 
       DocumentSnapshotWrapper query = await ref.get();
       UserDatabaseData.instance.onClubUpdated(new FirestoreWrappedData(
@@ -347,9 +351,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             id: query.documentID, data: query.data, exists: query.exists));
       }));
     }
-    team.onOpponentUpdated(_firestoreData(queryOpponentSnap.documents));
-    ret.add(opCollection.snapshots().listen((QuerySnapshotWrapper snap) =>
-        team.onOpponentUpdated(_firestoreData(snap.documents))));
 
     if (team.isAdmin()) {
       QueryWrapper query = wrapper
@@ -386,6 +387,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       op.fromJSON(opUid, team.uid, data);
       ops[opUid] = op;
     });
+    print('Update ops ${team.uid} $ops');
     team.opponents = ops;
   }
 
@@ -528,6 +530,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       DateTime end,
       FilterDetails details) {
     GameSubscription sub = new GameSubscription(cachedGames);
+    sub.loaded = cachedGames.isNotEmpty;
+    if (teams.length == 0) {
+      // No teams, we are finished then.
+      sub.loaded = true;
+      return sub;
+    }
     Map<String, Set<Game>> maps = <String, Set<Game>>{};
     for (String teamUid in teams) {
       QueryWrapper gameQuery = wrapper
@@ -541,6 +549,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       if (seasonUid != null) {
         gameQuery = gameQuery.where(Game.SEASONUID, isEqualTo: seasonUid);
       }
+
       gameQuery.getDocuments().then((QuerySnapshotWrapper queryGameSnap) async {
         Set<Game> data = new Set<Game>();
         for (DocumentSnapshotWrapper snap in queryGameSnap.documents) {
@@ -589,7 +598,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         if (!maps.containsKey(teamUid)) {
           maps[teamUid] = new Set<Game>();
         }
-        maps[teamUid].addAll(data);
+        maps[teamUid] = data;
         if (maps.length == teams.length) {
           List<Game> newData = <Game>[];
 
@@ -597,13 +606,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             newData.addAll(it);
           }
           sub.addUpdate(newData);
+          sub.initialData = newData;
+          sub.loaded = true;
+          UserDatabaseData.instance.doCacheGames(newData);
         }
       });
 
       sub.subscriptions.add(gameQuery
           .snapshots()
           .listen((QuerySnapshotWrapper queryGameSnap) async {
-        print('Games updated $teamUid');
         Set<Game> data = new Set<Game>();
         if (!maps.containsKey(teamUid)) {
           maps[teamUid] = new Set<Game>();
@@ -656,7 +667,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
                   .instance.teams[newGame.teamUid].seasons[newGame.seasonUid];
             }
           }
-          if (details != null && details.isIncluded(newGame, season)) {
+          if (details != null && !details.isIncluded(newGame, season)) {
             include = false;
           }
 
@@ -672,15 +683,19 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           }
         }
         maps[teamUid] = data;
-        Set<Game> newData = new Set<Game>();
-
-        for (Set<Game> it in maps.values) {
-          newData.addAll(it);
+        // Only notify if we have loaded everything already.
+        if (maps.length == teams.length) {
+          Set<Game> newData = new Set<Game>();
+          for (Set<Game> it in maps.values) {
+            newData.addAll(it);
+          }
+          // Update the cache so we can find these games when the
+          // app is open.
+          UserDatabaseData.instance.doCacheGames(newData);
+          sub.addUpdate(newData);
+          sub.initialData = newData;
+          sub.loaded = true;
         }
-        // Update the cache so we can find these games when the
-        // app is open.
-        UserDatabaseData.instance.doCacheGames(newData);
-        sub.addUpdate(newData);
       }));
     }
     return sub;

@@ -33,34 +33,68 @@ class GamesComponent implements OnInit, OnDestroy {
   static DateFormat dateFormat = DateFormat.MMMMEEEEd();
   static DateFormat timeFormat = DateFormat.jm();
   FilterDetails _details = new FilterDetails();
-  MonthDetails _curMonth;
+  MonthDetails curMonth;
   MonthDetails _nextMonth;
   MonthDetails _prevMonth;
-  Stream<Iterable<Game>> games;
+  bool loading = true;
+  Iterable<Game> games;
   StreamController<Iterable<Game>> _gameController =
       new StreamController<Iterable<Game>>();
+  StreamSubscription<Iterable<Game>> _gameSub;
 
-  String get currentMonth => dateFormat.format(_curMonth.start);
+  String get currentMonth => dateFormat.format(curMonth.start);
 
-  MonthDetails get currentMonthDetails => _curMonth;
+  MonthDetails get currentMonthDetails => curMonth;
+
+  int numTeams;
 
   @override
   void ngOnInit() {
+    numTeams = UserDatabaseData.instance.teams.length;
     TZDateTime tmp = new TZDateTime.now(local);
     TZDateTime currentMonth = new TZDateTime(local, tmp.year, tmp.month, 1);
     TZDateTime nextMonth = _getNextMonth(currentMonth);
     TZDateTime prevMonth = _getPrevMonth(currentMonth);
     TZDateTime nextNextMonth = _getNextMonth(nextMonth);
 
-    print('Init stuff');
-    _curMonth = new MonthDetails(
+    curMonth = new MonthDetails(
         start: currentMonth, end: nextMonth, details: _details);
     _nextMonth = new MonthDetails(
         start: nextMonth, end: nextNextMonth, details: _details);
     _prevMonth = new MonthDetails(
         start: prevMonth, end: currentMonth, details: _details);
-    games = _gameController.stream.asBroadcastStream();
-    _curMonth.setController(_gameController);
+    _gameSub = _gameController.stream
+        .asBroadcastStream()
+        .listen((Iterable<Game> data) {
+      games = data;
+      loading = !curMonth.cachedLoaded;
+    });
+    curMonth.setController(_gameController);
+    updateLoading();
+
+    UserDatabaseData.instance.teamStream
+        .listen((UpdateReason reason) => setupListeners());
+  }
+
+  void setupListeners() {
+    // only do stuff in here if the team size changes.
+    if (numTeams == UserDatabaseData.instance.teams.length &&
+        UserDatabaseData.instance.loadedDatabase) {
+      return;
+    }
+    MonthDetails old = curMonth;
+    curMonth = new MonthDetails(
+        start: curMonth.start, end: curMonth.end, details: _details);
+    old.dispose();
+    old = _nextMonth;
+    _nextMonth = new MonthDetails(
+        start: _nextMonth.start, end: _nextMonth.end, details: _details);
+    old.dispose();
+    old = _prevMonth;
+    _prevMonth = new MonthDetails(
+        start: _prevMonth.start, end: _prevMonth.end, details: _details);
+    old.dispose();
+    updateLoading();
   }
 
   TZDateTime _getNextMonth(TZDateTime time) {
@@ -83,37 +117,41 @@ class GamesComponent implements OnInit, OnDestroy {
 
   @override
   void ngOnDestroy() {
-    print('Destroy them my robots');
-    _curMonth?.dispose();
+    curMonth?.dispose();
     _nextMonth?.dispose();
     _prevMonth?.dispose();
     _gameController.close();
+    _gameSub?.cancel();
+    _gameSub = null;
+  }
+
+  void updateLoading() {
+    loading = !curMonth.cachedLoaded;
   }
 
   void nextMonth() {
-    print('$_curMonth');
     _prevMonth?.dispose();
-    _prevMonth = _curMonth;
-    _curMonth = _nextMonth;
-    TZDateTime next = _getNextMonth(_curMonth.end);
+    _prevMonth = curMonth;
+    curMonth.setController(null);
+    curMonth = _nextMonth;
+    curMonth.setController(_gameController);
+    TZDateTime next = _getNextMonth(curMonth.end);
     _nextMonth =
-        new MonthDetails(start: _curMonth.end, end: next, details: _details);
-    _prevMonth.setController(null);
-    _curMonth.setController(_gameController);
+        new MonthDetails(start: curMonth.end, end: next, details: _details);
+    updateLoading();
   }
 
   void prevMonth() {
     _nextMonth?.dispose();
-    _nextMonth = _curMonth;
-    _curMonth = _prevMonth;
-    TZDateTime next = _getPrevMonth(_curMonth.start);
+    _nextMonth = curMonth;
+    curMonth.setController(null);
+    curMonth = _prevMonth;
+    curMonth.setController(_gameController);
+    TZDateTime next = _getPrevMonth(curMonth.start);
     _prevMonth =
-        new MonthDetails(start: next, end: _curMonth.start, details: _details);
-    _nextMonth.setController(null);
-    _curMonth.setController(_gameController);
+        new MonthDetails(start: next, end: curMonth.start, details: _details);
+    updateLoading();
   }
-
-  bool get loading => !UserDatabaseData.instance.loadedDatabase;
 }
 
 class MonthDetails {
@@ -123,20 +161,23 @@ class MonthDetails {
   StreamSubscription<Iterable<Game>> _curMonthListen;
   Iterable<Game> _games = [];
   StreamController<Iterable<Game>> _controller;
+  bool cachedLoaded = false;
 
   MonthDetails({this.start, this.end, FilterDetails details})
       : _curMonthSubscription =
             UserDatabaseData.instance.getGames(details, start, end) {
+    cachedLoaded = _curMonthSubscription.loaded;
     _games = _curMonthSubscription.initialData;
     _curMonthListen =
         _curMonthSubscription.stream.listen((Iterable<Game> games) {
-      _games = games;
+      _games = games.toList();
       _controller?.add(_games);
-      print("Games updated");
+      cachedLoaded = true;
     });
   }
 
   void setController(StreamController<Iterable<Game>> controller) {
+    cachedLoaded = _curMonthSubscription.loaded;
     _controller = controller;
     if (_controller != null) {
       _controller.add(_games);

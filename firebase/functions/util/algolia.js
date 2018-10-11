@@ -30,6 +30,27 @@ exports.updateLeague = (leagueDoc) => {
     delete data.currentSeason;
     data.searchRanking = 900;
     records.push(data);
+    index.browse('', {'filters': 'leagueUid="' + leagueDoc.id + '"',
+                     'attributesToRetrieve': [ 'leagueDivisonName ']},
+            (err, content) => {
+                if (err) {
+                    throw err;
+                }
+
+                // Get the records to update.
+                var toUpdateRecords = new Set();
+                for (var i in content.hits) {
+                    var hit = content.hits[i];
+                    toUpdateRecords.add(hit.objectID);
+                }
+                var records = [];
+                toUpdateRecords.forEach(id => {
+                    var data = {'leagueDivisonName': leagueDoc.name,
+                                'objectID': id};
+                    records.push(data);
+                });
+                teamIndex.partialUpdateObjects(records);
+            })
 }
 
 exports.delteLeague = (teamId) => {

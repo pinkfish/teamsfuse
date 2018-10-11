@@ -1,14 +1,14 @@
 
-<div class="month">
+<div class="navbar">
     <div style="float: left; display: inline">
         <material-button (trigger)="prevMonth()">
             <material-icon icon="arrow_back"></material-icon>
         </material-button>
     </div>
-    <div style="text-align: center; width: 100%">
+    <h5 class="navbar-item">
         {{currentMonth}}
-    </div>
-    <div style="position: absolute; right: 0; top: 10px;">
+    </h5>
+    <div class="navbar-item">
         <material-button (trigger)="nextMonth()">
             <material-icon icon="arrow_forward"></material-icon>
         </material-button>
@@ -20,7 +20,7 @@
     <div class="loader">Invisible</div>
 </div>
 
-<game-card *ngFor="let fluff of games | async; trackBy: trackByGames" [game]="fluff">
+<game-card *ngFor="let fluff of games; trackBy: trackByGames" [game]="fluff">
 
 </game-card>
 

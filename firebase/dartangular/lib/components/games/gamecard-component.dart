@@ -57,7 +57,7 @@ class GameCardComponent implements OnInit {
   @ViewChild('mapArea')
   HtmlElement mapAreaRef;
   final Router _router;
-  Opponent opponent;
+  String opponent;
 
   GameCardComponent(this._router);
 
@@ -72,12 +72,14 @@ class GameCardComponent implements OnInit {
   }
 
   void updateOpponent() {
+    print('Checking ${game.opponentUids} ${game.teamUid} ${UserDatabaseData.instance.teams[game.teamUid].opponents.keys}');
     if (game.opponentUids.length > 0 &&
         UserDatabaseData.instance.teams[game.teamUid].opponents
             .containsKey(game.opponentUids[0])) {
-    } else if (opponent == null) {
-      opponent = new Opponent();
-      opponent.name = 'unknown';
+      opponent = UserDatabaseData
+          .instance.teams[game.teamUid].opponents[game.opponentUids[0]].name;
+    } else {
+      opponent = 'unknown';
     }
   }
 
@@ -96,7 +98,6 @@ class GameCardComponent implements OnInit {
   }
 
   void openDetails() {
-    print('Doing exciting stuff');
     _router.navigate("/a/game/" + game.uid);
   }
 

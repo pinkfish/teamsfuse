@@ -34,6 +34,7 @@ import 'package:angular_components/material_tab/tab_change_event.dart';
   ],
 )
 class PromoComponent implements OnActivate {
+  final Location _location;
   final Routes routes;
   int tabIndex = 0;
   bool stopChange = false;
@@ -48,7 +49,7 @@ class PromoComponent implements OnActivate {
 
   void onTabChange(TabChangeEvent event) {
     tabIndex = event.newIndex;
-    _router.navigate(_tabLabelsInner[tabIndex].route);
+    _router.navigate(_location.normalizePath(_tabLabelsInner[tabIndex].route));
   }
 
   void onBeforeTabChange(TabChangeEvent event) {
@@ -58,9 +59,9 @@ class PromoComponent implements OnActivate {
   }
 
   final _tabLabelsInner = const <_LabelStuff>[
-    const _LabelStuff(label: 'Teams', route: '/g/guesthome'),
-    const _LabelStuff(label: 'Leagues', route: '/g/guestleague'),
-    const _LabelStuff(label: 'Tournaments', route: '/g/guesttournaments'),
+    const _LabelStuff(label: 'Teams', route: 'g/promo/guesthome'),
+    const _LabelStuff(label: 'Leagues', route: 'g/promo/guestleague'),
+    const _LabelStuff(label: 'Tournaments', route: 'g/promo/guesttournaments'),
   ];
 
   List<String> get tabLabels =>
@@ -74,7 +75,7 @@ class PromoComponent implements OnActivate {
     _router.navigate("/createAccount");
   }
 
-  PromoComponent(this._router, this.routes);
+  PromoComponent(this._router, this._location, this.routes);
 }
 
 class _LabelStuff {
