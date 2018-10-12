@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'fuseddrawercontent.dart';
 
 enum DrawerMode {
-  GameList,
-  League,
+  gameList,
+  league,
 }
 
 

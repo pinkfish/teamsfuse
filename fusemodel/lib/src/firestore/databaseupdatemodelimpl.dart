@@ -341,7 +341,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // If there is a club for this team, load that too.
     if (team.clubUid != null) {
       DocumentReferenceWrapper ref =
-      wrapper.collection(CLUB_COLLECTION).document(team.clubUid);
+          wrapper.collection(CLUB_COLLECTION).document(team.clubUid);
 
       DocumentSnapshotWrapper query = await ref.get();
       UserDatabaseData.instance.onClubUpdated(new FirestoreWrappedData(
@@ -360,15 +360,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       query.getDocuments().then((QuerySnapshotWrapper query) {
         for (DocumentSnapshotWrapper doc in query.documents) {
           team.updateSeason(doc.documentID, doc.data);
+          persistenData.updateElement(
+              PersistenData.seasonTable, doc.documentID, doc.data);
         }
       });
       ret.add(query.snapshots().listen((QuerySnapshotWrapper query) {
         for (DocumentSnapshotWrapper doc in query.documents) {
           team.updateSeason(doc.documentID, doc.data);
+          persistenData.updateElement(
+              PersistenData.seasonTable, doc.documentID, doc.data);
         }
         for (DocumentChangeWrapper change in query.documentChanges) {
           if (change.type == DocumentChangeTypeWrapper.removed) {
             team.seasons.remove(change.document.documentID);
+            persistenData.deleteElement(
+                PersistenData.seasonTable, change.document.documentID);
           }
         }
       }));
@@ -874,11 +880,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         doc = await ref.add(season.toJSON(includePlayers: includePlayers));
       }
       season.uid = doc.documentID;
+      persistenData.updateElement(PersistenData.seasonTable, season.uid,
+          season.toJSON(includePlayers: true));
     } else {
       // Update the game.
       await ref
           .document(season.uid)
           .updateData(season.toJSON(includePlayers: includePlayers));
+      persistenData.updateElement(PersistenData.seasonTable, season.uid,
+          season.toJSON(includePlayers: true));
     }
   }
 
@@ -1069,6 +1079,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         Season season = new Season();
         season.fromJSON(doc.documentID, doc.data);
         team.seasons[season.uid] = season;
+        persistenData.updateElement(
+            PersistenData.seasonTable, season.uid, doc.data);
       }
       return team;
     }
@@ -1132,6 +1144,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .document(club.uid)
           .updateData(data);
     }
+    persistenData.updateElement(
+        PersistenData.clubsTable, club.uid, club.toJson(includeMembers: true));
+
     return club.uid;
   }
 
@@ -1148,6 +1163,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .updateData({PHOTOURL: club.photoUrl});
 
     print('photurl ${club.photoUrl}');
+    persistenData.updateElement(
+        PersistenData.clubsTable, club.uid, club.toJson(includeMembers: true));
     return snapshot.downloadUrl;
   }
 
@@ -1162,6 +1179,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentSnapshotWrapper snap =
         await wrapper.collection(CLUB_COLLECTION).document(clubUid).get();
     if (snap.exists) {
+      persistenData.updateElement(
+          PersistenData.clubsTable, snap.documentID, snap.data);
+
       return new Club.fromJson(snap.documentID, snap.data);
     }
     return null;
@@ -1329,6 +1349,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .document(league.uid)
           .updateData(data);
     }
+    persistenData.updateElement(PersistenData.leagueOrTournamentTable,
+        league.uid, league.toJson(includeMembers: true));
+
     return league.uid;
   }
 
@@ -1345,6 +1368,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(league.uid)
         .updateData({PHOTOURL: league.photoUrl});
     print('photurl ${league.photoUrl}');
+    persistenData.updateElement(PersistenData.leagueOrTournamentTable,
+        league.uid, league.toJson(includeMembers: true));
     return snapshot.downloadUrl;
   }
 
@@ -1363,6 +1388,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentSnapshotWrapper snap =
         await wrapper.collection(LEAGUE_COLLECTON).document(leagueUid).get();
     if (snap.exists) {
+      persistenData.updateElement(PersistenData.leagueOrTournamentTable,
+          snap.documentID, snap.data);
       return new LeagueOrTournament.fromJson(snap.documentID, snap.data);
     }
     return null;

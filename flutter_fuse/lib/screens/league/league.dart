@@ -8,7 +8,6 @@ import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/addinvitetoleaguedialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'dart:async';
 
 class LeagueScreen extends StatelessWidget {
   final String leagueUid;
@@ -42,6 +41,7 @@ class LeagueScreen extends StatelessWidget {
     AddSeasonDialog.showSeasonDialog(context, leagueUid);
   }
 
+  @override
   Widget build(BuildContext context) {
     FloatingActionButton fab;
     List<Widget> actions = <Widget>[];
@@ -81,7 +81,7 @@ class LeagueScreen extends StatelessWidget {
         title: new LeagueOrTournamentName(leagueUid),
         actions: actions,
       ),
-      drawer: new FusedDrawer(DrawerMode.League),
+      drawer: new FusedDrawer(DrawerMode.league),
       floatingActionButton: fab,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Scrollbar(

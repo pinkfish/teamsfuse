@@ -223,6 +223,7 @@ class GameSharedData {
     // TODO: Do something in here :)
     UserDatabaseData.instance.updateModel
         .updateFirestoreOfficalGameResult(this, result);
+    return null;
   }
 
   @override

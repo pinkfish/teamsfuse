@@ -70,7 +70,7 @@ class SeasonFormFieldState extends FormFieldState<String> {
 
   void setTeamUid(String teamUid) {
     setState(() {
-      this._teamUid = teamUid;
+      _teamUid = teamUid;
       if (_teamSubscription != null) {
         _teamSubscription.cancel();
       }
@@ -96,13 +96,13 @@ class SeasonFormFieldState extends FormFieldState<String> {
     if (_teamUid != null &&
         UserDatabaseData.instance.teams.containsKey(_teamUid)) {
       if (_includeNone) {
-        ret.add(new DropdownMenuItem(
+        ret.add(new DropdownMenuItem<String>(
           child: Text(Messages.of(context).noseasons),
           value: SeasonFormField.none,
         ));
       }
       if (_includeNew) {
-        ret.add(new DropdownMenuItem(
+        ret.add(new DropdownMenuItem<String>(
           child: Text(Messages.of(context).addseason),
           value: SeasonFormField.createNew,
         ));

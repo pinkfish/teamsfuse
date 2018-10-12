@@ -31,7 +31,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   int _currentStep;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   StepState _detailsStepState = StepState.disabled;
-  StepState _secondDetailsStepState = StepState.disabled;
+  StepState _detailsSecondStepState = StepState.disabled;
   StepState _createStepStage = StepState.disabled;
   StepState _clubStepState = StepState.disabled;
   StepState _playerStepState = StepState.editing;
@@ -143,44 +143,44 @@ class AddTeamScreenState extends State<AddTeamScreen> {
         }
         if (!_formKeyTeam.currentState.validate()) {
           _detailsStepState = StepState.error;
-          _secondDetailsStepState = StepState.disabled;
+          _detailsSecondStepState = StepState.disabled;
           _showInSnackBar(Messages.of(context).formerror);
           return false;
         }
         _teamToAdd = _formKeyTeam.currentState.validateAndCreate();
         if (_teamToAdd == null) {
           _detailsStepState = StepState.error;
-          _secondDetailsStepState = StepState.disabled;
+          _detailsSecondStepState = StepState.disabled;
           _showInSnackBar(Messages.of(context).formerror);
           return false;
         }
         _imageFileToAdd = _formKeyTeam.currentState.getImageFile();
         _detailsStepState = StepState.complete;
-        _secondDetailsStepState = StepState.editing;
+        _detailsSecondStepState = StepState.editing;
         break;
       // Check to make sure a team is picked.
       case 3:
         // Verify the form is correct.
         if (backwards) {
           // Can always leave this step.
-          _secondDetailsStepState = StepState.editing;
+          _detailsSecondStepState = StepState.editing;
           return true;
         }
         if (!_formKeyTeam.currentState.validate()) {
-          _secondDetailsStepState = StepState.error;
+          _detailsSecondStepState = StepState.error;
           _createStepStage = StepState.disabled;
           _showInSnackBar(Messages.of(context).formerror);
           return false;
         }
         _teamToAdd = _formKeyTeam.currentState.validateAndCreate();
         if (_teamToAdd == null) {
-          _secondDetailsStepState = StepState.error;
+          _detailsSecondStepState = StepState.error;
           _createStepStage = StepState.disabled;
           _showInSnackBar(Messages.of(context).formerror);
           return false;
         }
         _imageFileToAdd = _formKeyTeam.currentState.getImageFile();
-        _secondDetailsStepState = StepState.complete;
+        _detailsSecondStepState = StepState.complete;
         _createStepStage = StepState.editing;
         break;
       case 4:
@@ -332,19 +332,19 @@ class AddTeamScreenState extends State<AddTeamScreen> {
               child: new TeamEditForm(
                 _teamToAdd,
                 _formKeyTeam,
-                startSection: StartSection.Start,
+                startSection: StartSection.start,
               ),
             ),
           ),
           new Step(
             title: new Text(messages.details),
-            state: _detailsStepState,
+            state: _detailsSecondStepState,
             isActive: true,
             content: new SingleChildScrollView(
               child: new TeamEditForm(
                 _teamToAdd,
                 _formKeyTeam,
-                startSection: StartSection.End,
+                startSection: StartSection.end,
               ),
             ),
           ),

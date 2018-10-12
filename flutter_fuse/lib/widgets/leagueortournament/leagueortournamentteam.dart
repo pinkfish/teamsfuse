@@ -30,6 +30,7 @@ class _LeagueOrTournamentTeamDetailsState
   LeagueOrTournamentTeam leagueOrTournamentTeam;
   StreamSubscription<LeagueOrTournamentTeam> _sub;
 
+  @override
   void initState() {
     super.initState();
     // Start trying to load the team.
@@ -73,6 +74,7 @@ class _LeagueOrTournamentTeamDetailsState
     return leagueOrTournmentSeason;
   }
 
+  @override
   void dispose() {
     super.dispose();
     _sub?.cancel();
@@ -92,6 +94,11 @@ class _LeagueOrTournamentTeamDetailsState
     return Messages.of(context).loading;
   }
 
+  void _onDelete() {
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     // We must have the league/season loaded to have got in here.  If not
@@ -99,7 +106,7 @@ class _LeagueOrTournamentTeamDetailsState
 
     return Container(
       margin: EdgeInsets.all(5.0),
-      child: FutureBuilder(
+      child: FutureBuilder<LeagueOrTournamentSeason>(
         future: _loadDetails(),
         builder: (BuildContext context,
             AsyncSnapshot<LeagueOrTournamentSeason> snap) {
@@ -128,7 +135,7 @@ class _LeagueOrTournamentTeamDetailsState
                       .copyWith(fontWeight: FontWeight.bold)),
               Text("${_divisonName()}",
                   style: Theme.of(context).textTheme.subhead),
-              StreamBuilder(
+              StreamBuilder<Iterable<GameSharedData>>(
                 stream: leagueOrTournmentDivison != null
                     ? leagueOrTournmentDivison.gameStream
                     : null,
@@ -171,6 +178,7 @@ class _LeagueOrTournamentTeamDetailsState
                         return ListTile(
                           trailing: IconButton(
                             icon: Icon(Icons.delete),
+                            onPressed: _onDelete,
                           ),
                           title: Text(
                             invite.email,
@@ -182,7 +190,7 @@ class _LeagueOrTournamentTeamDetailsState
                       Align(
                         alignment: Alignment.topLeft,
                         child: ButtonBar(
-                          children: [
+                          children: <Widget>[
                             FlatButton(
                               onPressed: () =>
                                   AddInviteToTeamDialog.showAddTeamInviteDialog(

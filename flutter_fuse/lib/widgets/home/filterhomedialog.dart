@@ -131,7 +131,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(messages.title),
-        actions: <Widget>[],
+        actions: const <Widget>[],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
@@ -235,11 +235,13 @@ class _CheckboxDialogItem extends StatefulWidget {
 class _CheckboxDialogItemState extends State<_CheckboxDialogItem> {
   bool _isOn;
 
+  @override
   void initState() {
     super.initState();
     _isOn = widget.initialValue;
   }
 
+  @override
   Widget build(BuildContext context) {
     return new ListTile(
       leading: new Checkbox(

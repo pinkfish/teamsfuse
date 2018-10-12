@@ -112,6 +112,7 @@ class LeagueNameAndResult implements OnInit, OnDestroy {
       case GameResult.Unknown:
         return "";
     }
+    return "";
   }
 
   String get float {

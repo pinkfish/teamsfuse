@@ -22,15 +22,16 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
       new GlobalKey<LeagueOrTournamentEditFormState>();
 
   LeagueOrTournament _league;
-  File _leagueImage;
   bool _saving = false;
 
+  @override
   void initState() {
     super.initState();
     _league = new LeagueOrTournament.copy(UserDatabaseData
         .instance.leagueOrTournments[widget.leagueOrTournamentUid]);
   }
 
+  @override
   void dispose() {
     super.dispose();
     _league.dispose();

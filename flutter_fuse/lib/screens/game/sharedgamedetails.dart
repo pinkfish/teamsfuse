@@ -3,7 +3,6 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/games/gameshareddetails.dart';
 import 'package:flutter_fuse/widgets/games/deletesharedgamedialog.dart';
-import 'dart:async';
 
 class SharedGameDetailsScreen extends StatefulWidget {
   SharedGameDetailsScreen(this.sharedGameUid);
@@ -29,6 +28,7 @@ class _SharedGameDetailsScreenState extends State<SharedGameDetailsScreen> {
         .getSharedGame(widget.sharedGameUid);
   }
 
+  @override
   void dispose() {
     super.dispose();
     _gameSub?.dispose();
@@ -56,7 +56,7 @@ class _SharedGameDetailsScreenState extends State<SharedGameDetailsScreen> {
     List<Widget> actions = <Widget>[];
     FloatingActionButton fab;
 
-    body = StreamBuilder(
+    body = StreamBuilder<Iterable<GameSharedData>>(
         stream: _gameSub.stream,
         builder: (BuildContext context,
             AsyncSnapshot<Iterable<GameSharedData>> snap) {

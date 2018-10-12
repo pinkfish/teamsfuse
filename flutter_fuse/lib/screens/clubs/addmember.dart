@@ -29,6 +29,7 @@ class AddMemberScreenState extends State<AddMemberScreen> {
   bool _inviteAsAdmin;
   Club _club;
 
+  @override
   void initState() {
     super.initState();
     _club = UserDatabaseData.instance.clubs[widget.clubUid];

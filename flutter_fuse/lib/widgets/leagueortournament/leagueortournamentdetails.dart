@@ -25,7 +25,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
       LeagueOrTournamentSeason season, bool admin, LeagueOrTournament league) {
     if (season.uid == _openedPanel || season.uid == league.currentSeason) {
       // Show all the divisions and details.
-      return new StreamBuilder(
+      return new StreamBuilder<Iterable<LeagueOrTournamentDivison>>(
         stream: season.divisonStream,
         builder: (BuildContext context,
             AsyncSnapshot<Iterable<LeagueOrTournamentDivison>> data) {
@@ -121,6 +121,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
     AddDivisonDialog.showSeasonDialog(context, seasonUid);
   }
 
+  @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(5.0),
@@ -129,7 +130,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           // Show the divisons in the current season.
-          new FutureBuilder(
+          new FutureBuilder<LeagueOrTournament>(
             future: UserDatabaseData.instance
                 .getLegueOrTournament(widget.leagueOrTournamentUid),
             builder:
@@ -149,7 +150,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Container(
                           margin: EdgeInsets.only(right: 10.0),
                           child: LeagueImage(
@@ -223,7 +224,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                               text: TextSpan(
                                   text: data.data.longDescription,
                                   style: Theme.of(context).textTheme.subhead))),
-                  StreamBuilder(
+                  StreamBuilder<Iterable<LeagueOrTournamentSeason>>(
                     stream: data.data.seasonStream,
                     builder: (BuildContext context,
                         AsyncSnapshot<Iterable<LeagueOrTournamentSeason>>
@@ -300,7 +301,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                         return Column(
                           children: <Widget>[
                             ButtonBar(
-                              children: [
+                              children: <Widget>[
                                 FlatButton(
                                   onPressed: _addSeason,
                                   child: Text(

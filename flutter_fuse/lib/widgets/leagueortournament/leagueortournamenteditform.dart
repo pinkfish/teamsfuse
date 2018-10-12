@@ -39,7 +39,6 @@ class LeagueOrTournamentEditFormState
   bool _changedImage = false;
   File _imageFile;
 
-  @override
   void save() {
     _formKey.currentState.save();
   }
@@ -49,7 +48,6 @@ class LeagueOrTournamentEditFormState
     super.initState();
   }
 
-  @override
   bool validate() {
     if (_formKey.currentState == null) {
       return false;

@@ -123,7 +123,7 @@ class LeagueHomeScreen extends StatelessWidget {
                   value: "tournament",
                   child: new Text(Messages.of(context).addtournament),
                 ),
-                new PopupMenuItem(
+                new PopupMenuItem<String>(
                   value: 'edit',
                   child: Text(Messages.of(context).editbuttontext),
                 )
@@ -132,7 +132,7 @@ class LeagueHomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      drawer: new FusedDrawer(DrawerMode.League),
+      drawer: new FusedDrawer(DrawerMode.league),
       body: Scrollbar(
         child: SingleChildScrollView(
           child: _buildBody(context),

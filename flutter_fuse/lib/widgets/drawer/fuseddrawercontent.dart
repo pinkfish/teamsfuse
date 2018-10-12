@@ -10,9 +10,9 @@ import 'package:fluro/fluro.dart';
 import 'fuseddrawer.dart';
 
 class FusedDrawerContent extends StatelessWidget {
-  DrawerMode mode;
+  final DrawerMode mode;
 
-  FusedDrawerContent({this.mode = DrawerMode.GameList});
+  FusedDrawerContent({this.mode = DrawerMode.gameList});
 
   Widget _buildTeamSection(BuildContext context) {
     List<Widget> data = <Widget>[];
@@ -105,7 +105,7 @@ class FusedDrawerContent extends StatelessWidget {
         },
       ),
       new Divider(),
-      mode == DrawerMode.GameList ?
+      mode == DrawerMode.gameList ?
       new ListTile(
         leading: const Icon(Icons.people_outline),
         title: new Text(Messages.of(context).leaguetournament),

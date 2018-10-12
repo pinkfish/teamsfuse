@@ -64,7 +64,7 @@ class TeamImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return new FutureBuilder<Team>(
       future: team != null
-          ? Future.value(team)
+          ? Future.value<Team>(team)
           : UserDatabaseData.instance.updateModel.getPublicTeamDetails(teamUid),
       builder: (BuildContext context, AsyncSnapshot<Team> snap) {
         Widget inner;

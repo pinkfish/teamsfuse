@@ -25,7 +25,7 @@ abstract class PersistenData {
   Future<void> updateElement(
       String tableId, String key, Map<String, dynamic> data) ;
 
-  Future<int> deleteElement(String tableId, String key) ;
+  Future<void> deleteElement(String tableId, String key) ;
 
   // Gets all the data out of the json table.
   Future<Map<String, Map<String, dynamic>>> getAllTeamElements(

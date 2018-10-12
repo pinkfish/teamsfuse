@@ -41,8 +41,10 @@ class _LeagueDivisonScreenState extends State<LeagueDivisonScreen> {
       case 2:
         return Text(Messages.of(context).unknown);
     }
+    return SizedBox(width: 0.0,);
   }
 
+  @override
   Widget build(BuildContext context) {
     FloatingActionButton fab;
     if (UserDatabaseData.instance.leagueOrTournments

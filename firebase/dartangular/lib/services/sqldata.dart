@@ -6,29 +6,22 @@ import 'dart:html';
 class SqlData implements PersistenData {
   static SqlData _instance;
 
-  static const String GAME_TABLE = "Games";
-  static const String TEAMS_TABLE = "Teams";
-  static const String SEASON_TABLE = "Seasons";
-  static const String PLAYERS_TABLE = "Players";
-  static const String INVITES_TABLE = "Invites";
-  static const String OPPONENTS_TABLE = "Opponents";
-  static const String PROFILE_TABLE = "Profile";
-  static const String MESSAGES_TABLE = "Messages";
-
   static const List<String> kTables = [
-    GAME_TABLE,
-    TEAMS_TABLE,
-    SEASON_TABLE,
-    PLAYERS_TABLE,
-    INVITES_TABLE,
-    OPPONENTS_TABLE,
-    PROFILE_TABLE,
-    MESSAGES_TABLE
+    PersistenData.gameTable,
+    PersistenData.teamsTable,
+    PersistenData.seasonTable,
+    PersistenData.playersTable,
+    PersistenData.invitesTable,
+    PersistenData.opponentsTable,
+    PersistenData.profileTable,
+    PersistenData.messagesTable,
+    PersistenData.clubsTable,
+    PersistenData.leagueOrTournamentTable
   ];
 
-  static const String INDEX = "fluff";
-  static const String DATA = "data";
-  static const String TEAMUID = "teamuid";
+  static const String kIndex = "fluff";
+  static const String kData = "data";
+  static const String kTeamUid = "teamuid";
 
   Database _database;
   Completer<bool> _loaded = Completer();
@@ -43,81 +36,157 @@ class SqlData implements PersistenData {
 
   SqlData() {
     if (IdbFactory.supported) {
+      print('indexDBSupported');
       window.indexedDB
-          .open('myIndexedDB', version: 1, onUpgradeNeeded: _initializeDatabase)
+          .open('fluffyIndexDb', version: 1, onUpgradeNeeded: _initializeDatabase)
           .then(_loadFromDB);
     }
     _initialized = _loaded.future;
   }
 
-  void _initializeDatabase(VersionChangeEvent e) {}
+  void _initializeDatabase(VersionChangeEvent e) {
+    Database db = (e.target as Request).result;
 
-  void _loadFromDB(Database d) {
-    _database = d;
-    _loaded.complete(true);
+    for (String table in kTables) {
+      print('Creating table $table');
+      ObjectStore store = db.createObjectStore(table);
+      // Create the index for both of them.
+      store.createIndex(kTeamUid + '-index', kTeamUid, unique: false);
+    }
   }
 
-  Future<void> initDatabase() async {}
-
-  @override
-  Future<void> dropDatabase() async {
-    await _initialized;
-
-    for (String db in kTables) {
-      _database.createObjectStore(db);
-    }
+  void _loadFromDB(Database d) {
+    print('Loaded from the db');
+    _database = d;
+    _loaded.complete(true);
   }
 
   // Gets all the data out of the json table.
   @override
   Future<Map<String, Map<String, dynamic>>> getAllElements(String table) async {
+    if (!IdbFactory.supported) {
+      return {};
+    }
     Map<String, Map<String, dynamic>> ret = <String, Map<String, dynamic>>{};
     await _initialized;
 
+    Transaction t = _database.transaction(table, 'readonly');
+    ObjectStore store = t.objectStore(table);
+    await for (CursorWithValue data
+        in store.openCursor(autoAdvance: true).asBroadcastStream()) {
+      ret[data.key as String] = _toMap(data.value);
+    }
+    await t.completed;
     return ret;
+  }
+
+  Map<String, dynamic> _toMap(dynamic data) {
+    if (data == null) {
+      return null;
+    }
+    Map<dynamic, dynamic> map = data as Map<dynamic, dynamic>;
+    return map.map((dynamic k, dynamic v) => MapEntry<String, dynamic>(k, v));
   }
 
   @override
   Future<Map<String, dynamic>> getElement(String tableId, String key) async {
-    Map<String, Map<String, dynamic>> ret = <String, Map<String, dynamic>>{};
+    if (!IdbFactory.supported) {
+      return null;
+    }
     await _initialized;
 
-    return ret;
+    Transaction t = _database.transaction(tableId, 'readonly');
+    ObjectStore store = t.objectStore(tableId);
+    Map<dynamic, dynamic> ret = await store.getObject(key);
+    await t.completed;
+    return _toMap(ret);
   }
 
   @override
   Future<void> updateElement(
       String tableId, String key, Map<String, dynamic> data) async {
+    if (!IdbFactory.supported) {
+      return null;
+    }
     await _initialized;
+
+    Transaction t = _database.transaction(tableId, 'readwrite');
+    ObjectStore store = t.objectStore(tableId);
+    await store.put(data, key);
+    return t.completed;
   }
 
   @override
-  Future<int> deleteElement(String tableId, String key) async {
+  Future<void> deleteElement(String tableId, String key) async {
+    if (!IdbFactory.supported) {
+      return null;
+    }
     await _initialized;
-    return 0;
+    Transaction t = _database.transaction(tableId, 'readwrite');
+    ObjectStore store = t.objectStore(tableId);
+    await store.delete(key);
+    return t.completed;
   }
 
   // Gets all the data out of the json table.
   @override
   Future<Map<String, Map<String, dynamic>>> getAllTeamElements(
       String table, String teamUid) async {
+    if (!IdbFactory.supported) {
+      return {};
+    }
+    Map<String, Map<String, dynamic>> ret = <String, Map<String, dynamic>>{};
+
     await _initialized;
-    return {};
+    Transaction t = _database.transaction(table, 'readonly');
+    ObjectStore store = t.objectStore(table);
+    Index index = store.index(kTeamUid + '-index');
+    await for (CursorWithValue data in index
+        .openCursor(key: teamUid, autoAdvance: true)
+        .asBroadcastStream()) {
+      ret[data.primaryKey as String] = _toMap(data.value);
+    }
+    await t.completed;
+    return ret;
   }
 
   @override
   Future<void> updateTeamElement(String tableId, String key, String teamUid,
       Map<String, dynamic> data) async {
+    if (!IdbFactory.supported) {
+      return null;
+    }
     await _initialized;
+
+    Transaction t = _database.transaction(tableId, 'readwrite');
+    ObjectStore store = t.objectStore(tableId);
+    data[kTeamUid] = teamUid;
+    await store.put(data, key);
+    return t.completed;
   }
 
   @override
-  Future<void> clearTable(String tableId) {
-    return null;
+  Future<void> clearTable(String tableId) async {
+    if (!IdbFactory.supported) {
+      return null;
+    }
+    Transaction t = _database.transaction(tableId, 'readwrite');
+    ObjectStore store = t.objectStore(tableId);
+    await store.clear();
+    return t.completed;
   }
 
   @override
   Future<void> recreateDatabase() {
-    return null;
+    if (!IdbFactory.supported) {
+      return null;
+    }
+    _loaded = new Completer<bool>();
+    _initialized = _loaded.future;
+    if (IdbFactory.supported) {
+      return window.indexedDB
+          .open('myIndexedDB', version: 1, onUpgradeNeeded: _initializeDatabase)
+          .then(_loadFromDB);
+    }
   }
 }

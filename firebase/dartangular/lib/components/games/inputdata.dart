@@ -1,7 +1,6 @@
 import 'package:google_maps/google_maps_places.dart';
 import 'package:google_maps/google_maps.dart';
 import 'dart:js';
-import 'dart:js_util';
 
 class InputData {
   static const String CROSSFIRE_2017 =

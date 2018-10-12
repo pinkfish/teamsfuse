@@ -38,15 +38,16 @@ class SharedGameDisplayComponent implements OnInit, AfterViewInit {
   static DateFormat timeFormat = new DateFormat(DateFormat.HOUR_MINUTE);
 
   GMap map;
-  final Router _router;
 
-  SharedGameDisplayComponent(this._router);
+  SharedGameDisplayComponent();
 
   Team homeTeam;
   LeagueOrTournamentTeam homeLeagueTeam;
   Team awayTeam;
   LeagueOrTournamentTeam awayLeagueTeam;
   GameFromOfficial homeTeamResult;
+
+  Marker marker;
 
   @ViewChild('mapArea')
   HtmlElement mapAreaRef;
@@ -85,7 +86,7 @@ class SharedGameDisplayComponent implements OnInit, AfterViewInit {
         new MapOptions()
           ..zoom = 15
           ..center = new LatLng(game.place.latitude, game.place.longitude));
-    final Marker marker = new Marker(new MarkerOptions()
+    marker = new Marker(new MarkerOptions()
       ..map = map
       ..draggable = true
       ..label = game.place.name
@@ -103,6 +104,7 @@ class SharedGameDisplayComponent implements OnInit, AfterViewInit {
       case GameResult.Unknown:
         return "";
     }
+    return "";
   }
 
   String get awayResultClass {
@@ -116,6 +118,7 @@ class SharedGameDisplayComponent implements OnInit, AfterViewInit {
       case GameResult.Unknown:
         return "";
     }
+    return "";
   }
 
   String get mapUrl {
@@ -146,7 +149,8 @@ class SharedGameDisplayComponent implements OnInit, AfterViewInit {
   }
 
   void openDirections() {
-    String navTo = "https://www.google.com/maps/dir/?api=1&destination=" + game.place.address;
+    String navTo = "https://www.google.com/maps/dir/?api=1&destination=" +
+        game.place.address;
     if (game.place.placeId != null && game.place.placeId.isNotEmpty) {
       navTo += "&destination_place_id=" + game.place.placeId;
     }

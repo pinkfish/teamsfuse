@@ -155,7 +155,6 @@ class GameDetailsState extends State<GameDetails> {
       bool inProgress, bool dontMatch) {
     // Started.
     TextSpan title;
-    TextStyle resultStyle;
     ThemeData theme = Theme.of(context);
     switch (details.result) {
       case GameResult.Unknown:
@@ -247,7 +246,7 @@ class GameDetailsState extends State<GameDetails> {
             content: RichText(
                 text: TextSpan(
                     text: Messages.of(context).useofficialresultdialog,
-                    children: [
+                    children: <TextSpan>[
                   TextSpan(text: Messages.of(context).resultinprogress(details))
                 ])),
             actions: <Widget>[
@@ -430,7 +429,7 @@ class GameDetailsState extends State<GameDetails> {
                     .millisecondsSinceEpoch &&
             !widget.game.result.isGameFinished) {
           body.add(ButtonBar(
-            children: [
+            children: <Widget>[
               FlatButton(
                 child: Text(Messages.of(context).addresultbutton),
                 onPressed: _editResult,
@@ -450,7 +449,7 @@ class GameDetailsState extends State<GameDetails> {
             officalData.isSameAs(widget.game.result)));
         if (!officalData.isSameAs(widget.game.result)) {
           body.add(ButtonBar(
-            children: [
+            children: <Widget>[
               FlatButton(
                 child: Text(Messages.of(context).useofficialresultbutton),
                 onPressed: () => _copyOfficialResult(officalData),

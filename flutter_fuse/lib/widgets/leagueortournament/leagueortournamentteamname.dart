@@ -10,8 +10,10 @@ class LeagueOrTournamentTeamName extends StatelessWidget {
 
   LeagueOrTournamentTeamName(this.leagueOrTournmentTeamUid,
       {this.style, this.textAlign, this.overflow});
+
+  @override
   Widget build(BuildContext context) {
-    return new FutureBuilder(
+    return new FutureBuilder<LeagueOrTournamentTeam>(
       future: UserDatabaseData.instance.updateModel
           .getLeagueTeamData(leagueOrTournmentTeamUid),
       builder:

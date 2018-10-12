@@ -245,7 +245,6 @@ class GameCard extends StatelessWidget {
     launch(url);
   }
 
-  @override
   Widget _buildMain(BuildContext context, LeagueOrTournamentTeam leagueTeam) {
     List<Widget> buttons = <Widget>[];
     Team team;
@@ -477,7 +476,7 @@ class GameCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (game.leagueOpponentUid != null && game.leagueOpponentUid.isNotEmpty) {
       // Show this in a future.
-      return FutureBuilder(
+      return FutureBuilder<LeagueOrTournamentTeam>(
         future: UserDatabaseData.instance.updateModel
             .getLeagueTeamData(game.leagueOpponentUid),
         builder:

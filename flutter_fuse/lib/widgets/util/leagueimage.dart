@@ -34,7 +34,7 @@ class LeagueImage extends StatelessWidget {
       this.matchTextDirection: false})
       : super(
           key: key,
-        ) {}
+        );
 
   ImageProvider _providerFromLeague(LeagueOrTournament league) {
     String photoUrl = league.photoUrl;

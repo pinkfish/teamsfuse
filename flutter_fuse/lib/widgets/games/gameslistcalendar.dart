@@ -19,12 +19,10 @@ class GameListCalendarState {
 
   GameListCalendarState(this.details, this.state);
 
-  @override
   Widget buildWidget(BuildContext context, CalendarEvent event) {
     return new GameCard(_listToShow[event.index]);
   }
 
-  @override
   List<CalendarEvent> getEvents(DateTime start, DateTime end) {
     print('Get events $start $end');
     if (startPoint == null ||
@@ -68,7 +66,6 @@ class GameListCalendarState {
     });
   }
 
-  @override
   void initState() {
     _teamListen =
         UserDatabaseData.instance.teamStream.listen((UpdateReason reason) {
@@ -76,7 +73,6 @@ class GameListCalendarState {
     });
   }
 
-  @override
   void dispose() {
     _listening?.cancel();
     _listening = null;

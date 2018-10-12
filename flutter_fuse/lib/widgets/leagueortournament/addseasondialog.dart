@@ -4,7 +4,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
 
 class AddSeasonDialog extends Dialog {
-  TextEditingController _controller = new TextEditingController();
+  final TextEditingController _controller = new TextEditingController();
 
   static Future<bool> showSeasonDialog(
       BuildContext context, String leagueOrTournamentUid) async {

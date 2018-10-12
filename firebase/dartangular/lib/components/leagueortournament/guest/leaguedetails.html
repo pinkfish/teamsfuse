@@ -23,9 +23,9 @@
             <td><b>Sport</b></td> <td>{{sportDetails}}</td>
         </tr>
     </table>
-    <material-expansion-panel-set>
+    <material-expansionpanel-set>
         <season-expansionpanel *ngFor="let fluff of seasons; trackBy: trackBySeason" [league]="league" [season]="fluff"
             >
         </season-expansionpanel>
-    </material-expansion-panel-set>
+    </material-expansionpanel-set>
 </div>

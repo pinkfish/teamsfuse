@@ -260,14 +260,22 @@ class UserDatabaseData {
         _loadedInvites &&
         _loadedTeams &&
         _loadedLeagueOrTournment &&
-        _loadedClubs;
+        _loadedClubs &&
+        _loadedTeamAdmins;
     if (_completedLoading) {
       // Stop it and delete it.
       _loadingDataTrace?.stop();
       _loadingDataTrace = null;
     }
-    print(
-        "loading $_completedLoading $_loadedPlayers $_loadedGames $_loadedInvites $_loadedTeams $_loadedClubs $_loadedLeagueOrTournment sql $_loadedFromSql");
+    print("loading $_completedLoading "
+        "$_loadedPlayers "
+        "$_loadedGames "
+        "$_loadedInvites "
+        "$_loadedTeams "
+        "$_loadedClubs "
+        "$_loadedLeagueOrTournment "
+        "$_loadedTeamAdmins "
+        "sql $_loadedFromSql");
   }
 
   void _onTeamAdminsUpdate(FirestoreChangedData change) {
@@ -600,9 +608,13 @@ class UserDatabaseData {
           }
         });
       }
+      persistentData.updateElement(
+          PersistenData.clubsTable, club.uid, data.data);
+
     }
     for (FirestoreWrappedData toRemove in removed) {
       _clubs.remove(toRemove.id);
+      persistentData.deleteElement(PersistenData.clubsTable, toRemove.id);
     }
     _loadedClubs = true;
     _updateLoading();
@@ -939,19 +951,21 @@ class UserDatabaseData {
       this._onTeamAdminsUpdate(
           FirestoreChangedData(newList: data, removed: []));
       // Cleanup.
-      for (Team t in _teams.values) {
+      _teams.removeWhere((String key, Team t) {
         if (t.seasons.length == 0 && !t.isAdmin()) {
-          _teams.remove(t.uid);
           persistentData.deleteElement(PersistenData.teamsTable, t.uid);
+          return true;
         }
-      }
+        return false;
+      });
     });
-    for (Team t in _teams.values) {
+    _teams.removeWhere((String key, Team t) {
       if (t.seasons.length == 0 && !t.isAdmin()) {
-        _teams.remove(t.uid);
         persistentData.deleteElement(PersistenData.teamsTable, t.uid);
+        return true;
       }
-    }
+      return false;
+    });
 
     _teamAdminSnapshot =
         _teamAdminInitialData.stream.listen((FirestoreChangedData data) {

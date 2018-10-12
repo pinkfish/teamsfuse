@@ -6,7 +6,6 @@ import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart';
 import 'league/leaguenameandresult.dart';
-import 'package:google_maps/google_maps.dart';
 
 @Component(
   selector: 'game-shared-card',

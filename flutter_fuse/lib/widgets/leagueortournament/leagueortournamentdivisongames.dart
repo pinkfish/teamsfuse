@@ -29,7 +29,6 @@ class LeagueOrTournamentDivisonDetails extends StatefulWidget {
 
 class _LeagueOrTournamentDivisonDetailsState
     extends State<LeagueOrTournamentDivisonDetails> {
-  bool _teamExpanded = false;
   LeagueOrTournament leagueOrTournament;
   LeagueOrTournamentSeason leagueOrTournmentSeason;
   LeagueOrTournamentDivison leagueOrTournmentDivison;
@@ -42,6 +41,7 @@ class _LeagueOrTournamentDivisonDetailsState
   static const double widthFirst = 40.0;
   static const double inset = 5.0;
 
+  @override
   void initState() {
     super.initState();
     leagueOrTournament = UserDatabaseData
@@ -63,7 +63,7 @@ class _LeagueOrTournamentDivisonDetailsState
     return Expanded(
       child: Scrollbar(
         child: SingleChildScrollView(
-          child: StreamBuilder(
+          child: StreamBuilder<Iterable<GameSharedData>>(
             stream: leagueOrTournmentDivison.gameStream,
             builder: (BuildContext contex,
                 AsyncSnapshot<Iterable<GameSharedData>> snap) {
@@ -125,7 +125,7 @@ class _LeagueOrTournamentDivisonDetailsState
               TextStyle style = Theme.of(context).textTheme.subhead.copyWith(
                     fontWeight: FontWeight.w300,
                   );
-              List<Widget> displayEvents = [];
+              List<Widget> displayEvents = <Widget>[];
               DateTime day = new DateTime(1970);
               final Size screenSize = MediaQuery.of(context).size;
               double widthSecond = screenSize.width - widthFirst - inset - 20.0;
@@ -177,7 +177,7 @@ class _LeagueOrTournamentDivisonDetailsState
                   ));
                   day =
                       new DateTime(g.tzTime.year, g.tzTime.month, g.tzTime.day);
-                  displayEvents = [];
+                  displayEvents = <Widget>[];
                 }
               }
               return Container(
@@ -195,6 +195,7 @@ class _LeagueOrTournamentDivisonDetailsState
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     // We must have the league/season loaded to have got in here.  If not
     // this is an error.

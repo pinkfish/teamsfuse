@@ -136,9 +136,8 @@ class Team extends HasUIDComparable {
         (String key, Season season) => MapEntry(key, new Season.copy(season)));
     _trackAttendence = team._trackAttendence;
     if (team._completeSeasonsCached != null) {
-      _completeSeasonsCached =
-          team._completeSeasonsCached.map((Season season) =>
-              Season.copy(season));
+      _completeSeasonsCached = team._completeSeasonsCached
+          .map((Season season) => Season.copy(season));
     }
   }
 
@@ -335,7 +334,7 @@ class Team extends HasUIDComparable {
       opponents[doc.id] = opponent;
       toDeleteOpponents.remove(doc.id);
       sql.updateTeamElement(
-          PersistenData.opponentsTable, doc.id, uid, toJSON());
+          PersistenData.opponentsTable, doc.id, uid, doc.data);
     }
     for (String id in toDeleteOpponents) {
       sql.deleteElement(PersistenData.opponentsTable, id);
@@ -439,7 +438,7 @@ class Team extends HasUIDComparable {
   ///
   int compareTo(HasUIDComparable t) {
     if (t is Team) {
-      Team tTeam = t as Team;
+      Team tTeam = t;
       return name.compareTo(tTeam.name);
     }
     return uid.compareTo(t.uid);

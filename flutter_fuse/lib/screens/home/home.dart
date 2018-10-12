@@ -47,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() {
     _calendarEvents.state = _calendarState;
+    super.didChangeDependencies();
   }
 
   // This widget is the root of your application.
@@ -158,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return new Scaffold(
-      drawer: new FusedDrawer(DrawerMode.GameList),
+      drawer: new FusedDrawer(DrawerMode.gameList),
       appBar: new AppBar(
         title: new Text(messages.title),
         actions: actions,

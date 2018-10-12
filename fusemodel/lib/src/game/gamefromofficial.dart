@@ -9,7 +9,7 @@ import 'gamescore.dart';
 /// This class converts from the offical results on a game
 /// to the results for this specific team.
 ///
-class GameFromOfficial extends GameResultSharedDetails{
+class GameFromOfficial extends GameResultSharedDetails {
   final GameSharedData game;
   final String awayTeamLeageUid;
 
@@ -21,18 +21,15 @@ class GameFromOfficial extends GameResultSharedDetails{
       : _finalResult = _swapResult(
             game.officialResults.scores,
             GamePeriod.regulation,
-            game.officialResults.homeTeamLeagueUid !=
-                awayTeamLeageUid),
+            game.officialResults.homeTeamLeagueUid != awayTeamLeageUid),
         _overtimeResult = _swapResult(
             game.officialResults.scores,
             GamePeriod.overtime,
-            game.officialResults.homeTeamLeagueUid !=
-                awayTeamLeageUid),
+            game.officialResults.homeTeamLeagueUid != awayTeamLeageUid),
         _penaltyResult = _swapResult(
             game.officialResults.scores,
             GamePeriod.penalty,
-            game.officialResults.homeTeamLeagueUid !=
-                awayTeamLeageUid);
+            game.officialResults.homeTeamLeagueUid != awayTeamLeageUid);
 
   /// If the game is finished.
   bool get isGameFinished =>
@@ -53,19 +50,11 @@ class GameFromOfficial extends GameResultSharedDetails{
   GameResultPerPeriod get penaltyResult => _penaltyResult;
 
   /// Figure out if this is the same as the official results.
-  bool _isSameAs(GameResultPerPeriod regulationResult,
-      GameResultPerPeriod overtimeResult, GameResultPerPeriod penaltyResult) {
-    return _compareResults(_finalResult, regulationResult) &&
-        _compareResults(_overtimeResult, overtimeResult) &&
-        _compareResults(_penaltyResult, penaltyResult);
-  }
-
   bool isSameAs(GameResultSharedDetails result) {
     return _compareResults(_finalResult, result.regulationResult) &&
         _compareResults(_overtimeResult, result.overtimeResult) &&
         _compareResults(_penaltyResult, result.penaltyResult);
   }
-
 
   ///
   /// Compares the results of official vs team results.
@@ -122,5 +111,6 @@ class GameFromOfficial extends GameResultSharedDetails{
       case OfficialResult.NotStarted:
         return GameResult.Unknown;
     }
+    return GameResult.Unknown;
   }
 }

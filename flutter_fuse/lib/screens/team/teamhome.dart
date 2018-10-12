@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/teams/teamanimatedlist.dart';
 
 class TeamHomeScreen extends StatelessWidget {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-
-  Widget _addTeam(BuildContext context) {
+  void _addTeam(BuildContext context) {
     Navigator.pushNamed(context, "/AddTeam");
   }
 
@@ -23,7 +20,7 @@ class TeamHomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             TeamAnimatedList(
               archived: false,
             ),
@@ -42,7 +39,7 @@ class TeamHomeScreen extends StatelessWidget {
               archived: true,
             ),
             ButtonBar(
-              children: [
+              children: <Widget>[
                 FlatButton(
                   child: Text(Messages.of(context).addteam),
                   onPressed: () => _addTeam(context),

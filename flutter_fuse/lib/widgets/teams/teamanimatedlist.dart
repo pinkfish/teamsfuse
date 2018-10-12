@@ -7,7 +7,6 @@ import 'teamtile.dart';
 /// The list of teams that animated teams in and out.  Nifty.
 ///
 class TeamAnimatedList extends StatefulWidget {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   final bool archived;
 
   TeamAnimatedList({this.archived});

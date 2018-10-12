@@ -70,6 +70,7 @@ class InviteToLeagueAsAdmin extends Invite {
       return UserDatabaseData.instance.updateModel.addUserToLeagueDivison(
           leagueUid, UserDatabaseData.instance.userUid, true);
     }
+    return null;
   }
 
   InviteToLeagueAsAdmin.fromJSON(String uid, Map<String, dynamic> data)

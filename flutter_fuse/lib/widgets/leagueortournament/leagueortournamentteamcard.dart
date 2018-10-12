@@ -17,6 +17,7 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
   LeagueOrTournamentTeamCard(this.leagueUid, this.team,
       {this.admin = false, this.divison});
 
+  @override
   Widget build(BuildContext context) {
     Widget subtitle;
     if (divison != null) {

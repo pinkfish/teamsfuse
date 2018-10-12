@@ -22,8 +22,7 @@ class SharedSingleGameComponent implements OnInit, OnActivate, OnDestroy {
       new StreamController<GameSharedData>();
   SharedGameSubscription _sub;
 
-  SingleGameComponent() {
-  }
+  SharedSingleGameComponent();
 
   @override
   Future<Null> ngOnInit() async {

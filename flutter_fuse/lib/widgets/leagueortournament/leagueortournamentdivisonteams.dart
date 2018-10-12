@@ -34,6 +34,7 @@ class _LeagueOrTournamentDivisonDetailsState
   List<LeagueOrTournamentTeam> _sortedTeams;
   GlobalKey<AnimatedListState> _listState = new GlobalKey<AnimatedListState>();
 
+  @override
   void initState() {
     super.initState();
     _leagueOrTournament = UserDatabaseData
@@ -46,6 +47,7 @@ class _LeagueOrTournamentDivisonDetailsState
             s.uid == widget.leagueOrTournamentDivisonUid);
   }
 
+  @override
   void dispose() {
     super.dispose();
   }
@@ -141,6 +143,7 @@ class _LeagueOrTournamentDivisonDetailsState
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     // We must have the league/season loaded to have got in here.  If not
     // this is an error.
@@ -170,7 +173,7 @@ class _LeagueOrTournamentDivisonDetailsState
               style: Theme.of(context).textTheme.subhead,
             ),
           ),
-          StreamBuilder(
+          StreamBuilder<Iterable<LeagueOrTournamentTeam>>(
               stream: _leagueOrTournmentDivison.teamStream,
               builder: (BuildContext context,
                   AsyncSnapshot<Iterable<LeagueOrTournamentTeam>> snap) {

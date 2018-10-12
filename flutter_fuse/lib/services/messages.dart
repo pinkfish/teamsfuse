@@ -1309,6 +1309,7 @@ class Messages {
       case OfficialResult.Tie:
         return Intl.message('Tie');
     }
+    return unknown;
   }
 
   /*

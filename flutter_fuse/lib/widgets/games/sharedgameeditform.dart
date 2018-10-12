@@ -2,18 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
-import 'package:flutter_fuse/widgets/form/opponentformfield.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/screens/game/addopponent.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:timezone/timezone.dart';
 import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_fuse/widgets/form/placesformfield.dart';
-import 'editformbase.dart';
 
 // This form has all the stuff needed to edit the main parts
 // of the game.  Does not have the add game step flow.
@@ -35,19 +29,13 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
       new GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<DateTimeFormFieldState> _atEndKEy =
       new GlobalKey<DateTimeFormFieldState>();
-  final GlobalKey<OpponentFormFieldState> _opponentState =
-      new GlobalKey<OpponentFormFieldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool autovalidate = false;
-  Validations _validations = new Validations();
   ScrollController _scrollController = new ScrollController();
-  FocusNode _focusNodeNotes = new FocusNode();
   FocusNode _focusNodePlaceNotes = new FocusNode();
-  FocusNode _focusNodeUniform = new FocusNode();
   DateTime _atDate;
   DateTime _atEnd;
 
-  @override
   void save() {
     _formKey.currentState.save();
   }
@@ -59,7 +47,6 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
     _atEnd = widget.game.tzEndTime;
   }
 
-  @override
   bool validate() {
     if (_formKey.currentState == null) {
       return false;
@@ -67,7 +54,6 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
     return _formKey.currentState.validate();
   }
 
-  @override
   GameSharedData get finalGameResult {
     if (!_formKey.currentState.validate()) {
       autovalidate = true;

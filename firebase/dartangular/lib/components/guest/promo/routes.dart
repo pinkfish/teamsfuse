@@ -7,8 +7,6 @@ import 'route_paths.dart' as paths;
 import 'home/home.template.dart' as hcgl;
 import 'league/league.template.dart' as lcgl;
 import 'tournaments/tournaments.template.dart' as tcgl;
-import 'package:teamfuse/components/leagueortournament/guest/league.template.dart'
-    as lotlt;
 
 @Injectable()
 class Routes {

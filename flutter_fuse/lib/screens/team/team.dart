@@ -85,7 +85,7 @@ class TeamScreenState extends State<TeamScreen> {
                   value: "club",
                   child: new Text(Messages.of(context).club),
                 ),
-                new PopupMenuItem(
+                new PopupMenuItem<String>(
                   value: 'archive',
                   child: Text(Messages.of(context).archiveteam),
                 )

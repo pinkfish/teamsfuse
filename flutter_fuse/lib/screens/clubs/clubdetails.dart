@@ -82,7 +82,7 @@ class ClubDetailsScreenState extends State<ClubDetailsScreen> {
                   value: "addteam",
                   child: new Text(Messages.of(context).addteam),
                 ),
-                new PopupMenuItem(
+                new PopupMenuItem<String>(
                   value: 'addadmin',
                   child: Text(Messages.of(context).addadmin),
                 )

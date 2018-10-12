@@ -30,6 +30,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
   File _leagueImage;
   bool _saving = false;
 
+  @override
   void initState() {
     super.initState();
     _league = LeagueOrTournament(
@@ -37,7 +38,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
       name: "",
       shortDescription: "",
       longDescription: "",
-      adminUids: [UserDatabaseData.instance.userUid],
+      adminUids: <String>[UserDatabaseData.instance.userUid],
     );
   }
 

@@ -19,6 +19,7 @@ class LeagueTeamScreen extends StatelessWidget {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     FloatingActionButton fab;
     List<Widget> actions = <Widget>[];

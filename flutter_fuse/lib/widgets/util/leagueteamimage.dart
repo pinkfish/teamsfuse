@@ -6,7 +6,7 @@ import 'dart:async';
 import 'package:flutter_fuse/services/messages.dart';
 
 /// Some overlay text onto the team to say home/away.
-enum HomeAwayOverlay { Home, Away, None }
+enum HomeAwayOverlay { home, away, none }
 
 ///
 /// Looks up the league team from the database and then uses that to display
@@ -33,13 +33,13 @@ class LeagueTeamImage extends StatelessWidget {
       this.height,
       this.color,
       this.fit,
-      this.overlay = HomeAwayOverlay.None,
+      this.overlay = HomeAwayOverlay.none,
       this.alignment: Alignment.center,
       this.repeat: ImageRepeat.noRepeat,
       this.matchTextDirection: false})
       : super(
           key: key,
-        ) {}
+        );
 
   ImageProvider _providerFromTeam(Team team) {
     if (team == null) {
@@ -107,7 +107,7 @@ class LeagueTeamImage extends StatelessWidget {
         );
       },
     );
-    if (overlay == HomeAwayOverlay.None) {
+    if (overlay == HomeAwayOverlay.none) {
       return SizedBox(width: width, height: height, child: futureBuilder);
     }
     return SizedBox(
@@ -124,7 +124,7 @@ class LeagueTeamImage extends StatelessWidget {
               ),
               width: width,
               child: Text(
-                overlay == HomeAwayOverlay.Away
+                overlay == HomeAwayOverlay.away
                     ? Messages.of(context).away
                     : Messages.of(context).home,
                 textAlign: TextAlign.center,

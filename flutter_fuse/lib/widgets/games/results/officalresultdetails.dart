@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/numberpicker.dart';
 
-enum DetailsState { NotStarted, InProgress, Final }
+enum DetailsState { notStarted, inProgress, finalState }
 
 ///
 /// No logs in an offical result display.  Just set the
@@ -40,11 +39,11 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
     // Make our own copy of it.
     _results = new GameOfficialResults.copy(widget.game.officialResults);
     if (_results.result == OfficialResult.NotStarted) {
-      _currentState = DetailsState.NotStarted;
+      _currentState = DetailsState.notStarted;
     } else if (_results.result == OfficialResult.InProgress) {
-      _currentState = DetailsState.InProgress;
+      _currentState = DetailsState.inProgress;
     } else {
-      _currentState = DetailsState.Final;
+      _currentState = DetailsState.finalState;
       _startedAsFinal = true;
     }
 
@@ -83,7 +82,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
 
   void _updateGame() async {
     _setupWinLossTie();
-    if (_currentState == DetailsState.Final) {
+    if (_currentState == DetailsState.finalState) {
       // Show dialogs and stuff.
       _finishGame();
     } else {
@@ -150,9 +149,9 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
       }
     }
 
-    if (_currentState == DetailsState.NotStarted) {
+    if (_currentState == DetailsState.notStarted) {
       _results.result = OfficialResult.NotStarted;
-    } else if (_currentState == DetailsState.InProgress) {
+    } else if (_currentState == DetailsState.inProgress) {
       _results.result = OfficialResult.InProgress;
     } else {
       OfficialResult gameResult = OfficialResult.Tie;
@@ -227,7 +226,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Container(
           margin: EdgeInsets.only(left: 15.0, right: 5.0),
           child: Text(
@@ -256,14 +255,14 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
     ThemeData theme = Theme.of(context);
 
     print("Stuff in here ${_results.result}");
-    TextStyle header = Theme.of(context).textTheme.subhead.copyWith(
+    TextStyle header = theme.textTheme.subhead.copyWith(
         color: Theme.of(context).primaryColorDark, fontWeight: FontWeight.w500);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
-      children: [
+      children: <Widget>[
         Expanded(
           child: Scrollbar(
             child: SingleChildScrollView(
@@ -281,30 +280,30 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                   ),
                   RadioListTile<DetailsState>(
                     groupValue: _currentState,
-                    value: DetailsState.NotStarted,
+                    value: DetailsState.notStarted,
                     title: Text(Messages.of(context)
                         .gameofficalinprogress(OfficialResult.NotStarted)),
                     onChanged: _updateState,
                   ),
                   RadioListTile<DetailsState>(
                     groupValue: _currentState,
-                    value: DetailsState.InProgress,
+                    value: DetailsState.inProgress,
                     title: Text(Messages.of(context)
                         .gameofficalinprogress(OfficialResult.InProgress)),
                     onChanged: _updateState,
                   ),
                   RadioListTile<DetailsState>(
                     groupValue: _currentState,
-                    value: DetailsState.Final,
+                    value: DetailsState.finalState,
                     title: Text(Messages.of(context).finalscore),
                     onChanged: _updateState,
                   ),
-                  _currentState == DetailsState.Final
+                  _currentState == DetailsState.finalState
                       ? Divider()
                       : SizedBox(
                           height: 0.0,
                         ),
-                  _currentState == DetailsState.Final
+                  _currentState == DetailsState.finalState
                       ? _buildFinalText(header)
                       : SizedBox(
                           height: 0.0,

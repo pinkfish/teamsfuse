@@ -5,12 +5,10 @@ import 'dart:async';
 import 'package:google_maps/google_maps_places.dart';
 import 'package:google_maps/google_maps.dart';
 import 'dart:js';
-import 'dart:js_util';
-import 'dart:html';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:csv/csv.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'dart:async';
+import 'dart:html';
 
 class TimeStuff {
   num hour;
@@ -45,7 +43,7 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
   Map<String, LeagueOrTournamentDivison> _divisonNameToUid = {};
   Map<String, LeagueOrTournamentTeam> _divisonTeamNameToUid = {};
   @ViewChild('mapArea')
-  ElementRef mapAreaRef;
+  HtmlElement mapAreaRef;
   Map<String, PlaceResult> placesResults = {};
 
   Set<String> newDivisionsToGenerate;
@@ -54,7 +52,7 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
   int currentlyProcessing = 0;
 
   String travellingLeague =
-  '''Date,Start Time,End Time,Away Team,Home Team,Event Type,Location,Division
+      '''Date,Start Time,End Time,Away Team,Home Team,Event Type,Location,Division
 12/2/17,2:00 PM,3:00 PM,Woodinville 4th,Cedar Park Christian 4th,Game,Cedar Park Christian School Aux Gym,4th Grade
 12/2/17,3:15 PM,4:00 PM,Woodinville 5th,Cedar Park Christian 5th,Game,Cedar Park Christian School Aux Gym,5th Grade
 12/2/17,11:30 AM,12:30 PM,Woodinville 6th,Cedar Park Christian 6th,Game,Cedar Park Christian School Aux Gym,6th Grade
@@ -137,7 +135,7 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
 12/03/17,1:15 PM,2:15 PM,Juanita 7th,Hazen 7th,Game,Hazen Senior High School,7th Grade
 12/03/17,2:30 PM,3:30 PM,Juanita 8th,Hazen 8th,Game,Hazen Senior High School,8th Grade''';
 
-  HomeCsvComponent() {}
+  HomeCsvComponent();
 
   @override
   Future<Null> ngOnInit() async {
@@ -145,31 +143,31 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
         .getLeagueDivisonsForSeason(_curLeagueSeasonUid);
     _subSeason.subscriptions.add(
         _subSeason.stream.listen((Iterable<LeagueOrTournamentDivison> div) {
-          _divisons = div;
-          print(div);
-          for (LeagueOrTournamentDivison myDiv in div) {
-            _teamSubs[myDiv.uid] = UserDatabaseData.instance.updateModel
-                .getLeagueDivisionTeams(myDiv.uid);
-            _teamSubs[myDiv.uid].subscriptions.add(_teamSubs[myDiv.uid]
+      _divisons = div;
+      print(div);
+      for (LeagueOrTournamentDivison myDiv in div) {
+        _teamSubs[myDiv.uid] = UserDatabaseData.instance.updateModel
+            .getLeagueDivisionTeams(myDiv.uid);
+        _teamSubs[myDiv.uid].subscriptions.add(_teamSubs[myDiv.uid]
                 .stream
                 .listen((Iterable<LeagueOrTournamentTeam> teams) {
               print(teams);
               _teamsForDiv[myDiv.uid] = teams.toList();
             }));
-            SharedGameSubscription fluff = UserDatabaseData.instance.updateModel
-                .getLeagueGamesForDivison(myDiv.uid);
-            fluff.stream.listen((Iterable<GameSharedData> games) {
-              _gamesForDiv[myDiv.uid] = games.toList();
-            });
-          }
-        }));
+        SharedGameSubscription fluff = UserDatabaseData.instance.updateModel
+            .getLeagueGamesForDivison(myDiv.uid);
+        fluff.stream.listen((Iterable<GameSharedData> games) {
+          _gamesForDiv[myDiv.uid] = games.toList();
+        });
+      }
+    }));
   }
 
   @override
   void ngOnDestroy() {
     _subSeason?.dispose();
     for (LeagueOrTournmentTeamSubscription teamSubscription
-    in _teamSubs.values) {
+        in _teamSubs.values) {
       teamSubscription?.dispose();
     }
   }
@@ -231,9 +229,9 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
   void onGenerate() async {
     tz.Location loc = tz.getLocation("America/Los_Angeles");
     List<List<dynamic>> rowsAsListOfValues =
-    const CsvToListConverter(eol: '\n').convert(travellingLeague);
+        const CsvToListConverter(eol: '\n').convert(travellingLeague);
     GMap map = new GMap(
-        mapAreaRef.nativeElement,
+        mapAreaRef,
         new MapOptions()
           ..center = new LatLng(47.4979, 19.0402)
           ..zoom = 15);
@@ -258,7 +256,7 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
       print(d);
 
       List<int> bits =
-      startDate.split("/").map((String s) => int.parse(s)).toList();
+          startDate.split("/").map((String s) => int.parse(s)).toList();
 
       TimeStuff stuff = getTime(startTime);
       tz.TZDateTime startTZTime = new tz.TZDateTime(loc, bits[2], bits[0],
@@ -316,7 +314,7 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
           address = place.formattedAddress;
         } else {
           Completer<List<PlaceResult>> completeResults =
-          new Completer<List<PlaceResult>>();
+              new Completer<List<PlaceResult>>();
           TextSearchRequest req = new TextSearchRequest();
           req.query = addressToLookup;
 
@@ -362,7 +360,7 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
     for (String divison in newDivisionsToGenerate) {
       currentlyProcessing++;
       LeagueOrTournamentDivison div =
-      new LeagueOrTournamentDivison(null, divison, _curLeagueSeasonUid);
+          new LeagueOrTournamentDivison(null, divison, _curLeagueSeasonUid);
       await div.updateFirestore();
       _teamsForDiv[div.uid] = [];
       print('Created $div');
@@ -373,7 +371,7 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
       currentlyProcessing++;
       List<String> bits = team.split(" --- ");
       LeagueOrTournamentDivison div =
-      _divisonNameToUid[bits[0].toLowerCase().trim()];
+          _divisonNameToUid[bits[0].toLowerCase().trim()];
 
       LeagueOrTournamentTeam teamData = new LeagueOrTournamentTeam(
           leagueOrTournamentDivisonUid: div.uid, name: bits[1]);
@@ -386,22 +384,23 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
     for (GameToGenerate gen in newGames) {
       currentlyProcessing++;
       LeagueOrTournamentDivison divison =
-      _divisonNameToUid[gen.divisonName.toLowerCase()];
+          _divisonNameToUid[gen.divisonName.toLowerCase()];
       LeagueOrTournamentTeam awayTeamUid =
-      findTeamUid(gen.awayTeamName, divison);
+          findTeamUid(gen.awayTeamName, divison);
       LeagueOrTournamentTeam homeTeamUid =
-      findTeamUid(gen.homeTeamName, divison);
+          findTeamUid(gen.homeTeamName, divison);
       // See if we can find the game, if we already have it.
       bool found = false;
       for (GameSharedData g in _gamesForDiv[divison.uid]) {
         if (g.time == gen.start.millisecondsSinceEpoch) {
-          print('Time match ${g.officialResults.homeTeamLeagueUid} ${g.officialResults.awayTeamLeagueUid}');
-          if (g.officialResults.homeTeamLeagueUid == homeTeamUid &&
-              g.officialResults.awayTeamLeagueUid == awayTeamUid) {
+          print(
+              'Time match ${g.officialResults.homeTeamLeagueUid} ${g.officialResults.awayTeamLeagueUid}');
+          if (g.officialResults.homeTeamLeagueUid == homeTeamUid.uid &&
+              g.officialResults.awayTeamLeagueUid == awayTeamUid.uid) {
             // Found it, update the data and save this instead.
             g.timezone = "America/Los_Angeles";
             g.officialResults.awayTeamLeagueUid = awayTeamUid.uid;
-            g.officialResults.homeTeamLeagueUid= homeTeamUid.uid;
+            g.officialResults.homeTeamLeagueUid = homeTeamUid.uid;
             await g.updateFirestore();
             found = true;
           }
@@ -416,7 +415,7 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
           place.latitude = gen.where.geometry.location.lat;
         }
         GameOfficialResults results =
-        GameOfficialResults(homeTeamUid.uid, awayTeamUid.uid);
+            GameOfficialResults(homeTeamUid.uid, awayTeamUid.uid);
         GameSharedData newGame = new GameSharedData(
             homeTeamUid.uid, awayTeamUid.uid,
             officalResults: results,
@@ -432,7 +431,6 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  @override
   void onActivate(RouterState previous, RouterState current) {
     /*
     _curTeamId = current.parameters['id'];
@@ -495,17 +493,17 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
 class GameToGenerate {
   GameToGenerate(
       {this.start,
-        this.end,
-        this.eventType,
-        this.homeTeamName,
-        this.homeTeamUid,
-        this.awayTeamName,
-        this.awayTeamUid,
-        this.where,
-        this.address,
-        this.divison,
-        this.divisonName,
-        this.placeName});
+      this.end,
+      this.eventType,
+      this.homeTeamName,
+      this.homeTeamUid,
+      this.awayTeamName,
+      this.awayTeamUid,
+      this.where,
+      this.address,
+      this.divison,
+      this.divisonName,
+      this.placeName});
   final tz.TZDateTime start;
   final tz.TZDateTime end;
   final EventType eventType;

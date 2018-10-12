@@ -30,7 +30,7 @@ class TimeStuff {
   styleUrls: const [],
 )
 class HomeComponent implements OnInit, OnDestroy, OnChanges {
-  HomeComponent() {}
+  HomeComponent();
 
   @override
   Future<Null> ngOnInit() async {
@@ -62,6 +62,5 @@ class HomeComponent implements OnInit, OnDestroy, OnChanges {
   Object trackByTournament(int index, dynamic t) =>
       t is LeagueOrTournament ? t.uid : "";
 
-  @override
   void onActivate(RouterState previous, RouterState current) {}
 }

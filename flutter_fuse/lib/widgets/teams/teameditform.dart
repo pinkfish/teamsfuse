@@ -14,7 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
 
-enum StartSection { Start, End, All }
+enum StartSection { start, end, all }
 
 ///
 /// Shows the edit form for the team.  Splits up the team into two
@@ -26,7 +26,7 @@ class TeamEditForm extends StatefulWidget {
   final StartSection startSection;
 
   TeamEditForm(this.team, GlobalKey<TeamEditFormState> key,
-      {this.startSection = StartSection.All})
+      {this.startSection = StartSection.all})
       : super(key: key);
 
   @override
@@ -185,7 +185,7 @@ class TeamEditFormState extends State<TeamEditForm> {
     }
 
     List<Widget> fields = <Widget>[];
-    if (widget.startSection != StartSection.End) {
+    if (widget.startSection != StartSection.end) {
       fields.addAll(<Widget>[
         new IconButton(
           onPressed: _selectImage,
@@ -241,7 +241,7 @@ class TeamEditFormState extends State<TeamEditForm> {
         seasonWidget,
       ]);
     }
-    if (widget.startSection != StartSection.Start) {
+    if (widget.startSection != StartSection.start) {
       fields.addAll(<Widget>[
         new EnsureVisibleWhenFocused(
           focusNode: _focusNodeNotes,

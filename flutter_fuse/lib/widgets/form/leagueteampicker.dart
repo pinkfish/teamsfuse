@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'dart:async';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
@@ -81,7 +80,7 @@ class _TournamentOrLeagueTeamPickerState
                 .copyWith(fontWeight: FontWeight.bold)
             : null,
       ),
-      child: StreamBuilder(
+      child: StreamBuilder<Iterable<LeagueOrTournamentTeam>>(
           stream: _teamSub.stream,
           builder: (BuildContext context,
               AsyncSnapshot<Iterable<LeagueOrTournamentTeam>> snap) {

@@ -81,8 +81,8 @@ class GameSharedCard extends StatelessWidget {
     if (game.time < new DateTime.now().millisecondsSinceEpoch &&
             game.type == EventType.Game &&
             game.officialResults.result == OfficialResult.NotStarted &&
-            leagueOrTournament?.isAdmin() ??
-        false) {
+        (leagueOrTournament?.isAdmin() ??
+        false)) {
       // Show a result button (if an admin).
       buttons.add(
         new FlatButton(
@@ -212,7 +212,7 @@ class GameSharedCard extends StatelessWidget {
     }
     Widget tile = Container(
       child: Column(
-        children: [
+        children: <Widget>[
           ListTile(
             contentPadding: EdgeInsets.zero,
             onTap: () {
@@ -222,7 +222,7 @@ class GameSharedCard extends StatelessWidget {
               leagueOrTeamUid: game.officialResults.homeTeamLeagueUid,
               width: 50.0,
               height: 50.0,
-              overlay: HomeAwayOverlay.None,
+              overlay: HomeAwayOverlay.none,
             ),
             title: new Text(
               title,
@@ -239,7 +239,7 @@ class GameSharedCard extends StatelessWidget {
               leagueOrTeamUid: game.officialResults.awayTeamLeagueUid,
               width: 50.0,
               height: 50.0,
-              overlay: HomeAwayOverlay.None,
+              overlay: HomeAwayOverlay.none,
             ),
           ),
           Row(
