@@ -1,57 +1,81 @@
-<div class="card" *ngIf="game == null">
-    Loading...
-</div>
 <div class="card" *ngIf="game != null">
-    <div class="teamimg">
-        <img src="{{teamUrl}}" width="50" height="50" style="padding-right: 10px"/>
-    </div>
-    <div class="details">
-        <div [ngSwitch]="game.sharedData.type.toString()">
-            <template [ngSwitchCase]="'EventType.Game'">
-                {{GameDisplayComponent.dateWithTimeFormat.format(game.sharedData.tzTime)}}  vs {{opponent.name}}
-            </template>
-            <template [ngSwitchCase]="'EventType.Practice'">
-                {{GameDisplayComponent.dateWithTimeFormat.format(game.sharedData.tzTime)}} practice
-            </template>
-            <template [ngSwitchCase]="'EventType.Event'">
-                {{GameDisplayComponent.dateWithTimeFormat.format(game.sharedData.tzTime)}} event
-            </template>
-            <template ngSwitchDefault>
-                {{game.sharedData.type.toString() == 'EventType.Game'}}
-            </template>
-            <div class="teamname">{{team.name}}</div>
-            <div *ngIf="game.result.inProgress.toString() == 'GameInProgress.InProgress'">
-                {{gameResult()}}
-            </div>
-            <div class="address">
-                {{game.sharedData.place.address}} {{game.sharedData.place.notes}} {{game.uniform}}
-            </div>
-        </div>
-        <template [ngSwitch]="game.sharedData.type">
-            <template [ngSwitchCase]="'EventType.Game'">
-                <div *ngIf="game.sharedData.time != game.arriveTime">
-                    {{GameDisplayComponent.justTimeFormat.format(game.tzArriveTime)}}
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <h5 class="card-title" style="float: left">
+                    {{team.name}} vs {{opponent}}
+                    <template [ngIf]="game.sharedData.type.toString() == 'EventType.Game'">
+                        <div class="h6 {{resultclass}}" *ngIf="result != null && game.result.inProgress.toString() != 'GameInProgress.NotStarted'">
+                            {{result}}
+                        </div>
+                        <div class="h6 {{resultclass}}" *ngIf="result == null || game.result.inProgress.toString() == 'GameInProgress.NotStarted'">
+                            Not started
+                        </div>
+                        <div *ngIf="officialResult != null" class="h6 {{officialResultClass}}">
+                            {{officialResult}}
+                        </div>
+                    </template>
+                </h5>
+                <div style="text-align: right">
+                    {{GameDisplayComponent.dateFormat.format(game.sharedData.tzTime)}}
                 </div>
-            </template>
-            <template [ngSwitchCase]="'EventType.Practice'">
-            </template>
-            <template [ngSwitchCase]="'EventType.Event'">
-            </template>
-        </template>
-        <!--- <div style="width: 300px; height: 300px" #mapArea></div> --->
-    </div>
-    <div class="trailing">
-        <div [ngSwitch]="game.result.result.toString()" class="result{{game.result.result.toString().substring(11)}}">
-            <template [ngSwitchCase]="'GameResult.Win'">
-                Win: {{gameResult()}}
-            </template>
-            <template [ngSwitchCase]="'GameResult.Loss'">
-                Loss: {{gameResult()}}
-            </template>
-            <template [ngSwitchCase]="'GameResult.Tie'">
-                Tie: {{gameResult()}}
-            </template>
+                <div style="text-align: right; font-style: italic;">
+                    {{GameDisplayComponent.timeFormat.format(game.sharedData.tzTime)}}
+                    <div *ngIf="game.sharedData.time != game.sharedData.endTime" style="display:inline">
+                        - {{GameDisplayComponent.timeFormat.format(game.sharedData.tzEndTime)}}
+                    </div>
+                    <small *ngIf="game.arriveTime != game.sharedData.time" style="display:block">
+                        Arrive by {{GameDisplayComponent.timeFormat.format(game.tzArriveTime)}}
+                    </small>
+                    <small [ngSwitch]="game.sharedData.type.toString()"  style="display:block; margin-left: auto; width: fit-content" class="badge badge-secondary">
+                        <template [ngSwitchCase]="'EventType.Game'">
+                            Game
+                        </template>
+                        <template [ngSwitchCase]="'EventType.Practice'">
+                            Practice
+                        </template>
+                        <template [ngSwitchCase]="'EventType.Event'">
+                            Event
+                        </template>
+                        <template ngSwitchDefault>
+                           Help
+                        </template>
+                    </small>
+                </div>
+            </div>
+            <img src="{{teamUrl}}" width="50" height="50" style="float: right"/>
         </div>
+
+
+         <div class="map-area" #mapArea>
+        </div>
+        <div *ngIf="game.sharedData.place.name != null" style="font-style: italic;
+        font-weight: bold;
+        font-size: 90%;">
+            {{game.sharedData.place.name}}
+        </div>
+
+        <div class="card-text">
+            {{game.sharedData.place.address}}
+        </div>
+        <div *ngIf="game.sharedData.place.notes.isNotEmpty">
+            Notes: {{game.sharedData.place.notes}}
+        </div>
+        <material-button class="green" (trigger)="openDirections()">Directions</material-button>
+
+        <div *ngIf="currentSeason != null" class="container">
+            <h6>Attendence</h6>
+            <!-- Show attendence -->
+            <player-attendence *ngFor="let play of players; trackBy: trackByPlayer" [player]="play" [game]="game">
+            </player-attendence>
+            Season: {{currentSeason.name}}
+        </div>
+
+        <div *ngIf="game.uniform.isNotEmpty">
+            Uniform: {{game.uniform}}
+        </div>
+
+        <!--- <div style="width: 300px; height: 300px" #mapArea></div> --->
     </div>
 
 </div>

@@ -714,6 +714,20 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return _getGamesInternal(cachedGames, teams, null, start, end, details);
   }
 
+  Future<GameSharedData> _getSharedGameInternal(String sharedGameUid) async {
+    DocumentReferenceWrapper ref =
+        wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
+
+    DocumentSnapshotWrapper doc = await ref.get();
+    if (doc.exists) {
+      GameSharedData gameSharedData =
+          new GameSharedData.fromJSON(doc.documentID, doc.data);
+
+      return gameSharedData;
+    }
+    return null;
+  }
+
   @override
   SharedGameSubscription getSharedGame(String sharedGameUid) {
     DocumentReferenceWrapper ref =
@@ -731,6 +745,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       sub.addUpdate([gameSharedData]);
     });
     return sub;
+  }
+
+  @override
+  Future<Game> getGame(String gameUid) async {
+    DocumentSnapshotWrapper doc =
+        await wrapper.collection(GAMES_COLLECTION).document(gameUid).get();
+    if (!doc.exists) {
+      return null;
+    }
+
+    String sharedGameUid = doc.data[Game.SHAREDDATAUID];
+    GameSharedData shared = await _getSharedGameInternal(sharedGameUid);
+    Game game =
+        new Game.fromJSON(doc.data[Game.TEAMUID], gameUid, doc.data, shared);
+    return game;
   }
 
   // Player stuff
@@ -1388,8 +1417,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentSnapshotWrapper snap =
         await wrapper.collection(LEAGUE_COLLECTON).document(leagueUid).get();
     if (snap.exists) {
-      persistenData.updateElement(PersistenData.leagueOrTournamentTable,
-          snap.documentID, snap.data);
+      persistenData.updateElement(
+          PersistenData.leagueOrTournamentTable, snap.documentID, snap.data);
       return new LeagueOrTournament.fromJson(snap.documentID, snap.data);
     }
     return null;

@@ -198,6 +198,7 @@ abstract class DatabaseUpdateModel {
   GameLogReturnData readGameLogs(Game game);
   Future<String> addFirestoreGameLog(Game game, GameLog log);
   SharedGameSubscription getSharedGame(String sharedGameUid);
+  Future<Game> getGame(String gameUid);
 
   // Invite firestore updates
   Future<void> firestoreInviteDelete(Invite invite);

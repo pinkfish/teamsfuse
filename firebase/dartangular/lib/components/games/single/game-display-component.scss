@@ -34,21 +34,6 @@
   @include mat-temporary-drawer-width(50%);
 }
 
-.teamname {
-  font-style: italic;
-  display: inline;
-  margin-left: 30px;
-}
-
-.details {
-  flex-grow: 1;
-}
-
-.column {
-  float: left;
-  margin: 5px;
-}
-
 .trailing {
    width: 100px;
 
@@ -69,29 +54,6 @@
 .resultTie {
   display:inline;
   font-size: 75%;
-}
-
-.teamimg {
-   width: 60px;
-   padding: 5px;
-}
-
-.card {
-  float:none;
-  clear: both;
-  margin-bottom: 25px;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-  transition: 0.3s;
-  height: 60px;
-  display: flex;
-}
-
-.card:hover {
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-}
-
-.address {
-  font-size: 70%;
 }
 
 .month {

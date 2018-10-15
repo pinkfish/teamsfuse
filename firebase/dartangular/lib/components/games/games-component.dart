@@ -41,6 +41,7 @@ class GamesComponent implements OnInit, OnDestroy {
   StreamController<Iterable<Game>> _gameController =
       new StreamController<Iterable<Game>>();
   StreamSubscription<Iterable<Game>> _gameSub;
+  StreamSubscription<UpdateReason> _teamSub;
 
   String get currentMonth => dateFormat.format(curMonth.start);
 
@@ -72,8 +73,9 @@ class GamesComponent implements OnInit, OnDestroy {
     curMonth.setController(_gameController);
     updateLoading();
 
-    UserDatabaseData.instance.teamStream
+    _teamSub = UserDatabaseData.instance.teamStream
         .listen((UpdateReason reason) => setupListeners());
+
   }
 
   void setupListeners() {
@@ -123,6 +125,8 @@ class GamesComponent implements OnInit, OnDestroy {
     _gameController.close();
     _gameSub?.cancel();
     _gameSub = null;
+    _teamSub?.cancel();
+    _teamSub = null;
   }
 
   void updateLoading() {

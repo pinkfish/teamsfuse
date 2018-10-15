@@ -23,7 +23,7 @@ class SqlData implements PersistenData {
   static const String kData = "data";
   static const String kTeamUid = "teamuid";
 
-  Database _database;
+  static Database _database;
   Completer<bool> _loaded = Completer();
   Future<bool> _initialized;
 
@@ -35,7 +35,7 @@ class SqlData implements PersistenData {
   }
 
   SqlData() {
-    if (IdbFactory.supported) {
+    if (IdbFactory.supported && _database == null) {
       print('indexDBSupported');
       window.indexedDB
           .open('fluffyIndexDb', version: 1, onUpgradeNeeded: _initializeDatabase)
