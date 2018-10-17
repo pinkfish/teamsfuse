@@ -1,4 +1,3 @@
-// ignore_for_file: uri_has_not_been_generated
 import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 
@@ -10,6 +9,7 @@ import 'package:teamfuse/components/authed/authed-component.template.dart'
 import 'package:teamfuse/components/guest/guest-component.template.dart'
     as gctd;
 import 'notfound-component.template.dart' as nfct;
+import 'package:teamfuse/components/promo/promo-component.template.dart' as pct;
 
 @Injectable()
 class Routes {
@@ -20,8 +20,13 @@ class Routes {
   static final _guest = new RouteDefinition(
     routePath: paths.guest,
     component: gctd.GuestComponentNgFactory,
+  );
+  static final _promo = new RouteDefinition(
+    routePath: paths.promo,
+    component: pct.PromoComponentNgFactory,
     useAsDefault: true,
   );
+
   static final _login = new RouteDefinition(
     routePath: paths.login,
     component: nactd.NeedAuthComponentNgFactory,
@@ -31,7 +36,8 @@ class Routes {
     _authed,
     _login,
     _guest,
-    new RouteDefinition.redirect(path: '', redirectTo: 'g/promo/guesthome'),
+    _promo,
+    new RouteDefinition.redirect(path: '', redirectTo: 'promo/guesthome'),
     new RouteDefinition(
       path: '.*',
       component: nfct.NotFoundComponentNgFactory,

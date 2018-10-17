@@ -3,6 +3,9 @@ import '../winrecord.dart';
 import '../userdatabasedata.dart';
 import 'dart:async';
 import '../invite/invitetoleagueteam.dart';
+import '../game/gamesharedata.dart';
+import '../userdatabasedata.dart';
+import '../databaseupdatemodel.dart';
 
 ///
 /// Team associated with a league or tournament.  A single team can
@@ -34,6 +37,11 @@ class LeagueOrTournamentTeam {
   List<InviteToLeagueTeam> _inviteTeams;
   StreamSubscription<dynamic> _inviteSub;
   Stream<LeagueOrTournamentTeam> _thisTeamStream;
+  // Games
+  List<GameSharedData> _games;
+  SharedGameSubscription _sharedGameSub;
+  Stream<Iterable<GameSharedData>> _gameStream;
+  StreamController<Iterable<GameSharedData>> _gameController;
 
   StreamController<LeagueOrTournamentTeam> _updateThisTeam;
 
@@ -104,8 +112,7 @@ class LeagueOrTournamentTeam {
   /// Load this from the wire format.
   ///
   LeagueOrTournamentTeam.fromJSON(String myUid, Map<String, dynamic> data)
-      :
-        teamUid = data[TEAMUID],
+      : teamUid = data[TEAMUID],
         seasonUid = data[SEASONUID],
         name = data[NAME],
         uid = myUid,
@@ -130,6 +137,27 @@ class LeagueOrTournamentTeam {
       _thisTeamStream = _updateThisTeam.stream.asBroadcastStream();
     }
     return _thisTeamStream;
+  }
+
+  ///
+  /// The cached games for this league team.
+  ///
+  Iterable<GameSharedData> get cachedGames => _games;
+
+  Stream<Iterable<GameSharedData>> get games {
+    if (_gameStream != null) {
+      return _gameStream;
+    }
+    _gameController = new StreamController();
+    _gameStream = _gameController.stream.asBroadcastStream();
+    _sharedGameSub =
+        UserDatabaseData.instance.updateModel.getLeagueGamesForTeam(uid);
+    _sharedGameSub.subscriptions
+        .add(_sharedGameSub.stream.listen((Iterable<GameSharedData> gs) {
+      _games = gs;
+      _gameController.add(gs);
+    }));
+    return _gameStream;
   }
 
   /// Update the league team into the database.

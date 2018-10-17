@@ -1276,6 +1276,72 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
+  SharedGameSubscription getLeagueGamesForTeam(String leagueTeamUid) {
+    QueryWrapper queryHome = wrapper.collection(GAMES_SHARED_COLLECTION).where(
+        GameSharedData.OFFICIALRESULT + "." + GameOfficialResults.HOMETEAMUID,
+        isEqualTo: leagueTeamUid);
+    QueryWrapper queryAway = wrapper.collection(GAMES_SHARED_COLLECTION).where(
+        GameSharedData.OFFICIALRESULT + "." + GameOfficialResults.AWAYTEAMUID,
+        isEqualTo: leagueTeamUid);
+
+    // Snapshot and the main query.
+    SharedGameSubscription sub = new SharedGameSubscription();
+    List<GameSharedData> mainRet = [];
+    sub.subscriptions
+        .add(queryAway.snapshots().listen((QuerySnapshotWrapper snap) {
+      List<GameSharedData> ret = <GameSharedData>[];
+      for (DocumentSnapshotWrapper doc in snap.documents) {
+        GameSharedData game =
+            new GameSharedData.fromJSON(doc.documentID, doc.data);
+        ret.add(game);
+      }
+      mainRet.removeWhere((GameSharedData g) =>
+          g.officialResults.awayTeamLeagueUid == leagueTeamUid);
+      mainRet.addAll(ret);
+      sub.addUpdate(mainRet);
+    }));
+
+    sub.subscriptions
+        .add(queryHome.snapshots().listen((QuerySnapshotWrapper snap) {
+      List<GameSharedData> ret = <GameSharedData>[];
+      for (DocumentSnapshotWrapper doc in snap.documents) {
+        GameSharedData game =
+            new GameSharedData.fromJSON(doc.documentID, doc.data);
+        ret.add(game);
+      }
+      mainRet.removeWhere((GameSharedData g) =>
+          g.officialResults.homeTeamLeagueUid == leagueTeamUid);
+      mainRet.addAll(ret);
+      sub.addUpdate(mainRet);
+    }));
+    queryHome.getDocuments().then((QuerySnapshotWrapper snap) {
+      List<GameSharedData> ret = <GameSharedData>[];
+      for (DocumentSnapshotWrapper doc in snap.documents) {
+        GameSharedData game =
+            new GameSharedData.fromJSON(doc.documentID, doc.data);
+        ret.add(game);
+      }
+      mainRet.removeWhere((GameSharedData g) =>
+          g.officialResults.homeTeamLeagueUid == leagueTeamUid);
+      mainRet.addAll(ret);
+      sub.addUpdate(mainRet);
+    });
+    queryAway.getDocuments().then((QuerySnapshotWrapper snap) {
+      List<GameSharedData> ret = <GameSharedData>[];
+      for (DocumentSnapshotWrapper doc in snap.documents) {
+        GameSharedData game =
+            new GameSharedData.fromJSON(doc.documentID, doc.data);
+        ret.add(game);
+      }
+      mainRet.removeWhere((GameSharedData g) =>
+          g.officialResults.awayTeamLeagueUid == leagueTeamUid);
+      mainRet.addAll(ret);
+      sub.addUpdate(mainRet);
+    });
+    return sub;
+  }
+
+  @override
   Future<void> addUserToLeague(String leagueUid, String userUid, bool admin) {
     return wrapper
         .collection(LEAGUE_COLLECTON)

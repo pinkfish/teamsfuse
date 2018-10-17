@@ -6,8 +6,6 @@ import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
 import 'package:angular_components/content/deferred_content.dart';
-import '../../../../util/algolia/algolia.dart';
-import '../../../../util/algolia/searchresult.dart';
 
 @Component(
   selector: 'my-league',
@@ -29,12 +27,6 @@ class LeagueComponent implements OnInit {
 
   @override
   void ngOnInit() {
-    SearchRequest req = new SearchRequest('leagues', 'bing');
-    Algolia algolia =
-        new Algolia('588269MZO8', '32b210cdab0b0eb11b2b1f35a89b7b38');
-    algolia
-        .search(req)
-        .then((SearchResult result) => print(result));
   }
 
   void search(String text) {}

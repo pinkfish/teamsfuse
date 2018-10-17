@@ -76,7 +76,17 @@ class AppComponent implements OnInit, OnDestroy {
       print('ROuter state ${state.path}');
       // Logged out.
       if (!state.path.startsWith(guest.path)) {
-        _router.navigate("/" + guest.path + "/g/guesthome");
+        // Try and switch to the guest version of the url first.
+        String newPath = state.path.split("/").sublist(1).join("/");
+        print('newpath: $newPath ${state.path}');
+        _router.navigate("/" + guest.path + "/" + newPath);
+      }
+    } else {
+      if (state.path.startsWith(guest.path)) {
+        // Try the authed version of it.
+        String newPath = state.path.split("/").sublist(1).join("/");
+        print('newpath: $newPath ${state.path}');
+        _router.navigate("/" + authed.path + "/" + newPath);
       }
     }
   }

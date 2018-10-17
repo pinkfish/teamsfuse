@@ -1,7 +1,6 @@
-<div class="row" style="align-items: center">
-    <div class="col-md-2">
-        <em>
-        {{playerName()}}</em>
+<div class="row {{attendclass}} align-items-center">
+    <div class="col-md">
+        <em>{{playerName()}}</em>
     </div>
     <div class="col-sm-2">
         <material-button (trigger)="openAttendence()" class="{{iconFromAttendanceColor()}}">

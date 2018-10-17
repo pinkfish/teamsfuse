@@ -47,7 +47,7 @@
         </div>
 
 
-         <div class="map-area" #mapArea>
+        <div class="map-area" #mapArea>
         </div>
         <div *ngIf="game.sharedData.place.name != null" style="font-style: italic;
         font-weight: bold;
@@ -61,21 +61,46 @@
         <div *ngIf="game.sharedData.place.notes.isNotEmpty">
             Notes: {{game.sharedData.place.notes}}
         </div>
+
         <material-button class="green" (trigger)="openDirections()">Directions</material-button>
+        <material-button class="green" (trigger)="openTeam()">Team</material-button>
+        <material-button class="green" *ngIf="game.sharedData.leagueUid != null" (trigger)="openLeague()">League</material-button>
 
-        <div *ngIf="currentSeason != null" class="container">
-            <h6>Attendence</h6>
+        <template [ngIf]="currentSeason != null && game.trackAttendance">
+            <h6 class="attendtitle text-muted">Attendence</h6>
             <!-- Show attendence -->
-            <player-attendence *ngFor="let play of players; trackBy: trackByPlayer" [player]="play" [game]="game">
-            </player-attendence>
-            Season: {{currentSeason.name}}
-        </div>
+            <div class="container" style="padding-top: 15px">
+                <player-attendence *ngFor="let play of players; trackBy: trackByPlayer" [player]="play" [game]="game" style="margin: -15px">
+                </player-attendence>
+            </div>
+        </template>
 
-        <div *ngIf="game.uniform.isNotEmpty">
-            Uniform: {{game.uniform}}
+        <div class="container" style="padding-top: 15px">
+            <div *ngIf="currentSeason != null" class="row">
+                <div class="col col-sm-2">
+                    <em>Season:</em>
+                </div>
+                <div class="col">
+                    {{currentSeason.name}}
+                </div>
+            </div>
+            <div *ngIf="game.uniform.isNotEmpty" class="row">
+                <div class="col col-sm-2">
+                    <em>Uniform:</em>
+                </div>
+                <div class="col">
+                    {{game.uniform}}
+                </div>
+            </div>
+            <div *ngIf="game.notes.isNotEmpty" class="row">
+                <div class="col col-sm-2">
+                    <em>Notes:</em>
+                </div>
+                <div class="col">
+                    {{game.notes}}
+                </div>
+            </div>
         </div>
-
-        <!--- <div style="width: 300px; height: 300px" #mapArea></div> --->
     </div>
 
 </div>

@@ -63,6 +63,6 @@ class LeagueTeamCardComponent implements OnChanges {
 
   void openDetails() {
     print('Doing exciting stuff');
-    _router.navigate("/a/leagueteam/detail/" + leagueOrTournamentTeam.uid);
+    _router.navigate("/a/league/team/" + leagueOrTournamentTeam.uid);
   }
 }

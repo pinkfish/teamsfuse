@@ -26,24 +26,26 @@ class SeasonExpansionPanelComponent implements OnDestroy, OnInit {
   @Input()
   Season season;
   GameSubscription _subscription;
-  Stream<Iterable<Game>> _transformedStream;
+  Iterable<Game> games;
+  StreamSubscription<Iterable<Game>> _transformedStream;
 
   @override
   void ngOnInit() {
     print('Making panel');
     _subscription = season.getGames();
+    games = _subscription.initialData;
     _transformedStream = _subscription.stream.map((Iterable<Game> games) {
-      Iterable<Game> ret = games.where((Game g) => g.sharedData.type == EventType.Game);
+      Iterable<Game> ret =
+          games.where((Game g) => g.sharedData.type == EventType.Game);
       return ret;
-    });
+    }).listen((Iterable<Game> allGames) => games = allGames);
   }
 
   @override
   void ngOnDestroy() {
     _subscription.dispose();
+    _transformedStream.cancel();
   }
-
-  Stream<Iterable<Game>> get games => _transformedStream;
 
   Object trackByGame(int index, dynamic game) => game is Game ? game.uid : "";
 }

@@ -23,50 +23,8 @@
   @include colorize("material-button.green", $mat-green);
 }
 
-.controls {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: column;
-}
-
-.custom-width {
-  @include mat-drawer-width(50%);
-  @include mat-temporary-drawer-width(50%);
-}
-
-.trailing {
-   width: 100px;
-
-}
-
-.resultWin {
-  display: inline;
-  color: limegreen;
-  font-size: 75%;
-}
-
-.resultLoss {
-  display: inline;
-  color: red;
-  font-size: 75%;
-}
-
-.resultTie {
-  display:inline;
-  font-size: 75%;
-}
-
-.month {
-  font-size: 200%;
-  background: #369;
-  color: white;
-  font-family: Arial, Helvetica, sans-serif;
-  width: 100%;
-  padding: 10px;
-}
-
 .win {
-  color: limegreen;
+  color: #0f9d58;
 }
 
 .loss {
@@ -76,7 +34,37 @@
 .tie {
 }
 
+.attendyes {
+  color: #0f9d58;
+}
+
+.attendyes:hover {
+  background: rgba(15,157,88,0.12);
+}
+
+.attendno {
+  text-color: red;
+}
+
+.attendno:hover {
+  background: red;
+}
+
+
+.attendmaybe {
+  text-color: black;
+}
+
+.attendmaybe:hover {
+   background: #f8f9fa;
+}
+
+
+.attendtitle {
+   font-weight: bold;
+}
+
 .map-area {
-   height: 400px;
-   margin: 10px;
- }
+  height: 400px;
+  margin: 10px;
+}

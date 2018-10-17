@@ -82,7 +82,7 @@ db.collection('LeagueTeam')
                }
                for (var index in records) {
                    var divison = divLookup[records[index].leagueDivisonUid];
-                   records[index].divisonName = divison.name;
+                   records[index].leagueDivisonName = divison.name;
                    records[index].leagueSeasonUid = divison.seasonUid;
                }
                const details = [];
@@ -105,7 +105,7 @@ db.collection('LeagueTeam')
                }
                for (var index in records) {
                    var divison = divLookup[records[index].leagueSeasonUid];
-                   records[index].seasonName = divison.name;
+                   records[index].leagueSeasonName = divison.name;
                    records[index].leagueUid = divison.leagueUid;
                }
                const details = [];

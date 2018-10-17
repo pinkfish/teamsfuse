@@ -2,18 +2,20 @@
     Loading...
 </div>
 
-<div *ngIf="leagueOrTournamentTeam != null" class="card" (click)="openDetails()">
-    <div class="row" style="min-width: 350px">
-        <img src="{{teamUrl}}" width="50" height="50" class="rounded float-left" style="margin-left: 20px"/>
-        <div class="col">
-            <h5>
-                {{leagueOrTournamentTeam.name}}
-            </h5>
-            <small>
-                Win: {{record.win}}
-                Loss: {{record.loss}}
-                Tie: {{record.tie}}
-            </small>
+<div *ngIf="leagueOrTournamentTeam != null" class="card border border-primary shadow" (click)="openDetails()">
+    <div class="card-body">
+        <div class="row" style="min-width: 350px">
+            <img src="{{teamUrl}}" width="50" height="50" class="rounded float-left" style="margin-left: 20px"/>
+            <div class="col">
+                <h5>
+                    {{leagueOrTournamentTeam.name}}
+                </h5>
+                <small>
+                    Win: {{record.win}}
+                    Loss: {{record.loss}}
+                    Tie: {{record.tie}}
+                </small>
+            </div>
         </div>
     </div>
 </div>

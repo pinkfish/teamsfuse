@@ -23,6 +23,52 @@ exports.deleteTeam = (teamId) => {
     teamIndex.deleteObjects(['T' + teamId]);
 }
 
+exports.updateLeagueTeam = (db, teamDoc) => {
+    var data = teamDoc.data();
+    data.objectID ='t' + teamDoc.id;
+          delete data.members;
+          delete data.record;
+    data.searchRanking = 500;
+    // Update the data with fun.
+    return db.collection('LeagueDivison')
+            .doc(teamDoc.data().leagueDivisonUid)
+            .get()
+            .then(snap => {
+                if (snap !== null && snap.exists) {
+                    data.leagueDivisonName = divisonData.name;
+                    data.leagueSeasonUid = divisonData.seasonUid;
+                    return db.collection('LeagueSeason')
+                        .doc(divisonData.seasonUid).get();
+                }
+                return null;
+            }).then(snap => {
+                if (snap !== null && snap.exists) {
+                    var seasonData = snap.data();
+                    data.leagueSeasonName = seasonData.name;
+                    data.leagueUid = seasonData.leagueUid;
+                    return db.collection('League')
+                        .doc(divisonData.leagueUid).get();
+                }
+                return null;
+            }).then(snap => {
+                if (snap !== null && snap.exists) {
+                    var leagueData = snap.data();
+                    data.leagueName = snap.name;
+                }
+                return teamIndex.saveObjects([data]);
+            })
+}
+
+exports.deleteLeagueTeam = (teamId) => {
+    teamIndex.deleteObjects(['t' + teamId]);
+}
+
+
+exports.deleteTeam = (teamId) => {
+    teamIndex.deleteObjects(['T' + teamId]);
+}
+
+
 exports.updateLeague = (leagueDoc) => {
     var data = leagueDoc.data();
     data.objectID = 'L' + leagueDoc.id;

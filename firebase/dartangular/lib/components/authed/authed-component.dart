@@ -27,14 +27,14 @@ import '../common/search.dart';
     Drawer
   ],
   providers: [
-    const ClassProvider(Routes),
+    const ClassProvider(AuthedRoutes),
   ],
   styleUrls: const [
     'package:angular_components/app_layout/layout.scss.css',
   ],
 )
 class AuthedComponent {
-  final Routes routes;
+  final AuthedRoutes routes;
 
   AuthedComponent(this.routes);
 }

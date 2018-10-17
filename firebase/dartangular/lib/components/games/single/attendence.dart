@@ -1,12 +1,7 @@
 import 'package:angular/angular.dart';
-import 'package:angular_router/angular_router.dart';
-import 'package:angular_components/content/deferred_content.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:intl/intl.dart';
-import 'dart:html';
-import 'package:google_maps/google_maps.dart';
 
 @Component(
   selector: 'player-attendence',
@@ -17,7 +12,8 @@ import 'package:google_maps/google_maps.dart';
   ],
   templateUrl: 'attendence.html',
   styleUrls: const [
-     'package:angular_components/app_layout/layout.scss.css',
+    'game-display-component.css',
+    'package:angular_components/app_layout/layout.scss.css',
   ],
 )
 class AttendenceComponent {
@@ -62,7 +58,20 @@ class AttendenceComponent {
     }
   }
 
-  void openAttendence() {
-
+  String get attendclass {
+    Attendance attendance = Attendance.Maybe;
+    if (game.attendance.containsKey(player.playerUid)) {
+      attendance = game.attendance[player.playerUid];
+    }
+    switch (attendance) {
+      case Attendance.Maybe:
+        return "attendmaybe";
+      case Attendance.No:
+        return "attendno";
+      case Attendance.Yes:
+        return "attendyes";
+    }
   }
+
+  void openAttendence() {}
 }

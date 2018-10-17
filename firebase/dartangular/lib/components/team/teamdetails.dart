@@ -31,7 +31,9 @@ class TeamDetailsComponent implements OnDestroy, OnInit, OnActivate {
   StreamSubscription<Iterable<Season>> _seasonSub;
   Stream<Iterable<Season>> _seasonStream;
 
-  TeamDetailsComponent();
+  Location _location;
+
+  TeamDetailsComponent(this._location);
 
   @override
   void ngOnInit() {
@@ -95,7 +97,7 @@ class TeamDetailsComponent implements OnDestroy, OnInit, OnActivate {
       return team.photoUrl;
     }
     // Default asset.
-    return "assets/" + team.sport.toString() + ".png";
+    return _location.normalizePath("/assets/" + team.sport.toString() + ".png");
   }
 
   bool get displayIcon {

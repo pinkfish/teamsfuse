@@ -18,7 +18,7 @@ exports = module.exports = functions.firestore.document("/LeagueTeam/{teamId}")
             : null;
 
         // See if we added in a seasonUid into the setup.
-        if (data.seasonUid !== null &&
+        if (data !== null && data.seasonUid !== null &&
           (previousData === null ||
            previousData.seasonUid !== data.seasonUid)) {
             // The season changed.  Make sure it is not
@@ -70,9 +70,13 @@ exports = module.exports = functions.firestore.document("/LeagueTeam/{teamId}")
             }
         }
 
-        // See if the name changed.
+        // Update algolia
         if (previousData === null ||
             (previousData.name !== data.name)) {
-            algolia.updateLeagueTeam(inputData.after);
+            finalRet.push(algolia.updateLeagueTeam(db, inputData.after));
         }
+        if (data === null) {
+            finalRet.push(algolia.deleteLeagueTeam(inputData.before));
+        }
+        return Promise.all(finalRet);
 })

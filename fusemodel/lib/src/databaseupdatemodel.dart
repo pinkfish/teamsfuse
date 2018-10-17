@@ -275,6 +275,7 @@ abstract class DatabaseUpdateModel {
 
   // League and stuff.
   SharedGameSubscription getLeagueGamesForDivison(String leagueDivisonUid);
+  SharedGameSubscription getLeagueGamesForTeam(String leagueTeamUid);
   LeagueOrTournamentSeasonSubscription getLeagueSeasons(String leagueUid);
   LeagueOrTournamentDivisonSubscription getLeagueDivisonsForSeason(
       String leagueSeasonUid);

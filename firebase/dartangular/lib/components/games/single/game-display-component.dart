@@ -51,10 +51,12 @@ class GameDisplayComponent implements AfterViewInit, OnInit {
   @ViewChild('mapArea')
   HtmlElement mapAreaRef;
 
+  Router _router;
+
   StreamSubscription<UpdateReason> _teamSub;
   StreamSubscription<UpdateReason> _gameSub;
 
-  GameDisplayComponent();
+  GameDisplayComponent(this._router);
 
   @override
   @override
@@ -173,6 +175,15 @@ class GameDisplayComponent implements AfterViewInit, OnInit {
       navTo += "&destination_place_id=" + game.sharedData.place.placeId;
     }
     window.open(navTo, '_top');
+  }
+
+  void openTeam() {
+    _router.navigate("/a/team/" + game.teamUid);
+
+  }
+
+  void openLeague() {
+    _router.navigate("/a/league/home/" + game.sharedData.leagueUid);
   }
 
   Object trackByPlayer(int index, dynamic player) =>

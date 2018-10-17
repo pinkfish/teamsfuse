@@ -22,8 +22,8 @@ class GameOfficialResults {
 
   static const String _OFFICIALRESULT = 'officialResult';
   static const String _SCORES = 'scores';
-  static const String _HOMETEAMUID = 'homeTeamUid';
-  static const String _AWAYTEAMUID = 'awayTeamUid';
+  static const String HOMETEAMUID = 'homeTeamUid';
+  static const String AWAYTEAMUID = 'awayTeamUid';
 
   GameOfficialResults(this.homeTeamLeagueUid, this.awayTeamLeagueUid,
       {this.result = OfficialResult.NotStarted});
@@ -43,8 +43,8 @@ class GameOfficialResults {
                 e.toString() == data[_OFFICIALRESULT] ??
                 OfficialResult.NotStarted.toString(),
             orElse: () => OfficialResult.NotStarted),
-        homeTeamLeagueUid = data[_HOMETEAMUID],
-        awayTeamLeagueUid = data[_AWAYTEAMUID] {
+        homeTeamLeagueUid = data[HOMETEAMUID],
+        awayTeamLeagueUid = data[AWAYTEAMUID] {
     if (data.containsKey(_SCORES)) {
       Map<dynamic, dynamic> scoreData = data[_SCORES];
       CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> newResults =
@@ -70,8 +70,8 @@ class GameOfficialResults {
     }
     ret[_SCORES] = retScores;
     ret[_OFFICIALRESULT] = result.toString();
-    ret[_AWAYTEAMUID] = awayTeamLeagueUid;
-    ret[_HOMETEAMUID] = homeTeamLeagueUid;
+    ret[AWAYTEAMUID] = awayTeamLeagueUid;
+    ret[HOMETEAMUID] = homeTeamLeagueUid;
     return ret;
   }
 }

@@ -2,7 +2,7 @@
 import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 
-import 'route_paths.dart' as paths;
+import 'package:teamfuse/components/promo/route_paths.dart' as paths;
 
 import 'home/home.template.dart' as hcgl;
 import 'league/league.template.dart' as lcgl;

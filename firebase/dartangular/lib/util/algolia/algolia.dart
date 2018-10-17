@@ -6,6 +6,7 @@ import 'package:http/browser_client.dart';
 export 'searchresult.dart';
 import 'request.dart';
 export 'request.dart';
+export 'searchitem.dart';
 
 class Algolia {
   final String _applicationId;
@@ -26,5 +27,16 @@ class Algolia {
         body: search.makeBody());
     dynamic data = json.decode(response.body);
     return new SearchResult.fromJSON(data as Map<String, dynamic>);
+  }
+
+  Future<Map<String, dynamic>> get(String index, String objectId) async {
+    String url =
+        "${_applicationId}-dsn.algolia.net/1/indexes/${index}/${objectId}";
+    http.Response response = await _client.post(url, headers: {
+      'X-Algolia-API-Key': _applicationKey,
+      'X-Algolia-Application-Id': _applicationId,
+    });
+    dynamic data = json.decode(response.body);
+    return data as Map<String, dynamic>;
   }
 }
