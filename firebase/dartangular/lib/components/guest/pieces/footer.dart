@@ -20,7 +20,7 @@ class GuestFooterComponent {
   final Router _router;
 
   void createAccount() {
-    _router.navigate("/createAccount");
+    _router.navigate("/signup");
   }
 
   GuestFooterComponent(this._router);

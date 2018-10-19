@@ -3,6 +3,7 @@ import 'package:angular/angular.dart';
 import 'routes.dart';
 import 'package:teamfuse/components/guest/pieces/header.dart';
 import 'package:teamfuse/components/guest/pieces/footer.dart';
+import 'package:angular_router/angular_router.dart';
 
 @Component(
   selector: 'my-guest',
@@ -10,6 +11,7 @@ import 'package:teamfuse/components/guest/pieces/footer.dart';
   directives: [
     GuestHeaderComponent,
     GuestFooterComponent,
+    RouterOutlet,
   ],
   providers: [
     const ClassProvider(GuestRoutes),

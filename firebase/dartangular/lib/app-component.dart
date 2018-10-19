@@ -75,13 +75,21 @@ class AppComponent implements OnInit, OnDestroy {
     if (UserDatabaseData.instance.userAuth.currentUserNoWait() == null) {
       print('ROuter state ${state.path}');
       // Logged out.
-      if (!state.path.startsWith(guest.path)) {
+      if (state.path.startsWith(authed.path)) {
         // Try and switch to the guest version of the url first.
         String newPath = state.path.split("/").sublist(1).join("/");
         print('newpath: $newPath ${state.path}');
         _router.navigate("/" + guest.path + "/" + newPath);
       }
     } else {
+      // If we are not verified yet, then go there and keep track of the
+      // current path.
+      if (!UserDatabaseData.instance.userAuth
+          .currentUserNoWait()
+          .isEmailVerified) {
+        _router.navigate("/verify",
+            NavigationParams(queryParameters: {'current': state.path}));
+      }
       if (state.path.startsWith(guest.path)) {
         // Try the authed version of it.
         String newPath = state.path.split("/").sublist(1).join("/");

@@ -31,20 +31,4 @@
     }
   }
 
-  [row] {
-    flex-direction: row;
-  }
 
-  [column] {
-    flex-direction: column;
-  }
-
-  [flex] {
-    display: flex;
-    flex: 1;
-  }
-
-  [inline-flex] {
-    display: inline-flex;
-    flex: 1;
-  }
