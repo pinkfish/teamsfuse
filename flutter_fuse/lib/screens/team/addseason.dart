@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:flutter_fuse/services/validations.dart';
+import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
+import 'package:flutter_fuse/widgets/form/switchformfield.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AddSeasonScreen extends StatefulWidget {
-  final String teamUid;
-
   AddSeasonScreen(this.teamUid);
+
+  final String teamUid;
 
   @override
   AddSeasonScreenState createState() {

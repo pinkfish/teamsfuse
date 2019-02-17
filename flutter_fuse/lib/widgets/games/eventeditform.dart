@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
+import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
+import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/services/map.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
+
 import 'editformbase.dart';
 
 class EventEditForm extends StatefulWidget {
-  final Game game;
-
   EventEditForm(
       {@required Game game, @required GlobalKey<EventEditFormState> key})
-      : this.game = new Game.copy(game),
+      : game = new Game.copy(game),
         super(key: key);
+
+  final Game game;
 
   @override
   EventEditFormState createState() {
@@ -56,16 +57,21 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
   Game get finalGameResult {
     _formState.currentState.save();
     // Add the date time and the time together.
-    widget.game.sharedData.time = new TZDateTime(getLocation(_timezone), _atDate.year,
-            _atDate.month, _atDate.day, _atDate.hour, _atDate.minute)
+    widget.game.sharedData.time = new TZDateTime(
+            getLocation(_timezone),
+            _atDate.year,
+            _atDate.month,
+            _atDate.day,
+            _atDate.hour,
+            _atDate.minute)
         .millisecondsSinceEpoch;
     widget.game.arriveTime = widget.game.sharedData.time;
     DateTime end = _atEnd;
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
       end.add(new Duration(days: 1));
     }
-    widget.game.sharedData.endTime = new TZDateTime(getLocation(_timezone), end.year,
-            end.month, end.day, end.hour, end.minute)
+    widget.game.sharedData.endTime = new TZDateTime(getLocation(_timezone),
+            end.year, end.month, end.day, end.hour, end.minute)
         .millisecondsSinceEpoch;
     widget.game.sharedData.endTime = _atEnd.millisecondsSinceEpoch;
     widget.game.sharedData.place = _place;

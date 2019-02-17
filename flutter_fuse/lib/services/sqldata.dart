@@ -1,12 +1,17 @@
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:fusemodel/fusemodel.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
 
 class SqlData implements PersistenData {
+  SqlData() {
+    _initialized = _completer.future;
+  }
+
   Database _database;
   static SqlData _instance;
   String _path;
@@ -34,10 +39,6 @@ class SqlData implements PersistenData {
     PersistenData.opponentsTable,
     PersistenData.gameTable
   ];
-
-  SqlData() {
-    _initialized = _completer.future;
-  }
 
   static SqlData get instance {
     if (_instance == null) {

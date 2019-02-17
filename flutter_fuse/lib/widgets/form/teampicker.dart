@@ -1,22 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:async';
-import 'package:fusemodel/fusemodel.dart';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class TeamPicker extends StatefulWidget {
+  TeamPicker(
+      {@required this.onChanged,
+      this.teamUid,
+      this.includeCreateNew = false,
+      this.disabled = false,
+      this.selectedTitle = false});
+
   final ValueChanged<String> onChanged;
   final String teamUid;
   final bool disabled;
   final bool selectedTitle;
   final bool includeCreateNew;
-
-  TeamPicker(
-      {@required this.onChanged,
-      this.teamUid,
-        this.includeCreateNew = false,
-      this.disabled = false,
-      this.selectedTitle = false});
 
   @override
   TeamPickerState createState() {
@@ -29,7 +30,6 @@ class TeamPicker extends StatefulWidget {
 class TeamPickerState extends State<TeamPicker> {
   StreamSubscription<UpdateReason> _teamStream;
 
-  TeamPickerState();
   @override
   void dispose() {
     super.dispose();
@@ -69,8 +69,7 @@ class TeamPickerState extends State<TeamPicker> {
       decoration: new InputDecoration(
         labelText: Messages.of(context).team,
         labelStyle: widget.selectedTitle
-            ? Theme
-                .of(context)
+            ? Theme.of(context)
                 .textTheme
                 .subhead
                 .copyWith(fontWeight: FontWeight.bold)

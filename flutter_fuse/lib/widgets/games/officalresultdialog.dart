@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'results/officalresultdetails.dart';
 
 class OfficialResultDialog extends StatelessWidget {
-  final GameSharedData _game;
-
   OfficialResultDialog(this._game);
+
+  final GameSharedData _game;
 
   @override
   Widget build(BuildContext context) {

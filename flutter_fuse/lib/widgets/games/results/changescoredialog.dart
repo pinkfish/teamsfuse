@@ -1,7 +1,8 @@
-import 'package:fusemodel/fusemodel.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'dart:async';
+import 'package:fusemodel/fusemodel.dart';
 
 Future<GameResultDetails> changeScoreDialog(
     BuildContext context, GameResultDetails details) async {
@@ -38,11 +39,11 @@ Future<GameResultDetails> changeScoreDialog(
 }
 
 class _ChangeScore extends StatefulWidget {
-  final GameResultDetails _details;
-  final GlobalKey<FormState> _formState = new GlobalKey<FormState>();
-
   _ChangeScore(this._details, GlobalKey<_ChangeScoreState> key)
       : super(key: key);
+
+  final GameResultDetails _details;
+  final GlobalKey<FormState> _formState = new GlobalKey<FormState>();
 
   @override
   State createState() {
@@ -61,8 +62,7 @@ class _ChangeScoreState extends State<_ChangeScore> {
     for (GameResultPerPeriod result in widget._details.scores.values) {
       ret.add(new Text(
         Messages.of(context).periodname(result.period),
-        style: Theme
-            .of(context)
+        style: Theme.of(context)
             .textTheme
             .subhead
             .copyWith(fontWeight: FontWeight.bold),

@@ -1,17 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/approuter.dart';
 import 'package:fluro/fluro.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/approuter.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class TeamTile extends StatelessWidget {
+  TeamTile(this.team,
+      {this.popBeforeNavigate = false, this.showIconForTeam = false});
+
   final Team team;
   final bool showIconForTeam;
   final bool popBeforeNavigate;
-
-  TeamTile(this.team,
-      {this.popBeforeNavigate = false, this.showIconForTeam = false});
 
   @override
   Widget build(BuildContext context) {

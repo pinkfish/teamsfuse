@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'results/gamelogview.dart';
 import 'results/messagesend.dart';
 import 'results/scoredetails.dart';
 
 class EditResultDialog extends StatelessWidget {
-  final Game _game;
-  final Team _team;
-  final Opponent _opponent;
-
   EditResultDialog(this._game)
       : _team = UserDatabaseData.instance.teams[_game.teamUid] ?? new Team(),
         _opponent = UserDatabaseData.instance.teams[_game.teamUid]
@@ -17,6 +14,10 @@ class EditResultDialog extends StatelessWidget {
             new Opponent() {
     _game.loadGameLogs();
   }
+
+  final Game _game;
+  final Team _team;
+  final Opponent _opponent;
 
   @override
   Widget build(BuildContext context) {

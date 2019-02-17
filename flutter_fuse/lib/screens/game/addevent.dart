@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/games/eventeditform.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/teams/teamselection.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AddEventScreen extends StatefulWidget {
   AddEventScreen();
@@ -15,6 +15,8 @@ class AddEventScreen extends StatefulWidget {
 }
 
 class AddEventScreenState extends State<AddEventScreen> {
+  AddEventScreenState();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<EventEditFormState> _eventFormKey =
       new GlobalKey<EventEditFormState>();
@@ -24,8 +26,6 @@ class AddEventScreenState extends State<AddEventScreen> {
   Team _team;
   Game _initGame;
   int currentStep = 0;
-
-  AddEventScreenState();
 
   @override
   void initState() {
@@ -72,8 +72,7 @@ class AddEventScreenState extends State<AddEventScreen> {
       ),
       new ListTile(
         leading: const Icon(Icons.calendar_today),
-        title: new Text(MaterialLocalizations
-            .of(context)
+        title: new Text(MaterialLocalizations.of(context)
             .formatFullDate(myGame.sharedData.tzTime)),
         subtitle: new Text(timeStr),
       ),
@@ -183,7 +182,8 @@ class AddEventScreenState extends State<AddEventScreen> {
   }
 
   void newGame() {
-    GameSharedData sharedGameData = new GameSharedData(_team.uid, null, type: EventType.Event);
+    GameSharedData sharedGameData =
+        new GameSharedData(_team.uid, null, type: EventType.Event);
     _initGame = new Game(_team.uid, null, sharedData: sharedGameData);
     _initGame.opponentUids = <String>[];
     _initGame.homegame = false;

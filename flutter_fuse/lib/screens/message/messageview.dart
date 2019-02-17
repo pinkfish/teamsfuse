@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class ShowMessageScreen extends StatelessWidget {
-  final String messageUid;
-
   ShowMessageScreen({this.messageUid});
+
+  final String messageUid;
 
   void _archiveMessage(BuildContext context) {
     if (UserDatabaseData.instance.messages.containsKey(messageUid)) {
@@ -96,8 +96,8 @@ class ShowMessageScreen extends StatelessWidget {
           MaterialLocalizations.of(context).formatMediumDate(mess.tzTimeSent) +
               " " +
               MaterialLocalizations.of(context).formatTimeOfDay(
-                    new TimeOfDay.fromDateTime(mess.tzTimeSent),
-                  ),
+                new TimeOfDay.fromDateTime(mess.tzTimeSent),
+              ),
         ),
       ),
     );

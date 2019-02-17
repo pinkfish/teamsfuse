@@ -7,17 +7,19 @@
 */
 
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class Debouncer<Val> {
+  Debouncer(this._delay, this._callback,
+      {this.atBegin = false, this.resetOnAdd});
+
   final Duration _delay;
   final ValueChanged<List<Val>> _callback;
   bool atBegin;
   bool resetOnAdd;
 
   List<Val> _data = <Val>[];
-
-  Debouncer(this._delay, this._callback, {this.atBegin = false, this.resetOnAdd});
 
   Timer _timeoutId;
 

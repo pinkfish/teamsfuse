@@ -7,14 +7,16 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:http/http.dart' as http;
-import 'package:synchronized/synchronized.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_fuse/services/appconfiguration.dart';
+import 'package:http/http.dart' as http;
+import 'package:synchronized/synchronized.dart';
 
 import 'cacheobject.dart';
 
 class CacheManager {
+  CacheManager._();
+
   static const String _keyCacheData = "lib_cached_image_data";
   static const String _keyCacheCleanDate = "lib_cached_image_data_last_clean";
 
@@ -24,8 +26,6 @@ class CacheManager {
   static bool showDebugLogs = false;
 
   static CacheManager _instance;
-
-  CacheManager._();
 
   static Future<CacheManager> getInstance() async {
     if (_instance == null) {

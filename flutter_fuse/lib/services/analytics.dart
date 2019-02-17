@@ -1,9 +1,10 @@
+import 'dart:io';
+
+import 'package:device_info/device_info.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
-import 'package:package_info/package_info.dart';
-import 'package:device_info/device_info.dart';
-import 'dart:io';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:package_info/package_info.dart';
 
 class Analytics extends AnalyticsSubsystem {
   static FirebaseAnalytics _analytics = new FirebaseAnalytics();
@@ -89,8 +90,9 @@ class Analytics extends AnalyticsSubsystem {
 }
 
 class FirebaseTrace implements TraceProxy {
-  Trace trace;
   FirebaseTrace(this.trace);
+
+  Trace trace;
 
   @override
   void start() {

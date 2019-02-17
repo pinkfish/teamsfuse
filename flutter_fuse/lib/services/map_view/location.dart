@@ -1,11 +1,12 @@
 class MapLocation {
-  final double latitude;
-  final double longitude;
-
-  const MapLocation(this.latitude, this.longitude);
   factory MapLocation.fromMap(Map<String, double> map) {
     return new MapLocation(map["latitude"], map["longitude"]);
   }
+
+  const MapLocation(this.latitude, this.longitude);
+
+  final double latitude;
+  final double longitude;
 
   Map<String, double> toMap() {
     return <String, double>{"latitude": latitude, "longitude": longitude};

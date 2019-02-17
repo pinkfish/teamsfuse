@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdivisongames.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdivisonteams.dart';
-import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class LeagueDivisonScreen extends StatefulWidget {
+  LeagueDivisonScreen(
+      this.leagueUid, this.leagueSeasonUid, this.leagueDivisonUid);
+
   final String leagueUid;
   final String leagueDivisonUid;
   final String leagueSeasonUid;
-
-  LeagueDivisonScreen(
-      this.leagueUid, this.leagueSeasonUid, this.leagueDivisonUid);
 
   @override
   State createState() {
@@ -41,7 +41,9 @@ class _LeagueDivisonScreenState extends State<LeagueDivisonScreen> {
       case 2:
         return Text(Messages.of(context).unknown);
     }
-    return SizedBox(width: 0.0,);
+    return SizedBox(
+      width: 0.0,
+    );
   }
 
   @override

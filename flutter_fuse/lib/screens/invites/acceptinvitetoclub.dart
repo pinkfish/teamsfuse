@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'dialog/deleteinvite.dart';
 
 // Shows the current invites pending for this user.
 class AcceptInviteToClubScreen extends StatefulWidget {
-  final String _inviteUid;
-
   AcceptInviteToClubScreen(this._inviteUid);
+
+  final String _inviteUid;
 
   @override
   _AcceptInviteToClubScreenState createState() {

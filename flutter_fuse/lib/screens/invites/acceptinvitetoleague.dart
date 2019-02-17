@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'dialog/deleteinvite.dart';
 
 class AcceptInviteToLeagueScreen extends StatefulWidget {
-  final String _inviteUid;
-
   AcceptInviteToLeagueScreen(this._inviteUid);
+
+  final String _inviteUid;
 
   @override
   _AcceptInviteToLeagueScreenState createState() {
@@ -47,7 +48,6 @@ class _AcceptInviteToLeagueScreenState
     await _invite.firestoreDelete();
     Navigator.pop(context);
   }
-
 
   @override
   Widget build(BuildContext context) {

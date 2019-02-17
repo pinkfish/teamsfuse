@@ -41,14 +41,14 @@ class Auth extends wfs.AuthWrapper {
 }
 
 class FirebaseUser extends wfs.FirebaseUserWrapper {
-  fa.FirebaseUser _user;
-
   FirebaseUser(this._user)
       : super(
             email: _user?.email,
             isEmailVerified: _user?.isEmailVerified,
             uid: _user?.uid,
             loggedIn: _user != null);
+
+  fa.FirebaseUser _user;
 
   @override
   Future<void> reload() {
@@ -63,13 +63,6 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
 
 class UserTransformer
     extends StreamTransformerBase<fa.FirebaseUser, wfs.FirebaseUserWrapper> {
-  StreamController<wfs.FirebaseUserWrapper> _controller;
-
-  StreamSubscription<fa.FirebaseUser> _subscription;
-
-  // Original Stream
-  Stream<fa.FirebaseUser> _stream;
-
   UserTransformer() {
     _controller = new StreamController<wfs.FirebaseUserWrapper>(
         onListen: _onListen,
@@ -81,6 +74,13 @@ class UserTransformer
           _subscription.resume();
         });
   }
+
+  StreamController<wfs.FirebaseUserWrapper> _controller;
+
+  StreamSubscription<fa.FirebaseUser> _subscription;
+
+  // Original Stream
+  Stream<fa.FirebaseUser> _stream;
 
   void _onListen() {
     _subscription = _stream.listen(onData,

@@ -1,18 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/teams/teamtile.dart';
-
-import 'fuseddrawerheader.dart';
-import 'package:flutter_fuse/services/approuter.dart';
 import 'package:fluro/fluro.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/approuter.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/teams/teamtile.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'fuseddrawer.dart';
+import 'fuseddrawerheader.dart';
 
 class FusedDrawerContent extends StatelessWidget {
-  final DrawerMode mode;
-
   FusedDrawerContent({this.mode = DrawerMode.gameList});
+
+  final DrawerMode mode;
 
   Widget _buildTeamSection(BuildContext context) {
     List<Widget> data = <Widget>[];
@@ -105,20 +105,21 @@ class FusedDrawerContent extends StatelessWidget {
         },
       ),
       new Divider(),
-      mode == DrawerMode.gameList ?
-      new ListTile(
-        leading: const Icon(Icons.people_outline),
-        title: new Text(Messages.of(context).leaguetournament),
-        onTap: () {
-          Navigator.popAndPushNamed(context, "/League/Home");
-        },
-      ) : new ListTile(
-        leading: const Icon(Icons.list),
-        title: new Text(Messages.of(context).allgames),
-        onTap: () {
-          Navigator.popAndPushNamed(context, "/Home");
-        },
-      ),
+      mode == DrawerMode.gameList
+          ? new ListTile(
+              leading: const Icon(Icons.people_outline),
+              title: new Text(Messages.of(context).leaguetournament),
+              onTap: () {
+                Navigator.popAndPushNamed(context, "/League/Home");
+              },
+            )
+          : new ListTile(
+              leading: const Icon(Icons.list),
+              title: new Text(Messages.of(context).allgames),
+              onTap: () {
+                Navigator.popAndPushNamed(context, "/Home");
+              },
+            ),
       new Divider(),
       new ListTile(
         leading: const Icon(Icons.people_outline),

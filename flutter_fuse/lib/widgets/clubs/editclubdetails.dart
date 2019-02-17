@@ -1,16 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/clubimage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class EditClubDetailsForm extends StatefulWidget {
-  final Club club;
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/validations.dart';
+import 'package:flutter_fuse/widgets/util/clubimage.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:image_picker/image_picker.dart';
 
-  EditClubDetailsForm(this.club, GlobalKey<EditClubDetailsFormState> key) : super(key: key);
+class EditClubDetailsForm extends StatefulWidget {
+  EditClubDetailsForm(this.club, GlobalKey<EditClubDetailsFormState> key)
+      : super(key: key);
+
+  final Club club;
 
   @override
   EditClubDetailsFormState createState() {
@@ -52,7 +54,11 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
       return null;
     } else {
       _formKey.currentState.save();
-      Club club = new Club(uid: widget.club.uid, name: _clubName, arriveBeforeGame: _clubArriveBefore, trackAttendence: _clubTrackAttendence);
+      Club club = new Club(
+          uid: widget.club.uid,
+          name: _clubName,
+          arriveBeforeGame: _clubArriveBefore,
+          trackAttendence: _clubTrackAttendence);
 
       // New club, add in the default admin.
       if (club.uid == null) {
@@ -97,7 +103,7 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
       new IconButton(
         onPressed: _selectImage,
         iconSize:
-        (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
+            (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
         icon: _buildImage(),
       ),
       new EnsureVisibleWhenFocused(
@@ -139,7 +145,7 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
       ),
     ];
 
-     return new SingleChildScrollView(
+    return new SingleChildScrollView(
       scrollDirection: Axis.vertical,
       controller: _scrollController,
       child: new Column(

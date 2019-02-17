@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class LeagueOrTournamentTeamName extends StatelessWidget {
+  LeagueOrTournamentTeamName(this.leagueOrTournmentTeamUid,
+      {this.style, this.textAlign, this.overflow});
+
   final String leagueOrTournmentTeamUid;
   final TextStyle style;
   final TextAlign textAlign;
   final TextOverflow overflow;
-
-  LeagueOrTournamentTeamName(this.leagueOrTournmentTeamUid,
-      {this.style, this.textAlign, this.overflow});
 
   @override
   Widget build(BuildContext context) {

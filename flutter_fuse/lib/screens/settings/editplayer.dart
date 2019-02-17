@@ -1,17 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/form/relationshipformfield.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:async';
 import 'dart:io';
 
-class EditPlayerScreen extends StatefulWidget {
-  final String playerUid;
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/validations.dart';
+import 'package:flutter_fuse/widgets/form/relationshipformfield.dart';
+import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:image_picker/image_picker.dart';
 
+class EditPlayerScreen extends StatefulWidget {
   EditPlayerScreen({this.playerUid});
+
+  final String playerUid;
 
   @override
   EditPlayerScreenState createState() {
@@ -20,6 +21,8 @@ class EditPlayerScreen extends StatefulWidget {
 }
 
 class EditPlayerScreenState extends State<EditPlayerScreen> {
+  EditPlayerScreenState();
+
   Player _player;
   Validations _validations = new Validations();
   File _imageFile;
@@ -27,8 +30,6 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
   bool _autoValidate = false;
 
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-
-  EditPlayerScreenState();
 
   @override
   void initState() {

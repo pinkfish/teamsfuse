@@ -1,16 +1,17 @@
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamenteditform.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'dart:io';
 
-class AddLeagueScreen extends StatefulWidget {
-  final LeagueOrTournamentType type;
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamenteditform.dart';
+import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
+import 'package:fusemodel/fusemodel.dart';
 
+class AddLeagueScreen extends StatefulWidget {
   AddLeagueScreen(this.type);
+
+  final LeagueOrTournamentType type;
 
   @override
   State createState() {

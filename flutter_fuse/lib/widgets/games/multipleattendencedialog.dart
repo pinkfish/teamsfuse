@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class MultipleAttendanceDialog extends StatefulWidget {
-  final Map<Player, Attendance> attendance;
   MultipleAttendanceDialog(this.attendance);
+
+  final Map<Player, Attendance> attendance;
 
   @override
   MultipleAttendanceDialogState createState() {
@@ -14,10 +15,10 @@ class MultipleAttendanceDialog extends StatefulWidget {
 }
 
 class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
+  MultipleAttendanceDialogState(this._attendance);
+
   Map<Player, Attendance> _attendance;
   Set<Player> _changed = new Set<Player>();
-
-  MultipleAttendanceDialogState(this._attendance);
 
   List<Widget> _buildAttendenceSet(BuildContext context) {
     List<Widget> ret = <Widget>[];
@@ -127,8 +128,7 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
                 child: new SingleChildScrollView(
                   padding: const EdgeInsetsDirectional.fromSTEB(
                       12.0, 12.0, 0.0, 16.0),
-                  child:
-                      new ListBody(children: _buildAttendenceSet(context)),
+                  child: new ListBody(children: _buildAttendenceSet(context)),
                 ),
               ),
               new FlatButton(

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
-import 'attendanceicon.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'attendancedialog.dart';
+import 'attendanceicon.dart';
 
 class Availaility extends StatefulWidget {
-  final Game _game;
-
   Availaility(this._game);
+
+  final Game _game;
 
   @override
   AvailabityState createState() {

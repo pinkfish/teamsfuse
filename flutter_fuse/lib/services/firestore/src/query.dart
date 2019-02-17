@@ -2,9 +2,9 @@ part of firestore_mobile;
 
 /// Represents a query over the data at a particular location.
 class Query extends wfs.QueryWrapper {
-  fs.Query _doc;
-
   Query(this._doc);
+
+  fs.Query _doc;
 
   /// Notifies of query results at this location
   @override

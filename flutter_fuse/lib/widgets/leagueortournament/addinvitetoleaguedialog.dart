@@ -1,33 +1,33 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AddInviteToLeagueDialog extends Dialog {
+  AddInviteToLeagueDialog(this.leagueOrTournament);
+
   final TextEditingController _controller = new TextEditingController();
   final Validations validations = Validations();
 
   final LeagueOrTournament leagueOrTournament;
 
-  AddInviteToLeagueDialog(this.leagueOrTournament);
-
-  static Future<bool> showAddLeagueOrTournamentInviteDialog(BuildContext context,
-      LeagueOrTournament leagueOrTournament) async {
+  static Future<bool> showAddLeagueOrTournamentInviteDialog(
+      BuildContext context, LeagueOrTournament leagueOrTournament) async {
     String email = await showDialog<String>(
         context: context,
-        builder: (BuildContext context) => new AddInviteToLeagueDialog(leagueOrTournament));
+        builder: (BuildContext context) =>
+            new AddInviteToLeagueDialog(leagueOrTournament));
     if (email == null) {
       return false;
     }
     InviteToLeagueAsAdmin invite = new InviteToLeagueAsAdmin(
-      sentByUid: UserDatabaseData.instance.userUid,
-      leagueUid: leagueOrTournament.uid,
-      leagueName: leagueOrTournament.name,
-      email: email
-    );
-    await UserDatabaseData.instance.updateModel
-        .inviteUserToLeague(invite);
+        sentByUid: UserDatabaseData.instance.userUid,
+        leagueUid: leagueOrTournament.uid,
+        leagueName: leagueOrTournament.name,
+        email: email);
+    await UserDatabaseData.instance.updateModel.inviteUserToLeague(invite);
     return true;
   }
 

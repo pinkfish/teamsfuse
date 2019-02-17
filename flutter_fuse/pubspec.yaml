@@ -39,7 +39,7 @@ dependencies:
   sqflite: any
   tuple: any
   sliver_calendar:
-    path: ../../sliver_calendar
+    path: ../../flutter_calendar
   flutter_local_notifications:
     git:
       url: "git://github.com/pinkfish/flutter_local_notifications.git"

@@ -1,18 +1,19 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/form/genderformfield.dart';
-import 'package:flutter_fuse/widgets/form/sportformfield.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
+import 'package:flutter_fuse/widgets/form/sportformfield.dart';
 import 'package:flutter_fuse/widgets/form/switchformfield.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'dart:async';
 
 enum StartSection { start, end, all }
 
@@ -22,12 +23,12 @@ enum StartSection { start, end, all }
 /// other bits.
 ///
 class TeamEditForm extends StatefulWidget {
-  final Team team;
-  final StartSection startSection;
-
   TeamEditForm(this.team, GlobalKey<TeamEditFormState> key,
       {this.startSection = StartSection.all})
       : super(key: key);
+
+  final Team team;
+  final StartSection startSection;
 
   @override
   TeamEditFormState createState() {

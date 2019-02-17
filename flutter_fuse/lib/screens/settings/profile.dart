@@ -1,16 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/playerimage.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:fusemodel/firestore.dart';
-import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
-import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
 import 'dart:async';
 
-class ProfileScreen extends StatefulWidget {
-  final bool onlyPlayer;
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
+import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
+import 'package:flutter_fuse/widgets/util/playerimage.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 
+class ProfileScreen extends StatefulWidget {
   ProfileScreen({this.onlyPlayer = false});
+
+  final bool onlyPlayer;
 
   @override
   ProfileScreenState createState() {

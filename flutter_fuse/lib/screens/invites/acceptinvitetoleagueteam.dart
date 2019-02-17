@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/byusername.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
-import 'dialog/deleteinvite.dart';
-import 'package:flutter_fuse/widgets/form/teampicker.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/services/validations.dart';
+import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
+import 'package:flutter_fuse/widgets/form/teampicker.dart';
+import 'package:flutter_fuse/widgets/util/byusername.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+import 'dialog/deleteinvite.dart';
 
 class AcceptInviteToLeagueTeamScreen extends StatefulWidget {
-  final String _inviteUid;
-
   AcceptInviteToLeagueTeamScreen(this._inviteUid);
+
+  final String _inviteUid;
 
   @override
   _AcceptInviteToLeagueTeamScreenState createState() {

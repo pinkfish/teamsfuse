@@ -1,8 +1,9 @@
-import 'package:fusemodel/fusemodel.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'dart:async';
 import 'package:flutter_fuse/widgets/form/switchformfield.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 Future<GamePeriodTime> timerSetupDialog(
     BuildContext context, GameResultDetails details) async {
@@ -39,12 +40,12 @@ Future<GamePeriodTime> timerSetupDialog(
 }
 
 class _TimerDetails extends StatefulWidget {
-  final GamePeriodTime _periodTime;
-  final GlobalKey<FormState> _formState = new GlobalKey<FormState>();
-
   _TimerDetails(GamePeriodTime periodTime, GlobalKey<_TimerDetailsState> key)
       : _periodTime = new GamePeriodTime.copy(periodTime),
         super(key: key);
+
+  final GamePeriodTime _periodTime;
+  final GlobalKey<FormState> _formState = new GlobalKey<FormState>();
 
   @override
   State createState() {
@@ -53,11 +54,8 @@ class _TimerDetails extends StatefulWidget {
 }
 
 class _TimerDetailsState extends State<_TimerDetails> {
-  bool _countUp;
-
   @override
   void initState() {
-    _countUp = widget._periodTime.timeCountUp;
     super.initState();
   }
 
@@ -81,8 +79,6 @@ class _TimerDetailsState extends State<_TimerDetails> {
               new SwitchFormField(
                 label: Messages.of(context).timercountup,
                 initialValue: widget._periodTime.timeCountUp,
-                onFieldSubmitted: (bool value) =>
-                    setState(() => _countUp = value),
                 onSaved: (bool value) => widget._periodTime.timeCountUp = value,
               ),
             ],

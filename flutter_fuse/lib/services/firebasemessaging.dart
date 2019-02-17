@@ -48,7 +48,7 @@ class FirebaseMessaging {
   }
 
   final StreamController<IosNotificationSettings> _iosSettingsStreamController =
-  new StreamController<IosNotificationSettings>.broadcast();
+      new StreamController<IosNotificationSettings>.broadcast();
 
   /// Stream that fires when the user changes their notification settings.
   ///
@@ -71,7 +71,7 @@ class FirebaseMessaging {
   }
 
   final StreamController<String> _tokenStreamController =
-  new StreamController<String>.broadcast();
+      new StreamController<String>.broadcast();
 
   /// Fires when a new FCM token is generated.
   Stream<String> get onTokenRefresh {
@@ -112,11 +112,14 @@ class FirebaseMessaging {
             call.arguments.cast<String, bool>() as Map<String, bool>));
         return null;
       case "onMessage":
-        return _onMessage(call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
+        return _onMessage(
+            call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
       case "onLaunch":
-        return _onLaunch(call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
+        return _onLaunch(
+            call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
       case "onResume":
-        return _onResume(call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
+        return _onResume(
+            call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
       default:
         throw new UnsupportedError("Unrecognized JSON message");
     }
@@ -124,9 +127,10 @@ class FirebaseMessaging {
 }
 
 class IosNotificationSettings {
-  final bool sound;
-  final bool alert;
-  final bool badge;
+  IosNotificationSettings._fromMap(Map<String, bool> settings)
+      : sound = settings['sound'],
+        alert = settings['alert'],
+        badge = settings['badge'];
 
   const IosNotificationSettings({
     this.sound: true,
@@ -134,10 +138,9 @@ class IosNotificationSettings {
     this.badge: true,
   });
 
-  IosNotificationSettings._fromMap(Map<String, bool> settings)
-      : sound = settings['sound'],
-        alert = settings['alert'],
-        badge = settings['badge'];
+  final bool sound;
+  final bool alert;
+  final bool badge;
 
   @visibleForTesting
   Map<String, dynamic> toMap() {

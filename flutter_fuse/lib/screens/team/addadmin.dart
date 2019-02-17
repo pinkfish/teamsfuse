@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/services/analytics.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/analytics.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/validations.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AddAdminScreen extends StatefulWidget {
   AddAdminScreen(this._teamUid);
@@ -17,6 +18,8 @@ class AddAdminScreen extends StatefulWidget {
 }
 
 class AddAdminScreenState extends State<AddAdminScreen> {
+  AddAdminScreenState();
+
   final Validations _validations = new Validations();
   List<String> _emailNames = <String>[];
   bool autovalidate = false;
@@ -24,8 +27,6 @@ class AddAdminScreenState extends State<AddAdminScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-
-  AddAdminScreenState();
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(

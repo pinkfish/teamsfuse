@@ -1,16 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 ///
 /// Shows a stopwatch on the screen in a nice widget that updates itself
 /// every second.
 ///
 class StopwatchDisplay extends StatefulWidget {
+  StopwatchDisplay({@required this.stopwatch, @required this.style});
+
   final MyStopwatch stopwatch;
   final TextStyle style;
-
-  StopwatchDisplay({@required this.stopwatch, @required this.style});
 
   @override
   State createState() {
@@ -68,15 +69,6 @@ class _StopwatchDisplayState extends State<StopwatchDisplay> {
 /// A simple stopwatch interface to measure elapsed time.
 ///
 class MyStopwatch {
-  Stopwatch watch = new Stopwatch();
-
-  // The _start and _stop fields capture the time when [start] and [stop]
-  // are called respectively.
-  // If _stop is null, the stopwatch is running.
-  int _start = 0;
-  int _stop = 0;
-  final int initialValue;
-
   ///
   ///    Creates a [Stopwatch] in stopped state with a zero elapsed count.
   ///
@@ -86,6 +78,15 @@ class MyStopwatch {
   ///    var stopwatch = new Stopwatch()..start();
   ///    ```
   MyStopwatch({this.initialValue});
+
+  Stopwatch watch = new Stopwatch();
+
+  // The _start and _stop fields capture the time when [start] and [stop]
+  // are called respectively.
+  // If _stop is null, the stopwatch is running.
+  int _start = 0;
+  int _stop = 0;
+  final int initialValue;
 
   ///   Starts the [Stopwatch].
   ///

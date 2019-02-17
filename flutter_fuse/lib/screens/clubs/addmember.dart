@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/form/switchformfield.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:flutter_fuse/widgets/util/clubimage.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AddMemberScreen extends StatefulWidget {
-  final String clubUid;
-
   AddMemberScreen(this.clubUid);
+
+  final String clubUid;
 
   @override
   AddMemberScreenState createState() {
@@ -109,7 +109,7 @@ class AddMemberScreenState extends State<AddMemberScreen> {
                 ),
               ),
               new SwitchFormField(
-                icon:  Icons.person_add,
+                icon: Icons.person_add,
                 child: new Text(Messages.of(context).administrator),
                 initialValue: false,
                 onSaved: (bool value) => _inviteAsAdmin = value,

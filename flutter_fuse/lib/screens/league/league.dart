@@ -1,18 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdetails.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/addseasondialog.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/addinvitetoleaguedialog.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/addseasondialog.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdetails.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class LeagueScreen extends StatelessWidget {
-  final String leagueUid;
-
   LeagueScreen(this.leagueUid);
+
+  final String leagueUid;
 
   void _doAction(BuildContext context, String action) async {
     if (action == "season") {

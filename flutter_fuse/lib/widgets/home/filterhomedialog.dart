@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class FilterHomeDialog extends StatefulWidget {
-  final FilterDetails details;
-
   FilterHomeDialog(this.details);
+
+  final FilterDetails details;
 
   @override
   _FilterHomeDialogState createState() {
@@ -220,11 +220,11 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
 }
 
 class _CheckboxDialogItem extends StatefulWidget {
+  _CheckboxDialogItem({this.initialValue = false, this.onChanged, this.title});
+
   final ValueChanged<bool> onChanged;
   final bool initialValue;
   final String title;
-
-  _CheckboxDialogItem({this.initialValue = false, this.onChanged, this.title});
 
   @override
   State createState() {

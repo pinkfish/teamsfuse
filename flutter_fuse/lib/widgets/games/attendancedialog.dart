@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AttendanceDialog extends StatefulWidget {
-  final Attendance current;
   AttendanceDialog({this.current});
+
+  final Attendance current;
 
   @override
   AttendanceDialogState createState() {

@@ -1,18 +1,19 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/screens/game/addopponent.dart';
+import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
 import 'package:flutter_fuse/widgets/form/opponentformfield.dart';
+import 'package:flutter_fuse/widgets/form/placesformfield.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/form/switchformfield.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/screens/game/addopponent.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
-import 'package:flutter_fuse/services/map.dart';
-import 'package:flutter_fuse/widgets/form/placesformfield.dart';
+
 import 'editformbase.dart';
 
 // This form has all the stuff needed to edit the main parts
@@ -31,6 +32,8 @@ class GameEditForm extends StatefulWidget {
 }
 
 class GameEditFormState extends State<GameEditForm> with EditFormBase {
+  GameEditFormState();
+
   final GlobalKey<DateTimeFormFieldState> _arriveByKey =
       new GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<DateTimeFormFieldState> _atEndKEy =
@@ -47,8 +50,6 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   DateTime _atDate;
   DateTime _atArrival;
   DateTime _atEnd;
-
-  GameEditFormState();
 
   @override
   void save() {
@@ -104,8 +105,13 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
       if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
         end.add(new Duration(days: 1));
       }
-      widget.game.sharedData.endTime = new TZDateTime(getLocation(widget.game.sharedData.timezone),
-              end.year, end.month, end.day, end.hour, end.minute)
+      widget.game.sharedData.endTime = new TZDateTime(
+              getLocation(widget.game.sharedData.timezone),
+              end.year,
+              end.month,
+              end.day,
+              end.hour,
+              end.minute)
           .millisecondsSinceEpoch;
     }
     return widget.game;
@@ -121,11 +127,11 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   void _openAddOpponentDialog() async {
     String save =
         await Navigator.of(context).push(new MaterialPageRoute<String>(
-              builder: (BuildContext context) {
-                return new AddOpponent(widget.game.teamUid);
-              },
-              fullscreenDialog: true,
-            ));
+      builder: (BuildContext context) {
+        return new AddOpponent(widget.game.teamUid);
+      },
+      fullscreenDialog: true,
+    ));
 
     if (save != null) {
       _opponentState.currentState.updateValue(save);
@@ -241,7 +247,8 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                 ),
                 new PlacesFormField(
                   initialValue: new LocationAndPlace.fromGame(
-                      widget.game.sharedData.place, widget.game.sharedData.timezone),
+                      widget.game.sharedData.place,
+                      widget.game.sharedData.timezone),
                   labelText: Messages.of(context).selectplace,
                   decoration:
                       const InputDecoration(icon: const Icon(Icons.place)),
@@ -250,7 +257,8 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                     widget.game.sharedData.place.name = loc.details.name;
                     widget.game.sharedData.place.address = loc.details.address;
                     widget.game.sharedData.place.placeId = loc.details.placeid;
-                    widget.game.sharedData.place.latitude = loc.details.location.latitude;
+                    widget.game.sharedData.place.latitude =
+                        loc.details.location.latitude;
                     widget.game.sharedData.place.longitude =
                         loc.details.location.longitude;
                     loc.loc.then((Location location) {

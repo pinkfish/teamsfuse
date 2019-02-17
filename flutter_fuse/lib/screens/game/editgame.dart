@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_fuse/widgets/games/editformbase.dart';
+import 'package:flutter_fuse/widgets/games/eventeditform.dart';
 import 'package:flutter_fuse/widgets/games/gameeditform.dart';
 import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
-import 'package:flutter_fuse/widgets/games/eventeditform.dart';
-import 'package:flutter_fuse/widgets/games/editformbase.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class EditGameScreen extends StatefulWidget {
-  final String gameuid;
-
   EditGameScreen(this.gameuid);
+
+  final String gameuid;
 
   @override
   EditGameScreenState createState() {
@@ -19,6 +19,8 @@ class EditGameScreen extends StatefulWidget {
 }
 
 class EditGameScreenState extends State<EditGameScreen> {
+  EditGameScreenState();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   GlobalKey<GameEditFormState> _gameFormKey =
       new GlobalKey<GameEditFormState>();
@@ -27,8 +29,6 @@ class EditGameScreenState extends State<EditGameScreen> {
   GlobalKey<EventEditFormState> _eventFormKey =
       new GlobalKey<EventEditFormState>();
   bool _saving = false;
-
-  EditGameScreenState();
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState

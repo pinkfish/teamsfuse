@@ -1,12 +1,12 @@
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/teams/teamtile.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class ClubTeams extends StatelessWidget {
-  final Club club;
-
   ClubTeams(this.club);
+
+  final Club club;
 
   List<Widget> _teamTiles(BuildContext context, Iterable<Team> teams) {
     List<Widget> teamWidgets = <Widget>[];

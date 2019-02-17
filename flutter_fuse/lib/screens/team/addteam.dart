@@ -1,21 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/teams/teameditform.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
-import 'package:flutter_fuse/widgets/util/clubimage.dart';
-import 'package:flutter_fuse/widgets/util/gendericon.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/form/clubpicker.dart';
-import 'package:flutter_fuse/widgets/form/playerformfield.dart';
-import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
 import 'dart:io';
 
-class AddTeamScreen extends StatefulWidget {
-  final String clubUid;
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/form/clubpicker.dart';
+import 'package:flutter_fuse/widgets/form/playerformfield.dart';
+import 'package:flutter_fuse/widgets/teams/teameditform.dart';
+import 'package:flutter_fuse/widgets/util/clubimage.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/gendericon.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
+import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/fusemodel.dart';
 
+class AddTeamScreen extends StatefulWidget {
   AddTeamScreen({this.clubUid});
+
+  final String clubUid;
 
   @override
   AddTeamScreenState createState() {

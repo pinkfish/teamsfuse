@@ -1,18 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+
+///
+/// Shows an overlay over the main class when it is saving with some useful
+/// information, does it as a semi-transparent overlay.
+///
 class SavingOverlay extends StatelessWidget {
+  SavingOverlay({@required bool saving, @required this.child, int quoteId})
+      : _saving = saving ?? false,
+        quoteId = quoteId ?? randomNum.nextInt(20000);
+
   final bool _saving;
   final Widget child;
   final int quoteId;
 
   static Random randomNum = Random.secure();
-
-  SavingOverlay({@required bool saving, @required this.child, int quoteId})
-      : _saving = saving ?? false,
-        this.quoteId = quoteId ?? randomNum.nextInt(20000);
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +48,7 @@ class SavingOverlay extends StatelessWidget {
                 ),
                 new SizedBox(height: 10.0),
                 new Text(quote.author,
-                    style: Theme
-                        .of(context)
+                    style: Theme.of(context)
                         .textTheme
                         .subhead
                         .copyWith(fontStyle: FontStyle.italic)),

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class PeriodTypeSelector extends StatelessWidget {
+  PeriodTypeSelector(this.team, this.currentPeriod, this.onChanged);
+
   final Team team;
   final ValueChanged<GamePeriod> onChanged;
   final GamePeriod currentPeriod;
-
-  PeriodTypeSelector(this.team, this.currentPeriod, this.onChanged);
 
   void _setPeriodType(GamePeriodType type) {
     int periodNumber = currentPeriod.periodNumber;
@@ -92,13 +92,13 @@ class PeriodTypeSelector extends StatelessWidget {
 }
 
 class PeriodNumberSelector extends StatelessWidget {
+  PeriodNumberSelector(
+      this.currentPeriod, this.divisionsType, this.onChanged, this.controller);
+
   final ValueChanged<GamePeriod> onChanged;
   final GamePeriod currentPeriod;
   final ScrollController controller;
   final GameDivisionsType divisionsType;
-
-  PeriodNumberSelector(
-      this.currentPeriod, this.divisionsType, this.onChanged, this.controller);
 
   static double itemExtent = 150.0;
 
@@ -206,16 +206,16 @@ class PeriodNumberSelector extends StatelessWidget {
 }
 
 class PeriodSelector extends StatelessWidget {
-  final GamePeriod currentPeriod;
-  final GameDivisionsType divisionsType;
-  final Team team;
-  final ValueChanged<GamePeriod> onChanged;
-
   PeriodSelector(
       {@required this.currentPeriod,
       @required this.divisionsType,
       @required this.team,
       @required this.onChanged});
+
+  final GamePeriod currentPeriod;
+  final GameDivisionsType divisionsType;
+  final Team team;
+  final ValueChanged<GamePeriod> onChanged;
 
   List<DropdownMenuItem<GamePeriodType>> _buildPeriodTypes(
       BuildContext context) {

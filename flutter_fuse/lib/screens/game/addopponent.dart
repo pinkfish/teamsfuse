@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AddOpponent extends StatefulWidget {
   AddOpponent(this.teamUid);
@@ -19,12 +19,12 @@ class AddOpponent extends StatefulWidget {
 }
 
 class _AddOpponentState extends State<AddOpponent> {
+  _AddOpponentState(this._opponent);
+
   Opponent _opponent;
   FocusNode _focusNode = new FocusNode();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool _saving = false;
-
-  _AddOpponentState(this._opponent);
 
   void _savePressed(BuildContext context) async {
     _formKey.currentState.save();
@@ -52,8 +52,7 @@ class _AddOpponentState extends State<AddOpponent> {
             },
             child: new Text(
               Messages.of(context).savebuttontext,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .subhead
                   .copyWith(color: Colors.white),
@@ -61,46 +60,48 @@ class _AddOpponentState extends State<AddOpponent> {
           ),
         ],
       ),
-      body: new SavingOverlay(saving: _saving, child: new Container(
-        padding: new EdgeInsets.all(16.0),
-        child: new Form(
-          key: _formKey,
-          child: new Column(
-            children: <Widget>[
-              new EnsureVisibleWhenFocused(
-                focusNode: _focusNode,
-                child: new TextFormField(
-                  decoration: new InputDecoration(
-                    icon: const Icon(Icons.short_text),
-                    hintText: Messages.of(context).opponentnamehint,
-                    labelText: Messages.of(context).opponentname,
+      body: new SavingOverlay(
+        saving: _saving,
+        child: new Container(
+          padding: new EdgeInsets.all(16.0),
+          child: new Form(
+            key: _formKey,
+            child: new Column(
+              children: <Widget>[
+                new EnsureVisibleWhenFocused(
+                  focusNode: _focusNode,
+                  child: new TextFormField(
+                    decoration: new InputDecoration(
+                      icon: const Icon(Icons.short_text),
+                      hintText: Messages.of(context).opponentnamehint,
+                      labelText: Messages.of(context).opponentname,
+                    ),
+                    keyboardType: TextInputType.text,
+                    obscureText: false,
+                    onSaved: (String value) {
+                      _opponent.name = value;
+                    },
                   ),
-                  keyboardType: TextInputType.text,
-                  obscureText: false,
-                  onSaved: (String value) {
-                    _opponent.name = value;
-                  },
                 ),
-              ),
-              new EnsureVisibleWhenFocused(
-                focusNode: _focusNode,
-                child: new TextFormField(
-                  decoration: new InputDecoration(
-                    icon: const Icon(Icons.email),
-                    hintText: Messages.of(context).opponentcontacthint,
-                    labelText: Messages.of(context).opponentcontact,
+                new EnsureVisibleWhenFocused(
+                  focusNode: _focusNode,
+                  child: new TextFormField(
+                    decoration: new InputDecoration(
+                      icon: const Icon(Icons.email),
+                      hintText: Messages.of(context).opponentcontacthint,
+                      labelText: Messages.of(context).opponentcontact,
+                    ),
+                    keyboardType: TextInputType.text,
+                    obscureText: false,
+                    onSaved: (String value) {
+                      _opponent.contact = value;
+                    },
                   ),
-                  keyboardType: TextInputType.text,
-                  obscureText: false,
-                  onSaved: (String value) {
-                    _opponent.contact = value;
-                  },
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }

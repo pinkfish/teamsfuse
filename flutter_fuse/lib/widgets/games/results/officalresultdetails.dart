@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 enum DetailsState { notStarted, inProgress, finalState }
 
@@ -9,9 +9,9 @@ enum DetailsState { notStarted, inProgress, finalState }
 /// values on a per period basis.
 ///
 class OfficalScoreDetails extends StatefulWidget {
-  final GameSharedData game;
-
   OfficalScoreDetails(this.game);
+
+  final GameSharedData game;
 
   @override
   State createState() {

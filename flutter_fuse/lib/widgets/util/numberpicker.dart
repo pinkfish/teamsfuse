@@ -8,12 +8,6 @@ import 'package:flutter/rendering.dart';
 
 ///NumberPicker is a widget designed to pick a number between #minValue and #maxValue
 class NumberPicker extends StatefulWidget {
-  ///height of every list element
-  static const double defaultItemExtent = 50.0;
-
-  ///width of list view
-  static const double defaultListViewWidth = 100.0;
-
   ///constructor for integer number picker
   NumberPicker.integer({
     @required this.initialValue,
@@ -24,8 +18,7 @@ class NumberPicker extends StatefulWidget {
     this.disabled = false,
     this.itemExtent = defaultItemExtent,
     this.listViewWidth = defaultListViewWidth,
-  })
-      : assert(initialValue != null),
+  })  : assert(initialValue != null),
         assert(minValue != null),
         assert(maxValue != null),
         assert(maxValue > minValue),
@@ -50,27 +43,32 @@ class NumberPicker extends StatefulWidget {
     this.disabled = false,
     this.itemExtent = defaultItemExtent,
     this.listViewWidth = defaultListViewWidth,
-  })
-      : assert(initialValue != null),
+  })  : assert(initialValue != null),
         assert(minValue != null),
         assert(maxValue != null),
         assert(decimalPlaces != null && decimalPlaces > 0),
         assert(maxValue > minValue),
         assert(initialValue >= minValue && initialValue <= maxValue),
         selectedDecimalValue = ((initialValue - initialValue.floorToDouble()) *
-            pow(10, decimalPlaces))
+                pow(10, decimalPlaces))
             .round(),
         intScrollController = new ScrollController(
           initialScrollOffset: (initialValue.floor() - minValue) * itemExtent,
         ),
         decimalScrollController = new ScrollController(
           initialScrollOffset: ((initialValue - initialValue.floorToDouble()) *
-              pow(10, decimalPlaces))
-              .roundToDouble() *
+                      pow(10, decimalPlaces))
+                  .roundToDouble() *
               itemExtent,
         ),
         _listViewHeight = 3 * itemExtent,
         super(key: key);
+
+  ///height of every list element
+  static const double defaultItemExtent = 50.0;
+
+  ///width of list view
+  static const double defaultListViewWidth = 100.0;
 
   //called when selected value changes
   final ValueChanged<num> onChanged;
@@ -116,13 +114,13 @@ class NumberPicker extends StatefulWidget {
 }
 
 class NumberPickerState extends State<NumberPicker> {
-
   //
   //----------------------------- PUBLIC ------------------------------
   //
 
   void animateInt(int valueToSelect) {
-    _animate(widget.intScrollController, (valueToSelect - widget.minValue) * widget.itemExtent);
+    _animate(widget.intScrollController,
+        (valueToSelect - widget.minValue) * widget.itemExtent);
   }
 
   void animateDecimal(int decimalValue) {
@@ -133,7 +131,7 @@ class NumberPickerState extends State<NumberPicker> {
     print(valueToSelect);
     animateInt(valueToSelect.floor());
     animateDecimal(((valueToSelect - valueToSelect.floorToDouble()) *
-        pow(10, widget.decimalPlaces))
+            pow(10, widget.decimalPlaces))
         .round());
   }
 
@@ -162,7 +160,7 @@ class NumberPickerState extends State<NumberPicker> {
   Widget _integerListView(ThemeData themeData) {
     TextStyle defaultStyle = themeData.textTheme.body1;
     TextStyle selectedStyle =
-    themeData.textTheme.headline.copyWith(color: themeData.accentColor);
+        themeData.textTheme.headline.copyWith(color: themeData.accentColor);
     if (widget.disabled) {
       defaultStyle = defaultStyle.copyWith(color: themeData.disabledColor);
       selectedStyle = defaultStyle;
@@ -178,21 +176,23 @@ class NumberPickerState extends State<NumberPicker> {
           controller: widget.intScrollController,
           itemExtent: widget.itemExtent,
           itemCount: itemCount,
-          physics: widget.disabled ? new NeverScrollableScrollPhysics() : new AlwaysScrollableScrollPhysics(),
+          physics: widget.disabled
+              ? new NeverScrollableScrollPhysics()
+              : new AlwaysScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
             final int value = widget.minValue + index - 1;
 
             //define special style for selected (middle) element
             final TextStyle itemStyle =
-            value == widget.initialValue ? selectedStyle : defaultStyle;
+                value == widget.initialValue ? selectedStyle : defaultStyle;
 
             bool isExtra = index == 0 || index == itemCount - 1;
 
             return isExtra
                 ? new Container() //empty first and last element
                 : new Center(
-              child: new Text(value.toString(), style: itemStyle),
-            );
+                    child: new Text(value.toString(), style: itemStyle),
+                  );
           },
         ),
       ),
@@ -203,10 +203,11 @@ class NumberPickerState extends State<NumberPicker> {
   Widget _decimalListView(ThemeData themeData) {
     TextStyle defaultStyle = themeData.textTheme.body1;
     TextStyle selectedStyle =
-    themeData.textTheme.headline.copyWith(color: themeData.accentColor);
+        themeData.textTheme.headline.copyWith(color: themeData.accentColor);
 
-    int itemCount =
-    widget.initialValue == widget.maxValue ? 3 : pow(10, widget.decimalPlaces) + 2;
+    int itemCount = widget.initialValue == widget.maxValue
+        ? 3
+        : pow(10, widget.decimalPlaces) + 2;
 
     return new NotificationListener<Notification>(
       child: new Container(
@@ -216,23 +217,26 @@ class NumberPickerState extends State<NumberPicker> {
           controller: widget.decimalScrollController,
           itemExtent: widget.itemExtent,
           itemCount: itemCount,
-          physics: widget.disabled ? new NeverScrollableScrollPhysics() : new AlwaysScrollableScrollPhysics(),
+          physics: widget.disabled
+              ? new NeverScrollableScrollPhysics()
+              : new AlwaysScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
             final int value = index - 1;
 
             //define special style for selected (middle) element
-            final TextStyle itemStyle =
-            value == widget.selectedDecimalValue ? selectedStyle : defaultStyle;
+            final TextStyle itemStyle = value == widget.selectedDecimalValue
+                ? selectedStyle
+                : defaultStyle;
 
             bool isExtra = index == 0 || index == itemCount - 1;
 
             return isExtra
                 ? new Container() //empty first and last element
                 : new Center(
-              child: new Text(
-                  value.toString().padLeft(widget.decimalPlaces, '0'),
-                  style: itemStyle),
-            );
+                    child: new Text(
+                        value.toString().padLeft(widget.decimalPlaces, '0'),
+                        style: itemStyle),
+                  );
           },
         ),
       ),
@@ -251,7 +255,8 @@ class NumberPickerState extends State<NumberPicker> {
     if (notification is ScrollNotification && !widget.disabled) {
       //calculate
       int intIndexOfMiddleElement =
-          (notification.metrics.pixels + widget._listViewHeight / 2) ~/ widget.itemExtent;
+          (notification.metrics.pixels + widget._listViewHeight / 2) ~/
+              widget.itemExtent;
       int intValueInTheMiddle = widget.minValue + intIndexOfMiddleElement - 1;
 
       if (_userStoppedScrolling(notification, widget.intScrollController)) {
@@ -289,7 +294,8 @@ class NumberPickerState extends State<NumberPicker> {
     if (notification is ScrollNotification && !widget.disabled) {
       //calculate middle value
       int indexOfMiddleElement =
-          (notification.metrics.pixels + widget._listViewHeight / 2) ~/ widget.itemExtent;
+          (notification.metrics.pixels + widget._listViewHeight / 2) ~/
+              widget.itemExtent;
       int decimalValueInTheMiddle = indexOfMiddleElement - 1;
 
       if (_userStoppedScrolling(notification, widget.decimalScrollController)) {
@@ -309,8 +315,8 @@ class NumberPickerState extends State<NumberPicker> {
   }
 
   ///indicates if user has stopped scrolling so we can center value in the middle
-  bool _userStoppedScrolling(Notification notification,
-      ScrollController scrollController) {
+  bool _userStoppedScrolling(
+      Notification notification, ScrollController scrollController) {
     return notification is UserScrollNotification &&
         notification.direction == ScrollDirection.idle &&
         // ignore: invalid_use_of_protected_member

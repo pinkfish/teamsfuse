@@ -1,20 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 ///
 /// Picks a leagur or tournament team from the specified divison to
 /// set for a game.
 ///
 class TournamentOrLeagueTeamPicker extends StatefulWidget {
-  final ValueChanged<String> onChanged;
-  final String tournamentOrLeagueDivisonUid;
-  final bool disabled;
-  final bool selectedTitle;
-  final String initialTeamUid;
-  final bool includeAll;
-
   TournamentOrLeagueTeamPicker(
       {@required this.onChanged,
       @required this.tournamentOrLeagueDivisonUid,
@@ -22,6 +15,13 @@ class TournamentOrLeagueTeamPicker extends StatefulWidget {
       this.disabled = false,
       this.selectedTitle = false,
       this.includeAll = false});
+
+  final ValueChanged<String> onChanged;
+  final String tournamentOrLeagueDivisonUid;
+  final bool disabled;
+  final bool selectedTitle;
+  final String initialTeamUid;
+  final bool includeAll;
 
   static const String all = 'all';
 
@@ -33,9 +33,10 @@ class TournamentOrLeagueTeamPicker extends StatefulWidget {
 
 class _TournamentOrLeagueTeamPickerState
     extends State<TournamentOrLeagueTeamPicker> {
+  _TournamentOrLeagueTeamPickerState();
+
   LeagueOrTournmentTeamSubscription _teamSub;
 
-  _TournamentOrLeagueTeamPickerState();
   @override
   void dispose() {
     super.dispose();

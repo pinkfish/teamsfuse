@@ -1,12 +1,12 @@
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/clubimage.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class ClubDetails extends StatelessWidget {
-  final Club club;
-
   ClubDetails(this.club);
+
+  final Club club;
 
   @override
   Widget build(BuildContext context) {

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteam.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/addinvitetoteamdialog.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteam.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class LeagueTeamScreen extends StatelessWidget {
+  LeagueTeamScreen(this.leagueUid, this.leagueSeasonUid, this.leagueTeamUid);
+
   final String leagueTeamUid;
   final String leagueUid;
   final String leagueSeasonUid;
-
-  LeagueTeamScreen(this.leagueUid, this.leagueSeasonUid, this.leagueTeamUid);
 
   void _doAction(BuildContext context, String action) {
     if (action == "invite") {

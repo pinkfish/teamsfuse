@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:timezone/timezone.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:timezone/timezone.dart';
 
 class TeamResultsStreamFuture extends StatefulWidget {
-  final String seasonUid;
-  final String teamUid;
-  final String opponentUid;
   TeamResultsStreamFuture(
       {@required this.seasonUid, @required this.teamUid, this.opponentUid});
 
+  final String seasonUid;
+  final String teamUid;
+  final String opponentUid;
   @override
   _TeamResultsStreamFutureState createState() {
     return new _TeamResultsStreamFutureState();
@@ -47,8 +46,8 @@ class _TeamResultsStreamFutureState extends State<TeamResultsStreamFuture> {
         } else {
           List<Widget> newData = <Widget>[];
           List<Game> gameSort = games.data.toList();
-          gameSort
-              .sort((Game g1, Game g2) => g1.sharedData.time.toInt() - g2.sharedData.time.toInt());
+          gameSort.sort((Game g1, Game g2) =>
+              g1.sharedData.time.toInt() - g2.sharedData.time.toInt());
           TZDateTime lastTime;
           for (Game game in gameSort) {
             if (game.sharedData.type == EventType.Game &&
@@ -59,20 +58,20 @@ class _TeamResultsStreamFutureState extends State<TeamResultsStreamFuture> {
                   lastTime.month != game.sharedData.tzTime.month ||
                   lastTime.day != game.sharedData.tzTime.day) {
                 bool showYear = false;
-                if (lastTime == null || lastTime.year != game.sharedData.tzTime.year) {
+                if (lastTime == null ||
+                    lastTime.year != game.sharedData.tzTime.year) {
                   showYear = true;
                 }
 
                 String textToShow;
                 if (showYear) {
-                  textToShow = MaterialLocalizations
-                          .of(context)
+                  textToShow = MaterialLocalizations.of(context)
                           .formatMediumDate(game.sharedData.tzTime) +
                       " " +
-                      MaterialLocalizations.of(context).formatYear(game.sharedData.tzTime);
+                      MaterialLocalizations.of(context)
+                          .formatYear(game.sharedData.tzTime);
                 } else {
-                  textToShow = MaterialLocalizations
-                      .of(context)
+                  textToShow = MaterialLocalizations.of(context)
                       .formatMediumDate(game.sharedData.tzTime);
                 }
                 newData.add(

@@ -3,11 +3,10 @@ library cached_network_image;
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' as ui show instantiateImageCodec, Codec;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui show instantiateImageCodec, Codec;
-
 import 'package:flutter_fuse/cache/cachemanager.dart';
 
 ///
@@ -19,8 +18,6 @@ import 'package:flutter_fuse/cache/cachemanager.dart';
 ///
 
 class CachedNetworkImage extends StatefulWidget {
-  static List<Object> _registeredErrors = <Object>[];
-
   /// Creates a widget that displays a [placeholder] while an [imageUrl] is loading
   /// then cross-fades to display the [imageUrl].
   /// Optional [httpHeaders] can be used for example for authentication on the server.
@@ -56,6 +53,8 @@ class CachedNetworkImage extends StatefulWidget {
         assert(repeat != null),
         assert(matchTextDirection != null),
         super(key: key);
+
+  static List<Object> _registeredErrors = <Object>[];
 
   /// Widget displayed while the target [imageUrl] is loading.
   final Widget placeholder;
@@ -535,8 +534,7 @@ class CachedNetworkImageProvider
       if (errorListener != null) {
         errorListener();
       }
-        throw new Exception("File was empty");
-
+      throw new Exception("File was empty");
     }
 
     return await ui.instantiateImageCodec(bytes);
@@ -547,11 +545,10 @@ class CachedNetworkImageProvider
     if (other.runtimeType != runtimeType) {
       return false;
     }
-      final CachedNetworkImageProvider typedOther = other;
-      return urlNow == typedOther.urlNow &&
-          urlFuture == typedOther.urlFuture &&
-          scale == typedOther.scale;
-
+    final CachedNetworkImageProvider typedOther = other;
+    return urlNow == typedOther.urlNow &&
+        urlFuture == typedOther.urlFuture &&
+        scale == typedOther.scale;
   }
 
   @override

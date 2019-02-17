@@ -1,12 +1,12 @@
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/userimage.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class ClubMembers extends StatelessWidget {
-  final Club club;
-
   ClubMembers(this.club);
+
+  final Club club;
 
   void _deleteMember(BuildContext context, FusedUserProfile profile) async {
     Messages mess = Messages.of(context);

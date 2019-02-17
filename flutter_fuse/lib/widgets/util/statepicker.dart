@@ -1,16 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class InProgressGamePicker extends StatelessWidget {
-  ///height of every list element
-  static const double defaultItemExtent = 50.0;
-
-  ///width of list view
-  static const double defaultListViewWidth = 100.0;
-
   ///constructor for integer number picker
   InProgressGamePicker({
     @required this.initialValue,
@@ -19,14 +13,18 @@ class InProgressGamePicker extends StatelessWidget {
     this.disabled = false,
     this.itemExtent = defaultItemExtent,
     this.listViewWidth = defaultListViewWidth,
-  })
-      : assert(initialValue != null),
+  })  : assert(initialValue != null),
         scrollController = new ScrollController(
-          initialScrollOffset:
-              ((initialValue.index) * itemExtent).toDouble(),
+          initialScrollOffset: ((initialValue.index) * itemExtent).toDouble(),
         ),
         _listViewHeight = 3 * itemExtent,
         super(key: key);
+
+  ///height of every list element
+  static const double defaultItemExtent = 50.0;
+
+  ///width of list view
+  static const double defaultListViewWidth = 100.0;
 
   ///called when selected value changes
   final ValueChanged<GameInProgress> onChanged;
@@ -102,7 +100,8 @@ class InProgressGamePicker extends StatelessWidget {
                 value == initialValue ? selectedStyle : defaultStyle;
 
             return new Center(
-              child: new Text(Messages.of(context).gameinprogress(value), style: itemStyle),
+              child: new Text(Messages.of(context).gameinprogress(value),
+                  style: itemStyle),
             );
           },
         ),
@@ -155,7 +154,7 @@ class InProgressGamePicker extends StatelessWidget {
         scrollController.position.activity is! HoldScrollActivity;
   }
 
-   ///scroll to selected value
+  ///scroll to selected value
   void _animate(ScrollController scrollController, double value) {
     scrollController.animateTo(value,
         duration: new Duration(seconds: 1), curve: new ElasticOutCurve());

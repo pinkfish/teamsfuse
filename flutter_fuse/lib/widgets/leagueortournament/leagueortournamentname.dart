@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 ///
 /// Puts the name of the league or tournament in the UX
 ///
 class LeagueOrTournamentName extends StatelessWidget {
+  LeagueOrTournamentName(this.leagueOrTournamentUid,
+      {this.style, this.textAlign});
+
   final String leagueOrTournamentUid;
   final TextStyle style;
   final TextAlign textAlign;
-
-  LeagueOrTournamentName(this.leagueOrTournamentUid,
-      {this.style, this.textAlign});
 
   @override
   Widget build(BuildContext context) {

@@ -7,13 +7,13 @@ enum DrawerMode {
   league,
 }
 
-
 ///
 /// The drawer to display in the ux.
 ///
 class FusedDrawer extends StatelessWidget {
-  final DrawerMode mode;
   FusedDrawer(this.mode);
+
+  final DrawerMode mode;
 
   @override
   Widget build(BuildContext context) {

@@ -1,14 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
-import 'dart:async';
+import 'package:fusemodel/fusemodel.dart';
 
 class TeamPlayers extends StatefulWidget {
-  final String _teamUid;
-
   TeamPlayers(this._teamUid);
+
+  final String _teamUid;
 
   @override
   TeamPlayersState createState() {
@@ -17,14 +18,14 @@ class TeamPlayers extends StatefulWidget {
 }
 
 class TeamPlayersState extends State<TeamPlayers> {
+  TeamPlayersState();
+
   String _seasonUid;
   Team _team;
   Season _season;
   List<InviteToTeam> _invites;
   StreamSubscription<UpdateReason> _updateStream;
   StreamSubscription<List<InviteToTeam>> _inviteStream;
-
-  TeamPlayersState();
 
   @override
   void initState() {
@@ -170,9 +171,7 @@ class TeamPlayersState extends State<TeamPlayers> {
     );
 
     // Put in an expansion bar if there are pending invites.
-    if (_invites != null &&
-        _invites.length > 0 &&
-        _team.isAdmin()) {
+    if (_invites != null && _invites.length > 0 && _team.isAdmin()) {
       List<Widget> kids = <Widget>[];
       _invites.forEach((InviteToTeam inv) {
         kids.add(

@@ -1,12 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
 
-class ClubSettings extends StatefulWidget {
-  final String _teamUid;
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
+class ClubSettings extends StatefulWidget {
   ClubSettings(this._teamUid);
+
+  final String _teamUid;
 
   @override
   ClubSettingsState createState() {
@@ -126,8 +127,7 @@ class ClubSettingsState extends State<ClubSettings> {
               onPressed: _setClub,
               child: new Text(
                 Messages.of(context).setclub,
-                style: Theme
-                    .of(context)
+                style: Theme.of(context)
                     .textTheme
                     .button
                     .copyWith(color: Theme.of(context).accentColor),
@@ -137,8 +137,7 @@ class ClubSettingsState extends State<ClubSettings> {
               onPressed: _addClub,
               child: new Text(
                 Messages.of(context).addclub,
-                style: Theme
-                    .of(context)
+                style: Theme.of(context)
                     .textTheme
                     .button
                     .copyWith(color: Theme.of(context).accentColor),

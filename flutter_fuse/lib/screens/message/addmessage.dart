@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
+import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AddMessageScreen extends StatefulWidget {
+  AddMessageScreen({this.teamUid, this.seasonUid, this.playerUid});
+
   final String teamUid;
   final String seasonUid;
   final String playerUid;
-
-  AddMessageScreen({this.teamUid, this.seasonUid, this.playerUid});
 
   @override
   AddMessageScreenState createState() {
@@ -188,13 +188,13 @@ class AddMessageScreenState extends State<AddMessageScreen> {
             ret.add(
               new CheckboxListTile(
                 title: new PlayerName(playerUid: player.playerUid),
-                subtitle: new Text(Messages.of(context).roleingame(player.role)),
+                subtitle:
+                    new Text(Messages.of(context).roleingame(player.role)),
                 value: _message.recipients.containsKey(player.playerUid),
                 onChanged: (bool toAdd) {
                   if (toAdd) {
                     _message.recipients[player.playerUid] =
-                        new MessageRecipient(
-                            playerId: player.playerUid);
+                        new MessageRecipient(playerId: player.playerUid);
                   } else {
                     _message.recipients.remove(player.playerUid);
                   }
@@ -251,8 +251,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
             onPressed: _sendMessage,
             child: new Text(
               Messages.of(context).sendmessagebuttontext,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .subhead
                   .copyWith(color: Colors.white),

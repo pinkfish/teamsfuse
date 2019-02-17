@@ -1,9 +1,9 @@
 part of firestore_mobile;
 
 class StorageReference extends wfs.StorageReferenceWrapper {
-  st.StorageReference _ref;
-
   StorageReference(this._ref);
+
+  st.StorageReference _ref;
 
   @override
   String get path {
@@ -125,14 +125,14 @@ class StorageReference extends wfs.StorageReferenceWrapper {
 }
 
 class StorageUploadTask extends wfs.StorageUploadTaskWrapper {
-  st.StorageUploadTask _task;
-
   StorageUploadTask(this._task);
+
+  st.StorageUploadTask _task;
 
   @override
   Future<wfs.UploadTaskSnapshotWrapper> get future {
-    return _task.future.then((st.UploadTaskSnapshot f) {
-      return new wfs.UploadTaskSnapshotWrapper(downloadUrl: f.downloadUrl);
+    return _task.onComplete.then((st.StorageTaskSnapshot f) {
+      return new wfs.UploadTaskSnapshotWrapper(downloadUrl: f.uploadSessionUri);
     });
   }
 }
