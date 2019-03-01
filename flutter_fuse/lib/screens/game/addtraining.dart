@@ -66,7 +66,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
 
   Future<bool> _saveTraining() async {
     Uuid uuid = new Uuid();
-    String seriesId = uuid.v4();
+    String seriesId = uuid.v4() as String;
     _initGame.seriesId = seriesId;
     _initGame.updateFirestore(false);
     await Future.forEach(_repeatDates, (TZDateTime time) async {

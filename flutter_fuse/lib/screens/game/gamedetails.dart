@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/games/gamedetails.dart';
 import 'package:flutter_fuse/widgets/games/availability.dart';
 import 'package:flutter_fuse/widgets/games/deletegamedialog.dart';
+import 'package:flutter_fuse/widgets/games/gamedetails.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class GameDetailsScreen extends StatefulWidget {
   GameDetailsScreen(this.gameUid);
@@ -27,7 +27,6 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     game = UserDatabaseData.instance.gamesCache[widget.gameUid];
   }
 
-
   void _select(String choice) async {
     // Causes the app to rebuild with the new _selectedChoice.
     setState(() {});
@@ -40,11 +39,6 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _editGame() {
     Navigator.pushNamed(context, "EditGame/" + widget.gameUid);
   }
@@ -54,7 +48,8 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     Widget body;
     Team team = UserDatabaseData.instance.teams[game.teamUid];
     Opponent opponent;
-    if (game.sharedData.type == EventType.Game && game.opponentUids.length > 0) {
+    if (game.sharedData.type == EventType.Game &&
+        game.opponentUids.length > 0) {
       opponent = team.opponents[game.opponentUids[0]];
     }
     List<Widget> actions = <Widget>[];
@@ -73,7 +68,8 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
             return <PopupMenuItem<String>>[
               new PopupMenuItem<String>(
                 value: "delete",
-                child: new Text(Messages.of(context).deletegame(game.sharedData)),
+                child:
+                    new Text(Messages.of(context).deletegame(game.sharedData)),
               ),
             ];
           },
@@ -89,7 +85,8 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
 
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).gametitlevs(game.sharedData, opponentName)),
+        title: new Text(
+            Messages.of(context).gametitlevs(game.sharedData, opponentName)),
         actions: actions,
       ),
       bottomNavigationBar: new BottomNavigationBar(

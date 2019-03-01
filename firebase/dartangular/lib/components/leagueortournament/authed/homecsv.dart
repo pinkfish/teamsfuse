@@ -1,14 +1,15 @@
-import 'package:angular/angular.dart';
-import 'package:angular_router/angular_router.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'dart:async';
-import 'package:google_maps/google_maps_places.dart';
-import 'package:google_maps/google_maps.dart';
-import 'dart:js';
-import 'package:angular_components/material_button/material_button.dart';
-import 'package:csv/csv.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'dart:html';
+import 'dart:js';
+
+import 'package:angular/angular.dart';
+import 'package:angular_components/material_button/material_button.dart';
+import 'package:angular_router/angular_router.dart';
+import 'package:csv/csv.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:google_maps/google_maps.dart';
+import 'package:google_maps/google_maps_places.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 class TimeStuff {
   num hour;
@@ -243,15 +244,15 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
     for (int i = 1; i < rowsAsListOfValues.length; i++) {
       currentlyProcessing = i;
       List<dynamic> d = rowsAsListOfValues[i];
-      String startDate = d[0].trim();
-      String startTime = d[1].trim();
-      String endTime = d[2].trim();
-      String awayTeam = d[3].trim();
-      String homeTeam = d[4].trim();
-      String eventType = d[5];
-      String address = d[6].trim();
-      String placeName = address;
-      String divison = d[7].trim();
+      String startDate = d[0].trim() as String;
+      String startTime = d[1].trim() as String;
+      String endTime = d[2].trim() as String;
+      String awayTeam = d[3].trim() as String;
+      String homeTeam = d[4].trim() as String;
+      String eventType = d[5] as String;
+      String address = d[6].trim() as String;
+      String placeName = address as String;
+      String divison = d[7].trim() as String;
 
       print(d);
 

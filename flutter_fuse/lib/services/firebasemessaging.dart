@@ -43,7 +43,7 @@ class FirebaseMessaging {
     if (!_platform.isIOS) {
       return;
     }
-    _channel.invokeMethod(
+    _channel.invokeMethod<dynamic>(
         'requestNotificationPermissions', iosSettings.toMap());
   }
 
@@ -67,7 +67,7 @@ class FirebaseMessaging {
     _onLaunch = onLaunch;
     _onResume = onResume;
     _channel.setMethodCallHandler(_handleMethod);
-    _channel.invokeMethod('configure');
+    _channel.invokeMethod<void>('configure');
   }
 
   final StreamController<String> _tokenStreamController =
@@ -90,18 +90,18 @@ class FirebaseMessaging {
   /// [topic] must match the following regular expression:
   /// "[a-zA-Z0-9-_.~%]{1,900}".
   void subscribeToTopic(String topic) {
-    _channel.invokeMethod('subscribeToTopic', topic);
+    _channel.invokeMethod<String>('subscribeToTopic', topic);
   }
 
   /// Unsubscribe from topic in background.
   void unsubscribeFromTopic(String topic) {
-    _channel.invokeMethod('unsubscribeFromTopic', topic);
+    _channel.invokeMethod<String>('unsubscribeFromTopic', topic);
   }
 
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onToken":
-        final String token = call.arguments;
+        final String token = call.arguments as String;
         if (_token != token) {
           _token = token;
           _tokenStreamController.add(_token);

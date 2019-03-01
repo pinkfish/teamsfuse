@@ -41,6 +41,7 @@ class AttendenceComponent {
       case Attendance.Yes:
         return "check";
     }
+    return "error";
   }
 
   String iconFromAttendanceColor() {
@@ -56,6 +57,7 @@ class AttendenceComponent {
       case Attendance.Yes:
         return "green";
     }
+    return "error";
   }
 
   String get attendclass {
@@ -71,6 +73,7 @@ class AttendenceComponent {
       case Attendance.Yes:
         return "attendyes";
     }
+    return "error";
   }
 
   void openAttendence() {}

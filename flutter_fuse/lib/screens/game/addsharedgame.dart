@@ -37,11 +37,6 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
   String _homeTeamUid;
   String _awayTeamUid;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(value)));

@@ -2,6 +2,7 @@ import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
 
 import 'route_paths.dart' as paths;
+
 import 'package:teamfuse/components/login/needauth-component.template.dart'
     as nactd;
 import 'package:teamfuse/components/authed/authed-component.template.dart'
@@ -18,36 +19,36 @@ import 'package:teamfuse/components/login/forgot.template.dart' as fct;
 class Routes {
   static final _authed = new RouteDefinition(
     routePath: paths.authed,
-    component: actd.AuthedComponentNgFactory,
+    component: actd.AuthedComponentNgFactory as ComponentFactory,
   );
   static final _guest = new RouteDefinition(
     routePath: paths.guest,
-    component: gctd.GuestComponentNgFactory,
+    component: gctd.GuestComponentNgFactory as ComponentFactory,
   );
   static final _promo = new RouteDefinition(
     routePath: paths.promo,
-    component: pct.PromoComponentNgFactory,
+    component: pct.PromoComponentNgFactory as ComponentFactory,
     useAsDefault: true,
   );
 
   static final _login = new RouteDefinition(
     routePath: paths.login,
-    component: nactd.NeedAuthComponentNgFactory,
+    component: nactd.NeedAuthComponentNgFactory as ComponentFactory,
   );
 
   static final _signup = new RouteDefinition(
     routePath: paths.signup,
-    component: sct.SignupComponentNgFactory,
+    component: sct.SignupComponentNgFactory as ComponentFactory,
   );
 
   static final _verify = new RouteDefinition(
     routePath: paths.verify,
-    component: vct.VerifyComponentNgFactory,
+    component: vct.VerifyComponentNgFactory as ComponentFactory,
   );
 
   static final _forgot = new RouteDefinition(
     routePath: paths.forgot,
-    component: fct.ForgotComponentNgFactory,
+    component: fct.ForgotComponentNgFactory as ComponentFactory,
   );
 
   final List<RouteDefinition> all = [
@@ -61,7 +62,7 @@ class Routes {
     new RouteDefinition.redirect(path: '', redirectTo: 'promo/guesthome'),
     new RouteDefinition(
       path: '.*',
-      component: nfct.NotFoundComponentNgFactory,
+      component: nfct.NotFoundComponentNgFactory as ComponentFactory,
     ),
   ];
 }

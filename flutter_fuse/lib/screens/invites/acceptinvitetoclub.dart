@@ -37,11 +37,6 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _savePressed() async {
     _invite.acceptInvite();
     await _invite.firestoreDelete();

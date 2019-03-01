@@ -24,11 +24,6 @@ class ClubSelection extends StatefulWidget {
 class _ClubSelectionState extends State<ClubSelection> {
   String _clubUid;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void _updateClub(String clubUid) {
     setState(() {
       if (clubUid == ClubPicker.noClub) {

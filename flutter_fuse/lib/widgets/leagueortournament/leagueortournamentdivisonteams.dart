@@ -47,11 +47,6 @@ class _LeagueOrTournamentDivisonDetailsState
             s.uid == widget.leagueOrTournamentDivisonUid);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _addTeam() {
     AddTeamDialog.showTeamDialog(context, widget.leagueOrTournamentDivisonUid);
   }

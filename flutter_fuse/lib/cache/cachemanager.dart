@@ -61,7 +61,8 @@ class CacheManager {
         AppConfiguration.instance.sharedPreferences.getString(_keyCacheData);
     _cacheData = <String, CacheObject>{};
     if (jsonCacheString != null) {
-      Map<String, dynamic> jsonCache = json.decode(jsonCacheString);
+      Map<String, dynamic> jsonCache =
+          json.decode(jsonCacheString) as Map<String, dynamic>;
       jsonCache.forEach((String keyOb, dynamic dataOb) {
         _cacheData[keyOb] =
             new CacheObject.fromMap(keyOb, dataOb as Map<dynamic, dynamic>);

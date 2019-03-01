@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:flutter_fuse/widgets/util/inputdropdown.dart';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/util/inputdropdown.dart';
 
 class PlacesFormField extends FormField<LocationAndPlace> {
   PlacesFormField(
@@ -20,7 +21,7 @@ class PlacesFormField extends FormField<LocationAndPlace> {
             onSaved: onSaved,
             validator: validator,
             builder: (FormFieldState<LocationAndPlace> state) {
-              PlacesFormFieldState field = state;
+              PlacesFormFieldState field = state as PlacesFormFieldState;
 
               final TextStyle valueStyle =
                   Theme.of(field.context).textTheme.title;

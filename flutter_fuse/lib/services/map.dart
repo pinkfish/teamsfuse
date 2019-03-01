@@ -62,7 +62,8 @@ class MapData {
     print("Response $response");
     if (response.statusCode == HttpStatus.ok) {
       String responseBody = await response.transform(utf8.decoder).join();
-      Map<String, dynamic> data = json.decode(responseBody);
+      Map<String, dynamic> data =
+          json.decode(responseBody) as Map<String, dynamic>;
       print("ResponseBody $data");
       return getLocation(data['timeZoneId'].toString());
     } else {

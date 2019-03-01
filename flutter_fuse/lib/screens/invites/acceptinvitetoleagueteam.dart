@@ -51,11 +51,6 @@ class _AcceptInviteToLeagueTeamScreenState
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(value)));

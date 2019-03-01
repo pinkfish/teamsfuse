@@ -36,11 +36,6 @@ class _AcceptInviteToPlayerScreenState
         UserDatabaseData.instance.invites[widget._inviteUid] as InviteToPlayer;
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _savePressed() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();

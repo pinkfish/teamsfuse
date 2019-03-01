@@ -54,11 +54,6 @@ class _TimerDetails extends StatefulWidget {
 }
 
 class _TimerDetailsState extends State<_TimerDetails> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   GamePeriodTime save() {
     widget._formState.currentState.save();
     return widget._periodTime;
