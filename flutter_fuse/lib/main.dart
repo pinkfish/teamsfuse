@@ -1,20 +1,22 @@
+import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_fuse/Routes.dart';
 import 'package:flutter_fuse/cache/cachemanager.dart';
-import 'package:flutter_fuse/services/sqldata.dart';
 import 'package:flutter_fuse/services/analytics.dart';
-import 'package:flutter_fuse/services/notifications.dart';
-import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:fusemodel/firestore.dart';
+import 'package:flutter_fuse/services/appconfiguration.dart';
 import 'package:flutter_fuse/services/firestore/firestore.dart' as fs;
 import 'package:flutter_fuse/services/loggingdata.dart';
-import 'package:flutter_fuse/services/appconfiguration.dart';
+import 'package:flutter_fuse/services/notifications.dart';
+import 'package:flutter_fuse/services/sqldata.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter/foundation.dart';
-import 'dart:typed_data';
 
 void main() async {
   TraceProxy trace = Analytics.instance.newTrace("startup");
@@ -47,6 +49,9 @@ void main() async {
 
   // database
   print('Making stuff in here');
+  // Setup the timestamps correctly.
+  await Firestore.instance.settings(timestampsInSnapshotsEnabled: true);
+
   UserDatabaseData.instance = new UserDatabaseData(Analytics.instance,
       LoggingData.instance, SqlData.instance, new fs.Firestore());
 
@@ -55,7 +60,7 @@ void main() async {
   AppConfiguration.instance.load().then((void a) {
     CacheManager.getInstance().then((CacheManager man) {
       print('got manager');
-    }).catchError((Exception error) {
+    }).catchError((dynamic error) {
       print('Got error $error');
     });
     Notifications.instance.init();
