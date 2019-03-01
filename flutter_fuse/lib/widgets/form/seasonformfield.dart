@@ -24,7 +24,7 @@ class SeasonFormField extends FormField<String> {
             onSaved: onSaved,
             validator: validator,
             builder: (FormFieldState<String> field) {
-              final SeasonFormFieldState state = field;
+              final SeasonFormFieldState state = field as SeasonFormFieldState;
               state._teamUid = teamUid;
               final InputDecoration effectiveDecoration = (decoration ??
                       const InputDecoration())

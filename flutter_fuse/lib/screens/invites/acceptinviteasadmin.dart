@@ -37,11 +37,6 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _savePressed() async {
     _invite.acceptInvite();
     await _invite.firestoreDelete();

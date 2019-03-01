@@ -100,7 +100,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
         while (
             startOfWeek.millisecondsSinceEpoch < end.millisecondsSinceEpoch &&
                 curSpins < 100) {
-          DateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
+          TZDateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
           for (int dayNum = 0;
               dayNum < widget.repeat.dayRepeats.length;
               dayNum++) {

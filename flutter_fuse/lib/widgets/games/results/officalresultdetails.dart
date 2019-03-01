@@ -75,11 +75,6 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _updateGame() async {
     _setupWinLossTie();
     if (_currentState == DetailsState.finalState) {

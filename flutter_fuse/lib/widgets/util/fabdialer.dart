@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
 import 'fabminimenuitem.dart';
 
 class FabDialer extends StatefulWidget {
@@ -25,12 +26,6 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
   bool _isRotated = true;
 
   AnimationController controller;
-
-  @override
-  void deactivate() {
-    //closeDialer();
-    super.deactivate();
-  }
 
   @override
   void initState() {
@@ -71,7 +66,6 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
       }
       print('$_isRotated $rotate $_angle');
     });
-
   }
 
   void _rotate() {

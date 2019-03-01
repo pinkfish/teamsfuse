@@ -5,7 +5,6 @@
 import 'dart:collection' show SplayTreeMap, HashMap;
 
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -20,13 +19,14 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
 
   @override
   SliverListCenter get widget {
-    SliverListCenter bing = super.widget;
+    SliverListCenter bing = super.widget as SliverListCenter;
     return bing;
   }
 
   @override
   RenderSliverMultiBoxAdaptor get renderObject {
-    RenderSliverMultiBoxAdaptor frog = super.renderObject;
+    RenderSliverMultiBoxAdaptor frog =
+        super.renderObject as RenderSliverMultiBoxAdaptor;
     return frog;
   }
 
@@ -76,7 +76,7 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
             updateChild(_childElementsMe[index], _build(index), index);
         if (newChild != null) {
           _childElementsMe[index] = newChild;
-          RenderBox box = newChild.renderObject;
+          RenderBox box = newChild.renderObject as RenderBox;
           _currentBeforeChildMe = box;
         } else {
           _childElementsMe.remove(index);
@@ -98,8 +98,9 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
     owner.buildScope(this, () {
       final bool insertFirst = after == null;
       assert(insertFirst || _childElementsMe[index - 1] != null);
-      RenderBox box =
-          insertFirst ? null : _childElementsMe[index - 1].renderObject;
+      RenderBox box = insertFirst
+          ? null
+          : _childElementsMe[index - 1].renderObject as RenderBox;
       _currentBeforeChildMe = box;
       Element newChild;
       try {
@@ -214,7 +215,8 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
   @override
   void didAdoptChild(RenderBox child) {
     assert(_currentlyUpdatingChildIndex != null);
-    final SliverMultiBoxAdaptorParentData childParentData = child.parentData;
+    final SliverMultiBoxAdaptorParentData childParentData =
+        child.parentData as SliverMultiBoxAdaptorParentData;
     childParentData.index = _currentlyUpdatingChildIndex;
   }
 
@@ -231,10 +233,11 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
     print('$_currentlyUpdatingChildIndex $slot');
     assert(_currentlyUpdatingChildIndex == slot);
     assert(renderObject.debugValidateChild(child));
-    RenderBox box = child;
+    RenderBox box = child as RenderBox;
     renderObject.insert(box, after: _currentBeforeChildMe);
     assert(() {
-      final SliverMultiBoxAdaptorParentData childParentData = child.parentData;
+      final SliverMultiBoxAdaptorParentData childParentData =
+          child.parentData as SliverMultiBoxAdaptorParentData;
       assert(slot == childParentData.index);
       return true;
     }());
@@ -250,7 +253,7 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
   @override
   void removeChildRenderObject(covariant RenderObject child) {
     assert(_currentlyUpdatingChildIndex != null);
-    RenderBox box = child;
+    RenderBox box = child as RenderBox;
     renderObject.remove(box);
   }
 
@@ -293,10 +296,9 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
   /// the main axis.
   ///
   /// The [childManager] argument must not be null.
-  RenderSliverCenterList({
-    @required RenderSliverBoxChildManager childManager,
-    this.startIndex = 0
-  }) : super(childManager: childManager);
+  RenderSliverCenterList(
+      {@required RenderSliverBoxChildManager childManager, this.startIndex = 0})
+      : super(childManager: childManager);
 
   final num startIndex;
 
@@ -362,7 +364,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
 
       if (earliestUsefulChild == null) {
         final SliverMultiBoxAdaptorParentData childParentData =
-            firstChild.parentData;
+            firstChild.parentData as SliverMultiBoxAdaptorParentData;
         childParentData.layoutOffset = 0.0;
         //print("earlierusefulchild ${childParentData.layoutOffset}");
 
@@ -405,7 +407,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
           scrollOffsetCorrection: correction - earliestScrollOffset,
         );
         final SliverMultiBoxAdaptorParentData childParentData =
-            firstChild.parentData;
+            firstChild.parentData as SliverMultiBoxAdaptorParentData;
         childParentData.layoutOffset = 0.0;
         //print("correctring here ${childParentData.layoutOffset} == 0.0");
 
@@ -413,7 +415,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
       }
 
       final SliverMultiBoxAdaptorParentData childParentData =
-          earliestUsefulChild.parentData;
+          earliestUsefulChild.parentData as SliverMultiBoxAdaptorParentData;
       childParentData.layoutOffset = firstChildScrollOffset;
       //print("layout offset update ${childParentData.layoutOffset} == 0.0");
 
@@ -456,7 +458,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
         inLayoutRange = false;
       }
       child = childAfter(child);
-      if(child == null) {
+      if (child == null) {
         inLayoutRange = false;
       }
       index += 1;
@@ -480,7 +482,8 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
         trailingChildWithLayout = child;
       }
       assert(child != null);
-      final SliverMultiBoxAdaptorParentData childParentData = child.parentData;
+      final SliverMultiBoxAdaptorParentData childParentData =
+          child.parentData as SliverMultiBoxAdaptorParentData;
       childParentData.layoutOffset = endScrollOffset;
       assert(childParentData.index == index);
       endScrollOffset = childScrollOffset(child) + paintExtentOf(child);
@@ -577,13 +580,9 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
 
 class SliverListCenter extends RenderObjectWidget {
   /// Creates a sliver that places box children in a linear array.
-  const SliverListCenter({
-    @required this.delegate,
-    Key key,
-    this.startIndex = 0
-
-  })  :
-        super(key: key);
+  const SliverListCenter(
+      {@required this.delegate, Key key, this.startIndex = 0})
+      : super(key: key);
 
   final num startIndex;
 
@@ -593,11 +592,10 @@ class SliverListCenter extends RenderObjectWidget {
 
   @override
   RenderSliverCenterList createRenderObject(BuildContext context) {
-    final CenterSliverMultiBoxAdaptorElement element = context;
+    final CenterSliverMultiBoxAdaptorElement element =
+        context as CenterSliverMultiBoxAdaptorElement;
     return new RenderSliverCenterList(
-      childManager: element,
-      startIndex: startIndex
-    );
+        childManager: element, startIndex: startIndex);
   }
 
   /// The delegate that provides the children for this widget.

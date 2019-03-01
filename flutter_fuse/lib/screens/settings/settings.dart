@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/firestore.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/form/switchformfield.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -19,11 +19,6 @@ class SettingsScreenState extends State<SettingsScreen> {
 
   bool emailOnUpdate;
   bool emailOnUpcoming;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
@@ -57,7 +52,9 @@ class SettingsScreenState extends State<SettingsScreen> {
         title: new Text(Messages.of(context).title),
       ),
       body: new FutureBuilder<FusedUserProfile>(
-          future: UserDatabaseData.instance.userAuth.currentUser().then((UserData data) {
+          future: UserDatabaseData.instance.userAuth
+              .currentUser()
+              .then((UserData data) {
             return UserDatabaseData.instance.userAuth.getProfile(data.uid);
           }),
           builder:
@@ -68,53 +65,53 @@ class SettingsScreenState extends State<SettingsScreen> {
                 child: new SingleChildScrollView(
                   child: new Container(
                     padding: new EdgeInsets.all(10.0),
-                  child: new Form(
-                    key: formState,
-                    child: new Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        new Text(
-                          Messages.of(context).emailheader,
-                          style: Theme.of(context).textTheme.title,
-                        ),
-                        new SwitchFormField(
-                          label: Messages.of(context).emailonupdates,
-                          icon: Icons.update,
-                          initialValue: data.data.emailOnUpdates,
-                          onSaved: (bool val) => emailOnUpdate = val,
-                        ),
-                        new SwitchFormField(
-                          label: Messages.of(context).emailonupcoming,
-                          icon: Icons.calendar_today,
-                          initialValue: data.data.emailUpcomingGame,
-                          onSaved: (bool val) => emailOnUpcoming = val,
-                        ),
-                        new ButtonBar(
-                          children: <Widget>[
-                            new FlatButton(
-                              child: new Text(MaterialLocalizations
-                                  .of(context)
-                                  .okButtonLabel),
-                              onPressed: _onSave,
-                              textColor: Colors.white,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                            new FlatButton(
-                              child: new Text(MaterialLocalizations
-                                  .of(context)
-                                  .cancelButtonLabel),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        )
-                      ],
+                    child: new Form(
+                      key: formState,
+                      child: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          new Text(
+                            Messages.of(context).emailheader,
+                            style: Theme.of(context).textTheme.title,
+                          ),
+                          new SwitchFormField(
+                            label: Messages.of(context).emailonupdates,
+                            icon: Icons.update,
+                            initialValue: data.data.emailOnUpdates,
+                            onSaved: (bool val) => emailOnUpdate = val,
+                          ),
+                          new SwitchFormField(
+                            label: Messages.of(context).emailonupcoming,
+                            icon: Icons.calendar_today,
+                            initialValue: data.data.emailUpcomingGame,
+                            onSaved: (bool val) => emailOnUpcoming = val,
+                          ),
+                          new ButtonBar(
+                            children: <Widget>[
+                              new FlatButton(
+                                child: new Text(
+                                    MaterialLocalizations.of(context)
+                                        .okButtonLabel),
+                                onPressed: _onSave,
+                                textColor: Colors.white,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              new FlatButton(
+                                child: new Text(
+                                    MaterialLocalizations.of(context)
+                                        .cancelButtonLabel),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
                 ),
               );
             } else {

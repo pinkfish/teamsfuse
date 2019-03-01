@@ -205,9 +205,9 @@ class NumberPickerState extends State<NumberPicker> {
     TextStyle selectedStyle =
         themeData.textTheme.headline.copyWith(color: themeData.accentColor);
 
-    int itemCount = widget.initialValue == widget.maxValue
+    int itemCount = widget.initialValue == widget.maxValue.toInt()
         ? 3
-        : pow(10, widget.decimalPlaces) + 2;
+        : (pow(10, widget.decimalPlaces) + 2).toInt();
 
     return new NotificationListener<Notification>(
       child: new Container(

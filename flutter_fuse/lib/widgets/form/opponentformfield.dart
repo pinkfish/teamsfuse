@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:fusemodel/fusemodel.dart';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class OpponentFormField extends FormField<String> {
   OpponentFormField({
@@ -20,7 +21,8 @@ class OpponentFormField extends FormField<String> {
           onSaved: onSaved,
           validator: validator,
           builder: (FormFieldState<String> field) {
-            final OpponentFormFieldState state = field;
+            final OpponentFormFieldState state =
+                field as OpponentFormFieldState;
             state.teamUid = teamUid;
 
             final InputDecoration effectiveDecoration = (decoration ??

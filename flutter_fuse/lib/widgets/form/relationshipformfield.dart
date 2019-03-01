@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class RelationshipFormField extends FormField<Relationship> {
   RelationshipFormField({
@@ -17,7 +17,8 @@ class RelationshipFormField extends FormField<Relationship> {
           onSaved: onSaved,
           validator: validator,
           builder: (FormFieldState<Relationship> field) {
-            final RelationshipFormFieldState state = field;
+            final RelationshipFormFieldState state =
+                field as RelationshipFormFieldState;
 
             final InputDecoration effectiveDecoration = (decoration ??
                     const InputDecoration())

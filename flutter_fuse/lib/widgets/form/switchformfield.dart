@@ -1,5 +1,5 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class SwitchFormField extends FormField<bool> {
   SwitchFormField({
@@ -19,7 +19,7 @@ class SwitchFormField extends FormField<bool> {
           onSaved: onSaved,
           validator: validator,
           builder: (FormFieldState<bool> field) {
-            final _SwitchFormFieldState state = field;
+            final _SwitchFormFieldState state = field as _SwitchFormFieldState;
             InputDecorationTheme theme =
                 Theme.of(field.context).inputDecorationTheme;
             ValueChanged<bool> onChanged = enabled

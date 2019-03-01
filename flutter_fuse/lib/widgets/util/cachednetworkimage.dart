@@ -528,16 +528,16 @@ class CachedNetworkImageProvider
       CachedNetworkImageProvider key, File file) async {
     assert(key == this);
 
-    final Uint8List bytes = await file.readAsBytes();
+    final List<int> bytes = await file.readAsBytes();
 
-    if (bytes.lengthInBytes == 0) {
+    if (bytes.length == 0) {
       if (errorListener != null) {
         errorListener();
       }
       throw new Exception("File was empty");
     }
-
-    return await ui.instantiateImageCodec(bytes);
+    Uint8List bytesAsUint = Uint8List.fromList(bytes);
+    return await ui.instantiateImageCodec(bytesAsUint);
   }
 
   @override
@@ -545,10 +545,13 @@ class CachedNetworkImageProvider
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    final CachedNetworkImageProvider typedOther = other;
-    return urlNow == typedOther.urlNow &&
-        urlFuture == typedOther.urlFuture &&
-        scale == typedOther.scale;
+    if (other is CachedNetworkImageProvider) {
+      final CachedNetworkImageProvider typedOther = other;
+      return urlNow == typedOther.urlNow &&
+          urlFuture == typedOther.urlFuture &&
+          scale == typedOther.scale;
+    }
+    return false;
   }
 
   @override

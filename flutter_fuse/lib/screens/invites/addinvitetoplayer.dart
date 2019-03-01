@@ -36,11 +36,6 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
         playerName: _player.name, playerUid: widget._playerUid, email: '');
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _savePressed() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();

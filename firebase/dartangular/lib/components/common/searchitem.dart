@@ -1,8 +1,9 @@
 import 'package:angular/angular.dart';
 import 'package:angular_forms/angular_forms.dart';
-import 'package:teamfuse/util/algolia/algolia.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:teamfuse/util/algolia/algolia.dart';
+
 import 'constants.dart';
 
 @Component(
@@ -35,8 +36,7 @@ class SearchItemComponent implements OnInit {
     }
     String gender = item.data['gender'] as String;
     if (gender != null) {
-      Gender ge = Gender.values.firstWhere(
-          (Gender g) => g.toString() == gender,
+      Gender ge = Gender.values.firstWhere((Gender g) => g.toString() == gender,
           orElse: () => Gender.NA);
       switch (ge) {
         case Gender.Coed:
@@ -59,11 +59,11 @@ class SearchItemComponent implements OnInit {
     if (item == null) {
       return "";
     }
-    String sport = item.data['sport'];
+    String sport = item.data['sport'] as String;
 
     switch ((item.data['objectID'] as String)[0]) {
       case 'T':
-        return  "${sport.substring(6)} Team ";
+        return "${sport.substring(6)} Team ";
         break;
       case 't':
         return 'Team in league ${item.data["leagueName"]}';
@@ -87,7 +87,7 @@ class SearchItemComponent implements OnInit {
     if (photoUrl != null && photoUrl.isNotEmpty) {
       return item.data['photourl'] as String;
     }
-    String sport = item.data['sport'];
+    String sport = item.data['sport'] as String;
     if (sport != null) {
       return _location.normalizePath('/assets/' + sport + ".png");
     }
@@ -95,8 +95,8 @@ class SearchItemComponent implements OnInit {
   }
 
   String getBody() {
-    String leagueSeasonName = item.data['leagueSeasonName'];
-    String leagueDivisonName = item.data['leagueDivisonName'];
+    String leagueSeasonName = item.data['leagueSeasonName'] as String;
+    String leagueDivisonName = item.data['leagueDivisonName'] as String;
     if (leagueSeasonName != null && leagueDivisonName != null) {
       return "${leagueSeasonName} - ${leagueDivisonName}";
     }
@@ -125,9 +125,8 @@ class SearchItemComponent implements OnInit {
         // Hmmm.
         return;
     }
-    NavigationParams params = new NavigationParams(queryParameters: {
-      Constants.kObjectId: objectId
-    });
+    NavigationParams params =
+        new NavigationParams(queryParameters: {Constants.kObjectId: objectId});
     if (UserDatabaseData.instance.userAuth.currentUserNoWait() != null) {
       // Authed.
       _router.navigate('/a/' + path, params);

@@ -31,12 +31,6 @@ class _LeagueOrTournamentTeamDetailsState
   LeagueOrTournamentTeam leagueOrTournamentTeam;
   StreamSubscription<LeagueOrTournamentTeam> _sub;
 
-  @override
-  void initState() {
-    super.initState();
-    // Start trying to load the team.
-  }
-
   ///
   /// Load the details but only do so once.
   ///

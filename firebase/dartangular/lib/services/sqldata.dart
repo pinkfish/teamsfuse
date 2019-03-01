@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'package:fusemodel/fusemodel.dart';
-import 'dart:indexed_db';
 import 'dart:html';
+import 'dart:indexed_db';
+
+import 'package:fusemodel/fusemodel.dart';
 
 class SqlData implements PersistenData {
   static SqlData _instance;
@@ -38,14 +39,15 @@ class SqlData implements PersistenData {
     if (IdbFactory.supported && _database == null) {
       print('indexDBSupported');
       window.indexedDB
-          .open('fluffyIndexDb', version: 1, onUpgradeNeeded: _initializeDatabase)
+          .open('fluffyIndexDb',
+              version: 1, onUpgradeNeeded: _initializeDatabase)
           .then(_loadFromDB);
     }
     _initialized = _loaded.future;
   }
 
   void _initializeDatabase(VersionChangeEvent e) {
-    Database db = (e.target as Request).result;
+    Database db = (e.target as Request).result as Database;
 
     for (String table in kTables) {
       print('Creating table $table');
@@ -85,7 +87,8 @@ class SqlData implements PersistenData {
       return null;
     }
     Map<dynamic, dynamic> map = data as Map<dynamic, dynamic>;
-    return map.map((dynamic k, dynamic v) => MapEntry<String, dynamic>(k, v));
+    return map.map(
+        (dynamic k, dynamic v) => MapEntry<String, dynamic>(k as String, v));
   }
 
   @override
@@ -97,7 +100,8 @@ class SqlData implements PersistenData {
 
     Transaction t = _database.transaction(tableId, 'readonly');
     ObjectStore store = t.objectStore(tableId);
-    Map<dynamic, dynamic> ret = await store.getObject(key);
+    Map<dynamic, dynamic> ret =
+        await store.getObject(key) as Map<dynamic, dynamic>;
     await t.completed;
     return _toMap(ret);
   }

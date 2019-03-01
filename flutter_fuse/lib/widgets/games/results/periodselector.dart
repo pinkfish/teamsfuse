@@ -9,7 +9,7 @@ class PeriodTypeSelector extends StatelessWidget {
   final GamePeriod currentPeriod;
 
   void _setPeriodType(GamePeriodType type) {
-    int periodNumber = currentPeriod.periodNumber;
+    int periodNumber = currentPeriod.periodNumber.toInt();
     switch (type) {
       case GamePeriodType.Regulation:
         break;
@@ -296,7 +296,7 @@ class PeriodSelector extends StatelessWidget {
     if (type == currentPeriod.type) {
       return;
     }
-    int periodNumber = currentPeriod.periodNumber;
+    int periodNumber = currentPeriod.periodNumber.toInt();
     switch (type) {
       case GamePeriodType.Regulation:
         break;
@@ -353,7 +353,7 @@ class PeriodSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     GamePeriodType selected = currentPeriod.type;
-    int selectedPeriod = currentPeriod.periodNumber;
+    int selectedPeriod = currentPeriod.periodNumber.toInt();
     if (selected == GamePeriodType.Break) {
       selected = GamePeriodType.Regulation;
       selectedPeriod += 1000;

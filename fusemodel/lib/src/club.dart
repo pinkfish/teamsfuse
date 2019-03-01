@@ -1,7 +1,7 @@
 import 'common.dart';
 import 'userdatabasedata.dart';
 import 'databaseupdatemodel.dart';
-import 'package:fusemodel/src/team/team.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'dart:async';
 import 'dart:io';
 import 'invite.dart';
@@ -50,7 +50,7 @@ class Club {
       {this.uid,
       this.name,
       this.photoUrl,
-        this.about,
+      this.about,
       this.sport = Sport.Other,
       this.trackAttendence = Tristate.Unset,
       List<String> adminUids,

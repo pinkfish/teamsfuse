@@ -1,8 +1,9 @@
+import 'dart:async';
+
 import 'package:angular/angular.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:angular_components/material_expansionpanel/material_expansionpanel_set.dart';
 import 'package:angular_router/angular_router.dart';
-import 'dart:async';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:teamfuse/components/leagueortournament/guest/seasonexpansionpanel.dart';
 
 @Component(
@@ -43,7 +44,8 @@ class LeagueDetailsComponent
   @override
   void ngOnChanges(Map<String, SimpleChange> changes) {
     if (changes.containsKey('league')) {
-      LeagueOrTournament league = changes['league'].currentValue;
+      LeagueOrTournament league =
+          changes['league'].currentValue as LeagueOrTournament;
       _seasonSub?.cancel();
       _seasonSub = league.seasonStream
           .listen((Iterable<LeagueOrTournamentSeason> newSeasons) {

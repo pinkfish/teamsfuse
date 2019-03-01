@@ -58,11 +58,6 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _onChangedPlayer(String name, String uid) {
     setState(() {
       if (uid.compareTo('new') == 0) {

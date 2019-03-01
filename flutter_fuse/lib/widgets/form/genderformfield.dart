@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class GenderFormField extends FormField<Gender> {
   GenderFormField({
@@ -17,7 +17,7 @@ class GenderFormField extends FormField<Gender> {
           onSaved: onSaved,
           validator: validator,
           builder: (FormFieldState<Gender> field) {
-            final GenderFormFieldState state = field;
+            final GenderFormFieldState state = field as GenderFormFieldState;
 
             final InputDecoration effectiveDecoration = (decoration ??
                     const InputDecoration())
@@ -48,7 +48,7 @@ class GenderFormField extends FormField<Gender> {
 class GenderFormFieldState extends FormFieldState<Gender> {
   @override
   GenderFormField get widget {
-    GenderFormField field = super.widget;
+    GenderFormField field = super.widget as GenderFormField;
     return field;
   }
 
