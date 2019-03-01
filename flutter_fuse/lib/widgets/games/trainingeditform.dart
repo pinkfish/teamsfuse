@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/services/map.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
+import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
-import 'dart:async';
-import 'package:uuid/uuid.dart';
+
+import 'editformbase.dart';
 
 class TrainingEditForm extends StatefulWidget {
-  final Game game;
+  TrainingEditForm(
+      {@required this.game, @required GlobalKey<TrainingEditFormState> key})
+      : super(key: key);
 
-  TrainingEditForm({Game game, GlobalKey<TrainingEditFormState> key})
-      : this.game = new Game.copy(game),
-        super(key: key);
+  final Game game;
 
   @override
   TrainingEditFormState createState() {
@@ -22,7 +23,7 @@ class TrainingEditForm extends StatefulWidget {
   }
 }
 
-class TrainingEditFormState extends State<TrainingEditForm> {
+class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   ScrollController _scrollController = new ScrollController();
   GlobalKey<DateTimeFormFieldState> _endTimeKey =
       new GlobalKey<DateTimeFormFieldState>();
@@ -30,54 +31,25 @@ class TrainingEditFormState extends State<TrainingEditForm> {
   GlobalKey<FormState> _formState = new GlobalKey<FormState>();
   DateTime _atDate;
   DateTime _atEnd;
+  FocusNode _focusNodePlaceNotes = new FocusNode();
+  FocusNode _focusNodeNotes = new FocusNode();
+  FocusNode _focusNodeUniform = new FocusNode();
 
-  void save() {}
+  @override
+  void save() {
+    _formState.currentState.save();
+  }
 
   @override
   void initState() {
     super.initState();
-    _atDate = new DateTime.fromMillisecondsSinceEpoch(widget.game.time);
-    _atEnd = new DateTime.fromMillisecondsSinceEpoch(widget.game.endTime);
-  }
-
-  bool validate() {
-    return _formState.currentState.validate();
-  }
-
-  Future<bool> validateAndSaveToFirebase(List<DateTime> extraTimes) async {
-    if (_formState.currentState.validate()) {
-      Uuid uuid = new Uuid();
-      String seriesId = uuid.v4();
-      _formState.currentState.save();
-      widget.game.time = new TZDateTime(
-              getLocation(widget.game.timezone),
-              _atDate.year,
-              _atDate.month,
-              _atDate.day,
-              _atDate.hour,
-              _atDate.minute)
-          .millisecondsSinceEpoch;
-      widget.game.seriesId = seriesId;
-      DateTime end = new TZDateTime(getLocation(widget.game.timezone),
-          _atEnd.year, _atEnd.month, _atEnd.day, _atEnd.hour, _atEnd.minute);
-      if (end.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
-        end.add(new Duration(days: 1));
-      }
-      widget.game.endTime = end.millisecondsSinceEpoch;
-      await widget.game.updateFirestore();
-      await Future.forEach(extraTimes, (DateTime time) async {
-        Game newGame = new Game.copy(widget.game);
-        newGame.time = time.millisecondsSinceEpoch;
-        return newGame.updateFirestore();
-      });
-      return true;
-    }
-    return false;
+    _atDate = widget.game.sharedData.tzTime;
+    _atEnd = widget.game.sharedData.tzEndTime;
   }
 
   void _updateTimes(Duration diff) {
     _endTimeKey.currentState
-        .setValue(_endTimeKey.currentState.value.subtract(diff));
+        .updateValue(_endTimeKey.currentState.value.subtract(diff));
   }
 
   void _showPlacesPicker() async {
@@ -85,11 +57,50 @@ class TrainingEditFormState extends State<TrainingEditForm> {
     if (place != null) {
       // Yay!
       setState(() {
-        widget.game.place.name = place.details.name;
-        widget.game.place.address = place.details.address;
-        widget.game.timezone = place.loc.name;
+        widget.game.sharedData.place.name = place.details.name;
+        widget.game.sharedData.place.address = place.details.address;
+        widget.game.sharedData.place.longitude =
+            place.details.location.longitude;
+        widget.game.sharedData.place.latitude = place.details.location.latitude;
+        place.loc.then((Location location) {
+          widget.game.sharedData.timezone = location.name;
+        });
       });
     }
+  }
+
+  @override
+  bool validate() {
+    return _formState.currentState.validate();
+  }
+
+  @override
+  Game get finalGameResult {
+    _formState.currentState.save();
+    // Add the date time and the time together.
+    widget.game.sharedData.time = new TZDateTime(
+            getLocation(widget.game.sharedData.timezone),
+            _atDate.year,
+            _atDate.month,
+            _atDate.day,
+            _atDate.hour,
+            _atDate.minute)
+        .millisecondsSinceEpoch;
+    widget.game.arriveTime = widget.game.sharedData.time;
+    DateTime end = _atEnd;
+    if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
+      end.add(new Duration(days: 1));
+    }
+    widget.game.sharedData.endTime = new TZDateTime(
+            getLocation(widget.game.sharedData.timezone),
+            end.year,
+            end.month,
+            end.day,
+            end.hour,
+            end.minute)
+        .millisecondsSinceEpoch;
+    widget.game.sharedData.endTime = _atEnd.millisecondsSinceEpoch;
+    return widget.game;
   }
 
   @override
@@ -111,7 +122,7 @@ class TrainingEditFormState extends State<TrainingEditForm> {
               children: <Widget>[
                 new SeasonFormField(
                   decoration: new InputDecoration(
-                    icon: const Icon(CommunityIcons.calendarquestion),
+                    icon: const Icon(CommunityIcons.calendarQuestion),
                     labelText: messages.season,
                   ),
                   initialValue: widget.game.seasonUid,
@@ -136,7 +147,7 @@ class TrainingEditFormState extends State<TrainingEditForm> {
                   labelText: Messages.of(context).trainingend,
                   key: _endTimeKey,
                   decoration: new InputDecoration(
-                    icon: const Icon(CommunityIcons.calendarrange),
+                    icon: const Icon(CommunityIcons.calendarRange),
                   ),
                   initialValue: _atEnd,
                   hideDate: false,
@@ -147,33 +158,59 @@ class TrainingEditFormState extends State<TrainingEditForm> {
                 new ListTile(
                   onTap: _showPlacesPicker,
                   leading: const Icon(Icons.place),
-                  title: new Text(widget.game.place.name == null
+                  title: new Text(widget.game.sharedData.place.name == null
                       ? messages.unknown
-                      : widget.game.place.name),
-                  subtitle: new Text(widget.game.place.address == null
-                      ? messages.unknown
-                      : widget.game.place.address),
+                      : widget.game.sharedData.place.name),
+                  subtitle: new Text(
+                      widget.game.sharedData.place.address == null
+                          ? messages.unknown
+                          : widget.game.sharedData.place.address),
                 ),
-                new TextFormField(
-                  initialValue: widget.game.notes,
-                  decoration: new InputDecoration(
-                    hintText: messages.trainingnoteshint,
-                    labelText: messages.trainingnotes,
-                    icon: const Icon(Icons.note),
+                new EnsureVisibleWhenFocused(
+                  focusNode: _focusNodePlaceNotes,
+                  child: new TextFormField(
+                    decoration: new InputDecoration(
+                      icon: const Icon(CommunityIcons.tshirtCrew),
+                      hintText: Messages.of(context).placesnoteshint,
+                      labelText: Messages.of(context).placesnotes,
+                    ),
+                    keyboardType: TextInputType.text,
+                    focusNode: _focusNodePlaceNotes,
+                    obscureText: false,
+                    initialValue: widget.game.sharedData.place.notes,
+                    onSaved: (String value) {
+                      widget.game.sharedData.place.notes = value;
+                    },
                   ),
-                  onSaved: (String value) {
-                    widget.game.notes = value;
-                  },
                 ),
-                new TextFormField(
-                  initialValue: widget.game.uniform,
-                  decoration: new InputDecoration(
-                      hintText: messages.uniformhint,
-                      labelText: messages.uniform,
-                      icon: const Icon(CommunityIcons.tshirtcrew)),
-                  onSaved: (String value) {
-                    widget.game.uniform = value;
-                  },
+                new EnsureVisibleWhenFocused(
+                  focusNode: _focusNodeUniform,
+                  child: new TextFormField(
+                    initialValue: widget.game.uniform,
+                    decoration: new InputDecoration(
+                        hintText: messages.uniformhint,
+                        labelText: messages.uniform,
+                        icon: const Icon(CommunityIcons.tshirtCrew)),
+                    onSaved: (String value) {
+                      widget.game.uniform = value;
+                    },
+                    focusNode: _focusNodeUniform,
+                  ),
+                ),
+                new EnsureVisibleWhenFocused(
+                  focusNode: _focusNodeNotes,
+                  child: new TextFormField(
+                    initialValue: widget.game.notes,
+                    decoration: new InputDecoration(
+                      hintText: messages.trainingnoteshint,
+                      labelText: messages.trainingnotes,
+                      icon: const Icon(Icons.note),
+                    ),
+                    focusNode: _focusNodeNotes,
+                    onSaved: (String value) {
+                      widget.game.notes = value;
+                    },
+                  ),
                 ),
               ],
             ),

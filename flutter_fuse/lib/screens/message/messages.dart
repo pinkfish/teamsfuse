@@ -6,6 +6,7 @@ class MessagesScreen extends StatelessWidget {
   void _newMessage(BuildContext context) {
     Navigator.pushNamed(context, "AddMessage");
   }
+
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
@@ -13,20 +14,12 @@ class MessagesScreen extends StatelessWidget {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(messages.message),
-        actions: <Widget>[
-          new FlatButton(
-            onPressed: () => this._newMessage(context),
-            child: new Text(
-              Messages.of(context).newbuttontext,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(color: Colors.white),
-            ),
-          ),
-        ],
       ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: () => _newMessage(context),
+        child: const Icon(Icons.message),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: new MessageList(),
     );
   }

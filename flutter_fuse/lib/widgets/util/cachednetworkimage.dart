@@ -3,18 +3,24 @@ library cached_network_image;
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' as ui show instantiateImageCodec, Codec;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui show instantiateImageCodec, Codec;
-
 import 'package:flutter_fuse/cache/cachemanager.dart';
 
-class CachedNetworkImage extends StatefulWidget {
-  static List<Object> _registeredErrors = <Object>[];
+///
+/// CachedNetworkImage for Flutter
+///
+/// Copyright (c) 2017 Rene Floor
+///
+/// Released under MIT License.
+///
 
+class CachedNetworkImage extends StatefulWidget {
   /// Creates a widget that displays a [placeholder] while an [imageUrl] is loading
   /// then cross-fades to display the [imageUrl].
+  /// Optional [httpHeaders] can be used for example for authentication on the server.
   ///
   /// The [imageUrl], [fadeOutDuration], [fadeOutCurve],
   /// [fadeInDuration], [fadeInCurve], [alignment], [repeat], and
@@ -24,7 +30,7 @@ class CachedNetworkImage extends StatefulWidget {
   const CachedNetworkImage({
     Key key,
     this.placeholder,
-    this.imageNow,
+    this.imageUrl,
     this.imageFuture,
     this.errorWidget,
     this.fadeOutDuration: const Duration(milliseconds: 300),
@@ -37,8 +43,8 @@ class CachedNetworkImage extends StatefulWidget {
     this.alignment: Alignment.center,
     this.repeat: ImageRepeat.noRepeat,
     this.matchTextDirection: false,
-  })
-      : assert(imageFuture != null || imageNow != null),
+    this.httpHeaders,
+  })  : assert(imageUrl != null || imageFuture != null),
         assert(fadeOutDuration != null),
         assert(fadeOutCurve != null),
         assert(fadeInDuration != null),
@@ -48,14 +54,16 @@ class CachedNetworkImage extends StatefulWidget {
         assert(matchTextDirection != null),
         super(key: key);
 
+  static List<Object> _registeredErrors = <Object>[];
+
   /// Widget displayed while the target [imageUrl] is loading.
   final Widget placeholder;
 
   /// The target image that is displayed.
-  final Future<String> imageFuture;
+  final String imageUrl;
 
-  /// The target image that is displayed.
-  final String imageNow;
+  // The future image to display
+  final Future<String> imageFuture;
 
   /// Widget displayed while the target [imageUrl] failed loading.
   final Widget errorWidget;
@@ -138,6 +146,9 @@ class CachedNetworkImage extends StatefulWidget {
   /// scope.
   final bool matchTextDirection;
 
+  // Optional headers for the http request of the image url
+  final Map<String, String> httpHeaders;
+
   @override
   State<StatefulWidget> createState() => new _CachedNetworkImageState();
 }
@@ -151,9 +162,6 @@ enum ImagePhase {
   /// animation is necessary, or whether we need to use the placeholder and
   /// wait for the image to load.
   start,
-
-  // After starting we wait a bit to see if we can show the image with a fast fadein.
-  starttimeout,
 
   /// Waiting for the target image to load.
   waiting,
@@ -220,15 +228,15 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
 
   bool _hasError;
 
-  Timer _timer;
-
   @override
   void initState() {
     _hasError = false;
     _imageProvider = new CachedNetworkImageProvider(
-        urlNow: widget.imageNow,
-        urlFuture: widget.imageFuture,
-        errorListener: _imageLoadingFailed);
+      urlNow: widget.imageUrl,
+      urlFuture: widget.imageFuture,
+      headers: widget.httpHeaders,
+      errorListener: _imageLoadingFailed,
+    );
     _imageResolver =
         new _ImageProviderResolver(state: this, listener: _updatePhase);
 
@@ -246,11 +254,6 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
     });
 
     super.initState();
-    _timer = new Timer(const Duration(milliseconds: 50), () {
-      if (_phase == ImagePhase.start) {
-        _phase = ImagePhase.starttimeout;
-      }
-    });
   }
 
   @override
@@ -270,8 +273,15 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
   @override
   void didUpdateWidget(CachedNetworkImage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.imageFuture != oldWidget.imageFuture ||
+    if (widget.imageUrl != oldWidget.imageUrl ||
+        widget.imageFuture != oldWidget.imageFuture ||
         widget.placeholder != widget.placeholder) {
+      _imageProvider = new CachedNetworkImageProvider(
+        urlNow: widget.imageUrl,
+        urlFuture: widget.imageFuture,
+        errorListener: _imageLoadingFailed,
+      );
+
       _resolveImage();
     }
   }
@@ -294,16 +304,10 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
     setState(() {
       switch (_phase) {
         case ImagePhase.start:
-          if (_imageResolver._imageInfo != null || _hasError) {
+          if (_imageResolver._imageInfo != null || _hasError)
             _phase = ImagePhase.completed;
-          }
-          break;
-        case ImagePhase.starttimeout:
-          if (_imageResolver._imageInfo != null || _hasError) {
-            _phase = ImagePhase.completed;
-          } else {
+          else
             _phase = ImagePhase.waiting;
-          }
           break;
         case ImagePhase.waiting:
           if (_hasError && widget.errorWidget == null) {
@@ -363,14 +367,12 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
   void dispose() {
     _imageResolver.stopListening();
     _controller.dispose();
-    _timer.cancel();
     super.dispose();
   }
 
   bool get _isShowingPlaceholder {
     assert(_phase != null);
     switch (_phase) {
-      case ImagePhase.starttimeout:
       case ImagePhase.start:
       case ImagePhase.waiting:
       case ImagePhase.fadeOut:
@@ -397,7 +399,7 @@ class _CachedNetworkImageState extends State<CachedNetworkImage>
 
   @override
   Widget build(BuildContext context) {
-    //assert(_phase != ImagePhase.start && _phase != ImagePhase.starttimeout);
+    assert(_phase != ImagePhase.start);
     if (_isShowingPlaceholder && widget.placeholder != null) {
       return _fadedWidget(widget.placeholder);
     }
@@ -446,13 +448,18 @@ class CachedNetworkImageProvider
   /// Creates an ImageProvider which loads an image from the [url], using the [scale].
   /// When the image fails to load [errorListener] is called.
   const CachedNetworkImageProvider(
-      {this.urlNow, this.urlFuture, this.scale: 1.0, this.errorListener})
+      {this.urlNow,
+      this.scale: 1.0,
+      this.errorListener,
+      this.headers,
+      this.urlFuture})
       : assert(urlNow != null || urlFuture != null),
         assert(scale != null);
 
   /// Web url of the image to load
   final String urlNow;
 
+  // The image future.
   final Future<String> urlFuture;
 
   /// Scale of the image
@@ -460,6 +467,9 @@ class CachedNetworkImageProvider
 
   /// Listener to be called when images fails to load.
   final ErrorListener errorListener;
+
+  // Set headers for the image provider, for example for authentication
+  final Map<String, String> headers;
 
   @override
   Future<CachedNetworkImageProvider> obtainKey(
@@ -478,34 +488,40 @@ class CachedNetworkImageProvider
         });
   }
 
-  // Never return if the file is not found.
-  Future<ui.Codec> _loadAsync(CachedNetworkImageProvider key) {
-    print('load async');
+  Future<ui.Codec> _loadAsync(CachedNetworkImageProvider key) async {
     Completer<ui.Codec> completer = new Completer<ui.Codec>();
     _internalLoadAsync(key, completer);
+
     return completer.future;
   }
 
   void _internalLoadAsync(
       CachedNetworkImageProvider key, Completer<ui.Codec> completer) async {
-    String url = urlNow;
-
-    if (urlFuture != null) {
-      url = await urlFuture;
+    print("Stuff");
+    CacheManager cacheManager = await CacheManager.getInstance();
+    String myUrl = urlNow;
+    print('Before this $myUrl');
+    if (urlNow == null) {
+      myUrl = await urlFuture;
     }
-    try {
-      CacheManager manager = await CacheManager.getInstance();
-      print('got the cache mamanger');
-      File f = await manager.getFile(url);
-      print('did get file');
-      if (f != null) {
-        _loadAsyncFromFile(key, f).then((ui.Codec codec) {
-          completer.complete(codec);
-        });
+    print('My url $myUrl');
+    if (myUrl == null) {
+      if (errorListener != null) {
+        errorListener();
+      } else {
+        throw new Exception("Couldn't download or retreive file.");
       }
-    } catch (error) {
-      completer.completeError(error);
     }
+    File file = await cacheManager.getFile(myUrl, headers: headers);
+    if (file == null) {
+      if (errorListener != null) {
+        errorListener();
+      } else {
+        throw new Exception("Couldn't download or retreive file.");
+      }
+      return;
+    }
+    return completer.complete(_loadAsyncFromFile(key, file));
   }
 
   Future<ui.Codec> _loadAsyncFromFile(
@@ -513,16 +529,26 @@ class CachedNetworkImageProvider
     assert(key == this);
 
     final Uint8List bytes = await file.readAsBytes();
-    if (bytes.lengthInBytes == 0) return null;
+
+    if (bytes.lengthInBytes == 0) {
+      if (errorListener != null) {
+        errorListener();
+      }
+      throw new Exception("File was empty");
+    }
 
     return await ui.instantiateImageCodec(bytes);
   }
 
   @override
   bool operator ==(dynamic other) {
-    if (other.runtimeType != runtimeType) return false;
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
     final CachedNetworkImageProvider typedOther = other;
-    return urlNow == typedOther.urlNow && scale == typedOther.scale;
+    return urlNow == typedOther.urlNow &&
+        urlFuture == typedOther.urlFuture &&
+        scale == typedOther.scale;
   }
 
   @override

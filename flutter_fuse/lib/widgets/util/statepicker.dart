@@ -1,32 +1,30 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class InProgressGamePicker extends StatelessWidget {
-  ///height of every list element
-  static const double DEFAULT_ITEM_EXTENT = 50.0;
-
-  ///width of list view
-  static const double DEFUALT_LISTVIEW_WIDTH = 100.0;
-
   ///constructor for integer number picker
   InProgressGamePicker({
-    Key key,
     @required this.initialValue,
     @required this.onChanged,
+    Key key,
     this.disabled = false,
-    this.itemExtent = DEFAULT_ITEM_EXTENT,
-    this.listViewWidth = DEFUALT_LISTVIEW_WIDTH,
-  })
-      : assert(initialValue != null),
+    this.itemExtent = defaultItemExtent,
+    this.listViewWidth = defaultListViewWidth,
+  })  : assert(initialValue != null),
         scrollController = new ScrollController(
-          initialScrollOffset:
-              ((initialValue.index) * itemExtent).toDouble(),
+          initialScrollOffset: ((initialValue.index) * itemExtent).toDouble(),
         ),
         _listViewHeight = 3 * itemExtent,
         super(key: key);
+
+  ///height of every list element
+  static const double defaultItemExtent = 50.0;
+
+  ///width of list view
+  static const double defaultListViewWidth = 100.0;
 
   ///called when selected value changes
   final ValueChanged<GameInProgress> onChanged;
@@ -53,7 +51,7 @@ class InProgressGamePicker extends StatelessWidget {
   //----------------------------- PUBLIC ------------------------------
   //
 
-  animateMove(GameInProgress valueToSelect) {
+  void animateMove(GameInProgress valueToSelect) {
     _animate(scrollController, (valueToSelect.index) * itemExtent);
   }
 
@@ -80,7 +78,7 @@ class InProgressGamePicker extends StatelessWidget {
 
     int itemCount = GameInProgress.values.length + 2;
 
-    return new NotificationListener(
+    return new NotificationListener<Notification>(
       child: new Container(
         height: _listViewHeight,
         width: listViewWidth,
@@ -102,7 +100,8 @@ class InProgressGamePicker extends StatelessWidget {
                 value == initialValue ? selectedStyle : defaultStyle;
 
             return new Center(
-              child: new Text(Messages.of(context).gameinprogress(value), style: itemStyle),
+              child: new Text(Messages.of(context).gameinprogress(value),
+                  style: itemStyle),
             );
           },
         ),
@@ -134,6 +133,11 @@ class InProgressGamePicker extends StatelessWidget {
       GameInProgress newValue;
 
       //return integer value
+      if (intValueInTheMiddle < 0) {
+        intValueInTheMiddle = 0;
+      } else if (intValueInTheMiddle >= GameInProgress.values.length) {
+        intValueInTheMiddle = GameInProgress.values.length - 1;
+      }
       newValue = GameInProgress.values[intValueInTheMiddle];
 
       onChanged(newValue);
@@ -146,11 +150,12 @@ class InProgressGamePicker extends StatelessWidget {
       Notification notification, ScrollController scrollController) {
     return notification is UserScrollNotification &&
         notification.direction == ScrollDirection.idle &&
+        // ignore: invalid_use_of_protected_member
         scrollController.position.activity is! HoldScrollActivity;
   }
 
-   ///scroll to selected value
-  _animate(ScrollController scrollController, double value) {
+  ///scroll to selected value
+  void _animate(ScrollController scrollController, double value) {
     scrollController.animateTo(value,
         duration: new Duration(seconds: 1), curve: new ElasticOutCurve());
   }

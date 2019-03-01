@@ -1,25 +1,30 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'dart:async';
 
 class EditProfileScreen extends StatefulWidget {
-  final String meUid;
   EditProfileScreen(this.meUid);
+
+  final String meUid;
 
   @override
   EditProfileScreenState createState() {
-    return new EditProfileScreenState(this.meUid);
+    return new EditProfileScreenState(meUid);
   }
 }
 
 class EditProfileScreenState extends State<EditProfileScreen> {
+  EditProfileScreenState(String meUid)
+      : me = new Player.copy(UserDatabaseData.instance.players[meUid]);
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool _autovalidate = false;
@@ -29,26 +34,31 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   File _imageFile;
   bool _changedImage = false;
   UserData _user;
-  StreamSubscription streamListen;
+  StreamSubscription<UserData> streamListen;
   final Player me;
 
-  EditProfileScreenState(String meUid)
-      : me = new Player.copy(UserDatabaseData.instance.players[meUid]);
+  // Details to update.
+  String displayName;
+  String phoneNumber;
 
+  @override
   void initState() {
     super.initState();
-    UserAuth.instance.currentUser().then((UserData data) {
+    UserDatabaseData.instance.userAuth.currentUser().then((UserData data) {
       setState(() {
         _user = data;
       });
     });
-    streamListen = UserAuth.instance.onAuthChanged().listen((UserData data) {
+    streamListen = UserDatabaseData.instance.userAuth
+        .onAuthChanged()
+        .listen((UserData data) {
       setState(() {
         _user = data;
       });
     });
   }
 
+  @override
   void dispose() {
     super.dispose();
     streamListen.cancel();
@@ -76,7 +86,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildImage() {
     if (!_changedImage) {
-      return new PlayerImage(me.uid);
+      return new PlayerImage(playerUid: me.uid);
     }
     return new Image.file(_imageFile);
   }
@@ -93,12 +103,16 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         // Only update in the me player, we don't use the built in photourl.
         await me.updateImage(_imageFile);
       }
+      FusedUserProfile profile = _user.profile
+          .copyWith(displayName: displayName, phoneNumber: phoneNumber);
+      UserDatabaseData.instance.userAuth.updateProfile(_user.uid, profile);
       Navigator.pop(context);
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     if (_user == null) {
       return new Text('Invalid state');
@@ -112,12 +126,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         actions: <Widget>[
           new FlatButton(
             onPressed: () {
-              this._savePressed(context);
+              _savePressed(context);
             },
             child: new Text(
               Messages.of(context).savebuttontext,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .subhead
                   .copyWith(color: Colors.white),
@@ -140,11 +153,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   child: new Column(
                     children: <Widget>[
                       new IconButton(
-                        onPressed: this._selectImage,
+                        onPressed: _selectImage,
                         iconSize: (screenSize.width < 500)
                             ? 120.0
                             : (screenSize.width / 4) + 12.0,
-                        icon: this._buildImage(),
+                        icon: _buildImage(),
                       ),
                       new EnsureVisibleWhenFocused(
                         focusNode: _focusNode,
@@ -161,7 +174,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                             return _validations.validateName(context, name);
                           },
                           onSaved: (String value) {
-                            _user.profile.displayName = value;
+                            displayName = value;
                           },
                         ),
                       ),
@@ -180,14 +193,14 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                             return _validations.validatePhone(context, phone);
                           },
                           onSaved: (String value) {
-                            _user.profile.displayName = value;
+                            phoneNumber = value;
                           },
                         ),
                       ),
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

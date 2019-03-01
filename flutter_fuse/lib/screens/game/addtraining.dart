@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
-import 'package:flutter_fuse/widgets/form/teampicker.dart';
-import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
 import 'package:flutter_fuse/widgets/games/repeatdetails.dart';
+import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
+import 'package:flutter_fuse/widgets/teams/teamselection.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
+import 'package:uuid/uuid.dart';
 
 class AddTrainingScreen extends StatefulWidget {
   AddTrainingScreen();
@@ -17,6 +21,8 @@ class AddTrainingScreen extends StatefulWidget {
 }
 
 class AddTrainingScreenState extends State<AddTrainingScreen> {
+  AddTrainingScreenState();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<TrainingEditFormState> _trainingFormKey =
       new GlobalKey<TrainingEditFormState>();
@@ -26,13 +32,11 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   StepState detailsStepState = StepState.disabled;
   StepState repeatStepState = StepState.disabled;
   StepState createStepStage = StepState.disabled;
-  String _teamUid;
+  Team _team;
   Game _initGame;
   RepeatData repeatData = new RepeatData();
   int currentStep = 0;
   List<TZDateTime> _repeatDates;
-
-  AddTrainingScreenState();
 
   @override
   void initState() {
@@ -54,10 +58,28 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
 
   Widget _buildRepeat(BuildContext context) {
     return new RepeatDetailsWidget(
-      _initGame.tzTime,
+      _initGame.sharedData.tzTime,
       repeatData,
       key: _repeatKey,
     );
+  }
+
+  Future<bool> _saveTraining() async {
+    Uuid uuid = new Uuid();
+    String seriesId = uuid.v4();
+    _initGame.seriesId = seriesId;
+    _initGame.updateFirestore(false);
+    await Future.forEach(_repeatDates, (TZDateTime time) async {
+      // Only save times that are not the same as the initial setup.
+      if (_initGame.sharedData.time != time.millisecondsSinceEpoch) {
+        print('Saving for $time');
+        Game newGame = new Game.copy(_initGame);
+        newGame.uid = null;
+        newGame.sharedData.time = time.millisecondsSinceEpoch;
+        return newGame.updateFirestore(false);
+      }
+    });
+    return true;
   }
 
   Widget _buildRepeatSummary() {
@@ -67,21 +89,18 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     }
     Game myGame = _initGame;
     String timeStr;
-    print("game -- ${myGame.time} ${myGame.endTime}");
-    if (myGame.time != myGame.endTime) {
-      timeStr = MaterialLocalizations
-              .of(context)
-              .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.tzTime)) +
+    print("game -- ${myGame.sharedData.time} ${myGame.sharedData.endTime}");
+    if (myGame.sharedData.time != myGame.sharedData.endTime) {
+      timeStr = MaterialLocalizations.of(context).formatTimeOfDay(
+              new TimeOfDay.fromDateTime(myGame.sharedData.tzTime)) +
           " - " +
-          MaterialLocalizations
-              .of(context)
-              .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.tzEndTime));
+          MaterialLocalizations.of(context).formatTimeOfDay(
+              new TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
     } else {
-      timeStr = MaterialLocalizations
-          .of(context)
-          .formatTimeOfDay(new TimeOfDay.fromDateTime(myGame.tzTime));
+      timeStr = MaterialLocalizations.of(context).formatTimeOfDay(
+          new TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
     }
-    List<Widget> cols = [
+    List<Widget> cols = <Widget>[
       new RaisedButton(
         child: new Text(Messages.of(context).createnew),
         color: Theme.of(context).accentColor,
@@ -90,15 +109,18 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
       ),
       new ListTile(
         leading: const Icon(Icons.calendar_today),
-        title: new Text(
-            MaterialLocalizations.of(context).formatFullDate(myGame.tzTime)),
+        title: new Text(MaterialLocalizations.of(context)
+            .formatFullDate(myGame.sharedData.tzTime)),
         subtitle: new Text(timeStr),
       ),
       new ListTile(
         leading: const Icon(Icons.place),
-        title: new Text(myGame.place.name != null ? myGame.place.name : ""),
-        subtitle:
-            new Text(myGame.place.address != null ? myGame.place.address : ""),
+        title: new Text(myGame.sharedData.place.name != null
+            ? myGame.sharedData.place.name
+            : ""),
+        subtitle: new Text(myGame.sharedData.place.address != null
+            ? myGame.sharedData.place.address
+            : ""),
       ),
     ];
 
@@ -113,7 +135,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     if (myGame.uniform.isNotEmpty) {
       cols.add(
         new ListTile(
-          leading: const Icon(CommunityIcons.tshirtcrew),
+          leading: const Icon(CommunityIcons.tshirtCrew),
           title: new Text(myGame.uniform),
         ),
       );
@@ -128,7 +150,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     _repeatDates.forEach((DateTime t) {
       cols.add(
         new ListTile(
-          leading: const Icon(CommunityIcons.calendarplus),
+          leading: const Icon(CommunityIcons.calendarPlus),
           title: new Text(
             MaterialLocalizations.of(context).formatFullDate(t),
           ),
@@ -151,7 +173,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     switch (currentStep) {
       // Check to make sure a team is picked.
       case 0:
-        if (_teamUid == null) {
+        if (_team == null) {
           teamStepState = StepState.error;
           return false;
         }
@@ -175,6 +197,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
           return false;
         }
         _trainingFormKey.currentState.save();
+        _initGame = _trainingFormKey.currentState.finalGameResult;
         detailsStepState = StepState.complete;
         repeatStepState = StepState.editing;
         break;
@@ -186,7 +209,8 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
         _repeatKey.currentState.save();
         repeatStepState = StepState.complete;
         createStepStage = StepState.complete;
-        _repeatDates = _repeatKey.currentState.repeatTimes(_initGame.tzTime);
+        _repeatDates =
+            _repeatKey.currentState.repeatTimes(_initGame.sharedData.tzTime);
         break;
       case 3:
         createStepStage = StepState.disabled;
@@ -201,16 +225,18 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
         if (currentStep < 3) {
           currentStep++;
         } else {
-          Game myGame = _trainingFormKey.currentState.widget.game;
-
           // Write the game out.
-          _trainingFormKey.currentState
-              .validateAndSaveToFirebase(
-                  _repeatKey.currentState.repeatTimes(myGame.tzTime))
-              .then((bool result) {
-            if (result) {
-              Navigator.pop(context);
-            }
+          _saveTraining().then((void y) {
+            Navigator.pop(context);
+          }).catchError((Error e) {
+            showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return new AlertDialog(
+                    title: new Text("Error"),
+                    content: new Text("Error saving the training"),
+                  );
+                });
           });
         }
       });
@@ -226,23 +252,28 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   void newGame() {
-    _initGame = new Game.newGame(EventType.Practice);
-    _initGame.opponentUid = null;
+    GameSharedData sharedGameData =
+        new GameSharedData(_team.uid, null, type: EventType.Practice);
+    _initGame = new Game(_team.uid, null, sharedData: sharedGameData);
+    _initGame.opponentUids = <String>[];
     _initGame.homegame = false;
     _initGame.uniform = '';
     _initGame.notes = '';
+    _initGame.sharedData.type = EventType.Practice;
   }
 
-  void _teamChanged(String str) {
-    _teamUid = str;
-    _initGame.teamUid = _teamUid;
-    Team teamData = UserDatabaseData.instance.teams[_teamUid];
+  void _teamChanged(Team team) {
+    _initGame.teamUid = team.uid;
     DateTime start = new DateTime.now().add(const Duration(days: 0));
-    _initGame.time = start.millisecondsSinceEpoch;
-    _initGame.endTime = _initGame.time;
-    _initGame.seasonUid = teamData.currentSeason;
+    _initGame.sharedData.time = start.millisecondsSinceEpoch;
+    _initGame.sharedData.endTime = _initGame.sharedData.time;
+    _initGame.seasonUid = team.currentSeason;
+    _initGame.trackAttendance = team.trackAttendence;
 
     print('team changed ${_initGame.toJSON()}');
+    setState(() {
+      _team = team;
+    });
   }
 
   @override
@@ -256,46 +287,44 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
       ),
       body: new Container(
         padding: new EdgeInsets.all(16.0),
-        child: new Stepper(
+        child: new StepperAlwaysVisible(
           type: StepperType.horizontal,
-          currentStep: this.currentStep,
+          currentStep: currentStep,
           onStepContinue: () {
-            this._onStepperContinue(context);
+            _onStepperContinue(context);
           },
           onStepCancel: () {
             // Go back
             Navigator.of(context).pop();
           },
           onStepTapped: (int step) {
-            this._onStepTapped(step);
+            _onStepTapped(step);
           },
           steps: <Step>[
             new Step(
               title: new Text(messages.team),
               state: teamStepState,
               isActive: true,
-              content: new Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  new TeamPicker(onChanged: this._teamChanged),
-                ],
+              content: new TeamSelection(
+                club: null,
+                onChanged: _teamChanged,
+                initialTeam: _team,
               ),
             ),
             new Step(
-              title: new Text(messages.gamedetails),
+              title: new Text(messages.details),
               state: detailsStepState,
-              isActive: _teamUid != null && _teamUid.isNotEmpty,
-              content: this._buildForm(context),
+              isActive: _team != null ? _team?.uid?.isNotEmpty : false,
+              content: _buildForm(context),
             ),
             new Step(
               title: new Text(messages.repeat),
               state: repeatStepState,
-              isActive: _teamUid != null && _teamUid.isNotEmpty,
-              content: this._buildRepeat(context),
+              isActive: _team != null ? _team?.uid?.isNotEmpty : false,
+              content: _buildRepeat(context),
             ),
             new Step(
-              title: new Text(messages.gamecreate),
+              title: new Text(messages.create),
               state: createStepStage,
               isActive: _trainingFormKey != null &&
                   _trainingFormKey.currentState != null &&

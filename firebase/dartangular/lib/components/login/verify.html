@@ -1,0 +1,34 @@
+<div class="material-content">
+    <guest-header></guest-header>
+
+    <h2>Email not verified</h2>
+    <div class="container">
+        <div class="row" *ngIf="resentEmail">
+            Email verification email resent, please check your spam box if
+            you cannot find it.
+        </div>
+        <div class="row">
+            <template [ngIf]="!resentEmail">
+                <material-button (trigger)="resendVerifyEmail()">
+                    RESEND EMAIL
+                </material-button>
+            </template>
+
+            <material-button (trigger)="login()">
+                LOGIN
+            </material-button>
+
+            <material-button (trigger)="signup()">
+                SIGNUP
+            </material-button>
+
+            <material-button (trigger)="forgotPassword()">
+                FORGOT PASSWORD
+            </material-button>
+
+            <material-button (trigger)="cancel()">
+                CANCEL
+            </material-button>
+        </div>
+    </div>
+</div>

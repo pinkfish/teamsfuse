@@ -1,31 +1,94 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/authentication.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
-
-import 'fuseddrawerheader.dart';
-import 'package:flutter_fuse/services/approuter.dart';
 import 'package:fluro/fluro.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/approuter.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/teams/teamtile.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+import 'fuseddrawer.dart';
+import 'fuseddrawerheader.dart';
 
 class FusedDrawerContent extends StatelessWidget {
+  FusedDrawerContent({this.mode = DrawerMode.gameList});
+
+  final DrawerMode mode;
+
   Widget _buildTeamSection(BuildContext context) {
-    List<Widget> data = new List<Widget>();
-    UserDatabaseData.instance.teams.forEach((uid, team) {
-      data.add(
-        new ListTile(
-          leading: const Icon(Icons.group),
-          title: new Text(team.name),
-          onTap: () {
-            AppRouter.instance.navigateTo(context, "Team/" + team.uid,
-                transition: TransitionType.inFromRight);
-          },
-        ),
-      );
+    List<Widget> data = <Widget>[];
+    // If we are specifically in a club, list that here.
+    for (Club club in UserDatabaseData.instance.clubs.values) {
+      if (club.isMember()) {
+        data.add(
+          new ListTile(
+            leading: const Icon(CommunityIcons.cardsClub),
+            title: new RichText(
+              text: new TextSpan(
+                text: club.name,
+                style: Theme.of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(fontWeight: FontWeight.bold, fontSize: 17.0),
+                children: <TextSpan>[
+                  new TextSpan(
+                      text: club.isAdmin()
+                          ? "\n" + Messages.of(context).administrator
+                          : "",
+                      style: Theme.of(context).textTheme.subhead.copyWith(
+                            fontStyle: FontStyle.italic,
+                            fontSize: 10.0,
+                            color: Theme.of(context).primaryColorDark,
+                          )),
+                ],
+              ),
+            ),
+            subtitle: new StreamBuilder<Iterable<Team>>(
+                stream: club.teamStream,
+                builder:
+                    (BuildContext context, AsyncSnapshot<Iterable<Team>> snap) {
+                  if (snap.hasData) {
+                    return new Text(
+                      Messages.of(context).teamnumbers(snap.data.length),
+                    );
+                  }
+                  if (club.cachedTeams != null) {
+                    return new Text(
+                      Messages.of(context).teamnumbers(club.cachedTeams.length),
+                    );
+                  }
+                  return new Text(Messages.of(context).loading);
+                }),
+            onTap: () {
+              Navigator.pop(context);
+              AppRouter.instance.navigateTo(context, "Club/" + club.uid,
+                  transition: TransitionType.inFromRight);
+            },
+          ),
+        );
+      }
+    }
+    UserDatabaseData.instance.teams.forEach((String uid, Team team) {
+      if (!team.archived) {
+        if (team.clubUid == null ||
+            !UserDatabaseData.instance.clubs.containsKey(team.clubUid)) {
+          data.add(
+            new TeamTile(
+              team,
+              popBeforeNavigate: true,
+              showIconForTeam: true,
+            ),
+          );
+        }
+      }
     });
     data.add(
       new ListTile(
-        leading: const Icon(Icons.add),
-        title: const Text('Add Team'),
-        onTap: () => Navigator.pushNamed(context, "AddTeam"),
+        leading: const Icon(CommunityIcons.teamviewer),
+        title: new Text(
+          Messages.of(context).allteamsbbutton,
+          style: Theme.of(context).textTheme.button,
+        ),
+        onTap: () => Navigator.popAndPushNamed(context, "AllTeams"),
       ),
     );
     return new Column(children: data);
@@ -33,33 +96,78 @@ class FusedDrawerContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final children = <Widget>[
+    final List<Widget> children = <Widget>[
       new FusedDrawerHeader(),
-      new StreamBuilder(
+      new StreamBuilder<UpdateReason>(
         stream: UserDatabaseData.instance.teamStream,
         builder: (BuildContext context, AsyncSnapshot<UpdateReason> snapshot) {
-          return this._buildTeamSection(context);
+          return _buildTeamSection(context);
         },
       ),
       new Divider(),
+      mode == DrawerMode.gameList
+          ? new ListTile(
+              leading: const Icon(Icons.people_outline),
+              title: new Text(Messages.of(context).leaguetournament),
+              onTap: () {
+                Navigator.popAndPushNamed(context, "/League/Home");
+              },
+            )
+          : new ListTile(
+              leading: const Icon(Icons.list),
+              title: new Text(Messages.of(context).allgames),
+              onTap: () {
+                Navigator.popAndPushNamed(context, "/Home");
+              },
+            ),
+      new Divider(),
+      new ListTile(
+        leading: const Icon(Icons.people_outline),
+        title: new Text(Messages.of(context).players),
+        onTap: () {
+          Navigator.popAndPushNamed(context, "/Players");
+        },
+      ),
       new ListTile(
         leading: const Icon(Icons.exit_to_app),
-        title: const Text('Signout'),
-        onTap: () {
-          UserAuth.instance.signOut();
-          Navigator.of(context).pushNamed("/Home");
+        title: new Text(Messages.of(context).signout),
+        onTap: () async {
+          OverlayState overlayState = Overlay.of(context);
+          OverlayEntry overlayEntry =
+              new OverlayEntry(builder: (BuildContext context) {
+            return new Positioned(
+              top: 50.0,
+              left: 50.0,
+              child: new Material(
+                color: Colors.transparent,
+                child: new Icon(Icons.warning, color: Colors.purple),
+              ),
+            );
+          });
+
+          overlayState.insert(overlayEntry);
+
+          // Pre-emptively clear the user data stuff, otherwise we end
+          // erroring all over the place when the subscriptions fail
+          UserDatabaseData.instance.close();
+          await UserDatabaseData.instance.userAuth.signOut();
+
+          await overlayEntry.remove();
+
+          Navigator.pushNamedAndRemoveUntil(
+              context, "/Login/Home", (Route<dynamic> d) => false);
         },
       ),
       new ListTile(
         leading: const Icon(Icons.settings),
-        title: const Text('Settings'),
+        title: new Text(Messages.of(context).settings),
         onTap: () {
           Navigator.popAndPushNamed(context, "/Settings");
         },
       ),
       new ListTile(
         leading: const Icon(Icons.help),
-        title: const Text('About'),
+        title: new Text(Messages.of(context).about),
         onTap: () {
           Navigator.popAndPushNamed(context, "/About");
         },

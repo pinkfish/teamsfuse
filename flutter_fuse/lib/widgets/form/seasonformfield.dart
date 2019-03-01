@@ -1,19 +1,22 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:flutter_fuse/services/databasedetails.dart';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class SeasonFormField extends FormField<String> {
   SeasonFormField({
+    @required String teamUid,
     Key key,
-    String teamUid,
-    String initialValue: '',
+    String initialValue: none,
+    bool enabled: true,
+    this.includeNone: false,
+    this.includeNew: false,
     InputDecoration decoration: const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
-  })
-      : assert(initialValue != null),
+  })  : assert(initialValue != null),
         assert(teamUid != null),
         super(
             key: key,
@@ -22,65 +25,92 @@ class SeasonFormField extends FormField<String> {
             validator: validator,
             builder: (FormFieldState<String> field) {
               final SeasonFormFieldState state = field;
-              state.teamUid = teamUid;
+              state._teamUid = teamUid;
               final InputDecoration effectiveDecoration = (decoration ??
                       const InputDecoration())
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme);
               return new InputDecorator(
                   decoration: effectiveDecoration,
-                  child: new DropdownButton(
+                  child: new DropdownButton<String>(
                       hint: new Text(Messages.of(state.context).seasonselect),
                       value: state.value,
                       items: state._buildItems(state.context),
-                      onChanged: (dynamic val) {
-                        state.setValue(val);
-                        field.didChange(val);
-                        if (onFieldSubmitted != null) {
-                          onFieldSubmitted(val);
-                        }
-                      }));
+                      onChanged: enabled
+                          ? (String val) {
+                              state.updateValue(val);
+                              field.didChange(val);
+                              if (onFieldSubmitted != null) {
+                                onFieldSubmitted(val);
+                              }
+                            }
+                          : null));
             });
 
+  final bool includeNone;
+  final bool includeNew;
+
+  static const String none = 'none';
+  static const String createNew = 'new';
+
   @override
-  SeasonFormFieldState createState() => new SeasonFormFieldState();
+  SeasonFormFieldState createState() =>
+      new SeasonFormFieldState(includeNone, includeNew);
 }
 
 class SeasonFormFieldState extends FormFieldState<String> {
-  @override
-  SeasonFormField get widget => super.widget;
+  SeasonFormFieldState(this._includeNone, this._includeNew);
 
-  String teamUid;
-  StreamSubscription<UpdateReason> teamSubscription;
+  String _teamUid;
+  StreamSubscription<UpdateReason> _teamSubscription;
+  bool _includeNone;
+  bool _includeNew;
+
+  void updateValue(String val) {
+    setValue(val);
+  }
 
   void setTeamUid(String teamUid) {
     setState(() {
-      this.teamUid = teamUid;
-      if (teamSubscription != null) {
-        teamSubscription.cancel();
+      _teamUid = teamUid;
+      if (_teamSubscription != null) {
+        _teamSubscription.cancel();
       }
-      teamSubscription = UserDatabaseData.instance.teams[teamUid].thisTeamStream
+      _teamSubscription = UserDatabaseData
+          .instance.teams[teamUid].thisTeamStream
           .listen((UpdateReason value) {
         setState(() {});
       });
     });
   }
 
-
   @override
   void dispose() {
     super.dispose();
-    if (teamSubscription != null) {
-      teamSubscription.cancel();
-      teamSubscription = null;
+    if (_teamSubscription != null) {
+      _teamSubscription.cancel();
+      _teamSubscription = null;
     }
   }
 
-  List<DropdownMenuItem> _buildItems(BuildContext context) {
-    List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
-    if (teamUid != null &&
-        UserDatabaseData.instance.teams.containsKey(teamUid)) {
-      UserDatabaseData.instance.teams[teamUid].seasons.forEach((key, season) {
-        ret.add(new DropdownMenuItem(
+  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    if (_teamUid != null &&
+        UserDatabaseData.instance.teams.containsKey(_teamUid)) {
+      if (_includeNone) {
+        ret.add(new DropdownMenuItem<String>(
+          child: Text(Messages.of(context).noseasons),
+          value: SeasonFormField.none,
+        ));
+      }
+      if (_includeNew) {
+        ret.add(new DropdownMenuItem<String>(
+          child: Text(Messages.of(context).addseason),
+          value: SeasonFormField.createNew,
+        ));
+      }
+      UserDatabaseData.instance.teams[_teamUid].seasons
+          .forEach((String key, Season season) {
+        ret.add(new DropdownMenuItem<String>(
             child: new Text(season.name), value: season.uid));
       });
     }

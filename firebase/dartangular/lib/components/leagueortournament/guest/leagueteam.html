@@ -1,0 +1,39 @@
+<div *ngIf="leagueTeam == null">
+    Loading...
+</div>
+
+<div *ngIf="leagueTeam != null" class="p-3">
+    <img src="{{leagueUrl}}" width="100" height="100" style="float: right">
+
+    <h2 style="margin-bottom: 0px">
+        {{leagueTeam.name}}
+    </h2>
+    <h4 *ngIf="league != null" class="text-muted">
+        {{league.name}} <i class="mdi mdi-{{genderIcon}}"></i>
+        <span *ngIf="leagueSeason != null" class="text-muted">
+            &nbsp;{{leagueSeason.name}}
+        </span>
+        <span *ngIf="leagueDivison != null" class="text-muted">
+            &nbsp;{{leagueDivison.name}}
+        </span>
+    </h4>
+    <h2 class="text-muted" *ngIf="league == null">
+        unknown league
+    </h2>
+
+    <material-button (trigger)="openLeague()" *ngIf="league != null">
+        League
+    </material-button>
+    <material-button (trigger)="openTeam()" *ngIf="team != null">
+        Team
+    </material-button>
+
+    <br clear="both">
+
+    <material-expansionpanel name="Games" [showSaveCancel]="false">
+        <div *deferredContent>
+            <game-shared-card *ngFor="let fluff of games; trackBy: trackByGame" [game]="fluff">
+            </game-shared-card>
+        </div>
+    </material-expansionpanel>
+</div>

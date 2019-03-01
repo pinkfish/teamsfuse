@@ -1,0 +1,13 @@
+<div>
+
+    <h2>League</h2>
+    <league-card *ngFor="let fluff of leagues; trackBy: trackByTournament" [leagueOrTournament]="fluff">
+        {{fluff.name}}
+    </league-card>
+
+    <h2>Tournaments</h2>
+    <league-card *ngFor="let fluff of tournaments; trackBy: trackByTournament" [leagueOrTournament]="fluff">
+
+    </league-card>
+
+</div>

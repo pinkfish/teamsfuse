@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'dart:async';
+import 'package:fusemodel/fusemodel.dart';
 
 class FilterHomeDialog extends StatefulWidget {
-  final FilterDetails details;
-
   FilterHomeDialog(this.details);
+
+  final FilterDetails details;
 
   @override
   _FilterHomeDialogState createState() {
@@ -18,22 +17,25 @@ class FilterHomeDialog extends StatefulWidget {
 class _FilterHomeDialogState extends State<FilterHomeDialog> {
   void _openTeamListWithCheckbox() {
     Messages messages = Messages.of(context);
-    List<Widget> teams = [];
+    List<Widget> teams = <Widget>[];
     UserDatabaseData.instance.teams.forEach((String str, Team team) {
       bool isOn = widget.details.teamUids.contains(str);
-      teams.add(
-        new ListTile(
-          leading: new Checkbox(
-            value: isOn,
-            onChanged: (bool val) => val
-                ? widget.details.teamUids.add(str)
-                : widget.details.teamUids.remove(str),
-          ),
-          title: new Text(team.name),
-        ),
-      );
+      teams.add(_CheckboxDialogItem(
+          initialValue: isOn,
+          title: team.name,
+          onChanged: (bool val) => val
+              ? widget.details.teamUids.add(str)
+              : widget.details.teamUids.remove(str)));
     });
-    showDialog(
+    teams.add(ButtonBar(
+      children: <Widget>[
+        FlatButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(MaterialLocalizations.of(context).okButtonLabel),
+        ),
+      ],
+    ));
+    showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return new SimpleDialog(
@@ -41,7 +43,9 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
           children: teams,
         );
       },
-    );
+    ).then((bool closed) {
+      setState(() {});
+    });
   }
 
   Widget _showTeamPicker() {
@@ -67,30 +71,36 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
 
   void _openPlayerListWithCheckbox() {
     Messages messages = Messages.of(context);
-    List<Widget> teams = [];
+    List<Widget> players = <Widget>[];
     UserDatabaseData.instance.players.forEach((String str, Player player) {
       bool isOn = widget.details.playerUids.contains(str);
-      teams.add(
-        new ListTile(
-          leading: new Checkbox(
-            value: isOn,
-            onChanged: (bool val) => val
-                ? widget.details.playerUids.add(str)
-                : widget.details.playerUids.remove(str),
-          ),
-          title: new Text(player.name),
-        ),
-      );
+      players.add(_CheckboxDialogItem(
+          initialValue: isOn,
+          title: player.name,
+          onChanged: (bool val) => val
+              ? widget.details.playerUids.add(str)
+              : widget.details.playerUids.remove(str)));
     });
-    showDialog(
+    players.add(ButtonBar(
+      children: <Widget>[
+        FlatButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(MaterialLocalizations.of(context).okButtonLabel),
+        ),
+      ],
+    ));
+    showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return new SimpleDialog(
-          title: new Text(messages.teamselect),
-          children: teams,
+          title: new Text(messages.playerselect),
+          children: players,
         );
       },
-    );
+    ).then((bool closed) {
+      setState(() {});
+    });
+    ;
   }
 
   Widget _showPlayerPicker() {
@@ -114,24 +124,6 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     );
   }
 
-  Future<void> _selectStartDate() async {
-    DateTime dt = await showDatePicker(
-        context: context,
-        initialDate: widget.details.startDate,
-        firstDate: new DateTime(2015, 8),
-        lastDate: new DateTime(2101));
-    widget.details.startDate = dt;
-  }
-
-  Future<void> _selectEndDate() async {
-    DateTime dt = await showDatePicker(
-        context: context,
-        initialDate: widget.details.endDate,
-        firstDate: new DateTime(2015, 8),
-        lastDate: new DateTime(2101));
-    widget.details.endDate = dt;
-  }
-
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
@@ -139,12 +131,12 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(messages.title),
-        actions: <Widget>[
-          new FlatButton(
-            child: new Text(messages.savebuttontext),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ],
+        actions: const <Widget>[],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Icon(Icons.check),
       ),
       body: new SingleChildScrollView(
         child: new Column(
@@ -162,24 +154,24 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
               leading: const Icon(Icons.gamepad),
               title: new DropdownButton<GameResult>(
                 value: widget.details.result,
-                items: [
-                  new DropdownMenuItem(
+                items: <DropdownMenuItem<GameResult>>[
+                  new DropdownMenuItem<GameResult>(
                     child: new Text(messages.noresult),
                     value: null,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<GameResult>(
                     child: new Text(messages.win),
                     value: GameResult.Win,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<GameResult>(
                     child: new Text(messages.loss),
                     value: GameResult.Loss,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<GameResult>(
                     child: new Text(messages.tie),
                     value: GameResult.Tie,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<GameResult>(
                     child: new Text(messages.notfinished),
                     value: GameResult.Unknown,
                   ),
@@ -192,23 +184,23 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
               ),
             ),
             new ListTile(
-              leading: const Icon(CommunityIcons.tshirtcrew),
+              leading: const Icon(CommunityIcons.tshirtCrew),
               title: new DropdownButton<EventType>(
                 value: widget.details.eventType,
-                items: [
-                  new DropdownMenuItem(
+                items: <DropdownMenuItem<EventType>>[
+                  new DropdownMenuItem<EventType>(
                     child: new Text(messages.noevent),
                     value: null,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<EventType>(
                     child: new Text(messages.gametype),
                     value: EventType.Game,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<EventType>(
                     child: new Text(messages.trainingtype),
                     value: EventType.Practice,
                   ),
-                  new DropdownMenuItem(
+                  new DropdownMenuItem<EventType>(
                     child: new Text(messages.eventtype),
                     value: EventType.Event,
                   ),
@@ -220,51 +212,46 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
                 },
               ),
             ),
-            new ListTile(
-              leading: const Icon(CommunityIcons.calendarquestion),
-              title: new ListTile(
-                leading: new Checkbox(
-                  value: widget.details.allGames,
-                  onChanged: (bool val) => widget.details.allGames = val,
-                ),
-                title: new Text(messages.allgames),
-              ),
-            ),
-            new ListTile(
-              leading: const Icon(CommunityIcons.calendarrange),
-              title: new Row(
-                children: <Widget>[
-                  new InkWell(
-                    child: new Text(
-                      MaterialLocalizations
-                              .of(context)
-                              .formatMediumDate(widget.details.startDate) +
-                          " " +
-                          MaterialLocalizations
-                              .of(context)
-                              .formatYear(widget.details.startDate),
-                    ),
-                    onTap: _selectStartDate,
-                  ),
-                  new Text("to"),
-                  new InkWell(
-                    child: new Text(
-                      MaterialLocalizations
-                              .of(context)
-                              .formatMediumDate(widget.details.endDate) +
-                          " " +
-                          MaterialLocalizations
-                              .of(context)
-                              .formatYear(widget.details.startDate),
-                    ),
-                    onTap: _selectEndDate,
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _CheckboxDialogItem extends StatefulWidget {
+  _CheckboxDialogItem({this.initialValue = false, this.onChanged, this.title});
+
+  final ValueChanged<bool> onChanged;
+  final bool initialValue;
+  final String title;
+
+  @override
+  State createState() {
+    return _CheckboxDialogItemState();
+  }
+}
+
+class _CheckboxDialogItemState extends State<_CheckboxDialogItem> {
+  bool _isOn;
+
+  @override
+  void initState() {
+    super.initState();
+    _isOn = widget.initialValue;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new ListTile(
+      leading: new Checkbox(
+        value: _isOn,
+        onChanged: (bool val) => setState(() {
+              _isOn = val;
+              widget.onChanged(val);
+            }),
+      ),
+      title: Text(widget.title),
     );
   }
 }

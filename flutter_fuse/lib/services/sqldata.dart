@@ -1,40 +1,43 @@
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
-class SqlData {
+import 'package:fusemodel/fusemodel.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart';
+
+class SqlData implements PersistenData {
+  SqlData() {
+    _initialized = _completer.future;
+  }
+
   Database _database;
   static SqlData _instance;
   String _path;
   Completer<bool> _completer = new Completer<bool>();
   Future<bool> _initialized;
+  bool _recreating = false;
 
-  static const String _DBNAME = "teamfuse.db";
+  static const String _dbName = "teamfuse.db";
 
-  static const String GAME_TABLE = "Games";
-  static const String TEAMS_TABLE = "Teams";
-  static const String SEASON_TABLE = "Seasons";
-  static const String PLAYERS_TABLE = "Players";
-  static const String INVITES_TABLE = "Invites";
-  static const String OPPONENTS_TABLE = "Opponents";
-  static const String PROFILE_TABLE = "Profile";
-  static const String MESSAGES_TABLE = "Messages";
+  static const String indexColumn = "fluff";
+  static const String dataColumn = "data";
+  static const String teamUidColumn = "teamuid";
 
-  static const String INDEX = "fluff";
-  static const String DATA = "data";
-  static const String TEAMUID = "teamuid";
-
-  static const List<String> _TABLES = const [
-    GAME_TABLE,
-    TEAMS_TABLE,
-    SEASON_TABLE,
-    PLAYERS_TABLE,
-    INVITES_TABLE,
-    PROFILE_TABLE,
-    MESSAGES_TABLE
+  static const List<String> _tables = const <String>[
+    PersistenData.teamsTable,
+    PersistenData.seasonTable,
+    PersistenData.playersTable,
+    PersistenData.invitesTable,
+    PersistenData.profileTable,
+    PersistenData.messagesTable,
+    PersistenData.clubsTable,
+    PersistenData.leagueOrTournamentTable,
+  ];
+  static const List<String> _teamSpecificTables = const <String>[
+    PersistenData.opponentsTable,
+    PersistenData.gameTable
   ];
 
   static SqlData get instance {
@@ -44,82 +47,114 @@ class SqlData {
     return _instance;
   }
 
-  SqlData() {
-    _initialized = _completer.future;
-  }
-
   Future<void> initDatabase() async {
+    print('_initDatabase()');
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    _path = join(documentsDirectory.path, _DBNAME);
-    _database = await openDatabase(_path, version: 2,
+    _path = join(documentsDirectory.path, _dbName);
+    _database = await openDatabase(_path, version: 6,
         onUpgrade: (Database db, int oldVersion, int newVersion) async {
-      if (newVersion == 2) {
-        await db.execute("CREATE TABLE IF NOT EXISTS " +
-            MESSAGES_TABLE +
-            " (" +
-            INDEX +
+      print('Upgrading db $oldVersion $newVersion');
+      if (newVersion == 5) {
+        await db.execute("DROP TABLE " + PersistenData.gameTable);
+        return db.execute("CREATE TABLE IF NOT EXISTS " +
+            PersistenData.gameTable +
+            "(" +
+            indexColumn +
             " text PRIMARY KEY, " +
-            DATA +
+            teamUidColumn +
+            " text NOT NULL, " +
+            dataColumn +
+            " text NOT NULL);");
+      } else if (newVersion == 6) {
+        print('Making league table');
+        return db.execute("CREATE TABLE IF NOT EXISTS " +
+            PersistenData.leagueOrTournamentTable +
+            "(" +
+            indexColumn +
+            " text PRIMARY KEY, " +
+            teamUidColumn +
+            " text NOT NULL, " +
+            dataColumn +
             " text NOT NULL);");
       }
+      print('Finish upgrade');
     }, onCreate: (Database db, int version) async {
-      await Future.forEach(_TABLES, (String table) async {
+      await Future.forEach(_tables, (String table) async {
         print('Made db $table');
         return await db.execute("CREATE TABLE IF NOT EXISTS " +
             table +
             " (" +
-            INDEX +
+            indexColumn +
             " text PRIMARY KEY, " +
-            DATA +
+            dataColumn +
             " text NOT NULL);");
       });
-      await db.execute("CREATE TABLE IF NOT EXISTS " +
-          OPPONENTS_TABLE +
-          "(" +
-          INDEX +
-          " text PRIMARY KEY, " +
-          TEAMUID +
-          " text NOT NULL, " +
-          DATA +
-          " text NOT NULL);");
+      await Future.forEach(_teamSpecificTables, (String table) async {
+        return db.execute("CREATE TABLE IF NOT EXISTS " +
+            table +
+            "(" +
+            indexColumn +
+            " text PRIMARY KEY, " +
+            teamUidColumn +
+            " text NOT NULL, " +
+            dataColumn +
+            " text NOT NULL);");
+      });
     });
     _completer.complete(true);
     print('out of here');
   }
 
-  void dropDatabase() async {
-    await deleteDatabase(_path);
+  // Close the database, delete everything and then reopen it.
+  @override
+  Future<void> recreateDatabase() async {
+    if (_recreating) {
+      return;
+    }
+    _recreating = true;
+    try {
+      _completer = new Completer<bool>();
+      _initialized = _completer.future;
+      await _database.close();
+      await deleteDatabase(_path);
+      await initDatabase();
+    } finally {
+      _recreating = false;
+    }
   }
 
   // Gets all the data out of the json table.
+  @override
   Future<Map<String, Map<String, dynamic>>> getAllElements(String table) async {
-    Map<String, Map<String, dynamic>> ret =
-        new Map<String, Map<String, dynamic>>();
+    Map<String, Map<String, dynamic>> ret = <String, Map<String, dynamic>>{};
     await _initialized;
 
     List<Map<String, dynamic>> data = await _database.query(table);
 
-    data.forEach((Map<String, dynamic> innerData) {
-      ret[innerData[INDEX]] = json.decode(innerData[DATA]);
-    });
+    for (Map<String, dynamic> innerData in data) {
+      ret[innerData[indexColumn].toString()] =
+          json.decode(innerData[dataColumn].toString()) as Map<String, dynamic>;
+    }
 
     return ret;
   }
 
+  @override
   Future<Map<String, dynamic>> getElement(String tableId, String key) async {
     await _initialized;
-    Map<String, String> updateData = new Map<String, String>();
-    updateData[INDEX] = key;
+    Map<String, String> updateData = <String, String>{};
+    updateData[indexColumn] = key;
 
-    List<Map<String, dynamic>> data =
-        await _database.query(tableId, where: INDEX + " = ?", whereArgs: [key]);
+    List<Map<String, dynamic>> data = await _database
+        .query(tableId, where: indexColumn + " = ?", whereArgs: <String>[key]);
     if (data == null || data.length == 0) {
       return null;
     }
 
-    return json.decode(data[0][DATA]);
+    return json.decode(data[0][dataColumn].toString()) as Map<String, dynamic>;
   }
 
+  @override
   Future<void> updateElement(
       String tableId, String key, Map<String, dynamic> data) async {
     await _initialized;
@@ -129,35 +164,39 @@ class SqlData {
         "insert or replace into " +
             tableId +
             " (" +
-            INDEX +
+            indexColumn +
             ", " +
-            DATA +
+            dataColumn +
             ") values (?, ?)",
-        [key, myJson]);
+        <String>[key, myJson]);
   }
 
+  @override
   Future<int> deleteElement(String tableId, String key) async {
     await _initialized;
-    return _database.delete(tableId, where: INDEX + " = ?", whereArgs: [key]);
+    return _database
+        .delete(tableId, where: indexColumn + " = ?", whereArgs: <String>[key]);
   }
 
   // Gets all the data out of the json table.
+  @override
   Future<Map<String, Map<String, dynamic>>> getAllTeamElements(
       String table, String teamUid) async {
     await _initialized;
-    Map<String, Map<String, dynamic>> ret =
-        new Map<String, Map<String, dynamic>>();
+    Map<String, Map<String, dynamic>> ret = <String, Map<String, dynamic>>{};
 
-    List<Map<String, dynamic>> data = await _database
-        .query(table, where: TEAMUID + " = ?", whereArgs: [teamUid]);
+    List<Map<String, dynamic>> data = await _database.query(table,
+        where: teamUidColumn + " = ?", whereArgs: <String>[teamUid]);
 
-    data.forEach((Map<String, dynamic> innerData) {
-      ret[innerData[INDEX]] = json.decode(innerData[DATA]);
-    });
+    for (Map<String, dynamic> innerData in data) {
+      ret[innerData[indexColumn].toString()] =
+          json.decode(innerData[dataColumn].toString()) as Map<String, dynamic>;
+    }
 
     return ret;
   }
 
+  @override
   Future<void> updateTeamElement(String tableId, String key, String teamUid,
       Map<String, dynamic> data) async {
     await _initialized;
@@ -167,16 +206,17 @@ class SqlData {
         "insert or replace into " +
             tableId +
             " (" +
-            INDEX +
+            indexColumn +
             ", " +
-            TEAMUID +
+            teamUidColumn +
             ", " +
-            DATA +
+            dataColumn +
             ") values (?, ?, ?)",
-        [key, teamUid, myJson]);
+        <String>[key, teamUid, myJson]);
   }
 
-  void clearTable(String tableId) {
-    _database.delete(tableId);
+  @override
+  Future<void> clearTable(String tableId) {
+    return _database.delete(tableId);
   }
 }

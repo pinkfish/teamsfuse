@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
-import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
 import 'package:flutter_fuse/widgets/games/attendancedialog.dart';
-import 'attendanceicon.dart';
+import 'package:flutter_fuse/widgets/games/editresultdialog.dart';
+import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
+import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/src/game/gamefromofficial.dart';
 import 'package:timezone/timezone.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'attendanceicon.dart';
 
 class GameCard extends StatelessWidget {
-  final Game game;
-  final Map<Player, Attendance> attendence = new Map<Player, Attendance>();
-
   GameCard(this.game);
+
+  final Game game;
+  final Map<Player, Attendance> attendence = <Player, Attendance>{};
 
   void _openAttendance(BuildContext context) async {
     if (attendence.length == 1) {
@@ -25,7 +29,7 @@ class GameCard extends StatelessWidget {
             return new AttendanceDialog(current: current);
           });
       if (attend != null) {
-        game.updateFirestorAttendence(player.uid, attend);
+        game.updateFirestoreAttendence(player.uid, attend);
       }
     } else {
       Map<Player, Attendance> attend = await showDialog(
@@ -35,13 +39,36 @@ class GameCard extends StatelessWidget {
           });
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
-          game.updateFirestorAttendence(player.uid, attend);
+          game.updateFirestoreAttendence(player.uid, attend);
         });
       }
     }
   }
 
-  Widget _buildAvailability(BuildContext context) {
+  void _editResult(BuildContext context) async {
+    // Call up a dialog to edit the result.
+    await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return new EditResultDialog(game);
+      },
+    );
+  }
+
+  void _officalResult(BuildContext context) async {
+    // Call up a dialog to edit the result.
+    /*
+    await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return new EditResultDialog(game);
+      },
+    );
+    */
+  }
+
+  Widget _buildAvailability(
+      BuildContext context, Season season, List<Player> players) {
     print('${game.seasonUid} ${game.teamUid}');
     if (!UserDatabaseData.instance.teams.containsKey(game.teamUid)) {
       return null;
@@ -51,78 +78,133 @@ class GameCard extends StatelessWidget {
       return null;
     }
 
-    Season season =
-        UserDatabaseData.instance.teams[game.teamUid].seasons[game.seasonUid];
     // Show current availability.
-    UserDatabaseData.instance.players.forEach((String key, Player player) {
-      if (season.players.any((SeasonPlayer play) {
-        return play.playerUid == key;
-      })) {
-        if (game.attendance.containsKey(key)) {
-          attendence[player] = game.attendance[key];
-        } else {
-          attendence[player] = Attendance.Maybe;
-        }
+    for (Player player in players) {
+      if (game.attendance.containsKey(player.uid)) {
+        attendence[player] = game.attendance[player.uid];
+      } else {
+        attendence[player] = Attendance.Maybe;
       }
-    });
+    }
+    print('Attend ${game.uid} $players ${game.attendance} $attendence');
     if (attendence.length == 0) {
       return null;
     }
-    List<Widget> widgets = new List<Widget>();
+    List<Widget> widgets = <Widget>[];
     attendence.forEach((Player player, Attendance attend) {
       widgets.add(new AttendanceIcon(attend));
     });
     return new GestureDetector(
       onTap: () {
-        this._openAttendance(context);
+        _openAttendance(context);
       },
       child: new Column(children: widgets),
     );
   }
 
-  Widget _buildInProgress(BuildContext context) {
-    if (game.result.inProgress == GameInProgress.Final) {
-      GameResultPerPeriod finalResult = game.result.scores[GameInProgress.Final];
-      GameResultPerPeriod overtimeResult;
-      if (game.result.scores.containsKey(GameInProgress.Overtime)) {
-       overtimeResult = game.result.scores[GameInProgress.Overtime] ;
-      }
-      GameResultPerPeriod penaltyResult;
-      if (game.result.scores.containsKey(GameInProgress.Penalty)) {
-        penaltyResult = game.result.scores[GameInProgress.Penalty] ;
-      }
-      switch (game.result.result) {
-        case GameResult.Win:
-        case GameResult.Tie:
-        case GameResult.Loss:
-          List<Widget> children = [];
-          children.add(
-            new Text(
-              Messages.of(context).gameresult(game.result.result),
-            ),
-          );
-          children.add(
-            new Text("${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}"),
-          );
-          if (overtimeResult != null) {
-            children.add(
-              new Text(
-                  "OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score.ptsAgainst}"),
-            );
-          }
-          if (penaltyResult != null) {
-            children.add(
-              new Text(
-                  "PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score.ptsAgainst}"),
-            );
-          }
-          return new Column(
-            children: children,
-          );
+  List<Widget> _buildResultColumn(
+      BuildContext context,
+      GameResultPerPeriod finalResult,
+      GameResultPerPeriod overtimeResult,
+      GameResultPerPeriod penaltyResult,
+      GameResult result) {
+    TextStyle style = Theme.of(context).textTheme.body1;
+    switch (result) {
+      case GameResult.Win:
+        style = style.copyWith(color: Theme.of(context).accentColor);
+        break;
+      case GameResult.Loss:
+        style = style.copyWith(color: Theme.of(context).errorColor);
+        break;
 
-        case GameResult.Unknown:
-          // Do the in progress in this case.
-          break;
+      case GameResult.Tie:
+        style = style.copyWith(color: Colors.blueAccent);
+        break;
+      case GameResult.Unknown:
+        break;
+    }
+    List<Widget> children = <Widget>[];
+    children.add(
+      new Text(
+        Messages.of(context).gameresult(result),
+        style: style,
+      ),
+    );
+    children.add(
+      new Text(
+        "${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}",
+        style: style,
+      ),
+    );
+    if (overtimeResult != null) {
+      children.add(
+        new Text(
+          "OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score.ptsAgainst}",
+          style: style,
+        ),
+      );
+    }
+    if (penaltyResult != null) {
+      children.add(
+        new Text(
+          "PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score.ptsAgainst}",
+          style: style,
+        ),
+      );
+    }
+    return children;
+  }
+
+  Widget _buildInProgress(BuildContext context) {
+    GameFromOfficial officalData =
+        GameFromOfficial(game.sharedData, game.leagueOpponentUid);
+    if (game.result.inProgress == GameInProgress.Final) {
+      GameResultPerPeriod finalResult;
+      GameResultPerPeriod overtimeResult;
+      GameResultPerPeriod penaltyResult;
+      for (GameResultPerPeriod result in game.result.scores.values) {
+        switch (result.period.type) {
+          case GamePeriodType.Regulation:
+            finalResult = result;
+            break;
+          case GamePeriodType.Overtime:
+            overtimeResult = result;
+            break;
+          case GamePeriodType.Penalty:
+            penaltyResult = result;
+            break;
+          default:
+            break;
+        }
+      }
+
+      if (game.result.result != GameResult.Unknown) {
+        List<Widget> children = _buildResultColumn(context, finalResult,
+            overtimeResult, penaltyResult, game.result.result);
+        // If there is an offical result and it is different, mark this.
+        if (officalData.isGameFinished) {
+          if (!officalData.isSameAs(game.result)) {
+            children
+                .add(Icon(Icons.error, color: Theme.of(context).errorColor));
+          }
+        }
+        return new Column(
+          children: children,
+        );
+      }
+    } else {
+      // See if there is an offical result.
+      if (officalData.isGameFinished) {
+        List<Widget> children = _buildResultColumn(
+            context,
+            officalData.regulationResult,
+            officalData.overtimeResult,
+            officalData.penaltyResult,
+            officalData.result);
+        children.insert(0, Text(Messages.of(context).offical));
+        return Column(
+          children: children,
+        );
       }
     }
     return new Column(
@@ -131,69 +213,196 @@ class GameCard extends StatelessWidget {
           Messages.of(context).gameinprogress(game.result.inProgress),
         ),
         new Text(
-          Messages.of(context).resultinprogress(game.result),
+          Messages.of(context).cardresultinprogress(game.result),
         ),
       ],
     );
   }
 
-  Widget _buildTrailing(BuildContext context) {
+  Widget _buildTrailing(
+      BuildContext context, Season season, List<Player> players) {
     // Only show attendence until the game/event is over.
-    if (game.result.inProgress == GameInProgress.NotStarted &&
-        (game.trackAttendance &&
-            game.time >
-                new DateTime.now()
-                    .subtract(new Duration(hours: 2))
-                    .millisecondsSinceEpoch)) {
-      return _buildAvailability(context);
-    }
-    if (game.result.inProgress != GameInProgress.NotStarted) {
+    if (game.result.inProgress == GameInProgress.NotStarted) {
+      if ((game.trackAttendance &&
+          game.sharedData.time >
+              new DateTime.now()
+                  .subtract(new Duration(hours: 2))
+                  .millisecondsSinceEpoch)) {
+        return _buildAvailability(context, season, players);
+      }
+    } else if (game.result.inProgress != GameInProgress.NotStarted) {
       return _buildInProgress(context);
     }
     return null;
   }
 
-  Widget build(BuildContext context) {
-    Team team = UserDatabaseData.instance.teams[game.teamUid];
+  void _showDirections(BuildContext context) {
+    String url = "https://www.google.com/maps/dir/?api=1";
+    url += "&destination=" + Uri.encodeComponent(game.sharedData.place.address);
+    if (game.sharedData.place.placeId != null) {
+      url += "&destionation_place_id=" +
+          Uri.encodeComponent(game.sharedData.place.placeId);
+    }
+    launch(url);
+  }
+
+  Widget _buildMain(BuildContext context, LeagueOrTournamentTeam leagueTeam) {
+    List<Widget> buttons = <Widget>[];
+    Team team;
+    //print('Trying ${game.teamUid}');
+    if (UserDatabaseData.instance.teams.containsKey(game.teamUid)) {
+      team = UserDatabaseData.instance.teams[game.teamUid];
+    }
     Opponent op;
-    if (team == null) {
-      op = new Opponent(name: Messages.of(context).unknown);
+    // Use the opponent from the main list before the league one if it is
+    // set.
+    if (game.sharedData.type == EventType.Game &&
+        game.opponentUids.length > 0 &&
+        team != null &&
+        team.opponents.containsKey(game.opponentUids[0])) {
+      op = team.opponents[game.opponentUids[0]];
+    } else if (game.sharedData.type == EventType.Game && leagueTeam != null) {
+      op = new Opponent(name: leagueTeam.name);
     } else {
-      op = team.opponents[game.opponentUid];
+      op = new Opponent(name: Messages.of(context).unknown);
     }
 
-    TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
+    Season season;
+    if (team != null) {
+      season =
+          UserDatabaseData.instance.teams[game.teamUid].seasons[game.seasonUid];
+    }
+    if (season == null) {
+      season = new Season();
+    }
+
+    TZDateTime timeNow = new TZDateTime.now(local);
+    Duration dur = timeNow.difference(game.sharedData.tzTime).abs();
+    TimeOfDay day = new TimeOfDay.fromDateTime(game.sharedData.tzTime);
     String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeFormat;
-    if (game.time != game.endTime) {
-      TimeOfDay endDay = new TimeOfDay.fromDateTime(game.tzEndTime);
+    String tzShortName;
+    if (game.sharedData.timezone != local.name) {
+      tzShortName = getLocation(game.sharedData.timezone)
+          .timeZone(game.sharedData.time.toInt())
+          .abbr;
+    }
+
+    if (game.sharedData.time != game.sharedData.endTime) {
+      TimeOfDay endDay = new TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
       endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
     }
     String arriveFormat;
-    // Only arrival time for games.
-    if (game.arriveTime != game.time && game.type == EventType.Game) {
+    // Only arrival time for games and only if it is before the game.
+    if (game.arriveTime != game.sharedData.time &&
+        game.sharedData.type == EventType.Game &&
+        timeNow.millisecondsSinceEpoch <
+            game.arriveTime + Duration.millisecondsPerHour) {
       TimeOfDay arriveDay = new TimeOfDay.fromDateTime(game.tzArriveTime);
       arriveFormat =
           MaterialLocalizations.of(context).formatTimeOfDay(arriveDay);
     }
 
-    TZDateTime time = new TZDateTime.now(local);
-    Duration dur = time.difference(game.tzTime).abs();
-    String subtitle;
-    if (arriveFormat != null) {
-      String addr = game.place.address;
-      if (game.place.name.isNotEmpty) {
-        addr = game.place.name;
+    if (game.arriveTime <
+            timeNow.millisecondsSinceEpoch + Duration.millisecondsPerHour &&
+        game.arriveTime >
+            timeNow.millisecondsSinceEpoch - Duration.millisecondsPerHour * 3) {
+      // Put in directions buttons.
+      buttons.add(
+        new FlatButton(
+          onPressed: () => _showDirections(context),
+          child: new Text(
+            Messages.of(context).directionsbuttons,
+          ),
+        ),
+      );
+    }
+
+    if (game.sharedData.time < new DateTime.now().millisecondsSinceEpoch &&
+        game.sharedData.type == EventType.Game &&
+        game.result.result == GameResult.Unknown) {
+      if (game.sharedData.officialResults != null &&
+          game.sharedData.officialResults.result != OfficialResult.InProgress &&
+          game.sharedData.officialResults.result != OfficialResult.NotStarted) {
+        buttons.add(new FlatButton(
+          onPressed: () => _officalResult(context),
+          child: new Text(Messages.of(context).useofficialresultbutton),
+        ));
       }
-      subtitle = Messages.of(context).gameaddressarriveat(arriveFormat, addr);
+      // Show a result button.
+      buttons.add(
+        new FlatButton(
+          onPressed: () => _editResult(context),
+          child: new Text(Messages.of(context).addresultbutton),
+        ),
+      );
+    }
+
+    List<TextSpan> subtitle = <TextSpan>[];
+    if (arriveFormat != null) {
+      String addr = game.sharedData.place.address;
+      if (game.sharedData.place.name.isNotEmpty) {
+        addr = game.sharedData.place.name;
+      }
+      subtitle.add(
+        new TextSpan(
+          style: Theme.of(context)
+              .textTheme
+              .subhead
+              .copyWith(fontWeight: FontWeight.bold),
+          text: Messages.of(context).gameaddressarriveat(arriveFormat, addr) +
+              "\n",
+        ),
+      );
     } else {
-      if (game.place.name.isNotEmpty) {
-        subtitle = game.place.name;
+      if (game.sharedData.place.name.isNotEmpty) {
+        subtitle.add(
+          new TextSpan(
+            style: Theme.of(context)
+                .textTheme
+                .subhead
+                .copyWith(fontWeight: FontWeight.bold),
+            text: game.sharedData.place.name + "\n",
+          ),
+        );
       } else {
-        subtitle = game.place.address;
+        subtitle.add(
+          new TextSpan(
+            style: Theme.of(context)
+                .textTheme
+                .subhead
+                .copyWith(fontWeight: FontWeight.bold),
+            text: game.sharedData.place.address + "\n",
+          ),
+        );
       }
     }
-    switch (game.type) {
+    List<Player> players = <Player>[];
+    if (season != null) {
+      players = UserDatabaseData.instance.players.values
+          .where((Player p) =>
+              season.players.any((SeasonPlayer sp) => sp.playerUid == p.uid))
+          .toList();
+    }
+
+    for (Player play in players) {
+      subtitle.add(
+        new TextSpan(
+          style: Theme.of(context).textTheme.subhead,
+          text: Messages.of(context).nameandteam(team, play),
+        ),
+      );
+    }
+
+    Color color = Colors.white;
+    String title;
+
+    if (game.sharedData.time < timeNow.millisecondsSinceEpoch &&
+        dur.inMinutes < 60) {
+      color = Colors.lightBlueAccent;
+    }
+
+    switch (game.sharedData.type) {
       case EventType.Game:
         String opName;
         if (op == null) {
@@ -202,82 +411,84 @@ class GameCard extends StatelessWidget {
           opName = op.name;
         }
         // Within an hour.
-        String title;
-        if (dur.inMinutes < 60) {
-          title =
-              Messages.of(context).gametitlenow(format, endTimeFormat, opName);
-        } else {
-          title = Messages.of(context).gametitle(format, endTimeFormat, opName);
-        }
-        return new Card(
-          color: Colors.green.shade50,
-          child: new ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, "/Game/" + game.uid);
-            },
-            leading: new TeamImage(game.teamUid),
-            title: new Text(
-              title,
-              overflow: TextOverflow.clip,
-              style: new TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: new Text(subtitle),
-            trailing: _buildTrailing(context),
-          ),
-        );
+        title = Messages.of(context)
+            .gametitle(format, endTimeFormat, tzShortName, opName);
+
+        break;
 
       case EventType.Event:
-        String title;
-        if (dur.inMinutes < 60) {
-          title = Messages.of(context).eventtitlenow(format, endTimeFormat);
-        } else {
-          title = Messages.of(context).eventtitle(format, endTimeFormat);
-        }
+        title = Messages.of(context).eventtitle(
+            format, game.sharedData.name, endTimeFormat, tzShortName);
 
-        return new Card(
-          color: Colors.blue.shade50,
-          child: new ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, "/Game/" + game.uid);
-            },
-            leading: new TeamImage(game.teamUid),
-            title: new Text(
-              title,
-              overflow: TextOverflow.clip,
-              style: new TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: new Text(subtitle),
-            trailing: _buildTrailing(context),
-          ),
-        );
+        break;
 
       case EventType.Practice:
-        String title;
-        if (dur.inMinutes < 60) {
-          title = Messages.of(context).trainingtitlenow(format, endTimeFormat);
-        } else {
-          title = Messages.of(context).trainingtitle(format, endTimeFormat);
-        }
+        title = Messages.of(context)
+            .trainingtitle(format, endTimeFormat, tzShortName);
 
-        return new Card(
-          key: new ValueKey(game),
-          child: new ListTile(
-            onTap: () {
-              Navigator.pushNamed(context, "/Game/" + game.uid);
-            },
-            leading: new TeamImage(game.teamUid),
-            title: new Text(
-              title,
-              overflow: TextOverflow.clip,
-              style: new TextStyle(
-                fontWeight: FontWeight.bold,
+        break;
+    }
+    ListTile tile = new ListTile(
+      onTap: () {
+        Navigator.pushNamed(context, "/Game/" + game.uid);
+      },
+      leading: new TeamImage(
+        team: team,
+        width: 50.0,
+        height: 50.0,
+      ),
+      title: new Text(
+        title,
+        overflow: TextOverflow.clip,
+        style: new TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: new RichText(
+        text: new TextSpan(
+          style: Theme.of(context).textTheme.subhead,
+          children: subtitle,
+        ),
+      ),
+      trailing: _buildTrailing(context, season, players),
+    );
+    if (buttons.length > 0) {
+      return new Card(
+        color: color,
+        child: new Column(
+          children: <Widget>[
+            tile,
+            new ButtonTheme.bar(
+              // make buttons use the appropriate styles for cards
+              child: new ButtonBar(
+                children: buttons,
               ),
             ),
-            subtitle: new Text(subtitle),
-            trailing: _buildTrailing(context),
-          ),
-        );
+          ],
+        ),
+      );
+    } else {
+      return new Card(
+        color: color,
+        child: tile,
+      );
     }
-    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (game.leagueOpponentUid != null && game.leagueOpponentUid.isNotEmpty) {
+      // Show this in a future.
+      return FutureBuilder<LeagueOrTournamentTeam>(
+        future: UserDatabaseData.instance.updateModel
+            .getLeagueTeamData(game.leagueOpponentUid),
+        builder:
+            (BuildContext context, AsyncSnapshot<LeagueOrTournamentTeam> team) {
+          if (team.hasData) {
+            return _buildMain(context, team.data);
+          }
+          return _buildMain(context, null);
+        },
+      );
+    }
+    return _buildMain(context, null);
   }
 }

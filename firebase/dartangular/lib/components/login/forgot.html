@@ -1,0 +1,56 @@
+<div class="material-content" xmlns="http://www.w3.org/1999/html">
+    <guest-header></guest-header>
+
+    <h2>Forgot password</h2>
+    Type in your email to reset your password, then look in your email box for the
+    reset email to reset your password.
+    <form (ngSubmit)="onSubmit()" #forgotForm="ngForm" class="container">
+        <template [ngIf]="!resetSent">
+            <div class="row">
+                <material-input label="Email"
+                                type="email"
+                                class="col"
+                                required
+                                requiredErrorMsg="You need an email to reset!"
+                                #name="ngForm"
+                                [(ngModel)]="email"
+                                ngControl="email">
+                </material-input>
+            </div>
+        </template>
+
+        <div *ngIf="resetSent" class="row">
+            <h4>Password reset sent to {{email}}</h4>
+            Please look in your email box for the link to reset your password.
+        </div>
+
+
+        <div class="container">
+            <div class="row">
+                <button type="submit" style="-webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border: 0;
+        padding: 0;
+        font-size: inherit;
+        background: transparent;">
+                    <material-button (trigger)="forgotForm.onSubmit($event)">
+                        RESET PASSWORD
+                    </material-button>
+                </button>
+
+                <material-button (trigger)="login()">
+                    LOGIN
+                </material-button>
+
+                <material-button (trigger)="signup()">
+                    SIGNUP
+                </material-button>
+
+                <material-button (trigger)="cancel()">
+                    CANCEL
+                </material-button>
+            </div>
+        </div>
+    </form>
+</div>

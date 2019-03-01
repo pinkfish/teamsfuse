@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'inputdropdown.dart';
+import 'package:flutter_fuse/widgets/util/inputdropdown.dart';
 
 class DateTimeFormField extends FormField<DateTime> {
   DateTimeFormField(
-      {Key key,
-      DateTime initialValue,
+      {@required DateTime initialValue,
+      Key key,
       InputDecoration decoration: const InputDecoration(),
       ValueChanged<DateTime> onFieldSubmitted,
       ValueChanged<Duration> onFieldChanged,
@@ -31,17 +31,16 @@ class DateTimeFormField extends FormField<DateTime> {
                   .copyWith(labelText: labelText);
               print('label ${effectiveDecoration.labelText} $labelText');
 
-              List<Widget> children = new List<Widget>();
+              List<Widget> children = <Widget>[];
               if (!hideDate && !hideTime) {
                 children.add(new Expanded(
                   flex: 4,
                   child: new InputDropdown(
                     decoration: effectiveDecoration,
                     errorText: field.errorText,
-                    valueText: MaterialLocalizations
-                        .of(field.context)
+                    valueText: MaterialLocalizations.of(field.context)
                         .formatMediumDate(field.value),
-                    valueStyle: valueStyle,
+                    valueStyle: valueStyle.copyWith(fontSize: 17.0),
                     onPressed: () {
                       field._selectDate(onFieldSubmitted, onFieldChanged);
                     },
@@ -51,8 +50,10 @@ class DateTimeFormField extends FormField<DateTime> {
                 children.add(new Expanded(
                   flex: 3,
                   child: new InputDropdown(
-                    valueText: new TimeOfDay.fromDateTime(field.value)
-                        .format(field.context),
+                    valueText: new TimeOfDay(
+                      hour: field.value.hour,
+                      minute: field.value.minute,
+                    ).format(field.context),
                     decoration: new InputDecoration(),
                     valueStyle: valueStyle,
                     onPressed: () {
@@ -66,8 +67,7 @@ class DateTimeFormField extends FormField<DateTime> {
                   child: new InputDropdown(
                     decoration: effectiveDecoration,
                     errorText: field.errorText,
-                    valueText: MaterialLocalizations
-                        .of(field.context)
+                    valueText: MaterialLocalizations.of(field.context)
                         .formatMediumDate(field.value),
                     valueStyle: valueStyle,
                     onPressed: () {
@@ -80,7 +80,8 @@ class DateTimeFormField extends FormField<DateTime> {
                   flex: 1,
                   child: new InputDropdown(
                     decoration: effectiveDecoration,
-                    valueText: new TimeOfDay.fromDateTime(field.value)
+                    valueText: new TimeOfDay(
+                            hour: field.value.hour, minute: field.value.minute)
                         .format(field.context),
                     valueStyle: valueStyle,
                     onPressed: () {
@@ -105,13 +106,20 @@ class DateTimeFormField extends FormField<DateTime> {
 
 class DateTimeFormFieldState extends FormFieldState<DateTime> {
   @override
-  DateTimeFormField get widget => super.widget;
+  DateTimeFormField get widget {
+    DateTimeFormField val = super.widget;
+    return val;
+  }
+
+  void updateValue(DateTime val) {
+    setValue(val);
+  }
 
   Future<Null> _selectDate(ValueChanged<DateTime> onFieldSubmitted,
       ValueChanged<Duration> onFieldChanged) async {
     final DateTime picked = await showDatePicker(
         context: context,
-        initialDate: value,
+        initialDate: new DateTime(value.year, value.month, value.day),
         firstDate: new DateTime(2015, 8),
         lastDate: new DateTime(2101));
     if (picked != null &&
@@ -139,7 +147,7 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
       initialTime: new TimeOfDay.fromDateTime(value),
     );
     if (picked != null &&
-        (picked.minute != this.value.minute || picked.hour != value.hour)) {
+        (picked.minute != value.minute || picked.hour != value.hour)) {
       DateTime newTime = new DateTime(
           value.year, value.month, value.day, picked.hour, picked.minute);
       Duration diff = value.difference(newTime);

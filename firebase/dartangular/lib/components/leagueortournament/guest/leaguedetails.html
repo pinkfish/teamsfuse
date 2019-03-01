@@ -1,0 +1,31 @@
+<div *ngIf="league == null">
+    Loading...
+</div>
+
+<div *ngIf="league != null">
+    <img src="{{leagueUrl}}" width="100" height="100" style="float: right">
+
+    <h2 style="margin-bottom: 0px">
+        {{league.name}} <i class="mdi mdi-{{genderIcon}}"></i>
+    </h2>
+    <div class="shortdesc">
+        {{league.shortDescription}}
+    </div>
+    <div class="longdesc">
+        {{league.longDescription}}
+    </div>
+    <table>
+
+        <tr>
+            <td><b>Gender</b></td><td>{{gender}}</td>
+        </tr>
+        <tr>
+            <td><b>Sport</b></td> <td>{{sportDetails}}</td>
+        </tr>
+    </table>
+    <material-expansionpanel-set>
+        <season-expansionpanel *ngFor="let fluff of seasons; trackBy: trackBySeason" [league]="league" [season]="fluff"
+            >
+        </season-expansionpanel>
+    </material-expansionpanel-set>
+</div>

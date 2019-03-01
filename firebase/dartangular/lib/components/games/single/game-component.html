@@ -1,0 +1,7 @@
+<div>
+    <div *ngIf="game == null">
+        Loading...
+    </div>
+
+    <game-display [game]="game" *ngIf="game != null"></game-display>
+</div>

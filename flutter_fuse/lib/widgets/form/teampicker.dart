@@ -1,44 +1,61 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:async';
-import 'package:flutter_fuse/services/databasedetails.dart';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class TeamPicker extends StatefulWidget {
+  TeamPicker(
+      {@required this.onChanged,
+      this.teamUid,
+      this.includeCreateNew = false,
+      this.disabled = false,
+      this.selectedTitle = false});
+
   final ValueChanged<String> onChanged;
   final String teamUid;
+  final bool disabled;
+  final bool selectedTitle;
+  final bool includeCreateNew;
 
-  TeamPicker({ @required this.onChanged,this.teamUid});
-
+  @override
   TeamPickerState createState() {
     return new TeamPickerState();
   }
+
+  static const String createNew = 'new';
 }
 
 class TeamPickerState extends State<TeamPicker> {
-  String _value;
-  StreamSubscription<UpdateReason> teamStresm;
+  StreamSubscription<UpdateReason> _teamStream;
 
-  TeamPickerState();
   @override
   void dispose() {
     super.dispose();
-    teamStresm.cancel();
-    teamStresm = null;
+    _teamStream?.cancel();
+    _teamStream = null;
   }
 
+  @override
   void initState() {
-    teamStresm = UserDatabaseData.instance.teamStream.listen((update) {
+    _teamStream =
+        UserDatabaseData.instance.teamStream.listen((UpdateReason update) {
       setState(() {});
     });
-    _value = widget.teamUid;
     super.initState();
   }
 
-  List<DropdownMenuItem> _buildItems() {
-    List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
-    UserDatabaseData.instance.teams.forEach((key, team) {
-      ret.add(new DropdownMenuItem(
+  List<DropdownMenuItem<String>> _buildItems() {
+    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    if (widget.includeCreateNew) {
+      ret.add(DropdownMenuItem<String>(
+        child: Text(Messages.of(context).addteam),
+        value: TeamPicker.createNew,
+      ));
+    }
+    UserDatabaseData.instance.teams.forEach((String key, Team team) {
+      ret.add(new DropdownMenuItem<String>(
         child: new Text(team.name),
         value: team.uid,
       ));
@@ -51,6 +68,12 @@ class TeamPickerState extends State<TeamPicker> {
     return new InputDecorator(
       decoration: new InputDecoration(
         labelText: Messages.of(context).team,
+        labelStyle: widget.selectedTitle
+            ? Theme.of(context)
+                .textTheme
+                .subhead
+                .copyWith(fontWeight: FontWeight.bold)
+            : null,
       ),
       child: new Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -58,16 +81,20 @@ class TeamPickerState extends State<TeamPicker> {
         children: <Widget>[
           new Expanded(
             flex: 1,
-            child: new DropdownButton(
-              hint: new Text(Messages.of(context).teamselect),
-              items: _buildItems(),
-              value: this._value,
-              onChanged: (dynamic val) {
-                _value = val;
-                this.widget.onChanged(val);
-                return val;
-              },
-            ),
+            child: widget.disabled
+                ? new Text(
+                    Messages.of(context).teamselect,
+                    style: Theme.of(context).textTheme.body1.copyWith(
+                        color: Theme.of(context).disabledColor, height: 3.0),
+                  )
+                : new DropdownButton<String>(
+                    hint: new Text(Messages.of(context).teamselect),
+                    items: _buildItems(),
+                    value: widget.teamUid,
+                    onChanged: (String val) {
+                      widget.onChanged(val);
+                    },
+                  ),
           ),
         ],
       ),

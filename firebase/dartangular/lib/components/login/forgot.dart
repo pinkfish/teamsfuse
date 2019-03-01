@@ -1,0 +1,58 @@
+import 'package:angular/angular.dart';
+import 'package:angular_components/content/deferred_content.dart';
+import 'package:angular_components/material_button/material_button.dart';
+import 'package:angular_components/material_icon/material_icon.dart';
+import 'package:angular_components/material_list/material_list.dart';
+import 'package:angular_components/material_list/material_list_item.dart';
+import 'package:angular_components/material_input/material_input.dart';
+import 'package:angular_forms/angular_forms.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:angular_router/angular_router.dart';
+import 'package:teamfuse/components/guest/pieces/header.dart';
+
+@Component(
+  selector: 'verify-form',
+  directives: const [
+    MaterialButtonComponent,
+    materialInputDirectives,
+    formDirectives,
+    GuestHeaderComponent,
+    NgIf
+  ],
+  templateUrl: 'forgot.html',
+  styleUrls: const [
+    'login.css',
+    'package:angular_components/app_layout/layout.scss.css',
+  ],
+)
+class ForgotComponent {
+  String email;
+  bool resetSent = false;
+  bool error = true;
+  final Router _router;
+
+  ForgotComponent(this._router);
+
+  void onSubmit() {
+    resetSent = true;
+    print('Forgot password in $email');
+    UserDatabaseData.instance.userAuth.sendPasswordResetEmail(email);
+  }
+
+  void login() {
+    _router.navigate("/login");
+  }
+
+  void cancel() {
+    _router.navigate("/promo/guesthome");
+  }
+
+  void signup() {
+    _router.navigate("/signup");
+  }
+
+  void resendVerifyEmail() {
+    UserDatabaseData.instance.userAuth.sendEmailVerification();
+  }
+}

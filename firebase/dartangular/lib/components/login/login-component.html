@@ -1,0 +1,62 @@
+<div class="material-content">
+    <guest-header></guest-header>
+
+    <div class="login-section">
+        <div class="container">
+            <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+                <div class="row">
+                     <material-input label="Email"
+                                    type="email"
+                                    required
+                                    requiredErrorMsg="You need an email to login!"
+                            #name="ngForm"
+                           [(ngModel)]="model.email"
+                           ngControl="email">
+                    </material-input>
+                </div>
+                <div class="row">
+                    <material-input label="Password"
+                                    type="password"
+                                    required
+                                    requiredErrorMsg="You need a password to login!"
+                                    #name="ngForm"
+                                    [(ngModel)]="model.password"
+                                    ngControl="password">
+                    </material-input>
+                </div>
+                <div [hidden]="error">
+                    <div class="error-text">
+                        Incorrect username/password.
+                    </div>
+                </div>
+                 <div class="row">
+                     <button type="submit" style="-webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border: 0;
+        padding: 0;
+        font-size: inherit;
+        background: transparent;">
+                        <material-button (trigger)="loginForm.onSubmit($event)">
+                         LOGIN
+                         </material-button>
+                     </button>
+
+                     <material-button (trigger)="signup()">
+                         SIGNUP
+                     </material-button>
+
+                     <material-button (trigger)="forgotPassword()">
+                         FORGOT PASSWORD
+                     </material-button>
+
+                     <material-button (trigger)="cancel()">
+                         CANCEL
+                     </material-button>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

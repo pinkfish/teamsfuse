@@ -1,10 +1,12 @@
-import 'map_view/staticmapprovider.dart';
-import 'package:flutter_places_dialog/flutter_places_dialog.dart';
-import 'package:timezone/timezone.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
-import 'dart:io';
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter_places_dialog/flutter_places_dialog.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:timezone/timezone.dart';
+
+import 'map_view/staticmapprovider.dart';
 
 class LocationAndPlace {
   LocationAndPlace(this.details, this.loc);
@@ -16,16 +18,22 @@ class LocationAndPlace {
             placeid: place.placeId,
             location: new PlaceLatLong(
                 latitude: place.latitude, longitude: place.longitude)),
-        loc = getLocation(tz);
+        loc = Future<Location>.value(getLocation(tz));
 
   PlaceDetails details;
-  Location loc;
+  Future<Location> loc;
 }
 
 class MapData {
-  static const String APIKEY = "AIzaSyC0nzXvh-NqEV5c1Qoa-DCUY6iVXG0HcGQ";
-  static const String URL_AUTH = "maps.googleapis.com";
-  static const String URL_PATH = "/maps/api/timezone/json";
+  MapData() {
+    _providerData = new StaticMapProvider(apiKey);
+    FlutterPlacesDialog.setGoogleApiKey(iosApiKey);
+  }
+
+  static const String apiKey = "AIzaSyC0nzXvh-NqEV5c1Qoa-DCUY6iVXG0HcGQ";
+  static const String iosApiKey = "AIzaSyBVJ6DGEqQv4lRicySx0siZTCk-9lXY6lY";
+  static const String urlAuth = "maps.googleapis.com";
+  static const String urlPath = "/maps/api/timezone/json";
 
   static MapData _instance;
   StaticMapProvider _providerData;
@@ -41,24 +49,22 @@ class MapData {
     return _providerData;
   }
 
-  MapData() {
-     _providerData = new StaticMapProvider(APIKEY);
-  }
-
   Future<Location> getTimezoneFromLocation(PlaceLatLong loc, num ms) async {
-    Map<String, String> query = {
+    Map<String, String> query = <String, String>{
       'location': loc.latitude.toString() + "," + loc.longitude.toString(),
       'timestamp': ms.toString(),
-      'key': APIKEY
+      'key': apiKey
     };
-    Uri uri = new Uri.https(URL_AUTH, URL_PATH, query);
+    Uri uri = new Uri.https(urlAuth, urlPath, query);
     HttpClient httpClient = new HttpClient();
     HttpClientRequest request = await httpClient.getUrl(uri);
     HttpClientResponse response = await request.close();
-    if (response.statusCode == HttpStatus.OK) {
+    print("Response $response");
+    if (response.statusCode == HttpStatus.ok) {
       String responseBody = await response.transform(utf8.decoder).join();
-      Map<String, String> data = json.decode(responseBody);
-      return getLocation(data['timeZoneId']);
+      Map<String, dynamic> data = json.decode(responseBody);
+      print("ResponseBody $data");
+      return getLocation(data['timeZoneId'].toString());
     } else {
       print(await response.transform(utf8.decoder).join());
     }
@@ -67,10 +73,10 @@ class MapData {
 
   Future<LocationAndPlace> getPlaceAndLocation() async {
     PlaceDetails details = await FlutterPlacesDialog.getPlacesDialog();
-    Location tz = await getTimezoneFromLocation(
+    print("Looking up timezone for $details.location");
+    Future<Location> tz = getTimezoneFromLocation(
         details.location, new DateTime.now().millisecondsSinceEpoch / 1000);
     print('tz $tz');
     return new LocationAndPlace(details, tz);
   }
 }
-

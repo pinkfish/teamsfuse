@@ -1,13 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/playerimage.dart';
 import 'dart:async';
 
-class TeamPlayers extends StatefulWidget {
-  final String _teamUid;
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/util/playerimage.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:fusemodel/fusemodel.dart';
 
+class TeamPlayers extends StatefulWidget {
   TeamPlayers(this._teamUid);
+
+  final String _teamUid;
 
   @override
   TeamPlayersState createState() {
@@ -16,14 +18,14 @@ class TeamPlayers extends StatefulWidget {
 }
 
 class TeamPlayersState extends State<TeamPlayers> {
+  TeamPlayersState();
+
   String _seasonUid;
   Team _team;
   Season _season;
-  List<Invite> _invites;
+  List<InviteToTeam> _invites;
   StreamSubscription<UpdateReason> _updateStream;
-  StreamSubscription<List<Invite>> _inviteStream;
-
-  TeamPlayersState();
+  StreamSubscription<List<InviteToTeam>> _inviteStream;
 
   @override
   void initState() {
@@ -66,7 +68,7 @@ class TeamPlayersState extends State<TeamPlayers> {
       _seasonUid = _team.currentSeason;
       _season = _team.seasons[seasonUid];
       // Look for the invites.
-      _inviteStream = _season.inviteStream.listen((List<Invite> invites) {
+      _inviteStream = _season.inviteStream.listen((List<InviteToTeam> invites) {
         setState(() {
           _invites = invites;
         });
@@ -74,13 +76,13 @@ class TeamPlayersState extends State<TeamPlayers> {
     }
   }
 
-  List<DropdownMenuItem> _buildItems(BuildContext context) {
-    List<DropdownMenuItem> ret = new List<DropdownMenuItem>();
+  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     if (widget._teamUid != null &&
         UserDatabaseData.instance.teams.containsKey(widget._teamUid)) {
       UserDatabaseData.instance.teams[widget._teamUid].seasons
-          .forEach((key, season) {
-        ret.add(new DropdownMenuItem(
+          .forEach((String key, Season season) {
+        ret.add(new DropdownMenuItem<String>(
             child: new Text(season.name), value: season.uid));
       });
     }
@@ -88,7 +90,7 @@ class TeamPlayersState extends State<TeamPlayers> {
     return ret;
   }
 
-  void _deleteInvite(Invite invite) async {
+  void _deleteInvite(InviteToTeam invite) async {
     Messages mess = Messages.of(context);
     // Show an alert dialog first.
     bool result = await showDialog<bool>(
@@ -129,10 +131,9 @@ class TeamPlayersState extends State<TeamPlayers> {
   }
 
   List<Widget> _buildPlayers() {
-    List<Widget> ret = new List<Widget>();
+    List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
 
-    print('players ${_season.toJSON()}');
     _season.players.forEach((SeasonPlayer player) {
       ret.add(
         new GestureDetector(
@@ -147,28 +148,32 @@ class TeamPlayersState extends State<TeamPlayers> {
                     player.playerUid);
           },
           child: new ListTile(
-            leading: new PlayerImage(player.playerUid),
-            title: new Text(player.displayName),
-            subtitle: new Text(Messages.of(context).roleingame(player.role)),
+            leading: new PlayerImage(playerUid: player.playerUid),
+            title: new PlayerName(playerUid: player.playerUid),
+            subtitle: new Text(
+              Messages.of(context).roleingame(player.role),
+            ),
           ),
         ),
       );
     });
-    ret.add(new ListTile(
+    ret.add(
+      new ListTile(
         title: new FlatButton(
-            textColor: Theme.of(context).accentColor,
-            onPressed: () {
-              Navigator.pushNamed(
-                  context, "AddPlayer/" + widget._teamUid + "/" + _seasonUid);
-            },
-            child: new Text(Messages.of(context).addplayer))));
+          textColor: Theme.of(context).accentColor,
+          onPressed: () {
+            Navigator.pushNamed(
+                context, "AddPlayer/" + widget._teamUid + "/" + _seasonUid);
+          },
+          child: new Text(Messages.of(context).addplayer),
+        ),
+      ),
+    );
 
     // Put in an expansion bar if there are pending invites.
-    if (_invites != null &&
-        _invites.length > 0 &&
-        _team.isAdmin(UserDatabaseData.instance.players)) {
-      List<Widget> kids = new List<Widget>();
-      _invites.forEach((Invite inv) {
+    if (_invites != null && _invites.length > 0 && _team.isAdmin()) {
+      List<Widget> kids = <Widget>[];
+      _invites.forEach((InviteToTeam inv) {
         kids.add(
           new ListTile(
             title: new Row(
@@ -217,11 +222,11 @@ class TeamPlayersState extends State<TeamPlayers> {
       children: <Widget>[
         new Row(
           children: <Widget>[
-            new DropdownButton(
+            new DropdownButton<String>(
               hint: new Text(messsages.seasonselect),
               value: _seasonUid,
               items: _buildItems(context),
-              onChanged: (dynamic val) {
+              onChanged: (String val) {
                 print('changed $val');
                 setState(() {
                   _seasonUid = val;

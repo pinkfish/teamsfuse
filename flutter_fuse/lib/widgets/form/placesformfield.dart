@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'inputdropdown.dart';
+import 'package:flutter_fuse/widgets/util/inputdropdown.dart';
 import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_fuse/services/messages.dart';
 
 class PlacesFormField extends FormField<LocationAndPlace> {
   PlacesFormField(
-      {Key key,
-      LocationAndPlace initialValue,
+      {@required LocationAndPlace initialValue,
+      Key key,
       InputDecoration decoration: const InputDecoration(),
       ValueChanged<LocationAndPlace> onFieldSubmitted,
       FormFieldSetter<LocationAndPlace> onSaved,
@@ -29,7 +29,7 @@ class PlacesFormField extends FormField<LocationAndPlace> {
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme)
                   .copyWith(labelText: labelText);
 
-              List<Widget> children = new List<Widget>();
+              List<Widget> children = <Widget>[];
               children.add(const SizedBox(width: 12.0));
               children.add(new Expanded(
                 flex: 1,
@@ -66,9 +66,6 @@ class PlacesFormField extends FormField<LocationAndPlace> {
 }
 
 class PlacesFormFieldState extends FormFieldState<LocationAndPlace> {
-  @override
-  PlacesFormField get widget => super.widget;
-
   Future<Null> _selectPlace(
       ValueChanged<LocationAndPlace> onFieldSubmitted) async {
     final LocationAndPlace picked =

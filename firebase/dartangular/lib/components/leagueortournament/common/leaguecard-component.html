@@ -1,0 +1,17 @@
+<div *ngIf="leagueOrTournament == null">
+    Loading...
+</div>
+
+<div *ngIf="leagueOrTournament != null" class="card" (click)="openDetails()">
+    <div class="row">
+        <img src="{{leagueUrl}}" width="50" height="50" class="leagueimg" />
+        <div class="col">
+            <div class="leaguename">
+                {{leagueOrTournament.name}}
+            </div>
+            <div class="leagueshortdesc">
+                {{leagueOrTournament.shortDescription}}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+functions/node_modules
+node_modules
+appengine/lib
+
+# Files and directories created by pub
+dartangular/.packages
+dartangular/.pub/
+dartangular/build/
+# Remove the following pattern if you wish to check in your lock file
+dartangular/pubspec.lock
+
+# Directory created by dartdoc
+dartangular/doc/api/

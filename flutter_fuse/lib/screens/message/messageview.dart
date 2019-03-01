@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class ShowMessageScreen extends StatelessWidget {
-  final String messageUid;
-
   ShowMessageScreen({this.messageUid});
+
+  final String messageUid;
 
   void _archiveMessage(BuildContext context) {
     if (UserDatabaseData.instance.messages.containsKey(messageUid)) {
@@ -50,7 +51,7 @@ class ShowMessageScreen extends StatelessWidget {
   Widget _showMessage(BuildContext context) {
     Messages messages = Messages.of(context);
     Message mess = UserDatabaseData.instance.messages[messageUid];
-    List<Widget> kids = [];
+    List<Widget> kids = <Widget>[];
     _readMessage(context);
     kids.add(
       new ListTile(
@@ -61,19 +62,22 @@ class ShowMessageScreen extends StatelessWidget {
 
     kids.add(
       new ListTile(
-        leading: new TeamImage(mess.teamUid, width: 30.0),
+        leading: new TeamImage(
+          team: UserDatabaseData.instance.teams[mess.teamUid],
+          width: 30.0,
+        ),
         title: new Text(
           UserDatabaseData.instance.teams[mess.teamUid].name,
         ),
       ),
     );
 
-    List<Widget> players = [];
+    List<Widget> players = <Widget>[];
     mess.recipients.forEach((String id, MessageRecipient rec) {
       players.add(
         new ListTile(
           leading: const Icon(Icons.person),
-          title: new Text(rec.name),
+          title: new PlayerName(playerUid: rec.playerId),
         ),
       );
     });
@@ -92,8 +96,8 @@ class ShowMessageScreen extends StatelessWidget {
           MaterialLocalizations.of(context).formatMediumDate(mess.tzTimeSent) +
               " " +
               MaterialLocalizations.of(context).formatTimeOfDay(
-                    new TimeOfDay.fromDateTime(mess.tzTimeSent),
-                  ),
+                new TimeOfDay.fromDateTime(mess.tzTimeSent),
+              ),
         ),
       ),
     );
@@ -128,11 +132,12 @@ class ShowMessageScreen extends StatelessWidget {
       ),
     );
 
-    return new Scrollbar(child:new SingleChildScrollView(
-      child: new Column(
-        children: kids,
+    return new Scrollbar(
+      child: new SingleChildScrollView(
+        child: new Column(
+          children: kids,
+        ),
       ),
-    ),
     );
   }
 

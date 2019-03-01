@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class MultipleAttendanceDialog extends StatefulWidget {
-  final Map<Player, Attendance> attendance;
   MultipleAttendanceDialog(this.attendance);
+
+  final Map<Player, Attendance> attendance;
 
   @override
   MultipleAttendanceDialogState createState() {
@@ -14,13 +15,13 @@ class MultipleAttendanceDialog extends StatefulWidget {
 }
 
 class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
+  MultipleAttendanceDialogState(this._attendance);
+
   Map<Player, Attendance> _attendance;
   Set<Player> _changed = new Set<Player>();
 
-  MultipleAttendanceDialogState(this._attendance);
-
   List<Widget> _buildAttendenceSet(BuildContext context) {
-    List<Widget> ret = new List<Widget>();
+    List<Widget> ret = <Widget>[];
 
     ThemeData theme = Theme.of(context);
     BoxDecoration selected = new BoxDecoration(
@@ -98,7 +99,7 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
       Navigator.pop(context);
       return;
     }
-    Map<Player, Attendance> ret = new Map<Player, Attendance>();
+    Map<Player, Attendance> ret = <Player, Attendance>{};
     _changed.forEach((Player player) {
       ret[player] = _attendance[player];
     });
@@ -115,7 +116,7 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
           child: new Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+            children: <Widget>[
               new Padding(
                 padding:
                     const EdgeInsetsDirectional.fromSTEB(24.0, 24.0, 24.0, 0.0),
@@ -127,12 +128,11 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
                 child: new SingleChildScrollView(
                   padding: const EdgeInsetsDirectional.fromSTEB(
                       12.0, 12.0, 0.0, 16.0),
-                  child:
-                      new ListBody(children: this._buildAttendenceSet(context)),
+                  child: new ListBody(children: _buildAttendenceSet(context)),
                 ),
               ),
               new FlatButton(
-                  onPressed: this._saveDialog,
+                  onPressed: _saveDialog,
                   child: new Text(Messages.of(context).savebuttontext))
             ],
           ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
@@ -38,7 +38,7 @@ class InviteCardState extends State<InviteCard> {
       Widget card = new Card(
         color: Colors.limeAccent,
         child: new ListTile(
-          leading: const Icon(CommunityIcons.emailopen),
+          leading: const Icon(CommunityIcons.emailOpen),
           title: new Text(
             Messages
                 .of(context)
@@ -49,8 +49,8 @@ class InviteCardState extends State<InviteCard> {
       return card;
     }
 
-    return new Container(
-      child: new Text("Fluff"),
+    return new SizedBox(
+      width: 1.0,
     );
   }
 }

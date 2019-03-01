@@ -28,9 +28,9 @@ class NumberPickerFormField extends FormField<num> {
                 decoration:
                 effectiveDecoration.copyWith(errorText: field.errorText),
                 child: new NumberPicker.integer(
-                    initialValue: state.value,
-                    minValue: minValue,
-                    maxValue: maxValue,
+                    initialValue: state.value.toInt(),
+                    minValue: minValue.toInt(),
+                    maxValue: maxValue.toInt(),
                     onChanged: (num value) {
                       field.didChange(value);
                       onFieldSubmitted(value);
@@ -42,6 +42,4 @@ class NumberPickerFormField extends FormField<num> {
 }
 
 class NumberPickerFormFieldState extends FormFieldState<num> {
-  @override
-  NumberPickerFormField get widget => super.widget;
 }

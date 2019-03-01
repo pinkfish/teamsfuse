@@ -1,10 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/authentication.dart';
 import 'dart:async';
-import 'loginform.dart';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/screens/home/home.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/notifications.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+import 'loginform.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key key}) : super(key: key);
@@ -14,24 +18,53 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  static UserData currentUser;
-  static bool loaded = false;
-  static bool loadOnMounted = false;
-
   SplashScreenState() {
     _startLoading();
   }
 
-  void initState() {
+  static UserData currentUser;
+  static bool loaded = false;
+  static bool loadOnMounted = false;
+  StreamSubscription<UserData> _stream;
 
+  @override
+  void initState() {
     _startLoading();
     super.initState();
+    _stream = UserDatabaseData.instance.userAuth
+        .onAuthChanged()
+        .listen(_onAuthStateChanged);
+    // Setup the notifications listen/sender.
+    Notifications.instance.initForNotification(this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _stream?.cancel();
+    _stream = null;
+  }
+
+  void _onAuthStateChanged(UserData data) {
+    if (data != null) {
+      if (currentUser != null) {
+        // Nothing changed...
+        if (currentUser.uid == data.uid &&
+            currentUser.isEmailVerified == data.isEmailVerified) {
+          return;
+        }
+      }
+      setState(() => currentUser = data);
+    } else if (currentUser != null) {
+      // Logged out.
+      setState(() => currentUser = data);
+    }
   }
 
   Future<Null> _startLoading() async {
     print('Loading...');
     if (!loaded) {
-      currentUser = await UserAuth.instance.currentUser();
+      currentUser = await UserDatabaseData.instance.userAuth.currentUser();
     }
     print('Got current user $currentUser');
     setState(() {
@@ -87,14 +120,18 @@ class SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     if (!loaded) {
+      print('Not loaded yet');
       return _loadingScreen();
     }
     if (currentUser != null && currentUser.isEmailVerified) {
+      print('Show home screen');
       return new HomeScreen();
     }
     if (currentUser != null) {
+      print('Verify user screen');
       return new VerifyEmailScreen();
     }
+    print('Login screen');
     return new LoginScreen();
   }
 }

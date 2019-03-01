@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:flutter_fuse/services/validations.dart';
+import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
+import 'package:flutter_fuse/widgets/form/switchformfield.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AddSeasonScreen extends StatefulWidget {
-  final String teamUid;
-
   AddSeasonScreen(this.teamUid);
+
+  final String teamUid;
 
   @override
   AddSeasonScreenState createState() {
@@ -26,6 +26,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   Validations _validations = new Validations();
 
+  @override
   void initState() {
     super.initState();
     _team = UserDatabaseData.instance.teams[widget.teamUid];
@@ -46,13 +47,11 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
       // Make a new season.
       Season season = new Season(teamUid: widget.teamUid, name: _seasonName);
       if (_importPlayers) {
-        season.players = new List.from(_seasonSelect.players);
+        season.players = new List<SeasonPlayer>.from(_seasonSelect.players);
       } else {
-        season.players = [
+        season.players = <SeasonPlayer>[
           new SeasonPlayer(
               playerUid: UserDatabaseData.instance.mePlayer.uid,
-              displayName: UserDatabaseData.instance.mePlayer.name,
-              photoUrl: UserDatabaseData.instance.mePlayer.photoUrl,
               role: RoleInTeam.NonPlayer)
         ];
       }
@@ -66,33 +65,16 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
   }
 
   Widget _buildResults(BuildContext context) {
-     return new Form(
+    return new Form(
       key: _formKey,
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          new SeasonFormField(
-            decoration: new InputDecoration(
-              icon: const Icon(CommunityIcons.tshirtcrew),
-              labelText: Messages.of(context).season,
-            ),
-            teamUid: widget.teamUid,
-            initialValue: _team.currentSeason,
-            onSaved: (String seasonUid) {
-              _seasonSelect = _team.seasons[seasonUid];
-            },
-          ),
-          new SwitchFormField(
-            initialValue: false,
-            icon: Icons.import_contacts,
-            onSaved: (bool b) => _importPlayers = b,
-            label: Messages.of(context).importplayers,
-          ),
           new TextFormField(
             decoration: new InputDecoration(
               icon: const Icon(Icons.event_note),
               hintText: Messages.of(context).season,
-              labelText: Messages.of(context).seasonhint,
+              labelText: Messages.of(context).newseasonhint,
             ),
             validator: (String s) =>
                 _validations.validateDisplayName(context, s),
@@ -101,6 +83,24 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
             obscureText: false,
             onSaved: (String value) {
               _seasonName = value;
+            },
+          ),
+          new SizedBox(height: 40.0),
+          new SwitchFormField(
+            initialValue: false,
+            icon: Icons.import_contacts,
+            onSaved: (bool b) => _importPlayers = b,
+            label: Messages.of(context).importplayers,
+          ),
+          new SeasonFormField(
+            decoration: new InputDecoration(
+              icon: const Icon(CommunityIcons.tshirtCrew),
+              labelText: Messages.of(context).copyseasonfrom,
+            ),
+            teamUid: widget.teamUid,
+            initialValue: _team.currentSeason,
+            onSaved: (String seasonUid) {
+              _seasonSelect = _team.seasons[seasonUid];
             },
           ),
           new FlatButton(
@@ -117,18 +117,18 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
     return new Scaffold(
       key: _scaffoldKey,
       appBar: new AppBar(
-        title: new Text(Messages.of(context).gametitlevs(_team.name)),
+        title: new Text(Messages.of(context).addseason),
       ),
       backgroundColor: Colors.grey.shade100,
       resizeToAvoidBottomPadding: true,
       body: new Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
+        children: <Widget>[
           new Flexible(
             fit: FlexFit.tight,
             flex: 0,
-            child: this._buildResults(context),
+            child: _buildResults(context),
           )
         ],
       ),

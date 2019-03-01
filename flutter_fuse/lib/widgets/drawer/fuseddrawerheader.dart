@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/authentication.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class FusedDrawerHeader extends StatefulWidget {
   @override
@@ -11,23 +13,25 @@ class FusedDrawerHeader extends StatefulWidget {
 }
 
 class FusedDrawerHeaderState extends State<FusedDrawerHeader> {
+  FusedDrawerHeaderState();
+
   UserData user;
   StreamSubscription<UserData> streamListen;
-
-  FusedDrawerHeaderState();
 
   @override
   void initState() {
     super.initState();
     print('initState');
-    UserAuth.instance.currentUser().then((UserData data) {
+    UserDatabaseData.instance.userAuth.currentUser().then((UserData data) {
       setState(() {
-        this.user = data;
+        user = data;
       });
     });
-    streamListen = UserAuth.instance.onAuthChanged().listen((UserData data) {
+    streamListen = UserDatabaseData.instance.userAuth
+        .onAuthChanged()
+        .listen((UserData data) {
       setState(() {
-        this.user = data;
+        user = data;
       });
     });
   }
@@ -60,10 +64,12 @@ class FusedDrawerHeaderState extends State<FusedDrawerHeader> {
         ),
       ),
       onDetailsPressed: _showProfile,
-      accountName: new Text(
-          user != null && user.profile != null ? user.profile.displayName : Messages.of(context).unknown),
-      accountEmail:
-          new Text(user != null && user.profile != null ? user.email : Messages.of(context).unknown),
+      accountName: new Text(user != null && user.profile != null
+          ? user.profile.displayName
+          : Messages.of(context).unknown),
+      accountEmail: new Text(user != null && user.profile != null
+          ? user.email
+          : Messages.of(context).unknown),
     );
   }
 }

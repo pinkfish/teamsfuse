@@ -1,0 +1,2 @@
+You are invited to be an admin for the team {{team.name}}
+by {{sentBy.name}}.

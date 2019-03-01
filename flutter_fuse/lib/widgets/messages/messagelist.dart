@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'dart:async';
 
 class MessageList extends StatefulWidget {
@@ -14,23 +15,26 @@ class MessageList extends StatefulWidget {
 class MessageListState extends State<MessageList> {
   String _myUid = UserDatabaseData.instance.userUid;
   DateTime _dayCutoff = new DateTime.now().subtract(const Duration(days: 1));
-  List<Message> _sortedList = [];
+  List<Message> _sortedList = <Message>[];
 
   StreamSubscription<UpdateReason> _messageStream;
 
+  @override
   void initState() {
     super.initState();
     _sortedList = UserDatabaseData.instance.messages.values.toList();
-    _sortedList.sort((Message m1, Message m2) => m1.timeSent = m2.timeSent);
+    _sortedList.sort(
+        (Message m1, Message m2) => m1.timeSent.toInt() - m2.timeSent.toInt());
 
     _messageStream = UserDatabaseData.instance.messagesStream
         .listen((UpdateReason reason) => setState(() {
               _sortedList = UserDatabaseData.instance.messages.values.toList();
-              _sortedList
-                  .sort((Message m1, Message m2) => m1.timeSent - m2.timeSent);
+              _sortedList.sort((Message m1, Message m2) =>
+                  m1.timeSent.toInt() - m2.timeSent.toInt());
             }));
   }
 
+  @override
   void dispose() {
     super.dispose();
     _messageStream.cancel();
@@ -52,7 +56,10 @@ class MessageListState extends State<MessageList> {
 
     return new ListTile(
       onTap: () => Navigator.pushNamed(context, "/ShowMessage/" + mess.uid),
-      leading: new TeamImage(mess.teamUid, width: 30.0),
+      leading: new TeamImage(
+        team: UserDatabaseData.instance.teams[mess.teamUid],
+        width: 30.0,
+      ),
       subtitle: new Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -62,8 +69,8 @@ class MessageListState extends State<MessageList> {
             child: new Container(
               margin: new EdgeInsets.only(top: 3.0),
               alignment: AlignmentDirectional.centerStart,
-              child: new Text(
-                mess.fromName,
+              child: new PlayerName(
+                playerUid: mess.fromUid,
                 style: mess.recipients[_myUid].state == MessageState.Unread
                     ? theme.textTheme.subhead
                         .copyWith(fontWeight: FontWeight.bold)
@@ -94,7 +101,7 @@ class MessageListState extends State<MessageList> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> messages = [];
+    List<Widget> messages = <Widget>[];
     if (_sortedList.length == 0) {
       // No messages
       return new Center(

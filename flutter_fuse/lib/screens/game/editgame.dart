@@ -1,27 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:flutter_fuse/widgets/games/editformbase.dart';
+import 'package:flutter_fuse/widgets/games/eventeditform.dart';
 import 'package:flutter_fuse/widgets/games/gameeditform.dart';
+import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class EditGameScreen extends StatefulWidget {
-  final String gameuid;
-
   EditGameScreen(this.gameuid);
+
+  final String gameuid;
 
   @override
   EditGameScreenState createState() {
-    return new EditGameScreenState(this.gameuid);
+    return new EditGameScreenState();
   }
 }
 
 class EditGameScreenState extends State<EditGameScreen> {
-  final Game _game;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<GameEditFormState> _gameFormKey =
-      new GlobalKey<GameEditFormState>();
+  EditGameScreenState();
 
-  EditGameScreenState(String gameUid)
-      : _game = new Game.copy(UserDatabaseData.instance.games[gameUid]);
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  GlobalKey<GameEditFormState> _gameFormKey =
+      new GlobalKey<GameEditFormState>();
+  GlobalKey<TrainingEditFormState> _trainingFormKey =
+      new GlobalKey<TrainingEditFormState>();
+  GlobalKey<EventEditFormState> _eventFormKey =
+      new GlobalKey<EventEditFormState>();
+  bool _saving = false;
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
@@ -29,37 +36,70 @@ class EditGameScreenState extends State<EditGameScreen> {
   }
 
   void _savePressed(BuildContext context) async {
-    if (_gameFormKey.currentState.validate()) {
-      _gameFormKey.currentState.save();
-      await _gameFormKey.currentState.finalGameResult.updateFirestore();
+    print('save pressed');
+    Game game = UserDatabaseData.instance.gamesCache[widget.gameuid];
+    EditFormBase baseForm;
+    switch (game.sharedData.type) {
+      case EventType.Game:
+        baseForm = _gameFormKey.currentState;
+        break;
+      case EventType.Event:
+        baseForm = _eventFormKey.currentState;
+        break;
+      case EventType.Practice:
+        baseForm = _trainingFormKey.currentState;
+        print('${_trainingFormKey.currentState} $_eventFormKey $_gameFormKey');
+        break;
+    }
+    if (baseForm.validate()) {
+      setState(() {
+        _saving = true;
+      });
+      baseForm.save();
+      print("updating firestore");
+      await baseForm.finalGameResult.updateFirestore(true);
+      print('finished update');
+      setState(() {
+        _saving = false;
+      });
       Navigator.pop(context);
     } else {
+      print('error?');
       _showInSnackBar(Messages.of(context).formerror);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    Game game = UserDatabaseData.instance.gamesCache[widget.gameuid];
+    Widget form;
+    switch (game.sharedData.type) {
+      case EventType.Game:
+        form = new GameEditForm(game: game, key: _gameFormKey);
+        break;
+      case EventType.Event:
+        form = new EventEditForm(game: game, key: _eventFormKey);
+        break;
+      case EventType.Practice:
+        form = new TrainingEditForm(game: game, key: _trainingFormKey);
+        break;
+    }
     return new Scaffold(
-        key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(Messages.of(context).title),
-          actions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  this._savePressed(context);
-                },
-                child: new Text(Messages.of(context).savebuttontext,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .subhead
-                        .copyWith(color: Colors.white))),
-          ],
+      key: _scaffoldKey,
+      appBar: new AppBar(
+        title: new Text(Messages.of(context).title),
+      ),
+      body: new Container(
+        padding: new EdgeInsets.all(16.0),
+        child: new SavingOverlay(
+          saving: _saving,
+          child: form,
         ),
-        body: new Container(
-          padding: new EdgeInsets.all(16.0),
-          child: new GameEditForm(_game, _gameFormKey),
-        ));
+      ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: () => _savePressed(context),
+        child: const Icon(Icons.check),
+      ),
+    );
   }
 }

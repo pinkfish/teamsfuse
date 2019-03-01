@@ -12,11 +12,11 @@ import 'package:intl/src/intl_helpers.dart';
 import 'messages_messages.dart' as messages_messages;
 
 typedef Future<dynamic> LibraryLoader();
-Map<String, LibraryLoader> _deferredLibraries = {
-  'messages': () => new Future.value(null),
+Map<String, LibraryLoader> _deferredLibraries = <String, LibraryLoader>{
+  'messages': () => new Future<LibraryLoader>.value(null),
 };
 
-MessageLookupByLibrary _findExact(localeName) {
+MessageLookupByLibrary _findExact(String localeName) {
   switch (localeName) {
     case 'messages':
       return messages_messages.messages;
@@ -41,7 +41,7 @@ bool _messagesExistFor(String locale) {
   }
 }
 
-MessageLookupByLibrary _findGeneratedMessagesFor(locale) {
+MessageLookupByLibrary _findGeneratedMessagesFor(String locale) {
   var actualLocale = Intl.verifiedLocale(locale, _messagesExistFor,
       onFailure: (_) => null);
   if (actualLocale == null) return null;

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
-import 'attendanceicon.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'attendancedialog.dart';
+import 'attendanceicon.dart';
 
 class Availaility extends StatefulWidget {
-  final Game _game;
-
   Availaility(this._game);
+
+  final Game _game;
 
   @override
   AvailabityState createState() {
@@ -24,7 +26,7 @@ class AvailabityState extends State<Availaility> {
           return new AttendanceDialog(current: current);
         });
     if (attend != null) {
-      widget._game.updateFirestorAttendence(player.playerUid, attend);
+      widget._game.updateFirestoreAttendence(player.playerUid, attend);
     }
   }
 
@@ -67,7 +69,7 @@ class AvailabityState extends State<Availaility> {
         leading: canEdit
             ? new Icon(Icons.person, color: theme.accentColor)
             : const Icon(Icons.person),
-        title: new Text(player.displayName),
+        title: new PlayerName(playerUid: player.playerUid),
         trailing: _buildAvailability(player),
       );
     });

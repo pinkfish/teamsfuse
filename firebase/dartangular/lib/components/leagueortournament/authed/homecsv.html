@@ -1,0 +1,22 @@
+<div>
+
+    <material-button (trigger)="onGenerate()">Generate
+
+    </material-button>
+    Processing {{currentlyProcessing}}
+
+    <div style="width: 300px; height: 300px" #mapArea></div>
+
+    <div *ngFor="let fluff of newTeamsToGenerate" >
+        {{fluff}}
+    </div>
+
+    <div *ngFor="let fluff of newDivisionsToGenerate" >
+        {{fluff}}
+    </div>
+
+    <div *ngFor="let fluff of newGames" >
+        {{fluff}} rabbit
+    </div>
+
+</div>

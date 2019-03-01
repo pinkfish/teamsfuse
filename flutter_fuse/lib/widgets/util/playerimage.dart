@@ -1,53 +1,64 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:flutter/foundation.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'cachednetworkimage.dart';
 
-class PlayerImage extends CircleAvatar {
-  PlayerImage(String playerUid,
-      {Key key,
-      double width,
-      double height,
-      Color color,
-      Color backgroundColor,
-      BlendMode colorBlendMode,
-      BoxFit fit,
-      AlignmentGeometry alignment: Alignment.center,
-      ImageRepeat repeat: ImageRepeat.noRepeat,
-      Rect centerSlice,
-      bool matchTextDirection: false,
-      bool gaplessPlayback: false})
-      : super(
-            backgroundColor: backgroundColor,
-            radius: width == null ? 20.0 : (width < height ? width / 2: height / 2),
-            child: new Image(
-                image: getImageProvider(playerUid),
-                key: key,
-                width: width,
-                height: height,
-                color: color,
-                colorBlendMode: colorBlendMode,
-                fit: fit,
-                alignment: alignment,
-                repeat: repeat,
-                centerSlice: centerSlice,
-                matchTextDirection: matchTextDirection,
-                gaplessPlayback: gaplessPlayback));
+///
+/// Image of the specific player.  Will make an oval clip rect of the specific
+/// radius and fill the image to fit that circle.
+///
+class PlayerImage extends ClipOval {
+  PlayerImage({
+    @required String playerUid,
+    Key key,
+    double radius = 20.0,
+    Color backgroundColor,
+  }) : super(
+          child: SizedBox(
+            width: radius * 2,
+            height: radius * 2,
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: new CachedNetworkImage(
+                placeholder: new Image(
+                    image:
+                        const AssetImage("assets/images/defaultavatar2.png")),
+                errorWidget: new Image(
+                    image: const AssetImage("assets/images/defaultavatar.png")),
+                imageFuture: getImageUrl(playerUid),
+              ),
+            ),
+          ),
+        );
 
-  static ImageProvider getImageProvider(String playerUid) {
-    ImageProvider logo;
+  static Future<String> getImageUrl(String playerUid) async {
+    print('Loading for player $playerUid');
     if (UserDatabaseData.instance.players.containsKey(playerUid)) {
       Player player = UserDatabaseData.instance.players[playerUid];
+
       if (player.photoUrl != null && player.photoUrl.isNotEmpty) {
-        logo = new NetworkImage(player.photoUrl);
+        print('Cached ${player.photoUrl}');
+        return new Future<String>(() => player.photoUrl);
       } else {
-        logo = const AssetImage("assets/images/defaultavatar2.png");
+        return null;
       }
     } else {
-      // Lookup the player image, show the defaultavatar and then
-      // transform to it.
+      return UserDatabaseData.instance
+          .getPlayer(playerUid)
+          .then((Player player) {
+        print('Found player $playerUid $player');
+        if (player != null &&
+            player.photoUrl != null &&
+            player.photoUrl.isNotEmpty) {
+          return player.photoUrl;
+        }
+        return null;
+      }).catchError((dynamic e) {
+        // error!
+        return null;
+      });
     }
-    if (logo == null) {
-      logo = const AssetImage("assets/images/defaultavatar2.png");
-    }
-    return logo;
   }
 }

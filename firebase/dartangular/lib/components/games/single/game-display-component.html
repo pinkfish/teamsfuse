@@ -1,0 +1,106 @@
+<div class="card" *ngIf="game != null">
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <h5 class="card-title" style="float: left">
+                    {{team.name}} vs {{opponent}}
+                    <template [ngIf]="game.sharedData.type.toString() == 'EventType.Game'">
+                        <div class="h6 {{resultclass}}" *ngIf="result != null && game.result.inProgress.toString() != 'GameInProgress.NotStarted'">
+                            {{result}}
+                        </div>
+                        <div class="h6 {{resultclass}}" *ngIf="result == null || game.result.inProgress.toString() == 'GameInProgress.NotStarted'">
+                            Not started
+                        </div>
+                        <div *ngIf="officialResult != null" class="h6 {{officialResultClass}}">
+                            {{officialResult}}
+                        </div>
+                    </template>
+                </h5>
+                <div style="text-align: right">
+                    {{GameDisplayComponent.dateFormat.format(game.sharedData.tzTime)}}
+                </div>
+                <div style="text-align: right; font-style: italic;">
+                    {{GameDisplayComponent.timeFormat.format(game.sharedData.tzTime)}}
+                    <div *ngIf="game.sharedData.time != game.sharedData.endTime" style="display:inline">
+                        - {{GameDisplayComponent.timeFormat.format(game.sharedData.tzEndTime)}}
+                    </div>
+                    <small *ngIf="game.arriveTime != game.sharedData.time" style="display:block">
+                        Arrive by {{GameDisplayComponent.timeFormat.format(game.tzArriveTime)}}
+                    </small>
+                    <small [ngSwitch]="game.sharedData.type.toString()"  style="display:block; margin-left: auto; width: fit-content" class="badge badge-secondary">
+                        <template [ngSwitchCase]="'EventType.Game'">
+                            Game
+                        </template>
+                        <template [ngSwitchCase]="'EventType.Practice'">
+                            Practice
+                        </template>
+                        <template [ngSwitchCase]="'EventType.Event'">
+                            Event
+                        </template>
+                        <template ngSwitchDefault>
+                           Help
+                        </template>
+                    </small>
+                </div>
+            </div>
+            <img src="{{teamUrl}}" width="50" height="50" style="float: right"/>
+        </div>
+
+
+        <div class="map-area" #mapArea>
+        </div>
+        <div *ngIf="game.sharedData.place.name != null" style="font-style: italic;
+        font-weight: bold;
+        font-size: 90%;">
+            {{game.sharedData.place.name}}
+        </div>
+
+        <div class="card-text">
+            {{game.sharedData.place.address}}
+        </div>
+        <div *ngIf="game.sharedData.place.notes.isNotEmpty">
+            Notes: {{game.sharedData.place.notes}}
+        </div>
+
+        <material-button class="green" (trigger)="openDirections()">Directions</material-button>
+        <material-button class="green" (trigger)="openTeam()">Team</material-button>
+        <material-button class="green" *ngIf="game.sharedData.leagueUid != null" (trigger)="openLeague()">League</material-button>
+
+        <template [ngIf]="currentSeason != null && game.trackAttendance">
+            <h6 class="attendtitle text-muted">Attendence</h6>
+            <!-- Show attendence -->
+            <div class="container" style="padding-top: 15px">
+                <player-attendence *ngFor="let play of players; trackBy: trackByPlayer" [player]="play" [game]="game" style="margin: -15px">
+                </player-attendence>
+            </div>
+        </template>
+
+        <div class="container" style="padding-top: 15px">
+            <div *ngIf="currentSeason != null" class="row">
+                <div class="col col-sm-2">
+                    <em>Season:</em>
+                </div>
+                <div class="col">
+                    {{currentSeason.name}}
+                </div>
+            </div>
+            <div *ngIf="game.uniform.isNotEmpty" class="row">
+                <div class="col col-sm-2">
+                    <em>Uniform:</em>
+                </div>
+                <div class="col">
+                    {{game.uniform}}
+                </div>
+            </div>
+            <div *ngIf="game.notes.isNotEmpty" class="row">
+                <div class="col col-sm-2">
+                    <em>Notes:</em>
+                </div>
+                <div class="col">
+                    {{game.notes}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

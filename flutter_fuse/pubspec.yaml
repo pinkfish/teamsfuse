@@ -7,31 +7,42 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  cloud_firestore: "^0.2.9"
-  firebase_auth: "^0.4.5"
-  firebase_core: "^0.0.6"
-  firebase_storage: "^0.2.2"
-  firebase_analytics: "^0.2.3"
-  firebase_messaging: "^0.2.1"
-  shared_preferences: "^0.3.3"
-  path_provider: "^0.3.0"
-  uuid: "^0.5.0"
-  url_launcher: "^2.0.2"
+  sentry: any
+
+  cloud_firestore: "^0.8.1"
+  firebase_auth: "^0.5.20"
+  firebase_core: "^0.2.5"
+  firebase_storage: "^1.0.2"
+  firebase_analytics: "^1.0.3"
+  firebase_performance: "^0.0.8"
+  firebase_remote_config: "^0.0.5"
+  firebase_messaging: "^2.0.0"
+  shared_preferences: "^0.4.2"
+  package_info: "^0.3.0"
+  device_info: "^0.2.0"
+  path_provider: "^0.4.1"
+  uuid: "^1.0.3"
+  url_launcher: "^3.0.3"
   csv: "^3.1.2"
   flutter_native_timezone: # "^1.0.0"
-    path: ../../flutter_native_timezone
+    "^1.0.1"
   flutter_places_dialog: # "^1.0.0"
     path: ../../flutter_places_dialog
 
   fluro: any
-  image_picker: any
+  image_picker: "^0.4.1"
   timezone:
-    path: ../../timezone
+     git:
+       url: "https://github.com/pinkfish/timezone.git"
   fusemodel:
-    path: ../../fusemodel
+    path: ../fusemodel
   sqflite: any
   tuple: any
-  flutter_google_places_autocomplete: "^0.0.4"
+  sliver_calendar:
+    path: ../../flutter_calendar
+  flutter_local_notifications:
+    git:
+      url: "git://github.com/pinkfish/flutter_local_notifications.git"
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -59,6 +70,10 @@ flutter:
      - assets/images/defaultavatar2.png
      - assets/timezone/2018c.tzf
      - assets/sports/Sport.Basketball.png
+     - assets/sports/Sport.Soccer.png
+     - assets/images/calendarbanner.jpg
+     - assets/images/calendarheader.png
+     - assets/images/leagueteam.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

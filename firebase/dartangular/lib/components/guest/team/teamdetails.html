@@ -1,0 +1,18 @@
+<div *ngIf="teamName == null" style="">
+    <div *ngIf="needLogin">
+        <h4>Need to login to see this team.</h4>
+        <material-button (trigger)="signIn()">
+            <material-icon icon="person"></material-icon>Login
+        </material-button>
+    </div>
+    <div *ngIf="!needLogin">
+        Loading...
+    </div>
+</div>
+
+<div *ngIf="teamName != null">
+    <h4>{{teamName}}</h4>
+    <h5 class="text-muted">
+        {{sportDetails}} <i class="mdi mdi-{{genderIcon}}"></i>
+    </h5>
+</div>

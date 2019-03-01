@@ -1,0 +1,20 @@
+<material-drawer persistent #drawer="drawer">
+    <teamfuse-drawer ></teamfuse-drawer>
+</material-drawer>
+<div class="material-content">
+    <header class="material-header shadow">
+        <div class="material-header-row">
+            <material-button icon
+                             class="material-drawer-button" (trigger)="drawer.toggle()">
+                <material-icon icon="menu"></material-icon>
+            </material-button>
+            <span class="material-header-title">Team Fuse</span>
+            <div class="material-spacer"></div>
+            <search-form></search-form>
+        </div>
+    </header>
+
+    <div>
+        <router-outlet [routes]="routes.all"></router-outlet>
+    </div>
+</div>

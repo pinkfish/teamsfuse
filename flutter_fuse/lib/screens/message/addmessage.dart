@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
-import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
+import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AddMessageScreen extends StatefulWidget {
+  AddMessageScreen({this.teamUid, this.seasonUid, this.playerUid});
+
   final String teamUid;
   final String seasonUid;
   final String playerUid;
-
-  AddMessageScreen({this.teamUid, this.seasonUid, this.playerUid});
 
   @override
   AddMessageScreenState createState() {
@@ -24,10 +26,13 @@ class AddMessageScreenState extends State<AddMessageScreen> {
   Message _message;
   String _seasonUid;
   String _sendAs;
-  List<String> _possiblePlayers = [];
+  List<String> _possiblePlayers = <String>[];
   bool _allPlayers = true;
   bool _includeMyself = false;
+  FocusNode _focusNodeSubject = new FocusNode();
+  FocusNode _focusNodeBody = new FocusNode();
 
+  @override
   void initState() {
     super.initState();
     _message = new Message();
@@ -36,7 +41,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
     _message.message = '';
     _seasonUid = widget.seasonUid;
     if (widget.playerUid != null) {
-      Map<String, MessageRecipient> recips = {};
+      Map<String, MessageRecipient> recips = <String, MessageRecipient>{};
       Season season =
           UserDatabaseData.instance.teams[_message.teamUid].seasons[_seasonUid];
 
@@ -45,18 +50,17 @@ class AddMessageScreenState extends State<AddMessageScreen> {
       if (player != null) {
         recips[widget.playerUid] = new MessageRecipient(
           playerId: widget.playerUid,
-          name: player.displayName,
         );
       }
       _message.recipients = recips;
       _setupSendAs();
     } else {
-      _message.recipients = {};
+      _message.recipients = <String, MessageRecipient>{};
     }
   }
 
   void _setupSendAs() {
-    _possiblePlayers = [];
+    _possiblePlayers = <String>[];
     // Find the intersection of team and player.
     UserDatabaseData
         .instance.teams[_message.teamUid].seasons[_seasonUid].players
@@ -94,14 +98,12 @@ class AddMessageScreenState extends State<AddMessageScreen> {
           if (_includeMyself || play.playerUid != _sendAs) {
             _message.recipients[play.playerUid] = new MessageRecipient(
               playerId: play.playerUid,
-              name: play.displayName,
               state: MessageState.Unread,
             );
           }
         });
       }
       if (_message.recipients.length > 0) {
-        _message.fromName = UserDatabaseData.instance.players[_sendAs].name;
         _message.fromUid = _sendAs;
         _message.timeSent = new DateTime.now().millisecondsSinceEpoch;
         _message.updateFirestore();
@@ -115,7 +117,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
   }
 
   List<Widget> _buildPlayerPicker() {
-    List<Widget> ret = [];
+    List<Widget> ret = <Widget>[];
 
     if (_message.teamUid != null) {
       // Build the rest of the form.
@@ -138,7 +140,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
               title: new DropdownButton<String>(
                   value: _sendAs,
                   items: _possiblePlayers.map((String str) {
-                    return new DropdownMenuItem(
+                    return new DropdownMenuItem<String>(
                         child: new Text(
                             UserDatabaseData.instance.players[str].name),
                         value: str);
@@ -185,17 +187,14 @@ class AddMessageScreenState extends State<AddMessageScreen> {
           season.players.forEach((SeasonPlayer player) {
             ret.add(
               new CheckboxListTile(
-                title: new Text(player.displayName +
-                    " (" +
-                    Messages.of(context).roleingame(player.role) +
-                    ")"),
+                title: new PlayerName(playerUid: player.playerUid),
+                subtitle:
+                    new Text(Messages.of(context).roleingame(player.role)),
                 value: _message.recipients.containsKey(player.playerUid),
                 onChanged: (bool toAdd) {
                   if (toAdd) {
                     _message.recipients[player.playerUid] =
-                        new MessageRecipient(
-                            playerId: player.playerUid,
-                            name: player.displayName);
+                        new MessageRecipient(playerId: player.playerUid);
                   } else {
                     _message.recipients.remove(player.playerUid);
                   }
@@ -206,23 +205,31 @@ class AddMessageScreenState extends State<AddMessageScreen> {
         }
         // Add in the message box itself :)
         ret.add(
-          new TextFormField(
-            decoration: new InputDecoration(
-              icon: const Icon(Icons.subject),
-              labelText: Messages.of(context).subject,
+          new EnsureVisibleWhenFocused(
+            child: new TextFormField(
+              decoration: new InputDecoration(
+                icon: const Icon(Icons.subject),
+                labelText: Messages.of(context).subject,
+              ),
+              focusNode: _focusNodeSubject,
+              initialValue: _message.subject,
+              onSaved: (String val) => _message.subject = val,
             ),
-            initialValue: _message.subject,
-            onSaved: (String val) => _message.subject = val,
+            focusNode: _focusNodeSubject,
           ),
         );
         ret.add(
-          new TextFormField(
-            decoration: new InputDecoration(
-              icon: const Icon(Icons.message),
-              labelText: Messages.of(context).message,
+          new EnsureVisibleWhenFocused(
+            focusNode: _focusNodeBody,
+            child: new TextFormField(
+              decoration: new InputDecoration(
+                icon: const Icon(Icons.message),
+                labelText: Messages.of(context).message,
+              ),
+              focusNode: _focusNodeBody,
+              initialValue: _message.message,
+              onSaved: (String val) => _message.message = val,
             ),
-            initialValue: _message.message,
-            onSaved: (String val) => _message.message = val,
           ),
         );
       }
@@ -241,11 +248,10 @@ class AddMessageScreenState extends State<AddMessageScreen> {
         title: new Text(messages.title),
         actions: <Widget>[
           new FlatButton(
-            onPressed: this._sendMessage,
+            onPressed: _sendMessage,
             child: new Text(
               Messages.of(context).sendmessagebuttontext,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .subhead
                   .copyWith(color: Colors.white),
@@ -261,7 +267,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
               child: new Column(
                 children: <Widget>[
                       new ListTile(
-                        leading: const Icon(CommunityIcons.tshirtcrew),
+                        leading: const Icon(CommunityIcons.tshirtCrew),
                         title: new TeamPicker(
                           onChanged: _changeTeam,
                         ),

@@ -2,141 +2,130 @@
 // Copyright (c) 2017 Rene Floor
 // Released under MIT License.
 
+import 'dart:async';
 import 'dart:io';
+
 import 'package:path_provider/path_provider.dart';
+import 'package:synchronized/synchronized.dart';
 import 'package:uuid/uuid.dart';
 
 ///Cache information of one file
 class CacheObject {
-  static const _keyFilePath = "relativePath";
-  static const _keyValidTill = "validTill";
-  static const _keyETag = "ETag";
-  static const _keyTouched = "touched";
+  CacheObject(this.url) {
+    touch();
+    lock = new Lock();
+  }
+
+  CacheObject.fromMap(this.url, Map<dynamic, dynamic> map) {
+    if (map.containsKey(_keyFilePath)) {
+      relativePath = map[_keyFilePath].toString();
+    }
+    if (map.containsKey(_keyValidTill)) {
+      validTill =
+          new DateTime.fromMillisecondsSinceEpoch(map[_keyValidTill] as int);
+    }
+    if (map.containsKey(_keyETag)) {
+      eTag = map[_keyETag].toString();
+    }
+    if (map.containsKey(_keyTouched)) {
+      touched =
+          new DateTime.fromMillisecondsSinceEpoch(map[_keyTouched] as int);
+    } else {
+      touch();
+    }
+
+    lock = new Lock();
+  }
+
+  static const String _keyFilePath = "relativePath";
+  static const String _keyValidTill = "validTill";
+  static const String _keyETag = "ETag";
+  static const String _keyTouched = "touched";
   static Directory _directory;
 
+  String relativePath;
+  DateTime validTill;
+  String eTag;
+  DateTime touched;
+  String url;
+  Lock lock;
+
   static void initDirectory() async {
-     _directory = await getTemporaryDirectory();
+    _directory = await getTemporaryDirectory();
   }
 
   String getFilePath() {
-    if(relativePath == null){
+    if (relativePath == null) {
       return null;
     }
 
     return _directory.path + relativePath;
   }
 
-  DateTime touched;
-  String url;
-
-  Object lock;
-  Map<String, dynamic> _map;
-
-  String get relativePath {
-    if (_map.containsKey(_keyFilePath)) {
-      return _map[_keyFilePath];
-    }
-    return null;
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> ret = <String, dynamic>{};
+    ret[_keyETag] = eTag;
+    ret[_keyValidTill] = validTill?.millisecondsSinceEpoch;
+    ret[_keyTouched] = touched?.millisecondsSinceEpoch;
+    ret[_keyFilePath] = relativePath;
+    return ret;
   }
 
-  DateTime get validTill {
-    if (_map.containsKey(_keyValidTill)) {
-      return new DateTime.fromMillisecondsSinceEpoch(_map[_keyValidTill]);
-    }
-    return null;
-  }
-
-  String get eTag {
-    if (_map.containsKey(_keyETag)) {
-      return _map[_keyETag];
-    }
-    return null;
-  }
-
-
-  CacheObject(String url) {
-    this.url = url;
-    _map = new Map();
-    touch();
-    lock = new Object();
-  }
-
-  CacheObject.fromMap(String url, Map map) {
-    this.url = url;
-    _map = map;
-
-    if (_map.containsKey(_keyTouched)) {
-      touched = new DateTime.fromMillisecondsSinceEpoch(_map[_keyTouched]);
-    } else {
-      touch();
-    }
-
-    lock = new Object();
-  }
-
-  Map toMap() {
-    return _map;
-  }
-
-  touch() {
+  void touch() {
     touched = new DateTime.now();
-    _map[_keyTouched] = touched.millisecondsSinceEpoch;
   }
 
-  setDataFromHeaders(Map<String, String> headers) async {
+  Future<void> setDataFromHeaders(Map<String, String> headers) async {
     //Without a cache-control header we keep the file for a week
-    var ageDuration = new Duration(days: 7);
+    Duration ageDuration = new Duration(days: 7);
 
     if (headers.containsKey("cache-control")) {
-      var cacheControl = headers["cache-control"];
-      var controlSettings = cacheControl.split(", ");
-      controlSettings.forEach((setting) {
+      String cacheControl = headers["cache-control"];
+      List<String> controlSettings = cacheControl.split(", ");
+      for (String setting in controlSettings) {
         if (setting.startsWith("max-age=")) {
-          var validSeconds =
-          int.parse(setting.split("=")[1], onError: (source) => 0);
+          int validSeconds = int.tryParse(setting.split("=")[1]) ?? 0;
+
           if (validSeconds > 0) {
             ageDuration = new Duration(seconds: validSeconds);
           }
         }
-      });
+      }
     }
 
-    _map[_keyValidTill] =
-        new DateTime.now().add(ageDuration).millisecondsSinceEpoch;
+    validTill = new DateTime.now().add(ageDuration);
 
     if (headers.containsKey("etag")) {
-      _map[_keyETag] = headers["etag"];
+      eTag = headers["etag"];
     }
 
-    var fileExtension = "";
+    String fileExtension = "";
     if (headers.containsKey("content-type")) {
-      var type = headers["content-type"].split("/");
+      List<String> type = headers["content-type"].split("/");
       if (type.length == 2) {
         fileExtension = ".${type[1]}";
       }
     }
 
-    var oldPath = getFilePath();
+    String oldPath = getFilePath();
     if (oldPath != null && !oldPath.endsWith(fileExtension)) {
       removeOldFile(oldPath);
-      _map[_keyFilePath] = null;
+      relativePath = null;
     }
 
     if (relativePath == null) {
-      var fileName = "cache/${new Uuid().v1()}$fileExtension";
-      _map[_keyFilePath] = "$fileName";
+      relativePath = "cache/${new Uuid().v1()}$fileExtension";
     }
-
   }
 
-  removeOldFile(String filePath) async {
-    var file = new File(filePath);
+  void removeOldFile(String filePath) async {
+    File file = new File(filePath);
     if (await file.exists()) {
       await file.delete();
     }
   }
 
-  setRelativePath(String path) {
-    _map[_keyFilePath] = path;
+  void setRelativePath(String path) {
+    relativePath = path;
   }
 }

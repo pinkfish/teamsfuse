@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AttendanceIcon extends StatelessWidget {
-  final Attendance attend;
-
   AttendanceIcon(this.attend);
+
+  final Attendance attend;
 
   @override
   Widget build(BuildContext context) {

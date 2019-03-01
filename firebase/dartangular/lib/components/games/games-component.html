@@ -1,0 +1,26 @@
+
+<div class="navbar">
+    <div style="float: left; display: inline">
+        <material-button (trigger)="prevMonth()">
+            <material-icon icon="arrow_back"></material-icon>
+        </material-button>
+    </div>
+    <h5 class="navbar-item">
+        {{currentMonth}}
+    </h5>
+    <div class="navbar-item">
+        <material-button (trigger)="nextMonth()">
+            <material-icon icon="arrow_forward"></material-icon>
+        </material-button>
+    </div>
+</div>
+
+<div *ngIf="loading">
+    <h2>Loading...</h2>
+    <div class="loader">Invisible</div>
+</div>
+
+<game-card *ngFor="let fluff of games; trackBy: trackByGames" [game]="fluff">
+
+</game-card>
+

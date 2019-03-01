@@ -1,15 +1,13 @@
-import 'dart:async';
-
 import 'location.dart';
 import 'marker.dart';
 
 class StaticMapProvider {
+  StaticMapProvider(this.googleMapsApiKey);
+
   final String googleMapsApiKey;
   static const int defaultZoomLevel = 4;
   static const int defaultWidth = 600;
   static const int defaultHeight = 400;
-
-  StaticMapProvider(this.googleMapsApiKey);
 
   ///
   /// Creates a Uri for the Google Static Maps API
@@ -35,30 +33,36 @@ class StaticMapProvider {
 
   Uri _buildUrl(List<Marker> locations, MapLocation center, int zoomLevel,
       int width, int height) {
-    var finalUri = Uri(scheme: 'https', host: 'maps.googleapis.com', port: 443, path: '/maps/api/staticmap');
+    Uri finalUri = Uri(
+        scheme: 'https',
+        host: 'maps.googleapis.com',
+        port: 443,
+        path: '/maps/api/staticmap');
 
     if (center == null && (locations == null || locations.length == 0)) {
       center = MapLocations.centerOfUSA;
     }
 
     if (locations == null || locations.length == 0) {
-      if (center == null) center = MapLocations.centerOfUSA;
-      finalUri = finalUri.replace(queryParameters: {
+      if (center == null) {
+        center = MapLocations.centerOfUSA;
+      }
+      finalUri = finalUri.replace(queryParameters: <String, dynamic>{
         'center': '${center.latitude},${center.longitude}',
         'zoom': zoomLevel.toString(),
         'size': '${width ?? defaultWidth}x${height ?? defaultHeight}',
         'key': googleMapsApiKey,
       });
     } else {
-      List<String> markers = new List();
-      locations.forEach((location) {
+      List<String> markers = <String>[];
+      for (Marker location in locations) {
         num lat = location.latitude;
         num lng = location.longitude;
         String marker = '$lat,$lng';
         markers.add(marker);
-      });
+      }
       String markersString = markers.join('|');
-      finalUri = finalUri.replace(queryParameters: {
+      finalUri = finalUri.replace(queryParameters: <String, dynamic>{
         'markers': markersString,
         'size': '${width ?? defaultWidth}x${height ?? defaultHeight}',
         'key': googleMapsApiKey,

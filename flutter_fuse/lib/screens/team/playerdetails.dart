@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'dart:async';
+import 'package:flutter_fuse/widgets/util/playerimage.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PlayerDetailsScreen extends StatefulWidget {
   PlayerDetailsScreen(this.teamUid, this.seasonUid, this.playerUid);
@@ -17,9 +22,9 @@ class PlayerDetailsScreen extends StatefulWidget {
 }
 
 class _RoleInTeamAlertDialog extends StatefulWidget {
-  final RoleInTeam initialRole;
-
   _RoleInTeamAlertDialog(this.initialRole);
+
+  final RoleInTeam initialRole;
 
   @override
   _RoleInTeamAlertDialogState createState() {
@@ -40,10 +45,11 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
 
-    List<DropdownMenuItem<RoleInTeam>> widgets = [];
+    List<DropdownMenuItem<RoleInTeam>> widgets =
+        <DropdownMenuItem<RoleInTeam>>[];
     RoleInTeam.values.forEach((RoleInTeam role) {
       widgets.add(
-        new DropdownMenuItem(
+        new DropdownMenuItem<RoleInTeam>(
           child: new Text(
             messages.roleingame(role),
           ),
@@ -62,7 +68,6 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
           setState(() {
             _myRole = role;
           });
-          return role;
         },
       ),
       actions: <Widget>[
@@ -136,8 +141,8 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     Messages mess = Messages.of(context);
 
     bool result = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
+        context: context,
+        barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
           return new AlertDialog(
             title: new Text(mess.deleteplayer),
@@ -145,34 +150,41 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
               child: new SingleChildScrollView(
                 child: new ListBody(
                   children: <Widget>[
-                    new Text(mess.confirmremovefromteam(_player.displayName)),
+                    new FutureBuilder<Player>(
+                        future: UserDatabaseData.instance
+                            .getPlayer(_player.playerUid),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<Player> player) {
+                          if (player.hasData) {
+                            return new Text(
+                                mess.confirmremovefromteam(player.data.name));
+                          }
+                          return new Text(
+                              mess.confirmremovefromteam(mess.loading));
+                        }),
                   ],
                 ),
               ),
             ),
             actions: <Widget>[
               new FlatButton(
-                child: new Text(MaterialLocalizations
-                    .of(context)
-                    .okButtonLabel),
+                child:
+                    new Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   // Do the delete.
                   Navigator.of(context).pop(true);
                 },
               ),
               new FlatButton(
-                child:
-                new Text(MaterialLocalizations
-                    .of(context)
-                    .cancelButtonLabel),
+                child: new Text(
+                    MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
               ),
             ],
           );
-        }
-    );
+        });
     if (result) {
       _season.removePlayer(_player);
       Navigator.pop(context);
@@ -196,18 +208,12 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     });
   }
 
-  ImageProvider _playerImage() {
-    ImageProvider logo;
-    if (_player.photoUrl != null && _player.photoUrl.isNotEmpty) {
-      logo = new NetworkImage(_player.photoUrl);
-    } else {
-      logo = const AssetImage("assets/images/defaultavatar2.png");
-    }
-    return logo;
+  void _deleteInvite(BuildContext context, InviteToPlayer invite) {
+    deleteInviteDialog(context, invite);
   }
 
   Widget _buildPlayerDetails() {
-    List<Widget> ret = new List<Widget>();
+    List<Widget> ret = <Widget>[];
     final Size screenSize = MediaQuery.of(context).size;
     Messages messages = Messages.of(context);
     ThemeData theme = Theme.of(context);
@@ -217,57 +223,111 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     double height = screenSize.height / 4 + 20;
 
     ret.add(
-      new CircleAvatar(
-        child: new Image(
-          image: _playerImage(),
-          width: width,
-          height: height,
-        ),
-        radius: (width > height) ? width / 2 : height / 2,
+      new PlayerImage(
+        playerUid: _player.playerUid,
+        radius: width > height ? height / 2 : width / 2,
       ),
     );
 
-    ret.add(new ListTile(
-      leading: const Icon(CommunityIcons.bookopenvariant),
-      title: new Text(messages.roleingame(_player.role)),
-    ));
-
-    bool loading = false;
+    ret.add(
+      new ListTile(
+        leading: const Icon(CommunityIcons.bookOpenVariant),
+        title: new Text(
+          messages.roleingame(_player.role),
+        ),
+      ),
+    );
 
     if (_playerDetails != null && _playerDetails.users != null) {
       _playerDetails.users.forEach((String key, PlayerUser player) {
-        if (player.profile != null) {
-          if (player.profile.phoneNumber != null &&
-              player.profile.phoneNumber.isNotEmpty) {
-            ret.add(new ListTile(
-              leading: const Icon(Icons.phone),
-              title: new Text(
-                messages.displaynamerelationship(
-                    player.profile.displayName, player.relationship),
-              ),
-              subtitle: new Text(player.profile.phoneNumber),
-            ));
-          } else {
-            ret.add(new ListTile(
-              leading: const Icon(Icons.email),
-              title: new Text(player.profile.displayName),
-              subtitle: new Text(messages.sendmessage),
-            ));
-          }
-        } else {
-          loading = true;
-        }
+        ret.add(new FutureBuilder<FusedUserProfile>(
+            future: player.getProfile(),
+            builder: (BuildContext context,
+                AsyncSnapshot<FusedUserProfile> profile) {
+              if (!profile.hasData) {
+                return new Text(messages.loading);
+              }
+
+              if (profile.data.phoneNumber != null &&
+                  profile.data.phoneNumber.isNotEmpty) {
+                return new ListTile(
+                  leading: const Icon(Icons.phone),
+                  title: new Text(
+                    messages.displaynamerelationship(
+                        profile.data.displayName, player.relationship),
+                  ),
+                  subtitle: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      new Text(
+                          "${profile.data.phoneNumber}\n${profile.data.email}"),
+                      new Row(
+                        children: <Widget>[
+                          new IconButton(
+                            icon: const Icon(Icons.sms),
+                            color: Theme.of(context).primaryColorDark,
+                            onPressed: () =>
+                                launch("sms:" + profile.data.phoneNumber),
+                          ),
+                          new IconButton(
+                            icon: const Icon(Icons.email),
+                            color: Theme.of(context).primaryColorDark,
+                            onPressed: () =>
+                                launch("mailto:" + profile.data.email),
+                          ),
+                          new IconButton(
+                            icon: const Icon(Icons.message),
+                            color: Theme.of(context).primaryColorDark,
+                            onPressed: () => Navigator.pushNamed(
+                                context,
+                                "/AddMessagePlayer/" +
+                                    widget.teamUid +
+                                    "/" +
+                                    widget.seasonUid +
+                                    "/" +
+                                    widget.playerUid),
+                          )
+                        ],
+                      )
+                    ],
+                  ),
+                );
+              } else {
+                return new ListTile(
+                  leading: const Icon(Icons.email),
+                  title: new Text(profile.data.displayName),
+                  subtitle: new Text(messages.sendmessage),
+                );
+              }
+            }));
       });
-    } else {
-      ret.add(new ListTile(
-        leading: const Icon(Icons.phone),
-        title: new Text(_player.displayName),
-      ));
-      loading = true;
-    }
-    if (loading) {
-      ret.add(new Text(messages.loading));
-      ret.add(new CircularProgressIndicator());
+      ret.add(
+        new StreamBuilder<List<InviteToPlayer>>(
+          stream: _playerDetails.inviteStream,
+          builder:
+              (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
+            List<InviteToPlayer> invites = _playerDetails.cachedInvites;
+            if (invites == null || invites.length == 0) {
+              if (!snap.hasData || snap.data.length == 0) {
+                return new SizedBox(height: 0.0);
+              }
+            }
+
+            return new Column(
+              children: invites.map((InviteToPlayer invite) {
+                return new ListTile(
+                  leading: const Icon(Icons.person_add),
+                  title: new Text(Messages.of(context).invitedemail(invite)),
+                  trailing: new IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _deleteInvite(context, invite),
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        ),
+      );
     }
 
     // Find which seasons they are in.
@@ -276,14 +336,14 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
           (SeasonPlayer player) => player.playerUid == _player.playerUid)) {
         ret.add(
           new ListTile(
-            leading: const Icon(CommunityIcons.tshirtcrew),
+            leading: const Icon(CommunityIcons.tshirtCrew),
             title: new Text(season.name),
           ),
         );
       }
     });
 
-    if (_team.isAdmin(UserDatabaseData.instance.players)) {
+    if (_team.isAdmin()) {
       ret.add(
         new Row(
           children: <Widget>[
@@ -307,18 +367,56 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     );
   }
 
+  void _onInvite(BuildContext context) {
+    Navigator.pushNamed(context, "AddInviteToPlayer/" + widget.playerUid);
+  }
+
+  void _editPlayer(BuildContext context) {
+    Navigator.pushNamed(context, "EditPlayer/" + _playerDetails.uid);
+  }
+
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
+    List<Widget> actions = <Widget>[];
+    if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
+      if (UserDatabaseData.instance.teams[widget.teamUid].isAdmin()) {
+        actions.add(
+          new FlatButton(
+            onPressed: () {
+              _onInvite(context);
+            },
+            child: new Text(
+              messages.addinvite,
+              style: Theme.of(context)
+                  .textTheme
+                  .subhead
+                  .copyWith(color: Colors.white),
+            ),
+          ),
+        );
+      }
+    }
+
+    FloatingActionButton fab;
+    if (_playerDetails != null &&
+        _playerDetails.users.containsKey(UserDatabaseData.instance.userUid)) {
+      // I am a member of this player, can edit them!
+      fab = new FloatingActionButton(
+        onPressed: () => _editPlayer(context),
+        child: const Icon(Icons.edit),
+      );
+    }
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(messages.title),
+        title: new PlayerName(playerUid: _player.playerUid),
       ),
       body: new Scrollbar(
         child: new SingleChildScrollView(
           child: _buildPlayerDetails(),
         ),
       ),
+      floatingActionButton: fab,
     );
   }
 }

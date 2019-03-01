@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/services/authentication.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key key}) : super(key: key);
@@ -11,7 +11,6 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  BuildContext context;
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   ScrollController scrollController = new ScrollController();
@@ -19,7 +18,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Validations validations = new Validations();
   String email = '';
 
-  onPressed(String routeName) {
+  void onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
   }
 
@@ -35,17 +34,17 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      UserAuth.instance.sendPasswordResetEmail(email).then((bool user) {
-        Navigator.pushNamed(context, "/");
-      }).catchError((error) {
-        showInSnackBar(error);
+      UserDatabaseData.instance.userAuth.sendPasswordResetEmail(email).then((void nothing) {
+        // Show a dialog saying we sent the email.
+        Navigator.pushNamed(context, "/Login/Home");
+      }).catchError((Error error) {
+        showInSnackBar(error.toString());
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    this.context = context;
     final Size screenSize = MediaQuery.of(context).size;
     return new Scaffold(
         key: _scaffoldKey,
@@ -111,7 +110,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             new FlatButton(
                               child: const Text("Create Account"),
                               textColor: Theme.of(context).accentColor,
-                              onPressed: () => onPressed("/SignUp"),
+                              onPressed: () => onPressed("/Login/SignUp"),
                             ),
                             new FlatButton(
                                 child: const Text("Login"),

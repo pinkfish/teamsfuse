@@ -8,19 +8,20 @@ typedef void OnFabMiniMenuItemPressed();
 class MenuDetails {
   int index;
   AnimationController controller;
+  FabDialerState dialer;
 }
 
 class FabMiniMenuItemWidget extends StatelessWidget {
   FabMiniMenuItemWidget(
-      {Key key,
+      {@required this.icon,
+      @required this.fabColor,
+      @required this.onPressed,
+      Key key,
       this.elevation = 1.0,
       this.textColor,
       this.tooltip,
       this.text,
-      @required this.icon,
-      @required this.fabColor,
-      this.chipColor,
-      @required this.onPressed})
+      this.chipColor})
       : super(key: key);
   final double elevation;
   final String text;
@@ -32,6 +33,12 @@ class FabMiniMenuItemWidget extends StatelessWidget {
   final Color chipColor;
   final String tooltip;
   final Color textColor;
+
+  void _doPress() {
+    details.controller.animateTo(0.0);
+    details.dialer.closeDialer();
+    onPressed();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +94,7 @@ class FabMiniMenuItemWidget extends StatelessWidget {
               heroTag: "Inner fab " + details.index.toString(),
               tooltip: tooltip,
               child: icon,
-              onPressed: onPressed,
+              onPressed: _doPress,
             ),
           )
         ],

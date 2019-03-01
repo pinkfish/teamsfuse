@@ -1,12 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/playerimage.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
-import 'package:flutter_fuse/services/authentication.dart';
-import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
+import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
+import 'package:flutter_fuse/widgets/util/playerimage.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 class ProfileScreen extends StatefulWidget {
+  ProfileScreen({this.onlyPlayer = false});
+
+  final bool onlyPlayer;
+
   @override
   ProfileScreenState createState() {
     return new ProfileScreenState();
@@ -14,21 +20,24 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
-  StreamSubscription streamListen;
-  StreamSubscription playersListen;
+  StreamSubscription<UserData> streamListen;
+  StreamSubscription<UpdateReason> playersListen;
   UserData user;
   Player me;
 
-   void initState() {
+  @override
+  void initState() {
     super.initState();
-    UserAuth.instance.currentUser().then((UserData data) {
+    UserDatabaseData.instance.userAuth.currentUser().then((UserData data) {
       setState(() {
         user = data;
       });
     });
-    streamListen = UserAuth.instance.onAuthChanged().listen((UserData data) {
+    streamListen = UserDatabaseData.instance.userAuth
+        .onAuthChanged()
+        .listen((UserData data) {
       setState(() {
-        this.user = data;
+        user = data;
       });
     });
     playersListen =
@@ -47,6 +56,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  @override
   void dispose() {
     super.dispose();
     streamListen.cancel();
@@ -57,45 +67,183 @@ class ProfileScreenState extends State<ProfileScreen> {
     Navigator.pushNamed(context, "EditPlayer/" + uid);
   }
 
-  void _deletePlayer(String uid) {
+  void _deletePlayer(Player player) async {
+    Messages mess = Messages.of(context);
     // Show an alert dialog and stuff.
+    bool result = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text(mess.deleteplayer),
+            content: new Scrollbar(
+              child: new SingleChildScrollView(
+                child: new ListBody(
+                  children: <Widget>[
+                    new Text(mess.confirmdeleteplayer(player)),
+                  ],
+                ),
+              ),
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child:
+                    new Text(MaterialLocalizations.of(context).okButtonLabel),
+                onPressed: () {
+                  // Do the delete.
+                  Navigator.of(context).pop(true);
+                },
+              ),
+              new FlatButton(
+                child: new Text(
+                    MaterialLocalizations.of(context).cancelButtonLabel),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              ),
+            ],
+          );
+        });
+    if (result) {
+      player.removeFirebaseUser(UserDatabaseData.instance.userUid);
+    }
+  }
+
+  void _deleteInvite(BuildContext context, InviteToPlayer invite) async {
+    await deleteInviteDialog(context, invite);
+  }
+
+  void _onAddPlayerInvite(BuildContext context, Player player) {
+    Navigator.pushNamed(context, "AddInviteToPlayer/" + player.uid);
+  }
+
+  List<Widget> _buildUserList(BuildContext context, Player player) {
+    List<Widget> ret = <Widget>[];
+    ThemeData theme = Theme.of(context);
+
+    ret.add(
+      new StreamBuilder<List<InviteToPlayer>>(
+        stream: player.inviteStream,
+        builder:
+            (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
+          List<InviteToPlayer> invites = player.cachedInvites;
+          if (snap.hasData) {
+            invites = snap.data;
+          }
+          if (invites == null) {
+            return new Text("");
+          }
+          if (invites.length == 0) {
+            return new Text("");
+          }
+          return new Column(
+            children: invites.map((InviteToPlayer invite) {
+              return new ListTile(
+                leading: const Icon(Icons.person_add),
+                title: new Text(Messages.of(context).invitedemail(invite)),
+                trailing: new IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _deleteInvite(context, invite)),
+              );
+            }).toList(),
+          );
+        },
+      ),
+    );
+
+    /*
+      new ListTile(
+        leading: const Icon(Icons.add),
+        title: new Text(Messages.of(context).addinvite),
+        onTap: () => this._onAddPlayerInvite(context, player),
+      ),
+    );*/
+
+    for (PlayerUser user in player.users.values) {
+      ret.add(
+        new FutureBuilder<FusedUserProfile>(
+          future: user.getProfile(),
+          builder:
+              (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) {
+            if (profile.hasData) {
+              return new ListTile(
+                leading: const Icon(Icons.person),
+                title: new Text(Messages.of(context).displaynamerelationship(
+                    profile.data.displayName, user.relationship)),
+                subtitle: new Text(profile.data.email),
+              );
+            } else {
+              return new ListTile(
+                title: new Text(Messages.of(context).displaynamerelationship(
+                    Messages.of(context).loading, user.relationship)),
+              );
+            }
+          },
+        ),
+      );
+    }
+    ret.add(
+      new FlatButton(
+        onPressed: () => _onAddPlayerInvite(context, player),
+        child: new Row(
+          children: <Widget>[
+            new Icon(
+              Icons.add,
+              color: Colors.blueAccent,
+            ),
+            new SizedBox(width: 10.0),
+            new Text(
+              Messages.of(context).addinvite,
+              style: theme.textTheme.button.copyWith(color: Colors.blueAccent),
+            ),
+          ],
+        ),
+      ),
+    );
+    return ret;
   }
 
   List<Widget> _buildPlayerData() {
     final Size screenSize = MediaQuery.of(context).size;
-    List<Widget> ret = new List<Widget>();
+    List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
     Messages messages = Messages.of(context);
 
-    ret.add(new Center(
-      child: new PlayerImage(
-        me != null ? me.uid : null,
-        width: (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
-        height: screenSize.height / 4 + 20,
-      ),
-    ));
+    double width =
+        (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0;
+    double height = screenSize.height / 4 + 20;
+    if (!widget.onlyPlayer) {
+      ret.add(new Center(
+        child: new PlayerImage(
+          playerUid: me != null ? me.uid : null,
+          radius: width > height ? height / 2 : width / 2,
+        ),
+      ));
+    }
     if (user != null) {
-      ret.add(
-          new Text(user.profile.displayName, style: theme.textTheme.headline));
-      ret.add(
-        new ListTile(
-          leading: const Icon(Icons.email),
-          title: new Text(user.email),
-        ),
-      );
-      ret.add(
-        new ListTile(
-          leading: const Icon(Icons.phone),
-          title: new Text(user.profile.phoneNumber),
-        ),
-      );
-      ret.add(new Divider());
-      ret.add(new Text(messages.players,
-          style: theme.textTheme.subhead.copyWith(color: theme.accentColor)));
+      if (!widget.onlyPlayer) {
+        ret.add(new Text(user.profile.displayName,
+            style: theme.textTheme.headline));
+        ret.add(
+          new ListTile(
+            leading: const Icon(Icons.email),
+            title: new Text(user.email),
+          ),
+        );
+        ret.add(
+          new ListTile(
+            leading: const Icon(Icons.phone),
+            title: new Text(user.profile.phoneNumber),
+          ),
+        );
+        ret.add(new Divider());
+        ret.add(new Text(messages.players,
+            style: theme.textTheme.subhead.copyWith(color: theme.accentColor)));
+      }
       if (UserDatabaseData.instance.players.length > 0) {
         // We have some extra players!
         UserDatabaseData.instance.players.forEach((String key, Player player) {
-          List<Widget> teamNames = new List<Widget>();
+          List<Widget> teamNames = <Widget>[];
           // List the teams they are in.
           UserDatabaseData.instance.teams.forEach((String key, Team team) {
             team.seasons.forEach((String key, Season season) {
@@ -115,7 +263,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                       ),
                       trailing: new IconButton(
                         onPressed: () {
-                          this._deletePlayer(player.uid);
+                          _deletePlayer(player);
                         },
                         icon: const Icon(Icons.delete),
                       ),
@@ -134,19 +282,31 @@ class ProfileScreenState extends State<ProfileScreen> {
           ret.add(
             new Card(
               child: new Column(
-                  children: <Widget>[
-                        new ListTile(
-                          leading: new CircleAvatar(backgroundImage: leading),
-                          trailing: new IconButton(
-                            onPressed: () {
-                              _editPlayer(player.uid);
-                            },
-                            icon: const Icon(Icons.edit),
-                          ),
-                          title: new Text(player.name),
-                        ),
-                      ] +
-                      teamNames),
+                children: <Widget>[
+                  new ListTile(
+                    leading: new CircleAvatar(backgroundImage: leading),
+                    trailing: new IconButton(
+                      onPressed: () {
+                        _editPlayer(player.uid);
+                      },
+                      icon: const Icon(Icons.edit),
+                    ),
+                    title: new Text(player.name),
+                  ),
+                  new ExpansionTile(
+                    title: new Text(
+                        messages.numberofuserforplayer(player.users.length)),
+                    initiallyExpanded: false,
+                    children: _buildUserList(context, player),
+                  ),
+                  new ExpansionTile(
+                    title: new Text(
+                        messages.numberofteamsforplayer(teamNames.length)),
+                    initiallyExpanded: false,
+                    children: teamNames,
+                  )
+                ],
+              ),
             ),
           );
         });
@@ -164,21 +324,17 @@ class ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
-        actions: <Widget>[
-          new FlatButton(
-            onPressed: this._editProfile,
-            child: new Text(
-              Messages.of(context).editbuttontext,
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(color: Colors.white),
-            ),
-          ),
-        ],
+        title: new Text(
+          widget.onlyPlayer
+              ? Messages.of(context).players
+              : Messages.of(context).title,
+        ),
       ),
+      floatingActionButton: new FloatingActionButton(
+        onPressed: _editProfile,
+        child: const Icon(Icons.edit),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: new Scrollbar(
         child: new SingleChildScrollView(
           child: new Column(

@@ -1,49 +1,131 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/databasedetails.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'cachednetworkimage.dart';
 
-class TeamImage extends Image {
-  TeamImage(String teamUid,
-      {Key key,
-      double width,
-      double height,
-      Color color,
-      BlendMode colorBlendMode,
-      BoxFit fit,
-      AlignmentGeometry alignment: Alignment.center,
-      ImageRepeat repeat: ImageRepeat.noRepeat,
-      bool matchTextDirection: false})
+class TeamImage extends StatelessWidget {
+  TeamImage(
+      {this.team,
+      this.teamUid,
+      Key key,
+      this.width = 200.0,
+      this.height = 200.0,
+      this.color,
+      this.showIcon = false,
+      this.fit = BoxFit.cover,
+      this.alignment: Alignment.center,
+      this.repeat: ImageRepeat.noRepeat,
+      this.matchTextDirection: false})
       : super(
-            image: getImageURL(teamUid),
-      key: key,
-            width: width,
-            height: height,
-            fit: fit,
-            alignment: alignment,
-            repeat: repeat,
-             matchTextDirection: matchTextDirection);
-
-  static ImageProvider getImageURL(String teamUid) {
-    if (UserDatabaseData.instance.teams.containsKey(teamUid)) {
-      String photoUrl = UserDatabaseData.instance.teams[teamUid].photoUrl;
-      if (photoUrl != null && photoUrl.isNotEmpty) {
-        return new CachedNetworkImageProvider(urlNow: photoUrl);
-      }
-    }
-    return const AssetImage("assets/images/defaultavatar.png");
+          key: key,
+        ) {
+    assert(team != null || teamUid != null);
   }
 
-  static Widget getPlaceholderImage(String teamUid, Color color, BlendMode colorBlendMode) {
-     Widget placeholder;
+  final String teamUid;
+  final Team team;
+  final double width;
+  final double height;
+  final Color color;
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+  final ImageRepeat repeat;
+  final bool matchTextDirection;
+  final bool showIcon;
 
-    if (UserDatabaseData.instance.teams.containsKey(teamUid)) {
-      Team team = UserDatabaseData.instance.teams[teamUid];
-      placeholder =
-        new Image(image: new AssetImage('assets/sports/' + team.sport.toString() + '.png'), color: color, colorBlendMode: colorBlendMode);
-      } else {
-      placeholder =  new Image(image: const AssetImage('assets/images/defaultavatar.png'), color: color, colorBlendMode: colorBlendMode);
+  ImageProvider _providerFromTeam(Team team) {
+    String photoUrl = team.photoUrl;
+    if (photoUrl != null && photoUrl.isNotEmpty) {
+      return new CachedNetworkImageProvider(urlNow: photoUrl);
     }
+    switch (team.sport) {
+      case Sport.Basketball:
+        return const AssetImage("assets/sports/Sport.Basketball.png");
+      case Sport.Soccer:
+        return const AssetImage("assets/sports/Sport.Soccer.png");
+      default:
+        break;
+    }
+    return const AssetImage("assets/images/defaultavatar2.png");
+  }
 
-    return placeholder;
+  Future<ImageProvider> get imageUrl async {
+    if (team != null) {
+      return _providerFromTeam(team);
+    }
+    // Team uid, lookup the team first.
+    Team oublicTeam = await UserDatabaseData.instance.updateModel
+        .getPublicTeamDetails(teamUid);
+    return _providerFromTeam(oublicTeam);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new FutureBuilder<Team>(
+      future: team != null
+          ? Future<Team>.value(team)
+          : UserDatabaseData.instance.updateModel.getPublicTeamDetails(teamUid),
+      builder: (BuildContext context, AsyncSnapshot<Team> snap) {
+        Widget inner;
+        if (snap.hasData &&
+            (snap.data.photoUrl != null && snap.data.photoUrl.isNotEmpty ||
+                width > 50.0 ||
+                !showIcon)) {
+          // Yay!
+          inner = ClipOval(
+            child: SizedBox(
+              width: width < height ? width : height,
+              height: width < height ? width : height,
+              child: FittedBox(
+                fit: fit,
+                child: FadeInImage(
+                  fadeInDuration: Duration(milliseconds: 200),
+                  fadeOutDuration: Duration(milliseconds: 200),
+                  image: _providerFromTeam(snap.data),
+                  alignment: alignment,
+                  repeat: repeat,
+                  matchTextDirection: matchTextDirection,
+                  placeholder: AssetImage("assets/images/defaultavatar2.png"),
+                ),
+              ),
+            ),
+          );
+        } else {
+          inner = const Icon(Icons.group);
+        }
+        return Container(
+          color: color,
+          height: height,
+          width: width,
+          alignment: alignment,
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 200),
+            child: inner,
+          ),
+        );
+      },
+    );
+  }
+
+  static ImageProvider getImageURL(Team team) {
+    if (team == null) {
+      return const AssetImage("assets/images/defaultavatar2.png");
+    }
+    String photoUrl = team.photoUrl;
+    if (photoUrl != null && photoUrl.isNotEmpty) {
+      return new CachedNetworkImageProvider(urlNow: photoUrl);
+    }
+    switch (team.sport) {
+      case Sport.Basketball:
+        return const AssetImage("assets/sports/Sport.Basketball.png");
+      case Sport.Soccer:
+        return const AssetImage("assets/sports/Sport.Soccer.png");
+      default:
+        break;
+    }
+    return const AssetImage("assets/images/defaultavatar2.png");
   }
 }
