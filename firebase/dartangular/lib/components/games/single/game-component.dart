@@ -3,8 +3,6 @@ import 'package:angular_router/angular_router.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'dart:async';
 import 'game-display-component.dart';
-import 'package:google_maps/google_maps.dart';
-import 'dart:html';
 
 @Component(
   selector: 'single-game',
@@ -20,7 +18,6 @@ import 'dart:html';
 class SingleGameComponent implements OnInit, OnActivate, OnDestroy {
   Game game;
   String _curGameId;
-  final StreamController<Game> _controller = new StreamController<Game>();
   StreamSubscription<UpdateReason> _sub;
 
   SingleGameComponent();

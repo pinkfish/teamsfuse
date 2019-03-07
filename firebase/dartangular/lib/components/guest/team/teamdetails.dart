@@ -37,7 +37,7 @@ class TeamDetailsComponent implements OnActivate {
   TeamDetailsComponent(this._location, this._router)
       : needLogin = false,
         _algolia =
-            new Algolia(Constants.kAlgoliaAppId, Constants.kAlgoliaKey) {}
+            new Algolia(Constants.kAlgoliaAppId, Constants.kAlgoliaKey);
 
   @override
   void onActivate(RouterState previous, RouterState current) async {

@@ -131,8 +131,10 @@ class StorageUploadTask extends wfs.StorageUploadTaskWrapper {
 
   @override
   Future<wfs.UploadTaskSnapshotWrapper> get future {
-    return _task.future.then((st.UploadTaskSnapshot f) {
-      return new wfs.UploadTaskSnapshotWrapper(downloadUrl: f.downloadUrl);
+    return _task.onComplete.then((st.StorageTaskSnapshot f) async {
+      return new wfs.UploadTaskSnapshotWrapper(
+          downloadUrl:
+              Uri.base.resolve((await f.ref.getDownloadURL() as String)));
     });
   }
 }

@@ -30,7 +30,7 @@ import 'dart:async';
     'package:angular_components/app_layout/layout.scss.css',
   ],
 )
-class GameDisplayComponent implements AfterViewInit, OnInit {
+class GameDisplayComponent implements AfterViewInit, OnInit, OnDestroy {
   @Input()
   Game game;
   String opponent = "";
@@ -83,6 +83,13 @@ class GameDisplayComponent implements AfterViewInit, OnInit {
     updateGame();
   }
 
+
+  @override
+  void ngOnDestroy() {
+    _teamSub?.cancel();
+    _gameSub?.cancel();
+  }
+
   void updateGame() {
     if (UserDatabaseData.instance.teams.containsKey(game.teamUid) &&
         UserDatabaseData.instance.teams[game.teamUid].opponents
@@ -117,6 +124,7 @@ class GameDisplayComponent implements AfterViewInit, OnInit {
       case Attendance.Yes:
         return "tick";
     }
+    return "help_outline";
   }
 
   Team get team {

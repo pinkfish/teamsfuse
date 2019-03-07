@@ -45,7 +45,7 @@ class SqlData implements PersistenData {
   }
 
   void _initializeDatabase(VersionChangeEvent e) {
-    Database db = (e.target as Request).result;
+    Database db = e.target.result;
 
     for (String table in kTables) {
       print('Creating table $table');
@@ -188,5 +188,6 @@ class SqlData implements PersistenData {
           .open('myIndexedDB', version: 1, onUpgradeNeeded: _initializeDatabase)
           .then(_loadFromDB);
     }
+    return null;
   }
 }

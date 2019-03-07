@@ -46,7 +46,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
           widget.game.result.scores[widget.game.result.currentPeriod];
     }
     GamePeriod periodZero = new GamePeriod(
-        type: widget.game.result.currentPeriod.type, periodNumber: 0);
+        widget.game.result.currentPeriod.type, periodNumber: 0);
     if (_currentPeriodResults == null) {
       _currentPeriodResults = widget.game.result.scores[periodZero];
     }
@@ -82,7 +82,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
   void _updateGame(UpdateReason reason) {
     // Change scores and timers.
     GamePeriod period = new GamePeriod(
-        type: widget.game.result.currentPeriod.type, periodNumber: 0);
+        widget.game.result.currentPeriod.type, periodNumber: 0);
     if (widget.game.result.scores.containsKey(period)) {
       _ptsForState.currentState
           .animateInt(widget.game.result.scores[period].score.ptsFor.toInt());
@@ -116,11 +116,11 @@ class _ScoreDetailsState extends State<ScoreDetails> {
 
   void _setPeriodType(GamePeriod newPeriod) {
     GamePeriod scoreUpdate = new GamePeriod(
-        type: _currentPeriodResults.period.type, periodNumber: 0);
+        _currentPeriodResults.period.type, periodNumber: 0);
     _details.scores[scoreUpdate] = _currentPeriodResults;
     // Create a new score type.
     GamePeriod newScoreUpdate =
-        new GamePeriod(type: newPeriod.type, periodNumber: 0);
+        new GamePeriod(newPeriod.type, periodNumber: 0);
     if (!_details.scores.containsKey(newScoreUpdate)) {
       _details.scores[newScoreUpdate] = new GameResultPerPeriod(
         period: newScoreUpdate,
@@ -203,7 +203,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
           _currentPeriodResults.score.ptsFor = _ptsFor;
         }
         _currentPeriodResults.period =
-            new GamePeriod(type: GamePeriodType.Regulation);
+            new GamePeriod(GamePeriodType.Regulation);
         _details.scores[_currentPeriodResults.period] = _currentPeriodResults;
         _details.inProgress = GameInProgress.Final;
         _details.result = gameResult;
@@ -255,7 +255,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         _details.time.currentPeriodStart = null;
         _details.time.currentOffset = new Duration();
         _details.currentPeriod =
-            new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 1);
+            new GamePeriod(GamePeriodType.Regulation, periodNumber: 1);
         _writeLog(GameLogType.PeriodStart);
         widget.game.updateFirestoreResult(_details);
       });
@@ -297,7 +297,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         _details.time.currentPeriodStart = null;
         _details.time.currentOffset = new Duration();
         _details.currentPeriod =
-            new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 1);
+            new GamePeriod(GamePeriodType.Regulation, periodNumber: 1);
         _writeLog(GameLogType.PeriodStart);
         widget.game.updateFirestoreResult(_details);
       });

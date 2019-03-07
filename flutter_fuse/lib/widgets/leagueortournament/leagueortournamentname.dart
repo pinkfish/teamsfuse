@@ -9,12 +9,12 @@ class LeagueOrTournamentName extends StatelessWidget {
   final String leagueOrTournamentUid;
   final TextStyle style;
   final TextAlign textAlign;
+  final String leagueOrTournamentDivisonUid;
 
   LeagueOrTournamentName(this.leagueOrTournamentUid,
-      {this.style, this.textAlign});
+      {this.leagueOrTournamentDivisonUid, this.style, this.textAlign});
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _nameFuture() {
     return new FutureBuilder<LeagueOrTournament>(
         future: UserDatabaseData.instance
             .getLegueOrTournament(leagueOrTournamentUid),
@@ -26,6 +26,7 @@ class LeagueOrTournamentName extends StatelessWidget {
               data.data.name,
               style: style,
               textAlign: textAlign,
+              overflow: TextOverflow.ellipsis,
             );
           } else {
             inner = Text(
@@ -39,5 +40,52 @@ class LeagueOrTournamentName extends StatelessWidget {
             duration: Duration(milliseconds: 300),
           );
         });
+  }
+
+  Widget _divisionFuture() {
+    return new FutureBuilder<LeagueOrTournamentDivison>(
+        future: UserDatabaseData.instance.updateModel
+            .getLeagueDivisionData(leagueOrTournamentDivisonUid),
+        builder: (BuildContext context,
+            AsyncSnapshot<LeagueOrTournamentDivison> data) {
+          Widget inner;
+          print('Loaded $leagueOrTournamentDivisonUid');
+
+          if (data.hasData) {
+            inner = Text(
+              data.data.name,
+              style: style,
+              textAlign: textAlign,
+              overflow: TextOverflow.ellipsis,
+            );
+          } else {
+            inner = Text(
+              "",
+              style: style,
+              textAlign: textAlign,
+            );
+          }
+          return AnimatedSwitcher(
+            child: inner,
+            duration: Duration(milliseconds: 300),
+          );
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (leagueOrTournamentDivisonUid == null) {
+      return  _nameFuture();
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        _divisionFuture(),
+        SizedBox(
+          width: 15.0,
+        ),
+        Flexible(child: _nameFuture()),
+      ],
+    );
   }
 }

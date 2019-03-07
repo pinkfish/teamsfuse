@@ -6,7 +6,7 @@ class GamePeriod {
   final GamePeriodType type;
   final num periodNumber;
 
-  const GamePeriod({this.type, this.periodNumber = 0}) : assert(type != null);
+  const GamePeriod(this.type, {this.periodNumber = 0});
 
   GamePeriod.copy(GamePeriod per)
       : type = per.type,
@@ -40,9 +40,9 @@ class GamePeriod {
         bits[0] = "Regulation";
       }
       type = GamePeriodType.values.firstWhere(
-              (GamePeriodType val) => val.toString().substring(15) == bits[0]);
+          (GamePeriodType val) => val.toString().substring(15) == bits[0]);
       periodNumber = getNum(bits[1]);
-      return new GamePeriod(type: type, periodNumber: periodNumber);
+      return new GamePeriod(type, periodNumber: periodNumber);
     } else {
       // Old style.
       switch (str) {
@@ -63,20 +63,17 @@ class GamePeriod {
           periodNumber = 0;
           break;
       }
-      return new GamePeriod(type: type, periodNumber: periodNumber);
+      return new GamePeriod(type, periodNumber: periodNumber);
     }
   }
 
   String toString() => "GamePeriod [$type $periodNumber]";
 
   static const GamePeriod regulation =
-  const GamePeriod(type: GamePeriodType.Regulation, periodNumber: 0);
-  static const GamePeriod overtime =
-  const GamePeriod(type: GamePeriodType.Overtime, periodNumber: 0);
-  static const GamePeriod penalty =
-  const GamePeriod(type: GamePeriodType.Penalty, periodNumber: 0);
+      const GamePeriod(GamePeriodType.Regulation);
+  static const GamePeriod overtime = const GamePeriod(GamePeriodType.Overtime);
+  static const GamePeriod penalty = const GamePeriod(GamePeriodType.Penalty);
 }
-
 
 class GamePeriodTime {
   num _currentPeriodStart; // Start of the current period.
@@ -88,9 +85,9 @@ class GamePeriodTime {
 
   GamePeriodTime(
       {DateTime currentPeriodStart,
-        this.currentOffset,
-        this.defaultPeriodDuration,
-        this.timeCountUp})
+      this.currentOffset,
+      this.defaultPeriodDuration,
+      this.timeCountUp})
       : _currentPeriodStart = currentPeriodStart?.millisecondsSinceEpoch;
 
   GamePeriodTime.copy(GamePeriodTime copy) {
@@ -102,7 +99,7 @@ class GamePeriodTime {
 
   DateTime get currentPeriodStart =>
       _currentPeriodStart != null && _currentPeriodStart != 0
-          ? new DateTime.fromMillisecondsSinceEpoch(_currentPeriodStart)
+          ? new DateTime.fromMillisecondsSinceEpoch(_currentPeriodStart.toInt())
           : null;
   set currentPeriodStart(DateTime tim) => tim != null
       ? _currentPeriodStart = tim.millisecondsSinceEpoch
@@ -146,7 +143,7 @@ class GamePeriodTime {
     currentOffset = new Duration(milliseconds: getNum(data[_OFFSET]));
     timeCountUp = getBool(data[_TIMECOUNTUP]);
     defaultPeriodDuration =
-    new Duration(milliseconds: getNum(data[_DEFAULTDURATION]));
+        new Duration(milliseconds: getNum(data[_DEFAULTDURATION]));
   }
 
   Map<String, dynamic> toJSON() {

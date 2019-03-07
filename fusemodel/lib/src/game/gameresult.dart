@@ -35,7 +35,7 @@ class GameResultPerPeriod {
 
 class GameResultDetails extends GameResultSharedDetails {
   CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> scores =
-  new CanonicalizedMap((GamePeriod p) => p.toIndex());
+      new CanonicalizedMap((GamePeriod p) => p.toIndex());
   GameResult result;
   GameInProgress inProgress;
   GamePeriod currentPeriod; // Null until the game started.
@@ -45,8 +45,7 @@ class GameResultDetails extends GameResultSharedDetails {
   GameResultDetails() {
     result = GameResult.Unknown;
     inProgress = GameInProgress.NotStarted;
-    GamePeriod per =
-    new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 0);
+    GamePeriod per = new GamePeriod(GamePeriodType.Regulation);
     scores[per] = new GameResultPerPeriod(
         period: per, score: new GameScore(ptsAgainst: 0, ptsFor: 0));
   }
@@ -54,7 +53,7 @@ class GameResultDetails extends GameResultSharedDetails {
   GameResultDetails.copy(GameResultDetails copy) {
     copy.scores.values.forEach((GameResultPerPeriod per) {
       this.scores[new GamePeriod.copy(per.period)] =
-      new GameResultPerPeriod.copy(per);
+          new GameResultPerPeriod.copy(per);
     });
     result = copy.result;
     inProgress = copy.inProgress;
@@ -77,11 +76,11 @@ class GameResultDetails extends GameResultSharedDetails {
     if (data.containsKey(_SCORES)) {
       Map<dynamic, dynamic> scoreData = data[_SCORES];
       CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> newResults =
-      new CanonicalizedMap((GamePeriod p) => p.toIndex());
+          new CanonicalizedMap((GamePeriod p) => p.toIndex());
       scoreData.forEach((dynamic periodStd, dynamic data) {
         GamePeriod period = GamePeriod.fromIndex(periodStd);
         GameResultPerPeriod newResult =
-        new GameResultPerPeriod.fromJSON(period, data);
+            new GameResultPerPeriod.fromJSON(period, data);
 
         newResults[period] = newResult;
       });
@@ -142,6 +141,7 @@ class GameResultDetails extends GameResultSharedDetails {
       scores.containsKey(GamePeriod.regulation)
           ? scores[GamePeriod.regulation]
           : null;
+
   ///
   /// Result for the overtime period.
   /// (can be null!)
@@ -150,6 +150,7 @@ class GameResultDetails extends GameResultSharedDetails {
       scores.containsKey(GamePeriod.overtime)
           ? scores[GamePeriod.overtime]
           : null;
+
   ///
   /// Result for the penalty period.
   /// (can be null!)
@@ -162,8 +163,7 @@ class GameResultDetails extends GameResultSharedDetails {
   ///
   /// If this game is currently finished.
   ///
-  bool get isGameFinished =>
-      inProgress == GameInProgress.Final;
+  bool get isGameFinished => inProgress == GameInProgress.Final;
 
   @override
   String toString() {

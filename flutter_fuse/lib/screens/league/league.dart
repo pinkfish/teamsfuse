@@ -80,7 +80,7 @@ class LeagueScreen extends StatelessWidget {
       appBar: new AppBar(
         title: new LeagueOrTournamentName(leagueUid),
         actions: actions,
-      ),
+    ),
       drawer: new FusedDrawer(DrawerMode.league),
       floatingActionButton: fab,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

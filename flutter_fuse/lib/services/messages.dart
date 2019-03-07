@@ -1183,7 +1183,7 @@ class Messages {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = new GameResultPerPeriod(
-          period: new GamePeriod(type: GamePeriodType.Regulation),
+          period: new GamePeriod(GamePeriodType.Regulation),
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
     if (result.overtimeResult != null) {
@@ -1221,7 +1221,7 @@ class Messages {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = new GameResultPerPeriod(
-          period: new GamePeriod(type: GamePeriodType.Regulation),
+          period: new GamePeriod(GamePeriodType.Regulation),
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
     if (result.overtimeResult != null) {
@@ -1261,7 +1261,7 @@ class Messages {
       finalScore = result.regulationResult;
     } else {
       finalScore = new GameResultPerPeriod(
-          period: new GamePeriod(type: GamePeriodType.Regulation),
+          period: new GamePeriod(GamePeriodType.Regulation),
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
     if (result.overtimeResult != null) {
@@ -1363,7 +1363,7 @@ class Messages {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = new GameResultPerPeriod(
-          period: new GamePeriod(type: GamePeriodType.Regulation),
+          period: GamePeriod.regulation,
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
     if (result.overtimeResult != null) {
@@ -1465,12 +1465,9 @@ class Messages {
   }
 
   String finalofficalscorebody(GameOfficialResults result) {
-    GamePeriod regulationPeriod =
-        new GamePeriod(type: GamePeriodType.Regulation, periodNumber: 0);
-    GamePeriod overtimePeriod =
-        new GamePeriod(type: GamePeriodType.Overtime, periodNumber: 0);
-    GamePeriod penaltyPeriod =
-        new GamePeriod(type: GamePeriodType.Penalty, periodNumber: 0);
+    GamePeriod regulationPeriod = GamePeriod.regulation;
+    GamePeriod overtimePeriod = GamePeriod.overtime;
+    GamePeriod penaltyPeriod = GamePeriod.penalty;
 
     GameResultPerPeriod regulationPeriodResult =
         result.scores[regulationPeriod];

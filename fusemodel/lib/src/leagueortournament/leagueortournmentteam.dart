@@ -4,7 +4,6 @@ import '../userdatabasedata.dart';
 import 'dart:async';
 import '../invite/invitetoleagueteam.dart';
 import '../game/gamesharedata.dart';
-import '../userdatabasedata.dart';
 import '../databaseupdatemodel.dart';
 
 ///

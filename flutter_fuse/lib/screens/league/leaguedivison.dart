@@ -22,8 +22,6 @@ class LeagueDivisonScreen extends StatefulWidget {
 class _LeagueDivisonScreenState extends State<LeagueDivisonScreen> {
   int _tabIndex = 0;
 
-  void _onEditLeague(BuildContext context) {}
-
   Widget _buildBody() {
     switch (_tabIndex) {
       case 0:
@@ -41,25 +39,28 @@ class _LeagueDivisonScreenState extends State<LeagueDivisonScreen> {
       case 2:
         return Text(Messages.of(context).unknown);
     }
-    return SizedBox(width: 0.0,);
+    return SizedBox(
+      width: 0.0,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     FloatingActionButton fab;
+    List<Widget> actions = <Widget>[];
+
     if (UserDatabaseData.instance.leagueOrTournments
         .containsKey(widget.leagueUid)) {
       if (UserDatabaseData.instance.leagueOrTournments[widget.leagueUid]
-          .isAdmin()) {
-        fab = new FloatingActionButton(
-          onPressed: () => _onEditLeague(context),
-          child: new Icon(Icons.edit),
-        );
-      }
+          .isAdmin()) {}
     }
     return new Scaffold(
       appBar: new AppBar(
-        title: new LeagueOrTournamentName(widget.leagueUid),
+        title: new LeagueOrTournamentName(
+          widget.leagueUid,
+          leagueOrTournamentDivisonUid: widget.leagueDivisonUid,
+        ),
+        actions: actions,
       ),
       floatingActionButton: fab,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

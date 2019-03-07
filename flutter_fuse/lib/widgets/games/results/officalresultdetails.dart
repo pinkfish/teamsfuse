@@ -55,8 +55,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
               .toString());
     }
 
-    _overtimePeriod = _results.scores.containsKey(
-        GamePeriod(type: GamePeriodType.Overtime, periodNumber: 0));
+    _overtimePeriod = _results.scores.containsKey(GamePeriod.overtime);
     if (_overtimePeriod) {
       _overtimeHomePts = TextEditingController(
           text: _results.scores[GamePeriod.overtime].score.ptsFor.toString());
@@ -65,7 +64,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
               _results.scores[GamePeriod.overtime].score.ptsAgainst.toString());
     }
     _penaltyPeriod = _results.scores
-        .containsKey(GamePeriod(type: GamePeriodType.Penalty, periodNumber: 0));
+        .containsKey(GamePeriod.penalty);
     if (_penaltyPeriod) {
       _penaltyHomePts = TextEditingController(
           text: _results.scores[GamePeriod.penalty].score.ptsFor.toString());

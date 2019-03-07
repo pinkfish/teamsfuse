@@ -100,18 +100,16 @@ class PasswordCheckValidator implements Validator {
 
   @Input('passwordCheck')
   set minLength(String value) {
-     passwordCheckAttr = value;
+    passwordCheckAttr = value;
   }
 
   @override
   Map<String, dynamic> validate(AbstractControl c) {
     final v = c?.value?.toString();
-    if (v == null || v == '') return null;
+    if (v == null || v == '') {
+      return null;
+    }
     print('Checking $v $passwordCheckAttr');
-    return v != passwordCheckAttr
-        ? {
-            'pattern': 'Password must match!'
-          }
-        : null;
+    return v != passwordCheckAttr ? {'pattern': 'Password must match!'} : null;
   }
 }

@@ -18,6 +18,7 @@ dependencies:
   timezone:
     git:
       url: "https://github.com/pinkfish/timezone.git"
+  service_worker: any
   fusemodel:
     path: ../../fusemodel
 
