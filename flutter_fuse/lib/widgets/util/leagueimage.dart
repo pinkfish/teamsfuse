@@ -1,25 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'cachednetworkimage.dart';
 import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+import 'cachednetworkimage.dart';
 
 ///
 /// Image for the league, handling the fade in/out and caching of the
 /// image itself in the local cache.
 ///
 class LeagueImage extends StatelessWidget {
-  final String leagueOrTournamentUid;
-  final LeagueOrTournament leagueOrTournament;
-  final double width;
-  final double height;
-  final Color color;
-  final BoxFit fit;
-  final AlignmentGeometry alignment;
-  final ImageRepeat repeat;
-  final bool matchTextDirection;
-  final BlendMode colorBlendMode;
-
   LeagueImage(
       {this.leagueOrTournamentUid,
       this.leagueOrTournament,
@@ -35,6 +26,17 @@ class LeagueImage extends StatelessWidget {
       : super(
           key: key,
         );
+
+  final String leagueOrTournamentUid;
+  final LeagueOrTournament leagueOrTournament;
+  final double width;
+  final double height;
+  final Color color;
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+  final ImageRepeat repeat;
+  final bool matchTextDirection;
+  final BlendMode colorBlendMode;
 
   ImageProvider _providerFromLeague(LeagueOrTournament league) {
     String photoUrl = league.photoUrl;

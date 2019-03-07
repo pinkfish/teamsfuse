@@ -4,17 +4,16 @@ import 'package:flutter_fuse/widgets/teams/teamsettings.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class TeamSettingsScreen extends StatelessWidget {
+  TeamSettingsScreen(this.teamUid);
 
   final String teamUid;
-  TeamSettingsScreen(this.teamUid);
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(
-          Messages
-              .of(context)
+          Messages.of(context)
               .titlewith(UserDatabaseData.instance.teams[teamUid].name),
         ),
       ),

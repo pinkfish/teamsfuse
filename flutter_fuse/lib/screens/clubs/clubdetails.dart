@@ -1,15 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/clubs/clubdetails.dart';
 import 'package:flutter_fuse/widgets/clubs/clubmembers.dart';
 import 'package:flutter_fuse/widgets/clubs/clubteams.dart';
-import 'dart:async';
+import 'package:fusemodel/fusemodel.dart';
 
 class ClubDetailsScreen extends StatefulWidget {
-  final String clubUid;
-
   ClubDetailsScreen(this.clubUid);
+
+  final String clubUid;
 
   @override
   ClubDetailsScreenState createState() {
@@ -18,10 +19,10 @@ class ClubDetailsScreen extends StatefulWidget {
 }
 
 class ClubDetailsScreenState extends State<ClubDetailsScreen> {
+  ClubDetailsScreenState();
+
   int _tabIndex = 1;
   StreamSubscription<UpdateReason> _clubUpdates;
-
-  ClubDetailsScreenState();
 
   @override
   void initState() {

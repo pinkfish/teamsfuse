@@ -1,9 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'cachednetworkimage.dart';
 import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+import 'cachednetworkimage.dart';
 
 /// Some overlay text onto the team to say home/away.
 enum HomeAwayOverlay { home, away, none }
@@ -14,17 +16,6 @@ enum HomeAwayOverlay { home, away, none }
 /// while loading.
 ///
 class LeagueTeamImage extends StatelessWidget {
-  final String leagueOrTeamUid;
-  final LeagueOrTournamentTeam team;
-  final double width;
-  final double height;
-  final BoxFit fit;
-  final Color color;
-  final AlignmentGeometry alignment;
-  final ImageRepeat repeat;
-  final bool matchTextDirection;
-  final HomeAwayOverlay overlay;
-
   LeagueTeamImage(
       {this.team,
       this.leagueOrTeamUid,
@@ -40,6 +31,17 @@ class LeagueTeamImage extends StatelessWidget {
       : super(
           key: key,
         );
+
+  final String leagueOrTeamUid;
+  final LeagueOrTournamentTeam team;
+  final double width;
+  final double height;
+  final BoxFit fit;
+  final Color color;
+  final AlignmentGeometry alignment;
+  final ImageRepeat repeat;
+  final bool matchTextDirection;
+  final HomeAwayOverlay overlay;
 
   ImageProvider _providerFromTeam(Team team) {
     if (team == null) {

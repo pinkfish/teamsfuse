@@ -43,12 +43,12 @@ class FirebaseMessaging {
     if (!_platform.isIOS) {
       return;
     }
-    _channel.invokeMethod(
+    _channel.invokeMethod<dynamic>(
         'requestNotificationPermissions', iosSettings.toMap());
   }
 
   final StreamController<IosNotificationSettings> _iosSettingsStreamController =
-  new StreamController<IosNotificationSettings>.broadcast();
+      new StreamController<IosNotificationSettings>.broadcast();
 
   /// Stream that fires when the user changes their notification settings.
   ///
@@ -67,11 +67,11 @@ class FirebaseMessaging {
     _onLaunch = onLaunch;
     _onResume = onResume;
     _channel.setMethodCallHandler(_handleMethod);
-    _channel.invokeMethod('configure');
+    _channel.invokeMethod<void>('configure');
   }
 
   final StreamController<String> _tokenStreamController =
-  new StreamController<String>.broadcast();
+      new StreamController<String>.broadcast();
 
   /// Fires when a new FCM token is generated.
   Stream<String> get onTokenRefresh {
@@ -90,18 +90,18 @@ class FirebaseMessaging {
   /// [topic] must match the following regular expression:
   /// "[a-zA-Z0-9-_.~%]{1,900}".
   void subscribeToTopic(String topic) {
-    _channel.invokeMethod('subscribeToTopic', topic);
+    _channel.invokeMethod<String>('subscribeToTopic', topic);
   }
 
   /// Unsubscribe from topic in background.
   void unsubscribeFromTopic(String topic) {
-    _channel.invokeMethod('unsubscribeFromTopic', topic);
+    _channel.invokeMethod<String>('unsubscribeFromTopic', topic);
   }
 
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onToken":
-        final String token = call.arguments;
+        final String token = call.arguments as String;
         if (_token != token) {
           _token = token;
           _tokenStreamController.add(_token);
@@ -112,11 +112,14 @@ class FirebaseMessaging {
             call.arguments.cast<String, bool>() as Map<String, bool>));
         return null;
       case "onMessage":
-        return _onMessage(call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
+        return _onMessage(
+            call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
       case "onLaunch":
-        return _onLaunch(call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
+        return _onLaunch(
+            call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
       case "onResume":
-        return _onResume(call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
+        return _onResume(
+            call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
       default:
         throw new UnsupportedError("Unrecognized JSON message");
     }
@@ -124,9 +127,10 @@ class FirebaseMessaging {
 }
 
 class IosNotificationSettings {
-  final bool sound;
-  final bool alert;
-  final bool badge;
+  IosNotificationSettings._fromMap(Map<String, bool> settings)
+      : sound = settings['sound'],
+        alert = settings['alert'],
+        badge = settings['badge'];
 
   const IosNotificationSettings({
     this.sound: true,
@@ -134,10 +138,9 @@ class IosNotificationSettings {
     this.badge: true,
   });
 
-  IosNotificationSettings._fromMap(Map<String, bool> settings)
-      : sound = settings['sound'],
-        alert = settings['alert'],
-        badge = settings['badge'];
+  final bool sound;
+  final bool alert;
+  final bool badge;
 
   @visibleForTesting
   Map<String, dynamic> toMap() {

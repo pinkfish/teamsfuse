@@ -1,27 +1,28 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'teamtile.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/form/clubteampicker.dart';
+import 'package:flutter_fuse/widgets/form/teampicker.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+import 'teamtile.dart';
 
 ///
 /// Selects the team to use for adding a game/event/whatever.  Will select
 /// between clubs/teams/leagues.
 ///
 class TeamSelection extends StatefulWidget {
+  TeamSelection(
+      {@required this.onChanged,
+      @required this.initialTeam,
+      @required this.club});
+
   final ValueChanged<Team> onChanged;
 
   /// The initialTeam
   final Team initialTeam;
 
   final Club club;
-
-  TeamSelection(
-      {@required this.onChanged,
-      @required this.initialTeam,
-      @required this.club});
 
   @override
   _TeamSelectionState createState() {
@@ -48,8 +49,7 @@ class _TeamSelectionState extends State<TeamSelection> {
               child: new ListTile(
                 title: new Text(
                   Messages.of(context).team,
-                  style: Theme
-                      .of(context)
+                  style: Theme.of(context)
                       .textTheme
                       .caption
                       .copyWith(color: Theme.of(context).hintColor),

@@ -1,20 +1,20 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class ClubPicker extends StatelessWidget {
-  final ValueChanged<String> onChanged;
-  final String clubUid;
-  final bool adminOnly;
-  final bool selectedTitle;
-
   ClubPicker({
     @required this.onChanged,
     this.clubUid,
     this.adminOnly = true,
     this.selectedTitle = false,
   });
+
+  final ValueChanged<String> onChanged;
+  final String clubUid;
+  final bool adminOnly;
+  final bool selectedTitle;
 
   static const String noClub = "noClub";
 
@@ -45,8 +45,7 @@ class ClubPicker extends StatelessWidget {
       decoration: new InputDecoration(
         labelText: Messages.of(context).club,
         labelStyle: selectedTitle
-            ? Theme
-                .of(context)
+            ? Theme.of(context)
                 .textTheme
                 .subhead
                 .copyWith(fontWeight: FontWeight.bold)

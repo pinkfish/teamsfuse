@@ -1,17 +1,18 @@
-import 'package:fusemodel/fusemodel.dart';
 import 'dart:async';
-import 'package:flutter_fuse/services/messages.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 // Creates the text for the game.  THis is used by the game card and other
 // places to display details about the game without being dependent on
 // flutter.
 class GameNotification {
+  GameNotification(this.game, this.team);
+
   final Game game;
   final Team team;
-
-  GameNotification(this.game, this.team);
 
   Future<int> showNotification(
       int id,

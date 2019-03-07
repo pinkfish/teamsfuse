@@ -9,5 +9,4 @@ import 'injector_prod.template.dart' as self;
   const ClassProvider(Client, useClass: BrowserClient),
   routerProviders,
 ])
-final InjectorFactory injector = self.injector$Injector;
-
+final InjectorFactory injector = self.injector$Injector as InjectorFactory;

@@ -10,5 +10,4 @@ const useHashLS = false;
   const ClassProvider(Client, useClass: BrowserClient),
   routerProvidersHash,
 ])
-final InjectorFactory injector = self.injector$Injector;
-
+final InjectorFactory injector = self.injector$Injector as InjectorFactory;

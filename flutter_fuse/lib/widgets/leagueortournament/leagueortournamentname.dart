@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 ///
 /// Puts the name of the league or tournament in the UX
 ///
 class LeagueOrTournamentName extends StatelessWidget {
+  LeagueOrTournamentName(this.leagueOrTournamentUid,
+      {this.leagueOrTournamentDivisonUid, this.style, this.textAlign});
+
   final String leagueOrTournamentUid;
   final TextStyle style;
   final TextAlign textAlign;
   final String leagueOrTournamentDivisonUid;
 
-  LeagueOrTournamentName(this.leagueOrTournamentUid,
-      {this.leagueOrTournamentDivisonUid, this.style, this.textAlign});
 
   Widget _nameFuture() {
     return new FutureBuilder<LeagueOrTournament>(

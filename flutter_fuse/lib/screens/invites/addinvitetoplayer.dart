@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 // Shows the current invites pending for this user.
 class AddInviteToPlayerScreen extends StatefulWidget {
-  final String _playerUid;
-
   AddInviteToPlayerScreen(this._playerUid);
+
+  final String _playerUid;
 
   @override
   _AddInviteToPlayerScreenState createState() {
@@ -22,7 +22,6 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
 
   static const String newAddInvite = 'new';
 
-
   void showInSnackBar(String value) {
     _scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(value)));
@@ -33,19 +32,16 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
     super.initState();
     _player = UserDatabaseData.instance.players[widget._playerUid];
     // Default to empty.
-    _invite = new InviteToPlayer(playerName: _player.name, playerUid: widget._playerUid, email: '');
-   }
-
-  @override
-  void dispose() {
-    super.dispose();
+    _invite = new InviteToPlayer(
+        playerName: _player.name, playerUid: widget._playerUid, email: '');
   }
 
   void _savePressed() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       UserDatabaseData.instance.players[_invite.playerUid]
-          .inviteUser(email: _invite.email).then((void e) {
+          .inviteUser(email: _invite.email)
+          .then((void e) {
         Navigator.pop(context);
       }).catchError((dynamic e) {
         print(e);
@@ -69,8 +65,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
             },
             child: new Text(
               Messages.of(context).savebuttontext,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .subhead
                   .copyWith(color: Colors.white),

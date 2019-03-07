@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/services/map.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
+import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
+
 import 'editformbase.dart';
 
 class TrainingEditForm extends StatefulWidget {
-  final Game game;
-
   TrainingEditForm(
       {@required this.game, @required GlobalKey<TrainingEditFormState> key})
       : super(key: key);
+
+  final Game game;
 
   @override
   TrainingEditFormState createState() {
@@ -58,7 +59,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
       setState(() {
         widget.game.sharedData.place.name = place.details.name;
         widget.game.sharedData.place.address = place.details.address;
-        widget.game.sharedData.place.longitude = place.details.location.longitude;
+        widget.game.sharedData.place.longitude =
+            place.details.location.longitude;
         widget.game.sharedData.place.latitude = place.details.location.latitude;
         place.loc.then((Location location) {
           widget.game.sharedData.timezone = location.name;
@@ -89,8 +91,13 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
       end.add(new Duration(days: 1));
     }
-    widget.game.sharedData.endTime = new TZDateTime(getLocation(widget.game.sharedData.timezone),
-            end.year, end.month, end.day, end.hour, end.minute)
+    widget.game.sharedData.endTime = new TZDateTime(
+            getLocation(widget.game.sharedData.timezone),
+            end.year,
+            end.month,
+            end.day,
+            end.hour,
+            end.minute)
         .millisecondsSinceEpoch;
     widget.game.sharedData.endTime = _atEnd.millisecondsSinceEpoch;
     return widget.game;
@@ -154,9 +161,10 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                   title: new Text(widget.game.sharedData.place.name == null
                       ? messages.unknown
                       : widget.game.sharedData.place.name),
-                  subtitle: new Text(widget.game.sharedData.place.address == null
-                      ? messages.unknown
-                      : widget.game.sharedData.place.address),
+                  subtitle: new Text(
+                      widget.game.sharedData.place.address == null
+                          ? messages.unknown
+                          : widget.game.sharedData.place.address),
                 ),
                 new EnsureVisibleWhenFocused(
                   focusNode: _focusNodePlaceNotes,

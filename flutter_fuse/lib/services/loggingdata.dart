@@ -1,23 +1,12 @@
-import 'package:package_info/package_info.dart';
-import 'package:device_info/device_info.dart';
-import 'package:flutter/material.dart';
-import 'package:sentry/sentry.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'dart:io';
 
+import 'package:device_info/device_info.dart';
+import 'package:flutter/material.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:package_info/package_info.dart';
+import 'package:sentry/sentry.dart';
+
 class LoggingData extends LoggingDataBase {
-  static LoggingData instance = new LoggingData();
-
-  Map<String, dynamic> extra = <String, dynamic>{};
-  Map<String, String> tags = <String, String>{};
-  PackageInfo packageInfo;
-  bool realDevice = true;
-  bool debugMode = false;
-
-  final SentryClient sentry = new SentryClient(
-      dsn:
-      'https://5691b440eb64430d9ba2917166fa17a1:7978cf6a0a5a4f7ab7702a51f524620a@sentry.io/1200691');
-
   LoggingData() {
     assert(debugMode = true);
     DeviceInfoPlugin plugin = new DeviceInfoPlugin();
@@ -87,6 +76,17 @@ class LoggingData extends LoggingDataBase {
     });
   }
 
+  static LoggingData instance = new LoggingData();
+
+  Map<String, dynamic> extra = <String, dynamic>{};
+  Map<String, String> tags = <String, String>{};
+  PackageInfo packageInfo;
+  bool realDevice = true;
+  bool debugMode = false;
+
+  final SentryClient sentry = new SentryClient(
+      dsn:
+          'https://5691b440eb64430d9ba2917166fa17a1:7978cf6a0a5a4f7ab7702a51f524620a@sentry.io/1200691');
 
   set lastPath(String path) => extra["lastPath"] = path;
   String get lastPath => extra["lastPath"].toString();
@@ -100,23 +100,21 @@ class LoggingData extends LoggingDataBase {
           exception: details.exception,
           stackTrace: details.stack,
           extra: LoggingData.instance.extra,
-          tags: LoggingData.instance.tags
-      );
+          tags: LoggingData.instance.tags);
       sentry.capture(event: event);
     }
   }
 
   @override
   void logError(FusedErrorDetails details) {
-     // Don't capture on emulators.
+    // Don't capture on emulators.
     if (realDevice && !debugMode) {
       final Event event = new Event(
           release: LoggingData.instance.packageInfo.version,
           exception: details.exception,
           stackTrace: details.stack,
           extra: LoggingData.instance.extra,
-          tags: LoggingData.instance.tags
-      );
+          tags: LoggingData.instance.tags);
       sentry.capture(event: event);
     }
   }

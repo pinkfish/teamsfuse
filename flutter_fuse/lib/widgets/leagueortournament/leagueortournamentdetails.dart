@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'addseasondialog.dart';
-import 'adddivisondialog.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:flutter_fuse/widgets/util/gendericon.dart';
+import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+import 'adddivisondialog.dart';
+import 'addseasondialog.dart';
 
 class LeagueOrTournamentDetails extends StatefulWidget {
-  final String leagueOrTournamentUid;
-
   LeagueOrTournamentDetails(this.leagueOrTournamentUid);
+
+  final String leagueOrTournamentUid;
 
   @override
   State createState() {

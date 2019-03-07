@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/form/relationshipformfield.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'dialog/deleteinvite.dart';
 
 ///
 /// Accepts the invite to the player.
 ///
 class AcceptInviteToPlayerScreen extends StatefulWidget {
-  final String _inviteUid;
-
   AcceptInviteToPlayerScreen(this._inviteUid);
+
+  final String _inviteUid;
 
   @override
   _AcceptInviteToPlayerScreenState createState() {
@@ -33,11 +34,6 @@ class _AcceptInviteToPlayerScreenState
     super.initState();
     _invite =
         UserDatabaseData.instance.invites[widget._inviteUid] as InviteToPlayer;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   void _savePressed() async {

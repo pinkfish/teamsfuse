@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'leagueortournamentteamcard.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'addteamdialog.dart';
+import 'leagueortournamentteamcard.dart';
 
 ///
 /// The details section to display on a page in the app about the
 /// divison of the league.
 ///
 class LeagueOrTournamentDivisonTeamDetails extends StatefulWidget {
-  final String leagueOrTournamentUid;
-  final String leagueOrTournamentSeasonUid;
-  final String leagueOrTournamentDivisonUid;
-
   LeagueOrTournamentDivisonTeamDetails(
       {@required this.leagueOrTournamentUid,
       @required this.leagueOrTournamentSeasonUid,
       @required this.leagueOrTournamentDivisonUid});
+
+  final String leagueOrTournamentUid;
+  final String leagueOrTournamentSeasonUid;
+  final String leagueOrTournamentDivisonUid;
 
   @override
   State createState() {
@@ -45,11 +45,6 @@ class _LeagueOrTournamentDivisonDetailsState
     _leagueOrTournmentDivison = _leagueOrTournmentSeason.cacheDivisions
         .firstWhere((LeagueOrTournamentDivison s) =>
             s.uid == widget.leagueOrTournamentDivisonUid);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   void _addTeam() {

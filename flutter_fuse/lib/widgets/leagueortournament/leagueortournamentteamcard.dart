@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'leagueortournamentteamname.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+import 'leagueortournamentteamname.dart';
 
 ///
 /// Card showing details of a team inside a league/tournament.
 ///
 class LeagueOrTournamentTeamCard extends StatelessWidget {
+  LeagueOrTournamentTeamCard(this.leagueUid, this.team,
+      {this.admin = false, this.divison});
+
   final LeagueOrTournamentTeam team;
   final LeagueOrTournamentDivison divison;
   final String leagueUid;
   final bool admin;
-
-  LeagueOrTournamentTeamCard(this.leagueUid, this.team,
-      {this.admin = false, this.divison});
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:fusemodel/fusemodel.dart';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class PlayerFormField extends FormField<String> {
   PlayerFormField({
@@ -19,7 +20,7 @@ class PlayerFormField extends FormField<String> {
           onSaved: onSaved,
           validator: validator,
           builder: (FormFieldState<String> field) {
-            final PlayerFormFieldState state = field;
+            final PlayerFormFieldState state = field as PlayerFormFieldState;
 
             final InputDecoration effectiveDecoration = (decoration ??
                     const InputDecoration())
@@ -58,15 +59,13 @@ class PlayerFormFieldState extends FormFieldState<String> {
 
   @override
   PlayerFormField get widget {
-    PlayerFormField field = super.widget;
+    PlayerFormField field = super.widget as PlayerFormField;
     return field;
   }
-
 
   void updateValue(String val) {
     setValue(val);
   }
-
 
   void setTeamUid(String teamUid) {
     setState(() {
@@ -100,9 +99,8 @@ class PlayerFormFieldState extends FormFieldState<String> {
 
     if (widget.addNew) {
       ret.add(new DropdownMenuItem<String>(
-          child: new Text(Messages
-              .of(context)
-              .addplayer), value: PlayerFormField.addPlayer));
+          child: new Text(Messages.of(context).addplayer),
+          value: PlayerFormField.addPlayer));
     }
 
     UserDatabaseData.instance.players.forEach((String key, Player player) {

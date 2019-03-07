@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/games/sharedgameeditform.dart';
-import 'package:flutter_fuse/widgets/games/gameshareddetails.dart';
-import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:flutter_fuse/widgets/form/leagueteampicker.dart';
+import 'package:flutter_fuse/widgets/games/gameshareddetails.dart';
+import 'package:flutter_fuse/widgets/games/sharedgameeditform.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 ///
 /// Screen to display when doing a game add sequence.
 ///
 class AddSharedGameScreen extends StatefulWidget {
+  AddSharedGameScreen(this.leagueUid, this.leagueDivisonUid);
+
   final String leagueDivisonUid;
   final String leagueUid;
-
-  AddSharedGameScreen(this.leagueUid, this.leagueDivisonUid);
 
   @override
   _AddSharedGameScreenState createState() {
@@ -23,6 +23,8 @@ class AddSharedGameScreen extends StatefulWidget {
 }
 
 class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
+  _AddSharedGameScreenState();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<SharedGameEditFormState> _gameFormKey =
       new GlobalKey<SharedGameEditFormState>();
@@ -34,13 +36,6 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
   bool _saving = false;
   String _homeTeamUid;
   String _awayTeamUid;
-
-  _AddSharedGameScreenState();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState

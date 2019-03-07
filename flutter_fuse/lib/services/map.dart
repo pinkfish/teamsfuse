@@ -1,10 +1,12 @@
-import 'map_view/staticmapprovider.dart';
-import 'package:flutter_places_dialog/flutter_places_dialog.dart';
-import 'package:timezone/timezone.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'dart:io';
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter_places_dialog/flutter_places_dialog.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:timezone/timezone.dart';
+
+import 'map_view/staticmapprovider.dart';
 
 class LocationAndPlace {
   LocationAndPlace(this.details, this.loc);
@@ -23,6 +25,11 @@ class LocationAndPlace {
 }
 
 class MapData {
+  MapData() {
+    _providerData = new StaticMapProvider(apiKey);
+    FlutterPlacesDialog.setGoogleApiKey(iosApiKey);
+  }
+
   static const String apiKey = "AIzaSyC0nzXvh-NqEV5c1Qoa-DCUY6iVXG0HcGQ";
   static const String iosApiKey = "AIzaSyBVJ6DGEqQv4lRicySx0siZTCk-9lXY6lY";
   static const String urlAuth = "maps.googleapis.com";
@@ -30,11 +37,6 @@ class MapData {
 
   static MapData _instance;
   StaticMapProvider _providerData;
-
-  MapData() {
-    _providerData = new StaticMapProvider(apiKey);
-    FlutterPlacesDialog.setGoogleApiKey(iosApiKey);
-  }
 
   static MapData get instance {
     if (_instance == null) {
@@ -46,7 +48,6 @@ class MapData {
   StaticMapProvider get provider {
     return _providerData;
   }
-
 
   Future<Location> getTimezoneFromLocation(PlaceLatLong loc, num ms) async {
     Map<String, String> query = <String, String>{
@@ -61,7 +62,8 @@ class MapData {
     print("Response $response");
     if (response.statusCode == HttpStatus.ok) {
       String responseBody = await response.transform(utf8.decoder).join();
-      Map<String, dynamic> data = json.decode(responseBody);
+      Map<String, dynamic> data =
+          json.decode(responseBody) as Map<String, dynamic>;
       print("ResponseBody $data");
       return getLocation(data['timeZoneId'].toString());
     } else {
@@ -79,4 +81,3 @@ class MapData {
     return new LocationAndPlace(details, tz);
   }
 }
-

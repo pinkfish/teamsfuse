@@ -31,6 +31,12 @@ class GuestHeaderComponent implements OnActivate {
     _router.navigate("/login");
   }
 
+  void gotoHome() {
+    _router.navigate("/promo/guesthome");
+  }
+
+
+
   GuestHeaderComponent(this._router);
 }
 

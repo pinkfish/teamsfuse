@@ -1,16 +1,17 @@
+import 'dart:async';
+
 import 'package:angular/angular.dart';
-import 'package:teamfuse/app-component.template.dart' as fluff;
 import 'package:firebase/firebase.dart' as fb;
+import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
+import "package:intl/intl_browser.dart";
+import 'package:teamfuse/services/sqldata.dart';
 import 'package:teamfuse/services/webanalytics.dart';
 import 'package:teamfuse/services/weblogging.dart';
-import 'package:teamfuse/services/sqldata.dart';
-import "package:intl/intl_browser.dart";
-import 'package:timezone/browser.dart';
 import 'package:teamfuse/util/firestore/firestore.dart' as fs;
-import 'package:fusemodel/firestore.dart';
+import 'package:timezone/browser.dart';
 
-import 'dart:async';
+import 'package:teamfuse/app-component.template.dart' as fluff;
 
 void mainShared(InjectorFactory injector) async {
   fb.initializeApp(
@@ -38,5 +39,6 @@ void mainShared(InjectorFactory injector) async {
   sub.cancel();
   print('Loaded!');
 
-  runApp(fluff.AppComponentNgFactory, createInjector: injector);
+  runApp(fluff.AppComponentNgFactory as ComponentFactory,
+      createInjector: injector);
 }

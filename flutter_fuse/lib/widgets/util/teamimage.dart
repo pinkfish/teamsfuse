@@ -1,21 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'cachednetworkimage.dart';
 import 'dart:async';
 
-class TeamImage extends StatelessWidget {
-  final String teamUid;
-  final Team team;
-  final double width;
-  final double height;
-  final Color color;
-  final BoxFit fit;
-  final AlignmentGeometry alignment;
-  final ImageRepeat repeat;
-  final bool matchTextDirection;
-  final bool showIcon;
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:fusemodel/fusemodel.dart';
 
+import 'cachednetworkimage.dart';
+
+class TeamImage extends StatelessWidget {
   TeamImage(
       {this.team,
       this.teamUid,
@@ -33,6 +24,17 @@ class TeamImage extends StatelessWidget {
         ) {
     assert(team != null || teamUid != null);
   }
+
+  final String teamUid;
+  final Team team;
+  final double width;
+  final double height;
+  final Color color;
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+  final ImageRepeat repeat;
+  final bool matchTextDirection;
+  final bool showIcon;
 
   ImageProvider _providerFromTeam(Team team) {
     String photoUrl = team.photoUrl;
@@ -64,7 +66,7 @@ class TeamImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return new FutureBuilder<Team>(
       future: team != null
-          ? Future.value<Team>(team)
+          ? Future<Team>.value(team)
           : UserDatabaseData.instance.updateModel.getPublicTeamDetails(teamUid),
       builder: (BuildContext context, AsyncSnapshot<Team> snap) {
         Widget inner;

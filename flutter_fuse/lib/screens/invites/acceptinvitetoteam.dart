@@ -1,18 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'dialog/deleteinvite.dart';
 
 ///
 /// Shows the invite the team screen.
 ///
 class AcceptInviteToTeamScreen extends StatefulWidget {
-  final String _inviteUid;
-
   AcceptInviteToTeamScreen(this._inviteUid);
+
+  final String _inviteUid;
 
   @override
   _AcceptInviteToTeamScreenState createState() {
@@ -54,11 +56,6 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
       // Get out of here.
       Navigator.pop(context);
     }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   void _onChangedPlayer(String name, String uid) {

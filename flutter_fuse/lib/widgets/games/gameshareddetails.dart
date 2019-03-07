@@ -1,19 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/map.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_fuse/services/map_view/marker.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
-import 'package:flutter_fuse/widgets/util/leagueteamimage.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
 import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
-import 'package:timezone/timezone.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
-import 'officalresultdialog.dart';
-
-import 'dart:async';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'package:flutter_fuse/widgets/util/leagueteamimage.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:timezone/timezone.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'officalresultdialog.dart';
 
 class GameSharedDetails extends StatefulWidget {
   GameSharedDetails(this.game, {this.adding = false});
@@ -30,11 +31,6 @@ class GameSharedDetails extends StatefulWidget {
 class _GameSharedDetailsState extends State<GameSharedDetails> {
   StreamSubscription<UpdateReason> teamUpdate;
   StreamSubscription<UpdateReason> _subscription;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {

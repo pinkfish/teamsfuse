@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/games/gamesharedcard.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_fuse/widgets/form/leagueteampicker.dart';
+import 'package:flutter_fuse/widgets/games/gamesharedcard.dart';
+import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:intl/intl.dart';
 
 ///
 /// The details section to display on a page in the app about the
 /// divison of the league.
 ///
 class LeagueOrTournamentDivisonDetails extends StatefulWidget {
-  final String leagueOrTournamentUid;
-  final String leagueOrTournamentSeasonUid;
-  final String leagueOrTournamentDivisonUid;
-
   LeagueOrTournamentDivisonDetails(
       {@required this.leagueOrTournamentUid,
       @required this.leagueOrTournamentSeasonUid,
       @required this.leagueOrTournamentDivisonUid});
+
+  final String leagueOrTournamentUid;
+  final String leagueOrTournamentSeasonUid;
+  final String leagueOrTournamentDivisonUid;
 
   @override
   State createState() {

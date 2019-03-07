@@ -2,12 +2,12 @@ import 'location.dart';
 import 'marker.dart';
 
 class StaticMapProvider {
+  StaticMapProvider(this.googleMapsApiKey);
+
   final String googleMapsApiKey;
   static const int defaultZoomLevel = 4;
   static const int defaultWidth = 600;
   static const int defaultHeight = 400;
-
-  StaticMapProvider(this.googleMapsApiKey);
 
   ///
   /// Creates a Uri for the Google Static Maps API

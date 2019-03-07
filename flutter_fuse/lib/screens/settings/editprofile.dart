@@ -1,17 +1,19 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
 import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'dart:async';
 
 class EditProfileScreen extends StatefulWidget {
-  final String meUid;
   EditProfileScreen(this.meUid);
+
+  final String meUid;
 
   @override
   EditProfileScreenState createState() {
@@ -20,6 +22,9 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class EditProfileScreenState extends State<EditProfileScreen> {
+  EditProfileScreenState(String meUid)
+      : me = new Player.copy(UserDatabaseData.instance.players[meUid]);
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool _autovalidate = false;
@@ -35,9 +40,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   // Details to update.
   String displayName;
   String phoneNumber;
-
-  EditProfileScreenState(String meUid)
-      : me = new Player.copy(UserDatabaseData.instance.players[meUid]);
 
   @override
   void initState() {
@@ -110,7 +112,6 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     if (_user == null) {
@@ -129,8 +130,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
             },
             child: new Text(
               Messages.of(context).savebuttontext,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .subhead
                   .copyWith(color: Colors.white),
@@ -201,7 +201,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
               ),
-             ],
+            ],
           ),
         ),
       ),

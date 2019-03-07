@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class RoleInTeamFormField extends FormField<String> {
   RoleInTeamFormField({
@@ -17,7 +17,8 @@ class RoleInTeamFormField extends FormField<String> {
             onSaved: onSaved,
             validator: validator,
             builder: (FormFieldState<String> field) {
-              final RoleInTeamFormFieldState state = field;
+              final RoleInTeamFormFieldState state =
+                  field as RoleInTeamFormFieldState;
 
               final InputDecoration effectiveDecoration = (decoration ??
                       const InputDecoration())

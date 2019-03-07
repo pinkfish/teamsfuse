@@ -1,10 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/games/gamecard.dart';
-import 'package:sliver_calendar/sliver_calendar.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/widgets/games/gamecard.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:sliver_calendar/sliver_calendar.dart';
+
 class GameListCalendarState {
+  GameListCalendarState(this.details, this.state);
+
   GameSubscription _subscription;
   StreamSubscription<Iterable<Game>> _listening;
   StreamSubscription<UpdateReason> _teamListen;
@@ -16,8 +19,6 @@ class GameListCalendarState {
       new StreamController<UpdateReason>();
   Stream<UpdateReason> _myStream;
   GlobalKey<CalendarWidgetState> state;
-
-  GameListCalendarState(this.details, this.state);
 
   Widget buildWidget(BuildContext context, CalendarEvent event) {
     return new GameCard(_listToShow[event.index]);

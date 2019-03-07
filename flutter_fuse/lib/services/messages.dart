@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_fuse/i10n/messages_all.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'dart:math';
+import 'package:intl/intl.dart';
 
 class Messages {
   static Future<Messages> load(Locale locale) async {
@@ -2058,9 +2059,10 @@ class Messages {
 }
 
 class QuoteAndAuthor {
+  QuoteAndAuthor({this.quote, this.author});
+
   String quote;
   String author;
-  QuoteAndAuthor({this.quote, this.author});
 }
 
 class MessagesDelegate extends LocalizationsDelegate<Messages> {

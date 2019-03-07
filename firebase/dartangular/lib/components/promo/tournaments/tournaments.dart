@@ -18,6 +18,9 @@ import 'package:angular_components/content/deferred_content.dart';
     MaterialListComponent,
     MaterialListItemComponent,
   ],
+  styleUrls: const [
+    '../league/league.css',
+  ],
 )
 class TournamentsComponent {
 

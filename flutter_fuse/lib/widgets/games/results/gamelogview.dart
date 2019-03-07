@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class GameLogView extends StatelessWidget {
-  final Game game;
-
   GameLogView(this.game);
 
-  Widget _buildGameItem(BuildContext context, GameLog log, TextStyle subheadStyle) {
+  final Game game;
+
+  Widget _buildGameItem(
+      BuildContext context, GameLog log, TextStyle subheadStyle) {
     Widget subtitle;
     switch (log.type) {
       case GameLogType.Message:
-        subtitle = new Text(log.message,
-            style: subheadStyle);
+        subtitle = new Text(log.message, style: subheadStyle);
         break;
       case GameLogType.PeriodStart:
-        subtitle = new Text(
-            Messages
-                .of(context)
-                .periodstart(log),
+        subtitle = new Text(Messages.of(context).periodstart(log),
             style: subheadStyle);
         break;
       case GameLogType.PeriodStop:
@@ -29,9 +26,7 @@ class GameLogView extends StatelessWidget {
         break;
       case GameLogType.ScoreUpdate:
         subtitle = new Text(
-          Messages
-              .of(context)
-              .onlyscore(log.score),
+          Messages.of(context).onlyscore(log.score),
           style: subheadStyle,
         );
         break;
@@ -48,15 +43,11 @@ class GameLogView extends StatelessWidget {
         child: new Text(log.initials()),
       ),
       title: new Text(
-          MaterialLocalizations
-              .of(context)
-              .formatFullDate(log.eventTime),
-          style: Theme
-              .of(context)
+          MaterialLocalizations.of(context).formatFullDate(log.eventTime),
+          style: Theme.of(context)
               .textTheme
               .subhead
-              .copyWith(
-              color: Colors.grey, fontSize: 15.0)),
+              .copyWith(color: Colors.grey, fontSize: 15.0)),
       subtitle: subtitle,
     );
   }
@@ -67,29 +58,27 @@ class GameLogView extends StatelessWidget {
     game.loadGameLogs();
     return new StreamBuilder<List<GameLog>>(
       stream: game.thisGameLogStream,
-      builder:
-          (BuildContext context, AsyncSnapshot<List<GameLog>> logs) {
-            TextStyle subheadStyle = Theme
-                .of(context)
-                .textTheme
-                .subhead
-                .copyWith(color: Colors.black, fontSize: 20.0);
-          if (logs.hasData) {
-            return new ListView.builder(
-              scrollDirection: Axis.vertical,
-              itemBuilder: (BuildContext context, int index) {
-                return _buildGameItem(context, logs.data[index], subheadStyle);
-              },
-              itemCount: logs.data.length,
-            );
-          }
+      builder: (BuildContext context, AsyncSnapshot<List<GameLog>> logs) {
+        TextStyle subheadStyle = Theme.of(context)
+            .textTheme
+            .subhead
+            .copyWith(color: Colors.black, fontSize: 20.0);
+        if (logs.hasData) {
           return new ListView.builder(
             scrollDirection: Axis.vertical,
             itemBuilder: (BuildContext context, int index) {
-              return _buildGameItem(context, game.logs[index], subheadStyle);
+              return _buildGameItem(context, logs.data[index], subheadStyle);
             },
-            itemCount: game.logs.length,
+            itemCount: logs.data.length,
           );
+        }
+        return new ListView.builder(
+          scrollDirection: Axis.vertical,
+          itemBuilder: (BuildContext context, int index) {
+            return _buildGameItem(context, game.logs[index], subheadStyle);
+          },
+          itemCount: game.logs.length,
+        );
       },
     );
   }

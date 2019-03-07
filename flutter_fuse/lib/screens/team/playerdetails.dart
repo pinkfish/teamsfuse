@@ -1,12 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
-import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
+import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:async';
 
 class PlayerDetailsScreen extends StatefulWidget {
   PlayerDetailsScreen(this.teamUid, this.seasonUid, this.playerUid);
@@ -21,9 +22,9 @@ class PlayerDetailsScreen extends StatefulWidget {
 }
 
 class _RoleInTeamAlertDialog extends StatefulWidget {
-  final RoleInTeam initialRole;
-
   _RoleInTeamAlertDialog(this.initialRole);
+
+  final RoleInTeam initialRole;
 
   @override
   _RoleInTeamAlertDialogState createState() {
@@ -387,8 +388,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
             },
             child: new Text(
               messages.addinvite,
-              style: Theme
-                  .of(context)
+              style: Theme.of(context)
                   .textTheme
                   .subhead
                   .copyWith(color: Colors.white),

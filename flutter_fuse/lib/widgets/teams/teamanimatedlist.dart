@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'teamtile.dart';
 
 ///
 /// The list of teams that animated teams in and out.  Nifty.
 ///
 class TeamAnimatedList extends StatefulWidget {
-  final bool archived;
-
   TeamAnimatedList({this.archived});
+
+  final bool archived;
 
   @override
   State createState() {

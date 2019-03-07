@@ -1,11 +1,13 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_fuse/screens/home/home.dart';
+import 'package:flutter_fuse/screens/login/verifyemail.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/notifications.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/screens/home/home.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/screens/login/verifyemail.dart';
-import 'package:flutter_fuse/services/notifications.dart';
+
 import 'loginform.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,14 +18,14 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
+  SplashScreenState() {
+    _startLoading();
+  }
+
   static UserData currentUser;
   static bool loaded = false;
   static bool loadOnMounted = false;
   StreamSubscription<UserData> _stream;
-
-  SplashScreenState() {
-    _startLoading();
-  }
 
   @override
   void initState() {

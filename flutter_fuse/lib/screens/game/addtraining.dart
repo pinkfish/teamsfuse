@@ -1,14 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/teams/teamselection.dart';
-import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
 import 'package:flutter_fuse/widgets/games/repeatdetails.dart';
+import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
+import 'package:flutter_fuse/widgets/teams/teamselection.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:async';
 
 class AddTrainingScreen extends StatefulWidget {
   AddTrainingScreen();
@@ -20,6 +21,8 @@ class AddTrainingScreen extends StatefulWidget {
 }
 
 class AddTrainingScreenState extends State<AddTrainingScreen> {
+  AddTrainingScreenState();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<TrainingEditFormState> _trainingFormKey =
       new GlobalKey<TrainingEditFormState>();
@@ -34,8 +37,6 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   RepeatData repeatData = new RepeatData();
   int currentStep = 0;
   List<TZDateTime> _repeatDates;
-
-  AddTrainingScreenState();
 
   @override
   void initState() {
@@ -65,7 +66,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
 
   Future<bool> _saveTraining() async {
     Uuid uuid = new Uuid();
-    String seriesId = uuid.v4();
+    String seriesId = uuid.v4() as String;
     _initGame.seriesId = seriesId;
     _initGame.updateFirestore(false);
     await Future.forEach(_repeatDates, (TZDateTime time) async {
@@ -108,8 +109,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
       ),
       new ListTile(
         leading: const Icon(Icons.calendar_today),
-        title: new Text(MaterialLocalizations
-            .of(context)
+        title: new Text(MaterialLocalizations.of(context)
             .formatFullDate(myGame.sharedData.tzTime)),
         subtitle: new Text(timeStr),
       ),
@@ -306,7 +306,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
               state: teamStepState,
               isActive: true,
               content: new TeamSelection(
-                club:  null,
+                club: null,
                 onChanged: _teamChanged,
                 initialTeam: _team,
               ),

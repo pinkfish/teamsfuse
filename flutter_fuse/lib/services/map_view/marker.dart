@@ -1,6 +1,9 @@
 import 'dart:ui';
 
 class Marker {
+  Marker(this.id, this.title, this.latitude, this.longitude,
+      {this.color: _defaultColor});
+
   final String id;
   final String title;
   final double latitude;
@@ -9,13 +12,10 @@ class Marker {
 
   static const Color _defaultColor = const Color.fromARGB(1, 255, 0, 0);
 
-  Marker(this.id, this.title, this.latitude, this.longitude,
-      {this.color: _defaultColor});
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Marker && runtimeType == other.runtimeType && id == other.id;
+      other is Marker && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;

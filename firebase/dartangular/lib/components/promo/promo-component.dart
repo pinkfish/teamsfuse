@@ -53,9 +53,9 @@ class PromoComponent implements OnActivate {
   }
 
   final _tabLabelsInner = const <_LabelStuff>[
-    const _LabelStuff(label: 'Teams', route: 'promo/guesthome'),
-    const _LabelStuff(label: 'Leagues', route: 'promo/guestleague'),
-    const _LabelStuff(label: 'Tournaments', route: 'promo/guesttournaments'),
+    const _LabelStuff(label: 'Teams', route: '/promo/guesthome'),
+    const _LabelStuff(label: 'Leagues', route: '/promo/guestleague'),
+    const _LabelStuff(label: 'Tournaments', route: '/promo/guesttournaments'),
   ];
 
   List<String> get tabLabels =>

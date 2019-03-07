@@ -5,12 +5,10 @@ author: David Bennett <pinkfishfrog@gmail.com>
 homepage: http://www.whelksoft.com
 
 environment:
-  sdk: '>=1.9.0 <3.0.0'
+  sdk: ">=1.19.0 <3.0.0"
 
 dependencies:
-  timezone:
-     git:
-       url: "https://github.com/pinkfish/timezone.git"
+  timezone:  ^0.5.2
 
 dev_dependencies:
-  test: ^1.0.0
+  test: any

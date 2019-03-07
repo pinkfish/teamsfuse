@@ -1,15 +1,21 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'dart:async';
 import 'package:fusemodel/fusemodel.dart';
-import 'dart:math';
+
 import 'appconfiguration.dart';
-import 'dart:convert';
-import 'dart:io';
 import 'firebasemessaging.dart';
 
 class Notifications {
+  Notifications() {
+    routeStream = _notificationRoutes.stream.asBroadcastStream();
+  }
+
   static final Notifications instance = new Notifications();
 
   static const String _keyNotificationData = "lib_notification_data";
@@ -30,10 +36,6 @@ class Notifications {
 
   static const Duration notifyStart = const Duration(days: 31);
   static const Duration timeoutNotifiation = const Duration(days: 2);
-
-  Notifications() {
-    routeStream = _notificationRoutes.stream.asBroadcastStream();
-  }
 
   void dispose() {
     _gameStream?.cancel();
@@ -136,9 +138,11 @@ class Notifications {
     String jsonCacheString = AppConfiguration.instance.sharedPreferences
         .getString(_keyNotificationData);
     if (jsonCacheString != null) {
-      Map<String, dynamic> tmp = json.decode(jsonCacheString) as Map<String, dynamic>;
+      Map<String, dynamic> tmp =
+          json.decode(jsonCacheString) as Map<String, dynamic>;
       _notificationMapping.clear();
-      tmp.forEach((String str, dynamic val) => val is int ? _notificationMapping[str] = val : null);
+      tmp.forEach((String str, dynamic val) =>
+          val is int ? _notificationMapping[str] = val : null);
     }
   }
 

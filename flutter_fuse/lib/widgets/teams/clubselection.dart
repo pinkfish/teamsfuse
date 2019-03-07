@@ -1,19 +1,19 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/widgets/form/clubpicker.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 ///
 /// Selects the team to use for adding a game/event/whatever.  Will select
 /// between clubs/teams/leagues.
 ///
 class ClubSelection extends StatefulWidget {
+  ClubSelection({@required this.onChanged, @required this.initialClub});
+
   final ValueChanged<Club> onChanged;
 
   /// The initialTeam
   final Club initialClub;
-
-  ClubSelection({@required this.onChanged, @required this.initialClub});
 
   @override
   _ClubSelectionState createState() {
@@ -23,11 +23,6 @@ class ClubSelection extends StatefulWidget {
 
 class _ClubSelectionState extends State<ClubSelection> {
   String _clubUid;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void _updateClub(String clubUid) {
     setState(() {

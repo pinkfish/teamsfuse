@@ -31,7 +31,7 @@ class VerifyComponent {
   }
 
   void cancel() {
-    _router.navigate("/g/guesthome");
+    _router.navigate("/promo/guesthome");
   }
 
   void signup() {

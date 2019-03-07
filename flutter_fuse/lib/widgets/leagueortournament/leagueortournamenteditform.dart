@@ -1,17 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
-import 'package:flutter_fuse/widgets/form/sportformfield.dart';
-import 'package:flutter_fuse/widgets/form/genderformfield.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-// This form has all the stuff needed to edit the main parts
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/validations.dart';
+import 'package:flutter_fuse/widgets/form/genderformfield.dart';
+import 'package:flutter_fuse/widgets/form/sportformfield.dart';
+import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:image_picker/image_picker.dart';
+
 // of the game.  Does not have the add game step flow.
 class LeagueOrTournamentEditForm extends StatefulWidget {
   LeagueOrTournamentEditForm(
@@ -43,10 +43,6 @@ class LeagueOrTournamentEditFormState
     _formKey.currentState.save();
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
 
   bool validate() {
     if (_formKey.currentState == null) {

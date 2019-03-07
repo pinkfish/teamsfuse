@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/byusername.dart';
 import 'dart:async';
 
-class TeamSettings extends StatefulWidget {
-  final String _teamUid;
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/util/byusername.dart';
+import 'package:fusemodel/fusemodel.dart';
 
+class TeamSettings extends StatefulWidget {
   TeamSettings(this._teamUid);
+
+  final String _teamUid;
 
   @override
   TeamSettingsState createState() {

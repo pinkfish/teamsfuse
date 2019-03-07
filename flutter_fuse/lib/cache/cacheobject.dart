@@ -2,27 +2,15 @@
 // Copyright (c) 2017 Rene Floor
 // Released under MIT License.
 
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
-import 'package:synchronized/synchronized.dart';
 import 'dart:async';
+import 'dart:io';
+
+import 'package:path_provider/path_provider.dart';
+import 'package:synchronized/synchronized.dart';
+import 'package:uuid/uuid.dart';
 
 ///Cache information of one file
 class CacheObject {
-  static const String _keyFilePath = "relativePath";
-  static const String _keyValidTill = "validTill";
-  static const String _keyETag = "ETag";
-  static const String _keyTouched = "touched";
-  static Directory _directory;
-
-  String relativePath;
-  DateTime validTill;
-  String eTag;
-  DateTime touched;
-  String url;
-  Lock lock;
-
   CacheObject(this.url) {
     touch();
     lock = new Lock();
@@ -48,6 +36,19 @@ class CacheObject {
 
     lock = new Lock();
   }
+
+  static const String _keyFilePath = "relativePath";
+  static const String _keyValidTill = "validTill";
+  static const String _keyETag = "ETag";
+  static const String _keyTouched = "touched";
+  static Directory _directory;
+
+  String relativePath;
+  DateTime validTill;
+  String eTag;
+  DateTime touched;
+  String url;
+  Lock lock;
 
   static void initDirectory() async {
     _directory = await getTemporaryDirectory();

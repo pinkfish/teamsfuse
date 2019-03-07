@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_fuse/widgets/games/gamedetails.dart';
+import 'package:flutter_fuse/widgets/games/gameeditform.dart';
 import 'package:flutter_fuse/widgets/teams/clubselection.dart';
 import 'package:flutter_fuse/widgets/teams/teamselection.dart';
-import 'package:flutter_fuse/widgets/games/gameeditform.dart';
-import 'package:flutter_fuse/widgets/games/gamedetails.dart';
-import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 ///
 /// Screen to display when doing a game add sequence.
@@ -21,6 +21,8 @@ class AddGameScreen extends StatefulWidget {
 }
 
 class AddGameScreenState extends State<AddGameScreen> {
+  AddGameScreenState();
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<GameEditFormState> _gameFormKey =
       new GlobalKey<GameEditFormState>();
@@ -33,8 +35,6 @@ class AddGameScreenState extends State<AddGameScreen> {
   int _currentStep = 1;
   Game _initGame;
   bool _saving = false;
-
-  AddGameScreenState();
 
   @override
   void initState() {
@@ -153,7 +153,8 @@ class AddGameScreenState extends State<AddGameScreen> {
   void _teamChanged(Team team) {
     print('Team $team');
     //_gameFormKey.currentState.setTeam(str);
-    GameSharedData sharedGameData = new GameSharedData(team.uid, null, type: EventType.Game);
+    GameSharedData sharedGameData =
+        new GameSharedData(team.uid, null, type: EventType.Game);
     _initGame = new Game(team.uid, null, sharedData: sharedGameData);
     DateTime start = new DateTime.now().add(const Duration(days: 1));
     _initGame.sharedData.time = start.millisecondsSinceEpoch;

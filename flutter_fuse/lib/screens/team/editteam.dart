@@ -1,14 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/teams/teameditform.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'dart:io';
 
-class EditTeamScreen extends StatefulWidget {
-  final String teamUid;
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/teams/teameditform.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/fusemodel.dart';
 
+class EditTeamScreen extends StatefulWidget {
   EditTeamScreen(this.teamUid);
+
+  final String teamUid;
 
   @override
   EditTeamScreenState createState() {
@@ -69,8 +70,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
       key: _scaffoldKey,
       appBar: new AppBar(
         title: new Text(
-          Messages
-              .of(context)
+          Messages.of(context)
               .titlewith(UserDatabaseData.instance.teams[widget.teamUid].name),
         ),
       ),

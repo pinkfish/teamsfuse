@@ -1,6 +1,8 @@
 <header class="material-header shadow">
     <div class="material-header-row">
-        <material-icon icon="gamepad"></material-icon>
+        <material-button (trigger)="gotoHome()">
+            <material-icon icon="gamepad"></material-icon>
+        </material-button>
         <span class="material-header-title">Team Fuse</span>
         <div class="material-spacer"></div>
         <search-form></search-form>

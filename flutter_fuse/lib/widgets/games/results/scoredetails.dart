@@ -1,20 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/numberpicker.dart';
-import 'package:flutter_fuse/util/debouncer.dart';
-import 'package:flutter_fuse/widgets/util/stopwatchdisplay.dart';
-import 'package:timezone/timezone.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/util/debouncer.dart';
+import 'package:flutter_fuse/widgets/util/numberpicker.dart';
+import 'package:flutter_fuse/widgets/util/stopwatchdisplay.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:timezone/timezone.dart';
+
+import 'changescoredialog.dart';
 import 'periodselector.dart';
 import 'timersetupdialog.dart';
-import 'changescoredialog.dart';
 
 class ScoreDetails extends StatefulWidget {
+  ScoreDetails(this.game, this.team);
+
   final Game game;
   final Team team;
-
-  ScoreDetails(this.game, this.team);
 
   @override
   State createState() {
@@ -559,8 +561,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                       new Container(
                         child: new StopwatchDisplay(
                           stopwatch: stopwatch,
-                          style: Theme
-                              .of(context)
+                          style: Theme.of(context)
                               .textTheme
                               .title
                               .copyWith(fontSize: 25.0),

@@ -1,20 +1,21 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/leagueteamimage.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
-import 'package:flutter_fuse/widgets/games/officalresultdialog.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:timezone/timezone.dart';
 import 'dart:async';
 
-class GameSharedCard extends StatelessWidget {
-  final GameSharedData game;
-  final LeagueOrTournament leagueOrTournament;
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/games/officalresultdialog.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
+import 'package:flutter_fuse/widgets/util/leagueteamimage.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:timezone/timezone.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+class GameSharedCard extends StatelessWidget {
   GameSharedCard(this.game)
       : leagueOrTournament =
             UserDatabaseData.instance.leagueOrTournments[game.leagueUid];
+
+  final GameSharedData game;
+  final LeagueOrTournament leagueOrTournament;
 
   void _editResult(BuildContext context) async {
     // Call up a dialog to edit the result.
@@ -79,10 +80,9 @@ class GameSharedCard extends StatelessWidget {
     }
 
     if (game.time < new DateTime.now().millisecondsSinceEpoch &&
-            game.type == EventType.Game &&
-            game.officialResults.result == OfficialResult.NotStarted &&
-        (leagueOrTournament?.isAdmin() ??
-        false)) {
+        game.type == EventType.Game &&
+        game.officialResults.result == OfficialResult.NotStarted &&
+        (leagueOrTournament?.isAdmin() ?? false)) {
       // Show a result button (if an admin).
       buttons.add(
         new FlatButton(
@@ -152,10 +152,10 @@ class GameSharedCard extends StatelessWidget {
 
         // Add in the offical results.
         if (game.officialResults.result != OfficialResult.NotStarted) {
-          TextStyle homeStyle = Theme.of(context)
-              .textTheme
-              .display1.copyWith(fontSize: 25.0);
-          TextStyle awayStyle = Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
+          TextStyle homeStyle =
+              Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
+          TextStyle awayStyle =
+              Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
           if (game.officialResults.result == OfficialResult.AwayTeamWon) {
             awayStyle = awayStyle.copyWith(color: Colors.green);
           }

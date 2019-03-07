@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/games/gamecard.dart';
 import 'dart:async';
 
-class TeamOpponents extends StatefulWidget {
-  final String _teamUid;
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/games/gamecard.dart';
+import 'package:fusemodel/fusemodel.dart';
 
+class TeamOpponents extends StatefulWidget {
   TeamOpponents(this._teamUid);
+
+  final String _teamUid;
 
   @override
   TeamOpponentsState createState() {
@@ -172,7 +173,8 @@ class TeamOpponentsState extends State<TeamOpponents> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         new Center(
-                          child: new Text(Messages.of(context).unabletoloadgames),
+                          child:
+                              new Text(Messages.of(context).unabletoloadgames),
                         ),
                       ],
                     );

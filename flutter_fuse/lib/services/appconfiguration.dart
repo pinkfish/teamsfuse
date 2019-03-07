@@ -1,6 +1,7 @@
-import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'dart:async';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum Experiments { calendarView }
@@ -18,11 +19,11 @@ class AppConfiguration {
   Future<void> load() async {
     sharedPreferences = await SharedPreferences.getInstance();
     print('Loading app config');
+
     FirebaseApp.instance.options.then((FirebaseOptions opt) {
       print("Firstbase client id${opt.clientID}");
-    }).catchError((Error e) {
-      print("Got error loading the firebase options");
-    });
+    }).catchError((dynamic e, StackTrace st) =>
+        print("Got error loading the firebase options $st"));
     loadingFuture = _completer.future.then((bool done) => loaded = done);
     config = await RemoteConfig.instance;
     await config.fetch();

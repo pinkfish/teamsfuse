@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
-import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
 import 'package:flutter_fuse/widgets/games/attendancedialog.dart';
 import 'package:flutter_fuse/widgets/games/editresultdialog.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'attendanceicon.dart';
-import 'package:timezone/timezone.dart';
+import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
+import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/src/game/gamefromofficial.dart';
+import 'package:timezone/timezone.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'attendanceicon.dart';
 
 class GameCard extends StatelessWidget {
+  GameCard(this.game);
+
   final Game game;
   final Map<Player, Attendance> attendence = <Player, Attendance>{};
-
-  GameCard(this.game);
 
   void _openAttendance(BuildContext context) async {
     if (attendence.length == 1) {

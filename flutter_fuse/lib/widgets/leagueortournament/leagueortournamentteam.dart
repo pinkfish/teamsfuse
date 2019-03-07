@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/games/gamesharedcard.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
-import 'dart:async';
+import 'package:fusemodel/fusemodel.dart';
+
 import 'addinvitetoteamdialog.dart';
 
 ///
@@ -12,9 +13,9 @@ import 'addinvitetoteamdialog.dart';
 /// tournament.
 ///
 class LeagueOrTournamentTeamDetails extends StatefulWidget {
-  final String leagueOrTournamentTeamUid;
-
   LeagueOrTournamentTeamDetails({@required this.leagueOrTournamentTeamUid});
+
+  final String leagueOrTournamentTeamUid;
 
   @override
   State createState() {
@@ -29,12 +30,6 @@ class _LeagueOrTournamentTeamDetailsState
   LeagueOrTournamentDivison leagueOrTournmentDivison;
   LeagueOrTournamentTeam leagueOrTournamentTeam;
   StreamSubscription<LeagueOrTournamentTeam> _sub;
-
-  @override
-  void initState() {
-    super.initState();
-    // Start trying to load the team.
-  }
 
   ///
   /// Load the details but only do so once.
@@ -94,9 +89,7 @@ class _LeagueOrTournamentTeamDetailsState
     return Messages.of(context).loading;
   }
 
-  void _onDelete() {
-
-  }
+  void _onDelete() {}
 
   @override
   Widget build(BuildContext context) {

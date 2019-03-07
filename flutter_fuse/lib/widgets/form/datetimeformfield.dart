@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/widgets/util/inputdropdown.dart';
 
 class DateTimeFormField extends FormField<DateTime> {
@@ -21,7 +22,7 @@ class DateTimeFormField extends FormField<DateTime> {
             onSaved: onSaved,
             validator: validator,
             builder: (FormFieldState<DateTime> state) {
-              DateTimeFormFieldState field = state;
+              DateTimeFormFieldState field = state as DateTimeFormFieldState;
 
               final TextStyle valueStyle =
                   Theme.of(field.context).textTheme.title;
@@ -107,7 +108,7 @@ class DateTimeFormField extends FormField<DateTime> {
 class DateTimeFormFieldState extends FormFieldState<DateTime> {
   @override
   DateTimeFormField get widget {
-    DateTimeFormField val = super.widget;
+    DateTimeFormField val = super.widget as DateTimeFormField;
     return val;
   }
 

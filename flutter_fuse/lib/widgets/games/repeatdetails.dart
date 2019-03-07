@@ -17,16 +17,24 @@ class RepeatData {
   num repeatInterval = 1;
   bool repeatUntil = false;
   DateTime endRepeat;
-  List<bool> dayRepeats = <bool>[false, false, false, false, false, false, false];
+  List<bool> dayRepeats = <bool>[
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
 }
 
 class RepeatDetailsWidget extends StatefulWidget {
-  final TZDateTime startTime;
-  final RepeatData repeat;
-
   RepeatDetailsWidget(this.startTime, this.repeat,
       {GlobalKey<RepeatDetailsState> key})
       : super(key: key);
+
+  final TZDateTime startTime;
+  final RepeatData repeat;
 
   @override
   RepeatDetailsState createState() {
@@ -90,8 +98,9 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                 widget.repeat.endRepeat.day)
             .add(new Duration(days: 1));
         while (
-            startOfWeek.millisecondsSinceEpoch < end.millisecondsSinceEpoch && curSpins < 100) {
-          DateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
+            startOfWeek.millisecondsSinceEpoch < end.millisecondsSinceEpoch &&
+                curSpins < 100) {
+          TZDateTime newWeek = startOfWeek.add(new Duration(days: i * 7));
           for (int dayNum = 0;
               dayNum < widget.repeat.dayRepeats.length;
               dayNum++) {
@@ -113,7 +122,8 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
 
   List<DropdownMenuItem<RepeatPeriod>> _buildRepeatIntervalItems(
       BuildContext context) {
-    List<DropdownMenuItem<RepeatPeriod>> ret = <DropdownMenuItem<RepeatPeriod>>[];
+    List<DropdownMenuItem<RepeatPeriod>> ret =
+        <DropdownMenuItem<RepeatPeriod>>[];
     ret.add(new DropdownMenuItem<RepeatPeriod>(
       child: new Text(Messages.of(context).noneperiod),
       value: RepeatPeriod.None,
