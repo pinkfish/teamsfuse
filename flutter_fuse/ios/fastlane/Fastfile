@@ -18,6 +18,24 @@ default_platform(:ios)
 platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do
+    project = 'Runner.xcodeproj'
+
+    version = get_version_number(xcodeproj: project,)
+    desc "Version $version"
+    #build_number = app_store_build_number(
+    #  app_identifier: 'com.teamfuse.flutterfuse',
+    #  username: 'pinkfishfrog@gmail.com',
+    #  live: false
+    #)
+    build_number = latest_testflight_build_number(
+      app_identifier: CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier),
+      version: version,
+      initial_build_number: 30
+    )
+    increment_build_number(
+      build_number: build_number + 1,
+      xcodeproj: project
+    )
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
     upload_to_testflight
   end

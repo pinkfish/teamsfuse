@@ -1,0 +1,1 @@
+Fast simple team management designed for mobile usage from the start.  Handles multiple players and teams in the same app seamlessly, allowing you to easily see and schedule across more than one team and more than one player.
