@@ -30,7 +30,6 @@ class SingleGameComponent implements OnInit, OnActivate, OnDestroy {
   @override
   void ngOnDestroy() {
     _sub?.cancel();
-    _controller.close();
   }
 
   @override
