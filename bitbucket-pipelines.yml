@@ -5,6 +5,9 @@
 # You can specify a custom docker image from Docker Hub as your build environment.
 image: node:6.9.4
 
+definitions:
+  caches:
+    dart: ~/firebase/dartangular/.packages
 
 pipelines:
   default:
@@ -22,3 +25,14 @@ pipelines:
               MESSAGE: 'Deploying TeamsFuse functions'
               EXTRA_ARGS: '--only functions'
               DEBUG: 'true'
+    - step:
+       caches:
+         - dart
+       image: google/dart
+       name: Angular Dart build
+       script:
+         - cd firebase/dartangular
+         - pub global activate webdev
+         - pub packages get
+         - webdev build --release
+              
