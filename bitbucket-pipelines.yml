@@ -8,12 +8,13 @@ image: node:6.9.4
 definitions:
   caches:
     dart: ~/firebase/dartangular/.packages
+    firebasenode: ~/firebase/funcitons/node_modules
 
 pipelines:
   default:
     - step:
         caches:
-          - node
+          - firebasenode
         script: # Modify the commands below to build your repository.
           - cd firebase/functions
           - npm install
