@@ -13,11 +13,12 @@ definitions:
 pipelines:
   default:
     - step:
+        image: google/cloud-sdk
         caches:
           - firebasenode
         script: # Modify the commands below to build your repository.
           - cd firebase/functions
-          - npm install
+          - npm install -g firebase-tools
           - npm test
           - pipe: atlassian/firebase-deploy:0.2.0
             variables:
