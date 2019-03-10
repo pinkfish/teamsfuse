@@ -21,7 +21,7 @@ pipelines:
           - npm update
           - npm install -g firebase-tools
           - firebase setup:emulators:firestore
-          - firebase serve --only firestore
+          - firebase serve --port=8010 --debug --only firestore
           - npm test
           - pipe: atlassian/firebase-deploy:0.2.0
             variables:
