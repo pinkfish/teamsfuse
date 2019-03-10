@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-const admin = require('firebase-admin');
-const functions = require('firebase-functions');
+const admin = require("firebase-admin");
+const functions = require("firebase-functions");
 
 var db = admin.firestore();
 
-
-exports = module.exports = functions.firestore.document("/Players/{playerid}")
-    .onWrite((inputData, context) => {
+exports = module.exports = functions.firestore
+  .document("/Players/{playerid}")
+  .onWrite((inputData, context) => {
     /* No longer need to do this.
   const data = inputData.after.data();
   const previousData = inputData.before.data();
@@ -34,5 +34,5 @@ exports = module.exports = functions.firestore.document("/Players/{playerid}")
   }
   */
 
-  return inputData.after.data();
-});
+    return inputData.after.data();
+  });

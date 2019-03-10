@@ -101,7 +101,7 @@ service cloud.firestore {
       allow read, update, delete: if isSignedIn() &&
           request.auth.uid == resource.id;
       allow create: if isSignedIn() && request.auth.uid != null &&
-          request.resource.id == request.auth.uid;
+          request.resource.id == request.auth.uid && request.resource.data.createdAt == request.time;
     }
 
     match /Players/{player} {
