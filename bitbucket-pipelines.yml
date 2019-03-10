@@ -35,7 +35,7 @@ pipelines:
               PROJECT_ID: 'Teamsfuse'
               MESSAGE: 'Deploying TeamsFuse functions'
               EXTRA_ARGS: '--only functions'
-              DEBUG: 'true'
+              DEBUG: 'false'
     - step:
        caches:
          - dart
