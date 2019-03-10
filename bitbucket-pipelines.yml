@@ -9,19 +9,24 @@ definitions:
   caches:
     dart: ~/firebase/dartangular/.packages
     firebasenode: ~/firebase/funcitons/node_modules
+  services:
+    firestore:
+      image: jdlk7/firestore-emulator
+      memory: 512
 
 pipelines:
   default:
     - step:
-        #image: google/cloud-sdk
         caches:
           - firebasenode
+          - node
+        services:
+          - firestore
         script: # Modify the commands below to build your repository.
           - cd firebase/functions
           - npm update
           - npm install -g firebase-tools
-          - firebase setup:emulators:firestore
-          - firebase serve --port=8010 --debug --only firestore
+          - npm install -g @google-cloud/functions-emulator
           - npm test
           - pipe: atlassian/firebase-deploy:0.2.0
             variables:
