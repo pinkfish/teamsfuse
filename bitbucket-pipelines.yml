@@ -31,7 +31,7 @@ pipelines:
           - npm test
           - pipe: atlassian/firebase-deploy:0.2.0
             variables:
-              FIREBASE_TOKEN: 1/1wQ5cStKTP6wS44J-SVyoxeV27K52yxDcFEZCAOfh2M
+              FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
               PROJECT_ID: 'Teamsfuse'
               MESSAGE: 'Deploying TeamsFuse functions'
               EXTRA_ARGS: '--only functions'
