@@ -1,0 +1,39 @@
+# This is a sample build configuration for JavaScript.
+# Check our guides at https://confluence.atlassian.com/x/14UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: node:6.9.4
+
+definitions:
+  caches:
+    dart: ~/firebase/dartangular/.packages
+    firebasenode: ~/firebase/funcitons/node_modules
+
+pipelines:
+  default:
+    - step:
+        caches:
+          - firebasenode
+        script: # Modify the commands below to build your repository.
+          - cd firebase/functions
+          - npm install
+          - npm test
+          - pipe: atlassian/firebase-deploy:0.2.0
+            variables:
+              FIREBASE_TOKEN: 1/1wQ5cStKTP6wS44J-SVyoxeV27K52yxDcFEZCAOfh2M
+              PROJECT_ID: 'Teamsfuse'
+              MESSAGE: 'Deploying TeamsFuse functions'
+              EXTRA_ARGS: '--only functions'
+              DEBUG: 'true'
+    - step:
+       caches:
+         - dart
+       image: google/dart
+       name: Angular Dart build
+       script:
+         - cd firebase/dartangular
+         - pub global activate webdev
+         - pub packages get
+         - webdev build --release
+              
