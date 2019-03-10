@@ -9,7 +9,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "mocha --reporter spec"
+    "test": "cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:9090' mocha --reporter spec"
   },
   "dependencies": {
     "algoliasearch": "^3.32.0",
@@ -32,6 +32,7 @@
   "devDependencies": {
     "@firebase/testing": "0.7.0",
     "chai": "^4.2.0",
+    "cross-env": "^5.2.0",
     "eslint": "^4.19.1",
     "eslint-plugin-promise": "^3.8.0",
     "filesystem": "1.0.1",
