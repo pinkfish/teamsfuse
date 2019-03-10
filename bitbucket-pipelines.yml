@@ -22,6 +22,7 @@ pipelines:
           - node
         services:
           - firestore
+        image: node
         script: # Modify the commands below to build your repository.
           - cd firebase/functions
           - npm update
