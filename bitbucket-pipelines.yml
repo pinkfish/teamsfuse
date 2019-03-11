@@ -28,6 +28,7 @@ pipelines:
           - npm install -g @google-cloud/functions-emulator
           - npm test
           # - firebase deploy --token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ" --only functions,firestore,storage
+          - cd ..
           - pipe: atlassian/firebase-deploy:0.2.0
             variables:
               FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
@@ -47,6 +48,7 @@ pipelines:
          - pub get
          - webdev build --release
          - cp -rf build/* ../public
+         - cd ..
          - pipe: atlassian/firebase-deploy:0.2.0
            variables:
              FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
