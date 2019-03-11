@@ -22,19 +22,21 @@ pipelines:
           - node
         services:
           - firestore
+        image: node
         script: # Modify the commands below to build your repository.
           - cd firebase/functions
           - npm update
           - npm install -g firebase-tools
           - npm install -g @google-cloud/functions-emulator
           - npm test
-          - pipe: atlassian/firebase-deploy:0.2.0
-            variables:
-              FIREBASE_TOKEN: 1/1wQ5cStKTP6wS44J-SVyoxeV27K52yxDcFEZCAOfh2M
-              PROJECT_ID: 'Teamsfuse'
-              MESSAGE: 'Deploying TeamsFuse functions'
-              EXTRA_ARGS: '--only functions'
-              DEBUG: 'true'
+          # pipe: atlassian/firebase-deploy:0.2.0
+          - firebase deploy --token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ" --only functions,firestore,storage
+           # variables:
+           #   FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
+           #   PROJECT_ID: 'Teamsfuse'
+           #   MESSAGE: 'Deploying TeamsFuse functions'
+           #   EXTRA_ARGS: '--only functions,firestore'
+           #   DEBUG: 'false'
     - step:
        caches:
          - dart
