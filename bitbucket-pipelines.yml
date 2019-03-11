@@ -36,28 +36,28 @@ pipelines:
               MESSAGE: 'Deploying TeamsFuse functions'
               EXTRA_ARGS: '--only functions,firestore'
               DEBUG: 'false'
-    - step:
-       caches:
-         - dart
-       image: google/dart
-       name: Angular Dart build and deploy
-       trigger: manual
-       script:
-         - cd firebase/dartangular
-         - pub global activate webdev
-         - pub global activate stagehand
-         - pub get
-         - $HOME/.pub-cache/bin/webdev build --release
-         - cp -rf build/* ../public
-         - cd ..
-         - git add public/*
-         - git commit -m "Updating to ${BITBUCKET_BUILD_NUMBER}."
-         - git tag -am "Tagging for release ${BITBUCKET_BUILD_NUMBER}" release-${BITBUCKET_BUILD_NUMBER}
-         - git push
-         - pipe: atlassian/firebase-deploy:0.2.0
-           variables:
-             FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
-             #PROJECT_ID: 'teamsfuse'
-             MESSAGE: 'Deploying Teamsfuse hosting'
-             EXTRA_ARGS: '--only hosting'
-             DEBUG: 'false'
+  custom: # pipelines that can only be triggered manually.
+    deploy-to-prod:
+      - step:
+          caches:
+            - dart
+          image: google/dart
+          name: Angular Dart build and deploy
+          script:
+            - cd firebase/dartangular
+            - pub global activate webdev
+            - pub global activate stagehand
+            - pub get
+            - $HOME/.pub-cache/bin/webdev build --release
+            - cp -rf build/* ../public
+            - cd ..
+            - git add public/*
+            - git commit -m "Updating to ${BITBUCKET_BUILD_NUMBER}."
+            - git tag -am "Tagging for release ${BITBUCKET_BUILD_NUMBER}" release-${BITBUCKET_BUILD_NUMBER}
+            - git push
+            - pipe: atlassian/firebase-deploy:0.2.0
+              variables:
+                FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
+                #PROJECT_ID: 'teamsfuse'
+                MESSAGE: 'Deploying Teamsfuse hosting'                 EXTRA_ARGS: '--only hosting'
+                DEBUG: 'false'
