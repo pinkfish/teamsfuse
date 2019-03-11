@@ -41,6 +41,7 @@ pipelines:
          - dart
        image: google/dart
        name: Angular Dart build and deploy
+       trigger: manual
        script:
          - cd firebase/dartangular
          - pub global activate webdev
