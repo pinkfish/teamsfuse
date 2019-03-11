@@ -46,9 +46,13 @@ pipelines:
          - pub global activate webdev
          - pub global activate stagehand
          - pub get
-         - webdev build --release
+         - $HOME/.pub-cache/bin/webdev build --release
          - cp -rf build/* ../public
          - cd ..
+         - git add public/*
+         - git commit -m "Updating to ${BITBUCKET_BUILD_NUMBER}."
+         - git tag -am "Tagging for release ${BITBUCKET_BUILD_NUMBER}" release-${BITBUCKET_BUILD_NUMBER}
+         - git push
          - pipe: atlassian/firebase-deploy:0.2.0
            variables:
              FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
