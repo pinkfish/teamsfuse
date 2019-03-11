@@ -1,13 +1,10 @@
-# This is a sample build configuration for JavaScript.
-# Check our guides at https://confluence.atlassian.com/x/14UWN for more examples.
-# Only use spaces to indent your .yml configuration.
-# -----
-# You can specify a custom docker image from Docker Hub as your build environment.
+# Build config for angulardart and teamsfuse
 image: node:6.9.4
 
 definitions:
   caches:
     dart: ~/firebase/dartangular/.packages
+    dartbuild: ~/firebase/dartangular/build
     firebasenode: ~/firebase/funcitons/node_modules
   services:
     firestore:
@@ -20,6 +17,7 @@ pipelines:
         caches:
           - firebasenode
           - node
+        name: Firebase functions deploy and build
         services:
           - firestore
         image: node
@@ -29,22 +27,30 @@ pipelines:
           - npm install -g firebase-tools
           - npm install -g @google-cloud/functions-emulator
           - npm test
-          # pipe: atlassian/firebase-deploy:0.2.0
-          - firebase deploy --token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ" --only functions,firestore,storage
-           # variables:
-           #   FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
-           #   PROJECT_ID: 'Teamsfuse'
-           #   MESSAGE: 'Deploying TeamsFuse functions'
-           #   EXTRA_ARGS: '--only functions,firestore'
-           #   DEBUG: 'false'
+          # - firebase deploy --token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ" --only functions,firestore,storage
+          - pipe: atlassian/firebase-deploy:0.2.0
+            variables:
+              FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
+              #PROJECT_ID: 'Teamsfuse'
+              MESSAGE: 'Deploying TeamsFuse functions'
+              EXTRA_ARGS: '--only functions,firestore'
+              DEBUG: 'false'
     - step:
        caches:
          - dart
        image: google/dart
-       name: Angular Dart build
+       name: Angular Dart build and deploy
        script:
          - cd firebase/dartangular
          - pub global activate webdev
-         - pub packages get
+         - pub global activate stagehand
+         - pub get
          - webdev build --release
-              
+         - cp -rf build/* ../public
+         - pipe: atlassian/firebase-deploy:0.2.0
+           variables:
+             FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
+             #PROJECT_ID: 'teamsfuse'
+             MESSAGE: 'Deploying Teamsfuse hosting'
+             EXTRA_ARGS: '--only hosting'
+             DEBUG: 'false'
