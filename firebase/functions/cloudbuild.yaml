@@ -4,6 +4,9 @@ steps:
     args: [ 'npm', 'update' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase'
+    args: [ 'firebase', 'setup:emulators:firestore' ]
+  - name: 'gcr.io/teamsfuse/firebasenode'
+    dir: 'firebase'
     args: [ 'firebase', 'serve', '--only', 'firestore' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase/functions'
