@@ -3,8 +3,8 @@ steps:
     dir: 'firebase/functions'
     args: [ 'npm', 'update' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
-    dir: 'firebase/functions'
-    args: [ 'firebase', 'serve --only firestore' ]
+    dir: 'firebase'
+    args: [ 'firebase', 'serve', '--only', 'firestore' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase/functions'
     args: [ 'npm', 'test' ]
