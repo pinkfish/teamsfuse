@@ -4,6 +4,9 @@ steps:
     args: [ 'npm', 'update' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase/functions'
+    args: [ 'firebase', 'serve --only firestore' ]
+  - name: 'gcr.io/teamsfuse/firebasenode'
+    dir: 'firebase/functions'
     args: [ 'npm', 'test' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     args: ['firebase', 'deploy --token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ" --only functions,firestore,storage']

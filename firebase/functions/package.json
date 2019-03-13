@@ -9,7 +9,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:9090' mocha --reporter spec"
+    "test": "cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:8080' mocha --reporter spec"
   },
   "dependencies": {
     "algoliasearch": "^3.32.0",

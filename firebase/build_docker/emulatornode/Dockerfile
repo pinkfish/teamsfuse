@@ -16,6 +16,7 @@ RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
     && apt-get -qyy autoremove \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get -qyy clean \
-    && npm install firebase-tools
+    && npm install -g firebase-tools \
+    && firebase setup:emulators:database
 
 CMD [ "/bin/bash" ]
