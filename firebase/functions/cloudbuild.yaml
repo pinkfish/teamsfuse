@@ -7,7 +7,7 @@ steps:
     args: [ 'firebase', 'setup:emulators:firestore' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase'
-    args: [ 'firebase', 'serve', '--only', 'firestore' ]
+    args: [ 'firebase', 'serve', '--only', 'firestore', '--port=9090', '--host=0.0.0.0' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase/functions'
     args: [ 'npm', 'test' ]
