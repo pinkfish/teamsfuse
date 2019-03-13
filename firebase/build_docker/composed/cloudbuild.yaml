@@ -3,3 +3,5 @@ steps:
     args: ['up', '-d']
   - name: 'gcr.io/$PROJECT_ID/docker-compose'
     args: ['run', 'app', 'npm test']
+  - name: 'gcr.io/$PROJECT_ID/docker-compose'
+    args: ['firebase', 'deploy --token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ" --only functions,firestore,storage']

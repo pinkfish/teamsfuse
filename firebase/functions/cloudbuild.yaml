@@ -1,5 +1,6 @@
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    args: [ 'build', '-t', 'gcr.io/teamsfuse/emulator', '.' ]
-images:
-  - 'gcr.io/teamsfuse/emulator'
+  - name: 'gcr.io/teamsfuse/firebasenode'
+    dir: 'firebase/functions'
+    args: [ 'npm', 'test' ]
+  - name: 'gcr.io/teamsfuse/firebasenode'
+    args: ['firebase', 'deploy --token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ" --only functions,firestore,storage']
