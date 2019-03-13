@@ -4,7 +4,7 @@ steps:
     args: [ 'npm', 'update' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase'
-    args: [ 'chmod a+x emulator-test.sh && ./emulator-test.sh start' ]
+    args: [ 'firebase-emulator.sh start' ]
 #  - name: 'gcr.io/teamsfuse/firebasenode'
 #    dir: 'firebase'
 #    args: [ 'firebase', 'serve', '--only', 'firestore', '--port=9090', '--host=0.0.0.0' ]
@@ -13,6 +13,6 @@ steps:
     args: [ 'npm', 'test' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase'
-    args: [ './emulator-test.sh stop' ]
+    args: [ 'firebase-emulator.sh stop' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     args: ['firebase', 'deploy --token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ" --only functions,firestore,storage']
