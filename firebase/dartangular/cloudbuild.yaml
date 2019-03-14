@@ -22,7 +22,4 @@ steps:
     args: ['firebase', 'use', '--token', '$_FIREBASE_DEPLOY_KEY', 'production' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase'
-    args: ['firebase', 'use', '--add', 'teamsfuse', 'production' ]
-  - name: 'gcr.io/teamsfuse/firebasenode'
-    dir: 'firebase'
     args: ['firebase', 'deploy', '--token', '$_FIREBASE_DEPLOY_KEY', '--only', 'hosting']
