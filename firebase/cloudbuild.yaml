@@ -18,4 +18,8 @@ steps:
     dir: 'firebase'
     args: [ 'bash', '/workspace/firebase/firebase-emulator.sh', 'stop' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
-    args: ['firebase', 'deploy', '--token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ"', '--only', 'functions,firestore,storage']
+    args: ['firebase', 'use', '--token', '$_FIREBASE_DEPLOY_KEY', 'production' ]
+  - name: 'gcr.io/teamsfuse/firebasenode'
+    args: ['firebase', 'use', '--add', 'teamsfuse', 'production' ]
+  - name: 'gcr.io/teamsfuse/firebasenode'
+    args: ['firebase', 'deploy', '--non-interactive', '--token', '$_FIREBASE_DEPLOY_KEY', '--only', 'functions,firestore,storage']
