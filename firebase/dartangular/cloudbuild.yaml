@@ -1,0 +1,13 @@
+steps:
+  - name: 'google/dart'
+    dir: 'firebase/dartangular'
+    args: [ 'pub', 'global', 'activate', 'webdev' ]
+  - name: 'google/dart'
+    dir: 'firebase/dartangular'
+    args: [ '$HOME/.pub-cache/bin/webdev', 'webdev', 'build', '--release' ]
+  - name: 'google/dart'
+    dir: 'firebase/dartangular'
+    args: [ 'cp', '-rf', 'build/*', '../pubic' ]
+  - name: 'gcr.io/teamsfuse/firebasenode'
+    dir: 'firebase'
+    args: ['firebase', 'deploy --token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ" --only hosting']
