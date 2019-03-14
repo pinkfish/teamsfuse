@@ -13,7 +13,7 @@ steps:
     args: [ 'ls' ]
   - name: 'google/dart'
     dir: 'firebase/dartangular'
-    args: [ 'cp', '-rf', '/workspace/firebase/dartangular/build_release/*', '../public' ]
+    args: [ 'cp', '-rf', '/workspace/firebase/dartangular/build_release/*', '/workspace/firebase/public' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase'
-    args: ['firebase', 'deploy --token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ" --only hosting']
+    args: ['firebase', 'deploy', '--token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ"','--only', 'hosting']
