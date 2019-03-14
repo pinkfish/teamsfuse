@@ -1,0 +1,11 @@
+# Bild flutter_fuse for android in the cloud.
+
+steps:
+ - name: 'gcr.io/teamsfuse/flutter'
+    dir: 'flutter_fuse'
+    args: ['build apk']
+
+  # push apk into gcs
+  - name: 'gcr.io/cloud-builders/gsutil'
+    dir: 'flutter_fuse'
+    args: ['cp', 'flutter_fuse/build/app/outputs/apk/release/app-release.apk', 'gs://flutter_fuse_release/flutter_fuse_$BUILD_ID.apk']

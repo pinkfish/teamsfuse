@@ -1,5 +1,0 @@
-steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    args: [ 'build', '-t', 'gcr.io/teamsfuse/emulator', '.' ]
-images:
-  - 'gcr.io/teamsfuse/emulator'
