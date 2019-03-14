@@ -4,7 +4,7 @@ steps:
     args: [ 'pub', 'global', 'activate', 'webdev' ]
   - name: 'google/dart'
     dir: 'firebase/dartangular'
-    args: [ '$HOME/.pub-cache/bin/webdev', 'webdev', 'build', '--release' ]
+    args: [ 'pub', 'global', 'run', 'webdev', 'build', '--release' ]
   - name: 'google/dart'
     dir: 'firebase/dartangular'
     args: [ 'cp', '-rf', 'build/*', '../pubic' ]
