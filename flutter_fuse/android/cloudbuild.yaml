@@ -6,7 +6,7 @@ steps:
 
   - name: 'gcr.io/teamsfuse/flutter'
     dir: 'flutter_fuse'
-    args: ['build apk']
+    args: ['build', 'apk']
 
   # push apk into gcs
   - name: 'gcr.io/cloud-builders/gsutil'
