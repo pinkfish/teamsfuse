@@ -10,6 +10,9 @@ steps:
     args: [ 'pub', 'global', 'run', 'webdev', 'build', '--release' ]
   - name: 'google/dart'
     dir: 'firebase/dartangular'
+    args: [ 'ls' ]
+  - name: 'google/dart'
+    dir: 'firebase/dartangular'
     args: [ 'cp', '-rf', 'build_release/*', '../pubic' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase'
