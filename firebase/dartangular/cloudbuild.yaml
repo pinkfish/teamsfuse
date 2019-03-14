@@ -10,7 +10,7 @@ steps:
     args: [ 'pub', 'global', 'run', 'webdev', 'build', '--release' ]
   - name: 'google/dart'
     dir: 'firebase/dartangular'
-    args: [ 'cp', '-rf', 'build/*', '../pubic' ]
+    args: [ 'cp', '-rf', 'build_release/*', '../pubic' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase'
     args: ['firebase', 'deploy --token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ" --only hosting']
