@@ -35,8 +35,8 @@ dependencies:
     path: ../fusemodel
   sqflite: any
   tuple: any
-  sliver_calendar:
-    path: ../../flutter_calendar
+  sliver_calendar: ^0.2.0
+    #path: ../../flutter_calendar
   flutter_local_notifications:
     git:
       url: "git://github.com/pinkfish/flutter_local_notifications.git"
