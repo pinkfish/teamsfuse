@@ -1,7 +1,7 @@
 # Bild flutter_fuse for android in the cloud.
 
 steps:
- - name: 'gcr.io/teamsfuse/flutter'
+  - name: 'gcr.io/teamsfuse/flutter'
     dir: 'flutter_fuse'
     args: ['build apk']
 
