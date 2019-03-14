@@ -18,5 +18,9 @@ steps:
     dir: 'firebase/dartangular'
     args: [ 'bash', '-c', 'cp -rf /workspace/firebase/dartangular/build_release/* /workspace/firebase/public' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
+    args: ['firebase', 'use', '--token', '$_FIREBASE_DEPLOY_KEY', 'production' ]
+  - name: 'gcr.io/teamsfuse/firebasenode'
+    args: ['firebase', 'use', '--add', 'teamsfuse', 'production' ]
+  - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase'
-    args: ['firebase', 'deploy', '--token="1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ"','--only', 'hosting']
+    args: ['firebase', 'deploy', '--token' '$_FIREBASE_DEPLOY_KEY', '--only', 'hosting']
