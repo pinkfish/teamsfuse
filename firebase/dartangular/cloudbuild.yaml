@@ -4,6 +4,9 @@ steps:
     args: [ 'pub', 'global', 'activate', 'webdev' ]
   - name: 'google/dart'
     dir: 'firebase/dartangular'
+    args: [ 'pub', 'get' ]
+  - name: 'google/dart'
+    dir: 'firebase/dartangular'
     args: [ 'pub', 'global', 'run', 'webdev', 'build', '--release' ]
   - name: 'google/dart'
     dir: 'firebase/dartangular'
