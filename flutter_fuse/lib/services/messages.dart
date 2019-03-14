@@ -1222,7 +1222,7 @@ class Messages {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = new GameResultPerPeriod(
-          period: new GamePeriod(type: GamePeriodType.Regulation),
+          period: new GamePeriod(GamePeriodType.Regulation),
           score: new GameScore(ptsFor: 0, ptsAgainst: 0));
     }
     if (result.overtimeResult != null) {

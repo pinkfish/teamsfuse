@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_fuse/Routes.dart';
+import 'package:flutter_fuse/routes.dart';
 import 'package:flutter_fuse/cache/cachemanager.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/appconfiguration.dart';
