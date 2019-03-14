@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 EMULATOR="cloud-firestore-emulator"
 EMULATOR_TARGET=$(find ~/.cache/firebase/emulators/ -type f -name "$EMULATOR*.jar" | sort -r | head -n1)
