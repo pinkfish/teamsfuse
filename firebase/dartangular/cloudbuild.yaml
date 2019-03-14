@@ -19,7 +19,7 @@ steps:
     args: [ 'bash', '-c', 'cp -rf /workspace/firebase/dartangular/build_release/* /workspace/firebase/public' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase'
-    args: ['firebase', 'use', '--token', '$_FIREBASE_DEPLOY_KEY', 'production' ]
+    args: ['firebase', 'use', '--token', '$_FIREBASE_DEPLOY_KEY', 'default' ]
   - name: 'gcr.io/teamsfuse/firebasenode'
     dir: 'firebase'
     args: ['firebase', 'deploy', '--token', '$_FIREBASE_DEPLOY_KEY', '--only', 'hosting']
