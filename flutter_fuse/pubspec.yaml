@@ -42,8 +42,8 @@ dependencies:
   tuple: any
   sliver_calendar: #^0.2.0
     path: ../../flutter_calendar
-  flutter_local_notifications:
-    path: ../../flutter_local_notifications
+  #flutter_local_notifications:
+   # path: ../../flutter_local_notifications
     #git:
     #  url: "git://github.com/pinkfish/flutter_local_notifications.git"
 

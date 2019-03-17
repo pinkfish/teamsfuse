@@ -1,9 +1,6 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fusemodel/fusemodel.dart';
+//import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+//art';
 
 // Creates the text for the game.  THis is used by the game card and other
 // places to display details about the game without being dependent on
@@ -14,12 +11,12 @@ class GameNotification {
   final Game game;
   final Team team;
 
+  /*
   Future<int> showNotification(
       int id,
       FlutterLocalNotificationsPlugin notification,
       Messages messages,
       MaterialLocalizations materialLocalizations) async {
-    /*
     StringBuffer body;
     String title;
 
@@ -144,7 +141,7 @@ class GameNotification {
           new DateTime.fromMillisecondsSinceEpoch(scheduleToShow), details);
     }
     */
-    */
     return id;
   }
+    */
 }
