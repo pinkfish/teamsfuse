@@ -1,6 +1,11 @@
 name: flutter_fuse
 description: A way to fuse the teams.
 
+version: 0.8.7+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
 dependencies:
   flutter:
     sdk: flutter
@@ -9,41 +14,42 @@ dependencies:
 
   sentry: any
 
-  cloud_firestore: "^0.9.5+2"
+  cloud_firestore: "^0.9.6"
   firebase_auth: "^0.8.1+4"
   firebase_core: "^0.3.1+1"
   firebase_storage: "^2.1.0+1"
-  firebase_analytics: "^1.0.3"
-  firebase_performance: "^0.0.8"
-  firebase_remote_config: "^0.0.5"
-  firebase_messaging: "^2.0.0"
-  shared_preferences: "^0.4.2"
-  package_info: "^0.3.0"
-  device_info: "^0.2.0"
-  path_provider: "^0.4.1"
+  firebase_analytics: "^2.0.3"
+  firebase_performance: "^0.1.0"
+  firebase_remote_config: "^0.1.0"
+  firebase_messaging: "^4.0.0"
+  shared_preferences: "^0.5.1"
+  package_info: "^0.4.0"
+  device_info: "^0.4.0"
+  path_provider: "^0.5.0"
   uuid: "^1.0.3"
-  url_launcher: "^3.0.3"
-  flutter_native_timezone: ^1.0.2
-    #path: ../../flutter_native_timezone
-  flutter_places_dialog: "^1.0.3"
-    #path: ../../flutter_places_dialog
+  url_launcher: "^5.0.2"
+  flutter_native_timezone: #^1.0.3
+    path: ../../flutter_native_timezone
+  flutter_places_dialog: #"^1.0.5"
+    path: ../../flutter_places_dialog
 
   fluro: any
-  image_picker: "^0.4.1"
+  image_picker: "^0.5.0"
   timezone: ^0.5.2
   fusemodel:
     path: ../fusemodel
   sqflite: any
   tuple: any
-  sliver_calendar: ^0.2.0
-    #path: ../../flutter_calendar
+  sliver_calendar: #^0.2.0
+    path: ../../flutter_calendar
   flutter_local_notifications:
-    git:
-      url: "git://github.com/pinkfish/flutter_local_notifications.git"
+    path: ../../flutter_local_notifications
+    #git:
+    #  url: "git://github.com/pinkfish/flutter_local_notifications.git"
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.0
+  cupertino_icons: ^0.1.2
 
 dev_dependencies:
   flutter_test:
