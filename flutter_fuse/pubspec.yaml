@@ -28,10 +28,10 @@ dependencies:
   path_provider: "^0.5.0"
   uuid: "^1.0.3"
   url_launcher: "^5.0.2"
-  flutter_native_timezone: #^1.0.3
-    path: ../../flutter_native_timezone
-  flutter_places_dialog: #"^1.0.5"
-    path: ../../flutter_places_dialog
+  flutter_native_timezone: ^1.0.3
+    #path: ../../flutter_native_timezone
+  flutter_places_dialog: "^1.0.5"
+    #path: ../../flutter_places_dialog
 
   fluro: any
   image_picker: "^0.5.0"
@@ -40,8 +40,8 @@ dependencies:
     path: ../fusemodel
   sqflite: any
   tuple: any
-  sliver_calendar: #^0.2.0
-    path: ../../flutter_calendar
+  sliver_calendar: ^0.2.0
+    #path: ../../flutter_calendar
   #flutter_local_notifications:
    # path: ../../flutter_local_notifications
     #git:
