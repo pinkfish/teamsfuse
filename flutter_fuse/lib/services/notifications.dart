@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'appconfiguration.dart';
 import 'firebasemessaging.dart';
+//import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class Notifications {
   Notifications() {
@@ -21,8 +20,8 @@ class Notifications {
   static const String _keyNotificationData = "lib_notification_data";
 
   final FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      new FlutterLocalNotificationsPlugin();
+  //final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  //   new FlutterLocalNotificationsPlugin();
 
   StreamController<String> _notificationRoutes = new StreamController<String>();
   Stream<String> routeStream;
@@ -147,6 +146,7 @@ class Notifications {
   }
 
   void initForNotification(State<SplashScreen> state) async {
+    /*
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         new FlutterLocalNotificationsPlugin();
     InitializationSettingsAndroid initializationSettingsAndroid =
@@ -186,5 +186,6 @@ class Notifications {
       });
       */
     }
+    */
   }
 }

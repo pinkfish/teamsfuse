@@ -42,6 +42,7 @@ node_modules
 local.properties
 *.iml
 /android/
+flutter_fuse/android/key.jks
 
 # Icon must end with two \r
 Icon
