@@ -8,13 +8,15 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/blocs/authenticationbloc.dart';
 
 class Routes {
-  Routes(UserData data) {
+  Routes(FirestoreWrapper firestore, PersistenData persistentData) {
     // Subscribe to auth changes.
-    UserDatabaseData.instance.userAuth.onAuthChanged().listen(_authChanged);
+    //UserDatabaseData.instance.userAuth.onAuthChanged().listen(_authChanged);
     // Start loading stuff.
-    _authChanged(data);
+    //_authChanged(data);
     // Setup the app and do exciting things.
     app = new MaterialApp(
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
@@ -32,16 +34,21 @@ class Routes {
       ],
       title: "Team Fuse",
       theme: theme,
-      initialRoute: _currentUser == null || !_currentUser.isEmailVerified
-          ? "Login/Home"
-          : "Home",
+      initialRoute: "Home",
       home: new SplashScreen(),
       onGenerateRoute: _buildRoute,
     );
-    runApp(app);
+    _authenticationBloc = AuthenticationBloc(userAuth: firestore, persistentData: persistentData);
+    _authenticationBloc.dispatch(AppStarted());
+    runApp(  BlocProvider<AuthenticationBloc>(
+        bloc: _authenticationBloc,
+        child:
+
+    app);
   }
 
-  UserData _currentUser;
+  //UserData _currentUser;
+  AuthenticationBloc _authenticationBloc;
 
   final ThemeData theme = new ThemeData(
     // This is the theme of your application.
@@ -62,7 +69,7 @@ class Routes {
     LoggingData.instance.lastPath = routeSettings.name;
     return AppRouter.instance.generator(routeSettings);
   }
-
+/*
   void _authChanged(UserData user) async {
     _currentUser = user;
     if (user != null) {
@@ -78,4 +85,5 @@ class Routes {
       UserDatabaseData.clear();
     }
   }
+  */
 }

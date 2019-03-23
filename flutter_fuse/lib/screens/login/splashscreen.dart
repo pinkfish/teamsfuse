@@ -7,6 +7,9 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/notifications.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/blocs/authenticationbloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 
 import 'loginform.dart';
 
@@ -26,9 +29,11 @@ class SplashScreenState extends State<SplashScreen> {
   static bool loaded = false;
   static bool loadOnMounted = false;
   StreamSubscription<UserData> _stream;
+  AuthenticationBloc _authenticationBloc;
 
   @override
   void initState() {
+    _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
     _startLoading();
     super.initState();
     _stream = UserDatabaseData.instance.userAuth
@@ -119,6 +124,30 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<AuthenticationEvent, AuthenticationState>(
+      bloc: _authenticationBloc,
+      builder: (BuildContext context, AuthenticationState state) {
+        if (state is AuthenticationUninitialized || state is AuthenticationLoading) {
+          return _loadingScreen();
+        }
+        if (state is AuthenticationLoggedIn) {
+          Analytics.analytics.setUserId();
+          if (Analytics.instance.debugMode) {
+            Analytics.analytics.setUserProperty(name: "developer", value: "true");
+          } else {
+            Analytics.analytics.setUserProperty(name: "developer", value: "false");
+          }
+          return new HomeScreen();
+        }
+        if (state is AuthenticationLoggedInUnverified) {
+          return new VerifyEmailScreen();
+        }
+        if (state is AuthenticationLoggedOut) {
+          return new LoginScreen();
+        }
+      }
+    );
+    /*
     if (!loaded) {
       print('Not loaded yet');
       return _loadingScreen();
@@ -133,5 +162,6 @@ class SplashScreenState extends State<SplashScreen> {
     }
     print('Login screen');
     return new LoginScreen();
+    */
   }
 }

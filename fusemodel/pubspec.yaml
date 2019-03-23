@@ -5,10 +5,13 @@ author: David Bennett <pinkfishfrog@gmail.com>
 homepage: http://www.whelksoft.com
 
 environment:
-  sdk: ">=1.19.0 <3.0.0"
+  sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
   timezone:  any
+  bloc: any
+  equatable: any
+  meta: any
 
 dev_dependencies:
   test: any

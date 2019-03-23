@@ -148,8 +148,6 @@ PODS:
     - FirebaseCore (~> 5.2)
     - GTMSessionFetcher/Core (~> 1.1)
   - Flutter (1.0.0)
-  - flutter_local_notifications (0.0.1):
-    - Flutter
   - flutter_native_timezone (1.0.2):
     - Flutter
   - flutter_places_dialog (0.0.1):
@@ -252,7 +250,6 @@ DEPENDENCIES:
   - firebase_remote_config (from `Pods/.symlinks/plugins/firebase_remote_config/ios`)
   - firebase_storage (from `Pods/.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Pods/.symlinks/flutter/ios-release`)
-  - flutter_local_notifications (from `Pods/.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_native_timezone (from `Pods/.symlinks/plugins/flutter_native_timezone/ios`)
   - flutter_places_dialog (from `Pods/.symlinks/plugins/flutter_places_dialog/ios`)
   - GoogleAnalytics
@@ -319,8 +316,6 @@ EXTERNAL SOURCES:
     :path: Pods/.symlinks/plugins/firebase_storage/ios
   Flutter:
     :path: Pods/.symlinks/flutter/ios-release
-  flutter_local_notifications:
-    :path: Pods/.symlinks/plugins/flutter_local_notifications/ios
   flutter_native_timezone:
     :path: Pods/.symlinks/plugins/flutter_native_timezone/ios
   flutter_places_dialog:
@@ -351,7 +346,7 @@ SPEC CHECKSUMS:
   firebase_core: ce5006bb48508ee4e71e0f429a3f519bb8ee2961
   firebase_messaging: b25b2fa94e685146bcf9d706ed87b4e95cd2a17d
   firebase_performance: f9c43d7f14e9c6d209ff3e6906be93ac7fc7debc
-  firebase_remote_config: 7314ade4a1590e3b6e5b2728d9d0a539696eb69e
+  firebase_remote_config: d153cf3ee4ab117a776e5145f9a5805b864276d0
   firebase_storage: 2543f377090a6e219caab9224dead5bbcb30ef33
   FirebaseABTesting: 1f50b8d50f5e3469eea54e7463a7b7fe221d1f5e
   FirebaseAnalytics: 23851fe602c872130a2c5c55040b302120346cc2
@@ -367,8 +362,7 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfig: 7e11c65f0769c09bff6947997c209515058c5318
   FirebaseStorage: 29075f874c2b3cf61e5221a62c4ceefc809e5412
   Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
-  flutter_local_notifications: 9e4738ce2471c5af910d961a6b7eadcf57c50186
-  flutter_native_timezone: 7a48fe48d8e837337e09504e23d24e4b9c80f4ee
+  flutter_native_timezone: 08c9c3b286dd0e1f361e043b61dd402aec026eec
   flutter_places_dialog: d6706ba5200150251c737166277e02a92b8fc141
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleAnalytics: f42cc53a87a51fe94334821868d9c8481ff47a7b
@@ -393,4 +387,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: f31239aa1aa6b6ffa09b90489f11a480ab96082d
 
-COCOAPODS: 1.7.0.beta.1
+COCOAPODS: 1.6.1
