@@ -5,8 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_fuse/routes.dart';
 import 'package:flutter_fuse/cache/cachemanager.dart';
+import 'package:flutter_fuse/routes.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/appconfiguration.dart';
 import 'package:flutter_fuse/services/firestore/firestore.dart' as fs;
@@ -52,8 +52,9 @@ void main() async {
   // Setup the timestamps correctly.
   await Firestore.instance.settings(timestampsInSnapshotsEnabled: true);
 
+  FirestoreWrapper firestoreWrapper = new fs.Firestore();
   UserDatabaseData.instance = new UserDatabaseData(Analytics.instance,
-      LoggingData.instance, SqlData.instance, new fs.Firestore());
+      LoggingData.instance, SqlData.instance, firestoreWrapper);
 
   // Start the loading, but don't block on it,
   // Load notifications after the app config has loaded.
@@ -73,9 +74,6 @@ void main() async {
     LoggingData.instance.logFlutterError(details);
   };
 
-  // Wait till the user has loaded from firebase.
-  UserData data = await UserDatabaseData.instance.userAuth.currentUser();
-
   // License for the freepik picture.
   LicenseRegistry.addLicense(() async* {
     yield const LicenseEntryWithLineBreaks(
@@ -83,5 +81,5 @@ void main() async {
   });
   trace.stop();
 
-  new Routes(data);
+  new Routes(firestoreWrapper, SqlData.instance);
 }

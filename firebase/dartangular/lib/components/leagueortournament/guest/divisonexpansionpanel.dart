@@ -1,14 +1,16 @@
-import 'package:angular/angular.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:angular_components/material_expansionpanel/material_expansionpanel.dart';
 import 'dart:async';
-import 'package:teamfuse/components/games/gamesharedcard-component.dart';
-import 'package:angular_components/material_tab/material_tab_panel.dart';
-import 'package:angular_components/material_tab/material_tab.dart';
-import 'package:angular_components/material_tab/tab_change_event.dart';
+
+import 'package:angular/angular.dart';
 import 'package:angular_components/content/deferred_content.dart';
-import '../common/league-team-card-component.dart';
+import 'package:angular_components/material_expansionpanel/material_expansionpanel.dart';
+import 'package:angular_components/material_tab/material_tab.dart';
+import 'package:angular_components/material_tab/material_tab_panel.dart';
+import 'package:angular_components/material_tab/tab_change_event.dart';
 import 'package:angular_router/angular_router.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:teamfuse/components/games/gamesharedcard-component.dart';
+
+import '../common/league-team-card-component.dart';
 
 @Component(
   selector: 'divison-expansionpanel',
@@ -145,7 +147,6 @@ class DivisonExpansionPanelComponent implements OnDestroy, OnInit {
     _location.replaceState(
         bits[0], 'season=${season.uid}&divison=${divison.uid}&t=${tabIndex}');
   }
-
 
   void closePanel() {
     print('closePanel');

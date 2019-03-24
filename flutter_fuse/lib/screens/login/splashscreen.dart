@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/screens/home/home.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/notifications.dart';
+import 'package:fusemodel/blocs/authenticationbloc.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:fusemodel/blocs/authenticationbloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/analytics.dart';
 
 import 'loginform.dart';
 
@@ -125,28 +125,31 @@ class SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthenticationEvent, AuthenticationState>(
-      bloc: _authenticationBloc,
-      builder: (BuildContext context, AuthenticationState state) {
-        if (state is AuthenticationUninitialized || state is AuthenticationLoading) {
-          return _loadingScreen();
-        }
-        if (state is AuthenticationLoggedIn) {
-          Analytics.analytics.setUserId();
-          if (Analytics.instance.debugMode) {
-            Analytics.analytics.setUserProperty(name: "developer", value: "true");
-          } else {
-            Analytics.analytics.setUserProperty(name: "developer", value: "false");
+        bloc: _authenticationBloc,
+        builder: (BuildContext context, AuthenticationState state) {
+          if (state is AuthenticationUninitialized ||
+              state is AuthenticationLoading) {
+            return _loadingScreen();
           }
-          return new HomeScreen();
-        }
-        if (state is AuthenticationLoggedInUnverified) {
-          return new VerifyEmailScreen();
-        }
-        if (state is AuthenticationLoggedOut) {
-          return new LoginScreen();
-        }
-      }
-    );
+          if (state is AuthenticationLoggedIn) {
+            AuthenticationLoggedIn logIn = state;
+            Analytics.analytics.setUserId(logIn.user.uid);
+            if (Analytics.instance.debugMode) {
+              Analytics.analytics
+                  .setUserProperty(name: "developer", value: "true");
+            } else {
+              Analytics.analytics
+                  .setUserProperty(name: "developer", value: "false");
+            }
+            return new HomeScreen();
+          }
+          if (state is AuthenticationLoggedInUnverified) {
+            return new VerifyEmailScreen();
+          }
+          if (state is AuthenticationLoggedOut) {
+            return new LoginScreen();
+          }
+        });
     /*
     if (!loaded) {
       print('Not loaded yet');

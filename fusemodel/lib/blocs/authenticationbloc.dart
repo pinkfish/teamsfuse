@@ -1,9 +1,10 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
-import 'dart:async';
 
 ///
 /// States for the authentication bloc.
@@ -71,8 +72,8 @@ class LoggedOut extends AuthenticationEvent {
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  UserAuthImpl _userAuth;
-  PersistenData persistentData;
+  final UserAuthImpl _userAuth;
+  final PersistenData persistentData;
   StreamSubscription<UserData> _listener;
 
   @override
@@ -89,16 +90,14 @@ class AuthenticationBloc
   @override
   void dispose() {
     super.dispose();
-    _listener.dispose();
+    _listener.cancel();
   }
 
   Future<AuthenticationState> _updateWithUser(UserData user) async {
     if (user.isEmailVerified) {
       // Load stuff
       await UserDatabaseData.load(
-          user.uid,
-          user.email,
-          _userAuth.getProfile(user.uid));
+          user.uid, user.email, _userAuth.getProfile(user.uid));
       // Finished loading.  Yay!
       return AuthenticationLoggedIn(user: user);
     } else {
@@ -111,8 +110,6 @@ class AuthenticationBloc
       AuthenticationState currentState, AuthenticationEvent event) async* {
     if (event is AppStarted) {
       UserData data = await _userAuth.currentUser();
-
-      _currentUser = data;
       if (data == null) {
         yield AuthenticationLoggedOut();
       } else {
@@ -127,7 +124,6 @@ class AuthenticationBloc
       LoggedIn loggedInEvent = event;
       yield AuthenticationLoading();
       yield await _updateWithUser(loggedInEvent.user);
-
     }
 
     if (event is LoggedOut) {
@@ -141,7 +137,7 @@ class AuthenticationBloc
 
   void _authChanged(UserData user) async {
     if (user != null) {
-        dispatch(LoggedIn(user: user));
+      dispatch(LoggedIn(user: user));
     } else {
       dispatch(LoggedOut());
     }

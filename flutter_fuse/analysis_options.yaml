@@ -2,8 +2,6 @@ analyzer:
   strong-mode:
     implicit-casts: false
     implicit-dynamic: false
-  language:
-    enableSuperMixins: true
   errors:
     todo: ignore
   exclude:
@@ -40,7 +38,6 @@ linter:
     - always_put_required_named_parameters_first
     - always_require_non_null_named_parameters
     - recursive_getters
-    - super_goes_last
     - unnecessary_overrides
     - unnecessary_this
     - use_string_buffers

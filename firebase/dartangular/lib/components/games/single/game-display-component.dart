@@ -1,14 +1,16 @@
+import 'dart:async';
+import 'dart:html';
+
 import 'package:angular/angular.dart';
-import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/content/deferred_content.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_components/material_icon/material_icon.dart';
+import 'package:angular_router/angular_router.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:intl/intl.dart';
-import 'dart:html';
 import 'package:google_maps/google_maps.dart';
+import 'package:intl/intl.dart';
+
 import 'attendence.dart';
-import 'dart:async';
 
 @Component(
   selector: 'game-display',
@@ -82,7 +84,6 @@ class GameDisplayComponent implements AfterViewInit, OnInit, OnDestroy {
     _gameSub = game.thisGameStream.listen((UpdateReason e) => updateGame());
     updateGame();
   }
-
 
   @override
   void ngOnDestroy() {
@@ -187,7 +188,6 @@ class GameDisplayComponent implements AfterViewInit, OnInit, OnDestroy {
 
   void openTeam() {
     _router.navigate("/a/team/" + game.teamUid);
-
   }
 
   void openLeague() {

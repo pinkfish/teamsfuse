@@ -148,7 +148,7 @@ PODS:
     - FirebaseCore (~> 5.2)
     - GTMSessionFetcher/Core (~> 1.1)
   - Flutter (1.0.0)
-  - flutter_native_timezone (1.0.2):
+  - flutter_native_timezone (0.0.1):
     - Flutter
   - flutter_places_dialog (0.0.1):
     - Flutter
@@ -362,7 +362,7 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfig: 7e11c65f0769c09bff6947997c209515058c5318
   FirebaseStorage: 29075f874c2b3cf61e5221a62c4ceefc809e5412
   Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
-  flutter_native_timezone: 08c9c3b286dd0e1f361e043b61dd402aec026eec
+  flutter_native_timezone: e72ff1900460ff57cfd331d1758050c9269f3e99
   flutter_places_dialog: d6706ba5200150251c737166277e02a92b8fc141
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleAnalytics: f42cc53a87a51fe94334821868d9c8481ff47a7b

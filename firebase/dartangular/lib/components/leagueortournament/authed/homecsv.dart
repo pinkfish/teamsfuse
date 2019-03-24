@@ -249,9 +249,9 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
       String endTime = d[2].trim() as String;
       String awayTeam = d[3].trim() as String;
       String homeTeam = d[4].trim() as String;
-      String eventType = d[5] as String;
+      //String eventType = d[5] as String;
       String address = d[6].trim() as String;
-      String placeName = address as String;
+      String placeName = address;
       String divison = d[7].trim() as String;
 
       print(d);

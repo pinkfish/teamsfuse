@@ -1,6 +1,6 @@
 import 'package:angular/angular.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:angular_components/material_expansionpanel/material_expansionpanel.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:teamfuse/components/team/teamdetails.dart';
 
 @Component(

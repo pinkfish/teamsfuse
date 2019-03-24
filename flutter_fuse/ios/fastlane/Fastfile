@@ -36,7 +36,19 @@ platform :ios do
       build_number: build_number + 1,
       xcodeproj: project
     )
-    build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
+    match(type: "appstore", readonly: is_ci)
+    #get_certificates           # invokes cert
+    #get_provisioning_profile   # invokes sigh
+    build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
+    upload_to_testflight
+  end
+
+  lane :release do
+    sync_code_signing
+    disable_automatic_code_signing(path: "my_project.xcodeproj")
+    build_app
+    enable_automatic_code_signing(path: "my_project.xcodeproj")
     upload_to_testflight
   end
 end
+

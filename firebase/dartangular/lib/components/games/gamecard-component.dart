@@ -1,16 +1,18 @@
+import 'dart:html';
+
 import 'package:angular/angular.dart';
-import 'package:angular_forms/angular_forms.dart';
-import 'package:angular_router/angular_router.dart';
 import 'package:angular_components/content/deferred_content.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
+import 'package:angular_forms/angular_forms.dart';
+import 'package:angular_router/angular_router.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:intl/intl.dart';
 import 'package:google_maps/google_maps_places.dart';
+import 'package:intl/intl.dart';
+
 import 'inputdata.dart';
-import 'dart:html';
 
 class TimeStuff {
   num hour;
@@ -72,7 +74,8 @@ class GameCardComponent implements OnInit {
   }
 
   void updateOpponent() {
-    print('Checking ${game.opponentUids} ${game.teamUid} ${UserDatabaseData.instance.teams[game.teamUid].opponents.keys}');
+    print(
+        'Checking ${game.opponentUids} ${game.teamUid} ${UserDatabaseData.instance.teams[game.teamUid].opponents.keys}');
     if (game.opponentUids.length > 0 &&
         UserDatabaseData.instance.teams[game.teamUid].opponents
             .containsKey(game.opponentUids[0])) {

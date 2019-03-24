@@ -1,15 +1,15 @@
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/approuter.dart';
 import 'package:flutter_fuse/services/loggingdata.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:fusemodel/blocs/authenticationbloc.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fusemodel/blocs/authenticationbloc.dart';
 
 class Routes {
   Routes(FirestoreWrapper firestore, PersistenData persistentData) {
@@ -38,13 +38,11 @@ class Routes {
       home: new SplashScreen(),
       onGenerateRoute: _buildRoute,
     );
-    _authenticationBloc = AuthenticationBloc(userAuth: firestore, persistentData: persistentData);
+    _authenticationBloc =
+        AuthenticationBloc(userAuth: firestore, persistentData: persistentData);
     _authenticationBloc.dispatch(AppStarted());
-    runApp(  BlocProvider<AuthenticationBloc>(
-        bloc: _authenticationBloc,
-        child:
-
-    app);
+    runApp(BlocProvider<AuthenticationBloc>(
+        bloc: _authenticationBloc, child: app));
   }
 
   //UserData _currentUser;
