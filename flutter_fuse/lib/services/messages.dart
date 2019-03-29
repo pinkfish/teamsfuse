@@ -78,6 +78,20 @@ class Messages {
     );
   }
 
+  String get forgotPasswordSent {
+    return Intl.message(
+      'Sent email to your email address to reset your password',
+      name: 'Forgot password happy button',
+    );
+  }
+
+  String get forgotPasswordHint {
+    return Intl.message(
+      'The email to resend the password to',
+      name: 'Forgot password happy button',
+    );
+  }
+
   String get resendverify {
     return Intl.message(
       'RESEND EMAIL',

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_fuse/widgets/login/loginheader.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs/loginbloc.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key key}) : super(key: key);
@@ -17,6 +21,11 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   bool autovalidate = false;
   Validations validations = new Validations();
   String email = '';
+  LoginBloc _loginBloc;
+
+  void initState() {
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
+  }
 
   void onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
@@ -34,95 +43,133 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      UserDatabaseData.instance.userAuth.sendPasswordResetEmail(email).then((void nothing) {
-        // Show a dialog saying we sent the email.
-        Navigator.pushNamed(context, "/Login/Home");
-      }).catchError((Error error) {
-        showInSnackBar(error.toString());
-      });
+      _loginBloc.dispatch(LoginEventForgotPasswordSend(email: email));
     }
+  }
+
+  Widget _buildForgotPasswordForm() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Form(
+            key: formKey,
+            autovalidate: autovalidate,
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  decoration: InputDecoration(
+                    icon: const Icon(Icons.email),
+                    hintText: Messages.of(context).email,
+                    labelText: Messages.of(context).email,
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  obscureText: false,
+                  onSaved: (String value) {
+                    email = value;
+                  },
+                ),
+                Container(
+                  child: RaisedButton(
+                      child: Text(Messages.of(context).forgotPassword),
+                      color: Theme.of(context).primaryColor,
+                      onPressed: _handleSubmitted),
+                  margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                ),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              FlatButton(
+                child: Text(Messages.of(context).createaccount),
+                textColor: Theme.of(context).accentColor,
+                onPressed: () {
+                  _loginBloc.dispatch(LoginEventReset());
+                  onPressed("/Login/SignUp");
+                },
+              ),
+              FlatButton(
+                child: Text(Messages.of(context).login),
+                textColor: Theme.of(context).accentColor,
+                onPressed: () {
+                  _loginBloc.dispatch(LoginEventReset());
+                  onPressed("/Login/Home");
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildForgotPasswordDone() {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Center(child: Text(Messages.of(context).forgotPasswordSent)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              FlatButton(
+                child: Text(Messages.of(context).createaccount),
+                textColor: Theme.of(context).accentColor,
+                onPressed: () {
+                  _loginBloc.dispatch(LoginEventReset());
+                  onPressed("/Login/SignUp");
+                },
+              ),
+              FlatButton(
+                  child: Text(Messages.of(context).login),
+                  textColor: Theme.of(context).accentColor,
+                  onPressed: () {
+                    _loginBloc.dispatch(LoginEventReset());
+                    // Go back to the initial state.
+                    onPressed("/Login/Home");
+                  }),
+            ],
+          )
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
     return new Scaffold(
-        key: _scaffoldKey,
-        body: new SingleChildScrollView(
-            controller: scrollController,
-            child: new Container(
-              padding: new EdgeInsets.all(16.0),
-              //decoration: new BoxDecoration(image: backgroundImage),
-              child: new Column(
-                children: <Widget>[
-                  new Container(
-                    child: new Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        new Center(
-                            child: new Image(
-                          image: new ExactAssetImage(
-                              "assets/images/abstractsport.png"),
-                          width: (screenSize.width < 500)
-                              ? 120.0
-                              : (screenSize.width / 4) + 12.0,
-                          height: screenSize.height / 4 + 20,
-                        ))
-                      ],
-                    ),
-                  ),
-                  new Container(
-                    child: new Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        new Form(
-                          key: formKey,
-                          autovalidate: autovalidate,
-                          child: new Column(
-                            children: <Widget>[
-                              new TextFormField(
-                                  decoration: const InputDecoration(
-                                    icon: const Icon(Icons.email),
-                                    hintText: 'Your email address',
-                                    labelText: 'E-mail',
-                                  ),
-                                  keyboardType: TextInputType.emailAddress,
-                                  obscureText: false,
-                                  onSaved: (String value) {
-                                    email = value;
-                                  }),
-                              new Container(
-                                child: new RaisedButton(
-                                    child: const Text("Forgot Password"),
-                                    color: Theme.of(context).primaryColor,
-                                    onPressed: _handleSubmitted),
-                                margin: new EdgeInsets.only(
-                                    top: 20.0, bottom: 20.0),
-                              ),
-                            ],
-                          ),
-                        ),
-                        new Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            new FlatButton(
-                              child: const Text("Create Account"),
-                              textColor: Theme.of(context).accentColor,
-                              onPressed: () => onPressed("/Login/SignUp"),
-                            ),
-                            new FlatButton(
-                                child: const Text("Login"),
-                                textColor: Theme.of(context).accentColor,
-                                onPressed: () => onPressed("/")),
-                          ],
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            )));
+      key: _scaffoldKey,
+      body: SingleChildScrollView(
+        controller: scrollController,
+        child: Container(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            children: <Widget>[
+              LoginHeader(),
+              BlocBuilder<LoginEvent, LoginState>(
+                  bloc: _loginBloc,
+                  builder: (BuildContext context, LoginState state) {
+                    bool loading = LoginState is LoginValidatingForgotPassword;
+                    if (state is LoginForgotPasswordFailed) {
+                      showInSnackBar(state.error.toString());
+                      return SavingOverlay(
+                        saving: false,
+                        child: _buildForgotPasswordDone(),
+                      );
+                    }
+                    return SavingOverlay(
+                      saving: loading,
+                      child: _buildForgotPasswordForm(),
+                    );
+                  }),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

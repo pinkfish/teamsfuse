@@ -1,8 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
+import 'package:fusemodel/blocs/invitebloc.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 // Shows the current invites pending for this user.
 class InviteListScreen extends StatefulWidget {
@@ -264,12 +267,11 @@ class InviteListScreenState extends State<InviteListScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> invites = <Widget>[];
-    if (UserDatabaseData.instance.invites.length == 0) {
-      invites.add(new SizedBox(height: 50.0));
-      invites.add(
+  List<Widget> _buildInviteList(Map<String, Invite> invites) {
+    List<Widget> inviteWidgets = <Widget>[];
+    if (invites.length == 0) {
+      inviteWidgets.add(new SizedBox(height: 50.0));
+      inviteWidgets.add(
         new Center(
           child: new Text(
             Messages.of(context).noinvites,
@@ -278,27 +280,33 @@ class InviteListScreenState extends State<InviteListScreen> {
         ),
       );
     } else {
-      UserDatabaseData.instance.invites.forEach((String key, Invite invite) {
+      invites.forEach((String key, Invite invite) {
         if (invite is InviteToTeam) {
-          invites.add(_buildInviteToTeam(invite));
+          inviteWidgets.add(_buildInviteToTeam(invite));
         }
         if (invite is InviteToPlayer) {
-          invites.add(_buildInviteToPlayer(invite));
+          inviteWidgets.add(_buildInviteToPlayer(invite));
         }
         if (invite is InviteAsAdmin) {
-          invites.add(_buildInviteAsAdmin(invite));
+          inviteWidgets.add(_buildInviteAsAdmin(invite));
         }
         if (invite is InviteToClub) {
-          invites.add(_buildInviteToClub(invite));
+          inviteWidgets.add(_buildInviteToClub(invite));
         }
         if (invite is InviteToLeagueAsAdmin) {
-          invites.add(_buildInviteToLeague(invite));
+          inviteWidgets.add(_buildInviteToLeague(invite));
         }
         if (invite is InviteToLeagueTeam) {
-          invites.add(_buildInviteToLeagueTeam(invite));
+          inviteWidgets.add(_buildInviteToLeagueTeam(invite));
         }
       });
     }
+    return inviteWidgets;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
 
     return new Scaffold(
       appBar: new AppBar(
@@ -306,9 +314,13 @@ class InviteListScreenState extends State<InviteListScreen> {
       ),
       body: new Scrollbar(
         child: new SingleChildScrollView(
-          child: new Column(
-            children: invites,
-          ),
+          child: BlocBuilder<InviteEvent, InviteState>(
+              bloc: inviteBloc,
+              builder: (BuildContext context, InviteState state) {
+                return Column(
+                  children: _buildInviteList(state.invites),
+                );
+              }),
         ),
       ),
     );

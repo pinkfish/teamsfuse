@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:fusemodel/firestore.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/analytics.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/validations.dart';
+import 'package:flutter_fuse/widgets/login/loginheader.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs/loginbloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key key}) : super(key: key);
@@ -20,9 +20,14 @@ class LoginScreenState extends State<LoginScreen> {
   ScrollController scrollController = new ScrollController();
   bool autovalidate = false;
   Validations validations = new Validations();
-  UserData person = new UserData();
+  String email;
+  String password;
   String errorText = '';
-  bool _loggingIn = false;
+  LoginBloc _loginBloc;
+
+  void initState() {
+    _loginBloc = BlocProvider.of<LoginBloc>(context);
+  }
 
   void onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
@@ -45,143 +50,111 @@ class LoginScreenState extends State<LoginScreen> {
       });
       showInSnackBar(errorText);
     } else {
-      setState(() {
-        _loggingIn = true;
-      });
       // Save the data and login.
       form.save();
-
-      // Login!
-      // Remove any spaces at the begining/end.
-      person.email = person.email.trim();
-      print('Doing login');
-      UserData user;
-      try {
-        user = await UserDatabaseData.instance.userAuth.signIn(person);
-      } catch (error) {
-        print('Right here $error');
-        setState(() {
-          errorText = "Invaid password or difficulty logging on";
-          _loggingIn = false;
-        });
-        showInSnackBar(errorText);
-        return;
-      }
-      print('Home page $user');
-      await UserDatabaseData.instance.userAuth.reloadUser();
-      print('reloaded user');
-      Analytics.analytics.logLogin();
-      setState(() {
-        _loggingIn = false;
-      });
-      Navigator.pushNamedAndRemoveUntil(
-          context, '/Home', ModalRoute.withName('/Home'));
+      _loginBloc
+          .dispatch(LoginEventAttempt(email: email.trim(), password: password));
     }
+  }
+
+  Widget _buildLoginForm() {
+    return SingleChildScrollView(
+      controller: scrollController,
+      child: Container(
+        padding: EdgeInsets.all(16.0),
+        //decoration: new BoxDecoration(image: backgroundImage),
+        child: Column(
+          children: <Widget>[
+            LoginHeader(),
+            Container(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Form(
+                    key: formKey,
+                    autovalidate: autovalidate,
+                    child: Column(
+                      children: <Widget>[
+                        Text(errorText),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            icon: const Icon(Icons.email),
+                            hintText: 'Your email address',
+                            labelText: 'E-mail',
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          obscureText: false,
+                          onSaved: (String value) {
+                            email = value;
+                          },
+                        ),
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            icon: const Icon(Icons.lock_open),
+                            hintText: 'Password',
+                            labelText: 'Password',
+                          ),
+                          obscureText: true,
+                          onSaved: (String password) {
+                            password = password;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    child: RaisedButton(
+                      child: Text(Messages.of(context).login),
+                      color: Theme.of(context).primaryColor,
+                      textColor: Colors.white,
+                      onPressed: () => _handleSubmitted(),
+                    ),
+                    margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      FlatButton(
+                        child: Text(Messages.of(context).createaccount),
+                        textColor: Theme.of(context).accentColor,
+                        onPressed: () => onPressed("/Login/SignUp"),
+                      ),
+                      FlatButton(
+                        child: Text(Messages.of(context).forgotPassword),
+                        textColor: Theme.of(context).accentColor,
+                        onPressed: () => onPressed("/Login/ForgotPassword"),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
-
-    return new Scaffold(
+    return Scaffold(
       key: _scaffoldKey,
-      body: new SavingOverlay(
-        saving: _loggingIn,
-        child: new SingleChildScrollView(
-          controller: scrollController,
-          child: new Container(
-            padding: new EdgeInsets.all(16.0),
-            //decoration: new BoxDecoration(image: backgroundImage),
-            child: new Column(
-              children: <Widget>[
-                new Container(
-                  child: new Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      new Center(
-                        child: new Image(
-                          image: new ExactAssetImage(
-                              "assets/images/abstractsport.png"),
-                          width: (screenSize.width < 500)
-                              ? 120.0
-                              : (screenSize.width / 4) + 12.0,
-                          height: screenSize.height / 4 + 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                new Container(
-                  child: new Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      new Form(
-                        key: formKey,
-                        autovalidate: autovalidate,
-                        child: new Column(
-                          children: <Widget>[
-                            new Text(errorText),
-                            new TextFormField(
-                              decoration: const InputDecoration(
-                                icon: const Icon(Icons.email),
-                                hintText: 'Your email address',
-                                labelText: 'E-mail',
-                              ),
-                              keyboardType: TextInputType.emailAddress,
-                              obscureText: false,
-                              onSaved: (String value) {
-                                person.email = value;
-                              },
-                            ),
-                            new TextFormField(
-                              decoration: const InputDecoration(
-                                icon: const Icon(Icons.lock_open),
-                                hintText: 'Password',
-                                labelText: 'Password',
-                              ),
-                              obscureText: true,
-                              onSaved: (String password) {
-                                person.password = password;
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      new Container(
-                        child: new RaisedButton(
-                          child: new Text(Messages.of(context).login),
-                          color: Theme.of(context).primaryColor,
-                          textColor: Colors.white,
-                          onPressed: () => _handleSubmitted(),
-                        ),
-                        margin: new EdgeInsets.only(top: 20.0, bottom: 20.0),
-                      ),
-                      new Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          new FlatButton(
-                            child: new Text(Messages.of(context).createaccount),
-                            textColor: Theme.of(context).accentColor,
-                            onPressed: () => onPressed("/Login/SignUp"),
-                          ),
-                          new FlatButton(
-                            child:
-                                new Text(Messages.of(context).forgotPassword),
-                            textColor: Theme.of(context).accentColor,
-                            onPressed: () => onPressed("/Login/ForgotPassword"),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
+      body: BlocBuilder<LoginEvent, LoginState>(
+          bloc: _loginBloc,
+          builder: (BuildContext context, LoginState state) {
+            if (state is LoginFailed) {
+              errorText = Messages.of(context).passwordsnotmatching;
+              showInSnackBar(errorText);
+            }
+            if (state is LoginSucceeded) {
+              // Navigate away!
+              return SavingOverlay(saving: true, child: _buildLoginForm());
+            } else {
+              bool loading = state is LoginValidating;
+              return SavingOverlay(saving: loading, child: _buildLoginForm());
+            }
+          }),
     );
   }
 }

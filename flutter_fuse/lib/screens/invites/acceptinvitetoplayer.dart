@@ -39,8 +39,6 @@ class _AcceptInviteToPlayerScreenState
   void _savePressed() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      UserDatabaseData.instance
-          .acceptInvite(_invite, relationship: _relationship);
       Navigator.pop(context);
     }
   }

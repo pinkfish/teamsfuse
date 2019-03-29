@@ -14,7 +14,7 @@ class Analytics extends AnalyticsSubsystem {
   DeviceInfoPlugin deviceInfo;
   IosDeviceInfo iosDeviceInfo;
   AndroidDeviceInfo androidDeviceInfo;
-  bool debugMode = false;
+  bool _debugMode = false;
 
   static Analytics get instance {
     if (_instance == null) {
@@ -27,7 +27,7 @@ class Analytics extends AnalyticsSubsystem {
   }
 
   void load() {
-    assert(debugMode = true);
+    assert(_debugMode = true);
 
     // Load the device and package info.
     packageInfo = new PackageInfo(
@@ -56,6 +56,26 @@ class Analytics extends AnalyticsSubsystem {
   @override
   void logSignUp({String signUpMethod}) {
     _analytics.logSignUp(signUpMethod: signUpMethod);
+  }
+
+  @override
+  void logLogin() {
+    _analytics.logLogin();
+  }
+
+  @override
+  void setUserId(String uid) {
+    _analytics.setUserId(uid);
+  }
+
+  @override
+  void setUserProperty({String name, String value}) {
+    _analytics.setUserProperty(name: name, value: value);
+  }
+
+  @override
+  bool get debugMode {
+    return _debugMode;
   }
 
   @override

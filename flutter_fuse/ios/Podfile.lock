@@ -249,7 +249,7 @@ DEPENDENCIES:
   - firebase_performance (from `Pods/.symlinks/plugins/firebase_performance/ios`)
   - firebase_remote_config (from `Pods/.symlinks/plugins/firebase_remote_config/ios`)
   - firebase_storage (from `Pods/.symlinks/plugins/firebase_storage/ios`)
-  - Flutter (from `Pods/.symlinks/flutter/ios-release`)
+  - Flutter (from `Pods/.symlinks/flutter/ios`)
   - flutter_native_timezone (from `Pods/.symlinks/plugins/flutter_native_timezone/ios`)
   - flutter_places_dialog (from `Pods/.symlinks/plugins/flutter_places_dialog/ios`)
   - GoogleAnalytics
@@ -315,7 +315,7 @@ EXTERNAL SOURCES:
   firebase_storage:
     :path: Pods/.symlinks/plugins/firebase_storage/ios
   Flutter:
-    :path: Pods/.symlinks/flutter/ios-release
+    :path: Pods/.symlinks/flutter/ios
   flutter_native_timezone:
     :path: Pods/.symlinks/plugins/flutter_native_timezone/ios
   flutter_places_dialog:

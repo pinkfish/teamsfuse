@@ -10,15 +10,15 @@ class InviteToPlayer extends Invite {
 
   InviteToPlayer(
       {this.playerUid,
-        this.playerName,
-        String email,
-        String uid,
-        String sentByUid})
+      this.playerName,
+      String email,
+      String uid,
+      String sentByUid})
       : super(
-      email: email,
-      uid: uid,
-      type: InviteType.Player,
-      sentByUid: sentByUid);
+            email: email,
+            uid: uid,
+            type: InviteType.Player,
+            sentByUid: sentByUid);
 
   InviteToPlayer.copy(InviteToPlayer player)
       : playerUid = player.playerUid,

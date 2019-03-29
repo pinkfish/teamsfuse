@@ -23,8 +23,15 @@ class AuthenticationLoading extends AuthenticationState {
 
 class AuthenticationLoggedIn extends AuthenticationState {
   final UserData user;
+  TraceProxy loadingTrace;
+  TraceProxy sqlTrace;
+  DateTime start;
 
-  AuthenticationLoggedIn({@required this.user});
+  AuthenticationLoggedIn(
+      {@required this.user,
+      @required this.loadingTrace,
+      @required this.sqlTrace,
+      @required this.start});
 
   @override
   String toString() => "AuthenticationState::AuthenticatonLoggedIn";
@@ -72,8 +79,9 @@ class LoggedOut extends AuthenticationEvent {
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  final UserAuthImpl _userAuth;
-  final PersistenData persistentData;
+  final UserAuthImpl userAuth;
+  final AnalyticsSubsystem analyticsSubsystem;
+
   StreamSubscription<UserData> _listener;
 
   @override
@@ -82,24 +90,39 @@ class AuthenticationBloc
   }
 
   AuthenticationBloc(
-      {@required FirestoreWrapper userAuth, @required this.persistentData})
-      : _userAuth = new UserAuthImpl(userAuth, persistentData) {
-    _listener = _userAuth.onAuthChanged().listen(_authChanged);
-  }
+      {@required this.userAuth, @required this.analyticsSubsystem});
 
   @override
   void dispose() {
     super.dispose();
-    _listener.cancel();
+    _listener?.cancel();
+  }
+
+  UserData get currentUser {
+    if (currentState is AuthenticationLoggedIn) {
+      return (currentState as AuthenticationLoggedIn).user;
+    }
+    return null;
   }
 
   Future<AuthenticationState> _updateWithUser(UserData user) async {
     if (user.isEmailVerified) {
       // Load stuff
       await UserDatabaseData.load(
-          user.uid, user.email, _userAuth.getProfile(user.uid));
+          user.uid, user.email, userAuth.getProfile(user.uid));
       // Finished loading.  Yay!
-      return AuthenticationLoggedIn(user: user);
+      analyticsSubsystem.setUserId(user.uid);
+      if (analyticsSubsystem.debugMode) {
+        analyticsSubsystem.setUserProperty(name: "developer", value: "true");
+      } else {
+        analyticsSubsystem.setUserProperty(name: "developer", value: "false");
+      }
+
+      return AuthenticationLoggedIn(
+          user: user,
+          sqlTrace: analyticsSubsystem.newTrace("sqlTraxeNew"),
+          loadingTrace: analyticsSubsystem.newTrace("loadingTraceNew"),
+          start: DateTime.now());
     } else {
       return AuthenticationLoggedInUnverified(user: user);
     }
@@ -109,7 +132,8 @@ class AuthenticationBloc
   Stream<AuthenticationState> mapEventToState(
       AuthenticationState currentState, AuthenticationEvent event) async* {
     if (event is AppStarted) {
-      UserData data = await _userAuth.currentUser();
+      _listener = userAuth.onAuthChanged().listen(_authChanged);
+      UserData data = await userAuth.currentUser();
       if (data == null) {
         yield AuthenticationLoggedOut();
       } else {

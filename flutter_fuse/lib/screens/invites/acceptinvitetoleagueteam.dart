@@ -119,7 +119,7 @@ class _AcceptInviteToLeagueTeamScreenState
               .getLeagueTeamData(_invite.leagueTeamUid);
           if (leagueTeam.seasonUid != null) {
             // Someone beat them to it!
-//TODO: Say someone beat them to it.
+            // TODO: Say someone beat them to it.
           } else {
             leagueTeam.seasonUid = season.precreateUid();
             await season.updateFirestore();

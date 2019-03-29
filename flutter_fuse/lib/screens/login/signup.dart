@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:fusemodel/firestore.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key key}) : super(key: key);
@@ -37,7 +37,7 @@ class SignupScreenState extends State<SignupScreen> {
 
   @override
   void initState() {
-    _person.profile = new FusedUserProfile(null);
+    //_person.profile = new FusedUserProfile(null);
     super.initState();
   }
 
@@ -58,8 +58,8 @@ class SignupScreenState extends State<SignupScreen> {
     } else {
       _saving = true;
       form.save();
-      _person.email = _email;
-      _person.password = _password;
+      //email = _email;
+      //password = _password;
 
       UserDatabaseData.instance.userAuth
           .createUser(

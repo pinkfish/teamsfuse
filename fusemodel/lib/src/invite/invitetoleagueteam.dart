@@ -17,19 +17,19 @@ class InviteToLeagueTeam extends Invite {
 
   InviteToLeagueTeam(
       {String sentByUid,
-        String email,
-        String uid,
-        this.leagueTeamUid,
-        this.leagueDivisonUid,
-        this.leagueTeamName,
-        this.leagueSeasonName,
-        this.leagueUid,
-        this.leagueName})
+      String email,
+      String uid,
+      this.leagueTeamUid,
+      this.leagueDivisonUid,
+      this.leagueTeamName,
+      this.leagueSeasonName,
+      this.leagueUid,
+      this.leagueName})
       : super(
-      email: email,
-      uid: uid,
-      type: InviteType.LeagueTeam,
-      sentByUid: sentByUid);
+            email: email,
+            uid: uid,
+            type: InviteType.LeagueTeam,
+            sentByUid: sentByUid);
 
   InviteToLeagueTeam.copy(InviteToLeagueTeam invite)
       : leagueName = invite.leagueName,

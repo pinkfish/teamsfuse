@@ -1,55 +1,55 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter_fuse/screens/home/home.dart';
+import 'package:flutter_fuse/screens/clubs/addclub.dart';
+import 'package:flutter_fuse/screens/clubs/addmember.dart';
+import 'package:flutter_fuse/screens/clubs/clubdetails.dart';
+import 'package:flutter_fuse/screens/clubs/editclub.dart';
 import 'package:flutter_fuse/screens/game/addevent.dart';
 import 'package:flutter_fuse/screens/game/addgame.dart';
 import 'package:flutter_fuse/screens/game/addtraining.dart';
 import 'package:flutter_fuse/screens/game/editgame.dart';
 import 'package:flutter_fuse/screens/game/gamedetails.dart';
 import 'package:flutter_fuse/screens/game/sharedgamedetails.dart';
-import 'package:flutter_fuse/screens/invites/invitelist.dart';
-import 'package:flutter_fuse/screens/invites/acceptinvitetoteam.dart';
-import 'package:flutter_fuse/screens/invites/addinvitetoplayer.dart';
-import 'package:flutter_fuse/screens/invites/acceptinvitetoplayer.dart';
-import 'package:flutter_fuse/screens/invites/acceptinvitetoclub.dart';
 import 'package:flutter_fuse/screens/invites/acceptinviteasadmin.dart';
+import 'package:flutter_fuse/screens/invites/acceptinvitetoclub.dart';
 import 'package:flutter_fuse/screens/invites/acceptinvitetoleague.dart';
 import 'package:flutter_fuse/screens/invites/acceptinvitetoleagueteam.dart';
-import 'package:flutter_fuse/screens/message/messages.dart';
+import 'package:flutter_fuse/screens/invites/acceptinvitetoplayer.dart';
+import 'package:flutter_fuse/screens/invites/acceptinvitetoteam.dart';
+import 'package:flutter_fuse/screens/invites/addinvitetoplayer.dart';
+import 'package:flutter_fuse/screens/invites/invitelist.dart';
+import 'package:flutter_fuse/screens/league/addleague.dart';
+import 'package:flutter_fuse/screens/league/editleague.dart';
+import 'package:flutter_fuse/screens/league/home.dart';
+import 'package:flutter_fuse/screens/league/league.dart';
+import 'package:flutter_fuse/screens/league/leaguedivison.dart';
+import 'package:flutter_fuse/screens/league/leagueteam.dart';
+import 'package:flutter_fuse/screens/login/forgotpassword.dart';
+import 'package:flutter_fuse/screens/login/loginform.dart';
+import 'package:flutter_fuse/screens/login/signup.dart';
+import 'package:flutter_fuse/screens/login/splashscreen.dart';
+import 'package:flutter_fuse/screens/login/verifyemail.dart';
 import 'package:flutter_fuse/screens/message/addmessage.dart';
+import 'package:flutter_fuse/screens/message/messages.dart';
 import 'package:flutter_fuse/screens/message/messageview.dart';
 import 'package:flutter_fuse/screens/settings/about.dart';
-import 'package:flutter_fuse/screens/settings/editprofile.dart';
 import 'package:flutter_fuse/screens/settings/editplayer.dart';
+import 'package:flutter_fuse/screens/settings/editprofile.dart';
 import 'package:flutter_fuse/screens/settings/profile.dart';
 import 'package:flutter_fuse/screens/settings/settings.dart';
 import 'package:flutter_fuse/screens/team/addadmin.dart';
 import 'package:flutter_fuse/screens/team/addplayer.dart';
 import 'package:flutter_fuse/screens/team/addseason.dart';
 import 'package:flutter_fuse/screens/team/addteam.dart';
+import 'package:flutter_fuse/screens/team/clubsettings.dart';
 import 'package:flutter_fuse/screens/team/editteam.dart';
 import 'package:flutter_fuse/screens/team/playerdetails.dart';
 import 'package:flutter_fuse/screens/team/team.dart';
-import 'package:flutter_fuse/screens/team/clubsettings.dart';
-import 'package:flutter_fuse/screens/team/teamsettings.dart';
 import 'package:flutter_fuse/screens/team/teamhome.dart';
-import 'package:flutter_fuse/screens/clubs/clubdetails.dart';
-import 'package:flutter_fuse/screens/clubs/editclub.dart';
-import 'package:flutter_fuse/screens/clubs/addclub.dart';
-import 'package:flutter_fuse/screens/clubs/addmember.dart';
-import 'package:flutter_fuse/screens/login/loginform.dart';
-import 'package:flutter_fuse/screens/login/signup.dart';
-import 'package:flutter_fuse/screens/login/forgotpassword.dart';
-import 'package:flutter_fuse/screens/login/verifyemail.dart';
-import 'package:flutter_fuse/screens/league/league.dart';
-import 'package:flutter_fuse/screens/league/leaguedivison.dart';
-import 'package:flutter_fuse/screens/league/leagueteam.dart';
-import 'package:flutter_fuse/screens/league/addleague.dart';
-import 'package:flutter_fuse/screens/league/home.dart';
-import 'package:flutter_fuse/screens/league/editleague.dart';
-import 'analytics.dart';
+import 'package:flutter_fuse/screens/team/teamsettings.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import 'analytics.dart';
 
 class AppRouter {
   static Router myRouter;
@@ -66,7 +66,7 @@ class AppRouter {
     router.define("/Home",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new HomeScreen()));
+                new SplashScreen()));
     router.define("/Profile",
         handler: new Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>

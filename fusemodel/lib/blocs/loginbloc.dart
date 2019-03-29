@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 class LoginState extends Equatable {}
 
 ///
-/// Initial state (showing trhe login form)
+/// Initial state (showing the login form)
 ///
 class LoginInitial extends LoginState {
   @override
@@ -31,13 +31,18 @@ class LoginValidating extends LoginState {
   }
 }
 
+enum LoginFailedReason {
+  BadPassword,
+}
+
 ///
 /// The login failed.
 ///
 class LoginFailed extends LoginState {
   final UserData userData;
+  final LoginFailedReason reason;
 
-  LoginFailed({@required this.userData});
+  LoginFailed({@required this.userData, @required this.reason});
 
   @override
   String toString() {
@@ -73,6 +78,20 @@ class LoginValidatingForgotPassword extends LoginState {
 /// The forgot password flow is done.
 ///
 class LoginForgotPasswordDone extends LoginState {
+  @override
+  String toString() {
+    return 'LoginForgotPasswordDone{}';
+  }
+}
+
+///
+/// The forgot password attempt failed
+///
+class LoginForgotPasswordFailed extends LoginState {
+  final Error error;
+
+  LoginForgotPasswordFailed({@required this.error});
+
   @override
   String toString() {
     return 'LoginForgotPasswordDone{}';
@@ -119,6 +138,16 @@ class LoginSignupSucceeded extends LoginState {
 }
 
 class LoginEvent extends Equatable {}
+
+///
+/// Reset the state of the login system
+///
+class LoginEventReset extends LoginEvent {
+  @override
+  String toString() {
+    return 'LoginEventReset{}';
+  }
+}
 
 ///
 /// Sends a login attempt request.
@@ -175,8 +204,9 @@ class LoginEventSignupUser extends LoginEvent {
 ///
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final UserAuthImpl userAuth;
+  final AnalyticsSubsystem analyticsSubsystem;
 
-  LoginBloc({@required this.userAuth});
+  LoginBloc({@required this.userAuth, @required this.analyticsSubsystem});
 
   @override
   LoginState get initialState {
@@ -186,15 +216,27 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   @override
   Stream<LoginState> mapEventToState(
       LoginState currentState, LoginEvent event) async* {
+    if (event is LoginEventReset) {
+      yield LoginInitial();
+    }
     if (event is LoginEventAttempt) {
       yield LoginValidating();
       LoginEventAttempt attempt = event;
       UserData data =
           new UserData(email: attempt.email, password: attempt.password);
-      UserData signedIn = await userAuth.signIn(data);
-      if (signedIn == null) {
-        yield LoginFailed(userData: signedIn);
-      } else {
+      UserData signedIn;
+      try {
+        signedIn = await userAuth.signIn(data);
+      } catch (error) {
+        // Failed to login, probably bad password.
+        yield LoginFailed(
+            userData: signedIn, reason: LoginFailedReason.BadPassword);
+      }
+
+      if (signedIn != null) {
+        analyticsSubsystem.logLogin();
+        // Reload the user.
+        userAuth.reloadUser();
         yield LoginSucceeded(userData: signedIn);
       }
     }
@@ -202,8 +244,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       yield LoginValidatingForgotPassword();
 
       LoginEventForgotPasswordSend forgot = event;
-      await userAuth.sendPasswordResetEmail(forgot.email);
-      yield LoginForgotPasswordDone();
+      try {
+        await userAuth.sendPasswordResetEmail(forgot.email);
+        yield LoginForgotPasswordDone();
+      } catch (error) {
+        yield LoginForgotPasswordFailed(error: error);
+      }
     }
     if (event is LoginEventSignupUser) {
       yield LoginValidatingSignup();

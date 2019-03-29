@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs/invitebloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 // Shows the current invites pending for this user.
@@ -39,7 +40,8 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
   void _savePressed() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      UserDatabaseData.instance.players[_invite.playerUid]
+      InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
+      inviteBloc.UserDatabaseData.instance.players[_invite.playerUid]
           .inviteUser(email: _invite.email)
           .then((void e) {
         Navigator.pop(context);

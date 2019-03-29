@@ -1,34 +1,32 @@
 import 'dart:async';
+
 import 'package:fusemodel/fusemodel.dart';
+
 import 'firestore.dart';
 
+///
+/// Wrapped around the uaerdata into the firestore stuff.
+///
 class UserData {
-  String _email;
-  String uid;
-  String password;
-  bool isEmailVerified;
+  final String email;
+  final String uid;
+  final String password;
+  final bool isEmailVerified;
   FusedUserProfile profile;
 
-  UserData({this.profile, String email, this.uid, this.password})
-      : _email = email;
+  UserData(
+      {this.profile,
+      this.email,
+      this.uid,
+      this.password,
+      this.isEmailVerified});
 
-  UserData.copy(UserData copy) {
-    profile = new FusedUserProfile.copy(copy.profile);
-    email = copy.email;
-    uid = copy.uid;
-    password = copy.password;
-  }
-
-  set email(String val) {
-    if (profile != null) {
-      profile = profile.copyWith(email: val);
-    }
-    _email = val;
-  }
-
-  String get email {
-    return _email;
-  }
+  UserData.copy(UserData copy)
+      : email = copy.email,
+        uid = copy.uid,
+        password = copy.password,
+        isEmailVerified = copy.isEmailVerified,
+        profile = new FusedUserProfile.copy(copy.profile) {}
 
   @override
   String toString() {
@@ -60,7 +58,7 @@ class UserAuthImpl {
         deleteNotificationToken();
       }
       if (input == null || !input.loggedIn) {
-         _currentUser = null;
+        _currentUser = null;
         _currentFirebaseUser = null;
         _controller.add(null);
       } else {
@@ -90,7 +88,8 @@ class UserAuthImpl {
         .createUserWithEmailAndPassword(
             email: userData.email, password: userData.password)
         .then((FirebaseUserWrapper user) {
-      userData.uid = user.uid;
+      UserData newData = new UserData(
+          profile: profile, email: userData.email, isEmailVerified: false);
       user.sendEmailVerification();
       DocumentReferenceWrapper ref =
           wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
@@ -105,7 +104,7 @@ class UserAuthImpl {
         player.users[user.uid] = playerUser;
         await player.updateFirestore();
         await signIn(userData);
-        return userData;
+        return newData;
       });
     });
   }
@@ -218,10 +217,10 @@ class UserAuthImpl {
     // it exists.
     Map<String, dynamic> data =
         await persistenData.getElement(PersistenData.profileTable, input.uid);
-    UserData user = new UserData();
-    user.email = input.email;
-    user.uid = input.uid;
-    user.isEmailVerified = input.isEmailVerified;
+    UserData user = new UserData(
+        email: input.email,
+        uid: input.uid,
+        isEmailVerified: input.isEmailVerified);
     _currentFirebaseUser = input;
     if (data == null && forceProfile) {
       Future<DocumentSnapshotWrapper> ref =

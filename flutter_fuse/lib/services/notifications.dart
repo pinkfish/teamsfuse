@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'appconfiguration.dart';
@@ -145,7 +143,7 @@ class Notifications {
     }
   }
 
-  void initForNotification(State<SplashScreen> state) async {
+  void initForNotification() async {
     /*
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         new FlutterLocalNotificationsPlugin();

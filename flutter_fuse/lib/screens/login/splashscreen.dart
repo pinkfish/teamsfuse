@@ -1,83 +1,13 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/screens/home/home.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
-import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/notifications.dart';
 import 'package:fusemodel/blocs/authenticationbloc.dart';
-import 'package:fusemodel/firestore.dart';
-import 'package:fusemodel/fusemodel.dart';
 
-import 'loginform.dart';
-
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key key}) : super(key: key);
-
-  @override
-  SplashScreenState createState() => new SplashScreenState();
-}
-
-class SplashScreenState extends State<SplashScreen> {
-  SplashScreenState() {
-    _startLoading();
-  }
-
-  static UserData currentUser;
-  static bool loaded = false;
-  static bool loadOnMounted = false;
-  StreamSubscription<UserData> _stream;
-  AuthenticationBloc _authenticationBloc;
-
-  @override
-  void initState() {
-    _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
-    _startLoading();
-    super.initState();
-    _stream = UserDatabaseData.instance.userAuth
-        .onAuthChanged()
-        .listen(_onAuthStateChanged);
-    // Setup the notifications listen/sender.
-    Notifications.instance.initForNotification(this);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _stream?.cancel();
-    _stream = null;
-  }
-
-  void _onAuthStateChanged(UserData data) {
-    if (data != null) {
-      if (currentUser != null) {
-        // Nothing changed...
-        if (currentUser.uid == data.uid &&
-            currentUser.isEmailVerified == data.isEmailVerified) {
-          return;
-        }
-      }
-      setState(() => currentUser = data);
-    } else if (currentUser != null) {
-      // Logged out.
-      setState(() => currentUser = data);
-    }
-  }
-
-  Future<Null> _startLoading() async {
-    print('Loading...');
-    if (!loaded) {
-      currentUser = await UserDatabaseData.instance.userAuth.currentUser();
-    }
-    print('Got current user $currentUser');
-    setState(() {
-      loaded = true;
-    });
-  }
-
-  Widget _loadingScreen() {
+class SplashScreen extends StatelessWidget {
+  Widget _loadingScreen(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
 
     return new Scaffold(
@@ -124,47 +54,34 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AuthenticationBloc _authenticationBloc =
+        BlocProvider.of<AuthenticationBloc>(context);
+
     return BlocBuilder<AuthenticationEvent, AuthenticationState>(
-        bloc: _authenticationBloc,
-        builder: (BuildContext context, AuthenticationState state) {
-          if (state is AuthenticationUninitialized ||
-              state is AuthenticationLoading) {
-            return _loadingScreen();
-          }
-          if (state is AuthenticationLoggedIn) {
-            AuthenticationLoggedIn logIn = state;
-            Analytics.analytics.setUserId(logIn.user.uid);
-            if (Analytics.instance.debugMode) {
-              Analytics.analytics
-                  .setUserProperty(name: "developer", value: "true");
-            } else {
-              Analytics.analytics
-                  .setUserProperty(name: "developer", value: "false");
-            }
-            return new HomeScreen();
-          }
-          if (state is AuthenticationLoggedInUnverified) {
-            return new VerifyEmailScreen();
-          }
-          if (state is AuthenticationLoggedOut) {
-            return new LoginScreen();
-          }
-        });
-    /*
-    if (!loaded) {
-      print('Not loaded yet');
-      return _loadingScreen();
-    }
-    if (currentUser != null && currentUser.isEmailVerified) {
-      print('Show home screen');
-      return new HomeScreen();
-    }
-    if (currentUser != null) {
-      print('Verify user screen');
-      return new VerifyEmailScreen();
-    }
-    print('Login screen');
-    return new LoginScreen();
-    */
+      bloc: _authenticationBloc,
+      builder: (BuildContext context, AuthenticationState state) {
+        if (state is AuthenticationUninitialized ||
+            state is AuthenticationLoading) {
+          return _loadingScreen(context);
+        }
+        if (state is AuthenticationLoggedIn) {
+          AuthenticationLoggedIn logIn = state;
+          Notifications.instance.initForNotification();
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/Home', ModalRoute.withName('/Home'));
+
+          return new HomeScreen();
+        }
+        if (state is AuthenticationLoggedInUnverified) {
+          return new VerifyEmailScreen();
+        }
+        if (state is AuthenticationLoggedOut) {
+          // Navigate to the login screen at this point.
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/Home/Login', ModalRoute.withName('/Home/Login'));
+          return _loadingScreen(context);
+        }
+      },
+    );
   }
 }

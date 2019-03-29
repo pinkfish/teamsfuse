@@ -8,6 +8,8 @@ import 'package:flutter_fuse/services/loggingdata.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fusemodel/blocs/authenticationbloc.dart';
+import 'package:fusemodel/blocs/invitebloc.dart';
+import 'package:fusemodel/blocs/loginbloc.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -38,15 +40,26 @@ class Routes {
       home: new SplashScreen(),
       onGenerateRoute: _buildRoute,
     );
-    _authenticationBloc =
-        AuthenticationBloc(userAuth: firestore, persistentData: persistentData);
+    UserAuthImpl userAuthImpl = UserAuthImpl(firestore, persistentData);
+    _authenticationBloc = AuthenticationBloc(userAuth: userAuthImpl);
+    _loginBloc = new LoginBloc(userAuth: userAuthImpl);
+    _inviteBloc = new InviteBloc(
+        authenticationBloc: _authenticationBloc,
+        persistentData: persistentData,
+        analyticsSubsystem: Analytics.instance,
+        databaseUpdateModel: UserDatabaseData.instance.updateModel);
     _authenticationBloc.dispatch(AppStarted());
-    runApp(BlocProvider<AuthenticationBloc>(
-        bloc: _authenticationBloc, child: app));
+    runApp(BlocProviderTree(blocProviders: [
+      BlocProvider<AuthenticationBloc>(bloc: _authenticationBloc),
+      BlocProvider<LoginBloc>(bloc: _loginBloc),
+      BlocProvider<InviteBloc>(bloc: _inviteBloc)
+    ], child: app));
   }
 
   //UserData _currentUser;
   AuthenticationBloc _authenticationBloc;
+  LoginBloc _loginBloc;
+  InviteBloc _inviteBloc;
 
   final ThemeData theme = new ThemeData(
     // This is the theme of your application.

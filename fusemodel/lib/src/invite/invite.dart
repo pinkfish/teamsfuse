@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import '../common.dart';
 import '../userdatabasedata.dart';
 
@@ -57,4 +58,3 @@ abstract class Invite {
     return 'Invite{email: $email, uid: $uid, type: $type, sentByUid: $sentByUid}';
   }
 }
-

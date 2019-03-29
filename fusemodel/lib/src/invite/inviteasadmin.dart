@@ -12,10 +12,10 @@ class InviteAsAdmin extends Invite {
   InviteAsAdmin(
       {String sentByUid, String email, String uid, this.teamUid, this.teamName})
       : super(
-      email: email,
-      uid: uid,
-      type: InviteType.Admin,
-      sentByUid: sentByUid);
+            email: email,
+            uid: uid,
+            type: InviteType.Admin,
+            sentByUid: sentByUid);
 
   InviteAsAdmin.copy(InviteAsAdmin invite)
       : teamName = invite.teamName,
