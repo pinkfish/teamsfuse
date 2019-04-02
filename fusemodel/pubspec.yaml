@@ -12,6 +12,7 @@ dependencies:
   bloc: any
   equatable: any
   meta: any
+  async: ^2.1.0
 
 dev_dependencies:
   test: any

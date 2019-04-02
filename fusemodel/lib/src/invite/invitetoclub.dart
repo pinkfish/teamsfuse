@@ -13,16 +13,16 @@ class InviteToClub extends Invite {
 
   InviteToClub(
       {String sentByUid,
-        String email,
-        String uid,
-        this.clubUid,
-        this.clubName,
-        this.admin})
+      String email,
+      String uid,
+      this.clubUid,
+      this.clubName,
+      this.admin})
       : super(
-      email: email,
-      uid: uid,
-      type: InviteType.Club,
-      sentByUid: sentByUid);
+            email: email,
+            uid: uid,
+            type: InviteType.Club,
+            sentByUid: sentByUid);
 
   InviteToClub.copy(InviteToClub invite)
       : clubName = invite.clubName,
@@ -51,5 +51,25 @@ class InviteToClub extends Invite {
     ret[CLUBUID] = clubUid;
     ret[ADMIN] = admin;
     return ret;
+  }
+
+  @override
+  int compareTo(Invite other) {
+    if (baseCompareTo(other) != 0) {
+      return -1;
+    }
+    if (other is InviteToClub) {
+      if (clubName.compareTo(other.clubName) != 0) {
+        return -1;
+      }
+      if (clubUid.compareTo(other.clubUid) != 0) {
+        return -1;
+      }
+      if (admin != other.admin) {
+        return 1;
+      }
+      return 0;
+    }
+    return 1;
   }
 }

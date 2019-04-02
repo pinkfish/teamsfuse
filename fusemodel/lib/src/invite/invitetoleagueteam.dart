@@ -76,4 +76,30 @@ class InviteToLeagueTeam extends Invite {
     ret[LEAGUESEASONNAME] = leagueSeasonName;
     return ret;
   }
+
+  @override
+  int compareTo(Invite other) {
+    if (baseCompareTo(other) != 0) {
+      return -1;
+    }
+    if (other is InviteToLeagueTeam) {
+      if (leagueName.compareTo(other.leagueName) != 0) {
+        return -1;
+      }
+      if (leagueUid.compareTo(other.leagueUid) != 0) {
+        return -1;
+      }
+      if (leagueTeamUid.compareTo(other.leagueTeamUid) != 0) {
+        return -1;
+      }
+      if (leagueTeamName.compareTo(other.leagueTeamName) != 0) {
+        return -1;
+      }
+      if (leagueDivisonUid.compareTo(other.leagueDivisonUid) != 0) {
+        return -1;
+      }
+      return 0;
+    }
+    return 1;
+  }
 }

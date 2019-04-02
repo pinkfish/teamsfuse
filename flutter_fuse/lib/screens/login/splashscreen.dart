@@ -4,7 +4,7 @@ import 'package:flutter_fuse/screens/home/home.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/notifications.dart';
-import 'package:fusemodel/blocs/authenticationbloc.dart';
+import 'package:fusemodel/blocs.dart';
 
 class SplashScreen extends StatelessWidget {
   Widget _loadingScreen(BuildContext context) {

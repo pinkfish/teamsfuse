@@ -5,7 +5,7 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/login/loginheader.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:fusemodel/blocs/loginbloc.dart';
+import 'package:fusemodel/blocs.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key key}) : super(key: key);

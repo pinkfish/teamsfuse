@@ -9,44 +9,53 @@ import 'package:meta/meta.dart';
 ///
 /// States for the authentication bloc.
 ///
-abstract class AuthenticationState extends Equatable {}
+abstract class AuthenticationState extends Equatable {
+  final UserData user;
+
+  AuthenticationState({@required this.user});
+}
 
 class AuthenticationUninitialized extends AuthenticationState {
+  AuthenticationUninitialized() : super(user: null);
+
   @override
   String toString() => "AuthenticationState::AuthenticatonUninitialized";
 }
 
 class AuthenticationLoading extends AuthenticationState {
+  AuthenticationLoading() : super(user: null);
+
   @override
   String toString() => "AuthenticationState::AuthenticationLoading";
 }
 
 class AuthenticationLoggedIn extends AuthenticationState {
-  final UserData user;
   TraceProxy loadingTrace;
   TraceProxy sqlTrace;
   DateTime start;
 
   AuthenticationLoggedIn(
-      {@required this.user,
+      {@required UserData user,
       @required this.loadingTrace,
       @required this.sqlTrace,
-      @required this.start});
+      @required this.start})
+      : super(user: user);
 
   @override
   String toString() => "AuthenticationState::AuthenticatonLoggedIn";
 }
 
 class AuthenticationLoggedInUnverified extends AuthenticationState {
-  final UserData user;
-
-  AuthenticationLoggedInUnverified({@required this.user});
+  AuthenticationLoggedInUnverified({@required UserData user})
+      : super(user: user);
 
   @override
   String toString() => "AuthenticationState::AuthenticationLoggedInUnverified";
 }
 
 class AuthenticationLoggedOut extends AuthenticationState {
+  AuthenticationLoggedOut() : super(user: null);
+
   @override
   String toString() => "AuthenticationState::AuthenticatonUninitialized";
 }
@@ -130,7 +139,7 @@ class AuthenticationBloc
 
   @override
   Stream<AuthenticationState> mapEventToState(
-      AuthenticationState currentState, AuthenticationEvent event) async* {
+      AuthenticationEvent event) async* {
     if (event is AppStarted) {
       _listener = userAuth.onAuthChanged().listen(_authChanged);
       UserData data = await userAuth.currentUser();

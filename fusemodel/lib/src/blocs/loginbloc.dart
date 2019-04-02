@@ -215,7 +215,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   @override
   Stream<LoginState> mapEventToState(
-      LoginState currentState, LoginEvent event) async* {
+     LoginEvent event) async* {
     if (event is LoginEventReset) {
       yield LoginInitial();
     }

@@ -89,8 +89,8 @@ class Player {
   }
 
   void setupSnap() {
-    _subscriptions =
-        UserDatabaseData.instance.updateModel.setupPlayerSnap(this);
+    _subscriptions = UserDatabaseData.instance.updateModel
+        .setupPlayerSnap(uid, UserDatabaseData.instance.onSeasonUpdated);
   }
 
   Map<String, dynamic> toJSON({bool includeUsers: false}) {

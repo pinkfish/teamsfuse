@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:fusemodel/blocs/authenticationbloc.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';

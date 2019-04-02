@@ -23,7 +23,7 @@ class PregenUidRet {
 /// Represents a team in the system.  All the data associated with the team
 /// and the database manipulation for the team.
 ///
-class Team extends HasUIDComparable {
+class Team extends HasUIDComparable implements TeamSnapshotCallback {
   String name;
 
   /// How early people should arrive for the game by default.  This is
@@ -160,7 +160,7 @@ class Team extends HasUIDComparable {
   Team.fromJSON(String teamUid, Map<String, dynamic> data,
       {this.publicOnly = false})
       : uid = teamUid {
-    updateFromJSON(data);
+    onTeamUpdated(teamUid, data);
     thisTeamStream = _updateThisTeam.stream.asBroadcastStream();
   }
 
@@ -186,7 +186,7 @@ class Team extends HasUIDComparable {
     return ret;
   }
 
-  void updateFromJSON(Map<String, dynamic> data) {
+  void onTeamUpdated(String teamUid, Map<String, dynamic> data) {
     name = getString(data[NAME]);
     _arriveEarly = getNum(data[ARRIVALTIME]);
     currentSeason = getString(data[_CURRENTSEASON]);
@@ -310,15 +310,15 @@ class Team extends HasUIDComparable {
   /// firestore.
   ///
   Future<void> setupSnap() async {
-    _snapshots =
-        await UserDatabaseData.instance.updateModel.setupSnapForTeam(this);
+    _snapshots = await UserDatabaseData.instance.updateModel
+        .setupSnapForTeam(this, this);
   }
 
   ///
   /// Called when an opponent details are updated.  Handles adding/deleting
   /// opponents.
   ///
-  void onOpponentUpdated(List<FirestoreWrappedData> data) {
+  void onOpponentUpdated(String teamUid, List<FirestoreWrappedData> data) {
     Set<String> toDeleteOpponents = new Set<String>();
     PersistenData sql = UserDatabaseData.instance.persistentData;
 
@@ -458,7 +458,8 @@ class Team extends HasUIDComparable {
   }
 
   /// Update the season details for this team.
-  Season updateSeason(String seasonUid, Map<String, dynamic> data) {
+  Season onSeasonUpdated(
+      String teamUid, String seasonUid, Map<String, dynamic> data) {
     if (publicOnly) {
       return null;
     }
@@ -474,6 +475,20 @@ class Team extends HasUIDComparable {
     _updateThisTeam.add(UpdateReason.Update);
     return season;
   }
+
+  @override
+  void onSeasonRemoved(String teamUid, String seasonUid) {
+    seasons.remove(seasonUid);
+    _updateThisTeam.add(UpdateReason.Update);
+  }
+
+  @override
+  void onClubUpdated(FirestoreWrappedData data) {
+    UserDatabaseData.instance.onClubUpdated(data);
+  }
+
+  @override
+  void onTeamDeleted(String teamUid) {}
 
   ///
   /// This returns the complete season cache.  We don't worry about getting

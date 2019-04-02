@@ -283,7 +283,7 @@ class UserDatabaseData {
     for (FirestoreWrappedData doc in change.newList) {
       _loadingDataTrace?.incrementCounter("adminTeam");
       if (_teams.containsKey(doc.id)) {
-        _teams[doc.id].updateFromJSON(doc.data);
+        _teams[doc.id].onTeamUpdated(doc.id, doc.data);
         persistentData.updateElement(
             PersistenData.teamsTable, doc.id, _teams[doc.id].toJSON());
       } else {
@@ -457,7 +457,7 @@ class UserDatabaseData {
     _messageController.add(UpdateReason.Update);
   }
 
-  void onSeasonUpdated(List<FirestoreWrappedData> query) {
+  void onSeasonUpdated(String playerUid, List<FirestoreWrappedData> query) {
     Set<String> toDeleteSeasons = new Set<String>();
     String teamUid;
     List<Future<void>> newSnaps = [];
@@ -482,7 +482,7 @@ class UserDatabaseData {
       if (toDeleteSeasons == null) {
         toDeleteSeasons.addAll(team.seasons.keys);
       }
-      team.updateSeason(doc.id, doc.data);
+      team.onSeasonUpdated(team.uid, doc.id, doc.data);
       toDeleteSeasons.remove(doc.id);
       if (snapping) {
         String myTeamUid = teamUid;
@@ -610,7 +610,6 @@ class UserDatabaseData {
       }
       persistentData.updateElement(
           PersistenData.clubsTable, club.uid, data.data);
-
     }
     for (FirestoreWrappedData toRemove in removed) {
       _clubs.remove(toRemove.id);

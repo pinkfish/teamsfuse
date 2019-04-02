@@ -30,6 +30,45 @@ class FirestoreChangedData {
 }
 
 ///
+/// Callback for the cluh updated.
+///
+abstract class TeamSnapshotCallback {
+  // TODO: Remove this once I have the main system setup.
+  void onClubUpdated(FirestoreWrappedData data);
+  void onOpponentUpdated(String teamUid, List<FirestoreWrappedData> data);
+  void onSeasonUpdated(
+      String TeamUid, String seasonId, Map<String, dynamic> data);
+  void onSeasonRemoved(String teamUid, String seasonUid);
+  void onTeamUpdated(String teamUid, Map<String, dynamic> data);
+  void onTeamDeleted(String str);
+}
+
+enum GameSnapshotEventType { GameList, SharedGameUpdate }
+
+///
+/// Updates the games when things change in the snapshot.
+///
+class GameSnapshotEvent {
+  final GameSnapshotEventType type;
+  final GameSharedData sharedGame;
+  final Iterable<Game> newGames;
+  final Iterable<String> deletedGames;
+  final String gameUid;
+  final String teamUid;
+
+  GameSnapshotEvent(
+      {this.type,
+      this.gameUid,
+      this.teamUid,
+      this.sharedGame,
+      this.newGames,
+      this.deletedGames});
+}
+
+typedef void FirestoreDataCallback(
+    String playerUid, List<FirestoreWrappedData> data);
+
+///
 /// The initial data that comes back from all the initial subscriptions to
 /// things in the startup for the system.
 ///
@@ -219,7 +258,8 @@ abstract class DatabaseUpdateModel {
   Future<Iterable<Game>> getOpponentGames(Opponent season);
 
   // Team stuff
-  Future<List<StreamSubscription<dynamic>>> setupSnapForTeam(Team team);
+  Future<List<StreamSubscription<dynamic>>> setupSnapForTeam(
+      Team team, TeamSnapshotCallback snapback);
   Future<void> loadOpponents(Team team);
   Future<void> updateFirestoreTeam(Team team, PregenUidRet optionalPreGen);
   Future<Uri> updateTeamImage(Team team, File imgFile);
@@ -234,7 +274,8 @@ abstract class DatabaseUpdateModel {
   // Player stuff.
   Future<void> updateFirestorePlayer(Player player, bool includeUsers);
   Future<Uri> updatePlayerImage(Player player, File imgFile);
-  List<StreamSubscription<dynamic>> setupPlayerSnap(Player player);
+  List<StreamSubscription<dynamic>> setupPlayerSnap(
+      String playerUid, FirestoreDataCallback callback);
   // Send an invite to a user for this season and team.
   Future<void> inviteUserToPlayer(Player season, {String email});
   Future<StreamSubscription<dynamic>> getInviteForPlayerStream(Player season);
@@ -263,6 +304,8 @@ abstract class DatabaseUpdateModel {
   // Games!
   GameSubscription getGames(Iterable<Game> cachedGames, Set<String> teams,
       DateTime start, DateTime end, FilterDetails filterDetails);
+  Stream<GameSnapshotEvent> getBasicGames(
+      DateTime start, DateTime end, String teamUid);
 
   // Clubs and stuff.
   TeamSubscription getClubTeams(Club club);
@@ -295,9 +338,11 @@ abstract class DatabaseUpdateModel {
   Future<void> updateLeagueTeam(LeagueOrTournamentTeam team);
   Future<void> updateLeagueTeamRecord(
       LeagueOrTournamentTeam team, String season);
-  Future<void> inviteUserToLeagueTeam(LeagueOrTournament league,
+  Future<void> inviteUserToLeagueTeam(
+      LeagueOrTournament league,
       LeagueOrTournamentSeason season,
-      LeagueOrTournamentTeam leagueTeam, String email);
+      LeagueOrTournamentTeam leagueTeam,
+      String email);
   StreamSubscription<dynamic> getLeagueOrTournmentTeamInvitesStream(
       LeagueOrTournamentTeam leagueOrTournmentTeam);
 

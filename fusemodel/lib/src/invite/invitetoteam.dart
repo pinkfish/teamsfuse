@@ -15,19 +15,19 @@ class InviteToTeam extends Invite {
 
   InviteToTeam(
       {String email,
-        String uid,
-        String sentByUid,
-        this.teamUid,
-        this.teamName,
-        this.seasonName,
-        this.seasonUid,
-        this.playerName,
-        this.role = RoleInTeam.Player})
+      String uid,
+      String sentByUid,
+      this.teamUid,
+      this.teamName,
+      this.seasonName,
+      this.seasonUid,
+      this.playerName,
+      this.role = RoleInTeam.Player})
       : super(
-      email: email,
-      uid: uid,
-      type: InviteType.Team,
-      sentByUid: sentByUid);
+            email: email,
+            uid: uid,
+            type: InviteType.Team,
+            sentByUid: sentByUid);
 
   InviteToTeam.copy(InviteToTeam invite)
       : teamName = invite.teamName,
@@ -72,5 +72,37 @@ class InviteToTeam extends Invite {
     ret[SEASONNAME] = seasonName;
     ret[ROLE] = role.toString();
     return ret;
+  }
+
+  @override
+  int compareTo(Invite other) {
+    if (baseCompareTo(other) != 0) {
+      return -1;
+    }
+    if (other is InviteToTeam) {
+      if (teamName.compareTo(other.teamName) != 0) {
+        return -1;
+      }
+      if (teamUid.compareTo(other.teamUid) != 0) {
+        return -1;
+      }
+      if (seasonUid.compareTo(other.seasonUid) != 0) {
+        return -1;
+      }
+      if (playerName.length != other.playerName.length) {
+        return 1;
+      }
+      if (playerName.any((p) => !other.playerName.contains(p)) != 0) {
+        return -1;
+      }
+      if (seasonName.compareTo(other.seasonName) != 0) {
+        return -1;
+      }
+      if (role != other.role) {
+        return -1;
+      }
+      return 0;
+    }
+    return 1;
   }
 }

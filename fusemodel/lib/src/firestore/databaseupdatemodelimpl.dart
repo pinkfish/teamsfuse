@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:timezone/timezone.dart';
 import 'dart:io';
 import 'firestore.dart';
+import 'package:async/async.dart';
 
 class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   static const int maxMessages = 20;
@@ -311,31 +312,35 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   // Team stuff
-  void _onTeamUpdated(Team team, DocumentSnapshotWrapper snap) {
+  void _onTeamUpdated(
+      String teamUid, TeamSnapshotCallback team, DocumentSnapshotWrapper snap) {
     if (snap.exists) {
-      team.updateFromJSON(snap.data);
-      persistenData.updateElement(
-          PersistenData.teamsTable, team.uid, team.toJSON());
+      team.onTeamUpdated(teamUid, snap.data);
+    } else {
+      team.onTeamDeleted(teamUid);
     }
   }
 
   @override
-  Future<List<StreamSubscription<dynamic>>> setupSnapForTeam(Team team) async {
+  Future<List<StreamSubscription<dynamic>>> setupSnapForTeam(
+      Team team, TeamSnapshotCallback callback) async {
     List<StreamSubscription<dynamic>> ret = <StreamSubscription<dynamic>>[];
     ret.add(wrapper
         .collection(TEAMS_COLLECTION)
         .document(team.uid)
         .snapshots()
-        .listen((DocumentSnapshotWrapper snap) => _onTeamUpdated(team, snap)));
+        .listen((DocumentSnapshotWrapper snap) =>
+            _onTeamUpdated(team.uid, callback, snap)));
 
     CollectionReferenceWrapper opCollection = wrapper
         .collection(TEAMS_COLLECTION)
         .document(team.uid)
         .collection(OPPONENT_COLLECTION);
     QuerySnapshotWrapper queryOpponentSnap = await opCollection.getDocuments();
-    team.onOpponentUpdated(_firestoreData(queryOpponentSnap.documents));
+    callback.onOpponentUpdated(
+        team.uid, _firestoreData(queryOpponentSnap.documents));
     ret.add(opCollection.snapshots().listen((QuerySnapshotWrapper snap) =>
-        team.onOpponentUpdated(_firestoreData(snap.documents))));
+        callback.onOpponentUpdated(team.uid, _firestoreData(snap.documents))));
     print('Loaded ops ${team.uid} ${queryOpponentSnap.documents.length}');
 
     // If there is a club for this team, load that too.
@@ -347,7 +352,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       UserDatabaseData.instance.onClubUpdated(new FirestoreWrappedData(
           id: query.documentID, data: query.data, exists: query.exists));
       ret.add(ref.snapshots().listen((DocumentSnapshotWrapper snap) {
-        UserDatabaseData.instance.onClubUpdated(new FirestoreWrappedData(
+        callback.onClubUpdated(new FirestoreWrappedData(
             id: query.documentID, data: query.data, exists: query.exists));
       }));
     }
@@ -359,20 +364,20 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       // Get all the seasons.
       query.getDocuments().then((QuerySnapshotWrapper query) {
         for (DocumentSnapshotWrapper doc in query.documents) {
-          team.updateSeason(doc.documentID, doc.data);
+          callback.onSeasonUpdated(team.uid, doc.documentID, doc.data);
           persistenData.updateElement(
               PersistenData.seasonTable, doc.documentID, doc.data);
         }
       });
       ret.add(query.snapshots().listen((QuerySnapshotWrapper query) {
         for (DocumentSnapshotWrapper doc in query.documents) {
-          team.updateSeason(doc.documentID, doc.data);
+          callback.onSeasonUpdated(team.uid, doc.documentID, doc.data);
           persistenData.updateElement(
               PersistenData.seasonTable, doc.documentID, doc.data);
         }
         for (DocumentChangeWrapper change in query.documentChanges) {
           if (change.type == DocumentChangeTypeWrapper.removed) {
-            team.seasons.remove(change.document.documentID);
+            callback.onSeasonRemoved(team.uid, change.document.documentID);
             persistenData.deleteElement(
                 PersistenData.seasonTable, change.document.documentID);
           }
@@ -526,6 +531,120 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       return team;
     }
     return null;
+  }
+
+  ///
+  /// Returns the basic set of games for this specific team.
+  ///
+  Stream<GameSnapshotEvent> getBasicGames(
+      DateTime start, DateTime end, String teamUid) async* {
+    Map<String, Stream<GameSnapshotEvent>> sharedDocStream = {};
+    Stream<GameSnapshotEvent> mainGameStream;
+    StreamGroup<GameSnapshotEvent> str = StreamGroup<GameSnapshotEvent>();
+
+    QueryWrapper gameQuery = wrapper
+        .collection(GAMES_COLLECTION)
+        .where(Game.TEAMUID, isEqualTo: teamUid);
+    if (start != null) {
+      gameQuery = gameQuery
+          .where(ARRIVALTIME, isGreaterThan: start.millisecondsSinceEpoch)
+          .where(ARRIVALTIME, isLessThan: end.millisecondsSinceEpoch);
+    }
+    QuerySnapshotWrapper queryGameSnap = await gameQuery.getDocuments();
+
+    Set<Game> data = new Set<Game>();
+    for (DocumentSnapshotWrapper snap in queryGameSnap.documents) {
+      String sharedGameUid = snap.data[Game.SHAREDDATAUID];
+      GameSharedData sharedData;
+      if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
+        DocumentReferenceWrapper sharedRef =
+            wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
+        DocumentSnapshotWrapper snapShared = await sharedRef.get();
+        sharedData =
+            new GameSharedData.fromJSON(snapShared.documentID, snapShared.data);
+        // Add in a subscription to this shared game stuff and listen to it.
+        if (!sharedDocStream.containsKey(sharedGameUid)) {
+          sharedDocStream[sharedGameUid] = sharedRef.snapshots().map(
+              (DocumentSnapshotWrapper snapUpdate) => GameSnapshotEvent(
+                  type: GameSnapshotEventType.SharedGameUpdate,
+                  teamUid: teamUid,
+                  gameUid: snap.documentID,
+                  sharedGame: GameSharedData.fromJSON(
+                      snapUpdate.documentID, snapUpdate.data)));
+          str.add(sharedDocStream[sharedGameUid]);
+        }
+      } else {
+        sharedData = new GameSharedData.fromJSON(sharedGameUid, snap.data);
+      }
+      Game g =
+          new Game.fromJSON(teamUid, snap.documentID, snap.data, sharedData);
+      data.add(g);
+    }
+    yield GameSnapshotEvent(
+        type: GameSnapshotEventType.GameList,
+        teamUid: teamUid,
+        newGames: data,
+        deletedGames: []);
+
+    // Merge the streams.
+    mainGameStream = gameQuery
+        .snapshots()
+        .asyncMap((QuerySnapshotWrapper queryGameSnap) async {
+      Set<Game> data = new Set<Game>();
+      Set<String> sharedGamesToRemove = Set.from(sharedDocStream.keys);
+      for (DocumentSnapshotWrapper snap in queryGameSnap.documents) {
+        String sharedGameUid;
+        GameSharedData sharedData;
+        sharedGameUid = snap.data[Game.SHAREDDATAUID] as String;
+        if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
+          DocumentReferenceWrapper sharedRef = wrapper
+              .collection(GAMES_SHARED_COLLECTION)
+              .document(sharedGameUid);
+          DocumentSnapshotWrapper snapShared = await sharedRef.get();
+          sharedData = new GameSharedData.fromJSON(
+              snapShared.documentID, snapShared.data);
+          String gameId = snap.documentID;
+          // Listen to changes too.
+          sharedGamesToRemove.remove(snapShared.documentID);
+          if (!sharedDocStream.containsKey(sharedGameUid)) {
+            sharedDocStream[sharedGameUid] = sharedRef.snapshots().map(
+                (DocumentSnapshotWrapper snapUpdate) => GameSnapshotEvent(
+                    type: GameSnapshotEventType.SharedGameUpdate,
+                    teamUid: teamUid,
+                    gameUid: snap.documentID,
+                    sharedGame: GameSharedData.fromJSON(
+                        snapUpdate.documentID, snapUpdate.data)));
+            str.add(sharedDocStream[sharedGameUid]);
+          }
+        } else {
+          sharedData = new GameSharedData.fromJSON(sharedGameUid, snap.data);
+        }
+
+        Game newGame =
+            new Game.fromJSON(teamUid, snap.documentID, snap.data, sharedData);
+        data.add(newGame);
+      }
+      // Remove any old shared games that we are waiting for.
+      for (String rem in sharedGamesToRemove) {
+        str.remove(sharedDocStream[rem]);
+        sharedDocStream.remove(rem);
+      }
+      Iterable<String> toDelete = queryGameSnap.documentChanges
+          .where((DocumentChangeWrapper wrap) =>
+              wrap.type == DocumentChangeTypeWrapper.removed)
+          .map((DocumentChangeWrapper wrap) => wrap.document.documentID);
+      return GameSnapshotEvent(
+          type: GameSnapshotEventType.GameList,
+          teamUid: teamUid,
+          newGames: data,
+          deletedGames: toDelete);
+    });
+
+    str.add(mainGameStream);
+
+    await for (GameSnapshotEvent queryGameSnap in str.stream) {
+      yield queryGameSnap;
+    }
   }
 
   GameSubscription _getGamesInternal(
@@ -798,15 +917,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  List<StreamSubscription<dynamic>> setupPlayerSnap(Player player) {
+  List<StreamSubscription<dynamic>> setupPlayerSnap(
+      String playerUid, FirestoreDataCallback callback) {
     List<StreamSubscription<dynamic>> ret = <StreamSubscription<dynamic>>[];
     // Teams.
-    QueryWrapper ref = wrapper.collection(SEASONS_COLLECTION).where(
-        Season.PLAYERS + "." + player.uid + "." + ADDED,
-        isEqualTo: true);
+    QueryWrapper ref = wrapper
+        .collection(SEASONS_COLLECTION)
+        .where(Season.PLAYERS + "." + playerUid + "." + ADDED, isEqualTo: true);
     ret.add(ref.snapshots().listen((QuerySnapshotWrapper query) {
-      UserDatabaseData.instance
-          .onSeasonUpdated(_firestoreData(query.documents));
+      callback(playerUid, _firestoreData(query.documents));
     }));
     return ret;
   }

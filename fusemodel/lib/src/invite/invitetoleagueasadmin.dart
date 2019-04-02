@@ -20,28 +20,28 @@ class InviteToLeagueAsAdmin extends Invite {
 
   InviteToLeagueAsAdmin(
       {String sentByUid,
-        String email,
-        String uid,
-        this.leagueDivisonUid,
-        this.leagueSeasonUid,
-        this.leagueUid,
-        this.leagueName})
+      String email,
+      String uid,
+      this.leagueDivisonUid,
+      this.leagueSeasonUid,
+      this.leagueUid,
+      this.leagueName})
       : super(
-      email: email,
-      uid: uid,
-      type: InviteType.LeagueAdmin,
-      sentByUid: sentByUid) {
+            email: email,
+            uid: uid,
+            type: InviteType.LeagueAdmin,
+            sentByUid: sentByUid) {
     assert((leagueUid != null &&
-        leagueDivisonUid == null &&
-        leagueSeasonUid == null) ||
+            leagueDivisonUid == null &&
+            leagueSeasonUid == null) ||
         leagueUid == null);
     assert((leagueDivisonUid != null &&
-        leagueUid == null &&
-        leagueSeasonUid == null) ||
+            leagueUid == null &&
+            leagueSeasonUid == null) ||
         leagueDivisonUid == null);
     assert((leagueSeasonUid != null &&
-        leagueDivisonUid == null &&
-        leagueUid == null) ||
+            leagueDivisonUid == null &&
+            leagueUid == null) ||
         leagueSeasonUid == null);
   }
 
@@ -87,5 +87,28 @@ class InviteToLeagueAsAdmin extends Invite {
     ret[LEAGUESEASONUID] = leagueSeasonUid;
     ret[LEAGUEDIVISONUID] = leagueDivisonUid;
     return ret;
+  }
+
+  @override
+  int compareTo(Invite other) {
+    if (baseCompareTo(other) != 0) {
+      return -1;
+    }
+    if (other is InviteToLeagueAsAdmin) {
+      if (leagueName.compareTo(other.leagueName) != 0) {
+        return -1;
+      }
+      if (leagueUid.compareTo(other.leagueUid) != 0) {
+        return -1;
+      }
+      if (leagueSeasonUid.compareTo(other.leagueSeasonUid) != 0) {
+        return -1;
+      }
+      if (leagueDivisonUid.compareTo(other.leagueDivisonUid) != 0) {
+        return -1;
+      }
+      return 0;
+    }
+    return 1;
   }
 }

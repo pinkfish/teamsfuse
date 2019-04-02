@@ -9,31 +9,12 @@ import 'authenticationbloc.dart';
 
 class PlayerEvent extends Equatable {}
 
-class PlayerAdded extends PlayerEvent {
-  @override
-  String toString() {
-    return 'PlayerAdded{}';
-  }
-}
-
-class PlayerEdited extends PlayerEvent {
-  @override
-  String toString() {
-    return 'PlayerAdded{}';
-  }
-}
-
 class _PlayerUserLoaded extends PlayerEvent {
   final String uid;
-  final TraceProxy loadingTrace;
-  final TraceProxy sqlTrace;
-  final DateTime start;
 
-  _PlayerUserLoaded(
-      {@required this.uid,
-      @required this.loadingTrace,
-      @required this.sqlTrace,
-      @required this.start});
+  _PlayerUserLoaded({
+    @required this.uid,
+  });
 
   @override
   String toString() {
@@ -58,8 +39,10 @@ class _PlayerNewPlayersLoaded extends PlayerEvent {
 class PlayerState extends Equatable {
   final Map<String, Player> players;
   final String uid;
+  final bool onlySql;
 
-  PlayerState({@required this.players, @required this.uid});
+  PlayerState(
+      {@required this.players, @required this.uid, @required this.onlySql});
 }
 
 ///
@@ -67,12 +50,15 @@ class PlayerState extends Equatable {
 /// possibly too.
 ///
 class PlayerLoading extends PlayerState {
-  PlayerLoading({@required Map<String, Player> players, @required String uid})
-      : super(players: players, uid: uid);
+  PlayerLoading(
+      {@required Map<String, Player> players,
+      @required String uid,
+      @required bool onlySql})
+      : super(players: players, uid: uid, onlySql: onlySql);
 
   @override
   String toString() {
-    return 'PlayerUninitialized{players: ${players.length}';
+    return 'PlayerUninitialized{players: ${players.length}, onlySql: $onlySql}';
   }
 }
 
@@ -80,35 +66,42 @@ class PlayerLoading extends PlayerState {
 /// No data at all, we are uninitialized.
 ///
 class PlayerUninitialized extends PlayerState {
-  PlayerUninitialized() : super(players: {}, uid: null);
+  PlayerUninitialized() : super(players: {}, uid: null, onlySql: true);
 
   @override
   String toString() {
-    return 'PlayerUninitialized{players: ${players.length}';
+    return 'PlayerUninitialized{players: ${players.length}, onlySql: $onlySql}';
   }
 }
 
 ///
 /// Player data is loaded and everything is fluffy.
 ///
-class PlayerData extends PlayerState {
-  PlayerData({@required Map<String, Player> players, @required String uid})
-      : super(players: players, uid: uid);
+class PlayerLoaded extends PlayerState {
+  PlayerLoaded(
+      {@required Map<String, Player> players,
+      @required String uid,
+      @required bool onlySql})
+      : super(players: players, uid: uid, onlySql: onlySql);
 
   @override
   String toString() {
-    return 'PlayerData{players: ${players.length}';
+    return 'PlayerData{players: ${players.length}, onlySql: $onlySql}';
   }
 }
 
 ///
-/// Login bloc handles the login flow.  Password, reset, etc,
+/// Player bloc handles the player flow.  Loading all the players from
+/// firestore.
 ///
 class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   final AuthenticationBloc authenticationBloc;
   final PersistenData persistentData;
   final DatabaseUpdateModel databaseUpdateModel;
   final AnalyticsSubsystem analyticsSubsystem;
+  final TraceProxy loadingTrace;
+  final TraceProxy sqlTrace;
+  final DateTime start;
 
   StreamSubscription<FirestoreChangedData> _playerSnapshot;
   bool _createdMePlayer = false;
@@ -118,7 +111,10 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       {@required this.persistentData,
       @required this.authenticationBloc,
       @required this.databaseUpdateModel,
-      @required this.analyticsSubsystem}) {
+      @required this.analyticsSubsystem,
+      @required this.start,
+      @required this.sqlTrace,
+      @required this.loadingTrace}) {
     _authSub = authenticationBloc.state.listen((AuthenticationState state) {
       if (state is AuthenticationLoggedIn) {
         _startLoading(state);
@@ -132,11 +128,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   }
 
   void _startLoading(AuthenticationLoggedIn state) {
-    dispatch(_PlayerUserLoaded(
-        uid: state.user.uid,
-        loadingTrace: state.loadingTrace,
-        sqlTrace: state.sqlTrace,
-        start: state.start));
+    dispatch(_PlayerUserLoaded(uid: state.user.uid));
   }
 
   @override
@@ -162,7 +154,6 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       if (players.containsKey(doc.id)) {
         player = players[doc.id];
         player.fromJSON(doc.id, doc.data);
-        player.setupSnap();
         if (player.users[currentState.uid].relationship == Relationship.Me) {
           if (foundMe) {
             if (player.users.length <= 1) {
@@ -175,7 +166,6 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         player = new Player();
         // Add in snapshots to find the teams associated with the player.
         player.fromJSON(doc.id, doc.data);
-        player.setupSnap();
         players[player.uid] = player;
         if (player.users[currentState.uid].relationship == Relationship.Me) {
           if (foundMe) {
@@ -222,8 +212,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   }
 
   @override
-  Stream<PlayerState> mapEventToState(
-      PlayerState currentState, PlayerEvent event) async* {
+  Stream<PlayerState> mapEventToState(PlayerEvent event) async* {
     if (event is _PlayerUserLoaded) {
       yield PlayerLoading(players: currentState.players, uid: event.uid);
       TraceProxy playerTrace = analyticsSubsystem.newTrace("playerData");
@@ -232,21 +221,21 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
           await persistentData.getAllElements(PersistenData.playersTable);
       Map<String, Player> newPlayers = new Map<String, Player>();
       data.forEach((String uid, Map<String, dynamic> input) {
-        event.sqlTrace?.incrementCounter("player");
+        sqlTrace?.incrementCounter("player");
         playerTrace.incrementCounter("player");
         Player player = new Player();
         player.fromJSON(uid, input);
         newPlayers[uid] = player;
       });
-      print('End players ${event.start.difference(new DateTime.now())}');
+      print('End players ${start.difference(new DateTime.now())}');
       playerTrace.stop();
-      yield PlayerData(players: newPlayers, uid: event.uid);
+      yield PlayerLoaded(players: newPlayers, uid: event.uid, onlySql: true);
 
       // Load from firestore.
       InitialSubscription playersInitialData =
           databaseUpdateModel.getPlayers(event.uid);
       playersInitialData.startData.then((List<FirestoreWrappedData> data) {
-        event.loadingTrace?.incrementCounter("players");
+        loadingTrace?.incrementCounter("players");
         this._onPlayerUpdated(data);
       });
       _playerSnapshot =
@@ -262,7 +251,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     }
     // Update the data from an event.
     if (event is _PlayerNewPlayersLoaded) {
-      yield PlayerData(players: event.players, uid: event.uid);
+      yield PlayerLoaded(
+          players: event.players, uid: event.uid, onlySql: false);
     }
   }
 }

@@ -5,6 +5,9 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 
 import 'dialog/deleteinvite.dart';
 
@@ -23,7 +26,6 @@ class AcceptInviteToTeamScreen extends StatefulWidget {
 }
 
 class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
-  InviteToTeam _invite;
   Set<String> _checked;
   Map<String, String> _data;
   Map<String, String> _original = <String, String>{};
@@ -32,36 +34,36 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   Map<String, Relationship> _relationship = <String, Relationship>{};
   Map<String, TextEditingController> _controllers =
       <String, TextEditingController>{};
-
-  static const String newInvite = 'new';
+  SingleInviteBloc _singleInviteBloc;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     // Default to empty.
-    _invite = new InviteToTeam(teamName: '', seasonName: '');
-    _invite.playerName = <String>[];
     _checked = new Set<String>();
     _data = <String, String>{};
-    if (UserDatabaseData.instance.invites.containsKey(widget._inviteUid)) {
-      _invite =
-          UserDatabaseData.instance.invites[widget._inviteUid] as InviteToTeam;
-      for (String str in _invite.playerName) {
-        _checked.add(str);
-        _current[str] = 'new';
-        _data[str] = str;
-        _original[str] = str;
-      }
-    } else {
-      // Get out of here.
-      Navigator.pop(context);
-    }
+    _singleInviteBloc =
+        SingleInviteBloc(inviteBloc: BlocProvider.of<InviteBloc>(context));
+    _singleInviteBloc
+        .dispatch(SingleInviteEventLoaded(inviteUid: widget._inviteUid));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _singleInviteBloc.dispose();
+  }
+
+  void showInSnackBar(String value) {
+    _scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(value)));
   }
 
   void _onChangedPlayer(String name, String uid) {
     setState(() {
-      if (uid.compareTo('new') == 0) {
-        _current[name] = 'new';
+      if (uid.compareTo(SingleInviteEventAcceptInvite.createNew) == 0) {
+        _current[name] = SingleInviteEventAcceptInvite.createNew;
         _data[name] = _original[name];
         if (_relationship[name] == Relationship.Me) {
           _relationship[name] = Relationship.Friend;
@@ -92,10 +94,11 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     });
     dropdowns.add(
       new DropdownMenuItem<String>(
-          child: new Text(Messages.of(context).createnew), value: newInvite),
+          child: new Text(Messages.of(context).createnew),
+          value: SingleInviteEventAcceptInvite.createNew),
     );
     if (found == null) {
-      found = newInvite;
+      found = SingleInviteEventAcceptInvite.createNew;
     }
     if (!_current.containsKey(name)) {
       _current[name] = found;
@@ -120,21 +123,15 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   void _savePressed() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      InviteToTeam inv = new InviteToTeam.copy(_invite);
-      inv.playerName.clear();
-      await Future.forEach(_checked, (String name) async {
-        String uid;
-        if (_current[name].compareTo(newInvite) == 0) {
-          uid = await UserDatabaseData.instance
-              .addPlayer(_data[name], _relationship[name]);
-        } else {
-          uid = _current[name];
-        }
-        await UserDatabaseData.instance
-            .acceptInvite(inv, playerUid: uid, name: _data[name]);
-      });
-      await inv.firestoreDelete();
-      Navigator.pop(context);
+      Map<String, String> currentCopy = Map<String, String>.from(_current);
+
+      currentCopy
+          .removeWhere((String name, String uid) => _checked.contains(name));
+      _singleInviteBloc.dispatch(SingleInviteEventAcceptInvite(
+        inviteUid: _singleInviteBloc.currentState.invite.uid,
+        relationship: _relationship,
+        playerNameToUid: currentCopy,
+      ));
     }
   }
 
@@ -177,7 +174,8 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
 
     List<Widget> players = <Widget>[];
     ThemeData theme = Theme.of(context);
-    _invite.playerName.forEach(
+    InviteToTeam invite = _singleInviteBloc.currentState.invite as InviteToTeam;
+    invite.playerName.forEach(
       (String name) {
         if (!_controllers.containsKey(name)) {
           _controllers[name] = new TextEditingController();
@@ -200,7 +198,9 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
               },
             ),
             title: _showPlayerDropdown(name),
-            subtitle: _current[name].compareTo(newInvite) == 0
+            subtitle: _current[name]
+                        .compareTo(SingleInviteEventAcceptInvite.createNew) ==
+                    0
                 ? new Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -217,7 +217,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                           _data[name] = newName;
                         },
                       ),
-                      new ByUserNameComponent(userId: _invite.sentByUid),
+                      new ByUserNameComponent(userId: invite.sentByUid),
                     ],
                   )
                 : new FocusScope(
@@ -240,7 +240,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                             _data[name] = newName;
                           },
                         ),
-                        new ByUserNameComponent(userId: _invite.sentByUid),
+                        new ByUserNameComponent(userId: invite.sentByUid),
                       ],
                     ),
                   ),
@@ -259,44 +259,82 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
             textColor: Colors.white,
           ),
           new FlatButton(
-            onPressed: () => showDeleteInvite(context, _invite),
+            onPressed: () => showDeleteInvite(
+                context, _singleInviteBloc.currentState.invite),
             child: new Text(messages.deleteinvite),
           ),
         ],
       ),
     );
 
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
-        actions: <Widget>[
-          new FlatButton(
-            onPressed: () {
-              _savePressed();
-            },
-            child: new Text(
-              Messages.of(context).savebuttontext,
-              style: Theme.of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(color: Colors.white),
+    return BlocProvider(
+      bloc: _singleInviteBloc,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: new AppBar(
+          title: new Text(Messages.of(context).title),
+          actions: <Widget>[
+            new FlatButton(
+              onPressed: () {
+                _savePressed();
+              },
+              child: new Text(
+                Messages.of(context).savebuttontext,
+                style: Theme.of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(color: Colors.white),
+              ),
             ),
-          ),
-        ],
-      ),
-      body: new Scrollbar(
-        child: new SingleChildScrollView(
-          child: new Form(
-            key: _formKey,
-            child: new Column(
-              children: <Widget>[
-                    new ListTile(
-                      leading: const Icon(CommunityIcons.tshirtCrew),
-                      title: new Text(_invite.teamName),
-                      subtitle: new Text(_invite.seasonName),
-                    )
-                  ] +
-                  players,
+          ],
+        ),
+        body: new Scrollbar(
+          child: new SingleChildScrollView(
+            child: BlocBuilder<SingleInviteEvent, SingleInviteState>(
+              bloc: _singleInviteBloc,
+              builder: (BuildContext context, SingleInviteState state) {
+                if (state is SingleInviteUninitialized) {
+                  // Loading.
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is SingleInviteDoesntExist) {
+                  // Error.
+                  return Column(
+                    children: <Widget>[
+                      Text(Messages.of(context).noinvites),
+                      FlatButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(MaterialLocalizations.of(context)
+                            .cancelButtonLabel),
+                      )
+                    ],
+                  );
+                } else if (state is SingleInviteDeleted) {
+                  // Go back!
+                  Navigator.pop(context);
+                  return Center(child: CircularProgressIndicator());
+                } else {
+                  if (state is SingleInviteSaveFailed) {
+                    showInSnackBar(Messages.of(context).formerror);
+                  }
+                  InviteToTeam invite = state.invite as InviteToTeam;
+                  return SavingOverlay(
+                    saving: !(state is SingleInviteLoaded),
+                    child: Form(
+                      key: _formKey,
+                      child: new Column(
+                        children: <Widget>[
+                              new ListTile(
+                                leading: const Icon(CommunityIcons.tshirtCrew),
+                                title: new Text(invite.teamName),
+                                subtitle: new Text(invite.seasonName),
+                              )
+                            ] +
+                            players,
+                      ),
+                    ),
+                  );
+                }
+              },
             ),
           ),
         ),

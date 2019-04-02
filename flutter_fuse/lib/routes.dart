@@ -7,9 +7,7 @@ import 'package:flutter_fuse/services/approuter.dart';
 import 'package:flutter_fuse/services/loggingdata.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:fusemodel/blocs/authenticationbloc.dart';
-import 'package:fusemodel/blocs/invitebloc.dart';
-import 'package:fusemodel/blocs/loginbloc.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 

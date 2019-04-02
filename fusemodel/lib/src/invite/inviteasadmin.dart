@@ -46,4 +46,21 @@ class InviteAsAdmin extends Invite {
   String toString() {
     return 'InviteAsAdmin{${super.toString()}, teamName: $teamName, teamUid: $teamUid}';
   }
+
+  @override
+  int compareTo(Invite other) {
+    if (baseCompareTo(other) != 0) {
+      return -1;
+    }
+    if (other is InviteAsAdmin) {
+      if (teamName.compareTo(other.teamName) != 0) {
+        return -1;
+      }
+      if (teamUid.compareTo(other.teamUid) != 0) {
+        return -1;
+      }
+      return 0;
+    }
+    return 1;
+  }
 }
