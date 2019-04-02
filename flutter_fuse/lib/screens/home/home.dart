@@ -12,6 +12,7 @@ import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 import 'package:timezone/timezone.dart';
+import 'package:badges/badges.dart';
 import 'dart:async';
 
 class HomeScreen extends StatefulWidget {
@@ -43,7 +44,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
-
   @override
   void didChangeDependencies() {
     _calendarEvents.state = _calendarState;
@@ -55,67 +55,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
     Messages messages = Messages.of(context);
-    IconData badge;
     TZDateTime nowTime = new TZDateTime.now(local);
 
-    switch (UserDatabaseData.instance.unreadMessageCount) {
-      case 0:
-        badge = null;
-        break;
-      case 1:
-        badge = CommunityIcons.numeric1Box;
-        break;
-      case 2:
-        badge = CommunityIcons.numeric2Box;
-        break;
-      case 3:
-        badge = CommunityIcons.numeric3Box;
-        break;
-      case 4:
-        badge = CommunityIcons.numeric4Box;
-        break;
-      case 5:
-        badge = CommunityIcons.numeric5Box;
-        break;
-      case 6:
-        badge = CommunityIcons.numeric6Box;
-        break;
-      case 7:
-        badge = CommunityIcons.numeric7Box;
-        break;
-      case 8:
-        badge = CommunityIcons.numeric8Box;
-        break;
-      default:
-        badge = CommunityIcons.numeric9PlusBox;
-        break;
-    }
-    Widget messagesIcon;
-    if (badge != null) {
-      messagesIcon = new Stack(
-        children: <Widget>[
-          const Icon(
-            Icons.mail,
-            color: Colors.white,
-          ),
-          new Positioned(
-            // draw a red marble
-            top: 0.0,
-            right: 0.0,
-            child: new Icon(
-              badge,
-              size: 15.0,
-              color: Colors.redAccent,
-            ),
-          ),
-        ],
-      );
-    } else {
-      messagesIcon = const Icon(
-        Icons.mail,
-        color: Colors.white,
-      );
-    }
     List<Widget> actions = <Widget>[
       new IconButton(
         icon: const Icon(Icons.tune),
@@ -140,9 +81,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      new IconButton(
+      new BadgeIconButton(
+        itemCount: UserDatabaseData.instance.unreadMessageCount,
+        hideZeroCount: true,
         onPressed: () => Navigator.pushNamed(context, "Messages"),
-        icon: messagesIcon,
+        icon: const Icon(Icons.mail),
       ),
     ];
     if (!UserDatabaseData.instance.loadedDatabase &&
@@ -232,8 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
         .listen((UpdateReason reason) => setState(() {}));
     _messagaesSubscription = UserDatabaseData.instance.messagesStream
         .listen((UpdateReason reason) => setState(() {}));
-    _calendarEvents =
-        new GameListCalendarState(_details, _calendarState);
+    _calendarEvents = new GameListCalendarState(_details, _calendarState);
     _calendarEvents.loadGames(_details).then((void d) {
       setState(() {});
     });
