@@ -3,6 +3,8 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddOpponent extends StatefulWidget {
   AddOpponent(this.teamUid);
@@ -11,7 +13,7 @@ class AddOpponent extends StatefulWidget {
 
   @override
   State createState() {
-    Opponent opponent = new Opponent();
+    OpponentBuilder opponent = new OpponentBuilder();
     opponent.teamUid = teamUid;
 
     return new _AddOpponentState(opponent);
@@ -19,23 +21,54 @@ class AddOpponent extends StatefulWidget {
 }
 
 class _AddOpponentState extends State<AddOpponent> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   _AddOpponentState(this._opponent);
 
-  Opponent _opponent;
+  OpponentBuilder _opponent;
   FocusNode _focusNode = new FocusNode();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool _saving = false;
+  SingleTeamOpponentBloc _opponentBloc;
+
+  void _showInSnackBar(String value) {
+    _scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(value)));
+  }
+
+  void initState() {
+    super.initState();
+    _opponentBloc = SingleTeamOpponentBloc(
+        teamUid: widget.teamUid,
+        teamBloc: BlocProvider.of<TeamBloc>(context),
+        opponentUid: SingleTeamOpponentBloc.createNew);
+  }
 
   void _savePressed(BuildContext context) async {
     _formKey.currentState.save();
     setState(() {
       _saving = true;
     });
-    await _opponent.updateFirestore();
+    // Make a new single opponent bloc and wait for stuff.
+    _opponentBloc.dispatch(SingleTeamOpponentUpdate(opponent: _opponent));
+    // Wait till it is finished.
+    await for (SingleTeamOpponentState state in _opponentBloc.state) {
+      if (state is SingleTeamOpponentSaveFailed) {
+        // Darn it.
+        _showInSnackBar(Messages.of(context).formerror);
+        return;
+      }
+      if (state is SingleTeamOpponentLoaded) {
+        // Yay!  All good.
+        break;
+      }
+      // Still saving.
+    }
     print('updated');
     setState(() {
       _saving = false;
     });
+
     Navigator.of(context).pop(_opponent.uid);
     print('returning?');
   }
@@ -43,6 +76,7 @@ class _AddOpponentState extends State<AddOpponent> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      key: _scaffoldKey,
       appBar: new AppBar(
         title: new Text(Messages.of(context).addopponent),
         actions: <Widget>[

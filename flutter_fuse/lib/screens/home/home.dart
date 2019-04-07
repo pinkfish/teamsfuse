@@ -7,12 +7,14 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/fabdialer.dart';
 import 'package:flutter_fuse/widgets/util/fabminimenuitem.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 import 'package:timezone/timezone.dart';
 import 'package:badges/badges.dart';
+import 'package:fusemodel/blocs.dart';
 import 'dart:async';
 
 class HomeScreen extends StatefulWidget {
@@ -23,8 +25,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  StreamSubscription<UpdateReason> _teamSubscription;
-  StreamSubscription<UpdateReason> _messagaesSubscription;
   StreamSubscription<UpdateReason> _calendarSub;
   FilterDetails _details = new FilterDetails();
   GlobalKey<CalendarWidgetState> _calendarState =
@@ -81,25 +81,38 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      new BadgeIconButton(
-        itemCount: UserDatabaseData.instance.unreadMessageCount,
-        hideZeroCount: true,
-        onPressed: () => Navigator.pushNamed(context, "Messages"),
-        icon: const Icon(Icons.mail),
-      ),
+      BlocBuilder<MessagesEvent, MessagesState>(
+          bloc: BlocProvider.of<MessagesBloc>(context),
+          builder: (BuildContext context, MessagesState state) {
+            return BadgeIconButton(
+              itemCount: state.unreadMessages.length,
+              hideZeroCount: true,
+              onPressed: () => Navigator.pushNamed(context, "Messages"),
+              icon: const Icon(Icons.mail),
+            );
+          }),
     ];
-    if (!UserDatabaseData.instance.loadedDatabase &&
-        !UserDatabaseData.instance.loadedFromSQL) {
-      actions.add(
-        new SizedBox(
-          width: 15.0,
-          height: 15.0,
-          child: new CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.greenAccent),
-          ),
-        ),
-      );
-    }
+
+    actions.add(BlocBuilder<LoadedEvent, LoadedState>(
+      bloc: BlocProvider.of<LoadedStateBloc>(context),
+      builder: (BuildContext context, LoadedState state) {
+        switch (state) {
+          case LoadedState.Logout:
+          case LoadedState.Loading:
+          case LoadedState.SqlLoaded:
+            return SizedBox(
+              width: 15.0,
+              height: 15.0,
+              child: new CircularProgressIndicator(
+                valueColor:
+                    new AlwaysStoppedAnimation<Color>(Colors.greenAccent),
+              ),
+            );
+          case LoadedState.AllLoaded:
+            return SizedBox(height: 0);
+        }
+      },
+    ));
 
     return new Scaffold(
       drawer: new FusedDrawer(DrawerMode.gameList),
@@ -107,63 +120,83 @@ class _HomeScreenState extends State<HomeScreen> {
         title: new Text(messages.title),
         actions: actions,
       ),
-      body: new SavingOverlay(
-        quoteId: quoteId,
-        saving: !UserDatabaseData.instance.loadedFromSQL &&
-            !UserDatabaseData.instance.loadedDatabase,
-        child: new Column(
-          children: <Widget>[
-            new GestureDetector(
-              child: new InviteCard(),
-              onTap: () => Navigator.pushNamed(context, "Invites"),
+      body: BlocBuilder<LoadedEvent, LoadedState>(
+        bloc: BlocProvider.of<LoadedStateBloc>(context),
+        builder: (BuildContext context, LoadedState state) {
+          bool loading = false;
+          switch (state) {
+            case LoadedState.Logout:
+            case LoadedState.Loading:
+              loading = true;
+              break;
+            case LoadedState.SqlLoaded:
+            case LoadedState.AllLoaded:
+              loading = false;
+              break;
+          }
+          return SavingOverlay(
+            quoteId: quoteId,
+            saving: loading,
+            child: new Column(
+              children: <Widget>[
+                new GestureDetector(
+                  child: new InviteCard(),
+                  onTap: () => Navigator.pushNamed(context, "Invites"),
+                ),
+                new Expanded(
+                  child: new CalendarWidget(
+                    initialDate: new TZDateTime.now(local),
+                    key: _calendarState,
+                    getEvents: _calendarEvents.getEvents,
+                    buildItem: _calendarEvents.buildWidget,
+                    bannerHeader:
+                        new AssetImage("assets/images/calendarheader.png"),
+                    monthHeader:
+                        new AssetImage("assets/images/calendarbanner.jpg"),
+                  ),
+                ),
+              ],
             ),
-            new Expanded(
-              child: new CalendarWidget(
-                initialDate: new TZDateTime.now(local),
-                key: _calendarState,
-                getEvents: _calendarEvents.getEvents,
-                buildItem: _calendarEvents.buildWidget,
-                bannerHeader:
-                    new AssetImage("assets/images/calendarheader.png"),
-                monthHeader: new AssetImage("assets/images/calendarbanner.jpg"),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
-      floatingActionButton: new FabDialer(
-        disabled: UserDatabaseData.instance.teams.length == 0,
-        menu: <FabMiniMenuItemWidget>[
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.mail),
-            fabColor: Colors.lightBlueAccent,
-            text: messages.newmail,
-            onPressed: () => Navigator.pushNamed(context, "AddMessage"),
-          ),
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.calendar_today),
-            fabColor: Colors.blueAccent,
-            text: messages.addevent,
-            onPressed: () => Navigator.pushNamed(context, "AddEvent"),
-          ),
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.people),
-            fabColor: Colors.blueGrey,
-            text: messages.addtraining,
-            onPressed: () => Navigator.pushNamed(context, "AddTraining"),
-          ),
-          new FabMiniMenuItemWidget(
-            icon: const Icon(Icons.gamepad),
-            fabColor: theme.accentColor,
-            text: messages.addgame,
-            onPressed: () => Navigator.pushNamed(context, "AddGame"),
-          ),
-        ],
-        color: UserDatabaseData.instance.teams.length == 0
-            ? theme.disabledColor
-            : theme.accentColor,
-        icon: new Icon(Icons.add),
-      ),
+      floatingActionButton: BlocBuilder<TeamEvent, TeamState>(
+          bloc: BlocProvider.of<TeamBloc>(context),
+          builder: (BuildContext context, TeamState state) {
+            return FabDialer(
+              disabled: state.allTeamUids.length == 0,
+              menu: <FabMiniMenuItemWidget>[
+                new FabMiniMenuItemWidget(
+                  icon: const Icon(Icons.mail),
+                  fabColor: Colors.lightBlueAccent,
+                  text: messages.newmail,
+                  onPressed: () => Navigator.pushNamed(context, "AddMessage"),
+                ),
+                new FabMiniMenuItemWidget(
+                  icon: const Icon(Icons.calendar_today),
+                  fabColor: Colors.blueAccent,
+                  text: messages.addevent,
+                  onPressed: () => Navigator.pushNamed(context, "AddEvent"),
+                ),
+                new FabMiniMenuItemWidget(
+                  icon: const Icon(Icons.people),
+                  fabColor: Colors.blueGrey,
+                  text: messages.addtraining,
+                  onPressed: () => Navigator.pushNamed(context, "AddTraining"),
+                ),
+                new FabMiniMenuItemWidget(
+                  icon: const Icon(Icons.gamepad),
+                  fabColor: theme.accentColor,
+                  text: messages.addgame,
+                  onPressed: () => Navigator.pushNamed(context, "AddGame"),
+                ),
+              ],
+              color: state.allTeamUids.length == 0
+                  ? theme.disabledColor
+                  : theme.accentColor,
+              icon: new Icon(Icons.add),
+            );
+          }),
     );
   }
 
@@ -171,10 +204,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    _teamSubscription = UserDatabaseData.instance.teamStream
-        .listen((UpdateReason reason) => setState(() {}));
-    _messagaesSubscription = UserDatabaseData.instance.messagesStream
-        .listen((UpdateReason reason) => setState(() {}));
     _calendarEvents = new GameListCalendarState(_details, _calendarState);
     _calendarEvents.loadGames(_details).then((void d) {
       setState(() {});
@@ -187,10 +216,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     super.dispose();
-    _teamSubscription?.cancel();
-    _teamSubscription = null;
-    _messagaesSubscription?.cancel();
-    _messagaesSubscription = null;
     _calendarSub?.cancel();
     _calendarSub = null;
   }

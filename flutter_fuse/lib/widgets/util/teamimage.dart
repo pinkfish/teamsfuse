@@ -57,9 +57,9 @@ class TeamImage extends StatelessWidget {
       return _providerFromTeam(team);
     }
     // Team uid, lookup the team first.
-    Team oublicTeam = await UserDatabaseData.instance.updateModel
+    Team publicTeam = await UserDatabaseData.instance.updateModel
         .getPublicTeamDetails(teamUid);
-    return _providerFromTeam(oublicTeam);
+    return _providerFromTeam(publicTeam);
   }
 
   @override

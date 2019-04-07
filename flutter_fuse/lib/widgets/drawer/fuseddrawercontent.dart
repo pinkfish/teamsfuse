@@ -5,6 +5,8 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/teams/teamtile.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/blocs.dart';
 
 import 'fuseddrawer.dart';
 import 'fuseddrawerheader.dart';
@@ -14,10 +16,10 @@ class FusedDrawerContent extends StatelessWidget {
 
   final DrawerMode mode;
 
-  Widget _buildTeamSection(BuildContext context) {
+  Widget _buildClubSection(BuildContext context, ClubState state) {
     List<Widget> data = <Widget>[];
     // If we are specifically in a club, list that here.
-    for (Club club in UserDatabaseData.instance.clubs.values) {
+    for (Club club in state.clubs.values) {
       if (club.isMember()) {
         data.add(
           new ListTile(
@@ -67,10 +69,18 @@ class FusedDrawerContent extends StatelessWidget {
         );
       }
     }
-    UserDatabaseData.instance.teams.forEach((String uid, Team team) {
+    return new Column(children: data);
+  }
+
+  Widget _buildTeamSection(BuildContext context, TeamState state) {
+    List<Widget> data = <Widget>[];
+
+    ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
+
+    for (Team team in state.teams.values) {
       if (!team.archived) {
         if (team.clubUid == null ||
-            !UserDatabaseData.instance.clubs.containsKey(team.clubUid)) {
+            !clubBloc.currentState.clubs.containsKey(team.clubUid)) {
           data.add(
             new TeamTile(
               team,
@@ -80,7 +90,7 @@ class FusedDrawerContent extends StatelessWidget {
           );
         }
       }
-    });
+    }
     data.add(
       new ListTile(
         leading: const Icon(CommunityIcons.teamviewer),
@@ -98,10 +108,16 @@ class FusedDrawerContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> children = <Widget>[
       new FusedDrawerHeader(),
-      new StreamBuilder<UpdateReason>(
-        stream: UserDatabaseData.instance.teamStream,
-        builder: (BuildContext context, AsyncSnapshot<UpdateReason> snapshot) {
-          return _buildTeamSection(context);
+      new BlocBuilder<ClubEvent, ClubState>(
+        bloc: BlocProvider.of<ClubBloc>(context),
+        builder: (BuildContext context, ClubState state) {
+          return _buildClubSection(context, state);
+        },
+      ),
+      new BlocBuilder<TeamEvent, TeamState>(
+        bloc: BlocProvider.of<TeamBloc>(context),
+        builder: (BuildContext context, TeamState state) {
+          return _buildTeamSection(context, state);
         },
       ),
       new Divider(),
@@ -150,7 +166,10 @@ class FusedDrawerContent extends StatelessWidget {
           // Pre-emptively clear the user data stuff, otherwise we end
           // erroring all over the place when the subscriptions fail
           UserDatabaseData.instance.close();
-          await UserDatabaseData.instance.userAuth.signOut();
+          AuthenticationBloc authenticationBloc =
+              BlocProvider.of<AuthenticationBloc>(context);
+          authenticationBloc.dispatch(LoggedOut());
+          // await UserDatabaseData.instance.userAuth.signOut();
 
           await overlayEntry.remove();
 

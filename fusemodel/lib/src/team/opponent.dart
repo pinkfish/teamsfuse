@@ -1,51 +1,35 @@
-import 'dart:async';
-
 import '../common.dart';
 import '../winrecord.dart';
-import 'package:fusemodel/src/game/game.dart';
-import '../userdatabasedata.dart';
+import 'package:built_value/built_value.dart';
+import 'package:built_collection/built_collection.dart';
+
+part 'opponent.g.dart';
 
 ///
 /// An opponent for a team with all the opponent metadata associated with it.
 ///
-class Opponent {
-  String name;
-  String teamUid;
-  String contact;
-  String uid;
-  List<String> leagueTeamUid;
-  Map<String, WinRecord> record;
+abstract class Opponent implements Built<Opponent, OpponentBuilder> {
+  String get name;
+  String get teamUid;
+  String get contact;
+  String get uid;
+  BuiltList<String> get leagueTeamUid;
+  BuiltMap<String, WinRecord> get record;
 
-  Opponent(
-      {this.record,
-        this.name,
-        this.teamUid,
-        this.contact,
-        this.uid,
-        this.leagueTeamUid}) {
-    if (record == null) {
-      record = new Map<String, WinRecord>();
-    }
-  }
-
-  Opponent.copy(Opponent copy) {
-    name = copy.name;
-    teamUid = copy.teamUid;
-    contact = copy.contact;
-    uid = copy.uid;
-    leagueTeamUid = copy.leagueTeamUid;
-    record = new Map<String, WinRecord>.from(copy.record);
-  }
+  Opponent._();
+  factory Opponent([updates(OpponentBuilder b)]) = _$Opponent;
 
   static const String _CONTACT = 'contact';
   static const String _SEASONS = 'seasons';
   static const String _LEAGUETEAMUID = 'leagueTeamUid';
 
-  void fromJSON(String uid, String teamUid, Map<String, dynamic> data) {
-    this.uid = uid;
-    this.teamUid = teamUid;
-    name = getString(data[NAME]);
-    contact = getString(data[_CONTACT]);
+  static OpponentBuilder fromJSON(
+      String uid, String teamUid, Map<String, dynamic> data) {
+    OpponentBuilder builder = OpponentBuilder();
+    builder.uid = uid;
+    builder.teamUid = teamUid;
+    builder.name = getString(data[NAME]);
+    builder.contact = getString(data[_CONTACT]);
     if (data[_LEAGUETEAMUID] != null) {
       List<String> newLeagues = new List<String>();
       data[_LEAGUETEAMUID].forEach((dynamic key, dynamic data) {
@@ -55,20 +39,21 @@ class Opponent {
           }
         }
       });
-      leagueTeamUid = newLeagues;
+      builder.leagueTeamUid.addAll(newLeagues);
     }
     Map<String, WinRecord> newRecord = new Map<String, WinRecord>();
     if (data[_SEASONS] != null) {
       Map<dynamic, dynamic> innerSeason =
-      data[_SEASONS] as Map<dynamic, dynamic>;
+          data[_SEASONS] as Map<dynamic, dynamic>;
       // Load the seasons.
       innerSeason.forEach((dynamic seasonUid, dynamic value) {
-        WinRecord newData =
-        new WinRecord.fromJSON(value as Map<dynamic, dynamic>);
-        newRecord[seasonUid.toString()] = newData;
+        WinRecordBuilder newData =
+            WinRecord.fromJSON(value as Map<dynamic, dynamic>);
+        newRecord[seasonUid.toString()] = newData.build();
       });
     }
-    record = newRecord;
+    builder.record.addAll(newRecord);
+    return builder;
   }
 
   Map<String, dynamic> toJSON() {
@@ -88,22 +73,5 @@ class Opponent {
     });
     ret[_SEASONS] = recordSection;
     return ret;
-  }
-
-  Future<void> updateFirestore() {
-    return UserDatabaseData.instance.updateModel.updateFirestoreOpponent(this);
-  }
-
-  Future<void> deleteFromFirestore() {
-    return UserDatabaseData.instance.updateModel.deleteFirestoreOpponent(this);
-  }
-
-  String toString() {
-    return "Opponent {$uid $name $contact team: $teamUid}";
-  }
-
-  Future<Iterable<Game>> getGames() {
-    // Get all the games for this season.
-    return UserDatabaseData.instance.updateModel.getOpponentGames(this);
   }
 }

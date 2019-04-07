@@ -146,7 +146,7 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
         if (!_newerGameSubscriptions.containsKey(teamUid)) {
           String myUid = teamUid;
           _newerGameSubscriptions[teamUid] = gameBloc
-              .playerBloc.databaseUpdateModel
+              .coordinationBloc.databaseUpdateModel
               .getBasicGames(
                   currentState.start, gameBloc.currentState.start, teamUid)
               .listen((GameSnapshotEvent gse) {

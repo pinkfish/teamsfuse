@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ClubPicker extends StatelessWidget {
   ClubPicker({
@@ -18,7 +20,8 @@ class ClubPicker extends StatelessWidget {
 
   static const String noClub = "noClub";
 
-  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+  List<DropdownMenuItem<String>> _buildItems(
+      BuildContext context, ClubState state) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     ret.add(
       new DropdownMenuItem<String>(
@@ -26,7 +29,7 @@ class ClubPicker extends StatelessWidget {
         value: noClub,
       ),
     );
-    UserDatabaseData.instance.clubs.forEach((String key, Club club) {
+    for (Club club in state.clubs.values) {
       if (adminOnly && club.isAdmin()) {
         ret.add(
           new DropdownMenuItem<String>(
@@ -35,7 +38,7 @@ class ClubPicker extends StatelessWidget {
           ),
         );
       }
-    });
+    }
     return ret;
   }
 
@@ -56,16 +59,19 @@ class ClubPicker extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           new Expanded(
-            flex: 1,
-            child: new DropdownButton<String>(
-              hint: new Text(Messages.of(context).selectclub),
-              items: _buildItems(context),
-              value: clubUid,
-              onChanged: (String val) {
-                onChanged(val);
-              },
-            ),
-          ),
+              flex: 1,
+              child: BlocBuilder<ClubEvent, ClubState>(
+                  bloc: BlocProvider.of<ClubBloc>(context),
+                  builder: (BuildContext context, ClubState state) {
+                    return DropdownButton<String>(
+                      hint: new Text(Messages.of(context).selectclub),
+                      items: _buildItems(context, state),
+                      value: clubUid,
+                      onChanged: (String val) {
+                        onChanged(val);
+                      },
+                    );
+                  })),
         ],
       ),
     );

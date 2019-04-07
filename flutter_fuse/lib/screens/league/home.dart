@@ -3,6 +3,8 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/blocs.dart';
 
 ///
 /// This shows all the basic stuff about the league/tournaments the person
@@ -40,11 +42,11 @@ class LeagueHomeScreen extends StatelessWidget {
           SizedBox(
             height: 3.0,
           ),
-          StreamBuilder<UpdateReason>(
-            stream: UserDatabaseData.instance.leagueOrTournamentStream,
-            builder: (BuildContext context, AsyncSnapshot<UpdateReason> snap) {
-              Iterable<LeagueOrTournament> league = UserDatabaseData
-                  .instance.leagueOrTournments.values
+          BlocBuilder<LeagueOrTournamentEvent, LeagueOrTournamentState>(
+            bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
+            builder: (BuildContext context, LeagueOrTournamentState state) {
+              Iterable<LeagueOrTournament> league = state
+                  .leagueOrTournaments.values
                   .where((LeagueOrTournament l) =>
                       l.type == LeagueOrTournamentType.League);
               if (league.length == 0) {
@@ -73,11 +75,11 @@ class LeagueHomeScreen extends StatelessWidget {
           SizedBox(
             height: 3.0,
           ),
-          StreamBuilder<UpdateReason>(
-            stream: UserDatabaseData.instance.leagueOrTournamentStream,
-            builder: (BuildContext context, AsyncSnapshot<UpdateReason> snap) {
-              Iterable<LeagueOrTournament> tournament = UserDatabaseData
-                  .instance.leagueOrTournments.values
+          BlocBuilder<LeagueOrTournamentEvent, LeagueOrTournamentState>(
+            bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
+            builder: (BuildContext context, LeagueOrTournamentState state) {
+              Iterable<LeagueOrTournament> tournament = state
+                  .leagueOrTournaments.values
                   .where((LeagueOrTournament l) =>
                       l.type == LeagueOrTournamentType.Tournament);
               if (tournament.length == 0) {

@@ -3,56 +3,23 @@ import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'dart:async';
+import 'package:fusemodel/blocs.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class MessageList extends StatefulWidget {
-  @override
-  MessageListState createState() {
-    return new MessageListState();
-  }
-}
-
-class MessageListState extends State<MessageList> {
-  String _myUid = UserDatabaseData.instance.userUid;
-  DateTime _dayCutoff = new DateTime.now().subtract(const Duration(days: 1));
-  List<Message> _sortedList = <Message>[];
-
-  StreamSubscription<UpdateReason> _messageStream;
-
-  @override
-  void initState() {
-    super.initState();
-    _sortedList = UserDatabaseData.instance.messages.values.toList();
-    _sortedList.sort(
-        (Message m1, Message m2) => m1.timeSent.toInt() - m2.timeSent.toInt());
-
-    _messageStream = UserDatabaseData.instance.messagesStream
-        .listen((UpdateReason reason) => setState(() {
-              _sortedList = UserDatabaseData.instance.messages.values.toList();
-              _sortedList.sort((Message m1, Message m2) =>
-                  m1.timeSent.toInt() - m2.timeSent.toInt());
-            }));
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _messageStream.cancel();
-  }
-
-  Widget _buildMessage(Message mess) {
+class MessageList extends StatelessWidget {
+  Widget _buildMessage(BuildContext context, Message mess, DateTime dayCutoff,
+      AuthenticationBloc authenticationBloc) {
     String timeMess;
     ThemeData theme = Theme.of(context);
 
-    if (mess.timeSent < _dayCutoff.millisecondsSinceEpoch) {
-      timeMess = MaterialLocalizations
-          .of(context)
+    if (mess.timeSent < dayCutoff.millisecondsSinceEpoch) {
+      timeMess = MaterialLocalizations.of(context)
           .formatTimeOfDay(new TimeOfDay.fromDateTime(mess.tzTimeSent));
     } else {
       timeMess =
           MaterialLocalizations.of(context).formatMediumDate(mess.tzTimeSent);
     }
-    print('rec ${mess.recipients} $_myUid ${mess.uid}');
+    print('rec ${mess.recipients} ${mess.uid}');
 
     return new ListTile(
       onTap: () => Navigator.pushNamed(context, "/ShowMessage/" + mess.uid),
@@ -71,10 +38,12 @@ class MessageListState extends State<MessageList> {
               alignment: AlignmentDirectional.centerStart,
               child: new PlayerName(
                 playerUid: mess.fromUid,
-                style: mess.recipients[_myUid].state == MessageState.Unread
-                    ? theme.textTheme.subhead
-                        .copyWith(fontWeight: FontWeight.bold)
-                    : theme.textTheme.subhead,
+                style:
+                    mess.recipients[authenticationBloc.currentUser.uid].state ==
+                            MessageState.Unread
+                        ? theme.textTheme.subhead
+                            .copyWith(fontWeight: FontWeight.bold)
+                        : theme.textTheme.subhead,
               ),
             ),
           ),
@@ -90,7 +59,8 @@ class MessageListState extends State<MessageList> {
       title: new Text(
         mess.subject,
         overflow: TextOverflow.clip,
-        style: mess.recipients[_myUid].state == MessageState.Unread
+        style: mess.recipients[authenticationBloc.currentUser.uid].state ==
+                MessageState.Unread
             ? theme.textTheme.subhead.copyWith(
                 fontWeight: FontWeight.bold,
                 fontSize: theme.textTheme.subhead.fontSize * 1.25)
@@ -101,20 +71,35 @@ class MessageListState extends State<MessageList> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> messages = <Widget>[];
-    if (_sortedList.length == 0) {
-      // No messages
-      return new Center(
-        child: new Text(Messages.of(context).nomessages),
-      );
-    }
-    _sortedList.forEach((Message mess) {
-      messages.add(_buildMessage(mess));
-    });
-    return new SingleChildScrollView(
-      child: new Column(
-        children: messages,
-      ),
+    return BlocBuilder<MessagesEvent, MessagesState>(
+      bloc: BlocProvider.of<MessagesBloc>(context),
+      builder: (BuildContext context, MessagesState state) {
+        if (state.unreadMessages.length == 0 &&
+            state.recentMessages.length == 0) {
+          return new Center(
+            child: new Text(Messages.of(context).nomessages),
+          );
+        }
+        // Make a sorted list of the messages.
+        Map<String, Message> stuff = Map.from(state.unreadMessages);
+        stuff.addAll(state.recentMessages);
+        List<Message> sortedList = stuff.values.toList();
+        sortedList.sort((Message m1, Message m2) =>
+            m1.timeSent.toInt() - m2.timeSent.toInt());
+        List<Widget> messages = [];
+        DateTime dayCutoff = DateTime.now().subtract(Duration(days: 1));
+        AuthenticationBloc authenticationBloc =
+            BlocProvider.of<AuthenticationBloc>(context);
+        for (Message mess in sortedList) {
+          messages
+              .add(_buildMessage(context, mess, dayCutoff, authenticationBloc));
+        }
+        return new SingleChildScrollView(
+          child: new Column(
+            children: messages,
+          ),
+        );
+      },
     );
   }
 }

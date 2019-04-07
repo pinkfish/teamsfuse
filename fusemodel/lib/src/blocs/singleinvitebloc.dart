@@ -5,7 +5,11 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
+import 'coordinationbloc.dart';
 import 'invitebloc.dart';
+import 'teambloc.dart';
+
+import 'package:built_collection/built_collection.dart';
 
 ///
 /// Basic state for all the data in this system.
@@ -161,11 +165,16 @@ class SingleInviteEventAddInviteToPlayer extends SingleInviteEvent {
 /// invites.
 ///
 class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
+  final CoordinationBloc coordingationBloc;
   final InviteBloc inviteBloc;
+  final TeamBloc teamBloc;
 
   StreamSubscription<InviteState> _inviteState;
 
-  SingleInviteBloc({@required this.inviteBloc}) {
+  SingleInviteBloc(
+      {@required this.inviteBloc,
+      @required this.coordingationBloc,
+      @required this.teamBloc}) {
     _inviteState = inviteBloc.state.listen((InviteState state) {
       if (state is InviteLoaded) {
         _startLoading(state);
@@ -202,8 +211,10 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
         await inviteBloc.databaseUpdateModel.getSeason(invite.seasonUid);
     if (doc != null) {
       // Update it!  First we add to the player.
-      SeasonPlayer seasonPlayer =
-          new SeasonPlayer(playerUid: playerUid, role: invite.role);
+      SeasonPlayer seasonPlayer = new SeasonPlayer((b) => b
+        ..playerUid = playerUid
+        ..role = invite.role);
+
       await inviteBloc.databaseUpdateModel
           .addPlayerToSeason(invite.seasonUid, seasonPlayer);
       return true;
@@ -246,49 +257,53 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       //
       // Invite to league team
       //
-      Season season;
 
       if (event.teamUid == SingleInviteEventAcceptInvite.createNew) {
-        Team team = new Team(
-          name: invite.leagueTeamName,
-        );
+        TeamBuilder team = new TeamBuilder();
+        team.name = invite.leagueTeamName;
         team.admins.add(inviteBloc.currentState.uid);
-        await team.updateFirestore();
-        String teamUid = team.uid;
-        season = new Season(
-            name: invite.leagueSeasonName,
-            teamUid: teamUid,
-            record: WinRecord(),
-            players: <SeasonPlayer>[
-              SeasonPlayer(
-                playerUid: inviteBloc.currentState.uid,
-                role: RoleInTeam.NonPlayer,
-              )
-            ]);
-        team.currentSeason = season.precreateUid();
+        var pregen = inviteBloc.databaseUpdateModel.precreateTeamUid();
+        var pregenSeason = inviteBloc.databaseUpdateModel.precreateUidSeason();
+        team.uid = pregen.documentID;
+        Season season = new Season((b) => b
+          ..uid = pregenSeason.documentID
+          ..name = invite.leagueSeasonName
+          ..teamUid = team.uid
+          ..record = WinRecordBuilder()
+          ..players = ListBuilder([
+            SeasonPlayer((b) => b
+              ..playerUid = inviteBloc.currentState.uid
+              ..role = RoleInTeam.NonPlayer)
+          ]));
+        team.currentSeason = pregenSeason.documentID;
         LeagueOrTournamentTeam leagueTeam = await inviteBloc.databaseUpdateModel
             .getLeagueTeamData(invite.leagueTeamUid);
         if (leagueTeam.seasonUid != null) {
           // Someone beat them to it!
           // TODO: Say someone beat them to it.
         } else {
-          leagueTeam.seasonUid = season.precreateUid();
-          await season.updateFirestore();
+          leagueTeam.seasonUid = pregenSeason.documentID;
           await leagueTeam.firebaseUpdate();
-          await team.updateFirestore();
+          coordingationBloc.databaseUpdateModel
+              .addFirestoreTeam(team.build(), pregen);
+          coordingationBloc.databaseUpdateModel
+              .addFirestoreSeason(season, pregenSeason);
         }
       } else if (event.seasonUid == SingleInviteEventAcceptInvite.createNew) {
-        season = new Season(
-          name: invite.leagueSeasonName,
-          teamUid: event.teamUid,
-        );
-        await season.updateFirestore();
+        var pregenSeason = inviteBloc.databaseUpdateModel.precreateUidSeason();
+
+        Season season = new Season((b) => b
+          ..uid = pregenSeason.documentID
+          ..name = invite.leagueSeasonName
+          ..teamUid = event.teamUid);
+        coordingationBloc.databaseUpdateModel
+            .addFirestoreSeason(season, pregenSeason);
       } else {
-        season = UserDatabaseData
-            .instance.teams[event.teamUid].seasons[event.seasonUid];
+        Season season = teamBloc
+            .currentState.teamsByPlayer[event.teamUid].seasons[event.seasonUid];
+        await inviteBloc.databaseUpdateModel.connectLeagueTeamToSeason(
+            invite.leagueTeamUid, inviteBloc.currentState.uid, season);
       }
-      await inviteBloc.databaseUpdateModel.connectLeagueTeamToSeason(
-          invite.leagueTeamUid, inviteBloc.currentState.uid, season);
     } else if (invite is InviteToTeam) {
       //
       // Invite to team
@@ -395,23 +410,25 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
     }
 
     if (event is SingleInviteEventAddInviteToPlayer) {
-      if (!inviteBloc.playerBloc.currentState.players
+      if (!teamBloc.playerBloc.currentState.players
           .containsKey(event.playerUid)) {
         InviteToPlayer invite = new InviteToPlayer(
             playerUid: event.playerUid,
             playerName: 'Unknown',
             email: event.email,
-            sentByUid: inviteBloc.authenticationBloc.currentUser.uid);
+            sentByUid:
+                inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid);
         yield SingleInviteSaveFailed(
             failedInvite: invite, error: ArgumentError("Player doesn't exist"));
       } else {
         Player player =
-            inviteBloc.playerBloc.currentState.players[event.playerUid];
+            teamBloc.playerBloc.currentState.players[event.playerUid];
         InviteToPlayer invite = new InviteToPlayer(
             playerUid: player.uid,
             playerName: player.name,
             email: event.email,
-            sentByUid: inviteBloc.authenticationBloc.currentUser.uid);
+            sentByUid:
+                inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid);
         yield SingleInviteSaving(invite: invite);
         try {
           await inviteBloc.databaseUpdateModel

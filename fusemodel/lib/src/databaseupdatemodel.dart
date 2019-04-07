@@ -7,6 +7,7 @@ import 'invite.dart';
 import 'message.dart';
 import 'player.dart';
 import 'club.dart';
+import 'package:fusemodel/firestore.dart';
 
 ///
 /// Wraps up the firestore data to make it easier to use in the main
@@ -27,20 +28,6 @@ class FirestoreChangedData {
 
   final List<FirestoreWrappedData> newList;
   final List<FirestoreWrappedData> removed;
-}
-
-///
-/// Callback for the cluh updated.
-///
-abstract class TeamSnapshotCallback {
-  // TODO: Remove this once I have the main system setup.
-  void onClubUpdated(FirestoreWrappedData data);
-  void onOpponentUpdated(String teamUid, List<FirestoreWrappedData> data);
-  void onSeasonUpdated(
-      String TeamUid, String seasonId, Map<String, dynamic> data);
-  void onSeasonRemoved(String teamUid, String seasonUid);
-  void onTeamUpdated(String teamUid, Map<String, dynamic> data);
-  void onTeamDeleted(String str);
 }
 
 enum GameSnapshotEventType { GameList, SharedGameUpdate }
@@ -254,28 +241,29 @@ abstract class DatabaseUpdateModel {
 
   // Opponent update
   Future<void> updateFirestoreOpponent(Opponent opponent);
+  Future<Opponent> addFirestoreOpponent(Opponent opponent);
   Future<void> deleteFirestoreOpponent(Opponent opponent);
   Future<Iterable<Game>> getOpponentGames(Opponent season);
 
   // Team stuff
-  Future<List<StreamSubscription<dynamic>>> setupSnapForTeam(
-      Team team, TeamSnapshotCallback snapback);
-  Future<void> loadOpponents(Team team);
-  Future<void> updateFirestoreTeam(Team team, PregenUidRet optionalPreGen);
-  Future<Uri> updateTeamImage(Team team, File imgFile);
-  PregenUidRet precreateUid(Team team);
+  Future<void> updateFirestoreTeam(Team team);
+  Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen);
+  Future<Team> updateTeamImage(Team team, File imgFile);
+  DocumentReferenceWrapper precreateTeamUid();
   Future<String> inviteAdminToTeam(Team team, String email);
   Future<void> deleteAdmin(Team team, String uid);
   Future<String> addAdmin(String teamUid, String uid);
-  StreamSubscription<dynamic> getInviteForTeamStream(Team team);
-  SeasonSubscription getAllSeasons(String teamUid);
+  Stream<Iterable<InviteAsAdmin>> getInviteForTeamStream(Team team);
+  Stream<Iterable<Season>> getAllSeasons(String teamUid);
   Future<Team> getPublicTeamDetails(String teamUid);
+  Stream<Iterable<InviteAsAdmin>> getInvitesForTeam(String teamUid);
+  Stream<Iterable<Opponent>> getTeamOpponents(String teamUid);
+  Stream<TeamBuilder> getTeamDetails(String teamUid);
 
   // Player stuff.
   Future<void> updateFirestorePlayer(Player player, bool includeUsers);
   Future<Uri> updatePlayerImage(Player player, File imgFile);
-  List<StreamSubscription<dynamic>> setupPlayerSnap(
-      String playerUid, FirestoreDataCallback callback);
+  Stream<Iterable<Season>> getPlayerSeasons(String playerUid);
   // Send an invite to a user for this season and team.
   Future<void> inviteUserToPlayer(Player season, {String email});
   Future<StreamSubscription<dynamic>> getInviteForPlayerStream(Player season);
@@ -287,19 +275,20 @@ abstract class DatabaseUpdateModel {
   Future<void> deletePlayer(String playerUid);
 
   // Season updates
-  Future<void> updateFirestoreSeason(
-      Season season, bool includePlayers, PregenUidRet pregen);
+  Future<void> updateFirestoreSeason(Season season, bool includePlayers);
+  Future<Season> addFirestoreSeason(
+      Season season, DocumentReferenceWrapper pregen);
   Future<void> removePlayerFromSeason(Season season, SeasonPlayer player);
   Future<void> updateRoleInTeamForSeason(
       Season season, SeasonPlayer player, RoleInTeam role);
-  Future<StreamSubscription<dynamic>> getInviteForSeasonStream(Season season);
+  Stream<Iterable<Invite>> getInviteForSeasonStream(Season season);
   GameSubscription getSeasonGames(Iterable<Game> games, Season season);
   // Send an invite to a user for this season and team.
   Future<void> inviteUserToSeason(Season season,
       {String userId, String playername, String email, RoleInTeam role});
   Future<Season> getSeason(String seasonUid);
   Future<void> addPlayerToSeason(String seasonUid, SeasonPlayer player);
-  PregenUidRet precreateUidSeason(Season team);
+  DocumentReferenceWrapper precreateUidSeason();
 
   // Games!
   GameSubscription getGames(Iterable<Game> cachedGames, Set<String> teams,
@@ -308,7 +297,7 @@ abstract class DatabaseUpdateModel {
       DateTime start, DateTime end, String teamUid);
 
   // Clubs and stuff.
-  TeamSubscription getClubTeams(Club club);
+  Stream<Iterable<Team>> getClubTeams(Club club);
   Future<String> updateClub(Club club, {bool includeMembers});
   Future<Uri> updateClubImage(Club club, File imageFile);
   Future<void> addUserToClub(String clubUid, String userId, bool admin);
@@ -365,5 +354,5 @@ abstract class DatabaseUpdateModel {
   InitialSubscription getPlayers(String userUid);
   InitialSubscription getInvites(String userUid);
   InitialSubscription getMessages(String userUid, bool unread);
-  InitialSubscription getTeamAdmins(String userUid);
+  Stream<Iterable<Team>> getTeamAdmins(String userUid);
 }

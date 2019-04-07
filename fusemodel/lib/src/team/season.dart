@@ -7,15 +7,22 @@ import '../databaseupdatemodel.dart';
 import 'package:fusemodel/src/team/team.dart';
 import 'package:fusemodel/src/leagueortournament/leagueortournmentteam.dart';
 import 'seasonplayer.dart';
+import 'package:built_value/built_value.dart';
+import 'package:built_collection/built_collection.dart';
 
+part 'season.g.dart';
 
-class Season {
-  String name;
-  String uid;
-  String teamUid;
-  WinRecord record;
-  List<SeasonPlayer> players = [];
+abstract class Season implements Built<Season, SeasonBuilder> {
+  String get name;
+  String get uid;
+  String get teamUid;
+  WinRecord get record;
+  BuiltList<SeasonPlayer> get players;
 
+  Season._();
+  factory Season([updates(SeasonBuilder b)]) = _$Season;
+
+  /*
   StreamController<List<InviteToTeam>> _controller;
   StreamSubscription<dynamic> inviteSnapshot;
   Stream<List<InviteToTeam>> _stream;
@@ -27,39 +34,27 @@ class Season {
   Stream<Iterable<LeagueOrTournamentTeam>> _teamsStream;
   StreamController<Iterable<LeagueOrTournamentTeam>> _teamsController =
       new StreamController<Iterable<LeagueOrTournamentTeam>>();
+      */
 
-  Season({this.name, this.uid, this.teamUid, this.record, this.players}) {
-    if (players == null) {
-      players = new List<SeasonPlayer>();
-    }
-  }
-
-  Season.copy(Season copy) {
-    name = copy.name;
-    uid = copy.uid;
-    teamUid = copy.teamUid;
-    record = copy.record;
-    players = copy.players;
-  }
-
+  /*
   GameSubscription getGames() {
     // Get all the games for this season.
     return UserDatabaseData.instance.updateModel.getSeasonGames([], this);
   }
 
   List<InviteToTeam> get invites => _invites;
+  */
 
   static const String RECORD = 'record';
   static const String PLAYERS = 'players';
   static const String TEAMUID = 'teamUid';
 
-  void fromJSON(String uid, Map<String, dynamic> data) {
-    this.uid = uid;
-    name = getString(data[NAME]);
-    record = new WinRecord.fromJSON(data[RECORD] as Map<dynamic, dynamic>);
-    this.teamUid = teamUid;
-    this.record = record;
-    this.teamUid = data[TEAMUID];
+  static SeasonBuilder fromJSON(String uid, Map<String, dynamic> data) {
+    SeasonBuilder builder = SeasonBuilder();
+    builder.uid = uid;
+    builder.name = getString(data[NAME]);
+    builder.record = WinRecord.fromJSON(data[RECORD] as Map<dynamic, dynamic>);
+    builder.teamUid = data[TEAMUID];
     Map<dynamic, dynamic> playersData = data[PLAYERS];
     List<SeasonPlayer> newPlayers = new List<SeasonPlayer>();
     if (playersData == null) {
@@ -67,15 +62,15 @@ class Season {
     }
     playersData.forEach((dynamic key, dynamic val) {
       String playerUid = key;
-      SeasonPlayer player = new SeasonPlayer();
+      SeasonPlayerBuilder player = new SeasonPlayerBuilder();
       player.playerUid = playerUid;
       if (val != null) {
-        player.fromJSON(val as Map<dynamic, dynamic>);
-        newPlayers.add(player);
+        newPlayers.add(SeasonPlayer.fromJSON(val as Map<dynamic, dynamic>));
       }
     });
-    players = newPlayers;
+    builder.players.addAll(newPlayers);
     print('Update Season ' + uid);
+    return builder;
   }
 
   Map<String, dynamic> toJSON({bool includePlayers: false}) {
@@ -93,6 +88,7 @@ class Season {
     return ret;
   }
 
+  /*
   Future<void> updateFirestore({bool includePlayers = false}) async {
     return UserDatabaseData.instance.updateModel
         .updateFirestoreSeason(this, includePlayers, _pregen);
@@ -181,6 +177,7 @@ class Season {
     _teamsController.close();
     _teamsController = null;
   }
+  */
 
   ///
   /// Is the current user an admin for this season

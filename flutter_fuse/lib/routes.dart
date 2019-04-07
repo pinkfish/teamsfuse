@@ -41,39 +41,36 @@ class Routes {
     UserAuthImpl userAuthImpl = UserAuthImpl(firestore, persistentData);
     _authenticationBloc = AuthenticationBloc(userAuth: userAuthImpl);
     _loginBloc = new LoginBloc(userAuth: userAuthImpl);
-    _playerBloc = new PlayerBloc(
+    _coordinationBloc = CoordinationBloc(
         persistentData: persistentData,
         authenticationBloc: _authenticationBloc,
+        analytics: Analytics.instance,
         databaseUpdateModel: UserDatabaseData.instance.updateModel,
-        analyticsSubsystem: Analytics.instance,
-        start: DateTime.now(),
-        sqlTrace: Analytics.instance.newTrace("sqlLoading"),
-        loadingTrace: Analytics.instance.newTrace("firestoreLoading"));
+        analyticsSubsystem: Analytics.instance);
+    _playerBloc = new PlayerBloc(coordinationBloc: _coordinationBloc);
     _inviteBloc = new InviteBloc(
-        authenticationBloc: _authenticationBloc,
-        playerBloc: _playerBloc,
+        coordinationBloc: _coordinationBloc,
         persistentData: persistentData,
         analyticsSubsystem: Analytics.instance,
         databaseUpdateModel: UserDatabaseData.instance.updateModel);
     _teamBloc = new TeamBloc(
-        authenticationBloc: _authenticationBloc, playerBloc: _playerBloc);
-    _messagesBloc = MessagesBloc(
-        authenticationBloc: _authenticationBloc,
-        playerBloc: _playerBloc,
-        teamBloc: _teamBloc);
-    _clubBloc = ClubBloc(
-        authenticationBloc: _authenticationBloc,
-        playerBloc: _playerBloc,
-        teamBloc: _teamBloc);
-    _leagueOrTournamentBloc = LeagueOrTournamentBloc(
-        authenticationBloc: _authenticationBloc, playerBloc: _playerBloc);
-    _gameBloc = GameBloc(playerBloc: _playerBloc, teamBloc: _teamBloc);
+        coordinationBloc: _coordinationBloc, playerBloc: _playerBloc);
+    _messagesBloc =
+        MessagesBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
+    _clubBloc =
+        ClubBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
+    _leagueOrTournamentBloc =
+        LeagueOrTournamentBloc(coordinationBloc: _coordinationBloc);
+    _gameBloc =
+        GameBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
     _filteredGameBloc =
         FilteredGameBloc(gameBloc: _gameBloc, teamBloc: _teamBloc);
+    _loadedStateBloc = LoadedStateBloc(coordinationBloc: _coordinationBloc);
 
     _authenticationBloc.dispatch(AppStarted());
     runApp(BlocProviderTree(blocProviders: [
       BlocProvider<AuthenticationBloc>(bloc: _authenticationBloc),
+      BlocProvider<CoordinationBloc>(bloc: _coordinationBloc),
       BlocProvider<LoginBloc>(bloc: _loginBloc),
       BlocProvider<InviteBloc>(bloc: _inviteBloc),
       BlocProvider<TeamBloc>(bloc: _teamBloc),
@@ -83,6 +80,7 @@ class Routes {
       BlocProvider<GameBloc>(bloc: _gameBloc),
       BlocProvider<FilteredGameBloc>(bloc: _filteredGameBloc),
       BlocProvider<PlayerBloc>(bloc: _playerBloc),
+      BlocProvider<LoadedStateBloc>(bloc: _loadedStateBloc),
     ], child: app));
   }
 
@@ -97,6 +95,8 @@ class Routes {
   ClubBloc _clubBloc;
   LeagueOrTournamentBloc _leagueOrTournamentBloc;
   MessagesBloc _messagesBloc;
+  CoordinationBloc _coordinationBloc;
+  LoadedStateBloc _loadedStateBloc;
 
   final ThemeData theme = new ThemeData(
     // This is the theme of your application.

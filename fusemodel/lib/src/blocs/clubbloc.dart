@@ -5,9 +5,9 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import 'authenticationbloc.dart';
-import 'playerbloc.dart';
+import 'coordinationbloc.dart';
 import 'teambloc.dart';
+import 'internal/blocstoload.dart';
 
 ///
 /// Basic state for all the data in this system.
@@ -57,6 +57,17 @@ class _ClubEventUserLoaded extends ClubEvent {
   }
 }
 
+class _ClubEventLoadFromFirestore extends ClubEvent {
+  final String uid;
+
+  _ClubEventLoadFromFirestore({@required this.uid});
+
+  @override
+  String toString() {
+    return '_ClubEventLoadFromFirestore{}';
+  }
+}
+
 class _ClubEventLogout extends ClubEvent {}
 
 class _ClubEventNewDataLoaded extends ClubEvent {
@@ -70,28 +81,24 @@ class _ClubEventNewDataLoaded extends ClubEvent {
 /// the app.
 ///
 class ClubBloc extends Bloc<ClubEvent, ClubState> {
-  final AuthenticationBloc authenticationBloc;
-  final PlayerBloc playerBloc;
+  final CoordinationBloc coordinationBloc;
   final TeamBloc teamBloc;
 
-  StreamSubscription<AuthenticationState> _authSub;
+  StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<FirestoreChangedData> _clubChangeSub;
   Map<String, TeamSubscription> _clubSubscriptions;
   Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions;
 
-  ClubBloc(
-      {@required this.authenticationBloc,
-      @required this.playerBloc,
-      @required this.teamBloc}) {
-    _authSub = authenticationBloc.state.listen((AuthenticationState state) {
-      if (state is AuthenticationLoggedIn) {
+  ClubBloc({@required this.coordinationBloc, @required this.teamBloc}) {
+    _coordSub = coordinationBloc.state.listen((CoordinationState state) {
+      if (state is CoordinationStateStartLoadingSql) {
         _startLoading(state);
-      } else {
+      } else if (state is CoordinationStateLoggedOut) {
         dispatch(_ClubEventLogout());
       }
     });
-    if (authenticationBloc.currentState is AuthenticationLoggedIn) {
-      _startLoading(authenticationBloc.currentState);
+    if (!(coordinationBloc.currentState is CoordinationStateLoggedOut)) {
+      _startLoading(coordinationBloc.currentState);
     }
   }
 
@@ -99,7 +106,7 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
   void dispose() {
     super.dispose();
     _cleanupStuff();
-    _authSub?.cancel();
+    _coordSub?.cancel();
   }
 
   void _cleanupStuff() {
@@ -116,8 +123,8 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
     _clubTeamsSubscriptions.clear();
   }
 
-  void _startLoading(AuthenticationLoggedIn state) {
-    dispatch(_ClubEventUserLoaded(uid: state.user.uid));
+  void _startLoading(CoordinationState state) {
+    dispatch(_ClubEventUserLoaded(uid: state.uid));
   }
 
   @override
@@ -132,7 +139,7 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
       newClubs[data.id] = club;
       if (!_clubSubscriptions.containsKey(data.id)) {
         _clubSubscriptions[data.id] =
-            playerBloc.databaseUpdateModel.getClubTeams(club);
+            coordinationBloc.databaseUpdateModel.getClubTeams(club);
         _clubTeamsSubscriptions[data.id] =
             _clubSubscriptions[data.id].stream.listen((Iterable<Team> teams) {
           // Add in all the teams in the list to the teams list and
@@ -146,7 +153,7 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
               .dispatch(TeamClubTeams(clubTeams: clubTeams, clubUid: club.uid));
         });
       }
-      playerBloc.persistentData
+      coordinationBloc.persistentData
           .updateElement(PersistenData.clubsTable, club.uid, data.data);
     }
     dispatch(_ClubEventNewDataLoaded(clubs: newClubs));
@@ -157,14 +164,16 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
     if (event is _ClubEventUserLoaded) {
       // Reset stuff first.
       // Club data;
-      TraceProxy clubTrace = playerBloc.analyticsSubsystem.newTrace("clubData");
+      TraceProxy clubTrace =
+          coordinationBloc.analyticsSubsystem.newTrace("clubData");
       clubTrace.start();
       DateTime start = new DateTime.now();
-      Map<String, Map<String, dynamic>> data = await playerBloc.persistentData
+      Map<String, Map<String, dynamic>> data = await coordinationBloc
+          .persistentData
           .getAllElements(PersistenData.clubsTable);
       Map<String, Club> newClubs = new Map<String, Club>();
       data.forEach((String uid, Map<String, dynamic> input) {
-        playerBloc.sqlTrace.incrementCounter("club");
+        coordinationBloc.sqlTrace.incrementCounter("club");
         Club club = new Club.fromJson(uid, input);
         newClubs[uid] = club;
       });
@@ -172,10 +181,14 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
           'End clubs ${start.difference(new DateTime.now())} ${newClubs.length}');
       clubTrace.stop();
       yield ClubLoaded(clubs: newClubs);
+      coordinationBloc.dispatch(
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: true));
+    }
 
+    if (event is _ClubEventLoadFromFirestore) {
       // Load the clubs first.
       InitialSubscription clubInitialData =
-          playerBloc.databaseUpdateModel.getMainClubs(event.uid);
+          coordinationBloc.databaseUpdateModel.getMainClubs(event.uid);
       clubInitialData.startData.then((List<FirestoreWrappedData> data) {
         _onClubsUpdated(data, []);
       });
@@ -188,6 +201,8 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
     // New data from above.  Mark ourselves as done.
     if (event is _ClubEventNewDataLoaded) {
       yield ClubLoaded(clubs: event.clubs, onlySql: false);
+      coordinationBloc.dispatch(
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: false));
     }
 
     // Unload everything.

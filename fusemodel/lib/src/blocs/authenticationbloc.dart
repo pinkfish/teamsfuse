@@ -30,16 +30,7 @@ class AuthenticationLoading extends AuthenticationState {
 }
 
 class AuthenticationLoggedIn extends AuthenticationState {
-  TraceProxy loadingTrace;
-  TraceProxy sqlTrace;
-  DateTime start;
-
-  AuthenticationLoggedIn(
-      {@required UserData user,
-      @required this.loadingTrace,
-      @required this.sqlTrace,
-      @required this.start})
-      : super(user: user);
+  AuthenticationLoggedIn({@required UserData user}) : super(user: user);
 
   @override
   String toString() => "AuthenticationState::AuthenticatonLoggedIn";
@@ -127,11 +118,7 @@ class AuthenticationBloc
         analyticsSubsystem.setUserProperty(name: "developer", value: "false");
       }
 
-      return AuthenticationLoggedIn(
-          user: user,
-          sqlTrace: analyticsSubsystem.newTrace("sqlTraxeNew"),
-          loadingTrace: analyticsSubsystem.newTrace("loadingTraceNew"),
-          start: DateTime.now());
+      return AuthenticationLoggedIn(user: user);
     } else {
       return AuthenticationLoggedInUnverified(user: user);
     }
@@ -161,6 +148,7 @@ class AuthenticationBloc
 
     if (event is LoggedOut) {
       yield AuthenticationLoading();
+      await userAuth.signOut();
       // Unload stuff.
       await UserDatabaseData.clear();
       // Finished logging out.

@@ -26,7 +26,7 @@ class UserDatabaseData {
   Map<String, Club> _clubs = {};
   Map<String, LeagueOrTournament> _leagueOrTournaments = {};
 
-  Stream<UpdateReason> teamStream;
+  Stream<UpdateReason> teamStreamFrog;
   Stream<UpdateReason> playerStream;
   Stream<UpdateReason> inviteStream;
   Stream<UpdateReason> messagesStream;
@@ -48,7 +48,7 @@ class UserDatabaseData {
   bool _loadedTeamAdmins = false;
 
   Map<String, Player> get players => _players;
-  Map<String, Team> get teams => _teams;
+  Map<String, Team> get teamsFrog => _teams;
   Map<String, Game> get gamesCache => _gamesCache;
   Map<String, Invite> get invites => _invites;
   Map<String, Message> get messages => _messages;

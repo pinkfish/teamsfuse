@@ -5,8 +5,8 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import 'authenticationbloc.dart';
-import 'playerbloc.dart';
+import 'coordinationbloc.dart';
+import 'internal/blocstoload.dart';
 
 ///
 /// Basic state for all the data in this system.
@@ -68,37 +68,45 @@ class _LeagueOrTournamentEventNewDataLoaded extends LeagueOrTournamentEvent {
   _LeagueOrTournamentEventNewDataLoaded({@required this.leagueOrTournament});
 }
 
+class _LeagueOrTournamentEventFirestore extends LeagueOrTournamentEvent {
+  final String uid;
+
+  _LeagueOrTournamentEventFirestore({@required this.uid});
+
+  @override
+  String toString() {
+    return '_LeagueOrTournamentEventFirestore{}';
+  }
+}
+
 ///
 /// Handles the work around the clubs and club system inside of
 /// the app.
 ///
 class LeagueOrTournamentBloc
     extends Bloc<LeagueOrTournamentEvent, LeagueOrTournamentState> {
-  final AuthenticationBloc authenticationBloc;
-  final PlayerBloc playerBloc;
+  final CoordinationBloc coordinationBloc;
 
-  StreamSubscription<AuthenticationState> _authSub;
+  StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<FirestoreChangedData> _leagueOrTournamentSnapshot;
 
-  LeagueOrTournamentBloc(
-      {@required this.authenticationBloc, @required this.playerBloc}) {
-    _authSub = authenticationBloc.state.listen((AuthenticationState state) {
-      if (state is AuthenticationLoggedIn) {
-        _startLoading(state);
-      } else {
+  LeagueOrTournamentBloc({@required this.coordinationBloc}) {
+    _coordSub = coordinationBloc.state.listen((CoordinationState state) {
+      if (state is CoordinationStateLoggedOut) {
         dispatch(_LeagueOrTournamentEventLogout());
+      } else if (state is CoordinationStateStartLoadingSql) {
+        _startLoading(state);
+      } else if (state is CoordinationStateStartLoadingFirestore) {
+        _startLoadingFirestore(state);
       }
     });
-    if (authenticationBloc.currentState is AuthenticationLoggedIn) {
-      _startLoading(authenticationBloc.currentState);
-    }
   }
 
   @override
   void dispose() {
     super.dispose();
     _cleanupStuff();
-    _authSub?.cancel();
+    _coordSub?.cancel();
   }
 
   void _cleanupStuff() {
@@ -106,8 +114,12 @@ class LeagueOrTournamentBloc
     _leagueOrTournamentSnapshot = null;
   }
 
-  void _startLoading(AuthenticationLoggedIn state) {
-    dispatch(_LeagueOrTournamentEventUserLoaded(uid: state.user.uid));
+  void _startLoading(CoordinationStateStartLoadingSql state) {
+    dispatch(_LeagueOrTournamentEventUserLoaded(uid: state.uid));
+  }
+
+  void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
+    dispatch(_LeagueOrTournamentEventFirestore(uid: state.uid));
   }
 
   @override
@@ -121,14 +133,14 @@ class LeagueOrTournamentBloc
       LeagueOrTournament league =
           new LeagueOrTournament.fromJson(data.id, data.data);
       leagueOrTournsments[data.id] = league;
-      playerBloc.persistentData.updateElement(
+      coordinationBloc.persistentData.updateElement(
           PersistenData.leagueOrTournamentTable,
           league.uid,
           league.toJson(includeMembers: true));
       toRemove.remove(data.id);
     }
     for (String remove in toRemove) {
-      playerBloc.persistentData
+      coordinationBloc.persistentData
           .deleteElement(PersistenData.leagueOrTournamentTable, remove);
     }
     dispatch(_LeagueOrTournamentEventNewDataLoaded(
@@ -139,27 +151,32 @@ class LeagueOrTournamentBloc
   Stream<LeagueOrTournamentState> mapEventToState(
       LeagueOrTournamentEvent event) async* {
     if (event is _LeagueOrTournamentEventUserLoaded) {
-      TraceProxy leagueTrace =
-          playerBloc.analyticsSubsystem.newTrace("leagueOrTournamentData");
+      TraceProxy leagueTrace = coordinationBloc.analyticsSubsystem
+          .newTrace("leagueOrTournamentData");
       leagueTrace.start();
-      Map<String, Map<String, dynamic>> leagueData = await playerBloc
+      Map<String, Map<String, dynamic>> leagueData = await coordinationBloc
           .persistentData
           .getAllElements(PersistenData.leagueOrTournamentTable);
       Map<String, LeagueOrTournament> newLeague =
           new Map<String, LeagueOrTournament>();
       leagueData.forEach((String uid, Map<String, dynamic> input) {
-        playerBloc.sqlTrace?.incrementCounter("league");
+        coordinationBloc.sqlTrace?.incrementCounter("league");
         LeagueOrTournament league = new LeagueOrTournament.fromJson(uid, input);
         newLeague[uid] = league;
       });
       print(
-          'End LeagueOrTournament ${playerBloc.start.difference(new DateTime.now())} ${newLeague.length}');
+          'End LeagueOrTournament ${coordinationBloc.start.difference(new DateTime.now())} ${newLeague.length}');
       leagueTrace.stop();
       yield LeagueOrTournamentLoaded(
           leagueOrTournaments: newLeague, onlySql: true);
+      coordinationBloc.dispatch(CoordinationEventLoadedData(
+          loaded: BlocsToLoad.LeagueOrTournament, sql: true));
+    }
 
-      InitialSubscription initialSubscription =
-          playerBloc.databaseUpdateModel.getMainLeagueOrTournaments(event.uid);
+    if (event is _LeagueOrTournamentEventFirestore) {
+      InitialSubscription initialSubscription = coordinationBloc
+          .databaseUpdateModel
+          .getMainLeagueOrTournaments(event.uid);
       initialSubscription.startData.then((List<FirestoreWrappedData> data) {
         _onLeagueOrTournamentsUpdated(data, []);
       });
@@ -173,6 +190,8 @@ class LeagueOrTournamentBloc
     if (event is _LeagueOrTournamentEventNewDataLoaded) {
       yield LeagueOrTournamentLoaded(
           leagueOrTournaments: event.leagueOrTournament, onlySql: false);
+      coordinationBloc.dispatch(CoordinationEventLoadedData(
+          loaded: BlocsToLoad.LeagueOrTournament, sql: false));
     }
 
     // Unload everything.

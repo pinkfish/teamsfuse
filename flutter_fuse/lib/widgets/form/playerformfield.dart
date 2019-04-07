@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PlayerFormField extends FormField<String> {
   PlayerFormField({
@@ -26,22 +28,26 @@ class PlayerFormField extends FormField<String> {
                     const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             return new InputDecorator(
-              decoration: effectiveDecoration.copyWith(
-                errorText: field.errorText,
-              ),
-              child: new DropdownButton<String>(
-                hint: new Text(Messages.of(state.context).playerselecthint),
-                items: state._buildItems(state.context),
-                value: state.value,
-                onChanged: (String val) {
-                  state.updateValue(val);
-                  field.didChange(val);
-                  if (onFieldSubmitted != null) {
-                    onFieldSubmitted(val);
-                  }
-                },
-              ),
-            );
+                decoration: effectiveDecoration.copyWith(
+                  errorText: field.errorText,
+                ),
+                child: BlocBuilder<PlayerEvent, PlayerState>(
+                    bloc: BlocProvider.of<PlayerBloc>(state.context),
+                    builder: (BuildContext context, PlayerState playerState) {
+                      return DropdownButton<String>(
+                        hint: new Text(
+                            Messages.of(state.context).playerselecthint),
+                        items: state._buildItems(state.context, playerState),
+                        value: state.value,
+                        onChanged: (String val) {
+                          state.updateValue(val);
+                          field.didChange(val);
+                          if (onFieldSubmitted != null) {
+                            onFieldSubmitted(val);
+                          }
+                        },
+                      );
+                    }));
           },
         );
 
@@ -88,7 +94,8 @@ class PlayerFormFieldState extends FormFieldState<String> {
     }
   }
 
-  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+  List<DropdownMenuItem<String>> _buildItems(
+      BuildContext context, PlayerState state) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     ret.add(
       new DropdownMenuItem<String>(
@@ -103,7 +110,7 @@ class PlayerFormFieldState extends FormFieldState<String> {
           value: PlayerFormField.addPlayer));
     }
 
-    UserDatabaseData.instance.players.forEach((String key, Player player) {
+    for (Player player in state.players.values) {
       if (player.name != null) {
         ret.add(
           new DropdownMenuItem<String>(
@@ -112,7 +119,7 @@ class PlayerFormFieldState extends FormFieldState<String> {
           ),
         );
       }
-    });
+    }
 
     return ret;
   }

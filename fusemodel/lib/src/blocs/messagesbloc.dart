@@ -5,9 +5,9 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import 'authenticationbloc.dart';
-import 'playerbloc.dart';
+import 'coordinationbloc.dart';
 import 'teambloc.dart';
+import 'internal/blocstoload.dart';
 
 ///
 /// Basic state for all the data in this system.
@@ -92,43 +92,49 @@ class _MessagesEventNewRecentLoaded extends MessagesEvent {
   _MessagesEventNewRecentLoaded({@required this.recentMessages});
 }
 
+class _MessagesEventFirestore extends MessagesEvent {
+  final String uid;
+
+  _MessagesEventFirestore({@required this.uid});
+
+  @override
+  String toString() {
+    return '_MessagesEventFirestore{}';
+  }
+}
+
 ///
 /// Handles the work around the Messagess and Messages system inside of
 /// the app.
 ///
 class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
-  final AuthenticationBloc authenticationBloc;
-  final PlayerBloc playerBloc;
+  final CoordinationBloc coordinationBloc;
   final TeamBloc teamBloc;
 
-  StreamSubscription<AuthenticationState> _authSub;
+  StreamSubscription<CoordinationState> _coordState;
   StreamSubscription<FirestoreChangedData> _messageSnapshot;
   StreamSubscription<FirestoreChangedData> _readMessageSnapshot;
   InitialSubscription _unreadMessageInitialData;
   InitialSubscription _messageInitialData;
 
-  MessagesBloc(
-      {@required this.authenticationBloc,
-      @required this.playerBloc,
-      @required this.teamBloc}) {
-    _authSub = authenticationBloc.state.listen((AuthenticationState state) {
-      if (state is AuthenticationLoggedIn) {
-        _startLoading(state);
-      } else {
+  MessagesBloc({@required this.coordinationBloc, @required this.teamBloc}) {
+    _coordState = coordinationBloc.state.listen((CoordinationState state) {
+      if (state is CoordinationStateLoggedOut) {
         dispatch(_MessagesEventLogout());
+      } else if (state is CoordinationStateStartLoadingSql) {
+        _startLoading(state);
+      } else if (state is CoordinationStateStartLoadingFirestore) {
+        _startLoadingFirestore(state);
       }
     });
-    if (authenticationBloc.currentState is AuthenticationLoggedIn) {
-      _startLoading(authenticationBloc.currentState);
-    }
   }
 
   @override
   void dispose() {
     super.dispose();
     _cleanupStuff();
-    _authSub?.cancel();
-    _authSub = null;
+    _coordState?.cancel();
+    _coordState = null;
   }
 
   void _cleanupStuff() {
@@ -142,8 +148,12 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     _unreadMessageInitialData = null;
   }
 
-  void _startLoading(AuthenticationLoggedIn state) {
-    dispatch(_MessagesEventUserLoaded(uid: state.user.uid));
+  void _startLoading(CoordinationStateStartLoadingSql state) {
+    dispatch(_MessagesEventUserLoaded(uid: state.uid));
+  }
+
+  void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
+    dispatch(_MessagesEventFirestore(uid: state.uid));
   }
 
   @override
@@ -155,7 +165,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
 
     // Fill in all the messages.
     for (FirestoreWrappedData doc in data.newList) {
-      playerBloc.loadingTrace?.incrementCounter("message");
+      coordinationBloc.loadingTrace?.incrementCounter("message");
       MessageRecipient recipient;
       // Update in place to keep the fetched and seen times.
       recipient = new MessageRecipient.fromJSON(doc.id, doc.data);
@@ -166,24 +176,28 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
         mess.recipients[recipient.userId] = recipient;
         messages[mess.uid] = mess;
         toRemove.remove(mess.uid);
-        playerBloc.persistentData.updateElement(PersistenData.messagesTable,
-            doc.id, mess.toJSON(includeMessage: true, forSQL: true));
+        coordinationBloc.persistentData.updateElement(
+            PersistenData.messagesTable,
+            doc.id,
+            mess.toJSON(includeMessage: true, forSQL: true));
       } else {
         // Otherwise we need to load it.
-        mess = await playerBloc.databaseUpdateModel
+        mess = await coordinationBloc.databaseUpdateModel
             .getMessage(recipient.messageId);
         if (mess != null) {
           messages[mess.uid] = mess;
           toRemove.remove(mess.uid);
           mess.recipients[recipient.userId] = recipient;
-          playerBloc.persistentData.updateElement(PersistenData.messagesTable,
-              doc.id, mess.toJSON(includeMessage: true, forSQL: true));
+          coordinationBloc.persistentData.updateElement(
+              PersistenData.messagesTable,
+              doc.id,
+              mess.toJSON(includeMessage: true, forSQL: true));
         }
       }
     }
     for (String change in toRemove) {
-      playerBloc.loadingTrace?.incrementCounter("deletemessage");
-      playerBloc.persistentData
+      coordinationBloc.loadingTrace?.incrementCounter("deletemessage");
+      coordinationBloc.persistentData
           .deleteElement(PersistenData.messagesTable, change);
     }
     print('Loaded unread');
@@ -195,7 +209,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     Set<String> toRemove = Set.from(currentState.recentMessages.keys);
 
     for (FirestoreWrappedData doc in data.newList) {
-      playerBloc.loadingTrace?.incrementCounter("message");
+      coordinationBloc.loadingTrace?.incrementCounter("message");
       MessageRecipient recipient;
       // Update in place to keep the fetched and seen times.
       recipient = new MessageRecipient.fromJSON(doc.id, doc.data);
@@ -206,24 +220,28 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
         mess.recipients[recipient.userId] = recipient;
         messages[mess.uid] = mess;
         toRemove.remove(mess.uid);
-        playerBloc.persistentData.updateElement(PersistenData.messagesTable,
-            doc.id, mess.toJSON(includeMessage: true, forSQL: true));
+        coordinationBloc.persistentData.updateElement(
+            PersistenData.messagesTable,
+            doc.id,
+            mess.toJSON(includeMessage: true, forSQL: true));
       } else {
         // Otherwise we need to load it.
-        Message mess = await playerBloc.databaseUpdateModel
+        Message mess = await coordinationBloc.databaseUpdateModel
             .getMessage(recipient.messageId);
         if (mess != null) {
           mess.recipients[recipient.userId] = recipient;
           messages[mess.uid] = mess;
           toRemove.remove(mess.uid);
-          playerBloc.persistentData.updateElement(PersistenData.messagesTable,
-              doc.id, mess.toJSON(includeMessage: true, forSQL: true));
+          coordinationBloc.persistentData.updateElement(
+              PersistenData.messagesTable,
+              doc.id,
+              mess.toJSON(includeMessage: true, forSQL: true));
         }
       }
     }
     for (String remove in toRemove) {
-      playerBloc.loadingTrace?.incrementCounter("deletemessage");
-      playerBloc.persistentData
+      coordinationBloc.loadingTrace?.incrementCounter("deletemessage");
+      coordinationBloc.persistentData
           .deleteElement(PersistenData.messagesTable, remove);
     }
     print('Loaded read');
@@ -234,14 +252,15 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   Stream<MessagesState> mapEventToState(MessagesEvent event) async* {
     if (event is _MessagesEventUserLoaded) {
       TraceProxy messagesTrace =
-          playerBloc.analyticsSubsystem.newTrace("messagesTrace");
+          coordinationBloc.analyticsSubsystem.newTrace("messagesTrace");
       messagesTrace.start();
-      Map<String, Map<String, dynamic>> data = await playerBloc.persistentData
+      Map<String, Map<String, dynamic>> data = await coordinationBloc
+          .persistentData
           .getAllElements(PersistenData.messagesTable);
       Map<String, Message> newMessages = {};
       Map<String, Message> unreadMessages = {};
       data.forEach((String uid, Map<String, dynamic> input) {
-        playerBloc.sqlTrace.incrementCounter("message");
+        coordinationBloc.sqlTrace.incrementCounter("message");
         Message mess = new Message.fromJSON(uid, input);
         if (mess.recipients[event.uid].state == MessageState.Unread) {
           unreadMessages[uid] = mess;
@@ -249,18 +268,24 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
           newMessages[uid] = mess;
         }
       });
-      print('End messages ${playerBloc.start.difference(new DateTime.now())}');
+      print(
+          'End messages ${coordinationBloc.start.difference(new DateTime.now())}');
       messagesTrace.stop();
       yield MessagesLoaded(
           recentMessages: newMessages,
           unreadMessages: unreadMessages,
           onlySql: true);
+      coordinationBloc.dispatch(
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Messages, sql: true));
+    }
 
+    // The fireatore atart up.
+    if (event is _MessagesEventFirestore) {
       _unreadMessageInitialData =
-          playerBloc.databaseUpdateModel.getMessages(event.uid, true);
+          coordinationBloc.databaseUpdateModel.getMessages(event.uid, true);
       _unreadMessageInitialData.startData
           .then((List<FirestoreWrappedData> data) {
-        playerBloc.loadingTrace?.incrementCounter("message");
+        coordinationBloc.loadingTrace?.incrementCounter("message");
         print("Got some messages $data");
         _onUnreadMessagesUpdated(
             new FirestoreChangedData(newList: data, removed: []));
@@ -268,9 +293,9 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
       _messageSnapshot =
           _unreadMessageInitialData.stream.listen(this._onReadMessagesUpdated);
       _messageInitialData =
-          playerBloc.databaseUpdateModel.getMessages(event.uid, false);
+          coordinationBloc.databaseUpdateModel.getMessages(event.uid, false);
       _messageInitialData.startData.then((List<FirestoreWrappedData> data) {
-        playerBloc.loadingTrace?.incrementCounter("message");
+        coordinationBloc.loadingTrace?.incrementCounter("message");
         print("Got some messages $data");
         this._onUnreadMessagesUpdated(
             new FirestoreChangedData(newList: data, removed: []));
@@ -281,6 +306,9 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
 
     // New data from above.  Mark ourselves as done.
     if (event is _MessagesEventNewRecentLoaded) {
+      coordinationBloc.dispatch(CoordinationEventLoadedData(
+          loaded: BlocsToLoad.LeagueOrTournament, sql: false));
+
       yield MessagesLoaded(
           recentMessages: event.recentMessages,
           unreadMessages: currentState.unreadMessages,

@@ -5,8 +5,9 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import 'playerbloc.dart';
+import 'coordinationbloc.dart';
 import 'teambloc.dart';
+import 'internal/blocstoload.dart';
 
 ///
 /// Basic state for all the data in this system.
@@ -97,7 +98,7 @@ class _GameEventSharedDataUpdated extends GameEvent {
 /// the app.
 ///
 class GameBloc extends Bloc<GameEvent, GameState> {
-  final PlayerBloc playerBloc;
+  final CoordinationBloc coordinationBloc;
   final TeamBloc teamBloc;
 
   StreamSubscription<TeamState> _teamSub;
@@ -106,7 +107,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   DateTime _start;
   DateTime _end;
 
-  GameBloc({@required this.playerBloc, @required this.teamBloc}) {
+  GameBloc({@required this.coordinationBloc, @required this.teamBloc}) {
     if (teamBloc.currentState is TeamLoaded) {
       _onTeamsUpdates(teamBloc.currentState.allTeamUids);
     }
@@ -149,7 +150,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     for (String teamUid in uids) {
       if (!_gameSubscriptions.containsKey(teamUid)) {
         String myUid = teamUid;
-        _gameSubscriptions[teamUid] = playerBloc.databaseUpdateModel
+        _gameSubscriptions[teamUid] = coordinationBloc.databaseUpdateModel
             .getBasicGames(_start, _end, teamUid)
             .listen((GameSnapshotEvent gse) {
           if (gse.type == GameSnapshotEventType.GameList) {
@@ -173,22 +174,23 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Stream<GameState> mapEventToState(GameEvent event) async* {
     if (event is _GameEventUserLoaded) {
       TraceProxy gamesTrace =
-          playerBloc.analyticsSubsystem.newTrace("gamaData");
+          coordinationBloc.analyticsSubsystem.newTrace("gamaData");
       gamesTrace.start();
       Map<String, Map<String, Game>> newGames =
           new Map<String, Map<String, Game>>();
       for (String teamUid in event.teams) {
-        Map<String, Map<String, dynamic>> data = await playerBloc.persistentData
+        Map<String, Map<String, dynamic>> data = await coordinationBloc
+            .persistentData
             .getAllTeamElements(PersistenData.gameTable, teamUid);
         Map<String, Game> teamGames = {};
         for (String uid in data.keys) {
           Map<String, dynamic> input = data[uid];
-          playerBloc.sqlTrace.incrementCounter("game");
+          coordinationBloc.sqlTrace.incrementCounter("game");
           gamesTrace.incrementCounter("game");
           String sharedDataUid = input[Game.SHAREDDATAUID];
           GameSharedData sharedData;
           if (sharedDataUid.isNotEmpty) {
-            Map<String, dynamic> sharedDataStuff = await playerBloc
+            Map<String, dynamic> sharedDataStuff = await coordinationBloc
                 .persistentData
                 .getElement(PersistenData.sharedGameTable, sharedDataUid);
             sharedData =
@@ -202,8 +204,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         newGames[teamUid] = teamGames;
       }
       print(
-          'End games ${playerBloc.start.difference(new DateTime.now())} ${newGames.length}');
+          'End games ${coordinationBloc.start.difference(new DateTime.now())} ${newGames.length}');
       gamesTrace.stop();
+      coordinationBloc.dispatch(
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: true));
+
       if (currentState.onlySql) {
         yield GameLoaded(
             gamesByTeam: newGames, onlySql: true, start: _start, end: _end);
@@ -226,6 +231,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       }
       yield GameLoaded(
           gamesByTeam: newGames, onlySql: false, start: _start, end: _end);
+      coordinationBloc.dispatch(
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: false));
     }
 
     // New shared game data.

@@ -5,7 +5,8 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import 'authenticationbloc.dart';
+import 'internal/blocstoload.dart';
+import 'coordinationbloc.dart';
 
 class PlayerEvent extends Equatable {}
 
@@ -18,7 +19,20 @@ class _PlayerUserLoaded extends PlayerEvent {
 
   @override
   String toString() {
-    return 'PlayerDataUpdates{}';
+    return '_PlayerUserLoaded{}';
+  }
+}
+
+class _PlayerFirestore extends PlayerEvent {
+  final String uid;
+
+  _PlayerFirestore({
+    @required this.uid,
+  });
+
+  @override
+  String toString() {
+    return '_PlayerFirestore{}';
   }
 }
 
@@ -95,40 +109,32 @@ class PlayerLoaded extends PlayerState {
 /// firestore.
 ///
 class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
-  final AuthenticationBloc authenticationBloc;
-  final PersistenData persistentData;
-  final DatabaseUpdateModel databaseUpdateModel;
-  final AnalyticsSubsystem analyticsSubsystem;
-  final TraceProxy loadingTrace;
-  final TraceProxy sqlTrace;
-  final DateTime start;
+  final CoordinationBloc coordinationBloc;
 
   StreamSubscription<FirestoreChangedData> _playerSnapshot;
   bool _createdMePlayer = false;
-  StreamSubscription<AuthenticationState> _authSub;
+  StreamSubscription<CoordinationState> _authSub;
 
-  PlayerBloc(
-      {@required this.persistentData,
-      @required this.authenticationBloc,
-      @required this.databaseUpdateModel,
-      @required this.analyticsSubsystem,
-      @required this.start,
-      @required this.sqlTrace,
-      @required this.loadingTrace}) {
-    _authSub = authenticationBloc.state.listen((AuthenticationState state) {
-      if (state is AuthenticationLoggedIn) {
-        _startLoading(state);
-      } else {
+  PlayerBloc({
+    @required this.coordinationBloc,
+  }) {
+    _authSub = coordinationBloc.state.listen((CoordinationState state) {
+      if (state is CoordinationStateLoggedOut) {
         dispatch(_PlayerLoggedOut());
+      } else if (state is CoordinationStateStartLoadingSql) {
+        _startLoading(state);
+      } else if (state is CoordinationStateStartLoadingFirestore) {
+        _startLoadingFirestore(state);
       }
     });
-    if (authenticationBloc.currentState is AuthenticationLoggedIn) {
-      _startLoading(authenticationBloc.currentState);
-    }
   }
 
-  void _startLoading(AuthenticationLoggedIn state) {
-    dispatch(_PlayerUserLoaded(uid: state.user.uid));
+  void _startLoading(CoordinationStateStartLoadingSql state) {
+    dispatch(_PlayerUserLoaded(uid: state.uid));
+  }
+
+  void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
+    dispatch(_PlayerFirestore(uid: state.uid));
   }
 
   @override
@@ -157,7 +163,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         if (player.users[currentState.uid].relationship == Relationship.Me) {
           if (foundMe) {
             if (player.users.length <= 1) {
-              databaseUpdateModel.deletePlayer(player.uid);
+              coordinationBloc.databaseUpdateModel.deletePlayer(player.uid);
             }
           }
           foundMe = true;
@@ -170,29 +176,32 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         if (player.users[currentState.uid].relationship == Relationship.Me) {
           if (foundMe) {
             if (player.users.length <= 1) {
-              databaseUpdateModel.deletePlayer(player.uid);
+              coordinationBloc.databaseUpdateModel.deletePlayer(player.uid);
             }
           }
           foundMe = true;
         }
       }
       toDeletePlayers.remove(doc.id);
-      persistentData.updateElement(PersistenData.playersTable, player.uid,
-          player.toJSON(includeUsers: true));
+      coordinationBloc.persistentData.updateElement(PersistenData.playersTable,
+          player.uid, player.toJSON(includeUsers: true));
     }
     toDeletePlayers.forEach((String id) {
       players.remove(id);
-      persistentData.deleteElement(PersistenData.playersTable, id);
+      coordinationBloc.persistentData
+          .deleteElement(PersistenData.playersTable, id);
     });
     if (query.length == 0) {
       if (!foundMe && !_createdMePlayer) {
         print('Docs are empty');
         Player player = new Player();
-        player.name =
-            authenticationBloc.currentUser.profile?.displayName ?? "Frog";
+        player.name = coordinationBloc
+                .authenticationBloc.currentUser.profile?.displayName ??
+            "Frog";
 
         PlayerUser playerUser = new PlayerUser();
-        playerUser.userUid = authenticationBloc.currentUser.uid;
+        playerUser.userUid =
+            coordinationBloc.authenticationBloc.currentUser.uid;
         playerUser.relationship = Relationship.Me;
         player.users[playerUser.userUid] = playerUser;
         print('Updating firestore');
@@ -215,27 +224,34 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   Stream<PlayerState> mapEventToState(PlayerEvent event) async* {
     if (event is _PlayerUserLoaded) {
       yield PlayerLoading(players: currentState.players, uid: event.uid);
-      TraceProxy playerTrace = analyticsSubsystem.newTrace("playerData");
+      TraceProxy playerTrace =
+          coordinationBloc.analyticsSubsystem.newTrace("playerData");
       playerTrace.start();
-      Map<String, Map<String, dynamic>> data =
-          await persistentData.getAllElements(PersistenData.playersTable);
+      Map<String, Map<String, dynamic>> data = await coordinationBloc
+          .persistentData
+          .getAllElements(PersistenData.playersTable);
       Map<String, Player> newPlayers = new Map<String, Player>();
       data.forEach((String uid, Map<String, dynamic> input) {
-        sqlTrace?.incrementCounter("player");
+        coordinationBloc.sqlTrace?.incrementCounter("player");
         playerTrace.incrementCounter("player");
         Player player = new Player();
         player.fromJSON(uid, input);
         newPlayers[uid] = player;
       });
-      print('End players ${start.difference(new DateTime.now())}');
+      print(
+          'End players ${coordinationBloc.start.difference(new DateTime.now())}');
       playerTrace.stop();
       yield PlayerLoaded(players: newPlayers, uid: event.uid, onlySql: true);
+      coordinationBloc.dispatch(
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Messages, sql: true));
+    }
 
+    if (event is _PlayerFirestore) {
       // Load from firestore.
       InitialSubscription playersInitialData =
-          databaseUpdateModel.getPlayers(event.uid);
+          coordinationBloc.databaseUpdateModel.getPlayers(event.uid);
       playersInitialData.startData.then((List<FirestoreWrappedData> data) {
-        loadingTrace?.incrementCounter("players");
+        coordinationBloc.loadingTrace?.incrementCounter("players");
         this._onPlayerUpdated(data);
       });
       _playerSnapshot =
@@ -253,6 +269,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     if (event is _PlayerNewPlayersLoaded) {
       yield PlayerLoaded(
           players: event.players, uid: event.uid, onlySql: false);
+      coordinationBloc.dispatch(CoordinationEventLoadedData(
+          loaded: BlocsToLoad.Messages, sql: false));
     }
   }
 }
