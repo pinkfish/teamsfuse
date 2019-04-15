@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'common.dart';
-import 'userprofile.dart';
-import 'userdatabasedata.dart';
 import 'invite.dart';
+import 'userdatabasedata.dart';
+import 'userprofile.dart';
 
 enum Relationship { Me, Parent, Guardian, Friend }
 
@@ -86,11 +86,6 @@ class Player {
       });
     }
     users = newUsers;
-  }
-
-  void setupSnap() {
-    _subscriptions = UserDatabaseData.instance.updateModel
-        .setupPlayerSnap(uid, UserDatabaseData.instance.onSeasonUpdated);
   }
 
   Map<String, dynamic> toJSON({bool includeUsers: false}) {

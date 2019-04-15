@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_fuse/widgets/util/byusername.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'dialog/deleteinvite.dart';
@@ -33,8 +35,7 @@ class _AcceptInviteToLeagueTeamScreenState
   Validations _validations = new Validations();
   String _seasonName;
   bool _saving = false;
-
-  static const String newInvite = 'new';
+  SingleInviteBloc _singleInviteBloc;
 
   @override
   void initState() {
@@ -45,10 +46,22 @@ class _AcceptInviteToLeagueTeamScreenState
           as InviteToLeagueTeam;
     } else {
       // Get out of here.
-      _invite = new InviteToLeagueTeam(leagueTeamUid: '');
+      _invite = new InviteToLeagueTeam(
+          (InviteToLeagueTeamBuilder b) => b..leagueTeamUid = '');
 
       Navigator.pop(context);
     }
+
+    _singleInviteBloc = SingleInviteBloc(
+        inviteBloc: BlocProvider.of<InviteBloc>(context),
+        inviteUid: widget._inviteUid,
+        teamBloc: BlocProvider.of<TeamBloc>(context));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _singleInviteBloc?.dispose();
   }
 
   void _showInSnackBar(String value) {
@@ -93,47 +106,69 @@ class _AcceptInviteToLeagueTeamScreenState
         });
     if (res) {
       setState(() => _saving = true);
+      _singleInviteBloc.dispatch(SingleInviteEventAcceptInviteToLeagueTeam(
+        teamUid: _currentTeamUid,
+        seasonUid: _seasonSelected,
+      ));
+      await for (var state in _singleInviteBloc.state) {
+        if (state is SingleInviteSaveFailed) {
+          _showInSnackBar(Messages.of(context).formerror);
+        } else if (state is SingleInviteDeleted) {
+          Navigator.pop(context);
+        } else if (state is SingleInviteLoaded) {
+          break;
+        }
+      }
+      /*
+      TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
       try {
-        Season season;
+        SeasonBuilder season;
 
         if (_currentTeamUid == TeamPicker.createNew) {
-          Team team = new Team(
-            name: _invite.leagueTeamName,
-          );
-          team.admins.add(UserDatabaseData.instance.userUid);
-          await team.updateFirestore();
-          _currentTeamUid = team.uid;
-          season = new Season(
-              name: _seasonName,
-              teamUid: team.uid,
-              record: WinRecord(),
-              players: <SeasonPlayer>[
-                SeasonPlayer(
-                  playerUid: UserDatabaseData.instance.mePlayer.uid,
-                  role: RoleInTeam.NonPlayer,
-                )
-              ]);
-          team.currentSeason = season.precreateUid();
+          TeamBuilder team = new TeamBuilder();
+            team.name =_invite.leagueTeamName;
+            String myUid= teamBloc.coordinationBloc.authenticationBloc.currentUser.uid;
+
+          team.admins.add(myUid);
+          season = new SeasonBuilder();
+          season.
+              name =_seasonName;
+              season.record =WinRecordBuilder();
+              season.players.add(SeasonPlayer((b) => b..playerUid = myUid
+              ..role = RoleInTeam.NonPlayer);
           LeagueOrTournamentTeam leagueTeam = await UserDatabaseData
               .instance.updateModel
               .getLeagueTeamData(_invite.leagueTeamUid);
+          SingleTeamBloc singleTeamBloc = new SingleTeamBloc(teamBloc: teamBloc, teamUid: SingleTeamBloc.createNew);
+          singleTeamBloc.dispatch(SingleTeamAdd(newSeason: season, newTeam: team));
+          Team savedTeam;
+          await for (SingleTeamState state in singleTeamBloc.state) {
+            if (state is SingleTeamSaveFailed) {
+              // Fail!
+              _showInSnackBar(Messages.of(context).formerror);
+              return;
+            }
+            if (state is SingleTeamLoaded) {
+              // Yay!
+              savedTeam = state.team;
+            }
+          }
+
           if (leagueTeam.seasonUid != null) {
             // Someone beat them to it!
             // TODO: Say someone beat them to it.
           } else {
-            leagueTeam.seasonUid = season.precreateUid();
-            await season.updateFirestore();
+            leagueTeam.seasonUid = savedTeam.currentSeason;
             await leagueTeam.firebaseUpdate();
-            await team.updateFirestore();
           }
         } else if (_seasonSelected == SeasonFormField.createNew) {
-          season = new Season(
+          season = new SeasonBuilder(
             name: _seasonName,
             teamUid: _currentTeamUid,
           );
           await season.updateFirestore();
         } else {
-          season = UserDatabaseData
+          season = team
               .instance.teams[_currentTeamUid].seasons[_seasonSelected];
         }
         await _invite.acceptInvite(season);
@@ -142,6 +177,7 @@ class _AcceptInviteToLeagueTeamScreenState
       } finally {
         setState(() => _saving = false);
       }
+    */
     }
 
     // _invite.acceptInvite();
@@ -210,70 +246,87 @@ class _AcceptInviteToLeagueTeamScreenState
 
     ThemeData theme = Theme.of(context);
 
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).league),
-      ),
-      body: SavingOverlay(
-        saving: _saving,
-        child: Container(
-          margin: EdgeInsets.all(10.0),
-          child: Scrollbar(
-            child: new SingleChildScrollView(
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  new ListTile(
-                    leading: LeagueImage(
-                      leagueOrTournamentUid: _invite.leagueUid,
-                      width: 50.0,
-                      height: 50.0,
-                    ),
-                    title: new Text(_invite.leagueTeamName),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(_invite.leagueName),
-                        ByUserNameComponent(userId: _invite.sentByUid),
-                      ],
-                    ),
-                  ),
-                  TeamPicker(
-                    includeCreateNew: true,
-                    teamUid: _currentTeamUid,
-                    onChanged: (String str) =>
-                        setState(() => _currentTeamUid = str),
-                  ),
-                  _buildSeasonSection(),
-                  ButtonBar(
-                    children: <Widget>[
-                      new RaisedButton(
-                        onPressed: _savePressed,
-                        child: new Text(messages.addteam),
-                        color: theme.accentColor,
-                        textColor: Colors.white,
-                      ),
-                      new FlatButton(
-                        onPressed: () => Navigator.pushNamed(
-                            context, "/League/Main/" + _invite.leagueUid),
-                        child: Text(messages.openbutton),
-                      ),
-                      new FlatButton(
-                        onPressed: () => showDeleteInvite(context, _invite),
-                        child: new Icon(Icons.delete),
-                      ),
-                    ],
-                  ),
-                ],
+    return BlocProvider<SingleInviteBloc>(
+      bloc: _singleInviteBloc,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: new AppBar(
+          title: new Text(Messages.of(context).league),
+        ),
+        body: SavingOverlay(
+          saving: _saving,
+          child: Container(
+            margin: EdgeInsets.all(10.0),
+            child: Scrollbar(
+              child: new SingleChildScrollView(
+                child: BlocBuilder(
+                    bloc: _singleInviteBloc,
+                    builder: (BuildContext context, SingleInviteState state) {
+                      if (state is SingleInviteDeleted) {
+                        // Deleted.
+                        return Center(child: CircularProgressIndicator());
+                      } else if (state is SingleInviteUninitialized) {
+                        // Loading.
+                        return Center(child: CircularProgressIndicator());
+                      } else {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            new ListTile(
+                              leading: LeagueImage(
+                                leagueOrTournamentUid: _invite.leagueUid,
+                                width: 50.0,
+                                height: 50.0,
+                              ),
+                              title: new Text(_invite.leagueTeamName),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(_invite.leagueName),
+                                  ByUserNameComponent(
+                                      userId: _invite.sentByUid),
+                                ],
+                              ),
+                            ),
+                            TeamPicker(
+                              includeCreateNew: true,
+                              teamUid: _currentTeamUid,
+                              onChanged: (String str) =>
+                                  setState(() => _currentTeamUid = str),
+                            ),
+                            _buildSeasonSection(),
+                            ButtonBar(
+                              children: <Widget>[
+                                new RaisedButton(
+                                  onPressed: _savePressed,
+                                  child: new Text(messages.addteam),
+                                  color: theme.accentColor,
+                                  textColor: Colors.white,
+                                ),
+                                new FlatButton(
+                                  onPressed: () => Navigator.pushNamed(context,
+                                      "/League/Main/" + _invite.leagueUid),
+                                  child: Text(messages.openbutton),
+                                ),
+                                new FlatButton(
+                                  onPressed: () => showDeleteInvite(
+                                      context, _singleInviteBloc),
+                                  child: new Icon(Icons.delete),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }
+                    }),
               ),
             ),
           ),
         ),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () => _savePressed(),
-        child: const Icon(Icons.check),
+        floatingActionButton: new FloatingActionButton(
+          onPressed: () => _savePressed(),
+          child: const Icon(Icons.check),
+        ),
       ),
     );
   }

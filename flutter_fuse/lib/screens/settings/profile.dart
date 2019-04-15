@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
 import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -20,31 +22,14 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
-  StreamSubscription<UserData> streamListen;
-  StreamSubscription<UpdateReason> playersListen;
   UserData user;
-  Player me;
 
   @override
   void initState() {
     super.initState();
-    UserDatabaseData.instance.userAuth.currentUser().then((UserData data) {
-      setState(() {
-        user = data;
-      });
-    });
-    streamListen = UserDatabaseData.instance.userAuth
-        .onAuthChanged()
-        .listen((UserData data) {
-      setState(() {
-        user = data;
-      });
-    });
-    playersListen =
-        UserDatabaseData.instance.playerStream.listen((UpdateReason update) {
-      playersUpdate();
-    });
-    playersUpdate();
+    AuthenticationBloc authenticationBloc =
+        BlocProvider.of<AuthenticationBloc>(context);
+    user = authenticationBloc.currentUser;
   }
 
   void playersUpdate() {
@@ -59,8 +44,6 @@ class ProfileScreenState extends State<ProfileScreen> {
   @override
   void dispose() {
     super.dispose();
-    streamListen.cancel();
-    playersListen.cancel();
   }
 
   void _editPlayer(String uid) {
@@ -203,7 +186,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     return ret;
   }
 
-  List<Widget> _buildPlayerData() {
+  List<Widget> _buildPlayerData(PlayerBlocState state) {
     final Size screenSize = MediaQuery.of(context).size;
     List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
@@ -322,6 +305,8 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(
@@ -337,9 +322,14 @@ class ProfileScreenState extends State<ProfileScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: new Scrollbar(
         child: new SingleChildScrollView(
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: _buildPlayerData(),
+          child: BlocBuilder<PlayerEvent, PlayerState>(
+            bloc: playerBloc,
+            builder: (BuildContext context, PlayerState state) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _buildPlayerData(state),
+              );
+            },
           ),
         ),
       ),

@@ -6,8 +6,8 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
-import 'teambloc.dart';
 import 'internal/blocstoload.dart';
+import 'teambloc.dart';
 
 ///
 /// Basic state for all the data in this system.
@@ -135,13 +135,15 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
     Map<String, Club> newClubs;
 
     for (FirestoreWrappedData data in newList) {
-      Club club = new Club.fromJson(data.id, data.data);
+      Club club = Club.fromJson(
+          coordinationBloc.authenticationBloc.currentUser.uid,
+          data.id,
+          data.data);
       newClubs[data.id] = club;
       if (!_clubSubscriptions.containsKey(data.id)) {
-        _clubSubscriptions[data.id] =
-            coordinationBloc.databaseUpdateModel.getClubTeams(club);
-        _clubTeamsSubscriptions[data.id] =
-            _clubSubscriptions[data.id].stream.listen((Iterable<Team> teams) {
+        _clubTeamsSubscriptions[data.id] = coordinationBloc.databaseUpdateModel
+            .getClubTeams(club)
+            .listen((Iterable<Team> teams) {
           // Add in all the teams in the list to the teams list and
           // filter out any that have a club on them that now don't
           // exist.
@@ -174,7 +176,8 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
       Map<String, Club> newClubs = new Map<String, Club>();
       data.forEach((String uid, Map<String, dynamic> input) {
         coordinationBloc.sqlTrace.incrementCounter("club");
-        Club club = new Club.fromJson(uid, input);
+        Club club = new Club.fromJson(
+            coordinationBloc.authenticationBloc.currentUser.uid, uid, input);
         newClubs[uid] = club;
       });
       print(

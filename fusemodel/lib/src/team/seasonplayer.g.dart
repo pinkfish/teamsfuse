@@ -16,7 +16,7 @@ class _$SeasonPlayer extends SeasonPlayer {
   @override
   final String position;
 
-  factory _$SeasonPlayer([void updates(SeasonPlayerBuilder b)]) =>
+  factory _$SeasonPlayer([void Function(SeasonPlayerBuilder) updates]) =>
       (new SeasonPlayerBuilder()..update(updates)).build();
 
   _$SeasonPlayer._(
@@ -37,7 +37,7 @@ class _$SeasonPlayer extends SeasonPlayer {
   }
 
   @override
-  SeasonPlayer rebuild(void updates(SeasonPlayerBuilder b)) =>
+  SeasonPlayer rebuild(void Function(SeasonPlayerBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
@@ -114,7 +114,7 @@ class SeasonPlayerBuilder
   }
 
   @override
-  void update(void updates(SeasonPlayerBuilder b)) {
+  void update(void Function(SeasonPlayerBuilder) updates) {
     if (updates != null) updates(this);
   }
 

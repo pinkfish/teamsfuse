@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
-import 'package:built_collection/built_collection.dart';
 
 import 'coordinationbloc.dart';
-import 'playerbloc.dart';
 import 'internal/blocstoload.dart';
+import 'playerbloc.dart';
 
 class TeamEvent extends Equatable {}
 
@@ -376,7 +376,8 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         coordinationBloc.sqlTrace?.incrementCounter("team");
         teamsTrace.incrementCounter("team");
         Map<String, dynamic> input = data[uid];
-        TeamBuilder team = Team.fromJSON(uid, input);
+        TeamBuilder team = Team.fromJSON(
+            coordinationBloc.authenticationBloc.currentUser.uid, uid, input);
 
         // Load opponents.
         Map<String, Map<String, dynamic>> opponentData = await coordinationBloc

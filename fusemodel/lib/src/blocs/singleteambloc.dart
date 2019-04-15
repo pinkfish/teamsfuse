@@ -1,11 +1,12 @@
-import 'package:equatable/equatable.dart';
+import 'dart:async';
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import 'teambloc.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'dart:async';
-import 'dart:io';
 
 abstract class SingleTeamState extends Equatable {
   final String teamUid;
@@ -193,10 +194,12 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
   final TeamBloc teamBloc;
   final String teamUid;
 
+  static String createNew = "new";
+
   StreamSubscription<TeamState> _teamSub;
   StreamSubscription<Iterable<InviteAsAdmin>> _inviteSub;
 
-  SingleTeamBloc(this.teamBloc, this.teamUid) {
+  SingleTeamBloc({@required this.teamBloc, @required this.teamUid}) {
     _teamSub = teamBloc.state.listen((TeamState state) {
       Team team = state.getTeam(teamUid);
       if (team != null) {

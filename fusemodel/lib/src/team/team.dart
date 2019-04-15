@@ -1,16 +1,10 @@
-import 'dart:async';
-import 'dart:io';
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
 
 import '../common.dart';
-import 'season.dart';
-import '../databaseupdatemodel.dart';
 import '../userdatabasedata.dart';
-import '../persistendata.dart';
-import '../hasuidcomparable.dart';
 import 'opponent.dart';
-import '../invite.dart';
-import 'package:built_value/built_value.dart';
-import 'package:built_collection/built_collection.dart';
+import 'season.dart';
 
 part 'team.g.dart';
 
@@ -40,6 +34,8 @@ abstract class Team implements Built<Team, TeamBuilder> {
   String get uid;
   String get photoUrl;
   bool get archived;
+  // The user id in this team.
+  String get userUid;
 
   /// If this is not null signifies that this team is a member of a club.
   String get clubUid;
@@ -70,12 +66,14 @@ abstract class Team implements Built<Team, TeamBuilder> {
   static const String ARCHIVED = 'archived';
 
   /// Deserialize the team.
-  static TeamBuilder fromJSON(String teamUid, Map<String, dynamic> data,
+  static TeamBuilder fromJSON(
+      String teamUid, String userUid, Map<String, dynamic> data,
       {bool publicOnly = false}) {
     TeamBuilder builder = TeamBuilder();
     builder.publicOnly = publicOnly;
 
-    onTeamUpdated(builder, teamUid, data);
+    onTeamUpdated(
+        builder: builder, teamUid: teamUid, userUid: userUid, data: data);
     return builder;
   }
 
@@ -92,7 +90,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
     ret[PHOTOURL] = photoUrl;
     ret[_TRACKATTENDENDCE] = trackAttendenceInternal;
     ret[CLUBUID] = clubUid;
-    ret[ARCHIVED + "." + UserDatabaseData.instance.userUid] = archived;
+    ret[ARCHIVED + "." + userUid] = archived;
     Map<String, bool> adminMap = new Map<String, bool>();
     admins.forEach((String key) {
       adminMap[key] = true;
@@ -102,7 +100,11 @@ abstract class Team implements Built<Team, TeamBuilder> {
   }
 
   static void onTeamUpdated(
-      TeamBuilder builder, String teamUid, Map<String, dynamic> data) {
+      {TeamBuilder builder,
+      String teamUid,
+      String userUid,
+      Map<String, dynamic> data}) {
+    builder.userUid = userUid;
     builder.name = getString(data[NAME]);
     builder.arriveEarlyInternal = getNum(data[ARRIVALTIME]);
     builder.currentSeason = getString(data[_CURRENTSEASON]);
@@ -112,7 +114,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
     if (data[ARCHIVED] != null) {
       if (data[ARCHIVED] is Map<dynamic, dynamic>) {
         Map<dynamic, dynamic> stuff = data[ARCHIVED] as Map<dynamic, dynamic>;
-        builder.archived = getBool(stuff[UserDatabaseData.instance.userUid]);
+        builder.archived = getBool(stuff[userUid]);
       }
     }
     builder.clubUid = data[CLUBUID];
@@ -184,9 +186,9 @@ abstract class Team implements Built<Team, TeamBuilder> {
     }
     if (clubUid != null &&
         UserDatabaseData.instance.clubs.containsKey(clubUid)) {
-      return isUserAdmin(UserDatabaseData.instance.userUid) ||
+      return isUserAdmin(userUid) ||
           UserDatabaseData.instance.clubs[clubUid].isAdmin();
     }
-    return isUserAdmin(UserDatabaseData.instance.userUid);
+    return isUserAdmin(userUid);
   }
 }

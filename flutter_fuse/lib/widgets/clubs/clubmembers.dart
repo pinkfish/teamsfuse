@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/userimage.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class ClubMembers extends StatelessWidget {
@@ -50,13 +52,13 @@ class ClubMembers extends StatelessWidget {
 
   Widget _buildFromFuture(BuildContext context,
       AsyncSnapshot<FusedUserProfile> profile, bool admin) {
+    AuthenticationBloc bloc = BlocProvider.of<AuthenticationBloc>(context);
     if (profile.hasData) {
       return new ListTile(
         leading: new UserImage(profile.data),
         title: new Text(profile.data.displayName),
         subtitle: new Text(admin ? Messages.of(context).administrator : ""),
-        trailing: club.isAdmin() &&
-                profile.data.uid != UserDatabaseData.instance.userUid
+        trailing: club.isAdmin() && profile.data.uid != bloc.currentUser.uid
             ? new IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () => _deleteMember(context, profile.data),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class ShowMessageScreen extends StatelessWidget {
@@ -10,11 +12,14 @@ class ShowMessageScreen extends StatelessWidget {
   final String messageUid;
 
   void _archiveMessage(BuildContext context) {
+    AuthenticationBloc authenticationBloc =
+        BlocProvider.of<AuthenticationBloc>(context);
+
     if (UserDatabaseData.instance.messages.containsKey(messageUid)) {
       if (UserDatabaseData.instance.messages[messageUid].recipients
-          .containsKey(UserDatabaseData.instance.userUid)) {
+          .containsKey(authenticationBloc.currentUser.uid)) {
         UserDatabaseData.instance.messages[messageUid]
-            .recipients[UserDatabaseData.instance.userUid]
+            .recipients[authenticationBloc.currentUser.uid]
             .updateState(MessageState.Archived);
         Navigator.pop(context);
       }
@@ -22,11 +27,14 @@ class ShowMessageScreen extends StatelessWidget {
   }
 
   void _deleteMessage(BuildContext context) {
+    AuthenticationBloc authenticationBloc =
+        BlocProvider.of<AuthenticationBloc>(context);
+
     if (UserDatabaseData.instance.messages.containsKey(messageUid)) {
       if (UserDatabaseData.instance.messages[messageUid].recipients
-          .containsKey(UserDatabaseData.instance.userUid)) {
+          .containsKey(authenticationBloc.currentUser.uid)) {
         UserDatabaseData.instance.messages[messageUid]
-            .recipients[UserDatabaseData.instance.userUid]
+            .recipients[authenticationBloc.currentUser.uid]
             .firestoreDelete();
         Navigator.pop(context);
       }
@@ -34,14 +42,17 @@ class ShowMessageScreen extends StatelessWidget {
   }
 
   void _readMessage(BuildContext context) {
+    AuthenticationBloc authenticationBloc =
+        BlocProvider.of<AuthenticationBloc>(context);
+
     if (UserDatabaseData.instance.messages.containsKey(messageUid)) {
       if (UserDatabaseData.instance.messages[messageUid].recipients
-          .containsKey(UserDatabaseData.instance.userUid)) {
+          .containsKey(authenticationBloc.currentUser.uid)) {
         if (UserDatabaseData.instance.messages[messageUid]
-                .recipients[UserDatabaseData.instance.userUid].state ==
+                .recipients[authenticationBloc.currentUser.uid].state ==
             MessageState.Unread) {
           UserDatabaseData.instance.messages[messageUid]
-              .recipients[UserDatabaseData.instance.userUid]
+              .recipients[authenticationBloc.currentUser.uid]
               .updateState(MessageState.Read);
         }
       }
@@ -60,14 +71,16 @@ class ShowMessageScreen extends StatelessWidget {
       ),
     );
 
+    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+
     kids.add(
       new ListTile(
         leading: new TeamImage(
-          team: UserDatabaseData.instance.teams[mess.teamUid],
+          teamUid: mess.teamUid,
           width: 30.0,
         ),
         title: new Text(
-          UserDatabaseData.instance.teams[mess.teamUid].name,
+          teamBloc.currentState.getTeam(mess.teamUid).name,
         ),
       ),
     );

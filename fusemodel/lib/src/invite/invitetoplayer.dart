@@ -1,13 +1,27 @@
+import 'package:built_value/built_value.dart';
+
 import '../common.dart';
 import 'invite.dart';
+
+part 'invitetoplayer.g.dart';
 
 ///
 /// Invited as a player to the team
 ///
-class InviteToPlayer extends Invite {
-  final String playerUid;
-  final String playerName;
+abstract class InviteToPlayer
+    implements Invite, Built<InviteToPlayer, InviteToPlayerBuilder> {
+  String get playerUid;
+  String get playerName;
 
+  /// The type of the invite.
+  @override
+  InviteType get type => InviteType.Player;
+
+  factory InviteToPlayer([void Function(InviteToPlayerBuilder) updates]) =
+      _$InviteToPlayer;
+  InviteToPlayer._();
+
+  /*
   InviteToPlayer(
       {this.playerUid,
       this.playerName,
@@ -24,22 +38,27 @@ class InviteToPlayer extends Invite {
       : playerUid = player.playerUid,
         playerName = player.playerName,
         super.copy(player);
+        */
 
   static const String PLAYERUID = 'playerUid';
 
-  InviteToPlayer.fromJSON(String uid, Map<String, dynamic> data)
-      : playerUid = getString(data[PLAYERUID]),
-        playerName = getString(data[NAME]),
-        super.fromJSON(uid, data);
+  static InviteToPlayerBuilder fromJSON(String uid, Map<String, dynamic> data) {
+    InviteToPlayerBuilder builder = InviteToPlayerBuilder();
+    Invite.fromJSON(builder, uid, data);
+    return builder
+      ..playerUid = getString(data[PLAYERUID])
+      ..playerName = getString(data[NAME]);
+  }
 
   Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = super.toJSON();
+    Map<String, dynamic> ret = Invite.toJSONInternal(this);
     ret[PLAYERUID] = playerUid;
     ret[NAME] = playerName;
 
     return ret;
   }
 
+  /*
   @override
   String toString() {
     return 'InviteToPlayer{${super.toString()} playerUid: $playerUid, playerName: $playerName}';
@@ -61,4 +80,5 @@ class InviteToPlayer extends Invite {
     }
     return 1;
   }
+  */
 }

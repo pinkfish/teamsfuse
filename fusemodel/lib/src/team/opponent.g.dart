@@ -20,7 +20,7 @@ class _$Opponent extends Opponent {
   @override
   final BuiltMap<String, WinRecord> record;
 
-  factory _$Opponent([void updates(OpponentBuilder b)]) =>
+  factory _$Opponent([void Function(OpponentBuilder) updates]) =>
       (new OpponentBuilder()..update(updates)).build();
 
   _$Opponent._(
@@ -52,7 +52,7 @@ class _$Opponent extends Opponent {
   }
 
   @override
-  Opponent rebuild(void updates(OpponentBuilder b)) =>
+  Opponent rebuild(void Function(OpponentBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
@@ -149,7 +149,7 @@ class OpponentBuilder implements Builder<Opponent, OpponentBuilder> {
   }
 
   @override
-  void update(void updates(OpponentBuilder b)) {
+  void update(void Function(OpponentBuilder) updates) {
     if (updates != null) updates(this);
   }
 

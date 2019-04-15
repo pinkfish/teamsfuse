@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'dialog/deleteinvite.dart';
@@ -19,7 +21,9 @@ class AcceptInviteToClubScreen extends StatefulWidget {
 }
 
 class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   InviteToClub _invite;
+  SingleInviteBloc _singleInviteBloc;
 
   static const String newInvite = 'new';
 
@@ -27,7 +31,7 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
   void initState() {
     super.initState();
     // Default to empty.
-    _invite = new InviteToClub(clubName: '');
+    _invite = new InviteToClub((b) => b..clubName = '');
     if (UserDatabaseData.instance.invites.containsKey(widget._inviteUid)) {
       _invite =
           UserDatabaseData.instance.invites[widget._inviteUid] as InviteToClub;
@@ -35,12 +39,34 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
       // Get out of here.
       Navigator.pop(context);
     }
+    _singleInviteBloc = SingleInviteBloc(
+        inviteBloc: BlocProvider.of<InviteBloc>(context),
+        inviteUid: widget._inviteUid,
+        teamBloc: BlocProvider.of<TeamBloc>(context));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _singleInviteBloc?.dispose();
+  }
+
+  void _showInSnackBar(String value) {
+    _scaffoldKey.currentState
+        .showSnackBar(new SnackBar(content: new Text(value)));
   }
 
   void _savePressed() async {
-    _invite.acceptInvite();
-    await _invite.firestoreDelete();
-    Navigator.pop(context);
+    _singleInviteBloc.dispatch(SingleInviteEventAcceptInviteToClub());
+    await for (SingleInviteState state in _singleInviteBloc.state) {
+      if (state is SingleInviteSaveFailed) {
+        _showInSnackBar(Messages.of(context).formerror);
+      } else if (state is SingleInviteDeleted) {
+        Navigator.pop(context);
+      } else if (state is SingleInviteLoaded) {
+        return;
+      }
+    }
   }
 
   @override
@@ -50,33 +76,49 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
     ThemeData theme = Theme.of(context);
 
     return new Scaffold(
+      key: _scaffoldKey,
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
       ),
       body: new Scrollbar(
         child: new SingleChildScrollView(
-          child: new Column(
-            children: <Widget>[
-              new ListTile(
-                leading: const Icon(CommunityIcons.houzz),
-                title: new Text(_invite.clubName),
-                subtitle: new ByUserNameComponent(userId: _invite.sentByUid),
-              ),
-              new Row(
-                children: <Widget>[
-                  new RaisedButton(
-                    onPressed: _savePressed,
-                    child: new Text(messages.addinvite),
-                    color: theme.accentColor,
-                    textColor: Colors.white,
-                  ),
-                  new FlatButton(
-                    onPressed: () => showDeleteInvite(context, _invite),
-                    child: new Text(messages.deleteinvite),
-                  ),
-                ],
-              ),
-            ],
+          child: BlocBuilder(
+            bloc: _singleInviteBloc,
+            builder: (BuildContext context, SingleInviteState state) {
+              if (state is SingleInviteDeleted) {
+                // Deleted.
+                return Center(child: CircularProgressIndicator());
+              } else if (state is SingleInviteUninitialized) {
+                // Loading.
+                return Center(child: CircularProgressIndicator());
+              } else {
+                return Column(
+                  children: <Widget>[
+                    new ListTile(
+                      leading: const Icon(CommunityIcons.houzz),
+                      title: new Text(_invite.clubName),
+                      subtitle:
+                          new ByUserNameComponent(userId: _invite.sentByUid),
+                    ),
+                    new Row(
+                      children: <Widget>[
+                        new RaisedButton(
+                          onPressed: _savePressed,
+                          child: new Text(messages.addinvite),
+                          color: theme.accentColor,
+                          textColor: Colors.white,
+                        ),
+                        new FlatButton(
+                          onPressed: () =>
+                              showDeleteInvite(context, _singleInviteBloc),
+                          child: new Text(messages.deleteinvite),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              }
+            },
           ),
         ),
       ),

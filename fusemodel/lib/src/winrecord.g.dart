@@ -14,7 +14,7 @@ class _$WinRecord extends WinRecord {
   @override
   final num tie;
 
-  factory _$WinRecord([void updates(WinRecordBuilder b)]) =>
+  factory _$WinRecord([void Function(WinRecordBuilder) updates]) =>
       (new WinRecordBuilder()..update(updates)).build();
 
   _$WinRecord._({this.win, this.loss, this.tie}) : super._() {
@@ -30,7 +30,7 @@ class _$WinRecord extends WinRecord {
   }
 
   @override
-  WinRecord rebuild(void updates(WinRecordBuilder b)) =>
+  WinRecord rebuild(void Function(WinRecordBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
@@ -96,7 +96,7 @@ class WinRecordBuilder implements Builder<WinRecord, WinRecordBuilder> {
   }
 
   @override
-  void update(void updates(WinRecordBuilder b)) {
+  void update(void Function(WinRecordBuilder) updates) {
     if (updates != null) updates(this);
   }
 

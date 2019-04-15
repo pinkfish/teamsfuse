@@ -26,6 +26,8 @@ class _$Team extends Team {
   @override
   final bool archived;
   @override
+  final String userUid;
+  @override
   final String clubUid;
   @override
   final bool publicOnly;
@@ -38,7 +40,7 @@ class _$Team extends Team {
   @override
   final BuiltMap<String, Season> seasons;
 
-  factory _$Team([void updates(TeamBuilder b)]) =>
+  factory _$Team([void Function(TeamBuilder) updates]) =>
       (new TeamBuilder()..update(updates)).build();
 
   _$Team._(
@@ -51,6 +53,7 @@ class _$Team extends Team {
       this.uid,
       this.photoUrl,
       this.archived,
+      this.userUid,
       this.clubUid,
       this.publicOnly,
       this.trackAttendenceInternal,
@@ -85,6 +88,9 @@ class _$Team extends Team {
     if (archived == null) {
       throw new BuiltValueNullFieldError('Team', 'archived');
     }
+    if (userUid == null) {
+      throw new BuiltValueNullFieldError('Team', 'userUid');
+    }
     if (clubUid == null) {
       throw new BuiltValueNullFieldError('Team', 'clubUid');
     }
@@ -106,7 +112,7 @@ class _$Team extends Team {
   }
 
   @override
-  Team rebuild(void updates(TeamBuilder b)) =>
+  Team rebuild(void Function(TeamBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
@@ -125,6 +131,7 @@ class _$Team extends Team {
         uid == other.uid &&
         photoUrl == other.photoUrl &&
         archived == other.archived &&
+        userUid == other.userUid &&
         clubUid == other.clubUid &&
         publicOnly == other.publicOnly &&
         trackAttendenceInternal == other.trackAttendenceInternal &&
@@ -149,17 +156,22 @@ class _$Team extends Team {
                                                 $jc(
                                                     $jc(
                                                         $jc(
-                                                            $jc(0,
-                                                                name.hashCode),
-                                                            arriveEarlyInternal
+                                                            $jc(
+                                                                $jc(
+                                                                    0,
+                                                                    name
+                                                                        .hashCode),
+                                                                arriveEarlyInternal
+                                                                    .hashCode),
+                                                            currentSeason
                                                                 .hashCode),
-                                                        currentSeason.hashCode),
-                                                    gender.hashCode),
-                                                league.hashCode),
-                                            sport.hashCode),
-                                        uid.hashCode),
-                                    photoUrl.hashCode),
-                                archived.hashCode),
+                                                        gender.hashCode),
+                                                    league.hashCode),
+                                                sport.hashCode),
+                                            uid.hashCode),
+                                        photoUrl.hashCode),
+                                    archived.hashCode),
+                                userUid.hashCode),
                             clubUid.hashCode),
                         publicOnly.hashCode),
                     trackAttendenceInternal.hashCode),
@@ -180,6 +192,7 @@ class _$Team extends Team {
           ..add('uid', uid)
           ..add('photoUrl', photoUrl)
           ..add('archived', archived)
+          ..add('userUid', userUid)
           ..add('clubUid', clubUid)
           ..add('publicOnly', publicOnly)
           ..add('trackAttendenceInternal', trackAttendenceInternal)
@@ -231,6 +244,10 @@ class TeamBuilder implements Builder<Team, TeamBuilder> {
   bool get archived => _$this._archived;
   set archived(bool archived) => _$this._archived = archived;
 
+  String _userUid;
+  String get userUid => _$this._userUid;
+  set userUid(String userUid) => _$this._userUid = userUid;
+
   String _clubUid;
   String get clubUid => _$this._clubUid;
   set clubUid(String clubUid) => _$this._clubUid = clubUid;
@@ -273,6 +290,7 @@ class TeamBuilder implements Builder<Team, TeamBuilder> {
       _uid = _$v.uid;
       _photoUrl = _$v.photoUrl;
       _archived = _$v.archived;
+      _userUid = _$v.userUid;
       _clubUid = _$v.clubUid;
       _publicOnly = _$v.publicOnly;
       _trackAttendenceInternal = _$v.trackAttendenceInternal;
@@ -293,7 +311,7 @@ class TeamBuilder implements Builder<Team, TeamBuilder> {
   }
 
   @override
-  void update(void updates(TeamBuilder b)) {
+  void update(void Function(TeamBuilder) updates) {
     if (updates != null) updates(this);
   }
 
@@ -312,6 +330,7 @@ class TeamBuilder implements Builder<Team, TeamBuilder> {
               uid: uid,
               photoUrl: photoUrl,
               archived: archived,
+              userUid: userUid,
               clubUid: clubUid,
               publicOnly: publicOnly,
               trackAttendenceInternal: trackAttendenceInternal,

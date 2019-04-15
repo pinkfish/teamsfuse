@@ -18,7 +18,7 @@ class _$Season extends Season {
   @override
   final BuiltList<SeasonPlayer> players;
 
-  factory _$Season([void updates(SeasonBuilder b)]) =>
+  factory _$Season([void Function(SeasonBuilder) updates]) =>
       (new SeasonBuilder()..update(updates)).build();
 
   _$Season._({this.name, this.uid, this.teamUid, this.record, this.players})
@@ -41,7 +41,7 @@ class _$Season extends Season {
   }
 
   @override
-  Season rebuild(void updates(SeasonBuilder b)) =>
+  Season rebuild(void Function(SeasonBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
@@ -125,7 +125,7 @@ class SeasonBuilder implements Builder<Season, SeasonBuilder> {
   }
 
   @override
-  void update(void updates(SeasonBuilder b)) {
+  void update(void Function(SeasonBuilder) updates) {
     if (updates != null) updates(this);
   }
 

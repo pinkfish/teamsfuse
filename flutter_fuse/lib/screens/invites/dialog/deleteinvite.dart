@@ -1,8 +1,8 @@
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
 
-void showDeleteInvite(BuildContext context, Invite invite) async {
+void showDeleteInvite(BuildContext context, SingleInviteBloc bloc) async {
   Messages mess = Messages.of(context);
 
   bool result = await showDialog<bool>(
@@ -15,23 +15,22 @@ void showDeleteInvite(BuildContext context, Invite invite) async {
             child: new SingleChildScrollView(
               child: new ListBody(
                 children: <Widget>[
-                  new Text(mess.confirmdelete(invite)),
+                  new Text(mess.confirmdelete(bloc.currentState.invite)),
                 ],
               ),
             ),
           ),
           actions: <Widget>[
             new FlatButton(
-              child:
-              new Text(MaterialLocalizations.of(context).okButtonLabel),
+              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
             ),
             new FlatButton(
-              child: new Text(
-                  MaterialLocalizations.of(context).cancelButtonLabel),
+              child:
+                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
@@ -40,7 +39,17 @@ void showDeleteInvite(BuildContext context, Invite invite) async {
         );
       });
   if (result) {
-    await invite.firestoreDelete();
-    Navigator.pop(context);
+    bloc.dispatch(
+        SingleInviteEventDeleteInvite(inviteUid: bloc.currentState.invite.uid));
+    await for (SingleInviteState state in bloc.state) {
+      if (state is SingleInviteDeleted) {
+        Navigator.pop(context);
+        return;
+      }
+      if (state is SingleInviteSaveFailed) {
+        Navigator.pop(context);
+        return;
+      }
+    }
   }
 }

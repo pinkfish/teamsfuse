@@ -1,54 +1,57 @@
-import 'dart:async';
+import 'package:built_value/built_value.dart';
 
 import '../common.dart';
-import '../userdatabasedata.dart';
+
+part 'invite.g.dart';
 
 /// The type of the invite.
 enum InviteType { Player, Team, Admin, Club, LeagueAdmin, LeagueTeam }
 
+abstract class BaseInviteType {
+  /// The type of the invite.
+  InviteType get type;
+}
+
 ///
 /// Base class for all invites.
 ///
-abstract class Invite extends Comparable<Invite> {
+@BuiltValue(instantiable: false)
+abstract class Invite implements BaseInviteType {
   /// email invites.
-  String email;
+  String get email;
 
   /// uid of the invite itself
-  String uid;
-
-  /// The type of the invite.
-  final InviteType type;
+  String get uid;
 
   // Who sent the invite.
-  final String sentByUid;
+  String get sentByUid;
+
+  Invite rebuild(void Function(InviteBuilder) updates);
+  InviteBuilder toBuilder();
 
   static const String EMAIL = 'email';
   static const String TYPE = 'type';
   static const String SENTBYUID = 'sentbyUid';
 
-  Invite({this.uid, this.email, this.type, this.sentByUid});
+  static InviteBuilder fromJSON(
+      InviteBuilder builder, String myUid, Map<String, dynamic> data) {
+    return builder
+      ..email = getString(data[EMAIL])
+      ..uid = myUid
+      ..sentByUid = getString(data[SENTBYUID]);
+  }
 
-  Invite.copy(Invite invite)
-      : email = invite.email,
-        uid = invite.uid,
-        sentByUid = invite.sentByUid,
-        type = invite.type;
+  Map<String, dynamic> toJSON();
 
-  Invite.fromJSON(String myUid, Map<String, dynamic> data)
-      : email = getString(data[EMAIL]),
-        type = InviteType.values
-            .firstWhere((InviteType ty) => ty.toString() == data[TYPE]),
-        uid = myUid,
-        sentByUid = getString(data[SENTBYUID]);
-
-  Map<String, dynamic> toJSON() {
+  static Map<String, dynamic> toJSONInternal(Invite invite) {
     Map<String, dynamic> ret = new Map<String, dynamic>();
-    ret[EMAIL] = email;
-    ret[TYPE] = type.toString();
-    ret[SENTBYUID] = sentByUid;
+    ret[EMAIL] = invite.email;
+    ret[TYPE] = invite.type.toString();
+    ret[SENTBYUID] = invite.sentByUid;
     return ret;
   }
 
+  /*
   Future<void> firestoreDelete() {
     return UserDatabaseData.instance.updateModel.firestoreInviteDelete(this);
   }
@@ -75,4 +78,5 @@ abstract class Invite extends Comparable<Invite> {
     }
     return 0;
   }
+  */
 }

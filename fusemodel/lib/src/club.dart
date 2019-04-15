@@ -1,10 +1,12 @@
-import 'common.dart';
-import 'userdatabasedata.dart';
-import 'databaseupdatemodel.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'dart:async';
 import 'dart:io';
+
+import 'package:fusemodel/fusemodel.dart';
+
+import 'common.dart';
+import 'databaseupdatemodel.dart';
 import 'invite.dart';
+import 'userdatabasedata.dart';
 
 ///
 /// Keeps track of the club details.  The tracks a list of teams,
@@ -41,6 +43,8 @@ class Club {
   // Cached list of teams.
   Iterable<Team> _teams;
 
+  String _userUid;
+
   TeamSubscription _teamSub;
   Stream<Iterable<Team>> _teamStream;
   StreamController<Iterable<Team>> _teamController =
@@ -74,7 +78,8 @@ class Club {
   ///
   /// Load this from the wire format.
   ///
-  Club.fromJson(String myUid, Map<String, dynamic> data) {
+  Club.fromJson(String userUid, String myUid, Map<String, dynamic> data) {
+    _userUid = userUid;
     uid = myUid;
     name = data[NAME];
     photoUrl = data[PHOTOURL];
@@ -111,7 +116,7 @@ class Club {
   ///
   /// Convrt this club into the format to use to send over the wire.
   ///
-  Map<String, dynamic> toJson({bool includeMembers = false}) {
+  Map<String, dynamic> toJson({String myUid, bool includeMembers = false}) {
     Map<String, dynamic> ret = <String, dynamic>{};
     ret[NAME] = name;
     ret[PHOTOURL] = photoUrl;
@@ -138,7 +143,7 @@ class Club {
 
   /// Is the current user a member (or admin)?
   bool isMember() {
-    return isUserMember(UserDatabaseData.instance.userUid);
+    return isUserMember(_userUid);
   }
 
   bool isUserAdmin(String myUid) {
@@ -147,9 +152,10 @@ class Club {
 
   /// Is the current user an admin?
   bool isAdmin() {
-    return isUserAdmin(UserDatabaseData.instance.userUid);
+    return isUserAdmin(_userUid);
   }
 
+  /*
   Iterable<Team> get cachedTeams => _teams;
 
   /// Get the teams for this club.
@@ -164,6 +170,7 @@ class Club {
     }
     return _teamStream;
   }
+  */
 
   ///
   /// Updates the club from another club.
@@ -209,12 +216,12 @@ class Club {
   /// Sends the invite to this club.
   ///
   Future<String> invite(String email, bool asAdmin) {
-    InviteToClub inviteToClub = new InviteToClub(
-        sentByUid: UserDatabaseData.instance.userUid,
-        email: email,
-        admin: asAdmin,
-        clubUid: uid,
-        clubName: name);
+    InviteToClub inviteToClub = new InviteToClub((b) => b
+      ..sentByUid = _userUid
+      ..email = email
+      ..admin = asAdmin
+      ..clubUid = uid
+      ..clubName = name);
     return UserDatabaseData.instance.updateModel.inviteUserToClub(inviteToClub);
   }
 

@@ -1,18 +1,29 @@
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
+
 import '../common.dart';
-import 'invite.dart';
 import '../team.dart';
+import 'invite.dart';
+
+part 'invitetoteam.g.dart';
 
 ///
 /// Invited to the team.
 ///
-class InviteToTeam extends Invite {
-  final String teamName;
-  final String seasonName;
-  final String teamUid;
-  final String seasonUid;
-  final RoleInTeam role;
-  List<String> playerName;
+abstract class InviteToTeam
+    implements Invite, Built<InviteToTeam, InviteToTeamBuilder> {
+  String get teamName;
+  String get seasonName;
+  String get teamUid;
+  String get seasonUid;
+  RoleInTeam get role;
+  BuiltList<String> get playerName;
 
+  factory InviteToTeam([void Function(InviteToTeamBuilder) updates]) =
+      _$InviteToTeam;
+  InviteToTeam._();
+
+  /*
   InviteToTeam(
       {String email,
       String uid,
@@ -37,6 +48,7 @@ class InviteToTeam extends Invite {
         playerName = new List<String>.from(invite.playerName),
         role = invite.role,
         super.copy(invite) {}
+        */
 
   static const String TEAMUID = 'teamUid';
   static const String TEAMNAME = 'teamName';
@@ -44,27 +56,27 @@ class InviteToTeam extends Invite {
   static const String SEASONUID = 'seasonUid';
   static const String ROLE = 'role';
 
-  InviteToTeam.fromJSON(String uid, Map<String, dynamic> data)
-      : teamUid = getString(data[TEAMUID]),
-        seasonUid = getString(data[SEASONUID]),
-        teamName = getString(data[TEAMNAME]),
-        seasonName = getString(data[SEASONNAME]),
-        role = RoleInTeam.values.firstWhere((e) => e.toString() == data[ROLE],
-            orElse: () => RoleInTeam.NonPlayer),
-        super.fromJSON(uid, data) {
+  static InviteToTeamBuilder fromJSON(String uid, Map<String, dynamic> data) {
+    InviteToTeamBuilder builder = InviteToTeamBuilder();
+    Invite.fromJSON(builder, uid, data);
     if (data.containsKey(NAME) && data[NAME] is List) {
       List<dynamic> nameList = data[NAME];
-      playerName = nameList.map((dynamic d) => d is String ? d : "").toList();
-    } else {
-      playerName = [];
+      builder.playerName
+          .addAll(nameList.map((dynamic d) => d is String ? d : ""));
+      //playerName = nameList.map((dynamic d) => d is String ? d : "").toList();
     }
-    if (playerName == null) {
-      playerName = new List<String>();
-    }
+
+    return builder
+      ..teamUid = getString(data[TEAMUID])
+      ..seasonUid = getString(data[SEASONUID])
+      ..teamName = getString(data[TEAMNAME])
+      ..seasonName = getString(data[SEASONNAME])
+      ..role = RoleInTeam.values.firstWhere((e) => e.toString() == data[ROLE],
+          orElse: () => RoleInTeam.NonPlayer);
   }
 
   Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = super.toJSON();
+    Map<String, dynamic> ret = Invite.toJSONInternal(this);
     ret[TEAMUID] = teamUid;
     ret[SEASONUID] = seasonUid;
     ret[NAME] = playerName;
@@ -74,6 +86,7 @@ class InviteToTeam extends Invite {
     return ret;
   }
 
+  /*
   @override
   int compareTo(Invite other) {
     if (baseCompareTo(other) != 0) {
@@ -105,4 +118,5 @@ class InviteToTeam extends Invite {
     }
     return 1;
   }
+  */
 }

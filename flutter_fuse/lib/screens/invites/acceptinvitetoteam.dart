@@ -1,13 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:fusemodel/blocs.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'dialog/deleteinvite.dart';
 
@@ -43,10 +41,10 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     // Default to empty.
     _checked = new Set<String>();
     _data = <String, String>{};
-    _singleInviteBloc =
-        SingleInviteBloc(inviteBloc: BlocProvider.of<InviteBloc>(context));
-    _singleInviteBloc
-        .dispatch(SingleInviteEventLoaded(inviteUid: widget._inviteUid));
+    _singleInviteBloc = SingleInviteBloc(
+        inviteBloc: BlocProvider.of<InviteBloc>(context),
+        inviteUid: widget._inviteUid,
+        teamBloc: BlocProvider.of<TeamBloc>(context));
   }
 
   @override
@@ -55,25 +53,27 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     _singleInviteBloc.dispose();
   }
 
-  void showInSnackBar(String value) {
+  void _showInSnackBar(String value) {
     _scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(value)));
   }
 
   void _onChangedPlayer(String name, String uid) {
     setState(() {
-      if (uid.compareTo(SingleInviteEventAcceptInvite.createNew) == 0) {
-        _current[name] = SingleInviteEventAcceptInvite.createNew;
+      if (uid.compareTo(SingleInviteBloc.createNew) == 0) {
+        _current[name] = SingleInviteBloc.createNew;
         _data[name] = _original[name];
         if (_relationship[name] == Relationship.Me) {
           _relationship[name] = Relationship.Friend;
         }
       } else {
-        UserDatabaseData data = UserDatabaseData.instance;
+        AuthenticationBloc authenticationBloc =
+            BlocProvider.of<AuthenticationBloc>(context);
+        PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
         _current[name] = uid;
-        _data[name] = data.players[uid].name;
-        _relationship[name] =
-            data.players[uid].users[data.userUid].relationship;
+        _data[name] = authenticationBloc.currentUser.profile.displayName;
+        _relationship[name] = playerBloc.currentState.players[uid]
+            .users[authenticationBloc.currentUser.uid].relationship;
       }
     });
   }
@@ -95,17 +95,20 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     dropdowns.add(
       new DropdownMenuItem<String>(
           child: new Text(Messages.of(context).createnew),
-          value: SingleInviteEventAcceptInvite.createNew),
+          value: SingleInviteBloc.createNew),
     );
     if (found == null) {
-      found = SingleInviteEventAcceptInvite.createNew;
+      found = SingleInviteBloc.createNew;
     }
     if (!_current.containsKey(name)) {
       _current[name] = found;
-      if (UserDatabaseData.instance.players.containsKey(found)) {
-        UserDatabaseData data = UserDatabaseData.instance;
+      AuthenticationBloc authenticationBloc =
+          BlocProvider.of<AuthenticationBloc>(context);
+      PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+      String myUid = authenticationBloc.currentUser.uid;
+      if (playerBloc.currentState.players.containsKey(found)) {
         _relationship[name] =
-            data.players[found].users[data.userUid].relationship;
+            playerBloc.currentState.players[found].users[myUid].relationship;
       } else {
         _relationship[name] = Relationship.Friend;
       }
@@ -127,11 +130,19 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
 
       currentCopy
           .removeWhere((String name, String uid) => _checked.contains(name));
-      _singleInviteBloc.dispatch(SingleInviteEventAcceptInvite(
-        inviteUid: _singleInviteBloc.currentState.invite.uid,
+      _singleInviteBloc.dispatch(SingleInviteEventAcceptInviteToTeam(
         relationship: _relationship,
         playerNameToUid: currentCopy,
       ));
+      await for (SingleInviteState state in _singleInviteBloc.state) {
+        if (state is SingleInviteSaveFailed) {
+          _showInSnackBar(Messages.of(context).formerror);
+          return;
+        }
+        if (state is SingleInviteLoaded) {
+          break;
+        }
+      }
     }
   }
 
@@ -198,9 +209,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
               },
             ),
             title: _showPlayerDropdown(name),
-            subtitle: _current[name]
-                        .compareTo(SingleInviteEventAcceptInvite.createNew) ==
-                    0
+            subtitle: _current[name].compareTo(SingleInviteBloc.createNew) == 0
                 ? new Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -259,15 +268,14 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
             textColor: Colors.white,
           ),
           new FlatButton(
-            onPressed: () => showDeleteInvite(
-                context, _singleInviteBloc.currentState.invite),
+            onPressed: () => showDeleteInvite(context, _singleInviteBloc),
             child: new Text(messages.deleteinvite),
           ),
         ],
       ),
     );
 
-    return BlocProvider(
+    return BlocProvider<SingleInviteBloc>(
       bloc: _singleInviteBloc,
       child: Scaffold(
         key: _scaffoldKey,
@@ -296,25 +304,13 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                 if (state is SingleInviteUninitialized) {
                   // Loading.
                   return Center(child: CircularProgressIndicator());
-                } else if (state is SingleInviteDoesntExist) {
-                  // Error.
-                  return Column(
-                    children: <Widget>[
-                      Text(Messages.of(context).noinvites),
-                      FlatButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text(MaterialLocalizations.of(context)
-                            .cancelButtonLabel),
-                      )
-                    ],
-                  );
                 } else if (state is SingleInviteDeleted) {
                   // Go back!
                   Navigator.pop(context);
                   return Center(child: CircularProgressIndicator());
                 } else {
                   if (state is SingleInviteSaveFailed) {
-                    showInSnackBar(Messages.of(context).formerror);
+                    _showInSnackBar(Messages.of(context).formerror);
                   }
                   InviteToTeam invite = state.invite as InviteToTeam;
                   return SavingOverlay(

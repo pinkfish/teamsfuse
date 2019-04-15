@@ -1,12 +1,12 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/approuter.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/teams/teamtile.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'fuseddrawer.dart';
 import 'fuseddrawerheader.dart';
@@ -44,21 +44,22 @@ class FusedDrawerContent extends StatelessWidget {
                 ],
               ),
             ),
-            subtitle: new StreamBuilder<Iterable<Team>>(
-                stream: club.teamStream,
-                builder:
-                    (BuildContext context, AsyncSnapshot<Iterable<Team>> snap) {
-                  if (snap.hasData) {
+            subtitle: BlocBuilder<TeamEvent, TeamState>(
+                bloc: BlocProvider.of<TeamBloc>(context),
+                builder: (BuildContext build, TeamState state) {
+                  //if (snap.hasData) {
+                  return new Text(
+                    Messages.of(context)
+                        .teamnumbers(state.teamsByPlayer.length),
+                  );
+                  /*}
+                  //if (club.cachedTeams != null) {
                     return new Text(
-                      Messages.of(context).teamnumbers(snap.data.length),
+                      Messages.of(context).teamnumbers(state.clubTeams.length),
                     );
-                  }
-                  if (club.cachedTeams != null) {
-                    return new Text(
-                      Messages.of(context).teamnumbers(club.cachedTeams.length),
-                    );
-                  }
+                  //}
                   return new Text(Messages.of(context).loading);
+                  */
                 }),
             onTap: () {
               Navigator.pop(context);
@@ -77,7 +78,7 @@ class FusedDrawerContent extends StatelessWidget {
 
     ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
 
-    for (Team team in state.teams.values) {
+    for (Team team in state.teamsByPlayer.values) {
       if (!team.archived) {
         if (team.clubUid == null ||
             !clubBloc.currentState.clubs.containsKey(team.clubUid)) {

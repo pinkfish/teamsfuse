@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/games/availability.dart';
 import 'package:flutter_fuse/widgets/games/deletegamedialog.dart';
 import 'package:flutter_fuse/widgets/games/gamedetails.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class GameDetailsScreen extends StatefulWidget {
   GameDetailsScreen(this.gameUid);
@@ -51,14 +51,6 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
     Team team = teamBloc.currentState.getTeam(game.teamUid);
     Opponent opponent = team.opponents[game.opponentUids[0]];
-    /*
-    Team team = UserDatabaseData.instance.teams[game.teamUid];
-    Opponent opponent;
-    if (game.sharedData.type == EventType.Game &&
-        game.opponentUids.length > 0) {
-      opponent = team.opponents[game.opponentUids[0]];
-    }
-    */
     List<Widget> actions = <Widget>[];
 
     if (_tabIndex == 0) {

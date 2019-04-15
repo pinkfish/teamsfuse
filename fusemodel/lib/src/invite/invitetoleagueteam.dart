@@ -1,20 +1,32 @@
-import 'dart:async';
+import 'package:built_value/built_value.dart';
+
 import '../common.dart';
-import '../userdatabasedata.dart';
 import 'invite.dart';
-import '../team.dart';
+
+part 'invitetoleagueteam.g.dart';
 
 ///
 /// Invited to a league team.
 ///
-class InviteToLeagueTeam extends Invite {
-  final String leagueName;
-  final String leagueTeamName;
-  final String leagueTeamUid;
-  final String leagueUid;
-  final String leagueDivisonUid;
-  final String leagueSeasonName;
+abstract class InviteToLeagueTeam
+    implements Invite, Built<InviteToLeagueTeam, InviteToLeagueTeamBuilder> {
+  String get leagueName;
+  String get leagueTeamName;
+  String get leagueTeamUid;
+  String get leagueUid;
+  String get leagueDivisonUid;
+  String get leagueSeasonName;
 
+  /// The type of the invite.
+  @override
+  InviteType get type => InviteType.LeagueTeam;
+
+  factory InviteToLeagueTeam(
+          [void Function(InviteToLeagueTeamBuilder) updates]) =
+      _$InviteToLeagueTeam;
+  InviteToLeagueTeam._();
+
+  /*
   InviteToLeagueTeam(
       {String sentByUid,
       String email,
@@ -39,6 +51,7 @@ class InviteToLeagueTeam extends Invite {
         leagueSeasonName = invite.leagueSeasonName,
         leagueUid = invite.leagueUid,
         super.copy(invite);
+        */
 
   static const String LEAGUETEAMUID = 'leagueTeamUid';
   static const String LEAGUENAME = 'leagueName';
@@ -51,23 +64,29 @@ class InviteToLeagueTeam extends Invite {
   /// This accepts the invite connecting the specified team to the matching
   /// season
   ///
+  /*
   Future<void> acceptInvite(Season season) {
     return UserDatabaseData.instance.updateModel.connectLeagueTeamToSeason(
         leagueTeamUid, UserDatabaseData.instance.userUid, season);
   }
+  */
 
   /// Create a new invite from the json.
-  InviteToLeagueTeam.fromJSON(String uid, Map<String, dynamic> data)
-      : leagueTeamUid = getString(data[LEAGUETEAMUID]),
-        leagueName = getString(data[LEAGUENAME]),
-        leagueUid = getString(data[LEAGUEUID]) ?? "",
-        leagueDivisonUid = data[LEAGUEDIVISONUID] ?? "",
-        leagueTeamName = data[LEAGUETEAMNAME] ?? "",
-        leagueSeasonName = data[LEAGUESEASONNAME] ?? "",
-        super.fromJSON(uid, data);
+  static InviteToLeagueTeamBuilder fromJSON(
+      String uid, Map<String, dynamic> data) {
+    InviteToLeagueTeamBuilder builder = InviteToLeagueTeamBuilder();
+    Invite.fromJSON(builder, uid, data);
+    return builder
+      ..leagueTeamUid = getString(data[LEAGUETEAMUID])
+      ..leagueName = getString(data[LEAGUENAME])
+      ..leagueUid = getString(data[LEAGUEUID]) ?? ""
+      ..leagueDivisonUid = data[LEAGUEDIVISONUID] ?? ""
+      ..leagueTeamName = data[LEAGUETEAMNAME] ?? ""
+      ..leagueSeasonName = data[LEAGUESEASONNAME] ?? "";
+  }
 
   Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = super.toJSON();
+    Map<String, dynamic> ret = Invite.toJSONInternal(this);
     ret[LEAGUENAME] = leagueName;
     ret[LEAGUETEAMUID] = leagueTeamUid;
     ret[LEAGUEDIVISONUID] = leagueDivisonUid;
@@ -77,6 +96,7 @@ class InviteToLeagueTeam extends Invite {
     return ret;
   }
 
+  /*
   @override
   int compareTo(Invite other) {
     if (baseCompareTo(other) != 0) {
@@ -102,4 +122,5 @@ class InviteToLeagueTeam extends Invite {
     }
     return 1;
   }
+  */
 }

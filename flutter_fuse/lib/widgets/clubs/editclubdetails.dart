@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/util/clubimage.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -62,7 +64,8 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
 
       // New club, add in the default admin.
       if (club.uid == null) {
-        club.adminsUids.add(UserDatabaseData.instance.userUid);
+        AuthenticationBloc bloc = BlocProvider.of<AuthenticationBloc>(context);
+        club.adminsUids.add(bloc.currentUser.uid);
       }
       return club;
     }

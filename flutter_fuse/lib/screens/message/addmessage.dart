@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class AddMessageScreen extends StatefulWidget {
@@ -31,10 +33,13 @@ class AddMessageScreenState extends State<AddMessageScreen> {
   bool _includeMyself = false;
   FocusNode _focusNodeSubject = new FocusNode();
   FocusNode _focusNodeBody = new FocusNode();
+  TeamBloc _teamBloc;
 
   @override
   void initState() {
     super.initState();
+    _teamBloc = BlocProvider.of<TeamBloc>(context);
+
     _message = new Message();
     _message.teamUid = widget.teamUid;
     _message.subject = '';
@@ -42,8 +47,9 @@ class AddMessageScreenState extends State<AddMessageScreen> {
     _seasonUid = widget.seasonUid;
     if (widget.playerUid != null) {
       Map<String, MessageRecipient> recips = <String, MessageRecipient>{};
+
       Season season =
-          UserDatabaseData.instance.teams[_message.teamUid].seasons[_seasonUid];
+          _teamBloc.currentState.getTeam(_message.teamUid).seasons[_seasonUid];
 
       SeasonPlayer player = season.players.firstWhere(
           (SeasonPlayer player) => player.playerUid == widget.playerUid);
@@ -62,10 +68,13 @@ class AddMessageScreenState extends State<AddMessageScreen> {
   void _setupSendAs() {
     _possiblePlayers = <String>[];
     // Find the intersection of team and player.
-    UserDatabaseData
-        .instance.teams[_message.teamUid].seasons[_seasonUid].players
+    _teamBloc.currentState
+        .getTeam(_message.teamUid)
+        .seasons[_seasonUid]
+        .players
         .forEach((SeasonPlayer play) {
-      if (UserDatabaseData.instance.players.containsKey(play.playerUid)) {
+      PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+      if (playerBloc.currentState.players.containsKey(play.playerUid)) {
         _sendAs = play.playerUid;
         _possiblePlayers.add(play.playerUid);
       }
@@ -76,7 +85,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
     if (teamUid != _message.teamUid) {
       setState(() {
         _message.teamUid = teamUid;
-        _seasonUid = UserDatabaseData.instance.teams[teamUid].currentSeason;
+        _seasonUid = _teamBloc.currentState.getTeam(teamUid).currentSeason;
         _setupSendAs();
       });
     }
@@ -92,8 +101,10 @@ class AddMessageScreenState extends State<AddMessageScreen> {
       _formKey.currentState.save();
       if (_allPlayers) {
         // Add in everyone!
-        UserDatabaseData
-            .instance.teams[_message.teamUid].seasons[_seasonUid].players
+        _teamBloc.currentState
+            .getTeam(_message.teamUid)
+            .seasons[_seasonUid]
+            .players
             .forEach((SeasonPlayer play) {
           if (_includeMyself || play.playerUid != _sendAs) {
             _message.recipients[play.playerUid] = new MessageRecipient(
@@ -128,8 +139,10 @@ class AddMessageScreenState extends State<AddMessageScreen> {
             onSaved: (String seasonUid) => _seasonUid = seasonUid),
       );
       if (_seasonUid != null &&
-          UserDatabaseData.instance.teams.containsKey(_message.teamUid) &&
-          UserDatabaseData.instance.teams[_message.teamUid].seasons
+          _teamBloc.currentState.getTeam(_message.teamUid) != null &&
+          _teamBloc.currentState
+              .getTeam(_message.teamUid)
+              .seasons
               .containsKey(_seasonUid)) {
         // Show who we are sending as, drop down if there is more than one
         // option.
@@ -181,7 +194,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
           );
         } else {
           // Show the list of players with checkboxes.
-          Team team = UserDatabaseData.instance.teams[_message.teamUid];
+          Team team = _teamBloc.currentState.getTeam(_message.teamUid);
           Season season = team.seasons[_seasonUid];
 
           season.players.forEach((SeasonPlayer player) {

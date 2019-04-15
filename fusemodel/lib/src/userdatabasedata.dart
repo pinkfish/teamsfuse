@@ -16,7 +16,7 @@ class UserDatabaseData {
   static const num MAX_MESSAGES = 20;
 
   // User id for us!
-  String userUid;
+  String userUidFrog;
 
   Map<String, Player> _players = {};
   Map<String, Team> _teams = {};

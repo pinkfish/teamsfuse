@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamenteditform.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class AddLeagueScreen extends StatefulWidget {
@@ -33,13 +35,15 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
 
   @override
   void initState() {
+    AuthenticationBloc authenticationBloc =
+        BlocProvider.of<AuthenticationBloc>(context);
     super.initState();
     _league = LeagueOrTournament(
       type: widget.type,
       name: "",
       shortDescription: "",
       longDescription: "",
-      adminUids: <String>[UserDatabaseData.instance.userUid],
+      adminUids: <String>[authenticationBloc.currentUser.uid],
     );
   }
 

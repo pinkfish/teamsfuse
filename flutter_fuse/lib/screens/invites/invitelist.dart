@@ -47,8 +47,26 @@ class InviteListScreen extends StatefulWidget {
           );
         });
     if (result) {
-      await invite.firestoreDelete();
-      Navigator.pop(context);
+      SingleInviteBloc singleInviteBloc = SingleInviteBloc(
+          inviteBloc: BlocProvider.of<InviteBloc>(context),
+          inviteUid: invite.uid,
+          teamBloc: BlocProvider.of<TeamBloc>(context));
+      try {
+        singleInviteBloc
+            .dispatch(SingleInviteEventDeleteInvite(inviteUid: invite.uid));
+        await for (SingleInviteState state in singleInviteBloc.state) {
+          if (state is SingleInviteDeleted) {
+            Navigator.pop(context);
+            return;
+          }
+          if (state is SingleInviteSaveFailed) {
+            Navigator.pop(context);
+            return;
+          }
+        }
+      } finally {
+        singleInviteBloc.dispose();
+      }
     }
   }
 
