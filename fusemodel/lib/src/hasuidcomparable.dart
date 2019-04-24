@@ -1,4 +1,4 @@
 abstract class HasUIDComparable {
-  String uid;
+  String get uid;
   int compareTo(HasUIDComparable cmp);
 }

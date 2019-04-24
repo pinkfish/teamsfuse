@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -5,7 +7,6 @@ import 'package:meta/meta.dart';
 
 import 'gamesbloc.dart';
 import 'teambloc.dart';
-import 'dart:async';
 
 ///
 /// The set of filtered games.
@@ -148,7 +149,9 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
           _newerGameSubscriptions[teamUid] = gameBloc
               .coordinationBloc.databaseUpdateModel
               .getBasicGames(
-                  currentState.start, gameBloc.currentState.start, teamUid)
+                  start: currentState.start,
+                  end: gameBloc.currentState.start,
+                  teamUid: teamUid)
               .listen((GameSnapshotEvent gse) {
             if (gse.type == GameSnapshotEventType.GameList) {
               _newerGamesByTeam[myUid] = gse.newGames;

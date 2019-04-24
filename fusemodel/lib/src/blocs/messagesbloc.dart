@@ -6,8 +6,8 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
-import 'teambloc.dart';
 import 'internal/blocstoload.dart';
+import 'teambloc.dart';
 
 ///
 /// Basic state for all the data in this system.
@@ -112,10 +112,8 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   final TeamBloc teamBloc;
 
   StreamSubscription<CoordinationState> _coordState;
-  StreamSubscription<FirestoreChangedData> _messageSnapshot;
-  StreamSubscription<FirestoreChangedData> _readMessageSnapshot;
-  InitialSubscription _unreadMessageInitialData;
-  InitialSubscription _messageInitialData;
+  StreamSubscription<Iterable<MessageRecipient>> _messageSnapshot;
+  StreamSubscription<Iterable<MessageRecipient>> _readMessageSnapshot;
 
   MessagesBloc({@required this.coordinationBloc, @required this.teamBloc}) {
     _coordState = coordinationBloc.state.listen((CoordinationState state) {
@@ -138,14 +136,10 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   }
 
   void _cleanupStuff() {
-    _messageInitialData?.dispose();
-    _messageInitialData = null;
     _messageSnapshot?.cancel();
     _messageSnapshot = null;
     _readMessageSnapshot?.cancel();
     _readMessageSnapshot = null;
-    _unreadMessageInitialData?.dispose();
-    _unreadMessageInitialData = null;
   }
 
   void _startLoading(CoordinationStateStartLoadingSql state) {
@@ -159,16 +153,13 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   @override
   MessagesState get initialState => MessagesUninitialized();
 
-  void _onUnreadMessagesUpdated(FirestoreChangedData data) async {
+  void _onUnreadMessagesUpdated(Iterable<MessageRecipient> data) async {
     Set<String> toRemove = Set.from(currentState.unreadMessages.keys);
     Map<String, Message> messages = {};
 
     // Fill in all the messages.
-    for (FirestoreWrappedData doc in data.newList) {
+    for (MessageRecipient recipient in data) {
       coordinationBloc.loadingTrace?.incrementCounter("message");
-      MessageRecipient recipient;
-      // Update in place to keep the fetched and seen times.
-      recipient = new MessageRecipient.fromJSON(doc.id, doc.data);
 
       Message mess = currentState.getMessage(recipient.messageId);
       if (mess != null) {
@@ -178,7 +169,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
         toRemove.remove(mess.uid);
         coordinationBloc.persistentData.updateElement(
             PersistenData.messagesTable,
-            doc.id,
+            mess.uid,
             mess.toJSON(includeMessage: true, forSQL: true));
       } else {
         // Otherwise we need to load it.
@@ -190,7 +181,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
           mess.recipients[recipient.userId] = recipient;
           coordinationBloc.persistentData.updateElement(
               PersistenData.messagesTable,
-              doc.id,
+              mess.uid,
               mess.toJSON(includeMessage: true, forSQL: true));
         }
       }
@@ -204,15 +195,12 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     dispatch(_MessagesEventNewUnReadLoaded(unreadMessages: messages));
   }
 
-  void _onReadMessagesUpdated(FirestoreChangedData data) async {
+  void _onReadMessagesUpdated(Iterable<MessageRecipient> data) async {
     Map<String, Message> messages = {};
     Set<String> toRemove = Set.from(currentState.recentMessages.keys);
 
-    for (FirestoreWrappedData doc in data.newList) {
+    for (MessageRecipient recipient in data) {
       coordinationBloc.loadingTrace?.incrementCounter("message");
-      MessageRecipient recipient;
-      // Update in place to keep the fetched and seen times.
-      recipient = new MessageRecipient.fromJSON(doc.id, doc.data);
 
       Message mess = currentState.getMessage(recipient.messageId);
       if (mess != null) {
@@ -222,7 +210,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
         toRemove.remove(mess.uid);
         coordinationBloc.persistentData.updateElement(
             PersistenData.messagesTable,
-            doc.id,
+            mess.uid,
             mess.toJSON(includeMessage: true, forSQL: true));
       } else {
         // Otherwise we need to load it.
@@ -234,7 +222,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
           toRemove.remove(mess.uid);
           coordinationBloc.persistentData.updateElement(
               PersistenData.messagesTable,
-              doc.id,
+              mess.uid,
               mess.toJSON(includeMessage: true, forSQL: true));
         }
       }
@@ -281,27 +269,18 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
 
     // The fireatore atart up.
     if (event is _MessagesEventFirestore) {
-      _unreadMessageInitialData =
-          coordinationBloc.databaseUpdateModel.getMessages(event.uid, true);
-      _unreadMessageInitialData.startData
-          .then((List<FirestoreWrappedData> data) {
+      _messageSnapshot = coordinationBloc.databaseUpdateModel
+          .getMessages(event.uid, true)
+          .listen((Iterable<MessageRecipient> messages) {
         coordinationBloc.loadingTrace?.incrementCounter("message");
-        print("Got some messages $data");
-        _onUnreadMessagesUpdated(
-            new FirestoreChangedData(newList: data, removed: []));
+        _onUnreadMessagesUpdated(messages);
       });
-      _messageSnapshot =
-          _unreadMessageInitialData.stream.listen(this._onReadMessagesUpdated);
-      _messageInitialData =
-          coordinationBloc.databaseUpdateModel.getMessages(event.uid, false);
-      _messageInitialData.startData.then((List<FirestoreWrappedData> data) {
+      _readMessageSnapshot = coordinationBloc.databaseUpdateModel
+          .getMessages(event.uid, false)
+          .listen((Iterable<MessageRecipient> messages) {
         coordinationBloc.loadingTrace?.incrementCounter("message");
-        print("Got some messages $data");
-        this._onUnreadMessagesUpdated(
-            new FirestoreChangedData(newList: data, removed: []));
+        this._onReadMessagesUpdated(messages);
       });
-      _readMessageSnapshot =
-          _messageInitialData.stream.listen(this._onReadMessagesUpdated);
     }
 
     // New data from above.  Mark ourselves as done.

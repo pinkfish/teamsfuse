@@ -1,29 +1,31 @@
-import 'dart:async';
-import 'dart:io';
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
 
 import 'common.dart';
-import 'invite.dart';
-import 'userdatabasedata.dart';
-import 'userprofile.dart';
+
+part 'player.g.dart';
 
 enum Relationship { Me, Parent, Guardian, Friend }
 
-class PlayerUser {
-  String userUid;
-  Relationship relationship;
-  FusedUserProfile profile;
+///
+/// The user part of the player, has a mapping to the relationship with the
+/// player.
+///
+abstract class PlayerUser implements Built<PlayerUser, PlayerUserBuilder> {
+  String get userUid;
+  Relationship get relationship;
 
-  PlayerUser({this.userUid, this.relationship, this.profile});
+  PlayerUser._();
+  factory PlayerUser([updates(PlayerUserBuilder b)]) = _$PlayerUser;
 
   static const String _RELATIONSHIP = 'relationship';
 
-  void fromJSON(Map<dynamic, dynamic> data) {
-    try {
-      relationship = Relationship.values
-          .firstWhere((e) => e.toString() == data[_RELATIONSHIP]);
-    } catch (e) {
-      relationship = Relationship.Friend;
-    }
+  static PlayerUserBuilder fromJSON(Map<dynamic, dynamic> data) {
+    PlayerUserBuilder builder = PlayerUserBuilder();
+    builder.relationship = Relationship.values.firstWhere(
+        (e) => e.toString() == data[_RELATIONSHIP],
+        orElse: () => Relationship.Friend);
+    return builder;
   }
 
   Map<String, dynamic> toJSON() {
@@ -33,59 +35,41 @@ class PlayerUser {
     data[ADDED] = true;
     return data;
   }
-
-  Future<FusedUserProfile> getProfile() async {
-    return UserDatabaseData.instance.userAuth.getProfile(userUid);
-  }
-
-  String toString() {
-    return "PlayerUser [$userUid, $relationship, $profile]";
-  }
 }
 
-class Player {
-  String name;
-  String uid;
-  String photoUrl;
-  Map<String, PlayerUser> users = {};
+///
+/// The player associated with users and in all the various teams.
+///
+abstract class Player implements Built<Player, PlayerBuilder> {
+  String get name;
+  String get uid;
+  String get photoUrl;
+  BuiltMap<String, PlayerUser> get users;
 
-  // Handle invirtes.
-  StreamController<List<InviteToPlayer>> _controller;
-  Stream<List<InviteToPlayer>> _stream;
-  List<InviteToPlayer> _invites;
-
-  // ignore
-  List<StreamSubscription<dynamic>> _subscriptions = [];
-
-  Player();
-
-  Player.copy(Player copy) {
-    name = copy.name;
-    uid = copy.uid;
-    photoUrl = copy.photoUrl;
-    users = new Map.from(copy.users);
-  }
+  Player._();
+  factory Player([updates(PlayerBuilder b)]) = _$Player;
 
   static const String USERS = 'user';
 
-  void fromJSON(String playerUid, Map<String, dynamic> data) {
-    uid = playerUid;
-    name = data[NAME];
-    photoUrl = data[PHOTOURL];
+  static PlayerBuilder fromJSON(String playerUid, Map<String, dynamic> data) {
+    PlayerBuilder builder = PlayerBuilder();
+    builder
+      ..uid = playerUid
+      ..name = data[NAME]
+      ..photoUrl = data[PHOTOURL];
 
-    Map<String, PlayerUser> newUsers = new Map<String, PlayerUser>();
     Map<dynamic, dynamic> usersData = data[USERS] as Map<dynamic, dynamic>;
     if (usersData != null) {
       usersData.forEach((dynamic key, dynamic data) {
         if (data != null) {
-          PlayerUser mapToUser = new PlayerUser();
+          PlayerUserBuilder mapToUser =
+              PlayerUser.fromJSON(data as Map<dynamic, dynamic>);
           mapToUser.userUid = key.toString();
-          mapToUser.fromJSON(data as Map<dynamic, dynamic>);
-          newUsers[key.toString()] = mapToUser;
+          builder.users[key.toString()] = mapToUser.build();
         }
       });
     }
-    users = newUsers;
+    return builder;
   }
 
   Map<String, dynamic> toJSON({bool includeUsers: false}) {
@@ -102,6 +86,7 @@ class Player {
     return ret;
   }
 
+  /*
   void dispose() {
     _subscriptions?.forEach((StreamSubscription<dynamic> sub) {
       sub.cancel();
@@ -111,8 +96,9 @@ class Player {
     _controller = null;
     _invites?.clear();
     _invites = null;
-  }
+  }*/
 
+  /*
   Future<void> updateFirestore({bool includeUsers = false}) async {
     return UserDatabaseData.instance.updateModel
         .updateFirestorePlayer(this, includeUsers);
@@ -122,13 +108,17 @@ class Player {
     return UserDatabaseData.instance.updateModel
         .updatePlayerImage(this, imgFile);
   }
+  */
 
   // Send an invite to a user for this season and team.
+  /*
   Future<void> inviteUser({String email}) async {
     return UserDatabaseData.instance.updateModel
         .inviteUserToPlayer(this, email: normalizeEmail(email));
   }
+  */
 
+  /*
   Stream<List<InviteToPlayer>> get inviteStream {
     if (_stream == null) {
       _controller = new StreamController<List<InviteToPlayer>>();
@@ -140,24 +130,28 @@ class Player {
   }
 
   List<InviteToPlayer> get cachedInvites => _invites;
+  */
 
+  /*
   Future<void> removeFirebaseUser(String userId) {
     return UserDatabaseData.instance.updateModel
         .removeUserFromPlayer(this, userId);
   }
+
 
   void setInvites(List<InviteToPlayer> invites) {
     _invites = invites;
     _controller.add(invites);
   }
 
-  Future<void> _doInviteQuery() async {
-    _subscriptions.add(await UserDatabaseData.instance.updateModel
-        .getInviteForPlayerStream(this));
-  }
 
-  @override
-  String toString() {
-    return 'Player{name: $name, uid: $uid, photoUrl: $photoUrl, users: $users, invites: $_invites}';
+  Future<void> _doInviteQuery() async {
+    await for (Iterable<InviteToPlayer> invites in UserDatabaseData
+        .instance.updateModel
+        .getInviteForPlayerStream(this)) {
+      _invites = invites;
+    }
   }
+  */
+
 }

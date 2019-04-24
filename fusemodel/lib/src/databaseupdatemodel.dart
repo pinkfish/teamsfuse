@@ -1,13 +1,17 @@
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
+
+import 'package:fusemodel/firestore.dart';
+import 'package:meta/meta.dart';
+
+import 'club.dart';
 import 'game.dart';
-import 'leagueortournament.dart';
-import 'team.dart';
 import 'invite.dart';
+import 'leagueortournament.dart';
 import 'message.dart';
 import 'player.dart';
-import 'club.dart';
-import 'package:fusemodel/firestore.dart';
+import 'team.dart';
+import 'winrecord.dart';
 
 ///
 /// Wraps up the firestore data to make it easier to use in the main
@@ -59,6 +63,7 @@ typedef void FirestoreDataCallback(
 /// The initial data that comes back from all the initial subscriptions to
 /// things in the startup for the system.
 ///
+/*
 class InitialSubscription {
   InitialSubscription({this.startData})
       : _controller = new StreamController<FirestoreChangedData>() {
@@ -81,12 +86,14 @@ class InitialSubscription {
     }
   }
 }
+*/
 
 ///
 /// Subscription to a list of iterable items that contains a startup set and
 /// a stream.  Handles management of the stream and the controller associated
 /// with the data.
 ///
+/*
 class IterableSubscription<T> {
   Stream<Iterable<T>> _stream;
   Iterable<T> initialData;
@@ -160,6 +167,7 @@ class SharedGameSubscription extends IterableSubscription<GameSharedData> {}
 /// Specialization of the iterable subscription that handles seasons.
 ///
 class SeasonSubscription extends IterableSubscription<Season> {}
+*/
 
 ///
 /// Details the games can be filtered on.
@@ -223,7 +231,7 @@ abstract class DatabaseUpdateModel {
       GameSharedData game, GameOfficialResults result);
   GameLogReturnData readGameLogs(Game game);
   Future<String> addFirestoreGameLog(Game game, GameLog log);
-  SharedGameSubscription getSharedGame(String sharedGameUid);
+  Stream<GameSharedData> getSharedGame(String sharedGameUid);
   Future<Game> getGame(String gameUid);
 
   // Invite firestore updates
@@ -249,24 +257,36 @@ abstract class DatabaseUpdateModel {
   Future<void> updateFirestoreTeam(Team team);
   Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen);
   Future<Team> updateTeamImage(Team team, File imgFile);
-  DocumentReferenceWrapper precreateTeamUid();
-  Future<String> inviteAdminToTeam(Team team, String email);
+  DocumentReferenceWrapper precreateClubUid();
+  Future<String> inviteAdminToTeam(
+      {@required String myUid,
+      @required String teamUid,
+      @required String teamName,
+      @required String email});
   Future<void> deleteAdmin(Team team, String uid);
   Future<String> addAdmin(String teamUid, String uid);
   Stream<Iterable<InviteAsAdmin>> getInviteForTeamStream(Team team);
   Stream<Iterable<Season>> getAllSeasons(String teamUid);
-  Future<Team> getPublicTeamDetails(String teamUid);
+  Future<Team> getPublicTeamDetails(
+      {@required String userUid, @required String teamUid});
   Stream<Iterable<InviteAsAdmin>> getInvitesForTeam(String teamUid);
   Stream<Iterable<Opponent>> getTeamOpponents(String teamUid);
-  Stream<TeamBuilder> getTeamDetails(String teamUid);
+  Stream<TeamBuilder> getTeamDetails(
+      {@required String userUid, @required String teamUid});
 
   // Player stuff.
   Future<void> updateFirestorePlayer(Player player, bool includeUsers);
+  Future<String> addFirestorePlayer(Player player);
   Future<Uri> updatePlayerImage(Player player, File imgFile);
   Stream<Iterable<Season>> getPlayerSeasons(String playerUid);
   // Send an invite to a user for this season and team.
-  Future<void> inviteUserToPlayer(Player season, {String email});
-  Future<StreamSubscription<dynamic>> getInviteForPlayerStream(Player season);
+  Future<void> inviteUserToPlayer(
+      {@required String playerUid,
+      @required String playerName,
+      @required String email,
+      @required myUid});
+  Stream<Iterable<InviteToPlayer>> getInviteForPlayerStream(
+      {String userUid, Player player});
   Future<void> removeUserFromPlayer(Player player, String userId);
   Future<bool> playerExists(String uid);
   Future<Player> getPlayerDetails(String uid);
@@ -281,37 +301,52 @@ abstract class DatabaseUpdateModel {
   Future<void> removePlayerFromSeason(Season season, SeasonPlayer player);
   Future<void> updateRoleInTeamForSeason(
       Season season, SeasonPlayer player, RoleInTeam role);
-  Stream<Iterable<Invite>> getInviteForSeasonStream(Season season);
-  GameSubscription getSeasonGames(Iterable<Game> games, Season season);
+  Stream<Iterable<InviteToTeam>> getInviteForSeasonStream(
+      {@required String userUid,
+      @required String seasonUid,
+      @required String teamUid});
+  Stream<GameSnapshotEvent> getSeasonGames(Season season);
   // Send an invite to a user for this season and team.
-  Future<void> inviteUserToSeason(Season season,
-      {String userId, String playername, String email, RoleInTeam role});
+  Future<void> inviteUserToSeason(
+      {@required String seasonUid,
+      @required String userId,
+      @required String playername,
+      @required String email,
+      @required RoleInTeam role});
   Future<Season> getSeason(String seasonUid);
   Future<void> addPlayerToSeason(String seasonUid, SeasonPlayer player);
   DocumentReferenceWrapper precreateUidSeason();
 
   // Games!
-  GameSubscription getGames(Iterable<Game> cachedGames, Set<String> teams,
-      DateTime start, DateTime end, FilterDetails filterDetails);
+
+  //GameSubscription getGames(Iterable<Game> cachedGames, Set<String> teams,
+  //    DateTime start, DateTime end, FilterDetails filterDetails);
   Stream<GameSnapshotEvent> getBasicGames(
-      DateTime start, DateTime end, String teamUid);
+      {DateTime start, DateTime end, String teamUid, String seasonUid});
 
   // Clubs and stuff.
-  Stream<Iterable<Team>> getClubTeams(Club club);
+  Stream<Iterable<Team>> getClubTeams(String userUid, Club club);
   Future<String> updateClub(Club club, {bool includeMembers});
+  Future<String> addClub(DocumentReferenceWrapper ref, Club club);
   Future<Uri> updateClubImage(Club club, File imageFile);
   Future<void> addUserToClub(String clubUid, String userId, bool admin);
-  Future<String> inviteUserToClub(InviteToClub invite);
+  Future<String> inviteUserToClub(
+      {String clubName, String clubUid, bool admin, String email});
   Future<void> deleteClubMember(Club club, String memberUid);
-  Future<Club> getClubData(String clubUid);
+  DocumentReferenceWrapper precreateTeamUid();
+  Stream<Iterable<InviteToClub>> getInviteToClubStream(String clubUid);
+  Future<Club> getClubData(
+      {@required String userUid, @required String clubUid});
 
   // League and stuff.
-  SharedGameSubscription getLeagueGamesForDivison(String leagueDivisonUid);
-  SharedGameSubscription getLeagueGamesForTeam(String leagueTeamUid);
-  LeagueOrTournamentSeasonSubscription getLeagueSeasons(String leagueUid);
-  LeagueOrTournamentDivisonSubscription getLeagueDivisonsForSeason(
+  Stream<Iterable<GameSharedData>> getLeagueGamesForDivison(
+      String leagueDivisonUid);
+  Stream<Iterable<GameSharedData>> getLeagueGamesForTeam(String leagueTeamUid);
+  Stream<Iterable<LeagueOrTournamentSeason>> getLeagueSeasons(
+      {String userUid, String leagueUid});
+  Stream<Iterable<LeagueOrTournamentDivison>> getLeagueDivisonsForSeason(
       String leagueSeasonUid);
-  LeagueOrTournmentTeamSubscription getLeagueTeamsForTeamSeason(
+  Stream<Iterable<LeagueOrTournamentTeam>> getLeagueTeamsForTeamSeason(
       String teamSeasonUid);
   Future<String> updateLeague(LeagueOrTournament league, {bool includeMembers});
   Future<Uri> updateLeagueImage(LeagueOrTournament league, File imageFile);
@@ -322,18 +357,19 @@ abstract class DatabaseUpdateModel {
       String leagueUid, String userId, bool admin);
   Future<String> inviteUserToLeague(InviteToLeagueAsAdmin invite);
   Future<void> deleteLeagueMember(LeagueOrTournament league, String memberUid);
-  Future<LeagueOrTournament> getLeagueData(String leagueUid);
+  Future<LeagueOrTournament> getLeagueData({String userUid, String leagueUid});
   Future<LeagueOrTournamentTeam> getLeagueTeamData(String teamUid);
   Future<void> updateLeagueTeam(LeagueOrTournamentTeam team);
   Future<void> updateLeagueTeamRecord(
-      LeagueOrTournamentTeam team, String season);
+      LeagueOrTournamentTeam team, String season, WinRecord record);
   Future<void> inviteUserToLeagueTeam(
+      {String userUid,
       LeagueOrTournament league,
       LeagueOrTournamentSeason season,
       LeagueOrTournamentTeam leagueTeam,
-      String email);
-  StreamSubscription<dynamic> getLeagueOrTournmentTeamInvitesStream(
-      LeagueOrTournamentTeam leagueOrTournmentTeam);
+      String email});
+  Stream<Iterable<InviteToLeagueTeam>> getLeagueOrTournmentTeamInvitesStream(
+      String leagueTeamUid);
 
   // League Season/Division.
   Future<LeagueOrTournamentDivison> getLeagueDivisionData(
@@ -341,7 +377,7 @@ abstract class DatabaseUpdateModel {
   Future<LeagueOrTournamentSeason> getLeagueSeasonData(String leagueSeasonUid);
   Future<void> updateLeagueSeason(LeagueOrTournamentSeason season);
   Future<void> updateLeagueDivison(LeagueOrTournamentDivison division);
-  LeagueOrTournmentTeamSubscription getLeagueDivisionTeams(
+  Stream<Iterable<LeagueOrTournamentTeam>> getLeagueDivisionTeams(
       String leagueDivisionUid);
 
   /// Returns true if this connected correctly, false if there was an error.
@@ -349,10 +385,11 @@ abstract class DatabaseUpdateModel {
       String leagueTeamUid, String userUid, Season season);
 
   // Initialized subscfriptions.
-  InitialSubscription getMainLeagueOrTournaments(String userUid);
-  InitialSubscription getMainClubs(String userUid);
-  InitialSubscription getPlayers(String userUid);
-  InitialSubscription getInvites(String userUid);
-  InitialSubscription getMessages(String userUid, bool unread);
+  Stream<Iterable<LeagueOrTournament>> getMainLeagueOrTournaments(
+      String userUid);
+  Stream<Iterable<Club>> getMainClubs(String userUid);
+  Stream<Iterable<Player>> getPlayers(String userUid);
+  Stream<Iterable<Invite>> getInvites(String userUid);
+  Stream<Iterable<MessageRecipient>> getMessages(String userUid, bool unread);
   Stream<Iterable<Team>> getTeamAdmins(String userUid);
 }

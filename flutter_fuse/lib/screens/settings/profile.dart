@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
@@ -30,15 +28,6 @@ class ProfileScreenState extends State<ProfileScreen> {
     AuthenticationBloc authenticationBloc =
         BlocProvider.of<AuthenticationBloc>(context);
     user = authenticationBloc.currentUser;
-  }
-
-  void playersUpdate() {
-    UserDatabaseData.instance.players.forEach((String key, Player player) {
-      if (player.users[UserDatabaseData.instance.userUid].relationship ==
-          Relationship.Me) {
-        me = player;
-      }
-    });
   }
 
   @override
@@ -88,7 +77,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           );
         });
     if (result) {
-      player.removeFirebaseUser(UserDatabaseData.instance.userUid);
+      player.removeFirebaseUser(user.uid);
     }
   }
 
@@ -186,7 +175,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     return ret;
   }
 
-  List<Widget> _buildPlayerData(PlayerBlocState state) {
+  List<Widget> _buildPlayerData(PlayerState state) {
     final Size screenSize = MediaQuery.of(context).size;
     List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
@@ -198,7 +187,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     if (!widget.onlyPlayer) {
       ret.add(new Center(
         child: new PlayerImage(
-          playerUid: me != null ? me.uid : null,
+          playerUid: state.me != null ? state.me.uid : null,
           radius: width > height ? height / 2 : width / 2,
         ),
       ));
@@ -298,9 +287,9 @@ class ProfileScreenState extends State<ProfileScreen> {
     return ret;
   }
 
-  void _editProfile() {
+  void _editProfile(String uid) {
     // Open up the edit profile dialog.
-    Navigator.pushNamed(context, "EditProfile/" + me.uid);
+    Navigator.pushNamed(context, "EditProfile/" + uid);
   }
 
   @override

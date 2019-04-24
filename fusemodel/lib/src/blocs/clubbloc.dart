@@ -85,8 +85,7 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
   final TeamBloc teamBloc;
 
   StreamSubscription<CoordinationState> _coordSub;
-  StreamSubscription<FirestoreChangedData> _clubChangeSub;
-  Map<String, TeamSubscription> _clubSubscriptions;
+  StreamSubscription<Iterable<Club>> _clubChangeSub;
   Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions;
 
   ClubBloc({@required this.coordinationBloc, @required this.teamBloc}) {
@@ -112,10 +111,6 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
   void _cleanupStuff() {
     _clubChangeSub?.cancel();
     _clubChangeSub = null;
-    for (TeamSubscription sub in _clubSubscriptions.values) {
-      sub.dispose();
-    }
-    _clubSubscriptions.clear();
     for (StreamSubscription<Iterable<Team>> sub
         in _clubTeamsSubscriptions.values) {
       sub.cancel();
@@ -130,19 +125,15 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
   @override
   ClubState get initialState => ClubUninitialized();
 
-  void _onClubsUpdated(
-      List<FirestoreWrappedData> newList, List<FirestoreWrappedData> removed) {
+  void _onClubsUpdated(Iterable<Club> clubs) {
     Map<String, Club> newClubs;
 
-    for (FirestoreWrappedData data in newList) {
-      Club club = Club.fromJson(
-          coordinationBloc.authenticationBloc.currentUser.uid,
-          data.id,
-          data.data);
-      newClubs[data.id] = club;
-      if (!_clubSubscriptions.containsKey(data.id)) {
-        _clubTeamsSubscriptions[data.id] = coordinationBloc.databaseUpdateModel
-            .getClubTeams(club)
+    for (Club club in clubs) {
+      newClubs[club.uid] = club;
+      if (!_clubTeamsSubscriptions.containsKey(club.uid)) {
+        _clubTeamsSubscriptions[club.uid] = coordinationBloc.databaseUpdateModel
+            .getClubTeams(
+                coordinationBloc.authenticationBloc.currentUser.uid, club)
             .listen((Iterable<Team> teams) {
           // Add in all the teams in the list to the teams list and
           // filter out any that have a club on them that now don't
@@ -155,8 +146,8 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
               .dispatch(TeamClubTeams(clubTeams: clubTeams, clubUid: club.uid));
         });
       }
-      coordinationBloc.persistentData
-          .updateElement(PersistenData.clubsTable, club.uid, data.data);
+      coordinationBloc.persistentData.updateElement(PersistenData.clubsTable,
+          club.uid, club.toJson(includeMembers: true));
     }
     dispatch(_ClubEventNewDataLoaded(clubs: newClubs));
   }
@@ -176,8 +167,9 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
       Map<String, Club> newClubs = new Map<String, Club>();
       data.forEach((String uid, Map<String, dynamic> input) {
         coordinationBloc.sqlTrace.incrementCounter("club");
-        Club club = new Club.fromJson(
-            coordinationBloc.authenticationBloc.currentUser.uid, uid, input);
+        Club club = Club.fromJSON(
+                coordinationBloc.authenticationBloc.currentUser.uid, uid, input)
+            .build();
         newClubs[uid] = club;
       });
       print(
@@ -190,14 +182,10 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
 
     if (event is _ClubEventLoadFromFirestore) {
       // Load the clubs first.
-      InitialSubscription clubInitialData =
+      Stream<Iterable<Club>> clubInitialData =
           coordinationBloc.databaseUpdateModel.getMainClubs(event.uid);
-      clubInitialData.startData.then((List<FirestoreWrappedData> data) {
-        _onClubsUpdated(data, []);
-      });
-      _clubChangeSub =
-          clubInitialData.stream.listen((FirestoreChangedData data) {
-        _onClubsUpdated(data.newList, data.removed);
+      _clubChangeSub = clubInitialData.listen((Iterable<Club> clubs) {
+        _onClubsUpdated(clubs);
       });
     }
 

@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
+import 'clubbloc.dart';
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
 import 'playerbloc.dart';
@@ -174,6 +175,7 @@ class TeamLoaded extends TeamState {
 class TeamBloc extends Bloc<TeamEvent, TeamState> {
   final CoordinationBloc coordinationBloc;
   final PlayerBloc playerBloc;
+  final ClubBloc clubBloc;
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<PlayerState> _playerSub;
@@ -185,7 +187,10 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
       {};
   TraceProxy _teamByPlayerTrace;
 
-  TeamBloc({@required this.coordinationBloc, @required this.playerBloc}) {
+  TeamBloc(
+      {@required this.coordinationBloc,
+      @required this.playerBloc,
+      @required this.clubBloc}) {
     _coordSub = coordinationBloc.state.listen((CoordinationState state) {
       if (state is CoordinationStateLoggedOut) {
         dispatch(_TeamLoggedOut());
@@ -226,7 +231,11 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     _teamByPlayerTrace?.incrementCounter('season');
 
     for (Team t in currentState.teamsByPlayer.values) {
-      if (!t.isAdmin()) {
+      Club club;
+      if (clubBloc.currentState.clubs.containsKey(t.clubUid)) {
+        club = clubBloc.currentState.clubs[t.clubUid];
+      }
+      if (!t.isAdmin(club)) {
         Iterable<String> playerSeasons = t.seasons.keys.where(
             (String seasonUid) => t.seasons[seasonUid].players
                 .any((SeasonPlayer p) => p.playerUid == playerUid));
@@ -249,8 +258,8 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         tBuilder = teams[teamUid].toBuilder();
       } else {
         // Get the data for the team itself.
-        Stream<TeamBuilder> tb =
-            coordinationBloc.databaseUpdateModel.getTeamDetails(tBuilder.uid);
+        Stream<TeamBuilder> tb = coordinationBloc.databaseUpdateModel
+            .getTeamDetails(teamUid: tBuilder.uid);
         tBuilder = await tb.first;
         _teammDetailsSubscription[teamUid] = tb.listen((TeamBuilder b) {
           dispatch(_TeamBuilderUpdate(teamUid: teamUid, teamBuilder: b));
@@ -391,7 +400,11 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
           team.opponents[key] = op;
         }
         Team realTeam = team.build();
-        if (realTeam.isAdmin()) {
+        Club club;
+        if (clubBloc.currentState.clubs.containsKey(realTeam.clubUid)) {
+          club = clubBloc.currentState.clubs[realTeam.clubUid];
+        }
+        if (realTeam.isAdmin(club)) {
           newAdminTeams[uid] = realTeam;
         } else {
           newTeams[uid] = realTeam;

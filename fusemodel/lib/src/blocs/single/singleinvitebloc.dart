@@ -298,12 +298,14 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       bool exists =
           await inviteBloc.databaseUpdateModel.playerExists(invite.playerUid);
       if (!exists) {
-        return SingleInviteSaveFailed(failedInvite: invite);
+        return SingleInviteSaveFailed(
+            failedInvite: invite,
+            error: ArgumentError("already added to player"));
       }
       // Yay!  We have a player.
-      PlayerUser playerUser = new PlayerUser(
-          userUid: inviteBloc.currentState.uid,
-          relationship: event.relationship);
+      PlayerUser playerUser = new PlayerUser((b) => b
+        ..userUid = inviteBloc.currentState.uid
+        ..relationship = event.relationship);
       await inviteBloc.databaseUpdateModel
           .addUserToPlayer(invite.playerUid, playerUser);
 
@@ -322,7 +324,6 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       //
       // Invite to league team
       //
-
       if (event.teamUid == SingleInviteBloc.createNew) {
         TeamBuilder team = new TeamBuilder();
         team.name = invite.leagueTeamName;
@@ -347,8 +348,9 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
           // Someone beat them to it!
           // TODO: Say someone beat them to it.
         } else {
-          leagueTeam.seasonUid = pregenSeason.documentID;
-          await leagueTeam.firebaseUpdate();
+          leagueTeam =
+              leagueTeam.rebuild((b) => b..seasonUid = pregenSeason.documentID);
+          await inviteBloc.databaseUpdateModel.updateLeagueTeam(leagueTeam);
           inviteBloc.coordinationBloc.databaseUpdateModel
               .addFirestoreTeam(team.build(), pregen);
           inviteBloc.coordinationBloc.databaseUpdateModel
@@ -416,20 +418,24 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       Season doc =
           await inviteBloc.databaseUpdateModel.getSeason(invite.seasonUid);
       if (doc == null) {
-        return SingleInviteSaveFailed(failedInvite: invite);
+        return SingleInviteSaveFailed(
+            failedInvite: invite,
+            error: ArgumentError("season already added to team"));
       }
       //invite.playerName.clear();
       for (String name in event.playerNameToUid.keys) {
         String playerUid;
         if (event.playerNameToUid[name].compareTo(SingleInviteBloc.createNew) ==
             0) {
-          Player player = new Player();
+          PlayerBuilder player = new PlayerBuilder();
           player.name = name;
-          player.users = new Map<String, PlayerUser>();
-          player.users[inviteBloc.currentState.uid] = new PlayerUser();
-          player.users[inviteBloc.currentState.uid].relationship =
-              event.relationship[name];
-          playerUid = await inviteBloc.databaseUpdateModel.createPlayer(player);
+          player.users[inviteBloc.coordinationBloc.authenticationBloc
+              .currentUser.uid] = new PlayerUser((b) => b
+            ..relationship = event.relationship[name]
+            ..userUid =
+                inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid);
+          playerUid =
+              await inviteBloc.databaseUpdateModel.createPlayer(player.build());
         } else {
           playerUid = event.playerNameToUid[name];
         }
@@ -580,8 +586,10 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
               inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid);
         yield SingleInviteSaving(invite: invite);
         try {
-          await inviteBloc.databaseUpdateModel
-              .inviteUserToPlayer(player, email: event.email);
+          await inviteBloc.databaseUpdateModel.inviteUserToPlayer(
+              playerUid: player.uid,
+              playerName: player.name,
+              email: event.email);
           yield SingleInviteLoaded(invite: invite);
         } catch (e) {
           yield SingleInviteSaveFailed(failedInvite: invite, error: e);

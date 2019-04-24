@@ -1,11 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/blocs.dart';
 
 class AddAdminScreen extends StatefulWidget {
   AddAdminScreen(this._teamUid);
@@ -41,16 +40,20 @@ class AddAdminScreenState extends State<AddAdminScreen> {
       _formKey.currentState.save();
       // Send the invite, cloud functions will handle the email
       // part of this.
-      Team team = UserDatabaseData.instance.teams[widget._teamUid];
       setState(() {
         _saving = true;
       });
-      await Future.forEach<String>(_emailNames, (String en) async {
+      InviteBloc bloc = BlocProvider.of<InviteBloc>(context);
+      TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+      for (String en in _emailNames) {
         print("Sending to $en");
         Analytics.analytics
-            .logShare(contentType: 'inviteAsAdmin', itemId: team.uid);
-        return team.inviteAsAdmin(en);
-      });
+            .logShare(contentType: 'inviteAsAdmin', itemId: widget._teamUid);
+        bloc.dispatch(InviteEventAddAsAdmin(
+            teamUid: widget._teamUid,
+            email: en,
+            teamName: teamBloc.currentState.getTeam(widget._teamUid).name));
+      }
       setState(() {
         _saving = false;
       });

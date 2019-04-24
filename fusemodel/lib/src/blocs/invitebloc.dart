@@ -77,6 +77,32 @@ class _InviteEventLoadFirestore extends InviteEvent {
 }
 
 ///
+/// Sends the invite off to invite world.
+///
+class InviteEventAddAsAdmin extends InviteEvent {
+  final String teamUid;
+  final String email;
+  final String teamName;
+
+  InviteEventAddAsAdmin(
+      {@required this.teamUid, @required this.email, @required this.teamName});
+}
+
+///
+/// Sends the invite off to invite world.
+///
+class InviteEventAddToPlayer extends InviteEvent {
+  final String playerUid;
+  final String email;
+  final String playerName;
+
+  InviteEventAddToPlayer(
+      {@required this.playerUid,
+      @required this.email,
+      @required this.playerName});
+}
+
+///
 /// Handles the work around the invites and invites system inside of
 /// the app.
 ///
@@ -87,7 +113,7 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
   final AnalyticsSubsystem analyticsSubsystem;
 
   StreamSubscription<CoordinationState> _coordSub;
-  StreamSubscription<FirestoreChangedData> _inviteChangeSub;
+  StreamSubscription<Iterable<Invite>> _inviteChangeSub;
 
   InviteBloc(
       {@required this.coordinationBloc,
@@ -126,18 +152,16 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
   @override
   InviteState get initialState => new InviteUninitialized();
 
-  void _onInviteUpdated(List<FirestoreWrappedData> query) {
+  void _onInviteUpdated(Iterable<Invite> invites) {
     Map<String, Invite> newInvites = new Map<String, Invite>();
 
     // Completely clear the invite table.
     persistentData.clearTable(PersistenData.invitesTable);
-    query.forEach((FirestoreWrappedData doc) {
-      String uid = doc.id;
-      Invite invite = InviteFactory.makeInviteFromJSON(uid, doc.data);
-      newInvites[uid] = invite;
+    for (Invite invite in invites) {
+      newInvites[invite.uid] = invite;
       persistentData.updateElement(
-          PersistenData.invitesTable, uid, invite.toJSON());
-    });
+          PersistenData.invitesTable, invite.uid, invite.toJSON());
+    }
     dispatch(
         _InviteEventNewDataLoaded(invites: newInvites, uid: currentState.uid));
   }
@@ -170,15 +194,11 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
 
     if (event is _InviteEventLoadFirestore) {
       print('getting invites');
-      InitialSubscription inviteInitialData = databaseUpdateModel
-          .getInvites(coordinationBloc.authenticationBloc.currentUser.email);
-      inviteInitialData.startData.then((List<FirestoreWrappedData> data) {
+      _inviteChangeSub = databaseUpdateModel
+          .getInvites(coordinationBloc.authenticationBloc.currentUser.email)
+          .listen((Iterable<Invite> invites) {
         coordinationBloc.loadingTrace?.incrementCounter("invite");
-        this._onInviteUpdated(data);
-      });
-      _inviteChangeSub =
-          inviteInitialData.stream.listen((FirestoreChangedData data) {
-        this._onInviteUpdated(data.newList);
+        this._onInviteUpdated(invites);
       });
       print(
           'End firebase invites ${coordinationBloc.start.difference(new DateTime.now())}');
@@ -196,6 +216,16 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
       yield InviteUninitialized();
       _inviteChangeSub?.cancel();
       _inviteChangeSub = null;
+    }
+
+    if (event is InviteEventAddAsAdmin) {
+      // Just do it and ignore the result.  It will cause the invite
+      // list to update if it happens.
+      databaseUpdateModel.inviteAdminToTeam(
+          teamUid: event.teamUid,
+          email: event.email,
+          teamName: event.teamName,
+          myUid: coordinationBloc.authenticationBloc.currentUser.uid);
     }
   }
 }

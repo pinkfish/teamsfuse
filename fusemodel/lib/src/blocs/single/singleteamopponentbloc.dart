@@ -1,44 +1,28 @@
-import 'package:equatable/equatable.dart';
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import 'teambloc.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'dart:async';
 
 abstract class SingleTeamOpponentState extends Equatable {
-  final String teamUid;
-  final String opponentUid;
   final Opponent opponent;
 
-  SingleTeamOpponentState(
-      {@required this.teamUid,
-      @required this.opponent,
-      @required this.opponentUid});
-}
-
-///
-/// Nothing happened for this team yet.
-///
-class SingleTeamOpponentUninitalized extends SingleTeamOpponentState {
-  SingleTeamOpponentUninitalized(
-      {@required String teamUid, @required String opponentUid})
-      : super(teamUid: teamUid, opponentUid: opponentUid, opponent: null);
+  SingleTeamOpponentState({@required this.opponent});
 }
 
 ///
 /// We have a team, default state.
 ///
 class SingleTeamOpponentLoaded extends SingleTeamOpponentState {
-  SingleTeamOpponentLoaded(
-      {@required String teamUid,
-      @required Opponent opponent,
-      @required String opponentUid})
-      : super(teamUid: teamUid, opponent: opponent, opponentUid: opponentUid);
+  SingleTeamOpponentLoaded({@required Opponent opponent})
+      : super(opponent: opponent);
 
   @override
   String toString() {
-    return 'SingleTeamOpponentLoaded{teamUid: $teamUid, opponentUid: $opponentUid}';
+    return 'SingleTeamOpponentLoaded{opponent: $opponent}';
   }
 }
 
@@ -46,15 +30,12 @@ class SingleTeamOpponentLoaded extends SingleTeamOpponentState {
 /// Saving operation in progress.
 ///
 class SingleTeamOpponentSaving extends SingleTeamOpponentState {
-  SingleTeamOpponentSaving(
-      {@required String teamUid,
-      @required Opponent opponent,
-      @required String opponentUid})
-      : super(teamUid: teamUid, opponent: opponent, opponentUid: opponentUid);
+  SingleTeamOpponentSaving({@required SingleTeamOpponentState state})
+      : super(opponent: state.opponent);
 
   @override
   String toString() {
-    return 'SingleTeamOpponentSaving{teamUid: $teamUid, opponentUid: $opponentUid}';
+    return 'SingleTeamOpponentSaving{opponent: $opponent}';
   }
 }
 
@@ -65,15 +46,12 @@ class SingleTeamOpponentSaveFailed extends SingleTeamOpponentState {
   final Error error;
 
   SingleTeamOpponentSaveFailed(
-      {@required String teamUid,
-      @required Opponent opponent,
-      @required String opponentUid,
-      this.error})
-      : super(teamUid: teamUid, opponent: opponent, opponentUid: opponentUid);
+      {@required SingleTeamOpponentState state, this.error})
+      : super(opponent: state.opponent);
 
   @override
   String toString() {
-    return 'SingleTeamOpponentSaveFailed{teamUid: $teamUid, opponentUid: $opponentUid}';
+    return 'SingleTeamOpponentSaveFailed{opponent: $opponent}';
   }
 }
 
@@ -81,15 +59,11 @@ class SingleTeamOpponentSaveFailed extends SingleTeamOpponentState {
 /// Team got deleted.
 ///
 class SingleTeamOpponentDeleted extends SingleTeamOpponentState {
-  SingleTeamOpponentDeleted(
-      {@required String teamUid,
-      @required Opponent opponent,
-      @required String opponentUid})
-      : super(teamUid: teamUid, opponent: opponent, opponentUid: opponentUid);
+  SingleTeamOpponentDeleted() : super(opponent: null);
 
   @override
   String toString() {
-    return 'SingleTeamDeleted{}';
+    return 'SingleTeamOpponentDeleted{}';
   }
 }
 
@@ -107,8 +81,8 @@ class SingleTeamOpponentUpdate extends SingleTeamOpponentEvent {
 ///
 /// Delete this team from the world.
 ///
-class SingleTeamOpponentDelete extends SingleTeamOpponentEvent {
-  SingleTeamOpponentDelete();
+class SingleTeamOpponentDeleteOpponent extends SingleTeamOpponentEvent {
+  SingleTeamOpponentDeleteOpponent();
 }
 
 class _SingleTeamNewTeamOpponent extends SingleTeamOpponentEvent {
@@ -158,46 +132,57 @@ class SingleTeamOpponentBloc
   }
 
   @override
-  SingleTeamOpponentState get initialState =>
-      SingleTeamOpponentUninitalized(teamUid: teamUid);
+  SingleTeamOpponentState get initialState {
+    Team t = teamBloc.currentState.getTeam(teamUid);
+    if (t != null && t.opponents.containsKey(opponentUid)) {
+      return SingleTeamOpponentLoaded(opponent: t.opponents[opponentUid]);
+    } else {
+      return SingleTeamOpponentDeleted();
+    }
+  }
 
   @override
   Stream<SingleTeamOpponentState> mapEventToState(
       SingleTeamOpponentEvent event) async* {
     if (event is _SingleTeamNewTeamOpponent) {
-      yield SingleTeamOpponentLoaded(
-          teamUid: teamUid,
-          opponent: event.newOpponent,
-          opponentUid: opponentUid);
+      yield SingleTeamOpponentLoaded(opponent: event.newOpponent);
     }
 
     // The team is deleted.
     if (event is _SingleTeamOpponentDeleted) {
-      yield SingleTeamOpponentDeleted(
-          teamUid: teamUid,
-          opponent: currentState.opponent,
-          opponentUid: opponentUid);
+      yield SingleTeamOpponentDeleted();
     }
 
     // Save the team.
     if (event is SingleTeamOpponentUpdate) {
-      yield SingleTeamOpponentSaving(
-          teamUid: currentState.teamUid,
-          opponent: currentState.opponent,
-          opponentUid: opponentUid);
+      yield SingleTeamOpponentSaving(state: currentState);
       try {
         await teamBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreOpponent(event.opponent.build());
-        yield SingleTeamOpponentLoaded(
-            teamUid: teamUid,
-            opponent: event.opponent.build(),
-            opponentUid: opponentUid);
+        yield SingleTeamOpponentLoaded(opponent: event.opponent.build());
       } catch (e) {
-        yield SingleTeamOpponentSaveFailed(
-            teamUid: currentState.teamUid,
-            opponent: currentState.opponent,
-            opponentUid: currentState.opponentUid,
-            error: e);
+        yield SingleTeamOpponentSaveFailed(state: currentState, error: e);
+      }
+    }
+
+    // Delete the opponent.
+    if (event is SingleTeamOpponentDeleteOpponent) {
+      try {
+        await teamBloc.coordinationBloc.databaseUpdateModel
+            .deleteFirestoreOpponent(currentState.opponent);
+        yield SingleTeamOpponentDeleted();
+      } catch (e) {
+        yield SingleTeamOpponentSaveFailed(state: currentState, error: e);
+      }
+    }
+
+    if (event is SingleTeamOpponentUpdate) {
+      try {
+        await teamBloc.coordinationBloc.databaseUpdateModel
+            .updateFirestoreOpponent(event.opponent.build());
+        yield SingleTeamOpponentLoaded(opponent: event.opponent.build());
+      } catch (e) {
+        yield SingleTeamOpponentSaveFailed(state: currentState, error: e);
       }
     }
   }

@@ -107,10 +107,6 @@ class AuthenticationBloc
 
   Future<AuthenticationState> _updateWithUser(UserData user) async {
     if (user.isEmailVerified) {
-      // Load stuff
-      await UserDatabaseData.load(
-          user.uid, user.email, userAuth.getProfile(user.uid));
-      // Finished loading.  Yay!
       analyticsSubsystem.setUserId(user.uid);
       if (analyticsSubsystem.debugMode) {
         analyticsSubsystem.setUserProperty(name: "developer", value: "true");
@@ -149,8 +145,6 @@ class AuthenticationBloc
     if (event is LoggedOut) {
       yield AuthenticationLoading();
       await userAuth.signOut();
-      // Unload stuff.
-      await UserDatabaseData.clear();
       // Finished logging out.
       yield AuthenticationLoggedOut();
     }

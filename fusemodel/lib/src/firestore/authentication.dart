@@ -96,13 +96,15 @@ class UserAuthImpl {
       return ref.setData(profile.toJSON()).then((void data) async {
         // With update uid.
         // Create a 'me' user.
-        Player player = new Player();
+        PlayerBuilder player = new PlayerBuilder();
         player.name = userData.profile.displayName;
-        PlayerUser playerUser = new PlayerUser();
+        PlayerUserBuilder playerUser = new PlayerUserBuilder();
         playerUser.userUid = user.uid;
         playerUser.relationship = Relationship.Me;
-        player.users[user.uid] = playerUser;
-        await player.updateFirestore();
+        player.users[user.uid] = playerUser.build();
+        wrapper
+            .collection(PLAYERS_COLLECTION)
+            .add(player.build().toJSON(includeUsers: true));
         await signIn(userData);
         return newData;
       });

@@ -1,8 +1,8 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 
+import '../club.dart';
 import '../common.dart';
-import '../userdatabasedata.dart';
 import 'opponent.dart';
 import 'season.dart';
 
@@ -139,27 +139,25 @@ abstract class Team implements Built<Team, TeamBuilder> {
   }
 
   /// Get the attendence tracking, potentially from the club.
-  bool get trackAttendence {
+  bool trackAttendence(Club club) {
     if (clubUid == null) {
       return trackAttendenceInternal;
     }
-    if (UserDatabaseData.instance.clubs.containsKey(clubUid)) {
-      if (UserDatabaseData.instance.clubs[clubUid].trackAttendence !=
-          Tristate.Unset) {
-        return UserDatabaseData.instance.clubs[clubUid].trackAttendence ==
-            Tristate.Yes;
+    if (club != null) {
+      if (club.trackAttendence != Tristate.Unset) {
+        return club.trackAttendence == Tristate.Yes;
       }
     }
     return trackAttendenceInternal;
   }
 
   /// Get the early arrive, using the club value if this is 0.
-  num get arriveEarly {
+  num arriveEarly(Club club) {
     if (publicOnly) {
       return 0;
     }
-    if (arriveEarlyInternal == 0 && clubUid != null) {
-      num ret = UserDatabaseData.instance.clubs[clubUid].arriveBeforeGame;
+    if (arriveEarlyInternal == 0 && club != null) {
+      num ret = club.arriveBeforeGame;
       if (ret != null) {
         return ret;
       }
@@ -180,14 +178,12 @@ abstract class Team implements Built<Team, TeamBuilder> {
   ///
   /// Check if the current user is an admin
   ///
-  bool isAdmin() {
+  bool isAdmin(Club club) {
     if (publicOnly) {
       return false;
     }
-    if (clubUid != null &&
-        UserDatabaseData.instance.clubs.containsKey(clubUid)) {
-      return isUserAdmin(userUid) ||
-          UserDatabaseData.instance.clubs[clubUid].isAdmin();
+    if (club != null) {
+      return isUserAdmin(userUid) || club.isUserAdmin(userUid);
     }
     return isUserAdmin(userUid);
   }

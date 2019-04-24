@@ -13,10 +13,40 @@ import 'internal/blocstoload.dart';
 ///
 class LeagueOrTournamentState extends Equatable {
   final Map<String, LeagueOrTournament> leagueOrTournaments;
+  final Map<String, Iterable<LeagueOrTournamentSeason>>
+      leagueOrTournamentSeasons;
+  final Map<String, Iterable<LeagueOrTournamentDivison>>
+      leagueOrTournamentDivisions;
+  final Map<String, Iterable<LeagueOrTournamentTeam>> leagueOrTournamentTeams;
   final bool onlySql;
 
   LeagueOrTournamentState(
-      {@required this.leagueOrTournaments, @required this.onlySql});
+      {@required this.leagueOrTournaments,
+      @required this.onlySql,
+      @required this.leagueOrTournamentSeasons,
+      @required this.leagueOrTournamentDivisions,
+      @required this.leagueOrTournamentTeams});
+
+  LeagueOrTournamentLoaded rebuild(
+      {Map<String, LeagueOrTournament> leagueOrTournamentsParam,
+      @required bool onlySqlParam,
+      Map<String, Iterable<LeagueOrTournamentSeason>>
+          leagueOrTournamentSeasonsParam,
+      Map<String, Iterable<LeagueOrTournamentDivison>>
+          leagueOrTournamentDivisionsParam,
+      Map<String, Iterable<LeagueOrTournamentTeam>>
+          leagueOrTournamentTeamsParam}) {
+    return LeagueOrTournamentLoaded(
+        onlySql: onlySqlParam ?? onlySql,
+        leagueOrTournaments:
+            leagueOrTournamentsParam ?? this.leagueOrTournaments,
+        leagueOrTournamentDivisions: leagueOrTournamentDivisionsParam ??
+            this.leagueOrTournamentDivisions,
+        leagueOrTournamentSeasons:
+            leagueOrTournamentSeasonsParam ?? this.leagueOrTournamentSeasons,
+        leagueOrTournamentTeams:
+            leagueOrTournamentTeamsParam ?? this.leagueOrTournamentTeams);
+  }
 }
 
 ///
@@ -24,7 +54,12 @@ class LeagueOrTournamentState extends Equatable {
 ///
 class LeagueOrTournamentUninitialized extends LeagueOrTournamentState {
   LeagueOrTournamentUninitialized()
-      : super(leagueOrTournaments: {}, onlySql: true);
+      : super(
+            leagueOrTournaments: {},
+            onlySql: true,
+            leagueOrTournamentDivisions: {},
+            leagueOrTournamentSeasons: {},
+            leagueOrTournamentTeams: {});
 
   @override
   String toString() {
@@ -38,8 +73,17 @@ class LeagueOrTournamentUninitialized extends LeagueOrTournamentState {
 class LeagueOrTournamentLoaded extends LeagueOrTournamentState {
   LeagueOrTournamentLoaded(
       {@required Map<String, LeagueOrTournament> leagueOrTournaments,
-      @required bool onlySql})
-      : super(leagueOrTournaments: leagueOrTournaments, onlySql: onlySql);
+      @required bool onlySql,
+      Map<String, Iterable<LeagueOrTournamentSeason>> leagueOrTournamentSeasons,
+      Map<String, Iterable<LeagueOrTournamentDivison>>
+          leagueOrTournamentDivisions,
+      Map<String, Iterable<LeagueOrTournamentTeam>> leagueOrTournamentTeams})
+      : super(
+            leagueOrTournaments: leagueOrTournaments,
+            onlySql: onlySql,
+            leagueOrTournamentTeams: leagueOrTournamentTeams,
+            leagueOrTournamentSeasons: leagueOrTournamentSeasons,
+            leagueOrTournamentDivisions: leagueOrTournamentDivisions);
 
   @override
   String toString() {
@@ -88,7 +132,7 @@ class LeagueOrTournamentBloc
   final CoordinationBloc coordinationBloc;
 
   StreamSubscription<CoordinationState> _coordSub;
-  StreamSubscription<FirestoreChangedData> _leagueOrTournamentSnapshot;
+  StreamSubscription<Iterable<LeagueOrTournament>> _leagueOrTournamentSnapshot;
 
   LeagueOrTournamentBloc({@required this.coordinationBloc}) {
     _coordSub = coordinationBloc.state.listen((CoordinationState state) {
@@ -125,19 +169,16 @@ class LeagueOrTournamentBloc
   @override
   LeagueOrTournamentState get initialState => LeagueOrTournamentUninitialized();
 
-  void _onLeagueOrTournamentsUpdated(
-      List<FirestoreWrappedData> newList, List<FirestoreWrappedData> removed) {
+  void _onLeagueOrTournamentsUpdated(Iterable<LeagueOrTournament> leagues) {
     Map<String, LeagueOrTournament> leagueOrTournsments;
     Set<String> toRemove = Set.from(currentState.leagueOrTournaments.keys);
-    for (FirestoreWrappedData data in newList) {
-      LeagueOrTournament league =
-          new LeagueOrTournament.fromJson(data.id, data.data);
-      leagueOrTournsments[data.id] = league;
+    for (LeagueOrTournament league in leagues) {
+      leagueOrTournsments[league.uid] = league;
       coordinationBloc.persistentData.updateElement(
           PersistenData.leagueOrTournamentTable,
           league.uid,
           league.toJson(includeMembers: true));
-      toRemove.remove(data.id);
+      toRemove.remove(league.uid);
     }
     for (String remove in toRemove) {
       coordinationBloc.persistentData
@@ -161,35 +202,34 @@ class LeagueOrTournamentBloc
           new Map<String, LeagueOrTournament>();
       leagueData.forEach((String uid, Map<String, dynamic> input) {
         coordinationBloc.sqlTrace?.incrementCounter("league");
-        LeagueOrTournament league = new LeagueOrTournament.fromJson(uid, input);
+        LeagueOrTournament league = LeagueOrTournament.fromJSON(
+                myUid: uid,
+                data: input,
+                userUid: coordinationBloc.authenticationBloc.currentUser.uid)
+            .build();
         newLeague[uid] = league;
       });
       print(
           'End LeagueOrTournament ${coordinationBloc.start.difference(new DateTime.now())} ${newLeague.length}');
       leagueTrace.stop();
-      yield LeagueOrTournamentLoaded(
-          leagueOrTournaments: newLeague, onlySql: true);
+      yield currentState.rebuild(
+          onlySqlParam: true, leagueOrTournamentsParam: newLeague);
       coordinationBloc.dispatch(CoordinationEventLoadedData(
           loaded: BlocsToLoad.LeagueOrTournament, sql: true));
     }
 
     if (event is _LeagueOrTournamentEventFirestore) {
-      InitialSubscription initialSubscription = coordinationBloc
-          .databaseUpdateModel
-          .getMainLeagueOrTournaments(event.uid);
-      initialSubscription.startData.then((List<FirestoreWrappedData> data) {
-        _onLeagueOrTournamentsUpdated(data, []);
-      });
-      _leagueOrTournamentSnapshot =
-          initialSubscription.stream.listen((FirestoreChangedData data) {
-        _onLeagueOrTournamentsUpdated(data.newList, data.removed);
-      });
+      _leagueOrTournamentSnapshot = coordinationBloc.databaseUpdateModel
+          .getMainLeagueOrTournaments(event.uid)
+          .listen((Iterable<LeagueOrTournament> leagues) =>
+              this._onLeagueOrTournamentsUpdated(leagues));
     }
 
     // New data from above.  Mark ourselves as done.
     if (event is _LeagueOrTournamentEventNewDataLoaded) {
-      yield LeagueOrTournamentLoaded(
-          leagueOrTournaments: event.leagueOrTournament, onlySql: false);
+      yield currentState.rebuild(
+          leagueOrTournamentsParam: event.leagueOrTournament,
+          onlySqlParam: false);
       coordinationBloc.dispatch(CoordinationEventLoadedData(
           loaded: BlocsToLoad.LeagueOrTournament, sql: false));
     }

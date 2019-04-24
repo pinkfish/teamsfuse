@@ -5,8 +5,8 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import 'internal/blocstoload.dart';
 import 'coordinationbloc.dart';
+import 'internal/blocstoload.dart';
 
 class PlayerEvent extends Equatable {}
 
@@ -57,6 +57,9 @@ class PlayerState extends Equatable {
 
   PlayerState(
       {@required this.players, @required this.uid, @required this.onlySql});
+
+  Player get me => players.values.firstWhere(
+      (Player play) => play.users[uid].relationship == Relationship.Me);
 }
 
 ///
@@ -111,7 +114,7 @@ class PlayerLoaded extends PlayerState {
 class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   final CoordinationBloc coordinationBloc;
 
-  StreamSubscription<FirestoreChangedData> _playerSnapshot;
+  StreamSubscription<Iterable<Player>> _playerSnapshot;
   bool _createdMePlayer = false;
   StreamSubscription<CoordinationState> _authSub;
 
@@ -148,41 +151,24 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     _authSub?.cancel();
   }
 
-  void _onPlayerUpdated(List<FirestoreWrappedData> query) {
+  void _onPlayerUpdated(Iterable<Player> data) {
     Set<String> toDeletePlayers = new Set<String>();
     bool foundMe = false;
     Map<String, Player> players =
         Map<String, Player>.from(currentState.players);
 
     toDeletePlayers.addAll(players.keys);
-    for (FirestoreWrappedData doc in query) {
-      Player player;
-      if (players.containsKey(doc.id)) {
-        player = players[doc.id];
-        player.fromJSON(doc.id, doc.data);
-        if (player.users[currentState.uid].relationship == Relationship.Me) {
-          if (foundMe) {
-            if (player.users.length <= 1) {
-              coordinationBloc.databaseUpdateModel.deletePlayer(player.uid);
-            }
+    for (Player player in data) {
+      if (player.users[currentState.uid].relationship == Relationship.Me) {
+        if (foundMe) {
+          if (player.users.length <= 1) {
+            coordinationBloc.databaseUpdateModel.deletePlayer(player.uid);
           }
-          foundMe = true;
         }
-      } else {
-        player = new Player();
-        // Add in snapshots to find the teams associated with the player.
-        player.fromJSON(doc.id, doc.data);
-        players[player.uid] = player;
-        if (player.users[currentState.uid].relationship == Relationship.Me) {
-          if (foundMe) {
-            if (player.users.length <= 1) {
-              coordinationBloc.databaseUpdateModel.deletePlayer(player.uid);
-            }
-          }
-          foundMe = true;
-        }
+        foundMe = true;
       }
-      toDeletePlayers.remove(doc.id);
+      players[player.uid] = player;
+      toDeletePlayers.remove(player.uid);
       coordinationBloc.persistentData.updateElement(PersistenData.playersTable,
           player.uid, player.toJSON(includeUsers: true));
     }
@@ -191,22 +177,22 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       coordinationBloc.persistentData
           .deleteElement(PersistenData.playersTable, id);
     });
-    if (query.length == 0) {
+    if (data.length == 0) {
       if (!foundMe && !_createdMePlayer) {
         print('Docs are empty');
-        Player player = new Player();
+        PlayerUser playerUser = new PlayerUser((b) => b
+          ..userUid = coordinationBloc.authenticationBloc.currentUser.uid
+          ..relationship = Relationship.Me);
+        PlayerBuilder player = PlayerBuilder();
+        player.users[playerUser.userUid] = playerUser;
         player.name = coordinationBloc
                 .authenticationBloc.currentUser.profile?.displayName ??
             "Frog";
-
-        PlayerUser playerUser = new PlayerUser();
-        playerUser.userUid =
-            coordinationBloc.authenticationBloc.currentUser.uid;
-        playerUser.relationship = Relationship.Me;
-        player.users[playerUser.userUid] = playerUser;
         print('Updating firestore');
         _createdMePlayer = true;
-        player.updateFirestore(includeUsers: true).then((void val) {
+        coordinationBloc.databaseUpdateModel
+            .updateFirestorePlayer(player.build(), true)
+            .then((void val) {
           print('Done!');
         }).catchError((dynamic e, StackTrace trace) {
           print('Setting up snap with players $trace');
@@ -223,7 +209,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   @override
   Stream<PlayerState> mapEventToState(PlayerEvent event) async* {
     if (event is _PlayerUserLoaded) {
-      yield PlayerLoading(players: currentState.players, uid: event.uid);
+      yield PlayerLoading(
+          players: currentState.players, uid: event.uid, onlySql: true);
       TraceProxy playerTrace =
           coordinationBloc.analyticsSubsystem.newTrace("playerData");
       playerTrace.start();
@@ -234,8 +221,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       data.forEach((String uid, Map<String, dynamic> input) {
         coordinationBloc.sqlTrace?.incrementCounter("player");
         playerTrace.incrementCounter("player");
-        Player player = new Player();
-        player.fromJSON(uid, input);
+        Player player = Player.fromJSON(uid, input).build();
         newPlayers[uid] = player;
       });
       print(
@@ -248,23 +234,20 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
     if (event is _PlayerFirestore) {
       // Load from firestore.
-      InitialSubscription playersInitialData =
-          coordinationBloc.databaseUpdateModel.getPlayers(event.uid);
-      playersInitialData.startData.then((List<FirestoreWrappedData> data) {
-        coordinationBloc.loadingTrace?.incrementCounter("players");
-        this._onPlayerUpdated(data);
-      });
-      _playerSnapshot =
-          playersInitialData.stream.listen((FirestoreChangedData data) {
-        this._onPlayerUpdated(data.newList);
+      _playerSnapshot = coordinationBloc.databaseUpdateModel
+          .getPlayers(event.uid)
+          .listen((Iterable<Player> players) {
+        this._onPlayerUpdated(players);
       });
     }
+
     // Unload everything.
     if (event is _PlayerLoggedOut) {
       yield PlayerUninitialized();
       _playerSnapshot?.cancel();
       _playerSnapshot = null;
     }
+
     // Update the data from an event.
     if (event is _PlayerNewPlayersLoaded) {
       yield PlayerLoaded(

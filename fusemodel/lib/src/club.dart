@@ -1,12 +1,10 @@
-import 'dart:async';
-import 'dart:io';
-
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'common.dart';
-import 'databaseupdatemodel.dart';
-import 'invite.dart';
-import 'userdatabasedata.dart';
+
+part 'club.g.dart';
 
 ///
 /// Keeps track of the club details.  The tracks a list of teams,
@@ -15,95 +13,68 @@ import 'userdatabasedata.dart';
 /// member if you are a member of a subteam or if you are in a member in
 /// the club itself.
 ///
-class Club {
-  String uid;
-  String name;
-  String photoUrl;
+abstract class Club implements Built<Club, ClubBuilder> {
+  String get uid;
+  String get name;
+  String get photoUrl;
 
   /// Some text describing what the club is about.
-  String about;
+  String get about;
 
   // The sport associated with this club.
-  Sport sport;
+  Sport get sport;
 
   /// This pulls through to all the teams in a club as a default and overrides
   /// the team specific settings, if this is not null.
-  Tristate trackAttendence = Tristate.Unset;
+  Tristate get trackAttendence;
 
   /// This is the default to arrive before a game,  It overrides the defaults
   /// on the team if this is not null.
-  int arriveBeforeGame;
+  int get arriveBeforeGame;
 
   /// List of admin user ids. This is all user ids (not players)
-  List<String> adminsUids = [];
+  BuiltList<String> get adminsUids;
 
   /// List of member user ids.  This is all user ids (not players)
-  List<String> members = [];
+  BuiltList<String> get members;
 
-  // Cached list of teams.
-  Iterable<Team> _teams;
+  String get userUid;
 
-  String _userUid;
-
-  TeamSubscription _teamSub;
-  Stream<Iterable<Team>> _teamStream;
-  StreamController<Iterable<Team>> _teamController =
-      new StreamController<Iterable<Team>>();
-
-  Club(
-      {this.uid,
-      this.name,
-      this.photoUrl,
-      this.about,
-      this.sport = Sport.Other,
-      this.trackAttendence = Tristate.Unset,
-      List<String> adminUids,
-      List<String> members,
-      this.arriveBeforeGame = 0})
-      : adminsUids = adminUids ?? [],
-        members = members ?? [];
-
-  Club.copy(Club club) {
-    uid = club.uid;
-    name = club.name;
-    sport = club.sport;
-    photoUrl = club.photoUrl;
-    trackAttendence = club.trackAttendence;
-    adminsUids = club.adminsUids;
-    members = club.members;
-    about = club.about;
-    arriveBeforeGame = club.arriveBeforeGame;
-  }
+  Club._();
+  factory Club([updates(ClubBuilder b)]) = _$Club;
 
   ///
   /// Load this from the wire format.
   ///
-  Club.fromJson(String userUid, String myUid, Map<String, dynamic> data) {
-    _userUid = userUid;
-    uid = myUid;
-    name = data[NAME];
-    photoUrl = data[PHOTOURL];
+  static ClubBuilder fromJSON(
+      String userUid, String myUid, Map<String, dynamic> data) {
+    ClubBuilder builder = ClubBuilder();
+    builder
+      ..userUid = userUid
+      ..uid = myUid
+      ..name = data[NAME]
+      ..photoUrl = data[PHOTOURL]
+      ..about = data[_ABOUT]
+      ..arriveBeforeGame = data[_ARRIVEBEFOREGAME] ?? 0
+      ..trackAttendence = Tristate.values.firstWhere(
+          (Tristate state) => state.toString() == data[_TRACKATTENDENCE],
+          orElse: () => Tristate.Unset);
     if (data.containsKey(_SPORT)) {
-      sport =
+      builder.sport =
           Sport.values.firstWhere((Sport s) => s.toString() == data[_SPORT]);
     }
-    arriveBeforeGame = data[_ARRIVEBEFOREGAME] ?? 0;
-    adminsUids = [];
-    members = [];
-    about = data[_ABOUT];
-    print(data[MEMBERS]);
+    ;
     for (String adminUid in data[MEMBERS].keys) {
       Map<dynamic, dynamic> adminData = data[MEMBERS][adminUid];
       if (adminData[ADDED]) {
         if (adminData[ADMIN]) {
-          adminsUids.add(adminUid.toString());
+          builder.adminsUids.add(adminUid.toString());
         } else {
-          members.add(adminUid.toString());
+          builder.members.add(adminUid.toString());
         }
       }
     }
-    trackAttendence = Tristate.values.firstWhere(
-        (Tristate state) => state.toString() == data[_TRACKATTENDENCE]);
+    return builder;
   }
 
   static const String _TRACKATTENDENCE = "trackAttendence";
@@ -143,7 +114,7 @@ class Club {
 
   /// Is the current user a member (or admin)?
   bool isMember() {
-    return isUserMember(_userUid);
+    return isUserMember(userUid);
   }
 
   bool isUserAdmin(String myUid) {
@@ -152,7 +123,7 @@ class Club {
 
   /// Is the current user an admin?
   bool isAdmin() {
-    return isUserAdmin(_userUid);
+    return isUserAdmin(userUid);
   }
 
   /*
@@ -170,7 +141,7 @@ class Club {
     }
     return _teamStream;
   }
-  */
+
 
   ///
   /// Updates the club from another club.
@@ -229,4 +200,5 @@ class Club {
   String toString() {
     return 'Club{uid: $uid, name: $name, photoUrl: $photoUrl, trackAttendence: $trackAttendence, arriveBeforeGame: $arriveBeforeGame, adminsUids: $adminsUids, members: $members}';
   }
+  */
 }

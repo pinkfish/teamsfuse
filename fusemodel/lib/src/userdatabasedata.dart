@@ -1,18 +1,5 @@
-import 'package:fusemodel/fusemodel.dart';
-import 'dart:async';
-import 'persistendata.dart';
-import 'loggingdata.dart';
-import 'analytics.dart';
-import 'fusederrordetails.dart';
-import 'club.dart';
-import 'team.dart';
-import 'invite.dart';
-import 'game.dart';
-import 'firestore/authentication.dart';
-import 'firestore/databaseupdatemodelimpl.dart';
-import 'firestore/firestore.dart';
-
-class UserDatabaseData {
+/*
+class UserDatabaseDataFrog {
   static const num MAX_MESSAGES = 20;
 
   // User id for us!
@@ -624,7 +611,7 @@ class UserDatabaseData {
       List<FirestoreWrappedData> newList, List<FirestoreWrappedData> removed) {
     for (FirestoreWrappedData data in newList) {
       LeagueOrTournament league =
-          new LeagueOrTournament.fromJson(data.id, data.data);
+          new LeagueOrTournament.fromJSON(data.id, data.data);
       if (_leagueOrTournaments.containsKey(data.id)) {
         _leagueOrTournaments[data.id].updateFrom(league);
       } else {
@@ -699,7 +686,7 @@ class UserDatabaseData {
 
   void onTournamentOrLeagueUpdated(FirestoreWrappedData data) {
     LeagueOrTournament leagueOrTournament =
-        new LeagueOrTournament.fromJson(data.id, data.data);
+        new LeagueOrTournament.fromJSON(data.id, data.data);
     if (_leagueOrTournaments.containsKey(data.id)) {
       _leagueOrTournaments[data.id].updateFrom(leagueOrTournament);
     } else {
@@ -851,7 +838,7 @@ class UserDatabaseData {
           new Map<String, LeagueOrTournament>();
       leagueData.forEach((String uid, Map<String, dynamic> input) {
         sqlTrace.incrementCounter("league");
-        LeagueOrTournament league = new LeagueOrTournament.fromJson(uid, input);
+        LeagueOrTournament league = new LeagueOrTournament.fromJSON(uid, input);
         newLeague[uid] = league;
       });
       _leagueOrTournaments = newLeague;
@@ -1100,3 +1087,4 @@ class UserDatabaseData {
     }
   }
 }
+*/

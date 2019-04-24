@@ -1,7 +1,6 @@
-import 'common.dart';
 import 'package:timezone/timezone.dart';
-import 'userdatabasedata.dart';
-import 'dart:async';
+
+import 'common.dart';
 
 enum MessageState { Read, Unread, Archived }
 
@@ -44,6 +43,7 @@ class MessageRecipient {
         .firstWhere((MessageState e) => e.toString() == data[STATE]);
   }
 
+  /*
   Future<void> updateState(MessageState state) {
     return UserDatabaseData.instance.updateModel.updateMessageRecipientState(this, state);
   }
@@ -51,6 +51,7 @@ class MessageRecipient {
   Future<void> firestoreDelete() {
     return UserDatabaseData.instance.updateModel.deleteRecipient(this);
   }
+  */
 }
 
 class Message {
@@ -135,7 +136,7 @@ class Message {
       });
     }
   }
-
+/*
   Future<void> updateFirestore() {
     return UserDatabaseData.instance.updateModel.updateFirestoreMessage(this);
   }
@@ -143,4 +144,5 @@ class Message {
   Future<String> loadMessage(Message mess) {
     return UserDatabaseData.instance.updateModel.loadMessage(mess);
   }
+  */
 }

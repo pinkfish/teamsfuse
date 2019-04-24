@@ -6,8 +6,8 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
-import 'teambloc.dart';
 import 'internal/blocstoload.dart';
+import 'teambloc.dart';
 
 ///
 /// Basic state for all the data in this system.
@@ -151,7 +151,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       if (!_gameSubscriptions.containsKey(teamUid)) {
         String myUid = teamUid;
         _gameSubscriptions[teamUid] = coordinationBloc.databaseUpdateModel
-            .getBasicGames(_start, _end, teamUid)
+            .getBasicGames(start: _start, end: _end, teamUid: teamUid)
             .listen((GameSnapshotEvent gse) {
           if (gse.type == GameSnapshotEventType.GameList) {
             dispatch(
