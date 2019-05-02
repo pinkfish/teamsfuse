@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import 'leagueortournamentbloc.dart';
+import '../leagueortournamentbloc.dart';
 
 ///
 /// Basic state for all the data in this system.

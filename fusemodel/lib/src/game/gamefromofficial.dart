@@ -1,9 +1,10 @@
-import 'gamesharedata.dart';
-import 'gameresult.dart';
-import 'gameperiod.dart';
 import 'gameofficialresults.dart';
+import 'gameperiod.dart';
+import 'gameresult.dart';
 import 'gameresultshareddetails.dart';
 import 'gamescore.dart';
+import 'gamesharedata.dart';
+import 'package:built_collection/built_collection.dart';
 
 ///
 /// This class converts from the offical results on a game
@@ -75,7 +76,7 @@ class GameFromOfficial extends GameResultSharedDetails {
   }
 
   static GameResultPerPeriod _swapResult(
-      Map<GamePeriod, GameResultPerPeriod> results,
+      BuiltMap<GamePeriod, GameResultPerPeriod> results,
       GamePeriod period,
       bool isHomeGame) {
     GameResultPerPeriod scores;
@@ -86,10 +87,13 @@ class GameFromOfficial extends GameResultSharedDetails {
     if (isHomeGame) {
       return scores;
     }
+    GameScoreBuilder scoreBuilder = GameScoreBuilder()
+      ..ptsAgainst = scores.score.ptsFor
+      ..ptsFor = scores.score.ptsAgainst;
     return GameResultPerPeriod(
-      score: GameScore(
-          ptsAgainst: scores.score.ptsFor, ptsFor: scores.score.ptsAgainst),
-      period: scores.period,
+      (b) => b
+        ..score = scoreBuilder
+        ..period = scores.period,
     );
   }
 

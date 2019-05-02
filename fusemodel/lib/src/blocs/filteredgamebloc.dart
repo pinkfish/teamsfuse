@@ -157,11 +157,15 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
               _newerGamesByTeam[myUid] = gse.newGames;
               dispatch(_FilteredGameEventUpdatedStuff());
             } else {
+              List<Game> updateGames = _newerGamesByTeam[myUid].toList();
               for (Game g in _newerGamesByTeam[myUid]) {
                 if (g.uid == gse.gameUid) {
-                  g.sharedData = gse.sharedGame;
+                  updateGames.remove(g);
+                  updateGames.add(g.rebuild(
+                      (b) => b..sharedData = gse.sharedGame.toBuilder()));
                 }
               }
+              _newerGamesByTeam[myUid] = updateGames;
               dispatch(_FilteredGameEventUpdatedStuff());
             }
           });

@@ -220,7 +220,7 @@ class FilterDetails {
 ///
 abstract class DatabaseUpdateModel {
   // Stuff for game updates.
-  Future<void> updateFirestoreGame(Game game, bool allTeams);
+  Future<Game> updateFirestoreGame(Game game, bool allTeams);
   Future<String> updateFirestoreSharedGame(GameSharedData game);
   Future<void> deleteFirestoreGame(Game game);
   Future<void> deleteFirestoreSharedGame(GameSharedData game);
@@ -229,7 +229,7 @@ abstract class DatabaseUpdateModel {
   Future<void> updateFirestoreGameResult(Game game, GameResultDetails result);
   Future<void> updateFirestoreOfficalGameResult(
       GameSharedData game, GameOfficialResults result);
-  GameLogReturnData readGameLogs(Game game);
+  Stream<Iterable<GameLog>> readGameLogs(Game game);
   Future<String> addFirestoreGameLog(Game game, GameLog log);
   Stream<GameSharedData> getSharedGame(String sharedGameUid);
   Future<Game> getGame(String gameUid);
@@ -243,7 +243,8 @@ abstract class DatabaseUpdateModel {
   Future<void> deleteRecipient(MessageRecipient rec);
 
   // Message for firestore.
-  Future<void> updateFirestoreMessage(Message mess);
+  Future<Message> updateFirestoreMessage(MessageBuilder mess);
+  Future<void> updateFirestoreMessageBody({String messageUid, String body});
   Future<String> loadMessage(Message mess);
   Future<Message> getMessage(String messageId);
 
@@ -280,7 +281,7 @@ abstract class DatabaseUpdateModel {
   Future<Uri> updatePlayerImage(Player player, File imgFile);
   Stream<Iterable<Season>> getPlayerSeasons(String playerUid);
   // Send an invite to a user for this season and team.
-  Future<void> inviteUserToPlayer(
+  Future<String> inviteUserToPlayer(
       {@required String playerUid,
       @required String playerName,
       @required String email,
@@ -307,7 +308,7 @@ abstract class DatabaseUpdateModel {
       @required String teamUid});
   Stream<GameSnapshotEvent> getSeasonGames(Season season);
   // Send an invite to a user for this season and team.
-  Future<void> inviteUserToSeason(
+  Future<String> inviteUserToSeason(
       {@required String seasonUid,
       @required String userId,
       @required String playername,
@@ -362,7 +363,7 @@ abstract class DatabaseUpdateModel {
   Future<void> updateLeagueTeam(LeagueOrTournamentTeam team);
   Future<void> updateLeagueTeamRecord(
       LeagueOrTournamentTeam team, String season, WinRecord record);
-  Future<void> inviteUserToLeagueTeam(
+  Future<String> inviteUserToLeagueTeam(
       {String userUid,
       LeagueOrTournament league,
       LeagueOrTournamentSeason season,

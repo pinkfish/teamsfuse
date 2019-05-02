@@ -214,8 +214,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   @override
-  Stream<LoginState> mapEventToState(
-     LoginEvent event) async* {
+  Stream<LoginState> mapEventToState(LoginEvent event) async* {
     if (event is LoginEventReset) {
       yield LoginInitial();
     }
@@ -256,10 +255,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       LoginEventSignupUser signup = event;
       UserData user =
           new UserData(email: signup.email, password: signup.password);
-      FusedUserProfile profile = new FusedUserProfile(null,
-          displayName: signup.displayName,
-          phoneNumber: signup.phoneNumber,
-          email: signup.email);
+      FusedUserProfile profile = new FusedUserProfile((b) => b
+        ..displayName = signup.displayName
+        ..phoneNumber = signup.phoneNumber
+        ..email = signup.email
+        ..emailOnUpdates = true
+        ..emailUpcomingGame = true
+        ..notifyOnlyForGames = true);
       UserData data = await userAuth.createUser(user, profile);
       if (data == null) {
         yield LoginSignupFailed(userData: user, profile: profile);

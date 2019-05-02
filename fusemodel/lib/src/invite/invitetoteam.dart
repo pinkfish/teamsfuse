@@ -19,6 +19,8 @@ abstract class InviteToTeam
   RoleInTeam get role;
   BuiltList<String> get playerName;
 
+  InviteType getType() => InviteType.Team;
+
   factory InviteToTeam([void Function(InviteToTeamBuilder) updates]) =
       _$InviteToTeam;
   InviteToTeam._();

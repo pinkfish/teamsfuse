@@ -23,6 +23,18 @@ class GameState extends Equatable {
       @required this.onlySql,
       @required this.start,
       @required this.end});
+
+  ///
+  /// Finds the game in the currently loaded set of games.
+  ///
+  Game getGame(String uid) {
+    for (Map<String, Game> games in gamesByTeam.values) {
+      if (games.containsKey(uid)) {
+        return games[uid];
+      }
+    }
+    return null;
+  }
 }
 
 ///
@@ -194,11 +206,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
                 .persistentData
                 .getElement(PersistenData.sharedGameTable, sharedDataUid);
             sharedData =
-                new GameSharedData.fromJSON(sharedDataUid, sharedDataStuff);
+                GameSharedData.fromJSON(sharedDataUid, sharedDataStuff).build();
           } else {
-            sharedData = new GameSharedData.fromJSON(sharedDataUid, input);
+            sharedData = GameSharedData.fromJSON(sharedDataUid, input).build();
           }
-          Game game = new Game.fromJSON(teamUid, uid, input, sharedData);
+          Game game = Game.fromJSON(teamUid, uid, input, sharedData).build();
           teamGames[uid] = game;
         }
         newGames[teamUid] = teamGames;
@@ -237,13 +249,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
     // New shared game data.
     if (event is _GameEventSharedDataUpdated) {
-      Game g =
-          new Game.copy(currentState.gamesByTeam[event.teamUid][event.gameUid]);
       Map<String, Map<String, Game>> allGames =
           Map.from(currentState.gamesByTeam);
       allGames[event.teamUid] = Map.from(allGames[event.teamUid]);
-      g.sharedData = event.sharedData;
-      allGames[event.teamUid][event.gameUid] = g;
+      Game g = allGames[event.teamUid][event.gameUid];
+      allGames[event.teamUid][event.gameUid] =
+          g.rebuild((b) => b..sharedData = event.sharedData.toBuilder());
       yield GameLoaded(
           gamesByTeam: allGames,
           onlySql: currentState.onlySql,

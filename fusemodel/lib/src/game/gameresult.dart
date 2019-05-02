@@ -1,25 +1,31 @@
-import 'gameperiod.dart';
-import 'gamescore.dart';
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
 import 'package:collection/collection.dart';
+
+import 'gameperiod.dart';
 import 'gameresultshareddetails.dart';
+import 'gamescore.dart';
+
+part 'gameresult.g.dart';
 
 enum GameResult { Win, Loss, Tie, Unknown }
 enum GameInProgress { NotStarted, InProgress, Final }
 enum GameDivisionsType { Halves, Quarters, Thirds }
 
-class GameResultPerPeriod {
-  GameResultPerPeriod({this.period, this.score});
-  GameResultPerPeriod.copy(GameResultPerPeriod res) {
-    period = res.period;
-    score = new GameScore(
-        ptsFor: res.score.ptsFor, ptsAgainst: res.score.ptsAgainst);
-  }
-  GamePeriod period;
-  GameScore score = new GameScore();
+abstract class GameResultPerPeriod
+    implements Built<GameResultPerPeriod, GameResultPerPeriodBuilder> {
+  GamePeriod get period;
+  GameScore get score;
 
-  GameResultPerPeriod.fromJSON(GamePeriod period, Map<dynamic, dynamic> data) {
-    this.period = period;
-    score = new GameScore.fromJSON(data);
+  GameResultPerPeriod._();
+  factory GameResultPerPeriod([updates(GameResultPerPeriodBuilder b)]) =
+      _$GameResultPerPeriod;
+
+  static GameResultPerPeriodBuilder fromJSON(
+      GamePeriod period, Map<dynamic, dynamic> data) {
+    return GameResultPerPeriodBuilder()
+      ..period = period
+      ..score = GameScore.fromJSON(data);
   }
 
   Map<String, dynamic> toJSON() {
@@ -27,43 +33,24 @@ class GameResultPerPeriod {
     score.toJSON(ret);
     return ret;
   }
-
-  String toString() {
-    return "GameResultPerPeriod[ $period, $score]";
-  }
 }
 
-class GameResultDetails extends GameResultSharedDetails {
-  CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> scores =
-      new CanonicalizedMap((GamePeriod p) => p.toIndex());
-  GameResult result;
-  GameInProgress inProgress;
-  GamePeriod currentPeriod; // Null until the game started.
-  GameDivisionsType divisions = GameDivisionsType.Halves;
-  GamePeriodTime time = new GamePeriodTime();
+abstract class GameResultDetails
+    with GameResultSharedDetails
+    implements Built<GameResultDetails, GameResultDetailsBuilder> {
+  BuiltMap<GamePeriod, GameResultPerPeriod> get scores;
 
-  GameResultDetails() {
-    result = GameResult.Unknown;
-    inProgress = GameInProgress.NotStarted;
-    GamePeriod per = new GamePeriod(GamePeriodType.Regulation);
-    scores[per] = new GameResultPerPeriod(
-        period: per, score: new GameScore(ptsAgainst: 0, ptsFor: 0));
-  }
+  //CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> get scores =
+  //    new CanonicalizedMap((GamePeriod p) => p.toIndex());
+  GameResult get result;
+  GameInProgress get inProgress;
+  GamePeriod get currentPeriod; // Null until the game started.
+  GameDivisionsType get divisions; // = GameDivisionsType.Halves;
+  GamePeriodTime get time;
 
-  GameResultDetails.copy(GameResultDetails copy) {
-    copy.scores.values.forEach((GameResultPerPeriod per) {
-      this.scores[new GamePeriod.copy(per.period)] =
-          new GameResultPerPeriod.copy(per);
-    });
-    result = copy.result;
-    inProgress = copy.inProgress;
-    divisions = copy.divisions;
-    if (divisions == null) {
-      divisions = GameDivisionsType.Halves;
-    }
-    currentPeriod = copy.currentPeriod;
-    time = new GamePeriodTime.copy(copy.time);
-  }
+  GameResultDetails._();
+  factory GameResultDetails([updates(GameResultDetailsBuilder b)]) =
+      _$GameResultDetails;
 
   static const String _SCORES = 'scores';
   static const String _RESULT = 'result';
@@ -72,7 +59,8 @@ class GameResultDetails extends GameResultSharedDetails {
   static const String _DIVISIONS = 'divisions';
   static const String _TIME_DETAILS = 'timeDetails';
 
-  void fromJSON(Map<dynamic, dynamic> data) {
+  static GameResultDetailsBuilder fromJSON(Map<dynamic, dynamic> data) {
+    GameResultDetailsBuilder builder = GameResultDetailsBuilder();
     if (data.containsKey(_SCORES)) {
       Map<dynamic, dynamic> scoreData = data[_SCORES];
       CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> newResults =
@@ -80,40 +68,42 @@ class GameResultDetails extends GameResultSharedDetails {
       scoreData.forEach((dynamic periodStd, dynamic data) {
         GamePeriod period = GamePeriod.fromIndex(periodStd);
         GameResultPerPeriod newResult =
-            new GameResultPerPeriod.fromJSON(period, data);
-
-        newResults[period] = newResult;
+            GameResultPerPeriod.fromJSON(period, data).build();
+        builder.scores[period] = newResult;
+        //newResults[period] = newResult;
       });
-      scores = newResults;
+      //scores = newResults;
     }
     if (data[_INPROGRESS] == null) {
-      inProgress = GameInProgress.NotStarted;
+      builder.inProgress = GameInProgress.NotStarted;
     } else {
       String str = data[_INPROGRESS];
       if (!str.startsWith('GameInProgress')) {
-        inProgress = GameInProgress.NotStarted;
+        builder.inProgress = GameInProgress.NotStarted;
       } else {
-        inProgress = GameInProgress.values
+        builder.inProgress = GameInProgress.values
             .firstWhere((e) => e.toString() == data[_INPROGRESS]);
       }
     }
-    result = GameResult.values.firstWhere((e) => e.toString() == data[_RESULT],
+    builder.result = GameResult.values.firstWhere(
+        (e) => e.toString() == data[_RESULT],
         orElse: () => GameResult.Unknown);
-    if (result == null) {
-      result = GameResult.Unknown;
+    if (builder.result == null) {
+      builder.result = GameResult.Unknown;
     }
     if (data[_PERIOD] is String) {
-      currentPeriod = GamePeriod.fromIndex(data[_PERIOD]);
+      builder.currentPeriod = GamePeriod.fromIndex(data[_PERIOD]);
     }
     if (data.containsKey(_DIVISIONS) && data[_DIVISIONS] != null) {
-      divisions = GameDivisionsType.values
+      builder.divisions = GameDivisionsType.values
           .firstWhere((e) => e.toString() == data[_DIVISIONS]);
     }
     if (data.containsKey(_TIME_DETAILS)) {
-      time.fromJSON(data[_TIME_DETAILS]);
+      builder.time.fromJSON(data[_TIME_DETAILS]);
     } else {
-      time.fromJSON({});
+      builder.time.fromJSON({});
     }
+    return builder;
   }
 
   Map<String, dynamic> toJSON() {

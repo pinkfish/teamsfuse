@@ -1,6 +1,11 @@
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
+import 'package:collection/collection.dart';
+
 import 'gameperiod.dart';
 import 'gameresult.dart';
-import 'package:collection/collection.dart';
+
+part 'gameofficialresults.g.dart';
 
 enum OfficialResult { HomeTeamWon, AwayTeamWon, Tie, NotStarted, InProgress }
 
@@ -8,43 +13,39 @@ enum OfficialResult { HomeTeamWon, AwayTeamWon, Tie, NotStarted, InProgress }
 /// The offical results we have for this game.  This only exists when the
 /// game is in a tournament or a league.
 ///
-class GameOfficialResults {
-  final CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> scores =
-      new CanonicalizedMap((GamePeriod p) => p.toIndex());
+abstract class GameOfficialResults
+    implements Built<GameOfficialResults, GameOfficialResultsBuilder> {
+  //final CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> scores =
+  //    new CanonicalizedMap((GamePeriod p) => p.toIndex());
+  BuiltMap<GamePeriod, GameResultPerPeriod> get scores;
 
   /// The team uid, this pointed to a leagueortourneamentteam data.
-  String homeTeamLeagueUid;
+  String get homeTeamLeagueUid;
 
   /// The team uid, this pointed to a leagueortourneamentteam data.
-  String awayTeamLeagueUid;
+  String get awayTeamLeagueUid;
 
-  OfficialResult result;
+  OfficialResult get result;
 
   static const String _OFFICIALRESULT = 'officialResult';
   static const String _SCORES = 'scores';
   static const String HOMETEAMUID = 'homeTeamUid';
   static const String AWAYTEAMUID = 'awayTeamUid';
 
-  GameOfficialResults(this.homeTeamLeagueUid, this.awayTeamLeagueUid,
-      {this.result = OfficialResult.NotStarted});
+  GameOfficialResults._();
+  factory GameOfficialResults([updates(GameOfficialResultsBuilder b)]) =
+      _$GameOfficialResults;
 
-  GameOfficialResults.copy(GameOfficialResults copy)
-      : homeTeamLeagueUid = copy.homeTeamLeagueUid,
-        awayTeamLeagueUid = copy.awayTeamLeagueUid,
-        result = copy.result {
-    for (GamePeriod p in copy.scores.keys) {
-      scores[p] = GameResultPerPeriod.copy(copy.scores[p]);
-    }
-  }
-
-  GameOfficialResults.fromJSON(Map<dynamic, dynamic> data)
-      : result = OfficialResult.values.firstWhere(
-            (e) =>
-                e.toString() == data[_OFFICIALRESULT] ??
-                OfficialResult.NotStarted.toString(),
-            orElse: () => OfficialResult.NotStarted),
-        homeTeamLeagueUid = data[HOMETEAMUID],
-        awayTeamLeagueUid = data[AWAYTEAMUID] {
+  static GameOfficialResultsBuilder fromJSON(Map<dynamic, dynamic> data) {
+    GameOfficialResultsBuilder builder = GameOfficialResultsBuilder();
+    builder
+      ..result = OfficialResult.values.firstWhere(
+          (e) =>
+              e.toString() == data[_OFFICIALRESULT] ??
+              OfficialResult.NotStarted.toString(),
+          orElse: () => OfficialResult.NotStarted)
+      ..homeTeamLeagueUid = data[HOMETEAMUID]
+      ..awayTeamLeagueUid = data[AWAYTEAMUID];
     if (data.containsKey(_SCORES)) {
       Map<dynamic, dynamic> scoreData = data[_SCORES];
       CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> newResults =
@@ -52,13 +53,13 @@ class GameOfficialResults {
       scoreData.forEach((dynamic periodStd, dynamic data) {
         GamePeriod period = GamePeriod.fromIndex(periodStd);
         GameResultPerPeriod newResult =
-            new GameResultPerPeriod.fromJSON(period, data);
+            GameResultPerPeriod.fromJSON(period, data).build();
 
-        newResults[period] = newResult;
+        builder.scores[period] = newResult;
       });
-      scores.addAll(newResults);
+      //scores.addAll(newResults);
     }
-    ;
+    return builder;
   }
 
   Map<String, dynamic> toJSON() {

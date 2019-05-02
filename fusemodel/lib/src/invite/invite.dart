@@ -9,14 +9,14 @@ enum InviteType { Player, Team, Admin, Club, LeagueAdmin, LeagueTeam }
 
 abstract class BaseInviteType {
   /// The type of the invite.
-  InviteType get type;
+  InviteType getType();
 }
 
 ///
 /// Base class for all invites.
 ///
 @BuiltValue(instantiable: false)
-abstract class Invite implements BaseInviteType {
+abstract class Invite with BaseInviteType {
   /// email invites.
   String get email;
 
@@ -46,7 +46,7 @@ abstract class Invite implements BaseInviteType {
   static Map<String, dynamic> toJSONInternal(Invite invite) {
     Map<String, dynamic> ret = new Map<String, dynamic>();
     ret[EMAIL] = invite.email;
-    ret[TYPE] = invite.type.toString();
+    ret[TYPE] = invite.getType().toString();
     ret[SENTBYUID] = invite.sentByUid;
     return ret;
   }

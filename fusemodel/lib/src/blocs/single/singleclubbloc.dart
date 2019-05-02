@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import 'clubbloc.dart';
+import '../clubbloc.dart';
 
 abstract class SingleClubState extends Equatable {
   final Club club;

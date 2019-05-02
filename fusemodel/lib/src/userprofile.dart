@@ -1,58 +1,38 @@
+import 'package:built_value/built_value.dart';
+
 import 'common.dart';
+
+part 'userprofile.g.dart';
 
 ///
 /// The profile data for users in the system
 ///
-class FusedUserProfile {
-  final String displayName;
-  final String email;
-  final String phoneNumber;
-  final bool emailUpcomingGame;
-  final bool emailOnUpdates;
-  final bool notifyOnlyForGames;
-  final String uid;
+abstract class FusedUserProfile
+    implements Built<FusedUserProfile, FusedUserProfileBuilder> {
+  String get displayName;
+  String get email;
+  String get phoneNumber;
+  bool get emailUpcomingGame;
+  bool get emailOnUpdates;
+  bool get notifyOnlyForGames;
+  @nullable
+  String get uid;
 
-  FusedUserProfile(this.uid,
-      {this.displayName,
-      this.email,
-      this.phoneNumber,
-      this.emailUpcomingGame = false,
-      this.emailOnUpdates = false,
-      this.notifyOnlyForGames = true});
-
-  FusedUserProfile.copy(FusedUserProfile copy)
-      : uid = copy.uid,
-        displayName = copy.displayName,
-        email = copy.email,
-        phoneNumber = copy.phoneNumber,
-        emailOnUpdates = copy.emailOnUpdates,
-        emailUpcomingGame = copy.emailUpcomingGame,
-        notifyOnlyForGames = copy.notifyOnlyForGames;
+  FusedUserProfile._();
+  factory FusedUserProfile([updates(FusedUserProfileBuilder b)]) =
+      _$FusedUserProfile;
 
   /// Load from the json
-  FusedUserProfile.fromJSON(String uid, Map<String, dynamic> data)
-      : uid = uid,
-        displayName = data[_NAME],
-        email = data[_EMAIL],
-        phoneNumber = data[_PHONE],
-        emailOnUpdates = getBool(data[_EMAIL_ON_UPDATES]),
-        emailUpcomingGame = getBool(data[_EMAIL_UPCOMING]),
-        notifyOnlyForGames = getBool(data[_ONLY_FOR_GAMES] ?? true);
-
-  /// Copy with specific things changed.
-  FusedUserProfile copyWith(
-      {String uid,
-      String email,
-      String displayName,
-      String phoneNumber,
-      bool emailNewEvents,
-      bool emailUpcomingGames}) {
-    return new FusedUserProfile(uid ?? this.uid,
-        email: email ?? this.email,
-        displayName: displayName ?? this.displayName,
-        phoneNumber: phoneNumber ?? this.phoneNumber,
-        emailOnUpdates: emailNewEvents ?? this.emailOnUpdates,
-        emailUpcomingGame: emailUpcomingGames ?? this.emailUpcomingGame);
+  static FusedUserProfileBuilder fromJSON(
+      String uid, Map<String, dynamic> data) {
+    return FusedUserProfileBuilder()
+      ..uid = uid
+      ..displayName = data[_NAME]
+      ..email = data[_EMAIL]
+      ..phoneNumber = data[_PHONE]
+      ..emailOnUpdates = getBool(data[_EMAIL_ON_UPDATES])
+      ..emailUpcomingGame = getBool(data[_EMAIL_UPCOMING])
+      ..notifyOnlyForGames = getBool(data[_ONLY_FOR_GAMES] ?? true);
   }
 
   /// The initials for the user.

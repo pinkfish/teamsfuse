@@ -19,7 +19,7 @@ abstract class InviteToLeagueTeam
 
   /// The type of the invite.
   @override
-  InviteType get type => InviteType.LeagueTeam;
+  InviteType getType() => InviteType.LeagueTeam;
 
   factory InviteToLeagueTeam(
           [void Function(InviteToLeagueTeamBuilder) updates]) =

@@ -25,7 +25,7 @@ abstract class InviteToLeagueAsAdmin
 
   /// The type of the invite.
   @override
-  InviteType get type => InviteType.LeagueAdmin;
+  InviteType getType() => InviteType.LeagueAdmin;
 
   factory InviteToLeagueAsAdmin(
           [void Function(InviteToLeagueAsAdminBuilder) updates]) =

@@ -26,7 +26,7 @@ class UserData {
         uid = copy.uid,
         password = copy.password,
         isEmailVerified = copy.isEmailVerified,
-        profile = new FusedUserProfile.copy(copy.profile) {}
+        profile = copy.profile;
 
   @override
   String toString() {
@@ -195,7 +195,7 @@ class UserAuthImpl {
     print("Found $userId ${ref.data}");
     if (ref.exists) {
       FusedUserProfile profile =
-          new FusedUserProfile.fromJSON(ref.documentID, ref.data);
+          FusedUserProfile.fromJSON(ref.documentID, ref.data).build();
       return profile;
     }
     return null;
@@ -206,7 +206,7 @@ class UserAuthImpl {
       persistenData.updateElement(
           PersistenData.profileTable, doc.documentID, doc.data);
       FusedUserProfile profile =
-          new FusedUserProfile.fromJSON(doc.documentID, doc.data);
+          FusedUserProfile.fromJSON(doc.documentID, doc.data).build();
       _currentUser.profile = profile;
       _controller.add(_currentUser);
     }
@@ -235,7 +235,7 @@ class UserAuthImpl {
         ref.then((DocumentSnapshotWrapper doc) {
           print('Loaded from firestore');
           FusedUserProfile profile =
-              new FusedUserProfile.fromJSON(doc.documentID, doc.data);
+              FusedUserProfile.fromJSON(doc.documentID, doc.data).build();
           user.profile = profile;
           persistenData.updateElement(
               PersistenData.profileTable, doc.documentID, data);
@@ -243,7 +243,8 @@ class UserAuthImpl {
       }
     }
     if (data != null) {
-      FusedUserProfile profile = new FusedUserProfile.fromJSON(input.uid, data);
+      FusedUserProfile profile =
+          FusedUserProfile.fromJSON(input.uid, data).build();
       user.profile = profile;
     }
     _currentUser = user;

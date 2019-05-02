@@ -16,7 +16,7 @@ abstract class InviteToClub
 
   /// The type of the invite.
   @override
-  InviteType get type => InviteType.Club;
+  InviteType getType() => InviteType.Club;
 
   factory InviteToClub([void Function(InviteToClubBuilder) updates]) =
       _$InviteToClub;

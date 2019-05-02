@@ -79,18 +79,6 @@ class _InviteEventLoadFirestore extends InviteEvent {
 ///
 /// Sends the invite off to invite world.
 ///
-class InviteEventAddAsAdmin extends InviteEvent {
-  final String teamUid;
-  final String email;
-  final String teamName;
-
-  InviteEventAddAsAdmin(
-      {@required this.teamUid, @required this.email, @required this.teamName});
-}
-
-///
-/// Sends the invite off to invite world.
-///
 class InviteEventAddToPlayer extends InviteEvent {
   final String playerUid;
   final String email;
@@ -216,16 +204,6 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
       yield InviteUninitialized();
       _inviteChangeSub?.cancel();
       _inviteChangeSub = null;
-    }
-
-    if (event is InviteEventAddAsAdmin) {
-      // Just do it and ignore the result.  It will cause the invite
-      // list to update if it happens.
-      databaseUpdateModel.inviteAdminToTeam(
-          teamUid: event.teamUid,
-          email: event.email,
-          teamName: event.teamName,
-          myUid: coordinationBloc.authenticationBloc.currentUser.uid);
     }
   }
 }

@@ -15,7 +15,7 @@ abstract class InviteAsAdmin
 
   /// The type of the invite.
   @override
-  InviteType get type => InviteType.Admin;
+  InviteType getType() => InviteType.Admin;
 
   factory InviteAsAdmin([void Function(InviteAsAdminBuilder) updates]) =
       _$InviteAsAdmin;

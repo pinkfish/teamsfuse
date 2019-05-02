@@ -15,7 +15,7 @@ abstract class InviteToPlayer
 
   /// The type of the invite.
   @override
-  InviteType get type => InviteType.Player;
+  InviteType getType() => InviteType.Player;
 
   factory InviteToPlayer([void Function(InviteToPlayerBuilder) updates]) =
       _$InviteToPlayer;

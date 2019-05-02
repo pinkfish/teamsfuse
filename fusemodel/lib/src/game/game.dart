@@ -1,10 +1,12 @@
-import '../common.dart';
-import 'dart:async';
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
 import 'package:timezone/timezone.dart';
-import '../userdatabasedata.dart';
-import 'gamelog.dart';
+
+import '../common.dart';
 import 'gameresult.dart';
 import 'gamesharedata.dart';
+
+part 'game.g.dart';
 
 enum Attendance { Yes, No, Maybe }
 
@@ -12,97 +14,51 @@ enum Attendance { Yes, No, Maybe }
 /// This is the game details and it is kept in a team specific format, so that
 /// the view of the same game for different teams will look different.
 ///
-class Game {
-  String uid;
-  String sharedDataUid;
-  num arriveTime;
-  String notes;
-  List<String> opponentUids;
-  String seasonUid;
-  String teamUid;
-  List<String> allTeamUids;
-  String uniform;
-  String seriesId;
-  GameResultDetails result;
-  Map<String, Attendance> attendance;
-  bool trackAttendance;
-  List<GameLog> _gameLogs;
-  GameSharedData sharedData;
-  final String leagueOpponentUid;
+abstract class Game implements Built<Game, GameBuilder> {
+  String get uid;
+  String get sharedDataUid;
+  num get arriveTime;
+  String get notes;
+  BuiltList<String> get opponentUids;
+  String get seasonUid;
+  String get teamUid;
+  BuiltList<String> get allTeamUids;
+  String get uniform;
+  String get seriesId;
+  GameResultDetails get result;
+  BuiltMap<String, Attendance> get attendance;
+  bool get trackAttendance;
+  GameSharedData get sharedData;
+  String get leagueOpponentUid;
 
-  Stream<UpdateReason> thisGameStream;
-  Stream<List<GameLog>> thisGameLogStream;
-  StreamSubscription<dynamic> _gameLogSubcription;
-  StreamController<UpdateReason> _updateThisGame =
-      new StreamController<UpdateReason>();
-  StreamController<List<GameLog>> _updateThisLogGame =
-      new StreamController<List<GameLog>>();
+  Game._();
+  factory Game([updates(GameBuilder b)]) = _$Game;
 
-  Game(String homeTeamUid, String awayTeamUid,
-      {this.uid,
-      num arriveTime,
-      GameSharedData sharedData,
-      this.notes = "",
-      this.trackAttendance = true,
-      this.uniform = "",
-      this.seriesId,
-      this.leagueOpponentUid,
-      GameResultDetails result,
-      Map<String, Attendance> attendance})
-      : this.sharedData =
-            sharedData ?? new GameSharedData(homeTeamUid, awayTeamUid),
-        this.result = result ?? new GameResultDetails(),
-        this.attendance = attendance ?? <String, Attendance>{},
-        this.arriveTime =
-            arriveTime ?? new DateTime.now().millisecondsSinceEpoch {
-    thisGameStream = _updateThisGame.stream.asBroadcastStream();
-    thisGameLogStream = _updateThisLogGame.stream.asBroadcastStream();
-  }
-
-  Game.copy(Game copy) : leagueOpponentUid = copy.leagueOpponentUid {
-    uid = copy.uid;
-    arriveTime = copy.arriveTime;
-    notes = copy.notes;
-    opponentUids = copy.opponentUids;
-    allTeamUids = copy.allTeamUids;
-    seasonUid = copy.seasonUid;
-    teamUid = copy.teamUid;
-    uniform = copy.uniform;
-    seriesId = copy.seriesId;
-    result = new GameResultDetails.copy(copy.result);
-    attendance = new Map<String, Attendance>.from(copy.attendance);
-    trackAttendance = copy.trackAttendance;
-    if (_gameLogs != null) {
-      _gameLogs = new List.from(copy._gameLogs);
-    }
-    sharedData = new GameSharedData.copy(copy.sharedData);
-    thisGameStream = _updateThisGame.stream.asBroadcastStream();
-    thisGameLogStream = _updateThisLogGame.stream.asBroadcastStream();
-  }
-
-  Game.fromJSON(String teamContext, String gameUid, Map<String, dynamic> data,
-      GameSharedData inputSharedData)
-      : leagueOpponentUid = data[LEAGUEOPPONENTUID] {
+  static GameBuilder fromJSON(String teamContext, String gameUid,
+      Map<String, dynamic> data, GameSharedData inputSharedData) {
     assert(inputSharedData != null);
-    uid = gameUid;
-    sharedDataUid = getString(data[SHAREDDATAUID]);
-    if (arriveTime == 0) {
-      arriveTime = sharedData.time;
-    }
-    sharedData = inputSharedData;
-    seasonUid = getString(data[SEASONUID]);
-    uniform = getString(data[_UNIFORM]);
-    teamUid = getString(data[TEAMUID]);
-    opponentUids = [getString(data[OPPONENTUID])];
-    allTeamUids = [teamUid, opponentUids[0]];
-    arriveTime = getNum(data[ARRIVALTIME]);
-    notes = getString(data[NOTES]);
-    GameResultDetails details = new GameResultDetails();
-    details.fromJSON(data[RESULT] as Map<dynamic, dynamic>);
-    result = details;
-    trackAttendance =
-        data[_TRACKATTENDANCE] == null || getBool(data[_TRACKATTENDANCE]);
-    seriesId = getString(data[_SERIESID]);
+
+    GameBuilder builder = GameBuilder()
+      ..leagueOpponentUid = data[LEAGUEOPPONENTUID]
+      ..uid = gameUid
+      ..sharedDataUid = getString(data[SHAREDDATAUID])
+      ..arriveTime = data[ARRIVALTIME] == null || getNum(data[ARRIVALTIME]) == 0
+          ? inputSharedData.time
+          : getNum(data[ARRIVALTIME])
+      ..sharedData = inputSharedData.toBuilder()
+      ..seasonUid = getString(data[SEASONUID])
+      ..uniform = getString(data[_UNIFORM])
+      ..teamUid = getString(data[TEAMUID])
+      ..opponentUids = BuiltList.of([getString(data[OPPONENTUID])]).toBuilder()
+      ..arriveTime = getNum(data[ARRIVALTIME])
+      ..notes = getString(data[NOTES])
+      ..result =
+          GameResultDetails.fromJSON(data[RESULT] as Map<dynamic, dynamic>)
+      ..trackAttendance =
+          data[_TRACKATTENDANCE] == null || getBool(data[_TRACKATTENDANCE])
+      ..seriesId = getString(data[_SERIESID]);
+    builder.allTeamUids.add(builder.teamUid);
+    builder.allTeamUids.add(builder.opponentUids[0]);
 
     // Work out attendance for our team only.
     Map<String, Attendance> newAttendanceData = new Map<String, Attendance>();
@@ -114,36 +70,16 @@ class Game {
             attendanceData[key].containsKey(ATTENDANCEVALUE)) {
           if (attendanceData[key][ATTENDANCEVALUE] is String &&
               attendanceData[key][ATTENDANCEVALUE].startsWith("Attendance")) {
-            newAttendanceData[key.toString()] = Attendance.values.firstWhere(
+            builder.attendance[key.toString()] = Attendance.values.firstWhere(
                 (e) => e.toString() == attendanceData[key][ATTENDANCEVALUE]);
           }
         }
       }
     }
-    attendance = newAttendanceData;
-    thisGameStream = _updateThisGame.stream.asBroadcastStream();
-    thisGameLogStream = _updateThisLogGame.stream.asBroadcastStream();
-  }
-
-  void updateFrom(Game copy) {
-    uid = copy.uid;
-    arriveTime = copy.arriveTime;
-    notes = copy.notes;
-    opponentUids = copy.opponentUids;
-    allTeamUids = copy.allTeamUids;
-    seasonUid = copy.seasonUid;
-    teamUid = copy.teamUid;
-    uniform = copy.uniform;
-    seriesId = copy.seriesId;
-    result = new GameResultDetails.copy(copy.result);
-    attendance = new Map<String, Attendance>.from(copy.attendance);
-    trackAttendance = copy.trackAttendance;
-    if (_gameLogs != null) {
-      _gameLogs = new List.from(copy._gameLogs);
-    }
   }
 
   bool get homegame => sharedData.officialResults.homeTeamLeagueUid == teamUid;
+  /*
   set homegame(bool val) => val
       ? sharedData.leagueUid != null
           ? sharedData.officialResults.homeTeamLeagueUid = teamUid
@@ -152,8 +88,7 @@ class Game {
           ? sharedData.officialResults.homeTeamLeagueUid =
               opponentUids.length > 0 ? opponentUids[0] : ""
           : null;
-
-  List<GameLog> get logs => _gameLogs ?? [];
+          */
 
   TZDateTime get tzArriveTime => new TZDateTime.fromMillisecondsSinceEpoch(
       sharedData.location, arriveTime);
@@ -169,10 +104,6 @@ class Game {
   static const String OPPONENTUID = 'opponentUid';
   static const String SHAREDDATAUID = 'sharedDataUid';
   static const String LEAGUEOPPONENTUID = 'leagueOpponentUid';
-
-  void markGameChanged() {
-    _updateThisGame?.add(UpdateReason.Update);
-  }
 
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = new Map<String, dynamic>();
@@ -203,16 +134,7 @@ class Game {
     return ret;
   }
 
-  void close() {
-    _updateThisGame?.close();
-    _updateThisGame = null;
-    _gameLogs?.clear();
-    _updateThisGame = null;
-    _gameLogSubcription?.cancel();
-    _updateThisLogGame?.close();
-    _updateThisLogGame = null;
-  }
-
+  /*
   void updateLogs(List<GameLog> logs) {
     _gameLogs = logs;
     _updateThisLogGame.add(_gameLogs);
@@ -253,6 +175,7 @@ class Game {
     _updateThisLogGame.add(_gameLogs);
     return logs;
   }
+  */
 
   @override
   String toString() {
@@ -264,14 +187,14 @@ class Game {
   }
 
   /// We are hashed based on the uid.
-  @override
-  int get hashCode => uid.hashCode;
+  //@override
+  //int get hashCode => uid.hashCode;
 
   ///
   /// Equal if the uid is the same.  Compare to string to handle removal from
   /// sets
   ///
-  @override
-  bool operator ==(Object other) =>
-      other is Game && other.uid == uid || other is String && uid == other;
+  //@override
+  //bool operator ==(Object other) =>
+  //   other is Game && other.uid == uid || other is String && uid == other;
 }

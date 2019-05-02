@@ -1,38 +1,24 @@
-import '../common.dart';
-import 'dart:async';
+import 'package:built_value/built_value.dart';
 import 'package:timezone/timezone.dart';
-import '../userdatabasedata.dart';
+
+import '../common.dart';
 import 'gameofficialresults.dart';
+
+part 'gamesharedata.g.dart';
 
 enum EventType { Game, Practice, Event }
 
-class GamePlace {
-  String name;
-  String placeId;
-  String address;
-  String notes;
-  num latitude;
-  num longitude;
-  bool unknown;
+abstract class GamePlace implements Built<GamePlace, GamePlaceBuilder> {
+  String get name;
+  String get placeId;
+  String get address;
+  String get notes;
+  num get latitude;
+  num get longitude;
+  bool get unknown;
 
-  GamePlace(
-      {this.name,
-      this.placeId = '',
-      this.address = '',
-      this.notes = '',
-      this.unknown = true,
-      this.latitude = 0,
-      this.longitude = 0});
-
-  GamePlace.copy(GamePlace copy) {
-    name = copy.name;
-    placeId = copy.placeId;
-    address = copy.address;
-    notes = copy.notes;
-    latitude = copy.latitude;
-    longitude = copy.longitude;
-    unknown = copy.unknown;
-  }
+  GamePlace._();
+  factory GamePlace([updates(GamePlaceBuilder b)]) = _$GamePlace;
 
   static const String _PLACEID = 'placeId';
   static const String _ADDRESS = 'address';
@@ -40,14 +26,15 @@ class GamePlace {
   static const String _LATITUDE = 'lat';
   static const String _UNKNOWN = 'unknown';
 
-  GamePlace.fromJSON(Map<dynamic, dynamic> data) {
-    name = getString(data[NAME]);
-    placeId = getString(data[_PLACEID]);
-    address = getString(data[_ADDRESS]);
-    notes = getString(data[NOTES]);
-    longitude = getNum(data[_LONGITUDE]);
-    latitude = getNum(data[_LATITUDE]);
-    unknown = getBool(data[_UNKNOWN]);
+  static GamePlaceBuilder fromJSON(Map<dynamic, dynamic> data) {
+    return GamePlaceBuilder()
+      ..name = getString(data[NAME])
+      ..placeId = getString(data[_PLACEID])
+      ..address = getString(data[_ADDRESS])
+      ..notes = getString(data[NOTES])
+      ..longitude = getNum(data[_LONGITUDE])
+      ..latitude = getNum(data[_LATITUDE])
+      ..unknown = getBool(data[_UNKNOWN]);
   }
 
   Map<String, dynamic> toJSON() {
@@ -61,92 +48,53 @@ class GamePlace {
     ret[_UNKNOWN] = unknown;
     return ret;
   }
-
-  @override
-  String toString() {
-    return 'GamePlace{name: $name, placeId: $placeId, address: $address, '
-        'notes: $notes, latitude: $latitude, longitude: $longitude, '
-        'unknown: $unknown}';
-  }
 }
 
 ///
 /// In the case of league games, this is the bit that is shared across all
 /// the games.
 ///
-class GameSharedData {
+abstract class GameSharedData
+    implements Built<GameSharedData, GameSharedDataBuilder> {
   // This is only valid in a special event.
-  String name;
-  String uid;
-  num time;
-  String _timezone;
-  num endTime;
-  EventType type;
-  GamePlace place;
-  GameOfficialResults officialResults;
-  String leagueUid;
-  String leagueDivisionUid;
+  String get name;
+  String get uid;
+  num get time;
+  String get timezone;
+  num get endTime;
+  EventType get type;
+  GamePlace get place;
+  GameOfficialResults get officialResults;
+  String get leagueUid;
+  String get leagueDivisionUid;
 
-  // Derived data
-  Location _location;
+  GameSharedData._();
+  factory GameSharedData([updates(GameSharedDataBuilder b)]) = _$GameSharedData;
 
-  GameSharedData(
-    String homeTeamUid,
-    String awayTeamUid, {
-    this.name = "",
-    this.uid,
-    num time,
-    num endTime,
-    GamePlace place,
-    GameOfficialResults officalResults,
-    String timezone,
-    this.type,
-    this.leagueUid,
-    this.leagueDivisionUid,
-  })  : this.place = place ?? new GamePlace(),
-        this.officialResults =
-            officalResults ?? new GameOfficialResults(homeTeamUid, awayTeamUid),
-        this.time = time ?? new DateTime.now().millisecondsSinceEpoch,
-        this.endTime = endTime ?? new DateTime.now().millisecondsSinceEpoch,
-        _timezone = timezone ?? local.toString();
-
-  GameSharedData.copy(GameSharedData copy) {
-    uid = copy.uid;
-    time = copy.time;
-    _timezone = copy._timezone;
-    _location = copy._location;
-    leagueUid = copy.leagueUid;
-    endTime = copy.endTime;
-    type = copy.type;
-    place = new GamePlace.copy(copy.place);
-    name = copy.name;
-    leagueDivisionUid = copy.leagueDivisionUid;
-    officialResults = new GameOfficialResults.copy(copy.officialResults);
-  }
-
-  GameSharedData.fromJSON(String uid, Map<String, dynamic> data) {
-    this.uid = uid;
-    time = getNum(data[_TIME]);
-    endTime = getNum(data[_ENDTIME]);
-    _timezone = getString(data[_TIMEZONE]);
-    if (endTime == 0) {
-      endTime = time;
+  static GameSharedDataBuilder fromJSON(String uid, Map<String, dynamic> data) {
+    GameSharedDataBuilder builder = GameSharedDataBuilder()
+      ..uid = uid
+      ..time = getNum(data[_TIME])
+      ..endTime = getNum(data[_ENDTIME])
+      ..timezone = getString(data[_TIMEZONE])
+      ..type = EventType.values.firstWhere((e) => e.toString() == data[TYPE],
+          orElse: () => EventType.Game)
+      ..place = GamePlace.fromJSON(data[_PLACE] as Map<dynamic, dynamic>)
+      ..name = getString(data[NAME])
+      ..leagueUid = data[_LEAGUEUID]
+      ..leagueDivisionUid = data[LEAGUEDIVISIONUID];
+    if (builder.endTime == 0) {
+      builder.endTime = builder.time;
     }
 
-    type = EventType.values.firstWhere((e) => e.toString() == data[TYPE],
-        orElse: () => EventType.Game);
-    GamePlace place =
-        new GamePlace.fromJSON(data[_PLACE] as Map<dynamic, dynamic>);
-    this.place = place;
-    name = getString(data[NAME]);
     if (data.containsKey(OFFICIALRESULT)) {
-      officialResults = new GameOfficialResults.fromJSON(data[OFFICIALRESULT]);
+      builder.officialResults =
+          GameOfficialResults.fromJSON(data[OFFICIALRESULT]);
     } else {
-      officialResults = new GameOfficialResults(null, null);
+      builder.officialResults = GameOfficialResultsBuilder();
     }
 
-    leagueUid = data[_LEAGUEUID];
-    leagueDivisionUid = data[LEAGUEDIVISIONUID];
+    return builder;
   }
 
   Map<String, dynamic> toJSON() {
@@ -156,7 +104,7 @@ class GameSharedData {
     data[_PLACE] = place.toJSON();
     data[TYPE] = type.toString();
     data[NAME] = name;
-    data[_TIMEZONE] = _timezone;
+    data[_TIMEZONE] = timezone;
     data[_LEAGUEUID] = leagueUid;
     data[LEAGUEDIVISIONUID] = leagueDivisionUid;
     if (officialResults != null) {
@@ -165,34 +113,15 @@ class GameSharedData {
     return data;
   }
 
+  /*
   set timezone(String value) {
     _timezone = value;
     _location = null;
   }
-
-  String get timezone {
-    return _timezone;
-  }
+  */
 
   Location get location {
-    if (_location == null) {
-      _location = getLocation(this.timezone);
-    }
-    return _location;
-  }
-
-  void updateFrom(GameSharedData copy) {
-    uid = copy.uid;
-    time = copy.time;
-    _timezone = copy._timezone;
-    _location = copy._location;
-    endTime = copy.endTime;
-    type = copy.type;
-    place = new GamePlace.copy(copy.place);
-    name = copy.name;
-    leagueDivisionUid = copy.leagueDivisionUid;
-    leagueUid = copy.leagueUid;
-    officialResults = new GameOfficialResults.copy(copy.officialResults);
+    return getLocation(this.timezone);
   }
 
   TZDateTime get tzTime =>
@@ -209,6 +138,7 @@ class GameSharedData {
   static const String _LEAGUEUID = 'leagueUid';
   static const String LEAGUEDIVISIONUID = 'leagueDivisonUid';
 
+  /*
   Future<void> deleteCompletelyFromFirestore() {
     return UserDatabaseData.instance.updateModel
         .deleteFirestoreSharedGame(this);
@@ -225,13 +155,6 @@ class GameSharedData {
         .updateFirestoreOfficalGameResult(this, result);
     return null;
   }
+  */
 
-  @override
-  String toString() {
-    return 'GameSharedData{uid: $uid, time: $tzTime, _timezone: $_timezone, '
-        'endTime: $tzEndTime, leagueUid: $leagueUid, '
-        'leagueDivisionUid: $leagueDivisionUid, '
-        'name: $name, type: $type, officalResults: $officialResults, '
-        'officalResult: $officialResults, place: $place}';
-  }
 }

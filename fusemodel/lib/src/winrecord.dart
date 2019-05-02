@@ -1,6 +1,6 @@
-import 'common.dart';
 import 'package:built_value/built_value.dart';
-import 'package:built_collection/built_collection.dart';
+
+import 'common.dart';
 
 part 'winrecord.g.dart';
 
@@ -8,6 +8,7 @@ abstract class WinRecord implements Built<WinRecord, WinRecordBuilder> {
   num get win;
   num get loss;
   num get tie;
+
   WinRecord._();
   factory WinRecord([updates(WinRecordBuilder b)]) = _$WinRecord;
 

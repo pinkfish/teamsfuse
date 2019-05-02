@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import 'teambloc.dart';
+import '../teambloc.dart';
 
 abstract class SingleTeamState extends Equatable {
   final Team team;

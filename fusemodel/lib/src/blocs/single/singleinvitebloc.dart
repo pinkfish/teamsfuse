@@ -6,8 +6,8 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import 'invitebloc.dart';
-import 'teambloc.dart';
+import '../invitebloc.dart';
+import '../teambloc.dart';
 
 ///
 /// Basic state for all the data in this system.
@@ -16,18 +16,6 @@ class SingleInviteState extends Equatable {
   final Invite invite;
 
   SingleInviteState({@required this.invite});
-}
-
-///
-/// No data at all yet.
-///
-class SingleInviteUninitialized extends SingleInviteState {
-  SingleInviteUninitialized() : super(invite: null);
-
-  @override
-  String toString() {
-    return 'SingleInviteUninitialized{}';
-  }
 }
 
 ///
@@ -58,7 +46,7 @@ class SingleInviteSaving extends SingleInviteState {
 /// Data is now loaded.
 ///
 class SingleInviteDeleted extends SingleInviteState {
-  SingleInviteDeleted({@required Invite invite}) : super(invite: invite);
+  SingleInviteDeleted() : super(invite: null);
 
   @override
   String toString() {
@@ -173,17 +161,6 @@ class SingleInviteEventLoaded extends SingleInviteEvent {
 }
 
 ///
-/// Adds this invite into the set of invites.  We fire and forget this.
-///
-class SingleInviteEventAddInviteToPlayer extends SingleInviteEvent {
-  String playerUid;
-  String email;
-
-  SingleInviteEventAddInviteToPlayer(
-      {@required this.playerUid, @required this.email});
-}
-
-///
 /// Deals with specific invites to allow for accepting/deleting/etc of the
 /// invites.
 ///
@@ -231,7 +208,14 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
   }
 
   @override
-  SingleInviteState get initialState => new SingleInviteUninitialized();
+  SingleInviteState get initialState {
+    if (inviteBloc.currentState.invites.containsKey(inviteUid)) {
+      return SingleInviteLoaded(
+          invite: inviteBloc.currentState.invites[inviteUid]);
+    } else {
+      return SingleInviteDeleted();
+    }
+  }
 
   Future<SingleInviteState> _acceptInviteToClub(
       SingleInviteEventAcceptInviteToClub event, Invite invite) async {
@@ -243,7 +227,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
           invite.clubUid, inviteBloc.currentState.uid, invite.admin);
       // This should cause the data to update
       await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
-      return SingleInviteDeleted(invite: invite);
+      return SingleInviteDeleted();
     } else {
       //
       // End this thing.
@@ -274,7 +258,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
 
       // This should cause the data to update
       await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
-      return SingleInviteDeleted(invite: invite);
+      return SingleInviteDeleted();
     } else {
       return SingleInviteSaveFailed(
           failedInvite: invite,
@@ -311,7 +295,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
 
       // This should cause the data to update
       await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
-      return SingleInviteDeleted(invite: invite);
+      return SingleInviteDeleted();
     } else {
       return SingleInviteSaveFailed(
           failedInvite: invite, error: ArgumentError('Not a player invite'));
@@ -373,7 +357,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       }
       // This should cause the data to update
       await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
-      return SingleInviteDeleted(invite: invite);
+      return SingleInviteDeleted();
     } else {
       return SingleInviteSaveFailed(
           failedInvite: invite,
@@ -392,7 +376,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
 
       // This should cause the data to update
       await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
-      return SingleInviteDeleted(invite: invite);
+      return SingleInviteDeleted();
     } else {
       return SingleInviteSaveFailed(
           failedInvite: invite, error: ArgumentError('Not an admin invite'));
@@ -458,7 +442,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
 
       // This should cause the data to update
       await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
-      return SingleInviteDeleted(invite: invite);
+      return SingleInviteDeleted();
     } else {
       return SingleInviteSaveFailed(
           failedInvite: invite, error: ArgumentError('Not a team invite'));
@@ -472,7 +456,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
         yield SingleInviteLoaded(
             invite: inviteBloc.currentState.invites[event.inviteUid]);
       } else {
-        yield SingleInviteDeleted(invite: currentState.invite);
+        yield SingleInviteDeleted();
       }
     }
     // Delete the invite
@@ -483,7 +467,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       try {
         await inviteBloc.databaseUpdateModel
             .firestoreInviteDelete(currentState.invite);
-        yield SingleInviteDeleted(invite: currentState.invite);
+        yield SingleInviteDeleted();
       } catch (e) {
         yield SingleInviteSaveFailed(
             error: e, failedInvite: currentState.invite);
@@ -557,44 +541,11 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
     }
 
     if (event is _SingleInviteEventUnloaded) {
-      yield SingleInviteDeleted(invite: currentState.invite);
+      yield SingleInviteDeleted();
     }
 
     if (event is _SingleInviteUpdated) {
       yield SingleInviteLoaded(invite: event.invite);
-    }
-
-    if (event is SingleInviteEventAddInviteToPlayer) {
-      if (!teamBloc.playerBloc.currentState.players
-          .containsKey(event.playerUid)) {
-        InviteToPlayer invite = new InviteToPlayer((b) => b
-          ..playerUid = event.playerUid
-          ..playerName = 'Unknown'
-          ..email = event.email
-          ..sentByUid =
-              inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid);
-        yield SingleInviteSaveFailed(
-            failedInvite: invite, error: ArgumentError("Player doesn't exist"));
-      } else {
-        Player player =
-            teamBloc.playerBloc.currentState.players[event.playerUid];
-        InviteToPlayer invite = new InviteToPlayer((b) => b
-          ..playerUid = player.uid
-          ..playerName = player.name
-          ..email = event.email
-          ..sentByUid =
-              inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid);
-        yield SingleInviteSaving(invite: invite);
-        try {
-          await inviteBloc.databaseUpdateModel.inviteUserToPlayer(
-              playerUid: player.uid,
-              playerName: player.name,
-              email: event.email);
-          yield SingleInviteLoaded(invite: invite);
-        } catch (e) {
-          yield SingleInviteSaveFailed(failedInvite: invite, error: e);
-        }
-      }
     }
   }
 }

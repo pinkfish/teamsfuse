@@ -1,18 +1,28 @@
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
 import 'package:timezone/timezone.dart';
 
 import 'common.dart';
 
+part 'message.g.dart';
+
 enum MessageState { Read, Unread, Archived }
 
-class MessageRecipient {
-  String uid;
-  String playerId;
-  String userId;
-  String messageId;
-  num sentAt;
-  MessageState state = MessageState.Unread;
+abstract class MessageRecipient
+    implements Built<MessageRecipient, MessageRecipientBuilder> {
+  @nullable
+  String get uid;
+  String get playerId;
+  String get userId;
+  @nullable
+  String get messageId;
+  @nullable
+  num get sentAt;
+  MessageState get state;
 
-  MessageRecipient({this.playerId, this.state});
+  MessageRecipient._();
+  factory MessageRecipient([updates(MessageRecipientBuilder b)]) =
+      _$MessageRecipient;
 
   static const String STATE = 'state';
   static const String SENTAT = 'sentAt';
@@ -33,14 +43,18 @@ class MessageRecipient {
     return data;
   }
 
-  MessageRecipient.fromJSON(String uid, Map<String, dynamic> data) {
-    this.uid = uid;
-    messageId = getString(data[MESSAGEID]);
-    playerId = getString(data[PLAYERID]);
-    userId = getString(data[USERID]);
-    sentAt = getNum(data[SENTAT]);
-    state = MessageState.values
-        .firstWhere((MessageState e) => e.toString() == data[STATE]);
+  static MessageRecipientBuilder fromJSON(
+      String uid, Map<String, dynamic> data) {
+    MessageRecipientBuilder builder = MessageRecipientBuilder();
+    builder
+      ..uid = uid
+      ..messageId = getString(data[MESSAGEID])
+      ..playerId = getString(data[PLAYERID])
+      ..userId = getString(data[USERID])
+      ..sentAt = getNum(data[SENTAT])
+      ..state = MessageState.values
+          .firstWhere((MessageState e) => e.toString() == data[STATE]);
+    return builder;
   }
 
   /*
@@ -54,30 +68,23 @@ class MessageRecipient {
   */
 }
 
-class Message {
-  String uid;
-  String fromUid;
-  String teamUid;
-  // Need a rich text section for the message itself.
-  bool messagesLoaded = false;
-  String message;
-  String subject;
+abstract class Message implements Built<Message, MessageBuilder> {
+  @nullable
+  String get uid;
+  String get fromUid;
+  String get teamUid;
+  String get subject;
 
-  num timeSent;
-  num fetched;
-  num lastSeen;
-  Map<String, MessageRecipient> recipients;
+  @nullable
+  num get timeSent;
+  @nullable
+  num get fetched;
+  @nullable
+  num get lastSeen;
+  BuiltMap<String, MessageRecipient> get recipients;
 
-  Message(
-      {this.uid,
-      this.fromUid,
-      this.teamUid,
-      this.messagesLoaded,
-      this.message,
-      this.fetched,
-      this.lastSeen,
-      this.timeSent,
-      this.recipients});
+  Message._();
+  factory Message([updates(MessageBuilder b)]) = _$Message;
 
   TZDateTime get tzTimeSent {
     return new TZDateTime.fromMillisecondsSinceEpoch(local, timeSent);
@@ -92,15 +99,11 @@ class Message {
   static const String _LASTSEEN = 'lastSeen';
   static const String RECIPIENTS = 'recipients';
 
-  Map<String, dynamic> toJSON(
-      {bool includeMessage = false, bool forSQL = false}) {
+  Map<String, dynamic> toJSON({bool forSQL = false}) {
     Map<String, dynamic> data = new Map<String, dynamic>();
     data[_TEAMUID] = teamUid;
     data[_FROMIUD] = fromUid;
     data[_SUBJECT] = subject;
-    if (includeMessage) {
-      data[BODY] = message;
-    }
     data[TIMESENT] = timeSent;
     if (forSQL) {
       data[_TIMEFETCHED] = fetched;
@@ -114,35 +117,27 @@ class Message {
     return data;
   }
 
-  Message.fromJSON(String inputUid, Map<String, dynamic> data) {
-    uid = inputUid;
-    teamUid = getString(data[_TEAMUID]);
-    fromUid = getString(data[_FROMIUD]);
-    message = getString(data[BODY]);
-    timeSent = getNum(data[TIMESENT]);
-    subject = getString(data[_SUBJECT]);
+  static MessageBuilder fromJSON(String inputUid, Map<String, dynamic> data) {
+    MessageBuilder builder = MessageBuilder();
+    builder
+      ..uid = inputUid
+      ..teamUid = getString(data[_TEAMUID])
+      ..fromUid = getString(data[_FROMIUD])
+      ..timeSent = getNum(data[TIMESENT])
+      ..subject = getString(data[_SUBJECT]);
     if (data.containsKey(_LASTSEEN)) {
-      lastSeen = data[_LASTSEEN];
+      builder.lastSeen = data[_LASTSEEN];
     }
     if (data.containsKey(_TIMEFETCHED)) {
-      fetched = data[_TIMEFETCHED];
+      builder.fetched = data[_TIMEFETCHED];
     }
     if (data.containsKey(RECIPIENTS)) {
       // From sql.
-      this.recipients = {};
       data[RECIPIENTS].forEach((String str, Map<String, dynamic> data) {
-        MessageRecipient rec = new MessageRecipient.fromJSON(str, data);
-        this.recipients[rec.userId] = rec;
+        MessageRecipient rec = MessageRecipient.fromJSON(str, data).build();
+        builder.recipients[rec.userId] = rec;
       });
     }
+    return builder;
   }
-/*
-  Future<void> updateFirestore() {
-    return UserDatabaseData.instance.updateModel.updateFirestoreMessage(this);
-  }
-
-  Future<String> loadMessage(Message mess) {
-    return UserDatabaseData.instance.updateModel.loadMessage(mess);
-  }
-  */
 }

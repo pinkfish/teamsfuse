@@ -164,13 +164,14 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
       Message mess = currentState.getMessage(recipient.messageId);
       if (mess != null) {
         // Update just my recipient piece of this.
-        mess.recipients[recipient.userId] = recipient;
-        messages[mess.uid] = mess;
+        MessageBuilder builder = mess.toBuilder();
+
+        builder.recipients[recipient.userId] = recipient;
+        messages[mess.uid] = builder.build();
         toRemove.remove(mess.uid);
+        mess = builder.build();
         coordinationBloc.persistentData.updateElement(
-            PersistenData.messagesTable,
-            mess.uid,
-            mess.toJSON(includeMessage: true, forSQL: true));
+            PersistenData.messagesTable, mess.uid, mess.toJSON(forSQL: true));
       } else {
         // Otherwise we need to load it.
         mess = await coordinationBloc.databaseUpdateModel
@@ -178,11 +179,11 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
         if (mess != null) {
           messages[mess.uid] = mess;
           toRemove.remove(mess.uid);
-          mess.recipients[recipient.userId] = recipient;
+          MessageBuilder builder = mess.toBuilder();
+          builder.recipients[recipient.userId] = recipient;
+          mess = builder.build();
           coordinationBloc.persistentData.updateElement(
-              PersistenData.messagesTable,
-              mess.uid,
-              mess.toJSON(includeMessage: true, forSQL: true));
+              PersistenData.messagesTable, mess.uid, mess.toJSON(forSQL: true));
         }
       }
     }
@@ -205,25 +206,23 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
       Message mess = currentState.getMessage(recipient.messageId);
       if (mess != null) {
         // Update just my recipient piece of this.
-        mess.recipients[recipient.userId] = recipient;
-        messages[mess.uid] = mess;
+        MessageBuilder builder = mess.toBuilder();
+        builder.recipients[recipient.userId] = recipient;
+        messages[mess.uid] = builder.build();
         toRemove.remove(mess.uid);
         coordinationBloc.persistentData.updateElement(
-            PersistenData.messagesTable,
-            mess.uid,
-            mess.toJSON(includeMessage: true, forSQL: true));
+            PersistenData.messagesTable, mess.uid, mess.toJSON(forSQL: true));
       } else {
         // Otherwise we need to load it.
         Message mess = await coordinationBloc.databaseUpdateModel
             .getMessage(recipient.messageId);
         if (mess != null) {
-          mess.recipients[recipient.userId] = recipient;
-          messages[mess.uid] = mess;
+          MessageBuilder builder = mess.toBuilder();
+          builder.recipients[recipient.userId] = recipient;
+          messages[mess.uid] = builder.build();
           toRemove.remove(mess.uid);
           coordinationBloc.persistentData.updateElement(
-              PersistenData.messagesTable,
-              mess.uid,
-              mess.toJSON(includeMessage: true, forSQL: true));
+              PersistenData.messagesTable, mess.uid, mess.toJSON(forSQL: true));
         }
       }
     }
@@ -249,7 +248,8 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
       Map<String, Message> unreadMessages = {};
       data.forEach((String uid, Map<String, dynamic> input) {
         coordinationBloc.sqlTrace.incrementCounter("message");
-        Message mess = new Message.fromJSON(uid, input);
+
+        Message mess = Message.fromJSON(uid, input).build();
         if (mess.recipients[event.uid].state == MessageState.Unread) {
           unreadMessages[uid] = mess;
         } else {

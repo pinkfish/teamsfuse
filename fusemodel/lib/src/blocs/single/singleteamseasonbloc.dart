@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import 'teambloc.dart';
+import '../teambloc.dart';
 
 ///
 /// The basic state for all the bits of the single team bloc.
