@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 ///
@@ -10,14 +12,17 @@ import 'package:fusemodel/fusemodel.dart';
 class TournamentOrLeagueTeamPicker extends StatefulWidget {
   TournamentOrLeagueTeamPicker(
       {@required this.onChanged,
-      @required this.tournamentOrLeagueDivisonUid,
+      @required this.leagueOrTournamentDivisonBloc,
       this.initialTeamUid,
       this.disabled = false,
       this.selectedTitle = false,
-      this.includeAll = false});
+      this.includeAll = false}) {
+    leagueOrTournamentDivisonBloc
+        .dispatch(SingleLeagueOrTournamentDivisonLoadTeams());
+  }
 
   final ValueChanged<String> onChanged;
-  final String tournamentOrLeagueDivisonUid;
+  final SingleLeagueOrTournamentDivisonBloc leagueOrTournamentDivisonBloc;
   final bool disabled;
   final bool selectedTitle;
   final String initialTeamUid;
@@ -34,22 +39,6 @@ class TournamentOrLeagueTeamPicker extends StatefulWidget {
 class _TournamentOrLeagueTeamPickerState
     extends State<TournamentOrLeagueTeamPicker> {
   _TournamentOrLeagueTeamPickerState();
-
-  LeagueOrTournmentTeamSubscription _teamSub;
-
-  @override
-  void dispose() {
-    super.dispose();
-    _teamSub?.dispose();
-    _teamSub = null;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _teamSub = UserDatabaseData.instance.updateModel
-        .getLeagueDivisionTeams(widget.tournamentOrLeagueDivisonUid);
-  }
 
   List<DropdownMenuItem<String>> _buildItems(
       Iterable<LeagueOrTournamentTeam> teams) {
@@ -81,48 +70,50 @@ class _TournamentOrLeagueTeamPickerState
                 .copyWith(fontWeight: FontWeight.bold)
             : null,
       ),
-      child: StreamBuilder<Iterable<LeagueOrTournamentTeam>>(
-          stream: _teamSub.stream,
-          builder: (BuildContext context,
-              AsyncSnapshot<Iterable<LeagueOrTournamentTeam>> snap) {
-            if (!snap.hasData) {
-              if (widget.disabled) {
-                return Text(
-                  Messages.of(context).teamselect,
-                  style: Theme.of(context).textTheme.body1.copyWith(
-                      color: Theme.of(context).disabledColor, height: 3.0),
-                );
-              }
-              return new Text(
-                Messages.of(context).loading,
-                style: Theme.of(context).textTheme.body1.copyWith(height: 3.0),
+      child: BlocBuilder(
+        bloc: widget.leagueOrTournamentDivisonBloc,
+        builder:
+            (BuildContext context, SingleLeagueOrTournamentDivisonState state) {
+          if (state.leagueOrTournamentTeams.length == 0) {
+            if (widget.disabled) {
+              return Text(
+                Messages.of(context).teamselect,
+                style: Theme.of(context).textTheme.body1.copyWith(
+                    color: Theme.of(context).disabledColor, height: 3.0),
               );
             }
-            return new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                new Expanded(
-                  flex: 1,
-                  child: widget.disabled
-                      ? new Text(
-                          Messages.of(context).teamselect,
-                          style: Theme.of(context).textTheme.body1.copyWith(
-                              color: Theme.of(context).disabledColor,
-                              height: 3.0),
-                        )
-                      : new DropdownButton<String>(
-                          hint: new Text(Messages.of(context).teamselect),
-                          items: _buildItems(snap.data),
-                          value: widget.initialTeamUid,
-                          onChanged: (String val) {
-                            widget.onChanged(val);
-                          },
-                        ),
-                ),
-              ],
+            return new Text(
+              Messages.of(context).loading,
+              style: Theme.of(context).textTheme.body1.copyWith(height: 3.0),
             );
-          }),
+          }
+          return new Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              new Expanded(
+                flex: 1,
+                child: widget.disabled
+                    ? new Text(
+                        Messages.of(context).teamselect,
+                        style: Theme.of(context).textTheme.body1.copyWith(
+                            color: Theme.of(context).disabledColor,
+                            height: 3.0),
+                      )
+                    : new DropdownButton<String>(
+                        hint: new Text(Messages.of(context).teamselect),
+                        items:
+                            _buildItems(state.leagueOrTournamentTeams.values),
+                        value: widget.initialTeamUid,
+                        onChanged: (String val) {
+                          widget.onChanged(val);
+                        },
+                      ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

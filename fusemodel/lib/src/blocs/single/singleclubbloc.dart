@@ -93,8 +93,10 @@ abstract class SingleClubEvent extends Equatable {}
 class SingleClubUpdate extends SingleClubEvent {
   final Club club;
   final bool includeMembers;
+  final File image;
 
-  SingleClubUpdate({@required this.club, this.includeMembers = false});
+  SingleClubUpdate(
+      {@required this.club, this.includeMembers = false, this.image});
 }
 
 ///
@@ -244,9 +246,30 @@ class SingleClubBloc extends Bloc<SingleClubEvent, SingleClubState> {
     if (event is SingleClubUpdate) {
       yield SingleClubSaving(singleClubState: currentState);
       try {
+        Club club = event.club;
+        if (event.image != null) {
+          Uri clubUri = await clubBloc.coordinationBloc.databaseUpdateModel
+              .updateClubImage(currentState.club, event.image);
+          club = club.rebuild((b) => b..photoUrl = clubUri.toString());
+        }
         await clubBloc.coordinationBloc.databaseUpdateModel
-            .updateClub(event.club, includeMembers: event.includeMembers);
+            .updateClub(club, includeMembers: event.includeMembers);
         yield SingleClubLoaded(club: event.club, teams: currentState.teams);
+      } catch (e) {
+        yield SingleClubSaveFailed(singleClubState: currentState, error: e);
+      }
+    }
+
+    if (event is SingleClubUpdateImage) {
+      yield SingleClubSaving(singleClubState: currentState);
+      try {
+        Uri clubUri = await clubBloc.coordinationBloc.databaseUpdateModel
+            .updateClubImage(currentState.club, event.image);
+
+        yield SingleClubLoaded(
+            club: currentState.club
+                .rebuild((b) => b..photoUrl = clubUri.toString()),
+            teams: currentState.teams);
       } catch (e) {
         yield SingleClubSaveFailed(singleClubState: currentState, error: e);
       }

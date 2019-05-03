@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import '../playerbloc.dart';
+import '../coordinationbloc.dart';
 import 'additemstate.dart';
 
 abstract class AddPlayerEvent extends Equatable {}
@@ -26,9 +26,9 @@ class AddPlayerEventCommit extends AddPlayerEvent {
 /// players.
 ///
 class AddPlayerBloc extends Bloc<AddPlayerEvent, AddItemState> {
-  final PlayerBloc playerBloc;
+  final CoordinationBloc coordinationBloc;
 
-  AddPlayerBloc({@required this.playerBloc}) {}
+  AddPlayerBloc({@required this.coordinationBloc}) {}
 
   @override
   AddItemState get initialState => new AddItemUninitialized();
@@ -42,12 +42,11 @@ class AddPlayerBloc extends Bloc<AddPlayerEvent, AddItemState> {
       try {
         Player updatedPlayer = Player((b) => b
           ..name = event.playerName
-          ..users[playerBloc.coordinationBloc.authenticationBloc.currentUser
-              .uid] = PlayerUser((b) => b
+          ..users[coordinationBloc
+              .authenticationBloc.currentUser.uid] = PlayerUser((b) => b
             ..relationship = event.relationship
-            ..userUid = playerBloc
-                .coordinationBloc.authenticationBloc.currentUser.uid));
-        String uid = await playerBloc.coordinationBloc.databaseUpdateModel
+            ..userUid = coordinationBloc.authenticationBloc.currentUser.uid));
+        String uid = await coordinationBloc.databaseUpdateModel
             .addFirestorePlayer(updatedPlayer);
         yield AddItemDone(uid: uid);
       } catch (e) {

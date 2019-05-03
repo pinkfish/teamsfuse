@@ -21,24 +21,12 @@ class AcceptInviteToLeagueScreen extends StatefulWidget {
 
 class _AcceptInviteToLeagueScreenState
     extends State<AcceptInviteToLeagueScreen> {
-  InviteToLeagueAsAdmin _invite;
   SingleInviteBloc _singleInviteBloc;
-
-  static const String newInvite = 'new';
 
   @override
   void initState() {
     super.initState();
     // Default to empty.
-    if (UserDatabaseData.instance.invites.containsKey(widget._inviteUid)) {
-      _invite = UserDatabaseData.instance.invites[widget._inviteUid]
-          as InviteToLeagueAsAdmin;
-    } else {
-      // Get out of here.
-      _invite = new InviteToLeagueAsAdmin((var b) => b..leagueUid = '');
-
-      Navigator.pop(context);
-    }
     _singleInviteBloc = SingleInviteBloc(
         inviteBloc: BlocProvider.of<InviteBloc>(context),
         inviteUid: widget._inviteUid,
@@ -75,21 +63,21 @@ class _AcceptInviteToLeagueScreenState
                 // Deleted.
                 Navigator.pop(context);
                 return Center(child: CircularProgressIndicator());
-              } else if (state is SingleInviteUninitialized) {
-                // Loading.
-                return Center(child: CircularProgressIndicator());
               } else {
+                InviteToLeagueAsAdmin inviteToLeagueAsAdmin =
+                    state.invite as InviteToLeagueAsAdmin;
+
                 return Column(
                   children: <Widget>[
                     new ListTile(
                       leading: LeagueImage(
-                        leagueOrTournamentUid: _invite.leagueUid,
+                        leagueOrTournamentUid: inviteToLeagueAsAdmin.leagueUid,
                         width: 50.0,
                         height: 50.0,
                       ),
-                      title: new Text(_invite.leagueName),
-                      subtitle:
-                          new ByUserNameComponent(userId: _invite.sentByUid),
+                      title: new Text(inviteToLeagueAsAdmin.leagueName),
+                      subtitle: new ByUserNameComponent(
+                          userId: inviteToLeagueAsAdmin.sentByUid),
                     ),
                     new ButtonBar(
                       children: <Widget>[
@@ -101,7 +89,9 @@ class _AcceptInviteToLeagueScreenState
                         ),
                         new FlatButton(
                           onPressed: () => Navigator.pushNamed(
-                              context, "/League/Main/" + _invite.leagueUid),
+                              context,
+                              "/League/Main/" +
+                                  inviteToLeagueAsAdmin.leagueUid),
                           child: Text(messages.openbutton),
                         ),
                         new FlatButton(

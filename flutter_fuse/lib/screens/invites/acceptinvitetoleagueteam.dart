@@ -27,7 +27,6 @@ class AcceptInviteToLeagueTeamScreen extends StatefulWidget {
 class _AcceptInviteToLeagueTeamScreenState
     extends State<AcceptInviteToLeagueTeamScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  InviteToLeagueTeam _invite;
   String _currentTeamUid;
   String _seasonSelected = SeasonFormField.none;
   GlobalKey<FormState> _seasonForm = new GlobalKey<FormState>();
@@ -40,18 +39,6 @@ class _AcceptInviteToLeagueTeamScreenState
   @override
   void initState() {
     super.initState();
-    // Default to empty.
-    if (UserDatabaseData.instance.invites.containsKey(widget._inviteUid)) {
-      _invite = UserDatabaseData.instance.invites[widget._inviteUid]
-          as InviteToLeagueTeam;
-    } else {
-      // Get out of here.
-      _invite = new InviteToLeagueTeam(
-          (InviteToLeagueTeamBuilder b) => b..leagueTeamUid = '');
-
-      Navigator.pop(context);
-    }
-
     _singleInviteBloc = SingleInviteBloc(
         inviteBloc: BlocProvider.of<InviteBloc>(context),
         inviteUid: widget._inviteUid,
@@ -82,12 +69,17 @@ class _AcceptInviteToLeagueTeamScreenState
     bool res = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
+          InviteToLeagueTeam inviteToLeagueTeam =
+              _singleInviteBloc.currentState.invite as InviteToLeagueTeam;
+
           return AlertDialog(
             title: Text(Messages.of(context).league),
             content: RichText(
               text: TextSpan(
                 text: Messages.of(context).confirmcreateteamforleague(
-                    _invite.leagueTeamName, _seasonName, _invite.leagueName),
+                    inviteToLeagueTeam.leagueTeamName,
+                    _seasonName,
+                    inviteToLeagueTeam.leagueName),
                 style: Theme.of(context).textTheme.body1,
               ),
             ),
@@ -107,85 +99,11 @@ class _AcceptInviteToLeagueTeamScreenState
     if (res) {
       setState(() => _saving = true);
       _singleInviteBloc.dispatch(SingleInviteEventAcceptInviteToLeagueTeam(
-        teamUid: _currentTeamUid,
-        seasonUid: _seasonSelected,
-      ));
-      await for (var state in _singleInviteBloc.state) {
-        if (state is SingleInviteSaveFailed) {
-          _showInSnackBar(Messages.of(context).formerror);
-        } else if (state is SingleInviteDeleted) {
-          Navigator.pop(context);
-        } else if (state is SingleInviteLoaded) {
-          break;
-        }
-      }
-      /*
-      TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
-      try {
-        SeasonBuilder season;
-
-        if (_currentTeamUid == TeamPicker.createNew) {
-          TeamBuilder team = new TeamBuilder();
-            team.name =_invite.leagueTeamName;
-            String myUid= teamBloc.coordinationBloc.authenticationBloc.currentUser.uid;
-
-          team.admins.add(myUid);
-          season = new SeasonBuilder();
-          season.
-              name =_seasonName;
-              season.record =WinRecordBuilder();
-              season.players.add(SeasonPlayer((b) => b..playerUid = myUid
-              ..role = RoleInTeam.NonPlayer);
-          LeagueOrTournamentTeam leagueTeam = await UserDatabaseData
-              .instance.updateModel
-              .getLeagueTeamData(_invite.leagueTeamUid);
-          SingleTeamBloc singleTeamBloc = new SingleTeamBloc(teamBloc: teamBloc, teamUid: SingleTeamBloc.createNew);
-          singleTeamBloc.dispatch(SingleTeamAdd(newSeason: season, newTeam: team));
-          Team savedTeam;
-          await for (SingleTeamState state in singleTeamBloc.state) {
-            if (state is SingleTeamSaveFailed) {
-              // Fail!
-              _showInSnackBar(Messages.of(context).formerror);
-              return;
-            }
-            if (state is SingleTeamLoaded) {
-              // Yay!
-              savedTeam = state.team;
-            }
-          }
-
-          if (leagueTeam.seasonUid != null) {
-            // Someone beat them to it!
-            // TODO: Say someone beat them to it.
-          } else {
-            leagueTeam.seasonUid = savedTeam.currentSeason;
-            await leagueTeam.firebaseUpdate();
-          }
-        } else if (_seasonSelected == SeasonFormField.createNew) {
-          season = new SeasonBuilder(
-            name: _seasonName,
-            teamUid: _currentTeamUid,
-          );
-          await season.updateFirestore();
-        } else {
-          season = team
-              .instance.teams[_currentTeamUid].seasons[_seasonSelected];
-        }
-        await _invite.acceptInvite(season);
-        await _invite.firestoreDelete();
-        Navigator.pushNamed(context, "/Team/" + _currentTeamUid);
-      } finally {
-        setState(() => _saving = false);
-      }
-    */
+          teamUid: _currentTeamUid, seasonUid: _seasonSelected));
     }
-
-    // _invite.acceptInvite();
-    // await _invite.firestoreDelete();
-    // Navigator.pop(context);
   }
 
-  Widget _buildSeasonTextField() {
+  Widget _buildSeasonTextField(InviteToLeagueTeam invite) {
     return EnsureVisibleWhenFocused(
       focusNode: _focusNodeSeason,
       child: new TextFormField(
@@ -195,7 +113,7 @@ class _AcceptInviteToLeagueTeamScreenState
           labelText: Messages.of(context).seasonhint,
         ),
         focusNode: _focusNodeSeason,
-        initialValue: _invite.leagueSeasonName,
+        initialValue: invite.leagueSeasonName,
         keyboardType: TextInputType.text,
         obscureText: false,
         validator: (String value) {
@@ -208,7 +126,7 @@ class _AcceptInviteToLeagueTeamScreenState
     );
   }
 
-  Widget _buildSeasonSection() {
+  Widget _buildSeasonSection(InviteToLeagueTeam invite) {
     if (_currentTeamUid == null) {
       return SizedBox(
         height: 0.0,
@@ -218,7 +136,7 @@ class _AcceptInviteToLeagueTeamScreenState
 
     if (_currentTeamUid == TeamPicker.createNew) {
       formChildren = Column(
-        children: <Widget>[_buildSeasonTextField()],
+        children: <Widget>[_buildSeasonTextField(invite)],
       );
     } else {
       formChildren = SeasonFormField(
@@ -232,7 +150,7 @@ class _AcceptInviteToLeagueTeamScreenState
       );
       if (_seasonSelected == SeasonFormField.createNew) {
         formChildren = Column(
-          children: <Widget>[formChildren, _buildSeasonTextField()],
+          children: <Widget>[formChildren, _buildSeasonTextField(invite)],
         );
       }
     }
@@ -259,32 +177,40 @@ class _AcceptInviteToLeagueTeamScreenState
             margin: EdgeInsets.all(10.0),
             child: Scrollbar(
               child: new SingleChildScrollView(
-                child: BlocBuilder(
+                child: BlocListener(
+                  bloc: _singleInviteBloc,
+                  listener: (BuildContext context, SingleInviteState state) {
+                    if (state is SingleInviteDeleted) {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: BlocBuilder(
                     bloc: _singleInviteBloc,
                     builder: (BuildContext context, SingleInviteState state) {
                       if (state is SingleInviteDeleted) {
                         // Deleted.
                         return Center(child: CircularProgressIndicator());
-                      } else if (state is SingleInviteUninitialized) {
-                        // Loading.
-                        return Center(child: CircularProgressIndicator());
                       } else {
+                        InviteToLeagueTeam inviteToLeagueTeam =
+                            state.invite as InviteToLeagueTeam;
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             new ListTile(
                               leading: LeagueImage(
-                                leagueOrTournamentUid: _invite.leagueUid,
+                                leagueOrTournamentUid:
+                                    inviteToLeagueTeam.leagueUid,
                                 width: 50.0,
                                 height: 50.0,
                               ),
-                              title: new Text(_invite.leagueTeamName),
+                              title:
+                                  new Text(inviteToLeagueTeam.leagueTeamName),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(_invite.leagueName),
+                                  Text(inviteToLeagueTeam.leagueName),
                                   ByUserNameComponent(
-                                      userId: _invite.sentByUid),
+                                      userId: inviteToLeagueTeam.sentByUid),
                                 ],
                               ),
                             ),
@@ -294,7 +220,7 @@ class _AcceptInviteToLeagueTeamScreenState
                               onChanged: (String str) =>
                                   setState(() => _currentTeamUid = str),
                             ),
-                            _buildSeasonSection(),
+                            _buildSeasonSection(inviteToLeagueTeam),
                             ButtonBar(
                               children: <Widget>[
                                 new RaisedButton(
@@ -304,8 +230,10 @@ class _AcceptInviteToLeagueTeamScreenState
                                   textColor: Colors.white,
                                 ),
                                 new FlatButton(
-                                  onPressed: () => Navigator.pushNamed(context,
-                                      "/League/Main/" + _invite.leagueUid),
+                                  onPressed: () => Navigator.pushNamed(
+                                      context,
+                                      "/League/Main/" +
+                                          inviteToLeagueTeam.leagueUid),
                                   child: Text(messages.openbutton),
                                 ),
                                 new FlatButton(
@@ -318,7 +246,9 @@ class _AcceptInviteToLeagueTeamScreenState
                           ],
                         );
                       }
-                    }),
+                    },
+                  ),
+                ),
               ),
             ),
           ),

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
@@ -77,19 +75,14 @@ class InviteListScreen extends StatefulWidget {
 }
 
 class InviteListScreenState extends State<InviteListScreen> {
-  StreamSubscription<UpdateReason> _stream;
-
   @override
   void initState() {
-    _stream = UserDatabaseData.instance.inviteStream.listen(onInviteUpdate);
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _stream.cancel();
-    _stream = null;
   }
 
   void onInviteUpdate(UpdateReason reason) {

@@ -59,16 +59,6 @@ class _AcceptInviteToPlayerScreenState
       _singleInviteBloc.dispatch(SingleInviteEventAcceptInviteToPlayer(
         relationship: _relationship,
       ));
-      await for (SingleInviteState state in _singleInviteBloc.state) {
-        if (state is SingleInviteSaveFailed) {
-          _showInSnackBar(Messages.of(context).formerror);
-          return;
-        }
-        if (state is SingleInviteLoaded) {
-          break;
-        }
-      }
-      Navigator.pop(context);
     }
   }
 
@@ -84,7 +74,7 @@ class _AcceptInviteToPlayerScreenState
           title: BlocBuilder<SingleInviteEvent, SingleInviteState>(
             bloc: _singleInviteBloc,
             builder: (BuildContext context, SingleInviteState state) {
-              if (state is SingleInviteUninitialized) {
+              if (state is SingleInviteDeleted) {
                 return Text(messages.loading);
               } else {
                 return Text(messages
@@ -109,15 +99,19 @@ class _AcceptInviteToPlayerScreenState
         ),
         body: new Scrollbar(
           child: new SingleChildScrollView(
-            child: BlocBuilder<SingleInviteEvent, SingleInviteState>(
+            child: BlocListener(
+              bloc: _singleInviteBloc,
+              listener: (BuildContext context, SingleInviteState state) {
+                if (state is SingleInviteDeleted) {
+                  Navigator.pop(context);
+                }
+              },
+              child: BlocBuilder<SingleInviteEvent, SingleInviteState>(
                 bloc: _singleInviteBloc,
                 builder: (BuildContext context, SingleInviteState state) {
                   if (state is SingleInviteDeleted) {
                     // Deleted.
                     Navigator.pop(context);
-                    return Center(child: CircularProgressIndicator());
-                  } else if (state is SingleInviteUninitialized) {
-                    // Loading.
                     return Center(child: CircularProgressIndicator());
                   } else {
                     return SavingOverlay(
@@ -172,7 +166,9 @@ class _AcceptInviteToPlayerScreenState
                       ),
                     );
                   }
-                }),
+                },
+              ),
+            ),
           ),
         ),
       ),

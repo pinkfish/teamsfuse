@@ -11,6 +11,8 @@ class ClubMembers extends StatelessWidget {
   final Club club;
 
   void _deleteMember(BuildContext context, FusedUserProfile profile) async {
+    ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
+
     Messages mess = Messages.of(context);
     // Show an alert dialog first.
     bool result = await showDialog<bool>(
@@ -46,25 +48,31 @@ class ClubMembers extends StatelessWidget {
       },
     );
     if (result) {
-      club.deleteClubMember(profile.uid);
+      clubBloc.dispatch(
+          ClubDeleteMember(clubUid: club.uid, memberUid: profile.uid));
     }
   }
 
-  Widget _buildFromFuture(BuildContext context,
-      AsyncSnapshot<FusedUserProfile> profile, bool admin) {
-    AuthenticationBloc bloc = BlocProvider.of<AuthenticationBloc>(context);
-    if (profile.hasData) {
-      return new ListTile(
-        leading: new UserImage(profile.data),
-        title: new Text(profile.data.displayName),
-        subtitle: new Text(admin ? Messages.of(context).administrator : ""),
-        trailing: club.isAdmin() && profile.data.uid != bloc.currentUser.uid
-            ? new IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () => _deleteMember(context, profile.data),
-              )
-            : null,
-      );
+  Widget _buildFromFuture(
+      BuildContext context, UserState state, bool admin, String uid) {
+    if ((state is UserLoaded) && state.users.containsKey(uid)) {
+      FusedUserProfile profile = state.users[uid];
+      if (profile != null) {
+        AuthenticationBloc authenticationBloc =
+            BlocProvider.of<AuthenticationBloc>(context);
+        return new ListTile(
+          leading: new UserImage(profile),
+          title: new Text(profile.displayName),
+          subtitle: new Text(admin ? Messages.of(context).administrator : ""),
+          trailing: club.isAdmin() &&
+                  profile.uid != authenticationBloc.currentUser.uid
+              ? new IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () => _deleteMember(context, profile),
+                )
+              : null,
+        );
+      }
     }
     return new ListTile(
       leading: const Icon(Icons.help),
@@ -77,21 +85,19 @@ class ClubMembers extends StatelessWidget {
 
     for (String adminUid in club.adminsUids) {
       members.add(
-        new FutureBuilder<FusedUserProfile>(
-          future: UserDatabaseData.instance.userAuth.getProfile(adminUid),
-          builder:
-              (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) =>
-                  _buildFromFuture(context, profile, true),
+        BlocBuilder(
+          bloc: BlocProvider.of<UserBloc>(context),
+          builder: (BuildContext context, UserState state) =>
+              _buildFromFuture(context, state, true, adminUid),
         ),
       );
     }
     for (String memberUid in club.members) {
       members.add(
-        new FutureBuilder<FusedUserProfile>(
-          future: UserDatabaseData.instance.userAuth.getProfile(memberUid),
-          builder:
-              (BuildContext context, AsyncSnapshot<FusedUserProfile> profile) =>
-                  _buildFromFuture(context, profile, false),
+        BlocBuilder(
+          bloc: BlocProvider.of<UserBloc>(context),
+          builder: (BuildContext context, UserState state) =>
+              _buildFromFuture(context, state, false, memberUid),
         ),
       );
     }

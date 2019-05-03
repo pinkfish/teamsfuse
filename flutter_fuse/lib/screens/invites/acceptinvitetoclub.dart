@@ -22,7 +22,6 @@ class AcceptInviteToClubScreen extends StatefulWidget {
 
 class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  InviteToClub _invite;
   SingleInviteBloc _singleInviteBloc;
 
   static const String newInvite = 'new';
@@ -31,14 +30,6 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
   void initState() {
     super.initState();
     // Default to empty.
-    _invite = new InviteToClub((b) => b..clubName = '');
-    if (UserDatabaseData.instance.invites.containsKey(widget._inviteUid)) {
-      _invite =
-          UserDatabaseData.instance.invites[widget._inviteUid] as InviteToClub;
-    } else {
-      // Get out of here.
-      Navigator.pop(context);
-    }
     _singleInviteBloc = SingleInviteBloc(
         inviteBloc: BlocProvider.of<InviteBloc>(context),
         inviteUid: widget._inviteUid,
@@ -82,43 +73,49 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
       ),
       body: new Scrollbar(
         child: new SingleChildScrollView(
-          child: BlocBuilder(
+          child: BlocListener(
             bloc: _singleInviteBloc,
-            builder: (BuildContext context, SingleInviteState state) {
+            listener: (BuildContext context, SingleInviteState state) {
               if (state is SingleInviteDeleted) {
-                // Deleted.
-                return Center(child: CircularProgressIndicator());
-              } else if (state is SingleInviteUninitialized) {
-                // Loading.
-                return Center(child: CircularProgressIndicator());
-              } else {
-                return Column(
-                  children: <Widget>[
-                    new ListTile(
-                      leading: const Icon(CommunityIcons.houzz),
-                      title: new Text(_invite.clubName),
-                      subtitle:
-                          new ByUserNameComponent(userId: _invite.sentByUid),
-                    ),
-                    new Row(
-                      children: <Widget>[
-                        new RaisedButton(
-                          onPressed: _savePressed,
-                          child: new Text(messages.addinvite),
-                          color: theme.accentColor,
-                          textColor: Colors.white,
-                        ),
-                        new FlatButton(
-                          onPressed: () =>
-                              showDeleteInvite(context, _singleInviteBloc),
-                          child: new Text(messages.deleteinvite),
-                        ),
-                      ],
-                    ),
-                  ],
-                );
+                Navigator.pop(context);
               }
             },
+            child: BlocBuilder(
+              bloc: _singleInviteBloc,
+              builder: (BuildContext context, SingleInviteState state) {
+                if (state is SingleInviteDeleted) {
+                  // Deleted.
+                  return Center(child: CircularProgressIndicator());
+                } else {
+                  InviteToClub inviteToClub = state.invite as InviteToClub;
+                  return Column(
+                    children: <Widget>[
+                      new ListTile(
+                        leading: const Icon(CommunityIcons.houzz),
+                        title: new Text(inviteToClub.clubName),
+                        subtitle: new ByUserNameComponent(
+                            userId: inviteToClub.sentByUid),
+                      ),
+                      new Row(
+                        children: <Widget>[
+                          new RaisedButton(
+                            onPressed: _savePressed,
+                            child: new Text(messages.addinvite),
+                            color: theme.accentColor,
+                            textColor: Colors.white,
+                          ),
+                          new FlatButton(
+                            onPressed: () =>
+                                showDeleteInvite(context, _singleInviteBloc),
+                            child: new Text(messages.deleteinvite),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+              },
+            ),
           ),
         ),
       ),

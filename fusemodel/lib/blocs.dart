@@ -19,3 +19,4 @@ export 'src/blocs/single/singleteambloc.dart';
 export 'src/blocs/single/singleteamopponentbloc.dart';
 export 'src/blocs/single/singleteamseasonbloc.dart';
 export 'src/blocs/teambloc.dart';
+export 'src/blocs/userbloc.dart';

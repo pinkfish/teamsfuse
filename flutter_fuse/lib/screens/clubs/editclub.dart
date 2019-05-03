@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/clubs/editclubdetails.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class EditClubScreen extends StatefulWidget {
@@ -20,8 +22,9 @@ class EditClubScreen extends StatefulWidget {
 class EditClubScreenState extends State<EditClubScreen> {
   final GlobalKey<EditClubDetailsFormState> _formKey =
       new GlobalKey<EditClubDetailsFormState>();
-  bool _saving = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  SingleClubBloc _singleClubState;
+  bool _doingSave = false;
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
@@ -29,35 +32,23 @@ class EditClubScreenState extends State<EditClubScreen> {
   }
 
   void _savePressed() async {
-    setState(() {
-      _saving = true;
-    });
     try {
       Club club = _formKey.currentState.validateAndCreate();
       File imageFile = _formKey.currentState.getImageFile();
       if (club != null) {
-        if (imageFile != null) {
-          Uri uri = await UserDatabaseData.instance.updateModel
-              .updateClubImage(club, imageFile);
-          club.photoUrl = uri.toString();
-        }
-        await club.updateFirestore();
-        Navigator.pop(context);
+        _doingSave = true;
+        _singleClubState
+            .dispatch(SingleClubUpdate(club: club, image: imageFile));
       } else {
         _showInSnackBar(Messages.of(context).formerror);
       }
-    } finally {
-      setState(() {
-        _saving = false;
-      });
-    }
+    } finally {}
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(SingleClubState state) {
     return new SavingOverlay(
-      saving: _saving,
-      child: new EditClubDetailsForm(
-          UserDatabaseData.instance.clubs[widget.clubUid], _formKey),
+      saving: state is SingleClubSaving,
+      child: new EditClubDetailsForm(state.club, _formKey),
     );
   }
 
@@ -72,7 +63,28 @@ class EditClubScreenState extends State<EditClubScreen> {
         child: const Icon(Icons.check),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: _buildBody(),
+      body: BlocListener(
+        bloc: _singleClubState,
+        listener: (BuildContext context, SingleClubState state) {
+          if (state is SingleClubDeleted) {
+            Navigator.pop(context);
+          } else if (state is SingleClubLoaded) {
+            // finished saving.
+            if (_doingSave) {
+              Navigator.pop(context);
+            }
+          }
+        },
+        child: BlocBuilder(
+          bloc: _singleClubState,
+          builder: (BuildContext context, SingleClubState state) {
+            if (state is SingleClubDeleted) {
+            } else {
+              return _buildBody(state);
+            }
+          },
+        ),
+      ),
     );
   }
 }

@@ -164,13 +164,10 @@ class FusedDrawerContent extends StatelessWidget {
 
           overlayState.insert(overlayEntry);
 
-          // Pre-emptively clear the user data stuff, otherwise we end
-          // erroring all over the place when the subscriptions fail
-          UserDatabaseData.instance.close();
+          // Do the logout dance.
           AuthenticationBloc authenticationBloc =
               BlocProvider.of<AuthenticationBloc>(context);
           authenticationBloc.dispatch(LoggedOut());
-          // await UserDatabaseData.instance.userAuth.signOut();
 
           await overlayEntry.remove();
 

@@ -51,16 +51,16 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
     return _formKey.currentState.validate();
   }
 
-  Club validateAndCreate() {
+  ClubBuilder validateAndCreate() {
     if (!_formKey.currentState.validate()) {
       return null;
     } else {
       _formKey.currentState.save();
-      Club club = new Club(
-          uid: widget.club.uid,
-          name: _clubName,
-          arriveBeforeGame: _clubArriveBefore,
-          trackAttendence: _clubTrackAttendence);
+      ClubBuilder club = ClubBuilder()
+        ..uid = widget.club.uid
+        ..name = _clubName
+        ..arriveBeforeGame = _clubArriveBefore
+        ..trackAttendence = _clubTrackAttendence;
 
       // New club, add in the default admin.
       if (club.uid == null) {

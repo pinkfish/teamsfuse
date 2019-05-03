@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/teams/teamtile.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class ClubTeams extends StatelessWidget {
-  ClubTeams(this.club);
+  ClubTeams(this.clubBloc) {
+    clubBloc.dispatch(SingleClubLoadTeams());
+  }
 
-  final Club club;
+  final SingleClubBloc clubBloc;
 
   List<Widget> _teamTiles(BuildContext context, Iterable<Team> teams) {
     List<Widget> teamWidgets = <Widget>[];
@@ -36,16 +40,14 @@ class ClubTeams extends StatelessWidget {
     return teamWidgets;
   }
 
-  Widget _buildTeams(
-      BuildContext context, AsyncSnapshot<Iterable<Team>> teams) {
+  Widget _buildTeams(BuildContext context, SingleClubState singleClubState) {
     List<Widget> teamWidgets = <Widget>[];
-
-    if (teams.hasData) {
-      teamWidgets = _teamTiles(context, teams.data);
-    } else if (club.cachedTeams != null) {
-      teamWidgets = _teamTiles(context, club.cachedTeams);
-    } else {
-      teamWidgets.add(new Text(Messages.of(context).loading));
+    if (singleClubState is SingleClubLoaded) {
+      if (singleClubState.teams.length != 0) {
+        teamWidgets = _teamTiles(context, singleClubState.teams);
+      } else {
+        teamWidgets.add(new Text(Messages.of(context).loading));
+      }
     }
 
     return new Column(
@@ -58,11 +60,11 @@ class ClubTeams extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new SingleChildScrollView(
-      child: new StreamBuilder<Iterable<Team>>(
-        stream: club.teamStream,
-        builder: _buildTeams,
-      ),
+    return BlocBuilder(
+      bloc: clubBloc,
+      builder: (BuildContext context, SingleClubState state) {
+        return _buildTeams(context, state);
+      },
     );
   }
 }

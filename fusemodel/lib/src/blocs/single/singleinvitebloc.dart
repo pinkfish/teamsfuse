@@ -77,11 +77,9 @@ class SingleInviteEvent extends Equatable {}
 class SingleInviteEventAcceptInviteToTeam extends SingleInviteEvent {
   final Map<String, String> playerNameToUid;
   final Map<String, Relationship> relationship;
-  final String teamUid;
-  final String seasonUid;
 
   SingleInviteEventAcceptInviteToTeam(
-      {this.playerNameToUid, this.relationship, this.teamUid, this.seasonUid});
+      {this.playerNameToUid, this.relationship});
 }
 
 ///
@@ -103,13 +101,10 @@ class SingleInviteEventAcceptInviteToLeagueAdmin extends SingleInviteEvent {
 ///
 class SingleInviteEventAcceptInviteToLeagueTeam extends SingleInviteEvent {
   final String teamUid;
-  final String playerUid;
   final String seasonUid;
 
   SingleInviteEventAcceptInviteToLeagueTeam(
-      {@required this.teamUid,
-      @required this.playerUid,
-      @required this.seasonUid});
+      {@required this.teamUid, @required this.seasonUid});
 }
 
 ///
@@ -127,9 +122,7 @@ class SingleInviteEventAcceptInviteToPlayer extends SingleInviteEvent {
 /// Accept this invite and do whatever than means in acceptance.
 ///
 class SingleInviteEventAcceptInviteAsAdmin extends SingleInviteEvent {
-  final String teamUid;
-
-  SingleInviteEventAcceptInviteAsAdmin({@required this.teamUid});
+  SingleInviteEventAcceptInviteAsAdmin();
 }
 
 ///

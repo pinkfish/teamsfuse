@@ -77,6 +77,16 @@ class _ClubEventNewDataLoaded extends ClubEvent {
 }
 
 ///
+/// Deletes an admin from the club.
+///
+class ClubDeleteMember extends ClubEvent {
+  final String memberUid;
+  final String clubUid;
+
+  ClubDeleteMember({@required this.memberUid, @required this.clubUid});
+}
+
+///
 /// Handles the work around the clubs and club system inside of
 /// the app.
 ///
@@ -200,6 +210,16 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
     if (event is _ClubEventLogout) {
       yield ClubUninitialized();
       _cleanupStuff();
+    }
+
+    if (event is ClubDeleteMember) {
+      if (!currentState.clubs.containsKey(event.clubUid)) {
+        return;
+      }
+      try {
+        await coordinationBloc.databaseUpdateModel.deleteClubMember(
+            currentState.clubs[event.clubUid], event.memberUid);
+      } catch (e) {}
     }
   }
 }

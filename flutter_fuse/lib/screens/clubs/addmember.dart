@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:flutter_fuse/widgets/util/clubimage.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/blocs.dart';
 
 class AddMemberScreen extends StatefulWidget {
   AddMemberScreen(this.clubUid);
@@ -24,15 +25,22 @@ class AddMemberScreenState extends State<AddMemberScreen> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   static final Validations validations = new Validations();
   bool _autoValidate = false;
-  bool _saving = false;
   String _emailToInvite;
   bool _inviteAsAdmin;
-  Club _club;
+  bool _doingSave = false;
+  SingleClubBloc _singleClubBloc;
 
   @override
   void initState() {
     super.initState();
-    _club = UserDatabaseData.instance.clubs[widget.clubUid];
+    _singleClubBloc = SingleClubBloc(
+        clubUid: widget.clubUid, clubBloc: BlocProvider.of<ClubBloc>(context));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _singleClubBloc.dispose();
   }
 
   void _showInSnackBar(String value) {
@@ -46,23 +54,12 @@ class AddMemberScreenState extends State<AddMemberScreen> {
   void _savePressed() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      setState(() {
-        _saving = true;
-      });
-      try {
-        if (UserDatabaseData.instance.clubs.containsKey(widget.clubUid)) {
-          Club club = UserDatabaseData.instance.clubs[widget.clubUid];
-          if (club.isAdmin()) {
-            await club.invite(_emailToInvite, _inviteAsAdmin);
-            Navigator.pop(context);
-          } else {
-            _showInSnackBar(Messages.of(context).needtobeadmin);
-          }
-        }
-      } finally {
-        setState(() {
-          _saving = false;
-        });
+      if (_singleClubBloc.currentState.club.isAdmin()) {
+        _doingSave = true;
+        _singleClubBloc.dispatch(SingleClubInviteMember(
+            email: _emailToInvite, admin: _inviteAsAdmin));
+      } else {
+        _showInSnackBar(Messages.of(context).needtobeadmin);
       }
     } else {
       _showInSnackBar(Messages.of(context).formerror);
@@ -70,53 +67,72 @@ class AddMemberScreenState extends State<AddMemberScreen> {
   }
 
   Widget _buildBody() {
-    return new SavingOverlay(
-      saving: _saving,
-      child: new SingleChildScrollView(
-        child: new Form(
-          key: _formKey,
-          autovalidate: _autoValidate,
-          child: new Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              new ListTile(
-                leading: ClubImage(
-                  width: 40.0,
-                  height: 40.0,
-                  clubUid: widget.clubUid,
+    return BlocListener(
+      bloc: _singleClubBloc,
+      listener: (BuildContext context, SingleClubState state) {
+        if (state is SingleClubSaveFailed) {
+          _showInSnackBar(Messages.of(context).formerror);
+        } else if (state is SingleClubDeleted) {
+          Navigator.pop(context);
+        } else if (state is SingleClubLoaded) {
+          if (_doingSave) {
+            Navigator.pop(context);
+          }
+        }
+      },
+      child: BlocBuilder(
+        bloc: _singleClubBloc,
+        builder: (BuildContext context, SingleClubState state) {
+          return SavingOverlay(
+            saving: state is SingleClubSaving,
+            child: new SingleChildScrollView(
+              child: new Form(
+                key: _formKey,
+                autovalidate: _autoValidate,
+                child: new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    new ListTile(
+                      leading: ClubImage(
+                        width: 40.0,
+                        height: 40.0,
+                        clubUid: widget.clubUid,
+                      ),
+                      title: Text(state.club.name,
+                          style: Theme.of(context)
+                              .textTheme
+                              .subhead
+                              .copyWith(fontWeight: FontWeight.bold)),
+                    ),
+                    new ListTile(
+                      leading: const Icon(Icons.email),
+                      title: new EnsureVisibleWhenFocused(
+                        child: new TextFormField(
+                          decoration: new InputDecoration(
+                              labelText: Messages.of(context).email,
+                              hintText: Messages.of(context).playeremailHint),
+                          initialValue: "",
+                          validator: (String value) =>
+                              validations.validateEmail(context, value),
+                          onSaved: (String value) => _emailToInvite = value,
+                        ),
+                        focusNode: _nameField,
+                      ),
+                    ),
+                    new SwitchFormField(
+                      icon: Icons.person_add,
+                      child: new Text(Messages.of(context).administrator),
+                      initialValue: false,
+                      onSaved: (bool value) => _inviteAsAdmin = value,
+                    )
+                  ],
                 ),
-                title: Text(_club.name,
-                    style: Theme.of(context)
-                        .textTheme
-                        .subhead
-                        .copyWith(fontWeight: FontWeight.bold)),
               ),
-              new ListTile(
-                leading: const Icon(Icons.email),
-                title: new EnsureVisibleWhenFocused(
-                  child: new TextFormField(
-                    decoration: new InputDecoration(
-                        labelText: Messages.of(context).email,
-                        hintText: Messages.of(context).playeremailHint),
-                    initialValue: "",
-                    validator: (String value) =>
-                        validations.validateEmail(context, value),
-                    onSaved: (String value) => _emailToInvite = value,
-                  ),
-                  focusNode: _nameField,
-                ),
-              ),
-              new SwitchFormField(
-                icon: Icons.person_add,
-                child: new Text(Messages.of(context).administrator),
-                initialValue: false,
-                onSaved: (bool value) => _inviteAsAdmin = value,
-              )
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

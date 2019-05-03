@@ -134,15 +134,6 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
         relationship: _relationship,
         playerNameToUid: currentCopy,
       ));
-      await for (SingleInviteState state in _singleInviteBloc.state) {
-        if (state is SingleInviteSaveFailed) {
-          _showInSnackBar(Messages.of(context).formerror);
-          return;
-        }
-        if (state is SingleInviteLoaded) {
-          break;
-        }
-      }
     }
   }
 
@@ -275,62 +266,76 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
       ),
     );
 
-    return BlocProvider<SingleInviteBloc>(
+    return BlocListener(
       bloc: _singleInviteBloc,
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(Messages.of(context).title),
-          actions: <Widget>[
-            new FlatButton(
-              onPressed: () {
-                _savePressed();
-              },
-              child: new Text(
-                Messages.of(context).savebuttontext,
-                style: Theme.of(context)
-                    .textTheme
-                    .subhead
-                    .copyWith(color: Colors.white),
+      listener: (BuildContext context, SingleInviteState state) {
+        if (state is SingleInviteDeleted) {
+          Navigator.pop(context);
+        }
+      },
+      child: BlocProvider<SingleInviteBloc>(
+        bloc: _singleInviteBloc,
+        child: Scaffold(
+          key: _scaffoldKey,
+          appBar: new AppBar(
+            title: new Text(Messages.of(context).title),
+            actions: <Widget>[
+              new FlatButton(
+                onPressed: () {
+                  _savePressed();
+                },
+                child: new Text(
+                  Messages.of(context).savebuttontext,
+                  style: Theme.of(context)
+                      .textTheme
+                      .subhead
+                      .copyWith(color: Colors.white),
+                ),
               ),
-            ),
-          ],
-        ),
-        body: new Scrollbar(
-          child: new SingleChildScrollView(
-            child: BlocBuilder<SingleInviteEvent, SingleInviteState>(
-              bloc: _singleInviteBloc,
-              builder: (BuildContext context, SingleInviteState state) {
-                if (state is SingleInviteUninitialized) {
-                  // Loading.
-                  return Center(child: CircularProgressIndicator());
-                } else if (state is SingleInviteDeleted) {
-                  // Go back!
-                  Navigator.pop(context);
-                  return Center(child: CircularProgressIndicator());
-                } else {
-                  if (state is SingleInviteSaveFailed) {
-                    _showInSnackBar(Messages.of(context).formerror);
+            ],
+          ),
+          body: new Scrollbar(
+            child: new SingleChildScrollView(
+              child: BlocListener(
+                bloc: _singleInviteBloc,
+                listener: (BuildContext context, SingleInviteState state) {
+                  if (state is SingleInviteDeleted) {
+                    // go back!
+                    Navigator.pop(context);
                   }
-                  InviteToTeam invite = state.invite as InviteToTeam;
-                  return SavingOverlay(
-                    saving: !(state is SingleInviteLoaded),
-                    child: Form(
-                      key: _formKey,
-                      child: new Column(
-                        children: <Widget>[
-                              new ListTile(
-                                leading: const Icon(CommunityIcons.tshirtCrew),
-                                title: new Text(invite.teamName),
-                                subtitle: new Text(invite.seasonName),
-                              )
-                            ] +
-                            players,
-                      ),
-                    ),
-                  );
-                }
-              },
+                },
+                child: BlocBuilder<SingleInviteEvent, SingleInviteState>(
+                  bloc: _singleInviteBloc,
+                  builder: (BuildContext context, SingleInviteState state) {
+                    if (state is SingleInviteDeleted) {
+                      // Go back!
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      if (state is SingleInviteSaveFailed) {
+                        _showInSnackBar(Messages.of(context).formerror);
+                      }
+                      InviteToTeam invite = state.invite as InviteToTeam;
+                      return SavingOverlay(
+                        saving: !(state is SingleInviteLoaded),
+                        child: Form(
+                          key: _formKey,
+                          child: new Column(
+                            children: <Widget>[
+                                  new ListTile(
+                                    leading:
+                                        const Icon(CommunityIcons.tshirtCrew),
+                                    title: new Text(invite.teamName),
+                                    subtitle: new Text(invite.seasonName),
+                                  )
+                                ] +
+                                players,
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
             ),
           ),
         ),

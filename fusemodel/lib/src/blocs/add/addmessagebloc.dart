@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import '../playerbloc.dart';
+import '../coordinationbloc.dart';
 import 'additemstate.dart';
 
 abstract class AddMessageEvent extends Equatable {}
@@ -18,7 +18,6 @@ class AddMessageEventCommit extends AddMessageEvent {
   // Need a rich text section for the message itself.
   final String subject;
   final String body;
-
   final List<String> recipients;
 
   AddMessageEventCommit(
@@ -32,10 +31,10 @@ class AddMessageEventCommit extends AddMessageEvent {
 /// Deals with specific players to allow for accepting/deleting/etc of the
 /// players.
 ///
-class AddPlayerBloc extends Bloc<AddMessageEvent, AddItemState> {
-  final PlayerBloc playerBloc;
+class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
+  final CoordinationBloc coordinationBloc;
 
-  AddPlayerBloc({@required this.playerBloc}) {}
+  AddMessageBloc({@required this.coordinationBloc}) {}
 
   @override
   AddItemState get initialState => new AddItemUninitialized();
@@ -44,28 +43,33 @@ class AddPlayerBloc extends Bloc<AddMessageEvent, AddItemState> {
   Stream<AddItemState> mapEventToState(AddMessageEvent event) async* {
     // Create a new Player.
     if (event is AddMessageEventCommit) {
-      yield AddItemSaving();
+      if (event.teamUid == null ||
+          event.recipients.length > 0 ||
+          event.body != null ||
+          event.subject != null) {
+        yield AddItemInvalidArguments(error: ArgumentError("Invalid args"));
+      } else {
+        yield AddItemSaving();
 
-      try {
-        MessageBuilder builder = MessageBuilder()
-          ..teamUid = event.teamUid
-          ..subject = event.subject
-          ..fromUid =
-              playerBloc.coordinationBloc.authenticationBloc.currentUser.uid;
-        for (String str in event.recipients) {
-          builder.recipients[str] = MessageRecipient((b) => b
-            ..state = MessageState.Unread
-            ..userId =
-                playerBloc.coordinationBloc.authenticationBloc.currentUser.uid
-            ..playerId = str);
+        try {
+          MessageBuilder builder = MessageBuilder()
+            ..teamUid = event.teamUid
+            ..subject = event.subject
+            ..fromUid = coordinationBloc.authenticationBloc.currentUser.uid;
+          for (String str in event.recipients) {
+            builder.recipients[str] = MessageRecipient((b) => b
+              ..state = MessageState.Unread
+              ..userId = coordinationBloc.authenticationBloc.currentUser.uid
+              ..playerId = str);
+          }
+          Message mess = await coordinationBloc.databaseUpdateModel
+              .updateFirestoreMessage(builder);
+          await coordinationBloc.databaseUpdateModel.updateFirestoreMessageBody(
+              messageUid: mess.uid, body: event.body);
+          yield AddItemDone(uid: mess.uid);
+        } catch (e) {
+          yield AddItemSaveFailed(error: e);
         }
-        Message mess = await playerBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreMessage(builder);
-        await playerBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreMessageBody(messageUid: mess.uid, body: event.body);
-        yield AddItemDone(uid: mess.uid);
-      } catch (e) {
-        yield AddItemSaveFailed(error: e);
       }
     }
   }

@@ -1,10 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/widgets/clubs/editclubdetails.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:flutter_fuse/widgets/util/clubimage.dart';
-import 'dart:io';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AddClubScreen extends StatefulWidget {
   @override
@@ -21,13 +22,13 @@ class AddClubScreenState extends State<AddClubScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   StepState _detailsStepState = StepState.editing;
   StepState _createStepStage = StepState.disabled;
-  Club _clubToAdd;
+  ClubBuilder _clubToAdd;
   File _imageFileToAdd;
 
   @override
   void initState() {
     super.initState();
-    _clubToAdd = new Club();
+    _clubToAdd = new ClubBuilder();
     _clubToAdd.name = "";
     _clubToAdd.arriveBeforeGame = 0;
     _clubToAdd.trackAttendence = Tristate.Unset;
@@ -149,8 +150,7 @@ class AddClubScreenState extends State<AddClubScreen> {
           ),
           new ListTile(
             leading: const Icon(Icons.check),
-            title: new Text(Messages
-                .of(context)
+            title: new Text(Messages.of(context)
                 .trackattendence(_clubToAdd.trackAttendence)),
           )
         ],
