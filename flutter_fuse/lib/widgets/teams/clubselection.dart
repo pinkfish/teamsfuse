@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/form/clubpicker.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 ///
@@ -31,7 +33,8 @@ class _ClubSelectionState extends State<ClubSelection> {
         widget.onChanged(null);
       } else {
         _clubUid = clubUid;
-        widget.onChanged(UserDatabaseData.instance.clubs[_clubUid]);
+        ClubBloc bloc = BlocProvider.of<ClubBloc>(context);
+        widget.onChanged(bloc.currentState.clubs[_clubUid]);
       }
     });
   }

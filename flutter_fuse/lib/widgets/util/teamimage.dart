@@ -1,7 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'cachednetworkimage.dart';
@@ -52,6 +52,7 @@ class TeamImage extends StatelessWidget {
     return const AssetImage("assets/images/defaultavatar2.png");
   }
 
+  /*
   Future<ImageProvider> get imageUrl async {
     if (team != null) {
       return _providerFromTeam(team);
@@ -61,19 +62,21 @@ class TeamImage extends StatelessWidget {
         .getPublicTeamDetails(teamUid);
     return _providerFromTeam(publicTeam);
   }
+  */
 
   @override
   Widget build(BuildContext context) {
-    return new FutureBuilder<Team>(
-      future: team != null
-          ? Future<Team>.value(team)
-          : UserDatabaseData.instance.updateModel.getPublicTeamDetails(teamUid),
-      builder: (BuildContext context, AsyncSnapshot<Team> snap) {
+    return BlocBuilder(
+      bloc: BlocProvider.of<TeamBloc>(context),
+      builder: (BuildContext context, TeamState teamState) {
         Widget inner;
-        if (snap.hasData &&
-            (snap.data.photoUrl != null && snap.data.photoUrl.isNotEmpty ||
-                width > 50.0 ||
-                !showIcon)) {
+        Team t = team;
+        if (t == null) {
+          t = teamState.getTeam(teamUid);
+        }
+        if (t != null &&
+            t.photoUrl != null &&
+            (t.photoUrl.isNotEmpty || width > 50.0 || !showIcon)) {
           // Yay!
           inner = ClipOval(
             child: SizedBox(
@@ -84,7 +87,7 @@ class TeamImage extends StatelessWidget {
                 child: FadeInImage(
                   fadeInDuration: Duration(milliseconds: 200),
                   fadeOutDuration: Duration(milliseconds: 200),
-                  image: _providerFromTeam(snap.data),
+                  image: _providerFromTeam(t),
                   alignment: alignment,
                   repeat: repeat,
                   matchTextDirection: matchTextDirection,
@@ -94,6 +97,11 @@ class TeamImage extends StatelessWidget {
             ),
           );
         } else {
+          // Try and load the public team.
+          if (t == null) {
+            BlocProvider.of<TeamBloc>(context)
+                .dispatch(TeamLoadPublicTeam(teamUid: teamUid));
+          }
           inner = const Icon(Icons.group);
         }
         return Container(

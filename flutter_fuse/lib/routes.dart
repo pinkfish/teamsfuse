@@ -41,18 +41,20 @@ class Routes {
     UserAuthImpl userAuthImpl = UserAuthImpl(firestore, persistentData);
     _authenticationBloc = AuthenticationBloc(userAuth: userAuthImpl);
     _loginBloc = new LoginBloc(userAuth: userAuthImpl);
+    DatabaseUpdateModel databaseUpdateModel =
+        DatabaseUpdateModelImpl(wrapper, SqlData.instance);
     _coordinationBloc = CoordinationBloc(
         persistentData: persistentData,
         authenticationBloc: _authenticationBloc,
         analytics: Analytics.instance,
-        databaseUpdateModel: UserDatabaseData.instance.updateModel,
+        databaseUpdateModel: databaseUpdateModel,
         analyticsSubsystem: Analytics.instance);
     _playerBloc = new PlayerBloc(coordinationBloc: _coordinationBloc);
     _inviteBloc = new InviteBloc(
         coordinationBloc: _coordinationBloc,
         persistentData: persistentData,
         analyticsSubsystem: Analytics.instance,
-        databaseUpdateModel: UserDatabaseData.instance.updateModel);
+        databaseUpdateModel: databaseUpdateModel);
     _teamBloc = new TeamBloc(
         coordinationBloc: _coordinationBloc, playerBloc: _playerBloc);
     _messagesBloc =

@@ -1,11 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class TeamPicker extends StatelessWidget {
   TeamPicker(
@@ -32,7 +30,8 @@ class TeamPicker extends StatelessWidget {
         value: TeamPicker.createNew,
       ));
     }
-    for (Team team in state.teams.values) {
+    for (String teamUid in state.allTeamUids) {
+      Team team = state.getTeam(teamUid);
       ret.add(new DropdownMenuItem<String>(
         child: new Text(team.name),
         value: team.uid,

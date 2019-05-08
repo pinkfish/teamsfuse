@@ -1,10 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../blocs/singleleagueortournamentteamprovider.dart';
 import 'cachednetworkimage.dart';
 
 /// Some overlay text onto the team to say home/away.
@@ -17,8 +18,7 @@ enum HomeAwayOverlay { home, away, none }
 ///
 class LeagueTeamImage extends StatelessWidget {
   LeagueTeamImage(
-      {this.team,
-      this.leagueOrTeamUid,
+      {this.leagueOrTeamUid,
       Key key,
       this.width,
       this.height,
@@ -33,7 +33,6 @@ class LeagueTeamImage extends StatelessWidget {
         );
 
   final String leagueOrTeamUid;
-  final LeagueOrTournamentTeam team;
   final double width;
   final double height;
   final BoxFit fit;
@@ -62,62 +61,65 @@ class LeagueTeamImage extends StatelessWidget {
     return const AssetImage("assets/images/leagueteam.png");
   }
 
-  Future<ImageProvider> get imageUrl async {
-    LeagueOrTournamentTeam lookupTeam = team;
-    if (lookupTeam == null) {
-      lookupTeam = await UserDatabaseData.instance.updateModel
-          .getLeagueTeamData(leagueOrTeamUid);
-    }
-    // Team uid, lookup the team first.
-    if (lookupTeam.seasonUid == null) {
-      return const AssetImage("assets/images/leagueteam.png");
-    }
-    Season season = await UserDatabaseData.instance.updateModel
-        .getSeason(lookupTeam.seasonUid);
-    if (season == null) {
-      return const AssetImage("assets/images/leagueteam.png");
-    }
-    Team publicTeam = await UserDatabaseData.instance.updateModel
-        .getPublicTeamDetails(lookupTeam.teamUid);
-    return _providerFromTeam(publicTeam);
-  }
-
   @override
   Widget build(BuildContext context) {
-    FutureBuilder<ImageProvider> futureBuilder = FutureBuilder<ImageProvider>(
-      future: imageUrl,
-      builder: (BuildContext context, AsyncSnapshot<ImageProvider> snap) {
-        Widget inner;
-        if (snap.hasData) {
-          // Yay!
-          inner = FadeInImage(
-            image: snap.data,
-            height: height,
-            width: width,
-            fit: fit,
-            alignment: alignment,
-            repeat: repeat,
-            matchTextDirection: matchTextDirection,
-            placeholder: AssetImage("assets/images/leagueteam.png"),
-          );
-        } else {
-          inner = Center(child: CircularProgressIndicator());
-        }
-        return AnimatedSwitcher(
-          duration: Duration(milliseconds: 500),
-          child: inner,
-        );
-      },
+    LeagueOrTournamentBloc leagueOrTournamentBloc =
+        BlocProvider.of<LeagueOrTournamentBloc>(context);
+    Widget blocBuilder = SingleLeagueOrTournamentTeamProvider(
+      leagueOrTournamentTeamUid: leagueOrTeamUid,
+      builder: (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
+          BlocListener(
+            bloc: bloc,
+            listener: (BuildContext context,
+                SingleLeagueOrTournamentTeamState state) {
+              if (state is SingleLeagueOrTournamentTeamLoaded) {
+                bloc.dispatch(SingleLeagueOrTournamentTeamLoadPublicTeam());
+              }
+            },
+            child: BlocBuilder<SingleLeagueOrTournamentTeamEvent,
+                SingleLeagueOrTournamentTeamState>(
+              bloc: bloc,
+              builder: (BuildContext context,
+                  SingleLeagueOrTournamentTeamState leagueState) {
+                Widget inner;
+                if (leagueState is SingleLeagueOrTournamentTeamDeleted ||
+                    leagueState.publicTeam == null) {
+                  inner = Center(child: CircularProgressIndicator());
+                } else {
+                  // Yay!
+
+                  inner = FadeInImage(
+                    image: _providerFromTeam(leagueState.publicTeam),
+                    height: height,
+                    width: width,
+                    fit: fit,
+                    alignment: alignment,
+                    repeat: repeat,
+                    matchTextDirection: matchTextDirection,
+                    placeholder: AssetImage("assets/images/leagueteam.png"),
+                  );
+                }
+                return AnimatedSwitcher(
+                  duration: Duration(milliseconds: 500),
+                  child: inner,
+                );
+              },
+            ),
+          ),
     );
     if (overlay == HomeAwayOverlay.none) {
-      return SizedBox(width: width, height: height, child: futureBuilder);
+      return SizedBox(
+        width: width,
+        height: height,
+        child: blocBuilder,
+      );
     }
     return SizedBox(
       width: width,
       height: height,
       child: Stack(
         children: <Widget>[
-          futureBuilder,
+          blocBuilder,
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(

@@ -13,19 +13,10 @@ import 'internal/blocstoload.dart';
 ///
 class LeagueOrTournamentState extends Equatable {
   final Map<String, LeagueOrTournament> leagueOrTournaments;
-  final Map<String, Iterable<LeagueOrTournamentSeason>>
-      leagueOrTournamentSeasons;
-  final Map<String, Iterable<LeagueOrTournamentDivison>>
-      leagueOrTournamentDivisions;
-  final Map<String, Iterable<LeagueOrTournamentTeam>> leagueOrTournamentTeams;
   final bool onlySql;
 
   LeagueOrTournamentState(
-      {@required this.leagueOrTournaments,
-      @required this.onlySql,
-      @required this.leagueOrTournamentSeasons,
-      @required this.leagueOrTournamentDivisions,
-      @required this.leagueOrTournamentTeams});
+      {@required this.leagueOrTournaments, @required this.onlySql});
 
   LeagueOrTournamentLoaded rebuild(
       {Map<String, LeagueOrTournament> leagueOrTournamentsParam,
@@ -39,13 +30,7 @@ class LeagueOrTournamentState extends Equatable {
     return LeagueOrTournamentLoaded(
         onlySql: onlySqlParam ?? onlySql,
         leagueOrTournaments:
-            leagueOrTournamentsParam ?? this.leagueOrTournaments,
-        leagueOrTournamentDivisions: leagueOrTournamentDivisionsParam ??
-            this.leagueOrTournamentDivisions,
-        leagueOrTournamentSeasons:
-            leagueOrTournamentSeasonsParam ?? this.leagueOrTournamentSeasons,
-        leagueOrTournamentTeams:
-            leagueOrTournamentTeamsParam ?? this.leagueOrTournamentTeams);
+            leagueOrTournamentsParam ?? this.leagueOrTournaments);
   }
 }
 
@@ -54,12 +39,7 @@ class LeagueOrTournamentState extends Equatable {
 ///
 class LeagueOrTournamentUninitialized extends LeagueOrTournamentState {
   LeagueOrTournamentUninitialized()
-      : super(
-            leagueOrTournaments: {},
-            onlySql: true,
-            leagueOrTournamentDivisions: {},
-            leagueOrTournamentSeasons: {},
-            leagueOrTournamentTeams: {});
+      : super(leagueOrTournaments: {}, onlySql: true);
 
   @override
   String toString() {
@@ -78,12 +58,7 @@ class LeagueOrTournamentLoaded extends LeagueOrTournamentState {
       Map<String, Iterable<LeagueOrTournamentDivison>>
           leagueOrTournamentDivisions,
       Map<String, Iterable<LeagueOrTournamentTeam>> leagueOrTournamentTeams})
-      : super(
-            leagueOrTournaments: leagueOrTournaments,
-            onlySql: onlySql,
-            leagueOrTournamentTeams: leagueOrTournamentTeams,
-            leagueOrTournamentSeasons: leagueOrTournamentSeasons,
-            leagueOrTournamentDivisions: leagueOrTournamentDivisions);
+      : super(leagueOrTournaments: leagueOrTournaments, onlySql: onlySql);
 
   @override
   String toString() {

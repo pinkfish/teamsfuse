@@ -152,6 +152,15 @@ class SingleTeamDeleteAdmin extends SingleTeamEvent {
 }
 
 ///
+/// Updates the club with this team.
+///
+class SingleTeamUpdateClub extends SingleTeamEvent {
+  final String clubUid;
+
+  SingleTeamUpdateClub({@required this.clubUid});
+}
+
+///
 /// Invites someone to be an admin for this team.
 ///
 class SingleTeamInviteAdmin extends SingleTeamEvent {
@@ -364,6 +373,14 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
           .listen((Iterable<InviteAsAdmin> invites) {
         dispatch(_SingleTeamInvitesAdded(invites: invites));
       });
+    }
+
+    if (event is SingleTeamUpdateClub) {
+      Team myTeam =
+          currentState.team.rebuild((b) => b..clubUid = event.clubUid);
+      await teamBloc.coordinationBloc.databaseUpdateModel
+          .updateFirestoreTeam(myTeam);
+      yield SingleTeamLoaded(state: currentState, team: myTeam);
     }
   }
 }

@@ -1,12 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class SeasonFormField extends FormField<String> {
   SeasonFormField({
-    @required String teamUid,
+    @required SingleTeamBloc teamBloc,
     Key key,
     String initialValue: none,
     bool enabled: true,
@@ -17,24 +17,27 @@ class SeasonFormField extends FormField<String> {
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
   })  : assert(initialValue != null),
-        assert(teamUid != null),
+        assert(teamBloc != null),
         super(
-            key: key,
-            initialValue: initialValue,
-            onSaved: onSaved,
-            validator: validator,
-            builder: (FormFieldState<String> field) {
-              final SeasonFormFieldState state = field as SeasonFormFieldState;
-              state._teamUid = teamUid;
-              final InputDecoration effectiveDecoration = (decoration ??
-                      const InputDecoration())
-                  .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-              return new InputDecorator(
+          key: key,
+          initialValue: initialValue,
+          onSaved: onSaved,
+          validator: validator,
+          builder: (FormFieldState<String> field) {
+            final SeasonFormFieldState state = field as SeasonFormFieldState;
+            state._teamUid = teamBloc;
+            final InputDecoration effectiveDecoration = (decoration ??
+                    const InputDecoration())
+                .applyDefaults(Theme.of(field.context).inputDecorationTheme);
+            return BlocBuilder(
+              bloc: teamBloc,
+              builder: (BuildContext context, SingleTeamState singleTeamState) {
+                return InputDecorator(
                   decoration: effectiveDecoration,
-                  child: new DropdownButton<String>(
+                  child: DropdownButton<String>(
                       hint: new Text(Messages.of(state.context).seasonselect),
                       value: state.value,
-                      items: state._buildItems(state.context),
+                      items: state._buildItems(state.context, singleTeamState),
                       onChanged: enabled
                           ? (String val) {
                               state.updateValue(val);
@@ -43,8 +46,12 @@ class SeasonFormField extends FormField<String> {
                                 onFieldSubmitted(val);
                               }
                             }
-                          : null));
-            });
+                          : null),
+                );
+              },
+            );
+          },
+        );
 
   final bool includeNone;
   final bool includeNew;
@@ -60,8 +67,7 @@ class SeasonFormField extends FormField<String> {
 class SeasonFormFieldState extends FormFieldState<String> {
   SeasonFormFieldState(this._includeNone, this._includeNew);
 
-  String _teamUid;
-  StreamSubscription<UpdateReason> _teamSubscription;
+  SingleTeamBloc _teamUid;
   bool _includeNone;
   bool _includeNew;
 
@@ -69,33 +75,10 @@ class SeasonFormFieldState extends FormFieldState<String> {
     setValue(val);
   }
 
-  void setTeamUid(String teamUid) {
-    setState(() {
-      _teamUid = teamUid;
-      if (_teamSubscription != null) {
-        _teamSubscription.cancel();
-      }
-      _teamSubscription = UserDatabaseData
-          .instance.teams[teamUid].thisTeamStream
-          .listen((UpdateReason value) {
-        setState(() {});
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    if (_teamSubscription != null) {
-      _teamSubscription.cancel();
-      _teamSubscription = null;
-    }
-  }
-
-  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+  List<DropdownMenuItem<String>> _buildItems(
+      BuildContext context, SingleTeamState state) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
-    if (_teamUid != null &&
-        UserDatabaseData.instance.teams.containsKey(_teamUid)) {
+    if (_teamUid != null) {
       if (_includeNone) {
         ret.add(new DropdownMenuItem<String>(
           child: Text(Messages.of(context).noseasons),
@@ -108,8 +91,7 @@ class SeasonFormFieldState extends FormFieldState<String> {
           value: SeasonFormField.createNew,
         ));
       }
-      UserDatabaseData.instance.teams[_teamUid].seasons
-          .forEach((String key, Season season) {
+      state.team.seasons.forEach((String key, Season season) {
         ret.add(new DropdownMenuItem<String>(
             child: new Text(season.name), value: season.uid));
       });

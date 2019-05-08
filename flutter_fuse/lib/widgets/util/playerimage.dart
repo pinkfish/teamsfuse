@@ -1,42 +1,35 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
 import 'cachednetworkimage.dart';
 
 ///
 /// Image of the specific player.  Will make an oval clip rect of the specific
 /// radius and fill the image to fit that circle.
 ///
-class PlayerImage extends ClipOval {
-  PlayerImage({
-    @required String playerUid,
-    Key key,
-    double radius = 20.0,
-    Color backgroundColor,
-  }) : super(
-          child: SizedBox(
-            width: radius * 2,
-            height: radius * 2,
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: new CachedNetworkImage(
-                placeholder: new Image(
-                    image:
-                        const AssetImage("assets/images/defaultavatar2.png")),
-                errorWidget: new Image(
-                    image: const AssetImage("assets/images/defaultavatar.png")),
-                imageFuture: getImageUrl(playerUid),
-              ),
-            ),
-          ),
-        );
+class PlayerImage extends StatelessWidget {
+  final double radius;
+  final Color backgroundColor;
+  final Key key;
+  final String playerUid;
 
-  static Future<String> getImageUrl(String playerUid) async {
+  PlayerImage(
+      {@required this.playerUid,
+      this.key,
+      this.backgroundColor,
+      this.radius = 20.0});
+
+  static Future<String> getImageUrl(
+      String playerUid, BuildContext context) async {
+    PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
     print('Loading for player $playerUid');
-    if (UserDatabaseData.instance.players.containsKey(playerUid)) {
-      Player player = UserDatabaseData.instance.players[playerUid];
+    if (playerBloc.currentState.players.containsKey(playerUid)) {
+      Player player = playerBloc.currentState.players[playerUid];
 
       if (player.photoUrl != null && player.photoUrl.isNotEmpty) {
         print('Cached ${player.photoUrl}');
@@ -45,20 +38,43 @@ class PlayerImage extends ClipOval {
         return null;
       }
     } else {
-      return UserDatabaseData.instance
-          .getPlayer(playerUid)
-          .then((Player player) {
-        print('Found player $playerUid $player');
-        if (player != null &&
-            player.photoUrl != null &&
-            player.photoUrl.isNotEmpty) {
-          return player.photoUrl;
+      playerBloc.dispatch(PlayerLoadPlayer(playerUid: playerUid));
+      await for (PlayerState state in playerBloc.state) {
+        Player player = state.getPlayer(playerUid);
+        if (player != null) {
+          if (player.photoUrl != null && player.photoUrl.isNotEmpty) {
+            return player.photoUrl;
+          } else {
+            return null;
+          }
         }
-        return null;
-      }).catchError((dynamic e) {
-        // error!
-        return null;
-      });
+      }
     }
+  }
+
+  Widget build(BuildContext context) {
+    return ClipOval(
+      key: key,
+      child: SizedBox(
+        width: radius * 2,
+        height: radius * 2,
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: BlocBuilder(
+            bloc: BlocProvider.of<PlayerBloc>(context),
+            builder: (BuildContext context, PlayerState playerState) {
+              return CachedNetworkImage(
+                placeholder: new Image(
+                    image:
+                        const AssetImage("assets/images/defaultavatar2.png")),
+                errorWidget: new Image(
+                    image: const AssetImage("assets/images/defaultavatar.png")),
+                imageFuture: getImageUrl(playerUid, context),
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 }

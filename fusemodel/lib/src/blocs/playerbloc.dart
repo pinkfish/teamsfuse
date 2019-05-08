@@ -8,7 +8,7 @@ import 'package:meta/meta.dart';
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
 
-class PlayerEvent extends Equatable {}
+abstract class PlayerEvent extends Equatable {}
 
 class _PlayerUserLoaded extends PlayerEvent {
   final String uid;
@@ -36,7 +36,23 @@ class _PlayerFirestore extends PlayerEvent {
   }
 }
 
+class _PlayerLoadedExtra extends PlayerEvent {
+  final String playerUid;
+  final Player player;
+
+  _PlayerLoadedExtra({@required this.playerUid, @required this.player});
+}
+
 class _PlayerLoggedOut extends PlayerEvent {}
+
+///
+/// Loads the specific details of this player.
+///
+class PlayerLoadPlayer extends PlayerEvent {
+  final String playerUid;
+
+  PlayerLoadPlayer({@required this.playerUid});
+}
 
 class _PlayerNewPlayersLoaded extends PlayerEvent {
   final Map<String, Player> players;
@@ -50,16 +66,36 @@ class _PlayerNewPlayersLoaded extends PlayerEvent {
 ///
 /// Basic state for all the player states.
 ///
-class PlayerState extends Equatable {
+abstract class PlayerState extends Equatable {
   final Map<String, Player> players;
+  final Map<String, Player> extraPlayers;
   final String uid;
   final bool onlySql;
 
   PlayerState(
-      {@required this.players, @required this.uid, @required this.onlySql});
+      {@required this.players,
+      @required this.onlySql,
+      @required this.uid,
+      @required this.extraPlayers});
 
+  ///
+  /// Get the me player.
+  ///
   Player get me => players.values.firstWhere(
       (Player play) => play.users[uid].relationship == Relationship.Me);
+
+  ///
+  /// Look up the specific player in the current state.
+  ///
+  Player getPlayer(String uid) {
+    if (players.containsKey(uid)) {
+      return players[uid];
+    }
+    if (extraPlayers.containsKey(uid)) {
+      return extraPlayers[uid];
+    }
+    return null;
+  }
 }
 
 ///
@@ -68,10 +104,15 @@ class PlayerState extends Equatable {
 ///
 class PlayerLoading extends PlayerState {
   PlayerLoading(
-      {@required Map<String, Player> players,
-      @required String uid,
+      {@required PlayerState playerState,
+      @required Map<String, Player> players,
+      @required Map<String, Player> extraPlayers,
       @required bool onlySql})
-      : super(players: players, uid: uid, onlySql: onlySql);
+      : super(
+            players: players ?? playerState.players,
+            uid: playerState.uid,
+            onlySql: onlySql ?? playerState.onlySql,
+            extraPlayers: extraPlayers ?? playerState.extraPlayers);
 
   @override
   String toString() {
@@ -96,10 +137,15 @@ class PlayerUninitialized extends PlayerState {
 ///
 class PlayerLoaded extends PlayerState {
   PlayerLoaded(
-      {@required Map<String, Player> players,
-      @required String uid,
-      @required bool onlySql})
-      : super(players: players, uid: uid, onlySql: onlySql);
+      {@required PlayerState playerState,
+      Map<String, Player> players,
+      Map<String, Player> extraPlayers,
+      bool onlySql})
+      : super(
+            players: players ?? playerState.players,
+            uid: playerState.uid,
+            onlySql: onlySql ?? playerState.onlySql,
+            extraPlayers: extraPlayers ?? playerState.extraPlayers);
 
   @override
   String toString() {
@@ -209,8 +255,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   @override
   Stream<PlayerState> mapEventToState(PlayerEvent event) async* {
     if (event is _PlayerUserLoaded) {
-      yield PlayerLoading(
-          players: currentState.players, uid: event.uid, onlySql: true);
+      yield PlayerLoading(playerState: currentState, onlySql: true);
       TraceProxy playerTrace =
           coordinationBloc.analyticsSubsystem.newTrace("playerData");
       playerTrace.start();
@@ -227,7 +272,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       print(
           'End players ${coordinationBloc.start.difference(new DateTime.now())}');
       playerTrace.stop();
-      yield PlayerLoaded(players: newPlayers, uid: event.uid, onlySql: true);
+      yield PlayerLoaded(
+          playerState: currentState, players: newPlayers, onlySql: true);
       coordinationBloc.dispatch(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Messages, sql: true));
     }
@@ -251,9 +297,24 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     // Update the data from an event.
     if (event is _PlayerNewPlayersLoaded) {
       yield PlayerLoaded(
-          players: event.players, uid: event.uid, onlySql: false);
+          playerState: currentState, players: event.players, onlySql: false);
       coordinationBloc.dispatch(CoordinationEventLoadedData(
           loaded: BlocsToLoad.Messages, sql: false));
+    }
+
+    if (event is PlayerLoadPlayer) {
+      coordinationBloc.databaseUpdateModel
+          .getPlayerDetails(event.playerUid)
+          .then((Player player) {
+        dispatch(
+            _PlayerLoadedExtra(playerUid: event.playerUid, player: player));
+      });
+    }
+
+    if (event is _PlayerLoadedExtra) {
+      Map<String, Player> extras = Map.from(currentState.extraPlayers);
+      extras[event.playerUid] = event.player;
+      yield PlayerLoaded(playerState: currentState, extraPlayers: extras);
     }
   }
 }

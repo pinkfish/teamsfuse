@@ -1,38 +1,34 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'cachednetworkimage.dart';
 import 'dart:async';
 
-class ClubImage extends CachedNetworkImage {
-  ClubImage(
-      {@required String clubUid,
-      Key key,
-      double width,
-      double height,
-      Color color,
-      BlendMode colorBlendMode,
-      BoxFit fit,
-      AlignmentGeometry alignment: Alignment.center,
-      ImageRepeat repeat: ImageRepeat.noRepeat,
-      bool matchTextDirection: false})
-      : super(
-            imageFuture: getImageURL(clubUid),
-            placeholder: new Image.asset(
-              "assets/images/defaultavatar.png",
-              width: width,
-              height: height,
-              fit: fit,
-            ),
-            key: key,
-            width: width,
-            height: height,
-            fit: fit,
-            alignment: alignment,
-            repeat: repeat,
-            matchTextDirection: matchTextDirection);
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
-  static Future<String> getImageURL(String clubUid) async {
-    Club club = await UserDatabaseData.instance.getClub(clubUid);
+import '../blocs/singleclubprovider.dart';
+import 'cachednetworkimage.dart';
+
+class ClubImage extends StatelessWidget {
+  ClubImage(
+      {@required this.clubUid,
+      this.key,
+      this.width,
+      this.height,
+      this.fit,
+      this.alignment: Alignment.center,
+      this.repeat: ImageRepeat.noRepeat,
+      this.matchTextDirection: false});
+
+  final String clubUid;
+  final Key key;
+  final double width;
+  final double height;
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+  final ImageRepeat repeat;
+  final bool matchTextDirection;
+
+  static Future<String> getImageURL(Club club) async {
     if (club != null) {
       String photoUrl = club.photoUrl;
       if (photoUrl != null && photoUrl.isNotEmpty) {
@@ -40,5 +36,49 @@ class ClubImage extends CachedNetworkImage {
       }
     }
     return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleClubProvider(
+      clubUid: clubUid,
+      builder: (BuildContext context, SingleClubBloc bloc) => BlocBuilder(
+            bloc: bloc,
+            builder: (BuildContext context, SingleClubState state) {
+              if (state is SingleClubDeleted) {
+                return CachedNetworkImage(
+                    key: key,
+                    width: width,
+                    height: height,
+                    placeholder: new Image.asset(
+                      "assets/images/defaultavatar.png",
+                      width: width,
+                      height: height,
+                      fit: fit,
+                    ),
+                    alignment: alignment,
+                    repeat: repeat,
+                    matchTextDirection: matchTextDirection,
+                    imageUrl: state.club.photoUrl);
+              } else {
+                return CachedNetworkImage(
+                  key: key,
+                  width: width,
+                  height: height,
+                  placeholder: new Image.asset(
+                    "assets/images/defaultavatar.png",
+                    width: width,
+                    height: height,
+                    fit: fit,
+                  ),
+                  alignment: alignment,
+                  repeat: repeat,
+                  matchTextDirection: matchTextDirection,
+                  imageUrl: null,
+                );
+              }
+            },
+          ),
+    );
   }
 }

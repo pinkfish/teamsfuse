@@ -1,39 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
-class PlayerName extends FutureBuilder<Player> {
-  PlayerName({@required String playerUid, TextStyle style})
-      : super(
-          future: UserDatabaseData.instance
-              .getPlayer(playerUid)
-              .then((Player play) {
-            if (play == null) {
-              play = new Player();
-            }
-            return play;
-          }).catchError((dynamic e) {
-            return new Player();
-          }),
-          builder: (BuildContext context, AsyncSnapshot<Player> player) {
-            Widget widgetOne;
-            Widget widgetTwo;
-            CrossFadeState state = CrossFadeState.showFirst;
+///
+/// Puts the name of the player in a nixe widget.
+///
+class PlayerName extends StatelessWidget {
+  final String playerUid;
+  final TextStyle style;
 
-            widgetTwo = new Text(Messages.of(context).unknown, style: style);
-            if (player.hasData) {
-              if (player.data.name != null) {
-                widgetTwo = new Text(player.data.name, style: style);
-              }
-              state = CrossFadeState.showSecond;
-            }
-            widgetOne = new Text(Messages.of(context).loading, style: style);
-            return AnimatedCrossFade(
-              firstChild: widgetOne,
-              secondChild: widgetTwo,
-              duration: Duration(milliseconds: 500),
-              crossFadeState: state,
-            );
-          },
+  PlayerName({@required this.playerUid, this.style});
+
+  Widget build(BuildContext context) {
+    PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+
+    return BlocBuilder(
+      bloc: playerBloc,
+      builder: (BuildContext context, PlayerState playerState) {
+        Player play = playerState.getPlayer(playerUid);
+
+        Widget widgetOne;
+        Widget widgetTwo;
+        CrossFadeState state = CrossFadeState.showFirst;
+
+        if (play != null) {
+          widgetTwo = new Text(Messages.of(context).unknown, style: style);
+          if (play.name != null) {
+            widgetTwo = new Text(play.name, style: style);
+          }
+          state = CrossFadeState.showSecond;
+        }
+
+        widgetOne = new Text(Messages.of(context).loading, style: style);
+        return AnimatedCrossFade(
+          firstChild: widgetOne,
+          secondChild: widgetTwo,
+          duration: Duration(milliseconds: 500),
+          crossFadeState: state,
         );
+      },
+    );
+  }
 }

@@ -1,7 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'cachednetworkimage.dart';
@@ -47,50 +47,55 @@ class LeagueImage extends StatelessWidget {
     return const AssetImage("assets/images/defaultavatar.png");
   }
 
-  Future<ImageProvider> get imageUrl async {
-    LeagueOrTournament lookupLeague = leagueOrTournament;
-    if (lookupLeague == null) {
-      lookupLeague = await UserDatabaseData.instance.updateModel
-          .getLeagueData(leagueOrTournamentUid);
-    }
-    // Team uid, lookup the team first.
-
-    return _providerFromLeague(lookupLeague);
-  }
-
   @override
   Widget build(BuildContext context) {
-    FutureBuilder<ImageProvider> futureBuilder = FutureBuilder<ImageProvider>(
-      future: imageUrl,
-      builder: (BuildContext context, AsyncSnapshot<ImageProvider> snap) {
-        Widget inner;
-        if (snap.hasData) {
-          // Yay!
-          inner = FadeInImage(
-            image: snap.data,
-            height: height,
-            width: width,
-            fit: fit,
-            alignment: alignment,
-            repeat: repeat,
-            matchTextDirection: matchTextDirection,
-            placeholder: AssetImage("assets/images/defaultavatar.png"),
-          );
-        } else {
-          inner = Center(child: CircularProgressIndicator());
-        }
-        return AnimatedContainer(
-          duration: Duration(milliseconds: 500),
-          color: color,
-          height: height,
-          width: width,
-          alignment: alignment,
-          child: inner,
-        );
-      },
-    );
+    BlocBuilder<LeagueOrTournamentEvent, LeagueOrTournamentState> blocBuilder =
+        BlocBuilder<LeagueOrTournamentEvent, LeagueOrTournamentState>(
+            bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
+            builder:
+                (BuildContext context, LeagueOrTournamentState leagueState) {
+              Widget inner;
+              if (leagueState is LeagueOrTournamentLoaded) {
+                if (leagueState.leagueOrTournaments
+                    .containsKey(leagueOrTournamentUid)) {
+                  // Yay!
+                  inner = FadeInImage(
+                    image: _providerFromLeague(
+                        leagueState.leagueOrTournaments[leagueOrTournamentUid]),
+                    height: height,
+                    width: width,
+                    fit: fit,
+                    alignment: alignment,
+                    repeat: repeat,
+                    matchTextDirection: matchTextDirection,
+                    placeholder: AssetImage("assets/images/defaultavatar.png"),
+                  );
+                } else {
+                  inner = FadeInImage(
+                    image: AssetImage("assets/images/defaultavatar.png"),
+                    height: height,
+                    width: width,
+                    fit: fit,
+                    alignment: alignment,
+                    repeat: repeat,
+                    matchTextDirection: matchTextDirection,
+                    placeholder: AssetImage("assets/images/defaultavatar.png"),
+                  );
+                }
+              } else {
+                inner = Center(child: CircularProgressIndicator());
+              }
+              return AnimatedContainer(
+                duration: Duration(milliseconds: 500),
+                color: color,
+                height: height,
+                width: width,
+                alignment: alignment,
+                child: inner,
+              );
+            });
 
-    return SizedBox(width: width, height: height, child: futureBuilder);
+    return SizedBox(width: width, height: height, child: blocBuilder);
   }
 
   static ImageProvider getImageURL(Team team) {

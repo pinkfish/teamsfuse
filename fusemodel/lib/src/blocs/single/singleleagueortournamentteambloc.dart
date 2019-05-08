@@ -13,11 +13,13 @@ abstract class SingleLeagueOrTournamentTeamState extends Equatable {
   final LeagueOrTournamentTeam leagueOrTournamentTeam;
   final Map<String, GameSharedData> games;
   final Iterable<InviteToLeagueTeam> invites;
+  final Team publicTeam;
 
   SingleLeagueOrTournamentTeamState(
       {@required this.leagueOrTournamentTeam,
       @required this.games,
-      @required this.invites});
+      @required this.invites,
+      @required this.publicTeam});
 }
 
 ///
@@ -26,9 +28,17 @@ abstract class SingleLeagueOrTournamentTeamState extends Equatable {
 class SingleLeagueOrTournamentTeamLoaded
     extends SingleLeagueOrTournamentTeamState {
   SingleLeagueOrTournamentTeamLoaded(
-      {@required LeagueOrTournamentTeam leagueOrTournamentTeam,
-      @required Map<String, GameSharedData> games})
-      : super(leagueOrTournamentTeam: leagueOrTournamentTeam, games: games);
+      {@required SingleLeagueOrTournamentTeamState state,
+      LeagueOrTournamentTeam leagueOrTournamentTeam,
+      Iterable<InviteToLeagueTeam> invites,
+      Map<String, GameSharedData> games,
+      Team publicTeam})
+      : super(
+            leagueOrTournamentTeam:
+                leagueOrTournamentTeam ?? state.leagueOrTournamentTeam,
+            games: games ?? state.games,
+            publicTeam: publicTeam ?? state.publicTeam,
+            invites: invites ?? state.invites);
 
   @override
   String toString() {
@@ -49,7 +59,8 @@ class SingleLeagueOrTournamentTeamSaveFailed
       : super(
             leagueOrTournamentTeam: leagueOrTournament.leagueOrTournamentTeam,
             games: leagueOrTournament.games,
-            invites: leagueOrTournament.invites);
+            invites: leagueOrTournament.invites,
+            publicTeam: leagueOrTournament.publicTeam);
 
   @override
   String toString() {
@@ -67,7 +78,8 @@ class SingleLeagueOrTournamentTeamSaving
       : super(
             leagueOrTournamentTeam: leagueOrTournament.leagueOrTournamentTeam,
             games: leagueOrTournament.games,
-            invites: leagueOrTournament.invites);
+            invites: leagueOrTournament.invites,
+            publicTeam: leagueOrTournament.publicTeam);
 
   @override
   String toString() {
@@ -85,9 +97,14 @@ class SingleLeagueOrTournamentTeamDeleted
       : super(
             leagueOrTournamentTeam: leagueOrTournament.leagueOrTournamentTeam,
             invites: leagueOrTournament.invites,
-            games: leagueOrTournament.games);
+            games: leagueOrTournament.games,
+            publicTeam: leagueOrTournament.publicTeam);
   SingleLeagueOrTournamentTeamDeleted.empty()
-      : super(leagueOrTournamentTeam: null, invites: {}, games: {});
+      : super(
+            leagueOrTournamentTeam: null,
+            invites: {},
+            games: {},
+            publicTeam: null);
   @override
   String toString() {
     return 'SingleLeagueOrTournamentDivisonDeleted{}';
@@ -136,6 +153,12 @@ class SingleLeagueOrTournamentTeamLoadGames
 /// Loads the Invites for this league or tournament team.
 ///
 class SingleLeagueOrTournamentTeamLoadInvites
+    extends SingleLeagueOrTournamentTeamEvent {}
+
+///
+/// Loads the public team associated with this league team.
+///
+class SingleLeagueOrTournamentTeamLoadPublicTeam
     extends SingleLeagueOrTournamentTeamEvent {}
 
 ///
@@ -286,8 +309,7 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
       SingleLeagueOrTournamentTeamEvent event) async* {
     if (event is _SingleLeagueOrTournamentEventLeagueTeamLoaded) {
       yield SingleLeagueOrTournamentTeamLoaded(
-          leagueOrTournamentTeam: event.leagueDivision,
-          games: currentState.games);
+          state: currentState, leagueOrTournamentTeam: event.leagueDivision);
     }
 
     if (event is _SingleLeagueOrTournamentEventTeamDeleted) {
@@ -324,14 +346,14 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
         newGames[game.uid] = game;
       }
       yield SingleLeagueOrTournamentTeamLoaded(
+          state: currentState,
           leagueOrTournamentTeam: currentState.leagueOrTournamentTeam,
           games: newGames);
     }
 
     if (event is _SingleLeagueOrTournamentEventTeamInvites) {
       yield SingleLeagueOrTournamentTeamLoaded(
-          leagueOrTournamentTeam: currentState.leagueOrTournamentTeam,
-          games: currentState.games);
+          state: currentState, invites: event.invites);
     }
 
     if (event is SingleLeagueOrTournamentTeamUpdate) {
@@ -340,6 +362,27 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
 
     if (event is SingleLeagueOrTournamentTeamUpdateWinRecord) {
       yield* _updateWinRecord(event.divison, event.record);
+    }
+
+    if (event is SingleLeagueOrTournamentTeamLoadPublicTeam) {
+      Team publicTeam = await singleLeagueOrTournamenDivisonBloc
+          .singleLeagueOrTournamentSeasonBloc
+          .singleLeagueOrTournamentBloc
+          .leagueOrTournamentBloc
+          .coordinationBloc
+          .databaseUpdateModel
+          .getPublicTeamDetails(
+              userUid: singleLeagueOrTournamenDivisonBloc
+                  .singleLeagueOrTournamentSeasonBloc
+                  .singleLeagueOrTournamentBloc
+                  .leagueOrTournamentBloc
+                  .coordinationBloc
+                  .authenticationBloc
+                  .currentUser
+                  .uid,
+              teamUid: currentState.leagueOrTournamentTeam.teamUid);
+      yield SingleLeagueOrTournamentTeamLoaded(
+          state: currentState, publicTeam: publicTeam);
     }
   }
 }

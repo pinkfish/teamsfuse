@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class PlayerFormField extends FormField<String> {
   PlayerFormField({
@@ -61,8 +59,6 @@ class PlayerFormField extends FormField<String> {
 }
 
 class PlayerFormFieldState extends FormFieldState<String> {
-  StreamSubscription<UpdateReason> playerSubscription;
-
   @override
   PlayerFormField get widget {
     PlayerFormField field = super.widget as PlayerFormField;
@@ -71,27 +67,6 @@ class PlayerFormFieldState extends FormFieldState<String> {
 
   void updateValue(String val) {
     setValue(val);
-  }
-
-  void setTeamUid(String teamUid) {
-    setState(() {
-      if (playerSubscription != null) {
-        playerSubscription.cancel();
-      }
-      playerSubscription =
-          UserDatabaseData.instance.playerStream.listen((UpdateReason value) {
-        setState(() {});
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    if (playerSubscription != null) {
-      playerSubscription.cancel();
-      playerSubscription = null;
-    }
   }
 
   List<DropdownMenuItem<String>> _buildItems(

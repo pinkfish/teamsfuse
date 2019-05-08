@@ -11,7 +11,7 @@ import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
 import 'playerbloc.dart';
 
-class TeamEvent extends Equatable {}
+abstract class TeamEvent extends Equatable {}
 
 class _TeamUserLoaded extends TeamEvent {
   final String uid;
@@ -77,6 +77,15 @@ class _TeamPlayerSeasonUpdates extends TeamEvent {
 }
 
 ///
+/// Loads the public details of this team.
+///
+class TeamLoadPublicTeam extends TeamEvent {
+  final String teamUid;
+
+  TeamLoadPublicTeam({@required this.teamUid});
+}
+
+///
 /// This event will update the current set of club teams.
 ///
 class TeamClubTeams extends TeamEvent {
@@ -89,17 +98,19 @@ class TeamClubTeams extends TeamEvent {
 ///
 /// Basic state for all the player states.
 ///
-class TeamState extends Equatable {
+abstract class TeamState extends Equatable {
   final BuiltMap<String, Team> adminTeams;
   final BuiltMap<String, Team> teamsByPlayer;
   final BuiltMap<String, BuiltMap<String, Team>> clubTeams;
+  final BuiltMap<String, Team> publicTeams;
   final bool onlySql;
 
   TeamState(
       {@required this.teamsByPlayer,
       @required this.onlySql,
       @required this.adminTeams,
-      @required this.clubTeams});
+      @required this.clubTeams,
+      @required this.publicTeams});
 
   ///
   /// Get the team from the various places it could exist.
@@ -118,6 +129,17 @@ class TeamState extends Equatable {
       }
     }
     return null;
+  }
+
+  ///
+  /// Gets the public details for the team.
+  ///
+  Team getPublicTeam(String uid) {
+    Team t = getTeam(uid);
+    if (t == null && publicTeams.containsKey(uid)) {
+      return publicTeams[uid];
+    }
+    return t;
   }
 
   Set<String> get allTeamUids {
@@ -139,6 +161,7 @@ class TeamUninitialized extends TeamState {
             teamsByPlayer: BuiltMap(),
             adminTeams: BuiltMap(),
             clubTeams: BuiltMap(),
+            publicTeams: BuiltMap(),
             onlySql: true);
 
   @override
@@ -152,15 +175,18 @@ class TeamUninitialized extends TeamState {
 ///
 class TeamLoaded extends TeamState {
   TeamLoaded(
-      {@required BuiltMap<String, Team> teamsByPlayer,
-      @required BuiltMap<String, Team> adminTeams,
-      @required BuiltMap<String, BuiltMap<String, Team>> clubTeams,
-      @required bool onlySql})
+      {@required TeamState state,
+      BuiltMap<String, Team> teamsByPlayer,
+      BuiltMap<String, Team> adminTeams,
+      BuiltMap<String, BuiltMap<String, Team>> clubTeams,
+      BuiltMap<String, Team> publicTeams,
+      bool onlySql})
       : super(
-            teamsByPlayer: teamsByPlayer,
-            clubTeams: clubTeams,
-            onlySql: onlySql,
-            adminTeams: adminTeams);
+            teamsByPlayer: teamsByPlayer ?? state.teamsByPlayer,
+            clubTeams: clubTeams ?? state.clubTeams,
+            onlySql: onlySql ?? state.onlySql,
+            publicTeams: publicTeams ?? state.publicTeams,
+            adminTeams: adminTeams ?? state.adminTeams);
 
   @override
   String toString() {
@@ -455,10 +481,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     if (event is _TeamAdminUpdated) {
       BuiltMap<String, Team> oldAdminTeams = currentState.adminTeams;
       yield TeamLoaded(
-          teamsByPlayer: currentState.teamsByPlayer,
-          adminTeams: BuiltMap.from(event.adminTeams),
-          clubTeams: currentState.clubTeams,
-          onlySql: currentState.onlySql);
+          state: currentState, adminTeams: BuiltMap.from(event.adminTeams));
       coordinationBloc.dispatch(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Team, sql: true));
       _onTeamAdminsUpdatePeristentData(oldAdminTeams, event.adminTeams.values);
@@ -506,10 +529,9 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         _teamByPlayerTrace = null;
       }
       yield TeamLoaded(
+          state: currentState,
           teamsByPlayer: BuiltMap.from(
               await _onPlayerSeasonUpdated(event.playerUid, event.seasons)),
-          clubTeams: currentState.clubTeams,
-          adminTeams: currentState.adminTeams,
           onlySql: false);
     }
 
@@ -524,10 +546,20 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         newTeams[event.teamUid] = event.teamBuilder.build();
 
         yield TeamLoaded(
-            teamsByPlayer: BuiltMap.from(newTeams),
-            adminTeams: currentState.adminTeams,
-            clubTeams: currentState.clubTeams,
-            onlySql: currentState.onlySql);
+            state: currentState, teamsByPlayer: BuiltMap.from(newTeams));
+      }
+    }
+
+    if (event is TeamLoadPublicTeam) {
+      if (currentState.getPublicTeam(event.teamUid) == null) {
+        Team t = await coordinationBloc.databaseUpdateModel
+            .getPublicTeamDetails(
+                userUid: coordinationBloc.authenticationBloc.currentUser.uid,
+                teamUid: event.teamUid);
+        MapBuilder<String, Team> publicStuff =
+            currentState.publicTeams.toBuilder();
+        publicStuff[event.teamUid] = t;
+        yield TeamLoaded(state: currentState, publicTeams: publicStuff.build());
       }
     }
   }

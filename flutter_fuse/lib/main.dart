@@ -53,8 +53,8 @@ void main() async {
   await Firestore.instance.settings(timestampsInSnapshotsEnabled: true);
 
   FirestoreWrapper firestoreWrapper = new fs.Firestore();
-  UserDatabaseData.instance = new UserDatabaseData(Analytics.instance,
-      LoggingData.instance, SqlData.instance, firestoreWrapper);
+  //UserDatabaseData.instance = new UserDatabaseData(Analytics.instance,
+  //    LoggingData.instance, SqlData.instance, firestoreWrapper);
 
   // Start the loading, but don't block on it,
   // Load notifications after the app config has loaded.
