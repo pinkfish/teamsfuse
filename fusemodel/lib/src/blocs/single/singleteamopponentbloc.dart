@@ -9,16 +9,21 @@ import '../teambloc.dart';
 
 abstract class SingleTeamOpponentState extends Equatable {
   final Opponent opponent;
+  final Iterable<Game> games;
 
-  SingleTeamOpponentState({@required this.opponent});
+  SingleTeamOpponentState({@required this.opponent, @required this.games});
 }
 
 ///
 /// We have a team, default state.
 ///
 class SingleTeamOpponentLoaded extends SingleTeamOpponentState {
-  SingleTeamOpponentLoaded({@required Opponent opponent})
-      : super(opponent: opponent);
+  SingleTeamOpponentLoaded(
+      {@required SingleTeamOpponentState state,
+      Opponent opponent,
+      Iterable<Game> games})
+      : super(
+            opponent: opponent ?? state.opponent, games: games ?? state.games);
 
   @override
   String toString() {
@@ -31,7 +36,7 @@ class SingleTeamOpponentLoaded extends SingleTeamOpponentState {
 ///
 class SingleTeamOpponentSaving extends SingleTeamOpponentState {
   SingleTeamOpponentSaving({@required SingleTeamOpponentState state})
-      : super(opponent: state.opponent);
+      : super(opponent: state.opponent, games: state.games);
 
   @override
   String toString() {
@@ -47,7 +52,7 @@ class SingleTeamOpponentSaveFailed extends SingleTeamOpponentState {
 
   SingleTeamOpponentSaveFailed(
       {@required SingleTeamOpponentState state, this.error})
-      : super(opponent: state.opponent);
+      : super(opponent: state.opponent, games: state.games);
 
   @override
   String toString() {
@@ -59,7 +64,7 @@ class SingleTeamOpponentSaveFailed extends SingleTeamOpponentState {
 /// Team got deleted.
 ///
 class SingleTeamOpponentDeleted extends SingleTeamOpponentState {
-  SingleTeamOpponentDeleted() : super(opponent: null);
+  SingleTeamOpponentDeleted() : super(opponent: null, games: []);
 
   @override
   String toString() {
@@ -81,9 +86,7 @@ class SingleTeamOpponentUpdate extends SingleTeamOpponentEvent {
 ///
 /// Delete this team from the world.
 ///
-class SingleTeamOpponentDeleteOpponent extends SingleTeamOpponentEvent {
-  SingleTeamOpponentDeleteOpponent();
-}
+class SingleTeamOpponentDeleteOpponent extends SingleTeamOpponentEvent {}
 
 class _SingleTeamNewTeamOpponent extends SingleTeamOpponentEvent {
   final Opponent newOpponent;
@@ -91,9 +94,17 @@ class _SingleTeamNewTeamOpponent extends SingleTeamOpponentEvent {
   _SingleTeamNewTeamOpponent({@required this.newOpponent});
 }
 
-class _SingleTeamOpponentDeleted extends SingleTeamOpponentEvent {
-  _SingleTeamOpponentDeleted();
+class _SingleTeamOpponentDeleted extends SingleTeamOpponentEvent {}
+
+class _SingleTeamOpponentGamesLoaded extends SingleTeamOpponentEvent {
+  final Iterable<Game> games;
+  _SingleTeamOpponentGamesLoaded({@required this.games});
 }
+
+///
+/// Loads the games for this opponent.
+///
+class SingleTeamOpponentLoadGames extends SingleTeamOpponentEvent {}
 
 ///
 /// Bloc to handle updates and state of a specific team.
@@ -107,6 +118,7 @@ class SingleTeamOpponentBloc
   static String createNew = "new";
 
   StreamSubscription<TeamState> _teamSub;
+  StreamSubscription<Iterable<Game>> _gameSub;
 
   SingleTeamOpponentBloc({this.teamBloc, this.teamUid, this.opponentUid}) {
     _teamSub = teamBloc.state.listen((TeamState state) {
@@ -129,6 +141,8 @@ class SingleTeamOpponentBloc
     super.dispose();
     _teamSub?.cancel();
     _teamSub = null;
+    _gameSub?.cancel();
+    _gameSub = null;
   }
 
   @override
@@ -184,6 +198,18 @@ class SingleTeamOpponentBloc
       } catch (e) {
         yield SingleTeamOpponentSaveFailed(state: currentState, error: e);
       }
+    }
+
+    if (event is SingleTeamOpponentLoadGames) {
+      _gameSub = teamBloc.coordinationBloc.databaseUpdateModel
+          .getOpponentGames(currentState.opponent)
+          .listen((Iterable<Game> g) {
+        dispatch(_SingleTeamOpponentGamesLoaded(games: g));
+      });
+    }
+
+    if (event is _SingleTeamOpponentGamesLoaded) {
+      yield SingleTeamOpponentLoaded(state: currentState, games: event.games);
     }
   }
 }

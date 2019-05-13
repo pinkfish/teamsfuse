@@ -219,7 +219,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       await inviteBloc.databaseUpdateModel.addUserToClub(
           invite.clubUid, inviteBloc.currentState.uid, invite.admin);
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
+      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
       //
@@ -250,7 +250,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       }
 
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
+      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
       return SingleInviteSaveFailed(
@@ -287,7 +287,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
           .addUserToPlayer(invite.playerUid, playerUser);
 
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
+      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
       return SingleInviteSaveFailed(
@@ -349,7 +349,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
             invite.leagueTeamUid, inviteBloc.currentState.uid, season);
       }
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
+      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
       return SingleInviteSaveFailed(
@@ -368,7 +368,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
           .addAdmin(invite.teamUid, inviteBloc.currentState.uid);
 
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
+      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
       return SingleInviteSaveFailed(
@@ -429,12 +429,13 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
             ..role = invite.role);
           await inviteBloc.databaseUpdateModel
               .addPlayerToSeason(invite.seasonUid, seasonPlayer);
-          await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
+          await inviteBloc.databaseUpdateModel
+              .firestoreInviteDelete(invite.uid);
         }
       }
 
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite);
+      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
       return SingleInviteSaveFailed(
@@ -459,7 +460,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       // a change when it is committed.
       try {
         await inviteBloc.databaseUpdateModel
-            .firestoreInviteDelete(currentState.invite);
+            .firestoreInviteDelete(currentState.invite.uid);
         yield SingleInviteDeleted();
       } catch (e) {
         yield SingleInviteSaveFailed(

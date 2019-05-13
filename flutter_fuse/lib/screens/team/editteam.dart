@@ -48,7 +48,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   void _savePressed(BuildContext context) async {
     saving = true;
     try {
-      Team team = _formKey.currentState.validateAndCreate();
+      TeamBuilder team = _formKey.currentState.validateAndCreate();
       if (team != null) {
         File imageFile = _formKey.currentState.getImageFile();
         if (imageFile != null) {

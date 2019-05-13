@@ -10,9 +10,11 @@ import '../playerbloc.dart';
 
 abstract class SinglePlayerState extends Equatable {
   final Player player;
+  final bool mePlayer;
   final List<InviteToPlayer> invites;
 
-  SinglePlayerState({@required this.player, @required this.invites});
+  SinglePlayerState(
+      {@required this.player, @required this.mePlayer, @required this.invites});
 }
 
 ///
@@ -22,9 +24,12 @@ class SinglePlayerLoaded extends SinglePlayerState {
   SinglePlayerLoaded(
       {@required SinglePlayerState state,
       Player player,
+      bool mePlayer,
       List<InviteToPlayer> invites})
       : super(
-            player: player ?? state.player, invites: invites ?? state.invites);
+            player: player ?? state.player,
+            mePlayer: mePlayer ?? state.mePlayer,
+            invites: invites ?? state.invites);
 
   @override
   String toString() {
@@ -79,9 +84,9 @@ abstract class SinglePlayerEvent extends Equatable {}
 /// Updates the Player (writes it out to firebase.
 ///
 class SinglePlayerUpdate extends SinglePlayerEvent {
-  final PlayerBuilder Player;
+  final PlayerBuilder player;
 
-  SinglePlayerUpdate({@required this.Player});
+  SinglePlayerUpdate({@required this.player});
 }
 
 ///
@@ -140,11 +145,11 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
   final PlayerBloc playerBloc;
   final String playerUid;
 
-  StreamSubscription<PlayerState> _PlayerSub;
+  StreamSubscription<PlayerState> _playerSub;
   StreamSubscription<Iterable<InviteToPlayer>> _inviteSub;
 
   SinglePlayerBloc({@required this.playerBloc, @required this.playerUid}) {
-    _PlayerSub = playerBloc.state.listen((PlayerState state) {
+    _playerSub = playerBloc.state.listen((PlayerState state) {
       if (state.players.containsKey(playerUid)) {
         Player player = state.players[playerUid];
         // Only send this if the Player is not the same.
@@ -160,7 +165,7 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
   @override
   void dispose() {
     super.dispose();
-    _PlayerSub?.cancel();
+    _playerSub?.cancel();
     _inviteSub?.cancel();
   }
 
@@ -182,6 +187,7 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
       yield SinglePlayerLoaded(
           state: currentState,
           player: event.newPlayer,
+          mePlayer: event.newPlayer.uid == playerBloc.currentState.me.uid,
           invites: currentState.invites);
     }
 
@@ -196,10 +202,11 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
 
       try {
         await playerBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestorePlayer(event.Player.build(), false);
+            .updateFirestorePlayer(event.player.build(), false);
         yield SinglePlayerLoaded(
             state: currentState,
-            player: event.Player.build(),
+            player: event.player.build(),
+            mePlayer: event.player.uid == playerBloc.currentState.me.uid,
             invites: currentState.invites);
       } catch (e) {
         yield SinglePlayerSaveFailed(state: currentState, error: e);

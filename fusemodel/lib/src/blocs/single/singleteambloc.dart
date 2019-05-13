@@ -6,20 +6,21 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
+import '../clubbloc.dart';
 import '../teambloc.dart';
 
 abstract class SingleTeamState extends Equatable {
   final Team team;
-  final List<InviteAsAdmin> invites;
+  final Club club;
+  final List<InviteAsAdmin> invitesAsAdmin;
   final List<Season> fullSeason;
-  final Map<String, Iterable<Game>> allGames;
   final Map<String, Opponent> opponents;
 
   SingleTeamState(
       {@required this.team,
-      @required this.invites,
+      @required this.club,
+      @required this.invitesAsAdmin,
       @required this.fullSeason,
-      @required this.allGames,
       @required this.opponents});
 }
 
@@ -30,15 +31,15 @@ class SingleTeamLoaded extends SingleTeamState {
   SingleTeamLoaded(
       {@required SingleTeamState state,
       Team team,
-      List<InviteAsAdmin> invites,
+      Club club,
+      List<InviteAsAdmin> invitesAsAdmin,
       List<Season> fullSeason,
-      Map<String, Iterable<Game>> allGames,
       Map<String, Opponent> opponents})
       : super(
             team: team ?? state.team,
-            invites: invites ?? state.invites,
+            invitesAsAdmin: invitesAsAdmin ?? state.invitesAsAdmin,
+            club: club ?? state.club,
             fullSeason: fullSeason ?? state.fullSeason,
-            allGames: allGames ?? state.allGames,
             opponents: opponents ?? state.opponents);
 
   @override
@@ -54,9 +55,9 @@ class SingleTeamSaving extends SingleTeamState {
   SingleTeamSaving({@required SingleTeamState state})
       : super(
             team: state.team,
-            invites: state.invites,
+            club: state.club,
+            invitesAsAdmin: state.invitesAsAdmin,
             fullSeason: state.fullSeason,
-            allGames: state.allGames,
             opponents: state.opponents);
 
   @override
@@ -74,9 +75,9 @@ class SingleTeamSaveFailed extends SingleTeamState {
   SingleTeamSaveFailed({@required SingleTeamState state, @required this.error})
       : super(
             team: state.team,
-            invites: state.invites,
+            club: state.club,
+            invitesAsAdmin: state.invitesAsAdmin,
             fullSeason: state.fullSeason,
-            allGames: state.allGames,
             opponents: state.opponents);
 
   @override
@@ -92,10 +93,10 @@ class SingleTeamDeleted extends SingleTeamState {
   SingleTeamDeleted()
       : super(
             team: null,
-            invites: [],
+            invitesAsAdmin: [],
             fullSeason: [],
-            allGames: {},
-            opponents: {});
+            opponents: {},
+            club: null);
 
   @override
   String toString() {
@@ -183,6 +184,13 @@ class SingleTeamLoadInvites extends SingleTeamEvent {
   SingleTeamLoadInvites();
 }
 
+///
+/// Loads the seasons from firebase.
+///
+class SingleTeamLoadAllSeasons extends SingleTeamEvent {
+  SingleTeamLoadAllSeasons();
+}
+
 class _SingleTeamNewTeam extends SingleTeamEvent {
   final Team newTeam;
 
@@ -193,10 +201,22 @@ class _SingleTeamDeleted extends SingleTeamEvent {
   _SingleTeamDeleted();
 }
 
-class _SingleTeamInvitesAdded extends SingleTeamEvent {
+class _SingleTeamInvitesAdminLoaded extends SingleTeamEvent {
   final Iterable<InviteAsAdmin> invites;
 
-  _SingleTeamInvitesAdded({@required this.invites});
+  _SingleTeamInvitesAdminLoaded({@required this.invites});
+}
+
+class _SingleTeamSeasonLoaded extends SingleTeamEvent {
+  final Iterable<Season> seasons;
+
+  _SingleTeamSeasonLoaded({@required this.seasons});
+}
+
+class _SingleTeamNewClub extends SingleTeamEvent {
+  final Club club;
+
+  _SingleTeamNewClub({@required this.club});
 }
 
 ///
@@ -204,20 +224,27 @@ class _SingleTeamInvitesAdded extends SingleTeamEvent {
 ///
 class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
   final TeamBloc teamBloc;
+  final ClubBloc clubBloc;
   final String teamUid;
 
   static String createNew = "new";
 
   StreamSubscription<TeamState> _teamSub;
-  StreamSubscription<Iterable<InviteAsAdmin>> _inviteSub;
+  StreamSubscription<ClubState> _clubSub;
+  StreamSubscription<Iterable<InviteAsAdmin>> _inviteAdminSub;
+  StreamSubscription<Iterable<Season>> _seasonSub;
 
-  SingleTeamBloc({@required this.teamBloc, @required this.teamUid}) {
+  SingleTeamBloc(
+      {@required this.teamBloc,
+      @required this.clubBloc,
+      @required this.teamUid}) {
     _teamSub = teamBloc.state.listen((TeamState state) {
       Team team = state.getTeam(teamUid);
       if (team != null) {
         // Only send this if the team is not the same.
         if (team != currentState.team) {
           dispatch(_SingleTeamNewTeam(newTeam: team));
+          _setupClubSub();
         }
       } else {
         dispatch(_SingleTeamDeleted());
@@ -229,18 +256,44 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
   void dispose() {
     super.dispose();
     _teamSub?.cancel();
-    _inviteSub?.cancel();
+    _inviteAdminSub?.cancel();
+    _seasonSub?.cancel();
+    _clubSub?.cancel();
+    _clubSub = null;
+  }
+
+  void _setupClubSub() {
+    if (_clubSub == null) {
+      if (clubBloc.currentState is ClubLoaded) {
+        if (clubBloc.currentState.clubs
+            .containsKey(currentState.team.clubUid)) {
+          dispatch(_SingleTeamNewClub(
+              club: clubBloc.currentState.clubs[currentState.team.clubUid]));
+        }
+      }
+      _clubSub = clubBloc.state.listen((ClubState state) {
+        if (state.clubs.containsKey(currentState.team.clubUid)) {
+          Club club = state.clubs[currentState.team.clubUid];
+
+          if (club != currentState.club) {
+            dispatch(_SingleTeamNewClub(club: club));
+          }
+        } else {
+          dispatch(_SingleTeamDeleted());
+        }
+      });
+    }
   }
 
   @override
   SingleTeamState get initialState {
     Team t = teamBloc.currentState.getTeam(teamUid);
     if (t != null) {
+      _setupClubSub();
       return SingleTeamLoaded(
           team: t,
-          allGames: {},
           fullSeason: [],
-          invites: [],
+          invitesAsAdmin: [],
           opponents: {},
           state: null);
     } else {
@@ -254,7 +307,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       yield SingleTeamLoaded(
           state: currentState,
           team: event.newTeam,
-          invites: currentState.invites);
+          invitesAsAdmin: currentState.invitesAsAdmin);
     }
 
     // The team is deleted.
@@ -276,7 +329,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
           yield SingleTeamLoaded(
               state: currentState,
               team: event.team.build(),
-              invites: currentState.invites);
+              invitesAsAdmin: currentState.invitesAsAdmin);
         } catch (e) {
           yield SingleTeamSaveFailed(state: currentState, error: e);
         }
@@ -311,7 +364,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
           yield SingleTeamLoaded(
               state: currentState,
               team: updatedTeam,
-              invites: currentState.invites);
+              invitesAsAdmin: currentState.invitesAsAdmin);
         } catch (e) {
           yield SingleTeamSaveFailed(state: currentState, error: e);
         }
@@ -326,7 +379,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
         yield SingleTeamLoaded(
             state: currentState,
             team: currentState.team,
-            invites: currentState.invites);
+            invitesAsAdmin: currentState.invitesAsAdmin);
       } catch (e) {
         yield SingleTeamSaveFailed(state: currentState, error: e);
       }
@@ -340,7 +393,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
         yield SingleTeamLoaded(
             state: currentState,
             team: currentState.team,
-            invites: currentState.invites);
+            invitesAsAdmin: currentState.invitesAsAdmin);
       } catch (e) {
         yield SingleTeamSaveFailed(state: currentState, error: e);
       }
@@ -356,23 +409,43 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
         yield SingleTeamLoaded(
             state: currentState,
             team: currentState.team,
-            invites: currentState.invites);
+            invitesAsAdmin: currentState.invitesAsAdmin);
       } catch (e) {
         yield SingleTeamSaveFailed(state: currentState, error: e);
       }
     }
 
-    if (event is _SingleTeamInvitesAdded) {
+    if (event is _SingleTeamInvitesAdminLoaded) {
       yield SingleTeamLoaded(
-          state: currentState, team: currentState.team, invites: event.invites);
+          state: currentState,
+          team: currentState.team,
+          invitesAsAdmin: event.invites);
     }
 
     if (event is SingleTeamLoadInvites) {
-      _inviteSub = teamBloc.coordinationBloc.databaseUpdateModel
-          .getInvitesForTeam(teamUid)
-          .listen((Iterable<InviteAsAdmin> invites) {
-        dispatch(_SingleTeamInvitesAdded(invites: invites));
+      if (_inviteAdminSub != null) {
+        _inviteAdminSub = teamBloc.coordinationBloc.databaseUpdateModel
+            .getInvitesForTeam(teamUid)
+            .listen((Iterable<InviteAsAdmin> invites) {
+          dispatch(_SingleTeamInvitesAdminLoaded(invites: invites));
+        });
+      }
+    }
+
+    if (event is SingleTeamLoadAllSeasons) {
+      _seasonSub = teamBloc.coordinationBloc.databaseUpdateModel
+          .getAllSeasons(teamUid)
+          .listen((Iterable<Season> seasons) {
+        dispatch(_SingleTeamSeasonLoaded(seasons: seasons));
       });
+    }
+
+    if (event is _SingleTeamSeasonLoaded) {
+      yield SingleTeamLoaded(state: currentState, fullSeason: event.seasons);
+    }
+
+    if (event is _SingleTeamNewClub) {
+      yield SingleTeamLoaded(state: currentState, club: event.club);
     }
 
     if (event is SingleTeamUpdateClub) {

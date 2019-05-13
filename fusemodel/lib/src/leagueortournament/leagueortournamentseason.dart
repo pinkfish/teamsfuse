@@ -18,10 +18,10 @@ abstract class LeagueOrTournamentSeason
   String get leagueOrTournmentUid;
 
   /// List of admin user ids. This is all user ids (not players)
-  BuiltList<String> get adminsUids;
+  BuiltSet<String> get adminsUids;
 
   /// List of member user ids.  This is all user ids (not players)
-  BuiltList<String> get members;
+  BuiltSet<String> get members;
 
   LeagueOrTournamentSeason._();
   factory LeagueOrTournamentSeason(

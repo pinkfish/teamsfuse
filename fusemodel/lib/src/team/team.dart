@@ -48,7 +48,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
   bool get trackAttendenceInternal;
 
   /// This is a list of user ids, not player Ids.
-  BuiltList<String> get admins;
+  BuiltSet<String> get admins;
   BuiltMap<String, Opponent> get opponents;
   BuiltMap<String, Season> get seasons;
 

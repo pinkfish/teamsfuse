@@ -12,15 +12,18 @@ import '../teambloc.dart';
 ///
 abstract class SingleTeamSeaonState extends Equatable {
   final Season season;
+  final Iterable<InviteToTeam> invites;
 
-  SingleTeamSeaonState({@required this.season});
+  SingleTeamSeaonState({@required this.season, @required this.invites});
 }
 
 ///
 /// We have a team, default state.
 ///
 class SingleTeamSeasonLoaded extends SingleTeamSeaonState {
-  SingleTeamSeasonLoaded({@required Season season}) : super(season: season);
+  SingleTeamSeasonLoaded(
+      {@required Season season, @required Iterable<InviteToTeam> invites})
+      : super(season: season, invites: invites);
 
   @override
   String toString() {
@@ -33,7 +36,7 @@ class SingleTeamSeasonLoaded extends SingleTeamSeaonState {
 ///
 class SingleTeamSeasonSaving extends SingleTeamSeaonState {
   SingleTeamSeasonSaving({@required SingleTeamSeaonState state})
-      : super(season: state.season);
+      : super(season: state.season, invites: state.invites);
 
   @override
   String toString() {
@@ -48,7 +51,7 @@ class SingleTeamSeasonSaveFailed extends SingleTeamSeaonState {
   final Error error;
 
   SingleTeamSeasonSaveFailed({@required SingleTeamSeaonState state, this.error})
-      : super(season: state.season);
+      : super(season: state.season, invites: state.invites);
 
   @override
   String toString() {
@@ -60,7 +63,7 @@ class SingleTeamSeasonSaveFailed extends SingleTeamSeaonState {
 /// Team got deleted.
 ///
 class SingleTeamSeasonDeleted extends SingleTeamSeaonState {
-  SingleTeamSeasonDeleted() : super(season: null);
+  SingleTeamSeasonDeleted() : super(season: null, invites: []);
 
   @override
   String toString() {
@@ -79,6 +82,11 @@ class SingleTeamSeasonUpdate extends SingleTeamSeasonEvent {
   SingleTeamSeasonUpdate({@required this.season});
 }
 
+///
+/// Loads all the invites for this season.
+///
+class SingleTeamLoadInvites extends SingleTeamSeasonEvent {}
+
 class _SingleTeamNewTeamSeason extends SingleTeamSeasonEvent {
   final Season newSeason;
 
@@ -87,6 +95,12 @@ class _SingleTeamNewTeamSeason extends SingleTeamSeasonEvent {
 
 class _SingleTeamSeasonDeleted extends SingleTeamSeasonEvent {
   _SingleTeamSeasonDeleted();
+}
+
+class _SingleTeamSeasonLoadedInvites extends SingleTeamSeasonEvent {
+  final Iterable<InviteToTeam> invites;
+
+  _SingleTeamSeasonLoadedInvites({this.invites});
 }
 
 ///
@@ -99,6 +113,7 @@ class SingleTeamSeasonBloc
   final String seasonUid;
 
   StreamSubscription<TeamState> _teamSub;
+  StreamSubscription<Iterable<InviteToTeam>> _inviteSub;
 
   SingleTeamSeasonBloc({this.teamBloc, this.teamUid, this.seasonUid}) {
     _teamSub = teamBloc.state.listen((TeamState state) {
@@ -121,6 +136,8 @@ class SingleTeamSeasonBloc
     super.dispose();
     _teamSub?.cancel();
     _teamSub = null;
+    _inviteSub?.cancel();
+    _inviteSub = null;
   }
 
   @override
@@ -155,6 +172,25 @@ class SingleTeamSeasonBloc
       } catch (e) {
         yield SingleTeamSeasonSaveFailed(state: currentState, error: e);
       }
+    }
+
+    if (event is SingleTeamLoadInvites) {
+      if (_inviteSub == null) {
+        _inviteSub = teamBloc.coordinationBloc.databaseUpdateModel
+            .getInviteForSeasonStream(
+                userUid: teamBloc
+                    .coordinationBloc.authenticationBloc.currentUser.uid,
+                seasonUid: seasonUid,
+                teamUid: teamUid)
+            .listen((Iterable<InviteToTeam> invites) {
+          dispatch(_SingleTeamSeasonLoadedInvites(invites: invites));
+        });
+      }
+    }
+
+    if (event is _SingleTeamSeasonLoadedInvites) {
+      yield SingleTeamSeasonLoaded(
+          season: currentState.season, invites: event.invites);
     }
   }
 }

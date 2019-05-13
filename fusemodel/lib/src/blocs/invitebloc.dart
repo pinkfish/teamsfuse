@@ -91,6 +91,15 @@ class InviteEventAddToPlayer extends InviteEvent {
 }
 
 ///
+/// Deletes a specific invite.
+///
+class InviteEventDeleteInvite extends InviteEvent {
+  final String inviteUid;
+
+  InviteEventDeleteInvite({this.inviteUid});
+}
+
+///
 /// Handles the work around the invites and invites system inside of
 /// the app.
 ///
@@ -204,6 +213,11 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
       yield InviteUninitialized();
       _inviteChangeSub?.cancel();
       _inviteChangeSub = null;
+    }
+
+    if (event is InviteEventDeleteInvite) {
+      coordinationBloc.databaseUpdateModel
+          .firestoreInviteDelete(event.inviteUid);
     }
   }
 }

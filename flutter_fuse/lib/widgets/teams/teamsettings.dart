@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../blocs/singleplayerprovider.dart';
 
 class TeamSettings extends StatefulWidget {
   TeamSettings(this._teamUid);
@@ -17,32 +21,6 @@ class TeamSettings extends StatefulWidget {
 }
 
 class TeamSettingsState extends State<TeamSettings> {
-  Team _team;
-  StreamSubscription<UpdateReason> _updateStream;
-
-  @override
-  void initState() {
-    super.initState();
-    _team = UserDatabaseData.instance.teams[widget._teamUid];
-    _updateStream = _team.thisTeamStream.listen((UpdateReason upd) {
-      setState(() {});
-    });
-  }
-
-  @override
-  void deactivate() {
-    _updateStream?.cancel();
-    _updateStream = null;
-    super.deactivate();
-  }
-
-  @override
-  void dispose() {
-    _updateStream?.cancel();
-    _updateStream = null;
-    super.dispose();
-  }
-
   void _deleteAdmin(String adminUid, String name) async {
     Messages mess = Messages.of(context);
     // Show an alert dialog first.
@@ -124,30 +102,39 @@ class TeamSettingsState extends State<TeamSettings> {
   }
 
   void _addAdmin() {
-    Navigator.pushNamed(context, "TeamAddAdmin/" + _team.uid);
+    Navigator.pushNamed(context, "TeamAddAdmin/" + widget._teamUid);
   }
 
-  List<Widget> _buildAdmins(List<Widget> ret) {
+  List<Widget> _buildAdmins(List<Widget> ret, SingleTeamState state) {
     ThemeData theme = Theme.of(context);
 
     ret.add(new Text("Admins", style: theme.textTheme.title));
 
-    for (String uid in _team.admins) {
+    for (String uid in state.team.admins) {
       print('$uid');
       ret.add(
-        new FutureBuilder<Player>(
-          future: UserDatabaseData.instance.getPlayer(uid, withProfile: true),
-          builder: (BuildContext context, AsyncSnapshot<Player> data) {
-            if (data.hasData) {
+        SinglePlayerProvider(playerUid: uid, builder: (BuildContext contxt, SinglePlayerBloc bloc) =>
+        BlocBuilder(bloc: bloc, builder: (BuildContext context, SinglePlayerState state) {
+if (state is SinglePlayerDeleted) {
+  return new ListTile(
+    leading: const Icon(Icons.person),
+    title: new Text(Messages.of(context).deleteplayer),
+    trailing: new IconButton(
+      icon: const Icon(Icons.delete),
+      onPressed: null,
+    ),
+  );
+}
+if (state is SinglePlayerLoaded) {
               return new ListTile(
                 leading: const Icon(Icons.person),
-                title: new Text(data.data.name),
+                title: new Text(state.player.name),
                 trailing: new IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed:
                       data.data.uid == UserDatabaseData.instance.mePlayer.uid
                           ? null
-                          : () => _deleteAdmin(uid, data.data.name),
+                          : () => _deleteAdmin(uid, tate.player.name),
                 ),
               );
             }
@@ -159,7 +146,7 @@ class TeamSettingsState extends State<TeamSettings> {
                 onPressed: null,
               ),
             );
-          },
+
         ),
       );
     }

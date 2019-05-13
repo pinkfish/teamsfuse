@@ -1,10 +1,13 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../blocs/singleteamprovider.dart';
+import '../blocs/singleteamseasonprovider.dart';
 
 class TeamPlayers extends StatefulWidget {
   TeamPlayers(this._teamUid);
@@ -21,71 +24,13 @@ class TeamPlayersState extends State<TeamPlayers> {
   TeamPlayersState();
 
   String _seasonUid;
-  Team _team;
-  Season _season;
-  List<InviteToTeam> _invites;
-  StreamSubscription<UpdateReason> _updateStream;
-  StreamSubscription<List<InviteToTeam>> _inviteStream;
 
-  @override
-  void initState() {
-    super.initState();
-    _team = UserDatabaseData.instance.teams[widget._teamUid];
-    updateSeason(_team.currentSeason);
-    _updateStream = _team.thisTeamStream.listen((UpdateReason upd) {
-      setState(() {});
-    });
-  }
-
-  @override
-  void deactivate() {
-    if (_updateStream != null) {
-      _updateStream.cancel();
-      _updateStream = null;
-    }
-    if (_inviteStream != null) {
-      _inviteStream.cancel();
-      _inviteStream = null;
-    }
-    super.deactivate();
-  }
-
-  @override
-  void dispose() {
-    if (_updateStream != null) {
-      _updateStream.cancel();
-      _updateStream = null;
-    }
-    if (_inviteStream != null) {
-      _inviteStream.cancel();
-      _inviteStream = null;
-    }
-    super.dispose();
-  }
-
-  void updateSeason(String seasonUid) {
-    if (_team.seasons.containsKey(seasonUid)) {
-      _seasonUid = _team.currentSeason;
-      _season = _team.seasons[seasonUid];
-      // Look for the invites.
-      _inviteStream = _season.inviteStream.listen((List<InviteToTeam> invites) {
-        setState(() {
-          _invites = invites;
-        });
-      });
-    }
-  }
-
-  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+  List<DropdownMenuItem<String>> _buildItems(BuildContext context, Team team) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
-    if (widget._teamUid != null &&
-        UserDatabaseData.instance.teams.containsKey(widget._teamUid)) {
-      UserDatabaseData.instance.teams[widget._teamUid].seasons
-          .forEach((String key, Season season) {
-        ret.add(new DropdownMenuItem<String>(
-            child: new Text(season.name), value: season.uid));
-      });
-    }
+    team.seasons.forEach((String key, Season season) {
+      ret.add(new DropdownMenuItem<String>(
+          child: new Text(season.name), value: season.uid));
+    });
 
     return ret;
   }
@@ -126,24 +71,26 @@ class TeamPlayersState extends State<TeamPlayers> {
       },
     );
     if (result) {
-      invite.firestoreDelete();
+      InviteBloc bloc = BlocProvider.of<InviteBloc>(context);
+      bloc.dispatch(InviteEventDeleteInvite(inviteUid: invite.uid));
     }
   }
 
-  List<Widget> _buildPlayers() {
+  List<Widget> _buildPlayers(
+      SingleTeamSeaonState state, SingleTeamState teamState) {
     List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
 
-    _season.players.forEach((SeasonPlayer player) {
+    for (SeasonPlayer player in state.season.players) {
       ret.add(
         new GestureDetector(
           onTap: () {
             Navigator.pushNamed(
                 context,
                 "PlayerDetails/" +
-                    _team.uid +
+                    widget._teamUid +
                     "/" +
-                    _season.uid +
+                    _seasonUid +
                     "/" +
                     player.playerUid);
           },
@@ -156,7 +103,7 @@ class TeamPlayersState extends State<TeamPlayers> {
           ),
         ),
       );
-    });
+    }
     ret.add(
       new ListTile(
         title: new FlatButton(
@@ -171,9 +118,11 @@ class TeamPlayersState extends State<TeamPlayers> {
     );
 
     // Put in an expansion bar if there are pending invites.
-    if (_invites != null && _invites.length > 0 && _team.isAdmin()) {
+    if (state.invites != null &&
+        state.invites.length > 0 &&
+        teamState.team.isAdmin(teamState.club)) {
       List<Widget> kids = <Widget>[];
-      _invites.forEach((InviteToTeam inv) {
+      for (InviteToTeam inv in state.invites) {
         kids.add(
           new ListTile(
             title: new Row(
@@ -205,9 +154,10 @@ class TeamPlayersState extends State<TeamPlayers> {
             ),
           ),
         );
-      });
+      }
       ret.add(new ExpansionTile(
-          title: new Text(Messages.of(context).invitedpeople(_invites.length)),
+          title: new Text(
+              Messages.of(context).invitedpeople(state.invites.length)),
           children: kids));
     }
     return ret;
@@ -218,35 +168,61 @@ class TeamPlayersState extends State<TeamPlayers> {
     ThemeData theme = Theme.of(context);
     Messages messsages = Messages.of(context);
 
-    return new Column(
-      children: <Widget>[
-        new Row(
-          children: <Widget>[
-            new DropdownButton<String>(
-              hint: new Text(messsages.seasonselect),
-              value: _seasonUid,
-              items: _buildItems(context),
-              onChanged: (String val) {
-                print('changed $val');
-                setState(() {
-                  _seasonUid = val;
-                  _season = _team.seasons[val];
-                });
-              },
-            ),
-          ],
-        ),
-        new Expanded(
-          child: new Container(
-            constraints: new BoxConstraints(),
-            margin: new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-            decoration: new BoxDecoration(color: theme.cardColor),
-            child: new SingleChildScrollView(
-              child: new Column(children: _buildPlayers()),
-            ),
+    return SingleTeamProvider(
+      teamUid: widget._teamUid,
+      builder: (BuildContext context, SingleTeamBloc bloc) => BlocBuilder(
+            bloc: bloc,
+            builder: (BuildContext context, SingleTeamState state) {
+              if (state is SingleTeamDeleted) {
+                return CircularProgressIndicator();
+              } else {
+                return Column(
+                  children: <Widget>[
+                    new Row(
+                      children: <Widget>[
+                        new DropdownButton<String>(
+                          hint: new Text(messsages.seasonselect),
+                          value: _seasonUid,
+                          items: _buildItems(context, bloc.currentState.team),
+                          onChanged: (String val) {
+                            print('changed $val');
+                            setState(() {
+                              _seasonUid = val;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    new Expanded(
+                      child: new Container(
+                        constraints: new BoxConstraints(),
+                        margin: new EdgeInsets.only(
+                            left: 10.0, right: 10.0, top: 10.0),
+                        decoration: new BoxDecoration(color: theme.cardColor),
+                        child: new SingleChildScrollView(
+                          child: SingleTeamSeasonProvider(
+                            seasonUid: _seasonUid,
+                            teamUid: widget._teamUid,
+                            builder: (BuildContext context,
+                                    SingleTeamSeasonBloc seasonBloc) =>
+                                BlocBuilder(
+                                  bloc: seasonBloc,
+                                  builder: (BuildContext context,
+                                      SingleTeamSeaonState seasonState) {
+                                    return Column(
+                                        children:
+                                            _buildPlayers(seasonState, state));
+                                  },
+                                ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
           ),
-        )
-      ],
     );
   }
 }

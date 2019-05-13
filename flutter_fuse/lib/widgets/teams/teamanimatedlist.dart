@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'teamtile.dart';
@@ -19,14 +21,12 @@ class TeamAnimatedList extends StatefulWidget {
 }
 
 class _TeamAnimatedListState extends State<TeamAnimatedList> {
-  List<Team> _currentData;
+  List<Team> _currentData = [];
   GlobalKey<AnimatedListState> _listState = new GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
     super.initState();
-    _currentData = UserDatabaseData.instance.teams.values.toList();
-    _currentData.sort((Team a, Team b) => a.compareTo(b));
   }
 
   Widget _buildItem(
@@ -57,8 +57,8 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
         i++;
         j++;
       } else {
-        int diff = _currentData[i].compareTo(oldList[j]);
-        if (diff < 0) {
+        bool same = _currentData[i] == oldList[j];
+        if (!same) {
           i++;
           _listState.currentState.insertItem(i);
         } else {
@@ -89,26 +89,31 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<UpdateReason>(
-      stream: UserDatabaseData.instance.teamStream,
-      builder: (BuildContext context, AsyncSnapshot<UpdateReason> reason) {
-        List<Team> teamSorted = UserDatabaseData.instance.teams.values
-            .where((Team t) => t.archived == widget.archived)
-            .toList();
-        if (teamSorted.length == 0) {
-          return Container(
-            margin: EdgeInsets.only(top: 5.0, left: 20.0, right: 20.0),
-            child: Text(Messages.of(context).noteams),
+    return BlocBuilder(
+      bloc: BlocProvider.of<TeamBloc>(context),
+      builder: (BuildContext context, TeamState state) {
+        if (state is TeamUninitialized) {
+          return CircularProgressIndicator();
+        } else {
+          List<Team> teamSorted = state.allTeamUids
+              .map((String uid) => state.getTeam(uid))
+              .where((Team t) => t.archived == widget.archived)
+              .toList();
+          if (teamSorted.length == 0) {
+            return Container(
+              margin: EdgeInsets.only(top: 5.0, left: 20.0, right: 20.0),
+              child: Text(Messages.of(context).noteams),
+            );
+          }
+          teamSorted.sort((Team a, Team b) => a.name.compareTo(b.name));
+          _updateTeams(teamSorted);
+          return AnimatedList(
+            key: _listState,
+            itemBuilder: _buildItem,
+            initialItemCount: teamSorted.length,
+            shrinkWrap: true,
           );
         }
-        _updateTeams(teamSorted);
-        teamSorted.sort((Team a, Team b) => a.compareTo(b));
-        return AnimatedList(
-          key: _listState,
-          itemBuilder: _buildItem,
-          initialItemCount: teamSorted.length,
-          shrinkWrap: true,
-        );
       },
     );
   }

@@ -131,8 +131,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   // Invite firestore updates
   @override
-  Future<void> firestoreInviteDelete(Invite invite) {
-    return wrapper.collection(INVITE_COLLECTION).document(invite.uid).delete();
+  Future<void> firestoreInviteDelete(String inviteUid) {
+    return wrapper.collection(INVITE_COLLECTION).document(inviteUid).delete();
   }
 
   // Message Recipients
@@ -287,31 +287,45 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .delete();
   }
 
+  Future<Game> _getWholeGame(
+      DocumentSnapshotWrapper doc, String teamUid) async {
+    String sharedGameUid = doc.data[Game.SHAREDDATAUID];
+    GameSharedDataBuilder sharedData;
+    if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
+      // Load the shared stuff too.
+      DocumentSnapshotWrapper doc = await wrapper
+          .collection(GAMES_SHARED_COLLECTION)
+          .document(sharedGameUid)
+          .get();
+      sharedData = GameSharedData.fromJSON(doc.documentID, doc.data);
+    } else {
+      sharedData = GameSharedData.fromJSON(sharedGameUid, doc.data);
+    }
+    GameBuilder game =
+        Game.fromJSON(teamUid, doc.documentID, doc.data, sharedData.build());
+    return game.build();
+  }
+
   @override
-  Future<Iterable<Game>> getOpponentGames(Opponent opponent) async {
+  Stream<Iterable<Game>> getOpponentGames(Opponent opponent) async* {
     CollectionReferenceWrapper ref = wrapper.collection(GAMES_COLLECTION);
     // See if the games for the season.
-    QuerySnapshotWrapper snap = await ref
+    CollectionReferenceWrapper snap = await ref
         .where(Game.TEAMUID, isEqualTo: opponent.teamUid)
-        .where(Game.OPPONENTUID, isEqualTo: opponent.uid)
-        .getDocuments();
-    return Future.wait(snap.documents.map((DocumentSnapshotWrapper doc) async {
-      String sharedGameUid = doc.data[Game.SHAREDDATAUID];
-      GameSharedDataBuilder sharedData;
-      if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-        // Load the shared stuff too.
-        DocumentSnapshotWrapper doc = await wrapper
-            .collection(GAMES_SHARED_COLLECTION)
-            .document(sharedGameUid)
-            .get();
-        sharedData = GameSharedData.fromJSON(doc.documentID, doc.data);
-      } else {
-        sharedData = GameSharedData.fromJSON(sharedGameUid, doc.data);
+        .where(Game.OPPONENTUID, isEqualTo: opponent.uid);
+    QuerySnapshotWrapper query = await snap.getDocuments();
+    List<Game> g = [];
+    for (DocumentSnapshotWrapper doc in query.documents) {
+      g.add(await _getWholeGame(doc, opponent.teamUid));
+    }
+    yield g;
+    await for (QuerySnapshotWrapper doc in snap.snapshots()) {
+      List<Game> g = [];
+      for (DocumentSnapshotWrapper doc in query.documents) {
+        g.add(await _getWholeGame(doc, opponent.teamUid));
       }
-      GameBuilder game = Game.fromJSON(
-          opponent.teamUid, doc.documentID, doc.data, sharedData.build());
-      return game.build();
-    }));
+      yield g;
+    }
   }
 
   @override

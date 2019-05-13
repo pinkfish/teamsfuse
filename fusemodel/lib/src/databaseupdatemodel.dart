@@ -235,7 +235,7 @@ abstract class DatabaseUpdateModel {
   Future<Game> getGame(String gameUid);
 
   // Invite firestore updates
-  Future<void> firestoreInviteDelete(Invite invite);
+  Future<void> firestoreInviteDelete(String inviteUid);
 
   // Message Recipients
   Future<void> updateMessageRecipientState(
@@ -252,7 +252,7 @@ abstract class DatabaseUpdateModel {
   Future<void> updateFirestoreOpponent(Opponent opponent);
   Future<Opponent> addFirestoreOpponent(Opponent opponent);
   Future<void> deleteFirestoreOpponent(Opponent opponent);
-  Future<Iterable<Game>> getOpponentGames(Opponent season);
+  Stream<Iterable<Game>> getOpponentGames(Opponent opponent);
 
   // Team stuff
   Future<void> updateFirestoreTeam(Team team);

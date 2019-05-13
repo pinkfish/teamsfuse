@@ -1,14 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class TeamOpponents extends StatefulWidget {
-  TeamOpponents(this._teamUid);
+  TeamOpponents(this._teamBloc);
 
-  final String _teamUid;
+  final SingleTeamBloc _teamBloc;
 
   @override
   TeamOpponentsState createState() {
@@ -18,57 +18,12 @@ class TeamOpponents extends StatefulWidget {
 
 class TeamOpponentsState extends State<TeamOpponents> {
   String _seasonUid;
-  Team _team;
-  StreamSubscription<UpdateReason> _updateStream;
-  List<String> _opponentKeys;
+  Map<String, SingleTeamOpponentBloc> _opponentBlocs = {};
 
-  @override
-  void initState() {
-    super.initState();
-    _team = UserDatabaseData.instance.teams[widget._teamUid];
-    _opponentKeys = _team.opponents.keys.toList();
-    _opponentKeys.sort((String uid1, String uid2) =>
-        _team.opponents[uid1].name.compareTo(_team.opponents[uid2].name));
-    updateSeason(_team.currentSeason);
-    _updateStream = _team.thisTeamStream.listen((UpdateReason upd) {
-      setState(() {
-        _opponentKeys = _team.opponents.keys.toList();
-        _opponentKeys.sort((String uid1, String uid2) =>
-            _team.opponents[uid1].name.compareTo(_team.opponents[uid2].name));
-      });
-    });
-  }
-
-  @override
-  void deactivate() {
-    if (_updateStream != null) {
-      _updateStream.cancel();
-      _updateStream = null;
-    }
-    super.deactivate();
-  }
-
-  @override
-  void dispose() {
-    if (_updateStream != null) {
-      _updateStream.cancel();
-      _updateStream = null;
-    }
-    super.dispose();
-  }
-
-  void updateSeason(String seasonUid) {
-    if (_team.seasons.containsKey(_team.currentSeason)) {
-      _seasonUid = _team.currentSeason;
-    }
-  }
-
-  List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
+  List<DropdownMenuItem<String>> _buildItems(BuildContext context, Team team) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
-    if (widget._teamUid != null &&
-        UserDatabaseData.instance.teams.containsKey(widget._teamUid)) {
-      UserDatabaseData.instance.teams[widget._teamUid].seasons
-          .forEach((String key, Season season) {
+    if (team != null) {
+      team.seasons.forEach((String key, Season season) {
         ret.add(new DropdownMenuItem<String>(
             child: new Text(season.name), value: season.uid));
       });
@@ -77,7 +32,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
     return ret;
   }
 
-  void _deleteOpponent(Opponent op) async {
+  void _deleteOpponent(SingleTeamOpponentBloc op) async {
     Messages mess = Messages.of(context);
     // Show an alert dialog first.
     bool result = await showDialog<bool>(
@@ -89,7 +44,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
           content: new SingleChildScrollView(
             child: new ListBody(
               children: <Widget>[
-                new Text(op.name),
+                new Text(op.currentState.opponent.name),
               ],
             ),
           ),
@@ -113,11 +68,11 @@ class TeamOpponentsState extends State<TeamOpponents> {
       },
     );
     if (result) {
-      op.deleteFromFirestore();
+      op.dispatch(SingleTeamOpponentDeleteOpponent());
     }
   }
 
-  List<Widget> _buildOpponents() {
+  List<Widget> _buildOpponents(Team team) {
     List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
 
@@ -129,13 +84,25 @@ class TeamOpponentsState extends State<TeamOpponents> {
         ),
       ),
     );
-    for (String uid in _opponentKeys) {
-      Opponent op = _team.opponents[uid];
+    List<String> opponentKeys = team.opponents.keys.toList();
+    opponentKeys.sort((String uid1, String uid2) =>
+        team.opponents[uid1].name.compareTo(team.opponents[uid2].name));
+
+    for (String uid in opponentKeys) {
+      Opponent op = team.opponents[uid];
       WinRecord record;
       if (!op.record.containsKey(_seasonUid)) {
         continue;
       }
       record = op.record[_seasonUid];
+
+      if (!_opponentBlocs.containsKey(op.uid)) {
+        _opponentBlocs[op.uid] = SingleTeamOpponentBloc(
+            teamUid: team.uid,
+            opponentUid: op.uid,
+            teamBloc: BlocProvider.of<TeamBloc>(context));
+        _opponentBlocs[op.uid].dispatch(SingleTeamOpponentLoadGames());
+      }
 
       ret.add(
         new ExpansionTile(
@@ -158,16 +125,15 @@ class TeamOpponentsState extends State<TeamOpponents> {
           ),
           initiallyExpanded: false,
           children: <Widget>[
-            new FutureBuilder<Iterable<Game>>(
-                future: op.getGames(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<Iterable<Game>> games) {
-                  if (!games.hasData) {
+            new BlocBuilder(
+                bloc: _opponentBlocs[op.uid],
+                builder: (BuildContext context, SingleTeamOpponentState state) {
+                  if (state is SingleTeamOpponentDeleted) {
                     return new Center(
                       child: new Text(Messages.of(context).loading),
                     );
                   }
-                  if (games.data.length == 0) {
+                  if (state.games.length == 0) {
                     return new Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -180,13 +146,13 @@ class TeamOpponentsState extends State<TeamOpponents> {
                     );
                   } else {
                     List<Widget> newData = <Widget>[];
-                    games.data.forEach((Game game) {
+                    for (Game game in state.games) {
                       if (game.sharedData.type == EventType.Game &&
                           game.seasonUid == _seasonUid &&
                           game.opponentUids.contains(uid)) {
                         newData.add(new GameCard(game));
                       }
-                    });
+                    }
                     if (newData.length == 0) {
                       newData.add(new Text(Messages.of(context).nogames));
                     }
@@ -207,8 +173,8 @@ class TeamOpponentsState extends State<TeamOpponents> {
         ),
       ),
     );
-    for (String uid in _opponentKeys) {
-      Opponent op = _team.opponents[uid];
+    for (String uid in opponentKeys) {
+      Opponent op = team.opponents[uid];
       if (op.record.containsKey(_seasonUid)) {
         continue;
       }
@@ -218,49 +184,51 @@ class TeamOpponentsState extends State<TeamOpponents> {
           title: new Text(op.name),
           initiallyExpanded: false,
           children: <Widget>[
-            new FutureBuilder<Iterable<Game>>(
-                future: op.getGames(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<Iterable<Game>> games) {
-                  if (!games.hasData) {
-                    return new Center(
-                      child: new Text(Messages.of(context).loading),
-                    );
-                  }
-                  if (games.data.length == 0) {
-                    return new Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        new Center(
-                          child: new Text(Messages.of(context).nogames),
-                        ),
-                        new IconButton(
-                          onPressed: () => _deleteOpponent(op),
-                          icon: const Icon(Icons.delete),
-                          color: Theme.of(context).primaryColorDark,
-                        )
-                      ],
-                    );
-                  } else {
-                    List<Widget> newData = <Widget>[];
-                    for (Game game in games.data) {
-                      if (game.sharedData.type == EventType.Game &&
-                          game.opponentUids.contains(uid)) {
-                        if (game.seasonUid == _seasonUid) {
-                          newData.add(new GameCard(game));
-                        }
+            new BlocBuilder(
+              bloc: _opponentBlocs[op.uid],
+              builder: (BuildContext context, SingleTeamOpponentState state) {
+                if (state is SingleTeamOpponentDeleted) {
+                  return new Center(
+                    child: new Text(Messages.of(context).loading),
+                  );
+                }
+
+                if (state.games.length == 0) {
+                  return new Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      new Center(
+                        child: new Text(Messages.of(context).nogames),
+                      ),
+                      new IconButton(
+                        onPressed: () =>
+                            _deleteOpponent(_opponentBlocs[op.uid]),
+                        icon: const Icon(Icons.delete),
+                        color: Theme.of(context).primaryColorDark,
+                      )
+                    ],
+                  );
+                } else {
+                  List<Widget> newData = <Widget>[];
+                  for (Game game in state.games) {
+                    if (game.sharedData.type == EventType.Game &&
+                        game.opponentUids.contains(uid)) {
+                      if (game.seasonUid == _seasonUid) {
+                        newData.add(new GameCard(game));
                       }
                     }
-                    if (newData.length == 0) {
-                      newData.add(
-                          new Text(Messages.of(context).nogamesthisseason));
-                    }
-                    return new Column(
-                      children: newData,
-                    );
                   }
-                }),
+                  if (newData.length == 0) {
+                    newData
+                        .add(new Text(Messages.of(context).nogamesthisseason));
+                  }
+                  return new Column(
+                    children: newData,
+                  );
+                }
+              },
+            ),
           ],
         ),
       );
@@ -274,14 +242,14 @@ class TeamOpponentsState extends State<TeamOpponents> {
     ThemeData theme = Theme.of(context);
     Messages messsages = Messages.of(context);
 
-    return new Column(
+    return Column(
       children: <Widget>[
         new Row(
           children: <Widget>[
             new DropdownButton<String>(
               hint: new Text(messsages.seasonselect),
               value: _seasonUid,
-              items: _buildItems(context),
+              items: _buildItems(context, widget._teamBloc.currentState.team),
               onChanged: (String val) {
                 print('changed $val');
                 setState(() {
@@ -299,7 +267,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
             child: new SingleChildScrollView(
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: _buildOpponents(),
+                children: _buildOpponents(widget._teamBloc.currentState.team),
               ),
             ),
           ),
