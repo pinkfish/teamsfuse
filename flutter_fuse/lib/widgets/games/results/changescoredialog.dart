@@ -4,19 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-Future<GameResultDetails> changeScoreDialog(
+///
+/// Shows a dialog to change the score.
+///
+Future<GameResultDetailsBuilder> changeScoreDialog(
     BuildContext context, GameResultDetails details) async {
   Messages mess = Messages.of(context);
   GlobalKey<_ChangeScoreState> detailsState =
       new GlobalKey<_ChangeScoreState>();
 
-  GameResultDetails result = await showDialog<GameResultDetails>(
+  GameResultDetailsBuilder result = await showDialog<GameResultDetailsBuilder>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return new AlertDialog(
           title: new Text(mess.changescore),
-          content: new _ChangeScore(details, detailsState),
+          content: new _ChangeScore(details.toBuilder(), detailsState),
           actions: <Widget>[
             new FlatButton(
               child: new Text(MaterialLocalizations.of(context).okButtonLabel),
@@ -42,7 +45,7 @@ class _ChangeScore extends StatefulWidget {
   _ChangeScore(this._details, GlobalKey<_ChangeScoreState> key)
       : super(key: key);
 
-  final GameResultDetails _details;
+  final GameResultDetailsBuilder _details;
   final GlobalKey<FormState> _formState = new GlobalKey<FormState>();
 
   @override
@@ -52,14 +55,15 @@ class _ChangeScore extends StatefulWidget {
 }
 
 class _ChangeScoreState extends State<_ChangeScore> {
-  GameResultDetails save() {
+  GameResultDetailsBuilder save() {
     widget._formState.currentState.save();
     return widget._details;
   }
 
   List<Widget> _buildScores() {
     List<Widget> ret = <Widget>[];
-    for (GameResultPerPeriod result in widget._details.scores.values) {
+    for (GamePeriod period in widget._details.scores.build().keys) {
+      GameResultPerPeriod result = widget._details.scores[period];
       ret.add(new Text(
         Messages.of(context).periodname(result.period),
         style: Theme.of(context)
@@ -80,7 +84,10 @@ class _ChangeScoreState extends State<_ChangeScore> {
               keyboardType: TextInputType.number,
               initialValue: result.score.ptsFor.toString(),
               onSaved: (String str) {
-                result.score.ptsFor = int.parse(str);
+                GameScoreBuilder builder = result.score.toBuilder();
+                builder.ptsFor = int.parse(str);
+                widget._details.scores[period] =
+                    result.rebuild((b) => b..score = builder);
               },
             ),
           ),
@@ -94,7 +101,10 @@ class _ChangeScoreState extends State<_ChangeScore> {
               keyboardType: TextInputType.number,
               initialValue: result.score.ptsAgainst.toString(),
               onSaved: (String str) {
-                result.score.ptsAgainst = int.parse(str);
+                GameScoreBuilder builder = result.score.toBuilder();
+                builder.ptsAgainst = int.parse(str);
+                widget._details.scores[period] =
+                    result.rebuild((b) => b..score = builder);
               },
             ),
           ),

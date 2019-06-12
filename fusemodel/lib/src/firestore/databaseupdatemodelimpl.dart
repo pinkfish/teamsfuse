@@ -81,21 +81,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     return ref.delete();
   }
 
-  Future<void> deleteFirestoreSharedGame(GameSharedData game) async {
-    DocumentReferenceWrapper ref =
-        wrapper.collection(GAMES_SHARED_COLLECTION).document(game.uid);
-    await ref.delete();
-    QuerySnapshotWrapper snap = await wrapper
-        .collection(GAMES_COLLECTION)
-        .where(Game.SHAREDDATAUID, isEqualTo: game.uid)
-        .getDocuments();
-
-    for (DocumentSnapshotWrapper doc in snap.documents) {
-      await doc.reference.delete();
-    }
-    return;
-  }
-
   @override
   Future<void> updateFirestoreGameAttendence(
       Game game, String playerUid, Attendance attend) {
@@ -110,9 +95,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<void> updateFirestoreGameResult(Game game, GameResultDetails result) {
+  Future<void> updateFirestoreGameResult(
+      String gameUid, GameResultDetails result) {
     DocumentReferenceWrapper ref =
-        wrapper.collection(GAMES_COLLECTION).document(game.uid);
+        wrapper.collection(GAMES_COLLECTION).document(gameUid);
 
     Map<String, dynamic> data = <String, dynamic>{};
     data[Game.RESULT] = result.toJSON();
@@ -120,9 +106,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   Future<void> updateFirestoreOfficalGameResult(
-      GameSharedData game, GameOfficialResults result) {
+      String sharedGameUid, GameOfficialResults result) {
     DocumentReferenceWrapper ref =
-        wrapper.collection(GAMES_SHARED_COLLECTION).document(game.uid);
+        wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
 
     Map<String, dynamic> data = <String, dynamic>{};
     data[GameSharedData.OFFICIALRESULT] = result.toJSON();

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class FilterHomeDialog extends StatefulWidget {
@@ -18,15 +20,18 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
   void _openTeamListWithCheckbox() {
     Messages messages = Messages.of(context);
     List<Widget> teams = <Widget>[];
-    UserDatabaseData.instance.teams.forEach((String str, Team team) {
-      bool isOn = widget.details.teamUids.contains(str);
+    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+
+    for (String uid in teamBloc.currentState.allTeamUids) {
+      Team team = teamBloc.currentState.getTeam(uid);
+      bool isOn = widget.details.teamUids.contains(uid);
       teams.add(_CheckboxDialogItem(
           initialValue: isOn,
           title: team.name,
           onChanged: (bool val) => val
-              ? widget.details.teamUids.add(str)
-              : widget.details.teamUids.remove(str)));
-    });
+              ? widget.details.teamUids.add(uid)
+              : widget.details.teamUids.remove(uid)));
+    }
     teams.add(ButtonBar(
       children: <Widget>[
         FlatButton(
@@ -54,8 +59,9 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     if (widget.details.teamUids.length == 0) {
       pickerText = messages.allteams;
     } else {
+      TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
       pickerText = widget.details.teamUids
-          .map((String uid) => UserDatabaseData.instance.teams[uid].name)
+          .map((String uid) => teamBloc.currentState.getTeam(uid).name)
           .join((", "));
     }
     return new InkWell(
@@ -72,15 +78,18 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
   void _openPlayerListWithCheckbox() {
     Messages messages = Messages.of(context);
     List<Widget> players = <Widget>[];
-    UserDatabaseData.instance.players.forEach((String str, Player player) {
-      bool isOn = widget.details.playerUids.contains(str);
+    PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+
+    for (String uid in playerBloc.currentState.players.keys) {
+      Player player = playerBloc.currentState.getPlayer(uid);
+      bool isOn = widget.details.playerUids.contains(uid);
       players.add(_CheckboxDialogItem(
           initialValue: isOn,
           title: player.name,
           onChanged: (bool val) => val
-              ? widget.details.playerUids.add(str)
-              : widget.details.playerUids.remove(str)));
-    });
+              ? widget.details.playerUids.add(uid)
+              : widget.details.playerUids.remove(uid)));
+    }
     players.add(ButtonBar(
       children: <Widget>[
         FlatButton(
@@ -109,8 +118,10 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     if (widget.details.playerUids.length == 0) {
       pickerText = messages.everyone;
     } else {
+      PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+
       pickerText = widget.details.playerUids
-          .map((String uid) => UserDatabaseData.instance.players[uid].name)
+          .map((String uid) => playerBloc.currentState.getPlayer(uid).name)
           .join((", "));
     }
     return new InkWell(

@@ -207,10 +207,10 @@ class _SingleTeamInvitesAdminLoaded extends SingleTeamEvent {
   _SingleTeamInvitesAdminLoaded({@required this.invites});
 }
 
-class _SingleTeamSeasonLoaded extends SingleTeamEvent {
+class _SingleTeamSeasonDataLoaded extends SingleTeamEvent {
   final Iterable<Season> seasons;
 
-  _SingleTeamSeasonLoaded({@required this.seasons});
+  _SingleTeamSeasonDataLoaded({@required this.seasons});
 }
 
 class _SingleTeamNewClub extends SingleTeamEvent {
@@ -436,11 +436,11 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       _seasonSub = teamBloc.coordinationBloc.databaseUpdateModel
           .getAllSeasons(teamUid)
           .listen((Iterable<Season> seasons) {
-        dispatch(_SingleTeamSeasonLoaded(seasons: seasons));
+        dispatch(_SingleTeamSeasonDataLoaded(seasons: seasons));
       });
     }
 
-    if (event is _SingleTeamSeasonLoaded) {
+    if (event is _SingleTeamSeasonDataLoaded) {
       yield SingleTeamLoaded(state: currentState, fullSeason: event.seasons);
     }
 

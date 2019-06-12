@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
@@ -8,6 +6,7 @@ import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../blocs/singleplayerprovider.dart';
+import '../blocs/singleteamprovider.dart';
 
 class TeamSettings extends StatefulWidget {
   TeamSettings(this._teamUid);
@@ -57,7 +56,8 @@ class TeamSettingsState extends State<TeamSettings> {
       },
     );
     if (result) {
-      _team.deleteAdmin(adminUid);
+      InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
+      inviteBloc.dispatch(InviteEventDeleteInvite(inviteUid: adminUid));
     }
   }
 
@@ -97,7 +97,8 @@ class TeamSettingsState extends State<TeamSettings> {
       },
     );
     if (result) {
-      adm.firestoreDelete();
+      InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
+      inviteBloc.dispatch(InviteEventDeleteInvite(inviteUid: adm.uid));
     }
   }
 
@@ -113,40 +114,43 @@ class TeamSettingsState extends State<TeamSettings> {
     for (String uid in state.team.admins) {
       print('$uid');
       ret.add(
-        SinglePlayerProvider(playerUid: uid, builder: (BuildContext contxt, SinglePlayerBloc bloc) =>
-        BlocBuilder(bloc: bloc, builder: (BuildContext context, SinglePlayerState state) {
-if (state is SinglePlayerDeleted) {
-  return new ListTile(
-    leading: const Icon(Icons.person),
-    title: new Text(Messages.of(context).deleteplayer),
-    trailing: new IconButton(
-      icon: const Icon(Icons.delete),
-      onPressed: null,
-    ),
-  );
-}
-if (state is SinglePlayerLoaded) {
-              return new ListTile(
-                leading: const Icon(Icons.person),
-                title: new Text(state.player.name),
-                trailing: new IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed:
-                      data.data.uid == UserDatabaseData.instance.mePlayer.uid
-                          ? null
-                          : () => _deleteAdmin(uid, tate.player.name),
-                ),
-              );
-            }
-            return new ListTile(
-              leading: const Icon(Icons.person),
-              title: new Text(Messages.of(context).loading),
-              trailing: new IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: null,
+        SinglePlayerProvider(
+          playerUid: uid,
+          builder: (BuildContext contxt, SinglePlayerBloc bloc) => BlocBuilder(
+                bloc: bloc,
+                builder: (BuildContext context, SinglePlayerState state) {
+                  if (state is SinglePlayerDeleted) {
+                    return new ListTile(
+                      leading: const Icon(Icons.person),
+                      title: new Text(Messages.of(context).deleteplayer),
+                      trailing: new IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: null,
+                      ),
+                    );
+                  }
+                  if (state is SinglePlayerLoaded) {
+                    return new ListTile(
+                      leading: const Icon(Icons.person),
+                      title: new Text(state.player.name),
+                      trailing: new IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: state.mePlayer
+                            ? null
+                            : () => _deleteAdmin(uid, state.player.name),
+                      ),
+                    );
+                  }
+                  return new ListTile(
+                    leading: const Icon(Icons.person),
+                    title: new Text(Messages.of(context).loading),
+                    trailing: new IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: null,
+                    ),
+                  );
+                },
               ),
-            );
-
         ),
       );
     }
@@ -157,49 +161,42 @@ if (state is SinglePlayerLoaded) {
         textColor: Theme.of(context).accentColor,
       ),
     );
-    ret.add(new StreamBuilder<Iterable<InviteAsAdmin>>(
-      stream: _team.inviteStream,
-      builder: (BuildContext context,
-          AsyncSnapshot<Iterable<InviteAsAdmin>> admins) {
-        Iterable<InviteAsAdmin> invites = _team.invites;
-        if (admins.hasData) {
-          // Do stuff
-          invites = admins.data;
-        }
-        // Load the existing stuff.
-        if (invites != null && invites.length > 0) {
-          return new ExpansionTile(
-            title:
-                new Text(Messages.of(context).pendinginvites(invites.length)),
-            children: invites
-                .map(
-                  (InviteAsAdmin adm) => new ListTile(
-                        leading: const Icon(Icons.person_add),
-                        title: new Text(adm.email),
-                        subtitle:
-                            new ByUserNameComponent(userId: adm.sentByUid),
-                        trailing: new IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _deleteInvite(adm),
-                        ),
+
+    Iterable<InviteAsAdmin> invites = state.invitesAsAdmin;
+    // Load the existing stuff.
+    if (invites != null && invites.length > 0) {
+      ret.add(
+        ExpansionTile(
+          title: new Text(Messages.of(context).pendinginvites(invites.length)),
+          children: invites
+              .map(
+                (InviteAsAdmin adm) => new ListTile(
+                      leading: const Icon(Icons.person_add),
+                      title: new Text(adm.email),
+                      subtitle: new ByUserNameComponent(userId: adm.sentByUid),
+                      trailing: new IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => _deleteInvite(adm),
                       ),
-                )
-                .toList(),
-          );
-        }
-        return SizedBox(height: 1.0);
-      },
-    ));
+                    ),
+              )
+              .toList(),
+        ),
+      );
+    } else {
+      ret.add(SizedBox(height: 1.0));
+    }
+
     return ret;
   }
 
-  List<Widget> _buildBody() {
+  List<Widget> _buildBody(SingleTeamState state) {
     List<Widget> ret = <Widget>[];
 
-    _buildAdmins(ret);
+    _buildAdmins(ret, state);
     ret.add(
       new SwitchListTile(
-        value: _team.trackAttendence,
+        value: state.team.trackAttendence(state.club),
         title: new Text("Track Attendence"),
         onChanged: (bool attend) => null,
       ),
@@ -219,9 +216,18 @@ if (state is SinglePlayerLoaded) {
             margin: new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
             decoration: new BoxDecoration(color: theme.cardColor),
             child: new SingleChildScrollView(
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _buildBody(),
+              child: SingleTeamProvider(
+                teamUid: widget._teamUid,
+                builder: (BuildContext contex, SingleTeamBloc bloc) =>
+                    BlocBuilder(
+                      bloc: bloc,
+                      builder: (BuildContext context, SingleTeamState state) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: _buildBody(state),
+                        );
+                      },
+                    ),
               ),
             ),
           ),

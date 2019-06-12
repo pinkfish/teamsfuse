@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/util/debouncer.dart';
 import 'package:flutter_fuse/widgets/util/numberpicker.dart';
 import 'package:flutter_fuse/widgets/util/stopwatchdisplay.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
@@ -15,7 +17,7 @@ import 'timersetupdialog.dart';
 class ScoreDetails extends StatefulWidget {
   ScoreDetails(this.game, this.team);
 
-  final Game game;
+  final SingleGameBloc game;
   final Team team;
 
   @override
@@ -26,9 +28,8 @@ class ScoreDetails extends StatefulWidget {
 
 class _ScoreDetailsState extends State<ScoreDetails> {
   MyStopwatch stopwatch = new MyStopwatch();
-  StreamSubscription<UpdateReason> _gameSubscription;
-  GameResultPerPeriod _currentPeriodResults;
-  GameResultDetails _details;
+  GameResultPerPeriodBuilder _currentPeriodResults;
+  GameResultDetailsBuilder _details;
   num _ptsFor;
   num _ptsAgainst;
   Debouncer<bool> _debouncer;
@@ -38,25 +39,34 @@ class _ScoreDetailsState extends State<ScoreDetails> {
   GlobalKey<NumberPickerState> _ptsAgainstState =
       new GlobalKey<NumberPickerState>();
 
+  Game _lastGame;
+
   @override
   void initState() {
     super.initState();
     print('init this state');
-    _details = new GameResultDetails.copy(widget.game.result);
-    if (widget.game.result.currentPeriod != null) {
-      _currentPeriodResults =
-          widget.game.result.scores[widget.game.result.currentPeriod];
+    _details = widget.game.currentState.game.result.toBuilder();
+    if (widget.game.currentState.game.result.currentPeriod != null) {
+      _currentPeriodResults = widget.game.currentState.game.result
+          .scores[widget.game.currentState.game.result.currentPeriod]
+          .toBuilder();
     }
     GamePeriod periodZero = new GamePeriod(
-        widget.game.result.currentPeriod.type, periodNumber: 0);
+        widget.game.currentState.game.result.currentPeriod.type,
+        periodNumber: 0);
     if (_currentPeriodResults == null) {
-      _currentPeriodResults = widget.game.result.scores[periodZero];
+      _currentPeriodResults =
+          widget.game.currentState.game.result.scores[periodZero].toBuilder();
     }
     if (_currentPeriodResults == null) {
-      _currentPeriodResults = new GameResultPerPeriod(
-          period: periodZero, score: new GameScore(ptsAgainst: 0, ptsFor: 0));
+      GameScoreBuilder gameScoreBuilder = GameScoreBuilder()
+        ..ptsAgainst = 0
+        ..ptsFor = 0;
+      _currentPeriodResults = new GameResultPerPeriodBuilder()
+        ..period = periodZero
+        ..score = gameScoreBuilder;
 
-      _details.scores[periodZero] = _currentPeriodResults;
+      _details.scores[periodZero] = _currentPeriodResults.build();
     }
     if (_details.currentPeriod == null) {
       _details.currentPeriod = _currentPeriodResults.period;
@@ -71,38 +81,30 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     if (_details.time.currentPeriodStart != null) {
       stopwatch.start();
     }
-    _gameSubscription = widget.game.thisGameStream.listen(_updateGame);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _gameSubscription?.cancel();
-    _gameSubscription = null;
-  }
-
-  void _updateGame(UpdateReason reason) {
+  void _updateGame(Game game) {
     // Change scores and timers.
-    GamePeriod period = new GamePeriod(
-        widget.game.result.currentPeriod.type, periodNumber: 0);
-    if (widget.game.result.scores.containsKey(period)) {
+    GamePeriod period =
+        new GamePeriod(game.result.currentPeriod.type, periodNumber: 0);
+    if (game.result.scores.containsKey(period)) {
       _ptsForState.currentState
-          .animateInt(widget.game.result.scores[period].score.ptsFor.toInt());
-      _ptsAgainstState.currentState.animateInt(
-          widget.game.result.scores[period].score.ptsAgainst.toInt());
+          .animateInt(game.result.scores[period].score.ptsFor.toInt());
+      _ptsAgainstState.currentState
+          .animateInt(game.result.scores[period].score.ptsAgainst.toInt());
     }
 
     // If the period changed, update stuff.
-    if (!widget.game.result.currentPeriod.isEqualTo(_details.currentPeriod)) {
-      _periodChanged(widget.game.result.currentPeriod);
+    if (!game.result.currentPeriod.isEqualTo(_details.currentPeriod)) {
+      _periodChanged(game.result.currentPeriod);
     }
 
     setState(() {
-      print("$period ${widget.game.result.scores}");
-      if (widget.game.result.scores.containsKey(period)) {
-        _currentPeriodResults.period = widget.game.result.scores[period].period;
+      print("$period ${game.result.scores}");
+      if (game.result.scores.containsKey(period)) {
+        _currentPeriodResults.period = game.result.scores[period].period;
       }
-      _details.currentPeriod = widget.game.result.currentPeriod;
+      _details.currentPeriod = game.result.currentPeriod;
     });
   }
 
@@ -113,31 +115,33 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     _currentPeriodResults.period = newPeriod;
     _details.currentPeriod = newPeriod;
     _writeLog(GameLogType.PeriodStart);
-    widget.game.updateFirestoreResult(_details);
+    widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
   }
 
   void _setPeriodType(GamePeriod newPeriod) {
-    GamePeriod scoreUpdate = new GamePeriod(
-        _currentPeriodResults.period.type, periodNumber: 0);
-    _details.scores[scoreUpdate] = _currentPeriodResults;
+    GamePeriod scoreUpdate =
+        new GamePeriod(_currentPeriodResults.period.type, periodNumber: 0);
+    _details.scores[scoreUpdate] = _currentPeriodResults.build();
     // Create a new score type.
-    GamePeriod newScoreUpdate =
-        new GamePeriod(newPeriod.type, periodNumber: 0);
-    if (!_details.scores.containsKey(newScoreUpdate)) {
-      _details.scores[newScoreUpdate] = new GameResultPerPeriod(
-        period: newScoreUpdate,
-        score: new GameScore(ptsFor: 0, ptsAgainst: 0),
-      );
+    GamePeriod newScoreUpdate = new GamePeriod(newPeriod.type, periodNumber: 0);
+    if (!_details.scores.build().containsKey(newScoreUpdate)) {
+      var builder = GameScoreBuilder()
+        ..ptsFor = 0
+        ..ptsAgainst = 0;
+      _details.scores[newScoreUpdate] = (GameResultPerPeriodBuilder()
+            ..period = newScoreUpdate
+            ..score = builder)
+          .build();
     }
     setState(() {
-      _currentPeriodResults = _details.scores[newScoreUpdate];
+      _currentPeriodResults = _details.scores[newScoreUpdate].toBuilder();
       _currentPeriodResults.period = newPeriod;
     });
   }
 
   void _sendUpdate(List<bool> results) {
     print('Writing update to firestore ${_details}');
-    widget.game.updateFirestoreResult(_details);
+    widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
   }
 
   void _updateScore() async {
@@ -148,7 +152,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       if (_ptsFor != null) {
         _currentPeriodResults.score.ptsFor = _ptsFor;
       }
-      _details.scores[_currentPeriodResults.period] = _currentPeriodResults;
+      _details.scores[_currentPeriodResults.period] =
+          _currentPeriodResults.build();
       print("Update score $_currentPeriodResults $_details");
       //widget.game.updateFirestoreResult(_details);
       _writeLog(GameLogType.ScoreUpdate);
@@ -206,13 +211,14 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         }
         _currentPeriodResults.period =
             new GamePeriod(GamePeriodType.Regulation);
-        _details.scores[_currentPeriodResults.period] = _currentPeriodResults;
+        _details.scores[_currentPeriodResults.period] =
+            _currentPeriodResults.build();
         _details.inProgress = GameInProgress.Final;
         _details.result = gameResult;
         _writeLog(GameLogType.PeriodStop);
       });
       // Save the game and exit.
-      widget.game.updateFirestoreResult(_details);
+      widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
       Navigator.pop(context);
     }
   }
@@ -259,7 +265,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         _details.currentPeriod =
             new GamePeriod(GamePeriodType.Regulation, periodNumber: 1);
         _writeLog(GameLogType.PeriodStart);
-        widget.game.updateFirestoreResult(_details);
+        widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
       });
     }
   }
@@ -301,20 +307,24 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         _details.currentPeriod =
             new GamePeriod(GamePeriodType.Regulation, periodNumber: 1);
         _writeLog(GameLogType.PeriodStart);
-        widget.game.updateFirestoreResult(_details);
+        widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
       });
     }
   }
 
   void _writeLog(GameLogType type, {String message}) {
-    widget.game.addGameLog(new GameLog(
-        type: type,
-        message: message,
-        score: _currentPeriodResults.score,
-        period: _currentPeriodResults.period,
-        eventTime: new DateTime.now().millisecondsSinceEpoch,
-        uid: UserDatabaseData.instance.userUid,
-        displayName: UserDatabaseData.instance.mePlayer.name));
+    widget.game.dispatch(SingleGameAddGameLog(
+        log: (GameLogBuilder()
+              ..type = type
+              ..message = message
+              ..score = _currentPeriodResults.score
+              ..period = _currentPeriodResults.period
+              ..eventTimeInternal = new DateTime.now().millisecondsSinceEpoch
+              ..uid = widget.game.gameBloc.coordinationBloc.authenticationBloc
+                  .currentUser.uid
+              ..displayName = widget.game.gameBloc.coordinationBloc
+                  .authenticationBloc.currentUser.profile.displayName)
+            .build()));
   }
 
   void _toggleTimer() {
@@ -332,7 +342,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       });
     }
     print("Update result $_details");
-    widget.game.updateFirestoreResult(_details);
+    widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
   }
 
   void _resetTimer() async {
@@ -372,25 +382,27 @@ class _ScoreDetailsState extends State<ScoreDetails> {
           _details.time.currentOffset = new Duration(milliseconds: 0);
         });
       }
-      widget.game.updateFirestoreResult(_details);
+      widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
     }
   }
 
   void _timerSettings() async {
-    GamePeriodTime time = await timerSetupDialog(context, _details);
+    GamePeriodTime time = await timerSetupDialog(context, _details.build());
     if (time != null) {
       setState(() {
         _details.time = time;
       });
-      widget.game.updateFirestoreResult(_details);
+
+      widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
     }
   }
 
   void _changeResult() async {
     // Do something to change the result.
-    GameResultDetails details = await changeScoreDialog(context, _details);
+    GameResultDetailsBuilder details =
+        await changeScoreDialog(context, _details.build());
     if (details != null) {
-      widget.game.updateFirestoreResult(details);
+      widget.game.dispatch(SingleGameUpdateResult(result: details.build()));
       _writeLog(GameLogType.UpdateScore);
     }
   }
@@ -400,7 +412,29 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     ThemeData theme = Theme.of(context);
 
     print("Stuff in here ${_details.inProgress}");
+    return BlocListener(
+      bloc: widget.game,
+      listener: (BuildContext context, SingleGameState state) {
+        if (state is SingleGameDeleted) {
+          // Go back where we came from.
+          Navigator.pop(context);
+        } else if (state.game != _lastGame) {
+          _updateGame(state.game);
+        }
+      },
+      child: BlocBuilder(
+        bloc: widget.game,
+        builder: (BuildContext context, SingleGameState state) {
+          if (state is SingleGameDeleted) {
+            return CircularProgressIndicator();
+          }
+          return _buildForm();
+        },
+      ),
+    );
+  }
 
+  Widget _buildForm() {
     if (_details.inProgress == GameInProgress.NotStarted) {
       return new Form(
         key: _formKey,
@@ -413,7 +447,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                     margin: new EdgeInsets.all(5.0),
                     child: new RaisedButton(
                       onPressed: _startGame,
-                      color: theme.accentColor,
+                      color: Theme.of(context).accentColor,
                       textColor: Colors.white,
                       child: new Text(Messages.of(context).startgame),
                     ),
@@ -429,14 +463,14 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       Color color = Colors.black;
       switch (_details.result) {
         case GameResult.Loss:
-          resultStr = Messages.of(context).resultloss(_details);
+          resultStr = Messages.of(context).resultloss(_details.build());
           color = Theme.of(context).errorColor;
           break;
         case GameResult.Tie:
-          resultStr = Messages.of(context).resulttie(_details);
+          resultStr = Messages.of(context).resulttie(_details.build());
           break;
         case GameResult.Win:
-          resultStr = Messages.of(context).resultwin(_details);
+          resultStr = Messages.of(context).resultwin(_details.build());
           break;
         default:
           resultStr = Messages.of(context).gameresult(_details.result);
@@ -464,7 +498,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                     margin: new EdgeInsets.all(5.0),
                     child: new RaisedButton(
                       onPressed: _changeResult,
-                      color: theme.accentColor,
+                      color: Theme.of(context).accentColor,
                       textColor: Colors.white,
                       child: new Text("Change score"),
                     ),
@@ -500,15 +534,16 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                     children: <Widget>[
                       new Text(
                         Messages.of(context).forpts,
-                        style: theme.textTheme.subhead.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.accentColor,
-                        ),
+                        style: Theme.of(context).textTheme.subhead.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).accentColor,
+                            ),
                       ),
                       new Container(
                         decoration: new BoxDecoration(
                           border: new Border.all(
-                              color: theme.dividerColor, width: 1.0),
+                              color: Theme.of(context).dividerColor,
+                              width: 1.0),
                           gradient: new LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerLeft,
@@ -589,15 +624,16 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                     children: <Widget>[
                       new Text(
                         Messages.of(context).againstpts,
-                        style: theme.textTheme.subhead.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.accentColor,
-                        ),
+                        style: Theme.of(context).textTheme.subhead.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).accentColor,
+                            ),
                       ),
                       new Container(
                         decoration: new BoxDecoration(
                           border: new Border.all(
-                              color: theme.dividerColor, width: 1.0),
+                              color: Theme.of(context).dividerColor,
+                              width: 1.0),
                           gradient: new LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerLeft,
@@ -646,7 +682,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                 margin: new EdgeInsets.only(right: 5.0, bottom: 5.0),
                 child: new RaisedButton(
                   onPressed: _finishGame,
-                  color: theme.accentColor,
+                  color: Theme.of(context).accentColor,
                   textColor: Colors.white,
                   child: new Text(Messages.of(context).finishgamebutton),
                 ),

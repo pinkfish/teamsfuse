@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class MessageList extends StatelessWidget {
   Widget _buildMessage(BuildContext context, Message mess, DateTime dayCutoff,
@@ -21,10 +21,12 @@ class MessageList extends StatelessWidget {
     }
     print('rec ${mess.recipients} ${mess.uid}');
 
+    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+
     return new ListTile(
       onTap: () => Navigator.pushNamed(context, "/ShowMessage/" + mess.uid),
       leading: new TeamImage(
-        team: UserDatabaseData.instance.teams[mess.teamUid],
+        team: teamBloc.currentState.getTeam(mess.teamUid),
         width: 30.0,
       ),
       subtitle: new Row(

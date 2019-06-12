@@ -10,19 +10,31 @@ import '../gamesbloc.dart';
 abstract class SingleGameState extends Equatable {
   final Game game;
   final Iterable<GameLog> gameLog;
+  final bool loadedLogs;
 
-  SingleGameState({@required this.game, @required this.gameLog});
+  SingleGameState(
+      {@required this.game, @required this.gameLog, @required this.loadedLogs});
 }
 
 ///
 /// We have a game, default state.
 ///
 class SingleGameLoaded extends SingleGameState {
-  SingleGameLoaded({@required Game game, @required Iterable<GameLog> gamelog})
-      : super(game: game, gameLog: gamelog);
+  SingleGameLoaded(
+      {@required SingleGameState state,
+      Game game,
+      Iterable<GameLog> gamelog,
+      bool loadedLogs})
+      : super(
+            game: game ?? state.game,
+            gameLog: gamelog ?? state.gameLog,
+            loadedLogs: loadedLogs ?? state.loadedLogs);
 
   SingleGameLoaded.copy(SingleGameState state)
-      : super(game: state.game, gameLog: state.gameLog);
+      : super(
+            game: state.game,
+            gameLog: state.gameLog,
+            loadedLogs: state.loadedLogs);
 
   @override
   String toString() {
@@ -35,7 +47,10 @@ class SingleGameLoaded extends SingleGameState {
 ///
 class SingleGameSaving extends SingleGameState {
   SingleGameSaving({@required SingleGameState singleGameState})
-      : super(game: singleGameState.game, gameLog: singleGameState.gameLog);
+      : super(
+            game: singleGameState.game,
+            gameLog: singleGameState.gameLog,
+            loadedLogs: singleGameState.loadedLogs);
 
   @override
   String toString() {
@@ -50,7 +65,10 @@ class SingleGameSaveFailed extends SingleGameState {
   final Error error;
 
   SingleGameSaveFailed({@required SingleGameState singleGameState, this.error})
-      : super(game: singleGameState.game, gameLog: singleGameState.gameLog);
+      : super(
+            game: singleGameState.game,
+            gameLog: singleGameState.gameLog,
+            loadedLogs: singleGameState.loadedLogs);
 
   @override
   String toString() {
@@ -62,7 +80,7 @@ class SingleGameSaveFailed extends SingleGameState {
 /// Game got deleted.
 ///
 class SingleGameDeleted extends SingleGameState {
-  SingleGameDeleted.empty() : super(game: null, gameLog: []);
+  SingleGameDeleted.empty() : super(game: null, gameLog: [], loadedLogs: false);
 
   @override
   String toString() {
@@ -215,28 +233,28 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
       yield SingleGameDeleted.empty();
     }
 
-    // Save the game.
+    // Update the game.
     if (event is SingleGameUpdate) {
       yield SingleGameSaving(singleGameState: currentState);
       try {
         await gameBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreGame(event.game, false);
-        yield SingleGameLoaded(game: event.game, gamelog: currentState.gameLog);
+        yield SingleGameLoaded(state: currentState, game: event.game);
       } catch (e) {
         yield SingleGameSaveFailed(singleGameState: currentState, error: e);
       }
     }
 
-    // Save the game.
+    // Update the shared data of the game.
     if (event is SingleGameUpdateSharedData) {
       yield SingleGameSaving(singleGameState: currentState);
       try {
         await gameBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreSharedGame(event.sharedData);
         yield SingleGameLoaded(
+            state: currentState,
             game: currentState.game
-                .rebuild((b) => b..sharedData = event.sharedData.toBuilder()),
-            gamelog: currentState.gameLog);
+                .rebuild((b) => b..sharedData = event.sharedData.toBuilder()));
       } catch (e) {
         yield SingleGameSaveFailed(singleGameState: currentState, error: e);
       }
@@ -250,7 +268,7 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
             .addFirestoreGameLog(currentState.game, event.log);
         List<GameLog> logs = currentState.gameLog.toList();
         logs.add(event.log);
-        yield SingleGameLoaded(game: currentState.game, gamelog: logs);
+        yield SingleGameLoaded(state: currentState, gamelog: logs);
       } catch (e) {
         yield SingleGameSaveFailed(singleGameState: currentState, error: e);
       }
@@ -265,8 +283,7 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
                 currentState.game, event.playerUid, event.attendance);
         GameBuilder builder = currentState.game.toBuilder();
         builder.attendance[event.playerUid] = event.attendance;
-        yield SingleGameLoaded(
-            game: builder.build(), gamelog: currentState.gameLog);
+        yield SingleGameLoaded(game: builder.build(), state: currentState);
       } catch (e) {
         yield SingleGameSaveFailed(singleGameState: currentState, error: e);
       }
@@ -277,11 +294,11 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
       yield SingleGameSaving(singleGameState: currentState);
       try {
         await gameBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreGameResult(currentState.game, event.result);
+            .updateFirestoreGameResult(currentState.game.uid, event.result);
         yield SingleGameLoaded(
             game: currentState.game
                 .rebuild((b) => b..result = event.result.toBuilder()),
-            gamelog: currentState.gameLog);
+            state: currentState);
       } catch (e) {
         yield SingleGameSaveFailed(singleGameState: currentState, error: e);
       }
@@ -293,16 +310,16 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
       try {
         await gameBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreOfficalGameResult(
-                currentState.game.sharedData, event.result);
-        yield SingleGameLoaded(
-            game: currentState.game, gamelog: currentState.gameLog);
+                currentState.game.sharedData.uid, event.result);
+        yield SingleGameLoaded(state: currentState);
       } catch (e) {
         yield SingleGameSaveFailed(singleGameState: currentState, error: e);
       }
     }
 
     if (event is _SingleGameNewLogs) {
-      yield SingleGameLoaded(game: currentState.game, gamelog: event.logs);
+      yield SingleGameLoaded(
+          game: currentState.game, gamelog: event.logs, loadedLogs: true);
     }
 
     if (event is SingleGameLoadGameLog) {

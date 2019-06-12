@@ -5,6 +5,10 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+///
+/// The tile associated with the team, shows bonus details about the
+/// team.
+///
 class TeamTile extends StatelessWidget {
   TeamTile(this.team,
       {this.popBeforeNavigate = false, this.showIconForTeam = false});
@@ -47,7 +51,7 @@ class TeamTile extends StatelessWidget {
                   .copyWith(fontStyle: FontStyle.italic, fontSize: 15.0),
             ),
             new TextSpan(
-              text: team.isAdmin()
+              text: team.isAdmin(null)
                   ? "\n" + Messages.of(context).administrator
                   : "",
               style: Theme.of(context).textTheme.subhead.copyWith(

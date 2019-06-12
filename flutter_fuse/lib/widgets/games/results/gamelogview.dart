@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class GameLogView extends StatelessWidget {
-  GameLogView(this.game);
+  GameLogView(this.game) {
+    game.dispatch(SingleGameLoadGameLog());
+  }
 
-  final Game game;
+  final SingleGameBloc game;
 
   Widget _buildGameItem(
       BuildContext context, GameLog log, TextStyle subheadStyle) {
@@ -55,29 +59,21 @@ class GameLogView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Force the logs to load if they are not already.
-    game.loadGameLogs();
-    return new StreamBuilder<List<GameLog>>(
-      stream: game.thisGameLogStream,
-      builder: (BuildContext context, AsyncSnapshot<List<GameLog>> logs) {
+    return BlocBuilder(
+      bloc: game,
+      builder: (BuildContext context, SingleGameState state) {
         TextStyle subheadStyle = Theme.of(context)
             .textTheme
             .subhead
             .copyWith(color: Colors.black, fontSize: 20.0);
-        if (logs.hasData) {
-          return new ListView.builder(
-            scrollDirection: Axis.vertical,
-            itemBuilder: (BuildContext context, int index) {
-              return _buildGameItem(context, logs.data[index], subheadStyle);
-            },
-            itemCount: logs.data.length,
-          );
-        }
+        List<GameLog> logs = state.gameLog.toList();
+
         return new ListView.builder(
           scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context, int index) {
-            return _buildGameItem(context, game.logs[index], subheadStyle);
+            return _buildGameItem(context, logs[index], subheadStyle);
           },
-          itemCount: game.logs.length,
+          itemCount: logs.length,
         );
       },
     );

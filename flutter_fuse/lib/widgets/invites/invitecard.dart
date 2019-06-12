@@ -1,56 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'dart:async';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/blocs.dart';
 
 // Shows the current invites pending for this user.
-class InviteCard extends StatefulWidget {
-  @override
-  InviteCardState createState() {
-    return new InviteCardState();
-  }
-}
-
-class InviteCardState extends State<InviteCard> {
-  StreamSubscription<UpdateReason> _stream;
-
-  @override
-  void initState() {
-    _stream = UserDatabaseData.instance.inviteStream.listen(onInviteUpdate);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _stream.cancel();
-    _stream = null;
-  }
-
-  void onInviteUpdate(UpdateReason reason) {
-    setState(() {});
-  }
-
+class InviteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    if (UserDatabaseData.instance.invites.length > 0) {
-      Widget card = new Card(
-        color: Colors.limeAccent,
-        child: new ListTile(
-          leading: const Icon(CommunityIcons.emailOpen),
-          title: new Text(
-            Messages
-                .of(context)
-                .invitedpeople(UserDatabaseData.instance.invites.length),
-          ),
-        ),
-      );
-      return card;
-    }
+    InviteBloc bloc = BlocProvider.of<InviteBloc>(context);
+    return BlocBuilder(
+      bloc: bloc,
+      builder: (BuildContext context, InviteState state) {
+        if (bloc.currentState.invites.length > 0) {
+          Widget card = new Card(
+            color: Colors.limeAccent,
+            child: new ListTile(
+              leading: const Icon(CommunityIcons.emailOpen),
+              title: new Text(
+                Messages.of(context)
+                    .invitedpeople(bloc.currentState.invites.length),
+              ),
+            ),
+          );
+          return card;
+        }
 
-    return new SizedBox(
-      width: 1.0,
+        return new SizedBox(
+          width: 1.0,
+        );
+      },
     );
   }
 }

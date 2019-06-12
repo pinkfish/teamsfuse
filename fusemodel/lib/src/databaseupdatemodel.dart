@@ -223,12 +223,11 @@ abstract class DatabaseUpdateModel {
   Future<Game> updateFirestoreGame(Game game, bool allTeams);
   Future<String> updateFirestoreSharedGame(GameSharedData game);
   Future<void> deleteFirestoreGame(Game game);
-  Future<void> deleteFirestoreSharedGame(GameSharedData game);
   Future<void> updateFirestoreGameAttendence(
       Game game, String playerUid, Attendance attend);
-  Future<void> updateFirestoreGameResult(Game game, GameResultDetails result);
+  Future<void> updateFirestoreGameResult(String gameUid, GameResultDetails result);
   Future<void> updateFirestoreOfficalGameResult(
-      GameSharedData game, GameOfficialResults result);
+      String gameSharedUid, GameOfficialResults result);
   Stream<Iterable<GameLog>> readGameLogs(Game game);
   Future<String> addFirestoreGameLog(Game game, GameLog log);
   Stream<GameSharedData> getSharedGame(String sharedGameUid);

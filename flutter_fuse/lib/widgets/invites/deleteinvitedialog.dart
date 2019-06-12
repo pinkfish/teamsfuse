@@ -1,7 +1,10 @@
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 Future<bool> deleteInviteDialog(BuildContext context, Invite invite) async {
   Messages mess = Messages.of(context);
@@ -23,16 +26,15 @@ Future<bool> deleteInviteDialog(BuildContext context, Invite invite) async {
           ),
           actions: <Widget>[
             new FlatButton(
-              child:
-              new Text(MaterialLocalizations.of(context).okButtonLabel),
+              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
             ),
             new FlatButton(
-              child: new Text(
-                  MaterialLocalizations.of(context).cancelButtonLabel),
+              child:
+                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
@@ -41,7 +43,8 @@ Future<bool> deleteInviteDialog(BuildContext context, Invite invite) async {
         );
       });
   if (result) {
-    await invite.firestoreDelete();
+    InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
+    inviteBloc.dispatch(InviteEventDeleteInvite(inviteUid: invite.uid));
   }
   return result;
 }

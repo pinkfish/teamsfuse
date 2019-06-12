@@ -14,12 +14,14 @@ import 'teambloc.dart';
 ///
 class GameState extends Equatable {
   final Map<String, Map<String, Game>> gamesByTeam;
+  final Map<String, GameSharedData> sharedGameData;
   final DateTime start;
   final DateTime end;
   final bool onlySql;
 
   GameState(
       {@required this.gamesByTeam,
+      @required this.sharedGameData,
       @required this.onlySql,
       @required this.start,
       @required this.end});
@@ -35,6 +37,16 @@ class GameState extends Equatable {
     }
     return null;
   }
+
+  ///
+  /// Finds the shared details for the game out of the loaded set.
+  ///
+  GameSharedData getSharedData(String uid) {
+    if (sharedGameData.containsKey(uid)) {
+      return sharedGameData[uid];
+    }
+    return null;
+  }
 }
 
 ///
@@ -44,6 +56,7 @@ class GameUninitialized extends GameState {
   GameUninitialized()
       : super(
             gamesByTeam: {},
+            sharedGameData: {},
             onlySql: true,
             start: DateTime.now(),
             end: DateTime.now());
@@ -59,12 +72,18 @@ class GameUninitialized extends GameState {
 ///
 class GameLoaded extends GameState {
   GameLoaded(
-      {@required Map<String, Map<String, Game>> gamesByTeam,
-      @required bool onlySql,
-      @required DateTime start,
-      @required end})
+      {@required GameState state,
+      Map<String, Map<String, Game>> gamesByTeam,
+      Map<String, GameSharedData> sharedGames,
+      bool onlySql,
+      DateTime start,
+      end})
       : super(
-            gamesByTeam: gamesByTeam, onlySql: onlySql, start: start, end: end);
+            gamesByTeam: gamesByTeam ?? state.gamesByTeam,
+            sharedGameData: sharedGames ?? state.sharedGameData,
+            onlySql: onlySql ?? state.onlySql,
+            start: start ?? state.start,
+            end: end ?? state.end);
 
   @override
   String toString() {
@@ -190,6 +209,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       gamesTrace.start();
       Map<String, Map<String, Game>> newGames =
           new Map<String, Map<String, Game>>();
+      Map<String, GameSharedData> gameSharedData = {};
       for (String teamUid in event.teams) {
         Map<String, Map<String, dynamic>> data = await coordinationBloc
             .persistentData
@@ -207,6 +227,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
                 .getElement(PersistenData.sharedGameTable, sharedDataUid);
             sharedData =
                 GameSharedData.fromJSON(sharedDataUid, sharedDataStuff).build();
+            gameSharedData[sharedDataUid] = sharedData;
           } else {
             sharedData = GameSharedData.fromJSON(sharedDataUid, input).build();
           }
@@ -219,11 +240,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           'End games ${coordinationBloc.start.difference(new DateTime.now())} ${newGames.length}');
       gamesTrace.stop();
       coordinationBloc.dispatch(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: true));
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Game, sql: true));
 
       if (currentState.onlySql) {
         yield GameLoaded(
-            gamesByTeam: newGames, onlySql: true, start: _start, end: _end);
+            state: currentState,
+            gamesByTeam: newGames,
+            sharedGames: gameSharedData,
+            onlySql: true,
+            start: _start,
+            end: _end);
       }
     }
 
@@ -234,15 +260,24 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       newGames[event.teamUid] =
           Map.from(currentState.gamesByTeam[event.teamUid]);
       Set<String> toRemoveGames = Set.from(newGames[event.teamUid].keys);
+      Map<String, GameSharedData> sharedGameData = {};
       for (Game g in event.games) {
         toRemoveGames.remove(g.uid);
         newGames[event.teamUid][g.uid] = g;
+        if (g.sharedDataUid.isNotEmpty) {
+          sharedGameData[g.sharedDataUid] = g.sharedData;
+        }
       }
       for (String rem in toRemoveGames) {
         newGames[event.teamUid].remove(rem);
       }
       yield GameLoaded(
-          gamesByTeam: newGames, onlySql: false, start: _start, end: _end);
+          state: currentState,
+          sharedGames: sharedGameData,
+          gamesByTeam: newGames,
+          onlySql: false,
+          start: _start,
+          end: _end);
       coordinationBloc.dispatch(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: false));
     }
@@ -255,8 +290,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       Game g = allGames[event.teamUid][event.gameUid];
       allGames[event.teamUid][event.gameUid] =
           g.rebuild((b) => b..sharedData = event.sharedData.toBuilder());
+      Map<String, GameSharedData> newMap = Map.of(currentState.sharedGameData);
+      newMap[g.sharedDataUid] = g.sharedData;
       yield GameLoaded(
           gamesByTeam: allGames,
+          sharedGames: newMap,
           onlySql: currentState.onlySql,
           start: _start,
           end: _end);

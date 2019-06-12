@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class MessageSendBox extends StatelessWidget {
   MessageSendBox(this.game);
 
   final TextEditingController _textController = new TextEditingController();
-  final Game game;
+  final SingleGameBloc game;
 
-  void _sendMessage(String mess) {
+  void _sendMessage(BuildContext context, String mess) {
     mess = mess.trim();
     if (mess.length > 0) {
-      print("Adding log for ${game.uid}");
-      game.addGameLog(new GameLog(
-          type: GameLogType.Message,
-          message: mess,
-          uid: UserDatabaseData.instance.userUid,
-          displayName: UserDatabaseData.instance.mePlayer.name));
+      PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+      print("Adding log for ${game.currentState.game.uid}");
+
+      game.dispatch(SingleGameAddGameLog(
+          log: GameLog((b) => b
+            ..type = GameLogType.Message
+            ..message = mess
+            ..displayName = playerBloc.currentState.me.name
+            ..uid = playerBloc.currentState.me.uid)));
       _textController.clear();
     }
   }
@@ -32,7 +37,7 @@ class MessageSendBox extends StatelessWidget {
         filled: true,
       ),
       keyboardType: TextInputType.text,
-      onSubmitted: (String str) => _sendMessage(str),
+      onSubmitted: (String str) => _sendMessage(context, str),
     );
   }
 }

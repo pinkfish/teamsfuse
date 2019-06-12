@@ -85,7 +85,7 @@ class SingleTeamSeasonUpdate extends SingleTeamSeasonEvent {
 ///
 /// Loads all the invites for this season.
 ///
-class SingleTeamLoadInvites extends SingleTeamSeasonEvent {}
+class SingleTeamLoadSeasonInvites extends SingleTeamSeasonEvent {}
 
 class _SingleTeamNewTeamSeason extends SingleTeamSeasonEvent {
   final Season newSeason;
@@ -174,7 +174,7 @@ class SingleTeamSeasonBloc
       }
     }
 
-    if (event is SingleTeamLoadInvites) {
+    if (event is SingleTeamLoadSeasonInvites) {
       if (_inviteSub == null) {
         _inviteSub = teamBloc.coordinationBloc.databaseUpdateModel
             .getInviteForSeasonStream(

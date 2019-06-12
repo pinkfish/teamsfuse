@@ -1,11 +1,16 @@
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'gamecard.dart';
 import 'dart:async';
 
-Future<bool> deleteGameDialog(BuildContext context, Game game) async {
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+import 'gamecard.dart';
+
+Future<bool> deleteGameDialog(
+    BuildContext context, SingleGameBloc gameBloc) async {
   Messages mess = Messages.of(context);
+  Game game = gameBloc.currentState.game;
 
   bool result = await showDialog<bool>(
       context: context,
@@ -37,7 +42,7 @@ Future<bool> deleteGameDialog(BuildContext context, Game game) async {
         );
       });
   if (result) {
-    await game.deleteFromFirestore();
+    gameBloc.dispatch(SingleGameDelete());
   }
   return result;
 }

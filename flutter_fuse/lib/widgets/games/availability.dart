@@ -1,84 +1,97 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../blocs/singleteamprovider.dart';
 import 'attendancedialog.dart';
 import 'attendanceicon.dart';
 
-class Availaility extends StatefulWidget {
+class Availaility extends StatelessWidget {
   Availaility(this._game);
 
-  final Game _game;
+  final SingleGameBloc _game;
 
-  @override
-  AvailabityState createState() {
-    return new AvailabityState();
-  }
-}
-
-class AvailabityState extends State<Availaility> {
-  AvailabityState();
-
-  void _updateAttendance(SeasonPlayer player, Attendance current) async {
+  void _updateAttendance(
+      BuildContext context, SeasonPlayer player, Attendance current) async {
     Attendance attend = await showDialog(
         context: context,
         builder: (BuildContext context) {
           return new AttendanceDialog(current: current);
         });
     if (attend != null) {
-      widget._game.updateFirestoreAttendence(player.playerUid, attend);
+      _game.dispatch(SingleGameUpdateAttendance(
+          playerUid: player.playerUid, attendance: attend));
     }
   }
 
-  Widget _buildAvailability(SeasonPlayer player) {
-    if (UserDatabaseData.instance.players.containsKey(player.playerUid)) {
+  Widget _buildAvailability(
+      BuildContext context, Game game, SeasonPlayer player) {
+    PlayerBloc players = BlocProvider.of<PlayerBloc>(context);
+    if (players.currentState.players.containsKey(player.playerUid)) {
       return new GestureDetector(
         onTap: () => _updateAttendance(
+              context,
               player,
-              widget._game.attendance[player.playerUid],
+              game.attendance[player.playerUid],
             ),
         child: new AttendanceIcon(
-          widget._game.attendance[player.playerUid],
+          game.attendance[player.playerUid],
         ),
       );
     }
-    return new AttendanceIcon(widget._game.attendance[player.playerUid]);
+    return new AttendanceIcon(game.attendance[player.playerUid]);
   }
 
-  void _showPlayer(BuildContext context, String playerUid) {
+  void _showPlayer(BuildContext context, Game game, String playerUid) {
     Navigator.pushNamed(
         context,
         "PlayerDetails/" +
-            widget._game.teamUid +
+            game.teamUid +
             "/" +
-            widget._game.seasonUid +
+            game.seasonUid +
             "/" +
             playerUid);
   }
 
-  Iterable<Widget> _buildChildren(BuildContext context) {
-    Team team = UserDatabaseData.instance.teams[widget._game.teamUid];
-    Season season = team.seasons[widget._game.seasonUid];
+  Iterable<Widget> _buildChildren(BuildContext context, Team team, Game game) {
+    Season season = team.seasons[game.seasonUid];
     ThemeData theme = Theme.of(context);
 
     return season.players.map((SeasonPlayer player) {
-      bool canEdit =
-          UserDatabaseData.instance.players.containsKey(player.playerUid);
+      PlayerBloc players = BlocProvider.of<PlayerBloc>(context);
+      bool canEdit = players.currentState.players.containsKey(player.playerUid);
       return new ListTile(
-        onTap: () => _showPlayer(context, player.playerUid),
+        onTap: () => _showPlayer(context, game, player.playerUid),
         leading: canEdit
             ? new Icon(Icons.person, color: theme.accentColor)
             : const Icon(Icons.person),
         title: new PlayerName(playerUid: player.playerUid),
-        trailing: _buildAvailability(player),
+        trailing: _buildAvailability(context, game, player),
       );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return new ListBody(
-      children: _buildChildren(context).toList(),
+    return BlocBuilder(
+      bloc: _game,
+      builder: (BuildContext context, SingleGameState gameState) =>
+          SingleTeamProvider(
+            teamUid: gameState.game.teamUid,
+            builder: (BuildContext context, SingleTeamBloc teamBloc) =>
+                BlocBuilder(
+                  bloc: teamBloc,
+                  builder: (BuildContext context, SingleTeamState teamState) {
+                    return ListBody(
+                      children: _buildChildren(
+                              context, teamState.team, gameState.game)
+                          .toList(),
+                    );
+                  },
+                ),
+          ),
     );
   }
 }
