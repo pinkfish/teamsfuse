@@ -1,7 +1,7 @@
 import 'package:fusemodel/fusemodel.dart';
 
 abstract class EditFormBase {
-  Game get finalGameResult;
+  GameBuilder get finalGameResult;
 
   bool validate();
 

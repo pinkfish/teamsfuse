@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/map.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_fuse/services/map_view/marker.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
-import 'package:flutter_fuse/widgets/games/editresultdialog.dart';
-import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
-import 'package:flutter_fuse/widgets/games/attendanceicon.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/games/attendancedialog.dart';
+import 'package:flutter_fuse/widgets/games/attendanceicon.dart';
+import 'package:flutter_fuse/widgets/games/editresultdialog.dart';
 import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
-import 'teamresultsstreamfuture.dart';
-import 'package:timezone/timezone.dart';
-import 'package:fusemodel/src/game/gamefromofficial.dart';
-import 'officalresultdialog.dart';
-
-import 'dart:async';
+import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/src/game/gamefromofficial.dart';
+import 'package:timezone/timezone.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../util/savingoverlay.dart';
+import 'officalresultdialog.dart';
+import 'teamresultsstreamfuture.dart';
 
 class GameDetails extends StatefulWidget {
-  GameDetails(this.game, {this.adding = false});
+  GameDetails(this.gameBloc, {this.adding = false});
 
-  final Game game;
+  final SingleGameBloc gameBloc;
   final bool adding;
 
   @override
@@ -31,43 +33,14 @@ class GameDetails extends StatefulWidget {
 }
 
 class GameDetailsState extends State<GameDetails> {
-  StreamSubscription<UpdateReason> teamUpdate;
   Map<Player, Attendance> _attendence;
-  StreamSubscription<UpdateReason> _subscription;
 
-  @override
-  void initState() {
-    super.initState();
-    Team team = UserDatabaseData.instance.teams[widget.game.teamUid];
-    if (team != null) {
-      teamUpdate = team.thisTeamStream.listen((UpdateReason data) {
-        setState(() {});
-      });
-    }
-    // Refresh the details on a change (only if the game exists).
-    if (widget.game.uid != null && widget.game.thisGameStream != null) {
-      _subscription = widget.game.thisGameStream.listen((UpdateReason reason) {
-        setState(() {});
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _subscription?.cancel();
-    _subscription = null;
-    teamUpdate?.cancel();
-    teamUpdate = null;
-  }
-
-  void openNavigation() {
+  void openNavigation(Game game) {
     String url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=" +
-        Uri.encodeComponent(widget.game.sharedData.place.address);
-    if (widget.game.sharedData.place.placeId != null) {
+    url += "&destination=" + Uri.encodeComponent(game.sharedData.place.address);
+    if (game.sharedData.place.placeId != null) {
       url += "&destination_place_id=" +
-          Uri.encodeComponent(widget.game.sharedData.place.placeId);
+          Uri.encodeComponent(game.sharedData.place.placeId);
     }
     launch(url);
   }
@@ -78,7 +51,7 @@ class GameDetailsState extends State<GameDetails> {
       context: context,
       builder: (BuildContext context) {
         print("$widget");
-        return new EditResultDialog(widget.game);
+        return new EditResultDialog(widget.gameBloc);
       },
     );
   }
@@ -95,7 +68,8 @@ class GameDetailsState extends State<GameDetails> {
             return new AttendanceDialog(current: current);
           });
       if (attend != null) {
-        widget.game.updateFirestoreAttendence(player.uid, attend);
+        widget.gameBloc.dispatch(SingleGameUpdateAttendance(
+            playerUid: player.uid, attendance: attend));
       }
     } else {
       Map<Player, Attendance> attend = await showDialog(
@@ -106,24 +80,26 @@ class GameDetailsState extends State<GameDetails> {
       );
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
-          widget.game.updateFirestoreAttendence(player.uid, attend);
+          widget.gameBloc.dispatch(SingleGameUpdateAttendance(
+              playerUid: player.uid, attendance: attend));
         });
       }
     }
   }
 
-  Widget _buildAttendence(Season season) {
+  Widget _buildAttendence(Game game, Season season) {
     List<Widget> availability = <Widget>[];
     Map<Player, Attendance> availavilityResult = <Player, Attendance>{};
 
     if (season != null) {
-      UserDatabaseData.instance.players.forEach((String key, Player player) {
+      PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+      playerBloc.currentState.players.forEach((String key, Player player) {
         if (season.players.any((SeasonPlayer play) {
           return play.playerUid == key;
         })) {
           Attendance attend = Attendance.Maybe;
-          if (widget.game.attendance.containsKey(key)) {
-            attend = widget.game.attendance[key];
+          if (game.attendance.containsKey(key)) {
+            attend = game.attendance[key];
           }
           availavilityResult[player] = attend;
           availability.add(
@@ -151,8 +127,8 @@ class GameDetailsState extends State<GameDetails> {
     );
   }
 
-  Widget _buildGameResult(bool official, GameResultSharedDetails details,
-      bool inProgress, bool dontMatch) {
+  Widget _buildGameResult(bool official, GameSharedData sharedData,
+      GameResultSharedDetails details, bool inProgress, bool dontMatch) {
     // Started.
     TextSpan title;
     ThemeData theme = Theme.of(context);
@@ -193,7 +169,9 @@ class GameDetailsState extends State<GameDetails> {
     }
 
     return ListTile(
-      onTap: official ? () => _editOfficialResult(details) : _editResult,
+      onTap: official
+          ? () => _editOfficialResult(sharedData, details)
+          : _editResult,
       leading: official
           ? (dontMatch
               ? Icon(Icons.error, color: theme.errorColor)
@@ -217,27 +195,32 @@ class GameDetailsState extends State<GameDetails> {
   /// user is an admin for the league itself.  Otherwise we can
   /// ask if they want to copy the results.
   ///
-  void _editOfficialResult(GameResultSharedDetails offical) {
-    if (UserDatabaseData.instance.leagueOrTournments
-        .containsKey(widget.game.sharedData.leagueUid)) {
-      if (UserDatabaseData
-          .instance.leagueOrTournments[widget.game.sharedData.leagueUid]
+  void _editOfficialResult(
+      GameSharedData sharedData, GameResultSharedDetails offical) {
+    LeagueOrTournamentBloc leagueOrTournamentBloc =
+        BlocProvider.of<LeagueOrTournamentBloc>(context);
+
+    if (leagueOrTournamentBloc.currentState.leagueOrTournaments
+        .containsKey(sharedData.leagueUid)) {
+      if (leagueOrTournamentBloc
+          .currentState.leagueOrTournaments[sharedData.leagueUid]
           .isAdmin()) {
         // Show it and forget it.
         showDialog<bool>(
             context: context,
             builder: (BuildContext context) =>
-                OfficialResultDialog(widget.game.sharedData));
+                OfficialResultDialog(sharedData));
         return;
       }
     }
-    _copyOfficialResult(offical);
+    _copyOfficialResult(sharedData, offical);
   }
 
   ///
   /// Copy the current score/stuff from the official results.
   ///
-  void _copyOfficialResult(GameResultSharedDetails details) async {
+  void _copyOfficialResult(
+      GameSharedData sharedData, GameResultSharedDetails details) async {
     bool ret = await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -264,8 +247,7 @@ class GameDetailsState extends State<GameDetails> {
         });
     if (ret != null && ret) {
       // Copy the result over and save.
-      GameResultDetails newResult =
-          new GameResultDetails.copy(widget.game.result);
+      GameResultDetailsBuilder newResult = GameResultDetailsBuilder();
       newResult.scores[GamePeriod.regulation] = details.regulationResult;
       if (details.overtimeResult != null) {
         newResult.scores[GamePeriod.overtime] = details.overtimeResult;
@@ -274,40 +256,38 @@ class GameDetailsState extends State<GameDetails> {
         newResult.scores[GamePeriod.penalty] = details.penaltyResult;
       }
       newResult.result = details.result;
-      await widget.game.updateFirestoreResult(newResult);
+      widget.gameBloc
+          .dispatch(SingleGameUpdateResult(result: newResult.build()));
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget buildGame(BuildContext context, Game game) {
     print(
-        'lat: ${widget.game.sharedData.place.latitude} long: ${widget.game.sharedData.place.longitude} ${widget.game.uid}');
+        'lat: ${game.sharedData.place.latitude} long: ${game.sharedData.place.longitude} ${game.uid}');
     Marker marker = new Marker(
-        widget.game.sharedData.place.placeId,
-        widget.game.sharedData.place.address,
-        widget.game.sharedData.place.latitude.toDouble(),
-        widget.game.sharedData.place.longitude.toDouble());
+        game.sharedData.place.placeId,
+        game.sharedData.place.address,
+        game.sharedData.place.latitude.toDouble(),
+        game.sharedData.place.longitude.toDouble());
     Uri uri = MapData.instance.provider
         .getStaticUriWithMarkers(<Marker>[marker], width: 900, height: 400);
-    TimeOfDay day = new TimeOfDay.fromDateTime(widget.game.sharedData.tzTime);
-    TimeOfDay dayArrive = new TimeOfDay.fromDateTime(widget.game.tzArriveTime);
-    TimeOfDay dayEnd =
-        new TimeOfDay.fromDateTime(widget.game.sharedData.tzEndTime);
+    TimeOfDay day = new TimeOfDay.fromDateTime(game.sharedData.tzTime);
+    TimeOfDay dayArrive = new TimeOfDay.fromDateTime(game.tzArriveTime);
+    TimeOfDay dayEnd = new TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
     String dateStr = MaterialLocalizations.of(context)
-        .formatFullDate(widget.game.sharedData.tzTime);
+        .formatFullDate(game.sharedData.tzTime);
     String timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeStr =
         MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
     String tzShortName;
-    if (widget.game.sharedData.timezone != local.name) {
+    if (game.sharedData.timezone != local.name) {
       tzShortName = " (" +
-          getLocation(widget.game.sharedData.timezone)
-              .timeZone(widget.game.sharedData.time.toInt())
+          getLocation(game.sharedData.timezone)
+              .timeZone(game.sharedData.time.toInt())
               .abbr +
           ")";
     }
-    print(
-        '${widget.game.sharedData.timezone} ${widget.game.sharedData.tzTime}');
+    print('${game.sharedData.timezone} $game.sharedData.tzTime}');
     String arriveAttimeStr;
     if (dayArrive.minute == day.minute && dayArrive.hour == day.hour) {
       arriveAttimeStr =
@@ -317,9 +297,10 @@ class GameDetailsState extends State<GameDetails> {
       arriveAttimeStr = MaterialLocalizations.of(context).formatTimeOfDay(day) +
           (tzShortName ?? "");
     }
-    Team team = UserDatabaseData.instance.teams[widget.game.teamUid];
-    Opponent opponent = team.opponents[widget.game.opponentUids[0]];
-    Season season = team.seasons[widget.game.seasonUid];
+    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+    Team team = teamBloc.currentState.getTeam(game.teamUid);
+    Opponent opponent = team.opponents[game.opponentUids[0]];
+    Season season = team.seasons[game.seasonUid];
 
     ThemeData theme = Theme.of(context);
 
@@ -352,10 +333,10 @@ class GameDetailsState extends State<GameDetails> {
               right: 20.0,
               bottom: 0.0,
               child: new FloatingActionButton(
-                onPressed: openNavigation,
+                onPressed: () => openNavigation(game),
                 child: const Icon(Icons.directions),
                 backgroundColor: Colors.orange,
-                heroTag: widget.game.uid,
+                heroTag: game.uid,
               ),
             ),
           ],
@@ -367,17 +348,17 @@ class GameDetailsState extends State<GameDetails> {
     body.add(
       new ListTile(
         leading: new TeamImage(
-          team: UserDatabaseData.instance.teams[widget.game.teamUid],
+          team: team,
           width: 50.0,
           height: 50.0,
         ),
         title: new Text(team.name, style: theme.textTheme.title),
-        subtitle: arriveAttimeStr != null &&
-                widget.game.sharedData.type == EventType.Game
-            ? new Text('arrive at ' + arriveAttimeStr,
-                style: theme.textTheme.subhead)
-            : null,
-        trailing: widget.game.homegame ? const Icon(Icons.home) : null,
+        subtitle:
+            arriveAttimeStr != null && game.sharedData.type == EventType.Game
+                ? new Text('arrive at ' + arriveAttimeStr,
+                    style: theme.textTheme.subhead)
+                : null,
+        trailing: game.homegame ? const Icon(Icons.home) : null,
       ),
     );
 
@@ -389,7 +370,7 @@ class GameDetailsState extends State<GameDetails> {
           dateStr +
               " " +
               timeStr +
-              (widget.game.sharedData.endTime == widget.game.sharedData.time
+              (game.sharedData.endTime == game.sharedData.time
                   ? ''
                   : " - " + endTimeStr + (tzShortName ?? "")),
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
@@ -397,16 +378,16 @@ class GameDetailsState extends State<GameDetails> {
         subtitle: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new Text(widget.game.sharedData.place.name ?? ''),
-            new Text(widget.game.sharedData.place.address ??
-                Messages.of(context).unknown),
+            new Text(game.sharedData.place.name ?? ''),
+            new Text(
+                game.sharedData.place.address ?? Messages.of(context).unknown),
           ],
         ),
       ),
     );
 
     // Results.
-    if (widget.game.sharedData.type == EventType.Game) {
+    if (game.sharedData.type == EventType.Game) {
       if (widget.adding) {
         body.add(
           new ListTile(
@@ -415,19 +396,19 @@ class GameDetailsState extends State<GameDetails> {
           ),
         );
       } else {
-        if (widget.game.result.inProgress == GameInProgress.NotStarted) {
-          if (widget.game.trackAttendance) {
-            body.add(_buildAttendence(season));
+        if (game.result.inProgress == GameInProgress.NotStarted) {
+          if (game.trackAttendance) {
+            body.add(_buildAttendence(game, season));
           }
         }
         // Show the live stuff if the game is close to starting.
-        body.add(_buildGameResult(false, widget.game.result,
-            widget.game.result.inProgress == GameInProgress.InProgress, false));
-        if (widget.game.sharedData.time >
+        body.add(_buildGameResult(false, game.sharedData, game.result,
+            game.result.inProgress == GameInProgress.InProgress, false));
+        if (game.sharedData.time >
                 new DateTime.now()
                     .subtract(const Duration(hours: 1))
                     .millisecondsSinceEpoch &&
-            !widget.game.result.isGameFinished) {
+            !game.result.isGameFinished) {
           body.add(ButtonBar(
             children: <Widget>[
               FlatButton(
@@ -440,19 +421,20 @@ class GameDetailsState extends State<GameDetails> {
 
         // Official results.
         GameFromOfficial officalData =
-            GameFromOfficial(widget.game.sharedData, widget.game.leagueOpponentUid);
+            GameFromOfficial(game.sharedData, game.leagueOpponentUid);
         body.add(_buildGameResult(
             true,
+            game.sharedData,
             officalData,
-            widget.game.sharedData.officialResults.result ==
-                OfficialResult.InProgress,
-            officalData.isSameAs(widget.game.result)));
-        if (!officalData.isSameAs(widget.game.result)) {
+            game.sharedData.officialResults.result == OfficialResult.InProgress,
+            officalData.isSameAs(game.result)));
+        if (!officalData.isSameAs(game.result)) {
           body.add(ButtonBar(
             children: <Widget>[
               FlatButton(
                 child: Text(Messages.of(context).useofficialresultbutton),
-                onPressed: () => _copyOfficialResult(officalData),
+                onPressed: () =>
+                    _copyOfficialResult(game.sharedData, officalData),
               ),
             ],
           ));
@@ -460,14 +442,14 @@ class GameDetailsState extends State<GameDetails> {
       }
     } else {
       // Tell people this is a practice or special event.
-      if (widget.game.sharedData.type == EventType.Practice) {
+      if (game.sharedData.type == EventType.Practice) {
         body.add(
           new ListTile(
             leading: const Icon(Icons.train),
             title: new Text(Messages.of(context).trainingtype),
           ),
         );
-      } else if (widget.game.sharedData.type == EventType.Event) {
+      } else if (game.sharedData.type == EventType.Event) {
         body.add(
           new ListTile(
             leading: const Icon(Icons.plus_one),
@@ -477,41 +459,40 @@ class GameDetailsState extends State<GameDetails> {
       }
       // Attendance, possibly.
       if (!widget.adding &&
-          widget.game.trackAttendance &&
-          widget.game.sharedData.time >
+          game.trackAttendance &&
+          game.sharedData.time >
               new DateTime.now()
                   .subtract(const Duration(hours: 1))
                   .millisecondsSinceEpoch) {
-        body.add(_buildAttendence(season));
+        body.add(_buildAttendence(game, season));
       }
     }
 
     // Uniform
-    if (widget.game.uniform != null && widget.game.uniform.isNotEmpty) {
+    if (game.uniform != null && game.uniform.isNotEmpty) {
       body.add(
         new ListTile(
           leading: const Icon(CommunityIcons.tshirtCrew),
-          title: new Text(
-              widget.game.uniform == null ? 'fluff' : widget.game.uniform),
+          title: new Text(game.uniform == null ? 'fluff' : game.uniform),
         ),
       );
     }
 
     // Notes.
-    if (widget.game.notes != null && widget.game.notes.isNotEmpty) {
+    if (game.notes != null && game.notes.isNotEmpty) {
       body.add(
         new ListTile(
           leading: const Icon(Icons.note),
-          title: new Text(widget.game.notes),
+          title: new Text(game.notes),
         ),
       );
     }
 
     // Opponent last games.
-    if (widget.game.sharedData.type == EventType.Game && !widget.adding) {
+    if (game.sharedData.type == EventType.Game && !widget.adding) {
       String seasonName;
-      if (team.seasons.containsKey(widget.game.seasonUid)) {
-        seasonName = team.seasons[widget.game.seasonUid].name;
+      if (team.seasons.containsKey(game.seasonUid)) {
+        seasonName = team.seasons[game.seasonUid].name;
       } else {
         seasonName = Messages.of(context).unknown;
       }
@@ -524,8 +505,8 @@ class GameDetailsState extends State<GameDetails> {
                 Messages.of(context).opponentseason(opponent, seasonName),
               ),
               new Text(
-                Messages.of(context).opponentwinrecord(
-                    opponent, widget.game.seasonUid, seasonName),
+                Messages.of(context)
+                    .opponentwinrecord(opponent, game.seasonUid, seasonName),
               ),
             ],
           ),
@@ -535,7 +516,7 @@ class GameDetailsState extends State<GameDetails> {
             new TeamResultsStreamFuture(
               teamUid: team.uid,
               seasonUid: season.uid,
-              opponentUid: widget.game.opponentUids[0],
+              opponentUid: game.opponentUids[0],
             ),
           ],
         ),
@@ -566,7 +547,7 @@ class GameDetailsState extends State<GameDetails> {
               new TeamResultsStreamFuture(
                 teamUid: team.uid,
                 seasonUid: season.uid,
-                opponentUid: widget.game.opponentUids[0],
+                opponentUid: game.opponentUids[0],
               ),
             );
           }
@@ -585,6 +566,32 @@ class GameDetailsState extends State<GameDetails> {
     return new Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: body,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener(
+      bloc: widget.gameBloc,
+      listener: (BuildContext context, SingleGameState state) {
+        if (state is SingleGameDeleted) {
+          Navigator.pop(context);
+        }
+
+        if (state is SingleGameSaveFailed) {}
+      },
+      child: BlocBuilder(
+        bloc: widget.gameBloc,
+        builder: (BuildContext context, SingleGameState state) {
+          if (state is SingleGameDeleted) {
+            return CircularProgressIndicator();
+          }
+          return SavingOverlay(
+            saving: state is SingleGameSaving,
+            child: buildGame(context, state.game),
+          );
+        },
+      ),
     );
   }
 }

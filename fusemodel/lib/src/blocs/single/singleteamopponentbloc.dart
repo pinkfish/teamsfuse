@@ -10,8 +10,12 @@ import '../teambloc.dart';
 abstract class SingleTeamOpponentState extends Equatable {
   final Opponent opponent;
   final Iterable<Game> games;
+  final bool gamesLoaded;
 
-  SingleTeamOpponentState({@required this.opponent, @required this.games});
+  SingleTeamOpponentState(
+      {@required this.opponent,
+      @required this.games,
+      @required this.gamesLoaded});
 }
 
 ///
@@ -21,9 +25,12 @@ class SingleTeamOpponentLoaded extends SingleTeamOpponentState {
   SingleTeamOpponentLoaded(
       {@required SingleTeamOpponentState state,
       Opponent opponent,
-      Iterable<Game> games})
+      Iterable<Game> games,
+      bool gamesLoaded})
       : super(
-            opponent: opponent ?? state.opponent, games: games ?? state.games);
+            opponent: opponent ?? state.opponent,
+            games: games ?? state.games,
+            gamesLoaded: gamesLoaded ?? state.gamesLoaded);
 
   @override
   String toString() {
@@ -36,7 +43,10 @@ class SingleTeamOpponentLoaded extends SingleTeamOpponentState {
 ///
 class SingleTeamOpponentSaving extends SingleTeamOpponentState {
   SingleTeamOpponentSaving({@required SingleTeamOpponentState state})
-      : super(opponent: state.opponent, games: state.games);
+      : super(
+            opponent: state.opponent,
+            games: state.games,
+            gamesLoaded: state.gamesLoaded);
 
   @override
   String toString() {
@@ -52,7 +62,10 @@ class SingleTeamOpponentSaveFailed extends SingleTeamOpponentState {
 
   SingleTeamOpponentSaveFailed(
       {@required SingleTeamOpponentState state, this.error})
-      : super(opponent: state.opponent, games: state.games);
+      : super(
+            opponent: state.opponent,
+            games: state.games,
+            gamesLoaded: state.gamesLoaded);
 
   @override
   String toString() {
@@ -64,7 +77,8 @@ class SingleTeamOpponentSaveFailed extends SingleTeamOpponentState {
 /// Team got deleted.
 ///
 class SingleTeamOpponentDeleted extends SingleTeamOpponentState {
-  SingleTeamOpponentDeleted() : super(opponent: null, games: []);
+  SingleTeamOpponentDeleted()
+      : super(opponent: null, games: [], gamesLoaded: false);
 
   @override
   String toString() {
@@ -209,7 +223,8 @@ class SingleTeamOpponentBloc
     }
 
     if (event is _SingleTeamOpponentGamesLoaded) {
-      yield SingleTeamOpponentLoaded(state: currentState, games: event.games);
+      yield SingleTeamOpponentLoaded(
+          state: currentState, games: event.games, gamesLoaded: true);
     }
   }
 }

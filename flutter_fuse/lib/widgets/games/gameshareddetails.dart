@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_fuse/services/map_view/marker.dart';
 import 'package:flutter_fuse/services/messages.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:flutter_fuse/widgets/util/leagueteamimage.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -367,9 +369,15 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
             ),
           ),
         );
-        if (UserDatabaseData.instance.leagueOrTournments[widget.game.leagueUid]
-                ?.isAdmin() ??
-            false) {
+        LeagueOrTournament leagueOrTournament;
+        LeagueOrTournamentBloc leagueOrTournamentBloc =
+            BlocProvider.of<LeagueOrTournamentBloc>(context);
+        if (leagueOrTournamentBloc.currentState.leagueOrTournaments
+            .containsValue(widget.game.leagueUid)) {
+          leagueOrTournament = leagueOrTournamentBloc
+              .currentState.leagueOrTournaments[widget.game.leagueUid];
+        }
+        if (leagueOrTournament?.isAdmin() ?? false) {
           body.add(ButtonBar(
             children: <Widget>[
               FlatButton(

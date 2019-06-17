@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/games/attendancedialog.dart';
 import 'package:flutter_fuse/widgets/games/editresultdialog.dart';
 import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/src/game/gamefromofficial.dart';
 import 'package:timezone/timezone.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../blocs/singleleagueortournamentteamprovider.dart';
 import 'attendanceicon.dart';
 
 class GameCard extends StatelessWidget {
-  GameCard(this.game);
+  GameCard({this.gameBloc});
 
-  final Game game;
+  final SingleGameBloc gameBloc;
   final Map<Player, Attendance> attendence = <Player, Attendance>{};
 
   void _openAttendance(BuildContext context) async {
@@ -29,7 +32,8 @@ class GameCard extends StatelessWidget {
             return new AttendanceDialog(current: current);
           });
       if (attend != null) {
-        game.updateFirestoreAttendence(player.uid, attend);
+        gameBloc.dispatch(SingleGameUpdateAttendance(
+            playerUid: player.uid, attendance: attend));
       }
     } else {
       Map<Player, Attendance> attend = await showDialog(
@@ -39,7 +43,8 @@ class GameCard extends StatelessWidget {
           });
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
-          game.updateFirestoreAttendence(player.uid, attend);
+          gameBloc.dispatch(SingleGameUpdateAttendance(
+              playerUid: player.uid, attendance: attend));
         });
       }
     }
@@ -50,7 +55,7 @@ class GameCard extends StatelessWidget {
     await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        return new EditResultDialog(game);
+        return new EditResultDialog(gameBloc);
       },
     );
   }
@@ -68,13 +73,14 @@ class GameCard extends StatelessWidget {
   }
 
   Widget _buildAvailability(
-      BuildContext context, Season season, List<Player> players) {
+      BuildContext context, Game game, Season season, List<Player> players) {
     print('${game.seasonUid} ${game.teamUid}');
-    if (!UserDatabaseData.instance.teams.containsKey(game.teamUid)) {
+    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+    Team team = teamBloc.currentState.getTeam(game.teamUid);
+    if (team == null) {
       return null;
     }
-    if (!UserDatabaseData.instance.teams[game.teamUid].seasons
-        .containsKey(game.seasonUid)) {
+    if (!team.seasons.containsKey(game.seasonUid)) {
       return null;
     }
 
@@ -155,7 +161,7 @@ class GameCard extends StatelessWidget {
     return children;
   }
 
-  Widget _buildInProgress(BuildContext context) {
+  Widget _buildInProgress(BuildContext context, Game game) {
     GameFromOfficial officalData =
         GameFromOfficial(game.sharedData, game.leagueOpponentUid);
     if (game.result.inProgress == GameInProgress.Final) {
@@ -220,7 +226,7 @@ class GameCard extends StatelessWidget {
   }
 
   Widget _buildTrailing(
-      BuildContext context, Season season, List<Player> players) {
+      BuildContext context, Game game, Season season, List<Player> players) {
     // Only show attendence until the game/event is over.
     if (game.result.inProgress == GameInProgress.NotStarted) {
       if ((game.trackAttendance &&
@@ -228,15 +234,15 @@ class GameCard extends StatelessWidget {
               new DateTime.now()
                   .subtract(new Duration(hours: 2))
                   .millisecondsSinceEpoch)) {
-        return _buildAvailability(context, season, players);
+        return _buildAvailability(context, game, season, players);
       }
     } else if (game.result.inProgress != GameInProgress.NotStarted) {
-      return _buildInProgress(context);
+      return _buildInProgress(context, game);
     }
     return null;
   }
 
-  void _showDirections(BuildContext context) {
+  void _showDirections(BuildContext context, Game game) {
     String url = "https://www.google.com/maps/dir/?api=1";
     url += "&destination=" + Uri.encodeComponent(game.sharedData.place.address);
     if (game.sharedData.place.placeId != null) {
@@ -246,13 +252,12 @@ class GameCard extends StatelessWidget {
     launch(url);
   }
 
-  Widget _buildMain(BuildContext context, LeagueOrTournamentTeam leagueTeam) {
+  Widget _buildMain(
+      BuildContext context, Game game, LeagueOrTournamentTeam leagueTeam) {
     List<Widget> buttons = <Widget>[];
-    Team team;
+    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+    Team team = teamBloc.currentState.getTeam(game.teamUid);
     //print('Trying ${game.teamUid}');
-    if (UserDatabaseData.instance.teams.containsKey(game.teamUid)) {
-      team = UserDatabaseData.instance.teams[game.teamUid];
-    }
     Opponent op;
     // Use the opponent from the main list before the league one if it is
     // set.
@@ -262,15 +267,14 @@ class GameCard extends StatelessWidget {
         team.opponents.containsKey(game.opponentUids[0])) {
       op = team.opponents[game.opponentUids[0]];
     } else if (game.sharedData.type == EventType.Game && leagueTeam != null) {
-      op = new Opponent(name: leagueTeam.name);
+      op = (OpponentBuilder()..name = leagueTeam.name).build();
     } else {
-      op = new Opponent(name: Messages.of(context).unknown);
+      op = (OpponentBuilder()..name = Messages.of(context).unknown).build();
     }
 
     Season season;
     if (team != null) {
-      season =
-          UserDatabaseData.instance.teams[game.teamUid].seasons[game.seasonUid];
+      season = team.seasons[game.seasonUid];
     }
     if (season == null) {
       season = new Season();
@@ -310,7 +314,7 @@ class GameCard extends StatelessWidget {
       // Put in directions buttons.
       buttons.add(
         new FlatButton(
-          onPressed: () => _showDirections(context),
+          onPressed: () => _showDirections(context, game),
           child: new Text(
             Messages.of(context).directionsbuttons,
           ),
@@ -379,7 +383,9 @@ class GameCard extends StatelessWidget {
     }
     List<Player> players = <Player>[];
     if (season != null) {
-      players = UserDatabaseData.instance.players.values
+      PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+
+      players = playerBloc.currentState.players.values
           .where((Player p) =>
               season.players.any((SeasonPlayer sp) => sp.playerUid == p.uid))
           .toList();
@@ -448,7 +454,7 @@ class GameCard extends StatelessWidget {
           children: subtitle,
         ),
       ),
-      trailing: _buildTrailing(context, season, players),
+      trailing: _buildTrailing(context, game, season, players),
     );
     if (buttons.length > 0) {
       return new Card(
@@ -475,20 +481,31 @@ class GameCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (game.leagueOpponentUid != null && game.leagueOpponentUid.isNotEmpty) {
-      // Show this in a future.
-      return FutureBuilder<LeagueOrTournamentTeam>(
-        future: UserDatabaseData.instance.updateModel
-            .getLeagueTeamData(game.leagueOpponentUid),
-        builder:
-            (BuildContext context, AsyncSnapshot<LeagueOrTournamentTeam> team) {
-          if (team.hasData) {
-            return _buildMain(context, team.data);
+    return BlocBuilder(
+        bloc: gameBloc,
+        builder: (BuildContext context, SingleGameState state) {
+          if (state is SingleGameDeleted) {
+            return SizedBox();
           }
-          return _buildMain(context, null);
-        },
-      );
-    }
-    return _buildMain(context, null);
+          Game game = state.game;
+          if (game.leagueOpponentUid != null &&
+              game.leagueOpponentUid.isNotEmpty) {
+            // Show this in a future.
+            return SingleLeagueOrTournamentTeamProvider(
+              leagueOrTournamentTeamUid: game.leagueOpponentUid,
+              builder: (BuildContext context,
+                      SingleLeagueOrTournamentTeamBloc leagueTeamBloc) =>
+                  BlocBuilder(
+                    bloc: leagueTeamBloc,
+                    builder: (BuildContext context,
+                        SingleLeagueOrTournamentTeamState teamState) {
+                      return _buildMain(
+                          context, game, teamState.leagueOrTournamentTeam);
+                    },
+                  ),
+            );
+          }
+          return _buildMain(context, game, null);
+        });
   }
 }

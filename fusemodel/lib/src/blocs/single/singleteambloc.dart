@@ -9,6 +9,9 @@ import 'package:meta/meta.dart';
 import '../clubbloc.dart';
 import '../teambloc.dart';
 
+///
+/// The basic team state for this team.
+///
 abstract class SingleTeamState extends Equatable {
   final Team team;
   final Club club;

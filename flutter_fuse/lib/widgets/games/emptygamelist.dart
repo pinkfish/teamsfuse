@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/blocs.dart';
 
 class EmptyGameList extends StatelessWidget {
   void _addTeam(BuildContext context) {
@@ -15,19 +16,16 @@ class EmptyGameList extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     RaisedButton button;
-    if (UserDatabaseData.instance.teams.length == 0) {
+    TeamBloc teams = BlocProvider.of<TeamBloc>(context);
+    if (teams.currentState.allTeamUids.length == 0) {
       button = new RaisedButton(
         onPressed: () => _addTeam(context),
-        child: new Text(Messages
-            .of(context)
-            .addteam),
+        child: new Text(Messages.of(context).addteam),
       );
     } else {
       button = new RaisedButton(
         onPressed: () => _addGame(context),
-        child: new Text(Messages
-            .of(context)
-            .addgame),
+        child: new Text(Messages.of(context).addgame),
       );
     }
 

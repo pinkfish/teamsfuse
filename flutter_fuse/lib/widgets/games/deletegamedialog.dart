@@ -20,7 +20,7 @@ Future<bool> deleteGameDialog(
           title: new Text(mess.deletegame(game.sharedData)),
           content: new Scrollbar(
             child: new SingleChildScrollView(
-              child: new GameCard(game),
+              child: new GameCard(gameBloc: gameBloc),
             ),
           ),
           actions: <Widget>[

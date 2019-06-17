@@ -1,42 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../blocs/singleteamprovider.dart';
 import 'results/gamelogview.dart';
 import 'results/messagesend.dart';
 import 'results/scoredetails.dart';
 
 class EditResultDialog extends StatelessWidget {
-  EditResultDialog(this._game)
-      : _team = UserDatabaseData.instance.teams[_game.teamUid] ?? new Team(),
-        _opponent = UserDatabaseData.instance.teams[_game.teamUid]
-                ?.opponents[_game.opponentUids[0]] ??
-            new Opponent() {
-    _game.loadGameLogs();
+  EditResultDialog(this._game) {
+    _game.dispatch(SingleGameLoadGameLog());
   }
 
-  final Game _game;
-  final Team _team;
-  final Opponent _opponent;
+  final SingleGameBloc _game;
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildGame(
+      BuildContext context, Game game, Team team, Opponent opponent) {
     ThemeData theme = Theme.of(context);
     String resultStr = "";
 
-    if (_game.result.inProgress == GameInProgress.Final) {
-      switch (_game.result.result) {
+    if (game.result.inProgress == GameInProgress.Final) {
+      switch (game.result.result) {
         case GameResult.Loss:
-          resultStr = Messages.of(context).resultloss(_game.result);
+          resultStr = Messages.of(context).resultloss(game.result);
           break;
         case GameResult.Tie:
-          resultStr = Messages.of(context).resulttie(_game.result);
+          resultStr = Messages.of(context).resulttie(game.result);
           break;
         case GameResult.Win:
-          resultStr = Messages.of(context).resultwin(_game.result);
+          resultStr = Messages.of(context).resultwin(game.result);
           break;
         default:
-          resultStr = Messages.of(context).gameresult(_game.result.result);
+          resultStr = Messages.of(context).gameresult(game.result.result);
           break;
       }
     }
@@ -44,7 +42,7 @@ class EditResultDialog extends StatelessWidget {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(
-          Messages.of(context).gametitlevs(_game.sharedData, _opponent.name) +
+          Messages.of(context).gametitlevs(game.sharedData, opponent.name) +
               "  " +
               resultStr,
           overflow: TextOverflow.clip,
@@ -69,8 +67,37 @@ class EditResultDialog extends StatelessWidget {
                 left: 10.0, right: 10.0, bottom: 10.0, top: 1.0),
             child: new MessageSendBox(_game),
           ),
-          new ScoreDetails(_game, _team),
+          new ScoreDetails(_game, team),
         ],
+      ),
+    );
+  }
+
+  Widget build(BuildContext context) {
+    return BlocListener(
+      bloc: _game,
+      listener: (BuildContext context, SingleGameState state) {
+        if (state is SingleGameDeleted) {
+          Navigator.pop(context);
+        }
+      },
+      child: BlocBuilder(
+        bloc: _game,
+        builder: (BuildContext context, SingleGameState state) {
+          if (state is SingleGameDeleted) {
+            return CircularProgressIndicator();
+          }
+          return SingleTeamProvider(
+            teamUid: state.game.teamUid,
+            builder: (BuildContext context, SingleTeamBloc teamBloc) =>
+                BlocBuilder(
+                  bloc: teamBloc,
+                  builder: (BuildContext context, SingleTeamState teamState) =>
+                      buildGame(context, state.game, teamState.team,
+                          teamState.opponents[state.game.opponentUids[0]]),
+                ),
+          );
+        },
       ),
     );
   }

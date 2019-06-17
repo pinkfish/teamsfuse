@@ -1,21 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/games/officalresultdialog.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
 import 'package:flutter_fuse/widgets/util/leagueteamimage.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class GameSharedCard extends StatelessWidget {
-  GameSharedCard(this.game)
-      : leagueOrTournament =
-            UserDatabaseData.instance.leagueOrTournments[game.leagueUid];
+  GameSharedCard(this.game);
 
   final GameSharedData game;
-  final LeagueOrTournament leagueOrTournament;
 
   void _editResult(BuildContext context) async {
     // Call up a dialog to edit the result.
@@ -79,6 +78,14 @@ class GameSharedCard extends StatelessWidget {
       );
     }
 
+    LeagueOrTournament leagueOrTournament;
+    LeagueOrTournamentBloc leagueOrTournamentBloc =
+        BlocProvider.of<LeagueOrTournamentBloc>(context);
+    if (leagueOrTournamentBloc.currentState.leagueOrTournaments
+        .containsValue(game.leagueUid)) {
+      leagueOrTournament = leagueOrTournamentBloc
+          .currentState.leagueOrTournaments[game.leagueUid];
+    }
     if (game.time < new DateTime.now().millisecondsSinceEpoch &&
         game.type == EventType.Game &&
         game.officialResults.result == OfficialResult.NotStarted &&
