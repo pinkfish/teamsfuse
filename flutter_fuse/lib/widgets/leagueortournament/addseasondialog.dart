@@ -1,23 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
 
 class AddSeasonDialog extends Dialog {
   final TextEditingController _controller = new TextEditingController();
 
-  static Future<bool> showSeasonDialog(
-      BuildContext context, String leagueOrTournamentUid) async {
+  static Future<bool> showSeasonDialog(BuildContext context,
+      SingleLeagueOrTournamentBloc leagueOrTournamentBloc) async {
     String seasonName = await showDialog<String>(
         context: context,
         builder: (BuildContext context) => new AddSeasonDialog());
     if (seasonName == null) {
       return false;
     }
-    LeagueOrTournamentSeason seasonData =
-        new LeagueOrTournamentSeason(null, seasonName, leagueOrTournamentUid);
+    leagueOrTournamentBloc
+        .dispatch(SingleLeagueOrTournamentAddSeason(name: seasonName));
     // Write it out to firestore.  Yay.
-    await seasonData.updateFirestore();
     return true;
   }
 

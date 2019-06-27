@@ -1252,17 +1252,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   Future<String> inviteUserToLeagueTeam(
       {String userUid,
-      LeagueOrTournament league,
-      LeagueOrTournamentSeason season,
+      String leagueSeasonUid,
       LeagueOrTournamentTeam leagueTeam,
       String email}) async {
+    LeagueOrTournamentSeason season =
+        await getLeagueSeasonData(leagueSeasonUid);
+    LeagueOrTournament leagueOrTournament = await getLeagueData(
+        userUid: userUid, leagueUid: season.leagueOrTournmentUid);
+
     InviteToLeagueTeam teamInvite = new InviteToLeagueTeam((b) => b
       ..email = email
-      ..leagueName = league.name
+      ..leagueName = leagueOrTournament.name
       ..sentByUid = userUid
       ..leagueDivisonUid = leagueTeam.leagueOrTournamentDivisonUid
       ..leagueTeamName = leagueTeam.name
-      ..leagueUid = league.uid
+      ..leagueUid = leagueOrTournament.uid
       ..leagueSeasonName = season.name
       ..leagueTeamUid = leagueTeam.uid);
     // Write it out to firestore.  Yay.
@@ -1370,16 +1374,19 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<Iterable<LeagueOrTournamentDivison>> getLeagueDivisonsForSeason(
-      String leagueSeasonUid) async* {
+      {String leagueSeasonUid, String memberUid}) async* {
     QueryWrapper query = wrapper.collection(LEAGUE_DIVISION_COLLECTION).where(
         LeagueOrTournamentDivison.LEAGUEORTOURNMENTSEASONUID,
         isEqualTo: leagueSeasonUid);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        LeagueOrTournamentDivison.fromJSON(snap.documentID, snap.data).build());
+        LeagueOrTournamentDivison.fromJSON(
+                snap.documentID, memberUid, snap.data)
+            .build());
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
       yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          LeagueOrTournamentDivison.fromJSON(snap.documentID, snap.data)
+          LeagueOrTournamentDivison.fromJSON(
+                  snap.documentID, memberUid, snap.data)
               .build());
     }
   }
@@ -1401,13 +1408,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<LeagueOrTournamentDivison> getLeagueDivisionData(
-      String leagueDivisionUid) async {
+      {String leagueDivisionUid, String memberUid}) async {
     DocumentSnapshotWrapper doc = await wrapper
         .collection(LEAGUE_DIVISION_COLLECTION)
         .document(leagueDivisionUid)
         .get();
     if (doc.exists) {
-      return LeagueOrTournamentDivison.fromJSON(doc.documentID, doc.data)
+      return LeagueOrTournamentDivison.fromJSON(
+              doc.documentID, memberUid, doc.data)
           .build();
     }
     return null;
@@ -1482,15 +1490,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<LeagueOrTournamentTeam> getLeagueTeamData(String teamUid) async {
-    DocumentSnapshotWrapper doc = await wrapper
-        .collection(LEAGUE_TEAM_COLLECTION)
-        .document(teamUid)
-        .get();
-    if (doc.exists) {
-      return LeagueOrTournamentTeam.fromJSON(doc.documentID, doc.data).build();
+  Stream<LeagueOrTournamentTeam> getLeagueTeamData(String teamUid) async* {
+    DocumentReferenceWrapper ref =
+        wrapper.collection(LEAGUE_TEAM_COLLECTION).document(teamUid);
+    DocumentSnapshotWrapper snap = await ref.get();
+    yield LeagueOrTournamentTeam.fromJSON(snap.documentID, snap.data).build();
+    await for (DocumentSnapshotWrapper snap in ref.snapshots()) {
+      yield LeagueOrTournamentTeam.fromJSON(snap.documentID, snap.data).build();
     }
-    return null;
   }
 
   Future<bool> connectLeagueTeamToSeason(

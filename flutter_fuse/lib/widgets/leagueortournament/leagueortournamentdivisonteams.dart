@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../blocs/singleleagueortournamentdivisonprovider.dart';
+import '../blocs/singleleagueortournamentprovider.dart';
+import '../blocs/singleleagueortournamentseasonprovider.dart';
 import 'addteamdialog.dart';
 import 'leagueortournamentteamcard.dart';
 
@@ -28,70 +33,57 @@ class LeagueOrTournamentDivisonTeamDetails extends StatefulWidget {
 
 class _LeagueOrTournamentDivisonDetailsState
     extends State<LeagueOrTournamentDivisonTeamDetails> {
-  LeagueOrTournament _leagueOrTournament;
-  LeagueOrTournamentSeason _leagueOrTournmentSeason;
-  LeagueOrTournamentDivison _leagueOrTournmentDivison;
   List<LeagueOrTournamentTeam> _sortedTeams;
   GlobalKey<AnimatedListState> _listState = new GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
     super.initState();
-    _leagueOrTournament = UserDatabaseData
-        .instance.leagueOrTournments[widget.leagueOrTournamentUid];
-    _leagueOrTournmentSeason = _leagueOrTournament.cacheSeasons.firstWhere(
-        (LeagueOrTournamentSeason s) =>
-            s.uid == widget.leagueOrTournamentSeasonUid);
-    _leagueOrTournmentDivison = _leagueOrTournmentSeason.cacheDivisions
-        .firstWhere((LeagueOrTournamentDivison s) =>
-            s.uid == widget.leagueOrTournamentDivisonUid);
   }
 
-  void _addTeam() {
-    AddTeamDialog.showTeamDialog(context, widget.leagueOrTournamentDivisonUid);
+  void _addTeam(SingleLeagueOrTournamentDivisonBloc bloc) {
+    AddTeamDialog.showTeamDialog(context, bloc);
   }
 
   int _sortTeams(LeagueOrTournamentTeam t1, LeagueOrTournamentTeam t2) {
-    if (!t1.record.containsKey(_leagueOrTournmentDivison.uid)) {
-      if (!t2.record.containsKey(_leagueOrTournmentDivison.uid)) {
+    String divisonUid = widget.leagueOrTournamentDivisonUid;
+    if (!t1.record.containsKey(divisonUid)) {
+      if (!t2.record.containsKey(divisonUid)) {
         return t1.name.compareTo(t2.name);
       } else {
         return 1;
       }
     }
-    if (!t2.record.containsKey(_leagueOrTournmentDivison.uid)) {
+    if (!t2.record.containsKey(divisonUid)) {
       return -1;
     }
-    if (t1.record[_leagueOrTournmentDivison.uid].win ==
-        t2.record[_leagueOrTournmentDivison.uid].win) {
-      if (t1.record[_leagueOrTournmentDivison.uid].loss ==
-          t2.record[_leagueOrTournmentDivison.uid].loss) {
+    if (t1.record[divisonUid].win == t2.record[divisonUid].win) {
+      if (t1.record[divisonUid].loss == t2.record[divisonUid].loss) {
         return t1.name.compareTo(t2.name);
       }
-      return (t1.record[_leagueOrTournmentDivison.uid].loss -
-              t2.record[_leagueOrTournmentDivison.uid].loss)
-          .toInt();
+      return (t1.record[divisonUid].loss - t2.record[divisonUid].loss).toInt();
     }
-    return (t2.record[_leagueOrTournmentDivison.uid].win -
-            t1.record[_leagueOrTournmentDivison.uid].win)
-        .toInt();
+    return (t2.record[divisonUid].win - t1.record[divisonUid].win).toInt();
   }
 
-  Widget _buildTeamItem(
-      BuildContext context, int index, Animation<double> animation) {
+  Widget _buildTeamItem(BuildContext context, int index,
+      Animation<double> animation, LeagueOrTournamentDivison leagueDivison) {
     return SizeTransition(
       axis: Axis.vertical,
       sizeFactor: animation,
       child: LeagueOrTournamentTeamCard(
-        _leagueOrTournament.uid,
+        widget.leagueOrTournamentUid,
         _sortedTeams[index],
-        admin: _leagueOrTournament.isAdmin(),
-        divison: _leagueOrTournmentDivison,
+        admin: leagueDivison.isAdmin(),
+        divison: leagueDivison,
       ),
     );
   }
 
-  void _updateTeams(List<LeagueOrTournamentTeam> newTeams) {
+  void _updateTeams(
+      LeagueOrTournament leagueOrTournament,
+      List<LeagueOrTournamentTeam> newTeams,
+      LeagueOrTournamentDivison leagueOrTournamentDivison) {
     List<LeagueOrTournamentTeam> oldList = _sortedTeams;
     _sortedTeams = newTeams;
     if (oldList == null || _listState.currentState == null) {
@@ -121,10 +113,10 @@ class _LeagueOrTournamentDivisonDetailsState
               axis: Axis.vertical,
               sizeFactor: animation,
               child: LeagueOrTournamentTeamCard(
-                _leagueOrTournament.uid,
+                widget.leagueOrTournamentUid,
                 myTeam,
-                admin: _leagueOrTournament.isAdmin(),
-                divison: _leagueOrTournmentDivison,
+                admin: leagueOrTournament.isAdmin(),
+                divison: leagueOrTournamentDivison,
               ),
             );
           });
@@ -142,96 +134,156 @@ class _LeagueOrTournamentDivisonDetailsState
   Widget build(BuildContext context) {
     // We must have the league/season loaded to have got in here.  If not
     // this is an error.
-    assert(_leagueOrTournmentSeason != null);
-    assert(_leagueOrTournmentDivison != null);
-    assert(_leagueOrTournament != null);
-
-    return Container(
-      alignment: Alignment.topLeft,
-      margin: EdgeInsets.all(5.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          new ListTile(
-            leading: LeagueImage(
-              leagueOrTournament: _leagueOrTournament,
-              width: 50.0,
-              height: 50.0,
-            ),
-            title: Text(
-              _leagueOrTournament.name,
-              style: Theme.of(context).textTheme.headline,
-            ),
-            subtitle: Text(
-              "${_leagueOrTournmentSeason.name} ${_leagueOrTournmentDivison.name}",
-              style: Theme.of(context).textTheme.subhead,
-            ),
+    assert(widget.leagueOrTournamentSeasonUid != null);
+    assert(widget.leagueOrTournamentDivisonUid != null);
+    assert(widget.leagueOrTournamentUid != null);
+    return SingleLeagueOrTournamentProvider(
+      leagueOrTournamentUid: widget.leagueOrTournamentUid,
+      builder: (BuildContext context,
+              SingleLeagueOrTournamentBloc leagueBloc) =>
+          SingleLeagueOrTournamentSeasonProvider(
+            leagueOrTournamentSeasonUid: widget.leagueOrTournamentSeasonUid,
+            singleLeagueOrTournamentBloc: leagueBloc,
+            builder: (BuildContext context,
+                    SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
+                SingleLeagueOrTournamentDivisonProvider(
+                  leagueOrTournamentDivisonUid:
+                      widget.leagueOrTournamentDivisonUid,
+                  singleLeagueOrTournamentSeasonBloc: seasonBloc,
+                  builder: (BuildContext context,
+                          SingleLeagueOrTournamentDivisonBloc divisonBloc) =>
+                      _buildTeams(context, leagueBloc, seasonBloc, divisonBloc),
+                ),
           ),
-          StreamBuilder<Iterable<LeagueOrTournamentTeam>>(
-              stream: _leagueOrTournmentDivison.teamStream,
-              builder: (BuildContext context,
-                  AsyncSnapshot<Iterable<LeagueOrTournamentTeam>> snap) {
-                Iterable<LeagueOrTournamentTeam> teams =
-                    _leagueOrTournmentDivison.cachedTeams;
-                if (snap.hasData) {
-                  teams = snap.data;
-                }
-                if (teams == null) {
-                  return Container(
-                    margin: EdgeInsets.all(5.0),
-                    child: Text(Messages.of(context).loading),
-                  );
-                }
-                if (teams.length == 0) {
-                  if (_leagueOrTournament.isAdmin()) {
+    );
+  }
+
+  Widget _buildTeams(
+      BuildContext context,
+      SingleLeagueOrTournamentBloc leagueBloc,
+      SingleLeagueOrTournamentSeasonBloc seasonBloc,
+      SingleLeagueOrTournamentDivisonBloc divisonBloc) {
+    return BlocBuilder(
+      bloc: leagueBloc,
+      builder: (BuildContext congtext, SingleLeagueOrTournamentState state) =>
+          BlocBuilder(
+            bloc: seasonBloc,
+            builder: (BuildContext context,
+                    SingleLeagueOrTournamentSeasonState seasonState) =>
+                BlocBuilder(
+                  bloc: divisonBloc,
+                  builder: (BuildContext context,
+                      SingleLeagueOrTournamentDivisonState divisonState) {
                     return Container(
+                      alignment: Alignment.topLeft,
                       margin: EdgeInsets.all(5.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
-                          Text(Messages.of(context).noteams),
-                          FlatButton(
-                            onPressed: () => _addTeam(),
-                            child: Text(
-                              Messages.of(context).addteam,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .button
-                                  .copyWith(
-                                      color: Theme.of(context).accentColor),
+                          new ListTile(
+                            leading: LeagueImage(
+                              leagueOrTournament: state.leagueOrTournament,
+                              width: 50.0,
+                              height: 50.0,
+                            ),
+                            title: Text(
+                              state.leagueOrTournament.name,
+                              style: Theme.of(context).textTheme.headline,
+                            ),
+                            subtitle: Text(
+                              "${seasonState.leagueOrTournamentSeason.name} ${divisonState.leagueOrTournamentDivison.name}",
+                              style: Theme.of(context).textTheme.subhead,
                             ),
                           ),
+                          BlocBuilder(
+                            bloc: new SingleLeagueOrTournamentDivisonTeamsBloc(
+                                singleLeagueOrTournamentDivisonBloc:
+                                    divisonBloc),
+                            builder: (BuildContext context,
+                                SingleLeagueOrTournamentDivisonTeamsState
+                                    state) {
+                              if (state
+                                  is SingleLeagueOrTournamentDivisonTeamsLoading) {
+                                return Container(
+                                  margin: EdgeInsets.all(5.0),
+                                  child: Text(Messages.of(context).loading),
+                                );
+                              } else {
+                                Iterable<LeagueOrTournamentTeam> teams =
+                                    state.leagueOrTournamentTeams.values;
+                                if (teams.length == 0) {
+                                  if (leagueBloc.currentState.leagueOrTournament
+                                      .isAdmin()) {
+                                    return Container(
+                                      margin: EdgeInsets.all(5.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(Messages.of(context).noteams),
+                                          FlatButton(
+                                            onPressed: () =>
+                                                _addTeam(divisonBloc),
+                                            child: Text(
+                                              Messages.of(context).addteam,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .button
+                                                  .copyWith(
+                                                      color: Theme.of(context)
+                                                          .accentColor),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return Container(
+                                      margin: EdgeInsets.all(5.0),
+                                      child: Text(Messages.of(context).noteams),
+                                    );
+                                  }
+                                }
+                                List<LeagueOrTournamentTeam> sortedTeams =
+                                    teams.toList();
+                                sortedTeams.sort(_sortTeams);
+                                _updateTeams(
+                                    leagueBloc.currentState.leagueOrTournament,
+                                    sortedTeams,
+                                    divisonState.leagueOrTournamentDivison);
+                                _sortedTeams = sortedTeams;
+                                return Expanded(
+                                  child: Scrollbar(
+                                    child: SingleChildScrollView(
+                                      child: AnimatedList(
+                                        key: _listState,
+                                        shrinkWrap: true,
+                                        itemBuilder: (BuildContext context,
+                                                int item,
+                                                Animation<double> an) =>
+                                            _buildTeamItem(
+                                                context,
+                                                item,
+                                                an,
+                                                divisonState
+                                                    .leagueOrTournamentDivison),
+                                        initialItemCount: sortedTeams.length,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                          )
                         ],
                       ),
                     );
-                  } else {
-                    return Container(
-                      margin: EdgeInsets.all(5.0),
-                      child: Text(Messages.of(context).noteams),
-                    );
-                  }
-                }
-                List<LeagueOrTournamentTeam> sortedTeams = teams.toList();
-                sortedTeams.sort(_sortTeams);
-                _updateTeams(sortedTeams);
-                _sortedTeams = sortedTeams;
-                return Expanded(
-                  child: Scrollbar(
-                    child: SingleChildScrollView(
-                      child: AnimatedList(
-                        key: _listState,
-                        shrinkWrap: true,
-                        itemBuilder: _buildTeamItem,
-                        initialItemCount: sortedTeams.length,
-                      ),
-                    ),
-                  ),
-                );
-              }),
-        ],
-      ),
+                  },
+                ),
+          ),
     );
   }
 }

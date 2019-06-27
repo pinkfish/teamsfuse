@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:fusemodel/src/blocs/single/singleleagueortournamentdivisonbloc.dart';
 import 'package:meta/meta.dart';
+
+import '../coordinationbloc.dart';
 
 ///
 /// Basic state for all the data in this system.
@@ -74,6 +75,25 @@ class SingleLeagueOrTournamentTeamSaveFailed
 class SingleLeagueOrTournamentTeamSaving
     extends SingleLeagueOrTournamentTeamState {
   SingleLeagueOrTournamentTeamSaving(
+      {@required SingleLeagueOrTournamentTeamState leagueOrTournament})
+      : super(
+            leagueOrTournamentTeam: leagueOrTournament.leagueOrTournamentTeam,
+            games: leagueOrTournament.games,
+            invites: leagueOrTournament.invites,
+            publicTeam: leagueOrTournament.publicTeam);
+
+  @override
+  String toString() {
+    return 'SingleLeagueOrTournamentTeamSaving{}';
+  }
+}
+
+///
+/// In the process of saving.
+///
+class SingleLeagueOrTournamentTeamLoading
+    extends SingleLeagueOrTournamentTeamState {
+  SingleLeagueOrTournamentTeamLoading(
       {@required SingleLeagueOrTournamentTeamState leagueOrTournament})
       : super(
             leagueOrTournamentTeam: leagueOrTournament.leagueOrTournamentTeam,
@@ -168,7 +188,7 @@ class SingleLeagueOrTournamentTeamUpdate
     extends SingleLeagueOrTournamentTeamEvent {
   final LeagueOrTournamentTeam team;
 
-  SingleLeagueOrTournamentTeamUpdate(this.team);
+  SingleLeagueOrTournamentTeamUpdate({this.team});
 }
 
 ///
@@ -179,7 +199,17 @@ class SingleLeagueOrTournamentTeamUpdateWinRecord
   final String divison;
   final WinRecord record;
 
-  SingleLeagueOrTournamentTeamUpdateWinRecord(this.divison, this.record);
+  SingleLeagueOrTournamentTeamUpdateWinRecord({this.divison, this.record});
+}
+
+///
+/// Loads the Invites for this league or tournament team.
+///
+class SingleLeagueOrTournamentTeamInviteMember
+    extends SingleLeagueOrTournamentTeamEvent {
+  final String email;
+
+  SingleLeagueOrTournamentTeamInviteMember({this.email});
 }
 
 ///
@@ -188,29 +218,20 @@ class SingleLeagueOrTournamentTeamUpdateWinRecord
 ///
 class SingleLeagueOrTournamentTeamBloc extends Bloc<
     SingleLeagueOrTournamentTeamEvent, SingleLeagueOrTournamentTeamState> {
-  final SingleLeagueOrTournamentDivisonBloc singleLeagueOrTournamenDivisonBloc;
   final String leagueTeamUid;
+  final CoordinationBloc coordinationBloc;
 
-  StreamSubscription<SingleLeagueOrTournamentDivisonState> _coordSub;
   StreamSubscription<Iterable<GameSharedData>> _gamesSnapshot;
   StreamSubscription<Iterable<InviteToLeagueTeam>> _inviteSnapshot;
+  StreamSubscription<LeagueOrTournamentTeam> _teamSub;
 
   SingleLeagueOrTournamentTeamBloc(
-      {@required this.singleLeagueOrTournamenDivisonBloc,
-      @required this.leagueTeamUid}) {
-    _coordSub = singleLeagueOrTournamenDivisonBloc.state
-        .listen((SingleLeagueOrTournamentDivisonState state) {
-      if (state is SingleLeagueOrTournamentDivisonLoaded) {
-        if (state.leagueOrTournamentTeams.containsKey(leagueTeamUid)) {
-          dispatch(_SingleLeagueOrTournamentEventLeagueTeamLoaded(
-              leagueDivision: state.leagueOrTournamentTeams[leagueTeamUid]));
-        } else {
-          dispatch(_SingleLeagueOrTournamentEventTeamDeleted());
-        }
-      }
-      if (state is SingleLeagueOrTournamentDivisonDeleted) {
-        dispatch(_SingleLeagueOrTournamentEventTeamDeleted());
-      }
+      {@required this.leagueTeamUid, @required this.coordinationBloc}) {
+    _teamSub = coordinationBloc.databaseUpdateModel
+        .getLeagueTeamData(leagueTeamUid)
+        .listen((LeagueOrTournamentTeam team) {
+      dispatch(
+          _SingleLeagueOrTournamentEventLeagueTeamLoaded(leagueDivision: team));
     });
   }
 
@@ -218,7 +239,6 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
   void dispose() {
     super.dispose();
     _cleanupStuff();
-    _coordSub?.cancel();
   }
 
   void _cleanupStuff() {
@@ -226,19 +246,14 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
     _gamesSnapshot = null;
     _inviteSnapshot?.cancel();
     _inviteSnapshot = null;
+    _teamSub?.cancel();
+    _teamSub = null;
   }
 
   @override
   SingleLeagueOrTournamentTeamState get initialState {
-    if (singleLeagueOrTournamenDivisonBloc.currentState.leagueOrTournamentTeams
-        .containsKey(leagueTeamUid)) {
-      return SingleLeagueOrTournamentTeamLoaded(
-          leagueOrTournamentTeam: singleLeagueOrTournamenDivisonBloc
-              .currentState.leagueOrTournamentTeams[leagueTeamUid],
-          games: {});
-    } else {
-      return SingleLeagueOrTournamentTeamDeleted.empty();
-    }
+    return SingleLeagueOrTournamentTeamLoading(
+        leagueOrTournament: currentState);
   }
 
   void _updateGames(Iterable<GameSharedData> games) {
@@ -247,6 +262,14 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
 
   void _updateInvites(Iterable<InviteToLeagueTeam> invites) {
     dispatch(_SingleLeagueOrTournamentEventTeamInvites(invites: invites));
+  }
+
+  void _inviteMember(String email) {
+    coordinationBloc.databaseUpdateModel.inviteUserToLeagueTeam(
+        leagueTeam: currentState.leagueOrTournamentTeam,
+        leagueSeasonUid: currentState.leagueOrTournamentTeam.seasonUid,
+        email: email,
+        userUid: coordinationBloc.authenticationBloc.currentUser.uid);
   }
 
   ///
@@ -258,13 +281,7 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
       yield SingleLeagueOrTournamentTeamSaving(
           leagueOrTournament: currentState);
       try {
-        await singleLeagueOrTournamenDivisonBloc
-            .singleLeagueOrTournamentSeasonBloc
-            .singleLeagueOrTournamentBloc
-            .leagueOrTournamentBloc
-            .coordinationBloc
-            .databaseUpdateModel
-            .updateLeagueTeam(league);
+        await coordinationBloc.databaseUpdateModel.updateLeagueTeam(league);
         yield SingleLeagueOrTournamentTeamLoaded(
             leagueOrTournamentTeam: currentState.leagueOrTournamentTeam,
             games: currentState.games);
@@ -287,14 +304,8 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
     try {
       yield SingleLeagueOrTournamentTeamSaving(
           leagueOrTournament: currentState);
-      await singleLeagueOrTournamenDivisonBloc
-          .singleLeagueOrTournamentSeasonBloc
-          .singleLeagueOrTournamentBloc
-          .leagueOrTournamentBloc
-          .coordinationBloc
-          .databaseUpdateModel
-          .updateLeagueTeamRecord(
-              currentState.leagueOrTournamentTeam, divison, record);
+      await coordinationBloc.databaseUpdateModel.updateLeagueTeamRecord(
+          currentState.leagueOrTournamentTeam, divison, record);
       yield SingleLeagueOrTournamentTeamLoaded(
           leagueOrTournamentTeam: currentState.leagueOrTournamentTeam,
           games: currentState.games);
@@ -318,23 +329,13 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
     }
 
     if (event is SingleLeagueOrTournamentTeamLoadGames) {
-      _gamesSnapshot = singleLeagueOrTournamenDivisonBloc
-          .singleLeagueOrTournamentSeasonBloc
-          .singleLeagueOrTournamentBloc
-          .leagueOrTournamentBloc
-          .coordinationBloc
-          .databaseUpdateModel
+      _gamesSnapshot = coordinationBloc.databaseUpdateModel
           .getLeagueGamesForTeam(leagueTeamUid)
           .listen((Iterable<GameSharedData> games) => _updateGames(games));
     }
 
     if (event is SingleLeagueOrTournamentTeamLoadInvites) {
-      _inviteSnapshot = singleLeagueOrTournamenDivisonBloc
-          .singleLeagueOrTournamentSeasonBloc
-          .singleLeagueOrTournamentBloc
-          .leagueOrTournamentBloc
-          .coordinationBloc
-          .databaseUpdateModel
+      _inviteSnapshot = coordinationBloc.databaseUpdateModel
           .getLeagueOrTournmentTeamInvitesStream(leagueTeamUid)
           .listen((Iterable<InviteToLeagueTeam> invites) =>
               _updateInvites(invites));
@@ -364,22 +365,14 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
       yield* _updateWinRecord(event.divison, event.record);
     }
 
+    if (event is SingleLeagueOrTournamentTeamInviteMember) {
+      _inviteMember(event.email);
+    }
+
     if (event is SingleLeagueOrTournamentTeamLoadPublicTeam) {
-      Team publicTeam = await singleLeagueOrTournamenDivisonBloc
-          .singleLeagueOrTournamentSeasonBloc
-          .singleLeagueOrTournamentBloc
-          .leagueOrTournamentBloc
-          .coordinationBloc
-          .databaseUpdateModel
+      Team publicTeam = await coordinationBloc.databaseUpdateModel
           .getPublicTeamDetails(
-              userUid: singleLeagueOrTournamenDivisonBloc
-                  .singleLeagueOrTournamentSeasonBloc
-                  .singleLeagueOrTournamentBloc
-                  .leagueOrTournamentBloc
-                  .coordinationBloc
-                  .authenticationBloc
-                  .currentUser
-                  .uid,
+              userUid: coordinationBloc.authenticationBloc.currentUser.uid,
               teamUid: currentState.leagueOrTournamentTeam.teamUid);
       yield SingleLeagueOrTournamentTeamLoaded(
           state: currentState, publicTeam: publicTeam);

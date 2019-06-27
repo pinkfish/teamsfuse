@@ -225,7 +225,8 @@ abstract class DatabaseUpdateModel {
   Future<void> deleteFirestoreGame(Game game);
   Future<void> updateFirestoreGameAttendence(
       Game game, String playerUid, Attendance attend);
-  Future<void> updateFirestoreGameResult(String gameUid, GameResultDetails result);
+  Future<void> updateFirestoreGameResult(
+      String gameUid, GameResultDetails result);
   Future<void> updateFirestoreOfficalGameResult(
       String gameSharedUid, GameOfficialResults result);
   Stream<Iterable<GameLog>> readGameLogs(Game game);
@@ -345,7 +346,7 @@ abstract class DatabaseUpdateModel {
   Stream<Iterable<LeagueOrTournamentSeason>> getLeagueSeasons(
       {String userUid, String leagueUid});
   Stream<Iterable<LeagueOrTournamentDivison>> getLeagueDivisonsForSeason(
-      String leagueSeasonUid);
+      {String leagueSeasonUid, String memberUid});
   Stream<Iterable<LeagueOrTournamentTeam>> getLeagueTeamsForTeamSeason(
       String teamSeasonUid);
   Future<String> updateLeague(LeagueOrTournament league, {bool includeMembers});
@@ -358,14 +359,13 @@ abstract class DatabaseUpdateModel {
   Future<String> inviteUserToLeague(InviteToLeagueAsAdmin invite);
   Future<void> deleteLeagueMember(LeagueOrTournament league, String memberUid);
   Future<LeagueOrTournament> getLeagueData({String userUid, String leagueUid});
-  Future<LeagueOrTournamentTeam> getLeagueTeamData(String teamUid);
+  Stream<LeagueOrTournamentTeam> getLeagueTeamData(String teamUid);
   Future<void> updateLeagueTeam(LeagueOrTournamentTeam team);
   Future<void> updateLeagueTeamRecord(
       LeagueOrTournamentTeam team, String season, WinRecord record);
   Future<String> inviteUserToLeagueTeam(
       {String userUid,
-      LeagueOrTournament league,
-      LeagueOrTournamentSeason season,
+      String leagueSeasonUid,
       LeagueOrTournamentTeam leagueTeam,
       String email});
   Stream<Iterable<InviteToLeagueTeam>> getLeagueOrTournmentTeamInvitesStream(
@@ -373,7 +373,7 @@ abstract class DatabaseUpdateModel {
 
   // League Season/Division.
   Future<LeagueOrTournamentDivison> getLeagueDivisionData(
-      String leagueDivisionUid);
+      {String leagueDivisionUid, String memberUid});
   Future<LeagueOrTournamentSeason> getLeagueSeasonData(String leagueSeasonUid);
   Future<void> updateLeagueSeason(LeagueOrTournamentSeason season);
   Future<void> updateLeagueDivison(LeagueOrTournamentDivison division);

@@ -5,9 +5,11 @@ import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
+import '../blocs/singleteamprovider.dart';
 import 'editformbase.dart';
 
 class TrainingEditForm extends StatefulWidget {
@@ -34,6 +36,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   FocusNode _focusNodePlaceNotes = new FocusNode();
   FocusNode _focusNodeNotes = new FocusNode();
   FocusNode _focusNodeUniform = new FocusNode();
+  GameBuilder builder;
 
   @override
   void save() {
@@ -45,6 +48,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
     super.initState();
     _atDate = widget.game.sharedData.tzTime;
     _atEnd = widget.game.sharedData.tzEndTime;
+    builder = widget.game.toBuilder();
   }
 
   void _updateTimes(Duration diff) {
@@ -57,13 +61,12 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
     if (place != null) {
       // Yay!
       setState(() {
-        widget.game.sharedData.place.name = place.details.name;
-        widget.game.sharedData.place.address = place.details.address;
-        widget.game.sharedData.place.longitude =
-            place.details.location.longitude;
-        widget.game.sharedData.place.latitude = place.details.location.latitude;
+        builder.sharedData.place.name = place.details.name;
+        builder.sharedData.place.address = place.details.address;
+        builder.sharedData.place.longitude = place.details.location.longitude;
+        builder.sharedData.place.latitude = place.details.location.latitude;
         place.loc.then((Location location) {
-          widget.game.sharedData.timezone = location.name;
+          builder.sharedData.timezone = location.name;
         });
       });
     }
@@ -75,10 +78,10 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   }
 
   @override
-  Game get finalGameResult {
+  GameBuilder get finalGameResult {
     _formState.currentState.save();
     // Add the date time and the time together.
-    widget.game.sharedData.time = new TZDateTime(
+    builder.sharedData.time = new TZDateTime(
             getLocation(widget.game.sharedData.timezone),
             _atDate.year,
             _atDate.month,
@@ -86,12 +89,12 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
             _atDate.hour,
             _atDate.minute)
         .millisecondsSinceEpoch;
-    widget.game.arriveTime = widget.game.sharedData.time;
+    builder.arriveTime = widget.game.sharedData.time;
     DateTime end = _atEnd;
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
       end.add(new Duration(days: 1));
     }
-    widget.game.sharedData.endTime = new TZDateTime(
+    builder.sharedData.endTime = new TZDateTime(
             getLocation(widget.game.sharedData.timezone),
             end.year,
             end.month,
@@ -99,8 +102,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
             end.hour,
             end.minute)
         .millisecondsSinceEpoch;
-    widget.game.sharedData.endTime = _atEnd.millisecondsSinceEpoch;
-    return widget.game;
+    builder.sharedData.endTime = _atEnd.millisecondsSinceEpoch;
+    return builder;
   }
 
   @override
@@ -120,16 +123,20 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                new SeasonFormField(
-                  decoration: new InputDecoration(
-                    icon: const Icon(CommunityIcons.calendarQuestion),
-                    labelText: messages.season,
-                  ),
-                  initialValue: widget.game.seasonUid,
-                  teamUid: widget.game.teamUid,
-                  onSaved: (String value) {
-                    widget.game.seasonUid = value;
-                  },
+                SingleTeamProvider(
+                  teamUid: builder.teamUid,
+                  builder: (BuildContext context, SingleTeamBloc teamBloc) =>
+                      SeasonFormField(
+                        decoration: new InputDecoration(
+                          icon: const Icon(CommunityIcons.calendarQuestion),
+                          labelText: messages.season,
+                        ),
+                        initialValue: widget.game.seasonUid,
+                        teamBloc: teamBloc,
+                        onSaved: (String value) {
+                          builder.seasonUid = value;
+                        },
+                      ),
                 ),
                 new DateTimeFormField(
                   labelText: Messages.of(context).gametime,
@@ -179,7 +186,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     obscureText: false,
                     initialValue: widget.game.sharedData.place.notes,
                     onSaved: (String value) {
-                      widget.game.sharedData.place.notes = value;
+                      builder.sharedData.place.notes = value;
                     },
                   ),
                 ),
@@ -192,7 +199,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                         labelText: messages.uniform,
                         icon: const Icon(CommunityIcons.tshirtCrew)),
                     onSaved: (String value) {
-                      widget.game.uniform = value;
+                      builder.uniform = value;
                     },
                     focusNode: _focusNodeUniform,
                   ),
@@ -208,7 +215,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     ),
                     focusNode: _focusNodeNotes,
                     onSaved: (String value) {
-                      widget.game.notes = value;
+                      builder.notes = value;
                     },
                   ),
                 ),

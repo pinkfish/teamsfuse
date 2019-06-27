@@ -1,48 +1,41 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
+import 'package:fusemodel/blocs.dart';
 
 class AddInviteToTeamDialog extends Dialog {
   final TextEditingController _controller = new TextEditingController();
   final Validations validations = Validations();
 
   static Future<bool> showAddTeamInviteDialog(
-      BuildContext context,
-      LeagueOrTournament league,
-      LeagueOrTournamentSeason season,
-      LeagueOrTournamentTeam leagueTeam) async {
+      BuildContext context, SingleLeagueOrTournamentTeamBloc leagueTeam) async {
     String email = await showDialog<String>(
         context: context,
         builder: (BuildContext context) => new AddInviteToTeamDialog());
     if (email == null) {
       return false;
     }
-    await UserDatabaseData.instance.updateModel
-        .inviteUserToLeagueTeam(league, season, leagueTeam, email);
+    leagueTeam.dispatch(SingleLeagueOrTournamentTeamInviteMember(email: email));
     return true;
   }
 
-  static Future<bool> showAddTeamInviteDialogByUid(BuildContext context,
-      String leagueUid, String leagueSeasonUid, String leagueTeamUid) async {
+  static Future<bool> showAddTeamInviteDialogByUid(
+      BuildContext context,
+      SingleLeagueOrTournamentBloc league,
+      String leagueSeasonUid,
+      String leagueTeamUid) async {
     String email = await showDialog<String>(
         context: context,
         builder: (BuildContext context) => new AddInviteToTeamDialog());
     if (email == null) {
       return false;
     }
-    // Lookup the team and league.
-    LeagueOrTournament league =
-        await UserDatabaseData.instance.getLegueOrTournament(leagueUid);
-    LeagueOrTournamentTeam leagueTeam = await UserDatabaseData
-        .instance.updateModel
-        .getLeagueTeamData(leagueTeamUid);
-    LeagueOrTournamentSeason leagueOrTournamentSeason = await UserDatabaseData
-        .instance.updateModel
-        .getLeagueSeasonData(leagueSeasonUid);
-    await UserDatabaseData.instance.updateModel.inviteUserToLeagueTeam(
-        league, leagueOrTournamentSeason, leagueTeam, email);
+    league.dispatch(SingleLeagueOrTournamentInviteToTeam(
+        email: email,
+        leagueTeamUid: leagueTeamUid,
+        leagueSeasonUid: leagueSeasonUid));
     return true;
   }
 

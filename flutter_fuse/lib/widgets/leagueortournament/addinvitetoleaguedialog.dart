@@ -3,31 +3,29 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/blocs.dart';
 
 class AddInviteToLeagueDialog extends Dialog {
-  AddInviteToLeagueDialog(this.leagueOrTournament);
+  AddInviteToLeagueDialog({@required this.leagueOrTournament});
 
   final TextEditingController _controller = new TextEditingController();
   final Validations validations = Validations();
 
-  final LeagueOrTournament leagueOrTournament;
+  final SingleLeagueOrTournamentBloc leagueOrTournament;
 
   static Future<bool> showAddLeagueOrTournamentInviteDialog(
-      BuildContext context, LeagueOrTournament leagueOrTournament) async {
+      BuildContext context,
+      SingleLeagueOrTournamentBloc leagueOrTournament) async {
     String email = await showDialog<String>(
         context: context,
-        builder: (BuildContext context) =>
-            new AddInviteToLeagueDialog(leagueOrTournament));
+        builder: (BuildContext context) => new AddInviteToLeagueDialog(
+            leagueOrTournament: leagueOrTournament));
     if (email == null) {
       return false;
     }
-    InviteToLeagueAsAdmin invite = new InviteToLeagueAsAdmin(
-        sentByUid: UserDatabaseData.instance.userUid,
-        leagueUid: leagueOrTournament.uid,
-        leagueName: leagueOrTournament.name,
-        email: email);
-    await UserDatabaseData.instance.updateModel.inviteUserToLeague(invite);
+    leagueOrTournament
+        .dispatch(SingleLeagueOrTournamentInviteAsAdmin(email: email));
+
     return true;
   }
 

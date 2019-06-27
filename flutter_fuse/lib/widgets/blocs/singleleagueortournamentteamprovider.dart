@@ -4,7 +4,7 @@ import 'package:fusemodel/blocs.dart';
 
 typedef SingleLeagueOrTournamentTeamProviderBuilder = Widget Function(
     BuildContext context,
-    SingleLeagueOrTournamentTeamBloc singleLeagueOrTournamentTeambBloc);
+    SingleLeagueOrTournamentTeamBloc singleLeagueOrTournamentTeamBloc);
 
 /**
  * Create a provider that will insert the singe leagueOrTournamentTeam bloc into the tree if the

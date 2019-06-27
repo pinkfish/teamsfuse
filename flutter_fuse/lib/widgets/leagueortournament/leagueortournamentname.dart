@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/blocs.dart';
+
+import '../blocs/singleleagueortournamentdivisonprovider.dart';
+import '../blocs/singleleagueortournamentprovider.dart';
 
 ///
 /// Puts the name of the league or tournament in the UX
@@ -14,78 +18,88 @@ class LeagueOrTournamentName extends StatelessWidget {
   final TextAlign textAlign;
   final String leagueOrTournamentDivisonUid;
 
-
-  Widget _nameFuture() {
-    return new FutureBuilder<LeagueOrTournament>(
-        future: UserDatabaseData.instance
-            .getLegueOrTournament(leagueOrTournamentUid),
-        builder:
-            (BuildContext context, AsyncSnapshot<LeagueOrTournament> data) {
-          Widget inner;
-          if (data.hasData) {
-            inner = Text(
-              data.data.name,
-              style: style,
-              textAlign: textAlign,
-              overflow: TextOverflow.ellipsis,
-            );
-          } else {
-            inner = Text(
-              Messages.of(context).loading,
-              style: style,
-              textAlign: textAlign,
-            );
-          }
-          return AnimatedSwitcher(
-            child: inner,
-            duration: Duration(milliseconds: 300),
-          );
-        });
+  Widget _divison() {
+    return SingleLeagueOrTournamentDivisonProvider(
+      leagueOrTournamentDivisonUid: leagueOrTournamentDivisonUid,
+      builder:
+          (BuildContext context, SingleLeagueOrTournamentDivisonBloc data) =>
+              BlocBuilder(
+                bloc: data,
+                builder: (BuildContext context,
+                    SingleLeagueOrTournamentDivisonState state) {
+                  Widget inner;
+                  if (state is SingleLeagueOrTournamentDivisonDeleted) {
+                    inner = Text(
+                      "",
+                      style: style,
+                      textAlign: textAlign,
+                      overflow: TextOverflow.ellipsis,
+                    );
+                  } else {
+                    inner = Text(
+                      state.leagueOrTournamentDivison.name,
+                      style: style,
+                      textAlign: textAlign,
+                      overflow: TextOverflow.ellipsis,
+                    );
+                  }
+                  return AnimatedSwitcher(
+                    child: inner,
+                    duration: Duration(milliseconds: 300),
+                  );
+                },
+              ),
+    );
   }
 
-  Widget _divisionFuture() {
-    return new FutureBuilder<LeagueOrTournamentDivison>(
-        future: UserDatabaseData.instance.updateModel
-            .getLeagueDivisionData(leagueOrTournamentDivisonUid),
-        builder: (BuildContext context,
-            AsyncSnapshot<LeagueOrTournamentDivison> data) {
-          Widget inner;
-          print('Loaded $leagueOrTournamentDivisonUid');
+  Widget _name() {
+    return SingleLeagueOrTournamentProvider(
+      leagueOrTournamentUid: leagueOrTournamentUid,
+      builder: (BuildContext context,
+              SingleLeagueOrTournamentBloc singleLeagueOrTournmanetBloc) =>
+          BlocBuilder(
+            bloc: singleLeagueOrTournmanetBloc,
+            builder:
+                (BuildContext context, SingleLeagueOrTournamentState state) {
+              Widget inner;
 
-          if (data.hasData) {
-            inner = Text(
-              data.data.name,
-              style: style,
-              textAlign: textAlign,
-              overflow: TextOverflow.ellipsis,
-            );
-          } else {
-            inner = Text(
-              "",
-              style: style,
-              textAlign: textAlign,
-            );
-          }
-          return AnimatedSwitcher(
-            child: inner,
-            duration: Duration(milliseconds: 300),
-          );
-        });
+              if (SingleLeagueOrTournamentState
+                  is SingleLeagueOrTournamentDeleted) {
+                inner = Text(
+                  Messages.of(context).loading,
+                  style: style,
+                  textAlign: textAlign,
+                  overflow: TextOverflow.ellipsis,
+                );
+              } else {
+                inner = Text(
+                  state.leagueOrTournament.name,
+                  style: style,
+                  textAlign: textAlign,
+                );
+              }
+              return AnimatedSwitcher(
+                child: inner,
+                duration: Duration(milliseconds: 300),
+              );
+            },
+          ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     if (leagueOrTournamentDivisonUid == null) {
-      return  _nameFuture();
+      return _name();
     }
     return Row(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
-        _divisionFuture(),
+        _divison(),
         SizedBox(
           width: 15.0,
         ),
-        Flexible(child: _nameFuture()),
+        Flexible(child: _name()),
       ],
     );
   }

@@ -14,6 +14,7 @@ export 'src/blocs/single/singlegamebloc.dart';
 export 'src/blocs/single/singleinvitebloc.dart';
 export 'src/blocs/single/singleleagueortournamentbloc.dart';
 export 'src/blocs/single/singleleagueortournamentdivisonbloc.dart';
+export 'src/blocs/single/singleleagueortournamentdivisonteamsbloc.dart';
 export 'src/blocs/single/singleleagueortournamentseasonbloc.dart';
 export 'src/blocs/single/singleleagueortournamentteambloc.dart';
 export 'src/blocs/single/singleplayerbloc.dart';

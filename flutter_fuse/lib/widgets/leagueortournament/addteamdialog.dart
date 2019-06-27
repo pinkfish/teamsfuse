@@ -1,13 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
 
 class AddTeamDialog extends Dialog {
   final TextEditingController _controller = new TextEditingController();
 
-  static Future<bool> showTeamDialog(
-      BuildContext context, String leagueOrTournmantDivisonUid) async {
+  static Future<bool> showTeamDialog(BuildContext context,
+      SingleLeagueOrTournamentDivisonBloc leagueOrTournmantDivison) async {
     String teamName = await showDialog<String>(
         context: context,
         builder: (BuildContext context) => new AddTeamDialog());
@@ -15,10 +16,9 @@ class AddTeamDialog extends Dialog {
       return false;
     }
     print('team name $teamName');
-    LeagueOrTournamentTeam teamData =
-        new LeagueOrTournamentTeam(leagueOrTournamentDivisonUid: leagueOrTournmantDivisonUid, name: teamName);
     // Write it out to firestore.  Yay.
-    await teamData.firebaseUpdate();
+    leagueOrTournmantDivison
+        .dispatch(SingleLeagueOrTournamentDivisonAddTeam(teamName: teamName));
     return true;
   }
 

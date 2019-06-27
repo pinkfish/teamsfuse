@@ -320,7 +320,8 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
           ]));
         team.currentSeason = pregenSeason.documentID;
         LeagueOrTournamentTeam leagueTeam = await inviteBloc.databaseUpdateModel
-            .getLeagueTeamData(invite.leagueTeamUid);
+            .getLeagueTeamData(invite.leagueTeamUid)
+            .first;
         if (leagueTeam.seasonUid != null) {
           // Someone beat them to it!
           // TODO: Say someone beat them to it.
