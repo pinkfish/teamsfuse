@@ -18,7 +18,7 @@ abstract class SingleLeagueOrTournamentDivisonTeamsState extends Equatable {
 }
 
 ///
-/// Doing something.
+/// Loaded.
 ///
 class SingleLeagueOrTournamentDivisonTeamsLoaded
     extends SingleLeagueOrTournamentDivisonTeamsState {
@@ -38,44 +38,7 @@ class SingleLeagueOrTournamentDivisonTeamsLoaded
 }
 
 ///
-/// Saveing failed, with an specified error.
-///
-class SingleLeagueOrTournamentDivisonTeamsSaveFailed
-    extends SingleLeagueOrTournamentDivisonTeamsState {
-  final Error error;
-
-  SingleLeagueOrTournamentDivisonTeamsSaveFailed(
-      {@required SingleLeagueOrTournamentDivisonTeamsState leagueOrTournament,
-      @required this.error})
-      : super(
-            leagueOrTournamentTeams: leagueOrTournament.leagueOrTournamentTeams,
-            loadedTeams: leagueOrTournament.loadedTeams);
-
-  @override
-  String toString() {
-    return 'SingleLeagueOrTournamentDivisonTeamsSaveFailed{}';
-  }
-}
-
-///
-/// In the process of saving.
-///
-class SingleLeagueOrTournamentDivisonTeamsSaving
-    extends SingleLeagueOrTournamentDivisonTeamsState {
-  SingleLeagueOrTournamentDivisonTeamsSaving(
-      {@required SingleLeagueOrTournamentDivisonTeamsState leagueOrTournament})
-      : super(
-            leagueOrTournamentTeams: leagueOrTournament.leagueOrTournamentTeams,
-            loadedTeams: leagueOrTournament.loadedTeams);
-
-  @override
-  String toString() {
-    return 'SingleLeagueOrTournamentDivisonTeamsSaving{}';
-  }
-}
-
-///
-/// Deleted
+/// Loading...
 ///
 class SingleLeagueOrTournamentDivisonTeamsLoading
     extends SingleLeagueOrTournamentDivisonTeamsState {
@@ -101,16 +64,6 @@ class _SingleLeagueOrTournamentEventDivisonTeamsLoaded
   _SingleLeagueOrTournamentEventDivisonTeamsLoaded({this.teams});
 }
 
-//
-/// Add a team to this division.
-///
-class SingleLeagueOrTournamentDivisonTeamsAddTeam
-    extends SingleLeagueOrTournamentDivisonTeamsEvent {
-  final String teamName;
-
-  SingleLeagueOrTournamentDivisonTeamsAddTeam({@required this.teamName});
-}
-
 ///
 /// Handles the work around the clubs and club system inside of
 /// the app.
@@ -131,8 +84,8 @@ class SingleLeagueOrTournamentDivisonTeamsBloc extends Bloc<
         .leagueOrTournamentBloc
         .coordinationBloc
         .databaseUpdateModel
-        .getLeagueDivisionTeams(singleLeagueOrTournamentDivisonBloc
-            .currentState.leagueOrTournamentDivison.uid)
+        .getLeagueDivisionTeams(
+            singleLeagueOrTournamentDivisonBloc.leagueDivisonUid)
         .listen((Iterable<LeagueOrTournamentTeam> divisons) =>
             _updateTeams(divisons));
   }
@@ -157,29 +110,6 @@ class SingleLeagueOrTournamentDivisonTeamsBloc extends Bloc<
     dispatch(_SingleLeagueOrTournamentEventDivisonTeamsLoaded(teams: teams));
   }
 
-  Stream<SingleLeagueOrTournamentDivisonTeamsState> _addTeam(
-      {String teamName}) async* {
-    yield SingleLeagueOrTournamentDivisonTeamsSaving(
-        leagueOrTournament: currentState);
-    try {
-      LeagueOrTournamentTeam teamData = new LeagueOrTournamentTeam((b) => b
-        ..leagueOrTournamentDivisonUid = singleLeagueOrTournamentDivisonBloc
-            .currentState.leagueOrTournamentDivison.uid
-        ..name = teamName);
-      await singleLeagueOrTournamentDivisonBloc
-          .singleLeagueOrTournamentSeasonBloc
-          .singleLeagueOrTournamentBloc
-          .leagueOrTournamentBloc
-          .coordinationBloc
-          .databaseUpdateModel
-          .updateLeagueTeam(teamData);
-      yield SingleLeagueOrTournamentDivisonTeamsLoaded(currentState);
-    } catch (e) {
-      yield SingleLeagueOrTournamentDivisonTeamsSaveFailed(
-          leagueOrTournament: currentState, error: e);
-    }
-  }
-
   @override
   Stream<SingleLeagueOrTournamentDivisonTeamsState> mapEventToState(
       SingleLeagueOrTournamentDivisonTeamsEvent event) async* {
@@ -194,10 +124,6 @@ class SingleLeagueOrTournamentDivisonTeamsBloc extends Bloc<
       }
       yield SingleLeagueOrTournamentDivisonTeamsLoaded(currentState,
           leagueOrTournamentTeams: newTeams, loadedTeams: true);
-    }
-
-    if (event is SingleLeagueOrTournamentDivisonTeamsAddTeam) {
-      yield* _addTeam(teamName: event.teamName);
     }
   }
 }

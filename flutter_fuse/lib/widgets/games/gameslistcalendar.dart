@@ -2,15 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/widgets/games/gamecard.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 
 class GameListCalendarState {
-  GameListCalendarState(this.details, this.state);
+  GameListCalendarState(this.details, this.state, this.gameBloc);
 
-  GameSubscription _subscription;
-  StreamSubscription<Iterable<Game>> _listening;
-  StreamSubscription<UpdateReason> _teamListen;
+  StreamSubscription<GameState> _listening;
   List<Game> _listToShow;
   DateTime startPoint;
   DateTime endPoint;
@@ -19,9 +18,10 @@ class GameListCalendarState {
       new StreamController<UpdateReason>();
   Stream<UpdateReason> _myStream;
   GlobalKey<CalendarWidgetState> state;
+  GameBloc gameBloc;
 
   Widget buildWidget(BuildContext context, CalendarEvent event) {
-    return new GameCard(_listToShow[event.index]);
+    return new GameCard(gameUid: _listToShow[event.index].uid);
   }
 
   List<CalendarEvent> getEvents(DateTime start, DateTime end) {
@@ -54,31 +54,14 @@ class GameListCalendarState {
     return _myStream;
   }
 
-  void _resubscribe() {
-    print('resubscribe $details');
-    _subscription?.dispose();
-    _subscription =
-        UserDatabaseData.instance.getGames(details, startPoint, endPoint);
-    _setGames(_subscription.initialData);
-    _listening?.cancel();
-    _listening = _subscription.stream.listen((Iterable<Game> games) {
-      print("Getting games $startPoint $endPoint $details");
-      _setGames(games);
-    });
-  }
-
   void initState() {
-    _teamListen =
-        UserDatabaseData.instance.teamStream.listen((UpdateReason reason) {
-      _resubscribe();
-    });
+    _listening =
+        gameBloc.state.listen((GameState newState) => _setGames(newState));
   }
 
   void dispose() {
     _listening?.cancel();
     _listening = null;
-    _teamListen?.cancel();
-    _teamListen = null;
     _controller?.close();
     _controller = null;
   }
@@ -88,9 +71,19 @@ class GameListCalendarState {
     _resubscribe();
   }
 
-  void _setGames(Iterable<Game> res) {
-    List<Game> games = res.toList();
+  void _resubscribe() {
+    gameBloc.dispatch(GameEventSetBoundaries(start: startPoint, end: endPoint));
+  }
+
+  void _setGames(GameState res) {
+    Map<String, Game> gamesMap;
+    for (String t in res.gamesByTeam.keys) {
+      for (Game g in res.gamesByTeam[t].values) {
+        gamesMap[g.uid] = g;
+      }
+    }
     print('_setGames');
+    List<Game> games = gamesMap.values.toList();
 
     if (games.length > 0 || _listToShow == null) {
       games.sort(

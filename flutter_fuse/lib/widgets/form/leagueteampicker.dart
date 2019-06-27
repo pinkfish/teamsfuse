@@ -70,49 +70,55 @@ class _TournamentOrLeagueTeamPickerState
                 .copyWith(fontWeight: FontWeight.bold)
             : null,
       ),
-      child: BlocBuilder(
-        bloc: widget.leagueOrTournamentDivisonBloc,
-        builder:
-            (BuildContext context, SingleLeagueOrTournamentDivisonState state) {
-          if (state.leagueOrTournamentTeams.length == 0) {
-            if (widget.disabled) {
-              return Text(
-                Messages.of(context).teamselect,
-                style: Theme.of(context).textTheme.body1.copyWith(
-                    color: Theme.of(context).disabledColor, height: 3.0),
+      child: BlocProvider(
+        bloc: SingleLeagueOrTournamentDivisonTeamsBloc(
+            singleLeagueOrTournamentDivisonBloc:
+                widget.leagueOrTournamentDivisonBloc),
+        child: BlocBuilder(
+          bloc: BlocProvider.of<SingleLeagueOrTournamentDivisonTeamsBloc>(
+              context),
+          builder: (BuildContext context,
+              SingleLeagueOrTournamentDivisonTeamsState state) {
+            if (state.leagueOrTournamentTeams.length == 0) {
+              if (widget.disabled) {
+                return Text(
+                  Messages.of(context).teamselect,
+                  style: Theme.of(context).textTheme.body1.copyWith(
+                      color: Theme.of(context).disabledColor, height: 3.0),
+                );
+              }
+              return new Text(
+                Messages.of(context).loading,
+                style: Theme.of(context).textTheme.body1.copyWith(height: 3.0),
               );
             }
-            return new Text(
-              Messages.of(context).loading,
-              style: Theme.of(context).textTheme.body1.copyWith(height: 3.0),
+            return new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                new Expanded(
+                  flex: 1,
+                  child: widget.disabled
+                      ? new Text(
+                          Messages.of(context).teamselect,
+                          style: Theme.of(context).textTheme.body1.copyWith(
+                              color: Theme.of(context).disabledColor,
+                              height: 3.0),
+                        )
+                      : new DropdownButton<String>(
+                          hint: new Text(Messages.of(context).teamselect),
+                          items:
+                              _buildItems(state.leagueOrTournamentTeams.values),
+                          value: widget.initialTeamUid,
+                          onChanged: (String val) {
+                            widget.onChanged(val);
+                          },
+                        ),
+                ),
+              ],
             );
-          }
-          return new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              new Expanded(
-                flex: 1,
-                child: widget.disabled
-                    ? new Text(
-                        Messages.of(context).teamselect,
-                        style: Theme.of(context).textTheme.body1.copyWith(
-                            color: Theme.of(context).disabledColor,
-                            height: 3.0),
-                      )
-                    : new DropdownButton<String>(
-                        hint: new Text(Messages.of(context).teamselect),
-                        items:
-                            _buildItems(state.leagueOrTournamentTeams.values),
-                        value: widget.initialTeamUid,
-                        onChanged: (String val) {
-                          widget.onChanged(val);
-                        },
-                      ),
-              ),
-            ],
-          );
-        },
+          },
+        ),
       ),
     );
   }

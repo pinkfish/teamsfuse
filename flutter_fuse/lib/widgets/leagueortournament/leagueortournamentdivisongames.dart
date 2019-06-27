@@ -53,120 +53,127 @@ class _LeagueOrTournamentDivisonDetailsState
         context, "/AddSharedGame/" + widget.leagueOrTournamentUid + "/" + uid);
   }
 
-  Widget _buildGamesList(
-      SingleLeagueOrTournamentState leagueState,
-      SingleLeagueOrTournamentSeasonState seasonState,
+  Widget _buildGamesList(SingleLeagueOrTournamentState leagueState,
       SingleLeagueOrTournamentDivisonState divisonState) {
-    if (!divisonState.loadedGames) {
-      return Text(Messages.of(context).loading);
-    }
-    // Filter only the ones we want.
-    Iterable<GameSharedData> games = divisonState.games.values;
-    if (_currentTeamConstraint != TournamentOrLeagueTeamPicker.all) {
-      games = games.where((GameSharedData g) =>
-          g.officialResults.homeTeamLeagueUid == _currentTeamConstraint ||
-          g.officialResults.awayTeamLeagueUid == _currentTeamConstraint);
-    }
-    if (games.length == 0) {
-      if (leagueState.leagueOrTournament.isAdmin()) {
-        return Container(
-          margin: EdgeInsets.all(5.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text(Messages.of(context).nogames),
-              Align(
-                alignment: Alignment.topLeft,
-                child: FlatButton(
-                  onPressed: () =>
-                      _addGame(divisonState.leagueOrTournamentDivison.uid),
-                  child: Text(Messages.of(context).addgame,
-                      style: Theme.of(context)
-                          .textTheme
-                          .button
-                          .copyWith(color: Theme.of(context).accentColor)),
-                ),
-              ),
-            ],
-          ),
-        );
-      } else {
-        return Container(
-          margin: EdgeInsets.all(5.0),
-          child: Text(Messages.of(context).nogames),
-        );
-      }
-    }
-
-    List<GameSharedData> sortedGames = games.toList();
-    sortedGames.sort(
-        (GameSharedData g1, GameSharedData g2) => (g1.time - g2.time).toInt());
-
-    List<Widget> children = <Widget>[];
-
-    TextStyle style = Theme.of(context).textTheme.subhead.copyWith(
-          fontWeight: FontWeight.w300,
-        );
-    List<Widget> displayEvents = <Widget>[];
-    DateTime day = new DateTime(1970);
-    final Size screenSize = MediaQuery.of(context).size;
-    double widthSecond = screenSize.width - widthFirst - inset - 20.0;
-
-    for (GameSharedData g in sortedGames) {
-      if (displayEvents.length == 0) {
-        // The day is the current game day.
-        day = g.tzTime;
-      }
-      displayEvents.add(GameSharedCard(g));
-      if (day.month != g.tzTime.month || day.day != g.tzTime.day) {
-        children.add(new Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            new Container(
-              constraints: new BoxConstraints.tightFor(width: widthFirst),
-              margin: new EdgeInsets.only(top: 5.0, left: inset),
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+    SingleLeagueOrTournamentDivisonGamesBloc bloc =
+        BlocProvider.of<SingleLeagueOrTournamentDivisonGamesBloc>(context);
+    return BlocBuilder(
+      bloc: bloc,
+      builder: (BuildContext context,
+          SingleLeagueOrTournamentDivisonGamesState gamesState) {
+        if (!gamesState.loadedGames) {
+          return Text(Messages.of(context).loading);
+        }
+        // Filter only the ones we want.
+        Iterable<GameSharedData> games =
+            gamesState.leagueOrTournamentGames.values;
+        if (_currentTeamConstraint != TournamentOrLeagueTeamPicker.all) {
+          games = games.where((GameSharedData g) =>
+              g.officialResults.homeTeamLeagueUid == _currentTeamConstraint ||
+              g.officialResults.awayTeamLeagueUid == _currentTeamConstraint);
+        }
+        if (games.length == 0) {
+          if (leagueState.leagueOrTournament.isAdmin()) {
+            return Container(
+              margin: EdgeInsets.all(5.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  new Text(
-                    dayOfWeekFormat.format(day),
-                    style: style,
-                  ),
-                  new Text(
-                    dayOfMonthFormat.format(day),
-                    style: style.copyWith(fontSize: 10.0),
+                  Text(Messages.of(context).nogames),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: FlatButton(
+                      onPressed: () =>
+                          _addGame(divisonState.leagueOrTournamentDivison.uid),
+                      child: Text(Messages.of(context).addgame,
+                          style: Theme.of(context)
+                              .textTheme
+                              .button
+                              .copyWith(color: Theme.of(context).accentColor)),
+                    ),
                   ),
                 ],
               ),
-            ),
-            new Container(
-              constraints: new BoxConstraints.tightFor(width: widthSecond),
-              margin: new EdgeInsets.only(top: 10.0),
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: displayEvents,
-              ),
-            ),
-          ],
-        ));
-        day = new DateTime(g.tzTime.year, g.tzTime.month, g.tzTime.day);
-        displayEvents = <Widget>[];
-      }
-    }
-    return Container(
-      margin: EdgeInsets.all(5.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
-      ),
+            );
+          } else {
+            return Container(
+              margin: EdgeInsets.all(5.0),
+              child: Text(Messages.of(context).nogames),
+            );
+          }
+        }
+
+        List<GameSharedData> sortedGames = games.toList();
+        sortedGames.sort((GameSharedData g1, GameSharedData g2) =>
+            (g1.time - g2.time).toInt());
+
+        List<Widget> children = <Widget>[];
+
+        TextStyle style = Theme.of(context).textTheme.subhead.copyWith(
+              fontWeight: FontWeight.w300,
+            );
+        List<Widget> displayEvents = <Widget>[];
+        DateTime day = new DateTime(1970);
+        final Size screenSize = MediaQuery.of(context).size;
+        double widthSecond = screenSize.width - widthFirst - inset - 20.0;
+
+        for (GameSharedData g in sortedGames) {
+          if (displayEvents.length == 0) {
+            // The day is the current game day.
+            day = g.tzTime;
+          }
+          displayEvents.add(GameSharedCard(g));
+          if (day.month != g.tzTime.month || day.day != g.tzTime.day) {
+            children.add(new Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                new Container(
+                  constraints: new BoxConstraints.tightFor(width: widthFirst),
+                  margin: new EdgeInsets.only(top: 5.0, left: inset),
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      new Text(
+                        dayOfWeekFormat.format(day),
+                        style: style,
+                      ),
+                      new Text(
+                        dayOfMonthFormat.format(day),
+                        style: style.copyWith(fontSize: 10.0),
+                      ),
+                    ],
+                  ),
+                ),
+                new Container(
+                  constraints: new BoxConstraints.tightFor(width: widthSecond),
+                  margin: new EdgeInsets.only(top: 10.0),
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: displayEvents,
+                  ),
+                ),
+              ],
+            ));
+            day = new DateTime(g.tzTime.year, g.tzTime.month, g.tzTime.day);
+            displayEvents = <Widget>[];
+          }
+        }
+        return Container(
+          margin: EdgeInsets.all(5.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: children,
+          ),
+        );
+      },
     );
   }
 
@@ -189,83 +196,85 @@ class _LeagueOrTournamentDivisonDetailsState
                   singleLeagueOrTournamentSeasonBloc: seasonBloc,
                   builder: (BuildContext context,
                           SingleLeagueOrTournamentDivisonBloc divisonBloc) =>
-                      BlocBuilder(
-                        bloc: leagueBloc,
-                        builder: (BuildContext context,
-                            SingleLeagueOrTournamentState leagueState) {
-                          if (leagueState is SingleLeagueOrTournamentDeleted) {
-                            return Text(Messages.of(context).loading);
-                          }
-                          divisonBloc.dispatch(
-                              SingleLeagueOrTournamentDivisonLoadGames());
+                      BlocProvider(
+                        bloc: SingleLeagueOrTournamentDivisonGamesBloc(
+                            singleLeagueOrTournamentDivisonBloc: divisonBloc),
+                        child: BlocBuilder(
+                          bloc: leagueBloc,
+                          builder: (BuildContext context,
+                              SingleLeagueOrTournamentState leagueState) {
+                            if (leagueState
+                                is SingleLeagueOrTournamentDeleted) {
+                              return Text(Messages.of(context).loading);
+                            }
 
-                          return BlocBuilder(
-                            bloc: seasonBloc,
-                            builder: (BuildContext context,
-                                    SingleLeagueOrTournamentSeasonState
-                                        seasonState) =>
-                                BlocBuilder(
-                                  bloc: divisonBloc,
-                                  builder: (BuildContext context,
-                                          SingleLeagueOrTournamentDivisonState
-                                              divisonState) =>
-                                      Container(
-                                        alignment: Alignment.topLeft,
-                                        margin: EdgeInsets.all(5.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: <Widget>[
-                                            new ListTile(
-                                              leading: LeagueImage(
-                                                leagueOrTournamentUid: widget
-                                                    .leagueOrTournamentUid,
-                                                width: 50.0,
-                                                height: 50.0,
-                                              ),
-                                              title: Text(
-                                                leagueState
-                                                    .leagueOrTournament.name,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .headline,
-                                              ),
-                                              subtitle: Text(
-                                                "${seasonState.leagueOrTournamentSeason.name} ${divisonState.leagueOrTournamentDivison.name}",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .subhead,
-                                              ),
-                                            ),
-                                            TournamentOrLeagueTeamPicker(
-                                              leagueOrTournamentDivisonBloc:
-                                                  divisonBloc,
-                                              initialTeamUid:
-                                                  _currentTeamConstraint,
-                                              includeAll: true,
-                                              onChanged: (String str) =>
-                                                  setState(() =>
-                                                      _currentTeamConstraint =
-                                                          str),
-                                            ),
-                                            Expanded(
-                                              child: Scrollbar(
-                                                child: SingleChildScrollView(
-                                                  child: _buildGamesList(
-                                                      leagueState,
-                                                      seasonState,
-                                                      divisonState),
+                            return BlocBuilder(
+                              bloc: seasonBloc,
+                              builder: (BuildContext context,
+                                      SingleLeagueOrTournamentSeasonState
+                                          seasonState) =>
+                                  BlocBuilder(
+                                    bloc: divisonBloc,
+                                    builder: (BuildContext context,
+                                            SingleLeagueOrTournamentDivisonState
+                                                divisonState) =>
+                                        Container(
+                                          alignment: Alignment.topLeft,
+                                          margin: EdgeInsets.all(5.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: <Widget>[
+                                              new ListTile(
+                                                leading: LeagueImage(
+                                                  leagueOrTournamentUid: widget
+                                                      .leagueOrTournamentUid,
+                                                  width: 50.0,
+                                                  height: 50.0,
+                                                ),
+                                                title: Text(
+                                                  leagueState
+                                                      .leagueOrTournament.name,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headline,
+                                                ),
+                                                subtitle: Text(
+                                                  "${seasonState.leagueOrTournamentSeason.name} ${divisonState.leagueOrTournamentDivison.name}",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subhead,
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                              TournamentOrLeagueTeamPicker(
+                                                leagueOrTournamentDivisonBloc:
+                                                    divisonBloc,
+                                                initialTeamUid:
+                                                    _currentTeamConstraint,
+                                                includeAll: true,
+                                                onChanged: (String str) =>
+                                                    setState(() =>
+                                                        _currentTeamConstraint =
+                                                            str),
+                                              ),
+                                              Expanded(
+                                                child: Scrollbar(
+                                                  child: SingleChildScrollView(
+                                                    child: _buildGamesList(
+                                                        leagueState,
+                                                        divisonState),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                ),
-                          );
-                        },
+                                  ),
+                            );
+                          },
+                        ),
                       ),
                 ),
           ),

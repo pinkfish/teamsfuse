@@ -1,21 +1,31 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/games/gamesharedcard.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../blocs/singleleagueortournamentdivisonprovider.dart';
+import '../blocs/singleleagueortournamentprovider.dart';
+import '../blocs/singleleagueortournamentseasonprovider.dart';
+import '../blocs/singleleagueortournamentteamprovider.dart';
 import 'addinvitetoteamdialog.dart';
+import 'leagueortournamentdivisonname.dart';
+import 'leagueortournamentname.dart';
+import 'leagueortournamentseasonname.dart';
 
 ///
 /// The details to display in the app about the team in a league or
 /// tournament.
 ///
 class LeagueOrTournamentTeamDetails extends StatefulWidget {
-  LeagueOrTournamentTeamDetails({@required this.leagueOrTournamentTeamUid});
+  LeagueOrTournamentTeamDetails(
+      {@required this.leagueOrTournamentTeamUid,
+      @required this.leagueOrTournamentUid});
 
   final String leagueOrTournamentTeamUid;
+  final String leagueOrTournamentUid;
 
   @override
   State createState() {
@@ -25,70 +35,6 @@ class LeagueOrTournamentTeamDetails extends StatefulWidget {
 
 class _LeagueOrTournamentTeamDetailsState
     extends State<LeagueOrTournamentTeamDetails> {
-  LeagueOrTournament leagueOrTournament;
-  LeagueOrTournamentSeason leagueOrTournmentSeason;
-  LeagueOrTournamentDivison leagueOrTournmentDivison;
-  LeagueOrTournamentTeam leagueOrTournamentTeam;
-  StreamSubscription<LeagueOrTournamentTeam> _sub;
-
-  ///
-  /// Load the details but only do so once.
-  ///
-  Future<LeagueOrTournamentSeason> _loadDetails() async {
-    if (leagueOrTournamentTeam == null) {
-      leagueOrTournamentTeam = await UserDatabaseData.instance.updateModel
-          .getLeagueTeamData(widget.leagueOrTournamentTeamUid);
-    }
-    // Update the UX.
-    setState(() => true);
-
-    if (leagueOrTournamentTeam != null && leagueOrTournmentDivison == null) {
-      leagueOrTournamentTeam.loadInvites();
-      _sub = leagueOrTournamentTeam.thisTeamStream
-          .listen((LeagueOrTournamentTeam t) {
-        setState(() {});
-      });
-      // load a bit more stuff.
-      leagueOrTournmentDivison = await UserDatabaseData.instance.updateModel
-          .getLeagueDivisionData(
-              leagueOrTournamentTeam.leagueOrTournamentDivisonUid);
-      setState(() => true);
-    }
-
-    if (leagueOrTournmentDivison != null && leagueOrTournmentSeason == null) {
-      // Load the rest.
-      leagueOrTournmentSeason = await UserDatabaseData.instance.updateModel
-          .getLeagueSeasonData(
-              leagueOrTournmentDivison.leagueOrTournmentSeasonUid);
-      setState(() => true);
-    }
-    if (leagueOrTournmentSeason != null && leagueOrTournament == null) {
-      leagueOrTournament = await UserDatabaseData.instance.updateModel
-          .getLeagueData(leagueOrTournmentSeason.leagueOrTournmentUid);
-    }
-    return leagueOrTournmentSeason;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _sub?.cancel();
-  }
-
-  String _seasonName() {
-    if (leagueOrTournmentSeason != null) {
-      return leagueOrTournmentSeason.name;
-    }
-    return Messages.of(context).loading;
-  }
-
-  String _divisonName() {
-    if (leagueOrTournmentDivison != null) {
-      return leagueOrTournmentDivison.name;
-    }
-    return Messages.of(context).loading;
-  }
-
   void _onDelete() {}
 
   @override
@@ -99,120 +45,235 @@ class _LeagueOrTournamentTeamDetailsState
 
     return Container(
       margin: EdgeInsets.all(5.0),
-      child: FutureBuilder<LeagueOrTournamentSeason>(
-        future: _loadDetails(),
+      child: SingleLeagueOrTournamentTeamProvider(
+        leagueOrTournamentTeamUid: widget.leagueOrTournamentTeamUid,
         builder: (BuildContext context,
-            AsyncSnapshot<LeagueOrTournamentSeason> snap) {
-          if (!snap.hasData) {
-            return Center(child: Text(Messages.of(context).loading));
-          }
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              LeagueImage(
-                leagueOrTournament: leagueOrTournament,
-                width: (screenSize.width < 500)
-                    ? 120.0
-                    : (screenSize.width / 4) + 12.0,
-                height: screenSize.height / 4 + 20,
-              ),
-              Text(
-                leagueOrTournament.name,
-                style: Theme.of(context).textTheme.headline,
-              ),
-              Text("${_seasonName()}",
-                  style: Theme.of(context)
-                      .textTheme
-                      .subhead
-                      .copyWith(fontWeight: FontWeight.bold)),
-              Text("${_divisonName()}",
-                  style: Theme.of(context).textTheme.subhead),
-              StreamBuilder<Iterable<GameSharedData>>(
-                stream: leagueOrTournmentDivison != null
-                    ? leagueOrTournmentDivison.gameStream
-                    : null,
-                builder: (BuildContext context,
-                    AsyncSnapshot<Iterable<GameSharedData>> snap) {
-                  Iterable<GameSharedData> games =
-                      leagueOrTournmentDivison.cachedGames;
-                  if (snap.hasData) {
-                    games = snap.data;
-                  }
-                  if (games == null) {
-                    return Text(Messages.of(context).loading);
-                  }
-                  List<GameSharedData> sortedGames = games
-                      .where((GameSharedData g) =>
-                          g.officialResults.homeTeamLeagueUid ==
-                              widget.leagueOrTournamentTeamUid ||
-                          g.officialResults.awayTeamLeagueUid ==
-                              widget.leagueOrTournamentTeamUid)
-                      .toList();
-                  if (sortedGames.length == 0) {
-                    return Text(Messages.of(context).nogames);
-                  }
+                SingleLeagueOrTournamentTeamBloc bloc) =>
+            BlocListener(
+              bloc: bloc,
+              listener: (BuildContext context,
+                  SingleLeagueOrTournamentTeamState teamState) {
+                if (teamState is SingleLeagueOrTournamentTeamLoaded) {
+                  bloc.dispatch(SingleLeagueOrTournamentTeamLoadInvites());
+                }
+              },
+              child: BlocBuilder(
+                  bloc: bloc,
+                  builder: (BuildContext context,
+                      SingleLeagueOrTournamentTeamState teamState) {
+                    if (teamState is SingleLeagueOrTournamentTeamLoading ||
+                        teamState is SingleLeagueOrTournamentTeamDeleted) {
+                      return Center(child: Text(Messages.of(context).loading));
+                    }
 
-                  sortedGames.sort((GameSharedData g1, GameSharedData g2) =>
-                      (g1.time - g2.time).toInt());
-                  List<Widget> children = sortedGames
-                      .map<Widget>((GameSharedData g) => GameSharedCard(g))
-                      .toList();
-                  if (leagueOrTournamentTeam.teamUid == null &&
-                      leagueOrTournament.isAdmin()) {
-                    children.add(new ExpansionTile(
-                      title: Text(
-                        Messages.of(context).invitedpeople(
-                            leagueOrTournamentTeam.cachedInvites?.length ?? 0),
-                      ),
-                      initiallyExpanded: false,
-                      children: leagueOrTournamentTeam.cachedInvites
-                          .map((InviteToLeagueTeam invite) {
-                        return ListTile(
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: _onDelete,
+                    return SingleLeagueOrTournamentProvider(
+                      leagueOrTournamentUid: widget.leagueOrTournamentUid,
+                      builder: (BuildContext context,
+                              SingleLeagueOrTournamentBloc leagueBloc) =>
+                          SingleLeagueOrTournamentSeasonProvider(
+                            leagueOrTournamentSeasonUid:
+                                teamState.leagueOrTournamentTeam.seasonUid,
+                            builder: (BuildContext context,
+                                    SingleLeagueOrTournamentSeasonBloc
+                                        seasonBloc) =>
+                                SingleLeagueOrTournamentDivisonProvider(
+                                  leagueOrTournamentDivisonUid: teamState
+                                      .leagueOrTournamentTeam
+                                      .leagueOrTournamentDivisonUid,
+                                  builder: (BuildContext context,
+                                          SingleLeagueOrTournamentDivisonBloc
+                                              divisonBloc) =>
+                                      BlocProvider(
+                                        bloc: SingleLeagueOrTournamentDivisonGamesBloc(
+                                            singleLeagueOrTournamentDivisonBloc:
+                                                divisonBloc),
+                                        child: BlocBuilder(
+                                          bloc: leagueBloc,
+                                          builder: (BuildContext context,
+                                                  SingleLeagueOrTournamentState
+                                                      leagueState) =>
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.stretch,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: <Widget>[
+                                                  LeagueImage(
+                                                    leagueOrTournamentUid: widget
+                                                        .leagueOrTournamentUid,
+                                                    width: (screenSize.width <
+                                                            500)
+                                                        ? 120.0
+                                                        : (screenSize.width /
+                                                                4) +
+                                                            12.0,
+                                                    height:
+                                                        screenSize.height / 4 +
+                                                            20,
+                                                  ),
+                                                  LeagueOrTournamentName(
+                                                    widget
+                                                        .leagueOrTournamentUid,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .headline,
+                                                  ),
+                                                  LeagueOrTournamentSeasonName(
+                                                      leagueBloc: leagueBloc,
+                                                      leagueOrTournmentSeasonUid:
+                                                          teamState
+                                                              .leagueOrTournamentTeam
+                                                              .seasonUid,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .subhead
+                                                          .copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                  LeagueOrTournamentDivisonName(
+                                                      leagueOrTournmentDivisonUid:
+                                                          teamState
+                                                              .leagueOrTournamentTeam
+                                                              .leagueOrTournamentDivisonUid,
+                                                      leagueSeasonBloc:
+                                                          seasonBloc,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .subhead),
+                                                  BlocBuilder(
+                                                    bloc: BlocProvider.of<
+                                                            SingleLeagueOrTournamentDivisonGamesBloc>(
+                                                        context),
+                                                    builder: (BuildContext
+                                                            context,
+                                                        SingleLeagueOrTournamentDivisonGamesState
+                                                            gamesState) {
+                                                      if (gamesState
+                                                          is SingleLeagueOrTournamentDivisonGamesLoading) {
+                                                        return Text(
+                                                            Messages.of(context)
+                                                                .loading);
+                                                      }
+
+                                                      List<GameSharedData> sortedGames = gamesState
+                                                          .leagueOrTournamentGames
+                                                          .values
+                                                          .where((GameSharedData
+                                                                  g) =>
+                                                              g.officialResults
+                                                                      .homeTeamLeagueUid ==
+                                                                  widget
+                                                                      .leagueOrTournamentTeamUid ||
+                                                              g.officialResults
+                                                                      .awayTeamLeagueUid ==
+                                                                  widget
+                                                                      .leagueOrTournamentTeamUid)
+                                                          .toList();
+                                                      if (sortedGames.length ==
+                                                          0) {
+                                                        return Text(
+                                                            Messages.of(context)
+                                                                .nogames);
+                                                      }
+
+                                                      sortedGames.sort(
+                                                          (GameSharedData g1,
+                                                                  GameSharedData
+                                                                      g2) =>
+                                                              (g1.time -
+                                                                      g2.time)
+                                                                  .toInt());
+                                                      List<Widget> children =
+                                                          sortedGames
+                                                              .map<Widget>(
+                                                                  (GameSharedData
+                                                                          g) =>
+                                                                      GameSharedCard(
+                                                                          g))
+                                                              .toList();
+
+                                                      if (teamState
+                                                                  .leagueOrTournamentTeam
+                                                                  .uid ==
+                                                              null &&
+                                                          leagueState
+                                                              .leagueOrTournament
+                                                              .isAdmin()) {
+                                                        children.add(
+                                                            new ExpansionTile(
+                                                          title: Text(
+                                                            Messages.of(context)
+                                                                .invitedpeople(
+                                                                    teamState
+                                                                        .invites
+                                                                        .length),
+                                                          ),
+                                                          initiallyExpanded:
+                                                              false,
+                                                          children: teamState
+                                                              .invites
+                                                              .map(
+                                                                  (InviteToLeagueTeam
+                                                                      invite) {
+                                                            return ListTile(
+                                                              trailing:
+                                                                  IconButton(
+                                                                icon: Icon(Icons
+                                                                    .delete),
+                                                                onPressed:
+                                                                    _onDelete,
+                                                              ),
+                                                              title: Text(
+                                                                invite.email,
+                                                              ),
+                                                            );
+                                                          }).toList(),
+                                                        ));
+                                                        children.add(
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .topLeft,
+                                                            child: ButtonBar(
+                                                              children: <
+                                                                  Widget>[
+                                                                FlatButton(
+                                                                  onPressed: () =>
+                                                                      AddInviteToTeamDialog.showAddTeamInviteDialog(
+                                                                          context,
+                                                                          bloc),
+                                                                  child: Text(
+                                                                    Messages.of(
+                                                                            context)
+                                                                        .addteamadmin,
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .button
+                                                                        .copyWith(
+                                                                            color:
+                                                                                Theme.of(context).accentColor),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+                                                      return Column(
+                                                        children: children,
+                                                      );
+                                                    },
+                                                  )
+                                                ],
+                                              ),
+                                        ),
+                                      ),
+                                ),
                           ),
-                          title: Text(
-                            invite.email,
-                          ),
-                        );
-                      }).toList(),
-                    ));
-                    children.add(
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: ButtonBar(
-                          children: <Widget>[
-                            FlatButton(
-                              onPressed: () =>
-                                  AddInviteToTeamDialog.showAddTeamInviteDialog(
-                                      context,
-                                      leagueOrTournament,
-                                      leagueOrTournmentSeason,
-                                      leagueOrTournamentTeam),
-                              child: Text(
-                                Messages.of(context).addteamadmin,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .button
-                                    .copyWith(
-                                        color: Theme.of(context).accentColor),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     );
-                  }
-                  return Column(
-                    children: children,
-                  );
-                },
-              )
-            ],
-          );
-        },
+                  }),
+            ),
       ),
     );
   }

@@ -11,13 +11,9 @@ import 'package:meta/meta.dart';
 ///
 abstract class SingleLeagueOrTournamentDivisonState extends Equatable {
   final LeagueOrTournamentDivison leagueOrTournamentDivison;
-  final Map<String, GameSharedData> games;
-  final bool loadedGames;
 
   SingleLeagueOrTournamentDivisonState(
-      {@required this.leagueOrTournamentDivison,
-      @required this.games,
-      @required this.loadedGames});
+      {@required this.leagueOrTournamentDivison});
 }
 
 ///
@@ -27,14 +23,10 @@ class SingleLeagueOrTournamentDivisonLoaded
     extends SingleLeagueOrTournamentDivisonState {
   SingleLeagueOrTournamentDivisonLoaded(
       SingleLeagueOrTournamentDivisonState state,
-      {LeagueOrTournamentDivison leagueOrTournamentDivison,
-      Map<String, GameSharedData> games,
-      bool loadedGames})
+      {LeagueOrTournamentDivison leagueOrTournamentDivison})
       : super(
             leagueOrTournamentDivison:
-                leagueOrTournamentDivison ?? state.leagueOrTournamentDivison,
-            games: games ?? state.games,
-            loadedGames: state.loadedGames);
+                leagueOrTournamentDivison ?? state.leagueOrTournamentDivison);
 
   @override
   String toString() {
@@ -54,9 +46,7 @@ class SingleLeagueOrTournamentDivisonSaveFailed
       @required this.error})
       : super(
             leagueOrTournamentDivison:
-                leagueOrTournament.leagueOrTournamentDivison,
-            games: leagueOrTournament.games,
-            loadedGames: leagueOrTournament.loadedGames);
+                leagueOrTournament.leagueOrTournamentDivison);
 
   @override
   String toString() {
@@ -73,9 +63,7 @@ class SingleLeagueOrTournamentDivisonSaving
       {@required SingleLeagueOrTournamentDivisonState leagueOrTournament})
       : super(
             leagueOrTournamentDivison:
-                leagueOrTournament.leagueOrTournamentDivison,
-            games: leagueOrTournament.games,
-            loadedGames: leagueOrTournament.loadedGames);
+                leagueOrTournament.leagueOrTournamentDivison);
 
   @override
   String toString() {
@@ -92,11 +80,9 @@ class SingleLeagueOrTournamentDivisonDeleted
       {@required SingleLeagueOrTournamentDivisonState leagueOrTournament})
       : super(
             leagueOrTournamentDivison:
-                leagueOrTournament.leagueOrTournamentDivison,
-            games: leagueOrTournament.games,
-            loadedGames: leagueOrTournament.loadedGames);
+                leagueOrTournament.leagueOrTournamentDivison);
   SingleLeagueOrTournamentDivisonDeleted.empty()
-      : super(leagueOrTournamentDivison: null, games: {}, loadedGames: false);
+      : super(leagueOrTournamentDivison: null);
   @override
   String toString() {
     return 'SingleLeagueOrTournamentDivisonDeleted{}';
@@ -121,23 +107,10 @@ class _SingleLeagueOrTournamentEventLeagueDivisonLoaded
 class _SingleLeagueOrTournamentEventDivisonDeleted
     extends SingleLeagueOrTournamentDivisonEvent {}
 
-class _SingleLeagueOrTournamentEventDivisonGames
-    extends SingleLeagueOrTournamentDivisonEvent {
-  Iterable<GameSharedData> games;
-
-  _SingleLeagueOrTournamentEventDivisonGames({this.games});
-}
-
 ///
 /// Loads the Teams for this league or tournament.
 ///
 class SingleLeagueOrTournamentDivisonLoadTeams
-    extends SingleLeagueOrTournamentDivisonEvent {}
-
-///
-/// Loads the Games for this league or tournament.
-///
-class SingleLeagueOrTournamentDivisonLoadGames
     extends SingleLeagueOrTournamentDivisonEvent {}
 
 ///
@@ -172,7 +145,6 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
   final String leagueDivisonUid;
 
   StreamSubscription<SingleLeagueOrTournamentSeasonState> _coordSub;
-  StreamSubscription<Iterable<GameSharedData>> _gamesSnapshot;
 
   SingleLeagueOrTournamentDivisonBloc(
       {@required this.singleLeagueOrTournamentSeasonBloc,
@@ -201,10 +173,7 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
     _coordSub?.cancel();
   }
 
-  void _cleanupStuff() {
-    _gamesSnapshot?.cancel();
-    _gamesSnapshot = null;
-  }
+  void _cleanupStuff() {}
 
   @override
   SingleLeagueOrTournamentDivisonState get initialState {
@@ -213,16 +182,10 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
         .containsKey(leagueDivisonUid)) {
       return SingleLeagueOrTournamentDivisonLoaded(null,
           leagueOrTournamentDivison: singleLeagueOrTournamentSeasonBloc
-              .currentState.leagueOrTournamentDivisons[leagueDivisonUid],
-          games: {},
-          loadedGames: false);
+              .currentState.leagueOrTournamentDivisons[leagueDivisonUid]);
     } else {
       return SingleLeagueOrTournamentDivisonDeleted.empty();
     }
-  }
-
-  void _updateGames(Iterable<GameSharedData> games) {
-    dispatch(_SingleLeagueOrTournamentEventDivisonGames(games: games));
   }
 
   ///
@@ -238,8 +201,7 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
             .leagueOrTournamentBloc.coordinationBloc.databaseUpdateModel
             .updateLeagueDivison(divison);
         yield SingleLeagueOrTournamentDivisonLoaded(currentState,
-            leagueOrTournamentDivison: currentState.leagueOrTournamentDivison,
-            games: currentState.games);
+            leagueOrTournamentDivison: currentState.leagueOrTournamentDivison);
       } catch (e) {
         yield SingleLeagueOrTournamentDivisonSaveFailed(
             leagueOrTournament: currentState, error: e);
@@ -264,8 +226,7 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
           .leagueOrTournamentBloc.coordinationBloc.databaseUpdateModel
           .updateLeagueTeam(teamData);
       yield SingleLeagueOrTournamentDivisonLoaded(currentState,
-          leagueOrTournamentDivison: currentState.leagueOrTournamentDivison,
-          games: currentState.games);
+          leagueOrTournamentDivison: currentState.leagueOrTournamentDivison);
     } catch (e) {
       yield SingleLeagueOrTournamentDivisonSaveFailed(
           leagueOrTournament: currentState, error: e);
@@ -277,30 +238,7 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
       SingleLeagueOrTournamentDivisonEvent event) async* {
     if (event is _SingleLeagueOrTournamentEventLeagueDivisonLoaded) {
       yield SingleLeagueOrTournamentDivisonLoaded(currentState,
-          leagueOrTournamentDivison: event.leagueDivision,
-          games: currentState.games);
-    }
-
-    if (event is SingleLeagueOrTournamentDivisonLoadGames) {
-      if (!currentState.loadedGames) {
-        _gamesSnapshot = singleLeagueOrTournamentSeasonBloc
-            .singleLeagueOrTournamentBloc
-            .leagueOrTournamentBloc
-            .coordinationBloc
-            .databaseUpdateModel
-            .getLeagueGamesForDivison(leagueDivisonUid)
-            .listen((Iterable<GameSharedData> games) => _updateGames(games));
-      }
-    }
-
-    if (event is _SingleLeagueOrTournamentEventDivisonGames) {
-      Map<String, GameSharedData> newGames = {};
-      for (GameSharedData game in event.games) {
-        newGames[game.uid] = game;
-      }
-      yield SingleLeagueOrTournamentDivisonLoaded(currentState,
-          leagueOrTournamentDivison: currentState.leagueOrTournamentDivison,
-          games: newGames);
+          leagueOrTournamentDivison: event.leagueDivision);
     }
 
     // Unload everything.

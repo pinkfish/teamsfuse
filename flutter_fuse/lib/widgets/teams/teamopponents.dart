@@ -5,8 +5,6 @@ import 'package:flutter_fuse/widgets/games/gamecard.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../blocs/singlegameprovider.dart';
-
 class TeamOpponents extends StatefulWidget {
   TeamOpponents(this._teamBloc);
 
@@ -153,12 +151,7 @@ class TeamOpponentsState extends State<TeamOpponents> {
                           game.seasonUid == _seasonUid &&
                           game.opponentUids.contains(uid)) {
                         newData.add(
-                          SingleGameProvider(
-                            gameUid: game.uid,
-                            builder: (BuildContext context,
-                                    SingleGameBloc gameBloc) =>
-                                GameCard(gameBloc: gameBloc),
-                          ),
+                          GameCard(gameUid: game.uid),
                         );
                       }
                     }
@@ -225,13 +218,8 @@ class TeamOpponentsState extends State<TeamOpponents> {
                         game.opponentUids.contains(uid)) {
                       if (game.seasonUid == _seasonUid) {
                         newData.add(
-                          SingleGameProvider(
+                          GameCard(
                             gameUid: game.uid,
-                            builder: (BuildContext context,
-                                    SingleGameBloc gameBloc) =>
-                                GameCard(
-                                  gameBloc: gameBloc,
-                                ),
                           ),
                         );
                       }

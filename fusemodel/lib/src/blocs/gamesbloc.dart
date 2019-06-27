@@ -113,6 +113,13 @@ class _GameEventNewDataLoaded extends GameEvent {
   _GameEventNewDataLoaded({@required this.teamUid, @required this.games});
 }
 
+class GameEventSetBoundaries extends GameEvent {
+  final DateTime start;
+  final DateTime end;
+
+  GameEventSetBoundaries({this.start, this.end});
+}
+
 class _GameEventSharedDataUpdated extends GameEvent {
   final GameSharedData sharedData;
   final String teamUid;
@@ -140,7 +147,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   GameBloc({@required this.coordinationBloc, @required this.teamBloc}) {
     if (teamBloc.currentState is TeamLoaded) {
-      _onTeamsUpdates(teamBloc.currentState.allTeamUids);
+      _onTeamsUpdates(teamBloc.currentState.allTeamUids, true);
     }
     _teamSub = teamBloc.state.listen((TeamState state) {
       if (state is TeamLoaded) {
@@ -149,7 +156,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         if (state.onlySql) {
           dispatch(_GameEventUserLoaded(teams: state.allTeamUids));
         } else {
-          _onTeamsUpdates(state.allTeamUids);
+          _onTeamsUpdates(state.allTeamUids, false);
         }
       } else {
         dispatch(_GameEventLogout());
@@ -175,11 +182,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _gameSubscriptions.clear();
   }
 
-  void _onTeamsUpdates(Set<String> uids) {
+  void _onTeamsUpdates(Set<String> uids, bool updateBoundary) {
     // Load all of this from the world of firestore.
-    Map<String, Game> newGames = new Map<String, Game>();
     for (String teamUid in uids) {
-      if (!_gameSubscriptions.containsKey(teamUid)) {
+      if (!_gameSubscriptions.containsKey(teamUid) || updateBoundary) {
+        _gameSubscriptions[teamUid]?.cancel();
         String myUid = teamUid;
         _gameSubscriptions[teamUid] = coordinationBloc.databaseUpdateModel
             .getBasicGames(start: _start, end: _end, teamUid: teamUid)
@@ -279,7 +286,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           start: _start,
           end: _end);
       coordinationBloc.dispatch(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: false));
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Game, sql: false));
     }
 
     // New shared game data.
@@ -304,6 +311,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     if (event is _GameEventLogout) {
       yield GameUninitialized();
       _cleanupStuff();
+    }
+
+    if (event is GameEventSetBoundaries) {
+      _start = event.start ?? _start;
+      _end = event.end ?? _end;
+      _onTeamsUpdates(teamBloc.currentState.allTeamUids, true);
     }
   }
 }

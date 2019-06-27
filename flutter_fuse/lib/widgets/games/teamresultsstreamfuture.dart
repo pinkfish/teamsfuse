@@ -98,7 +98,7 @@ class TeamResultsStreamFuture extends StatelessWidget {
                                     bloc: gameBloc,
                                     builder: (BuildContext context,
                                         SingleGameState state) {
-                                      return GameCard(gameBloc: gameBloc);
+                                      return GameCard(gameUid: state.game.uid);
                                     },
                                   ),
                         ),
