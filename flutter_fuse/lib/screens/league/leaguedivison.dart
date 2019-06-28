@@ -3,7 +3,6 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdivisongames.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdivisonteams.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 class LeagueDivisonScreen extends StatefulWidget {
   LeagueDivisonScreen(
@@ -49,11 +48,6 @@ class _LeagueDivisonScreenState extends State<LeagueDivisonScreen> {
     FloatingActionButton fab;
     List<Widget> actions = <Widget>[];
 
-    if (UserDatabaseData.instance.leagueOrTournments
-        .containsKey(widget.leagueUid)) {
-      if (UserDatabaseData.instance.leagueOrTournments[widget.leagueUid]
-          .isAdmin()) {}
-    }
     return new Scaffold(
       appBar: new AppBar(
         title: new LeagueOrTournamentName(

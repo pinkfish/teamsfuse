@@ -140,21 +140,29 @@ class LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      body: BlocBuilder<LoginEvent, LoginState>(
+      body: BlocListener(
+        bloc: _loginBloc,
+        listener: (BuildContext context, LoginState state) {
+          if (state is LoginSucceeded) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, "/Login/Home", (Route<dynamic> d) => false);
+          } else if (state is LoginEmailNotValidated) {
+            Navigator.popAndPushNamed(context, "/Login/Verify");
+          }
+        },
+        child: BlocBuilder<LoginEvent, LoginState>(
           bloc: _loginBloc,
           builder: (BuildContext context, LoginState state) {
             if (state is LoginFailed) {
               errorText = Messages.of(context).passwordsnotmatching;
               showInSnackBar(errorText);
             }
-            if (state is LoginSucceeded) {
-              // Navigate away!
-              return SavingOverlay(saving: true, child: _buildLoginForm());
-            } else {
-              bool loading = state is LoginValidating;
-              return SavingOverlay(saving: loading, child: _buildLoginForm());
-            }
-          }),
+
+            return SavingOverlay(
+                saving: state is LoginValidating, child: _buildLoginForm());
+          },
+        ),
+      ),
     );
   }
 }

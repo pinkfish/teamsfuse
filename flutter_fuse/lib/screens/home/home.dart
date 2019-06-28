@@ -1,21 +1,20 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:badges/badges.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
 import 'package:flutter_fuse/widgets/games/gameslistcalendar.dart';
+import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
 import 'package:flutter_fuse/widgets/invites/invitecard.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/fabdialer.dart';
 import 'package:flutter_fuse/widgets/util/fabminimenuitem.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 import 'package:timezone/timezone.dart';
-import 'package:badges/badges.dart';
-import 'package:fusemodel/blocs.dart';
-import 'dart:async';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -204,7 +203,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    _calendarEvents = new GameListCalendarState(_details, _calendarState);
+    _calendarEvents = new GameListCalendarState(
+        _details, _calendarState, BlocProvider.of<GameBloc>(context));
     _calendarEvents.loadGames(_details).then((void d) {
       setState(() {});
     });

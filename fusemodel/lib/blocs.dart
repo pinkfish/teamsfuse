@@ -1,3 +1,7 @@
+export 'src/blocs/add/addclubbloc.dart';
+export 'src/blocs/add/additemstate.dart';
+export 'src/blocs/add/addmessagebloc.dart';
+export 'src/blocs/add/addplayerbloc.dart';
 export 'src/blocs/authenticationbloc.dart';
 export 'src/blocs/clubbloc.dart';
 export 'src/blocs/coordinationbloc.dart';
@@ -14,8 +18,8 @@ export 'src/blocs/single/singlegamebloc.dart';
 export 'src/blocs/single/singleinvitebloc.dart';
 export 'src/blocs/single/singleleagueortournamentbloc.dart';
 export 'src/blocs/single/singleleagueortournamentdivisonbloc.dart';
-export 'src/blocs/single/singleleagueortournamentdivisonteamsbloc.dart';
 export 'src/blocs/single/singleleagueortournamentdivisongamesbloc.dart';
+export 'src/blocs/single/singleleagueortournamentdivisonteamsbloc.dart';
 export 'src/blocs/single/singleleagueortournamentseasonbloc.dart';
 export 'src/blocs/single/singleleagueortournamentteambloc.dart';
 export 'src/blocs/single/singleplayerbloc.dart';

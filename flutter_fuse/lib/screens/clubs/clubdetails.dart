@@ -45,7 +45,7 @@ class ClubDetailsScreenState extends State<ClubDetailsScreen> {
         ),
       );
     } else if (_tabIndex == 1) {
-      return new ClubTeams(club);
+      return new ClubTeams(_singleClubBloc);
     }
     print("$_tabIndex");
     return new ClubMembers(club);

@@ -33,12 +33,12 @@ class EditClubScreenState extends State<EditClubScreen> {
 
   void _savePressed() async {
     try {
-      Club club = _formKey.currentState.validateAndCreate();
+      ClubBuilder club = _formKey.currentState.validateAndCreate();
       File imageFile = _formKey.currentState.getImageFile();
       if (club != null) {
         _doingSave = true;
         _singleClubState
-            .dispatch(SingleClubUpdate(club: club, image: imageFile));
+            .dispatch(SingleClubUpdate(club: club.build(), image: imageFile));
       } else {
         _showInSnackBar(Messages.of(context).formerror);
       }
@@ -79,6 +79,7 @@ class EditClubScreenState extends State<EditClubScreen> {
           bloc: _singleClubState,
           builder: (BuildContext context, SingleClubState state) {
             if (state is SingleClubDeleted) {
+              Navigator.pop(context);
             } else {
               return _buildBody(state);
             }

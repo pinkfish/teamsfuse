@@ -65,6 +65,20 @@ class LoginSucceeded extends LoginState {
 }
 
 ///
+/// The login succeeded.
+///
+class LoginEmailNotValidated extends LoginState {
+  final UserData userData;
+
+  LoginEmailNotValidated({@required this.userData});
+
+  @override
+  String toString() {
+    return 'LoginEmailNotValidated{}';
+  }
+}
+
+///
 /// Validating the forgot password request
 ///
 class LoginValidatingForgotPassword extends LoginState {
@@ -95,6 +109,30 @@ class LoginForgotPasswordFailed extends LoginState {
   @override
   String toString() {
     return 'LoginForgotPasswordDone{}';
+  }
+}
+
+///
+/// The forgot password flow is done.
+///
+class LoginVerificationDone extends LoginState {
+  @override
+  String toString() {
+    return 'LoginVerificationDone{}';
+  }
+}
+
+///
+/// The forgot password attempt failed
+///
+class LoginVerificationFailed extends LoginState {
+  final Error error;
+
+  LoginVerificationFailed({@required this.error});
+
+  @override
+  String toString() {
+    return 'LoginVerificationFailed{}';
   }
 }
 
@@ -146,6 +184,36 @@ class LoginEventReset extends LoginEvent {
   @override
   String toString() {
     return 'LoginEventReset{}';
+  }
+}
+
+///
+/// Reloads the user to correct state
+///
+class LoginEventReload extends LoginEvent {
+  @override
+  String toString() {
+    return 'LoginEventReset{}';
+  }
+}
+
+///
+/// Reloads the user to correct state
+///
+class LoginEventLogout extends LoginEvent {
+  @override
+  String toString() {
+    return 'LoginEventLogout{}';
+  }
+}
+
+///
+/// Reloads the user to correct state
+///
+class LoginEventResendEmail extends LoginEvent {
+  @override
+  String toString() {
+    return 'LoginEventResendEmail{}';
   }
 }
 
@@ -217,6 +285,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
     if (event is LoginEventReset) {
       yield LoginInitial();
+    }
+    if (event is LoginEventReload) {
+      userAuth.reloadUser();
+    }
+    if (event is LoginEventLogout) {
+      userAuth.signOut();
+    }
+    if (event is LoginEventResendEmail) {
+      userAuth.sendEmailVerification();
     }
     if (event is LoginEventAttempt) {
       yield LoginValidating();

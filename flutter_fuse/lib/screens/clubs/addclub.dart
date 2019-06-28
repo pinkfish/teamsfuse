@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/clubs/editclubdetails.dart';
 import 'package:flutter_fuse/widgets/util/clubimage.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class AddClubScreen extends StatefulWidget {
@@ -17,21 +19,23 @@ class AddClubScreen extends StatefulWidget {
 class AddClubScreenState extends State<AddClubScreen> {
   final GlobalKey<EditClubDetailsFormState> _formKey =
       new GlobalKey<EditClubDetailsFormState>();
-  bool _saving = false;
   int _currentStep = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   StepState _detailsStepState = StepState.editing;
   StepState _createStepStage = StepState.disabled;
-  ClubBuilder _clubToAdd;
+  Club _clubToAdd;
+  AddClubBloc clubBloc;
   File _imageFileToAdd;
 
   @override
   void initState() {
     super.initState();
-    _clubToAdd = new ClubBuilder();
-    _clubToAdd.name = "";
-    _clubToAdd.arriveBeforeGame = 0;
-    _clubToAdd.trackAttendence = Tristate.Unset;
+    clubBloc = AddClubBloc(
+        coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
+    _clubToAdd = new Club((b) => b
+      ..name = ""
+      ..arriveBeforeGame = 0
+      ..trackAttendence = Tristate.Unset);
   }
 
   void _showInSnackBar(String value) {
@@ -40,25 +44,11 @@ class AddClubScreenState extends State<AddClubScreen> {
   }
 
   void _savePressed() async {
-    setState(() {
-      _saving = true;
-    });
-    try {
-      if (_clubToAdd != null) {
-        if (_imageFileToAdd != null) {
-          Uri uri = await UserDatabaseData.instance.updateModel
-              .updateClubImage(_clubToAdd, _imageFileToAdd);
-          _clubToAdd.photoUrl = uri.toString();
-        }
-        await _clubToAdd.updateFirestore(includeMembers: true);
-        Navigator.pop(context);
-      } else {
-        _showInSnackBar(Messages.of(context).formerror);
-      }
-    } finally {
-      setState(() {
-        _saving = false;
-      });
+    if (_clubToAdd != null) {
+      clubBloc.dispatch(
+          AddClubEventCommit(club: _clubToAdd, imageFile: _imageFileToAdd));
+    } else {
+      _showInSnackBar(Messages.of(context).formerror);
     }
   }
 
@@ -80,7 +70,7 @@ class AddClubScreenState extends State<AddClubScreen> {
           _showInSnackBar(Messages.of(context).formerror);
           return false;
         }
-        _clubToAdd = _formKey.currentState.validateAndCreate();
+        _clubToAdd = _formKey.currentState.validateAndCreate().build();
         if (_clubToAdd == null) {
           setState(() {
             _detailsStepState = StepState.error;
@@ -152,7 +142,7 @@ class AddClubScreenState extends State<AddClubScreen> {
             leading: const Icon(Icons.check),
             title: new Text(Messages.of(context)
                 .trackattendence(_clubToAdd.trackAttendence)),
-          )
+          ),
         ],
       ),
     );
@@ -160,59 +150,72 @@ class AddClubScreenState extends State<AddClubScreen> {
 
   Widget _buildBody() {
     Messages messages = Messages.of(context);
-    return new SavingOverlay(
-      saving: _saving,
-      child: new Stepper(
-        type: StepperType.horizontal,
-        currentStep: _currentStep,
-        onStepContinue: () {
-          _onStepperContinue(context);
-        },
-        onStepCancel: () {
-          // Go back
-          Navigator.of(context).pop();
-        },
-        onStepTapped: (int step) {
-          _onStepTapped(step);
-        },
-        steps: <Step>[
-          new Step(
-            title: new Text(messages.details),
-            state: _detailsStepState,
-            isActive: true,
-            content: new Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new EditClubDetailsForm(_clubToAdd, _formKey),
+    return BlocBuilder(
+      bloc: clubBloc,
+      builder: (BuildContext context, AddItemState state) => SavingOverlay(
+            saving: state is AddItemSaving,
+            child: new Stepper(
+              type: StepperType.horizontal,
+              currentStep: _currentStep,
+              onStepContinue: () {
+                _onStepperContinue(context);
+              },
+              onStepCancel: () {
+                // Go back
+                Navigator.of(context).pop();
+              },
+              onStepTapped: (int step) {
+                _onStepTapped(step);
+              },
+              steps: <Step>[
+                new Step(
+                  title: new Text(messages.details),
+                  state: _detailsStepState,
+                  isActive: true,
+                  content: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      new EditClubDetailsForm(_clubToAdd, _formKey),
+                    ],
+                  ),
+                ),
+                new Step(
+                  title: new Text(messages.create),
+                  state: _createStepStage,
+                  isActive: true,
+                  content: _buildSummary(),
+                ),
               ],
             ),
           ),
-          new Step(
-            title: new Text(messages.create),
-            state: _createStepStage,
-            isActive: true,
-            content: _buildSummary(),
-          ),
-        ],
-      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+    return BlocListener(
+      bloc: clubBloc,
+      listener: (BuildContext context, AddItemState state) {
+        if (state is AddItemDone) {
+          Navigator.pop(context);
+        } else if (state is AddItemSaveFailed) {
+          _showInSnackBar(Messages.of(context).formerror);
+        }
+      },
+      child: Scaffold(
+        appBar: new AppBar(
+          title: new Text(Messages.of(context).title),
+        ),
+        floatingActionButton: _currentStep == 1
+            ? new FloatingActionButton(
+                onPressed: () => _savePressed(),
+                child: const Icon(Icons.check),
+              )
+            : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        body: _buildBody(),
       ),
-      floatingActionButton: _currentStep == 1
-          ? new FloatingActionButton(
-              onPressed: () => _savePressed(),
-              child: const Icon(Icons.check),
-            )
-          : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: _buildBody(),
     );
   }
 }

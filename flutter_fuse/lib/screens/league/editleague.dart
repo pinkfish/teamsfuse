@@ -1,10 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamenteditform.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../widgets/blocs/singleleagueortournamentprovider.dart';
 
 class EditLeagueScreen extends StatefulWidget {
   EditLeagueScreen(this.leagueOrTournamentUid);
@@ -22,20 +26,16 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
   final GlobalKey<LeagueOrTournamentEditFormState> _formState =
       new GlobalKey<LeagueOrTournamentEditFormState>();
 
-  LeagueOrTournament _league;
   bool _saving = false;
 
   @override
   void initState() {
     super.initState();
-    _league = new LeagueOrTournament.copy(UserDatabaseData
-        .instance.leagueOrTournments[widget.leagueOrTournamentUid]);
   }
 
   @override
   void dispose() {
     super.dispose();
-    _league.dispose();
   }
 
   void _showInSnackBar(String value) {
@@ -43,31 +43,28 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
         .showSnackBar(new SnackBar(content: new Text(value)));
   }
 
-  void _savePressed(BuildContext context) async {
-    _saving = true;
-    try {
-      if (!_formState.currentState.validate()) {
-        _formState.currentState.autovalidate = true;
-        setState(() {});
-        _showInSnackBar(Messages.of(context).formerror);
-        return;
-      }
-      _formState.currentState.save();
-      LeagueOrTournament league =
-          _formState.currentState.finalLeagueOrTournamentResult;
+  void _savePressed(
+      BuildContext context, SingleLeagueOrTournamentBloc bloc) async {
+    if (!_formState.currentState.validate()) {
+      _formState.currentState.autovalidate = true;
+      setState(() {});
+      _showInSnackBar(Messages.of(context).formerror);
+      return;
+    }
+    _formState.currentState.save();
+    LeagueOrTournamentBuilder league =
+        _formState.currentState.finalLeagueOrTournamentResult;
 
-      if (league != null) {
-        File imageFile = _formState.currentState.imageFile;
-        if (imageFile != null) {
-          await league.updateImage(imageFile);
-        }
-        await league.updateFirestore();
-        Navigator.of(context).pop(widget.leagueOrTournamentUid);
-      } else {
-        _showInSnackBar(Messages.of(context).formerror);
+    if (league != null) {
+      File imageFile = _formState.currentState.imageFile;
+      _saving = true;
+      bloc.dispatch(SingleLeagueOrTournamentUpdate(
+          leagueOrTournament: league.build(), includeMembers: false));
+      if (imageFile != null) {
+        bloc.dispatch(SingleLeagueOrTournamentUpdateImage(image: imageFile));
       }
-    } finally {
-      _saving = false;
+    } else {
+      _showInSnackBar(Messages.of(context).formerror);
     }
   }
 
@@ -75,32 +72,54 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
 
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(messages.title),
-      ),
-      body: new SavingOverlay(
-        saving: _saving,
-        child: new Container(
-          padding: new EdgeInsets.all(5.0),
-          child: new SavingOverlay(
-            saving: _saving,
-            child: Scrollbar(
-              child: SingleChildScrollView(
-                child: new LeagueOrTournamentEditForm(
-                  leagueOrTournament: _league,
-                  key: _formState,
-                ),
+    return SingleLeagueOrTournamentProvider(
+      leagueOrTournamentUid: widget.leagueOrTournamentUid,
+      builder: (BuildContext context, SingleLeagueOrTournamentBloc bloc) =>
+          Scaffold(
+            key: _scaffoldKey,
+            appBar: new AppBar(
+              title: new Text(messages.title),
+            ),
+            body: BlocListener(
+              bloc: bloc,
+              listener:
+                  (BuildContext context, SingleLeagueOrTournamentState state) {
+                if (state is SingleLeagueOrTournamentDeleted) {
+                  Navigator.pop(context);
+                } else if (_saving && state is SingleLeagueOrTournamentLoaded) {
+                  Navigator.pop(context);
+                }
+              },
+              child: BlocBuilder(
+                bloc: bloc,
+                builder: (BuildContext context,
+                    SingleLeagueOrTournamentState state) {
+                  return SavingOverlay(
+                    saving: state is SingleLeagueOrTournamentSaving,
+                    child: new Container(
+                      padding: new EdgeInsets.all(5.0),
+                      child: new SavingOverlay(
+                        saving: state is SingleLeagueOrTournamentSaving,
+                        child: Scrollbar(
+                          child: SingleChildScrollView(
+                            child: new LeagueOrTournamentEditForm(
+                              leagueOrTournament:
+                                  bloc.currentState.leagueOrTournament,
+                              key: _formState,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
+            floatingActionButton: new FloatingActionButton(
+              onPressed: () => _savePressed(context, bloc),
+              child: const Icon(Icons.check),
+            ),
           ),
-        ),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () => _savePressed(context),
-        child: const Icon(Icons.check),
-      ),
     );
   }
 }

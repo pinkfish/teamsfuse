@@ -1159,9 +1159,11 @@ class Messages {
   String resultwin(GameResultSharedDetails result) {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
-      finalScore = new GameResultPerPeriod(
-          period: GamePeriod.regulation,
-          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+      finalScore = GameResultPerPeriod((b) => b
+        ..period = GamePeriod.regulation
+        ..score = (GameScoreBuilder()
+          ..ptsFor = 0
+          ..ptsAgainst = 0));
     }
     if (result.overtimeResult != null) {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
@@ -1197,9 +1199,11 @@ class Messages {
   String resultloss(GameResultSharedDetails result) {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
-      finalScore = new GameResultPerPeriod(
-          period: new GamePeriod(GamePeriodType.Regulation),
-          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+      finalScore = GameResultPerPeriod((b) => b
+        ..period = GamePeriod.regulation
+        ..score = (GameScoreBuilder()
+          ..ptsFor = 0
+          ..ptsAgainst = 0));
     }
     if (result.overtimeResult != null) {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
@@ -1235,9 +1239,11 @@ class Messages {
   String resulttie(GameResultSharedDetails result) {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
-      finalScore = new GameResultPerPeriod(
-          period: new GamePeriod(GamePeriodType.Regulation),
-          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+      finalScore = GameResultPerPeriod((b) => b
+        ..period = GamePeriod.regulation
+        ..score = (GameScoreBuilder()
+          ..ptsFor = 0
+          ..ptsAgainst = 0));
     }
     if (result.overtimeResult != null) {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
@@ -1275,9 +1281,11 @@ class Messages {
     if (result.regulationResult != null) {
       finalScore = result.regulationResult;
     } else {
-      finalScore = new GameResultPerPeriod(
-          period: new GamePeriod(GamePeriodType.Regulation),
-          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+      finalScore = GameResultPerPeriod((b) => b
+        ..period = GamePeriod.regulation
+        ..score = (GameScoreBuilder()
+          ..ptsFor = 0
+          ..ptsAgainst = 0));
     }
     if (result.overtimeResult != null) {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
@@ -1377,9 +1385,11 @@ class Messages {
   String cardresultinprogress(GameResultSharedDetails result) {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
-      finalScore = new GameResultPerPeriod(
-          period: GamePeriod.regulation,
-          score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+      finalScore = GameResultPerPeriod((b) => b
+        ..period = GamePeriod.regulation
+        ..score = (GameScoreBuilder()
+          ..ptsFor = 0
+          ..ptsAgainst = 0));
     }
     if (result.overtimeResult != null) {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
