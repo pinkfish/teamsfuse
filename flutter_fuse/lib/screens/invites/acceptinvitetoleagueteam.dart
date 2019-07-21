@@ -11,6 +11,7 @@ import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../widgets/blocs/singleteamprovider.dart';
 import 'dialog/deleteinvite.dart';
 
 class AcceptInviteToLeagueTeamScreen extends StatefulWidget {
@@ -126,7 +127,7 @@ class _AcceptInviteToLeagueTeamScreenState
     );
   }
 
-  Widget _buildSeasonSection(InviteToLeagueTeam invite) {
+  Widget _buildSeasonSection(InviteToLeagueTeam invite, SingleTeamBloc bloc) {
     if (_currentTeamUid == null) {
       return SizedBox(
         height: 0.0,
@@ -142,8 +143,8 @@ class _AcceptInviteToLeagueTeamScreenState
       formChildren = SeasonFormField(
         initialValue: _seasonSelected,
         includeNone: true,
-        includeNew: true,
-        teamUid: _currentTeamUid,
+        includeNew: true, teamBloc: bloc,
+        // teamUid: _currentTeamUid,
         enabled: _currentTeamUid != null,
         onFieldSubmitted: (String str) => setState(() => _seasonSelected = str),
         onSaved: (String str) => _seasonSelected = str,
@@ -164,8 +165,8 @@ class _AcceptInviteToLeagueTeamScreenState
 
     ThemeData theme = Theme.of(context);
 
-    return BlocProvider<SingleInviteBloc>(
-      bloc: _singleInviteBloc,
+    return BlocProvider<SingleInviteBloc>.value(
+      value: _singleInviteBloc,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: new AppBar(
@@ -220,7 +221,12 @@ class _AcceptInviteToLeagueTeamScreenState
                               onChanged: (String str) =>
                                   setState(() => _currentTeamUid = str),
                             ),
-                            _buildSeasonSection(inviteToLeagueTeam),
+                            SingleTeamProvider(
+                              teamUid: _currentTeamUid,
+                              builder: (BuildContext context,
+                                      SingleTeamBloc bloc) =>
+                                  _buildSeasonSection(inviteToLeagueTeam, bloc),
+                            ),
                             ButtonBar(
                               children: <Widget>[
                                 new RaisedButton(

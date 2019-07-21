@@ -12,46 +12,23 @@ typedef SingleGameProviderBuilder = Widget Function(
  * Create a provider that will insert the singe game bloc into the tree if the
  * bloc is not current provided or is different than the gameuid.
  */
-class SingleGameProvider extends StatefulWidget {
+class SingleGameProvider extends StatelessWidget {
   final String gameUid;
   final SingleGameProviderBuilder builder;
 
   SingleGameProvider({@required this.gameUid, @required this.builder});
 
   @override
-  State createState() => _SingleGameProviderState();
-}
-
-class _SingleGameProviderState extends State<SingleGameProvider> {
-  SingleGameBloc singleGameBloc;
-  bool disposeIt = false;
-
-  void initState() {
-    super.initState();
-    singleGameBloc = BlocProvider.of<SingleGameBloc>(context);
-    if (singleGameBloc == null || singleGameBloc.gameUid != widget.gameUid) {
-      singleGameBloc = SingleGameBloc(
-          gameBloc: BlocProvider.of<GameBloc>(context),
-          gameUid: widget.gameUid);
-      disposeIt = true;
-    }
-  }
-
-  void dispose() {
-    super.dispose();
-    if (disposeIt) {
-      singleGameBloc.dispose();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (disposeIt) {
+    SingleGameBloc singleGameBloc = BlocProvider.of<SingleGameBloc>(context);
+    if (singleGameBloc == null || singleGameBloc.gameUid != gameUid) {
+      singleGameBloc = SingleGameBloc(
+          gameBloc: BlocProvider.of<GameBloc>(context), gameUid: gameUid);
       return BlocProvider(
-        bloc: singleGameBloc,
-        child: widget.builder(context, singleGameBloc),
+        builder: (BuildContext context) => singleGameBloc,
+        child: builder(context, singleGameBloc),
       );
     }
-    return widget.builder(context, singleGameBloc);
+    return builder(context, singleGameBloc);
   }
 }

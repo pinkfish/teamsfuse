@@ -10,7 +10,7 @@ typedef SingleLeagueOrTournamentDivisonProviderBuilder = Widget Function(
  * Create a provider that will insert the singe leagueOrTournamentTeam bloc into the tree if the
  * bloc is not current provided or is different than the leagueOrTournamentTeamuid.
  */
-class SingleLeagueOrTournamentDivisonProvider extends StatefulWidget {
+class SingleLeagueOrTournamentDivisonProvider extends StatelessWidget {
   final String leagueOrTournamentDivisonUid;
   final SingleLeagueOrTournamentSeasonBloc singleLeagueOrTournamentSeasonBloc;
   final SingleLeagueOrTournamentDivisonProviderBuilder builder;
@@ -21,45 +21,21 @@ class SingleLeagueOrTournamentDivisonProvider extends StatefulWidget {
       @required this.builder});
 
   @override
-  State createState() => _SingleLeagueOrTournamentDivisonProviderState();
-}
-
-class _SingleLeagueOrTournamentDivisonProviderState
-    extends State<SingleLeagueOrTournamentDivisonProvider> {
-  SingleLeagueOrTournamentDivisonBloc singleLeagueOrTournamentDivisonBloc;
-  bool disposeIt = false;
-
-  void initState() {
-    super.initState();
-    singleLeagueOrTournamentDivisonBloc =
+  Widget build(BuildContext context) {
+    var singleLeagueOrTournamentDivisonBloc =
         BlocProvider.of<SingleLeagueOrTournamentDivisonBloc>(context);
     if (singleLeagueOrTournamentDivisonBloc == null ||
         singleLeagueOrTournamentDivisonBloc.leagueDivisonUid !=
-            widget.leagueOrTournamentDivisonUid) {
+            leagueOrTournamentDivisonUid) {
       singleLeagueOrTournamentDivisonBloc = SingleLeagueOrTournamentDivisonBloc(
           singleLeagueOrTournamentSeasonBloc:
-              widget.singleLeagueOrTournamentSeasonBloc,
-          leagueDivisonUid: widget.leagueOrTournamentDivisonUid);
-
-      disposeIt = true;
-    }
-  }
-
-  void dispose() {
-    super.dispose();
-    if (disposeIt) {
-      singleLeagueOrTournamentDivisonBloc.dispose();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (disposeIt) {
+              singleLeagueOrTournamentSeasonBloc,
+          leagueDivisonUid: leagueOrTournamentDivisonUid);
       return BlocProvider(
-        bloc: singleLeagueOrTournamentDivisonBloc,
-        child: widget.builder(context, singleLeagueOrTournamentDivisonBloc),
+        builder: (BuildContext context) => singleLeagueOrTournamentDivisonBloc,
+        child: builder(context, singleLeagueOrTournamentDivisonBloc),
       );
     }
-    return widget.builder(context, singleLeagueOrTournamentDivisonBloc);
+    return builder(context, singleLeagueOrTournamentDivisonBloc);
   }
 }

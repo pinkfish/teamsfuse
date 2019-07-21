@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/screens/home/home.dart';
 import 'package:flutter_fuse/screens/login/verifyemail.dart';
+import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/notifications.dart';
 import 'package:fusemodel/blocs.dart';
@@ -65,11 +66,17 @@ class SplashScreen extends StatelessWidget {
           return _loadingScreen(context);
         }
         if (state is AuthenticationLoggedIn) {
-          AuthenticationLoggedIn logIn = state;
           Notifications.instance.initForNotification();
           Navigator.pushNamedAndRemoveUntil(
               context, '/Home', ModalRoute.withName('/Home'));
-
+          Analytics.analytics.setUserId(state.user.uid);
+          if (Analytics.instance.debugMode) {
+            Analytics.analytics
+                .setUserProperty(name: "developer", value: "true");
+          } else {
+            Analytics.analytics
+                .setUserProperty(name: "developer", value: "false");
+          }
           return new HomeScreen();
         }
         if (state is AuthenticationLoggedInUnverified) {

@@ -12,7 +12,7 @@ typedef SingleSharedGameProviderBuilder = Widget Function(
  * Create a provider that will insert the singe sharedGame bloc into the tree if the
  * bloc is not current provided or is different than the sharedGameuid.
  */
-class SingleSharedGameProvider extends StatefulWidget {
+class SingleSharedGameProvider extends StatelessWidget {
   final String sharedGameUid;
   final SingleSharedGameProviderBuilder builder;
 
@@ -20,40 +20,17 @@ class SingleSharedGameProvider extends StatefulWidget {
       {@required this.sharedGameUid, @required this.builder});
 
   @override
-  State createState() => _SingleSharedGameProviderState();
-}
-
-class _SingleSharedGameProviderState extends State<SingleSharedGameProvider> {
-  SingleSharedGameBloc singleSharedGameBloc;
-  bool disposeIt = false;
-
-  void initState() {
-    super.initState();
-    singleSharedGameBloc = BlocProvider.of<SingleSharedGameBloc>(context);
-    if (singleSharedGameBloc == null ||
-        singleSharedGameBloc.sharedGameUid != widget.sharedGameUid) {
-      singleSharedGameBloc = SingleSharedGameBloc(
-          gameBloc: BlocProvider.of<GameBloc>(context),
-          gameUid: widget.sharedGameUid);
-      disposeIt = true;
-    }
-  }
-
-  void dispose() {
-    super.dispose();
-    if (disposeIt) {
-      singleSharedGameBloc.dispose();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (disposeIt) {
+    var singleSharedGameBloc = BlocProvider.of<SingleSharedGameBloc>(context);
+    if (singleSharedGameBloc == null ||
+        singleSharedGameBloc.sharedGameUid != sharedGameUid) {
+      singleSharedGameBloc = SingleSharedGameBloc(
+          gameBloc: BlocProvider.of<GameBloc>(context), gameUid: sharedGameUid);
       return BlocProvider(
-        bloc: singleSharedGameBloc,
-        child: widget.builder(context, singleSharedGameBloc),
+        builder: (BuildContext context) => singleSharedGameBloc,
+        child: builder(context, singleSharedGameBloc),
       );
     }
-    return widget.builder(context, singleSharedGameBloc);
+    return builder(context, singleSharedGameBloc);
   }
 }

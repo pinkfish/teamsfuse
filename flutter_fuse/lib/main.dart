@@ -11,7 +11,6 @@ import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/appconfiguration.dart';
 import 'package:flutter_fuse/services/firestore/firestore.dart' as fs;
 import 'package:flutter_fuse/services/loggingdata.dart';
-import 'package:flutter_fuse/services/notifications.dart';
 import 'package:flutter_fuse/services/sqldata.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:fusemodel/firestore.dart';
@@ -64,7 +63,6 @@ void main() async {
     }).catchError((dynamic error) {
       print('Got error $error');
     });
-    Notifications.instance.init();
   });
 
   Analytics.analytics.logAppOpen();

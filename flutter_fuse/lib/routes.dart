@@ -4,8 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/screens/login/splashscreen.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/approuter.dart';
+import 'package:flutter_fuse/services/firestore/firestore.dart';
 import 'package:flutter_fuse/services/loggingdata.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/sqldata.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
@@ -42,7 +44,7 @@ class Routes {
     _authenticationBloc = AuthenticationBloc(userAuth: userAuthImpl);
     _loginBloc = new LoginBloc(userAuth: userAuthImpl);
     DatabaseUpdateModel databaseUpdateModel =
-        DatabaseUpdateModelImpl(wrapper, SqlData.instance);
+        DatabaseUpdateModelImpl(new Firestore(), SqlData.instance);
     _coordinationBloc = CoordinationBloc(
         persistentData: persistentData,
         authenticationBloc: _authenticationBloc,
@@ -69,20 +71,26 @@ class Routes {
         FilteredGameBloc(gameBloc: _gameBloc, teamBloc: _teamBloc);
     _loadedStateBloc = LoadedStateBloc(coordinationBloc: _coordinationBloc);
 
-    _authenticationBloc.dispatch(AppStarted());
-    runApp(BlocProviderTree(blocProviders: [
-      BlocProvider<AuthenticationBloc>(bloc: _authenticationBloc),
-      BlocProvider<CoordinationBloc>(bloc: _coordinationBloc),
-      BlocProvider<LoginBloc>(bloc: _loginBloc),
-      BlocProvider<InviteBloc>(bloc: _inviteBloc),
-      BlocProvider<TeamBloc>(bloc: _teamBloc),
-      BlocProvider<MessagesBloc>(bloc: _messagesBloc),
-      BlocProvider<LeagueOrTournamentBloc>(bloc: _leagueOrTournamentBloc),
-      BlocProvider<ClubBloc>(bloc: _clubBloc),
-      BlocProvider<GameBloc>(bloc: _gameBloc),
-      BlocProvider<FilteredGameBloc>(bloc: _filteredGameBloc),
-      BlocProvider<PlayerBloc>(bloc: _playerBloc),
-      BlocProvider<LoadedStateBloc>(bloc: _loadedStateBloc),
+    _authenticationBloc.dispatch(AuthenticationAppStarted());
+    runApp(MultiBlocProvider(providers: [
+      BlocProvider<AuthenticationBloc>(
+          builder: (BuildContext context) => _authenticationBloc),
+      BlocProvider<CoordinationBloc>(
+          builder: (BuildContext context) => _coordinationBloc),
+      BlocProvider<LoginBloc>(builder: (BuildContext context) => _loginBloc),
+      BlocProvider<InviteBloc>(builder: (BuildContext context) => _inviteBloc),
+      BlocProvider<TeamBloc>(builder: (BuildContext context) => _teamBloc),
+      BlocProvider<MessagesBloc>(
+          builder: (BuildContext context) => _messagesBloc),
+      BlocProvider<LeagueOrTournamentBloc>(
+          builder: (BuildContext context) => _leagueOrTournamentBloc),
+      BlocProvider<ClubBloc>(builder: (BuildContext context) => _clubBloc),
+      BlocProvider<GameBloc>(builder: (BuildContext context) => _gameBloc),
+      BlocProvider<FilteredGameBloc>(
+          builder: (BuildContext context) => _filteredGameBloc),
+      BlocProvider<PlayerBloc>(builder: (BuildContext context) => _playerBloc),
+      BlocProvider<LoadedStateBloc>(
+          builder: (BuildContext context) => _loadedStateBloc),
     ], child: app));
   }
 
@@ -125,12 +133,7 @@ class Routes {
     if (user != null) {
       UserDatabaseData.load(user.uid, user.email,
           UserDatabaseData.instance.userAuth.getProfile(user.uid));
-      Analytics.analytics.setUserId(user.uid);
-      if (Analytics.instance.debugMode) {
-        Analytics.analytics.setUserProperty(name: "developer", value: "true");
-      } else {
-        Analytics.analytics.setUserProperty(name: "developer", value: "false");
-      }
+
     } else {
       UserDatabaseData.clear();
     }

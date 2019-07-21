@@ -10,7 +10,7 @@ typedef SingleLeagueOrTournamentProviderBuilder = Widget Function(
  * Create a provider that will insert the singe leagueOrTournament bloc into the tree if the
  * bloc is not current provided or is different than the leagueOrTournamentuid.
  */
-class SingleLeagueOrTournamentProvider extends StatefulWidget {
+class SingleLeagueOrTournamentProvider extends StatelessWidget {
   final String leagueOrTournamentUid;
   final SingleLeagueOrTournamentProviderBuilder builder;
 
@@ -18,44 +18,20 @@ class SingleLeagueOrTournamentProvider extends StatefulWidget {
       {@required this.leagueOrTournamentUid, @required this.builder});
 
   @override
-  State createState() => _SingleLeagueOrTournamentProviderState();
-}
-
-class _SingleLeagueOrTournamentProviderState
-    extends State<SingleLeagueOrTournamentProvider> {
-  SingleLeagueOrTournamentBloc singleLeagueOrTournamentBloc;
-  bool disposeIt = false;
-
-  void initState() {
-    super.initState();
-    singleLeagueOrTournamentBloc =
+  Widget build(BuildContext context) {
+    var singleLeagueOrTournamentBloc =
         BlocProvider.of<SingleLeagueOrTournamentBloc>(context);
     if (singleLeagueOrTournamentBloc == null ||
-        singleLeagueOrTournamentBloc.leagueUid !=
-            widget.leagueOrTournamentUid) {
+        singleLeagueOrTournamentBloc.leagueUid != leagueOrTournamentUid) {
       singleLeagueOrTournamentBloc = SingleLeagueOrTournamentBloc(
           leagueOrTournamentBloc:
               BlocProvider.of<LeagueOrTournamentBloc>(context),
-          leagueUid: widget.leagueOrTournamentUid);
-      disposeIt = true;
-    }
-  }
-
-  void dispose() {
-    super.dispose();
-    if (disposeIt) {
-      singleLeagueOrTournamentBloc.dispose();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (disposeIt) {
+          leagueUid: leagueOrTournamentUid);
       return BlocProvider(
-        bloc: singleLeagueOrTournamentBloc,
-        child: widget.builder(context, singleLeagueOrTournamentBloc),
+        builder: (BuildContext context) => singleLeagueOrTournamentBloc,
+        child: builder(context, singleLeagueOrTournamentBloc),
       );
     }
-    return widget.builder(context, singleLeagueOrTournamentBloc);
+    return builder(context, singleLeagueOrTournamentBloc);
   }
 }

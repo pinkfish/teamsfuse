@@ -12,7 +12,7 @@ typedef SingleTeamSeasonProviderBuilder = Widget Function(
  * Create a provider that will insert the singe teamSeason bloc into the tree if the
  * bloc is not current provided or is different than the teamSeasonuid.
  */
-class SingleTeamSeasonProvider extends StatefulWidget {
+class SingleTeamSeasonProvider extends StatelessWidget {
   final String seasonUid;
   final String teamUid;
   final SingleTeamSeasonProviderBuilder builder;
@@ -23,41 +23,19 @@ class SingleTeamSeasonProvider extends StatefulWidget {
       @required this.builder});
 
   @override
-  State createState() => _SingleTeamSeasonProviderState();
-}
-
-class _SingleTeamSeasonProviderState extends State<SingleTeamSeasonProvider> {
-  SingleTeamSeasonBloc singleTeamSeasonBloc;
-  bool disposeIt = false;
-
-  void initState() {
-    super.initState();
-    singleTeamSeasonBloc = BlocProvider.of<SingleTeamSeasonBloc>(context);
+  Widget build(BuildContext context) {
+    var singleTeamSeasonBloc = BlocProvider.of<SingleTeamSeasonBloc>(context);
     if (singleTeamSeasonBloc == null ||
-        singleTeamSeasonBloc.seasonUid != widget.seasonUid) {
+        singleTeamSeasonBloc.seasonUid != seasonUid) {
       singleTeamSeasonBloc = SingleTeamSeasonBloc(
           teamBloc: BlocProvider.of<TeamBloc>(context),
-          teamUid: widget.teamUid,
-          seasonUid: widget.seasonUid);
-      disposeIt = true;
-    }
-  }
-
-  void dispose() {
-    super.dispose();
-    if (disposeIt) {
-      singleTeamSeasonBloc.dispose();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (disposeIt) {
+          teamUid: teamUid,
+          seasonUid: seasonUid);
       return BlocProvider(
-        bloc: singleTeamSeasonBloc,
-        child: widget.builder(context, singleTeamSeasonBloc),
+        builder: (BuildContext context) => singleTeamSeasonBloc,
+        child: builder(context, singleTeamSeasonBloc),
       );
     }
-    return widget.builder(context, singleTeamSeasonBloc);
+    return builder(context, singleTeamSeasonBloc);
   }
 }

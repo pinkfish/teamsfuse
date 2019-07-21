@@ -66,8 +66,8 @@ class _AcceptInviteToPlayerScreenState
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
 
-    return BlocProvider<SingleInviteBloc>(
-      bloc: _singleInviteBloc,
+    return BlocProvider<SingleInviteBloc>.value(
+      value: _singleInviteBloc,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: new AppBar(

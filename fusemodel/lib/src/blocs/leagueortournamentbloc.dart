@@ -8,29 +8,30 @@ import 'package:meta/meta.dart';
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
 
+enum AddingState { None, Adding, Failed, Success }
+
 ///
 /// Basic state for all the data in this system.
 ///
 class LeagueOrTournamentState extends Equatable {
   final Map<String, LeagueOrTournament> leagueOrTournaments;
   final bool onlySql;
+  final AddingState adding;
 
   LeagueOrTournamentState(
-      {@required this.leagueOrTournaments, @required this.onlySql});
+      {@required this.leagueOrTournaments,
+      @required this.onlySql,
+      @required this.adding});
 
   LeagueOrTournamentLoaded rebuild(
       {Map<String, LeagueOrTournament> leagueOrTournamentsParam,
       @required bool onlySqlParam,
-      Map<String, Iterable<LeagueOrTournamentSeason>>
-          leagueOrTournamentSeasonsParam,
-      Map<String, Iterable<LeagueOrTournamentDivison>>
-          leagueOrTournamentDivisionsParam,
-      Map<String, Iterable<LeagueOrTournamentTeam>>
-          leagueOrTournamentTeamsParam}) {
+      AddingState adding}) {
     return LeagueOrTournamentLoaded(
         onlySql: onlySqlParam ?? onlySql,
         leagueOrTournaments:
-            leagueOrTournamentsParam ?? this.leagueOrTournaments);
+            leagueOrTournamentsParam ?? this.leagueOrTournaments,
+        adding: adding ?? false);
   }
 }
 
@@ -39,7 +40,7 @@ class LeagueOrTournamentState extends Equatable {
 ///
 class LeagueOrTournamentUninitialized extends LeagueOrTournamentState {
   LeagueOrTournamentUninitialized()
-      : super(leagueOrTournaments: {}, onlySql: true);
+      : super(leagueOrTournaments: {}, onlySql: true, adding: AddingState.None);
 
   @override
   String toString() {
@@ -54,11 +55,11 @@ class LeagueOrTournamentLoaded extends LeagueOrTournamentState {
   LeagueOrTournamentLoaded(
       {@required Map<String, LeagueOrTournament> leagueOrTournaments,
       @required bool onlySql,
-      Map<String, Iterable<LeagueOrTournamentSeason>> leagueOrTournamentSeasons,
-      Map<String, Iterable<LeagueOrTournamentDivison>>
-          leagueOrTournamentDivisions,
-      Map<String, Iterable<LeagueOrTournamentTeam>> leagueOrTournamentTeams})
-      : super(leagueOrTournaments: leagueOrTournaments, onlySql: onlySql);
+      AddingState adding})
+      : super(
+            leagueOrTournaments: leagueOrTournaments,
+            onlySql: onlySql,
+            adding: adding);
 
   @override
   String toString() {
@@ -85,6 +86,28 @@ class _LeagueOrTournamentEventNewDataLoaded extends LeagueOrTournamentEvent {
   final Map<String, LeagueOrTournament> leagueOrTournament;
 
   _LeagueOrTournamentEventNewDataLoaded({@required this.leagueOrTournament});
+}
+
+class _LeagueOrTournamentEventAddFailed extends LeagueOrTournamentEvent {
+  final AddingState adding;
+
+  _LeagueOrTournamentEventAddFailed({@required this.adding});
+}
+
+///
+/// Adds a league or a tournament to the system.
+///
+class LeagueOrTournamentEventAddLeague extends LeagueOrTournamentEvent {
+  LeagueOrTournamentBuilder league;
+
+  LeagueOrTournamentEventAddLeague({this.league});
+}
+
+///
+/// Resets the adding state of the bloc.
+///
+class LeagueOrTournamentEventReset extends LeagueOrTournamentEvent {
+  LeagueOrTournamentEventReset();
 }
 
 class _LeagueOrTournamentEventFirestore extends LeagueOrTournamentEvent {
@@ -188,7 +211,9 @@ class LeagueOrTournamentBloc
           'End LeagueOrTournament ${coordinationBloc.start.difference(new DateTime.now())} ${newLeague.length}');
       leagueTrace.stop();
       yield currentState.rebuild(
-          onlySqlParam: true, leagueOrTournamentsParam: newLeague);
+          adding: currentState.adding,
+          onlySqlParam: true,
+          leagueOrTournamentsParam: newLeague);
       coordinationBloc.dispatch(CoordinationEventLoadedData(
           loaded: BlocsToLoad.LeagueOrTournament, sql: true));
     }
@@ -204,9 +229,41 @@ class LeagueOrTournamentBloc
     if (event is _LeagueOrTournamentEventNewDataLoaded) {
       yield currentState.rebuild(
           leagueOrTournamentsParam: event.leagueOrTournament,
+          adding: currentState.adding,
           onlySqlParam: false);
       coordinationBloc.dispatch(CoordinationEventLoadedData(
           loaded: BlocsToLoad.LeagueOrTournament, sql: false));
+    }
+
+    // New data from above.  Mark ourselves as done.
+    if (event is _LeagueOrTournamentEventAddFailed) {
+      yield currentState.rebuild(
+          leagueOrTournamentsParam: currentState.leagueOrTournaments,
+          adding: event.adding,
+          onlySqlParam: false);
+    }
+
+    if (event is LeagueOrTournamentEventAddLeague) {
+      dispatch(_LeagueOrTournamentEventAddFailed(adding: AddingState.Success));
+      yield currentState.rebuild(
+          leagueOrTournamentsParam: currentState.leagueOrTournaments,
+          adding: AddingState.Adding,
+          onlySqlParam: currentState.onlySql);
+      coordinationBloc.databaseUpdateModel
+          .updateLeague(event.league.build())
+          .then((String uid) {
+        dispatch(
+            _LeagueOrTournamentEventAddFailed(adding: AddingState.Success));
+      }, onError: (e, stacktrace) {
+        dispatch(_LeagueOrTournamentEventAddFailed(adding: AddingState.Failed));
+      });
+    }
+
+    if (event is LeagueOrTournamentEventReset) {
+      yield currentState.rebuild(
+          leagueOrTournamentsParam: currentState.leagueOrTournaments,
+          adding: AddingState.None,
+          onlySqlParam: currentState.onlySql);
     }
 
     // Unload everything.

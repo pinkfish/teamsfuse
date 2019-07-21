@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
@@ -29,22 +30,24 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
   StepState leagueStepState = StepState.editing;
   StepState createStepStage = StepState.disabled;
 
-  LeagueOrTournament _league;
+  LeagueOrTournamentBuilder _league;
   File _leagueImage;
-  bool _saving = false;
+  LeagueOrTournamentBloc leagueBloc;
 
   @override
   void initState() {
     AuthenticationBloc authenticationBloc =
         BlocProvider.of<AuthenticationBloc>(context);
     super.initState();
-    _league = LeagueOrTournament(
-      type: widget.type,
-      name: "",
-      shortDescription: "",
-      longDescription: "",
-      adminUids: <String>[authenticationBloc.currentUser.uid],
-    );
+    SetBuilder<String> set = SetBuilder<String>();
+    set.add(authenticationBloc.currentUser.uid);
+    _league = LeagueOrTournamentBuilder()
+      ..type = widget.type
+      ..name = ""
+      ..shortDescription = ""
+      ..longDescription = ""
+      ..adminsUids = set;
+    leagueBloc = BlocProvider.of<LeagueOrTournamentBloc>(context);
   }
 
   void _showInSnackBar(String value) {
@@ -84,7 +87,8 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
       // Check to make sure a team is picked.
       case 1:
         if (backwards) {
-          if (UserDatabaseData.instance.clubs.values
+          ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
+          if (clubBloc.currentState.clubs.values
               .any((Club club) => club.isAdmin())) {
             return true;
           }
@@ -103,27 +107,9 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
           _currentStep++;
         } else {
           // Write the game out.
-          setState(() {
-            _saving = true;
-          });
-          try {
-            _league.updateFirestore(includeMembers: true).then((void h) {
-              _saving = false;
-              Navigator.pop(context);
-            }).catchError((Error e) {
-              _saving = false;
-              showDialog<bool>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return new AlertDialog(
-                      title: new Text("Error"),
-                      content: new Text("Error saving the game"),
-                    );
-                  });
-            });
-          } finally {
-            _saving = false;
-          }
+
+          leagueBloc
+              .dispatch(LeagueOrTournamentEventAddLeague(league: _league));
         }
       });
     }
@@ -153,7 +139,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
                       height: 50.0,
                     )
                   : LeagueImage(
-                      leagueOrTournament: _league,
+                      leagueOrTournament: _league.build(),
                       width: 50.0,
                       height: 50.0,
                     ),
@@ -176,41 +162,61 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
       appBar: new AppBar(
         title: new Text(messages.title),
       ),
-      body: new SavingOverlay(
-        saving: _saving,
-        child: new Container(
-          padding: new EdgeInsets.all(5.0),
-          child: new StepperAlwaysVisible(
-            type: StepperType.horizontal,
-            currentStep: _currentStep,
-            onStepContinue: () {
-              _onStepperContinue(context);
-            },
-            onStepCancel: () {
-              // Go back
-              Navigator.of(context).pop();
-            },
-            onStepTapped: (int step) {
-              _onStepTapped(step);
-            },
-            steps: <Step>[
-              new Step(
-                title: new Text(messages.league),
-                state: leagueStepState,
-                isActive: true,
-                content: new LeagueOrTournamentEditForm(
-                  leagueOrTournament: _league,
-                  key: _formState,
+      body: BlocListener(
+        bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
+        listener: (BuildContext context, LeagueOrTournamentState state) {
+          if (state.adding == AddingState.Failed) {
+            showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return new AlertDialog(
+                    title: new Text("Error"),
+                    content: new Text("Error saving the game"),
+                  );
+                });
+          }
+        },
+        child: BlocBuilder(
+          bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
+          builder: (BuildContext context, LeagueOrTournamentState state) {
+            return SavingOverlay(
+              saving: state.adding == AddingState.Adding,
+              child: new Container(
+                padding: new EdgeInsets.all(5.0),
+                child: new StepperAlwaysVisible(
+                  type: StepperType.horizontal,
+                  currentStep: _currentStep,
+                  onStepContinue: () {
+                    _onStepperContinue(context);
+                  },
+                  onStepCancel: () {
+                    // Go back
+                    Navigator.of(context).pop();
+                  },
+                  onStepTapped: (int step) {
+                    _onStepTapped(step);
+                  },
+                  steps: <Step>[
+                    new Step(
+                      title: new Text(messages.league),
+                      state: leagueStepState,
+                      isActive: true,
+                      content: new LeagueOrTournamentEditForm(
+                        leagueOrTournament: _league.build(),
+                        key: _formState,
+                      ),
+                    ),
+                    new Step(
+                      title: new Text(messages.create),
+                      state: createStepStage,
+                      isActive: leagueStepState == StepState.complete,
+                      content: _buildSummary(context),
+                    )
+                  ],
                 ),
               ),
-              new Step(
-                title: new Text(messages.create),
-                state: createStepStage,
-                isActive: leagueStepState == StepState.complete,
-                content: _buildSummary(context),
-              )
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

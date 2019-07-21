@@ -6,8 +6,11 @@ import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../widgets/blocs/singleteamprovider.dart';
 
 class AddMessageScreen extends StatefulWidget {
   AddMessageScreen({this.teamUid, this.seasonUid, this.playerUid});
@@ -25,7 +28,6 @@ class AddMessageScreen extends StatefulWidget {
 class AddMessageScreenState extends State<AddMessageScreen> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  Message _message;
   String _seasonUid;
   String _sendAs;
   List<String> _possiblePlayers = <String>[];
@@ -34,59 +36,36 @@ class AddMessageScreenState extends State<AddMessageScreen> {
   FocusNode _focusNodeSubject = new FocusNode();
   FocusNode _focusNodeBody = new FocusNode();
   TeamBloc _teamBloc;
+  String _messageBody;
+  AddMessageBloc addMessageBloc;
+  String _teamUid;
+  Set<String> _recipients = Set();
+  String _subject;
 
   @override
   void initState() {
     super.initState();
     _teamBloc = BlocProvider.of<TeamBloc>(context);
 
-    _message = new Message();
-    _message.teamUid = widget.teamUid;
-    _message.subject = '';
-    _message.message = '';
+    _teamUid = widget.teamUid;
     _seasonUid = widget.seasonUid;
+    addMessageBloc = new AddMessageBloc(
+        coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
+
     if (widget.playerUid != null) {
-      Map<String, MessageRecipient> recips = <String, MessageRecipient>{};
-
       Season season =
-          _teamBloc.currentState.getTeam(_message.teamUid).seasons[_seasonUid];
-
-      SeasonPlayer player = season.players.firstWhere(
-          (SeasonPlayer player) => player.playerUid == widget.playerUid);
-      if (player != null) {
-        recips[widget.playerUid] = new MessageRecipient(
-          playerId: widget.playerUid,
-        );
-      }
-      _message.recipients = recips;
-      _setupSendAs();
+          _teamBloc.currentState.getTeam(widget.teamUid).seasons[_seasonUid];
+      _recipients.add(widget.playerUid);
     } else {
-      _message.recipients = <String, MessageRecipient>{};
+      _recipients.clear();
     }
   }
 
-  void _setupSendAs() {
-    _possiblePlayers = <String>[];
-    // Find the intersection of team and player.
-    _teamBloc.currentState
-        .getTeam(_message.teamUid)
-        .seasons[_seasonUid]
-        .players
-        .forEach((SeasonPlayer play) {
-      PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
-      if (playerBloc.currentState.players.containsKey(play.playerUid)) {
-        _sendAs = play.playerUid;
-        _possiblePlayers.add(play.playerUid);
-      }
-    });
-  }
-
   void _changeTeam(String teamUid) {
-    if (teamUid != _message.teamUid) {
+    if (teamUid != _teamUid) {
       setState(() {
-        _message.teamUid = teamUid;
+        _teamUid = teamUid;
         _seasonUid = _teamBloc.currentState.getTeam(teamUid).currentSeason;
-        _setupSendAs();
       });
     }
   }
@@ -102,23 +81,21 @@ class AddMessageScreenState extends State<AddMessageScreen> {
       if (_allPlayers) {
         // Add in everyone!
         _teamBloc.currentState
-            .getTeam(_message.teamUid)
+            .getTeam(_teamUid)
             .seasons[_seasonUid]
             .players
             .forEach((SeasonPlayer play) {
           if (_includeMyself || play.playerUid != _sendAs) {
-            _message.recipients[play.playerUid] = new MessageRecipient(
-              playerId: play.playerUid,
-              state: MessageState.Unread,
-            );
+            _recipients.add(play.playerUid);
           }
         });
       }
-      if (_message.recipients.length > 0) {
-        _message.fromUid = _sendAs;
-        _message.timeSent = new DateTime.now().millisecondsSinceEpoch;
-        _message.updateFirestore();
-        Navigator.pop(context);
+      if (_recipients.length > 0) {
+        addMessageBloc.dispatch(AddMessageEventCommit(
+            teamUid: _teamUid,
+            recipients: _recipients,
+            subject: _subject,
+            body: _messageBody));
       } else {
         _showInSnackBar("Need to specify some recipients");
       }
@@ -127,21 +104,22 @@ class AddMessageScreenState extends State<AddMessageScreen> {
     }
   }
 
-  List<Widget> _buildPlayerPicker() {
+  List<Widget> _buildPlayerPicker(SingleTeamBloc singleTeamBloc) {
     List<Widget> ret = <Widget>[];
+    PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
 
-    if (_message.teamUid != null) {
+    if (_teamUid != null) {
       // Build the rest of the form.
       ret.add(
         new SeasonFormField(
-            teamUid: _message.teamUid,
+            teamBloc: singleTeamBloc,
             initialValue: _seasonUid,
             onSaved: (String seasonUid) => _seasonUid = seasonUid),
       );
       if (_seasonUid != null &&
-          _teamBloc.currentState.getTeam(_message.teamUid) != null &&
+          _teamBloc.currentState.getTeam(_teamUid) != null &&
           _teamBloc.currentState
-              .getTeam(_message.teamUid)
+              .getTeam(_teamUid)
               .seasons
               .containsKey(_seasonUid)) {
         // Show who we are sending as, drop down if there is more than one
@@ -153,9 +131,11 @@ class AddMessageScreenState extends State<AddMessageScreen> {
               title: new DropdownButton<String>(
                   value: _sendAs,
                   items: _possiblePlayers.map((String str) {
+                    PlayerBloc playerBloc =
+                        BlocProvider.of<PlayerBloc>(context);
                     return new DropdownMenuItem<String>(
-                        child: new Text(
-                            UserDatabaseData.instance.players[str].name),
+                        child:
+                            new Text(playerBloc.currentState.players[str].name),
                         value: str);
                   }).toList(),
                   onChanged: (String str) {
@@ -167,7 +147,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
           ret.add(
             new ListTile(
               leading: const Icon(Icons.person_outline),
-              title: new Text(UserDatabaseData.instance.players[_sendAs].name),
+              title: new Text(playerBloc.currentState.players[_sendAs].name),
             ),
           );
         }
@@ -194,7 +174,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
           );
         } else {
           // Show the list of players with checkboxes.
-          Team team = _teamBloc.currentState.getTeam(_message.teamUid);
+          Team team = _teamBloc.currentState.getTeam(_teamUid);
           Season season = team.seasons[_seasonUid];
 
           season.players.forEach((SeasonPlayer player) {
@@ -203,13 +183,12 @@ class AddMessageScreenState extends State<AddMessageScreen> {
                 title: new PlayerName(playerUid: player.playerUid),
                 subtitle:
                     new Text(Messages.of(context).roleingame(player.role)),
-                value: _message.recipients.containsKey(player.playerUid),
+                value: _recipients.contains(player.playerUid),
                 onChanged: (bool toAdd) {
                   if (toAdd) {
-                    _message.recipients[player.playerUid] =
-                        new MessageRecipient(playerId: player.playerUid);
+                    _recipients.add(player.playerUid);
                   } else {
-                    _message.recipients.remove(player.playerUid);
+                    _recipients.remove(player.playerUid);
                   }
                 },
               ),
@@ -225,8 +204,8 @@ class AddMessageScreenState extends State<AddMessageScreen> {
                 labelText: Messages.of(context).subject,
               ),
               focusNode: _focusNodeSubject,
-              initialValue: _message.subject,
-              onSaved: (String val) => _message.subject = val,
+              initialValue: _subject,
+              onSaved: (String val) => _subject = val,
             ),
             focusNode: _focusNodeSubject,
           ),
@@ -240,8 +219,8 @@ class AddMessageScreenState extends State<AddMessageScreen> {
                 labelText: Messages.of(context).message,
               ),
               focusNode: _focusNodeBody,
-              initialValue: _message.message,
-              onSaved: (String val) => _message.message = val,
+              initialValue: _messageBody,
+              onSaved: (String val) => _messageBody = val,
             ),
           ),
         );
@@ -255,38 +234,60 @@ class AddMessageScreenState extends State<AddMessageScreen> {
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
 
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(messages.title),
-        actions: <Widget>[
-          new FlatButton(
-            onPressed: _sendMessage,
-            child: new Text(
-              Messages.of(context).sendmessagebuttontext,
-              style: Theme.of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(color: Colors.white),
+    return SingleTeamProvider(
+      teamUid: widget.teamUid,
+      builder: (BuildContext conext, SingleTeamBloc teamBloc) => Scaffold(
+        key: _scaffoldKey,
+        appBar: new AppBar(
+          title: new Text(messages.title),
+          actions: <Widget>[
+            new FlatButton(
+              onPressed: _sendMessage,
+              child: new Text(
+                Messages.of(context).sendmessagebuttontext,
+                style: Theme.of(context)
+                    .textTheme
+                    .subhead
+                    .copyWith(color: Colors.white),
+              ),
             ),
-          ),
-        ],
-      ),
-      body: new Scrollbar(
-        child: new SingleChildScrollView(
-          child: new DropdownButtonHideUnderline(
-            child: new Form(
-              key: _formKey,
-              child: new Column(
-                children: <Widget>[
-                      new ListTile(
-                        leading: const Icon(CommunityIcons.tshirtCrew),
-                        title: new TeamPicker(
-                          onChanged: _changeTeam,
-                        ),
+          ],
+        ),
+        body: BlocListener(
+          bloc: addMessageBloc,
+          listener: (BuildContext context, AddItemState state) {
+            if (state is AddItemDone) {
+              Navigator.pop(context);
+            }
+            if (state is AddItemSaveFailed ||
+                state is AddItemInvalidArguments) {
+              _showInSnackBar(Messages.of(context).formerror);
+            }
+          },
+          child: BlocBuilder(
+            bloc: addMessageBloc,
+            builder: (BuildContext context, AddItemState state) =>
+                SavingOverlay(
+              saving: state is AddItemSaving,
+              child: Scrollbar(
+                child: new SingleChildScrollView(
+                  child: new DropdownButtonHideUnderline(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: <Widget>[
+                              new ListTile(
+                                leading: const Icon(CommunityIcons.tshirtCrew),
+                                title: new TeamPicker(
+                                  onChanged: _changeTeam,
+                                ),
+                              ),
+                            ] +
+                            _buildPlayerPicker(teamBloc),
                       ),
-                    ] +
-                    _buildPlayerPicker(),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

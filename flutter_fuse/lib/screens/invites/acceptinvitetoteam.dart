@@ -78,12 +78,13 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     });
   }
 
-  Widget _showPlayerDropdown(String name) {
+  Widget _showPlayerDropdown(String name, PlayerState state) {
     List<DropdownMenuItem<String>> dropdowns = <DropdownMenuItem<String>>[];
 
     String found;
     String lowerName = name.toLowerCase().trim();
-    UserDatabaseData.instance.players.forEach((String uid, Player play) {
+
+    state.players.forEach((String uid, Player play) {
       if (play.name.toLowerCase().trim().compareTo(lowerName) == 0) {
         found = uid;
       }
@@ -199,7 +200,15 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                 );
               },
             ),
-            title: _showPlayerDropdown(name),
+            title: BlocBuilder(
+                bloc: BlocProvider.of<PlayerBloc>(context),
+                builder: (BuildContext context, PlayerState state) {
+                  if (state is PlayerLoaded) {
+                    _showPlayerDropdown(name, state);
+                  } else {
+                    return Text(Messages.of(context).unknown);
+                  }
+                }),
             subtitle: _current[name].compareTo(SingleInviteBloc.createNew) == 0
                 ? new Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -273,8 +282,8 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
           Navigator.pop(context);
         }
       },
-      child: BlocProvider<SingleInviteBloc>(
-        bloc: _singleInviteBloc,
+      child: BlocProvider<SingleInviteBloc>.value(
+        value: _singleInviteBloc,
         child: Scaffold(
           key: _scaffoldKey,
           appBar: new AppBar(

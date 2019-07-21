@@ -18,7 +18,7 @@ class AddMessageEventCommit extends AddMessageEvent {
   // Need a rich text section for the message itself.
   final String subject;
   final String body;
-  final List<String> recipients;
+  final Set<String> recipients;
 
   AddMessageEventCommit(
       {@required this.teamUid,
@@ -59,9 +59,9 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
           for (String str in event.recipients) {
             builder.recipients[str] = MessageRecipient((b) => b
               ..state = MessageState.Unread
-              ..userId = coordinationBloc.authenticationBloc.currentUser.uid
               ..playerId = str);
           }
+
           Message mess = await coordinationBloc.databaseUpdateModel
               .updateFirestoreMessage(builder);
           await coordinationBloc.databaseUpdateModel.updateFirestoreMessageBody(

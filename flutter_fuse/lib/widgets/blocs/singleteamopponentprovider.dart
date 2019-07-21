@@ -12,7 +12,7 @@ typedef SingleTeamOpponentProviderBuilder = Widget Function(
  * Create a provider that will insert the singe teamOpponent bloc into the tree if the
  * bloc is not current provided or is different than the teamOpponentuid.
  */
-class SingleTeamOpponentProvider extends StatefulWidget {
+class SingleTeamOpponentProvider extends StatelessWidget {
   final String opponentUid;
   final String teamUid;
   final SingleTeamOpponentProviderBuilder builder;
@@ -23,42 +23,20 @@ class SingleTeamOpponentProvider extends StatefulWidget {
       @required this.builder});
 
   @override
-  State createState() => _SingleTeamOpponentProviderState();
-}
-
-class _SingleTeamOpponentProviderState
-    extends State<SingleTeamOpponentProvider> {
-  SingleTeamOpponentBloc singleTeamOpponentBloc;
-  bool disposeIt = false;
-
-  void initState() {
-    super.initState();
-    singleTeamOpponentBloc = BlocProvider.of<SingleTeamOpponentBloc>(context);
+  Widget build(BuildContext context) {
+    var singleTeamOpponentBloc =
+        BlocProvider.of<SingleTeamOpponentBloc>(context);
     if (singleTeamOpponentBloc == null ||
-        singleTeamOpponentBloc.opponentUid != widget.opponentUid) {
+        singleTeamOpponentBloc.opponentUid != opponentUid) {
       singleTeamOpponentBloc = SingleTeamOpponentBloc(
           teamBloc: BlocProvider.of<TeamBloc>(context),
-          teamUid: widget.teamUid,
-          opponentUid: widget.opponentUid);
-      disposeIt = true;
-    }
-  }
-
-  void dispose() {
-    super.dispose();
-    if (disposeIt) {
-      singleTeamOpponentBloc.dispose();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (disposeIt) {
+          teamUid: teamUid,
+          opponentUid: opponentUid);
       return BlocProvider(
-        bloc: singleTeamOpponentBloc,
-        child: widget.builder(context, singleTeamOpponentBloc),
+        builder: (BuildContext context) => singleTeamOpponentBloc,
+        child: builder(context, singleTeamOpponentBloc),
       );
     }
-    return widget.builder(context, singleTeamOpponentBloc);
+    return builder(context, singleTeamOpponentBloc);
   }
 }

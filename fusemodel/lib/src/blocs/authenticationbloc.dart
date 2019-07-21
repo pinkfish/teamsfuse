@@ -29,6 +29,9 @@ class AuthenticationLoading extends AuthenticationState {
   String toString() => "AuthenticationState::AuthenticationLoading";
 }
 
+///
+/// The user is logged in.
+///
 class AuthenticationLoggedIn extends AuthenticationState {
   AuthenticationLoggedIn({@required UserData user}) : super(user: user);
 
@@ -36,6 +39,9 @@ class AuthenticationLoggedIn extends AuthenticationState {
   String toString() => "AuthenticationState::AuthenticatonLoggedIn";
 }
 
+///
+/// The user is logged in, but unvierified.
+///
 class AuthenticationLoggedInUnverified extends AuthenticationState {
   AuthenticationLoggedInUnverified({@required UserData user})
       : super(user: user);
@@ -44,6 +50,9 @@ class AuthenticationLoggedInUnverified extends AuthenticationState {
   String toString() => "AuthenticationState::AuthenticationLoggedInUnverified";
 }
 
+///
+/// The user is logged out.
+///
 class AuthenticationLoggedOut extends AuthenticationState {
   AuthenticationLoggedOut() : super(user: null);
 
@@ -58,25 +67,43 @@ abstract class AuthenticationEvent extends Equatable {
   AuthenticationEvent([List props = const []]) : super(props);
 }
 
-class AppStarted extends AuthenticationEvent {
+///
+/// Called when the app starts to setup stuff.
+///
+class AuthenticationAppStarted extends AuthenticationEvent {
   @override
   String toString() => "AppStarted";
 }
 
-class LoggedIn extends AuthenticationEvent {
+class _AuthenticationLogIn extends AuthenticationEvent {
   final UserData user;
 
-  LoggedIn({@required this.user});
+  _AuthenticationLogIn({@required this.user});
 
   @override
   String toString() => "LoggedIn";
 }
 
-class LoggedOut extends AuthenticationEvent {
+///
+/// Logs the current user out.
+///
+class AuthenticationLogOut extends AuthenticationEvent {
   @override
   String toString() => "LoggedOut";
 }
 
+///
+/// Updates the notification token so we can receive notifications.
+///
+class AuthenticationNotificationToken extends AuthenticationEvent {
+  final String notificationToken;
+
+  AuthenticationNotificationToken(@required this.notificationToken);
+}
+
+///
+/// This bloc deals with all the pieces related to authentication.
+///
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
   final UserAuthImpl userAuth;
@@ -123,7 +150,7 @@ class AuthenticationBloc
   @override
   Stream<AuthenticationState> mapEventToState(
       AuthenticationEvent event) async* {
-    if (event is AppStarted) {
+    if (event is AuthenticationAppStarted) {
       _listener = userAuth.onAuthChanged().listen(_authChanged);
       UserData data = await userAuth.currentUser();
       if (data == null) {
@@ -136,25 +163,30 @@ class AuthenticationBloc
       // Wait on updates to this.
     }
 
-    if (event is LoggedIn) {
-      LoggedIn loggedInEvent = event;
+    if (event is _AuthenticationLogIn) {
+      _AuthenticationLogIn loggedInEvent = event;
       yield AuthenticationLoading();
       yield await _updateWithUser(loggedInEvent.user);
     }
 
-    if (event is LoggedOut) {
+    if (event is AuthenticationLogOut) {
       yield AuthenticationLoading();
       await userAuth.signOut();
       // Finished logging out.
       yield AuthenticationLoggedOut();
     }
+
+    if (event is AuthenticationNotificationToken) {
+      // Ignore the errors here.
+      userAuth.setNotificationToken(event.notificationToken);
+    }
   }
 
   void _authChanged(UserData user) async {
     if (user != null) {
-      dispatch(LoggedIn(user: user));
+      dispatch(_AuthenticationLogIn(user: user));
     } else {
-      dispatch(LoggedOut());
+      dispatch(AuthenticationLogOut());
     }
   }
 }

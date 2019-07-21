@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'appconfiguration.dart';
 import 'firebasemessaging.dart';
+
 //import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class Notifications {
@@ -13,9 +15,9 @@ class Notifications {
     routeStream = _notificationRoutes.stream.asBroadcastStream();
   }
 
-  static final Notifications instance = new Notifications();
-
   static const String _keyNotificationData = "lib_notification_data";
+
+  static final Notifications instance = Notifications();
 
   final FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   //final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -108,11 +110,11 @@ class Notifications {
   }
   */
 
-  void init() {
+  void init(AuthenticationBloc auth) {
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.getToken().then((String token) {
       print('We have token! $token');
-      UserDatabaseData.instance.userAuth.setNotificationToken(token);
+      auth.dispatch(AuthenticationNotificationToken(token));
     });
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {

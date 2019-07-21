@@ -34,7 +34,6 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    UserDatabaseData data = UserDatabaseData.instance;
     _player = new Player.copy(data.players[widget.playerUid]);
   }
 

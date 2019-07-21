@@ -71,9 +71,10 @@ class _TournamentOrLeagueTeamPickerState
             : null,
       ),
       child: BlocProvider(
-        bloc: SingleLeagueOrTournamentDivisonTeamsBloc(
-            singleLeagueOrTournamentDivisonBloc:
-                widget.leagueOrTournamentDivisonBloc),
+        builder: (BuildContext context) =>
+            SingleLeagueOrTournamentDivisonTeamsBloc(
+                singleLeagueOrTournamentDivisonBloc:
+                    widget.leagueOrTournamentDivisonBloc),
         child: BlocBuilder(
           bloc: BlocProvider.of<SingleLeagueOrTournamentDivisonTeamsBloc>(
               context),

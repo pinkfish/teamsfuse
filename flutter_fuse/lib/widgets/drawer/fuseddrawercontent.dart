@@ -167,7 +167,7 @@ class FusedDrawerContent extends StatelessWidget {
           // Do the logout dance.
           AuthenticationBloc authenticationBloc =
               BlocProvider.of<AuthenticationBloc>(context);
-          authenticationBloc.dispatch(LoggedOut());
+          authenticationBloc.dispatch(AuthenticationLogOut());
 
           await overlayEntry.remove();
 

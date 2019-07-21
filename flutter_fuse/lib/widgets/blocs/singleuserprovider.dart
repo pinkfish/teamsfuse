@@ -9,46 +9,24 @@ typedef SingleUserProviderBuilder = Widget Function(
  * Create a provider that will insert the singe user bloc into the tree if the
  * bloc is not current provided or is different than the useruid.
  */
-class SingleUserProvider extends StatefulWidget {
+class SingleUserProvider extends StatelessWidget {
   final String userUid;
   final SingleUserProviderBuilder builder;
 
   SingleUserProvider({@required this.userUid, @required this.builder});
 
   @override
-  State createState() => _SingleUserProviderState();
-}
-
-class _SingleUserProviderState extends State<SingleUserProvider> {
-  SingleUserBloc singleUserBloc;
-  bool disposeIt = false;
-
-  void initState() {
-    super.initState();
-    singleUserBloc = BlocProvider.of<SingleUserBloc>(context);
-    if (singleUserBloc == null || singleUserBloc.userUid != widget.userUid) {
+  Widget build(BuildContext context) {
+    var singleUserBloc = BlocProvider.of<SingleUserBloc>(context);
+    if (singleUserBloc == null || singleUserBloc.userUid != userUid) {
       singleUserBloc = SingleUserBloc(
           authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
-          userUid: widget.userUid);
-      disposeIt = true;
-    }
-  }
-
-  void dispose() {
-    super.dispose();
-    if (disposeIt) {
-      singleUserBloc.dispose();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (disposeIt) {
+          userUid: userUid);
       return BlocProvider(
-        bloc: singleUserBloc,
-        child: widget.builder(context, singleUserBloc),
+        builder: (BuildContext context) => singleUserBloc,
+        child: builder(context, singleUserBloc),
       );
     }
-    return widget.builder(context, singleUserBloc);
+    return builder(context, singleUserBloc);
   }
 }
