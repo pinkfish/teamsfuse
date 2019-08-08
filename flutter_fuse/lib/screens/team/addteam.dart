@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/form/clubpicker.dart';
 import 'package:flutter_fuse/widgets/form/playerformfield.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_fuse/widgets/util/gendericon.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class AddTeamScreen extends StatefulWidget {
@@ -28,7 +30,6 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   final GlobalKey<TeamEditFormState> _formKeyTeam =
       new GlobalKey<TeamEditFormState>();
   final GlobalKey<FormState> _formKeyPlayer = new GlobalKey<FormState>();
-  bool _saving = false;
   int _currentStep;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   StepState _detailsStepState = StepState.disabled;
@@ -36,10 +37,11 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   StepState _createStepStage = StepState.disabled;
   StepState _clubStepState = StepState.disabled;
   StepState _playerStepState = StepState.editing;
-  Team _teamToAdd = new Team();
   File _imageFileToAdd;
   String _clubUid;
   String _playerUid;
+  TeamBuilder _teamToAdd;
+  AddTeamBloc _addTeamBloc = new AddTeamBloc();
 
   @override
   void initState() {
@@ -59,10 +61,9 @@ class AddTeamScreenState extends State<AddTeamScreen> {
       _clubStepState = StepState.disabled;
       _detailsStepState = StepState.editing;
     }
-    _teamToAdd.currentSeason = "";
+    _teamToAdd = TeamBuilder();
     _teamToAdd.name = "";
-    _teamToAdd.league = "";
-    _teamToAdd.arriveEarly = 0;
+    _teamToAdd.arriveEarlyInternal = 0;
   }
 
   void _showInSnackBar(String value) {
@@ -71,42 +72,21 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   }
 
   void _savePressed() async {
-    setState(() {
-      _saving = true;
-    });
-    try {
-      if (_teamToAdd != null) {
-        if (_clubUid != null && _clubUid != ClubPicker.noClub) {
-          _teamToAdd.clubUid = _clubUid;
-        }
-        if (_imageFileToAdd != null) {
-          Uri uri = await UserDatabaseData.instance.updateModel
-              .updateTeamImage(_teamToAdd, _imageFileToAdd);
-          _teamToAdd.photoUrl = uri.toString();
-        }
-        // Create the season too.
-        Season season = _teamToAdd.seasons[_teamToAdd.currentSeason];
-        season.players.add(new SeasonPlayer(
-          playerUid: _playerUid,
-          role: RoleInTeam.Player,
-        ));
-        await _teamToAdd.updateFirestore();
-        await _teamToAdd.seasons[_teamToAdd.currentSeason]
-            .updateFirestore(includePlayers: true);
-        Navigator.pop(context);
-      } else {
-        _showInSnackBar(Messages.of(context).formerror);
+    if (_teamToAdd != null) {
+      if (_clubUid != null && _clubUid != ClubPicker.noClub) {
+        _teamToAdd.clubUid = _clubUid;
       }
-    } finally {
-      setState(() {
-        _saving = false;
-      });
+      _addTeamBloc.dispatch(AddTeamEventCommit(
+          team: _teamToAdd, playerUid: _playerUid, teamImage: _imageFileToAdd));
+    } else {
+      _showInSnackBar(Messages.of(context).formerror);
     }
   }
 
   String _seasonName() {
-    if (_teamToAdd.seasons.containsKey(_teamToAdd.currentSeason)) {
-      return _teamToAdd.seasons[_teamToAdd.currentSeason].name;
+    var seasons = _teamToAdd.seasons.build();
+    if (seasons.containsKey(_teamToAdd.currentSeason)) {
+      return seasons[_teamToAdd.currentSeason].name;
     }
     return Messages.of(context).noseasons;
   }
@@ -219,19 +199,22 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   Widget _buildImage() {
     if (_imageFileToAdd == null) {
       return new TeamImage(
-        team: _teamToAdd,
+        team: _teamToAdd.build(),
       );
     }
-    return new Image.file(_imageFileToAdd);
+    return new TeamImage(teamImage: _imageFileToAdd);
   }
 
   bool isActiveClub() {
+    var clubBloc = BlocProvider.of<ClubBloc>(context);
+
     // Only true if they are member of a club of some sort.
-    return UserDatabaseData.instance.clubs.values.any((Club c) => c.isAdmin());
+    return clubBloc.currentState.clubs.values.any((Club c) => c.isAdmin());
   }
 
   Widget _buildSummary() {
-    return new SingleChildScrollView(
+    var clubBloc = BlocProvider.of<ClubBloc>(context);
+    return SingleChildScrollView(
       child: new Column(
         children: <Widget>[
           _buildImage(),
@@ -257,7 +240,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
           new ListTile(
             leading: const Icon(CommunityIcons.group),
             title: _clubUid != null && _clubUid != ClubPicker.noClub
-                ? new Text(UserDatabaseData.instance.clubs[_clubUid].name)
+                ? new Text(clubBloc.currentState.clubs[_clubUid].name)
                 : new Text(Messages.of(context).noclub),
             trailing: _clubUid != null && _clubUid != ClubPicker.noClub
                 ? new ClubImage(
@@ -274,12 +257,14 @@ class AddTeamScreenState extends State<AddTeamScreen> {
           new ListTile(
             leading: const Icon(Icons.timer),
             title: new Text(Messages.of(context)
-                .arrivebefore(_teamToAdd.arriveEarly.toInt())),
+                .arrivebefore(_teamToAdd.arriveEarlyInternal.toInt())),
           ),
           new ListTile(
             leading: const Icon(CommunityIcons.trafficLight),
             title: new Text(Messages.of(context).trackattendence(
-                _teamToAdd.trackAttendence ? Tristate.Yes : Tristate.No)),
+                _teamToAdd.trackAttendenceInternal
+                    ? Tristate.Yes
+                    : Tristate.No)),
           )
         ],
       ),
@@ -288,74 +273,92 @@ class AddTeamScreenState extends State<AddTeamScreen> {
 
   Widget _buildBody() {
     Messages messages = Messages.of(context);
-    return new SavingOverlay(
-      saving: _saving,
-      child: new StepperAlwaysVisible(
-        type: StepperType.horizontal,
-        currentStep: _currentStep,
-        onStepContinue: () {
-          _onStepperContinue(context);
+    return BlocProvider(
+      builder: (BuildContext contex) => _addTeamBloc,
+      child: BlocListener(
+        bloc: _addTeamBloc,
+        listener: (BuildContext context, AddItemState addState) {
+          if (addState is AddItemDone) {
+            Navigator.pop(context);
+          }
+          if (addState is AddItemSaveFailed) {
+            _showInSnackBar(Messages.of(context).formerror);
+          }
         },
-        onStepCancel: () {
-          // Go back
-          Navigator.of(context).pop();
-        },
-        onStepTapped: (int step) {
-          _onStepTapped(step);
-        },
-        steps: <Step>[
-          new Step(
-            title: new Text(messages.club),
-            state: _clubStepState,
-            isActive: isActiveClub(),
-            content: new ClubPicker(
-              clubUid: _clubUid,
-              onChanged: (String val) => setState(() => _clubUid = val),
+        child: BlocBuilder(
+          bloc: _addTeamBloc,
+          builder: (BuildContext context, AddItemState addState) =>
+              SavingOverlay(
+            saving: addState is AddItemSaving,
+            child: new StepperAlwaysVisible(
+              type: StepperType.horizontal,
+              currentStep: _currentStep,
+              onStepContinue: () {
+                _onStepperContinue(context);
+              },
+              onStepCancel: () {
+                // Go back
+                Navigator.of(context).pop();
+              },
+              onStepTapped: (int step) {
+                _onStepTapped(step);
+              },
+              steps: <Step>[
+                new Step(
+                  title: new Text(messages.club),
+                  state: _clubStepState,
+                  isActive: isActiveClub(),
+                  content: new ClubPicker(
+                    clubUid: _clubUid,
+                    onChanged: (String val) => setState(() => _clubUid = val),
+                  ),
+                ),
+                new Step(
+                  title: new Text(messages.player),
+                  state: _playerStepState,
+                  isActive: true,
+                  content: new Form(
+                    key: _formKeyPlayer,
+                    child: new PlayerFormField(
+                      initialValue: PlayerFormField.nonePlayer,
+                      onSaved: (String player) => _playerUid = player,
+                    ),
+                  ),
+                ),
+                new Step(
+                  title: new Text(messages.team),
+                  state: _detailsStepState,
+                  isActive: true,
+                  content: new SingleChildScrollView(
+                    child: new TeamEditForm(
+                      _teamToAdd.build(),
+                      _formKeyTeam,
+                      startSection: StartSection.start,
+                    ),
+                  ),
+                ),
+                new Step(
+                  title: new Text(messages.details),
+                  state: _detailsSecondStepState,
+                  isActive: true,
+                  content: new SingleChildScrollView(
+                    child: new TeamEditForm(
+                      _teamToAdd.build(),
+                      _formKeyTeam,
+                      startSection: StartSection.end,
+                    ),
+                  ),
+                ),
+                new Step(
+                  title: new Text(messages.create),
+                  state: _createStepStage,
+                  isActive: true,
+                  content: _buildSummary(),
+                ),
+              ],
             ),
           ),
-          new Step(
-            title: new Text(messages.player),
-            state: _playerStepState,
-            isActive: true,
-            content: new Form(
-              key: _formKeyPlayer,
-              child: new PlayerFormField(
-                initialValue: PlayerFormField.nonePlayer,
-                onSaved: (String player) => _playerUid = player,
-              ),
-            ),
-          ),
-          new Step(
-            title: new Text(messages.team),
-            state: _detailsStepState,
-            isActive: true,
-            content: new SingleChildScrollView(
-              child: new TeamEditForm(
-                _teamToAdd,
-                _formKeyTeam,
-                startSection: StartSection.start,
-              ),
-            ),
-          ),
-          new Step(
-            title: new Text(messages.details),
-            state: _detailsSecondStepState,
-            isActive: true,
-            content: new SingleChildScrollView(
-              child: new TeamEditForm(
-                _teamToAdd,
-                _formKeyTeam,
-                startSection: StartSection.end,
-              ),
-            ),
-          ),
-          new Step(
-            title: new Text(messages.create),
-            state: _createStepStage,
-            isActive: true,
-            content: _buildSummary(),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -188,17 +188,21 @@ class UserAuthImpl {
     await ref.updateData(profile.toJSON());
   }
 
-  Future<FusedUserProfile> getProfile(String userId) async {
+  Stream<FusedUserProfile> getProfileStream(String userId) async* {
     print("Looking for $userId");
-    DocumentSnapshotWrapper ref =
-        await wrapper.collection(USER_DATA_COLLECTION).document(userId).get();
-    print("Found $userId ${ref.data}");
-    if (ref.exists) {
+    DocumentReferenceWrapper ref =
+        await wrapper.collection(USER_DATA_COLLECTION).document(userId);
+    DocumentSnapshotWrapper snap = await ref.get();
+    print("Found $userId ${snap.data}");
+    if (snap.exists) {
       FusedUserProfile profile =
-          FusedUserProfile.fromJSON(ref.documentID, ref.data).build();
-      return profile;
+          FusedUserProfile.fromJSON(ref.documentID, snap.data).build();
+      yield profile;
+      await for (DocumentSnapshotWrapper snap in ref.snapshots()) {
+        yield FusedUserProfile.fromJSON(ref.documentID, snap.data).build();
+      }
     }
-    return null;
+    yield null;
   }
 
   void _onProfileUpdates(DocumentSnapshotWrapper doc) {

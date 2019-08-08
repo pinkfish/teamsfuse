@@ -15,3 +15,4 @@ part 'src/storagereference.dart';
 part 'src/uploadtasksnapshot.dart';
 part 'src/storagemetadata.dart';
 part 'src/auth.dart';
+part 'src/transaction.dart';

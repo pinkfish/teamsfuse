@@ -330,9 +330,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
               leagueTeam.rebuild((b) => b..seasonUid = pregenSeason.documentID);
           await inviteBloc.databaseUpdateModel.updateLeagueTeam(leagueTeam);
           inviteBloc.coordinationBloc.databaseUpdateModel
-              .addFirestoreTeam(team.build(), pregen);
-          inviteBloc.coordinationBloc.databaseUpdateModel
-              .addFirestoreSeason(season, pregenSeason);
+              .addFirestoreTeam(team.build(), pregen, season, null);
         }
       } else if (event.seasonUid == SingleInviteBloc.createNew) {
         var pregenSeason = inviteBloc.databaseUpdateModel.precreateUidSeason();

@@ -1,10 +1,16 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../widgets/blocs/singleteamprovider.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 class AddSeasonScreen extends StatefulWidget {
   AddSeasonScreen(this.teamUid);
@@ -21,16 +27,16 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
   Season _seasonSelect;
   GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   String _seasonName;
-  Team _team;
   bool _importPlayers;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   Validations _validations = new Validations();
+  AddSeasonBloc addSeasonBloc;
 
   @override
   void initState() {
     super.initState();
-    _team = UserDatabaseData.instance.teams[widget.teamUid];
-    _seasonSelect = _team.seasons[_team.currentSeason];
+    addSeasonBloc = AddSeasonBloc(
+        coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
   }
 
   void _showInSnackBar(String value) {
@@ -45,27 +51,25 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       // Make a new season.
-      Season season = new Season(teamUid: widget.teamUid, name: _seasonName);
+      ListBuilder<SeasonPlayer> players = ListBuilder<SeasonPlayer>();
       if (_importPlayers) {
-        season.players = new List<SeasonPlayer>.from(_seasonSelect.players);
+        players.addAll(_seasonSelect.players);
       } else {
-        season.players = <SeasonPlayer>[
-          new SeasonPlayer(
-              playerUid: UserDatabaseData.instance.mePlayer.uid,
-              role: RoleInTeam.NonPlayer)
-        ];
+        PlayerBloc bloc = BlocProvider.of<PlayerBloc>(context);
+        var meUid = bloc.currentState.me.uid;
+        players.add(SeasonPlayer((b) => b
+          ..playerUid = meUid
+          ..role = RoleInTeam.NonPlayer));
       }
-      season.record = new WinRecord();
-      print(season.toJSON(includePlayers: true));
-      await season.updateFirestore(includePlayers: true);
-      Navigator.pop(context);
+      addSeasonBloc.dispatch(AddSeasonEventCommit(
+          teamUid: widget.teamUid, name: _seasonName, players: players));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
   }
 
-  Widget _buildResults(BuildContext context) {
-    return new Form(
+  Widget _buildResults(BuildContext context, SingleTeamBloc singleTeamBloc) {
+    return Form(
       key: _formKey,
       child: new Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -97,10 +101,11 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
               icon: const Icon(CommunityIcons.tshirtCrew),
               labelText: Messages.of(context).copyseasonfrom,
             ),
-            teamUid: widget.teamUid,
-            initialValue: _team.currentSeason,
+            teamBloc: singleTeamBloc,
+            initialValue: singleTeamBloc.currentState.team.currentSeason,
             onSaved: (String seasonUid) {
-              _seasonSelect = _team.seasons[seasonUid];
+              _seasonSelect =
+                  singleTeamBloc.currentState.team.seasons[seasonUid];
             },
           ),
           new FlatButton(
@@ -114,23 +119,61 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).addseason),
-      ),
-      backgroundColor: Colors.grey.shade100,
-      resizeToAvoidBottomPadding: true,
-      body: new Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          new Flexible(
-            fit: FlexFit.tight,
-            flex: 0,
-            child: _buildResults(context),
-          )
-        ],
+    return BlocProvider(
+      builder: (BuildContext context) => addSeasonBloc,
+      child: SingleTeamProvider(
+        teamUid: widget.teamUid,
+        builder: (BuildContext contrext, SingleTeamBloc singleTeamBloc) =>
+            BlocListener(
+          bloc: singleTeamBloc,
+          listener: (BuildContext context, SingleTeamState state) {
+            if (state is SingleTeamLoaded) {
+              if (_seasonSelect == null) {
+                _seasonSelect = state.team.seasons[state.team.currentSeason];
+              }
+            }
+            if (state is SingleTeamDeleted) {
+              Navigator.pop(context);
+            }
+          },
+          child: Scaffold(
+            key: _scaffoldKey,
+            appBar: new AppBar(
+              title: new Text(Messages.of(context).addseason),
+            ),
+            backgroundColor: Colors.grey.shade100,
+            resizeToAvoidBottomPadding: true,
+            body: BlocListener(
+              bloc: addSeasonBloc,
+              listener: (BuildContext context, AddItemState addState) {
+                if (addState is AddItemDone) {
+                  Navigator.pop(context);
+                }
+                if (addState is AddItemSaveFailed) {
+                  _showInSnackBar(Messages.of(context).formerror);
+                }
+              },
+              child: BlocBuilder(
+                bloc: addSeasonBloc,
+                builder: (BuildContext context, AddItemState addState) =>
+                    SavingOverlay(
+                  saving: addState is AddItemSaving,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      new Flexible(
+                        fit: FlexFit.tight,
+                        flex: 0,
+                        child: _buildResults(context, singleTeamBloc),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

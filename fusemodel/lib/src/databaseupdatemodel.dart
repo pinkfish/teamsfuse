@@ -245,7 +245,7 @@ abstract class DatabaseUpdateModel {
   // Message for firestore.
   Future<Message> updateFirestoreMessage(MessageBuilder mess);
   Future<void> updateFirestoreMessageBody({String messageUid, String body});
-  Future<String> loadMessage(Message mess);
+  Stream<String> loadMessageBody(String messageUid);
   Future<Message> getMessage(String messageId);
 
   // Opponent update
@@ -256,8 +256,9 @@ abstract class DatabaseUpdateModel {
 
   // Team stuff
   Future<void> updateFirestoreTeam(Team team);
-  Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen);
-  Future<Team> updateTeamImage(Team team, File imgFile);
+  Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen,
+      Season season, File imageFile);
+  Future<Uri> updateTeamImage(String teamUid, File imgFile);
   DocumentReferenceWrapper precreateClubUid();
   Future<String> inviteAdminToTeam(
       {@required String myUid,
@@ -310,6 +311,9 @@ abstract class DatabaseUpdateModel {
   // Send an invite to a user for this season and team.
   Future<String> inviteUserToSeason(
       {@required String seasonUid,
+      @required String seasonName,
+      @required String teamUid,
+      @required String teamName,
       @required String userId,
       @required String playername,
       @required String email,

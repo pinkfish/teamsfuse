@@ -31,4 +31,13 @@ class Firestore extends wfs.FirestoreWrapper {
     }
     return authWrapper;
   }
+
+  @override
+  Future<Map<String, dynamic>> runTransaction(
+      wfs.TransactionHandler transactionHandler,
+      {Duration timeout = const Duration(seconds: 5)}) {
+    fs.Firestore.instance.runTransaction((fs.Transaction transaction) {
+      return transactionHandler(Transaction(transaction));
+    });
+  }
 }

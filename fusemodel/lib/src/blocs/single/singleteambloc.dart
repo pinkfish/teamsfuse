@@ -119,16 +119,6 @@ class SingleTeamUpdate extends SingleTeamEvent {
 }
 
 ///
-/// Updates the team (writes it out to firebase.
-///
-class SingleTeamAdd extends SingleTeamEvent {
-  final TeamBuilder newTeam;
-  final SeasonBuilder newSeason;
-
-  SingleTeamAdd({@required this.newTeam, @required this.newSeason});
-}
-
-///
 /// Updates the image for the team.
 ///
 class SingleTeamUpdateImage extends SingleTeamEvent {
@@ -192,6 +182,15 @@ class SingleTeamLoadInvites extends SingleTeamEvent {
 ///
 class SingleTeamLoadAllSeasons extends SingleTeamEvent {
   SingleTeamLoadAllSeasons();
+}
+
+///
+/// Change the archive bit for this team
+///
+class SingleTeamArchive extends SingleTeamEvent {
+  final bool archive;
+
+  SingleTeamArchive({@required this.archive});
 }
 
 class _SingleTeamNewTeam extends SingleTeamEvent {
@@ -339,41 +338,6 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       }
     }
 
-    // Create a new team.
-    if (event is SingleTeamAdd) {
-      yield SingleTeamSaving(state: currentState);
-      if (currentState.team.publicOnly) {
-        yield SingleTeamSaveFailed(
-            state: currentState,
-            error: ArgumentError("Cannot save a public team"));
-      } else {
-        try {
-          var pregenTeam =
-              teamBloc.coordinationBloc.databaseUpdateModel.precreateTeamUid();
-          var pregenSeason = teamBloc.coordinationBloc.databaseUpdateModel
-              .precreateUidSeason();
-          event.newSeason.uid = pregenSeason.documentID;
-          event.newSeason.teamUid = pregenTeam.documentID;
-          event.newTeam.uid = pregenTeam.documentID;
-          event.newTeam.currentSeason = pregenSeason.documentID;
-          event.newTeam.seasons[pregenSeason.documentID] =
-              event.newSeason.build();
-
-          Team updatedTeam = event.newTeam.build();
-          await teamBloc.coordinationBloc.databaseUpdateModel
-              .addFirestoreTeam(event.newTeam.build(), pregenTeam);
-          await teamBloc.coordinationBloc.databaseUpdateModel
-              .addFirestoreSeason(event.newSeason.build(), pregenSeason);
-          yield SingleTeamLoaded(
-              state: currentState,
-              team: updatedTeam,
-              invitesAsAdmin: currentState.invitesAsAdmin);
-        } catch (e) {
-          yield SingleTeamSaveFailed(state: currentState, error: e);
-        }
-      }
-    }
-
     if (event is SingleTeamAddAdmin) {
       yield SingleTeamSaving(state: currentState);
       try {
@@ -454,6 +418,14 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
     if (event is SingleTeamUpdateClub) {
       Team myTeam =
           currentState.team.rebuild((b) => b..clubUid = event.clubUid);
+      await teamBloc.coordinationBloc.databaseUpdateModel
+          .updateFirestoreTeam(myTeam);
+      yield SingleTeamLoaded(state: currentState, team: myTeam);
+    }
+
+    if (event is SingleTeamArchive) {
+      Team myTeam =
+          currentState.team.rebuild((b) => b..archived = event.archive);
       await teamBloc.coordinationBloc.databaseUpdateModel
           .updateFirestoreTeam(myTeam);
       yield SingleTeamLoaded(state: currentState, team: myTeam);

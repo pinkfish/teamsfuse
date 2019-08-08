@@ -77,20 +77,6 @@ class _InviteEventLoadFirestore extends InviteEvent {
 }
 
 ///
-/// Sends the invite off to invite world.
-///
-class InviteEventAddToPlayer extends InviteEvent {
-  final String playerUid;
-  final String email;
-  final String playerName;
-
-  InviteEventAddToPlayer(
-      {@required this.playerUid,
-      @required this.email,
-      @required this.playerName});
-}
-
-///
 /// Deletes a specific invite.
 ///
 class InviteEventDeleteInvite extends InviteEvent {

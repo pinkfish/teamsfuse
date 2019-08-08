@@ -54,9 +54,9 @@ class ClubMembers extends StatelessWidget {
   }
 
   Widget _buildFromFuture(
-      BuildContext context, UserState state, bool admin, String uid) {
-    if ((state is UserLoaded) && state.users.containsKey(uid)) {
-      FusedUserProfile profile = state.users[uid];
+      BuildContext context, SingleProfileState state, bool admin, String uid) {
+    if ((state is ProfileLoaded)) {
+      FusedUserProfile profile = state.profile;
       if (profile != null) {
         AuthenticationBloc authenticationBloc =
             BlocProvider.of<AuthenticationBloc>(context);
@@ -84,20 +84,32 @@ class ClubMembers extends StatelessWidget {
     List<Widget> members = <Widget>[];
 
     for (String adminUid in club.adminsUids) {
+      var bloc = SingleProfileBloc(
+          authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+          profileUid: adminUid);
       members.add(
-        BlocBuilder(
-          bloc: BlocProvider.of<UserBloc>(context),
-          builder: (BuildContext context, UserState state) =>
-              _buildFromFuture(context, state, true, adminUid),
+        BlocProvider(
+          builder: (BuildContext context) => bloc,
+          child: BlocBuilder(
+            bloc: bloc,
+            builder: (BuildContext context, SingleProfileState state) =>
+                _buildFromFuture(context, state, true, adminUid),
+          ),
         ),
       );
     }
     for (String memberUid in club.members) {
+      var bloc = SingleProfileBloc(
+          authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+          profileUid: memberUid);
       members.add(
-        BlocBuilder(
-          bloc: BlocProvider.of<UserBloc>(context),
-          builder: (BuildContext context, UserState state) =>
-              _buildFromFuture(context, state, false, memberUid),
+        BlocProvider(
+          builder: (BuildContext context) => bloc,
+          child: BlocBuilder(
+            bloc: bloc,
+            builder: (BuildContext context, SingleProfileState state) =>
+                _buildFromFuture(context, state, false, memberUid),
+          ),
         ),
       );
     }

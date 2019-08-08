@@ -21,25 +21,6 @@ abstract class InviteToPlayer
       _$InviteToPlayer;
   InviteToPlayer._();
 
-  /*
-  InviteToPlayer(
-      {this.playerUid,
-      this.playerName,
-      String email,
-      String uid,
-      String sentByUid})
-      : super(
-            email: email,
-            uid: uid,
-            type: InviteType.Player,
-            sentByUid: sentByUid);
-
-  InviteToPlayer.copy(InviteToPlayer player)
-      : playerUid = player.playerUid,
-        playerName = player.playerName,
-        super.copy(player);
-        */
-
   static const String PLAYERUID = 'playerUid';
 
   static InviteToPlayerBuilder fromJSON(String uid, Map<String, dynamic> data) {
@@ -57,28 +38,4 @@ abstract class InviteToPlayer
 
     return ret;
   }
-
-  /*
-  @override
-  String toString() {
-    return 'InviteToPlayer{${super.toString()} playerUid: $playerUid, playerName: $playerName}';
-  }
-
-  @override
-  int compareTo(Invite other) {
-    if (baseCompareTo(other) != 0) {
-      return -1;
-    }
-    if (other is InviteToPlayer) {
-      if (playerName.compareTo(other.playerName) != 0) {
-        return -1;
-      }
-      if (playerUid.compareTo(other.playerUid) != 0) {
-        return -1;
-      }
-      return 0;
-    }
-    return 1;
-  }
-  */
 }

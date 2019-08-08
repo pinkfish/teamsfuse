@@ -1,4 +1,3 @@
-
 part of firestore_wrapper;
 
 ///
@@ -15,6 +14,11 @@ abstract class FirestoreWrapper {
   /// Creates a new [StorageReference] initialized at the root
   /// Firebase Storage location.
   StorageReferenceWrapper storageRef();
+
+  // Runs a transaction.dart.
+  Future<Map<String, dynamic>> runTransaction(
+      TransactionHandler transactionHandler,
+      {Duration timeout = const Duration(seconds: 5)});
 
   /// Returns the auth wrapper to deal with the auth system.
   AuthWrapper get auth;

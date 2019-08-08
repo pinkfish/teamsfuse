@@ -6,7 +6,8 @@ import 'package:fusemodel/fusemodel.dart';
 
 class SeasonFormField extends FormField<String> {
   SeasonFormField({
-    @required SingleTeamBloc teamBloc,
+    SingleTeamBloc teamBloc,
+    Team team,
     Key key,
     String initialValue: none,
     bool enabled: true,
@@ -17,7 +18,7 @@ class SeasonFormField extends FormField<String> {
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
   })  : assert(initialValue != null),
-        assert(teamBloc != null),
+        assert(teamBloc != null || team != null),
         super(
           key: key,
           initialValue: initialValue,
@@ -29,27 +30,48 @@ class SeasonFormField extends FormField<String> {
             final InputDecoration effectiveDecoration = (decoration ??
                     const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-            return BlocBuilder(
-              bloc: teamBloc,
-              builder: (BuildContext context, SingleTeamState singleTeamState) {
-                return InputDecorator(
-                  decoration: effectiveDecoration,
-                  child: DropdownButton<String>(
-                      hint: new Text(Messages.of(state.context).seasonselect),
-                      value: state.value,
-                      items: state._buildItems(state.context, singleTeamState),
-                      onChanged: enabled
-                          ? (String val) {
-                              state.updateValue(val);
-                              field.didChange(val);
-                              if (onFieldSubmitted != null) {
-                                onFieldSubmitted(val);
+            if (teamBloc != null) {
+              return BlocBuilder(
+                bloc: teamBloc,
+                builder:
+                    (BuildContext context, SingleTeamState singleTeamState) {
+                  return InputDecorator(
+                    decoration: effectiveDecoration,
+                    child: DropdownButton<String>(
+                        hint: new Text(Messages.of(state.context).seasonselect),
+                        value: state.value,
+                        items: state._buildItems(
+                            state.context, singleTeamState.team),
+                        onChanged: enabled
+                            ? (String val) {
+                                state.updateValue(val);
+                                field.didChange(val);
+                                if (onFieldSubmitted != null) {
+                                  onFieldSubmitted(val);
+                                }
                               }
+                            : null),
+                  );
+                },
+              );
+            } else {
+              return InputDecorator(
+                decoration: effectiveDecoration,
+                child: DropdownButton<String>(
+                    hint: new Text(Messages.of(state.context).seasonselect),
+                    value: state.value,
+                    items: state._buildItems(state.context, team),
+                    onChanged: enabled
+                        ? (String val) {
+                            state.updateValue(val);
+                            field.didChange(val);
+                            if (onFieldSubmitted != null) {
+                              onFieldSubmitted(val);
                             }
-                          : null),
-                );
-              },
-            );
+                          }
+                        : null),
+              );
+            }
           },
         );
 
@@ -75,8 +97,7 @@ class SeasonFormFieldState extends FormFieldState<String> {
     setValue(val);
   }
 
-  List<DropdownMenuItem<String>> _buildItems(
-      BuildContext context, SingleTeamState state) {
+  List<DropdownMenuItem<String>> _buildItems(BuildContext context, Team state) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     if (_teamUid != null) {
       if (_includeNone) {
@@ -91,7 +112,7 @@ class SeasonFormFieldState extends FormFieldState<String> {
           value: SeasonFormField.createNew,
         ));
       }
-      state.team.seasons.forEach((String key, Season season) {
+      state.seasons.forEach((String key, Season season) {
         ret.add(new DropdownMenuItem<String>(
             child: new Text(season.name), value: season.uid));
       });

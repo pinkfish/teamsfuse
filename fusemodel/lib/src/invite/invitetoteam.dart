@@ -8,6 +8,21 @@ import 'invite.dart';
 part 'invitetoteam.g.dart';
 
 ///
+/// This is used in parts of the api to handle an invite to the team without
+/// everything that is needed for it.
+///
+abstract class InviteTeamData
+    implements Built<InviteTeamData, InviteTeamDataBuilder> {
+  String get email;
+  String get playerName;
+  RoleInTeam get role;
+
+  factory InviteTeamData([void Function(InviteTeamDataBuilder) updates]) =
+      _$InviteTeamData;
+  InviteTeamData._();
+}
+
+///
 /// Invited to the team.
 ///
 abstract class InviteToTeam
@@ -24,33 +39,6 @@ abstract class InviteToTeam
   factory InviteToTeam([void Function(InviteToTeamBuilder) updates]) =
       _$InviteToTeam;
   InviteToTeam._();
-
-  /*
-  InviteToTeam(
-      {String email,
-      String uid,
-      String sentByUid,
-      this.teamUid,
-      this.teamName,
-      this.seasonName,
-      this.seasonUid,
-      this.playerName,
-      this.role = RoleInTeam.Player})
-      : super(
-            email: email,
-            uid: uid,
-            type: InviteType.Team,
-            sentByUid: sentByUid);
-
-  InviteToTeam.copy(InviteToTeam invite)
-      : teamName = invite.teamName,
-        seasonName = invite.seasonName,
-        teamUid = invite.teamUid,
-        seasonUid = invite.seasonUid,
-        playerName = new List<String>.from(invite.playerName),
-        role = invite.role,
-        super.copy(invite) {}
-        */
 
   static const String TEAMUID = 'teamUid';
   static const String TEAMNAME = 'teamName';

@@ -214,17 +214,20 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<String> loadMessage(Message mess) async {
+  Stream<String> loadMessageBody(String messageUid) async* {
     DocumentReferenceWrapper ref = wrapper
         .collection("Messages")
-        .document(mess.uid)
+        .document(messageUid)
         .collection(Message.BODY)
-        .document(mess.uid);
+        .document(messageUid);
     DocumentSnapshotWrapper snap = await ref.get();
     if (snap.exists) {
-      return snap.data[Message.BODY] as String;
+      yield snap.data[Message.BODY] as String;
+      await for (DocumentSnapshotWrapper snapper in ref.snapshots()) {
+        yield snapper.data[Message.BODY];
+      }
     }
-    return null;
+    yield null;
   }
 
   @override
@@ -341,18 +344,31 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<String> addFirestoreTeam(
-      Team team, DocumentReferenceWrapper pregen) async {
+  Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen,
+      Season season, File imageFile) async {
     // Add or update this record into the database.
     CollectionReferenceWrapper ref = wrapper.collection(TEAMS_COLLECTION);
     // Add the game.
     DocumentReferenceWrapper doc;
-    if (pregen != null) {
-      await pregen.setData(team.toJSON());
-    } else {
-      doc = await ref.add(team.toJSON());
+    if (pregen == null) {
+      pregen = wrapper.collection(TEAMS_COLLECTION).document();
     }
-    return doc.documentID;
+    DocumentReferenceWrapper pregenSeason =
+        wrapper.collection(SEASONS_COLLECTION).document();
+    wrapper.runTransaction((TransactionWrapper tx) async {
+      await tx.set(pregen, team.toJSON());
+      await tx.set(
+          pregenSeason,
+          season
+              .rebuild((b) => b..uid = pregen.documentID)
+              .toJSON(includePlayers: true));
+      if (imageFile != null) {}
+    });
+    if (imageFile != null) {
+      updateTeamImage(pregen.documentID, imageFile);
+    }
+
+    return pregen.documentID;
   }
 
   @override
@@ -368,18 +384,17 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Team> updateTeamImage(Team team, File imgFile) async {
+  Future<Uri> updateTeamImage(String teamUid, File imgFile) async {
     final StorageReferenceWrapper ref =
-        wrapper.storageRef().child("team_" + team.uid + ".img");
+        wrapper.storageRef().child("team_" + teamUid + ".img");
     final StorageUploadTaskWrapper task = ref.putFile(imgFile);
     final UploadTaskSnapshotWrapper snapshot = await task.future;
-    Team updatedTeam =
-        team.rebuild((b) => b..photoUrl = snapshot.downloadUrl.toString());
+    Uri photoUrl = snapshot.downloadUrl;
     await wrapper
         .collection(TEAMS_COLLECTION)
-        .document(team.uid)
-        .updateData({PHOTOURL: team.photoUrl});
-    return updatedTeam;
+        .document(teamUid)
+        .updateData({PHOTOURL: photoUrl.toString()});
+    return photoUrl;
   }
 
   @override

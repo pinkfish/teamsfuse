@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -12,56 +13,23 @@ class ShowMessageScreen extends StatelessWidget {
   final String messageUid;
 
   void _archiveMessage(BuildContext context) {
-    AuthenticationBloc authenticationBloc =
-        BlocProvider.of<AuthenticationBloc>(context);
-
-    if (UserDatabaseData.instance.messages.containsKey(messageUid)) {
-      if (UserDatabaseData.instance.messages[messageUid].recipients
-          .containsKey(authenticationBloc.currentUser.uid)) {
-        UserDatabaseData.instance.messages[messageUid]
-            .recipients[authenticationBloc.currentUser.uid]
-            .updateState(MessageState.Archived);
-        Navigator.pop(context);
-      }
-    }
+    SingleMessageBloc bloc = BlocProvider.of<SingleMessageBloc>(context);
+    bloc.dispatch(SingleMessageArchive());
   }
 
   void _deleteMessage(BuildContext context) {
-    AuthenticationBloc authenticationBloc =
-        BlocProvider.of<AuthenticationBloc>(context);
-
-    if (UserDatabaseData.instance.messages.containsKey(messageUid)) {
-      if (UserDatabaseData.instance.messages[messageUid].recipients
-          .containsKey(authenticationBloc.currentUser.uid)) {
-        UserDatabaseData.instance.messages[messageUid]
-            .recipients[authenticationBloc.currentUser.uid]
-            .firestoreDelete();
-        Navigator.pop(context);
-      }
-    }
+    SingleMessageBloc bloc = BlocProvider.of<SingleMessageBloc>(context);
+    bloc.dispatch(SingleMessageDelete());
   }
 
   void _readMessage(BuildContext context) {
-    AuthenticationBloc authenticationBloc =
-        BlocProvider.of<AuthenticationBloc>(context);
-
-    if (UserDatabaseData.instance.messages.containsKey(messageUid)) {
-      if (UserDatabaseData.instance.messages[messageUid].recipients
-          .containsKey(authenticationBloc.currentUser.uid)) {
-        if (UserDatabaseData.instance.messages[messageUid]
-                .recipients[authenticationBloc.currentUser.uid].state ==
-            MessageState.Unread) {
-          UserDatabaseData.instance.messages[messageUid]
-              .recipients[authenticationBloc.currentUser.uid]
-              .updateState(MessageState.Read);
-        }
-      }
-    }
+    SingleMessageBloc bloc = BlocProvider.of<SingleMessageBloc>(context);
+    bloc.dispatch(SingleMessageRead());
   }
 
-  Widget _showMessage(BuildContext context) {
+  Widget _showMessage(BuildContext context, SingleMessageState state) {
     Messages messages = Messages.of(context);
-    Message mess = UserDatabaseData.instance.messages[messageUid];
+    Message mess = state.message;
     List<Widget> kids = <Widget>[];
     _readMessage(context);
     kids.add(
@@ -141,7 +109,8 @@ class ShowMessageScreen extends StatelessWidget {
       new Container(
         alignment: Alignment.topLeft,
         margin: new EdgeInsets.only(left: 15.0),
-        child: new Text(mess.message),
+        child: new Text(
+            state.body == null ? Messages.of(context).loading : state.body),
       ),
     );
 
@@ -157,12 +126,34 @@ class ShowMessageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
-
+    var bloc = SingleMessageBloc(
+        messageUid: messageUid,
+        messageBloc: BlocProvider.of<MessagesBloc>(context));
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(messages.message),
       ),
-      body: _showMessage(context),
+      body: BlocProvider(
+        builder: (BuildContext context) => bloc,
+        child: BlocListener(
+          bloc: bloc,
+          listener: (BuildContext context, SingleMessageState state) {
+            if (state is SingleMessageDeleted) {
+              Navigator.pop(context);
+            }
+
+            if (state is SingleMessageSaveFailed) {}
+          },
+          child: BlocBuilder(
+            bloc: bloc,
+            builder: (BuildContext context, SingleMessageState state) =>
+                SavingOverlay(
+              saving: state is SingleMessageSaving,
+              child: _showMessage(context, state),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

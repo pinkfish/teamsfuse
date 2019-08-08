@@ -5,10 +5,12 @@ import 'package:fusemodel/blocs.dart';
 
 import '../blocs/singleuserprovider.dart';
 
-class ByUserNameComponent extends StatelessWidget {
+class UserName extends StatelessWidget {
   final String userId;
+  final TextOverflow overflow;
+  final TextStyle style;
 
-  ByUserNameComponent({@required this.userId});
+  UserName({@required this.userId, this.overflow, this.style});
 
   Widget build(BuildContext context) {
     return SingleProfileProvider(
@@ -18,10 +20,17 @@ class ByUserNameComponent extends StatelessWidget {
         builder: (BuildContext context, SingleProfileState state) {
           Widget inner;
           if (state is SingleProfileLoaded) {
-            inner =
-                Text(Messages.of(context).invitedby(state.profile.displayName));
+            inner = Text(
+              state.profile.displayName,
+              overflow: overflow,
+              style: style,
+            );
           } else {
-            inner = Text(Messages.of(context).loading);
+            inner = Text(
+              Messages.of(context).loading,
+              overflow: overflow,
+              style: style,
+            );
           }
           return AnimatedSwitcher(
             duration: Duration(milliseconds: 200),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+///
+/// Displays the user image.
+///
 class UserImage extends CircleAvatar {
   UserImage(
     FusedUserProfile profile, {

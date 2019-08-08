@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +11,7 @@ import 'cachednetworkimage.dart';
 class TeamImage extends StatelessWidget {
   TeamImage(
       {this.team,
+      this.teamImage,
       this.teamUid,
       Key key,
       this.width = 200.0,
@@ -22,11 +25,12 @@ class TeamImage extends StatelessWidget {
       : super(
           key: key,
         ) {
-    assert(team != null || teamUid != null);
+    assert(team != null || teamUid != null || teamImage != null);
   }
 
   final String teamUid;
   final Team team;
+  final File teamImage;
   final double width;
   final double height;
   final Color color;
@@ -37,6 +41,9 @@ class TeamImage extends StatelessWidget {
   final bool showIcon;
 
   ImageProvider _providerFromTeam(Team team) {
+    if (teamImage != null) {
+      return FileImage(teamImage);
+    }
     String photoUrl = team.photoUrl;
     if (photoUrl != null && photoUrl.isNotEmpty) {
       return new CachedNetworkImageProvider(urlNow: photoUrl);
@@ -64,8 +71,32 @@ class TeamImage extends StatelessWidget {
   }
   */
 
+  Widget _buildImageBit(Team t) {
+    return ClipOval(
+      child: SizedBox(
+        width: width < height ? width : height,
+        height: width < height ? width : height,
+        child: FittedBox(
+          fit: fit,
+          child: FadeInImage(
+            fadeInDuration: Duration(milliseconds: 200),
+            fadeOutDuration: Duration(milliseconds: 200),
+            image: _providerFromTeam(t),
+            alignment: alignment,
+            repeat: repeat,
+            matchTextDirection: matchTextDirection,
+            placeholder: AssetImage("assets/images/defaultavatar2.png"),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (teamImage != null) {
+      return _buildImageBit(null);
+    }
     return BlocBuilder(
       bloc: BlocProvider.of<TeamBloc>(context),
       builder: (BuildContext context, TeamState teamState) {
@@ -78,24 +109,7 @@ class TeamImage extends StatelessWidget {
             t.photoUrl != null &&
             (t.photoUrl.isNotEmpty || width > 50.0 || !showIcon)) {
           // Yay!
-          inner = ClipOval(
-            child: SizedBox(
-              width: width < height ? width : height,
-              height: width < height ? width : height,
-              child: FittedBox(
-                fit: fit,
-                child: FadeInImage(
-                  fadeInDuration: Duration(milliseconds: 200),
-                  fadeOutDuration: Duration(milliseconds: 200),
-                  image: _providerFromTeam(t),
-                  alignment: alignment,
-                  repeat: repeat,
-                  matchTextDirection: matchTextDirection,
-                  placeholder: AssetImage("assets/images/defaultavatar2.png"),
-                ),
-              ),
-            ),
-          );
+          inner = _buildImageBit(t);
         } else {
           // Try and load the public team.
           if (t == null) {

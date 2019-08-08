@@ -7,133 +7,139 @@ import 'package:meta/meta.dart';
 
 import '../authenticationbloc.dart';
 
-abstract class SingleUserState extends Equatable {
+abstract class SingleProfileState extends Equatable {
   final FusedUserProfile profile;
 
-  SingleUserState({@required this.profile});
+  SingleProfileState({@required this.profile});
 }
 
 ///
-/// We have a User, default state.
+/// We have a Profile, default state.
 ///
-class SingleUserUnitialized extends SingleUserState {
-  SingleUserUnitialized() : super(profile: null);
+class SingleProfileUnitialized extends SingleProfileState {
+  SingleProfileUnitialized() : super(profile: null);
 
   @override
   String toString() {
-    return 'SingleUserLoaded{}';
+    return 'SingleProfileLoaded{}';
   }
 }
 
 ///
-/// We have a User, default state.
+/// We have a Profile, default state.
 ///
-class SingleUserLoaded extends SingleUserState {
-  SingleUserLoaded({@required FusedUserProfile profile})
+class SingleProfileLoaded extends SingleProfileState {
+  SingleProfileLoaded({@required FusedUserProfile profile})
       : super(profile: profile);
 
   @override
   String toString() {
-    return 'SingleUserLoaded{}';
+    return 'SingleProfileLoaded{}';
   }
 }
 
 ///
 /// Saving operation in progress.
 ///
-class SingleUserSaving extends SingleUserState {
-  SingleUserSaving({@required FusedUserProfile profile})
+class SingleProfileSaving extends SingleProfileState {
+  SingleProfileSaving({@required FusedUserProfile profile})
       : super(profile: profile);
 
   @override
   String toString() {
-    return 'SingleUserSaving{}';
+    return 'SingleProfileSaving{}';
   }
 }
 
 ///
 /// Saving operation failed (goes back to loaded for success).
 ///
-class SingleUserSaveFailed extends SingleUserState {
+class SingleProfileSaveFailed extends SingleProfileState {
   final Error error;
 
-  SingleUserSaveFailed(
+  SingleProfileSaveFailed(
       {@required FusedUserProfile profile, @required this.error})
       : super(profile: profile);
 
   @override
   String toString() {
-    return 'SingleUserSaveFailed{}';
+    return 'SingleProfileSaveFailed{}';
   }
 }
 
 ///
-/// User got deleted.
+/// Profile got deleted.
 ///
-class SingleUserDeleted extends SingleUserState {
-  SingleUserDeleted() : super(profile: null);
+class SingleProfileDeleted extends SingleProfileState {
+  SingleProfileDeleted() : super(profile: null);
 
   @override
   String toString() {
-    return 'SingleUserDeleted{}';
+    return 'SingleProfileDeleted{}';
   }
 }
 
-abstract class SingleUserEvent extends Equatable {}
+abstract class SingleProfileEvent extends Equatable {}
 
 ///
-/// Updates the User (writes it out to firebase.
+/// Updates the Profile (writes it out to firebase.
 ///
-class SingleUserUpdate extends SingleUserEvent {
+class SingleProfileUpdate extends SingleProfileEvent {
   final FusedUserProfile profile;
 
-  SingleUserUpdate({@required this.profile});
+  SingleProfileUpdate({@required this.profile});
 }
 
-class _SingleUserNewUser extends SingleUserEvent {
+class _SingleProfileNewProfile extends SingleProfileEvent {
   final FusedUserProfile profile;
 
-  _SingleUserNewUser({@required this.profile});
+  _SingleProfileNewProfile({@required this.profile});
 }
 
-class _SingleUserDeleted extends SingleUserEvent {
-  _SingleUserDeleted();
+class _SingleProfileDeleted extends SingleProfileEvent {
+  _SingleProfileDeleted();
 }
 
 ///
-/// Bloc to handle updates and state of a specific User.
+/// Bloc to handle updates and state of a specific Profile.
 ///
-class SingleUserBloc extends Bloc<SingleUserEvent, SingleUserState> {
+class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
   final AuthenticationBloc authenticationBloc;
-  final String userUid;
+  final String profileUid;
 
-  SingleUserBloc({@required this.authenticationBloc, @required this.userUid}) {
-    authenticationBloc.userAuth
-        .getProfile(userUid)
-        .then((FusedUserProfile profile) {
-      dispatch(_SingleUserNewUser(profile: profile));
-    }).catchError((Error e) {
-      dispatch(_SingleUserDeleted());
+  StreamSubscription<FusedUserProfile> _profileSub;
+
+  SingleProfileBloc(
+      {@required this.authenticationBloc, @required this.profileUid}) {
+    _profileSub = authenticationBloc.userAuth
+        .getProfileStream(profileUid)
+        .listen((FusedUserProfile profile) {
+      if (profile == null) {
+        dispatch(_SingleProfileDeleted());
+      } else {
+        dispatch(_SingleProfileNewProfile(profile: profile));
+      }
     });
   }
 
   @override
   void dispose() {
     super.dispose();
+    _profileSub?.cancel();
   }
 
   @override
-  SingleUserState get initialState => SingleUserUnitialized();
+  SingleProfileState get initialState => SingleProfileUnitialized();
 
   @override
-  Stream<SingleUserState> mapEventToState(SingleUserEvent event) async* {
-    if (event is _SingleUserNewUser) {
-      yield SingleUserLoaded(profile: event.profile);
+  Stream<SingleProfileState> mapEventToState(SingleProfileEvent event) async* {
+    if (event is _SingleProfileNewProfile) {
+      yield SingleProfileLoaded(profile: event.profile);
     }
 
-    // The User is deleted.
-    if (event is _SingleUserDeleted) {
-      yield SingleUserDeleted();
+    // The Profile is deleted.
+    if (event is _SingleProfileDeleted) {
+      yield SingleProfileDeleted();
     }
   }
 }

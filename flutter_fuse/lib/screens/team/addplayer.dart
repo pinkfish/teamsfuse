@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:flutter_fuse/services/validations.dart';
-import 'package:fusemodel/firestore.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/form/roleinteamformfield.dart';
-import 'package:flutter_fuse/services/analytics.dart';
-import 'dart:async';
+import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+import '../../widgets/blocs/singleteamprovider.dart';
 
 class AddPlayerScreen extends StatefulWidget {
   AddPlayerScreen(this._teamUid, this._seasonUid);
@@ -24,9 +26,7 @@ class AddPlayerScreen extends StatefulWidget {
 class EmailName {
   final GlobalKey<FormFieldState<String>> nameKey =
       new GlobalKey<FormFieldState<String>>();
-  String email = '';
-  String name = '';
-  RoleInTeam role = RoleInTeam.NonPlayer;
+  InviteTeamData data;
   FocusNode focusNodeEmail = new FocusNode();
   FocusNode focusNodeName = new FocusNode();
 }
@@ -37,6 +37,8 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
   bool autovalidate = false;
   String _curSeasonUid;
 
+  AddInviteBloc addInviteBloc;
+
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
@@ -44,6 +46,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
   void initState() {
     super.initState();
     _curSeasonUid = widget._seasonUid;
+    addInviteBloc = AddInviteBloc();
   }
 
   void _showInSnackBar(String value) {
@@ -59,26 +62,16 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
       _formKey.currentState.save();
       // Send the invite, cloud functions will handle the email
       // part of this.
-      Team team = UserDatabaseData.instance.teams[widget._teamUid];
-      Season season = team.seasons[_curSeasonUid];
-      UserData user = await UserDatabaseData.instance.userAuth.currentUser();
-      await Future.forEach<EmailName>(_emailNames, (EmailName en) async {
-        Analytics.analytics
-            .logShare(contentType: 'inviteToTeam', itemId: team.uid);
-        return season.inviteUser(
-            email: en.email,
-            playername: en.name,
-            userId: user.uid,
-            role: en.role);
-      });
-      Navigator.pop(context);
+      addInviteBloc.dispatch(InvitePlayersToTeam(
+          seasonUid: widget._seasonUid,
+          invites: _emailNames.map((b) => b.data)));
     } else {
       autovalidate = true;
       _showInSnackBar(Messages.of(context).formerror);
     }
   }
 
-  Widget _buildForm() {
+  Widget _buildForm(SingleTeamBloc singleTeamBloc) {
     List<Widget> rows = <Widget>[];
     Messages messages = Messages.of(context);
 
@@ -86,7 +79,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
       new DropdownButtonHideUnderline(
         child: new SeasonFormField(
           initialValue: _curSeasonUid,
-          teamUid: widget._teamUid,
+          teamBloc: singleTeamBloc,
           onSaved: (String value) {
             _curSeasonUid = value;
           },
@@ -115,7 +108,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
             focusNode: en.focusNodeName,
             keyboardType: TextInputType.text,
             onSaved: (String value) {
-              en.name = value;
+              en.data = en.data.rebuild((b) => b..playerName = value);
             },
           ),
         ),
@@ -145,7 +138,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
               }
             },
             onSaved: (String value) {
-              en.email = value;
+              en.data = en.data.rebuild((b) => b..email = value);
             },
           ),
         ),
@@ -162,8 +155,9 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
             return _validations.validateRoleInTeam(context, val);
           },
           onSaved: (String val) {
-            en.role = RoleInTeam.values
-                .firstWhere((RoleInTeam e) => e.toString() == val);
+            en.data = en.data.rebuild((b) => b
+              ..role = RoleInTeam.values
+                  .firstWhere((RoleInTeam e) => e.toString() == val));
           },
         ),
       );
@@ -194,12 +188,38 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).addplayer),
+    return BlocProvider(
+      builder: (BuildContext context) => addInviteBloc,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: new AppBar(
+          title: new Text(Messages.of(context).addplayer),
+        ),
+        body: BlocListener(
+          bloc: addInviteBloc,
+          listener: (BuildContext context, AddItemState state) {
+            if (state is AddItemDone) {
+              Navigator.pop(context);
+            }
+            if (state is AddItemSaveFailed) {
+              _showInSnackBar(Messages.of(context).formerror);
+            }
+          },
+          child: BlocBuilder(
+            bloc: addInviteBloc,
+            builder: (BuildContext context, AddItemState state) =>
+                SavingOverlay(
+              saving: state is AddItemSaving,
+              child: SingleTeamProvider(
+                teamUid: widget._teamUid,
+                builder:
+                    (BuildContext contextl, SingleTeamBloc singleTeamBloc) =>
+                        _buildForm(singleTeamBloc),
+              ),
+            ),
+          ),
+        ),
       ),
-      body: _buildForm(),
     );
   }
 }

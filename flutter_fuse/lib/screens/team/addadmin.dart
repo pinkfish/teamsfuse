@@ -22,7 +22,8 @@ class AddAdminScreenState extends State<AddAdminScreen> {
   final Validations _validations = new Validations();
   List<String> _emailNames = <String>[];
   bool autovalidate = false;
-  bool _saving = false;
+
+  AddInviteBloc addInviteBloc;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
@@ -35,29 +36,27 @@ class AddAdminScreenState extends State<AddAdminScreen> {
     );
   }
 
+  @override
+  void initState() {
+    addInviteBloc = AddInviteBloc(
+        coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
+  }
+
   void _handleSubmit() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       // Send the invite, cloud functions will handle the email
       // part of this.
-      setState(() {
-        _saving = true;
-      });
-      InviteBloc bloc = BlocProvider.of<InviteBloc>(context);
       TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
       for (String en in _emailNames) {
         print("Sending to $en");
         Analytics.analytics
             .logShare(contentType: 'inviteAsAdmin', itemId: widget._teamUid);
-        bloc.dispatch(InviteEventAddAsAdmin(
+        addInviteBloc.dispatch(InviteEventAddAsAdmin(
             teamUid: widget._teamUid,
             email: en,
             teamName: teamBloc.currentState.getTeam(widget._teamUid).name));
       }
-      setState(() {
-        _saving = false;
-      });
-      Navigator.pop(context);
     } else {
       autovalidate = true;
       _showInSnackBar(Messages.of(context).formerror);
@@ -124,18 +123,36 @@ class AddAdminScreenState extends State<AddAdminScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).addadmin),
-      ),
-      body: new SavingOverlay(
-        saving: _saving,
-        child: _buildForm(),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () => save(),
-        child: const Icon(Icons.check),
+    return BlocProvider(
+      builder: (BuildContext context) => addInviteBloc,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: new AppBar(
+          title: new Text(Messages.of(context).addadmin),
+        ),
+        body: BlocListener(
+          bloc: addInviteBloc,
+          listener: (BuildContext context, AddItemState state) {
+            if (state is AddItemDone) {
+              Navigator.pop(context);
+            }
+            if (state is AddItemSaveFailed) {
+              _showInSnackBar(Messages.of(context).formerror);
+            }
+          },
+          child: BlocBuilder(
+            bloc: addInviteBloc,
+            builder: (BuildContext context, AddItemState state) =>
+                SavingOverlay(
+              saving: state is AddItemSaving,
+              child: _buildForm(),
+            ),
+          ),
+        ),
+        floatingActionButton: new FloatingActionButton(
+          onPressed: () => save(),
+          child: const Icon(Icons.check),
+        ),
       ),
     );
   }
