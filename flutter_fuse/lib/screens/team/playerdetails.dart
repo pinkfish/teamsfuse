@@ -1,25 +1,18 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/blocs/singleplayerprovider.dart';
+import 'package:flutter_fuse/widgets/blocs/singleprofileprovider.dart';
+import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
+import 'package:flutter_fuse/widgets/blocs/singleteamseasonplayerprovider.dart';
 import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
 import 'package:flutter_fuse/widgets/util/playername.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-class PlayerDetailsScreen extends StatefulWidget {
-  PlayerDetailsScreen(this.teamUid, this.seasonUid, this.playerUid);
-  final String teamUid;
-  final String seasonUid;
-  final String playerUid;
-
-  @override
-  PlayerDetailsScreenState createState() {
-    return new PlayerDetailsScreenState();
-  }
-}
 
 class _RoleInTeamAlertDialog extends StatefulWidget {
   _RoleInTeamAlertDialog(this.initialRole);
@@ -90,56 +83,45 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
   }
 }
 
-class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
-  SeasonPlayer _player;
-  Team _team;
-  Season _season;
-  Player _playerDetails;
+class PlayerDetailsScreen extends StatelessWidget {
+  PlayerDetailsScreen(this.teamUid, this.seasonUid, this.playerUid);
 
-  StreamSubscription<UpdateReason> _stream;
+  final String teamUid;
+  final String seasonUid;
+  final String playerUid;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  @override
-  void initState() {
-    print('initState');
-    super.initState();
-    // Lookup the player.
-    _team = UserDatabaseData.instance.teams[widget.teamUid];
-    _season = _team.seasons[widget.seasonUid];
-    List<SeasonPlayer> seasonPlayers = _season.players;
-    _player = seasonPlayers.firstWhere((SeasonPlayer player) {
-      return player.playerUid == widget.playerUid;
-    });
-    _stream = UserDatabaseData.instance.playerStream.listen(_playerUpdated);
-    // Get the actual player too, so we can show who else is associated
-    // with them.
-    _playerUpdated(UpdateReason.Update);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    if (_stream != null) {
-      _stream.cancel();
-      _stream = null;
-    }
-  }
-
-  void _changeRole() async {
+  void _changeRole(BuildContext context, SingleTeamSeasonPlayerBloc bloc,
+      SingleTeamSeasonPlayerState state) async {
+    SeasonPlayer player = state.seasonPlayer;
     RoleInTeam role = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return new _RoleInTeamAlertDialog(_player.role);
+        return new _RoleInTeamAlertDialog(player.role);
       },
     );
     if (role != null) {
-      _season.updateRoleInTeam(_player, role);
-      _player.role = role;
+      bloc.dispatch(SingleTeamSeasonPlayerUpdate(
+          player: player.rebuild((b) => b..role = role)));
     }
   }
 
-  void _removeFromTeam() async {
+  void _showInSnackBar(String value) {
+    _scaffoldKey.currentState.showSnackBar(
+      new SnackBar(
+        content: new Text(value),
+      ),
+    );
+  }
+
+  void _removeFromTeam(
+      BuildContext context,
+      SingleTeamSeasonPlayerState playerState,
+      SingleTeamSeasonPlayerBloc playerBloc) async {
     Messages mess = Messages.of(context);
 
+    var bloc = SinglePlayerBloc(
+        playerBloc: playerBloc.playerBloc, playerUid: playerBloc.playerUid);
     bool result = await showDialog<bool>(
         context: context,
         barrierDismissible: false, // user must tap button!
@@ -148,22 +130,21 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
             title: new Text(mess.deleteplayer),
             content: new Scrollbar(
               child: new SingleChildScrollView(
-                child: new ListBody(
-                  children: <Widget>[
-                    new FutureBuilder<Player>(
-                        future: UserDatabaseData.instance
-                            .getPlayer(_player.playerUid),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<Player> player) {
-                          if (player.hasData) {
-                            return new Text(
-                                mess.confirmremovefromteam(player.data.name));
-                          }
-                          return new Text(
-                              mess.confirmremovefromteam(mess.loading));
-                        }),
-                  ],
-                ),
+                child: BlocBuilder(
+                    bloc: bloc,
+                    builder: (BuildContext context, SinglePlayerState state) {
+                      var arr = <Widget>[];
+
+                      if (state is SinglePlayerLoaded) {
+                        arr.add(new Text(
+                            mess.confirmremovefromteam(state.player.name)));
+                      } else {
+                        arr.add(Text(mess.confirmremovefromteam(mess.loading)));
+                      }
+                      return ListBody(
+                        children: arr,
+                      );
+                    }),
               ),
             ),
             actions: <Widget>[
@@ -186,33 +167,20 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
           );
         });
     if (result) {
-      _season.removePlayer(_player);
-      Navigator.pop(context);
+      playerBloc.dispatch(SingleTeamSeasonPlayerDelete());
     }
-  }
-
-  void _playerUpdated(UpdateReason reason) {
-    _team = UserDatabaseData.instance.teams[widget.teamUid];
-    _season = _team.seasons[widget.seasonUid];
-    List<SeasonPlayer> seasonPlayers = _season.players;
-    _player = seasonPlayers.firstWhere((SeasonPlayer player) {
-      return player.playerUid == widget.playerUid;
-    });
-    // Lookup the player and then lookup the profiles.
-    UserDatabaseData.instance
-        .getPlayer(_player.playerUid, withProfile: true)
-        .then((Player player) {
-      setState(() {
-        _playerDetails = player;
-      });
-    });
   }
 
   void _deleteInvite(BuildContext context, InviteToPlayer invite) {
     deleteInviteDialog(context, invite);
   }
 
-  Widget _buildPlayerDetails() {
+  Widget _buildPlayerDetails(
+      BuildContext context,
+      SingleTeamSeasonPlayerState playerState,
+      SingleTeamState teamState,
+      SingleTeamSeasonPlayerBloc playerBloc,
+      SinglePlayerState singlePlayerState) {
     List<Widget> ret = <Widget>[];
     final Size screenSize = MediaQuery.of(context).size;
     Messages messages = Messages.of(context);
@@ -224,7 +192,7 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
 
     ret.add(
       new PlayerImage(
-        playerUid: _player.playerUid,
+        playerUid: playerState.seasonPlayer.playerUid,
         radius: width > height ? height / 2 : width / 2,
       ),
     );
@@ -233,107 +201,106 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
       new ListTile(
         leading: const Icon(CommunityIcons.bookOpenVariant),
         title: new Text(
-          messages.roleingame(_player.role),
+          messages.roleingame(playerState.seasonPlayer.role),
         ),
       ),
     );
 
-    if (_playerDetails != null && _playerDetails.users != null) {
-      _playerDetails.users.forEach((String key, PlayerUser player) {
-        ret.add(new FutureBuilder<FusedUserProfile>(
-            future: player.getProfile(),
-            builder: (BuildContext context,
-                AsyncSnapshot<FusedUserProfile> profile) {
-              if (!profile.hasData) {
-                return new Text(messages.loading);
-              }
+    if (singlePlayerState.player != null &&
+        singlePlayerState.player.users != null) {
+      for (String userUid in singlePlayerState.player.users.keys) {
+        PlayerUser player = singlePlayerState.player.users[userUid];
+        ret.add(
+          SingleProfileProvider(
+            userUid: userUid,
+            builder: (BuildContext context, SingleProfileBloc singleUserBloc) =>
+                BlocBuilder(
+              bloc: singleUserBloc,
+              builder: (BuildContext context, SingleProfileState userState) {
+                if (userState is SingleProfileUnitialized) {
+                  return new Text(messages.loading);
+                }
+                if (userState is SingleProfileLoaded) {
+                  FusedUserProfile profile = userState.profile;
 
-              if (profile.data.phoneNumber != null &&
-                  profile.data.phoneNumber.isNotEmpty) {
-                return new ListTile(
-                  leading: const Icon(Icons.phone),
-                  title: new Text(
-                    messages.displaynamerelationship(
-                        profile.data.displayName, player.relationship),
-                  ),
-                  subtitle: new Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      new Text(
-                          "${profile.data.phoneNumber}\n${profile.data.email}"),
-                      new Row(
+                  if (profile.phoneNumber != null &&
+                      profile.phoneNumber.isNotEmpty) {
+                    return new ListTile(
+                      leading: const Icon(Icons.phone),
+                      title: new Text(
+                        messages.displaynamerelationship(
+                            profile.displayName, player.relationship),
+                      ),
+                      subtitle: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          new IconButton(
-                            icon: const Icon(Icons.sms),
-                            color: Theme.of(context).primaryColorDark,
-                            onPressed: () =>
-                                launch("sms:" + profile.data.phoneNumber),
-                          ),
-                          new IconButton(
-                            icon: const Icon(Icons.email),
-                            color: Theme.of(context).primaryColorDark,
-                            onPressed: () =>
-                                launch("mailto:" + profile.data.email),
-                          ),
-                          new IconButton(
-                            icon: const Icon(Icons.message),
-                            color: Theme.of(context).primaryColorDark,
-                            onPressed: () => Navigator.pushNamed(
-                                context,
-                                "/AddMessagePlayer/" +
-                                    widget.teamUid +
-                                    "/" +
-                                    widget.seasonUid +
-                                    "/" +
-                                    widget.playerUid),
+                          new Text("${profile.phoneNumber}\n${profile.email}"),
+                          new Row(
+                            children: <Widget>[
+                              new IconButton(
+                                icon: const Icon(Icons.sms),
+                                color: Theme.of(context).primaryColorDark,
+                                onPressed: () =>
+                                    launch("sms:" + profile.phoneNumber),
+                              ),
+                              new IconButton(
+                                icon: const Icon(Icons.email),
+                                color: Theme.of(context).primaryColorDark,
+                                onPressed: () =>
+                                    launch("mailto:" + profile.email),
+                              ),
+                              new IconButton(
+                                icon: const Icon(Icons.message),
+                                color: Theme.of(context).primaryColorDark,
+                                onPressed: () => Navigator.pushNamed(
+                                    context,
+                                    "/AddMessagePlayer/" +
+                                        teamUid +
+                                        "/" +
+                                        seasonUid +
+                                        "/" +
+                                        playerUid),
+                              )
+                            ],
                           )
                         ],
-                      )
-                    ],
-                  ),
-                );
-              } else {
-                return new ListTile(
-                  leading: const Icon(Icons.email),
-                  title: new Text(profile.data.displayName),
-                  subtitle: new Text(messages.sendmessage),
-                );
-              }
-            }));
-      });
-      ret.add(
-        new StreamBuilder<List<InviteToPlayer>>(
-          stream: _playerDetails.inviteStream,
-          builder:
-              (BuildContext context, AsyncSnapshot<List<InviteToPlayer>> snap) {
-            List<InviteToPlayer> invites = _playerDetails.cachedInvites;
-            if (invites == null || invites.length == 0) {
-              if (!snap.hasData || snap.data.length == 0) {
-                return new SizedBox(height: 0.0);
-              }
-            }
-
-            return new Column(
-              children: invites.map((InviteToPlayer invite) {
-                return new ListTile(
-                  leading: const Icon(Icons.person_add),
-                  title: new Text(Messages.of(context).invitedemail(invite)),
-                  trailing: new IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => _deleteInvite(context, invite),
-                  ),
-                );
-              }).toList(),
+                      ),
+                    );
+                  } else {
+                    return new ListTile(
+                      leading: const Icon(Icons.email),
+                      title: new Text(profile.displayName),
+                      subtitle: new Text(messages.sendmessage),
+                    );
+                  }
+                }
+                return Text(messages.unknown);
+              },
+            ),
+          ),
+        );
+      }
+      if (!singlePlayerState.invitesLoaded &&
+          singlePlayerState.invites.length != 0) {
+        ret.add(Column(
+          children: singlePlayerState.invites.map((InviteToPlayer invite) {
+            return new ListTile(
+              leading: const Icon(Icons.person_add),
+              title: new Text(Messages.of(context).invitedemail(invite)),
+              trailing: new IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () => _deleteInvite(context, invite),
+              ),
             );
-          },
-        ),
-      );
+          }).toList(),
+        ));
+      }
     }
 
     // Find which seasons they are in.
-    _team.seasons.forEach((String key, Season season) {
-      if (season.players.any(
-          (SeasonPlayer player) => player.playerUid == _player.playerUid)) {
+    for (Season season in teamState.team.seasons.values) {
+      if (season.players.any((SeasonPlayer player) =>
+          player.playerUid == playerState.seasonPlayer.playerUid)) {
         ret.add(
           new ListTile(
             leading: const Icon(CommunityIcons.tshirtCrew),
@@ -341,19 +308,20 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
           ),
         );
       }
-    });
+    }
 
-    if (_team.isAdmin()) {
+    if (teamState.team.isAdmin(null)) {
       ret.add(
         new Row(
           children: <Widget>[
             new FlatButton(
-              onPressed: _changeRole,
+              onPressed: () => _changeRole(context, playerBloc, playerState),
               child: new Text(messages.changerole),
               textColor: theme.accentColor,
             ),
             new FlatButton(
-              onPressed: _removeFromTeam,
+              onPressed: () =>
+                  _removeFromTeam(context, playerState, playerBloc),
               child: new Text(messages.deleteplayer),
               textColor: theme.accentColor,
             ),
@@ -367,56 +335,129 @@ class PlayerDetailsScreenState extends State<PlayerDetailsScreen> {
     );
   }
 
-  void _onInvite(BuildContext context) {
-    Navigator.pushNamed(context, "AddInviteToPlayer/" + widget.playerUid);
+  void _onInvite(BuildContext context, SingleTeamSeasonPlayerState state) {
+    Navigator.pushNamed(
+        context, "AddInviteToPlayer/" + state.seasonPlayer.playerUid);
   }
 
-  void _editPlayer(BuildContext context) {
-    Navigator.pushNamed(context, "EditPlayer/" + _playerDetails.uid);
+  void _editPlayer(BuildContext context, SinglePlayerState state) {
+    Navigator.pushNamed(context, "EditPlayer/" + state.player.uid);
   }
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
-    List<Widget> actions = <Widget>[];
-    if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
-      if (UserDatabaseData.instance.teams[widget.teamUid].isAdmin()) {
-        actions.add(
-          new FlatButton(
-            onPressed: () {
-              _onInvite(context);
-            },
-            child: new Text(
-              messages.addinvite,
-              style: Theme.of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(color: Colors.white),
+    String userUid =
+        BlocProvider.of<AuthenticationBloc>(context).currentUser.uid;
+
+    return SingleTeamProvider(
+      teamUid: teamUid,
+      builder: (BuildContext context, SingleTeamBloc teamBloc) =>
+          SinglePlayerProvider(
+        playerUid: playerUid,
+        builder: (BuildContext context, SinglePlayerBloc singlePlayerBloc) =>
+            SingleTeamSeasonPlayerProvider(
+          teamUid: teamUid,
+          seasonUid: seasonUid,
+          playerUid: playerUid,
+          builder: (BuildContext context,
+                  SingleTeamSeasonPlayerBloc seasonPlayerBloc) =>
+              BlocBuilder(
+            bloc: teamBloc,
+            builder: (BuildContext context, SingleTeamState teamState) =>
+                BlocListener(
+              bloc: seasonPlayerBloc,
+              listener: (BuildContext context,
+                  SingleTeamSeasonPlayerState playerState) {
+                if (playerState is SingleTeamSeasonPlayerDeleted) {
+                  Navigator.pop(context);
+                }
+                if (playerState is SingleTeamSeasonPlayerSaveFailed) {
+                  _showInSnackBar(Messages.of(context).formerror);
+                }
+              },
+              child: BlocListener(
+                bloc: singlePlayerBloc,
+                listener: (BuildContext context,
+                    SinglePlayerState singlePlayerState) {
+                  if (singlePlayerState is SinglePlayerLoaded) {
+                    singlePlayerBloc.dispatch(SinglePlayerLoadInvites());
+                  }
+                  if (singlePlayerState is SingleTeamSeasonPlayerSaveFailed) {
+                    _showInSnackBar(Messages.of(context).formerror);
+                  }
+                },
+                child: BlocBuilder(
+                  bloc: seasonPlayerBloc,
+                  builder: (BuildContext context,
+                          SingleTeamSeasonPlayerState seasonPlayerState) =>
+                      BlocBuilder(
+                    bloc: singlePlayerBloc,
+                    builder: (BuildContext context,
+                        SinglePlayerState singlePlayerState) {
+                      Messages messages = Messages.of(context);
+                      if (teamState is SingleTeamLoaded) {
+                        List<Widget> actions = <Widget>[];
+                        if (teamState.team.isAdmin(null)) {
+                          actions.add(
+                            new FlatButton(
+                              onPressed: () {
+                                _onInvite(context, seasonPlayerState);
+                              },
+                              child: new Text(
+                                messages.addinvite,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .subhead
+                                    .copyWith(color: Colors.white),
+                              ),
+                            ),
+                          );
+                        }
+                      }
+
+                      FloatingActionButton fab;
+                      if (singlePlayerState is SinglePlayerLoaded &&
+                          singlePlayerState.player.users.containsKey(userUid)) {
+                        // I am a member of this player, can edit them!
+                        fab = new FloatingActionButton(
+                          onPressed: () =>
+                              _editPlayer(context, singlePlayerState),
+                          child: const Icon(Icons.edit),
+                        );
+                      }
+
+                      return new Scaffold(
+                        appBar: new AppBar(
+                          title: new PlayerName(
+                              playerUid:
+                                  seasonPlayerState.seasonPlayer.playerUid),
+                        ),
+                        key: _scaffoldKey,
+                        body: SavingOverlay(
+                          saving: seasonPlayerState
+                                  is SingleTeamSeasonPlayerSaving ||
+                              singlePlayerState is SinglePlayerSaving,
+                          child: Scrollbar(
+                            child: new SingleChildScrollView(
+                              child: _buildPlayerDetails(
+                                  context,
+                                  seasonPlayerState,
+                                  teamState,
+                                  seasonPlayerBloc,
+                                  singlePlayerState),
+                            ),
+                          ),
+                        ),
+                        floatingActionButton: fab,
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
           ),
-        );
-      }
-    }
-
-    FloatingActionButton fab;
-    if (_playerDetails != null &&
-        _playerDetails.users.containsKey(UserDatabaseData.instance.userUid)) {
-      // I am a member of this player, can edit them!
-      fab = new FloatingActionButton(
-        onPressed: () => _editPlayer(context),
-        child: const Icon(Icons.edit),
-      );
-    }
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new PlayerName(playerUid: _player.playerUid),
-      ),
-      body: new Scrollbar(
-        child: new SingleChildScrollView(
-          child: _buildPlayerDetails(),
         ),
       ),
-      floatingActionButton: fab,
     );
   }
 }

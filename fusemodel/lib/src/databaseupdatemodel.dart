@@ -287,8 +287,7 @@ abstract class DatabaseUpdateModel {
       @required String playerName,
       @required String email,
       @required myUid});
-  Stream<Iterable<InviteToPlayer>> getInviteForPlayerStream(
-      {String userUid, Player player});
+  Stream<Iterable<InviteToPlayer>> getInviteForPlayerStream({String playerUid});
   Future<void> removeUserFromPlayer(Player player, String userId);
   Future<bool> playerExists(String uid);
   Future<Player> getPlayerDetails(String uid);
@@ -300,7 +299,7 @@ abstract class DatabaseUpdateModel {
   Future<void> updateFirestoreSeason(Season season, bool includePlayers);
   Future<Season> addFirestoreSeason(
       Season season, DocumentReferenceWrapper pregen);
-  Future<void> removePlayerFromSeason(Season season, SeasonPlayer player);
+  Future<void> removePlayerFromSeason(String seasonUid, String playerUid);
   Future<void> updateRoleInTeamForSeason(
       Season season, SeasonPlayer player, RoleInTeam role);
   Stream<Iterable<InviteToTeam>> getInviteForSeasonStream(

@@ -813,12 +813,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<Iterable<InviteToPlayer>> getInviteForPlayerStream(
-      {String userUid, Player player}) async* {
+      {String playerUid}) async* {
     CollectionReferenceWrapper ref = wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     QueryWrapper query = ref
         .where(Invite.TYPE, isEqualTo: InviteType.Player.toString())
-        .where(InviteToPlayer.PLAYERUID, isEqualTo: player.uid);
+        .where(InviteToPlayer.PLAYERUID, isEqualTo: playerUid);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
         InviteToPlayer.fromJSON(snap.documentID, snap.data).build());
@@ -872,11 +872,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> removePlayerFromSeason(
-      Season season, SeasonPlayer player) async {
+      String seasonUid, String playerUid) async {
     DocumentReferenceWrapper doc =
-        wrapper.collection(SEASONS_COLLECTION).document(season.uid);
+        wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
     Map<String, dynamic> data = <String, dynamic>{};
-    data[Season.PLAYERS + "." + player.playerUid] = null;
+    data[Season.PLAYERS + "." + playerUid] = null;
     await doc.updateData(data);
   }
 

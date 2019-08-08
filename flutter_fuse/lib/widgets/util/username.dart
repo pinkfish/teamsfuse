@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 
-import '../blocs/singleuserprovider.dart';
+import '../blocs/singleprofileprovider.dart';
 
 class UserName extends StatelessWidget {
   final String userId;

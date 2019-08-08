@@ -11,10 +11,14 @@ import '../playerbloc.dart';
 abstract class SinglePlayerState extends Equatable {
   final Player player;
   final bool mePlayer;
+  final bool invitesLoaded;
   final List<InviteToPlayer> invites;
 
   SinglePlayerState(
-      {@required this.player, @required this.mePlayer, @required this.invites});
+      {@required this.player,
+      @required this.mePlayer,
+      @required this.invites,
+      @required this.invitesLoaded});
 }
 
 ///
@@ -25,11 +29,14 @@ class SinglePlayerLoaded extends SinglePlayerState {
       {@required SinglePlayerState state,
       Player player,
       bool mePlayer,
-      List<InviteToPlayer> invites})
+      List<InviteToPlayer> invites,
+      bool invitesLoaded,
+      FusedUserProfile profile})
       : super(
             player: player ?? state.player,
             mePlayer: mePlayer ?? state.mePlayer,
-            invites: invites ?? state.invites);
+            invites: invites ?? state.invites,
+            invitesLoaded: invitesLoaded ?? state.invitesLoaded);
 
   @override
   String toString() {
@@ -42,7 +49,11 @@ class SinglePlayerLoaded extends SinglePlayerState {
 ///
 class SinglePlayerSaving extends SinglePlayerState {
   SinglePlayerSaving({@required SinglePlayerState state})
-      : super(player: state.player, invites: state.invites);
+      : super(
+            player: state.player,
+            invites: state.invites,
+            invitesLoaded: state.invitesLoaded,
+            mePlayer: state.mePlayer);
 
   @override
   String toString() {
@@ -58,7 +69,11 @@ class SinglePlayerSaveFailed extends SinglePlayerState {
 
   SinglePlayerSaveFailed(
       {@required SinglePlayerState state, @required this.error})
-      : super(player: state.player, invites: state.invites);
+      : super(
+            player: state.player,
+            invites: state.invites,
+            invitesLoaded: state.invitesLoaded,
+            mePlayer: state.mePlayer);
 
   @override
   String toString() {
@@ -70,7 +85,8 @@ class SinglePlayerSaveFailed extends SinglePlayerState {
 /// Player got deleted.
 ///
 class SinglePlayerDeleted extends SinglePlayerState {
-  SinglePlayerDeleted() : super(player: null, invites: []);
+  SinglePlayerDeleted()
+      : super(player: null, invites: [], invitesLoaded: false, mePlayer: false);
 
   @override
   String toString() {
@@ -120,6 +136,13 @@ class SinglePlayerDelete extends SinglePlayerEvent {
 ///
 class SinglePlayerLoadInvites extends SinglePlayerEvent {
   SinglePlayerLoadInvites();
+}
+
+///
+/// Loads the profile from firebase.
+///
+class SinglePlayerLoadProfile extends SinglePlayerEvent {
+  SinglePlayerLoadProfile();
 }
 
 class _SinglePlayerNewPlayer extends SinglePlayerEvent {
@@ -175,7 +198,8 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
       return SinglePlayerLoaded(
           player: playerBloc.currentState.players[playerUid],
           invites: [],
-          state: null);
+          state: null,
+          invitesLoaded: false);
     } else {
       return SinglePlayerDeleted();
     }
@@ -187,8 +211,7 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
       yield SinglePlayerLoaded(
           state: currentState,
           player: event.newPlayer,
-          mePlayer: event.newPlayer.uid == playerBloc.currentState.me.uid,
-          invites: currentState.invites);
+          mePlayer: event.newPlayer.uid == playerBloc.currentState.me.uid);
     }
 
     // The Player is deleted.
@@ -206,8 +229,7 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
         yield SinglePlayerLoaded(
             state: currentState,
             player: event.player.build(),
-            mePlayer: event.player.uid == playerBloc.currentState.me.uid,
-            invites: currentState.invites);
+            mePlayer: event.player.uid == playerBloc.currentState.me.uid);
       } catch (e) {
         yield SinglePlayerSaveFailed(state: currentState, error: e);
       }
@@ -221,10 +243,7 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
                 playerUid: playerUid,
                 email: event.email,
                 playerName: currentState.player.name);
-        yield SinglePlayerLoaded(
-            state: currentState,
-            player: currentState.player,
-            invites: currentState.invites);
+        yield SinglePlayerLoaded(state: currentState);
       } catch (e) {
         yield SinglePlayerSaveFailed(state: currentState, error: e);
       }
@@ -234,15 +253,18 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
       yield SinglePlayerLoaded(
           state: currentState,
           player: currentState.player,
-          invites: event.invites);
+          invites: event.invites,
+          invitesLoaded: true);
     }
 
     if (event is SinglePlayerLoadInvites) {
-      _inviteSub = playerBloc.coordinationBloc.databaseUpdateModel
-          .getInviteForPlayerStream(player: currentState.player)
-          .listen((Iterable<InviteToPlayer> invites) {
-        dispatch(_SinglePlayerInvitesAdded(invites: invites));
-      });
+      if (_inviteSub == null) {
+        _inviteSub = playerBloc.coordinationBloc.databaseUpdateModel
+            .getInviteForPlayerStream(playerUid: currentState.player.uid)
+            .listen((Iterable<InviteToPlayer> invites) {
+          dispatch(_SinglePlayerInvitesAdded(invites: invites));
+        });
+      }
     }
   }
 }

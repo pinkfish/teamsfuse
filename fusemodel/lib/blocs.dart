@@ -32,5 +32,6 @@ export 'src/blocs/single/singlesharedgamebloc.dart';
 export 'src/blocs/single/singleteambloc.dart';
 export 'src/blocs/single/singleteamopponentbloc.dart';
 export 'src/blocs/single/singleteamseasonbloc.dart';
+export 'src/blocs/single/singleteamseasonplayerbloc.dart';
 export 'src/blocs/single/singleuserbloc.dart';
 export 'src/blocs/teambloc.dart';

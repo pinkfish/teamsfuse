@@ -77,7 +77,10 @@ class AddTeamScreenState extends State<AddTeamScreen> {
         _teamToAdd.clubUid = _clubUid;
       }
       _addTeamBloc.dispatch(AddTeamEventCommit(
-          team: _teamToAdd, playerUid: _playerUid, teamImage: _imageFileToAdd));
+          seasonName: _seasonName(),
+          team: _teamToAdd,
+          playerUid: _playerUid,
+          teamImage: _imageFileToAdd));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
