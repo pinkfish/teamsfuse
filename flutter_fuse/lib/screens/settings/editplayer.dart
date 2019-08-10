@@ -58,7 +58,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
     Navigator.pushNamed(context, "AddInviteToPlayer/" + widget.playerUid);
   }
 
-  List<Widget> _buildPlayerData() {
+  List<Widget> _buildPlayerData(SinglePlayerState singlePlayerState) {
     final Size screenSize = MediaQuery.of(context).size;
     List<Widget> ret = <Widget>[];
     Messages messages = Messages.of(context);
@@ -67,7 +67,8 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
     if (_imageFile != null) {
       provider = new FileImage(_imageFile);
     } else {
-      provider = new CachedNetworkImageProvider(urlNow: _player.photoUrl);
+      provider = new CachedNetworkImageProvider(
+          urlNow: singlePlayerState.player.photoUrl);
     }
     ret.add(
       new Center(
@@ -105,15 +106,19 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               new Expanded(
-                child: UserName(userId: user.userUid
-                          overflow: TextOverflow.clip,
-                          style: Theme.of(context).textTheme.subhead,
-                        ),
+                child: UserName(
+                  userId: user.userUid,
+                  overflow: TextOverflow.clip,
+                  style: Theme.of(context).textTheme.subhead,
+                ),
               ),
               new Flexible(
                 child: new RelationshipFormField(
                   initialValue: user.relationship,
-                  onSaved: (Relationship rel) => user.relationship = rel,
+                  onSaved: (Relationship rel) => _player.users.updateValue(
+                      user.userUid,
+                      (PlayerUser u) =>
+                          u.rebuild((b) => b..relationship = rel)),
                 ),
               ),
             ],
@@ -140,13 +145,8 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
     });
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      if (_changedImage) {
-        Uri uri = await _player.updateImage(_imageFile);
-        _player.photoUrl = uri.toString();
-      }
-      await _player.updateFirestore();
-
-      Navigator.pop(context);
+      singlePlayerBloc.dispatch(SinglePlayerUpdate(
+          player: _player, image: _changedImage ? _imageFile : null));
     }
   }
 
@@ -168,16 +168,34 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
           ),
         ],
       ),
-      body: new Container(
-        padding: new EdgeInsets.all(10.0),
-        child: new Scrollbar(
-          child: new SingleChildScrollView(
-            child: new Form(
-              autovalidate: _autoValidate,
-              key: _formKey,
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _buildPlayerData(),
+      body: BlocProvider(
+        builder: (BuildContext context) => singlePlayerBloc,
+        child: BlocListener(
+          bloc: singlePlayerBloc,
+          listener: (BuildContext contex, SinglePlayerState playerState) {
+            if (playerState is SinglePlayerLoaded) {
+              _player = playerState.player.toBuilder();
+            }
+            if (playerState is SinglePlayerSaveDone) {
+              Navigator.pop(context);
+            }
+          },
+          child: BlocBuilder(
+            bloc: singlePlayerBloc,
+            builder: (BuildContext context, SinglePlayerState playerState) =>
+                Container(
+              padding: new EdgeInsets.all(10.0),
+              child: new Scrollbar(
+                child: new SingleChildScrollView(
+                  child: new Form(
+                    autovalidate: _autoValidate,
+                    key: _formKey,
+                    child: new Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _buildPlayerData(playerState),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),

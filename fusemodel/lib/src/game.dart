@@ -7,3 +7,4 @@ export 'game/gamescore.dart';
 export 'game/gamesharedata.dart';
 export 'game/gameresultshareddetails.dart';
 export 'game/gamefromofficial.dart';
+export 'game/repeatdata.dart';

@@ -84,7 +84,7 @@ class FusedDrawerContent extends StatelessWidget {
             !clubBloc.currentState.clubs.containsKey(team.clubUid)) {
           data.add(
             new TeamTile(
-              team,
+              team.uid,
               popBeforeNavigate: true,
               showIconForTeam: true,
             ),

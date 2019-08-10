@@ -2,10 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
+import 'package:flutter_fuse/widgets/blocs/singleprofileprovider.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/playerimage.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:flutter_fuse/widgets/util/userimage.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,14 +21,11 @@ class EditProfileScreen extends StatefulWidget {
 
   @override
   EditProfileScreenState createState() {
-    return new EditProfileScreenState(meUid);
+    return new EditProfileScreenState();
   }
 }
 
 class EditProfileScreenState extends State<EditProfileScreen> {
-  EditProfileScreenState(String meUid)
-      : me = new Player.copy(UserDatabaseData.instance.players[meUid]);
-
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool _autovalidate = false;
@@ -33,36 +34,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   FocusNode _focusNode = new FocusNode();
   File _imageFile;
   bool _changedImage = false;
-  UserData _user;
   StreamSubscription<UserData> streamListen;
-  final Player me;
 
   // Details to update.
-  String displayName;
-  String phoneNumber;
-
-  @override
-  void initState() {
-    super.initState();
-    UserDatabaseData.instance.userAuth.currentUser().then((UserData data) {
-      setState(() {
-        _user = data;
-      });
-    });
-    streamListen = UserDatabaseData.instance.userAuth
-        .onAuthChanged()
-        .listen((UserData data) {
-      setState(() {
-        _user = data;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    streamListen.cancel();
-  }
+  String _displayName;
+  String _phoneNumber;
 
   void save() {
     _formKey.currentState.save();
@@ -84,9 +60,9 @@ class EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Widget _buildImage() {
+  Widget _buildImage(SingleProfileState profileState) {
     if (!_changedImage) {
-      return new PlayerImage(playerUid: me.uid);
+      return new UserImage(profileState.profile);
     }
     return new Image.file(_imageFile);
   }
@@ -96,17 +72,15 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         .showSnackBar(new SnackBar(content: new Text(value)));
   }
 
-  void _savePressed(BuildContext context) async {
+  void _savePressed(BuildContext context, SingleProfileState profileState,
+      SingleProfileBloc profileBloc) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      if (_changedImage) {
-        // Only update in the me player, we don't use the built in photourl.
-        await me.updateImage(_imageFile);
-      }
-      FusedUserProfile profile = _user.profile
-          .copyWith(displayName: displayName, phoneNumber: phoneNumber);
-      UserDatabaseData.instance.userAuth.updateProfile(_user.uid, profile);
-      Navigator.pop(context);
+      FusedUserProfile profile = profileState.profile.rebuild((b) => b
+        ..displayName = _displayName
+        ..phoneNumber = _phoneNumber);
+      profileBloc
+          .dispatch(SingleProfileUpdate(profile: profile, image: _imageFile));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
@@ -114,95 +88,121 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_user == null) {
-      return new Text('Invalid state');
-    }
-
     final Size screenSize = MediaQuery.of(context).size;
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
-        key: _scaffoldKey,
-        actions: <Widget>[
-          new FlatButton(
-            onPressed: () {
-              _savePressed(context);
-            },
-            child: new Text(
-              Messages.of(context).savebuttontext,
-              style: Theme.of(context)
-                  .textTheme
-                  .subhead
-                  .copyWith(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-      body: new Scrollbar(
-        child: new SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          controller: _scrollController,
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              new Form(
-                key: _formKey,
-                autovalidate: _autovalidate,
-                child: new DropdownButtonHideUnderline(
-                  child: new Column(
-                    children: <Widget>[
-                      new IconButton(
-                        onPressed: _selectImage,
-                        iconSize: (screenSize.width < 500)
-                            ? 120.0
-                            : (screenSize.width / 4) + 12.0,
-                        icon: _buildImage(),
-                      ),
-                      new EnsureVisibleWhenFocused(
-                        focusNode: _focusNode,
-                        child: new TextFormField(
-                          decoration: new InputDecoration(
-                            icon: const Icon(Icons.person),
-                            hintText: Messages.of(context).displayname,
-                            labelText: Messages.of(context).displaynamehint,
+    var authBloc = BlocProvider.of<AuthenticationBloc>(context);
+    return SingleProfileProvider(
+      userUid: authBloc.currentUser.uid,
+      builder: (BuildContext context, SingleProfileBloc profileBloc) =>
+          BlocListener(
+        bloc: profileBloc,
+        listener: (BuildContext context, SingleProfileState profileState) {
+          if (profileState is SingleProfileSaveDone ||
+              profileState is SingleProfileDeleted) {
+            Navigator.pop(context);
+          }
+        },
+        child: BlocBuilder(
+          bloc: profileBloc,
+          builder: (BuildContext context, SingleProfileState profileState) {
+            return Scaffold(
+              appBar: new AppBar(
+                title: new Text(Messages.of(context).title),
+                key: _scaffoldKey,
+                actions: <Widget>[
+                  new FlatButton(
+                    onPressed: () {
+                      _savePressed(context, profileState, profileBloc);
+                    },
+                    child: new Text(
+                      Messages.of(context).savebuttontext,
+                      style: Theme.of(context)
+                          .textTheme
+                          .subhead
+                          .copyWith(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+              body: SavingOverlay(
+                saving: profileState is SingleProfileSaving,
+                child: Scrollbar(
+                  child: new SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    controller: _scrollController,
+                    child: new Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        new Form(
+                          key: _formKey,
+                          autovalidate: _autovalidate,
+                          child: new DropdownButtonHideUnderline(
+                            child: new Column(
+                              children: <Widget>[
+                                new IconButton(
+                                  onPressed: _selectImage,
+                                  iconSize: (screenSize.width < 500)
+                                      ? 120.0
+                                      : (screenSize.width / 4) + 12.0,
+                                  icon: _buildImage(profileState),
+                                ),
+                                new EnsureVisibleWhenFocused(
+                                  focusNode: _focusNode,
+                                  child: new TextFormField(
+                                    decoration: new InputDecoration(
+                                      icon: const Icon(Icons.person),
+                                      hintText:
+                                          Messages.of(context).displayname,
+                                      labelText:
+                                          Messages.of(context).displaynamehint,
+                                    ),
+                                    initialValue:
+                                        profileState.profile.displayName,
+                                    keyboardType: TextInputType.text,
+                                    obscureText: false,
+                                    validator: (String name) {
+                                      return _validations.validateName(
+                                          context, name);
+                                    },
+                                    onSaved: (String value) {
+                                      _displayName = value;
+                                    },
+                                  ),
+                                ),
+                                new EnsureVisibleWhenFocused(
+                                  focusNode: _focusNode,
+                                  child: new TextFormField(
+                                    decoration: new InputDecoration(
+                                      icon: const Icon(Icons.phone),
+                                      hintText:
+                                          Messages.of(context).phonenumber,
+                                      labelText:
+                                          Messages.of(context).phonenumberhint,
+                                    ),
+                                    initialValue:
+                                        profileState.profile.phoneNumber,
+                                    keyboardType: TextInputType.text,
+                                    obscureText: false,
+                                    validator: (String phone) {
+                                      return _validations.validatePhone(
+                                          context, phone);
+                                    },
+                                    onSaved: (String value) {
+                                      _phoneNumber = value;
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          initialValue: _user.profile.displayName,
-                          keyboardType: TextInputType.text,
-                          obscureText: false,
-                          validator: (String name) {
-                            return _validations.validateName(context, name);
-                          },
-                          onSaved: (String value) {
-                            displayName = value;
-                          },
                         ),
-                      ),
-                      new EnsureVisibleWhenFocused(
-                        focusNode: _focusNode,
-                        child: new TextFormField(
-                          decoration: new InputDecoration(
-                            icon: const Icon(Icons.phone),
-                            hintText: Messages.of(context).phonenumber,
-                            labelText: Messages.of(context).phonenumberhint,
-                          ),
-                          initialValue: _user.profile.phoneNumber,
-                          keyboardType: TextInputType.text,
-                          obscureText: false,
-                          validator: (String phone) {
-                            return _validations.validatePhone(context, phone);
-                          },
-                          onSaved: (String value) {
-                            phoneNumber = value;
-                          },
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

@@ -310,7 +310,7 @@ class PlayerDetailsScreen extends StatelessWidget {
       }
     }
 
-    if (teamState.team.isAdmin(null)) {
+    if (teamState.isAdmin()) {
       ret.add(
         new Row(
           children: <Widget>[
@@ -397,7 +397,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                       Messages messages = Messages.of(context);
                       if (teamState is SingleTeamLoaded) {
                         List<Widget> actions = <Widget>[];
-                        if (teamState.team.isAdmin(null)) {
+                        if (teamState.isAdmin()) {
                           actions.add(
                             new FlatButton(
                               onPressed: () {

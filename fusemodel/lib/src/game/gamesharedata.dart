@@ -113,12 +113,6 @@ abstract class GameSharedData
     return data;
   }
 
-  /*
-  set timezone(String value) {
-    _timezone = value;
-    _location = null;
-  }
-  */
 
   Location get location {
     return getLocation(this.timezone);
@@ -138,23 +132,5 @@ abstract class GameSharedData
   static const String _LEAGUEUID = 'leagueUid';
   static const String LEAGUEDIVISIONUID = 'leagueDivisonUid';
 
-  /*
-  Future<void> deleteCompletelyFromFirestore() {
-    return UserDatabaseData.instance.updateModel
-        .deleteFirestoreSharedGame(this);
-  }
-
-  Future<String> updateFirestore() {
-    return UserDatabaseData.instance.updateModel
-        .updateFirestoreSharedGame(this);
-  }
-
-  Future<void> updateFirestoreResult(GameOfficialResults result) {
-    // TODO: Do something in here :)
-    UserDatabaseData.instance.updateModel
-        .updateFirestoreOfficalGameResult(this, result);
-    return null;
-  }
-  */
 
 }

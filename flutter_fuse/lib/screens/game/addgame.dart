@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/games/gamedetails.dart';
+import 'package:flutter_fuse/widgets/games/gamedetailsbase.dart';
 import 'package:flutter_fuse/widgets/games/gameeditform.dart';
 import 'package:flutter_fuse/widgets/teams/clubselection.dart';
 import 'package:flutter_fuse/widgets/teams/teamselection.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 ///
@@ -34,17 +36,19 @@ class AddGameScreenState extends State<AddGameScreen> {
   Club _club;
   int _currentStep = 1;
   Game _initGame;
-  bool _saving = false;
+  AddGameBloc addGameBloc;
 
   @override
   void initState() {
-    if (UserDatabaseData.instance.clubs.values
-        .any((Club club) => club.isAdmin())) {
+    ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
+    if (clubBloc.currentState.clubs.values.any((Club club) => club.isAdmin())) {
       _currentStep = 0;
       clubStepState = StepState.editing;
       teamStepState = StepState.disabled;
     }
     super.initState();
+    addGameBloc = new AddGameBloc(
+        coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
   }
 
   void _showInSnackBar(String value) {
@@ -57,8 +61,8 @@ class AddGameScreenState extends State<AddGameScreen> {
   }
 
   Widget _buildSummary(BuildContext context) {
-    return new GameDetails(
-      _initGame,
+    return new GameDetailsBase(
+      game: _initGame,
       adding: true,
     );
   }
@@ -72,7 +76,8 @@ class AddGameScreenState extends State<AddGameScreen> {
       // Check to make sure a team is picked.
       case 1:
         if (backwards) {
-          if (UserDatabaseData.instance.clubs.values
+          ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
+          if (clubBloc.currentState.clubs.values
               .any((Club club) => club.isAdmin())) {
             return true;
           }
@@ -101,7 +106,7 @@ class AddGameScreenState extends State<AddGameScreen> {
           return false;
         }
         _gameFormKey.currentState.save();
-        _initGame = _gameFormKey.currentState.finalGameResult;
+        _initGame = _gameFormKey.currentState.finalGameResult.build();
         print('Saved game $_initGame');
         detailsStepState = StepState.complete;
         createStepStage = StepState.complete;
@@ -123,20 +128,7 @@ class AddGameScreenState extends State<AddGameScreen> {
           setState(() {
             //_saving = true;
           });
-          _initGame.updateFirestore(true).then((void h) {
-            _saving = false;
-            Navigator.pop(context);
-          }).catchError((Error e) {
-            _saving = false;
-            showDialog<bool>(
-                context: context,
-                builder: (BuildContext context) {
-                  return new AlertDialog(
-                    title: new Text("Error"),
-                    content: new Text("Error saving the game"),
-                  );
-                });
-          });
+          addGameBloc.dispatch(AddGameEventCommit(newGame: _initGame));
         }
       });
     }
@@ -153,25 +145,23 @@ class AddGameScreenState extends State<AddGameScreen> {
   void _teamChanged(Team team) {
     print('Team $team');
     //_gameFormKey.currentState.setTeam(str);
-    GameSharedData sharedGameData =
-        new GameSharedData(team.uid, null, type: EventType.Game);
-    _initGame = new Game(team.uid, null, sharedData: sharedGameData);
+    GameSharedDataBuilder sharedGameData = GameSharedDataBuilder()
+      ..officialResults.homeTeamLeagueUid = team.uid
+      ..type = EventType.Game;
     DateTime start = new DateTime.now().add(const Duration(days: 1));
-    _initGame.sharedData.time = start.millisecondsSinceEpoch;
-    _initGame.arriveTime = start
-        .subtract(new Duration(minutes: team.arriveEarly.toInt()))
-        .millisecondsSinceEpoch;
-    _initGame.sharedData.endTime = _initGame.sharedData.time;
-    _initGame.teamUid = team.uid;
-    _initGame.seasonUid = team.currentSeason;
-    _initGame.opponentUids = <String>[];
-    _initGame.homegame = false;
-    _initGame.uniform = '';
-    _initGame.notes = '';
-    _initGame.trackAttendance = team.trackAttendence;
-    setState(() {
-      _team = team;
-    });
+    _initGame = new Game((b) => b
+      ..teamUid = team.uid
+      ..sharedData = sharedGameData
+      ..sharedData.time = start.millisecondsSinceEpoch
+      ..arriveTime = start
+          .subtract(new Duration(minutes: team.arriveEarlyInternal.toInt()))
+          .millisecondsSinceEpoch
+      ..sharedData.endTime = start.millisecondsSinceEpoch
+      ..seasonUid = team.currentSeason
+      ..uniform = ""
+      ..notes = ""
+      ..trackAttendance = team.trackAttendenceInternal);
+    setState(() {});
   }
 
   void _clubChanged(Club club) {
@@ -185,63 +175,89 @@ class AddGameScreenState extends State<AddGameScreen> {
     Messages messages = Messages.of(context);
 
     print(_team);
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(messages.title),
-      ),
-      body: new SavingOverlay(
-        saving: _saving,
-        child: new Container(
-          padding: new EdgeInsets.all(5.0),
-          child: new StepperAlwaysVisible(
-            type: StepperType.horizontal,
-            currentStep: _currentStep,
-            onStepContinue: () {
-              _onStepperContinue(context);
-            },
-            onStepCancel: () {
-              // Go back
-              Navigator.of(context).pop();
-            },
-            onStepTapped: (int step) {
-              _onStepTapped(step);
-            },
-            steps: <Step>[
-              new Step(
-                title: new Text(messages.club),
-                state: clubStepState,
-                isActive: false,
-                content: new ClubSelection(
-                  onChanged: _clubChanged,
-                  initialClub: _club,
+    return BlocProvider(
+      builder: (BuildContext context) => addGameBloc,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: new AppBar(
+          title: new Text(messages.title),
+        ),
+        body: BlocListener(
+          bloc: addGameBloc,
+          listener: (BuildContext context, AddItemState state) {
+            if (state is AddItemDone) {
+              Navigator.pop(context);
+            }
+            if (state is AddItemSaveFailed) {
+              showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return new AlertDialog(
+                    title: new Text("Error"),
+                    content: new Text("Error saving the game"),
+                  );
+                },
+              );
+            }
+          },
+          child: BlocBuilder(
+            bloc: addGameBloc,
+            builder: (BuildContext context, AddItemState state) =>
+                SavingOverlay(
+              saving: state is AddItemSaving,
+              child: new Container(
+                padding: new EdgeInsets.all(5.0),
+                child: new StepperAlwaysVisible(
+                  type: StepperType.horizontal,
+                  currentStep: _currentStep,
+                  onStepContinue: () {
+                    _onStepperContinue(context);
+                  },
+                  onStepCancel: () {
+                    // Go back
+                    Navigator.of(context).pop();
+                  },
+                  onStepTapped: (int step) {
+                    _onStepTapped(step);
+                  },
+                  steps: <Step>[
+                    new Step(
+                      title: new Text(messages.club),
+                      state: clubStepState,
+                      isActive: false,
+                      content: new ClubSelection(
+                        onChanged: _clubChanged,
+                        initialClub: _club,
+                      ),
+                    ),
+                    new Step(
+                      title: new Text(messages.team),
+                      state: teamStepState,
+                      isActive: true,
+                      content: new TeamSelection(
+                        onChanged: _teamChanged,
+                        initialTeam: _team,
+                        club: _club,
+                      ),
+                    ),
+                    new Step(
+                      title: new Text(messages.details),
+                      state: detailsStepState,
+                      isActive: _team != null,
+                      content: _buildForm(context),
+                    ),
+                    new Step(
+                      title: new Text(messages.create),
+                      state: createStepStage,
+                      isActive: _gameFormKey != null &&
+                          _gameFormKey.currentState != null &&
+                          _gameFormKey.currentState.validate(),
+                      content: _buildSummary(context),
+                    )
+                  ],
                 ),
               ),
-              new Step(
-                title: new Text(messages.team),
-                state: teamStepState,
-                isActive: true,
-                content: new TeamSelection(
-                  onChanged: _teamChanged,
-                  initialTeam: _team,
-                  club: _club,
-                ),
-              ),
-              new Step(
-                title: new Text(messages.details),
-                state: detailsStepState,
-                isActive: _team != null,
-                content: _buildForm(context),
-              ),
-              new Step(
-                title: new Text(messages.create),
-                state: createStepStage,
-                isActive: _gameFormKey != null &&
-                    _gameFormKey.currentState != null &&
-                    _gameFormKey.currentState.validate(),
-                content: _buildSummary(context),
-              )
-            ],
+            ),
           ),
         ),
       ),

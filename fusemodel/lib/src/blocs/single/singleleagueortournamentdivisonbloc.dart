@@ -6,6 +6,8 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/src/blocs/single/singleleagueortournamentseasonbloc.dart';
 import 'package:meta/meta.dart';
 
+import '../coordinationbloc.dart';
+
 ///
 /// Basic state for all the data in this system.
 ///
@@ -141,29 +143,44 @@ class SingleLeagueOrTournamentDivisonAddTeam
 class SingleLeagueOrTournamentDivisonBloc extends Bloc<
     SingleLeagueOrTournamentDivisonEvent,
     SingleLeagueOrTournamentDivisonState> {
+  final CoordinationBloc coordinationBloc;
   final SingleLeagueOrTournamentSeasonBloc singleLeagueOrTournamentSeasonBloc;
   final String leagueDivisonUid;
 
   StreamSubscription<SingleLeagueOrTournamentSeasonState> _coordSub;
+  StreamSubscription<LeagueOrTournamentDivison> _divSub;
 
   SingleLeagueOrTournamentDivisonBloc(
-      {@required this.singleLeagueOrTournamentSeasonBloc,
-      @required this.leagueDivisonUid}) {
-    _coordSub = singleLeagueOrTournamentSeasonBloc.state
-        .listen((SingleLeagueOrTournamentSeasonState state) {
-      if (state is SingleLeagueOrTournamentSeasonLoaded) {
-        if (state.leagueOrTournamentDivisons.containsKey(leagueDivisonUid)) {
-          dispatch(_SingleLeagueOrTournamentEventLeagueDivisonLoaded(
-              leagueDivision:
-                  state.leagueOrTournamentDivisons[leagueDivisonUid]));
+      {this.coordinationBloc,
+      @required this.leagueDivisonUid,
+      this.singleLeagueOrTournamentSeasonBloc}) {
+    assert(this.coordinationBloc != null ||
+        this.singleLeagueOrTournamentSeasonBloc != null);
+    if (coordinationBloc != null) {
+      _divSub = coordinationBloc.databaseUpdateModel
+          .getLeagueDivisionData(
+              leagueDivisionUid: leagueDivisonUid,
+              memberUid: coordinationBloc.authenticationBloc.currentUser.uid)
+          .listen((LeagueOrTournamentDivison div) {
+        if (div == null) {
+          dispatch(_SingleLeagueOrTournamentEventDivisonDeleted());
         } else {
+          dispatch(_SingleLeagueOrTournamentEventLeagueDivisonLoaded(
+              leagueDivision: div));
+        }
+      });
+    } else {
+      _coordSub = singleLeagueOrTournamentSeasonBloc.state
+          .listen((SingleLeagueOrTournamentSeasonState state) {
+        if (state is SingleLeagueOrTournamentSeasonLoaded) {
+          if (state.leagueOrTournamentDivisons.containsKey(leagueDivisonUid)) {
+          } else {}
+        }
+        if (state is SingleLeagueOrTournamentSeasonDeleted) {
           dispatch(_SingleLeagueOrTournamentEventDivisonDeleted());
         }
-      }
-      if (state is SingleLeagueOrTournamentSeasonDeleted) {
-        dispatch(_SingleLeagueOrTournamentEventDivisonDeleted());
-      }
-    });
+      });
+    }
   }
 
   @override
@@ -171,6 +188,9 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
     super.dispose();
     _cleanupStuff();
     _coordSub?.cancel();
+    _divSub?.cancel();
+    _coordSub = null;
+    _divSub = null;
   }
 
   void _cleanupStuff() {}

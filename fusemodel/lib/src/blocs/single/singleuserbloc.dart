@@ -5,141 +5,99 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import '../authenticationbloc.dart';
+abstract class SingleUserState extends Equatable {
+  final Iterable<Player> players;
 
-abstract class SingleProfileState extends Equatable {
-  final FusedUserProfile profile;
-
-  SingleProfileState({@required this.profile});
+  SingleUserState({@required this.players});
 }
 
 ///
 /// We have a Profile, default state.
 ///
-class SingleProfileUnitialized extends SingleProfileState {
-  SingleProfileUnitialized() : super(profile: null);
+class SingleUserUnitialized extends SingleUserState {
+  SingleUserUnitialized() : super(players: []);
 
   @override
   String toString() {
-    return 'SingleProfileLoaded{}';
+    return 'SingleUserUnitialized{}';
   }
 }
 
 ///
 /// We have a Profile, default state.
 ///
-class SingleProfileLoaded extends SingleProfileState {
-  SingleProfileLoaded({@required FusedUserProfile profile})
-      : super(profile: profile);
+class SingleUserLoaded extends SingleUserState {
+  SingleUserLoaded({@required Iterable<Player> players})
+      : super(players: players);
 
   @override
   String toString() {
-    return 'SingleProfileLoaded{}';
+    return 'SingleUserLoaded{}';
   }
 }
 
 ///
-/// Saving operation in progress.
+/// We have a Profile, default state.
 ///
-class SingleProfileSaving extends SingleProfileState {
-  SingleProfileSaving({@required FusedUserProfile profile})
-      : super(profile: profile);
+class SingleUserDeleted extends SingleUserState {
+  SingleUserDeleted() : super(players: []);
 
   @override
   String toString() {
-    return 'SingleProfileSaving{}';
+    return 'SingleUserLoaded{}';
   }
 }
 
-///
-/// Saving operation failed (goes back to loaded for success).
-///
-class SingleProfileSaveFailed extends SingleProfileState {
-  final Error error;
+abstract class SingleUserEvent extends Equatable {}
 
-  SingleProfileSaveFailed(
-      {@required FusedUserProfile profile, @required this.error})
-      : super(profile: profile);
+class _SingleUserNewProfile extends SingleUserEvent {
+  final Iterable<Player> players;
 
-  @override
-  String toString() {
-    return 'SingleProfileSaveFailed{}';
-  }
+  _SingleUserNewProfile({@required this.players});
 }
 
-///
-/// Profile got deleted.
-///
-class SingleProfileDeleted extends SingleProfileState {
-  SingleProfileDeleted() : super(profile: null);
-
-  @override
-  String toString() {
-    return 'SingleProfileDeleted{}';
-  }
-}
-
-abstract class SingleProfileEvent extends Equatable {}
-
-///
-/// Updates the Profile (writes it out to firebase.
-///
-class SingleProfileUpdate extends SingleProfileEvent {
-  final FusedUserProfile profile;
-
-  SingleProfileUpdate({@required this.profile});
-}
-
-class _SingleProfileNewProfile extends SingleProfileEvent {
-  final FusedUserProfile profile;
-
-  _SingleProfileNewProfile({@required this.profile});
-}
-
-class _SingleProfileDeleted extends SingleProfileEvent {
-  _SingleProfileDeleted();
+class _SingleUserDeleted extends SingleUserEvent {
+  _SingleUserDeleted();
 }
 
 ///
 /// Bloc to handle updates and state of a specific Profile.
 ///
-class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
-  final AuthenticationBloc authenticationBloc;
-  final String profileUid;
+class SingleUserBloc extends Bloc<SingleUserEvent, SingleUserState> {
+  final DatabaseUpdateModel databaseUpdateModel;
+  final String userUid;
 
-  StreamSubscription<FusedUserProfile> _profileSub;
+  StreamSubscription<Iterable<Player>> _playerSub;
 
-  SingleProfileBloc(
-      {@required this.authenticationBloc, @required this.profileUid}) {
-    _profileSub = authenticationBloc.userAuth
-        .getProfileStream(profileUid)
-        .listen((FusedUserProfile profile) {
-      if (profile == null) {
-        dispatch(_SingleProfileDeleted());
+  SingleUserBloc({@required this.databaseUpdateModel, @required this.userUid}) {
+    _playerSub = databaseUpdateModel.getPlayers(userUid).listen(
+        (Iterable<Player> players) {
+      if (players.length == 0) {
+        dispatch(_SingleUserDeleted());
       } else {
-        dispatch(_SingleProfileNewProfile(profile: profile));
+        dispatch(_SingleUserNewProfile(players: players));
       }
-    });
+    }, onError: (Error e) => dispatch(_SingleUserDeleted()));
   }
 
   @override
   void dispose() {
     super.dispose();
-    _profileSub?.cancel();
+    _playerSub?.cancel();
   }
 
   @override
-  SingleProfileState get initialState => SingleProfileUnitialized();
+  SingleUserState get initialState => SingleUserUnitialized();
 
   @override
-  Stream<SingleProfileState> mapEventToState(SingleProfileEvent event) async* {
-    if (event is _SingleProfileNewProfile) {
-      yield SingleProfileLoaded(profile: event.profile);
+  Stream<SingleUserState> mapEventToState(SingleUserEvent event) async* {
+    if (event is _SingleUserNewProfile) {
+      yield SingleUserLoaded(players: event.players);
     }
 
     // The Profile is deleted.
-    if (event is _SingleProfileDeleted) {
-      yield SingleProfileDeleted();
+    if (event is _SingleUserDeleted) {
+      yield SingleUserDeleted();
     }
   }
 }

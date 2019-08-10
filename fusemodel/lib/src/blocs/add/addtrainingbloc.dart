@@ -8,40 +8,42 @@ import 'package:meta/meta.dart';
 import '../coordinationbloc.dart';
 import 'additemstate.dart';
 
-abstract class AddGameEvent extends Equatable {}
+abstract class AddTrainingEvent extends Equatable {}
 
 ///
 /// Adds this game into the set of games.
 ///
-class AddGameEventCommit extends AddGameEvent {
+class AddTrainingEventCommit extends AddTrainingEvent {
   final Game newGame;
+  final List<DateTime> repeatTimes;
 
-  AddGameEventCommit({@required this.newGame});
+  AddTrainingEventCommit({@required this.newGame, @required this.repeatTimes});
 }
 
 ///
 /// Deals with specific games to allow for accepting/deleting/etc of the
 /// games.
 ///
-class AddGameBloc extends Bloc<AddGameEvent, AddItemState> {
+class AddTrainingBloc extends Bloc<AddTrainingEvent, AddItemState> {
   final CoordinationBloc coordinationBloc;
 
-  AddGameBloc({@required this.coordinationBloc}) {}
+  AddTrainingBloc({@required this.coordinationBloc}) {}
 
   @override
   AddItemState get initialState => new AddItemUninitialized();
 
   @override
-  Stream<AddItemState> mapEventToState(AddGameEvent event) async* {
+  Stream<AddItemState> mapEventToState(AddTrainingEvent event) async* {
     // Create a new Game.
-    if (event is AddGameEventCommit) {
+    if (event is AddTrainingEventCommit) {
       yield AddItemSaving();
 
       try {
         Game updatedGame = event.newGame;
-        Game g = await coordinationBloc.databaseUpdateModel
-            .updateFirestoreGame(updatedGame, true);
-        yield AddItemDone(uid: g.uid);
+        await coordinationBloc.databaseUpdateModel
+            .addTrainingEvents(updatedGame, event.repeatTimes);
+
+        yield AddItemDone(uid: null);
       } catch (e) {
         yield AddItemSaveFailed(error: e);
       }

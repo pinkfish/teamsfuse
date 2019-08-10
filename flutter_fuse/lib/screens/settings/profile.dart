@@ -90,36 +90,33 @@ class ProfileScreen extends StatelessWidget {
       );
     }
 
-    /*
-      new ListTile(
-        leading: const Icon(Icons.add),
-        title: new Text(Messages.of(context).addinvite),
-        onTap: () => this._onAddPlayerInvite(context, player),
-      ),
-    );*/
-
     for (PlayerUser user in player.player.users.values) {
+      var bloc = SingleProfileBloc(
+          coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
+          profileUid: user.userUid);
       ret.add(
-        BlocBuilder(
-          bloc: SingleUserBloc(
-              authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
-              userUid: user.userUid),
-          builder: (BuildContext context, SingleUserState userState) {
-            if (userState is SingleUserUnitialized ||
-                userState is SingleUserDeleted) {
+        // Use a provider to cleanup the bloc.
+        BlocProvider(
+          builder: (BuildContext context) => bloc,
+          child: BlocBuilder(
+            bloc: bloc,
+            builder: (BuildContext context, SingleProfileState userState) {
+              if (userState is SingleProfileUnitialized ||
+                  userState is SingleProfileDeleted) {
+                return new ListTile(
+                  title: new Text(Messages.of(context).displaynamerelationship(
+                      Messages.of(context).loading, user.relationship)),
+                );
+              }
+              FusedUserProfile profile = userState.profile;
               return new ListTile(
+                leading: const Icon(Icons.person),
                 title: new Text(Messages.of(context).displaynamerelationship(
-                    Messages.of(context).loading, user.relationship)),
+                    profile.displayName, user.relationship)),
+                subtitle: new Text(profile.email),
               );
-            }
-            FusedUserProfile profile = userState.profile;
-            return new ListTile(
-              leading: const Icon(Icons.person),
-              title: new Text(Messages.of(context).displaynamerelationship(
-                  profile.displayName, user.relationship)),
-              subtitle: new Text(profile.email),
-            );
-          },
+            },
+          ),
         ),
       );
     }
@@ -193,89 +190,85 @@ class ProfileScreen extends StatelessWidget {
             playerUid: player.uid,
             builder: (BuildContext context, SinglePlayerBloc playerBloc) =>
                 BlocBuilder(
-                  bloc: playerBloc,
-                  builder:
-                      (BuildContext context, SinglePlayerState playerState) {
-                    // List the teams they are in.
-                    List<Widget> teamNames = <Widget>[];
-                    ImageProvider leading;
-                    if (playerState.player.photoUrl != null &&
-                        playerState.player.photoUrl.isNotEmpty) {
-                      leading = new CachedNetworkImageProvider(
-                          urlNow: playerState.player.photoUrl);
-                    } else {
-                      leading =
-                          const AssetImage("assets/images/defaultavatar2.png");
-                    }
-                    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
-                    if (teamBloc.currentState.teamsByPlayer
-                        .containsKey(player.uid)) {
-                      Iterable<Team> teams =
-                          teamBloc.currentState.teamsByPlayer.values;
+              bloc: playerBloc,
+              builder: (BuildContext context, SinglePlayerState playerState) {
+                // List the teams they are in.
+                List<Widget> teamNames = <Widget>[];
+                ImageProvider leading;
+                if (playerState.player.photoUrl != null &&
+                    playerState.player.photoUrl.isNotEmpty) {
+                  leading = new CachedNetworkImageProvider(
+                      urlNow: playerState.player.photoUrl);
+                } else {
+                  leading =
+                      const AssetImage("assets/images/defaultavatar2.png");
+                }
+                TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+                if (teamBloc.currentState.teamsByPlayer
+                    .containsKey(player.uid)) {
+                  Iterable<Team> teams =
+                      teamBloc.currentState.teamsByPlayer.values;
 
-                      for (Team team in teams) {
-                        for (Season season in team.seasons.values) {
-                          int index =
-                              season.players.indexWhere((SeasonPlayer sp) {
-                            return sp.playerUid == player.uid;
-                          });
-                          if (index != -1) {
-                            teamNames.add(
-                              new GestureDetector(
-                                onTap: () => Navigator.pushNamed(
-                                    context, "EditPlayer/" + player.uid),
-                                child: new ListTile(
-                                  leading: const Icon(Icons.people),
-                                  title: new Text(team.name),
-                                  subtitle: new Text(
-                                    messages
-                                        .roleingame(season.players[index].role),
-                                  ),
-                                  trailing: new IconButton(
-                                    onPressed: () {
-                                      _deletePlayer(
-                                          context, player, playerBloc);
-                                    },
-                                    icon: const Icon(Icons.delete),
-                                  ),
-                                ),
+                  for (Team team in teams) {
+                    for (Season season in team.seasons.values) {
+                      int index = season.players.indexWhere((SeasonPlayer sp) {
+                        return sp.playerUid == player.uid;
+                      });
+                      if (index != -1) {
+                        teamNames.add(
+                          new GestureDetector(
+                            onTap: () => Navigator.pushNamed(
+                                context, "EditPlayer/" + player.uid),
+                            child: new ListTile(
+                              leading: const Icon(Icons.people),
+                              title: new Text(team.name),
+                              subtitle: new Text(
+                                messages.roleingame(season.players[index].role),
                               ),
-                            );
-                          }
-                        }
+                              trailing: new IconButton(
+                                onPressed: () {
+                                  _deletePlayer(context, player, playerBloc);
+                                },
+                                icon: const Icon(Icons.delete),
+                              ),
+                            ),
+                          ),
+                        );
                       }
                     }
+                  }
+                }
 
-                    return Card(
-                      child: new Column(
-                        children: <Widget>[
-                          new ListTile(
-                            leading: new CircleAvatar(backgroundImage: leading),
-                            trailing: new IconButton(
-                              onPressed: () {
-                                _editPlayer(context, player.uid);
-                              },
-                              icon: const Icon(Icons.edit),
-                            ),
-                            title: new Text(player.name),
-                          ),
-                          new ExpansionTile(
-                            title: new Text(messages
-                                .numberofuserforplayer(player.users.length)),
-                            initiallyExpanded: false,
-                            children: _buildUserList(context, playerState),
-                          ),
-                          ExpansionTile(
-                            title: new Text(messages
-                                .numberofteamsforplayer(teamNames.length)),
-                            initiallyExpanded: false,
-                            children: teamNames,
-                          )
-                        ],
+                return Card(
+                  child: new Column(
+                    children: <Widget>[
+                      new ListTile(
+                        leading: new CircleAvatar(backgroundImage: leading),
+                        trailing: new IconButton(
+                          onPressed: () {
+                            _editPlayer(context, player.uid);
+                          },
+                          icon: const Icon(Icons.edit),
+                        ),
+                        title: new Text(player.name),
                       ),
-                    );
-                  },
-                ),
+                      new ExpansionTile(
+                        title: new Text(messages
+                            .numberofuserforplayer(player.users.length)),
+                        initiallyExpanded: false,
+                        children: _buildUserList(context, playerState),
+                      ),
+                      ExpansionTile(
+                        title: new Text(
+                            messages.numberofteamsforplayer(teamNames.length)),
+                        initiallyExpanded: false,
+                        children: teamNames,
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         );
       }

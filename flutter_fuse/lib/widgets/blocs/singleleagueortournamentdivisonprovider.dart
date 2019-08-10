@@ -17,7 +17,7 @@ class SingleLeagueOrTournamentDivisonProvider extends StatelessWidget {
 
   SingleLeagueOrTournamentDivisonProvider(
       {@required this.leagueOrTournamentDivisonUid,
-      @required this.singleLeagueOrTournamentSeasonBloc,
+      this.singleLeagueOrTournamentSeasonBloc,
       @required this.builder});
 
   @override
@@ -28,6 +28,9 @@ class SingleLeagueOrTournamentDivisonProvider extends StatelessWidget {
         singleLeagueOrTournamentDivisonBloc.leagueDivisonUid !=
             leagueOrTournamentDivisonUid) {
       singleLeagueOrTournamentDivisonBloc = SingleLeagueOrTournamentDivisonBloc(
+          coordinationBloc: singleLeagueOrTournamentSeasonBloc == null
+              ? BlocProvider.of<CoordinationBloc>(context)
+              : null,
           singleLeagueOrTournamentSeasonBloc:
               singleLeagueOrTournamentSeasonBloc,
           leagueDivisonUid: leagueOrTournamentDivisonUid);

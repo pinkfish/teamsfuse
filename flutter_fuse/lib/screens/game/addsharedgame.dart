@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/blocs/singleleagueortournamentdivisonprovider.dart';
 import 'package:flutter_fuse/widgets/form/leagueteampicker.dart';
 import 'package:flutter_fuse/widgets/games/gameshareddetails.dart';
 import 'package:flutter_fuse/widgets/games/sharedgameeditform.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 ///
@@ -33,9 +36,15 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
   StepState createStepStage = StepState.disabled;
   int _currentStep = 0;
   GameSharedData _initGame;
-  bool _saving = false;
   String _homeTeamUid;
   String _awayTeamUid;
+  AddSharedGameBloc addSharedGameBloc;
+
+  void initState() {
+    super.initState();
+    addSharedGameBloc = AddSharedGameBloc(
+        coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
+  }
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
@@ -90,7 +99,7 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
           return false;
         }
         _gameFormKey.currentState.save();
-        _initGame = _gameFormKey.currentState.finalGameResult;
+        _initGame = _gameFormKey.currentState.finalGameResult.build();
         print('Saved game $_initGame');
         detailsStepState = StepState.complete;
         createStepStage = StepState.complete;
@@ -108,24 +117,8 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
         if (_currentStep < 2) {
           _currentStep++;
         } else {
-          // Write the game out.
-          setState(() {
-            //_saving = true;
-          });
-          _initGame.updateFirestore().then((String h) {
-            _saving = false;
-            Navigator.pop(context);
-          }).catchError((Error e) {
-            _saving = false;
-            showDialog<bool>(
-                context: context,
-                builder: (BuildContext context) {
-                  return new AlertDialog(
-                    title: new Text("Error"),
-                    content: new Text("Error saving the game"),
-                  );
-                });
-          });
+          addSharedGameBloc
+              .dispatch(AddSharedGameEventCommit(newSharedData: _initGame));
         }
       });
     }
@@ -140,29 +133,36 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
   }
 
   Widget _buildHomeAwayChooser() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          Messages.of(context).home,
-          style: Theme.of(context).textTheme.subhead,
-        ),
-        TournamentOrLeagueTeamPicker(
-          tournamentOrLeagueDivisonUid: widget.leagueDivisonUid,
-          initialTeamUid: _homeTeamUid,
-          onChanged: (String str) => _homeTeamUid = str,
-        ),
-        Text(
-          Messages.of(context).away,
-          style: Theme.of(context).textTheme.subhead,
-        ),
-        TournamentOrLeagueTeamPicker(
-          tournamentOrLeagueDivisonUid: widget.leagueDivisonUid,
-          initialTeamUid: _awayTeamUid,
-          onChanged: (String str) => _awayTeamUid = str,
-        ),
-      ],
+    return SingleLeagueOrTournamentDivisonProvider(
+      leagueOrTournamentDivisonUid: widget.leagueDivisonUid,
+      builder: (BuildContext context,
+              SingleLeagueOrTournamentDivisonBloc divisonBloc) =>
+          Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            Messages.of(context).home,
+            style: Theme.of(context).textTheme.subhead,
+          ),
+          TournamentOrLeagueTeamPicker(
+            leagueOrTournamentDivisonBloc: divisonBloc,
+            //tournamentOrLeagueDivisonUid: widget.leagueDivisonUid,
+            initialTeamUid: _homeTeamUid,
+            onChanged: (String str) => _homeTeamUid = str,
+          ),
+          Text(
+            Messages.of(context).away,
+            style: Theme.of(context).textTheme.subhead,
+          ),
+          TournamentOrLeagueTeamPicker(
+            leagueOrTournamentDivisonBloc: divisonBloc,
+            //tournamentOrLeagueDivisonUid: widget.leagueDivisonUid,
+            initialTeamUid: _awayTeamUid,
+            onChanged: (String str) => _awayTeamUid = str,
+          ),
+        ],
+      ),
     );
   }
 
@@ -175,45 +175,70 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
       appBar: new AppBar(
         title: new Text(messages.title),
       ),
-      body: new SavingOverlay(
-        saving: _saving,
-        child: new Container(
-          padding: new EdgeInsets.all(5.0),
-          child: new StepperAlwaysVisible(
-            type: StepperType.horizontal,
-            currentStep: _currentStep,
-            onStepContinue: () {
-              _onStepperContinue(context);
-            },
-            onStepCancel: () {
-              // Go back
-              Navigator.of(context).pop();
-            },
-            onStepTapped: (int step) {
-              _onStepTapped(step);
-            },
-            steps: <Step>[
-              new Step(
-                title: new Text(messages.homeaway),
-                state: homeAwayStepState,
-                isActive: false,
-                content: _buildHomeAwayChooser(),
+      body: BlocProvider(
+        builder: (BuildContext context) => addSharedGameBloc,
+        child: BlocListener(
+          bloc: addSharedGameBloc,
+          listener: (BuildContext conetext, AddItemState addState) {
+            if (addState is AddItemDone) {
+              Navigator.pop(context);
+            }
+            if (addState is AddItemSaveFailed) {
+              showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return new AlertDialog(
+                      title: new Text("Error"),
+                      content: new Text("Error saving the game"),
+                    );
+                  });
+            }
+          },
+          child: BlocBuilder(
+            bloc: addSharedGameBloc,
+            builder: (BuildContext context, AddItemState addState) =>
+                SavingOverlay(
+              saving: addState is AddItemSaving,
+              child: new Container(
+                padding: new EdgeInsets.all(5.0),
+                child: new StepperAlwaysVisible(
+                  type: StepperType.horizontal,
+                  currentStep: _currentStep,
+                  onStepContinue: () {
+                    _onStepperContinue(context);
+                  },
+                  onStepCancel: () {
+                    // Go back
+                    Navigator.of(context).pop();
+                  },
+                  onStepTapped: (int step) {
+                    _onStepTapped(step);
+                  },
+                  steps: <Step>[
+                    new Step(
+                      title: new Text(messages.homeaway),
+                      state: homeAwayStepState,
+                      isActive: false,
+                      content: _buildHomeAwayChooser(),
+                    ),
+                    new Step(
+                      title: new Text(messages.details),
+                      state: detailsStepState,
+                      isActive: _homeTeamUid != null && _awayTeamUid != null,
+                      content: _buildForm(context),
+                    ),
+                    new Step(
+                      title: new Text(messages.create),
+                      state: createStepStage,
+                      isActive: _gameFormKey != null &&
+                          _gameFormKey.currentState != null &&
+                          _gameFormKey.currentState.validate(),
+                      content: _buildSummary(context),
+                    )
+                  ],
+                ),
               ),
-              new Step(
-                title: new Text(messages.details),
-                state: detailsStepState,
-                isActive: _homeTeamUid != null && _awayTeamUid != null,
-                content: _buildForm(context),
-              ),
-              new Step(
-                title: new Text(messages.create),
-                state: createStepStage,
-                isActive: _gameFormKey != null &&
-                    _gameFormKey.currentState != null &&
-                    _gameFormKey.currentState.validate(),
-                content: _buildSummary(context),
-              )
-            ],
+            ),
           ),
         ),
       ),

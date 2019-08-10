@@ -24,19 +24,25 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     CollectionReferenceWrapper refShared =
         wrapper.collection(GAMES_SHARED_COLLECTION);
     if (game.uid == null || game.uid == '') {
-      GameBuilder gameBuilder = game.toBuilder();
-      // Add the shared stuff, then the game.
-      if (game.sharedData.officialResults.homeTeamLeagueUid == null) {
-        gameBuilder.sharedData.officialResults.homeTeamLeagueUid = game.teamUid;
-      }
-      DocumentReferenceWrapper sharedDoc =
-          await refShared.add(game.sharedData.toJSON());
-      gameBuilder.sharedDataUid = sharedDoc.documentID;
-      // Add the game.
-      DocumentReferenceWrapper doc =
-          await ref.add(gameBuilder.build().toJSON());
-      gameBuilder.uid = doc.documentID;
-      return gameBuilder.build();
+      DocumentReferenceWrapper ref =
+          wrapper.collection(GAMES_COLLECTION).document();
+      DocumentReferenceWrapper refShared =
+          wrapper.collection(GAMES_SHARED_COLLECTION).document();
+      wrapper.runTransaction((TransactionWrapper tx) async {
+        GameBuilder gameBuilder = game.toBuilder();
+        // Add the shared stuff, then the game.
+        if (game.sharedData.officialResults.homeTeamLeagueUid == null) {
+          gameBuilder.sharedData.officialResults.homeTeamLeagueUid =
+              game.teamUid;
+        }
+        gameBuilder.sharedData.uid = refShared.documentID;
+        tx.set(refShared, game.sharedData.toJSON());
+        gameBuilder.sharedDataUid = refShared.documentID;
+        gameBuilder.uid = ref.documentID;
+        // Add the game.
+        tx.set(ref, gameBuilder.build().toJSON());
+        return gameBuilder.build();
+      });
     } else {
       if (sharedData) {
         if (game.sharedDataUid.isEmpty) {
@@ -53,6 +59,42 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       ref.document(game.uid).updateData(game.toJSON());
       return game;
     }
+  }
+
+  @override
+  Future<void> addTrainingEvents(Game game, Iterable<DateTime> dates) {
+    List<DocumentReferenceWrapper> ref = List.generate(dates.length,
+        (int i) => wrapper.collection(GAMES_COLLECTION).document());
+    List<DocumentReferenceWrapper> refShared = List.generate(dates.length,
+        (int i) => wrapper.collection(GAMES_SHARED_COLLECTION).document());
+    DocumentReferenceWrapper mainRef =
+        wrapper.collection(GAMES_COLLECTION).document();
+    DocumentReferenceWrapper mainShared =
+        wrapper.collection(GAMES_SHARED_COLLECTION).document();
+
+    wrapper.runTransaction((TransactionWrapper tx) async {
+      GameBuilder gameBuilder = game.toBuilder();
+      // Add the shared stuff, then the game.
+      if (game.sharedData.officialResults.homeTeamLeagueUid == null) {
+        gameBuilder.sharedData.officialResults.homeTeamLeagueUid = game.teamUid;
+      }
+      tx.set(mainShared, game.sharedData.toJSON());
+      gameBuilder.sharedDataUid = mainShared.documentID;
+      // Add the game.
+      tx.set(mainRef, gameBuilder.build().toJSON());
+      for (int i = 0; i < dates.length; i++) {
+        DateTime time = dates.elementAt(i);
+        if (game.sharedData.time != time.millisecondsSinceEpoch) {
+          Game newGame = game.rebuild((b) => b
+            ..uid = null
+            ..sharedData.time = time.millisecondsSinceEpoch);
+          tx.set(refShared[i], game.sharedData.toJSON());
+          gameBuilder.sharedDataUid = refShared[i].documentID;
+          // Add the game.
+          tx.set(ref[i], gameBuilder.build().toJSON());
+        }
+      }
+    });
   }
 
   @override
@@ -348,8 +390,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       Season season, File imageFile) async {
     // Add or update this record into the database.
     CollectionReferenceWrapper ref = wrapper.collection(TEAMS_COLLECTION);
-    // Add the game.
-    DocumentReferenceWrapper doc;
     if (pregen == null) {
       pregen = wrapper.collection(TEAMS_COLLECTION).document();
     }
@@ -697,18 +737,18 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Uri> updatePlayerImage(Player player, File imgFile) async {
+  Future<Uri> updatePlayerImage(String playerUid, File imgFile) async {
     final StorageReferenceWrapper ref =
-        wrapper.storageRef().child("player_" + player.uid + ".img");
+        wrapper.storageRef().child("player_" + playerUid + ".img");
     final StorageUploadTaskWrapper task = ref.putFile(imgFile);
     final UploadTaskSnapshotWrapper snapshot = (await task.future);
     String photoUrl = snapshot.downloadUrl.toString();
-    print('photurl $player.photoUrl');
+    print('photurl $playerUid');
     Map<String, String> data = <String, String>{};
     data[PHOTOURL] = photoUrl;
     await wrapper
         .collection(PLAYERS_COLLECTION)
-        .document(player.uid)
+        .document(playerUid)
         .updateData(data);
     return snapshot.downloadUrl;
   }
@@ -1422,18 +1462,24 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<LeagueOrTournamentDivison> getLeagueDivisionData(
-      {String leagueDivisionUid, String memberUid}) async {
-    DocumentSnapshotWrapper doc = await wrapper
+  Stream<LeagueOrTournamentDivison> getLeagueDivisionData(
+      {String leagueDivisionUid, String memberUid}) async* {
+    DocumentReferenceWrapper doc = await wrapper
         .collection(LEAGUE_DIVISION_COLLECTION)
-        .document(leagueDivisionUid)
-        .get();
-    if (doc.exists) {
-      return LeagueOrTournamentDivison.fromJSON(
-              doc.documentID, memberUid, doc.data)
+        .document(leagueDivisionUid);
+    DocumentSnapshotWrapper wrap = await doc.get();
+    if (wrap.exists) {
+      yield LeagueOrTournamentDivison.fromJSON(
+              wrap.documentID, memberUid, wrap.data)
+          .build();
+    } else {
+      yield null;
+    }
+    await for (DocumentSnapshotWrapper wrap in doc.snapshots()) {
+      yield LeagueOrTournamentDivison.fromJSON(
+              wrap.documentID, memberUid, wrap.data)
           .build();
     }
-    return null;
   }
 
   @override

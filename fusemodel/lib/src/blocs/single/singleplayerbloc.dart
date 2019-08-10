@@ -19,6 +19,12 @@ abstract class SinglePlayerState extends Equatable {
       @required this.mePlayer,
       @required this.invites,
       @required this.invitesLoaded});
+
+  SinglePlayerState.fromState(SinglePlayerState state)
+      : mePlayer = state.mePlayer,
+        player = state.player,
+        invitesLoaded = state.invitesLoaded,
+        invites = state.invites;
 }
 
 ///
@@ -49,15 +55,24 @@ class SinglePlayerLoaded extends SinglePlayerState {
 ///
 class SinglePlayerSaving extends SinglePlayerState {
   SinglePlayerSaving({@required SinglePlayerState state})
-      : super(
-            player: state.player,
-            invites: state.invites,
-            invitesLoaded: state.invitesLoaded,
-            mePlayer: state.mePlayer);
+      : super.fromState(state);
 
   @override
   String toString() {
     return 'SinglePlayerSaving{}';
+  }
+}
+
+///
+/// Saving operation is done.
+///
+class SinglePlayerSaveDone extends SinglePlayerState {
+  SinglePlayerSaveDone({@required SinglePlayerState state})
+      : super.fromState(state);
+
+  @override
+  String toString() {
+    return 'SinglePlayerSaveDone{}';
   }
 }
 
@@ -69,11 +84,7 @@ class SinglePlayerSaveFailed extends SinglePlayerState {
 
   SinglePlayerSaveFailed(
       {@required SinglePlayerState state, @required this.error})
-      : super(
-            player: state.player,
-            invites: state.invites,
-            invitesLoaded: state.invitesLoaded,
-            mePlayer: state.mePlayer);
+      : super.fromState(state);
 
   @override
   String toString() {
@@ -101,8 +112,9 @@ abstract class SinglePlayerEvent extends Equatable {}
 ///
 class SinglePlayerUpdate extends SinglePlayerEvent {
   final PlayerBuilder player;
+  final File image;
 
-  SinglePlayerUpdate({@required this.player});
+  SinglePlayerUpdate({@required this.player, this.image});
 }
 
 ///
@@ -224,8 +236,14 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
       yield SinglePlayerSaving(state: currentState);
 
       try {
+        if (event.image != null) {
+          var url = await playerBloc.coordinationBloc.databaseUpdateModel
+              .updatePlayerImage(event.player.uid, event.image);
+          event.player.photoUrl = url.toString();
+        }
         await playerBloc.coordinationBloc.databaseUpdateModel
             .updateFirestorePlayer(event.player.build(), false);
+        yield SinglePlayerSaveDone(state: currentState);
         yield SinglePlayerLoaded(
             state: currentState,
             player: event.player.build(),
@@ -243,6 +261,7 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
                 playerUid: playerUid,
                 email: event.email,
                 playerName: currentState.player.name);
+        yield SinglePlayerSaveDone(state: currentState);
         yield SinglePlayerLoaded(state: currentState);
       } catch (e) {
         yield SinglePlayerSaveFailed(state: currentState, error: e);

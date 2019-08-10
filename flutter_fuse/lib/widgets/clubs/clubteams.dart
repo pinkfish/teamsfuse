@@ -34,7 +34,7 @@ class ClubTeams extends StatelessWidget {
 
     for (Team team in myTeam) {
       teamWidgets.add(
-        new TeamTile(team),
+        new TeamTile(team.uid),
       );
     }
     return teamWidgets;

@@ -25,6 +25,13 @@ abstract class SingleTeamState extends Equatable {
       @required this.invitesAsAdmin,
       @required this.fullSeason,
       @required this.opponents});
+
+  ///
+  /// Checks to see if the user is an admin for this team.
+  ///
+  bool isAdmin() {
+    return team.isAdmin(club);
+  }
 }
 
 ///
@@ -56,6 +63,24 @@ class SingleTeamLoaded extends SingleTeamState {
 ///
 class SingleTeamSaving extends SingleTeamState {
   SingleTeamSaving({@required SingleTeamState state})
+      : super(
+            team: state.team,
+            club: state.club,
+            invitesAsAdmin: state.invitesAsAdmin,
+            fullSeason: state.fullSeason,
+            opponents: state.opponents);
+
+  @override
+  String toString() {
+    return 'SingleTeamSaving{}';
+  }
+}
+
+///
+/// Saving operation is done.
+///
+class SingleTeamSaveDone extends SingleTeamState {
+  SingleTeamSaveDone({@required SingleTeamState state})
       : super(
             team: state.team,
             club: state.club,
@@ -114,8 +139,9 @@ abstract class SingleTeamEvent extends Equatable {}
 ///
 class SingleTeamUpdate extends SingleTeamEvent {
   final TeamBuilder team;
+  final File image;
 
-  SingleTeamUpdate({@required this.team});
+  SingleTeamUpdate({@required this.team, this.image});
 }
 
 ///
@@ -326,12 +352,33 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
             error: ArgumentError("Cannot save a public team"));
       } else {
         try {
+          if (event.image != null) {
+            await teamBloc.coordinationBloc.databaseUpdateModel
+                .updateTeamImage(teamUid, event.image);
+          }
           await teamBloc.coordinationBloc.databaseUpdateModel
               .updateFirestoreTeam(event.team.build());
-          yield SingleTeamLoaded(
-              state: currentState,
-              team: event.team.build(),
-              invitesAsAdmin: currentState.invitesAsAdmin);
+          yield SingleTeamSaveDone(state: currentState);
+          yield SingleTeamLoaded(state: currentState, team: event.team.build());
+        } catch (e) {
+          yield SingleTeamSaveFailed(state: currentState, error: e);
+        }
+      }
+    }
+
+    // Save the team image.
+    if (event is SingleTeamUpdateImage) {
+      yield SingleTeamSaving(state: currentState);
+      if (currentState.team.publicOnly) {
+        yield SingleTeamSaveFailed(
+            state: currentState,
+            error: ArgumentError("Cannot save a public team"));
+      } else {
+        try {
+          await teamBloc.coordinationBloc.databaseUpdateModel
+              .updateTeamImage(teamUid, event.image);
+          yield SingleTeamSaveDone(state: currentState);
+          yield SingleTeamLoaded(state: currentState);
         } catch (e) {
           yield SingleTeamSaveFailed(state: currentState, error: e);
         }
@@ -343,10 +390,8 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       try {
         await teamBloc.coordinationBloc.databaseUpdateModel
             .addAdmin(teamUid, event.adminUid);
-        yield SingleTeamLoaded(
-            state: currentState,
-            team: currentState.team,
-            invitesAsAdmin: currentState.invitesAsAdmin);
+        yield SingleTeamSaveDone(state: currentState);
+        yield SingleTeamLoaded(state: currentState);
       } catch (e) {
         yield SingleTeamSaveFailed(state: currentState, error: e);
       }
@@ -357,10 +402,8 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       try {
         await teamBloc.coordinationBloc.databaseUpdateModel
             .deleteAdmin(currentState.team, event.adminUid);
-        yield SingleTeamLoaded(
-            state: currentState,
-            team: currentState.team,
-            invitesAsAdmin: currentState.invitesAsAdmin);
+        yield SingleTeamSaveDone(state: currentState);
+        yield SingleTeamLoaded(state: currentState);
       } catch (e) {
         yield SingleTeamSaveFailed(state: currentState, error: e);
       }
@@ -373,10 +416,8 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
             teamUid: currentState.team.uid,
             email: event.email,
             teamName: currentState.team.name);
-        yield SingleTeamLoaded(
-            state: currentState,
-            team: currentState.team,
-            invitesAsAdmin: currentState.invitesAsAdmin);
+        yield SingleTeamSaveDone(state: currentState);
+        yield SingleTeamLoaded(state: currentState);
       } catch (e) {
         yield SingleTeamSaveFailed(state: currentState, error: e);
       }
@@ -384,9 +425,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
 
     if (event is _SingleTeamInvitesAdminLoaded) {
       yield SingleTeamLoaded(
-          state: currentState,
-          team: currentState.team,
-          invitesAsAdmin: event.invites);
+          state: currentState, invitesAsAdmin: event.invites);
     }
 
     if (event is SingleTeamLoadInvites) {
@@ -416,19 +455,29 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
     }
 
     if (event is SingleTeamUpdateClub) {
-      Team myTeam =
-          currentState.team.rebuild((b) => b..clubUid = event.clubUid);
-      await teamBloc.coordinationBloc.databaseUpdateModel
-          .updateFirestoreTeam(myTeam);
-      yield SingleTeamLoaded(state: currentState, team: myTeam);
+      try {
+        Team myTeam =
+            currentState.team.rebuild((b) => b..clubUid = event.clubUid);
+        await teamBloc.coordinationBloc.databaseUpdateModel
+            .updateFirestoreTeam(myTeam);
+        yield SingleTeamSaveDone(state: currentState);
+        yield SingleTeamLoaded(state: currentState, team: myTeam);
+      } catch (e) {
+        yield SingleTeamSaveFailed(state: currentState, error: e);
+      }
     }
 
     if (event is SingleTeamArchive) {
-      Team myTeam =
-          currentState.team.rebuild((b) => b..archived = event.archive);
-      await teamBloc.coordinationBloc.databaseUpdateModel
-          .updateFirestoreTeam(myTeam);
-      yield SingleTeamLoaded(state: currentState, team: myTeam);
+      try {
+        Team myTeam =
+            currentState.team.rebuild((b) => b..archived = event.archive);
+        await teamBloc.coordinationBloc.databaseUpdateModel
+            .updateFirestoreTeam(myTeam);
+        yield SingleTeamSaveDone(state: currentState);
+        yield SingleTeamLoaded(state: currentState, team: myTeam);
+      } catch (e) {
+        yield SingleTeamSaveFailed(state: currentState, error: e);
+      }
     }
   }
 }

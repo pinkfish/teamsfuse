@@ -85,7 +85,7 @@ class ClubMembers extends StatelessWidget {
 
     for (String adminUid in club.adminsUids) {
       var bloc = SingleProfileBloc(
-          authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+          coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
           profileUid: adminUid);
       members.add(
         BlocProvider(
@@ -100,7 +100,7 @@ class ClubMembers extends StatelessWidget {
     }
     for (String memberUid in club.members) {
       var bloc = SingleProfileBloc(
-          authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+          coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
           profileUid: memberUid);
       members.add(
         BlocProvider(

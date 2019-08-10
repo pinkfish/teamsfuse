@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/games/eventeditform.dart';
 import 'package:flutter_fuse/widgets/teams/teamselection.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class AddEventScreen extends StatefulWidget {
@@ -26,11 +29,14 @@ class AddEventScreenState extends State<AddEventScreen> {
   Team _team;
   Game _initGame;
   int currentStep = 0;
+  AddGameBloc addGameBloc;
 
   @override
   void initState() {
     newGame();
     super.initState();
+    addGameBloc = new AddGameBloc(
+        coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
   }
 
   void _showInSnackBar(String value) {
@@ -138,7 +144,7 @@ class AddEventScreenState extends State<AddEventScreen> {
           return false;
         }
         _eventFormKey.currentState.save();
-        _initGame = _eventFormKey.currentState.finalGameResult;
+        _initGame = _eventFormKey.currentState.finalGameResult.build();
         detailsStepState = StepState.complete;
         break;
       case 2:
@@ -155,19 +161,7 @@ class AddEventScreenState extends State<AddEventScreen> {
           currentStep++;
         } else {
           // Write the game out.
-          _initGame.updateFirestore(false).then((void y) {
-            Navigator.pop(context);
-          }).catchError((Error e) {
-            showDialog<bool>(
-              context: context,
-              builder: (BuildContext context) {
-                return new AlertDialog(
-                  title: new Text("Error"),
-                  content: new Text("Error saving the training"),
-                );
-              },
-            );
-          });
+          addGameBloc.dispatch(AddGameEventCommit(newGame: _initGame));
         }
       });
     }
@@ -182,26 +176,24 @@ class AddEventScreenState extends State<AddEventScreen> {
   }
 
   void newGame() {
-    GameSharedData sharedGameData =
-        new GameSharedData(_team.uid, null, type: EventType.Event);
-    _initGame = new Game(_team.uid, null, sharedData: sharedGameData);
-    _initGame.opponentUids = <String>[];
-    _initGame.homegame = false;
-    _initGame.uniform = '';
-    _initGame.notes = '';
+    GameSharedDataBuilder sharedGameData = new GameSharedDataBuilder()
+      ..type = EventType.Event
+      ..officialResults.homeTeamLeagueUid = _team.uid;
+    _initGame = new Game((b) => b
+      ..teamUid = _team.uid
+      ..sharedData = sharedGameData
+      ..uniform = ""
+      ..notes = "");
   }
 
   void _teamChanged(Team team) {
-    setState(() {
-      _team = team;
-    });
-    _initGame.teamUid = _team.uid;
     DateTime start = new DateTime.now().add(const Duration(days: 0));
-    _initGame.sharedData.time = start.millisecondsSinceEpoch;
-    _initGame.sharedData.endTime = _initGame.sharedData.time;
-    _initGame.seasonUid = _team.currentSeason;
-    _initGame.trackAttendance = _team.trackAttendence;
-
+    _initGame = _initGame.rebuild((b) => b
+      ..teamUid = _team.uid
+      ..seasonUid = _team.currentSeason
+      ..trackAttendance = _team.trackAttendenceInternal
+      ..sharedData.time = start.millisecondsSinceEpoch
+      ..sharedData.endTime = start.millisecondsSinceEpoch);
     print('team changed ${_initGame.toJSON()}');
   }
 
@@ -209,52 +201,82 @@ class AddEventScreenState extends State<AddEventScreen> {
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
 
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(messages.title),
-      ),
-      body: new Container(
-        padding: new EdgeInsets.all(16.0),
-        child: new Stepper(
-          type: StepperType.horizontal,
-          currentStep: currentStep,
-          onStepContinue: () {
-            _onStepperContinue(context);
+    return BlocProvider(
+      builder: (BuildContext context) => addGameBloc,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: new AppBar(
+          title: new Text(messages.title),
+        ),
+        body: BlocListener(
+          bloc: addGameBloc,
+          listener: (BuildContext context, AddItemState state) {
+            if (state is AddItemDone) {
+              Navigator.pop(context);
+            }
+            if (state is AddItemSaveFailed) {
+              showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return new AlertDialog(
+                    title: new Text("Error"),
+                    content: new Text("Error saving the event"),
+                  );
+                },
+              );
+            }
           },
-          onStepCancel: () {
-            // Go back
-            Navigator.of(context).pop();
-          },
-          onStepTapped: (int step) {
-            _onStepTapped(step);
-          },
-          steps: <Step>[
-            new Step(
-              title: new Text(messages.team),
-              state: teamStepState,
-              isActive: true,
-              content: new TeamSelection(
-                club: null,
-                onChanged: _teamChanged,
-                initialTeam: _team,
+          child: BlocBuilder(
+            bloc: addGameBloc,
+            builder: (BuildContext context, AddItemState state) =>
+                SavingOverlay(
+              saving: state is AddItemSaving,
+              child: Container(
+                padding: new EdgeInsets.all(16.0),
+                child: new Stepper(
+                  type: StepperType.horizontal,
+                  currentStep: currentStep,
+                  onStepContinue: () {
+                    _onStepperContinue(context);
+                  },
+                  onStepCancel: () {
+                    // Go back
+                    Navigator.of(context).pop();
+                  },
+                  onStepTapped: (int step) {
+                    _onStepTapped(step);
+                  },
+                  steps: <Step>[
+                    new Step(
+                      title: new Text(messages.team),
+                      state: teamStepState,
+                      isActive: true,
+                      content: new TeamSelection(
+                        club: null,
+                        onChanged: _teamChanged,
+                        initialTeam: _team,
+                      ),
+                    ),
+                    new Step(
+                      title: new Text(messages.details),
+                      state: detailsStepState,
+                      isActive:
+                          _team != null && ((_team?.uid?.isNotEmpty) ?? false),
+                      content: _buildForm(context),
+                    ),
+                    new Step(
+                      title: new Text(messages.create),
+                      state: createStepStage,
+                      isActive: _eventFormKey != null &&
+                          _eventFormKey.currentState != null &&
+                          _eventFormKey.currentState.validate(),
+                      content: _buildRepeatSummary(),
+                    )
+                  ],
+                ),
               ),
             ),
-            new Step(
-              title: new Text(messages.details),
-              state: detailsStepState,
-              isActive: _team != null && ((_team?.uid?.isNotEmpty) ?? false),
-              content: _buildForm(context),
-            ),
-            new Step(
-              title: new Text(messages.create),
-              state: createStepStage,
-              isActive: _eventFormKey != null &&
-                  _eventFormKey.currentState != null &&
-                  _eventFormKey.currentState.validate(),
-              content: _buildRepeatSummary(),
-            )
-          ],
+          ),
         ),
       ),
     );

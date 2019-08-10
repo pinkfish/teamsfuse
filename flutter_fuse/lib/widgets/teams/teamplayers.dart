@@ -120,7 +120,7 @@ class TeamPlayersState extends State<TeamPlayers> {
     // Put in an expansion bar if there are pending invites.
     if (state.invites != null &&
         state.invites.length > 0 &&
-        teamState.team.isAdmin(teamState.club)) {
+        teamState.isAdmin()) {
       List<Widget> kids = <Widget>[];
       for (InviteToTeam inv in state.invites) {
         kids.add(
@@ -171,58 +171,57 @@ class TeamPlayersState extends State<TeamPlayers> {
     return SingleTeamProvider(
       teamUid: widget._teamUid,
       builder: (BuildContext context, SingleTeamBloc bloc) => BlocBuilder(
-            bloc: bloc,
-            builder: (BuildContext context, SingleTeamState state) {
-              if (state is SingleTeamDeleted) {
-                return CircularProgressIndicator();
-              } else {
-                return Column(
+        bloc: bloc,
+        builder: (BuildContext context, SingleTeamState state) {
+          if (state is SingleTeamDeleted) {
+            return CircularProgressIndicator();
+          } else {
+            return Column(
+              children: <Widget>[
+                new Row(
                   children: <Widget>[
-                    new Row(
-                      children: <Widget>[
-                        new DropdownButton<String>(
-                          hint: new Text(messsages.seasonselect),
-                          value: _seasonUid,
-                          items: _buildItems(context, bloc.currentState.team),
-                          onChanged: (String val) {
-                            print('changed $val');
-                            setState(() {
-                              _seasonUid = val;
-                            });
-                          },
-                        ),
-                      ],
+                    new DropdownButton<String>(
+                      hint: new Text(messsages.seasonselect),
+                      value: _seasonUid,
+                      items: _buildItems(context, bloc.currentState.team),
+                      onChanged: (String val) {
+                        print('changed $val');
+                        setState(() {
+                          _seasonUid = val;
+                        });
+                      },
                     ),
-                    new Expanded(
-                      child: new Container(
-                        constraints: new BoxConstraints(),
-                        margin: new EdgeInsets.only(
-                            left: 10.0, right: 10.0, top: 10.0),
-                        decoration: new BoxDecoration(color: theme.cardColor),
-                        child: new SingleChildScrollView(
-                          child: SingleTeamSeasonProvider(
-                            seasonUid: _seasonUid,
-                            teamUid: widget._teamUid,
-                            builder: (BuildContext context,
-                                    SingleTeamSeasonBloc seasonBloc) =>
-                                BlocBuilder(
-                                  bloc: seasonBloc,
-                                  builder: (BuildContext context,
-                                      SingleTeamSeaonState seasonState) {
-                                    return Column(
-                                        children:
-                                            _buildPlayers(seasonState, state));
-                                  },
-                                ),
-                          ),
+                  ],
+                ),
+                new Expanded(
+                  child: new Container(
+                    constraints: new BoxConstraints(),
+                    margin:
+                        new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+                    decoration: new BoxDecoration(color: theme.cardColor),
+                    child: new SingleChildScrollView(
+                      child: SingleTeamSeasonProvider(
+                        seasonUid: _seasonUid,
+                        teamUid: widget._teamUid,
+                        builder: (BuildContext context,
+                                SingleTeamSeasonBloc seasonBloc) =>
+                            BlocBuilder(
+                          bloc: seasonBloc,
+                          builder: (BuildContext context,
+                              SingleTeamSeaonState seasonState) {
+                            return Column(
+                                children: _buildPlayers(seasonState, state));
+                          },
                         ),
                       ),
                     ),
-                  ],
-                );
-              }
-            },
-          ),
+                  ),
+                ),
+              ],
+            );
+          }
+        },
+      ),
     );
   }
 }

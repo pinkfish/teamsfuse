@@ -75,7 +75,7 @@ class TeamScreenState extends State<TeamScreen> {
             Navigator.pop(context);
             return Text(Messages.of(context).loading);
           }
-          if (state.team.isAdmin(null) && _tabIndex == 0) {
+          if (state.isAdmin() && _tabIndex == 0) {
             actions.add(
               new PopupMenuButton<String>(
                 onSelected: (String str) => _select(str, singleTeamBloc),
@@ -130,7 +130,7 @@ class TeamScreenState extends State<TeamScreen> {
             floatingActionButton: BlocBuilder(
               bloc: singleTeamBloc,
               builder: (BuildContext context, SingleTeamState state) {
-                if (state.team.isAdmin(null) && _tabIndex == 0) {
+                if (state.isAdmin() && _tabIndex == 0) {
                   fab = new FloatingActionButton(
                     onPressed: () => _onEditTeam(context),
                     child: new Icon(Icons.edit),

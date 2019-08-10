@@ -190,6 +190,7 @@ class _ImageProviderResolver {
   CachedNetworkImage get widget => state.widget;
 
   ImageStream _imageStream;
+  ImageStreamListener _listener;
   ImageInfo _imageInfo;
 
   void resolve(CachedNetworkImageProvider provider) {
@@ -200,8 +201,9 @@ class _ImageProviderResolver {
             : null));
 
     if (_imageStream.key != oldImageStream?.key) {
-      oldImageStream?.removeListener(_handleImageChanged);
-      _imageStream.addListener(_handleImageChanged);
+      oldImageStream?.removeListener(_listener);
+      _listener = ImageStreamListener(_handleImageChanged);
+      _imageStream.addListener(_listener);
     }
   }
 
@@ -211,7 +213,7 @@ class _ImageProviderResolver {
   }
 
   void stopListening() {
-    _imageStream?.removeListener(_handleImageChanged);
+    _imageStream?.removeListener(_listener);
   }
 }
 
@@ -482,9 +484,11 @@ class CachedNetworkImageProvider
     return new MultiFrameImageStreamCompleter(
         codec: _loadAsync(key),
         scale: key.scale,
-        informationCollector: (StringBuffer information) {
-          information.writeln('Image provider: $this');
-          information.write('Image key: $key');
+        informationCollector: () {
+          return <DiagnosticsNode>[
+            DiagnosticsProperty<String>('imageProvider', '$this'),
+            DiagnosticsProperty<String>('imazgeKey', '$key')
+          ];
         });
   }
 

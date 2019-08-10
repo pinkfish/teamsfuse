@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/blocs/singleprofileprovider.dart';
 import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -15,7 +17,6 @@ class SettingsScreen extends StatefulWidget {
 class SettingsScreenState extends State<SettingsScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   GlobalKey<FormState> formState = new GlobalKey<FormState>();
-  bool _saving;
 
   bool emailOnUpdate;
   bool emailOnUpcoming;
@@ -25,20 +26,15 @@ class SettingsScreenState extends State<SettingsScreen> {
         .showSnackBar(new SnackBar(content: new Text(value)));
   }
 
-  void _onSave() async {
+  void _onSave(
+      SingleProfileBloc bloc, SingleProfileState singleProfileState) async {
     if (formState.currentState.validate()) {
       formState.currentState.save();
-      setState(() {
-        _saving = true;
-      });
-      UserData user = await UserDatabaseData.instance.userAuth.currentUser();
-      FusedUserProfile profile = user.profile.copyWith(
-          emailUpcomingGames: emailOnUpcoming, emailNewEvents: emailOnUpdate);
-      UserDatabaseData.instance.userAuth.updateProfile(user.uid, profile);
-      setState(() {
-        _saving = false;
-      });
-      Navigator.pop(context);
+
+      FusedUserProfile profile = singleProfileState.profile.rebuild((b) => b
+        ..emailUpcomingGame = emailOnUpcoming
+        ..emailOnUpdates = emailOnUpdate);
+      bloc.dispatch(SingleProfileUpdate(profile: profile));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
@@ -46,22 +42,38 @@ class SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AuthenticationBloc authenticationBloc =
+        BlocProvider.of<AuthenticationBloc>(context);
+
     return new Scaffold(
       key: _scaffoldKey,
       appBar: new AppBar(
         title: new Text(Messages.of(context).title),
       ),
-      body: new FutureBuilder<FusedUserProfile>(
-          future: UserDatabaseData.instance.userAuth
-              .currentUser()
-              .then((UserData data) {
-            return UserDatabaseData.instance.userAuth.getProfile(data.uid);
-          }),
-          builder:
-              (BuildContext context, AsyncSnapshot<FusedUserProfile> data) {
-            if (data.hasData) {
+      body: SingleProfileProvider(
+        userUid: authenticationBloc.currentUser.uid,
+        builder: (BuildContext context, SingleProfileBloc singleProfileBloc) =>
+            BlocListener(
+          bloc: singleProfileBloc,
+          listener:
+              (BuildContext context, SingleProfileState singleProfileState) {
+            if (singleProfileState is SingleProfileSaveDone ||
+                singleProfileState is SingleProfileDeleted) {
+              Navigator.pop(context);
+            }
+          },
+          child: BlocBuilder(
+            bloc: singleProfileBloc,
+            builder:
+                (BuildContext vontext, SingleProfileState singleProfileState) {
+              if (singleProfileState is SingleProfileUnitialized) {
+                return new SavingOverlay(
+                  saving: true,
+                  child: new Text(Messages.of(context).title),
+                );
+              }
               return new SavingOverlay(
-                saving: _saving,
+                saving: singleProfileState is SingleProfileSaving,
                 child: new SingleChildScrollView(
                   child: new Container(
                     padding: new EdgeInsets.all(10.0),
@@ -79,13 +91,15 @@ class SettingsScreenState extends State<SettingsScreen> {
                           new SwitchFormField(
                             label: Messages.of(context).emailonupdates,
                             icon: Icons.update,
-                            initialValue: data.data.emailOnUpdates,
+                            initialValue:
+                                singleProfileState.profile.emailOnUpdates,
                             onSaved: (bool val) => emailOnUpdate = val,
                           ),
                           new SwitchFormField(
                             label: Messages.of(context).emailonupcoming,
                             icon: Icons.calendar_today,
-                            initialValue: data.data.emailUpcomingGame,
+                            initialValue:
+                                singleProfileState.profile.emailUpcomingGame,
                             onSaved: (bool val) => emailOnUpcoming = val,
                           ),
                           new ButtonBar(
@@ -94,7 +108,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                                 child: new Text(
                                     MaterialLocalizations.of(context)
                                         .okButtonLabel),
-                                onPressed: _onSave,
+                                onPressed: () => _onSave(
+                                    singleProfileBloc, singleProfileState),
                                 textColor: Colors.white,
                                 color: Theme.of(context).primaryColor,
                               ),
@@ -114,13 +129,10 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
               );
-            } else {
-              return new SavingOverlay(
-                saving: true,
-                child: new Text(Messages.of(context).title),
-              );
-            }
-          }),
+            },
+          ),
+        ),
+      ),
     );
   }
 }

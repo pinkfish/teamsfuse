@@ -256,6 +256,7 @@ abstract class DatabaseUpdateModel {
 
   // Team stuff
   Future<void> updateFirestoreTeam(Team team);
+  Future<void> addTrainingEvents(Game game, Iterable<DateTime> dates);
   Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen,
       Season season, File imageFile);
   Future<Uri> updateTeamImage(String teamUid, File imgFile);
@@ -279,7 +280,7 @@ abstract class DatabaseUpdateModel {
   // Player stuff.
   Future<void> updateFirestorePlayer(Player player, bool includeUsers);
   Future<String> addFirestorePlayer(Player player);
-  Future<Uri> updatePlayerImage(Player player, File imgFile);
+  Future<Uri> updatePlayerImage(String playerUid, File imgFile);
   Stream<Iterable<Season>> getPlayerSeasons(String playerUid);
   // Send an invite to a user for this season and team.
   Future<String> inviteUserToPlayer(
@@ -375,7 +376,7 @@ abstract class DatabaseUpdateModel {
       String leagueTeamUid);
 
   // League Season/Division.
-  Future<LeagueOrTournamentDivison> getLeagueDivisionData(
+  Stream<LeagueOrTournamentDivison> getLeagueDivisionData(
       {String leagueDivisionUid, String memberUid});
   Future<LeagueOrTournamentSeason> getLeagueSeasonData(String leagueSeasonUid);
   Future<void> updateLeagueSeason(LeagueOrTournamentSeason season);

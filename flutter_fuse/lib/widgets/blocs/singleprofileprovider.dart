@@ -20,7 +20,7 @@ class SingleProfileProvider extends StatelessWidget {
     var singleUserBloc = BlocProvider.of<SingleProfileBloc>(context);
     if (singleUserBloc == null || singleUserBloc.profileUid != userUid) {
       singleUserBloc = SingleProfileBloc(
-          authenticationBloc: BlocProvider.of<AuthenticationBloc>(context),
+          coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
           profileUid: userUid);
       return BlocProvider(
         builder: (BuildContext context) => singleUserBloc,

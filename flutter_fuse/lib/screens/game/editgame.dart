@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/blocs/singlegameprovider.dart';
 import 'package:flutter_fuse/widgets/games/editformbase.dart';
 import 'package:flutter_fuse/widgets/games/eventeditform.dart';
 import 'package:flutter_fuse/widgets/games/gameeditform.dart';
 import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class EditGameScreen extends StatefulWidget {
@@ -28,16 +31,15 @@ class EditGameScreenState extends State<EditGameScreen> {
       new GlobalKey<TrainingEditFormState>();
   GlobalKey<EventEditFormState> _eventFormKey =
       new GlobalKey<EventEditFormState>();
-  bool _saving = false;
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(value)));
   }
 
-  void _savePressed(BuildContext context) async {
+  void _savePressed(BuildContext context, SingleGameBloc gameBloc) async {
     print('save pressed');
-    Game game = UserDatabaseData.instance.gamesCache[widget.gameuid];
+    Game game = gameBloc.currentState.game;
     EditFormBase baseForm;
     switch (game.sharedData.type) {
       case EventType.Game:
@@ -52,17 +54,11 @@ class EditGameScreenState extends State<EditGameScreen> {
         break;
     }
     if (baseForm.validate()) {
-      setState(() {
-        _saving = true;
-      });
       baseForm.save();
       print("updating firestore");
-      await baseForm.finalGameResult.updateFirestore(true);
+      gameBloc
+          .dispatch(SingleGameUpdate(game: baseForm.finalGameResult.build()));
       print('finished update');
-      setState(() {
-        _saving = false;
-      });
-      Navigator.pop(context);
     } else {
       print('error?');
       _showInSnackBar(Messages.of(context).formerror);
@@ -71,34 +67,55 @@ class EditGameScreenState extends State<EditGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Game game = UserDatabaseData.instance.gamesCache[widget.gameuid];
-    Widget form;
-    switch (game.sharedData.type) {
-      case EventType.Game:
-        form = new GameEditForm(game: game, key: _gameFormKey);
-        break;
-      case EventType.Event:
-        form = new EventEditForm(game: game, key: _eventFormKey);
-        break;
-      case EventType.Practice:
-        form = new TrainingEditForm(game: game, key: _trainingFormKey);
-        break;
-    }
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
-      ),
-      body: new Container(
-        padding: new EdgeInsets.all(16.0),
-        child: new SavingOverlay(
-          saving: _saving,
-          child: form,
+    return SingleGameProvider(
+      gameUid: widget.gameuid,
+      builder: (BuildContext context, SingleGameBloc gameBloc) => BlocListener(
+        bloc: gameBloc,
+        listener: (BuildContext context, SingleGameState state) {
+          if (state is SingleGameSaveFailed) {
+            print('error?');
+            _showInSnackBar(Messages.of(context).formerror);
+          }
+          if (state is SingleGameSaveDone) {
+            Navigator.pop(context);
+          }
+        },
+        child: Scaffold(
+          key: _scaffoldKey,
+          appBar: new AppBar(
+            title: new Text(Messages.of(context).title),
+          ),
+          body: new Container(
+            padding: new EdgeInsets.all(16.0),
+            child: BlocBuilder(
+                bloc: gameBloc,
+                builder: (BuildContext context, SingleGameState gameState) {
+                  Widget form;
+                  switch (gameState.game.sharedData.type) {
+                    case EventType.Game:
+                      form = new GameEditForm(
+                          game: gameState.game, key: _gameFormKey);
+                      break;
+                    case EventType.Event:
+                      form = new EventEditForm(
+                          game: gameState.game, key: _eventFormKey);
+                      break;
+                    case EventType.Practice:
+                      form = new TrainingEditForm(
+                          game: gameState.game, key: _trainingFormKey);
+                      break;
+                  }
+                  return SavingOverlay(
+                    saving: gameState is SingleGameSaving,
+                    child: form,
+                  );
+                }),
+          ),
+          floatingActionButton: new FloatingActionButton(
+            onPressed: () => _savePressed(context, gameBloc),
+            child: const Icon(Icons.check),
+          ),
         ),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () => _savePressed(context),
-        child: const Icon(Icons.check),
       ),
     );
   }

@@ -64,7 +64,7 @@ class _TeamSelectionState extends State<TeamSelection> {
       );
     }
     return new Card(
-      child: new TeamTile(_team),
+      child: new TeamTile(_team.uid),
     );
   }
 
@@ -94,10 +94,10 @@ class _TeamSelectionState extends State<TeamSelection> {
           clubUid: widget.club.uid,
           builder: (BuildContext context, SingleClubBloc bloc) =>
               ClubTeamPicker(
-                onChanged: _teamChanged,
-                team: _team,
-                clubBloc: bloc,
-              ),
+            onChanged: _teamChanged,
+            team: _team,
+            clubBloc: bloc,
+          ),
         ),
       );
     }

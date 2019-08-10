@@ -35,7 +35,7 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
       axis: Axis.vertical,
       sizeFactor: animation,
       child: TeamTile(
-        _currentData[index],
+        _currentData[index].uid,
         popBeforeNavigate: true,
       ),
     );
@@ -71,7 +71,7 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
               axis: Axis.vertical,
               sizeFactor: animation,
               child: TeamTile(
-                myTeam,
+                myTeam.uid,
                 popBeforeNavigate: true,
               ),
             );

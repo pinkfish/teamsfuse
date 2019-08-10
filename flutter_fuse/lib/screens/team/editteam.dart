@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/teams/teameditform.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 class EditTeamScreen extends StatefulWidget {
@@ -22,18 +24,15 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   final GlobalKey<TeamEditFormState> _formKey =
       new GlobalKey<TeamEditFormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  bool saving = false;
+  SingleTeamBloc singleTeamBloc;
 
   @override
   void initState() {
     super.initState();
-    if (UserDatabaseData.instance.teams.containsKey(widget.teamUid)) {
-      _team = new Team.copy(UserDatabaseData.instance.teams[widget.teamUid]);
-      print('Existing team uid ${_team.toJSON()}');
-    } else {
-      _team = new Team();
-      _team.uid = widget.teamUid;
-    }
+    singleTeamBloc = SingleTeamBloc(
+        teamBloc: BlocProvider.of<TeamBloc>(context),
+        teamUid: widget.teamUid,
+        clubBloc: BlocProvider.of<ClubBloc>(context));
   }
 
   void _showInSnackBar(String value) {
@@ -46,44 +45,52 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   }
 
   void _savePressed(BuildContext context) async {
-    saving = true;
-    try {
-      TeamBuilder team = _formKey.currentState.validateAndCreate();
-      if (team != null) {
-        File imageFile = _formKey.currentState.getImageFile();
-        if (imageFile != null) {
-          await team.updateImage(imageFile);
-        }
-        await team.updateFirestore();
-        Navigator.of(context).pop(_formKey.currentState.widget.team.uid);
-      } else {
-        _showInSnackBar(Messages.of(context).formerror);
-      }
-    } finally {
-      saving = false;
+    TeamBuilder team = _formKey.currentState.validateAndCreate();
+    if (team != null) {
+      File imageFile = _formKey.currentState.getImageFile();
+      singleTeamBloc.dispatch(SingleTeamUpdate(team: team, image: imageFile));
+    } else {
+      _showInSnackBar(Messages.of(context).formerror);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(
-          Messages.of(context)
-              .titlewith(UserDatabaseData.instance.teams[widget.teamUid].name),
+    return BlocListener(
+      bloc: singleTeamBloc,
+      listener: (BuildContext context, SingleTeamState state) {
+        if (state is SingleTeamDeleted) {
+          Navigator.pop(context, widget.teamUid);
+        }
+        if (state is SingleTeamSaveDone) {
+          Navigator.pop(context, widget.teamUid);
+        }
+        if (state is SingleTeamSaveFailed) {
+          _showInSnackBar(Messages.of(context).formerror);
+        }
+      },
+      child: BlocBuilder(
+        bloc: singleTeamBloc,
+        builder: (BuildContext context, SingleTeamState teamState) => Scaffold(
+          key: _scaffoldKey,
+          appBar: new AppBar(
+            title: new Text(
+              Messages.of(context).titlewith(
+                  teamState.team?.name ?? Messages.of(context).unknown),
+            ),
+          ),
+          body: new Container(
+            padding: new EdgeInsets.all(16.0),
+            child: new SavingOverlay(
+              saving: teamState is SingleTeamSaving,
+              child: _buildForm(context),
+            ),
+          ),
+          floatingActionButton: new FloatingActionButton(
+            onPressed: () => _savePressed(context),
+            child: const Icon(Icons.check),
+          ),
         ),
-      ),
-      body: new Container(
-        padding: new EdgeInsets.all(16.0),
-        child: new SavingOverlay(
-          saving: saving,
-          child: _buildForm(context),
-        ),
-      ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () => _savePressed(context),
-        child: const Icon(Icons.check),
       ),
     );
   }

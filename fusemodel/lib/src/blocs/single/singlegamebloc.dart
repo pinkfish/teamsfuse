@@ -77,6 +77,22 @@ class SingleGameSaveFailed extends SingleGameState {
 }
 
 ///
+/// State for when the saving is done.
+///
+class SingleGameSaveDone extends SingleGameState {
+  SingleGameSaveDone({@required SingleGameState state})
+      : super(
+            game: state.game,
+            gameLog: state.gameLog,
+            loadedLogs: state.loadedLogs);
+
+  @override
+  String toString() {
+    return 'SingleGameSaveDone()';
+  }
+}
+
+///
 /// Game got deleted.
 ///
 class SingleGameDeleted extends SingleGameState {
@@ -239,6 +255,7 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
       try {
         await gameBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreGame(event.game, false);
+        yield SingleGameSaveDone(state: currentState);
         yield SingleGameLoaded(state: currentState, game: event.game);
       } catch (e) {
         yield SingleGameSaveFailed(singleGameState: currentState, error: e);
@@ -251,6 +268,7 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
       try {
         await gameBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreSharedGame(event.sharedData);
+        yield SingleGameSaveDone(state: currentState);
         yield SingleGameLoaded(
             state: currentState,
             game: currentState.game
@@ -268,6 +286,7 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
             .addFirestoreGameLog(currentState.game, event.log);
         List<GameLog> logs = currentState.gameLog.toList();
         logs.add(event.log);
+        yield SingleGameSaveDone(state: currentState);
         yield SingleGameLoaded(state: currentState, gamelog: logs);
       } catch (e) {
         yield SingleGameSaveFailed(singleGameState: currentState, error: e);
@@ -283,6 +302,7 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
                 currentState.game, event.playerUid, event.attendance);
         GameBuilder builder = currentState.game.toBuilder();
         builder.attendance[event.playerUid] = event.attendance;
+        yield SingleGameSaveDone(state: currentState);
         yield SingleGameLoaded(game: builder.build(), state: currentState);
       } catch (e) {
         yield SingleGameSaveFailed(singleGameState: currentState, error: e);
@@ -295,6 +315,7 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
       try {
         await gameBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreGameResult(currentState.game.uid, event.result);
+        yield SingleGameSaveDone(state: currentState);
         yield SingleGameLoaded(
             game: currentState.game
                 .rebuild((b) => b..result = event.result.toBuilder()),
@@ -311,6 +332,7 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
         await gameBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreOfficalGameResult(
                 currentState.game.sharedData.uid, event.result);
+        yield SingleGameSaveDone(state: currentState);
         yield SingleGameLoaded(state: currentState);
       } catch (e) {
         yield SingleGameSaveFailed(singleGameState: currentState, error: e);
