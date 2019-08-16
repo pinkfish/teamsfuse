@@ -1,9 +1,10 @@
-import 'package:equatable/equatable.dart';
 import 'package:bloc/bloc.dart';
-import 'internal/blocstoload.dart';
-import 'package:meta/meta.dart';
-import 'authenticationbloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:meta/meta.dart';
+
+import 'authenticationbloc.dart';
+import 'internal/blocstoload.dart';
 
 ///
 /// The base state for the bloc.
@@ -116,6 +117,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
         sqlTrace = analytics.newTrace("sqlTrace");
         loadingTrace = analytics.newTrace("fullLoadTrace");
         start = DateTime.now();
+        assert(state.user.uid != null);
         dispatch(_CoordintationStateStart(uid: state.user.uid));
       } else {
         dispatch(_CoordintationStateLoggedOut());
@@ -124,7 +126,9 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
   }
 
   @override
-  CoordinationState get initialState {}
+  CoordinationState get initialState {
+    return CoordinationStateLoggedOut();
+  }
 
   @override
   Stream<CoordinationState> mapEventToState(CoordinationEvent event) async* {
@@ -146,8 +150,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
           // Close the sql trace part.
           sqlTrace.stop();
           sqlTrace = null;
-          yield CoordinationStateStartLoadingFirestore(
-              uid: authenticationBloc.currentUser.uid);
+          yield CoordinationStateStartLoadingFirestore(uid: currentState.uid);
         } else {
           yield CoordinatiomnStateLoadingSql(
               loaded: loaded, uid: currentState.uid);

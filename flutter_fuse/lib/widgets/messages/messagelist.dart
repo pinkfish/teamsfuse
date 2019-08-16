@@ -73,7 +73,7 @@ class MessageList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MessagesEvent, MessagesState>(
+    return BlocBuilder(
       bloc: BlocProvider.of<MessagesBloc>(context),
       builder: (BuildContext context, MessagesState state) {
         if (state.unreadMessages.length == 0 &&

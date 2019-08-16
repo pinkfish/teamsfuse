@@ -16,8 +16,13 @@ import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
+import 'package:bloc/bloc.dart';
+import 'package:flutter_fuse/services/printingblocdelegate.dart';
 
 void main() async {
+  BlocSupervisor.delegate = PrintingBlocDelegate();
+
+
   TraceProxy trace = Analytics.instance.newTrace("startup");
   trace.start();
 

@@ -1758,6 +1758,11 @@ class Messages {
         desc: 'Passwords must match signup form error');
   }
 
+  String get passwordnotcorrect {
+    return Intl.message('Email and/or password incorrect',
+        desc: 'Passwords or email is not correct, login failed');
+  }
+
   String invitedpeople(int num) {
     return Intl.message("Invited: $num");
   }

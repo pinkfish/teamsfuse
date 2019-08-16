@@ -41,7 +41,8 @@ class Routes {
       onGenerateRoute: _buildRoute,
     );
     UserAuthImpl userAuthImpl = UserAuthImpl(firestore, persistentData);
-    _authenticationBloc = AuthenticationBloc(userAuth: userAuthImpl);
+    _authenticationBloc = AuthenticationBloc(
+        userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
     _loginBloc = new LoginBloc(userAuth: userAuthImpl);
     DatabaseUpdateModel databaseUpdateModel =
         DatabaseUpdateModelImpl(new Firestore(), SqlData.instance);

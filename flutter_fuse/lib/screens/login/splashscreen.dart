@@ -58,13 +58,9 @@ class SplashScreen extends StatelessWidget {
     AuthenticationBloc _authenticationBloc =
         BlocProvider.of<AuthenticationBloc>(context);
 
-    return BlocBuilder<AuthenticationEvent, AuthenticationState>(
+    return BlocListener(
       bloc: _authenticationBloc,
-      builder: (BuildContext context, AuthenticationState state) {
-        if (state is AuthenticationUninitialized ||
-            state is AuthenticationLoading) {
-          return _loadingScreen(context);
-        }
+      listener: (BuildContext context, AuthenticationState state) {
         if (state is AuthenticationLoggedIn) {
           Notifications.instance.initForNotification();
           Navigator.pushNamedAndRemoveUntil(
@@ -77,18 +73,31 @@ class SplashScreen extends StatelessWidget {
             Analytics.analytics
                 .setUserProperty(name: "developer", value: "false");
           }
-          return new HomeScreen();
-        }
-        if (state is AuthenticationLoggedInUnverified) {
-          return new VerifyEmailScreen();
         }
         if (state is AuthenticationLoggedOut) {
           // Navigate to the login screen at this point.
           Navigator.pushNamedAndRemoveUntil(
-              context, '/Home/Login', ModalRoute.withName('/Home/Login'));
-          return _loadingScreen(context);
+              context, '/Login/Home', ModalRoute.withName('/Login/Home'));
         }
       },
+      child: BlocBuilder(
+        bloc: _authenticationBloc,
+        builder: (BuildContext context, AuthenticationState state) {
+          if (state is AuthenticationUninitialized ||
+              state is AuthenticationLoading) {
+            return _loadingScreen(context);
+          }
+          if (state is AuthenticationLoggedIn) {
+            return new HomeScreen();
+          }
+          if (state is AuthenticationLoggedInUnverified) {
+            return new VerifyEmailScreen();
+          }
+          if (state is AuthenticationLoggedOut) {
+            return _loadingScreen(context);
+          }
+        },
+      ),
     );
   }
 }

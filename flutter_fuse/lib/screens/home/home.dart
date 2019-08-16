@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      BlocBuilder<MessagesEvent, MessagesState>(
+      BlocBuilder(
           bloc: BlocProvider.of<MessagesBloc>(context),
           builder: (BuildContext context, MessagesState state) {
             return BadgeIconButton(
@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }),
     ];
 
-    actions.add(BlocBuilder<LoadedEvent, LoadedState>(
+    actions.add(BlocBuilder(
       bloc: BlocProvider.of<LoadedStateBloc>(context),
       builder: (BuildContext context, LoadedState state) {
         switch (state) {
@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: new Text(messages.title),
         actions: actions,
       ),
-      body: BlocBuilder<LoadedEvent, LoadedState>(
+      body: BlocBuilder(
         bloc: BlocProvider.of<LoadedStateBloc>(context),
         builder: (BuildContext context, LoadedState state) {
           bool loading = false;
@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      floatingActionButton: BlocBuilder<TeamEvent, TeamState>(
+      floatingActionButton: BlocBuilder(
           bloc: BlocProvider.of<TeamBloc>(context),
           builder: (BuildContext context, TeamState state) {
             return FabDialer(

@@ -64,7 +64,7 @@ class TeamPicker extends StatelessWidget {
                       style: Theme.of(context).textTheme.body1.copyWith(
                           color: Theme.of(context).disabledColor, height: 3.0),
                     )
-                  : BlocBuilder<TeamEvent, TeamState>(
+                  : BlocBuilder(
                       bloc: BlocProvider.of<TeamBloc>(context),
                       builder: (BuildContext context, TeamState state) {
                         DropdownButton<String>(

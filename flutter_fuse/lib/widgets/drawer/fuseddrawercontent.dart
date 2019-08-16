@@ -44,7 +44,7 @@ class FusedDrawerContent extends StatelessWidget {
                 ],
               ),
             ),
-            subtitle: BlocBuilder<TeamEvent, TeamState>(
+            subtitle: BlocBuilder(
                 bloc: BlocProvider.of<TeamBloc>(context),
                 builder: (BuildContext build, TeamState state) {
                   //if (snap.hasData) {
@@ -109,13 +109,13 @@ class FusedDrawerContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> children = <Widget>[
       new FusedDrawerHeader(),
-      new BlocBuilder<ClubEvent, ClubState>(
+      new BlocBuilder(
         bloc: BlocProvider.of<ClubBloc>(context),
         builder: (BuildContext context, ClubState state) {
           return _buildClubSection(context, state);
         },
       ),
-      new BlocBuilder<TeamEvent, TeamState>(
+      new BlocBuilder(
         bloc: BlocProvider.of<TeamBloc>(context),
         builder: (BuildContext context, TeamState state) {
           return _buildTeamSection(context, state);

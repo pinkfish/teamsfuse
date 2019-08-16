@@ -121,7 +121,7 @@ class FirebaseTrace implements TraceProxy {
 
   @override
   void incrementCounter(String str) {
-    trace.incrementCounter(str);
+    trace.incrementMetric(str, 1);
   }
 
   @override

@@ -78,7 +78,7 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
                 Navigator.pop(context);
               }
             },
-            child: BlocBuilder<SingleInviteEvent, SingleInviteState>(
+            child: BlocBuilder(
               bloc: _singleInviteBloc,
               builder: (BuildContext context, SingleInviteState state) {
                 if (state is SingleInviteDeleted) {

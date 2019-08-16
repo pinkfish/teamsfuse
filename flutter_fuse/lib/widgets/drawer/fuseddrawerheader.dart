@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FusedDrawerHeader extends StatelessWidget {
   void _showProfile(BuildContext context) {
@@ -10,7 +10,7 @@ class FusedDrawerHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthenticationEvent, AuthenticationState>(
+    return BlocBuilder(
       bloc: BlocProvider.of<AuthenticationBloc>(context),
       builder: (BuildContext context, AuthenticationState state) {
         if (state is AuthenticationLoggedIn) {

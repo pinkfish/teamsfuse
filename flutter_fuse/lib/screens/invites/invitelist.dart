@@ -325,7 +325,7 @@ class InviteListScreenState extends State<InviteListScreen> {
       ),
       body: new Scrollbar(
         child: new SingleChildScrollView(
-          child: BlocBuilder<InviteEvent, InviteState>(
+          child: BlocBuilder(
               bloc: inviteBloc,
               builder: (BuildContext context, InviteState state) {
                 return Column(

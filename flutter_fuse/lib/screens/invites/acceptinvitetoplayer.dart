@@ -71,7 +71,7 @@ class _AcceptInviteToPlayerScreenState
       child: Scaffold(
         key: _scaffoldKey,
         appBar: new AppBar(
-          title: BlocBuilder<SingleInviteEvent, SingleInviteState>(
+          title: BlocBuilder(
             bloc: _singleInviteBloc,
             builder: (BuildContext context, SingleInviteState state) {
               if (state is SingleInviteDeleted) {
@@ -106,7 +106,7 @@ class _AcceptInviteToPlayerScreenState
                   Navigator.pop(context);
                 }
               },
-              child: BlocBuilder<SingleInviteEvent, SingleInviteState>(
+              child: BlocBuilder(
                 bloc: _singleInviteBloc,
                 builder: (BuildContext context, SingleInviteState state) {
                   if (state is SingleInviteDeleted) {

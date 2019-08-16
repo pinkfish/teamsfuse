@@ -29,7 +29,7 @@ class PlayerFormField extends FormField<String> {
                 decoration: effectiveDecoration.copyWith(
                   errorText: field.errorText,
                 ),
-                child: BlocBuilder<PlayerEvent, PlayerState>(
+                child: BlocBuilder(
                     bloc: BlocProvider.of<PlayerBloc>(state.context),
                     builder: (BuildContext context, PlayerState playerState) {
                       return DropdownButton<String>(

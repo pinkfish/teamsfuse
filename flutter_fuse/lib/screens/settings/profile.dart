@@ -302,7 +302,7 @@ class ProfileScreen extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: new Scrollbar(
         child: new SingleChildScrollView(
-          child: BlocBuilder<PlayerEvent, PlayerState>(
+          child: BlocBuilder(
             bloc: BlocProvider.of<PlayerBloc>(context),
             builder: (BuildContext context, PlayerState state) {
               if (state is PlayerUninitialized) {

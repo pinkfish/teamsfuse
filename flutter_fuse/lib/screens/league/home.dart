@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
-import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
+import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 ///
 /// This shows all the basic stuff about the league/tournaments the person
@@ -42,7 +42,7 @@ class LeagueHomeScreen extends StatelessWidget {
           SizedBox(
             height: 3.0,
           ),
-          BlocBuilder<LeagueOrTournamentEvent, LeagueOrTournamentState>(
+          BlocBuilder(
             bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
             builder: (BuildContext context, LeagueOrTournamentState state) {
               Iterable<LeagueOrTournament> league = state
@@ -75,7 +75,7 @@ class LeagueHomeScreen extends StatelessWidget {
           SizedBox(
             height: 3.0,
           ),
-          BlocBuilder<LeagueOrTournamentEvent, LeagueOrTournamentState>(
+          BlocBuilder(
             bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
             builder: (BuildContext context, LeagueOrTournamentState state) {
               Iterable<LeagueOrTournament> tournament = state

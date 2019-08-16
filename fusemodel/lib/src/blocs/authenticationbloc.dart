@@ -117,7 +117,9 @@ class AuthenticationBloc
   }
 
   AuthenticationBloc(
-      {@required this.userAuth, @required this.analyticsSubsystem});
+      {@required this.userAuth, @required this.analyticsSubsystem}) {
+    _listener = userAuth.onAuthChanged().listen(_authChanged);
+  }
 
   @override
   void dispose() {
@@ -132,7 +134,7 @@ class AuthenticationBloc
     return null;
   }
 
-  Future<AuthenticationState> _updateWithUser(UserData user) async {
+  AuthenticationState _updateWithUser(UserData user) {
     if (user.isEmailVerified) {
       analyticsSubsystem.setUserId(user.uid);
       if (analyticsSubsystem.debugMode) {
@@ -151,16 +153,19 @@ class AuthenticationBloc
   Stream<AuthenticationState> mapEventToState(
       AuthenticationEvent event) async* {
     if (event is AuthenticationAppStarted) {
-      _listener = userAuth.onAuthChanged().listen(_authChanged);
       UserData data = await userAuth.currentUser();
       if (data == null) {
         yield AuthenticationLoggedOut();
       } else {
         yield AuthenticationLoading();
-        yield await _updateWithUser(data);
+        try {
+          var state = _updateWithUser(data);
+          yield state;
+        } catch (e, stacktrace) {
+          print("Error loading $e $stacktrace");
+          yield AuthenticationLoggedOut();
+        }
       }
-
-      // Wait on updates to this.
     }
 
     if (event is _AuthenticationLogIn) {

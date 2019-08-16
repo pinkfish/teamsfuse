@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/messages.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class ClubPicker extends StatelessWidget {
   ClubPicker({
@@ -60,7 +60,7 @@ class ClubPicker extends StatelessWidget {
         children: <Widget>[
           new Expanded(
               flex: 1,
-              child: BlocBuilder<ClubEvent, ClubState>(
+              child: BlocBuilder(
                   bloc: BlocProvider.of<ClubBloc>(context),
                   builder: (BuildContext context, ClubState state) {
                     return DropdownButton<String>(

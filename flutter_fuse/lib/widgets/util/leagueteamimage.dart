@@ -69,43 +69,42 @@ class LeagueTeamImage extends StatelessWidget {
       leagueOrTournamentTeamUid: leagueOrTeamUid,
       builder: (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
           BlocListener(
-            bloc: bloc,
-            listener: (BuildContext context,
-                SingleLeagueOrTournamentTeamState state) {
-              if (state is SingleLeagueOrTournamentTeamLoaded) {
-                bloc.dispatch(SingleLeagueOrTournamentTeamLoadPublicTeam());
-              }
-            },
-            child: BlocBuilder<SingleLeagueOrTournamentTeamEvent,
-                SingleLeagueOrTournamentTeamState>(
-              bloc: bloc,
-              builder: (BuildContext context,
-                  SingleLeagueOrTournamentTeamState leagueState) {
-                Widget inner;
-                if (leagueState is SingleLeagueOrTournamentTeamDeleted ||
-                    leagueState.publicTeam == null) {
-                  inner = Center(child: CircularProgressIndicator());
-                } else {
-                  // Yay!
+        bloc: bloc,
+        listener:
+            (BuildContext context, SingleLeagueOrTournamentTeamState state) {
+          if (state is SingleLeagueOrTournamentTeamLoaded) {
+            bloc.dispatch(SingleLeagueOrTournamentTeamLoadPublicTeam());
+          }
+        },
+        child: BlocBuilder(
+          bloc: bloc,
+          builder: (BuildContext context,
+              SingleLeagueOrTournamentTeamState leagueState) {
+            Widget inner;
+            if (leagueState is SingleLeagueOrTournamentTeamDeleted ||
+                leagueState.publicTeam == null) {
+              inner = Center(child: CircularProgressIndicator());
+            } else {
+              // Yay!
 
-                  inner = FadeInImage(
-                    image: _providerFromTeam(leagueState.publicTeam),
-                    height: height,
-                    width: width,
-                    fit: fit,
-                    alignment: alignment,
-                    repeat: repeat,
-                    matchTextDirection: matchTextDirection,
-                    placeholder: AssetImage("assets/images/leagueteam.png"),
-                  );
-                }
-                return AnimatedSwitcher(
-                  duration: Duration(milliseconds: 500),
-                  child: inner,
-                );
-              },
-            ),
-          ),
+              inner = FadeInImage(
+                image: _providerFromTeam(leagueState.publicTeam),
+                height: height,
+                width: width,
+                fit: fit,
+                alignment: alignment,
+                repeat: repeat,
+                matchTextDirection: matchTextDirection,
+                placeholder: AssetImage("assets/images/leagueteam.png"),
+              );
+            }
+            return AnimatedSwitcher(
+              duration: Duration(milliseconds: 500),
+              child: inner,
+            );
+          },
+        ),
+      ),
     );
     if (overlay == HomeAwayOverlay.none) {
       return SizedBox(

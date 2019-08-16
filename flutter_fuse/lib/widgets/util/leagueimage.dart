@@ -49,51 +49,49 @@ class LeagueImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocBuilder<LeagueOrTournamentEvent, LeagueOrTournamentState> blocBuilder =
-        BlocBuilder<LeagueOrTournamentEvent, LeagueOrTournamentState>(
-            bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
-            builder:
-                (BuildContext context, LeagueOrTournamentState leagueState) {
-              Widget inner;
-              if (leagueState is LeagueOrTournamentLoaded) {
-                if (leagueState.leagueOrTournaments
-                    .containsKey(leagueOrTournamentUid)) {
-                  // Yay!
-                  inner = FadeInImage(
-                    image: _providerFromLeague(
-                        leagueState.leagueOrTournaments[leagueOrTournamentUid]),
-                    height: height,
-                    width: width,
-                    fit: fit,
-                    alignment: alignment,
-                    repeat: repeat,
-                    matchTextDirection: matchTextDirection,
-                    placeholder: AssetImage("assets/images/defaultavatar.png"),
-                  );
-                } else {
-                  inner = FadeInImage(
-                    image: AssetImage("assets/images/defaultavatar.png"),
-                    height: height,
-                    width: width,
-                    fit: fit,
-                    alignment: alignment,
-                    repeat: repeat,
-                    matchTextDirection: matchTextDirection,
-                    placeholder: AssetImage("assets/images/defaultavatar.png"),
-                  );
-                }
-              } else {
-                inner = Center(child: CircularProgressIndicator());
-              }
-              return AnimatedContainer(
-                duration: Duration(milliseconds: 500),
-                color: color,
+    var blocBuilder = BlocBuilder(
+        bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
+        builder: (BuildContext context, LeagueOrTournamentState leagueState) {
+          Widget inner;
+          if (leagueState is LeagueOrTournamentLoaded) {
+            if (leagueState.leagueOrTournaments
+                .containsKey(leagueOrTournamentUid)) {
+              // Yay!
+              inner = FadeInImage(
+                image: _providerFromLeague(
+                    leagueState.leagueOrTournaments[leagueOrTournamentUid]),
                 height: height,
                 width: width,
+                fit: fit,
                 alignment: alignment,
-                child: inner,
+                repeat: repeat,
+                matchTextDirection: matchTextDirection,
+                placeholder: AssetImage("assets/images/defaultavatar.png"),
               );
-            });
+            } else {
+              inner = FadeInImage(
+                image: AssetImage("assets/images/defaultavatar.png"),
+                height: height,
+                width: width,
+                fit: fit,
+                alignment: alignment,
+                repeat: repeat,
+                matchTextDirection: matchTextDirection,
+                placeholder: AssetImage("assets/images/defaultavatar.png"),
+              );
+            }
+          } else {
+            inner = Center(child: CircularProgressIndicator());
+          }
+          return AnimatedContainer(
+            duration: Duration(milliseconds: 500),
+            color: color,
+            height: height,
+            width: width,
+            alignment: alignment,
+            child: inner,
+          );
+        });
 
     return SizedBox(width: width, height: height, child: blocBuilder);
   }

@@ -96,8 +96,8 @@ class LoginScreenState extends State<LoginScreen> {
                             labelText: 'Password',
                           ),
                           obscureText: true,
-                          onSaved: (String password) {
-                            password = password;
+                          onSaved: (String pass) {
+                            password = pass;
                           },
                         ),
                       ],
@@ -143,21 +143,19 @@ class LoginScreenState extends State<LoginScreen> {
       body: BlocListener(
         bloc: _loginBloc,
         listener: (BuildContext context, LoginState state) {
-          if (state is LoginSucceeded) {
+          if (state is LoginFailed) {
+            errorText = Messages.of(context).passwordnotcorrect;
+            showInSnackBar(errorText);
+          } else if (state is LoginSucceeded) {
             Navigator.pushNamedAndRemoveUntil(
                 context, "/Login/Home", (Route<dynamic> d) => false);
           } else if (state is LoginEmailNotValidated) {
             Navigator.popAndPushNamed(context, "/Login/Verify");
           }
         },
-        child: BlocBuilder<LoginEvent, LoginState>(
+        child: BlocBuilder(
           bloc: _loginBloc,
           builder: (BuildContext context, LoginState state) {
-            if (state is LoginFailed) {
-              errorText = Messages.of(context).passwordsnotmatching;
-              showInSnackBar(errorText);
-            }
-
             return SavingOverlay(
                 saving: state is LoginValidating, child: _buildLoginForm());
           },

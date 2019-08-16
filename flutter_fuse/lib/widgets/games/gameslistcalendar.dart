@@ -10,7 +10,7 @@ class GameListCalendarState {
   GameListCalendarState(this.details, this.state, this.gameBloc);
 
   StreamSubscription<GameState> _listening;
-  List<Game> _listToShow;
+  List<Game> _listToShow = [];
   DateTime startPoint;
   DateTime endPoint;
   FilterDetails details;
