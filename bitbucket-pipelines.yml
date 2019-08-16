@@ -59,5 +59,6 @@ pipelines:
               variables:
                 FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
                 #PROJECT_ID: 'teamsfuse'
-                MESSAGE: 'Deploying Teamsfuse hosting'                 EXTRA_ARGS: '--only hosting'
+                MESSAGE: 'Deploying Teamsfuse hosting'
+                EXTRA_ARGS: '--only hosting'
                 DEBUG: 'false'
