@@ -73,7 +73,7 @@ class ProfileScreen extends StatelessWidget {
     List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
 
-    List<InviteToPlayer> invites = player.invites;
+    var invites = player.invites;
     if (invites.length > 0) {
       ret.add(
         new Column(

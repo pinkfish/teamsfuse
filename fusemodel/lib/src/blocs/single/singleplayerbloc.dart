@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
@@ -12,13 +13,14 @@ abstract class SinglePlayerState extends Equatable {
   final Player player;
   final bool mePlayer;
   final bool invitesLoaded;
-  final List<InviteToPlayer> invites;
+  final BuiltList<InviteToPlayer> invites;
 
   SinglePlayerState(
       {@required this.player,
       @required this.mePlayer,
       @required this.invites,
-      @required this.invitesLoaded});
+      @required this.invitesLoaded})
+      : super([player, mePlayer, invitesLoaded, invites]);
 
   SinglePlayerState.fromState(SinglePlayerState state)
       : mePlayer = state.mePlayer,
@@ -35,7 +37,7 @@ class SinglePlayerLoaded extends SinglePlayerState {
       {@required SinglePlayerState state,
       Player player,
       bool mePlayer,
-      List<InviteToPlayer> invites,
+      BuiltList<InviteToPlayer> invites,
       bool invitesLoaded,
       FusedUserProfile profile})
       : super(
@@ -97,7 +99,11 @@ class SinglePlayerSaveFailed extends SinglePlayerState {
 ///
 class SinglePlayerDeleted extends SinglePlayerState {
   SinglePlayerDeleted()
-      : super(player: null, invites: [], invitesLoaded: false, mePlayer: false);
+      : super(
+            player: null,
+            invites: BuiltList(),
+            invitesLoaded: false,
+            mePlayer: false);
 
   @override
   String toString() {
@@ -209,7 +215,7 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
     if (playerBloc.currentState.players.containsKey(playerUid)) {
       return SinglePlayerLoaded(
           player: playerBloc.currentState.players[playerUid],
-          invites: [],
+          invites: BuiltList(),
           state: null,
           invitesLoaded: false);
     } else {
@@ -272,7 +278,7 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
       yield SinglePlayerLoaded(
           state: currentState,
           player: currentState.player,
-          invites: event.invites,
+          invites: BuiltList.from(event.invites),
           invitesLoaded: true);
     }
 

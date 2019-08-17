@@ -12,7 +12,7 @@ import 'package:meta/meta.dart';
 abstract class AuthenticationState extends Equatable {
   final UserData user;
 
-  AuthenticationState({@required this.user});
+  AuthenticationState({@required this.user}) : super([user]);
 }
 
 class AuthenticationUninitialized extends AuthenticationState {
@@ -64,7 +64,7 @@ class AuthenticationLoggedOut extends AuthenticationState {
 /// Events associated with the authentication bloc
 ///
 abstract class AuthenticationEvent extends Equatable {
-  AuthenticationEvent([List props = const []]) : super(props);
+  AuthenticationEvent() : super();
 }
 
 ///
@@ -143,6 +143,12 @@ class AuthenticationBloc
         analyticsSubsystem.setUserProperty(name: "developer", value: "false");
       }
 
+      if (currentUser != null) {
+        if (user == currentUser) {
+          return null;
+        }
+      }
+
       return AuthenticationLoggedIn(user: user);
     } else {
       return AuthenticationLoggedInUnverified(user: user);
@@ -157,7 +163,6 @@ class AuthenticationBloc
       if (data == null) {
         yield AuthenticationLoggedOut();
       } else {
-        yield AuthenticationLoading();
         try {
           var state = _updateWithUser(data);
           yield state;
@@ -170,8 +175,10 @@ class AuthenticationBloc
 
     if (event is _AuthenticationLogIn) {
       _AuthenticationLogIn loggedInEvent = event;
-      yield AuthenticationLoading();
-      yield await _updateWithUser(loggedInEvent.user);
+      var state = _updateWithUser(loggedInEvent.user);
+      if (state != null) {
+        yield state;
+      }
     }
 
     if (event is AuthenticationLogOut) {

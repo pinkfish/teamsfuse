@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
@@ -12,15 +13,16 @@ import '../coordinationbloc.dart';
 ///
 abstract class SingleLeagueOrTournamentTeamState extends Equatable {
   final LeagueOrTournamentTeam leagueOrTournamentTeam;
-  final Map<String, GameSharedData> games;
-  final Iterable<InviteToLeagueTeam> invites;
+  final BuiltMap<String, GameSharedData> games;
+  final BuiltList<InviteToLeagueTeam> invites;
   final Team publicTeam;
 
   SingleLeagueOrTournamentTeamState(
       {@required this.leagueOrTournamentTeam,
       @required this.games,
       @required this.invites,
-      @required this.publicTeam});
+      @required this.publicTeam})
+      : super([leagueOrTournamentTeam, games, invites, publicTeam]);
 }
 
 ///
@@ -31,8 +33,8 @@ class SingleLeagueOrTournamentTeamLoaded
   SingleLeagueOrTournamentTeamLoaded(
       {@required SingleLeagueOrTournamentTeamState state,
       LeagueOrTournamentTeam leagueOrTournamentTeam,
-      Iterable<InviteToLeagueTeam> invites,
-      Map<String, GameSharedData> games,
+      BuiltList<InviteToLeagueTeam> invites,
+      BuiltMap<String, GameSharedData> games,
       Team publicTeam})
       : super(
             leagueOrTournamentTeam:
@@ -122,8 +124,8 @@ class SingleLeagueOrTournamentTeamDeleted
   SingleLeagueOrTournamentTeamDeleted.empty()
       : super(
             leagueOrTournamentTeam: null,
-            invites: {},
-            games: {},
+            invites: BuiltList(),
+            games: BuiltMap(),
             publicTeam: null);
   @override
   String toString() {
@@ -349,12 +351,12 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
       yield SingleLeagueOrTournamentTeamLoaded(
           state: currentState,
           leagueOrTournamentTeam: currentState.leagueOrTournamentTeam,
-          games: newGames);
+          games: BuiltMap.from(newGames));
     }
 
     if (event is _SingleLeagueOrTournamentEventTeamInvites) {
       yield SingleLeagueOrTournamentTeamLoaded(
-          state: currentState, invites: event.invites);
+          state: currentState, invites: BuiltList.from(event.invites));
     }
 
     if (event is SingleLeagueOrTournamentTeamUpdate) {

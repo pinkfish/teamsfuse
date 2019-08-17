@@ -21,7 +21,8 @@ class LeagueOrTournamentState extends Equatable {
   LeagueOrTournamentState(
       {@required this.leagueOrTournaments,
       @required this.onlySql,
-      @required this.adding});
+      @required this.adding})
+      : super([leagueOrTournaments, onlySql, adding]);
 
   LeagueOrTournamentLoaded rebuild(
       {Map<String, LeagueOrTournament> leagueOrTournamentsParam,

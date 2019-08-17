@@ -1,21 +1,22 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 abstract class SingleUserState extends Equatable {
-  final Iterable<Player> players;
+  final BuiltList<Player> players;
 
-  SingleUserState({@required this.players});
+  SingleUserState({@required this.players}) : super([players]);
 }
 
 ///
 /// We have a Profile, default state.
 ///
 class SingleUserUnitialized extends SingleUserState {
-  SingleUserUnitialized() : super(players: []);
+  SingleUserUnitialized() : super(players: BuiltList());
 
   @override
   String toString() {
@@ -27,7 +28,7 @@ class SingleUserUnitialized extends SingleUserState {
 /// We have a Profile, default state.
 ///
 class SingleUserLoaded extends SingleUserState {
-  SingleUserLoaded({@required Iterable<Player> players})
+  SingleUserLoaded({@required BuiltList<Player> players})
       : super(players: players);
 
   @override
@@ -40,7 +41,7 @@ class SingleUserLoaded extends SingleUserState {
 /// We have a Profile, default state.
 ///
 class SingleUserDeleted extends SingleUserState {
-  SingleUserDeleted() : super(players: []);
+  SingleUserDeleted() : super(players: BuiltList());
 
   @override
   String toString() {
@@ -92,7 +93,7 @@ class SingleUserBloc extends Bloc<SingleUserEvent, SingleUserState> {
   @override
   Stream<SingleUserState> mapEventToState(SingleUserEvent event) async* {
     if (event is _SingleUserNewProfile) {
-      yield SingleUserLoaded(players: event.players);
+      yield SingleUserLoaded(players: BuiltList.from(event.players));
     }
 
     // The Profile is deleted.

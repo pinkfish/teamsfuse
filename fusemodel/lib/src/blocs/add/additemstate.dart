@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 /// Basic state for all the data in this system.
 ///
 abstract class AddItemState extends Equatable {
-  AddItemState();
+  AddItemState({List props = const []}) : super(props);
 }
 
 ///
@@ -38,7 +38,7 @@ class AddItemSaving extends AddItemState {
 class AddItemInvalidArguments extends AddItemState {
   final Error error;
 
-  AddItemInvalidArguments({@required this.error});
+  AddItemInvalidArguments({@required this.error}) : super(props: [error]);
 
   @override
   String toString() {
@@ -52,7 +52,7 @@ class AddItemInvalidArguments extends AddItemState {
 class AddItemDone extends AddItemState {
   final String uid;
 
-  AddItemDone({@required this.uid});
+  AddItemDone({@required this.uid}) : super(props: [uid]);
 
   @override
   String toString() {
@@ -66,7 +66,7 @@ class AddItemDone extends AddItemState {
 class AddItemSaveFailed extends AddItemState {
   final Error error;
 
-  AddItemSaveFailed({@required this.error});
+  AddItemSaveFailed({@required this.error}) : super(props: [error]);
 
   @override
   String toString() {

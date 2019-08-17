@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/src/blocs/single/singleleagueortournamentbloc.dart';
@@ -11,13 +12,18 @@ import 'package:meta/meta.dart';
 ///
 abstract class SingleLeagueOrTournamentSeasonState extends Equatable {
   final LeagueOrTournamentSeason leagueOrTournamentSeason;
-  final Map<String, LeagueOrTournamentDivison> leagueOrTournamentDivisons;
+  final BuiltMap<String, LeagueOrTournamentDivison> leagueOrTournamentDivisons;
   final bool loadedDivisons;
 
   SingleLeagueOrTournamentSeasonState(
       {@required this.leagueOrTournamentSeason,
       @required this.leagueOrTournamentDivisons,
-      @required this.loadedDivisons});
+      @required this.loadedDivisons})
+      : super([
+          leagueOrTournamentSeason,
+          leagueOrTournamentDivisons,
+          loadedDivisons
+        ]);
 }
 
 ///
@@ -27,7 +33,7 @@ class SingleLeagueOrTournamentSeasonLoaded
     extends SingleLeagueOrTournamentSeasonState {
   SingleLeagueOrTournamentSeasonLoaded(
       {@required LeagueOrTournamentSeason leagueOrTournamentSeason,
-      Map<String, LeagueOrTournamentDivison> leagueOrTournamentDivisons,
+      BuiltMap<String, LeagueOrTournamentDivison> leagueOrTournamentDivisons,
       bool loadedDivisons})
       : super(
             leagueOrTournamentSeason: leagueOrTournamentSeason,
@@ -93,10 +99,12 @@ class SingleLeagueOrTournamentSeasonDeleted
       : super(
             leagueOrTournamentSeason:
                 leagueOrTournament.leagueOrTournamentSeason,
-            leagueOrTournamentDivisons: {},
+            leagueOrTournamentDivisons: BuiltMap(),
             loadedDivisons: false);
   SingleLeagueOrTournamentSeasonDeleted.empty()
-      : super(leagueOrTournamentSeason: null, leagueOrTournamentDivisons: {});
+      : super(
+            leagueOrTournamentSeason: null,
+            leagueOrTournamentDivisons: BuiltMap());
   @override
   String toString() {
     return 'SingleLeagueOrTournamentSeasonSeleted{}';
@@ -209,7 +217,7 @@ class SingleLeagueOrTournamentSeasonBloc extends Bloc<
       return SingleLeagueOrTournamentSeasonLoaded(
           leagueOrTournamentSeason: singleLeagueOrTournamentBloc
               .currentState.leagueOrTournamentSeasons[leagueSeasonUid],
-          leagueOrTournamentDivisons: {},
+          leagueOrTournamentDivisons: BuiltMap(),
           loadedDivisons: false);
     } else {
       return SingleLeagueOrTournamentSeasonDeleted.empty();
@@ -281,7 +289,7 @@ class SingleLeagueOrTournamentSeasonBloc extends Bloc<
       }
       yield SingleLeagueOrTournamentSeasonLoaded(
           leagueOrTournamentSeason: currentState.leagueOrTournamentSeason,
-          leagueOrTournamentDivisons: newDivisons,
+          leagueOrTournamentDivisons: BuiltMap.from(newDivisons),
           loadedDivisons: true);
     }
 

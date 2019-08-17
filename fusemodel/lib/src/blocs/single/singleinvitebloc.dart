@@ -15,7 +15,7 @@ import '../teambloc.dart';
 class SingleInviteState extends Equatable {
   final Invite invite;
 
-  SingleInviteState({@required this.invite});
+  SingleInviteState({@required this.invite}) : super([invite]);
 }
 
 ///

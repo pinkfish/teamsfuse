@@ -15,7 +15,8 @@ class InviteState extends Equatable {
   final Map<String, Invite> invites;
   final String uid;
 
-  InviteState({@required this.invites, @required this.uid});
+  InviteState({@required this.invites, @required this.uid})
+      : super([invites, uid]);
 }
 
 ///

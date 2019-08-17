@@ -14,7 +14,8 @@ abstract class SingleClubState extends Equatable {
   final Iterable<InviteToClub> invites;
 
   SingleClubState(
-      {@required this.club, @required this.teams, @required this.invites});
+      {@required this.club, @required this.teams, @required this.invites})
+      : super([club, teams, invites]);
 }
 
 ///

@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
@@ -10,10 +11,11 @@ import 'internal/blocstoload.dart';
 /// The base state for the bloc.
 ///
 abstract class CoordinationState extends Equatable {
-  final Set<BlocsToLoad> loaded;
+  final BuiltSet<BlocsToLoad> loaded;
   final String uid;
 
-  CoordinationState({@required this.uid, @required this.loaded});
+  CoordinationState({@required this.uid, @required this.loaded})
+      : super([loaded, uid]);
 }
 
 ///
@@ -21,15 +23,21 @@ abstract class CoordinationState extends Equatable {
 ///
 class CoordinationStateStartLoadingSql extends CoordinationState {
   CoordinationStateStartLoadingSql({@required String uid})
-      : super(loaded: Set(), uid: uid);
+      : super(loaded: BuiltSet<BlocsToLoad>(), uid: uid);
 }
 
 ///
 /// Yay, we are loading from sql and having fun.
 ///
 class CoordinatiomnStateLoadingSql extends CoordinationState {
-  CoordinatiomnStateLoadingSql({@required String uid, Set<BlocsToLoad> loaded})
+  CoordinatiomnStateLoadingSql(
+      {@required String uid, BuiltSet<BlocsToLoad> loaded})
       : super(loaded: loaded, uid: uid);
+
+  @override
+  String toString() {
+    return 'CoordinatiomnStateLoadingSql{loaded: $loaded}';
+  }
 }
 
 ///
@@ -37,7 +45,12 @@ class CoordinatiomnStateLoadingSql extends CoordinationState {
 ///
 class CoordinationStateStartLoadingFirestore extends CoordinationState {
   CoordinationStateStartLoadingFirestore({@required String uid})
-      : super(loaded: Set(), uid: uid);
+      : super(loaded: BuiltSet(), uid: uid);
+
+  @override
+  String toString() {
+    return 'CoordinationStateStartLoadingFirestore{loaded: $loaded}';
+  }
 }
 
 ///
@@ -45,8 +58,13 @@ class CoordinationStateStartLoadingFirestore extends CoordinationState {
 ///
 class CoordinationStateLoadingFirestore extends CoordinationState {
   CoordinationStateLoadingFirestore(
-      {@required String uid, Set<BlocsToLoad> loaded})
+      {@required String uid, BuiltSet<BlocsToLoad> loaded})
       : super(loaded: loaded, uid: uid);
+
+  @override
+  String toString() {
+    return 'CoordinationStateLoadingFirestore{loaded: $loaded}';
+  }
 }
 
 ///
@@ -54,14 +72,14 @@ class CoordinationStateLoadingFirestore extends CoordinationState {
 ///
 class CoordinationStateLoaded extends CoordinationState {
   CoordinationStateLoaded({@required String uid})
-      : super(uid: uid, loaded: Set.from(BlocsToLoad.values));
+      : super(uid: uid, loaded: BuiltSet.from(BlocsToLoad.values));
 }
 
 ///
 /// Logged out amd not doing any loading.
 ///
 class CoordinationStateLoggedOut extends CoordinationState {
-  CoordinationStateLoggedOut() : super(loaded: Set(), uid: '');
+  CoordinationStateLoggedOut() : super(loaded: BuiltSet(), uid: '');
 }
 
 ///
@@ -144,8 +162,9 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
       // In the sql loading state.
       if (currentState is CoordinationStateStartLoadingSql ||
           currentState is CoordinatiomnStateLoadingSql) {
-        Set<BlocsToLoad> loaded = Set.from(currentState.loaded);
-        loaded.add(event.loaded);
+        BuiltSet<BlocsToLoad> loaded =
+            currentState.loaded.rebuild((b) => b..add(event.loaded));
+        print("Update loaded ${event.loaded} $loaded");
         if (loaded.length == BlocsToLoad.values.length) {
           // Close the sql trace part.
           sqlTrace.stop();
@@ -153,14 +172,14 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
           yield CoordinationStateStartLoadingFirestore(uid: currentState.uid);
         } else {
           yield CoordinatiomnStateLoadingSql(
-              loaded: loaded, uid: currentState.uid);
+              loaded: BuiltSet.from(loaded), uid: currentState.uid);
         }
       }
       if (currentState is CoordinationStateStartLoadingFirestore ||
           currentState is CoordinationStateLoadingFirestore) {
-        Set<BlocsToLoad> loaded = Set.from(currentState.loaded);
-        if (!loaded.contains(currentState.loaded)) {
-          loaded.add(event.loaded);
+        if (!currentState.loaded.contains(currentState.loaded)) {
+          BuiltSet<BlocsToLoad> loaded =
+              currentState.loaded.rebuild((b) => b..add(event.loaded));
           if (loaded.length == BlocsToLoad.values.length) {
             loadingTrace.stop();
             loadingTrace = null;

@@ -36,7 +36,7 @@ class _ProfileLoggedOut extends ProfileEvent {}
 class ProfileState extends Equatable {
   final FusedUserProfile profile;
 
-  ProfileState({@required this.profile});
+  ProfileState({@required this.profile}) : super([profile]);
 }
 
 ///

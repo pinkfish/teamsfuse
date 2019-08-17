@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/src/blocs/single/singleleagueortournamentdivisonbloc.dart';
@@ -10,11 +11,12 @@ import 'package:meta/meta.dart';
 /// Basic state for all the data in this system.
 ///
 abstract class SingleLeagueOrTournamentDivisonGamesState extends Equatable {
-  final Map<String, GameSharedData> leagueOrTournamentGames;
+  final BuiltMap<String, GameSharedData> leagueOrTournamentGames;
   final bool loadedGames;
 
   SingleLeagueOrTournamentDivisonGamesState(
-      {@required this.leagueOrTournamentGames, @required this.loadedGames});
+      {@required this.leagueOrTournamentGames, @required this.loadedGames})
+      : super([leagueOrTournamentGames, loadedGames]);
 }
 
 ///
@@ -24,7 +26,7 @@ class SingleLeagueOrTournamentDivisonGamesLoaded
     extends SingleLeagueOrTournamentDivisonGamesState {
   SingleLeagueOrTournamentDivisonGamesLoaded(
       SingleLeagueOrTournamentDivisonGamesState state,
-      {Map<String, GameSharedData> leagueOrTournamentGames,
+      {BuiltMap<String, GameSharedData> leagueOrTournamentGames,
       bool loadedGames})
       : super(
             leagueOrTournamentGames:
@@ -48,7 +50,7 @@ class SingleLeagueOrTournamentDivisonGamesLoading
             leagueOrTournamentGames: leagueOrTournament.leagueOrTournamentGames,
             loadedGames: leagueOrTournament.loadedGames);
   SingleLeagueOrTournamentDivisonGamesLoading.empty()
-      : super(leagueOrTournamentGames: {}, loadedGames: false);
+      : super(leagueOrTournamentGames: BuiltMap(), loadedGames: false);
   @override
   String toString() {
     return 'SingleLeagueOrTournamentDivisonLoading{}';
@@ -121,7 +123,7 @@ class SingleLeagueOrTournamentDivisonGamesBloc extends Bloc<
         newTeams[game.uid] = game;
       }
       yield SingleLeagueOrTournamentDivisonGamesLoaded(currentState,
-          leagueOrTournamentGames: newTeams, loadedGames: true);
+          leagueOrTournamentGames: BuiltMap.from(newTeams), loadedGames: true);
     }
   }
 }

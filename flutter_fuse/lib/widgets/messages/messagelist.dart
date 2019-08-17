@@ -83,8 +83,8 @@ class MessageList extends StatelessWidget {
           );
         }
         // Make a sorted list of the messages.
-        Map<String, Message> stuff = Map.from(state.unreadMessages);
-        stuff.addAll(state.recentMessages);
+        Map<String, Message> stuff = Map.from(state.unreadMessages.asMap());
+        stuff.addEntries(state.recentMessages.entries);
         List<Message> sortedList = stuff.values.toList();
         sortedList.sort((Message m1, Message m2) =>
             m1.timeSent.toInt() - m2.timeSent.toInt());

@@ -9,7 +9,9 @@ import 'package:meta/meta.dart';
 ///
 /// Basic login state
 ///
-class LoginState extends Equatable {}
+class LoginState extends Equatable {
+  LoginState({List props = const []}) : super(props);
+}
 
 ///
 /// Initial state (showing the login form)
@@ -42,7 +44,8 @@ class LoginFailed extends LoginState {
   final UserData userData;
   final LoginFailedReason reason;
 
-  LoginFailed({@required this.userData, @required this.reason});
+  LoginFailed({@required this.userData, @required this.reason})
+      : super(props: [userData, reason]);
 
   @override
   String toString() {
@@ -56,7 +59,7 @@ class LoginFailed extends LoginState {
 class LoginSucceeded extends LoginState {
   final UserData userData;
 
-  LoginSucceeded({@required this.userData});
+  LoginSucceeded({@required this.userData}) : super(props: [userData]);
 
   @override
   String toString() {
@@ -70,7 +73,7 @@ class LoginSucceeded extends LoginState {
 class LoginEmailNotValidated extends LoginState {
   final UserData userData;
 
-  LoginEmailNotValidated({@required this.userData});
+  LoginEmailNotValidated({@required this.userData}) : super(props: [userData]);
 
   @override
   String toString() {
@@ -104,7 +107,7 @@ class LoginForgotPasswordDone extends LoginState {
 class LoginForgotPasswordFailed extends LoginState {
   final Error error;
 
-  LoginForgotPasswordFailed({@required this.error});
+  LoginForgotPasswordFailed({@required this.error}) : super(props: [error]);
 
   @override
   String toString() {
@@ -128,7 +131,7 @@ class LoginVerificationDone extends LoginState {
 class LoginVerificationFailed extends LoginState {
   final Error error;
 
-  LoginVerificationFailed({@required this.error});
+  LoginVerificationFailed({@required this.error}) : super(props: [error]);
 
   @override
   String toString() {
@@ -153,7 +156,8 @@ class LoginSignupFailed extends LoginState {
   final UserData userData;
   final FusedUserProfile profile;
 
-  LoginSignupFailed({@required this.userData, @required this.profile});
+  LoginSignupFailed({@required this.userData, @required this.profile})
+      : super(props: [userData, profile]);
 
   @override
   String toString() {
@@ -167,7 +171,7 @@ class LoginSignupFailed extends LoginState {
 class LoginSignupSucceeded extends LoginState {
   final UserData userData;
 
-  LoginSignupSucceeded({@required this.userData});
+  LoginSignupSucceeded({@required this.userData}) : super(props: [userData]);
 
   @override
   String toString() {
@@ -298,8 +302,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (event is LoginEventAttempt) {
       yield LoginValidating();
       LoginEventAttempt attempt = event;
-      UserData data =
-          new UserData(email: attempt.email, password: attempt.password);
+      UserData data = new UserData((b) => b
+        ..email = attempt.email
+        ..password = attempt.password);
       print(data);
       UserData signedIn;
       try {
@@ -332,8 +337,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (event is LoginEventSignupUser) {
       yield LoginValidatingSignup();
       LoginEventSignupUser signup = event;
-      UserData user =
-          new UserData(email: signup.email, password: signup.password);
+      UserData user = new UserData((b) => b
+        ..email = signup.email
+        ..password = signup.password);
       FusedUserProfile profile = new FusedUserProfile((b) => b
         ..displayName = signup.displayName
         ..phoneNumber = signup.phoneNumber

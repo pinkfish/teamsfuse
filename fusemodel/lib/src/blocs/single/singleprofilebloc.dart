@@ -12,7 +12,7 @@ import '../playerbloc.dart';
 abstract class SingleProfileState extends Equatable {
   final FusedUserProfile profile;
 
-  SingleProfileState({@required this.profile});
+  SingleProfileState({@required this.profile}) : super([profile]);
 }
 
 ///

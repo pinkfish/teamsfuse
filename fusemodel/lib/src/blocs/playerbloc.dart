@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
@@ -55,7 +56,7 @@ class PlayerLoadPlayer extends PlayerEvent {
 }
 
 class _PlayerNewPlayersLoaded extends PlayerEvent {
-  final Map<String, Player> players;
+  final BuiltMap<String, Player> players;
   final String uid;
   final Set<String> deleted;
 
@@ -67,8 +68,8 @@ class _PlayerNewPlayersLoaded extends PlayerEvent {
 /// Basic state for all the player states.
 ///
 abstract class PlayerState extends Equatable {
-  final Map<String, Player> players;
-  final Map<String, Player> extraPlayers;
+  final BuiltMap<String, Player> players;
+  final BuiltMap<String, Player> extraPlayers;
   final String uid;
   final bool onlySql;
 
@@ -76,7 +77,8 @@ abstract class PlayerState extends Equatable {
       {@required this.players,
       @required this.onlySql,
       @required this.uid,
-      @required this.extraPlayers});
+      @required this.extraPlayers})
+      : super([players, extraPlayers, uid, onlySql]);
 
   ///
   /// Get the me player.
@@ -105,8 +107,8 @@ abstract class PlayerState extends Equatable {
 class PlayerLoading extends PlayerState {
   PlayerLoading(
       {@required PlayerState playerState,
-      @required Map<String, Player> players,
-      @required Map<String, Player> extraPlayers,
+      @required BuiltMap<String, Player> players,
+      @required BuiltMap<String, Player> extraPlayers,
       @required bool onlySql})
       : super(
             players: players ?? playerState.players,
@@ -124,7 +126,7 @@ class PlayerLoading extends PlayerState {
 /// No data at all, we are uninitialized.
 ///
 class PlayerUninitialized extends PlayerState {
-  PlayerUninitialized() : super(players: {}, uid: null, onlySql: true);
+  PlayerUninitialized() : super(players: BuiltMap(), uid: null, onlySql: true);
 
   @override
   String toString() {
@@ -138,8 +140,8 @@ class PlayerUninitialized extends PlayerState {
 class PlayerLoaded extends PlayerState {
   PlayerLoaded(
       {@required PlayerState playerState,
-      Map<String, Player> players,
-      Map<String, Player> extraPlayers,
+      BuiltMap<String, Player> players,
+      BuiltMap<String, Player> extraPlayers,
       bool onlySql})
       : super(
             players: players ?? playerState.players,
@@ -200,10 +202,9 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   void _onPlayerUpdated(Iterable<Player> data) {
     Set<String> toDeletePlayers = new Set<String>();
     bool foundMe = false;
-    Map<String, Player> players =
-        Map<String, Player>.from(currentState.players);
+    MapBuilder<String, Player> players = currentState.players.toBuilder();
 
-    toDeletePlayers.addAll(players.keys);
+    toDeletePlayers.addAll(currentState.players.keys);
     for (Player player in data) {
       if (player.users[currentState.uid].relationship == Relationship.Me) {
         if (foundMe) {
@@ -249,7 +250,9 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       }
     }
     dispatch(_PlayerNewPlayersLoaded(
-        players: players, uid: currentState.uid, deleted: toDeletePlayers));
+        players: players.build(),
+        uid: currentState.uid,
+        deleted: toDeletePlayers));
   }
 
   @override
@@ -273,7 +276,9 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
           'End players ${coordinationBloc.start.difference(new DateTime.now())}');
       playerTrace.stop();
       yield PlayerLoaded(
-          playerState: currentState, players: newPlayers, onlySql: true);
+          playerState: currentState,
+          players: BuiltMap.from(newPlayers),
+          onlySql: true);
       coordinationBloc.dispatch(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Messages, sql: true));
     }
@@ -312,9 +317,10 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     }
 
     if (event is _PlayerLoadedExtra) {
-      Map<String, Player> extras = Map.from(currentState.extraPlayers);
+      MapBuilder<String, Player> extras = currentState.extraPlayers.toBuilder();
       extras[event.playerUid] = event.player;
-      yield PlayerLoaded(playerState: currentState, extraPlayers: extras);
+      yield PlayerLoaded(
+          playerState: currentState, extraPlayers: extras.build());
     }
   }
 }

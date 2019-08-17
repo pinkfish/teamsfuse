@@ -10,7 +10,7 @@ import '../gamesbloc.dart';
 abstract class SingleSharedGameState extends Equatable {
   final GameSharedData sharedData;
 
-  SingleSharedGameState({@required this.sharedData});
+  SingleSharedGameState({@required this.sharedData}) : super([sharedData]);
 }
 
 ///

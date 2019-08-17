@@ -21,7 +21,8 @@ class FilteredGameState extends Equatable {
       {@required this.games,
       @required this.filter,
       @required this.start,
-      @required this.end});
+      @required this.end})
+      : super([games, filter, start, end]);
 }
 
 ///

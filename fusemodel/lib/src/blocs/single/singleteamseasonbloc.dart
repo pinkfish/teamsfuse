@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
@@ -12,9 +13,10 @@ import '../teambloc.dart';
 ///
 abstract class SingleTeamSeaonState extends Equatable {
   final Season season;
-  final Iterable<InviteToTeam> invites;
+  final BuiltList<InviteToTeam> invites;
 
-  SingleTeamSeaonState({@required this.season, @required this.invites});
+  SingleTeamSeaonState({@required this.season, @required this.invites})
+      : super([season, invites]);
 }
 
 ///
@@ -22,7 +24,7 @@ abstract class SingleTeamSeaonState extends Equatable {
 ///
 class SingleTeamSeasonLoaded extends SingleTeamSeaonState {
   SingleTeamSeasonLoaded(
-      {@required Season season, @required Iterable<InviteToTeam> invites})
+      {@required Season season, @required BuiltList<InviteToTeam> invites})
       : super(season: season, invites: invites);
 
   @override
@@ -63,7 +65,7 @@ class SingleTeamSeasonSaveFailed extends SingleTeamSeaonState {
 /// Team got deleted.
 ///
 class SingleTeamSeasonDeleted extends SingleTeamSeaonState {
-  SingleTeamSeasonDeleted() : super(season: null, invites: []);
+  SingleTeamSeasonDeleted() : super(season: null, invites: BuiltList());
 
   @override
   String toString() {
@@ -190,7 +192,7 @@ class SingleTeamSeasonBloc
 
     if (event is _SingleTeamSeasonLoadedInvites) {
       yield SingleTeamSeasonLoaded(
-          season: currentState.season, invites: event.invites);
+          season: currentState.season, invites: BuiltList.from(event.invites));
     }
   }
 }

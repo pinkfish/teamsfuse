@@ -14,7 +14,8 @@ import '../teambloc.dart';
 abstract class SingleTeamSeasonPlayerState extends Equatable {
   final SeasonPlayer seasonPlayer;
 
-  SingleTeamSeasonPlayerState({@required this.seasonPlayer});
+  SingleTeamSeasonPlayerState({@required this.seasonPlayer})
+      : super([seasonPlayer]);
 }
 
 ///

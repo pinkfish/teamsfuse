@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
@@ -13,13 +14,14 @@ import '../leagueortournamentbloc.dart';
 ///
 abstract class SingleLeagueOrTournamentState extends Equatable {
   final LeagueOrTournament leagueOrTournament;
-  final Map<String, LeagueOrTournamentSeason> leagueOrTournamentSeasons;
+  final BuiltMap<String, LeagueOrTournamentSeason> leagueOrTournamentSeasons;
   final bool loadedSeasons;
 
   SingleLeagueOrTournamentState(
       {@required this.leagueOrTournament,
       @required this.leagueOrTournamentSeasons,
-      @required this.loadedSeasons});
+      @required this.loadedSeasons})
+      : super([leagueOrTournament, leagueOrTournamentSeasons, loadedSeasons]);
 }
 
 ///
@@ -28,7 +30,7 @@ abstract class SingleLeagueOrTournamentState extends Equatable {
 class SingleLeagueOrTournamentLoaded extends SingleLeagueOrTournamentState {
   SingleLeagueOrTournamentLoaded(
       {@required LeagueOrTournament leagueOrTournament,
-      Map<String, LeagueOrTournamentSeason> leagueOrTournamentSeasons,
+      BuiltMap<String, LeagueOrTournamentSeason> leagueOrTournamentSeasons,
       bool loadedSeasons})
       : super(
             leagueOrTournament: leagueOrTournament,
@@ -92,7 +94,7 @@ class SingleLeagueOrTournamentDeleted extends SingleLeagueOrTournamentState {
                 leagueOrTournament.leagueOrTournamentSeasons,
             loadedSeasons: leagueOrTournament.loadedSeasons);
   SingleLeagueOrTournamentDeleted.empty()
-      : super(leagueOrTournament: null, leagueOrTournamentSeasons: {});
+      : super(leagueOrTournament: null, leagueOrTournamentSeasons: BuiltMap());
   @override
   String toString() {
     return 'SingleLeagueOrTournamentDeleted{}';
@@ -425,7 +427,7 @@ class SingleLeagueOrTournamentBloc
       }
       yield SingleLeagueOrTournamentLoaded(
           leagueOrTournament: currentState.leagueOrTournament,
-          leagueOrTournamentSeasons: newSeasons,
+          leagueOrTournamentSeasons: BuiltMap.from(newSeasons),
           loadedSeasons: true);
     }
 

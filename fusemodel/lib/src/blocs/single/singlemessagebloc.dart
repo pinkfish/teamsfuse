@@ -11,7 +11,8 @@ abstract class SingleMessageState extends Equatable {
   final Message message;
   final String body;
 
-  SingleMessageState({@required this.message, @required this.body});
+  SingleMessageState({@required this.message, @required this.body})
+      : super([message, body]);
 }
 
 ///

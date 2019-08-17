@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/src/blocs/single/singleleagueortournamentdivisonbloc.dart';
@@ -10,11 +11,12 @@ import 'package:meta/meta.dart';
 /// Basic state for all the data in this system.
 ///
 abstract class SingleLeagueOrTournamentDivisonTeamsState extends Equatable {
-  final Map<String, LeagueOrTournamentTeam> leagueOrTournamentTeams;
+  final BuiltMap<String, LeagueOrTournamentTeam> leagueOrTournamentTeams;
   final bool loadedTeams;
 
   SingleLeagueOrTournamentDivisonTeamsState(
-      {@required this.leagueOrTournamentTeams, @required this.loadedTeams});
+      {@required this.leagueOrTournamentTeams, @required this.loadedTeams})
+      : super([leagueOrTournamentTeams, loadedTeams]);
 }
 
 ///
@@ -24,7 +26,7 @@ class SingleLeagueOrTournamentDivisonTeamsLoaded
     extends SingleLeagueOrTournamentDivisonTeamsState {
   SingleLeagueOrTournamentDivisonTeamsLoaded(
       SingleLeagueOrTournamentDivisonTeamsState state,
-      {Map<String, LeagueOrTournamentTeam> leagueOrTournamentTeams,
+      {BuiltMap<String, LeagueOrTournamentTeam> leagueOrTournamentTeams,
       bool loadedTeams})
       : super(
             leagueOrTournamentTeams:
@@ -48,7 +50,7 @@ class SingleLeagueOrTournamentDivisonTeamsLoading
             leagueOrTournamentTeams: leagueOrTournament.leagueOrTournamentTeams,
             loadedTeams: leagueOrTournament.loadedTeams);
   SingleLeagueOrTournamentDivisonTeamsLoading.empty()
-      : super(leagueOrTournamentTeams: {}, loadedTeams: false);
+      : super(leagueOrTournamentTeams: BuiltMap(), loadedTeams: false);
   @override
   String toString() {
     return 'SingleLeagueOrTournamentDivisonLoading{}';
@@ -123,7 +125,7 @@ class SingleLeagueOrTournamentDivisonTeamsBloc extends Bloc<
         newTeams[team.uid] = team;
       }
       yield SingleLeagueOrTournamentDivisonTeamsLoaded(currentState,
-          leagueOrTournamentTeams: newTeams, loadedTeams: true);
+          leagueOrTournamentTeams: BuiltMap.from(newTeams), loadedTeams: true);
     }
   }
 }

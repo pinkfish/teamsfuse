@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
@@ -13,14 +14,15 @@ import 'teambloc.dart';
 /// Basic state for all the data in this system.
 ///
 class MessagesState extends Equatable {
-  final Map<String, Message> unreadMessages;
-  final Map<String, Message> recentMessages;
+  final BuiltMap<String, Message> unreadMessages;
+  final BuiltMap<String, Message> recentMessages;
   final bool onlySql;
 
   MessagesState(
       {@required this.unreadMessages,
       @required this.recentMessages,
-      @required this.onlySql});
+      @required this.onlySql})
+      : super([unreadMessages, recentMessages, onlySql]);
 
   Message getMessage(String uid) {
     if (recentMessages.containsKey(uid)) {
@@ -38,7 +40,10 @@ class MessagesState extends Equatable {
 ///
 class MessagesUninitialized extends MessagesState {
   MessagesUninitialized()
-      : super(unreadMessages: {}, recentMessages: {}, onlySql: true);
+      : super(
+            unreadMessages: BuiltMap(),
+            recentMessages: BuiltMap(),
+            onlySql: true);
 
   @override
   String toString() {
@@ -51,8 +56,8 @@ class MessagesUninitialized extends MessagesState {
 ///
 class MessagesLoaded extends MessagesState {
   MessagesLoaded(
-      {@required Map<String, Message> unreadMessages,
-      @required Map<String, Message> recentMessages,
+      {@required BuiltMap<String, Message> unreadMessages,
+      @required BuiltMap<String, Message> recentMessages,
       @required bool onlySql})
       : super(
             unreadMessages: unreadMessages,
@@ -260,8 +265,8 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
           'End messages ${coordinationBloc.start.difference(new DateTime.now())}');
       messagesTrace.stop();
       yield MessagesLoaded(
-          recentMessages: newMessages,
-          unreadMessages: unreadMessages,
+          recentMessages: BuiltMap.from(newMessages),
+          unreadMessages: BuiltMap.from(unreadMessages),
           onlySql: true);
       coordinationBloc.dispatch(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Messages, sql: true));
@@ -289,7 +294,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
           loaded: BlocsToLoad.LeagueOrTournament, sql: false));
 
       yield MessagesLoaded(
-          recentMessages: event.recentMessages,
+          recentMessages: BuiltMap.from(event.recentMessages),
           unreadMessages: currentState.unreadMessages,
           onlySql: false);
     }
@@ -297,7 +302,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     if (event is _MessagesEventNewUnReadLoaded) {
       yield MessagesLoaded(
           recentMessages: currentState.recentMessages,
-          unreadMessages: event.unreadMessages,
+          unreadMessages: BuiltMap.from(event.unreadMessages),
           onlySql: false);
     }
 

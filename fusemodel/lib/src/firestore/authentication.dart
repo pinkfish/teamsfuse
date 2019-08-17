@@ -3,36 +3,7 @@ import 'dart:async';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'firestore.dart';
-
-///
-/// Wrapped around the uaerdata into the firestore stuff.
-///
-class UserData {
-  final String email;
-  final String uid;
-  final String password;
-  final bool isEmailVerified;
-  FusedUserProfile profile;
-
-  UserData(
-      {this.profile,
-      this.email,
-      this.uid,
-      this.password,
-      this.isEmailVerified});
-
-  UserData.copy(UserData copy)
-      : email = copy.email,
-        uid = copy.uid,
-        password = copy.password,
-        isEmailVerified = copy.isEmailVerified,
-        profile = copy.profile;
-
-  @override
-  String toString() {
-    return "UserData [$email $password $uid $profile]";
-  }
-}
+import 'userdata.dart';
 
 class UserAuthImpl {
   FirestoreWrapper wrapper;
@@ -88,8 +59,10 @@ class UserAuthImpl {
         .createUserWithEmailAndPassword(
             email: userData.email, password: userData.password)
         .then((FirebaseUserWrapper user) {
-      UserData newData = new UserData(
-          profile: profile, email: userData.email, isEmailVerified: false);
+      UserData newData = new UserData((b) => b
+        ..profile = profile.toBuilder()
+        ..email = userData.email
+        ..isEmailVerified = false);
       user.sendEmailVerification();
       DocumentReferenceWrapper ref =
           wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
@@ -209,9 +182,9 @@ class UserAuthImpl {
     if (doc.exists) {
       persistenData.updateElement(
           PersistenData.profileTable, doc.documentID, doc.data);
-      FusedUserProfile profile =
-          FusedUserProfile.fromJSON(doc.documentID, doc.data).build();
-      _currentUser.profile = profile;
+      FusedUserProfileBuilder profile =
+          FusedUserProfile.fromJSON(doc.documentID, doc.data);
+      _currentUser = _currentUser.rebuild((b) => b..profile = profile);
       _controller.add(_currentUser);
     }
   }
@@ -223,10 +196,22 @@ class UserAuthImpl {
     // it exists.
     Map<String, dynamic> data =
         await persistenData.getElement(PersistenData.profileTable, input.uid);
-    UserData user = new UserData(
-        email: input.email,
-        uid: input.uid,
-        isEmailVerified: input.isEmailVerified);
+    FusedUserProfileBuilder userProfile;
+    if (data != null) {
+      userProfile = FusedUserProfile.fromJSON(input.uid, data);
+    } else {
+      userProfile = FusedUserProfileBuilder();
+      userProfile.displayName = input.email.split("@")[0];
+      userProfile.email = input.email;
+      userProfile.phoneNumber = "";
+      userProfile.emailOnUpdates = true;
+      userProfile.emailUpcomingGame = true;
+    }
+    UserData user = new UserData((b) => b
+      ..email = input.email
+      ..uid = input.uid
+      ..isEmailVerified = input.isEmailVerified
+      ..profile = userProfile);
     _currentFirebaseUser = input;
     if (data == null && forceProfile) {
       Future<DocumentSnapshotWrapper> ref =
@@ -238,18 +223,13 @@ class UserAuthImpl {
         // Update when ready.
         ref.then((DocumentSnapshotWrapper doc) {
           print('Loaded from firestore');
-          FusedUserProfile profile =
-              FusedUserProfile.fromJSON(doc.documentID, doc.data).build();
-          user.profile = profile;
+          FusedUserProfileBuilder profile =
+              FusedUserProfile.fromJSON(doc.documentID, doc.data);
+          user = user.rebuild((b) => b..profile = profile);
           persistenData.updateElement(
               PersistenData.profileTable, doc.documentID, data);
         });
       }
-    }
-    if (data != null) {
-      FusedUserProfile profile =
-          FusedUserProfile.fromJSON(input.uid, data).build();
-      user.profile = profile;
     }
     _currentUser = user;
     return user;

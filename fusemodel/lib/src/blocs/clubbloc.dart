@@ -16,7 +16,8 @@ class ClubState extends Equatable {
   final Map<String, Club> clubs;
   final bool onlySql;
 
-  ClubState({@required this.clubs, @required this.onlySql});
+  ClubState({@required this.clubs, @required this.onlySql})
+      : super([clubs, onlySql]);
 }
 
 ///
@@ -96,7 +97,7 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<Club>> _clubChangeSub;
-  Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions;
+  Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions = {};
 
   ClubBloc({@required this.coordinationBloc, @required this.teamBloc}) {
     _coordSub = coordinationBloc.state.listen((CoordinationState state) {

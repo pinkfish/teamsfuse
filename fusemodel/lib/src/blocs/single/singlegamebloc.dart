@@ -13,7 +13,8 @@ abstract class SingleGameState extends Equatable {
   final bool loadedLogs;
 
   SingleGameState(
-      {@required this.game, @required this.gameLog, @required this.loadedLogs});
+      {@required this.game, @required this.gameLog, @required this.loadedLogs})
+      : super([game, gameLog, loadedLogs]);
 }
 
 ///

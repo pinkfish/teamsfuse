@@ -24,7 +24,8 @@ class GameState extends Equatable {
       @required this.sharedGameData,
       @required this.onlySql,
       @required this.start,
-      @required this.end});
+      @required this.end})
+      : super([gamesByTeam, sharedGameData, onlySql, start, end]);
 
   ///
   /// Finds the game in the currently loaded set of games.
@@ -141,7 +142,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   StreamSubscription<TeamState> _teamSub;
   StreamSubscription<FirestoreChangedData> _gameChangeSub;
-  Map<String, StreamSubscription<GameSnapshotEvent>> _gameSubscriptions;
+  Map<String, StreamSubscription<GameSnapshotEvent>> _gameSubscriptions = {};
   DateTime _start;
   DateTime _end;
 

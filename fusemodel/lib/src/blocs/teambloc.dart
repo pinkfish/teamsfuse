@@ -36,7 +36,7 @@ class _TeamFirestoreStart extends TeamEvent {
 }
 
 class _TeamPlayersLoaded extends TeamEvent {
-  final List<Player> players;
+  final Iterable<Player> players;
   final bool onlySql;
 
   _TeamPlayersLoaded({@required this.players, @required this.onlySql});
@@ -110,7 +110,8 @@ abstract class TeamState extends Equatable {
       @required this.onlySql,
       @required this.adminTeams,
       @required this.clubTeams,
-      @required this.publicTeams});
+      @required this.publicTeams})
+      : super([adminTeams, teamsByPlayer, clubTeams, publicTeams, onlySql]);
 
   ///
   /// Get the team from the various places it could exist.
@@ -437,8 +438,8 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         }
       }
       yield TeamLoaded(
+          state: currentState,
           teamsByPlayer: BuiltMap.from(newTeams),
-          clubTeams: currentState.clubTeams,
           adminTeams: BuiltMap.from(newAdminTeams),
           onlySql: true);
       coordinationBloc.dispatch(

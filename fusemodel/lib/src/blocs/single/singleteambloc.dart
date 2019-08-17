@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
@@ -15,16 +16,17 @@ import '../teambloc.dart';
 abstract class SingleTeamState extends Equatable {
   final Team team;
   final Club club;
-  final List<InviteAsAdmin> invitesAsAdmin;
-  final List<Season> fullSeason;
-  final Map<String, Opponent> opponents;
+  final BuiltList<InviteAsAdmin> invitesAsAdmin;
+  final BuiltList<Season> fullSeason;
+  final BuiltMap<String, Opponent> opponents;
 
   SingleTeamState(
       {@required this.team,
       @required this.club,
       @required this.invitesAsAdmin,
       @required this.fullSeason,
-      @required this.opponents});
+      @required this.opponents})
+      : super([team, club, invitesAsAdmin, fullSeason, opponents]);
 
   ///
   /// Checks to see if the user is an admin for this team.
@@ -42,9 +44,9 @@ class SingleTeamLoaded extends SingleTeamState {
       {@required SingleTeamState state,
       Team team,
       Club club,
-      List<InviteAsAdmin> invitesAsAdmin,
-      List<Season> fullSeason,
-      Map<String, Opponent> opponents})
+      BuiltList<InviteAsAdmin> invitesAsAdmin,
+      BuiltList<Season> fullSeason,
+      BuiltMap<String, Opponent> opponents})
       : super(
             team: team ?? state.team,
             invitesAsAdmin: invitesAsAdmin ?? state.invitesAsAdmin,
@@ -121,9 +123,9 @@ class SingleTeamDeleted extends SingleTeamState {
   SingleTeamDeleted()
       : super(
             team: null,
-            invitesAsAdmin: [],
-            fullSeason: [],
-            opponents: {},
+            invitesAsAdmin: BuiltList(),
+            fullSeason: BuiltList(),
+            opponents: BuiltMap(),
             club: null);
 
   @override
@@ -320,9 +322,9 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       _setupClubSub();
       return SingleTeamLoaded(
           team: t,
-          fullSeason: [],
-          invitesAsAdmin: [],
-          opponents: {},
+          fullSeason: BuiltList(),
+          invitesAsAdmin: BuiltList(),
+          opponents: BuiltMap(),
           state: null);
     } else {
       return SingleTeamDeleted();
@@ -425,7 +427,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
 
     if (event is _SingleTeamInvitesAdminLoaded) {
       yield SingleTeamLoaded(
-          state: currentState, invitesAsAdmin: event.invites);
+          state: currentState, invitesAsAdmin: BuiltList.from(event.invites));
     }
 
     if (event is SingleTeamLoadInvites) {
@@ -447,7 +449,8 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
     }
 
     if (event is _SingleTeamSeasonDataLoaded) {
-      yield SingleTeamLoaded(state: currentState, fullSeason: event.seasons);
+      yield SingleTeamLoaded(
+          state: currentState, fullSeason: BuiltList.from(event.seasons));
     }
 
     if (event is _SingleTeamNewClub) {

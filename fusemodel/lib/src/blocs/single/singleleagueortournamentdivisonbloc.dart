@@ -15,7 +15,8 @@ abstract class SingleLeagueOrTournamentDivisonState extends Equatable {
   final LeagueOrTournamentDivison leagueOrTournamentDivison;
 
   SingleLeagueOrTournamentDivisonState(
-      {@required this.leagueOrTournamentDivison});
+      {@required this.leagueOrTournamentDivison})
+      : super([leagueOrTournamentDivison]);
 }
 
 ///

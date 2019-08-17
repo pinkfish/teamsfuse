@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
@@ -9,13 +10,14 @@ import '../teambloc.dart';
 
 abstract class SingleTeamOpponentState extends Equatable {
   final Opponent opponent;
-  final Iterable<Game> games;
+  final BuiltList<Game> games;
   final bool gamesLoaded;
 
   SingleTeamOpponentState(
       {@required this.opponent,
       @required this.games,
-      @required this.gamesLoaded});
+      @required this.gamesLoaded})
+      : super([opponent, games, gamesLoaded]);
 }
 
 ///
@@ -25,7 +27,7 @@ class SingleTeamOpponentLoaded extends SingleTeamOpponentState {
   SingleTeamOpponentLoaded(
       {@required SingleTeamOpponentState state,
       Opponent opponent,
-      Iterable<Game> games,
+      BuiltList<Game> games,
       bool gamesLoaded})
       : super(
             opponent: opponent ?? state.opponent,
@@ -78,7 +80,7 @@ class SingleTeamOpponentSaveFailed extends SingleTeamOpponentState {
 ///
 class SingleTeamOpponentDeleted extends SingleTeamOpponentState {
   SingleTeamOpponentDeleted()
-      : super(opponent: null, games: [], gamesLoaded: false);
+      : super(opponent: null, games: BuiltList(), gamesLoaded: false);
 
   @override
   String toString() {
@@ -224,7 +226,9 @@ class SingleTeamOpponentBloc
 
     if (event is _SingleTeamOpponentGamesLoaded) {
       yield SingleTeamOpponentLoaded(
-          state: currentState, games: event.games, gamesLoaded: true);
+          state: currentState,
+          games: BuiltList.from(event.games),
+          gamesLoaded: true);
     }
   }
 }
