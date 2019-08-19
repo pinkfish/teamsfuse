@@ -16,6 +16,7 @@ part 'club.g.dart';
 abstract class Club implements Built<Club, ClubBuilder> {
   String get uid;
   String get name;
+  @nullable
   String get photoUrl;
 
   /// Some text describing what the club is about.
@@ -41,7 +42,7 @@ abstract class Club implements Built<Club, ClubBuilder> {
   String get userUid;
 
   Club._();
-  factory Club([updates(ClubBuilder b)]) = _$Club;
+  factory Club([updates(ClubBuilder b)]) => _$Club((b) => b..about = "");
 
   ///
   /// Load this from the wire format.
@@ -54,16 +55,19 @@ abstract class Club implements Built<Club, ClubBuilder> {
       ..uid = myUid
       ..name = data[NAME]
       ..photoUrl = data[PHOTOURL]
-      ..about = data[_ABOUT]
+      ..about = data[_ABOUT] ?? ""
       ..arriveBeforeGame = data[_ARRIVEBEFOREGAME] ?? 0
       ..trackAttendence = Tristate.values.firstWhere(
           (Tristate state) => state.toString() == data[_TRACKATTENDENCE],
           orElse: () => Tristate.Unset);
     if (data.containsKey(_SPORT)) {
-      builder.sport =
-          Sport.values.firstWhere((Sport s) => s.toString() == data[_SPORT]);
+      builder.sport = Sport.values.firstWhere(
+          (Sport s) => s.toString() == data[_SPORT],
+          orElse: () => Sport.None);
+    } else {
+      builder.sport = Sport.None;
     }
-    ;
+
     for (String adminUid in data[MEMBERS].keys) {
       Map<dynamic, dynamic> adminData = data[MEMBERS][adminUid];
       if (adminData[ADDED]) {

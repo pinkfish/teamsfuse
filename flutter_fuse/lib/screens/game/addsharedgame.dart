@@ -134,7 +134,7 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
 
   Widget _buildHomeAwayChooser() {
     return SingleLeagueOrTournamentDivisonProvider(
-      leagueOrTournamentDivisonUid: widget.leagueDivisonUid,
+      leagueDivisonUid: widget.leagueDivisonUid,
       builder: (BuildContext context,
               SingleLeagueOrTournamentDivisonBloc divisonBloc) =>
           Column(

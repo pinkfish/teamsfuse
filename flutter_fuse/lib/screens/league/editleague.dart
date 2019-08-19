@@ -73,53 +73,53 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
     Messages messages = Messages.of(context);
 
     return SingleLeagueOrTournamentProvider(
-      leagueOrTournamentUid: widget.leagueOrTournamentUid,
+      leagueUid: widget.leagueOrTournamentUid,
       builder: (BuildContext context, SingleLeagueOrTournamentBloc bloc) =>
           Scaffold(
-            key: _scaffoldKey,
-            appBar: new AppBar(
-              title: new Text(messages.title),
-            ),
-            body: BlocListener(
-              bloc: bloc,
-              listener:
-                  (BuildContext context, SingleLeagueOrTournamentState state) {
-                if (state is SingleLeagueOrTournamentDeleted) {
-                  Navigator.pop(context);
-                } else if (_saving && state is SingleLeagueOrTournamentLoaded) {
-                  Navigator.pop(context);
-                }
-              },
-              child: BlocBuilder(
-                bloc: bloc,
-                builder: (BuildContext context,
-                    SingleLeagueOrTournamentState state) {
-                  return SavingOverlay(
+        key: _scaffoldKey,
+        appBar: new AppBar(
+          title: new Text(messages.title),
+        ),
+        body: BlocListener(
+          bloc: bloc,
+          listener:
+              (BuildContext context, SingleLeagueOrTournamentState state) {
+            if (state is SingleLeagueOrTournamentDeleted) {
+              Navigator.pop(context);
+            } else if (_saving && state is SingleLeagueOrTournamentLoaded) {
+              Navigator.pop(context);
+            }
+          },
+          child: BlocBuilder(
+            bloc: bloc,
+            builder:
+                (BuildContext context, SingleLeagueOrTournamentState state) {
+              return SavingOverlay(
+                saving: state is SingleLeagueOrTournamentSaving,
+                child: new Container(
+                  padding: new EdgeInsets.all(5.0),
+                  child: new SavingOverlay(
                     saving: state is SingleLeagueOrTournamentSaving,
-                    child: new Container(
-                      padding: new EdgeInsets.all(5.0),
-                      child: new SavingOverlay(
-                        saving: state is SingleLeagueOrTournamentSaving,
-                        child: Scrollbar(
-                          child: SingleChildScrollView(
-                            child: new LeagueOrTournamentEditForm(
-                              leagueOrTournament:
-                                  bloc.currentState.leagueOrTournament,
-                              key: _formState,
-                            ),
-                          ),
+                    child: Scrollbar(
+                      child: SingleChildScrollView(
+                        child: new LeagueOrTournamentEditForm(
+                          leagueOrTournament:
+                              bloc.currentState.leagueOrTournament,
+                          key: _formState,
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
-            floatingActionButton: new FloatingActionButton(
-              onPressed: () => _savePressed(context, bloc),
-              child: const Icon(Icons.check),
-            ),
+                  ),
+                ),
+              );
+            },
           ),
+        ),
+        floatingActionButton: new FloatingActionButton(
+          onPressed: () => _savePressed(context, bloc),
+          child: const Icon(Icons.check),
+        ),
+      ),
     );
   }
 }

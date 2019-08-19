@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 
+import 'base/singleprovider.dart';
+
 typedef SingleLeagueOrTournamentProviderBuilder = Widget Function(
     BuildContext context,
     SingleLeagueOrTournamentBloc singleLeagueOrTournamentBloc);
@@ -10,28 +12,18 @@ typedef SingleLeagueOrTournamentProviderBuilder = Widget Function(
  * Create a provider that will insert the singe leagueOrTournament bloc into the tree if the
  * bloc is not current provided or is different than the leagueOrTournamentuid.
  */
-class SingleLeagueOrTournamentProvider extends StatelessWidget {
-  final String leagueOrTournamentUid;
-  final SingleLeagueOrTournamentProviderBuilder builder;
+
+class SingleLeagueOrTournamentProvider
+    extends SingleBlocProvider<SingleLeagueOrTournamentBloc> {
+  static SingleLeagueOrTournamentBloc _createBloc(
+      BuildContext context, String uid) {
+    return SingleLeagueOrTournamentBloc(
+        leagueOrTournamentBloc:
+            BlocProvider.of<LeagueOrTournamentBloc>(context),
+        leagueUid: uid);
+  }
 
   SingleLeagueOrTournamentProvider(
-      {@required this.leagueOrTournamentUid, @required this.builder});
-
-  @override
-  Widget build(BuildContext context) {
-    var singleLeagueOrTournamentBloc =
-        BlocProvider.of<SingleLeagueOrTournamentBloc>(context);
-    if (singleLeagueOrTournamentBloc == null ||
-        singleLeagueOrTournamentBloc.leagueUid != leagueOrTournamentUid) {
-      singleLeagueOrTournamentBloc = SingleLeagueOrTournamentBloc(
-          leagueOrTournamentBloc:
-              BlocProvider.of<LeagueOrTournamentBloc>(context),
-          leagueUid: leagueOrTournamentUid);
-      return BlocProvider(
-        builder: (BuildContext context) => singleLeagueOrTournamentBloc,
-        child: builder(context, singleLeagueOrTournamentBloc),
-      );
-    }
-    return builder(context, singleLeagueOrTournamentBloc);
-  }
+      {String leagueUid, SingleLeagueOrTournamentProviderBuilder builder})
+      : super(keyUid: leagueUid, creator: _createBloc, builder: builder);
 }

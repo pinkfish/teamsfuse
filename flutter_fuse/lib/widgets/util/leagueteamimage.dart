@@ -66,7 +66,7 @@ class LeagueTeamImage extends StatelessWidget {
     LeagueOrTournamentBloc leagueOrTournamentBloc =
         BlocProvider.of<LeagueOrTournamentBloc>(context);
     Widget blocBuilder = SingleLeagueOrTournamentTeamProvider(
-      leagueOrTournamentTeamUid: leagueOrTeamUid,
+      leagueTeamUid: leagueOrTeamUid,
       builder: (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
           BlocListener(
         bloc: bloc,

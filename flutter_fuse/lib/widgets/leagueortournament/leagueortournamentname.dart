@@ -20,70 +20,69 @@ class LeagueOrTournamentName extends StatelessWidget {
 
   Widget _divison() {
     return SingleLeagueOrTournamentDivisonProvider(
-      leagueOrTournamentDivisonUid: leagueOrTournamentDivisonUid,
+      leagueDivisonUid: leagueOrTournamentDivisonUid,
       builder:
           (BuildContext context, SingleLeagueOrTournamentDivisonBloc data) =>
               BlocBuilder(
-                bloc: data,
-                builder: (BuildContext context,
-                    SingleLeagueOrTournamentDivisonState state) {
-                  Widget inner;
-                  if (state is SingleLeagueOrTournamentDivisonDeleted) {
-                    inner = Text(
-                      "",
-                      style: style,
-                      textAlign: textAlign,
-                      overflow: TextOverflow.ellipsis,
-                    );
-                  } else {
-                    inner = Text(
-                      state.leagueOrTournamentDivison.name,
-                      style: style,
-                      textAlign: textAlign,
-                      overflow: TextOverflow.ellipsis,
-                    );
-                  }
-                  return AnimatedSwitcher(
-                    child: inner,
-                    duration: Duration(milliseconds: 300),
-                  );
-                },
-              ),
+        bloc: data,
+        builder:
+            (BuildContext context, SingleLeagueOrTournamentDivisonState state) {
+          Widget inner;
+          if (state is SingleLeagueOrTournamentDivisonDeleted) {
+            inner = Text(
+              "",
+              style: style,
+              textAlign: textAlign,
+              overflow: TextOverflow.ellipsis,
+            );
+          } else {
+            inner = Text(
+              state.leagueOrTournamentDivison.name,
+              style: style,
+              textAlign: textAlign,
+              overflow: TextOverflow.ellipsis,
+            );
+          }
+          return AnimatedSwitcher(
+            child: inner,
+            duration: Duration(milliseconds: 300),
+          );
+        },
+      ),
     );
   }
 
   Widget _name() {
     return SingleLeagueOrTournamentProvider(
-      leagueOrTournamentUid: leagueOrTournamentUid,
+      leagueUid: leagueOrTournamentUid,
       builder: (BuildContext context,
               SingleLeagueOrTournamentBloc singleLeagueOrTournmanetBloc) =>
           BlocBuilder(
-            bloc: singleLeagueOrTournmanetBloc,
-            builder:
-                (BuildContext context, SingleLeagueOrTournamentState state) {
-              Widget inner;
+        bloc: singleLeagueOrTournmanetBloc,
+        builder: (BuildContext context, SingleLeagueOrTournamentState state) {
+          Widget inner;
 
-              if (SingleLeagueOrTournamentState
-                  is SingleLeagueOrTournamentDeleted) {
-                inner = Text(
-                  Messages.of(context).loading,
-                  style: style,
-                  textAlign: textAlign,
-                  overflow: TextOverflow.ellipsis,
-                );
-              } else {
-                inner = Text(
-                  state.leagueOrTournament.name,
-                  style: style,
-                  textAlign: textAlign,
-                );
-              }
-              return AnimatedSwitcher(
-                child: inner,
-                duration: Duration(milliseconds: 300),
-              );
-            },
-          ),
+          if (SingleLeagueOrTournamentState
+              is SingleLeagueOrTournamentDeleted) {
+            inner = Text(
+              Messages.of(context).loading,
+              style: style,
+              textAlign: textAlign,
+              overflow: TextOverflow.ellipsis,
+            );
+          } else {
+            inner = Text(
+              state.leagueOrTournament.name,
+              style: style,
+              textAlign: textAlign,
+            );
+          }
+          return AnimatedSwitcher(
+            child: inner,
+            duration: Duration(milliseconds: 300),
+          );
+        },
+      ),
     );
   }
 

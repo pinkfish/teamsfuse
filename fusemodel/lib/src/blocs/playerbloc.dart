@@ -12,11 +12,7 @@ import 'internal/blocstoload.dart';
 abstract class PlayerEvent extends Equatable {}
 
 class _PlayerUserLoaded extends PlayerEvent {
-  final String uid;
-
-  _PlayerUserLoaded({
-    @required this.uid,
-  });
+  _PlayerUserLoaded();
 
   @override
   String toString() {
@@ -25,11 +21,7 @@ class _PlayerUserLoaded extends PlayerEvent {
 }
 
 class _PlayerFirestore extends PlayerEvent {
-  final String uid;
-
-  _PlayerFirestore({
-    @required this.uid,
-  });
+  _PlayerFirestore();
 
   @override
   String toString() {
@@ -57,11 +49,11 @@ class PlayerLoadPlayer extends PlayerEvent {
 
 class _PlayerNewPlayersLoaded extends PlayerEvent {
   final BuiltMap<String, Player> players;
-  final String uid;
   final Set<String> deleted;
+  final Player me;
 
   _PlayerNewPlayersLoaded(
-      {@required this.players, @required this.uid, @required this.deleted});
+      {@required this.players, @required this.deleted, @required this.me});
 }
 
 ///
@@ -70,21 +62,15 @@ class _PlayerNewPlayersLoaded extends PlayerEvent {
 abstract class PlayerState extends Equatable {
   final BuiltMap<String, Player> players;
   final BuiltMap<String, Player> extraPlayers;
-  final String uid;
+  final Player me;
   final bool onlySql;
 
   PlayerState(
       {@required this.players,
       @required this.onlySql,
-      @required this.uid,
+      @required this.me,
       @required this.extraPlayers})
-      : super([players, extraPlayers, uid, onlySql]);
-
-  ///
-  /// Get the me player.
-  ///
-  Player get me => players.values.firstWhere(
-      (Player play) => play.users[uid].relationship == Relationship.Me);
+      : super([players, extraPlayers, me, onlySql]);
 
   ///
   /// Look up the specific player in the current state.
@@ -109,16 +95,17 @@ class PlayerLoading extends PlayerState {
       {@required PlayerState playerState,
       @required BuiltMap<String, Player> players,
       @required BuiltMap<String, Player> extraPlayers,
+      @required Player me,
       @required bool onlySql})
       : super(
             players: players ?? playerState.players,
-            uid: playerState.uid,
             onlySql: onlySql ?? playerState.onlySql,
+            me: me ?? playerState.me,
             extraPlayers: extraPlayers ?? playerState.extraPlayers);
 
   @override
   String toString() {
-    return 'PlayerUninitialized{players: ${players.length}, onlySql: $onlySql}';
+    return 'PlayerLoading{players: ${players.length}, onlySql: $onlySql}';
   }
 }
 
@@ -126,7 +113,7 @@ class PlayerLoading extends PlayerState {
 /// No data at all, we are uninitialized.
 ///
 class PlayerUninitialized extends PlayerState {
-  PlayerUninitialized() : super(players: BuiltMap(), uid: null, onlySql: true);
+  PlayerUninitialized() : super(players: BuiltMap(), onlySql: true, me: null);
 
   @override
   String toString() {
@@ -142,16 +129,17 @@ class PlayerLoaded extends PlayerState {
       {@required PlayerState playerState,
       BuiltMap<String, Player> players,
       BuiltMap<String, Player> extraPlayers,
+      Player me,
       bool onlySql})
       : super(
             players: players ?? playerState.players,
-            uid: playerState.uid,
+            me: me ?? playerState.me,
             onlySql: onlySql ?? playerState.onlySql,
             extraPlayers: extraPlayers ?? playerState.extraPlayers);
 
   @override
   String toString() {
-    return 'PlayerData{players: ${players.length}, onlySql: $onlySql}';
+    return 'PlayerLoaded{players.length: ${players.length}, extraPlayers.length: ${extraPlayers?.length}, me: $me, onlySql: $onlySql}';
   }
 }
 
@@ -181,11 +169,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   }
 
   void _startLoading(CoordinationStateStartLoadingSql state) {
-    dispatch(_PlayerUserLoaded(uid: state.uid));
+    dispatch(_PlayerUserLoaded());
   }
 
   void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
-    dispatch(_PlayerFirestore(uid: state.uid));
+    dispatch(_PlayerFirestore());
   }
 
   @override
@@ -203,16 +191,21 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     Set<String> toDeletePlayers = new Set<String>();
     bool foundMe = false;
     MapBuilder<String, Player> players = currentState.players.toBuilder();
+    Player me;
 
     toDeletePlayers.addAll(currentState.players.keys);
     for (Player player in data) {
-      if (player.users[currentState.uid].relationship == Relationship.Me) {
+      String uid = coordinationBloc.currentState.uid;
+      print("Data $player $uid");
+      if (player.users[uid].relationship == Relationship.Me) {
         if (foundMe) {
           if (player.users.length <= 1) {
             coordinationBloc.databaseUpdateModel.deletePlayer(player.uid);
           }
         }
+
         foundMe = true;
+        me = player;
       }
       players[player.uid] = player;
       toDeletePlayers.remove(player.uid);
@@ -237,6 +230,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
             "Frog";
         print('Updating firestore');
         _createdMePlayer = true;
+        me = player.build();
         coordinationBloc.databaseUpdateModel
             .updateFirestorePlayer(player.build(), true)
             .then((void val) {
@@ -250,9 +244,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       }
     }
     dispatch(_PlayerNewPlayersLoaded(
-        players: players.build(),
-        uid: currentState.uid,
-        deleted: toDeletePlayers));
+        players: players.build(), deleted: toDeletePlayers, me: me));
   }
 
   @override
@@ -266,11 +258,17 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
           .persistentData
           .getAllElements(PersistenData.playersTable);
       Map<String, Player> newPlayers = new Map<String, Player>();
+      Player me;
+      String userUid = coordinationBloc.currentState.uid;
+
       data.forEach((String uid, Map<String, dynamic> input) {
         coordinationBloc.sqlTrace?.incrementCounter("player");
         playerTrace.incrementCounter("player");
         Player player = Player.fromJSON(uid, input).build();
         newPlayers[uid] = player;
+        if (player.users[userUid].relationship == Relationship.Me) {
+          me = player;
+        }
       });
       print(
           'End players ${coordinationBloc.start.difference(new DateTime.now())}');
@@ -278,15 +276,16 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       yield PlayerLoaded(
           playerState: currentState,
           players: BuiltMap.from(newPlayers),
-          onlySql: true);
+          onlySql: true,
+          me: me);
       coordinationBloc.dispatch(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Messages, sql: true));
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Player, sql: true));
     }
 
     if (event is _PlayerFirestore) {
       // Load from firestore.
       _playerSnapshot = coordinationBloc.databaseUpdateModel
-          .getPlayers(event.uid)
+          .getPlayers(coordinationBloc.currentState.uid)
           .listen((Iterable<Player> players) {
         this._onPlayerUpdated(players);
       });
@@ -302,9 +301,12 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     // Update the data from an event.
     if (event is _PlayerNewPlayersLoaded) {
       yield PlayerLoaded(
-          playerState: currentState, players: event.players, onlySql: false);
-      coordinationBloc.dispatch(CoordinationEventLoadedData(
-          loaded: BlocsToLoad.Messages, sql: false));
+          playerState: currentState,
+          players: event.players,
+          onlySql: false,
+          me: event.me);
+      coordinationBloc.dispatch(
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Player, sql: false));
     }
 
     if (event is PlayerLoadPlayer) {

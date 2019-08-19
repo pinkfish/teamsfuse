@@ -182,16 +182,16 @@ class _LeagueOrTournamentDivisonDetailsState
     // We must have the league/season loaded to have got in here.  If not
     // this is an error.
     return SingleLeagueOrTournamentProvider(
-      leagueOrTournamentUid: widget.leagueOrTournamentUid,
+      leagueUid: widget.leagueOrTournamentUid,
       builder:
           (BuildContext context, SingleLeagueOrTournamentBloc leagueBloc) =>
               SingleLeagueOrTournamentSeasonProvider(
-        leagueOrTournamentSeasonUid: widget.leagueOrTournamentSeasonUid,
-        singleLeagueOrTournamentBloc: leagueBloc,
+        leagueSeasonUid: widget.leagueOrTournamentSeasonUid,
+        tournmentBloc: leagueBloc,
         builder: (BuildContext context,
                 SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
             SingleLeagueOrTournamentDivisonProvider(
-          leagueOrTournamentDivisonUid: widget.leagueOrTournamentDivisonUid,
+          leagueDivisonUid: widget.leagueOrTournamentDivisonUid,
           singleLeagueOrTournamentSeasonBloc: seasonBloc,
           builder: (BuildContext context,
                   SingleLeagueOrTournamentDivisonBloc divisonBloc) =>

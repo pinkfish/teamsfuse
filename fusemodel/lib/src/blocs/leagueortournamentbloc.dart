@@ -169,7 +169,7 @@ class LeagueOrTournamentBloc
   LeagueOrTournamentState get initialState => LeagueOrTournamentUninitialized();
 
   void _onLeagueOrTournamentsUpdated(Iterable<LeagueOrTournament> leagues) {
-    Map<String, LeagueOrTournament> leagueOrTournsments;
+    Map<String, LeagueOrTournament> leagueOrTournsments = {};
     Set<String> toRemove = Set.from(currentState.leagueOrTournaments.keys);
     for (LeagueOrTournament league in leagues) {
       leagueOrTournsments[league.uid] = league;

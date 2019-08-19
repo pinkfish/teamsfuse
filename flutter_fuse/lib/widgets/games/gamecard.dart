@@ -488,32 +488,32 @@ class GameCard extends StatelessWidget {
     return SingleGameProvider(
       gameUid: gameUid,
       builder: (BuildContext context, SingleGameBloc gameBloc) => BlocBuilder(
-            bloc: gameBloc,
-            builder: (BuildContext context, SingleGameState state) {
-              if (state is SingleGameDeleted) {
-                return SizedBox();
-              }
-              Game game = state.game;
-              if (game.leagueOpponentUid != null &&
-                  game.leagueOpponentUid.isNotEmpty) {
-                // Show this in a future.
-                return SingleLeagueOrTournamentTeamProvider(
-                  leagueOrTournamentTeamUid: game.leagueOpponentUid,
-                  builder: (BuildContext context,
-                          SingleLeagueOrTournamentTeamBloc leagueTeamBloc) =>
-                      BlocBuilder(
-                        bloc: leagueTeamBloc,
-                        builder: (BuildContext context,
-                            SingleLeagueOrTournamentTeamState teamState) {
-                          return _buildMain(context, gameBloc,
-                              teamState.leagueOrTournamentTeam);
-                        },
-                      ),
-                );
-              }
-              return _buildMain(context, gameBloc, null);
-            },
-          ),
+        bloc: gameBloc,
+        builder: (BuildContext context, SingleGameState state) {
+          if (state is SingleGameDeleted) {
+            return SizedBox();
+          }
+          Game game = state.game;
+          if (game.leagueOpponentUid != null &&
+              game.leagueOpponentUid.isNotEmpty) {
+            // Show this in a future.
+            return SingleLeagueOrTournamentTeamProvider(
+              leagueTeamUid: game.leagueOpponentUid,
+              builder: (BuildContext context,
+                      SingleLeagueOrTournamentTeamBloc leagueTeamBloc) =>
+                  BlocBuilder(
+                bloc: leagueTeamBloc,
+                builder: (BuildContext context,
+                    SingleLeagueOrTournamentTeamState teamState) {
+                  return _buildMain(
+                      context, gameBloc, teamState.leagueOrTournamentTeam);
+                },
+              ),
+            );
+          }
+          return _buildMain(context, gameBloc, null);
+        },
+      ),
     );
   }
 }

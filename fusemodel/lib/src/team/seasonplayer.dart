@@ -1,6 +1,6 @@
-import '../common.dart';
 import 'package:built_value/built_value.dart';
-import 'package:built_collection/built_collection.dart';
+
+import '../common.dart';
 
 part 'seasonplayer.g.dart';
 
@@ -27,12 +27,13 @@ abstract class SeasonPlayer
   static const String _JERSEY = 'jerseyNumber';
   static const String _POSITION = 'position';
 
-  static SeasonPlayer fromJSON(Map<dynamic, dynamic> data) {
+  static SeasonPlayer fromJSON(Map<dynamic, dynamic> data, String playerUid) {
     SeasonPlayerBuilder builder = new SeasonPlayerBuilder();
     builder.role =
         RoleInTeam.values.firstWhere((e) => e.toString() == data[ROLE]);
     builder.position = getString(data[_POSITION]) ?? "";
     builder.jerseyNumber = getString(data[_JERSEY]) ?? "";
+    builder.playerUid = playerUid;
     return builder.build();
   }
 

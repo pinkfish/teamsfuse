@@ -47,7 +47,7 @@ abstract class LeagueOrTournament
       {@required String myUid,
       @required String userUid,
       @required Map<String, dynamic> data}) {
-    LeagueOrTournamentBuilder builder;
+    LeagueOrTournamentBuilder builder = LeagueOrTournamentBuilder();
     builder
       ..uid = myUid
       ..userUid = userUid

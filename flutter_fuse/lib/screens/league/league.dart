@@ -47,7 +47,7 @@ class LeagueScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleLeagueOrTournamentProvider(
-      leagueOrTournamentUid: leagueUid,
+      leagueUid: leagueUid,
       builder: (BuildContext context, SingleLeagueOrTournamentBloc bloc) =>
           BlocBuilder(
               bloc: bloc,

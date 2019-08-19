@@ -22,35 +22,35 @@ class LeagueOrTournamentDivisonName extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleLeagueOrTournamentDivisonProvider(
-      leagueOrTournamentDivisonUid: leagueOrTournmentDivisonUid,
+      leagueDivisonUid: leagueOrTournmentDivisonUid,
       singleLeagueOrTournamentSeasonBloc: leagueSeasonBloc,
       builder:
           (BuildContext context, SingleLeagueOrTournamentDivisonBloc bloc) =>
               BlocBuilder(
-                bloc: bloc,
-                builder: (BuildContext context,
-                    SingleLeagueOrTournamentDivisonState state) {
-                  Widget inner;
-                  if (state is SingleLeagueOrTournamentSeasonDeleted) {
-                    inner = Text(
-                      Messages.of(context).unknown,
-                      style: style,
-                      textAlign: textAlign,
-                      overflow: overflow,
-                    );
-                  } else {
-                    inner = Text(
-                      state.leagueOrTournamentDivison.name,
-                      style: style,
-                      textAlign: textAlign,
-                      overflow: overflow,
-                    );
-                  }
+        bloc: bloc,
+        builder:
+            (BuildContext context, SingleLeagueOrTournamentDivisonState state) {
+          Widget inner;
+          if (state is SingleLeagueOrTournamentSeasonDeleted) {
+            inner = Text(
+              Messages.of(context).unknown,
+              style: style,
+              textAlign: textAlign,
+              overflow: overflow,
+            );
+          } else {
+            inner = Text(
+              state.leagueOrTournamentDivison.name,
+              style: style,
+              textAlign: textAlign,
+              overflow: overflow,
+            );
+          }
 
-                  return AnimatedSwitcher(
-                      child: inner, duration: Duration(milliseconds: 300));
-                },
-              ),
+          return AnimatedSwitcher(
+              child: inner, duration: Duration(milliseconds: 300));
+        },
+      ),
     );
   }
 }

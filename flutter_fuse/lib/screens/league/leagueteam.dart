@@ -27,64 +27,60 @@ class LeagueTeamScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleLeagueOrTournamentProvider(
-      leagueOrTournamentUid: leagueUid,
+      leagueUid: leagueUid,
       builder: (BuildContext context, SingleLeagueOrTournamentBloc bloc) =>
           BlocListener(
-            bloc: bloc,
-            listener:
-                (BuildContext context, SingleLeagueOrTournamentState state) {
-              if (state is SingleLeagueOrTournamentDeleted) {
-                Navigator.pop(context);
-              }
-            },
-            child: BlocBuilder(
-              bloc: bloc,
-              builder:
-                  (BuildContext context, SingleLeagueOrTournamentState state) {
-                FloatingActionButton fab;
-                List<Widget> actions = <Widget>[];
+        bloc: bloc,
+        listener: (BuildContext context, SingleLeagueOrTournamentState state) {
+          if (state is SingleLeagueOrTournamentDeleted) {
+            Navigator.pop(context);
+          }
+        },
+        child: BlocBuilder(
+          bloc: bloc,
+          builder: (BuildContext context, SingleLeagueOrTournamentState state) {
+            FloatingActionButton fab;
+            List<Widget> actions = <Widget>[];
 
-                if (!(state is SingleLeagueOrTournamentDeleted)) {
-                  if (state.leagueOrTournament.isAdmin()) {
-                    actions.add(
-                      new PopupMenuButton<String>(
-                        onSelected: (String str) =>
-                            _doAction(context, str, bloc),
-                        itemBuilder: (BuildContext context) {
-                          return <PopupMenuItem<String>>[
-                            new PopupMenuItem<String>(
-                              value: "invite",
-                              child:
-                                  new Text(Messages.of(context).addteamadmin),
-                            ),
-                          ];
-                        },
-                      ),
-                    );
-                  }
-                }
-                return Scaffold(
-                  appBar: new AppBar(
-                    title: new LeagueOrTournamentTeamName(leagueTeamUid),
-                    actions: actions,
-                  ),
-                  floatingActionButton: fab,
-                  floatingActionButtonLocation:
-                      FloatingActionButtonLocation.endFloat,
-                  body: SavingOverlay(
-                    saving: state is SingleLeagueOrTournamentSaving,
-                    child: Scrollbar(
-                      child: SingleChildScrollView(
-                        child: LeagueOrTournamentTeamDetails(
-                          leagueOrTournamentTeamUid: leagueTeamUid,
+            if (!(state is SingleLeagueOrTournamentDeleted)) {
+              if (state.leagueOrTournament.isAdmin()) {
+                actions.add(
+                  new PopupMenuButton<String>(
+                    onSelected: (String str) => _doAction(context, str, bloc),
+                    itemBuilder: (BuildContext context) {
+                      return <PopupMenuItem<String>>[
+                        new PopupMenuItem<String>(
+                          value: "invite",
+                          child: new Text(Messages.of(context).addteamadmin),
                         ),
-                      ),
-                    ),
+                      ];
+                    },
                   ),
                 );
-              },
-            ),
-          ),
+              }
+            }
+            return Scaffold(
+              appBar: new AppBar(
+                title: new LeagueOrTournamentTeamName(leagueTeamUid),
+                actions: actions,
+              ),
+              floatingActionButton: fab,
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.endFloat,
+              body: SavingOverlay(
+                saving: state is SingleLeagueOrTournamentSaving,
+                child: Scrollbar(
+                  child: SingleChildScrollView(
+                    child: LeagueOrTournamentTeamDetails(
+                      leagueOrTournamentTeamUid: leagueTeamUid,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

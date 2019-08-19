@@ -164,7 +164,6 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
           currentState is CoordinatiomnStateLoadingSql) {
         BuiltSet<BlocsToLoad> loaded =
             currentState.loaded.rebuild((b) => b..add(event.loaded));
-        print("Update loaded ${event.loaded} $loaded");
         if (loaded.length == BlocsToLoad.values.length) {
           // Close the sql trace part.
           sqlTrace.stop();
@@ -180,6 +179,9 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
         if (!currentState.loaded.contains(currentState.loaded)) {
           BuiltSet<BlocsToLoad> loaded =
               currentState.loaded.rebuild((b) => b..add(event.loaded));
+          var loadedLeft = Set.from(BlocsToLoad.values);
+          loadedLeft.removeAll(loaded);
+          print("Update loaded ${event.loaded} ${loadedLeft}");
           if (loaded.length == BlocsToLoad.values.length) {
             loadingTrace.stop();
             loadingTrace = null;

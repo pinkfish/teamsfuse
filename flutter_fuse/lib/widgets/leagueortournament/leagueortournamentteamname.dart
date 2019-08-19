@@ -17,40 +17,40 @@ class LeagueOrTournamentTeamName extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleLeagueOrTournamentTeamProvider(
-      leagueOrTournamentTeamUid: leagueOrTournmentTeamUid,
+      leagueTeamUid: leagueOrTournmentTeamUid,
       builder: (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
           BlocBuilder(
-            bloc: bloc,
-            builder: (BuildContext context,
-                SingleLeagueOrTournamentTeamState state) {
-              Widget inner;
-              if (state is SingleLeagueOrTournamentTeamLoading) {
-                inner = Text(
-                  Messages.of(context).loading,
-                  style: style,
-                  textAlign: textAlign,
-                  overflow: overflow,
-                );
-              } else if (state is SingleLeagueOrTournamentTeamDeleted) {
-                inner = Text(
-                  Messages.of(context).unknown,
-                  style: style,
-                  textAlign: textAlign,
-                  overflow: overflow,
-                );
-              } else {
-                inner = Text(
-                  state.leagueOrTournamentTeam.name,
-                  style: style,
-                  textAlign: textAlign,
-                  overflow: overflow,
-                );
-              }
+        bloc: bloc,
+        builder:
+            (BuildContext context, SingleLeagueOrTournamentTeamState state) {
+          Widget inner;
+          if (state is SingleLeagueOrTournamentTeamLoading) {
+            inner = Text(
+              Messages.of(context).loading,
+              style: style,
+              textAlign: textAlign,
+              overflow: overflow,
+            );
+          } else if (state is SingleLeagueOrTournamentTeamDeleted) {
+            inner = Text(
+              Messages.of(context).unknown,
+              style: style,
+              textAlign: textAlign,
+              overflow: overflow,
+            );
+          } else {
+            inner = Text(
+              state.leagueOrTournamentTeam.name,
+              style: style,
+              textAlign: textAlign,
+              overflow: overflow,
+            );
+          }
 
-              return AnimatedSwitcher(
-                  child: inner, duration: Duration(milliseconds: 300));
-            },
-          ),
+          return AnimatedSwitcher(
+              child: inner, duration: Duration(milliseconds: 300));
+        },
+      ),
     );
   }
 }

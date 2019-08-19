@@ -46,7 +46,7 @@ class _LeagueOrTournamentTeamDetailsState
     return Container(
       margin: EdgeInsets.all(5.0),
       child: SingleLeagueOrTournamentTeamProvider(
-        leagueOrTournamentTeamUid: widget.leagueOrTournamentTeamUid,
+        leagueTeamUid: widget.leagueOrTournamentTeamUid,
         builder:
             (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
                 BlocListener(
@@ -67,16 +67,16 @@ class _LeagueOrTournamentTeamDetailsState
                 }
 
                 return SingleLeagueOrTournamentProvider(
-                  leagueOrTournamentUid: widget.leagueOrTournamentUid,
+                  leagueUid: widget.leagueOrTournamentUid,
                   builder: (BuildContext context,
                           SingleLeagueOrTournamentBloc leagueBloc) =>
                       SingleLeagueOrTournamentSeasonProvider(
-                    leagueOrTournamentSeasonUid:
-                        teamState.leagueOrTournamentTeam.seasonUid,
+                    leagueSeasonUid: teamState.leagueOrTournamentTeam.seasonUid,
+                    tournmentBloc: leagueBloc,
                     builder: (BuildContext context,
                             SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
                         SingleLeagueOrTournamentDivisonProvider(
-                      leagueOrTournamentDivisonUid: teamState
+                      leagueDivisonUid: teamState
                           .leagueOrTournamentTeam.leagueOrTournamentDivisonUid,
                       builder: (BuildContext context,
                               SingleLeagueOrTournamentDivisonBloc

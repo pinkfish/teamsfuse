@@ -199,6 +199,8 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     }
     print('Loaded unread');
     dispatch(_MessagesEventNewUnReadLoaded(unreadMessages: messages));
+    coordinationBloc.dispatch(
+        CoordinationEventLoadedData(loaded: BlocsToLoad.Messages, sql: false));
   }
 
   void _onReadMessagesUpdated(Iterable<MessageRecipient> data) async {

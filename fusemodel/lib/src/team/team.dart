@@ -71,6 +71,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
       {bool publicOnly = false}) {
     TeamBuilder builder = TeamBuilder();
     builder.publicOnly = publicOnly;
+    builder.uid = teamUid;
 
     onTeamUpdated(
         builder: builder, teamUid: teamUid, userUid: userUid, data: data);
@@ -104,6 +105,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
       String teamUid,
       String userUid,
       Map<String, dynamic> data}) {
+    builder.uid = teamUid;
     builder.userUid = userUid;
     builder.name = getString(data[NAME]);
     builder.arriveEarlyInternal = getNum(data[ARRIVALTIME]);

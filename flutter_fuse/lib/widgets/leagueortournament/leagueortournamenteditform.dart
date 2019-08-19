@@ -106,129 +106,125 @@ class LeagueOrTournamentEditFormState
         scrollDirection: Axis.vertical,
         controller: _scrollController,
         child: SingleLeagueOrTournamentProvider(
-          leagueOrTournamentUid: widget.leagueOrTournament.uid,
-          builder: (BuildContext context,
-                  SingleLeagueOrTournamentBloc leagueBloc) =>
-              BlocListener(
-                bloc: leagueBloc,
-                listener: (BuildContext context,
-                    SingleLeagueOrTournamentState state) {
-                  if (state is SingleLeagueOrTournamentDeleted) {
-                    Navigator.pop(context);
-                    return;
-                  }
-                  if (state is SingleLeagueOrTournamentLoaded) {
-                    // Tell it to load the seasons.
-                    leagueBloc.dispatch(SingleLeagueOrTournamentLoadSeasons());
-                  }
-                },
-                child: BlocBuilder(
-                  bloc: leagueBloc,
-                  builder: (BuildContext context,
-                      SingleLeagueOrTournamentState state) {
-                    return new Form(
-                      key: _formKey,
-                      autovalidate: autovalidate,
-                      child: new DropdownButtonHideUnderline(
-                        child: new Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            new IconButton(
-                              onPressed: _selectImage,
-                              iconSize: (screenSize.width < 500)
-                                  ? 120.0
-                                  : (screenSize.width / 4) + 12.0,
-                              icon: _buildImage(),
-                            ),
-                            new EnsureVisibleWhenFocused(
-                              focusNode: _focusNodeName,
-                              child: new TextFormField(
-                                decoration: new InputDecoration(
-                                  icon: const Icon(CommunityIcons.textbox),
-                                  hintText: Messages.of(context).league,
-                                ),
-                                keyboardType: TextInputType.text,
-                                focusNode: _focusNodeName,
-                                obscureText: false,
-                                validator: (String str) =>
-                                    _validations.validateName(context, str),
-                                initialValue: widget.leagueOrTournament.name,
-                                onSaved: (String value) {
-                                  builder.name = value;
-                                },
-                              ),
-                            ),
-                            new GenderFormField(
-                              decoration: InputDecoration(
-                                icon: const Icon(
-                                    CommunityIcons.genderTransgender),
-                                hintText:
-                                    Messages.of(context).needtoselectgender,
-                              ),
-                              initialValue: widget.leagueOrTournament.gender,
-                              onSaved: (Gender g) {
-                                builder.gender = g;
-                              },
-                            ),
-                            new SportFormField(
-                              decoration: InputDecoration(
-                                icon: const Icon(CommunityIcons.basketball),
-                              ),
-                              initialValue: widget.leagueOrTournament.sport,
-                              onSaved: (Sport s) {
-                                builder.sport = s;
-                              },
-                            ),
-                            new EnsureVisibleWhenFocused(
-                              focusNode: _focusNodeShortDescription,
-                              child: new TextFormField(
-                                decoration: new InputDecoration(
-                                  icon: const Icon(CommunityIcons.textShort),
-                                  hintText:
-                                      Messages.of(context).shortDescriptionHint,
-                                  labelText:
-                                      Messages.of(context).shortDescription,
-                                ),
-                                keyboardType: TextInputType.text,
-                                focusNode: _focusNodeShortDescription,
-                                obscureText: false,
-                                initialValue:
-                                    widget.leagueOrTournament.shortDescription,
-                                onSaved: (String value) {
-                                  builder.shortDescription = value;
-                                },
-                              ),
-                            ),
-                            new EnsureVisibleWhenFocused(
-                              focusNode: _focusNodeLongDescription,
-                              child: new TextFormField(
-                                decoration: new InputDecoration(
-                                  icon: const Icon(CommunityIcons.text),
-                                  hintText:
-                                      Messages.of(context).longDescriptionHint,
-                                  labelText:
-                                      Messages.of(context).longDescription,
-                                ),
-                                keyboardType: TextInputType.multiline,
-                                focusNode: _focusNodeLongDescription,
-                                obscureText: false,
-                                maxLines: 5,
-                                initialValue:
-                                    widget.leagueOrTournament.longDescription,
-                                onSaved: (String value) {
-                                  builder.longDescription = value;
-                                },
-                              ),
-                            ),
-                          ],
+          leagueUid: widget.leagueOrTournament.uid,
+          builder:
+              (BuildContext context, SingleLeagueOrTournamentBloc leagueBloc) =>
+                  BlocListener(
+            bloc: leagueBloc,
+            listener:
+                (BuildContext context, SingleLeagueOrTournamentState state) {
+              if (state is SingleLeagueOrTournamentDeleted) {
+                Navigator.pop(context);
+                return;
+              }
+              if (state is SingleLeagueOrTournamentLoaded) {
+                // Tell it to load the seasons.
+                leagueBloc.dispatch(SingleLeagueOrTournamentLoadSeasons());
+              }
+            },
+            child: BlocBuilder(
+              bloc: leagueBloc,
+              builder:
+                  (BuildContext context, SingleLeagueOrTournamentState state) {
+                return new Form(
+                  key: _formKey,
+                  autovalidate: autovalidate,
+                  child: new DropdownButtonHideUnderline(
+                    child: new Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        new IconButton(
+                          onPressed: _selectImage,
+                          iconSize: (screenSize.width < 500)
+                              ? 120.0
+                              : (screenSize.width / 4) + 12.0,
+                          icon: _buildImage(),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+                        new EnsureVisibleWhenFocused(
+                          focusNode: _focusNodeName,
+                          child: new TextFormField(
+                            decoration: new InputDecoration(
+                              icon: const Icon(CommunityIcons.textbox),
+                              hintText: Messages.of(context).league,
+                            ),
+                            keyboardType: TextInputType.text,
+                            focusNode: _focusNodeName,
+                            obscureText: false,
+                            validator: (String str) =>
+                                _validations.validateName(context, str),
+                            initialValue: widget.leagueOrTournament.name,
+                            onSaved: (String value) {
+                              builder.name = value;
+                            },
+                          ),
+                        ),
+                        new GenderFormField(
+                          decoration: InputDecoration(
+                            icon: const Icon(CommunityIcons.genderTransgender),
+                            hintText: Messages.of(context).needtoselectgender,
+                          ),
+                          initialValue: widget.leagueOrTournament.gender,
+                          onSaved: (Gender g) {
+                            builder.gender = g;
+                          },
+                        ),
+                        new SportFormField(
+                          decoration: InputDecoration(
+                            icon: const Icon(CommunityIcons.basketball),
+                          ),
+                          initialValue: widget.leagueOrTournament.sport,
+                          onSaved: (Sport s) {
+                            builder.sport = s;
+                          },
+                        ),
+                        new EnsureVisibleWhenFocused(
+                          focusNode: _focusNodeShortDescription,
+                          child: new TextFormField(
+                            decoration: new InputDecoration(
+                              icon: const Icon(CommunityIcons.textShort),
+                              hintText:
+                                  Messages.of(context).shortDescriptionHint,
+                              labelText: Messages.of(context).shortDescription,
+                            ),
+                            keyboardType: TextInputType.text,
+                            focusNode: _focusNodeShortDescription,
+                            obscureText: false,
+                            initialValue:
+                                widget.leagueOrTournament.shortDescription,
+                            onSaved: (String value) {
+                              builder.shortDescription = value;
+                            },
+                          ),
+                        ),
+                        new EnsureVisibleWhenFocused(
+                          focusNode: _focusNodeLongDescription,
+                          child: new TextFormField(
+                            decoration: new InputDecoration(
+                              icon: const Icon(CommunityIcons.text),
+                              hintText:
+                                  Messages.of(context).longDescriptionHint,
+                              labelText: Messages.of(context).longDescription,
+                            ),
+                            keyboardType: TextInputType.multiline,
+                            focusNode: _focusNodeLongDescription,
+                            obscureText: false,
+                            maxLines: 5,
+                            initialValue:
+                                widget.leagueOrTournament.longDescription,
+                            onSaved: (String value) {
+                              builder.longDescription = value;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ),
     );

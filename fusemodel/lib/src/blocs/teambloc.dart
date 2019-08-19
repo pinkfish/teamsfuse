@@ -470,6 +470,8 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
                 key: (t) => t.uid, value: (t) => t)));
       });
       adminTrace.stop();
+      coordinationBloc.dispatch(
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Team, sql: false));
     }
 
     // Unload everything.
@@ -491,7 +493,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     // Update the data based on the loaded players.
     if (event is _TeamPlayersLoaded) {
       // onluy dpo this once we jhabve real data
-
       if (!event.onlySql) {
         if (_playerSeasonSubscriuption.isEmpty) {
           _teamByPlayerTrace =
@@ -502,11 +503,12 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         // For each player grab a snapper.
         for (Player p in event.players) {
           toDelete.remove(p.uid);
+          print('team loading $p');
           if (!_playerSeasonSubscriuption.containsKey(p.uid)) {
             String myUid = p.uid;
-            _playerSeasonSubscriuption[p.uid] = coordinationBloc
+            _playerSeasonSubscriuption[myUid] = coordinationBloc
                 .databaseUpdateModel
-                .getPlayerSeasons(p.uid)
+                .getPlayerSeasons(myUid)
                 .listen((Iterable<Season> seasons) {
               dispatch(
                   _TeamPlayerSeasonUpdates(seasons: seasons, playerUid: myUid));
@@ -524,6 +526,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     }
 
     if (event is _TeamPlayerSeasonUpdates) {
+      print('seasons teams ${event.seasons} ${event.playerUid}');
       if (_playerSeasonSubscriuption.length ==
           playerBloc.currentState.players.length) {
         _teamByPlayerTrace?.stop();
@@ -534,6 +537,8 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
           teamsByPlayer: BuiltMap.from(
               await _onPlayerSeasonUpdated(event.playerUid, event.seasons)),
           onlySql: false);
+      coordinationBloc.dispatch(
+          CoordinationEventLoadedData(loaded: BlocsToLoad.Team, sql: false));
     }
 
     if (event is _TeamBuilderUpdate) {

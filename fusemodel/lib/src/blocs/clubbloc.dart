@@ -105,6 +105,8 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
         _startLoading(state);
       } else if (state is CoordinationStateLoggedOut) {
         dispatch(_ClubEventLogout());
+      } else if (state is CoordinationStateStartLoadingFirestore) {
+        dispatch(_ClubEventLoadFromFirestore(uid: state.uid));
       }
     });
     if (!(coordinationBloc.currentState is CoordinationStateLoggedOut)) {
@@ -137,7 +139,7 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
   ClubState get initialState => ClubUninitialized();
 
   void _onClubsUpdated(Iterable<Club> clubs) {
-    Map<String, Club> newClubs;
+    Map<String, Club> newClubs = {};
 
     for (Club club in clubs) {
       newClubs[club.uid] = club;
@@ -193,9 +195,10 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
 
     if (event is _ClubEventLoadFromFirestore) {
       // Load the clubs first.
-      Stream<Iterable<Club>> clubInitialData =
+      _clubChangeSub?.cancel();
+      Stream<Iterable<Club>> clubData =
           coordinationBloc.databaseUpdateModel.getMainClubs(event.uid);
-      _clubChangeSub = clubInitialData.listen((Iterable<Club> clubs) {
+      _clubChangeSub = clubData.listen((Iterable<Club> clubs) {
         _onClubsUpdated(clubs);
       });
     }
