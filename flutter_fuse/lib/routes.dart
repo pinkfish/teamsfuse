@@ -58,12 +58,13 @@ class Routes {
         persistentData: persistentData,
         analyticsSubsystem: Analytics.instance,
         databaseUpdateModel: databaseUpdateModel);
-    _teamBloc = new TeamBloc(
-        coordinationBloc: _coordinationBloc, playerBloc: _playerBloc);
     _messagesBloc =
         MessagesBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
-    _clubBloc =
-        ClubBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
+    _clubBloc = ClubBloc(coordinationBloc: _coordinationBloc);
+    _teamBloc = new TeamBloc(
+        coordinationBloc: _coordinationBloc,
+        playerBloc: _playerBloc,
+        clubBloc: _clubBloc);
     _leagueOrTournamentBloc =
         LeagueOrTournamentBloc(coordinationBloc: _coordinationBloc);
     _gameBloc =

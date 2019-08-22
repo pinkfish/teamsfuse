@@ -20,6 +20,10 @@ steps:
     args: ['packages', 'get']
 
   - name: 'gcr.io/teamsfuse/flutter'
+    dir: 'fusemodel'
+    args: ['pub', 'run', 'build_runner', 'build']
+
+  - name: 'gcr.io/teamsfuse/flutter'
     dir: 'flutter_fuse'
     args: ['build', 'apk']
 

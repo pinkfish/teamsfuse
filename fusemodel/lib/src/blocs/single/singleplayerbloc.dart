@@ -217,6 +217,7 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
           player: playerBloc.currentState.players[playerUid],
           invites: BuiltList(),
           state: null,
+          mePlayer: playerBloc.currentState.me?.uid == playerUid,
           invitesLoaded: false);
     } else {
       return SinglePlayerDeleted();

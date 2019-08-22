@@ -18,7 +18,9 @@ typedef SingleTeamProviderBuilder = Widget Function(
 class SingleTeamProvider extends SingleBlocProvider<SingleTeamBloc> {
   static SingleTeamBloc _createBloc(BuildContext context, String uid) {
     return SingleTeamBloc(
-        teamBloc: BlocProvider.of<TeamBloc>(context), teamUid: uid);
+        teamBloc: BlocProvider.of<TeamBloc>(context),
+        teamUid: uid,
+        clubBloc: BlocProvider.of<ClubBloc>(context));
   }
 
   SingleTeamProvider({String teamUid, SingleTeamProviderBuilder builder})

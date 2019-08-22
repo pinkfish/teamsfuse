@@ -38,6 +38,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
   String get userUid;
 
   /// If this is not null signifies that this team is a member of a club.
+  @nullable
   String get clubUid;
 
   /// If we can only see public details of this team.
@@ -67,7 +68,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
 
   /// Deserialize the team.
   static TeamBuilder fromJSON(
-      String teamUid, String userUid, Map<String, dynamic> data,
+      String userUid, String teamUid, Map<String, dynamic> data,
       {bool publicOnly = false}) {
     TeamBuilder builder = TeamBuilder();
     builder.publicOnly = publicOnly;

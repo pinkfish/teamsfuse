@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
@@ -182,7 +183,7 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
   Map<String, Game> _filterGames(GameLoaded state, FilterDetails details) {
     Map<String, Game> result = {};
 
-    for (Map<String, Game> teamGames in state.gamesByTeam.values) {
+    for (BuiltMap<String, Game> teamGames in state.gamesByTeam.values) {
       for (Game g in teamGames.values) {
         Team t = teamBloc.currentState.getTeam(g.teamUid);
         if (t != null) {

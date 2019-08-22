@@ -26,7 +26,7 @@ class _BlocProviderState<T extends Bloc<dynamic, dynamic>> {
 }
 
 class _SingleClubProviderState<T extends Bloc<dynamic, dynamic>>
-    extends State<SingleBlocProvider> {
+    extends State<SingleBlocProvider<T>> {
   T _singleBloc;
   bool _newBloc = false;
   static Map<String, _BlocProviderState<dynamic>> blocs = {};
@@ -40,7 +40,7 @@ class _SingleClubProviderState<T extends Bloc<dynamic, dynamic>>
       } catch (_) {}
 
       if (_singleBloc == null) {
-        _singleBloc = widget.creator(context, widget.keyUid) as T;
+        _singleBloc = widget.creator(context, widget.keyUid);
         blocs[widget.keyUid] = _BlocProviderState<T>(_singleBloc);
         _newBloc = true;
       }

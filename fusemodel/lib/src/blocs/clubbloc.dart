@@ -1,30 +1,33 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
-import 'teambloc.dart';
 
 ///
 /// Basic state for all the data in this system.
 ///
 class ClubState extends Equatable {
-  final Map<String, Club> clubs;
+  final BuiltMap<String, Club> clubs;
   final bool onlySql;
+  final BuiltMap<String, Iterable<Team>> teams;
 
-  ClubState({@required this.clubs, @required this.onlySql})
-      : super([clubs, onlySql]);
+  ClubState(
+      {@required this.clubs, @required this.onlySql, @required this.teams})
+      : super([clubs, onlySql, teams]);
 }
 
 ///
 /// No data at all yet.
 ///
 class ClubUninitialized extends ClubState {
-  ClubUninitialized() : super(clubs: {}, onlySql: true);
+  ClubUninitialized()
+      : super(clubs: BuiltMap(), onlySql: true, teams: BuiltMap());
 
   @override
   String toString() {
@@ -36,8 +39,11 @@ class ClubUninitialized extends ClubState {
 /// Doing something.
 ///
 class ClubLoaded extends ClubState {
-  ClubLoaded({@required Map<String, Club> clubs, @required bool onlySql})
-      : super(clubs: clubs, onlySql: onlySql);
+  ClubLoaded(
+      {@required BuiltMap<String, Club> clubs,
+      @required bool onlySql,
+      @required BuiltMap<String, Iterable<Team>> teams})
+      : super(clubs: clubs, onlySql: onlySql, teams: teams);
 
   @override
   String toString() {
@@ -72,9 +78,16 @@ class _ClubEventLoadFromFirestore extends ClubEvent {
 class _ClubEventLogout extends ClubEvent {}
 
 class _ClubEventNewDataLoaded extends ClubEvent {
-  final Map<String, Club> clubs;
+  final BuiltMap<String, Club> clubs;
 
   _ClubEventNewDataLoaded({@required this.clubs});
+}
+
+class _ClubEventNewTeamsLoaded extends ClubEvent {
+  final String clubUid;
+  final Iterable<Team> teams;
+
+  _ClubEventNewTeamsLoaded({@required this.clubUid, @required this.teams});
 }
 
 ///
@@ -93,13 +106,12 @@ class ClubDeleteMember extends ClubEvent {
 ///
 class ClubBloc extends Bloc<ClubEvent, ClubState> {
   final CoordinationBloc coordinationBloc;
-  final TeamBloc teamBloc;
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<Club>> _clubChangeSub;
   Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions = {};
 
-  ClubBloc({@required this.coordinationBloc, @required this.teamBloc}) {
+  ClubBloc({@required this.coordinationBloc}) {
     _coordSub = coordinationBloc.state.listen((CoordinationState state) {
       if (state is CoordinationStateStartLoadingSql) {
         _startLoading(state);
@@ -139,10 +151,11 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
   ClubState get initialState => ClubUninitialized();
 
   void _onClubsUpdated(Iterable<Club> clubs) {
-    Map<String, Club> newClubs = {};
+    MapBuilder<String, Club> newClubs = MapBuilder();
 
     for (Club club in clubs) {
       newClubs[club.uid] = club;
+      String clubUid = club.uid;
       if (!_clubTeamsSubscriptions.containsKey(club.uid)) {
         _clubTeamsSubscriptions[club.uid] = coordinationBloc.databaseUpdateModel
             .getClubTeams(
@@ -151,18 +164,13 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
           // Add in all the teams in the list to the teams list and
           // filter out any that have a club on them that now don't
           // exist.
-          Map<String, Team> clubTeams = {};
-          for (Team t in teams) {
-            clubTeams[t.uid] = t;
-          }
-          teamBloc
-              .dispatch(TeamClubTeams(clubTeams: clubTeams, clubUid: club.uid));
+          dispatch(_ClubEventNewTeamsLoaded(clubUid: clubUid, teams: teams));
         });
       }
       coordinationBloc.persistentData.updateElement(PersistenData.clubsTable,
           club.uid, club.toJson(includeMembers: true));
     }
-    dispatch(_ClubEventNewDataLoaded(clubs: newClubs));
+    dispatch(_ClubEventNewDataLoaded(clubs: newClubs.build()));
   }
 
   @override
@@ -177,7 +185,7 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
       Map<String, Map<String, dynamic>> data = await coordinationBloc
           .persistentData
           .getAllElements(PersistenData.clubsTable);
-      Map<String, Club> newClubs = new Map<String, Club>();
+      MapBuilder<String, Club> newClubs = new MapBuilder<String, Club>();
       data.forEach((String uid, Map<String, dynamic> input) {
         coordinationBloc.sqlTrace.incrementCounter("club");
         Club club = Club.fromJSON(
@@ -188,7 +196,10 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
       print(
           'End clubs ${start.difference(new DateTime.now())} ${newClubs.length}');
       clubTrace.stop();
-      yield ClubLoaded(clubs: newClubs);
+      yield ClubLoaded(
+          clubs: newClubs.build(),
+          onlySql: currentState.onlySql,
+          teams: BuiltMap());
       coordinationBloc.dispatch(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: true));
     }
@@ -205,7 +216,8 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
 
     // New data from above.  Mark ourselves as done.
     if (event is _ClubEventNewDataLoaded) {
-      yield ClubLoaded(clubs: event.clubs, onlySql: false);
+      yield ClubLoaded(
+          clubs: event.clubs, onlySql: false, teams: currentState.teams);
       coordinationBloc.dispatch(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: false));
     }
@@ -224,6 +236,15 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
         await coordinationBloc.databaseUpdateModel.deleteClubMember(
             currentState.clubs[event.clubUid], event.memberUid);
       } catch (e) {}
+    }
+
+    if (event is _ClubEventNewTeamsLoaded) {
+      MapBuilder<String, Iterable<Team>> teams = currentState.teams.toBuilder();
+      teams[event.clubUid] = event.teams;
+      yield ClubLoaded(
+          clubs: currentState.clubs,
+          onlySql: currentState.onlySql,
+          teams: teams.build());
     }
   }
 }

@@ -50,7 +50,7 @@ class SingleTeamLoaded extends SingleTeamState {
       : super(
             team: team ?? state.team,
             invitesAsAdmin: invitesAsAdmin ?? state.invitesAsAdmin,
-            club: club ?? state.club,
+            club: club ?? state?.club,
             fullSeason: fullSeason ?? state.fullSeason,
             opponents: opponents ?? state.opponents);
 
@@ -295,15 +295,16 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
   void _setupClubSub() {
     if (_clubSub == null) {
       if (clubBloc.currentState is ClubLoaded) {
-        if (clubBloc.currentState.clubs
-            .containsKey(currentState.team.clubUid)) {
-          dispatch(_SingleTeamNewClub(
-              club: clubBloc.currentState.clubs[currentState.team.clubUid]));
+        Team t = teamBloc.currentState.getTeam(teamUid);
+        if (clubBloc.currentState.clubs.containsKey(t.clubUid)) {
+          dispatch(
+              _SingleTeamNewClub(club: clubBloc.currentState.clubs[t.clubUid]));
         }
       }
       _clubSub = clubBloc.state.listen((ClubState state) {
-        if (state.clubs.containsKey(currentState.team.clubUid)) {
-          Club club = state.clubs[currentState.team.clubUid];
+        Team t = teamBloc.currentState.getTeam(teamUid);
+        if (state.clubs.containsKey(t.clubUid)) {
+          Club club = state.clubs[t.clubUid];
 
           if (club != currentState.club) {
             dispatch(_SingleTeamNewClub(club: club));
@@ -320,8 +321,11 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
     Team t = teamBloc.currentState.getTeam(teamUid);
     if (t != null) {
       _setupClubSub();
+      Club club = clubBloc.currentState.clubs[t.clubUid];
+
       return SingleTeamLoaded(
           team: t,
+          club: club,
           fullSeason: BuiltList(),
           invitesAsAdmin: BuiltList(),
           opponents: BuiltMap(),

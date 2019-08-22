@@ -34,7 +34,7 @@ class SingleLeagueOrTournamentLoaded extends SingleLeagueOrTournamentState {
       bool loadedSeasons})
       : super(
             leagueOrTournament: leagueOrTournament,
-            leagueOrTournamentSeasons: leagueOrTournamentSeasons ?? {},
+            leagueOrTournamentSeasons: leagueOrTournamentSeasons ?? BuiltMap(),
             loadedSeasons: loadedSeasons ?? false);
 
   @override

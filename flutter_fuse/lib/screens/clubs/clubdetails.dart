@@ -80,7 +80,7 @@ class ClubDetailsScreenState extends State<ClubDetailsScreen> {
               title = state.club.name;
             }
             List<Widget> actions = [];
-            if (state.club.isAdmin()) {
+            if (state?.club?.isAdmin()) {
               actions.add(
                 new PopupMenuButton<String>(
                   onSelected: _select,
