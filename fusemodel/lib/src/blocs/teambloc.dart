@@ -126,6 +126,10 @@ abstract class TeamState extends Equatable {
         return ts[uid];
       }
     }
+    if (publicTeams.containsKey(uid)) {
+      return publicTeams[uid];
+    }
+
     return null;
   }
 
