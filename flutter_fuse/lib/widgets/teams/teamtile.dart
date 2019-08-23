@@ -30,7 +30,7 @@ class TeamTile extends StatelessWidget {
           if (teamState is SingleTeamDeleted) {
             return ListTile(
                 leading: Icon(Icons.delete),
-                title: Text(Messages.of(context).formerror));
+                title: Text(Messages.of(context).teamdeleted));
           }
           WinRecord record;
           String seasonName = "";

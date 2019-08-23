@@ -2058,6 +2058,10 @@ class Messages {
     return Intl.message('About');
   }
 
+  String get teamdeleted {
+    return Intl.message('Team deleted');
+  }
+
   QuoteAndAuthor quoteforsaving(int quoteId) {
     switch (quoteId % 4) {
       case 0:

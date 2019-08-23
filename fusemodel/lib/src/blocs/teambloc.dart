@@ -308,7 +308,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         });
         tBuilder = await first.future;
       }
-      print('Building ${tBuilder.uid} ${tBuilder.name}');
 
       teams[teamUid] = tBuilder;
       coordinationBloc.persistentData.updateElement(
@@ -466,7 +465,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
           coordinationBloc.databaseUpdateModel.getTeamAdmins(event.uid);
       Completer<Iterable<Team>> adminData = Completer();
       _adminTeamSub = initialState.listen((Iterable<Team> data) {
-        print('team admin $data');
         if (!adminData.isCompleted) {
           adminData.complete(data);
         }
@@ -517,7 +515,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         // For each player grab a snapper.
         for (Player p in event.players) {
           toDelete.remove(p.uid);
-          print('team loading $p');
           if (!_playerSeasonSubscriuption.containsKey(p.uid)) {
             String myUid = p.uid;
             _playerSeasonSubscriuption[myUid] = coordinationBloc
@@ -541,7 +538,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     }
 
     if (event is _TeamPlayerSeasonUpdates) {
-      print('seasons teams ${event.teamsByPlayer} ${event.playerUid}');
       if (_playerSeasonSubscriuption.length ==
           playerBloc.currentState.players.length) {
         _teamByPlayerTrace?.stop();

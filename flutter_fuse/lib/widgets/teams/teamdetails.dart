@@ -56,7 +56,7 @@ class TeamDetails extends StatelessWidget {
     // Show all the seasons here, not just the ones we know.
     List<Widget> happyData = <Widget>[];
 
-    Iterable<Season> seasons;
+    Iterable<Season> seasons = team.team.seasons.values;
     if (seasons.length == 0) {
       ret.add(Text(Messages.of(context).noseasons));
     } else {
@@ -166,24 +166,26 @@ class TeamDetails extends StatelessWidget {
                 ),
                 new ListTile(
                   leading: const Icon(Icons.timer),
-                  title: teamState.club == null
-                      ? Text(Messages.of(context).loading)
-                      : Text(
-                          Messages.of(context).arrivebefore(
-                            team.arriveEarly(teamState.club).toInt(),
-                          ),
-                        ),
+                  title:
+                      teamState.club == null && teamState.team.clubUid != null
+                          ? Text(Messages.of(context).loading)
+                          : Text(
+                              Messages.of(context).arrivebefore(
+                                team.arriveEarly(teamState.club).toInt(),
+                              ),
+                            ),
                 ),
                 new ListTile(
                   leading: const Icon(CommunityIcons.trafficLight),
-                  title: teamState.club == null
-                      ? Text(Messages.of(context).loading)
-                      : Text(
-                          Messages.of(context).trackattendence(
-                              team.trackAttendence(teamState.club)
-                                  ? Tristate.Yes
-                                  : Tristate.No),
-                        ),
+                  title:
+                      teamState.club == null && teamState.team.clubUid != null
+                          ? Text(Messages.of(context).loading)
+                          : Text(
+                              Messages.of(context).trackattendence(
+                                  team.trackAttendence(teamState.club)
+                                      ? Tristate.Yes
+                                      : Tristate.No),
+                            ),
                 ),
                 _buildSeasons(
                     context, teamState, teamState.club, teamState.fullSeason)

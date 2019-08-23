@@ -249,6 +249,10 @@ class _SingleTeamNewClub extends SingleTeamEvent {
   _SingleTeamNewClub({@required this.club});
 }
 
+class _SingleTeamNoClub extends SingleTeamEvent {
+  _SingleTeamNoClub();
+}
+
 ///
 /// Bloc to handle updates and state of a specific team.
 ///
@@ -277,6 +281,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
           _setupClubSub();
         }
       } else {
+        print('Deleted team $teamUid');
         dispatch(_SingleTeamDeleted());
       }
     });
@@ -296,21 +301,22 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
     if (_clubSub == null) {
       if (clubBloc.currentState is ClubLoaded) {
         Team t = teamBloc.currentState.getTeam(teamUid);
-        if (clubBloc.currentState.clubs.containsKey(t.clubUid)) {
+        if (t.clubUid != null &&
+            clubBloc.currentState.clubs.containsKey(t.clubUid)) {
           dispatch(
               _SingleTeamNewClub(club: clubBloc.currentState.clubs[t.clubUid]));
         }
       }
       _clubSub = clubBloc.state.listen((ClubState state) {
         Team t = teamBloc.currentState.getTeam(teamUid);
-        if (state.clubs.containsKey(t.clubUid)) {
+        if (t.clubUid != null && state.clubs.containsKey(t.clubUid)) {
           Club club = state.clubs[t.clubUid];
 
           if (club != currentState.club) {
             dispatch(_SingleTeamNewClub(club: club));
           }
         } else {
-          dispatch(_SingleTeamDeleted());
+          dispatch(_SingleTeamNoClub());
         }
       });
     }
@@ -459,6 +465,10 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
 
     if (event is _SingleTeamNewClub) {
       yield SingleTeamLoaded(state: currentState, club: event.club);
+    }
+
+    if (event is _SingleTeamNoClub) {
+      yield SingleTeamLoaded(state: currentState, club: null);
     }
 
     if (event is SingleTeamUpdateClub) {
