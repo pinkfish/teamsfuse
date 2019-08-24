@@ -41,10 +41,10 @@ Future<GamePeriodTime> timerSetupDialog(
 
 class _TimerDetails extends StatefulWidget {
   _TimerDetails(GamePeriodTime periodTime, GlobalKey<_TimerDetailsState> key)
-      : _periodTime = new GamePeriodTime.copy(periodTime),
+      : _periodTime = periodTime.toBuilder(),
         super(key: key);
 
-  final GamePeriodTime _periodTime;
+  final GamePeriodTimeBuilder _periodTime;
   final GlobalKey<FormState> _formState = new GlobalKey<FormState>();
 
   @override
@@ -56,7 +56,7 @@ class _TimerDetails extends StatefulWidget {
 class _TimerDetailsState extends State<_TimerDetails> {
   GamePeriodTime save() {
     widget._formState.currentState.save();
-    return widget._periodTime;
+    return widget._periodTime.build();
   }
 
   @override

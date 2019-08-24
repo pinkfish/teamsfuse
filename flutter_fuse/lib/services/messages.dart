@@ -1160,7 +1160,7 @@ class Messages {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = GameResultPerPeriod((b) => b
-        ..period = GamePeriod.regulation
+        ..period = GamePeriod.regulation.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
           ..ptsAgainst = 0));
@@ -1200,7 +1200,7 @@ class Messages {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = GameResultPerPeriod((b) => b
-        ..period = GamePeriod.regulation
+        ..period = GamePeriod.regulation.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
           ..ptsAgainst = 0));
@@ -1240,7 +1240,7 @@ class Messages {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = GameResultPerPeriod((b) => b
-        ..period = GamePeriod.regulation
+        ..period = GamePeriod.regulation.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
           ..ptsAgainst = 0));
@@ -1282,7 +1282,7 @@ class Messages {
       finalScore = result.regulationResult;
     } else {
       finalScore = GameResultPerPeriod((b) => b
-        ..period = GamePeriod.regulation
+        ..period = GamePeriod.regulation.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
           ..ptsAgainst = 0));
@@ -1386,7 +1386,7 @@ class Messages {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = GameResultPerPeriod((b) => b
-        ..period = GamePeriod.regulation
+        ..period = GamePeriod.regulation.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
           ..ptsAgainst = 0));

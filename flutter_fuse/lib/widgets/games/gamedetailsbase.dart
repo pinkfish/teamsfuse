@@ -12,7 +12,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
 import '../blocs/singleteamprovider.dart';
-import 'teamresultsstreamfuture.dart';
+import 'teamresults.dart';
 
 typedef void GameCallback(Game game);
 typedef void GameOfficialResult(
@@ -426,7 +426,7 @@ class GameDetailsBase extends StatelessWidget {
           initiallyExpanded: false,
           leading: const Icon(Icons.people),
           children: <Widget>[
-            new TeamResultsStreamFuture(
+            new TeamResultsBySeason(
               teamUid: teamState.team.uid,
               seasonUid: season.uid,
               opponentUid: game.opponentUids[0],
@@ -457,9 +457,9 @@ class GameDetailsBase extends StatelessWidget {
               ),
             );
             cols.add(
-              new TeamResultsStreamFuture(
+              new TeamResultsBySeason(
                 teamUid: teamState.team.uid,
-                seasonUid: season.uid,
+                seasonUid: otherSeason.uid,
                 opponentUid: game.opponentUids[0],
               ),
             );

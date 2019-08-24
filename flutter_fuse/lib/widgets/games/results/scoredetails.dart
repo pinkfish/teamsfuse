@@ -51,9 +51,9 @@ class _ScoreDetailsState extends State<ScoreDetails> {
           .scores[widget.game.currentState.game.result.currentPeriod]
           .toBuilder();
     }
-    GamePeriod periodZero = new GamePeriod(
-        widget.game.currentState.game.result.currentPeriod.type,
-        periodNumber: 0);
+    GamePeriod periodZero = new GamePeriod((b) => b
+      ..type = widget.game.currentState.game.result.currentPeriod.type
+      ..periodNumber = 0);
     if (_currentPeriodResults == null) {
       _currentPeriodResults =
           widget.game.currentState.game.result.scores[periodZero].toBuilder();
@@ -63,7 +63,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         ..ptsAgainst = 0
         ..ptsFor = 0;
       _currentPeriodResults = new GameResultPerPeriodBuilder()
-        ..period = periodZero
+        ..period = periodZero.toBuilder()
         ..score = gameScoreBuilder;
 
       _details.scores[periodZero] = _currentPeriodResults.build();
@@ -76,17 +76,19 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     _ptsFor = _currentPeriodResults.score.ptsFor;
     _ptsAgainst = _currentPeriodResults.score.ptsAgainst;
     // Setup the stop watch/
-    stopwatch.resetTo(_details.time.currentStopwatch().inMilliseconds);
-    print("${_details.time.currentOffset} ${_details.time.currentPeriodStart}");
-    if (_details.time.currentPeriodStart != null) {
+    stopwatch.resetTo(_details.time.build().currentStopwatch().inMilliseconds);
+    print(
+        "${_details.time.currentOffsetInternal} ${_details.time.currentPeriodStartInternal}");
+    if (_details.time.currentPeriodStartInternal != null) {
       stopwatch.start();
     }
   }
 
   void _updateGame(Game game) {
     // Change scores and timers.
-    GamePeriod period =
-        new GamePeriod(game.result.currentPeriod.type, periodNumber: 0);
+    GamePeriod period = new GamePeriod((b) => b
+      ..type = game.result.currentPeriod.type
+      ..periodNumber = 0);
     if (game.result.scores.containsKey(period)) {
       _ptsForState.currentState
           .animateInt(game.result.scores[period].score.ptsFor.toInt());
@@ -95,16 +97,17 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     }
 
     // If the period changed, update stuff.
-    if (!game.result.currentPeriod.isEqualTo(_details.currentPeriod)) {
+    if (game.result.currentPeriod != _details.currentPeriod.build()) {
       _periodChanged(game.result.currentPeriod);
     }
 
     setState(() {
       print("$period ${game.result.scores}");
       if (game.result.scores.containsKey(period)) {
-        _currentPeriodResults.period = game.result.scores[period].period;
+        _currentPeriodResults.period =
+            game.result.scores[period].period.toBuilder();
       }
-      _details.currentPeriod = game.result.currentPeriod;
+      _details.currentPeriod = game.result.currentPeriod.toBuilder();
     });
   }
 
@@ -112,30 +115,31 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     if (newPeriod.type != _currentPeriodResults.period.type) {
       _setPeriodType(newPeriod);
     }
-    _currentPeriodResults.period = newPeriod;
-    _details.currentPeriod = newPeriod;
+    _currentPeriodResults.period = newPeriod.toBuilder();
+    _details.currentPeriod = newPeriod.toBuilder();
     _writeLog(GameLogType.PeriodStart);
     widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
   }
 
   void _setPeriodType(GamePeriod newPeriod) {
-    GamePeriod scoreUpdate =
-        new GamePeriod(_currentPeriodResults.period.type, periodNumber: 0);
-    _details.scores[scoreUpdate] = _currentPeriodResults.build();
+    GamePeriodBuilder scoreUpdate = GamePeriodBuilder()
+      ..type = _currentPeriodResults.period.type
+      ..periodNumber = 0;
+    _details.scores[scoreUpdate.build()] = _currentPeriodResults.build();
     // Create a new score type.
-    GamePeriod newScoreUpdate = new GamePeriod(newPeriod.type, periodNumber: 0);
+    GamePeriodBuilder newScoreUpdate = newPeriod.toBuilder()..periodNumber = 0;
     if (!_details.scores.build().containsKey(newScoreUpdate)) {
       var builder = GameScoreBuilder()
         ..ptsFor = 0
         ..ptsAgainst = 0;
-      _details.scores[newScoreUpdate] = (GameResultPerPeriodBuilder()
+      _details.scores[newScoreUpdate.build()] = (GameResultPerPeriodBuilder()
             ..period = newScoreUpdate
             ..score = builder)
           .build();
     }
     setState(() {
       _currentPeriodResults = _details.scores[newScoreUpdate].toBuilder();
-      _currentPeriodResults.period = newPeriod;
+      _currentPeriodResults.period = newPeriod.toBuilder();
     });
   }
 
@@ -152,7 +156,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       if (_ptsFor != null) {
         _currentPeriodResults.score.ptsFor = _ptsFor;
       }
-      _details.scores[_currentPeriodResults.period] =
+      _details.scores[_currentPeriodResults.period.build()] =
           _currentPeriodResults.build();
       print("Update score $_currentPeriodResults $_details");
       //widget.game.updateFirestoreResult(_details);
@@ -209,9 +213,9 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         if (_ptsFor != null) {
           _currentPeriodResults.score.ptsFor = _ptsFor;
         }
-        _currentPeriodResults.period =
-            new GamePeriod(GamePeriodType.Regulation);
-        _details.scores[_currentPeriodResults.period] =
+        _currentPeriodResults.period = new GamePeriodBuilder()
+          ..type = GamePeriodType.Regulation;
+        _details.scores[_currentPeriodResults.period.build()] =
             _currentPeriodResults.build();
         _details.inProgress = GameInProgress.Final;
         _details.result = gameResult;
@@ -260,10 +264,11 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       setState(() {
         _details.divisions = ret;
         _details.inProgress = GameInProgress.InProgress;
-        _details.time.currentPeriodStart = null;
-        _details.time.currentOffset = new Duration();
-        _details.currentPeriod =
-            new GamePeriod(GamePeriodType.Regulation, periodNumber: 1);
+        _details.time.currentPeriodStartInternal = null;
+        _details.time.currentOffsetInternal = 0;
+        _details.currentPeriod = new GamePeriodBuilder()
+          ..type = GamePeriodType.Regulation
+          ..periodNumber = 1;
         _writeLog(GameLogType.PeriodStart);
         widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
       });
@@ -302,10 +307,11 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         _details.divisions = GameDivisionsType.Halves;
         _details.inProgress = GameInProgress.InProgress;
         // Timer not running.
-        _details.time.currentPeriodStart = null;
-        _details.time.currentOffset = new Duration();
-        _details.currentPeriod =
-            new GamePeriod(GamePeriodType.Regulation, periodNumber: 1);
+        _details.time.currentPeriodStartInternal = null;
+        _details.time.currentOffsetInternal = 0;
+        _details.currentPeriod = new GamePeriodBuilder()
+          ..type = GamePeriodType.Regulation
+          ..periodNumber = 1;
         _writeLog(GameLogType.PeriodStart);
         widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
       });
@@ -331,14 +337,15 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     if (stopwatch.isRunning) {
       stopwatch.stop();
       setState(() {
-        _details.time.currentOffset = stopwatch.elapsed;
-        _details.time.currentPeriodStart = null;
+        _details.time.currentOffsetInternal = stopwatch.elapsed.inMilliseconds;
+        _details.time.currentPeriodStartInternal = null;
       });
     } else {
       // Initialize with the duration out of the detail first.
       stopwatch.start();
       setState(() {
-        _details.time.currentPeriodStart = new TZDateTime.now(local);
+        _details.time.currentPeriodStartInternal =
+            new TZDateTime.now(local).millisecondsSinceEpoch;
       });
     }
     print("Update result $_details");
@@ -374,12 +381,13 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       stopwatch.reset();
       if (stopwatch.isRunning) {
         setState(() {
-          _details.time.currentPeriodStart = new DateTime.now();
-          _details.time.currentOffset = new Duration(milliseconds: 0);
+          _details.time.currentPeriodStartInternal =
+              new DateTime.now().millisecondsSinceEpoch;
+          _details.time.currentOffsetInternal = 0;
         });
       } else {
         setState(() {
-          _details.time.currentOffset = new Duration(milliseconds: 0);
+          _details.time.currentOffsetInternal = 0;
         });
       }
       widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
@@ -390,7 +398,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     GamePeriodTime time = await timerSetupDialog(context, _details.build());
     if (time != null) {
       setState(() {
-        _details.time = time;
+        _details.time = time.toBuilder();
       });
 
       widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
@@ -512,7 +520,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     } else {
       List<Widget> children = <Widget>[
         new PeriodSelector(
-          currentPeriod: _details.currentPeriod,
+          currentPeriod: _details.currentPeriod.build(),
           divisionsType: _details.divisions,
           team: widget.team,
           onChanged: _periodChanged,

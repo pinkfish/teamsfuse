@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/games/teamresultsstreamfuture.dart';
+import 'package:flutter_fuse/widgets/games/teamresults.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/gendericon.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
@@ -31,7 +31,7 @@ class TeamDetails extends StatelessWidget {
             season.record.tie.toString(),
       ),
       children: <Widget>[
-        new TeamResultsStreamFuture(
+        new TeamResultsBySeason(
           teamUid: team.uid,
           seasonUid: season.uid,
         ),

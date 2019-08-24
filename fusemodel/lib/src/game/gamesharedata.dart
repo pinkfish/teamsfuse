@@ -65,7 +65,13 @@ abstract class GameSharedData
   EventType get type;
   GamePlace get place;
   GameOfficialResults get officialResults;
+
+  /// The league associated with this game, null if there is none.
+  @nullable
   String get leagueUid;
+
+  /// The divison in the league assocoiated with this game, null if there is none.
+  @nullable
   String get leagueDivisionUid;
 
   GameSharedData._();
@@ -113,7 +119,6 @@ abstract class GameSharedData
     return data;
   }
 
-
   Location get location {
     return getLocation(this.timezone);
   }
@@ -131,6 +136,4 @@ abstract class GameSharedData
   static const String _TIMEZONE = 'timezone';
   static const String _LEAGUEUID = 'leagueUid';
   static const String LEAGUEDIVISIONUID = 'leagueDivisonUid';
-
-
 }

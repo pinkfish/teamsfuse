@@ -33,7 +33,7 @@ abstract class GameLog implements Built<GameLog, GameLogBuilder> {
       ..message = getString(data[_MESSAGE])
       ..eventTimeInternal = getNum(data[_EVENT_TIME])
       ..displayName = getString(data[NAME])
-      ..period = newPeriod
+      ..period = newPeriod.toBuilder()
       ..score = data.containsKey(GameScore.PTS_FOR)
           ? GameScore.fromJSON(data)
           : scoreBuilder;

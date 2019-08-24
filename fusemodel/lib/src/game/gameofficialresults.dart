@@ -20,9 +20,11 @@ abstract class GameOfficialResults
   BuiltMap<GamePeriod, GameResultPerPeriod> get scores;
 
   /// The team uid, this pointed to a leagueortourneamentteam data.
+  @nullable
   String get homeTeamLeagueUid;
 
   /// The team uid, this pointed to a leagueortourneamentteam data.
+  @nullable
   String get awayTeamLeagueUid;
 
   OfficialResult get result;

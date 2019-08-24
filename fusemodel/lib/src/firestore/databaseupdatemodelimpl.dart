@@ -1028,8 +1028,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<GameSnapshotEvent> getSeasonGames(Season season) {
-    Set<String> teams = new Set<String>();
-    teams.add(season.teamUid);
     return getBasicGames(teamUid: season.teamUid, seasonUid: season.uid);
   }
 

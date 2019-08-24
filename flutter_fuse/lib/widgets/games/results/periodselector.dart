@@ -23,7 +23,9 @@ class PeriodTypeSelector extends StatelessWidget {
         periodNumber = 1;
         break;
     }
-    GamePeriod period = new GamePeriod(type, periodNumber: periodNumber);
+    GamePeriod period = new GamePeriod((b) => b
+      ..type = type
+      ..periodNumber = periodNumber);
     onChanged(period);
   }
 
@@ -105,11 +107,13 @@ class PeriodNumberSelector extends StatelessWidget {
   void _setPeriodNumber(int periodNumber) {
     GamePeriod period;
     if (currentPeriod.type == GamePeriodType.OvertimeBreak) {
-      period = new GamePeriod(
-          GamePeriodType.Overtime, periodNumber: periodNumber);
+      period = new GamePeriod((b) => b
+        ..type = GamePeriodType.Overtime
+        ..periodNumber = periodNumber);
     } else {
-      period = new GamePeriod(
-          GamePeriodType.Regulation, periodNumber: periodNumber);
+      period = new GamePeriod((b) => b
+        ..type = GamePeriodType.Regulation
+        ..periodNumber = periodNumber);
     }
     onChanged(period);
   }
@@ -118,12 +122,13 @@ class PeriodNumberSelector extends StatelessWidget {
     GamePeriod period;
 
     if (currentPeriod.type == GamePeriodType.Overtime) {
-      period = new GamePeriod(
-          GamePeriodType.OvertimeBreak,
-          periodNumber: currentPeriod.periodNumber);
+      period = new GamePeriod((b) => b
+        ..type = GamePeriodType.OvertimeBreak
+        ..periodNumber = currentPeriod.periodNumber);
     } else {
-      period = new GamePeriod(
-          GamePeriodType.Break, periodNumber: currentPeriod.periodNumber);
+      period = new GamePeriod((b) => b
+        ..type = GamePeriodType.Break
+        ..periodNumber = currentPeriod.periodNumber);
     }
     onChanged(period);
   }
@@ -310,7 +315,9 @@ class PeriodSelector extends StatelessWidget {
         periodNumber = 1;
         break;
     }
-    GamePeriod period = new GamePeriod(type, periodNumber: periodNumber);
+    GamePeriod period = new GamePeriod((b) => b
+      ..type = type
+      ..periodNumber = periodNumber);
     onChanged(period);
   }
 
@@ -320,11 +327,14 @@ class PeriodSelector extends StatelessWidget {
     }
     GamePeriod period;
     if (currentPeriod.type == GamePeriodType.OvertimeBreak) {
-      period = new GamePeriod(
-          GamePeriodType.Overtime, periodNumber: periodNumber);
+      period = new GamePeriod((b) => b
+        ..type = GamePeriodType.Overtime
+        ..periodNumber = periodNumber);
     } else {
-      period = new GamePeriod(
-          GamePeriodType.Regulation, periodNumber: periodNumber);
+      period = new GamePeriod((b) => b
+        ..type = GamePeriodType.Regulation
+        ..periodNumber
+        ..periodNumber);
     }
     onChanged(period);
   }
@@ -333,11 +343,13 @@ class PeriodSelector extends StatelessWidget {
     GamePeriod period;
 
     if (currentPeriod.type == GamePeriodType.Overtime) {
-      period = new GamePeriod(
-          GamePeriodType.OvertimeBreak, periodNumber: periodNumber);
+      period = new GamePeriod((b) => b
+        ..type = GamePeriodType.OvertimeBreak
+        ..periodNumber = periodNumber);
     } else {
-      period = new GamePeriod(
-          GamePeriodType.Break, periodNumber: periodNumber);
+      period = new GamePeriod((b) => b
+        ..type = GamePeriodType.Break
+        ..periodNumber = periodNumber);
     }
     onChanged(period);
   }

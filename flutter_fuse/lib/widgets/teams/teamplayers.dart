@@ -77,7 +77,7 @@ class TeamPlayersState extends State<TeamPlayers> {
   }
 
   List<Widget> _buildPlayers(
-      SingleTeamSeaonState state, SingleTeamState teamState) {
+      SingleTeamSeasonState state, SingleTeamState teamState) {
     List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
 
@@ -208,7 +208,7 @@ class TeamPlayersState extends State<TeamPlayers> {
                             BlocBuilder(
                           bloc: seasonBloc,
                           builder: (BuildContext context,
-                              SingleTeamSeaonState seasonState) {
+                              SingleTeamSeasonState seasonState) {
                             return Column(
                                 children: _buildPlayers(seasonState, state));
                           },

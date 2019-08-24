@@ -1,10 +1,11 @@
+import 'package:built_collection/built_collection.dart';
+
 import 'gameofficialresults.dart';
 import 'gameperiod.dart';
 import 'gameresult.dart';
 import 'gameresultshareddetails.dart';
 import 'gamescore.dart';
 import 'gamesharedata.dart';
-import 'package:built_collection/built_collection.dart';
 
 ///
 /// This class converts from the offical results on a game
@@ -93,7 +94,7 @@ class GameFromOfficial extends GameResultSharedDetails {
     return GameResultPerPeriod(
       (b) => b
         ..score = scoreBuilder
-        ..period = scores.period,
+        ..period = scores.period.toBuilder(),
     );
   }
 

@@ -24,7 +24,7 @@ abstract class GameResultPerPeriod
   static GameResultPerPeriodBuilder fromJSON(
       GamePeriod period, Map<dynamic, dynamic> data) {
     return GameResultPerPeriodBuilder()
-      ..period = period
+      ..period = period.toBuilder()
       ..score = GameScore.fromJSON(data);
   }
 
@@ -92,16 +92,16 @@ abstract class GameResultDetails
       builder.result = GameResult.Unknown;
     }
     if (data[_PERIOD] is String) {
-      builder.currentPeriod = GamePeriod.fromIndex(data[_PERIOD]);
+      builder.currentPeriod = GamePeriod.fromIndex(data[_PERIOD]).toBuilder();
     }
     if (data.containsKey(_DIVISIONS) && data[_DIVISIONS] != null) {
       builder.divisions = GameDivisionsType.values
           .firstWhere((e) => e.toString() == data[_DIVISIONS]);
     }
     if (data.containsKey(_TIME_DETAILS)) {
-      builder.time.fromJSON(data[_TIME_DETAILS]);
+      builder.time = GamePeriodTime.fromJSON(data[_TIME_DETAILS]);
     } else {
-      builder.time.fromJSON({});
+      builder.time = GamePeriodTimeBuilder()..timeCountUp = false;
     }
     return builder;
   }

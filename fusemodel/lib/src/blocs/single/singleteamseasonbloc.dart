@@ -11,34 +11,57 @@ import '../teambloc.dart';
 ///
 /// The basic state for all the bits of the single team bloc.
 ///
-abstract class SingleTeamSeaonState extends Equatable {
+abstract class SingleTeamSeasonState extends Equatable {
   final Season season;
   final BuiltList<InviteToTeam> invites;
+  final BuiltList<Game> games;
+  final bool loadedInvites;
+  final bool loadedGames;
 
-  SingleTeamSeaonState({@required this.season, @required this.invites})
-      : super([season, invites]);
+  SingleTeamSeasonState(
+      {@required this.season,
+      @required this.invites,
+      this.games,
+      this.loadedGames,
+      this.loadedInvites})
+      : super([season, invites, games, loadedGames, loadedInvites]);
 }
 
 ///
 /// We have a team, default state.
 ///
-class SingleTeamSeasonLoaded extends SingleTeamSeaonState {
+class SingleTeamSeasonLoaded extends SingleTeamSeasonState {
   SingleTeamSeasonLoaded(
-      {@required Season season, @required BuiltList<InviteToTeam> invites})
-      : super(season: season, invites: invites);
+      {@required SingleTeamSeasonState state,
+      @required Season season,
+      @required BuiltList<InviteToTeam> invites,
+      @required BuiltList<Game> games,
+      bool loadedInvites,
+      bool loadedGames})
+      : super(
+            season: season ?? state.season,
+            invites: invites ?? state.invites,
+            games: games ?? state.games,
+            loadedInvites: loadedInvites ?? false,
+            loadedGames: loadedGames ?? false);
 
   @override
   String toString() {
-    return 'SingleTeamSeasonLoaded{season: $season}';
+    return 'SingleTeamSeasonLoaded{season: $season, games: $games, loadedGames: $loadedGames, loadedInvites: $loadedInvites}';
   }
 }
 
 ///
 /// Saving operation in progress.
 ///
-class SingleTeamSeasonSaving extends SingleTeamSeaonState {
-  SingleTeamSeasonSaving({@required SingleTeamSeaonState state})
-      : super(season: state.season, invites: state.invites);
+class SingleTeamSeasonSaving extends SingleTeamSeasonState {
+  SingleTeamSeasonSaving({@required SingleTeamSeasonState state})
+      : super(
+            season: state.season,
+            invites: state.invites,
+            loadedGames: state.loadedGames,
+            loadedInvites: state.loadedInvites,
+            games: state.games);
 
   @override
   String toString() {
@@ -49,11 +72,17 @@ class SingleTeamSeasonSaving extends SingleTeamSeaonState {
 ///
 /// Saving operation failed (goes back to loaded for success).
 ///
-class SingleTeamSeasonSaveFailed extends SingleTeamSeaonState {
+class SingleTeamSeasonSaveFailed extends SingleTeamSeasonState {
   final Error error;
 
-  SingleTeamSeasonSaveFailed({@required SingleTeamSeaonState state, this.error})
-      : super(season: state.season, invites: state.invites);
+  SingleTeamSeasonSaveFailed(
+      {@required SingleTeamSeasonState state, this.error})
+      : super(
+            season: state.season,
+            invites: state.invites,
+            loadedInvites: state.loadedInvites,
+            loadedGames: state.loadedGames,
+            games: state.games);
 
   @override
   String toString() {
@@ -64,8 +93,14 @@ class SingleTeamSeasonSaveFailed extends SingleTeamSeaonState {
 ///
 /// Team got deleted.
 ///
-class SingleTeamSeasonDeleted extends SingleTeamSeaonState {
-  SingleTeamSeasonDeleted() : super(season: null, invites: BuiltList());
+class SingleTeamSeasonDeleted extends SingleTeamSeasonState {
+  SingleTeamSeasonDeleted()
+      : super(
+            season: null,
+            invites: BuiltList(),
+            games: BuiltList(),
+            loadedGames: false,
+            loadedInvites: false);
 
   @override
   String toString() {
@@ -87,7 +122,12 @@ class SingleTeamSeasonUpdate extends SingleTeamSeasonEvent {
 ///
 /// Loads all the invites for this season.
 ///
-class SingleTeamLoadSeasonInvites extends SingleTeamSeasonEvent {}
+class SingleTeamSeasonLoadInvites extends SingleTeamSeasonEvent {}
+
+///
+/// Loads all the games for this season.
+///
+class SingleTeamSeasonLoadGames extends SingleTeamSeasonEvent {}
 
 class _SingleTeamNewTeamSeason extends SingleTeamSeasonEvent {
   final Season newSeason;
@@ -105,17 +145,24 @@ class _SingleTeamSeasonLoadedInvites extends SingleTeamSeasonEvent {
   _SingleTeamSeasonLoadedInvites({this.invites});
 }
 
+class _SingleTeamSeasonLoadedGames extends SingleTeamSeasonEvent {
+  final BuiltList<Game> games;
+
+  _SingleTeamSeasonLoadedGames({@required this.games});
+}
+
 ///
 /// Bloc to handle updates and state of a specific team.
 ///
 class SingleTeamSeasonBloc
-    extends Bloc<SingleTeamSeasonEvent, SingleTeamSeaonState> {
+    extends Bloc<SingleTeamSeasonEvent, SingleTeamSeasonState> {
   final TeamBloc teamBloc;
   final String teamUid;
   final String seasonUid;
 
   StreamSubscription<TeamState> _teamSub;
   StreamSubscription<Iterable<InviteToTeam>> _inviteSub;
+  StreamSubscription<GameSnapshotEvent> _gameSub;
 
   SingleTeamSeasonBloc({this.teamBloc, this.teamUid, this.seasonUid}) {
     _teamSub = teamBloc.state.listen((TeamState state) {
@@ -140,23 +187,32 @@ class SingleTeamSeasonBloc
     _teamSub = null;
     _inviteSub?.cancel();
     _inviteSub = null;
+    _gameSub?.cancel();
+    _gameSub = null;
   }
 
   @override
-  SingleTeamSeaonState get initialState {
+  SingleTeamSeasonState get initialState {
+    print('Creating SingleTeamSeasonState');
     Team t = teamBloc.currentState.getTeam(teamUid);
     if (t != null && t.seasons.containsKey(seasonUid)) {
-      return SingleTeamSeasonLoaded(season: t.seasons[seasonUid]);
+      return SingleTeamSeasonLoaded(
+          season: t.seasons[seasonUid],
+          loadedGames: false,
+          loadedInvites: false,
+          games: BuiltList(),
+          invites: BuiltList());
     } else {
       return SingleTeamSeasonDeleted();
     }
   }
 
   @override
-  Stream<SingleTeamSeaonState> mapEventToState(
+  Stream<SingleTeamSeasonState> mapEventToState(
       SingleTeamSeasonEvent event) async* {
     if (event is _SingleTeamNewTeamSeason) {
-      yield SingleTeamSeasonLoaded(season: event.newSeason);
+      yield SingleTeamSeasonLoaded(
+          season: event.newSeason, state: currentState);
     }
 
     // The team is deleted.
@@ -170,13 +226,14 @@ class SingleTeamSeasonBloc
       try {
         await teamBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreSeason(event.season.build(), false);
-        yield SingleTeamSeasonLoaded(season: event.season.build());
+        yield SingleTeamSeasonLoaded(
+            season: event.season.build(), state: currentState);
       } catch (e) {
         yield SingleTeamSeasonSaveFailed(state: currentState, error: e);
       }
     }
 
-    if (event is SingleTeamLoadSeasonInvites) {
+    if (event is SingleTeamSeasonLoadInvites) {
       if (_inviteSub == null) {
         _inviteSub = teamBloc.coordinationBloc.databaseUpdateModel
             .getInviteForSeasonStream(
@@ -190,9 +247,28 @@ class SingleTeamSeasonBloc
       }
     }
 
+    if (event is SingleTeamSeasonLoadGames) {
+      print('Loading games');
+      if (_gameSub == null) {
+        _gameSub = teamBloc.coordinationBloc.databaseUpdateModel
+            .getSeasonGames(currentState.season)
+            .listen((GameSnapshotEvent games) {
+          dispatch(_SingleTeamSeasonLoadedGames(games: games.newGames));
+        });
+      }
+    }
+
+    if (event is _SingleTeamSeasonLoadedGames) {
+      print('Loaded games ${event.games}');
+      yield SingleTeamSeasonLoaded(
+          state: currentState, games: event.games, loadedGames: true);
+    }
+
     if (event is _SingleTeamSeasonLoadedInvites) {
       yield SingleTeamSeasonLoaded(
-          season: currentState.season, invites: BuiltList.from(event.invites));
+          invites: BuiltList.from(event.invites),
+          state: currentState,
+          loadedInvites: true);
     }
   }
 }
