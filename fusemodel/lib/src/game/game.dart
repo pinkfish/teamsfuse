@@ -29,6 +29,7 @@ abstract class Game implements Built<Game, GameBuilder> {
   BuiltMap<String, Attendance> get attendance;
   bool get trackAttendance;
   GameSharedData get sharedData;
+  @nullable
   String get leagueOpponentUid;
 
   Game._();
@@ -76,6 +77,7 @@ abstract class Game implements Built<Game, GameBuilder> {
         }
       }
     }
+    return builder;
   }
 
   bool get homegame => sharedData.officialResults.homeTeamLeagueUid == teamUid;

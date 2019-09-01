@@ -47,7 +47,7 @@ class SingleTeamSeasonLoaded extends SingleTeamSeasonState {
 
   @override
   String toString() {
-    return 'SingleTeamSeasonLoaded{season: $season, games: $games, loadedGames: $loadedGames, loadedInvites: $loadedInvites}';
+    return 'SingleTeamSeasonLoaded{season: ${season.name}, team: ${season.teamUid}, games: ${games.length}, invites: ${invites.length}, loadedGames: $loadedGames, loadedInvites: $loadedInvites}';
   }
 }
 
@@ -193,7 +193,6 @@ class SingleTeamSeasonBloc
 
   @override
   SingleTeamSeasonState get initialState {
-    print('Creating SingleTeamSeasonState');
     Team t = teamBloc.currentState.getTeam(teamUid);
     if (t != null && t.seasons.containsKey(seasonUid)) {
       return SingleTeamSeasonLoaded(
@@ -253,13 +252,20 @@ class SingleTeamSeasonBloc
         _gameSub = teamBloc.coordinationBloc.databaseUpdateModel
             .getSeasonGames(currentState.season)
             .listen((GameSnapshotEvent games) {
-          dispatch(_SingleTeamSeasonLoadedGames(games: games.newGames));
+          switch (games.type) {
+            case GameSnapshotEventType.SharedGameUpdate:
+              break;
+            case GameSnapshotEventType.GameList:
+              dispatch(_SingleTeamSeasonLoadedGames(
+                  games: BuiltList.of(games.newGames)));
+              break;
+          }
         });
       }
     }
 
     if (event is _SingleTeamSeasonLoadedGames) {
-      print('Loaded games ${event.games}');
+      print('Loaded games');
       yield SingleTeamSeasonLoaded(
           state: currentState, games: event.games, loadedGames: true);
     }

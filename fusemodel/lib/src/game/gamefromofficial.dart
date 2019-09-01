@@ -90,7 +90,8 @@ class GameFromOfficial extends GameResultSharedDetails {
     }
     GameScoreBuilder scoreBuilder = GameScoreBuilder()
       ..ptsAgainst = scores.score.ptsFor
-      ..ptsFor = scores.score.ptsAgainst;
+      ..ptsFor = scores.score.ptsAgainst
+      ..intermediate = scores.score.intermediate;
     return GameResultPerPeriod(
       (b) => b
         ..score = scoreBuilder

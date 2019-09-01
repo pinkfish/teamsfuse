@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
@@ -9,12 +10,20 @@ import '../gamesbloc.dart';
 
 abstract class SingleGameState extends Equatable {
   final Game game;
-  final Iterable<GameLog> gameLog;
+  final BuiltList<GameLog> gameLog;
   final bool loadedLogs;
 
   SingleGameState(
       {@required this.game, @required this.gameLog, @required this.loadedLogs})
       : super([game, gameLog, loadedLogs]);
+}
+
+///
+/// Game in the process of being loaded.
+///
+class SingleGameLoading extends SingleGameState {
+  SingleGameLoading()
+      : super(game: null, gameLog: BuiltList(), loadedLogs: false);
 }
 
 ///
@@ -97,7 +106,8 @@ class SingleGameSaveDone extends SingleGameState {
 /// Game got deleted.
 ///
 class SingleGameDeleted extends SingleGameState {
-  SingleGameDeleted.empty() : super(game: null, gameLog: [], loadedLogs: false);
+  SingleGameDeleted.empty()
+      : super(game: null, gameLog: BuiltList(), loadedLogs: false);
 
   @override
   String toString() {
@@ -196,18 +206,16 @@ class _SingleGameNewLogs extends SingleGameEvent {
 /// Bloc to handle updates and state of a specific game.
 ///
 class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
+  final String gameUid;
   final GameBloc gameBloc;
-  String _gameUid;
 
   static String createNew = "new";
 
-  String get gameUid => _gameUid;
-
   StreamSubscription<GameState> _gameSub;
   StreamSubscription<Iterable<GameLog>> _gameLogSub;
+  StreamSubscription<Game> _singleGameSub;
 
-  SingleGameBloc({@required this.gameBloc, @required String gameUid}) {
-    _gameUid = gameUid;
+  SingleGameBloc({@required this.gameBloc, @required this.gameUid}) {
     _gameSub = gameBloc.state.listen((GameState state) {
       Game game = state.getGame(gameUid);
       if (game != null) {
@@ -215,8 +223,6 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
         if (game != currentState.game) {
           dispatch(_SingleGameNewGame(newGame: game));
         }
-      } else {
-        dispatch(_SingleGameDeleted());
       }
     });
   }
@@ -226,6 +232,7 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
     super.dispose();
     _gameSub?.cancel();
     _gameLogSub?.cancel();
+    _singleGameSub?.cancel();
   }
 
   @override
@@ -235,14 +242,24 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
     if (g != null) {
       return SingleGameLoaded(game: g, gamelog: []);
     }
-    return SingleGameDeleted.empty();
+
+    _singleGameSub = gameBloc.coordinationBloc.databaseUpdateModel
+        .getGame(gameUid)
+        .listen((Game g) {
+      if (g == null) {
+        dispatch(_SingleGameDeleted());
+      } else {
+        dispatch(_SingleGameNewGame(newGame: g));
+      }
+    });
+    return SingleGameLoading();
   }
 
   @override
   Stream<SingleGameState> mapEventToState(SingleGameEvent event) async* {
     if (event is _SingleGameNewGame) {
-      yield SingleGameLoaded(
-          game: event.newGame, gamelog: currentState.gameLog);
+      print("exist update $gameUid");
+      yield SingleGameLoaded(game: event.newGame, state: currentState);
     }
 
     // The game is deleted.

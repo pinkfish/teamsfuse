@@ -1,7 +1,8 @@
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
+
 import '../common.dart';
 import '../winrecord.dart';
-import 'package:built_value/built_value.dart';
-import 'package:built_collection/built_collection.dart';
 
 part 'opponent.g.dart';
 
@@ -11,6 +12,7 @@ part 'opponent.g.dart';
 abstract class Opponent implements Built<Opponent, OpponentBuilder> {
   String get name;
   String get teamUid;
+  @nullable
   String get contact;
   String get uid;
   BuiltList<String> get leagueTeamUid;

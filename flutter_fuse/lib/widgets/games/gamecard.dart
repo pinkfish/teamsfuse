@@ -16,9 +16,10 @@ import '../blocs/singleleagueortournamentteamprovider.dart';
 import 'attendanceicon.dart';
 
 class GameCard extends StatelessWidget {
-  GameCard({this.gameUid});
+  GameCard({@required this.gameUid, this.singleGameBloc});
 
   final String gameUid;
+  final SingleGameBloc singleGameBloc;
   final Map<Player, Attendance> attendence = <Player, Attendance>{};
 
   void _openAttendance(BuildContext context, SingleGameBloc gameBloc) async {
@@ -76,7 +77,6 @@ class GameCard extends StatelessWidget {
   Widget _buildAvailability(BuildContext context, SingleGameBloc gameBloc,
       Season season, List<Player> players) {
     Game game = gameBloc.currentState.game;
-    print('${game.seasonUid} ${game.teamUid}');
     TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
     Team team = teamBloc.currentState.getTeam(game.teamUid);
     if (team == null) {
@@ -94,7 +94,6 @@ class GameCard extends StatelessWidget {
         attendence[player] = Attendance.Maybe;
       }
     }
-    print('Attend ${game.uid} $players ${game.attendance} $attendence');
     if (attendence.length == 0) {
       return null;
     }
@@ -255,9 +254,9 @@ class GameCard extends StatelessWidget {
     launch(url);
   }
 
-  Widget _buildMain(BuildContext context, SingleGameBloc gameBloc,
-      LeagueOrTournamentTeam leagueTeam) {
-    Game game = gameBloc.currentState.game;
+  Widget _buildMain(BuildContext context, SingleGameState gameState,
+      SingleGameBloc gameBloc, LeagueOrTournamentTeam leagueTeam) {
+    Game game = gameState.game;
     List<Widget> buttons = <Widget>[];
     TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
     Team team = teamBloc.currentState.getTeam(game.teamUid);
@@ -273,7 +272,11 @@ class GameCard extends StatelessWidget {
     } else if (game.sharedData.type == EventType.Game && leagueTeam != null) {
       op = (OpponentBuilder()..name = leagueTeam.name).build();
     } else {
-      op = (OpponentBuilder()..name = Messages.of(context).unknown).build();
+      op = (OpponentBuilder()
+            ..name = Messages.of(context).unknown
+            ..teamUid = game.teamUid
+            ..uid = "12")
+          .build();
     }
 
     Season season;
@@ -483,16 +486,14 @@ class GameCard extends StatelessWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SingleGameProvider(
-      gameUid: gameUid,
-      builder: (BuildContext context, SingleGameBloc gameBloc) => BlocBuilder(
+  Widget _buildFromnState(BuildContext context, SingleGameBloc gameBloc) {
+    return BlocBuilder(
         bloc: gameBloc,
         builder: (BuildContext context, SingleGameState state) {
           if (state is SingleGameDeleted) {
             return SizedBox();
           }
+          print("Building game ${state.game.uid}");
           Game game = state.game;
           if (game.leagueOpponentUid != null &&
               game.leagueOpponentUid.isNotEmpty) {
@@ -505,15 +506,25 @@ class GameCard extends StatelessWidget {
                 bloc: leagueTeamBloc,
                 builder: (BuildContext context,
                     SingleLeagueOrTournamentTeamState teamState) {
-                  return _buildMain(
-                      context, gameBloc, teamState.leagueOrTournamentTeam);
+                  return _buildMain(context, state, gameBloc,
+                      teamState.leagueOrTournamentTeam);
                 },
               ),
             );
           }
-          return _buildMain(context, gameBloc, null);
-        },
-      ),
+          return _buildMain(context, state, gameBloc, null);
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (singleGameBloc != null) {
+      return _buildFromnState(context, singleGameBloc);
+    }
+    return SingleGameProvider(
+      gameUid: gameUid,
+      builder: (BuildContext context, SingleGameBloc gameBloc) =>
+          _buildFromnState(context, gameBloc),
     );
   }
 }

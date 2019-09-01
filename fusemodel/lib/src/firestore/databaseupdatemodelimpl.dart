@@ -666,14 +666,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   // Games!
-  /*
-  @override
-  GameSubscription getGames(Iterable<Game> cachedGames, Set<String> teams,
-      DateTime start, DateTime end, FilterDetails details) {
-    return _getGamesInternal(cachedGames, teams, null, start, end, details);
-  }
-  */
-
   Future<GameSharedData> _getSharedGameInternal(String sharedGameUid) async {
     DocumentReferenceWrapper ref =
         wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
@@ -700,18 +692,29 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Game> getGame(String gameUid) async {
-    DocumentSnapshotWrapper doc =
-        await wrapper.collection(GAMES_COLLECTION).document(gameUid).get();
-    if (!doc.exists) {
-      return null;
-    }
+  Stream<Game> getGame(String gameUid) async* {
+    DocumentReferenceWrapper ref =
+        wrapper.collection(GAMES_COLLECTION).document(gameUid);
+    DocumentSnapshotWrapper snap = await ref.get();
+    if (!snap.exists) {
+      yield null;
+    } else {
+      String sharedGameUid = snap.data[Game.SHAREDDATAUID];
+      GameSharedData shared = await _getSharedGameInternal(sharedGameUid);
+      Game game =
+          Game.fromJSON(snap.data[Game.TEAMUID], gameUid, snap.data, shared)
+              .build();
+      yield game;
 
-    String sharedGameUid = doc.data[Game.SHAREDDATAUID];
-    GameSharedData shared = await _getSharedGameInternal(sharedGameUid);
-    Game game = Game.fromJSON(doc.data[Game.TEAMUID], gameUid, doc.data, shared)
-        .build();
-    return game;
+      await for (DocumentSnapshotWrapper snap in ref.snapshots()) {
+        String sharedGameUid = snap.data[Game.SHAREDDATAUID];
+        GameSharedData shared = await _getSharedGameInternal(sharedGameUid);
+        Game game =
+            Game.fromJSON(snap.data[Game.TEAMUID], gameUid, snap.data, shared)
+                .build();
+        yield game;
+      }
+    }
   }
 
   // Player stuff

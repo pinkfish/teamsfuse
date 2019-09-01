@@ -137,7 +137,6 @@ class TeamResultsBySeason extends StatelessWidget {
           BlocListener(
         bloc: seasonBloc,
         listener: (BuildContext context, SingleTeamSeasonState state) {
-          print('Asking to load games');
           seasonBloc.dispatch(SingleTeamSeasonLoadGames());
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
@@ -146,11 +145,10 @@ class TeamResultsBySeason extends StatelessWidget {
         child: BlocBuilder(
           bloc: seasonBloc,
           builder: (BuildContext context, SingleTeamSeasonState state) {
-            print('Building $state');
             seasonBloc.dispatch(SingleTeamSeasonLoadGames());
             if (state is SingleTeamOpponentDeleted) {
               return new Center(
-                child: new Text(Messages.of(context).nogames),
+                child: new Text(Messages.of(context).teamdeleted),
               );
             }
             if (!state.loadedGames) {
@@ -165,7 +163,7 @@ class TeamResultsBySeason extends StatelessWidget {
               TZDateTime lastTime;
               for (Game game in gameSort) {
                 if (game.sharedData.type == EventType.Game &&
-                    (opponentUid != null ||
+                    (opponentUid == null ||
                         game.opponentUids.contains(opponentUid))) {
                   if (lastTime == null ||
                       lastTime.year != game.sharedData.tzTime.year ||
@@ -209,7 +207,13 @@ class TeamResultsBySeason extends StatelessWidget {
                               BlocBuilder(
                         bloc: gameBloc,
                         builder: (BuildContext context, SingleGameState state) {
-                          return GameCard(gameUid: state.game.uid);
+                          if (state is SingleGameLoaded) {
+                            print("Display ${state.game.uid}");
+                            return GameCard(gameUid: state.game.uid);
+                          }
+                          return new Center(
+                            child: new Text(Messages.of(context).loading),
+                          );
                         },
                       ),
                     ),

@@ -232,7 +232,7 @@ abstract class DatabaseUpdateModel {
   Stream<Iterable<GameLog>> readGameLogs(Game game);
   Future<String> addFirestoreGameLog(Game game, GameLog log);
   Stream<GameSharedData> getSharedGame(String sharedGameUid);
-  Future<Game> getGame(String gameUid);
+  Stream<Game> getGame(String gameUid);
 
   // Invite firestore updates
   Future<void> firestoreInviteDelete(String inviteUid);
