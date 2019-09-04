@@ -59,11 +59,11 @@ exports = module.exports = functions.pubsub
         });
         // Loop through the scores and update the results.
         for (var teamUid in scores) {
-          if (scores.hasOwnProperty(teamUid)) {
+          if (Object.prototype.hasOwnProperty.call(scores, teamUid)) {
             var teamScores = scores[teamUid];
             console.log(teamScores);
             for (var seasonUid in teamScores.seasons) {
-              if (teamScores.seasons.hasOwnProperty(seasonUid)) {
+              if (Object.prototype.hasOwnProperty.call(teamScores.seasons, seasonUid)) {
                 var seasonScores = teamScores.seasons[seasonUid];
                 // Update the value.
                 var snap = {};
@@ -78,7 +78,7 @@ exports = module.exports = functions.pubsub
                 );
 
                 for (var opponentUid in seasonScores.opponents) {
-                  if (seasonScores.opponents.hasOwnProperty(opponentUid)) {
+                  if (Object.prototype.hasOwnProperty.call(seasonScores.opponents, opponentUid)) {
                     var opponentScores = seasonScores.opponents[opponentUid];
                     // Update the value.
                     snap = {};

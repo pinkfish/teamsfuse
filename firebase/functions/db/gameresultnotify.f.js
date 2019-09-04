@@ -52,7 +52,7 @@ exports = module.exports = functions.firestore
     }
     //var currentScoreStr = '';
     for (var s in data.result.scores) {
-      if (data.result.scores.hasOwnProperty(s)) {
+      if (Object.prototype.hasOwnProperty.call(data.result.scores, s)) {
         var nowScore = data.result.scores[s];
         var beforeScore = previousData.result.scores[s];
         console.log(nowScore);

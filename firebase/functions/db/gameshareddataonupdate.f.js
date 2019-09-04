@@ -16,6 +16,28 @@ exports = module.exports = functions.firestore
     const previousData =
       inputData.before !== null ? inputData.before.data() : null;
 
+    var updateGame = db.collection("Games")
+        .where("sharedDataUid", "==", inputData.id)
+        .get()
+        .then(snapshot => {
+             if (snapshot.empty) {
+               console.log('No matching games?');
+               return;
+             }
+
+             snapshot.forEach(doc => {
+               // Update the data in the doc.
+               db.collection("Games").doc(doc.id).update({
+                   sharedData: data,
+               });
+             });
+             return ;
+           })
+           .catch(err => {
+             console.log('Error getting documents', err);
+           });
+    finalRet.push(updateGame);
+
     // If the team is setup, then we need to go and do a bunch of work to connect the
     // shared games to the real time.
     if (

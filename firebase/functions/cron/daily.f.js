@@ -27,7 +27,7 @@ exports = module.exports = functions.pubsub
       .then(snapshot => {
         var promiseEmail = [snapshot.docs];
         for (const index in snapshot.docs) {
-          if (snapshot.docs.hasOwnProperty(index)) {
+          if (Object.prototype.hasOwnProperty.call(snapshot.docs, index)) {
             var doc = snapshot.docs[index];
             console.log("Checking game " + doc.id);
             if (doc.data().notifiedEmail) {

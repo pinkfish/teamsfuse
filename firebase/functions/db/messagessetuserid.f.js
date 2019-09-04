@@ -28,7 +28,7 @@ exports = module.exports = functions.firestore
             console.log(users);
             for (var userId in users) {
               console.log("Checking " + userId);
-              if (users.hasOwnProperty(userId)) {
+              if (Object.prototype.hasOwnProperty.call(users, userId)) {
                 if (!setupFirst) {
                   console.log("Updating first " + userId);
                   setupFirst = true;

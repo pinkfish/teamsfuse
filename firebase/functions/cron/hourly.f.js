@@ -26,7 +26,7 @@ exports = module.exports = functions.pubsub
         var promiseSeasons = [];
         var sharedGames = [];
         for (var index in snapshot.docs) {
-          if (snapshot.docs.hasOwnProperty(index)) {
+          if (Object.prototype.hasOwnProperty.call(snapshot.docs, index)) {
             var doc = snapshot.docs[index];
             console.log("Processing game " + doc.id);
             if (doc.data().notifiedHour) {
@@ -47,7 +47,7 @@ exports = module.exports = functions.pubsub
       .then(results => {
         var promiseSeasons = [];
         for (var index in results) {
-          if (results.hasOwnProperty(index) && results[index] !== null) {
+          if (Object.prototype.hasOwnProperty.call(results, index) && results[index] !== null) {
             var doc = results[index][0];
             var sharedGame = results[index][1];
             console.log("Games index " + index);
@@ -127,7 +127,7 @@ exports = module.exports = functions.pubsub
       .then(results => {
         var allRets = [];
         for (var gameId in results) {
-          if (results.hasOwnProperty(gameId)) {
+          if (Object.prototype.hasOwnProperty.call(results, gameId)) {
             game = games[gameId];
             // Mark this as notified.
             allRets.push(

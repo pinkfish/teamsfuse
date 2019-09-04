@@ -72,7 +72,7 @@ exports.notifyForGame = (
       // Now get the players.
       var seasonData = season.data();
       for (const playerId in seasonData.players) {
-        if (seasonData.players.hasOwnProperty(playerId)) {
+        if (Object.prototype.hasOwnProperty.call(seasonData.players, playerId)) {
           // Send the notification to this player.
           const players = db
             .collection("Players")
@@ -98,7 +98,7 @@ exports.notifyForGame = (
         }
         const player = snapshot.data();
         for (const userId in player.user) {
-          if (player.user.hasOwnProperty(userId)) {
+          if (Object.prototype.hasOwnProperty.call(player.user, userId)) {
             const excludeUser = extra[5];
             if (excludeUser !== userId) {
               const tokens = db
@@ -119,7 +119,7 @@ exports.notifyForGame = (
       var allRets = [];
 
       for (const key in allTokens) {
-        if (allTokens.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(allTokens, key)) {
           const extra = allTokens[key][0];
           const tokens = allTokens[key][1];
           if (tokens.exists) {
@@ -213,7 +213,7 @@ exports.notifyForGame = (
             console.log(sendPayload);
             var newTokens = [];
             for (const tokenKey in tokens.data().tokens) {
-              if (tokens.data().tokens.hasOwnProperty(tokenKey)) {
+              if (Object.prototype.hasOwnProperty.call(tokens.data().tokens, tokenKey)) {
                 const myData = tokens.data().tokens[tokenKey];
                 if (myData) {
                   newTokens.push(tokenKey);
@@ -297,7 +297,7 @@ function formatAvailability(input, season) {
   var extraBitsHtml = "";
   var extraBitsText = "";
   for (const playerUid in input) {
-    if (season.players.hasOwnProperty(playerUid)) {
+    if (Object.prototype.hasOwnProperty.call(season.players, playerUid)) {
       var seasonPlayer = season.players[playerUid];
       if (seasonPlayer.role === "RoleInTeam.Player") {
         availabilityHtml += "<li>" + seasonPlayer.displayName;
@@ -376,7 +376,7 @@ exports.emailForGame = (game, payload, excludeUser, userFlag) => {
       // Now get the players.
       var seasonData = season.data();
       for (const playerId in seasonData.players) {
-        if (seasonData.players.hasOwnProperty(playerId)) {
+        if (Object.prototype.hasOwnProperty.call(seasonData.players, playerId)) {
           // Send the notification to this player.
           const players = db
             .collection("Players")
@@ -402,7 +402,7 @@ exports.emailForGame = (game, payload, excludeUser, userFlag) => {
         }
         const player = snapshot.data();
         for (const userId in player.user) {
-          if (player.user.hasOwnProperty(userId)) {
+          if (Object.prototype.hasOwnProperty.call(player.user, userId)) {
             const excludeUser = extra[5];
             if (excludeUser !== userId) {
               const userData = db
@@ -423,7 +423,7 @@ exports.emailForGame = (game, payload, excludeUser, userFlag) => {
       var allRets = [];
 
       for (const key in allUsers) {
-        if (allUsers.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(allUsers, key)) {
           const extra = allUsers[key][0];
           const userData = allUsers[key][1];
           if (userData.exists) {
@@ -462,7 +462,7 @@ exports.emailForGame = (game, payload, excludeUser, userFlag) => {
               var no = [];
               var maybe = [];
               for (const playerUid in game.attendance) {
-                if (game.attendance.hasOwnProperty(playerUid)) {
+                if (Object.prototype.hasOwnProperty.call(game.attendance, playerUid)) {
                   var attend = game.attendance[playerUid];
                   if (attend["value"] === "Attendence.Yes") {
                     yes.push(playerUid);
