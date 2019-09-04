@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 class AddOpponent extends StatefulWidget {
   AddOpponent(this.teamUid);
@@ -29,7 +29,7 @@ class _AddOpponentState extends State<AddOpponent> {
   FocusNode _focusNode = new FocusNode();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   bool _saving = false;
-  SingleTeamOpponentBloc _opponentBloc;
+  SingleOpponentBloc _opponentBloc;
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
@@ -38,10 +38,9 @@ class _AddOpponentState extends State<AddOpponent> {
 
   void initState() {
     super.initState();
-    _opponentBloc = SingleTeamOpponentBloc(
-        teamUid: widget.teamUid,
+    _opponentBloc = SingleOpponentBloc(
         teamBloc: BlocProvider.of<TeamBloc>(context),
-        opponentUid: SingleTeamOpponentBloc.createNew);
+        opponentUid: SingleOpponentBloc.createNew);
   }
 
   void _savePressed(BuildContext context) async {
@@ -50,15 +49,15 @@ class _AddOpponentState extends State<AddOpponent> {
       _saving = true;
     });
     // Make a new single opponent bloc and wait for stuff.
-    _opponentBloc.dispatch(SingleTeamOpponentUpdate(opponent: _opponent));
+    _opponentBloc.dispatch(SingleOpponentUpdate(opponent: _opponent));
     // Wait till it is finished.
-    await for (SingleTeamOpponentState state in _opponentBloc.state) {
-      if (state is SingleTeamOpponentSaveFailed) {
+    await for (SingleOpponentState state in _opponentBloc.state) {
+      if (state is SingleOpponentSaveFailed) {
         // Darn it.
         _showInSnackBar(Messages.of(context).formerror);
         return;
       }
-      if (state is SingleTeamOpponentLoaded) {
+      if (state is SingleOpponentLoaded) {
         // Yay!  All good.
         break;
       }

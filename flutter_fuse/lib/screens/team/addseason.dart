@@ -104,8 +104,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
             teamBloc: singleTeamBloc,
             initialValue: singleTeamBloc.currentState.team.currentSeason,
             onSaved: (String seasonUid) {
-              _seasonSelect =
-                  singleTeamBloc.currentState.team.seasons[seasonUid];
+              _seasonSelect = singleTeamBloc.currentState.getSeason(seasonUid);
             },
           ),
           new FlatButton(
@@ -129,7 +128,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
           listener: (BuildContext context, SingleTeamState state) {
             if (state is SingleTeamLoaded) {
               if (_seasonSelect == null) {
-                _seasonSelect = state.team.seasons[state.team.currentSeason];
+                _seasonSelect = state.getSeason(state.team.currentSeason);
               }
             }
             if (state is SingleTeamDeleted) {

@@ -342,8 +342,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
         inviteBloc.coordinationBloc.databaseUpdateModel
             .addFirestoreSeason(season, pregenSeason);
       } else {
-        Season season = teamBloc
-            .currentState.teamsByPlayer[event.teamUid].seasons[event.seasonUid];
+        Season season = teamBloc.currentState.seasons[event.seasonUid];
         await inviteBloc.databaseUpdateModel.connectLeagueTeamToSeason(
             invite.leagueTeamUid, inviteBloc.currentState.uid, season);
       }

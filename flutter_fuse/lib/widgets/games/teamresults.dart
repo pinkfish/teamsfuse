@@ -7,8 +7,8 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
 import '../blocs/singlegameprovider.dart';
-import '../blocs/singleteamopponentprovider.dart';
-import '../blocs/singleteamseasonprovider.dart';
+import '../blocs/singleopponentprovider.dart';
+import '../blocs/singleseasonprovider.dart';
 
 ///
 /// Creates a nice team results section that shows all the games
@@ -22,22 +22,21 @@ class TeamResultsByOpponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleTeamOpponentProvider(
-      teamUid: teamUid,
+    return SingleOpponentProvider(
       opponentUid: opponentUid,
-      builder: (BuildContext context, SingleTeamOpponentBloc teamBloc) =>
+      builder: (BuildContext context, SingleOpponentBloc teamBloc) =>
           BlocListener(
         bloc: teamBloc,
-        listener: (BuildContext context, SingleTeamOpponentState state) {
-          teamBloc.dispatch(SingleTeamOpponentLoadGames());
+        listener: (BuildContext context, SingleOpponentState state) {
+          teamBloc.dispatch(SingleOpponentLoadGames());
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
           }
         },
         child: BlocBuilder(
           bloc: teamBloc,
-          builder: (BuildContext context, SingleTeamOpponentState state) {
-            if (state is SingleTeamOpponentDeleted) {
+          builder: (BuildContext context, SingleOpponentState state) {
+            if (state is SingleOpponentDeleted) {
               return new Center(
                 child: new Text(Messages.of(context).loading),
               );
@@ -130,23 +129,22 @@ class TeamResultsBySeason extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleTeamSeasonProvider(
-      teamUid: teamUid,
+    return SingleSeasonProvider(
       seasonUid: seasonUid,
-      builder: (BuildContext context, SingleTeamSeasonBloc seasonBloc) =>
+      builder: (BuildContext context, SingleSeasonBloc seasonBloc) =>
           BlocListener(
         bloc: seasonBloc,
-        listener: (BuildContext context, SingleTeamSeasonState state) {
-          seasonBloc.dispatch(SingleTeamSeasonLoadGames());
+        listener: (BuildContext context, SingleSeasonState state) {
+          seasonBloc.dispatch(SingleSeasonLoadGames());
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
           }
         },
         child: BlocBuilder(
           bloc: seasonBloc,
-          builder: (BuildContext context, SingleTeamSeasonState state) {
-            seasonBloc.dispatch(SingleTeamSeasonLoadGames());
-            if (state is SingleTeamOpponentDeleted) {
+          builder: (BuildContext context, SingleSeasonState state) {
+            seasonBloc.dispatch(SingleSeasonLoadGames());
+            if (state is SingleOpponentDeleted) {
               return new Center(
                 child: new Text(Messages.of(context).teamdeleted),
               );

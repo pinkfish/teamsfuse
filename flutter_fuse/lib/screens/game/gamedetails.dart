@@ -55,7 +55,8 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
               Game game = gameState.game;
               Widget body;
               Team team = singleTeamState.team;
-              Opponent opponent = team.opponents[game.opponentUids[0]];
+              Opponent opponent =
+                  singleTeamState.opponents[game.opponentUids[0]];
               List<Widget> actions = <Widget>[];
 
               if (_tabIndex == 0) {

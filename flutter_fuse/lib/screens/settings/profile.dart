@@ -210,7 +210,8 @@ class ProfileScreen extends StatelessWidget {
                       teamBloc.currentState.teamsByPlayer.values;
 
                   for (Team team in teams) {
-                    for (Season season in team.seasons.values) {
+                    for (Season season
+                        in teamBloc.currentState.seasons.values) {
                       int index = season.players.indexWhere((SeasonPlayer sp) {
                         return sp.playerUid == player.uid;
                       });

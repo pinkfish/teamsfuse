@@ -910,7 +910,7 @@ class Messages {
   }
 
   String opponentseason(Opponent opponent, String seasonName) {
-    return Intl.message("${opponent.name} - $seasonName",
+    return Intl.message("${opponent?.name} - $seasonName",
         name: "Shows the opponent and season");
   }
 

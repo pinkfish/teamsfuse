@@ -276,6 +276,7 @@ abstract class DatabaseUpdateModel {
   Stream<Iterable<Opponent>> getTeamOpponents(String teamUid);
   Stream<TeamBuilder> getTeamDetails(
       {@required String userUid, @required String teamUid});
+  Stream<Iterable<Season>> getSeasonsForTeam(String teamUid);
 
   // Player stuff.
   Future<void> updateFirestorePlayer(Player player, bool includeUsers);

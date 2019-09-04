@@ -298,7 +298,7 @@ class PlayerDetailsScreen extends StatelessWidget {
     }
 
     // Find which seasons they are in.
-    for (Season season in teamState.team.seasons.values) {
+    for (Season season in teamState.fullSeason) {
       if (season.players.any((SeasonPlayer player) =>
           player.playerUid == playerState.seasonPlayer.playerUid)) {
         ret.add(

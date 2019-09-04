@@ -78,6 +78,7 @@ abstract class GameSharedData
   factory GameSharedData([updates(GameSharedDataBuilder b)]) = _$GameSharedData;
 
   static GameSharedDataBuilder fromJSON(String uid, Map<String, dynamic> data) {
+    assert(uid != null);
     GameSharedDataBuilder builder = GameSharedDataBuilder()
       ..uid = uid
       ..time = getNum(data[_TIME])
@@ -97,7 +98,8 @@ abstract class GameSharedData
       builder.officialResults =
           GameOfficialResults.fromJSON(data[OFFICIALRESULT]);
     } else {
-      builder.officialResults = GameOfficialResultsBuilder();
+      builder.officialResults = GameOfficialResultsBuilder()
+        ..result = OfficialResult.NotStarted;
     }
 
     return builder;

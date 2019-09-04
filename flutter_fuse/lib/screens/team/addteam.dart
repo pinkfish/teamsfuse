@@ -39,6 +39,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   StepState _playerStepState = StepState.editing;
   File _imageFileToAdd;
   String _clubUid;
+  String _seasonNameInternal;
   String _playerUid;
   TeamBuilder _teamToAdd;
   AddTeamBloc _addTeamBloc = new AddTeamBloc();
@@ -77,7 +78,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
         _teamToAdd.clubUid = _clubUid;
       }
       _addTeamBloc.dispatch(AddTeamEventCommit(
-          seasonName: _seasonName(),
+          seasonName: _seasonNameInternal,
           team: _teamToAdd,
           playerUid: _playerUid,
           teamImage: _imageFileToAdd));
@@ -87,9 +88,8 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   }
 
   String _seasonName() {
-    var seasons = _teamToAdd.seasons.build();
-    if (seasons.containsKey(_teamToAdd.currentSeason)) {
-      return seasons[_teamToAdd.currentSeason].name;
+    if (_seasonNameInternal != null && _seasonNameInternal.isNotEmpty) {
+      return _seasonNameInternal;
     }
     return Messages.of(context).noseasons;
   }

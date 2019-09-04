@@ -29,6 +29,14 @@ abstract class SingleTeamState extends Equatable {
       : super([team, club, invitesAsAdmin, fullSeason, opponents]);
 
   ///
+  /// Gets the specified sweason.
+  ///
+  Season getSeason(String uid) {
+    return fullSeason.firstWhere((Season s) => s.uid == uid,
+        orElse: () => null);
+  }
+
+  ///
   /// Checks to see if the user is an admin for this team.
   ///
   bool isAdmin() {
@@ -223,8 +231,13 @@ class SingleTeamArchive extends SingleTeamEvent {
 
 class _SingleTeamNewTeam extends SingleTeamEvent {
   final Team newTeam;
+  final BuiltMap<String, Opponent> opponents;
+  final BuiltList<Season> seasons;
 
-  _SingleTeamNewTeam({@required this.newTeam});
+  _SingleTeamNewTeam(
+      {@required this.newTeam,
+      @required this.opponents,
+      @required this.seasons});
 }
 
 class _SingleTeamDeleted extends SingleTeamEvent {
@@ -276,10 +289,19 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       Team team = state.getTeam(teamUid);
       if (team != null) {
         // Only send this if the team is not the same.
-        if (team != currentState.team) {
-          dispatch(_SingleTeamNewTeam(newTeam: team));
-          _setupClubSub();
-        }
+        var builder = MapBuilder<String, Opponent>();
+        builder.addEntries(state.opponents.entries.where(
+                (MapEntry<String, Opponent> op) =>
+            op.value.teamUid == team.uid));
+        dispatch(
+          _SingleTeamNewTeam(
+            newTeam: team,
+            seasons: BuiltList.of(state.seasons.values
+                .where((Season s) => s.teamUid == team.uid)),
+            opponents: builder.build(),
+          ),
+        );
+        _setupClubSub();
       } else {
         print('Deleted team $teamUid');
         dispatch(_SingleTeamDeleted());

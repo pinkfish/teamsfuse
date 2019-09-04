@@ -6,8 +6,8 @@ import 'package:flutter_fuse/widgets/util/playername.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../blocs/singleseasonprovider.dart';
 import '../blocs/singleteamprovider.dart';
-import '../blocs/singleteamseasonprovider.dart';
 
 class TeamPlayers extends StatefulWidget {
   TeamPlayers(this._teamUid);
@@ -25,12 +25,15 @@ class TeamPlayersState extends State<TeamPlayers> {
 
   String _seasonUid;
 
-  List<DropdownMenuItem<String>> _buildItems(BuildContext context, Team team) {
+  List<DropdownMenuItem<String>> _buildItems(
+      BuildContext context, SingleTeamState teamState) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
-    team.seasons.forEach((String key, Season season) {
-      ret.add(new DropdownMenuItem<String>(
-          child: new Text(season.name), value: season.uid));
-    });
+    List<Season> seasons = teamState.fullSeason.toList();
+    seasons.sort();
+    for (Season s in seasons) {
+      ret.add(
+          new DropdownMenuItem<String>(child: new Text(s.name), value: s.uid));
+    }
 
     return ret;
   }
@@ -77,7 +80,7 @@ class TeamPlayersState extends State<TeamPlayers> {
   }
 
   List<Widget> _buildPlayers(
-      SingleTeamSeasonState state, SingleTeamState teamState) {
+      SingleSeasonState state, SingleTeamState teamState) {
     List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
 
@@ -183,7 +186,7 @@ class TeamPlayersState extends State<TeamPlayers> {
                     new DropdownButton<String>(
                       hint: new Text(messsages.seasonselect),
                       value: _seasonUid,
-                      items: _buildItems(context, bloc.currentState.team),
+                      items: _buildItems(context, state),
                       onChanged: (String val) {
                         print('changed $val');
                         setState(() {
@@ -200,15 +203,14 @@ class TeamPlayersState extends State<TeamPlayers> {
                         new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
                     decoration: new BoxDecoration(color: theme.cardColor),
                     child: new SingleChildScrollView(
-                      child: SingleTeamSeasonProvider(
+                      child: SingleSeasonProvider(
                         seasonUid: _seasonUid,
-                        teamUid: widget._teamUid,
                         builder: (BuildContext context,
-                                SingleTeamSeasonBloc seasonBloc) =>
+                                SingleSeasonBloc seasonBloc) =>
                             BlocBuilder(
                           bloc: seasonBloc,
                           builder: (BuildContext context,
-                              SingleTeamSeasonState seasonState) {
+                              SingleSeasonState seasonState) {
                             return Column(
                                 children: _buildPlayers(seasonState, state));
                           },

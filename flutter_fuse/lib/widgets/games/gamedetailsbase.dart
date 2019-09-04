@@ -195,8 +195,8 @@ class GameDetailsBase extends StatelessWidget {
       arriveAttimeStr = MaterialLocalizations.of(context).formatTimeOfDay(day) +
           (tzShortName ?? "");
     }
-    Opponent opponent = teamState.team.opponents[game.opponentUids[0]];
-    Season season = teamState.team.seasons[game.seasonUid];
+    Opponent opponent = teamState.opponents[game.opponentUids[0]];
+    Season season = teamState.getSeason(game.seasonUid);
 
     ThemeData theme = Theme.of(context);
 
@@ -404,8 +404,8 @@ class GameDetailsBase extends StatelessWidget {
     // Opponent last games.
     if (game.sharedData.type == EventType.Game && !adding) {
       String seasonName;
-      if (teamState.team.seasons.containsKey(game.seasonUid)) {
-        seasonName = teamState.team.seasons[game.seasonUid].name;
+      if (season != null) {
+        seasonName = season.name;
       } else {
         seasonName = Messages.of(context).unknown;
       }
@@ -434,16 +434,12 @@ class GameDetailsBase extends StatelessWidget {
           ],
         ),
       );
-      if (teamState.team.seasons.length > 1) {
+      if (teamState.fullSeason.length > 1) {
         List<Widget> cols = <Widget>[];
-        for (Season otherSeason in teamState.team.seasons.values) {
+        for (Season otherSeason in teamState.fullSeason) {
           if (otherSeason.uid != season.uid) {
             String seasonName;
-            if (teamState.team.seasons.containsKey(otherSeason.uid)) {
-              seasonName = teamState.team.seasons[otherSeason.uid].name;
-            } else {
-              seasonName = Messages.of(context).unknown;
-            }
+            seasonName = otherSeason.name;
 
             cols.add(
               new Text(

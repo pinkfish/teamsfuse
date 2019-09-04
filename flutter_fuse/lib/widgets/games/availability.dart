@@ -32,10 +32,10 @@ class Availaility extends StatelessWidget {
     if (players.currentState.players.containsKey(player.playerUid)) {
       return new GestureDetector(
         onTap: () => _updateAttendance(
-              context,
-              player,
-              game.attendance[player.playerUid],
-            ),
+          context,
+          player,
+          game.attendance[player.playerUid],
+        ),
         child: new AttendanceIcon(
           game.attendance[player.playerUid],
         ),
@@ -55,8 +55,9 @@ class Availaility extends StatelessWidget {
             playerUid);
   }
 
-  Iterable<Widget> _buildChildren(BuildContext context, Team team, Game game) {
-    Season season = team.seasons[game.seasonUid];
+  Iterable<Widget> _buildChildren(
+      BuildContext context, SingleTeamState teamState, Game game) {
+    Season season = teamState.getSeason(game.seasonUid);
     ThemeData theme = Theme.of(context);
 
     return season.players.map((SeasonPlayer player) {
@@ -79,19 +80,17 @@ class Availaility extends StatelessWidget {
       bloc: _game,
       builder: (BuildContext context, SingleGameState gameState) =>
           SingleTeamProvider(
-            teamUid: gameState.game.teamUid,
-            builder: (BuildContext context, SingleTeamBloc teamBloc) =>
-                BlocBuilder(
-                  bloc: teamBloc,
-                  builder: (BuildContext context, SingleTeamState teamState) {
-                    return ListBody(
-                      children: _buildChildren(
-                              context, teamState.team, gameState.game)
-                          .toList(),
-                    );
-                  },
-                ),
-          ),
+        teamUid: gameState.game.teamUid,
+        builder: (BuildContext context, SingleTeamBloc teamBloc) => BlocBuilder(
+          bloc: teamBloc,
+          builder: (BuildContext context, SingleTeamState teamState) {
+            return ListBody(
+              children:
+                  _buildChildren(context, teamState, gameState.game).toList(),
+            );
+          },
+        ),
+      ),
     );
   }
 }

@@ -185,12 +185,13 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
 
     for (BuiltMap<String, Game> teamGames in state.gamesByTeam.values) {
       for (Game g in teamGames.values) {
+        TeamState teamState = teamBloc.currentState;
         Team t = teamBloc.currentState.getTeam(g.teamUid);
         if (t != null) {
           // See if we have the eason.
-          if (t.seasons.containsKey(g.seasonUid)) {
+          if (teamState.seasons.containsKey(g.seasonUid)) {
             // We do.  Yay.
-            Season season = t.seasons[g.seasonUid];
+            Season season = teamState.seasons[g.seasonUid];
             if (details.isIncluded(g, season)) {
               result[g.uid] = g;
             }
@@ -200,12 +201,13 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
     }
     for (Iterable<Game> gameList in _newerGamesByTeam.values) {
       for (Game g in gameList) {
+        TeamState teamState = teamBloc.currentState;
         Team t = teamBloc.currentState.getTeam(g.teamUid);
         if (t != null) {
           // See if we have the eason.
-          if (t.seasons.containsKey(g.seasonUid)) {
+          if (teamState.seasons.containsKey(g.seasonUid)) {
             // We do.  Yay.
-            Season season = t.seasons[g.seasonUid];
+            Season season = teamState.seasons[g.seasonUid];
             if (details.isIncluded(g, season)) {
               result[g.uid] = g;
             }

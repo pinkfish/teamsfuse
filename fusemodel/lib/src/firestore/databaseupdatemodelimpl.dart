@@ -588,7 +588,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           str.add(sharedDocStream[sharedGameUid]);
         }
       } else {
-        sharedData = GameSharedData.fromJSON(sharedGameUid, snap.data).build();
+        // Missing shared data uid.
+        sharedData = GameSharedData.fromJSON("", snap.data).build();
       }
       Game g = Game.fromJSON(teamUid, snap.documentID, snap.data, sharedData)
           .build();
@@ -633,8 +634,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             str.add(sharedDocStream[sharedGameUid]);
           }
         } else {
-          sharedData =
-              GameSharedData.fromJSON(sharedGameUid, snap.data).build();
+          sharedData = GameSharedData.fromJSON("", snap.data).build();
         }
 
         Game newGame =
@@ -700,7 +700,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       yield null;
     } else {
       String sharedGameUid = snap.data[Game.SHAREDDATAUID];
-      GameSharedData shared = await _getSharedGameInternal(sharedGameUid);
+      GameSharedData shared;
+      if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
+        shared = await _getSharedGameInternal(sharedGameUid);
+      } else {
+        shared = GameSharedData.fromJSON("", snap.data).build();
+      }
       Game game =
           Game.fromJSON(snap.data[Game.TEAMUID], gameUid, snap.data, shared)
               .build();
@@ -708,7 +713,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
       await for (DocumentSnapshotWrapper snap in ref.snapshots()) {
         String sharedGameUid = snap.data[Game.SHAREDDATAUID];
-        GameSharedData shared = await _getSharedGameInternal(sharedGameUid);
+        GameSharedData shared;
+        if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
+          shared = await _getSharedGameInternal(sharedGameUid);
+        } else {
+          shared = GameSharedData.fromJSON("", snap.data).build();
+        }
         Game game =
             Game.fromJSON(snap.data[Game.TEAMUID], gameUid, snap.data, shared)
                 .build();
@@ -1059,18 +1069,36 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String userUid, DocumentSnapshotWrapper snap, Club club) async {
     final TeamBuilder team = Team.fromJSON(userUid, snap.documentID, snap.data,
         publicOnly: !club.isAdmin());
+
+    return team.build();
+  }
+
+  // Loads the seasons for the team.  This is only used for
+  // admin teams and club teams.
+  Stream<Iterable<Season>> getSeasonsForTeam(String teamUid) async* {
     // Find the seasons for the team.
-    QuerySnapshotWrapper query = await wrapper
+    QueryWrapper query = wrapper
         .collection(SEASONS_COLLECTION)
-        .where(Season.TEAMUID, isEqualTo: snap.documentID)
-        .getDocuments();
-    for (DocumentSnapshotWrapper doc in query.documents) {
+        .where(Season.TEAMUID, isEqualTo: teamUid);
+    List<Season> seasons = [];
+    var snap = await query.getDocuments();
+    for (DocumentSnapshotWrapper doc in snap.documents) {
       Season season = Season.fromJSON(doc.documentID, doc.data).build();
-      team.seasons[season.uid] = season;
       persistenData.updateElement(
           PersistenData.seasonTable, season.uid, doc.data);
+      seasons.add(season);
     }
-    return team.build();
+    yield seasons;
+    await for (QuerySnapshotWrapper snap in query.snapshots()) {
+      List<Season> seasons = [];
+      for (DocumentSnapshotWrapper doc in snap.documents) {
+        Season season = Season.fromJSON(doc.documentID, doc.data).build();
+        persistenData.updateElement(
+            PersistenData.seasonTable, season.uid, doc.data);
+        seasons.add(season);
+      }
+      yield seasons;
+    }
   }
 
   // clubs!

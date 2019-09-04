@@ -5,6 +5,8 @@ import 'package:flutter_fuse/widgets/games/gamecard.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../blocs/singleopponentprovider.dart';
+
 class TeamOpponents extends StatefulWidget {
   TeamOpponents(this._teamBloc);
 
@@ -18,21 +20,19 @@ class TeamOpponents extends StatefulWidget {
 
 class TeamOpponentsState extends State<TeamOpponents> {
   String _seasonUid;
-  Map<String, SingleTeamOpponentBloc> _opponentBlocs = {};
 
-  List<DropdownMenuItem<String>> _buildItems(BuildContext context, Team team) {
+  List<DropdownMenuItem<String>> _buildItems(
+      BuildContext context, SingleTeamState teamState) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
-    if (team != null) {
-      team.seasons.forEach((String key, Season season) {
-        ret.add(new DropdownMenuItem<String>(
-            child: new Text(season.name), value: season.uid));
-      });
+    for (Season s in teamState.fullSeason) {
+      ret.add(
+          new DropdownMenuItem<String>(child: new Text(s.name), value: s.uid));
     }
 
     return ret;
   }
 
-  void _deleteOpponent(SingleTeamOpponentBloc op) async {
+  void _deleteOpponent(SingleOpponentBloc op) async {
     Messages mess = Messages.of(context);
     // Show an alert dialog first.
     bool result = await showDialog<bool>(
@@ -68,11 +68,11 @@ class TeamOpponentsState extends State<TeamOpponents> {
       },
     );
     if (result) {
-      op.dispatch(SingleTeamOpponentDeleteOpponent());
+      op.dispatch(SingleOpponentDeleteOpponent());
     }
   }
 
-  List<Widget> _buildOpponents(Team team) {
+  List<Widget> _buildOpponents(Team team, SingleTeamState singleTeamState) {
     List<Widget> ret = <Widget>[];
     ThemeData theme = Theme.of(context);
 
@@ -84,86 +84,83 @@ class TeamOpponentsState extends State<TeamOpponents> {
         ),
       ),
     );
-    List<String> opponentKeys = team.opponents.keys.toList();
-    opponentKeys.sort((String uid1, String uid2) =>
-        team.opponents[uid1].name.compareTo(team.opponents[uid2].name));
+    List<String> opponentKeys = singleTeamState.opponents.keys.toList();
+    opponentKeys.sort((String uid1, String uid2) => singleTeamState
+        .opponents[uid1].name
+        .compareTo(singleTeamState.opponents[uid2].name));
 
     for (String uid in opponentKeys) {
-      Opponent op = team.opponents[uid];
+      Opponent op = singleTeamState.opponents[uid];
       WinRecord record;
       if (!op.record.containsKey(_seasonUid)) {
         continue;
       }
       record = op.record[_seasonUid];
 
-      if (!_opponentBlocs.containsKey(op.uid)) {
-        _opponentBlocs[op.uid] = SingleTeamOpponentBloc(
-            teamUid: team.uid,
-            opponentUid: op.uid,
-            teamBloc: BlocProvider.of<TeamBloc>(context));
-        _opponentBlocs[op.uid].dispatch(SingleTeamOpponentLoadGames());
-      }
-
       ret.add(
-        new ExpansionTile(
-          title: new RichText(
-            text: new TextSpan(
-              style: theme.textTheme.subhead.copyWith(
-                  color: record.win > record.loss
-                      ? Colors.green
-                      : record.win < record.loss
-                          ? Colors.redAccent
-                          : Colors.black),
-              text: op.name +
-                  " W:" +
-                  record.win.toString() +
-                  " L:" +
-                  record.loss.toString() +
-                  " T:" +
-                  record.tie.toString(),
+        SingleOpponentProvider(
+          opponentUid: op.uid,
+          builder: (BuildContext context, SingleOpponentBloc opBloc) =>
+              new ExpansionTile(
+            title: new RichText(
+              text: new TextSpan(
+                style: theme.textTheme.subhead.copyWith(
+                    color: record.win > record.loss
+                        ? Colors.green
+                        : record.win < record.loss
+                            ? Colors.redAccent
+                            : Colors.black),
+                text: op.name +
+                    " W:" +
+                    record.win.toString() +
+                    " L:" +
+                    record.loss.toString() +
+                    " T:" +
+                    record.tie.toString(),
+              ),
             ),
-          ),
-          initiallyExpanded: false,
-          children: <Widget>[
-            new BlocBuilder(
-                bloc: _opponentBlocs[op.uid],
-                builder: (BuildContext context, SingleTeamOpponentState state) {
-                  if (state is SingleTeamOpponentDeleted) {
-                    return new Center(
-                      child: new Text(Messages.of(context).loading),
-                    );
-                  }
-                  if (state.games.length == 0) {
-                    return new Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        new Center(
-                          child:
-                              new Text(Messages.of(context).unabletoloadgames),
-                        ),
-                      ],
-                    );
-                  } else {
-                    List<Widget> newData = <Widget>[];
-                    for (Game game in state.games) {
-                      if (game.sharedData.type == EventType.Game &&
-                          game.seasonUid == _seasonUid &&
-                          game.opponentUids.contains(uid)) {
-                        newData.add(
-                          GameCard(gameUid: game.uid),
-                        );
+            initiallyExpanded: false,
+            children: <Widget>[
+              new BlocBuilder(
+                  bloc: opBloc,
+                  builder: (BuildContext context, SingleOpponentState state) {
+                    if (state is SingleOpponentDeleted) {
+                      return new Center(
+                        child: new Text(Messages.of(context).loading),
+                      );
+                    }
+                    if (state.games.length == 0) {
+                      return new Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          new Center(
+                            child: new Text(
+                                Messages.of(context).unabletoloadgames),
+                          ),
+                        ],
+                      );
+                    } else {
+                      List<Widget> newData = <Widget>[];
+                      for (Game game in state.games) {
+                        if (game.sharedData.type == EventType.Game &&
+                            game.seasonUid == _seasonUid &&
+                            game.opponentUids.contains(uid)) {
+                          newData.add(
+                            GameCard(gameUid: game.uid),
+                          );
+                        }
                       }
+                      if (newData.length == 0) {
+                        newData.add(new Text(Messages.of(context).nogames));
+                      }
+                      return new Column(
+                        children: newData,
+                      );
                     }
-                    if (newData.length == 0) {
-                      newData.add(new Text(Messages.of(context).nogames));
-                    }
-                    return new Column(
-                      children: newData,
-                    );
-                  }
-                }),
-          ],
+                  }),
+            ],
+          ),
         ),
       );
     }
@@ -176,66 +173,69 @@ class TeamOpponentsState extends State<TeamOpponents> {
       ),
     );
     for (String uid in opponentKeys) {
-      Opponent op = team.opponents[uid];
+      Opponent op = singleTeamState.opponents[uid];
       if (op.record.containsKey(_seasonUid)) {
         continue;
       }
 
       ret.add(
-        new ExpansionTile(
-          title: new Text(op.name),
-          initiallyExpanded: false,
-          children: <Widget>[
-            new BlocBuilder(
-              bloc: _opponentBlocs[op.uid],
-              builder: (BuildContext context, SingleTeamOpponentState state) {
-                if (state is SingleTeamOpponentDeleted) {
-                  return new Center(
-                    child: new Text(Messages.of(context).loading),
-                  );
-                }
+        SingleOpponentProvider(
+          opponentUid: op.uid,
+          builder: (BuildContext context, SingleOpponentBloc opBloc) =>
+              ExpansionTile(
+            title: new Text(op.name),
+            initiallyExpanded: false,
+            children: <Widget>[
+              new BlocBuilder(
+                bloc: opBloc,
+                builder: (BuildContext context, SingleOpponentState state) {
+                  if (state is SingleOpponentDeleted) {
+                    return new Center(
+                      child: new Text(Messages.of(context).loading),
+                    );
+                  }
 
-                if (state.games.length == 0) {
-                  return new Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      new Center(
-                        child: new Text(Messages.of(context).nogames),
-                      ),
-                      new IconButton(
-                        onPressed: () =>
-                            _deleteOpponent(_opponentBlocs[op.uid]),
-                        icon: const Icon(Icons.delete),
-                        color: Theme.of(context).primaryColorDark,
-                      )
-                    ],
-                  );
-                } else {
-                  List<Widget> newData = <Widget>[];
-                  for (Game game in state.games) {
-                    if (game.sharedData.type == EventType.Game &&
-                        game.opponentUids.contains(uid)) {
-                      if (game.seasonUid == _seasonUid) {
-                        newData.add(
-                          GameCard(
-                            gameUid: game.uid,
-                          ),
-                        );
+                  if (state.games.length == 0) {
+                    return new Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        new Center(
+                          child: new Text(Messages.of(context).nogames),
+                        ),
+                        new IconButton(
+                          onPressed: () => _deleteOpponent(opBloc),
+                          icon: const Icon(Icons.delete),
+                          color: Theme.of(context).primaryColorDark,
+                        )
+                      ],
+                    );
+                  } else {
+                    List<Widget> newData = <Widget>[];
+                    for (Game game in state.games) {
+                      if (game.sharedData.type == EventType.Game &&
+                          game.opponentUids.contains(uid)) {
+                        if (game.seasonUid == _seasonUid) {
+                          newData.add(
+                            GameCard(
+                              gameUid: game.uid,
+                            ),
+                          );
+                        }
                       }
                     }
+                    if (newData.length == 0) {
+                      newData.add(
+                          new Text(Messages.of(context).nogamesthisseason));
+                    }
+                    return new Column(
+                      children: newData,
+                    );
                   }
-                  if (newData.length == 0) {
-                    newData
-                        .add(new Text(Messages.of(context).nogamesthisseason));
-                  }
-                  return new Column(
-                    children: newData,
-                  );
-                }
-              },
-            ),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -252,16 +252,20 @@ class TeamOpponentsState extends State<TeamOpponents> {
       children: <Widget>[
         new Row(
           children: <Widget>[
-            new DropdownButton<String>(
-              hint: new Text(messsages.seasonselect),
-              value: _seasonUid,
-              items: _buildItems(context, widget._teamBloc.currentState.team),
-              onChanged: (String val) {
-                print('changed $val');
-                setState(() {
-                  _seasonUid = val;
-                });
-              },
+            BlocBuilder(
+              bloc: widget._teamBloc,
+              builder: (BuildContext context, SingleTeamState teamState) =>
+                  DropdownButton<String>(
+                hint: new Text(messsages.seasonselect),
+                value: _seasonUid,
+                items: _buildItems(context, teamState),
+                onChanged: (String val) {
+                  print('changed $val');
+                  setState(() {
+                    _seasonUid = val;
+                  });
+                },
+              ),
             ),
           ],
         ),
@@ -271,9 +275,13 @@ class TeamOpponentsState extends State<TeamOpponents> {
             margin: new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
             decoration: new BoxDecoration(color: theme.cardColor),
             child: new SingleChildScrollView(
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _buildOpponents(widget._teamBloc.currentState.team),
+              child: BlocBuilder(
+                bloc: widget._teamBloc,
+                builder: (BuildContext context, SingleTeamState teamState) =>
+                    Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _buildOpponents(teamState.team, teamState),
+                ),
               ),
             ),
           ),

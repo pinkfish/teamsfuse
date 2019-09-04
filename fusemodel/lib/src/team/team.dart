@@ -50,8 +50,6 @@ abstract class Team implements Built<Team, TeamBuilder> {
 
   /// This is a list of user ids, not player Ids.
   BuiltSet<String> get admins;
-  BuiltMap<String, Opponent> get opponents;
-  BuiltMap<String, Season> get seasons;
 
   Team._();
   factory Team([updates(TeamBuilder b)]) = _$Team;

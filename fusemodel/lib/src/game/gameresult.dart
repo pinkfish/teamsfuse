@@ -93,10 +93,14 @@ abstract class GameResultDetails
     }
     if (data[_PERIOD] is String) {
       builder.currentPeriod = GamePeriod.fromIndex(data[_PERIOD]).toBuilder();
+    } else {
+      builder.currentPeriod = GamePeriod.regulation.toBuilder();
     }
     if (data.containsKey(_DIVISIONS) && data[_DIVISIONS] != null) {
       builder.divisions = GameDivisionsType.values
           .firstWhere((e) => e.toString() == data[_DIVISIONS]);
+    } else {
+      builder.divisions = GameDivisionsType.Halves;
     }
     if (data.containsKey(_TIME_DETAILS)) {
       builder.time = GamePeriodTime.fromJSON(data[_TIME_DETAILS]);

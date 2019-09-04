@@ -72,9 +72,12 @@ class _TeamOpponentsUpdate extends TeamEvent {
 class _TeamPlayerSeasonUpdates extends TeamEvent {
   final BuiltMap<String, Team> teamsByPlayer;
   final String playerUid;
+  final BuiltMap<String, Season> seasons;
 
   _TeamPlayerSeasonUpdates(
-      {@required this.playerUid, @required this.teamsByPlayer});
+      {@required this.playerUid,
+      @required this.teamsByPlayer,
+      @required this.seasons});
 }
 
 class _NewClubTeams extends TeamEvent {
@@ -100,15 +103,27 @@ abstract class TeamState extends Equatable {
   final BuiltMap<String, Team> teamsByPlayer;
   final BuiltMap<String, BuiltMap<String, Team>> clubTeams;
   final BuiltMap<String, Team> publicTeams;
+  final BuiltMap<String, Season> seasons;
+  final BuiltMap<String, Opponent> opponents;
   final bool onlySql;
 
   TeamState(
       {@required this.teamsByPlayer,
       @required this.onlySql,
+      @required this.seasons,
+      @required this.opponents,
       @required this.adminTeams,
       @required this.clubTeams,
       @required this.publicTeams})
-      : super([adminTeams, teamsByPlayer, clubTeams, publicTeams, onlySql]);
+      : super([
+          adminTeams,
+          teamsByPlayer,
+          clubTeams,
+          publicTeams,
+          onlySql,
+          seasons,
+          opponents
+        ]);
 
   ///
   /// Get the team from the various places it could exist.
@@ -164,6 +179,7 @@ class TeamUninitialized extends TeamState {
             adminTeams: BuiltMap(),
             clubTeams: BuiltMap(),
             publicTeams: BuiltMap(),
+            seasons: BuiltMap(),
             onlySql: true);
 
   @override
@@ -182,17 +198,21 @@ class TeamLoaded extends TeamState {
       BuiltMap<String, Team> adminTeams,
       BuiltMap<String, BuiltMap<String, Team>> clubTeams,
       BuiltMap<String, Team> publicTeams,
+      BuiltMap<String, Season> seasons,
+      BuiltMap<String, Opponent> opponents,
       bool onlySql})
       : super(
             teamsByPlayer: teamsByPlayer ?? state.teamsByPlayer,
             clubTeams: clubTeams ?? state.clubTeams,
             onlySql: onlySql ?? state.onlySql,
             publicTeams: publicTeams ?? state.publicTeams,
-            adminTeams: adminTeams ?? state.adminTeams);
+            adminTeams: adminTeams ?? state.adminTeams,
+            opponents: opponents ?? state.opponents,
+            seasons: seasons ?? state.seasons);
 
   @override
   String toString() {
-    return 'PlayerData{players: ${teamsByPlayer.length}, onlySql: $onlySql}';
+    return 'TeamLoaded{teamsByPlayer: ${teamsByPlayer.length}, onlySql: $onlySql} seasons: ${seasons.length} opponents: ${opponents.length}';
   }
 }
 
@@ -257,32 +277,35 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
 
   // This is called when the player seasons are updated.  Runs the rest of the
   // update stuff from in here.
-  Future<BuiltMap<String, Team>> _onPlayerSeasonUpdated(
+  Future<void> _onPlayerSeasonUpdated(
       String playerUid, Iterable<Season> seasons) async {
     Set<String> toDeleteSeasons = new Set<String>();
     Map<String, String> seasonToTeam = {};
 
     _teamByPlayerTrace?.incrementCounter('season');
 
+    // Build up the season to team mapping and the set to check for deletions.
     for (Team t in currentState.teamsByPlayer.values) {
       Club club;
       if (clubBloc.currentState.clubs.containsKey(t.clubUid)) {
         club = clubBloc.currentState.clubs[t.clubUid];
       }
       if (!t.isAdmin(club)) {
-        Iterable<String> playerSeasons = t.seasons.keys.where(
-            (String seasonUid) => t.seasons[seasonUid].players
-                .any((SeasonPlayer p) => p.playerUid == playerUid));
+        Iterable<String> playerSeasons = currentState.seasons.keys.where(
+            (String seasonUid) =>
+                currentState.seasons[seasonUid].players
+                    .any((SeasonPlayer p) => p.playerUid == playerUid) ||
+                currentState.seasons[seasonUid].teamUid == t.uid);
         toDeleteSeasons.addAll(playerSeasons);
-        for (String s in t.seasons.keys) {
-          seasonToTeam[s] = t.uid;
-        }
       }
     }
 
+    // Create the new set.
+    MapBuilder<String, Season> seasonMap = currentState.seasons.toBuilder();
     Map<String, TeamBuilder> teams = Map.fromEntries(
         currentState.teamsByPlayer.entries.map((MapEntry<String, Team> entry) =>
             MapEntry(entry.key, entry.value.toBuilder())));
+    // Run through the seasons and update stuff.
     for (Season doc in seasons) {
       coordinationBloc.loadingTrace?.incrementCounter("team");
       _teamByPlayerTrace?.incrementCounter('team');
@@ -291,7 +314,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
       TeamBuilder tBuilder;
       if (teams.containsKey(teamUid)) {
         tBuilder = teams[teamUid];
-        tBuilder.seasons[doc.uid] = doc;
         tBuilder.uid = teamUid;
       } else {
         // Get the data for the team itself.
@@ -322,6 +344,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         });
       }
       coordinationBloc.loadingTrace?.incrementCounter("playerTeam");
+      seasonMap[doc.uid] = doc;
     }
 
     for (String deleteUid in toDeleteSeasons) {
@@ -331,13 +354,13 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         bool overFound = false;
         for (String playerUid in playerBloc.currentState.players.keys) {
           overFound = overFound ||
-              team.seasons[deleteUid].players
+              currentState.seasons[deleteUid].players
                   .any((SeasonPlayer p) => p.playerUid == playerUid);
         }
         if (!overFound) {
           _teamByPlayerTrace?.incrementCounter('deleteseason');
           // Remove the season.
-          team.seasons.remove(deleteUid);
+          seasonMap.remove(deleteUid);
           coordinationBloc.persistentData
               .deleteElement(PersistenData.teamsTable, deleteUid);
         }
@@ -347,7 +370,10 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     var ret = MapBuilder<String, Team>();
     ret.addEntries(teams.entries.map((MapEntry<String, TeamBuilder> entry) =>
         MapEntry(entry.key, entry.value.build())));
-    return ret.build();
+    dispatch(_TeamPlayerSeasonUpdates(
+        teamsByPlayer: ret.build(),
+        playerUid: playerUid,
+        seasons: seasonMap.build()));
   }
 
   @override
@@ -382,6 +408,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     _cleanupSnaps();
     _playerSub?.cancel();
     _coordSub?.cancel();
+    _clubSub?.cancel();
   }
 
   @override
@@ -417,6 +444,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
           .getAllElements(PersistenData.teamsTable);
       Map<String, Team> newTeams = new Map<String, Team>();
       Map<String, Team> newAdminTeams = new Map<String, Team>();
+      MapBuilder<String, Opponent> opponents = MapBuilder();
       print(
           'Start teams ${coordinationBloc.start.difference(new DateTime.now())}');
       for (String uid in data.keys) {
@@ -435,7 +463,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
           teamsTrace.incrementCounter("opponent");
           Map<String, dynamic> innerData = opponentData[key];
           Opponent op = Opponent.fromJSON(key, uid, innerData).build();
-          team.opponents[key] = op;
+          opponents[key] = op;
         }
         Team realTeam = team.build();
         Club club;
@@ -452,6 +480,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
           state: currentState,
           teamsByPlayer: BuiltMap.from(newTeams),
           adminTeams: BuiltMap.from(newAdminTeams),
+          opponents: opponents.build(),
           onlySql: true);
       coordinationBloc.dispatch(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Team, sql: true));
@@ -521,9 +550,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
                 .databaseUpdateModel
                 .getPlayerSeasons(myUid)
                 .listen((Iterable<Season> seasons) async {
-              var teamsByPlayer = await _onPlayerSeasonUpdated(myUid, seasons);
-              dispatch(_TeamPlayerSeasonUpdates(
-                  teamsByPlayer: teamsByPlayer, playerUid: myUid));
+              _onPlayerSeasonUpdated(myUid, seasons);
             });
           }
         }
@@ -546,6 +573,7 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
       yield TeamLoaded(
           state: currentState,
           teamsByPlayer: event.teamsByPlayer,
+          seasons: event.seasons,
           onlySql: false);
       coordinationBloc.dispatch(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Team, sql: false));
@@ -555,8 +583,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
       Team team = currentState.getTeam(event.teamUid);
       if (team != null) {
         // This is not an admin team, so keep the seasons and opponents.
-        event.teamBuilder.seasons.addEntries(team.seasons.entries);
-        event.teamBuilder.opponents.addEntries(team.opponents.entries);
         Map<String, Team> newTeams =
             Map.fromEntries(currentState.teamsByPlayer.entries);
         newTeams[event.teamUid] = event.teamBuilder.build();

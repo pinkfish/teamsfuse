@@ -13,6 +13,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../blocs/singlegameprovider.dart';
 import '../blocs/singleleagueortournamentteamprovider.dart';
+import '../blocs/singleopponentprovider.dart';
+import '../blocs/singleseasonprovider.dart';
+import '../blocs/singleteamprovider.dart';
 import 'attendanceicon.dart';
 
 class GameCard extends StatelessWidget {
@@ -82,7 +85,7 @@ class GameCard extends StatelessWidget {
     if (team == null) {
       return null;
     }
-    if (!team.seasons.containsKey(game.seasonUid)) {
+    if (season == null) {
       return null;
     }
 
@@ -254,13 +257,89 @@ class GameCard extends StatelessWidget {
     launch(url);
   }
 
-  Widget _buildMain(BuildContext context, SingleGameState gameState,
-      SingleGameBloc gameBloc, LeagueOrTournamentTeam leagueTeam) {
+  String _titleWidget(BuildContext context, Game game,
+      LeagueOrTournamentTeam leagueTeam, SingleOpponentState opState) {
+    String title;
+
+    Opponent op = _opponentData(context, game, leagueTeam, opState);
+
+    TimeOfDay day = new TimeOfDay.fromDateTime(game.sharedData.tzTime);
+    String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
+    String endTimeFormat;
+    String tzShortName;
+    if (game.sharedData.timezone != local.name) {
+      tzShortName = getLocation(game.sharedData.timezone)
+          .timeZone(game.sharedData.time.toInt())
+          .abbr;
+    }
+
+    if (game.sharedData.time != game.sharedData.endTime) {
+      TimeOfDay endDay = new TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
+      endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
+    }
+    switch (game.sharedData.type) {
+      case EventType.Game:
+        String opName;
+        if (op == null) {
+          opName = Messages.of(context).unknown;
+        } else {
+          opName = op.name;
+        }
+        // Within an hour.
+        title = Messages.of(context)
+            .gametitle(format, endTimeFormat, tzShortName, opName);
+
+        break;
+
+      case EventType.Event:
+        title = Messages.of(context).eventtitle(
+            format, game.sharedData.name, endTimeFormat, tzShortName);
+
+        break;
+
+      case EventType.Practice:
+        title = Messages.of(context)
+            .trainingtitle(format, endTimeFormat, tzShortName);
+
+        break;
+    }
+    return title;
+  }
+
+  String _opponentUid(Game game) {
+    if (game.sharedData.type == EventType.Game &&
+        game.opponentUids.length > 0) {
+      return game.opponentUids[0];
+    }
+    return "123";
+  }
+
+  Opponent _opponentData(BuildContext context, Game game,
+      LeagueOrTournamentTeam leagueTeam, SingleOpponentState opState) {
+    if (game.sharedData.type == EventType.Game &&
+        game.opponentUids.length > 0) {
+      return opState.opponent;
+    } else if (game.sharedData.type == EventType.Game && leagueTeam != null) {
+      return (OpponentBuilder()..name = leagueTeam.name).build();
+    } else {
+      return (OpponentBuilder()
+            ..name = Messages.of(context).unknown
+            ..teamUid = game.teamUid
+            ..uid = "12")
+          .build();
+    }
+  }
+
+  Widget _buildMain(
+      BuildContext context,
+      SingleGameState gameState,
+      SingleGameBloc gameBloc,
+      LeagueOrTournamentTeam leagueTeam,
+      SingleSeasonState seasonState) {
     Game game = gameState.game;
     List<Widget> buttons = <Widget>[];
-    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
-    Team team = teamBloc.currentState.getTeam(game.teamUid);
     //print('Trying ${game.teamUid}');
+    /*
     Opponent op;
     // Use the opponent from the main list before the league one if it is
     // set.
@@ -278,7 +357,9 @@ class GameCard extends StatelessWidget {
             ..uid = "12")
           .build();
     }
+    */
 
+    /*
     Season season;
     if (team != null) {
       season = team.seasons[game.seasonUid];
@@ -286,23 +367,11 @@ class GameCard extends StatelessWidget {
     if (season == null) {
       season = new Season();
     }
+    */
 
     TZDateTime timeNow = new TZDateTime.now(local);
     Duration dur = timeNow.difference(game.sharedData.tzTime).abs();
-    TimeOfDay day = new TimeOfDay.fromDateTime(game.sharedData.tzTime);
-    String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
-    String endTimeFormat;
-    String tzShortName;
-    if (game.sharedData.timezone != local.name) {
-      tzShortName = getLocation(game.sharedData.timezone)
-          .timeZone(game.sharedData.time.toInt())
-          .abbr;
-    }
 
-    if (game.sharedData.time != game.sharedData.endTime) {
-      TimeOfDay endDay = new TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
-      endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
-    }
     String arriveFormat;
     // Only arrival time for games and only if it is before the game.
     if (game.arriveTime != game.sharedData.time &&
@@ -389,79 +458,64 @@ class GameCard extends StatelessWidget {
       }
     }
     List<Player> players = <Player>[];
-    if (season != null) {
-      PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+    PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
 
-      players = playerBloc.currentState.players.values
-          .where((Player p) =>
-              season.players.any((SeasonPlayer sp) => sp.playerUid == p.uid))
-          .toList();
-    }
-
-    for (Player play in players) {
-      subtitle.add(
-        new TextSpan(
-          style: Theme.of(context).textTheme.subhead,
-          text: Messages.of(context).nameandteam(team, play),
-        ),
-      );
-    }
+    players = playerBloc.currentState.players.values
+        .where((Player p) => seasonState.season.players
+            .any((SeasonPlayer sp) => sp.playerUid == p.uid))
+        .toList();
 
     Color color = Colors.white;
-    String title;
 
     if (game.sharedData.time < timeNow.millisecondsSinceEpoch &&
         dur.inMinutes < 60) {
       color = Colors.lightBlueAccent;
     }
 
-    switch (game.sharedData.type) {
-      case EventType.Game:
-        String opName;
-        if (op == null) {
-          opName = Messages.of(context).unknown;
-        } else {
-          opName = op.name;
-        }
-        // Within an hour.
-        title = Messages.of(context)
-            .gametitle(format, endTimeFormat, tzShortName, opName);
-
-        break;
-
-      case EventType.Event:
-        title = Messages.of(context).eventtitle(
-            format, game.sharedData.name, endTimeFormat, tzShortName);
-
-        break;
-
-      case EventType.Practice:
-        title = Messages.of(context)
-            .trainingtitle(format, endTimeFormat, tzShortName);
-
-        break;
-    }
     ListTile tile = new ListTile(
       onTap: () {
         Navigator.pushNamed(context, "/Game/" + game.uid);
       },
       leading: new TeamImage(
-        team: team,
+        teamUid: game.teamUid,
         width: 50.0,
         height: 50.0,
       ),
-      title: new Text(
-        title,
-        overflow: TextOverflow.clip,
-        style: new TextStyle(fontWeight: FontWeight.bold),
-      ),
-      subtitle: new RichText(
-        text: new TextSpan(
-          style: Theme.of(context).textTheme.subhead,
-          children: subtitle,
+      title: SingleOpponentProvider(
+        opponentUid: _opponentUid(game),
+        builder: (BuildContext context, SingleOpponentBloc opBloc) =>
+            BlocBuilder(
+          bloc: opBloc,
+          builder: (BuildContext context, SingleOpponentState opState) => Text(
+            _titleWidget(context, game, leagueTeam, opState),
+            overflow: TextOverflow.clip,
+            style: new TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
       ),
-      trailing: _buildTrailing(context, gameBloc, season, players),
+      subtitle: SingleTeamProvider(
+        teamUid: game.teamUid,
+        builder: (BuildContext context, SingleTeamBloc teamBloc) => BlocBuilder(
+            bloc: teamBloc,
+            builder: (BuildContext context, SingleTeamState state) {
+              for (Player play in players) {
+                subtitle.add(
+                  TextSpan(
+                    style: Theme.of(context).textTheme.subhead,
+                    text: Messages.of(context).nameandteam(state.team, play),
+                  ),
+                );
+              }
+
+              return RichText(
+                text: new TextSpan(
+                  style: Theme.of(context).textTheme.subhead,
+                  children: subtitle,
+                ),
+              );
+            }),
+      ),
+      trailing: _buildTrailing(context, gameBloc, seasonState.season, players),
     );
     if (buttons.length > 0) {
       return new Card(
@@ -488,32 +542,50 @@ class GameCard extends StatelessWidget {
 
   Widget _buildFromnState(BuildContext context, SingleGameBloc gameBloc) {
     return BlocBuilder(
-        bloc: gameBloc,
-        builder: (BuildContext context, SingleGameState state) {
-          if (state is SingleGameDeleted) {
-            return SizedBox();
-          }
-          print("Building game ${state.game.uid}");
-          Game game = state.game;
-          if (game.leagueOpponentUid != null &&
-              game.leagueOpponentUid.isNotEmpty) {
-            // Show this in a future.
-            return SingleLeagueOrTournamentTeamProvider(
-              leagueTeamUid: game.leagueOpponentUid,
+      bloc: gameBloc,
+      builder: (BuildContext context, SingleGameState state) {
+        if (state is SingleGameDeleted) {
+          return SizedBox();
+        }
+        print("Building game ${state.game.uid}");
+        Game game = state.game;
+        if (game.leagueOpponentUid != null &&
+            game.leagueOpponentUid.isNotEmpty) {
+          // Show this in a future.
+          return SingleLeagueOrTournamentTeamProvider(
+            leagueTeamUid: game.leagueOpponentUid,
+            builder: (BuildContext context,
+                    SingleLeagueOrTournamentTeamBloc leagueTeamBloc) =>
+                BlocBuilder(
+              bloc: leagueTeamBloc,
               builder: (BuildContext context,
-                      SingleLeagueOrTournamentTeamBloc leagueTeamBloc) =>
-                  BlocBuilder(
-                bloc: leagueTeamBloc,
-                builder: (BuildContext context,
-                    SingleLeagueOrTournamentTeamState teamState) {
-                  return _buildMain(context, state, gameBloc,
-                      teamState.leagueOrTournamentTeam);
-                },
+                      SingleLeagueOrTournamentTeamState teamState) =>
+                  SingleSeasonProvider(
+                seasonUid: game.seasonUid,
+                builder: (BuildContext contrext, SingleSeasonBloc seasonBloc) =>
+                    BlocBuilder(
+                  bloc: seasonBloc,
+                  builder:
+                      (BuildContext context, SingleSeasonState seasonState) {
+                    return _buildMain(context, state, gameBloc,
+                        teamState.leagueOrTournamentTeam, seasonState);
+                  },
+                ),
               ),
-            );
-          }
-          return _buildMain(context, state, gameBloc, null);
-        });
+            ),
+          );
+        }
+        return SingleSeasonProvider(
+          seasonUid: game.seasonUid,
+          builder: (BuildContext contrext, SingleSeasonBloc seasonBloc) =>
+              BlocBuilder(
+            bloc: seasonBloc,
+            builder: (BuildContext context, SingleSeasonState seasonState) =>
+                _buildMain(context, state, gameBloc, null, seasonState),
+          ),
+        );
+      },
+    );
   }
 
   @override

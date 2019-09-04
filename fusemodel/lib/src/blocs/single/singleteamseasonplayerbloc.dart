@@ -123,8 +123,8 @@ class SingleTeamSeasonPlayerBloc
       this.playerUid}) {
     _teamSub = teamBloc.state.listen((TeamState state) {
       Team team = state.getTeam(teamUid);
-      if (team != null && team.seasons.containsKey(seasonUid)) {
-        Season season = team.seasons[seasonUid];
+      if (team != null && state.seasons.containsKey(seasonUid)) {
+        Season season = state.seasons[seasonUid];
 
         // Only send this if the team is not the same.
         if (season.players.any((SeasonPlayer p) => p.playerUid == playerUid)) {
@@ -151,8 +151,8 @@ class SingleTeamSeasonPlayerBloc
   @override
   SingleTeamSeasonPlayerState get initialState {
     Team t = teamBloc.currentState.getTeam(teamUid);
-    if (t != null && t.seasons.containsKey(seasonUid)) {
-      Season season = t.seasons[seasonUid];
+    if (t != null && teamBloc.currentState.seasons.containsKey(seasonUid)) {
+      Season season = teamBloc.currentState.seasons[seasonUid];
       if (season.players.any((SeasonPlayer p) => p.playerUid == playerUid)) {
         SeasonPlayer player = season.players
             .firstWhere((SeasonPlayer p) => p.playerUid == playerUid);
@@ -197,8 +197,8 @@ class SingleTeamSeasonPlayerBloc
       yield SingleTeamSeasonPlayerSaving(state: currentState);
       try {
         Team t = teamBloc.currentState.getTeam(teamUid);
-        if (t != null && t.seasons.containsKey(seasonUid)) {
-          Season season = t.seasons[seasonUid];
+        if (t != null && teamBloc.currentState.seasons.containsKey(seasonUid)) {
+          Season season = teamBloc.currentState.seasons[seasonUid];
           await teamBloc.coordinationBloc.databaseUpdateModel
               .updateRoleInTeamForSeason(
                   season, event.player, event.player.role);

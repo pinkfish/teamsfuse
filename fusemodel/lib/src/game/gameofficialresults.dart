@@ -42,9 +42,7 @@ abstract class GameOfficialResults
     GameOfficialResultsBuilder builder = GameOfficialResultsBuilder();
     builder
       ..result = OfficialResult.values.firstWhere(
-          (e) =>
-              e.toString() == data[_OFFICIALRESULT] ??
-              OfficialResult.NotStarted.toString(),
+          (e) => e.toString() == data[_OFFICIALRESULT],
           orElse: () => OfficialResult.NotStarted)
       ..homeTeamLeagueUid = data[HOMETEAMUID]
       ..awayTeamLeagueUid = data[AWAYTEAMUID];
