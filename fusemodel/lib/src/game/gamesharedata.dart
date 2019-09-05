@@ -77,7 +77,8 @@ abstract class GameSharedData
   GameSharedData._();
   factory GameSharedData([updates(GameSharedDataBuilder b)]) = _$GameSharedData;
 
-  static GameSharedDataBuilder fromJSON(String uid, Map<String, dynamic> data) {
+  static GameSharedDataBuilder fromJSON(
+      String uid, Map<dynamic, dynamic> data) {
     assert(uid != null);
     GameSharedDataBuilder builder = GameSharedDataBuilder()
       ..uid = uid

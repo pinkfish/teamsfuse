@@ -106,6 +106,7 @@ abstract class Game implements Built<Game, GameBuilder> {
   static const String OPPONENTUID = 'opponentUid';
   static const String SHAREDDATAUID = 'sharedDataUid';
   static const String LEAGUEOPPONENTUID = 'leagueOpponentUid';
+  static const String GAMESHAREDDATA = 'sharedData';
 
   Map<String, dynamic> toJSON() {
     Map<String, dynamic> ret = new Map<String, dynamic>();

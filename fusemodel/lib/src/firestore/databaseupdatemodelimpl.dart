@@ -547,7 +547,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   ///
   Stream<GameSnapshotEvent> getBasicGames(
       {DateTime start, DateTime end, String teamUid, String seasonUid}) async* {
-    Map<String, Stream<GameSnapshotEvent>> sharedDocStream = {};
     Stream<GameSnapshotEvent> mainGameStream;
     StreamGroup<GameSnapshotEvent> str = StreamGroup<GameSnapshotEvent>();
 
@@ -569,24 +568,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String sharedGameUid = snap.data[Game.SHAREDDATAUID];
       GameSharedData sharedData;
       if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-        DocumentReferenceWrapper sharedRef =
-            wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
-        DocumentSnapshotWrapper snapShared = await sharedRef.get();
-        sharedData =
-            GameSharedData.fromJSON(snapShared.documentID, snapShared.data)
-                .build();
-        // Add in a subscription to this shared game stuff and listen to it.
-        if (!sharedDocStream.containsKey(sharedGameUid)) {
-          sharedDocStream[sharedGameUid] = sharedRef.snapshots().map(
-              (DocumentSnapshotWrapper snapUpdate) => GameSnapshotEvent(
-                  type: GameSnapshotEventType.SharedGameUpdate,
-                  teamUid: teamUid,
-                  gameUid: snap.documentID,
-                  sharedGame: GameSharedData.fromJSON(
-                          snapUpdate.documentID, snapUpdate.data)
-                      .build()));
-          str.add(sharedDocStream[sharedGameUid]);
-        }
+        print(snap.data[Game.GAMESHAREDDATA]);
+        sharedData = GameSharedData.fromJSON(sharedGameUid,
+                snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>)
+            .build();
       } else {
         // Missing shared data uid.
         sharedData = GameSharedData.fromJSON("", snap.data).build();
@@ -595,44 +580,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .build();
       data.add(g);
     }
-    yield GameSnapshotEvent(
-        type: GameSnapshotEventType.GameList,
-        teamUid: teamUid,
-        newGames: data,
-        deletedGames: []);
+    yield GameSnapshotEvent(teamUid: teamUid, newGames: data, deletedGames: []);
 
     // Merge the streams.
     mainGameStream = gameQuery
         .snapshots()
         .asyncMap((QuerySnapshotWrapper queryGameSnap) async {
       Set<Game> data = new Set<Game>();
-      Set<String> sharedGamesToRemove = Set.from(sharedDocStream.keys);
       for (DocumentSnapshotWrapper snap in queryGameSnap.documents) {
         String sharedGameUid;
         GameSharedData sharedData;
         sharedGameUid = snap.data[Game.SHAREDDATAUID] as String;
         if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-          DocumentReferenceWrapper sharedRef = wrapper
-              .collection(GAMES_SHARED_COLLECTION)
-              .document(sharedGameUid);
-          DocumentSnapshotWrapper snapShared = await sharedRef.get();
-          sharedData =
-              GameSharedData.fromJSON(snapShared.documentID, snapShared.data)
-                  .build();
-          String gameId = snap.documentID;
-          // Listen to changes too.
-          sharedGamesToRemove.remove(snapShared.documentID);
-          if (!sharedDocStream.containsKey(sharedGameUid)) {
-            sharedDocStream[sharedGameUid] = sharedRef.snapshots().map(
-                (DocumentSnapshotWrapper snapUpdate) => GameSnapshotEvent(
-                    type: GameSnapshotEventType.SharedGameUpdate,
-                    teamUid: teamUid,
-                    gameUid: snap.documentID,
-                    sharedGame: GameSharedData.fromJSON(
-                            snapUpdate.documentID, snapUpdate.data)
-                        .build()));
-            str.add(sharedDocStream[sharedGameUid]);
-          }
+          sharedData = GameSharedData.fromJSON(
+                  sharedGameUid, snap.data[Game.GAMESHAREDDATA])
+              .build();
         } else {
           sharedData = GameSharedData.fromJSON("", snap.data).build();
         }
@@ -642,20 +604,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
                 .build();
         data.add(newGame);
       }
-      // Remove any old shared games that we are waiting for.
-      for (String rem in sharedGamesToRemove) {
-        str.remove(sharedDocStream[rem]);
-        sharedDocStream.remove(rem);
-      }
       Iterable<String> toDelete = queryGameSnap.documentChanges
           .where((DocumentChangeWrapper wrap) =>
               wrap.type == DocumentChangeTypeWrapper.removed)
           .map((DocumentChangeWrapper wrap) => wrap.document.documentID);
       return GameSnapshotEvent(
-          type: GameSnapshotEventType.GameList,
-          teamUid: teamUid,
-          newGames: data,
-          deletedGames: toDelete);
+          teamUid: teamUid, newGames: data, deletedGames: toDelete);
     });
 
     str.add(mainGameStream);
@@ -666,20 +620,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   // Games!
-  Future<GameSharedData> _getSharedGameInternal(String sharedGameUid) async {
-    DocumentReferenceWrapper ref =
-        wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
-
-    DocumentSnapshotWrapper doc = await ref.get();
-    if (doc.exists) {
-      GameSharedData gameSharedData =
-          GameSharedData.fromJSON(doc.documentID, doc.data).build();
-
-      return gameSharedData;
-    }
-    return null;
-  }
-
   @override
   Stream<GameSharedData> getSharedGame(String sharedGameUid) async* {
     DocumentReferenceWrapper ref =
@@ -702,7 +642,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String sharedGameUid = snap.data[Game.SHAREDDATAUID];
       GameSharedData shared;
       if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-        shared = await _getSharedGameInternal(sharedGameUid);
+        shared = GameSharedData.fromJSON(
+                sharedGameUid, snap.data[Game.GAMESHAREDDATA])
+            .build();
       } else {
         shared = GameSharedData.fromJSON("", snap.data).build();
       }
@@ -715,7 +657,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         String sharedGameUid = snap.data[Game.SHAREDDATAUID];
         GameSharedData shared;
         if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-          shared = await _getSharedGameInternal(sharedGameUid);
+          shared = GameSharedData.fromJSON(
+                  sharedGameUid, snap.data[Game.GAMESHAREDDATA])
+              .build();
         } else {
           shared = GameSharedData.fromJSON("", snap.data).build();
         }

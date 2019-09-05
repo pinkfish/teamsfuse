@@ -155,21 +155,8 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
                   end: gameBloc.currentState.start,
                   teamUid: teamUid)
               .listen((GameSnapshotEvent gse) {
-            if (gse.type == GameSnapshotEventType.GameList) {
-              _newerGamesByTeam[myUid] = gse.newGames;
-              dispatch(_FilteredGameEventUpdatedStuff());
-            } else {
-              List<Game> updateGames = _newerGamesByTeam[myUid].toList();
-              for (Game g in _newerGamesByTeam[myUid]) {
-                if (g.uid == gse.gameUid) {
-                  updateGames.remove(g);
-                  updateGames.add(g.rebuild(
-                      (b) => b..sharedData = gse.sharedGame.toBuilder()));
-                }
-              }
-              _newerGamesByTeam[myUid] = updateGames;
-              dispatch(_FilteredGameEventUpdatedStuff());
-            }
+            _newerGamesByTeam[myUid] = gse.newGames;
+            dispatch(_FilteredGameEventUpdatedStuff());
           });
         }
       }

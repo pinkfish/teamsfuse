@@ -34,13 +34,11 @@ class FirestoreChangedData {
   final List<FirestoreWrappedData> removed;
 }
 
-enum GameSnapshotEventType { GameList, SharedGameUpdate }
 
 ///
 /// Updates the games when things change in the snapshot.
 ///
 class GameSnapshotEvent {
-  final GameSnapshotEventType type;
   final GameSharedData sharedGame;
   final Iterable<Game> newGames;
   final Iterable<String> deletedGames;
@@ -48,7 +46,7 @@ class GameSnapshotEvent {
   final String teamUid;
 
   GameSnapshotEvent(
-      {this.type,
+      {
       this.gameUid,
       this.teamUid,
       this.sharedGame,

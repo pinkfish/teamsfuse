@@ -245,14 +245,8 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
         _gameSub = teamBloc.coordinationBloc.databaseUpdateModel
             .getSeasonGames(currentState.season)
             .listen((GameSnapshotEvent games) {
-          switch (games.type) {
-            case GameSnapshotEventType.SharedGameUpdate:
-              break;
-            case GameSnapshotEventType.GameList:
-              dispatch(_SingleSeasonLoadedGames(
-                  games: BuiltList.of(games.newGames)));
-              break;
-          }
+          dispatch(
+              _SingleSeasonLoadedGames(games: BuiltList.of(games.newGames)));
         });
       }
     }

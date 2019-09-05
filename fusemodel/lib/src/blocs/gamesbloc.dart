@@ -122,17 +122,6 @@ class GameEventSetBoundaries extends GameEvent {
   GameEventSetBoundaries({this.start, this.end});
 }
 
-class _GameEventSharedDataUpdated extends GameEvent {
-  final GameSharedData sharedData;
-  final String teamUid;
-  final String gameUid;
-
-  _GameEventSharedDataUpdated(
-      {@required this.teamUid,
-      @required this.gameUid,
-      @required this.sharedData});
-}
-
 ///
 /// Handles the work around the games and game system inside of
 /// the app.
@@ -193,15 +182,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         _gameSubscriptions[teamUid] = coordinationBloc.databaseUpdateModel
             .getBasicGames(start: _start, end: _end, teamUid: teamUid)
             .listen((GameSnapshotEvent gse) {
-          if (gse.type == GameSnapshotEventType.GameList) {
-            dispatch(
-                _GameEventNewDataLoaded(teamUid: myUid, games: gse.newGames));
-          } else {
-            dispatch(_GameEventSharedDataUpdated(
-                teamUid: gse.teamUid,
-                gameUid: gse.gameUid,
-                sharedData: gse.sharedGame));
-          }
+          dispatch(
+              _GameEventNewDataLoaded(teamUid: myUid, games: gse.newGames));
         });
       }
     }
@@ -284,26 +266,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
           end: _end);
       coordinationBloc.dispatch(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Game, sql: false));
-    }
-
-    // New shared game data.
-    if (event is _GameEventSharedDataUpdated) {
-      MapBuilder<String, BuiltMap<String, Game>> allGames =
-          currentState.gamesByTeam.toBuilder();
-      Game g = allGames[event.teamUid][event.gameUid];
-      MapBuilder<String, Game> teamGames = allGames[event.teamUid].toBuilder();
-      teamGames[event.gameUid] =
-          g.rebuild((b) => b..sharedData = event.sharedData.toBuilder());
-      allGames[event.teamUid] = teamGames.build();
-      MapBuilder<String, GameSharedData> newMap =
-          currentState.sharedGameData.toBuilder();
-      newMap[g.sharedDataUid] = g.sharedData;
-      yield GameLoaded(
-          gamesByTeam: allGames.build(),
-          sharedGames: newMap.build(),
-          onlySql: currentState.onlySql,
-          start: _start,
-          end: _end);
     }
 
     // Unload everything.
