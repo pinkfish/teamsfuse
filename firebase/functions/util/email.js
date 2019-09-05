@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 exports.TEXT_BODY = `
 Reminder for upcoming game with {{team.name}}, details below:
