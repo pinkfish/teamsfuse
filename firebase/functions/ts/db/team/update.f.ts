@@ -1,13 +1,13 @@
 import * as functions from 'firebase-functions';
 import * as algolia from '../../util/algolia';
 import * as admin from 'firebase-admin';
-import { updateUsers } from './helper';
+import { updateUsers } from '../../util/updateusers';
 
 const db = admin.firestore();
 
 // Handle the creation case as well, so if we create a game
 // with a specific result we update the team values.
-export const onTeamUpdate = functions.firestore.document('/Team/{leagueId}').onUpdate((inputData, context) => {
+export const onTeamUpdate = functions.firestore.document('/Teams/{teamId}').onUpdate((inputData, context) => {
     const data = inputData.after.data();
     const previousData = inputData.before.data();
 
@@ -20,7 +20,7 @@ export const onTeamUpdate = functions.firestore.document('/Team/{leagueId}').onU
         if (newData.size > 0) {
             // Do the update.
             return db
-                .collection('Team')
+                .collection('Teams')
                 .doc(inputData.after.id)
                 .update(newData);
         }
