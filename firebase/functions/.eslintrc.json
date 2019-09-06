@@ -1,13 +1,21 @@
 {
   "parserOptions": {
     // Required for certain syntax usages
-    "ecmaVersion": 2018
+    "ecmaVersion": 2018,
+    "project": "./tsconfig.json",
+    "sourceType": "module"
   },
   "plugins": [
     "@typescript-eslint",
     "promise",
     "prettier"
   ],
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "plugin:prettier/recommended",
+    "prettier/@typescript-eslint"
+  ],
+
   "overrides": [
     {
       "files": [
@@ -137,10 +145,10 @@
       ],
       "extends": [
         "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
         "plugin:prettier/recommended",
         "prettier/@typescript-eslint"
-      ],
-      "parser": "@typescript-eslint/parser"
+      ]
     }
   ]
 }

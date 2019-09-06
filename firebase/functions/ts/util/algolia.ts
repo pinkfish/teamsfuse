@@ -8,9 +8,9 @@ const db = admin.firestore();
 
 export function updateTeam(teamDoc: functions.firestore.DocumentSnapshot): Promise<any> {
     const data = teamDoc!.data();
-if (data === null || data === undefined) {
-return Promise.resolve(null);
-}
+    if (data === null || data === undefined) {
+        return Promise.resolve(null);
+    }
     data.objectID = 'T' + teamDoc.id;
     delete data.archived;
     delete data.admins;
@@ -22,11 +22,11 @@ return Promise.resolve(null);
     return teamIndex.saveObjects([data]);
 }
 
-export  function deleteTeam(teamId: string): Promise<any> {
+export function deleteTeam(teamId: string): Promise<any> {
     return teamIndex.deleteObjects(['T' + teamId]);
 }
 
-export  function updateLeagueTeam(teamDoc: functions.firestore.DocumentSnapshot): Promise<any> {
+export function updateLeagueTeam(teamDoc: functions.firestore.DocumentSnapshot): Promise<any> {
     const data = teamDoc.data();
     data!.objectID = 't' + teamDoc.id;
     delete data!.members;
@@ -70,11 +70,11 @@ export  function updateLeagueTeam(teamDoc: functions.firestore.DocumentSnapshot)
         });
 }
 
-export  function deleteLeagueTeam(teamId: string): Promise<any> {
+export function deleteLeagueTeam(teamId: string): Promise<any> {
     return teamIndex.deleteObjects(['t' + teamId]);
 }
 
-export  function updateLeague (leagueDoc: functions.firestore.DocumentSnapshot): Promise<any> {
+export function updateLeague(leagueDoc: functions.firestore.DocumentSnapshot): Promise<any> {
     const data = leagueDoc.data();
     data!.objectID = 'L' + leagueDoc.id;
     delete data!.members;
@@ -108,11 +108,11 @@ export  function updateLeague (leagueDoc: functions.firestore.DocumentSnapshot):
     return Promise.resolve(null);
 }
 
-export  function deleteLeague(teamId: string): Promise<any> {
+export function deleteLeague(teamId: string): Promise<any> {
     return teamIndex.deleteObjects(['L' + teamId]);
 }
 
-export  function updateLeagueSeason(teamDoc: functions.firestore.DocumentSnapshot): Promise<any> {
+export function updateLeagueSeason(teamDoc: functions.firestore.DocumentSnapshot): Promise<any> {
     teamIndex.browse(
         '',
         {
@@ -143,7 +143,7 @@ export  function updateLeagueSeason(teamDoc: functions.firestore.DocumentSnapsho
 }
 
 export function deleteLeagueSeason(teamId: string) {
-return;
+    return;
 }
 
 export function updateLeagueDivison(teamDoc: functions.firestore.DocumentSnapshot): Promise<any> {
@@ -166,7 +166,7 @@ export function updateLeagueDivison(teamDoc: functions.firestore.DocumentSnapsho
             }
             const records: Record<string, any>[] = [];
             toUpdateRecords.forEach(id => {
-                const data = { 'leagueDivisonName': teamDoc!.data()!.name, 'objectID': id };
+                const data = { leagueDivisonName: teamDoc!.data()!.name, objectID: id };
                 records.push(data);
             });
             return teamIndex.partialUpdateObjects(records);
@@ -175,6 +175,6 @@ export function updateLeagueDivison(teamDoc: functions.firestore.DocumentSnapsho
     return Promise.resolve(null);
 }
 
-export  function deleteLeagueDivison (teamId: string) {
-return;
+export function deleteLeagueDivison(teamId: string) {
+    return;
 }
