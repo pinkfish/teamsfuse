@@ -3,7 +3,7 @@
     "module": "commonjs",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "outDir": "out",
+    "outDir": "lib",
     "sourceMap": true,
     "strict": true,
     "target": "es2018"
@@ -13,6 +13,9 @@
     "ts",
     "lib/**/*.js",
     "index.js"
+  ],
+  "exclude": [
+    "out/**"
   ],
   "allowJs": "true"
 }
