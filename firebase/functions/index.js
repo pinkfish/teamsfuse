@@ -22,6 +22,10 @@ for (let f = 0, fl = files.length; f < fl; f++) {
             .join('_'),
     ); // Strip off '.f.js'
     if (!process.env.FUNCTION_NAME || process.env.FUNCTION_NAME === functionName) {
-        exports[functionName] = require(file);
+        const stuff = require(file);
+        console.log(stuff);
+        for (let f in stuff) {
+          exports[f] = stuff[f];
+        }
     }
 }

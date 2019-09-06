@@ -10,8 +10,7 @@
   },
   "compileOnSave": true,
   "include": [
-    "util",
-    "db"
+    "ts"
   ],
   "allowJs": "true"
 }

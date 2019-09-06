@@ -225,37 +225,42 @@ exports.notifyForGame = (game, payload, excludeUser, onlyGames, sharedGameData) 
             return Promise.all(allRets);
         })
         .then(response => {
-            const tokensToRemove = [];
-            for (const val in response) {
-                if (typeof val === 'object' && val.constructor === Array) {
-                    var userOb = val[0];
-                    const pushResponse = val[1];
-                    // If we have a results property then it was for sending stuff.
-                    pushResponse.results.forEach((result, index) => {
-                        const error = result.error;
-                        if (error) {
-                            console.error('Failure sending notification to', userOb.id, error);
-                            // Cleanup the tokens who are not registered anymore.
-                            if (
-                                error.code === 'messaging/invalid-registration-token' ||
-                                error.code === 'messaging/registration-token-not-registered'
-                            ) {
-                                console.log('Removing ' + result.canonicalRegistrationToken);
-                                tokensToRemove.push(
-                                    db
-                                        .collection('UserData')
-                                        .doc(userOb.id)
-                                        .update('tokens.' + tokenKey, admin.firestore.FieldValue.delete()),
-                                );
-                            }
-                        }
-                    });
-                }
-            }
-            return Promise.all(tokensToRemove);
+            return handleNotifyResponse(response, tokenKey);
         })
         .catch(error => console.error('There was an error while sending the notification:', error));
 };
+
+function handleNotifyResponse(resppnse) {
+    const tokensToRemove = [];
+    for (const val in response) {
+        if (typeof val === 'object' && val.constructor === Array) {
+            var userOb = val[0];
+            const pushResponse = val[1];
+            // If we have a results property then it was for sending stuff.
+            for (const idx in pushResponse.results) {
+                const result = pushResponse[idx];
+                const error = result.error;
+                if (error) {
+                    console.error('Failure sending notification to', userOb.id, error);
+                    // Cleanup the tokens who are not registered anymore.
+                    if (
+                        error.code === 'messaging/invalid-registration-token' ||
+                        error.code === 'messaging/registration-token-not-registered'
+                    ) {
+                        console.log('Removing ' + result.canonicalRegistrationToken);
+                        tokensToRemove.push(
+                            db
+                                .collection('UserData')
+                                .doc(userOb.id)
+                                .update('tokens.' + userOb, admin.firestore.FieldValue.delete()),
+                        );
+                    }
+                }
+            }
+        }
+    }
+    return Promise.all(tokensToRemove);
+}
 
 function formatAvailability(input, season) {
     let availabilityHtml = '';

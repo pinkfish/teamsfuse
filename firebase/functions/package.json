@@ -15,6 +15,7 @@
     "eslintcheck": "eslint --print_config index.js | eslint-config-prettier-check"
   },
   "dependencies": {
+    "@types/algoliasearch": "^3.30.18",
     "algoliasearch": "^3.34.0",
     "camelcase": "^5.3.1",
     "cors": "^2.8.5",
