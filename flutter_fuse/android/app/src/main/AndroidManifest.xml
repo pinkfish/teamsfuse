@@ -61,11 +61,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyC0nzXvh-NqEV5c1Qoa-DCUY6iVXG0HcGQ"/>
-        <service android:name=".FlutterFirebaseInstanceIDService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>
         <service android:name=".FlutterFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>

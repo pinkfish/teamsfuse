@@ -20,8 +20,7 @@ class SingleTeamSeasonPlayerProvider
   static SingleTeamSeasonPlayerBloc _createBloc(
       BuildContext context, String uid, String teamUid, String seasonUid) {
     return SingleTeamSeasonPlayerBloc(
-        teamBloc: BlocProvider.of<TeamBloc>(context),
-        teamUid: teamUid,
+        seasonBloc: BlocProvider.of<SeasonBloc>(context),
         seasonUid: seasonUid,
         playerUid: uid);
   }

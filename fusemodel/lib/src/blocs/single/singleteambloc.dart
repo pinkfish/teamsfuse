@@ -8,6 +8,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../clubbloc.dart';
+import '../seasonbloc.dart';
 import '../teambloc.dart';
 
 ///
@@ -240,6 +241,12 @@ class _SingleTeamNewTeam extends SingleTeamEvent {
       @required this.seasons});
 }
 
+class _SingleTeamNewSeasons extends SingleTeamEvent {
+  final BuiltList<Season> seasons;
+
+  _SingleTeamNewSeasons({@required this.seasons});
+}
+
 class _SingleTeamDeleted extends SingleTeamEvent {
   _SingleTeamDeleted();
 }
@@ -272,18 +279,21 @@ class _SingleTeamNoClub extends SingleTeamEvent {
 class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
   final TeamBloc teamBloc;
   final ClubBloc clubBloc;
+  final SeasonBloc seasonBloc;
   final String teamUid;
 
   static String createNew = "new";
 
   StreamSubscription<TeamState> _teamSub;
   StreamSubscription<ClubState> _clubSub;
+  StreamSubscription<SeasonState> _seasonStateSub;
   StreamSubscription<Iterable<InviteAsAdmin>> _inviteAdminSub;
   StreamSubscription<Iterable<Season>> _seasonSub;
 
   SingleTeamBloc(
       {@required this.teamBloc,
       @required this.clubBloc,
+      @required this.seasonBloc,
       @required this.teamUid}) {
     _teamSub = teamBloc.state.listen((TeamState state) {
       Team team = state.getTeam(teamUid);
@@ -291,13 +301,10 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
         // Only send this if the team is not the same.
         var builder = MapBuilder<String, Opponent>();
         builder.addEntries(state.opponents.entries.where(
-                (MapEntry<String, Opponent> op) =>
-            op.value.teamUid == team.uid));
+            (MapEntry<String, Opponent> op) => op.value.teamUid == team.uid));
         dispatch(
           _SingleTeamNewTeam(
             newTeam: team,
-            seasons: BuiltList.of(state.seasons.values
-                .where((Season s) => s.teamUid == team.uid)),
             opponents: builder.build(),
           ),
         );
@@ -307,6 +314,14 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
         dispatch(_SingleTeamDeleted());
       }
     });
+    _seasonStateSub = seasonBloc.state.listen(((SeasonState state) {
+      dispatch(
+        _SingleTeamNewSeasons(
+          seasons: BuiltList.of(
+              state.seasons.values.where((Season s) => s.teamUid == teamUid)),
+        ),
+      );
+    }));
   }
 
   @override
@@ -474,10 +489,14 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
 
     if (event is SingleTeamLoadAllSeasons) {
       _seasonSub = teamBloc.coordinationBloc.databaseUpdateModel
-          .getAllSeasons(teamUid)
+          .getSeasonsForTeam(teamUid)
           .listen((Iterable<Season> seasons) {
         dispatch(_SingleTeamSeasonDataLoaded(seasons: seasons));
       });
+    }
+
+    if (event is _SingleTeamNewSeasons) {
+      yield SingleTeamLoaded(fullSeason: event.seasons, state: currentState);
     }
 
     if (event is _SingleTeamSeasonDataLoaded) {

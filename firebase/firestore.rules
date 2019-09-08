@@ -1,3 +1,5 @@
+rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -33,7 +35,7 @@ service cloud.firestore {
       allow write: if isSignedIn();
     }
 
-    match /League/{club} {
+    match /League/{league} {
       allow read: if true;
       allow update, delete: if isSignedIn() &&
           request.resource.data.members[request.auth.uid].admin == true;
@@ -42,31 +44,31 @@ service cloud.firestore {
           request.resource.data.members[request.auth.uid].admin == true;
     }
 
-    match /LeagueDivision/{club} {
+    match /LeagueDivision/{leagueDivision} {
       allow read: if true;
       allow update, delete: if isSignedIn();
       allow create: if isSignedIn() &&
           exists(/databases/$(database)/documents/LeagueSeason/$(request.resource.data.seasonUid));
     }
 
-    match /LeagueSeason/{club} {
+    match /LeagueSeason/{leagueSeason} {
       allow read: if true;
       allow write: if isSignedIn();
       allow create: if isSignedIn() &&
           exists(/databases/$(database)/documents/League/$(request.resource.data.leagueUid));
     }
 
-    match /LeagueTeam/{club} {
+    match /LeagueTeam/{} {leagueTeam}
       allow read: if true;
       allow write: if isSignedIn();
     }
 
-    match /MessageRecipients/{club} {
+    match /MessageRecipients/{recipient} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
     }
 
-    match /Messages/{club} {
+    match /Messages/{message} {
       match /{ALLSUBCOLLECTIONS=**} {
             allow read: if isSignedIn();
             allow write: if isSignedIn();
@@ -75,8 +77,9 @@ service cloud.firestore {
       allow write: if isSignedIn();
     }
 
-    match /Seasons/{club} {
-      allow read: if isSignedIn();
+    match /Seasons/{season} {
+      allow read: if isSignedIn() &&
+        (request.data.user[request.auth.uid].added;
       allow write: if isSignedIn();
     }
 
@@ -85,7 +88,9 @@ service cloud.firestore {
         allow read: if isSignedIn();
         allow write: if isSignedIn();
       }
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() &&
+        (request.data.user[request.auth.uid].added ||
+        request.data.admins[request.auth.uid]);
       allow write: if isSignedIn();
     }
 

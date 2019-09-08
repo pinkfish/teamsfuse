@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@types/algoliasearch": "^3.30.18",
+    "@types/lodash": "^4.14.138",
     "algoliasearch": "^3.34.0",
     "camelcase": "^5.3.1",
     "cors": "^2.8.5",
@@ -26,6 +27,7 @@
     "firebase-functions": "^3.2.0",
     "glob": "^7.1.4",
     "handlebars": "^4.2.0",
+    "lodash": "^4.17.15",
     "moment-timezone": "^0.5.26",
     "nodemailer": "^6.3.0",
     "nodemailer-mailgun-transport": "^1.4.0",

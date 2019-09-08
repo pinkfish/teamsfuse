@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import '../teambloc.dart';
+import '../seasonbloc.dart';
 
 ///
 /// The basic state for all the bits of the single team bloc.
@@ -154,15 +154,15 @@ class _SingleSeasonLoadedGames extends SingleSeasonEvent {
 /// Bloc to handle updates and state of a specific team.
 ///
 class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
-  final TeamBloc teamBloc;
+  final SeasonBloc seasonBloc;
   final String seasonUid;
 
-  StreamSubscription<TeamState> _teamSub;
+  StreamSubscription<SeasonState> _seasonSub;
   StreamSubscription<Iterable<InviteToTeam>> _inviteSub;
   StreamSubscription<GameSnapshotEvent> _gameSub;
 
-  SingleSeasonBloc({this.teamBloc, this.seasonUid}) {
-    _teamSub = teamBloc.state.listen((TeamState state) {
+  SingleSeasonBloc({this.seasonBloc, this.seasonUid}) {
+    _seasonSub = seasonBloc.state.listen((SeasonState state) {
       if (state.seasons.containsKey(seasonUid)) {
         Season season = state.seasons[seasonUid];
 
@@ -179,8 +179,8 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
   @override
   void dispose() {
     super.dispose();
-    _teamSub?.cancel();
-    _teamSub = null;
+    _seasonSub?.cancel();
+    _seasonSub = null;
     _inviteSub?.cancel();
     _inviteSub = null;
     _gameSub?.cancel();
@@ -189,9 +189,9 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
 
   @override
   SingleSeasonState get initialState {
-    if (teamBloc.currentState.seasons.containsKey(seasonUid)) {
+    if (seasonBloc.currentState.seasons.containsKey(seasonUid)) {
       return SingleSeasonLoaded(
-          season: teamBloc.currentState.seasons[seasonUid],
+          season: seasonBloc.currentState.seasons[seasonUid],
           loadedGames: false,
           loadedInvites: false,
           games: BuiltList(),
@@ -216,7 +216,7 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
     if (event is SingleSeasonUpdate) {
       yield SingleSeasonSaving(state: currentState);
       try {
-        await teamBloc.coordinationBloc.databaseUpdateModel
+        await seasonBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreSeason(event.season.build(), false);
         yield SingleSeasonLoaded(
             season: event.season.build(), state: currentState);
@@ -227,9 +227,9 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
 
     if (event is SingleSeasonLoadInvites) {
       if (_inviteSub == null) {
-        _inviteSub = teamBloc.coordinationBloc.databaseUpdateModel
+        _inviteSub = seasonBloc.coordinationBloc.databaseUpdateModel
             .getInviteForSeasonStream(
-                userUid: teamBloc
+                userUid: seasonBloc
                     .coordinationBloc.authenticationBloc.currentUser.uid,
                 seasonUid: seasonUid,
                 teamUid: currentState.season.teamUid)
@@ -242,7 +242,7 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
     if (event is SingleSeasonLoadGames) {
       print('Loading games');
       if (_gameSub == null) {
-        _gameSub = teamBloc.coordinationBloc.databaseUpdateModel
+        _gameSub = seasonBloc.coordinationBloc.databaseUpdateModel
             .getSeasonGames(currentState.season)
             .listen((GameSnapshotEvent games) {
           dispatch(

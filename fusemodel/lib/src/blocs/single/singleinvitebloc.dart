@@ -7,6 +7,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../invitebloc.dart';
+import '../seasonbloc.dart';
 import '../teambloc.dart';
 
 ///
@@ -160,6 +161,7 @@ class SingleInviteEventLoaded extends SingleInviteEvent {
 class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
   final InviteBloc inviteBloc;
   final TeamBloc teamBloc;
+  final SeasonBloc seasonBloc;
   final String inviteUid;
 
   StreamSubscription<InviteState> _inviteState;
@@ -170,6 +172,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
   SingleInviteBloc(
       {@required this.inviteBloc,
       @required this.teamBloc,
+      @required this.seasonBloc,
       @required this.inviteUid}) {
     _inviteState = inviteBloc.state.listen((InviteState state) {
       if (state is InviteLoaded) {
@@ -342,7 +345,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
         inviteBloc.coordinationBloc.databaseUpdateModel
             .addFirestoreSeason(season, pregenSeason);
       } else {
-        Season season = teamBloc.currentState.seasons[event.seasonUid];
+        Season season = seasonBloc.currentState.seasons[event.seasonUid];
         await inviteBloc.databaseUpdateModel.connectLeagueTeamToSeason(
             invite.leagueTeamUid, inviteBloc.currentState.uid, season);
       }
@@ -390,8 +393,9 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       }
       inviteBloc.analyticsSubsystem.logSignUp(signUpMethod: "inviteToTeam");
       // We add ourselves to the season.
-      Season doc =
-          await inviteBloc.databaseUpdateModel.getSeason(invite.seasonUid);
+      Season doc = await inviteBloc.databaseUpdateModel
+          .getSingleSeason(invite.seasonUid)
+          .first;
       if (doc == null) {
         return SingleInviteSaveFailed(
             failedInvite: invite,
@@ -418,8 +422,9 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
         teamBloc.coordinationBloc.analyticsSubsystem
             .logSignUp(signUpMethod: "inviteToTeam");
         // We add ourselves to the season.
-        Season doc =
-            await inviteBloc.databaseUpdateModel.getSeason(invite.seasonUid);
+        Season doc = await inviteBloc.databaseUpdateModel
+            .getSingleSeason(invite.seasonUid)
+            .first;
         if (doc != null) {
           // Update it!  First we add to the player.
           SeasonPlayer seasonPlayer = new SeasonPlayer((b) => b

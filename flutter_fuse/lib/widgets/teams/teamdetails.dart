@@ -56,9 +56,8 @@ class TeamDetails extends StatelessWidget {
     // Show all the seasons here, not just the ones we know.
     List<Widget> happyData = <Widget>[];
 
-    TeamBloc bloc = BlocProvider.of<TeamBloc>(context);
-    Iterable<Season> seasons = bloc.currentState.seasons.values
-        .where((Season s) => s.teamUid == team.team.uid);
+    Iterable<Season> seasons =
+        team.fullSeason.where((Season s) => s.teamUid == team.team.uid);
     if (seasons.length == 0) {
       ret.add(Text(Messages.of(context).noseasons));
     } else {

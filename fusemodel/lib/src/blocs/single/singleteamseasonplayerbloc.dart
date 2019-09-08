@@ -6,7 +6,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../playerbloc.dart';
-import '../teambloc.dart';
+import '../seasonbloc.dart';
 
 ///
 /// The basic state for all the bits of the single team bloc.
@@ -107,29 +107,24 @@ class SingleTeamSeasonPlayerDelete extends SingleTeamSeasonPlayerEvent {}
 ///
 class SingleTeamSeasonPlayerBloc
     extends Bloc<SingleTeamSeasonPlayerEvent, SingleTeamSeasonPlayerState> {
-  final TeamBloc teamBloc;
   final PlayerBloc playerBloc;
-  final String teamUid;
+  final SeasonBloc seasonBloc;
   final String seasonUid;
   final String playerUid;
 
-  StreamSubscription<TeamState> _teamSub;
+  StreamSubscription<SeasonState> _seasonSub;
 
   SingleTeamSeasonPlayerBloc(
-      {this.teamBloc,
-      this.playerBloc,
-      this.teamUid,
-      this.seasonUid,
-      this.playerUid}) {
-    _teamSub = teamBloc.state.listen((TeamState state) {
-      Team team = state.getTeam(teamUid);
-      if (team != null && state.seasons.containsKey(seasonUid)) {
+      {this.playerBloc, this.seasonBloc, this.seasonUid, this.playerUid}) {
+    _seasonSub = seasonBloc.state.listen((SeasonState state) {
+      if (state.seasons.containsKey(seasonUid)) {
         Season season = state.seasons[seasonUid];
 
-        // Only send this if the team is not the same.
+        // Only send this if the season is not the same.
         if (season.players.any((SeasonPlayer p) => p.playerUid == playerUid)) {
-          SeasonPlayer player = season.players
-              .firstWhere((SeasonPlayer p) => p.playerUid == playerUid);
+          SeasonPlayer player = season.players.firstWhere(
+              (SeasonPlayer p) => p.playerUid == playerUid,
+              orElse: () => null);
 
           if (player != currentState.seasonPlayer) {
             dispatch(_SingleTeamNewTeamSeasonPlayer(newPlayer: player));
@@ -144,15 +139,14 @@ class SingleTeamSeasonPlayerBloc
   @override
   void dispose() {
     super.dispose();
-    _teamSub?.cancel();
-    _teamSub = null;
+    _seasonSub?.cancel();
+    _seasonSub = null;
   }
 
   @override
   SingleTeamSeasonPlayerState get initialState {
-    Team t = teamBloc.currentState.getTeam(teamUid);
-    if (t != null && teamBloc.currentState.seasons.containsKey(seasonUid)) {
-      Season season = teamBloc.currentState.seasons[seasonUid];
+    if (seasonBloc.currentState.seasons.containsKey(seasonUid)) {
+      Season season = seasonBloc.currentState.seasons[seasonUid];
       if (season.players.any((SeasonPlayer p) => p.playerUid == playerUid)) {
         SeasonPlayer player = season.players
             .firstWhere((SeasonPlayer p) => p.playerUid == playerUid);
@@ -185,7 +179,7 @@ class SingleTeamSeasonPlayerBloc
       // Do its thing and it should remove ourselves whern it saves.
       yield SingleTeamSeasonPlayerSaving(state: currentState);
       try {
-        teamBloc.coordinationBloc.databaseUpdateModel
+        seasonBloc.coordinationBloc.databaseUpdateModel
             .removePlayerFromSeason(seasonUid, playerUid);
       } catch (e) {
         yield SingleTeamSeasonPlayerSaveFailed(state: currentState, error: e);
@@ -196,10 +190,9 @@ class SingleTeamSeasonPlayerBloc
     if (event is SingleTeamSeasonPlayerUpdate) {
       yield SingleTeamSeasonPlayerSaving(state: currentState);
       try {
-        Team t = teamBloc.currentState.getTeam(teamUid);
-        if (t != null && teamBloc.currentState.seasons.containsKey(seasonUid)) {
-          Season season = teamBloc.currentState.seasons[seasonUid];
-          await teamBloc.coordinationBloc.databaseUpdateModel
+        if (seasonBloc.currentState.seasons.containsKey(seasonUid)) {
+          Season season = seasonBloc.currentState.seasons[seasonUid];
+          await seasonBloc.coordinationBloc.databaseUpdateModel
               .updateRoleInTeamForSeason(
                   season, event.player, event.player.role);
         }

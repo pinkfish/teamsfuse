@@ -34,7 +34,7 @@ public class FirebaseBroadcastReceiver extends BroadcastReceiver implements NewI
         this.registrar = registrar;
 
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(FlutterFirebaseInstanceIDService.ACTION_TOKEN);
+        intentFilter.addAction(FlutterFirebaseMessagingService.ACTION_TOKEN);
         intentFilter.addAction(FlutterFirebaseMessagingService.ACTION_REMOTE_MESSAGE);
         LocalBroadcastManager manager = LocalBroadcastManager.getInstance(registrar.context());
         manager.registerReceiver(this, intentFilter);
@@ -49,8 +49,8 @@ public class FirebaseBroadcastReceiver extends BroadcastReceiver implements NewI
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         Log.i(TAG, "onReceive " + action);
-        if (action.equals(FlutterFirebaseInstanceIDService.ACTION_TOKEN)) {
-            String token = intent.getStringExtra(FlutterFirebaseInstanceIDService.EXTRA_TOKEN);
+        if (action.equals(FlutterFirebaseMessagingService.ACTION_TOKEN)) {
+            String token = intent.getStringExtra(FlutterFirebaseMessagingService.EXTRA_TOKEN);
             channel.invokeMethod("onToken", token);
         } else if (action.equals(FlutterFirebaseMessagingService.ACTION_REMOTE_MESSAGE)) {
             RemoteMessage message =

@@ -5,5 +5,6 @@ enum BlocsToLoad {
   LeagueOrTournament,
   Messages,
   Player,
-  Team
+  Team,
+  Season
 }

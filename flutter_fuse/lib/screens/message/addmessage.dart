@@ -36,6 +36,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
   FocusNode _focusNodeSubject = new FocusNode();
   FocusNode _focusNodeBody = new FocusNode();
   TeamBloc _teamBloc;
+  SeasonBloc _seasonBloc;
   String _messageBody;
   AddMessageBloc addMessageBloc;
   String _teamUid;
@@ -46,6 +47,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
   void initState() {
     super.initState();
     _teamBloc = BlocProvider.of<TeamBloc>(context);
+    _seasonBloc = BlocProvider.of<SeasonBloc>(context);
 
     _teamUid = widget.teamUid;
     _seasonUid = widget.seasonUid;
@@ -78,7 +80,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
       _formKey.currentState.save();
       if (_allPlayers) {
         // Add in everyone!
-        _teamBloc.currentState.seasons[_seasonUid].players
+        _seasonBloc.currentState.seasons[_seasonUid].players
             .forEach((SeasonPlayer play) {
           if (_includeMyself || play.playerUid != _sendAs) {
             _recipients.add(play.playerUid);
@@ -113,7 +115,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
       );
       if (_seasonUid != null &&
           _teamBloc.currentState.getTeam(_teamUid) != null &&
-          _teamBloc.currentState.seasons.containsKey(_seasonUid)) {
+          _seasonBloc.currentState.seasons.containsKey(_seasonUid)) {
         // Show who we are sending as, drop down if there is more than one
         // option.
         if (_possiblePlayers.length > 1) {
@@ -167,7 +169,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
         } else {
           // Show the list of players with checkboxes.
           Team team = _teamBloc.currentState.getTeam(_teamUid);
-          Season season = _teamBloc.currentState.seasons[_seasonUid];
+          Season season = _seasonBloc.currentState.seasons[_seasonUid];
 
           season.players.forEach((SeasonPlayer player) {
             ret.add(

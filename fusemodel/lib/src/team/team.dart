@@ -3,8 +3,6 @@ import 'package:built_value/built_value.dart';
 
 import '../club.dart';
 import '../common.dart';
-import 'opponent.dart';
-import 'season.dart';
 
 part 'team.g.dart';
 
@@ -63,6 +61,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
   static const String CLUBUID = 'clubUid';
   static const String LEAGUEUID = 'leagueuid';
   static const String ARCHIVED = 'archived';
+  static const String USER = 'user';
 
   /// Deserialize the team.
   static TeamBuilder fromJSON(

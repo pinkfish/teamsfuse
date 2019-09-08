@@ -14,6 +14,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.firebase.iid.FirebaseInstanceId;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -50,7 +51,7 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler {
      @Override
     public void onMethodCall(MethodCall call, Result result) {
         if ("configure".equals(call.method)) {
-            FlutterFirebaseInstanceIDService.broadcastToken(registrar.context());
+            FlutterFirebaseMessagingService.broadcastToken(registrar.context(),  FirebaseInstanceId.getInstance().getToken());
             receiver.sendMessageFromIntent("onLaunch", this.getIntent());
             result.success(null);
         } else if ("subscribeToTopic".equals(call.method)) {

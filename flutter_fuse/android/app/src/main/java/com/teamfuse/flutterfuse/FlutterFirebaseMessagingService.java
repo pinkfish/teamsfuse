@@ -31,6 +31,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -49,10 +50,27 @@ public class FlutterFirebaseMessagingService extends FirebaseMessagingService {
   private static final String PLACE_ID = "p";
   private static final String PAYLOAD = "payload";
   private static final String NOTIFICATION_SHARED_PREF = "lib_notification_data";
+  public static final String ACTION_TOKEN = "io.flutter.plugins.firebasemessaging.TOKEN";
+  public static final String EXTRA_TOKEN = "token";
+
 
   Random rand = new Random();
 
   public FlutterFirebaseMessagingService() {}
+
+  public static void broadcastToken(Context context, String newToken) {
+    Log.i(TAG, "Got a token refresh, sending");
+    Intent intent = new Intent(ACTION_TOKEN);
+    intent.putExtra(EXTRA_TOKEN, newToken);
+    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+  }
+
+  /** Called if InstanceID token is updated. */
+  @Override
+  public void onNewToken(String token) {
+    broadcastToken(this, token);
+  }
+
 
   /**
    * Called when message is received.

@@ -19,3 +19,19 @@ export function updateUsers(data: Record<string, any>): Record<string, any> {
     }
     return ret;
 }
+
+export function updateAdmins(admins: Set<string>, oldAdmins: Set<string>): Record<string, any> {
+    const ret: Record<string, any> = {};
+    for (const idx in admins) {
+        // Update the seasons with the admins bits.
+        ret[idx].admin = true;
+    }
+
+    if (oldAdmins) {
+        const difference = new Set([...oldAdmins].filter(x => !admins.has(x)));
+        for (const toRemove in difference) {
+            ret[toRemove].admin = FieldValue.delete();
+        }
+    }
+    return ret;
+}

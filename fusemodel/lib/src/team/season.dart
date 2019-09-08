@@ -22,6 +22,7 @@ abstract class Season implements Built<Season, SeasonBuilder> {
   static const String RECORD = 'record';
   static const String PLAYERS = 'players';
   static const String TEAMUID = 'teamUid';
+  static const String USER = 'user';
 
   static SeasonBuilder fromJSON(String uid, Map<String, dynamic> data) {
     SeasonBuilder builder = SeasonBuilder();

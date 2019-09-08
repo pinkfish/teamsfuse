@@ -61,10 +61,9 @@ class Routes {
     _messagesBloc =
         MessagesBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
     _clubBloc = ClubBloc(coordinationBloc: _coordinationBloc);
-    _teamBloc = new TeamBloc(
-        coordinationBloc: _coordinationBloc,
-        playerBloc: _playerBloc,
-        clubBloc: _clubBloc);
+    _teamBloc =
+        new TeamBloc(coordinationBloc: _coordinationBloc, clubBloc: _clubBloc);
+    _seasonBloc = new SeasonBloc(coordinationBloc: _coordinationBloc);
     _leagueOrTournamentBloc =
         LeagueOrTournamentBloc(coordinationBloc: _coordinationBloc);
     _gameBloc =
@@ -82,6 +81,7 @@ class Routes {
       BlocProvider<LoginBloc>(builder: (BuildContext context) => _loginBloc),
       BlocProvider<InviteBloc>(builder: (BuildContext context) => _inviteBloc),
       BlocProvider<TeamBloc>(builder: (BuildContext context) => _teamBloc),
+      BlocProvider<SeasonBloc>(builder: (BuildContext context) => _seasonBloc),
       BlocProvider<MessagesBloc>(
           builder: (BuildContext context) => _messagesBloc),
       BlocProvider<LeagueOrTournamentBloc>(
@@ -109,6 +109,7 @@ class Routes {
   MessagesBloc _messagesBloc;
   CoordinationBloc _coordinationBloc;
   LoadedStateBloc _loadedStateBloc;
+  SeasonBloc _seasonBloc;
 
   final ThemeData theme = new ThemeData(
     // This is the theme of your application.

@@ -498,21 +498,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<Iterable<Season>> getAllSeasons(String teamUid) async* {
-    var where = wrapper
-        .collection(SEASONS_COLLECTION)
-        .where(Season.TEAMUID, isEqualTo: teamUid);
-    var docs = await where.getDocuments();
-    yield docs.documents.map((DocumentSnapshotWrapper doc) =>
-        Season.fromJSON(doc.documentID, doc.data).build());
-
-    await for (QuerySnapshotWrapper query in where.snapshots()) {
-      yield query.documents.map((DocumentSnapshotWrapper doc) =>
-          Season.fromJSON(doc.documentID, doc.data).build());
-    }
-  }
-
-  @override
   Future<Team> getPublicTeamDetails(
       {@required String userUid, @required String teamUid}) async {
     DocumentSnapshotWrapper snap =
@@ -989,13 +974,39 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Season> getSeason(String seasonUid) async {
-    DocumentSnapshotWrapper doc =
-        await wrapper.collection(SEASONS_COLLECTION).document(seasonUid).get();
-    if (doc.exists) {
-      return Season.fromJSON(doc.documentID, doc.data).build();
+  Stream<Season> getSingleSeason(String seasonUid) async* {
+    DocumentReferenceWrapper doc =
+        wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
+    DocumentSnapshotWrapper snap = await doc.get();
+    if (snap.exists) {
+      yield Season.fromJSON(doc.documentID, snap.data).build();
     }
-    return null;
+    yield null;
+    await for (DocumentSnapshotWrapper snap in doc.snapshots()) {
+      yield Season.fromJSON(doc.documentID, snap.data).build();
+    }
+  }
+
+  @override
+  Stream<Iterable<Season>> getSeasons(String userUid) async* {
+    QueryWrapper query = wrapper
+        .collection(SEASONS_COLLECTION)
+        .where(Season.USER + "." + userUid + ".added", isEqualTo: true);
+    QuerySnapshotWrapper snap = await query.getDocuments();
+    List<Season> seasons = [];
+    for (DocumentSnapshotWrapper doc in snap.documents) {
+      seasons.add(Season.fromJSON(doc.documentID, doc.data).build());
+    }
+    yield seasons;
+
+    yield null;
+    await for (QuerySnapshotWrapper snap in query.snapshots()) {
+      List<Season> seasons = [];
+      for (DocumentSnapshotWrapper doc in snap.documents) {
+        seasons.add(Season.fromJSON(doc.documentID, doc.data).build());
+      }
+      yield seasons;
+    }
   }
 
   @override
@@ -1654,6 +1665,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     QueryWrapper teamCollection = wrapper
         .collection(TEAMS_COLLECTION)
         .where(Team.ADMINS + "." + userUid, isEqualTo: true);
+
+    QuerySnapshotWrapper wrap = await teamCollection.getDocuments();
+    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
+        Team.fromJSON(userUid, snap.documentID, snap.data).build());
+    await for (QuerySnapshotWrapper wrap in teamCollection.snapshots()) {
+      yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
+          Team.fromJSON(userUid, snap.documentID, snap.data).build());
+    }
+  }
+
+  @override
+  Stream<Iterable<Team>> getTeams(String userUid) async* {
+    QueryWrapper teamCollection = wrapper
+        .collection(TEAMS_COLLECTION)
+        .where(Team.USER + "." + userUid + ".added", isEqualTo: true);
 
     QuerySnapshotWrapper wrap = await teamCollection.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>

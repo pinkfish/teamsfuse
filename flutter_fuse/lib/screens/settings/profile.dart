@@ -208,10 +208,11 @@ class ProfileScreen extends StatelessWidget {
                     .containsKey(player.uid)) {
                   Iterable<Team> teams =
                       teamBloc.currentState.teamsByPlayer.values;
+                  SeasonBloc seasonBloc = BlocProvider.of<SeasonBloc>(context);
 
                   for (Team team in teams) {
                     for (Season season
-                        in teamBloc.currentState.seasons.values) {
+                        in seasonBloc.currentState.seasons.values) {
                       int index = season.players.indexWhere((SeasonPlayer sp) {
                         return sp.playerUid == player.uid;
                       });

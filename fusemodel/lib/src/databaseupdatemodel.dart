@@ -34,7 +34,6 @@ class FirestoreChangedData {
   final List<FirestoreWrappedData> removed;
 }
 
-
 ///
 /// Updates the games when things change in the snapshot.
 ///
@@ -46,8 +45,7 @@ class GameSnapshotEvent {
   final String teamUid;
 
   GameSnapshotEvent(
-      {
-      this.gameUid,
+      {this.gameUid,
       this.teamUid,
       this.sharedGame,
       this.newGames,
@@ -267,7 +265,6 @@ abstract class DatabaseUpdateModel {
   Future<void> deleteAdmin(Team team, String uid);
   Future<String> addAdmin(String teamUid, String uid);
   Stream<Iterable<InviteAsAdmin>> getInviteForTeamStream(Team team);
-  Stream<Iterable<Season>> getAllSeasons(String teamUid);
   Future<Team> getPublicTeamDetails(
       {@required String userUid, @required String teamUid});
   Stream<Iterable<InviteAsAdmin>> getInvitesForTeam(String teamUid);
@@ -275,12 +272,13 @@ abstract class DatabaseUpdateModel {
   Stream<TeamBuilder> getTeamDetails(
       {@required String userUid, @required String teamUid});
   Stream<Iterable<Season>> getSeasonsForTeam(String teamUid);
+  Stream<Iterable<Team>> getTeams(String userUid);
+  Stream<Iterable<Team>> getTeamAdmins(String userUid);
 
   // Player stuff.
   Future<void> updateFirestorePlayer(Player player, bool includeUsers);
   Future<String> addFirestorePlayer(Player player);
   Future<Uri> updatePlayerImage(String playerUid, File imgFile);
-  Stream<Iterable<Season>> getPlayerSeasons(String playerUid);
   // Send an invite to a user for this season and team.
   Future<String> inviteUserToPlayer(
       {@required String playerUid,
@@ -296,6 +294,7 @@ abstract class DatabaseUpdateModel {
   Future<void> deletePlayer(String playerUid);
 
   // Season updates
+  Stream<Iterable<Season>> getPlayerSeasons(String playerUid);
   Future<void> updateFirestoreSeason(Season season, bool includePlayers);
   Future<Season> addFirestoreSeason(
       Season season, DocumentReferenceWrapper pregen);
@@ -317,7 +316,8 @@ abstract class DatabaseUpdateModel {
       @required String playername,
       @required String email,
       @required RoleInTeam role});
-  Future<Season> getSeason(String seasonUid);
+  Stream<Season> getSingleSeason(String seasonUid);
+  Stream<Iterable<Season>> getSeasons(String userUid);
   Future<void> addPlayerToSeason(String seasonUid, SeasonPlayer player);
   DocumentReferenceWrapper precreateUidSeason();
 
@@ -394,5 +394,4 @@ abstract class DatabaseUpdateModel {
   Stream<Iterable<Player>> getPlayers(String userUid);
   Stream<Iterable<Invite>> getInvites(String userUid);
   Stream<Iterable<MessageRecipient>> getMessages(String userUid, bool unread);
-  Stream<Iterable<Team>> getTeamAdmins(String userUid);
 }

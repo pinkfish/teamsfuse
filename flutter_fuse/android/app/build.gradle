@@ -67,9 +67,10 @@ flutter {
 }
 
 dependencies {
-    androidTestImplementation 'androidx.test:runner:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
-    api 'com.google.firebase:firebase-messaging:17.3.3'
-    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    api 'com.google.gms:google-services:4.3.1'
 }
+

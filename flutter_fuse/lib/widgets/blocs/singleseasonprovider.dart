@@ -18,7 +18,7 @@ typedef SingleSeasonProviderBuilder = Widget Function(
 class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
   static SingleSeasonBloc _createBloc(BuildContext context, String uid) {
     return SingleSeasonBloc(
-        teamBloc: BlocProvider.of<TeamBloc>(context), seasonUid: uid);
+        seasonBloc: BlocProvider.of<SeasonBloc>(context), seasonUid: uid);
   }
 
   SingleSeasonProvider({String seasonUid, SingleSeasonProviderBuilder builder})

@@ -7,6 +7,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import 'gamesbloc.dart';
+import 'seasonbloc.dart';
 import 'teambloc.dart';
 
 ///
@@ -68,12 +69,6 @@ class _FilteredGameEventGamesLoaded extends FilteredGameEvent {
   _FilteredGameEventGamesLoaded({@required this.loaded});
 }
 
-class _FilteredGameEventGamesUpdated extends FilteredGameEvent {
-  GameLoaded loaded;
-
-  _FilteredGameEventGamesUpdated({@required this.loaded});
-}
-
 class _FilteredGameEventGamesLogout extends FilteredGameEvent {
   _FilteredGameEventGamesLogout();
 }
@@ -108,17 +103,18 @@ class FilteredGameEventUpdateDates extends FilteredGameEvent {
 class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
   final GameBloc gameBloc;
   final TeamBloc teamBloc;
+  final SeasonBloc seasonBloc;
 
   Map<String, StreamSubscription<GameSnapshotEvent>> _newerGameSubscriptions =
       {};
-  Map<String, StreamSubscription<GameSnapshotEvent>> _olderGameSubscriptions =
-      {};
   Map<String, Iterable<Game>> _newerGamesByTeam = {};
-  Map<String, Map<String, Game>> _olderGamesByTeam = {};
 
   StreamSubscription<GameState> _gameSub;
 
-  FilteredGameBloc({@required this.gameBloc, @required this.teamBloc}) {
+  FilteredGameBloc(
+      {@required this.gameBloc,
+      @required this.teamBloc,
+      @required this.seasonBloc}) {
     _gameSub = gameBloc.state.listen((GameState state) {
       if (state is GameLoaded) {
         dispatch(_FilteredGameEventGamesLoaded(loaded: state));
@@ -172,13 +168,13 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
 
     for (BuiltMap<String, Game> teamGames in state.gamesByTeam.values) {
       for (Game g in teamGames.values) {
-        TeamState teamState = teamBloc.currentState;
         Team t = teamBloc.currentState.getTeam(g.teamUid);
         if (t != null) {
+          SeasonState seasonState = seasonBloc.currentState;
           // See if we have the eason.
-          if (teamState.seasons.containsKey(g.seasonUid)) {
+          if (seasonState.seasons.containsKey(g.seasonUid)) {
             // We do.  Yay.
-            Season season = teamState.seasons[g.seasonUid];
+            Season season = seasonState.seasons[g.seasonUid];
             if (details.isIncluded(g, season)) {
               result[g.uid] = g;
             }
@@ -188,13 +184,13 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
     }
     for (Iterable<Game> gameList in _newerGamesByTeam.values) {
       for (Game g in gameList) {
-        TeamState teamState = teamBloc.currentState;
         Team t = teamBloc.currentState.getTeam(g.teamUid);
         if (t != null) {
+          SeasonState seasonState = seasonBloc.currentState;
           // See if we have the eason.
-          if (teamState.seasons.containsKey(g.seasonUid)) {
+          if (seasonState.seasons.containsKey(g.seasonUid)) {
             // We do.  Yay.
-            Season season = teamState.seasons[g.seasonUid];
+            Season season = seasonState.seasons[g.seasonUid];
             if (details.isIncluded(g, season)) {
               result[g.uid] = g;
             }
