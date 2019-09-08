@@ -4,9 +4,11 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/flutter', '.']
-    timeout: 500s
+    timeout: 1000s
   - name: 'gcr.io/$PROJECT_ID/flutter'
     args: ['--help']
-    timeout: 500s
+    timeout: 1000s
+
+timeout: 2000s
 
 images: ['gcr.io/$PROJECT_ID/flutter']
