@@ -1,7 +1,7 @@
 name: flutter_fuse
 description: A way to fuse the teams.
 
-version: 0.8.7+1
+version: 0.8.8
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -22,6 +22,7 @@ dependencies:
   firebase_performance: "^0.3.0+4"
   firebase_remote_config: "^0.2.0+5"
   firebase_messaging: "^5.1.5"
+  #flutter_crashlytics: any
   flutter_bloc: ^0.21.0
   bloc: any
   shared_preferences: "^0.5.3+4"

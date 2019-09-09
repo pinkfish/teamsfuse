@@ -21,10 +21,51 @@ platform :android do
     #gradle(task: "test")
   end
 
+  desc "Deploy a new alpha version to the Google Play Store"
+  lane :alpha do
+    #version_code = increment_version_code(
+    #  gradle_file_path: "./gradle/local.properties",
+    #  ext_constant_name: 'flutter.versionCode'
+    #)
+
+    build_number = number_of_commits(all: true)
+    changelog_from_git_commits
+    #gradle(task: "assembleRelease")
+    Dir.chdir "../.." do
+          #sh("pwd")
+          sh("flutter", "packages", "get")
+          #sh("flutter", "clean")
+    end
+    gradle(
+          task: 'assemble',
+          build_type: 'Release'
+    )
+
+
+    supply(
+      track: "alpha",
+      apk: "#{lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]}"
+    )
+
+    #git_commit(
+    #  path: "./app/build.gradle",
+    #  message: "Fastlane Android: Released new build #{version_code} to Google PlayStore Alpha track [ci skip]"
+    #)
+  end
+
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :beta do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store(track: 'beta')
+    #gradle(task: "clean")
+    gradle(
+        task: 'assemble',
+        build_type: 'Release'
+    )
+    build_number = number_of_commits(all: true)
+    changelog_from_git_commits
+    upload_to_play_store(
+        track: 'beta',
+        apk: '../build/app/outputs/apk/release/app-release.apk'
+    )
     #crashlytics(
     #    api_token: '8e49e324965658b5d6497544fb73022fbf38e28f',
     #    build_secret: '400dd35eaffac89c5c40c740eb0c58950ac5bacec99c34ad13df30b8a0f26051'
