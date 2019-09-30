@@ -10,7 +10,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:9090' mocha --reporter spec",
+    "test": "cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:8080' mocha --reporter spec",
     "build": "./node_modules/.bin/tslint -p tslint.json && ./node_modules/.bin/tsc",
     "eslintcheck": "eslint --print_config index.js | eslint-config-prettier-check"
   },

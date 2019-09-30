@@ -37,6 +37,7 @@ beforeEach(async () => {
 });
 
 before(async () => {
+  console.log("start before");
   await firebase.loadFirestoreRules({
     projectId: projectName,
     rules: rules
@@ -132,6 +133,12 @@ describe("My app", () => {
     await firebase.assertSucceeds(db.collection("Teams").doc("frog"));
   });
   it("require users to be in the teams to get team", async () => {
+     const db = authedApp({ uid: "alice" });
+     db.collection("Teams").doc("frog").set({users: {alice: { added: true}}});
+     //const doc = db.collection("Teams").doc("frog");
+     await firebase.assertSucceeds(db.collection("Teams").doc("frog"));
+   });
+  it("require users to be in the season to get the season", async () => {
      const db = authedApp({ uid: "alice" });
      db.collection("Seasons").doc("frog").set({user: {alice: { added: true}}});
      //const doc = db.collection("Teams").doc("frog");

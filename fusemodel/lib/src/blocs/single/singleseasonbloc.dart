@@ -161,6 +161,7 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
   StreamSubscription<Iterable<InviteToTeam>> _inviteSub;
   StreamSubscription<GameSnapshotEvent> _gameSub;
 
+  // Create the bloc and do exciting things with it.
   SingleSeasonBloc({this.seasonBloc, this.seasonUid}) {
     _seasonSub = seasonBloc.state.listen((SeasonState state) {
       if (state.seasons.containsKey(seasonUid)) {

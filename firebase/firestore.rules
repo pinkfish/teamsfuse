@@ -17,7 +17,8 @@ service cloud.firestore {
     }
 
     match /Games/{club} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() &&
+         get(/databases/$(database)/documents/Seasons/$(request.resource.seasonUid)).users[request.auth.uid].added;
       allow update, delete: if isSignedIn();
       // Only allow a create if the shared data exists and the team exists.
       allow create: if isSignedIn() &&
@@ -25,12 +26,12 @@ service cloud.firestore {
           exists(/databases/$(database)/documents/Team/$(request.resource.teamUid));
     }
 
-    match /GamesShared/{club} {
+    match /GamesShared/{sharedGame} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
     }
 
-    match /Invites/{club} {
+    match /Invites/{invite} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
     }
@@ -48,7 +49,7 @@ service cloud.firestore {
       allow read: if true;
       allow update, delete: if isSignedIn();
       allow create: if isSignedIn() &&
-          exists(/databases/$(database)/documents/LeagueSeason/$(request.resource.data.seasonUid));
+          exists(/databases/$(database)/documents/LeagueSeason/$(request.resource.data.seasonUid).added);
     }
 
     match /LeagueSeason/{leagueSeason} {
@@ -58,7 +59,7 @@ service cloud.firestore {
           exists(/databases/$(database)/documents/League/$(request.resource.data.leagueUid));
     }
 
-    match /LeagueTeam/{} {leagueTeam}
+    match /LeagueTeam/{leagueTeam} {
       allow read: if true;
       allow write: if isSignedIn();
     }
@@ -79,7 +80,7 @@ service cloud.firestore {
 
     match /Seasons/{season} {
       allow read: if isSignedIn() &&
-        (request.data.user[request.auth.uid].added;
+        (request.data.users[request.auth.uid].added);
       allow write: if isSignedIn();
     }
 
@@ -89,7 +90,7 @@ service cloud.firestore {
         allow write: if isSignedIn();
       }
       allow read: if isSignedIn() &&
-        (request.data.user[request.auth.uid].added ||
+        (request.data.users[request.auth.uid].added ||
         request.data.admins[request.auth.uid]);
       allow write: if isSignedIn();
     }
