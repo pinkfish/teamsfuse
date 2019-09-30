@@ -14,7 +14,6 @@ typedef SingleSeasonProviderBuilder = Widget Function(
  * Create a provider that will insert the singe teamSeason bloc into the tree if the
  * bloc is not current provided or is different than the teamSeasonuid.
  */
-
 class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
   static SingleSeasonBloc _createBloc(BuildContext context, String uid) {
     return SingleSeasonBloc(

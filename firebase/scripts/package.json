@@ -39,7 +39,8 @@
     "firestore-security-tests": "^1.4.0",
     "mocha": "^6.2.0",
     "prettier": "^1.18.2",
-    "sinon": "^7.4.2"
+    "sinon": "^7.4.2",
+    "typescript": "^3.6.3"
   },
   "private": true,
   "engines": {

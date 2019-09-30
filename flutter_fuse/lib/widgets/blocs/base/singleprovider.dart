@@ -15,7 +15,7 @@ class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
   SingleBlocProvider({this.builder, this.keyUid, this.creator});
 
   @override
-  State createState() => _SingleClubProviderState<T>();
+  State createState() => _SingleBlocProviderState<T>();
 }
 
 class _BlocProviderState<T extends Bloc<dynamic, dynamic>> {
@@ -25,7 +25,7 @@ class _BlocProviderState<T extends Bloc<dynamic, dynamic>> {
   _BlocProviderState(this.bloc) : ref = 0;
 }
 
-class _SingleClubProviderState<T extends Bloc<dynamic, dynamic>>
+class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
     extends State<SingleBlocProvider<T>> {
   T _singleBloc;
   bool _newBloc = false;

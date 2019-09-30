@@ -15,6 +15,7 @@
     "eslintcheck": "eslint --print_config index.js | eslint-config-prettier-check"
   },
   "dependencies": {
+    "@firebase/testing": "^0.13.0",
     "@types/algoliasearch": "^3.30.18",
     "@types/lodash": "^4.14.138",
     "algoliasearch": "^3.34.0",

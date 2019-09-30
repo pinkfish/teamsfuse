@@ -999,7 +999,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
     yield seasons;
 
-    yield null;
     await for (QuerySnapshotWrapper snap in query.snapshots()) {
       List<Season> seasons = [];
       for (DocumentSnapshotWrapper doc in snap.documents) {

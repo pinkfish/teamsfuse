@@ -49,8 +49,7 @@ class FusedDrawerContent extends StatelessWidget {
                 builder: (BuildContext build, TeamState state) {
                   //if (snap.hasData) {
                   return new Text(
-                    Messages.of(context)
-                        .teamnumbers(state.teamsByPlayer.length),
+                    Messages.of(context).teamnumbers(state.playerTeams.length),
                   );
                   /*}
                   //if (club.cachedTeams != null) {
@@ -78,7 +77,7 @@ class FusedDrawerContent extends StatelessWidget {
 
     ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
 
-    for (Team team in state.teamsByPlayer.values) {
+    for (Team team in state.playerTeams.values) {
       if (!team.archived) {
         if (team.clubUid == null ||
             !clubBloc.currentState.clubs.containsKey(team.clubUid)) {

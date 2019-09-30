@@ -87,14 +87,14 @@ class TeamLoadPublicTeam extends TeamEvent {
 ///
 abstract class TeamState extends Equatable {
   final BuiltMap<String, Team> adminTeams;
-  final BuiltMap<String, Team> teamsByPlayer;
+  final BuiltMap<String, Team> playerTeams;
   final BuiltMap<String, BuiltMap<String, Team>> clubTeams;
   final BuiltMap<String, Team> publicTeams;
   final BuiltMap<String, Opponent> opponents;
   final bool onlySql;
 
   TeamState(
-      {@required this.teamsByPlayer,
+      {@required this.playerTeams,
       @required this.onlySql,
       @required this.opponents,
       @required this.adminTeams,
@@ -102,7 +102,7 @@ abstract class TeamState extends Equatable {
       @required this.publicTeams})
       : super([
           adminTeams,
-          teamsByPlayer,
+          playerTeams,
           clubTeams,
           publicTeams,
           onlySql,
@@ -113,8 +113,8 @@ abstract class TeamState extends Equatable {
   /// Get the team from the various places it could exist.
   ///
   Team getTeam(String uid) {
-    if (teamsByPlayer.containsKey(uid)) {
-      return teamsByPlayer[uid];
+    if (playerTeams.containsKey(uid)) {
+      return playerTeams[uid];
     }
 
     if (adminTeams.containsKey(uid)) {
@@ -148,7 +148,7 @@ abstract class TeamState extends Equatable {
     clubTeams.forEach(
         (String clubUid, BuiltMap<String, Team> data) => set.addAll(data.keys));
     set.addAll(clubTeams.keys);
-    set.addAll(teamsByPlayer.keys);
+    set.addAll(playerTeams.keys);
     return set;
   }
 }
@@ -159,7 +159,7 @@ abstract class TeamState extends Equatable {
 class TeamUninitialized extends TeamState {
   TeamUninitialized()
       : super(
-            teamsByPlayer: BuiltMap(),
+            playerTeams: BuiltMap(),
             adminTeams: BuiltMap(),
             clubTeams: BuiltMap(),
             publicTeams: BuiltMap(),
@@ -167,7 +167,7 @@ class TeamUninitialized extends TeamState {
 
   @override
   String toString() {
-    return 'TeamUninitialized{players: ${teamsByPlayer.length}, onlySql: $onlySql}';
+    return 'TeamUninitialized{players: ${playerTeams.length}, onlySql: $onlySql}';
   }
 }
 
@@ -184,7 +184,7 @@ class TeamLoaded extends TeamState {
       BuiltMap<String, Opponent> opponents,
       bool onlySql})
       : super(
-            teamsByPlayer: teamsByPlayer ?? state.teamsByPlayer,
+            playerTeams: teamsByPlayer ?? state.playerTeams,
             clubTeams: clubTeams ?? state.clubTeams,
             onlySql: onlySql ?? state.onlySql,
             publicTeams: publicTeams ?? state.publicTeams,
@@ -193,7 +193,7 @@ class TeamLoaded extends TeamState {
 
   @override
   String toString() {
-    return 'TeamLoaded{teamsByPlayer: ${teamsByPlayer.length}, onlySql: $onlySql} opponents: ${opponents.length}';
+    return 'TeamLoaded{playerTeams: ${playerTeams.length}, adminTeams: ${adminTeams.length}, clubTeams: ${clubTeams.length}, publicTeams: ${publicTeams}, onlySql: $onlySql} opponents: ${opponents.length}';
   }
 }
 
@@ -219,9 +219,9 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
       if (state is CoordinationStateLoggedOut) {
         dispatch(_TeamLoggedOut());
       } else if (state is CoordinationStateStartLoadingSql) {
-        _startAdminLoading(state);
+        _startSqLoading(state);
       } else if (state is CoordinationStateStartLoadingFirestore) {
-        _startAdminLoadingFirestore(state);
+        _startLoadingFirestore(state);
       }
     });
     _clubSub = clubBloc.state.listen((ClubState state) {
@@ -231,12 +231,11 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     });
   }
 
-  void _startAdminLoading(CoordinationStateStartLoadingSql state) {
+  void _startSqLoading(CoordinationStateStartLoadingSql state) {
     dispatch(_TeamUserLoaded(uid: state.uid));
   }
 
-  void _startAdminLoadingFirestore(
-      CoordinationStateStartLoadingFirestore state) {
+  void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
     dispatch(_TeamFirestoreStart(uid: state.uid));
   }
 
@@ -359,11 +358,12 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     if (event is _TeamFirestoreStart) {
       // Do the admin team loading thing.
       TraceProxy adminTrace = coordinationBloc.analytics.newTrace('adminTeams');
-      Stream<Iterable<Team>> initialState =
+      Stream<Iterable<Team>> adminTeamStream =
           coordinationBloc.databaseUpdateModel.getTeamAdmins(event.uid);
 
       Completer<Iterable<Team>> adminData = Completer();
-      _adminTeamSub = initialState.listen((Iterable<Team> data) {
+      _adminTeamSub?.cancel();
+      _adminTeamSub = adminTeamStream.listen((Iterable<Team> data) {
         if (!adminData.isCompleted) {
           adminData.complete(data);
         }
@@ -373,11 +373,15 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
       });
       coordinationBloc.loadingTrace?.incrementCounter("teamAdmin");
       BuiltMap<String, Team> oldAdminTeams = currentState.adminTeams;
-      BuiltMap<String, Team> oldUserTeams = currentState.teamsByPlayer;
+      BuiltMap<String, Team> oldUserTeams = currentState.playerTeams;
       Iterable<Team> adminStartStuff = await adminData.future;
 
+      Stream<Iterable<Team>> userTeamStream =
+          coordinationBloc.databaseUpdateModel.getTeams(event.uid);
+
       Completer<Iterable<Team>> userData = Completer();
-      _userTeamSub = initialState.listen((Iterable<Team> data) {
+      _userTeamSub?.cancel();
+      _userTeamSub = userTeamStream.listen((Iterable<Team> data) {
         if (!userData.isCompleted) {
           userData.complete(data);
         }
@@ -386,6 +390,8 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
                 Map.fromIterable(data, key: (t) => t.uid, value: (t) => t)));
       });
       Iterable<Team> userStartStuff = await userData.future;
+
+      print("TeamBlock loaded");
 
       yield TeamLoaded(
           state: currentState,
@@ -419,14 +425,14 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
           CoordinationEventLoadedData(loaded: BlocsToLoad.Team, sql: true));
       _onTeamAdminsUpdatePeristentData(
           oldTeams: oldAdminTeams,
-          oldTeamsByPlayer: currentState.teamsByPlayer,
+          oldTeamsByPlayer: currentState.playerTeams,
           newAdminTeams: event.adminTeams.values);
     }
 
     if (event is _TeamUserUpdated) {
       _onTeamAdminsUpdatePeristentData(
-          oldTeams: currentState.teamsByPlayer,
-          oldTeamsByPlayer: currentState.teamsByPlayer,
+          oldTeams: currentState.playerTeams,
+          oldTeamsByPlayer: currentState.playerTeams,
           newPlayerTeam: event.userTeams.values);
 
       yield TeamLoaded(

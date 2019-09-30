@@ -2,20 +2,32 @@ import 'dart:async';
 
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 class MockUserAuthImpl extends Mock implements UserAuthImpl {}
 
+class MockAnalyticsSubsystem extends Mock implements AnalyticsSubsystem {}
+
 void main() {
   AuthenticationBloc authenticationBloc;
   MockUserAuthImpl userAuth;
+  MockAnalyticsSubsystem analyticsSubsystem;
   StreamController<UserData> _streamController;
 
   setUp(() {
     userAuth = MockUserAuthImpl();
+    analyticsSubsystem = MockAnalyticsSubsystem();
     _streamController = new StreamController<UserData>();
-    authenticationBloc = AuthenticationBloc(userAuth: userAuth);
+    when(userAuth.onAuthChanged()).thenAnswer((_) => _streamController.stream);
+    when(analyticsSubsystem.debugMode).thenReturn(true);
+    authenticationBloc = AuthenticationBloc(
+        userAuth: userAuth, analyticsSubsystem: analyticsSubsystem);
+  });
+
+  tearDown(() {
+    _streamController.close();
   });
 
   test('initial state is correct', () {
@@ -47,15 +59,16 @@ void main() {
         emitsInOrder(expectedResponse),
       );
 
-      authenticationBloc.dispatch(AppStarted());
+      authenticationBloc.dispatch(AuthenticationAppStarted());
     });
 
     test('emits [uninitialized, authenticated] for real data', () {
-      final UserData userData = new UserData(
-          email: "frog@frog.com", uid: "ububng", isEmailVerified: true);
+      final UserData userData = new UserData((b) => b
+        ..email = "frog@frog.com"
+        ..uid = "ububng"
+        ..isEmailVerified = true);
       final expectedResponse = [
         AuthenticationUninitialized(),
-        AuthenticationLoading(),
         AuthenticationLoggedIn(user: userData)
       ];
 
@@ -69,7 +82,7 @@ void main() {
         emitsInOrder(expectedResponse),
       );
 
-      authenticationBloc.dispatch(AppStarted());
+      authenticationBloc.dispatch(AuthenticationAppStarted());
     });
   });
 }

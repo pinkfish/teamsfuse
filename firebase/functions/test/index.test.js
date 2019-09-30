@@ -115,12 +115,29 @@ describe("My app", () => {
     const doc = db.collection("Seasons").doc("frog");
     await firebase.assertFails(doc.get());
   });
-  it("require users to log in before teams", async () => {
+  it("require users to be in the team to get team", async () => {
     const db = authedApp(null);
     const doc = db.collection("Teams").doc("frog");
     await firebase.assertFails(doc.get());
   });
-  it("should enforce the createdAt date in user profiles", async () => {
+  it("require users to be logged in to get team", async () => {
+    const db = authedApp(null);
+    const doc = db.collection("Seaons").doc("frog");
+    await firebase.assertFails(doc.get());
+  });
+  it("require users to be in the season to get season", async () => {
+    const db = authedApp({ uid: "alice" });
+    db.collection("Teams").doc("frog").set({user: {alice: { added: true}}});
+    //const doc = db.collection("Teams").doc("frog");
+    await firebase.assertSucceeds(db.collection("Teams").doc("frog"));
+  });
+  it("require users to be in the teams to get team", async () => {
+     const db = authedApp({ uid: "alice" });
+     db.collection("Seasons").doc("frog").set({user: {alice: { added: true}}});
+     //const doc = db.collection("Teams").doc("frog");
+     await firebase.assertSucceeds(db.collection("Seasons").doc("frog"));
+   });
+   it("should enforce the createdAt date in user profiles", async () => {
     const db = authedApp({ uid: "alice" });
     const profile = db.collection("UserData").doc("alice");
     await firebase.assertFails(profile.set({ birthday: "January 1" }));

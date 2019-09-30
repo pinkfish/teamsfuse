@@ -27,6 +27,7 @@ async function updateSeasons(playerId, user) {
                   .doc(myDoc.id)
                   .update(updateData));
 
+              console.log('Updating team ' + myDoc.data().teamUid  + ' player ' + playerId + ' user ' + user);
               ret.push(db.collection("Teams")
                   .doc(myDoc.data().teamUid)
                   .update(updateData));

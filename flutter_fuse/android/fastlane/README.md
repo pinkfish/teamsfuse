@@ -21,11 +21,6 @@ or alternatively using `brew cask install fastlane`
 fastlane android test
 ```
 Runs all the tests
-### android alpha
-```
-fastlane android alpha
-```
-Deploy a new alpha version to the Google Play Store
 ### android beta
 ```
 fastlane android beta

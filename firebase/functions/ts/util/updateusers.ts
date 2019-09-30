@@ -4,7 +4,7 @@ const FieldValue = admin.firestore.FieldValue;
 
 export function updateUsers(data: Record<string, any>): Record<string, any> {
     const ret: Record<string, any> = {};
-    // Go through the users and make sure there is still a aplyer for each one.
+    // Go through the users and make sure there is still a a player for each one.
     for (const idx in data) {
         const user = data[idx];
         let found = false;

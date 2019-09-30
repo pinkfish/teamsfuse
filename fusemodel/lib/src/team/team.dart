@@ -61,7 +61,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
   static const String CLUBUID = 'clubUid';
   static const String LEAGUEUID = 'leagueuid';
   static const String ARCHIVED = 'archived';
-  static const String USER = 'user';
+  static const String USER = 'users';
 
   /// Deserialize the team.
   static TeamBuilder fromJSON(

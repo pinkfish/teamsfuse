@@ -35,73 +35,84 @@ class TeamTile extends StatelessWidget {
           }
 
           return SingleSeasonProvider(
-            seasonUid: teamState.team.currentSeason,
-            builder: (BuildContext c, SingleSeasonBloc seasonBloc) => ListTile(
-              leading: TeamImage(
-                width: 40.0,
-                height: 40.0,
-                teamUid: teamState.team.uid,
-                alignment: Alignment.centerLeft,
-                showIcon: showIconForTeam,
-              ),
-              title: BlocBuilder(
-                bloc: seasonBloc,
-                builder: (BuildContext context, SingleSeasonState seasonState) {
-                  String seasonName = "";
-                  if (seasonState is SingleSeasonLoaded) {
-                    seasonName = seasonState.season.name;
-                  }
+              seasonUid: teamState.team.currentSeason,
+              builder: (BuildContext c, SingleSeasonBloc seasonBloc) {
+                return new ListTile(
+                  leading: TeamImage(
+                    width: 40.0,
+                    height: 40.0,
+                    teamUid: teamState.team.uid,
+                    alignment: Alignment.centerLeft,
+                    showIcon: showIconForTeam,
+                  ),
+                  title: BlocBuilder(
+                    bloc: seasonBloc,
+                    builder:
+                        (BuildContext context, SingleSeasonState seasonState) {
+                      String seasonName = "";
+                      if (seasonState is SingleSeasonLoaded) {
+                        seasonName = seasonState.season.name;
+                      }
 
-                  return RichText(
-                    text: new TextSpan(
-                      text: teamState.team.name,
-                      style: Theme.of(context).textTheme.subhead.copyWith(
-                          fontWeight: FontWeight.bold, fontSize: 17.0),
-                      children: <TextSpan>[
-                        new TextSpan(text: "  "),
-                        new TextSpan(
-                          text: seasonName,
+                      return RichText(
+                        text: new TextSpan(
+                          text: teamState.team.name,
                           style: Theme.of(context).textTheme.subhead.copyWith(
-                              fontStyle: FontStyle.italic, fontSize: 15.0),
+                              fontWeight: FontWeight.bold, fontSize: 17.0),
+                          children: <TextSpan>[
+                            new TextSpan(text: "  "),
+                            new TextSpan(
+                              text: seasonName,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subhead
+                                  .copyWith(
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 15.0),
+                            ),
+                            new TextSpan(
+                              text: teamState.isAdmin()
+                                  ? "\n" + Messages.of(context).administrator
+                                  : "",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subhead
+                                  .copyWith(
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 10.0,
+                                    color: Theme.of(context).primaryColorDark,
+                                  ),
+                            ),
+                          ],
                         ),
-                        new TextSpan(
-                          text: teamState.isAdmin()
-                              ? "\n" + Messages.of(context).administrator
-                              : "",
-                          style: Theme.of(context).textTheme.subhead.copyWith(
-                                fontStyle: FontStyle.italic,
-                                fontSize: 10.0,
-                                color: Theme.of(context).primaryColorDark,
-                              ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-              isThreeLine: false,
-              dense: true,
-              subtitle: BlocBuilder(
-                bloc: seasonBloc,
-                builder: (BuildContext context, SingleSeasonState seasonState) {
-                  if (seasonState is SingleSeasonLoaded) {
-                    return Text(seasonState.season.record != null
-                        ? Messages.of(context)
-                            .winrecord(seasonState.season.record)
-                        : "");
-                  }
-                },
-              ),
-              onTap: () {
-                if (popBeforeNavigate) {
-                  Navigator.pop(context);
-                }
-                AppRouter.instance.navigateTo(
-                    context, "Team/" + teamState.team.uid,
-                    transition: TransitionType.inFromRight);
-              },
-            ),
-          );
+                      );
+                    },
+                  ),
+                  isThreeLine: false,
+                  dense: true,
+                  subtitle: BlocBuilder(
+                    bloc: seasonBloc,
+                    builder:
+                        (BuildContext context, SingleSeasonState seasonState) {
+                      if (seasonState is SingleSeasonLoaded) {
+                        return Text(seasonState.season.record != null
+                            ? Messages.of(context)
+                                .winrecord(seasonState.season.record)
+                            : "");
+                      }
+                      return Text(Messages.of(context).loading);
+                    },
+                  ),
+                  onTap: () {
+                    if (popBeforeNavigate) {
+                      Navigator.pop(context);
+                    }
+                    AppRouter.instance.navigateTo(
+                        context, "Team/" + teamState.team.uid,
+                        transition: TransitionType.inFromRight);
+                  },
+                );
+              });
         },
       ),
     );

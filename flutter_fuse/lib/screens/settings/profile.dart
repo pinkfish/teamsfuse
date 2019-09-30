@@ -204,10 +204,9 @@ class ProfileScreen extends StatelessWidget {
                       const AssetImage("assets/images/defaultavatar2.png");
                 }
                 TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
-                if (teamBloc.currentState.teamsByPlayer
-                    .containsKey(player.uid)) {
+                if (teamBloc.currentState.playerTeams.containsKey(player.uid)) {
                   Iterable<Team> teams =
-                      teamBloc.currentState.teamsByPlayer.values;
+                      teamBloc.currentState.playerTeams.values;
                   SeasonBloc seasonBloc = BlocProvider.of<SeasonBloc>(context);
 
                   for (Team team in teams) {

@@ -348,18 +348,18 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   BoringSSL-GRPC: db8764df3204ccea016e1c8dd15d9a9ad63ff318
-  cloud_firestore: 41f84086d2e1a5c216a6af07ef050758de825ff0
+  cloud_firestore: 0ac494d23db743f104b95d3291946afec187b74c
   device_info: 3ebad48f726348f69abd802f3334a8d1ed795fbd
   FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
   FBSDKLoginKit: 7a1e411d46acc8834588eca437daf34de42e1d52
   Firebase: a2b5951f30ff38fd3b3bdae9c7d340f940fd3c51
-  firebase_analytics: 7c660d7721c20a83c13b33361111c5dba94b1853
-  firebase_auth: 45f6476560c372649eba5980c58f0783b527d04f
-  firebase_core: b3b02d0b5e9d01aab5e50ba7cbcf84c73cb6883c
-  firebase_messaging: efa1c09df5b6fbf505ee319bf27a0c88efe9ff8c
-  firebase_performance: b1d13887f1ffcc4c1f2b02b041317a727fbb03d2
-  firebase_remote_config: db83aa96557ac2400884c44378c008539c00c1ec
-  firebase_storage: 2251e73d2d6239f72243ef422969d8baa76d3012
+  firebase_analytics: 045e7ebe7b8a4d27357168072868ff082dca15a6
+  firebase_auth: 1e3b7bdd37b9fbd4ef75ba1d985b00be09e02d3d
+  firebase_core: ae55ea92448ec8675d325da4db22cf3b4d58a54d
+  firebase_messaging: 0d5c04cc40f58bd4bf7f2992c91050f9bc01bec3
+  firebase_performance: f7b5c78075a37ae9c5e6f44822e377d57d4da6d8
+  firebase_remote_config: dadb2f94875e4f2e173b570a77b88f4df3b14631
+  firebase_storage: 52b0c06e27af628b627be28d32b4b540f6b67cf7
   FirebaseABTesting: a32c488eb75089a61eb3d86db061dfb909d765db
   FirebaseAnalytics: 48414ae5cbf6976d8a2f7177e0466540e5ab33ce
   FirebaseAnalyticsInterop: 0f250d71e8741352407a8db351e6de78c5c56d35
@@ -374,7 +374,7 @@ SPEC CHECKSUMS:
   FirebasePerformance: 270bab0bfa55e067ffd839e4ce4e592a1bdeebd6
   FirebaseRemoteConfig: ed74d16d7e5b19e77a4c3e3eee4fe363039b0834
   FirebaseStorage: 618dd8fd886b30adf6e5d1915b1f5c18cb5c3944
-  Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_native_timezone: e72ff1900460ff57cfd331d1758050c9269f3e99
   flutter_places_dialog: d6706ba5200150251c737166277e02a92b8fc141
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
