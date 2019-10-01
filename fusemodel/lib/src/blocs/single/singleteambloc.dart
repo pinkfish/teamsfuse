@@ -20,14 +20,26 @@ abstract class SingleTeamState extends Equatable {
   final BuiltList<InviteAsAdmin> invitesAsAdmin;
   final BuiltList<Season> fullSeason;
   final BuiltMap<String, Opponent> opponents;
+  final bool loadedOpponents;
+  final bool loadedSeasons;
 
   SingleTeamState(
       {@required this.team,
       @required this.club,
       @required this.invitesAsAdmin,
       @required this.fullSeason,
-      @required this.opponents})
-      : super([team, club, invitesAsAdmin, fullSeason, opponents]);
+      @required this.opponents,
+      @required this.loadedOpponents,
+      @required this.loadedSeasons})
+      : super([
+          team,
+          club,
+          invitesAsAdmin,
+          fullSeason,
+          opponents,
+          loadedOpponents,
+          loadedSeasons,
+        ]);
 
   ///
   /// Gets the specified sweason.
@@ -55,13 +67,17 @@ class SingleTeamLoaded extends SingleTeamState {
       Club club,
       BuiltList<InviteAsAdmin> invitesAsAdmin,
       BuiltList<Season> fullSeason,
-      BuiltMap<String, Opponent> opponents})
+      BuiltMap<String, Opponent> opponents,
+      bool loadedOpponents,
+      bool loadedSeasons})
       : super(
             team: team ?? state.team,
             invitesAsAdmin: invitesAsAdmin ?? state.invitesAsAdmin,
             club: club ?? state?.club,
             fullSeason: fullSeason ?? state.fullSeason,
-            opponents: opponents ?? state.opponents);
+            opponents: opponents ?? state.opponents,
+            loadedOpponents: loadedOpponents ?? state.loadedOpponents,
+            loadedSeasons: loadedSeasons ?? state.loadedSeasons);
 
   @override
   String toString() {
@@ -79,7 +95,9 @@ class SingleTeamSaving extends SingleTeamState {
             club: state.club,
             invitesAsAdmin: state.invitesAsAdmin,
             fullSeason: state.fullSeason,
-            opponents: state.opponents);
+            opponents: state.opponents,
+            loadedOpponents: state.loadedOpponents,
+            loadedSeasons: state.loadedSeasons);
 
   @override
   String toString() {
@@ -97,7 +115,9 @@ class SingleTeamSaveDone extends SingleTeamState {
             club: state.club,
             invitesAsAdmin: state.invitesAsAdmin,
             fullSeason: state.fullSeason,
-            opponents: state.opponents);
+            opponents: state.opponents,
+            loadedOpponents: state.loadedOpponents,
+            loadedSeasons: state.loadedSeasons);
 
   @override
   String toString() {
@@ -117,7 +137,9 @@ class SingleTeamSaveFailed extends SingleTeamState {
             club: state.club,
             invitesAsAdmin: state.invitesAsAdmin,
             fullSeason: state.fullSeason,
-            opponents: state.opponents);
+            opponents: state.opponents,
+            loadedOpponents: state.loadedOpponents,
+            loadedSeasons: state.loadedSeasons);
 
   @override
   String toString() {
@@ -135,7 +157,9 @@ class SingleTeamDeleted extends SingleTeamState {
             invitesAsAdmin: BuiltList(),
             fullSeason: BuiltList(),
             opponents: BuiltMap(),
-            club: null);
+            club: null,
+            loadedOpponents: false,
+            loadedSeasons: false);
 
   @override
   String toString() {
@@ -222,12 +246,28 @@ class SingleTeamLoadAllSeasons extends SingleTeamEvent {
 }
 
 ///
+/// Loads all the opponents for this team.
+///
+class SingleTeamLoadOpponents extends SingleTeamEvent {
+  SingleTeamLoadOpponents();
+}
+
+///
 /// Change the archive bit for this team
 ///
 class SingleTeamArchive extends SingleTeamEvent {
   final bool archive;
 
   SingleTeamArchive({@required this.archive});
+}
+
+///
+/// Add an opponent to the team.
+///
+class SingleTeamAddOpponent extends SingleTeamEvent {
+  final Opponent opponent;
+
+  SingleTeamAddOpponent({this.opponent});
 }
 
 class _SingleTeamNewTeam extends SingleTeamEvent {
@@ -259,8 +299,10 @@ class _SingleTeamInvitesAdminLoaded extends SingleTeamEvent {
 
 class _SingleTeamSeasonDataLoaded extends SingleTeamEvent {
   final Iterable<Season> seasons;
+  final bool fullUpdate;
 
-  _SingleTeamSeasonDataLoaded({@required this.seasons});
+  _SingleTeamSeasonDataLoaded(
+      {@required this.seasons, @required this.fullUpdate});
 }
 
 class _SingleTeamNewClub extends SingleTeamEvent {
@@ -271,6 +313,12 @@ class _SingleTeamNewClub extends SingleTeamEvent {
 
 class _SingleTeamNoClub extends SingleTeamEvent {
   _SingleTeamNoClub();
+}
+
+class _SingleTeamLoadedOpponents extends SingleTeamEvent {
+  final BuiltMap<String, Opponent> opponents;
+
+  _SingleTeamLoadedOpponents({@required this.opponents});
 }
 
 ///
@@ -286,9 +334,12 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
 
   StreamSubscription<TeamState> _teamSub;
   StreamSubscription<ClubState> _clubSub;
-  StreamSubscription<SeasonState> _seasonStateSub;
   StreamSubscription<Iterable<InviteAsAdmin>> _inviteAdminSub;
   StreamSubscription<Iterable<Season>> _seasonSub;
+  StreamSubscription<Iterable<Opponent>> _opponentSub;
+  StreamSubscription<SeasonState> _seasonStateSub;
+
+  bool _doingLoad = false;
 
   SingleTeamBloc(
       {@required this.teamBloc,
@@ -300,8 +351,6 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       if (team != null) {
         // Only send this if the team is not the same.
         var builder = MapBuilder<String, Opponent>();
-        builder.addEntries(state.opponents.entries.where(
-            (MapEntry<String, Opponent> op) => op.value.teamUid == team.uid));
         dispatch(
           _SingleTeamNewTeam(
             newTeam: team,
@@ -314,14 +363,48 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
         dispatch(_SingleTeamDeleted());
       }
     });
-    _seasonStateSub = seasonBloc.state.listen(((SeasonState state) {
-      dispatch(
-        _SingleTeamNewSeasons(
-          seasons: BuiltList.of(
-              state.seasons.values.where((Season s) => s.teamUid == teamUid)),
-        ),
-      );
-    }));
+    _seasonStateSub = seasonBloc.state.listen((SeasonState state) {
+      Iterable<Season> seasons =
+          state.seasons.values.where((Season s) => s.teamUid == teamUid);
+      if (!currentState.loadedSeasons) {
+        // Update the season data.
+        dispatch(
+            _SingleTeamSeasonDataLoaded(fullUpdate: false, seasons: seasons));
+      }
+    });
+  }
+
+  void _loadOpponents() async {
+    print("Loading opponents");
+    if (!_doingLoad) {
+      _doingLoad = true;
+      print("Loading opponents inside");
+      Map<String, Map<String, dynamic>> opponentData = await teamBloc
+          .coordinationBloc.persistentData
+          .getAllTeamElements(PersistenData.opponentsTable, teamUid);
+      MapBuilder<String, Opponent> opponents = MapBuilder<String, Opponent>();
+      for (String key in opponentData.keys) {
+        teamBloc.coordinationBloc.sqlTrace?.incrementCounter("opponent");
+        Map<String, dynamic> innerData = opponentData[key];
+        Opponent op = Opponent.fromJSON(key, teamUid, innerData).build();
+        opponents[key] = op;
+      }
+      dispatch(_SingleTeamLoadedOpponents(opponents: opponents.build()));
+      print("Loading opponents sql $opponents");
+      _opponentSub = teamBloc.coordinationBloc.databaseUpdateModel
+          .getTeamOpponents(teamUid)
+          .listen((Iterable<Opponent> ops) {
+        MapBuilder<String, Opponent> opponents = MapBuilder<String, Opponent>();
+        for (Opponent op in ops) {
+          opponents[op.uid] = op;
+          // Write out to sql as well.
+          teamBloc.coordinationBloc.persistentData.updateTeamElement(
+              PersistenData.opponentsTable, op.uid, teamUid, op.toJSON());
+        }
+        dispatch(_SingleTeamLoadedOpponents(opponents: opponents.build()));
+        print("Loading opponents firestore $opponents");
+      });
+    }
   }
 
   @override
@@ -332,6 +415,10 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
     _seasonSub?.cancel();
     _clubSub?.cancel();
     _clubSub = null;
+    _opponentSub?.cancel();
+    _opponentSub = null;
+    _seasonStateSub?.cancel();
+    _seasonStateSub = null;
   }
 
   void _setupClubSub() {
@@ -372,7 +459,9 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
           fullSeason: BuiltList(),
           invitesAsAdmin: BuiltList(),
           opponents: BuiltMap(),
-          state: null);
+          state: null,
+          loadedOpponents: false,
+          loadedSeasons: false);
     } else {
       return SingleTeamDeleted();
     }
@@ -411,6 +500,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
           yield SingleTeamLoaded(state: currentState, team: event.team.build());
         } catch (e) {
           yield SingleTeamSaveFailed(state: currentState, error: e);
+          yield SingleTeamLoaded(state: currentState);
         }
       }
     }
@@ -430,6 +520,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
           yield SingleTeamLoaded(state: currentState);
         } catch (e) {
           yield SingleTeamSaveFailed(state: currentState, error: e);
+          yield SingleTeamLoaded(state: currentState);
         }
       }
     }
@@ -443,6 +534,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
         yield SingleTeamLoaded(state: currentState);
       } catch (e) {
         yield SingleTeamSaveFailed(state: currentState, error: e);
+        yield SingleTeamLoaded(state: currentState);
       }
     }
 
@@ -455,6 +547,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
         yield SingleTeamLoaded(state: currentState);
       } catch (e) {
         yield SingleTeamSaveFailed(state: currentState, error: e);
+        yield SingleTeamLoaded(state: currentState);
       }
     }
 
@@ -469,6 +562,20 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
         yield SingleTeamLoaded(state: currentState);
       } catch (e) {
         yield SingleTeamSaveFailed(state: currentState, error: e);
+        yield SingleTeamLoaded(state: currentState);
+      }
+    }
+
+    if (event is SingleTeamAddOpponent) {
+      try {
+        await teamBloc.coordinationBloc.databaseUpdateModel
+            .addFirestoreOpponent(
+                event.opponent.rebuild((b) => b..teamUid = teamUid));
+        yield SingleTeamSaveDone(state: currentState);
+        yield SingleTeamLoaded(state: currentState);
+      } catch (e) {
+        yield SingleTeamSaveFailed(state: currentState, error: e);
+        yield SingleTeamLoaded(state: currentState);
       }
     }
 
@@ -491,7 +598,8 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       _seasonSub = teamBloc.coordinationBloc.databaseUpdateModel
           .getSeasonsForTeam(teamUid)
           .listen((Iterable<Season> seasons) {
-        dispatch(_SingleTeamSeasonDataLoaded(seasons: seasons));
+        dispatch(
+            _SingleTeamSeasonDataLoaded(seasons: seasons, fullUpdate: true));
       });
     }
 
@@ -499,9 +607,22 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       yield SingleTeamLoaded(fullSeason: event.seasons, state: currentState);
     }
 
+    if (event is _SingleTeamLoadedOpponents) {
+      yield SingleTeamLoaded(
+          state: currentState,
+          loadedOpponents: true,
+          opponents: event.opponents);
+    }
+
+    if (event is SingleTeamLoadOpponents) {
+      _loadOpponents();
+    }
+
     if (event is _SingleTeamSeasonDataLoaded) {
       yield SingleTeamLoaded(
-          state: currentState, fullSeason: BuiltList.from(event.seasons));
+          state: currentState,
+          fullSeason: BuiltList.from(event.seasons),
+          loadedSeasons: true);
     }
 
     if (event is _SingleTeamNewClub) {
@@ -522,6 +643,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
         yield SingleTeamLoaded(state: currentState, team: myTeam);
       } catch (e) {
         yield SingleTeamSaveFailed(state: currentState, error: e);
+        yield SingleTeamLoaded(state: currentState);
       }
     }
 
@@ -535,6 +657,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
         yield SingleTeamLoaded(state: currentState, team: myTeam);
       } catch (e) {
         yield SingleTeamSaveFailed(state: currentState, error: e);
+        yield SingleTeamLoaded(state: currentState);
       }
     }
   }

@@ -318,30 +318,27 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .delete();
   }
 
-  Future<Game> _getWholeGame(
-      DocumentSnapshotWrapper doc, String teamUid) async {
-    String sharedGameUid = doc.data[Game.SHAREDDATAUID];
-    GameSharedDataBuilder sharedData;
+  Game _getWholeGame(DocumentSnapshotWrapper snap, String teamUid) {
+    String sharedGameUid = snap.data[Game.SHAREDDATAUID];
+    GameSharedData sharedData;
     if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-      // Load the shared stuff too.
-      DocumentSnapshotWrapper doc = await wrapper
-          .collection(GAMES_SHARED_COLLECTION)
-          .document(sharedGameUid)
-          .get();
-      sharedData = GameSharedData.fromJSON(doc.documentID, doc.data);
+      print(snap.data[Game.GAMESHAREDDATA]);
+      sharedData = GameSharedData.fromJSON(sharedGameUid,
+              snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>)
+          .build();
     } else {
-      sharedData = GameSharedData.fromJSON(sharedGameUid, doc.data);
+      // Missing shared data uid.
+      sharedData = GameSharedData.fromJSON("", snap.data).build();
     }
-    GameBuilder game =
-        Game.fromJSON(teamUid, doc.documentID, doc.data, sharedData.build());
-    return game.build();
+    return Game.fromJSON(teamUid, snap.documentID, snap.data, sharedData)
+        .build();
   }
 
   @override
   Stream<Iterable<Game>> getOpponentGames(Opponent opponent) async* {
     CollectionReferenceWrapper ref = wrapper.collection(GAMES_COLLECTION);
     // See if the games for the season.
-    CollectionReferenceWrapper snap = await ref
+    QueryWrapper snap = ref
         .where(Game.TEAMUID, isEqualTo: opponent.teamUid)
         .where(Game.OPPONENTUID, isEqualTo: opponent.uid);
     QuerySnapshotWrapper query = await snap.getDocuments();
@@ -350,7 +347,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       g.add(await _getWholeGame(doc, opponent.teamUid));
     }
     yield g;
-    await for (QuerySnapshotWrapper doc in snap.snapshots()) {
+    await for (QuerySnapshotWrapper query in snap.snapshots()) {
       List<Game> g = [];
       for (DocumentSnapshotWrapper doc in query.documents) {
         g.add(await _getWholeGame(doc, opponent.teamUid));

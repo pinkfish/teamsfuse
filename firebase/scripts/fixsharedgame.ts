@@ -15,24 +15,33 @@ async function updateSharedGames() {
         .then(snap => {
            var ret = [];
            for (var index in snap.docs) {
-              var myDoc = snap.docs[index]
-              ret.push(db.collection("Games")
-                  .where("sharedDataUid", "==", myDoc.id)
-                  .get()
-                  .then(snapshot => {
-                      var inner = [];
-
-                      for (var index in snapshot.docs) {
-                        var gameDoc = snapshot.docs[index]
-
-                        inner.push( db.collection("Games").doc(gameDoc.id).update({
-                           sharedData: myDoc.data(),
-                        }))
-                        console.log('Updated ' + gameDoc.id)
-                      }
-                      return Promise.all(inner);
-                  })
-              )
+              ret.push((function(myDoc) {
+                  var myDoc = snap.docs[index]
+                  var sharedData = myDoc.data()
+                  return db.collection("Games")
+                      .where("sharedDataUid", "==", myDoc.id)
+                      .get()
+                      .then(snapshot => {
+                          var inner = [];
+    
+                          if (snapshot.docs.length == 0) {
+                             console.log('Docs for ' + myDoc.id);
+                          }
+                          for (var index in snapshot.docs) {
+                            inner.push((function(gameDoc) {
+                                return db.collection("Games").doc(gameDoc.id).update({
+                                   'sharedData': sharedData
+                                })
+                                console.log('Updated ' + gameDoc.id)
+                            })(snapshot.docs[index]))
+                          }
+                          if (snapshot.docs.length == 0) {
+                             console.log('Fo0und no docs for ' + myDoc.id);
+                          }
+                          return Promise.all(inner);
+                      });
+                  
+               })(snap.docs[index]))
            }
            return Promise.all(ret);
         })
@@ -48,13 +57,15 @@ async function updateAllGames() {
             (function(myDoc){
             var data = myDoc.data()
             if (data != null && data.sharedDataUid == null) {
-                sharedData = {
+                var sharedData = {
                   endTime: data.endTime,
                   name: data.name,
                   place: data.place,
                   time: data.time,
                   timezone: data.timezone,
-                  type: data.type
+                  type: data.type,
+                  leagueDivisonUid: null,
+                  leagueUid: null,
                 }
                 if (data.leagueDivisonUid) {
                   sharedData.leagueDivisonUid = data.leagueDivisonUid
@@ -73,4 +84,4 @@ async function updateAllGames() {
 }
 
 updateSharedGames()
-updateAllGames()
+//updateAllGames()

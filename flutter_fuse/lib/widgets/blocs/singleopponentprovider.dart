@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 
 import 'base/singleprovider.dart';
@@ -16,16 +15,18 @@ typedef SingleOpponentProviderBuilder = Widget Function(
  */
 
 class SingleOpponentProvider extends SingleBlocProvider<SingleOpponentBloc> {
-  static SingleOpponentBloc _createBloc(BuildContext context, String uid) {
-    return SingleOpponentBloc(
-        teamBloc: BlocProvider.of<TeamBloc>(context), opponentUid: uid);
+  static SingleOpponentBloc _createBloc(
+      BuildContext context, SingleTeamBloc singleTeamBloc, String uid) {
+    return SingleOpponentBloc(singleTeamBloc: singleTeamBloc, opponentUid: uid);
   }
 
   SingleOpponentProvider(
-      {String opponentUid, SingleOpponentProviderBuilder builder})
+      {String opponentUid,
+      SingleTeamBloc singleTeamBloc,
+      SingleOpponentProviderBuilder builder})
       : super(
             keyUid: opponentUid,
             creator: (BuildContext context, String uid) =>
-                _createBloc(context, uid),
+                _createBloc(context, singleTeamBloc, uid),
             builder: builder);
 }

@@ -49,7 +49,7 @@ void mainShared(InjectorFactory injector) async {
   var messagesBloc =
       MessagesBloc(coordinationBloc: coordinationBloc, teamBloc: teamBloc);
   var clubBloc =
-      ClubBloc(coordinationBloc: coordinationBloc, teamBloc: teamBloc);
+      ClubBloc(coordinationBloc: coordinationBloc, singleTeamBloc: teamBloc);
   var leagueOrTournamentBloc =
       LeagueOrTournamentBloc(coordinationBloc: coordinationBloc);
   var gameBloc =

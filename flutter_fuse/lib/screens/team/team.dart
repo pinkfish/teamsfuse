@@ -137,7 +137,7 @@ class TeamScreenState extends State<TeamScreen> {
                   );
                   return fab;
                 }
-                return null;
+                return new Text("");
               },
             ),
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

@@ -22,7 +22,7 @@ abstract class Season implements Built<Season, SeasonBuilder> {
   static const String RECORD = 'record';
   static const String PLAYERS = 'players';
   static const String TEAMUID = 'teamUid';
-  static const String USER = 'user';
+  static const String USER = 'users';
 
   static SeasonBuilder fromJSON(String uid, Map<String, dynamic> data) {
     SeasonBuilder builder = SeasonBuilder();
@@ -31,20 +31,19 @@ abstract class Season implements Built<Season, SeasonBuilder> {
     builder.record = WinRecord.fromJSON(data[RECORD] as Map<dynamic, dynamic>);
     builder.teamUid = data[TEAMUID];
     Map<dynamic, dynamic> playersData = data[PLAYERS];
-    List<SeasonPlayer> newPlayers = new List<SeasonPlayer>();
     if (playersData == null) {
       playersData = {};
     }
-    playersData.forEach((dynamic key, dynamic val) {
+    for (dynamic key in playersData.keys) {
       String playerUid = key;
+      dynamic val = playersData[key];
       SeasonPlayerBuilder player = new SeasonPlayerBuilder();
       player.playerUid = playerUid;
       if (val != null) {
-        newPlayers.add(
+        builder.players.add(
             SeasonPlayer.fromJSON(val as Map<dynamic, dynamic>, playerUid));
       }
-    });
-    builder.players.addAll(newPlayers);
+    }
     print('Update Season ' + uid);
     return builder;
   }

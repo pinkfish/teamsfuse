@@ -165,6 +165,8 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
   SingleSeasonBloc({this.seasonBloc, this.seasonUid}) {
     _seasonSub = seasonBloc.state.listen((SeasonState state) {
       if (state.seasons.containsKey(seasonUid)) {
+        print(
+            'SingleSeasonBLoc: found $seasonUid} ${state.seasons[seasonUid].players}');
         Season season = state.seasons[seasonUid];
 
         // Only send this if the team is not the same.
@@ -172,6 +174,7 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
           dispatch(_SingleNewTeamSeason(newSeason: season));
         }
       } else {
+        print('SingleSeasonBLoc: lost $seasonUid}');
         dispatch(_SingleSeasonDeleted());
       }
     });
@@ -191,6 +194,7 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
   @override
   SingleSeasonState get initialState {
     if (seasonBloc.currentState.seasons.containsKey(seasonUid)) {
+      print('SingleSeasonBLoc: found $seasonUid}');
       return SingleSeasonLoaded(
           season: seasonBloc.currentState.seasons[seasonUid],
           loadedGames: false,
@@ -198,6 +202,8 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
           games: BuiltList(),
           invites: BuiltList());
     } else {
+      print(
+          'SingleSeasonBLoc: deleted $seasonUid ${seasonBloc.currentState.seasons}');
       return SingleSeasonDeleted();
     }
   }

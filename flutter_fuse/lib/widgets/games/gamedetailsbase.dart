@@ -482,10 +482,18 @@ class GameDetailsBase extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleTeamProvider(
       teamUid: game.teamUid,
-      builder: (BuildContext context, SingleTeamBloc bloc) => BlocBuilder(
+      builder: (BuildContext context, SingleTeamBloc bloc) => BlocListener(
         bloc: bloc,
-        builder: (BuildContext context, SingleTeamState teamState) =>
-            _buildGame(context, teamState),
+        listener: (BuildContext context, SingleTeamState state) {
+          if (state is SingleTeamLoaded) {
+            bloc.dispatch(SingleTeamLoadOpponents());
+          }
+        },
+        child: BlocBuilder(
+          bloc: bloc,
+          builder: (BuildContext context, SingleTeamState teamState) =>
+              _buildGame(context, teamState),
+        ),
       ),
     );
   }

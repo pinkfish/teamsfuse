@@ -1163,7 +1163,8 @@ class Messages {
         ..period = GamePeriod.regulation.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
-          ..ptsAgainst = 0));
+          ..ptsAgainst = 0
+          ..intermediate = false));
     }
     if (result.overtimeResult != null) {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
@@ -1203,7 +1204,8 @@ class Messages {
         ..period = GamePeriod.regulation.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
-          ..ptsAgainst = 0));
+          ..ptsAgainst = 0
+          ..intermediate = false));
     }
     if (result.overtimeResult != null) {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
@@ -1243,7 +1245,8 @@ class Messages {
         ..period = GamePeriod.regulation.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
-          ..ptsAgainst = 0));
+          ..ptsAgainst = 0
+          ..intermediate = false));
     }
     if (result.overtimeResult != null) {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
@@ -1285,7 +1288,8 @@ class Messages {
         ..period = GamePeriod.regulation.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
-          ..ptsAgainst = 0));
+          ..ptsAgainst = 0
+          ..intermediate = false));
     }
     if (result.overtimeResult != null) {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
@@ -1389,7 +1393,8 @@ class Messages {
         ..period = GamePeriod.regulation.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
-          ..ptsAgainst = 0));
+          ..ptsAgainst = 0
+          ..intermediate = false));
     }
     if (result.overtimeResult != null) {
       GameResultPerPeriod overtimeScore = result.overtimeResult;

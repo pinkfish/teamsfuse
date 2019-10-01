@@ -6,7 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import '../teambloc.dart';
+import 'singleteambloc.dart';
 
 abstract class SingleOpponentState extends Equatable {
   final Opponent opponent;
@@ -124,16 +124,16 @@ class SingleOpponentLoadGames extends SingleOpponentEvent {}
 ///
 class SingleOpponentBloc
     extends Bloc<SingleOpponentEvent, SingleOpponentState> {
-  final TeamBloc teamBloc;
+  final SingleTeamBloc singleTeamBloc;
   final String opponentUid;
 
   static String createNew = "new";
 
-  StreamSubscription<TeamState> _teamSub;
+  StreamSubscription<SingleTeamState> _teamSub;
   StreamSubscription<Iterable<Game>> _gameSub;
 
-  SingleOpponentBloc({this.teamBloc, this.opponentUid}) {
-    _teamSub = teamBloc.state.listen((TeamState state) {
+  SingleOpponentBloc({this.singleTeamBloc, this.opponentUid}) {
+    _teamSub = singleTeamBloc.state.listen((SingleTeamState state) {
       if (state.opponents.containsKey(opponentUid)) {
         Opponent op = state.opponents[opponentUid];
 
@@ -158,9 +158,11 @@ class SingleOpponentBloc
 
   @override
   SingleOpponentState get initialState {
-    if (teamBloc.currentState.opponents.containsKey(opponentUid)) {
+    if (singleTeamBloc.currentState.opponents.containsKey(opponentUid)) {
       return SingleOpponentLoaded(
-          opponent: teamBloc.currentState.opponents[opponentUid]);
+          opponent: singleTeamBloc.currentState.opponents[opponentUid],
+          gamesLoaded: false,
+          games: BuiltList());
     } else {
       return SingleOpponentDeleted();
     }
@@ -182,7 +184,7 @@ class SingleOpponentBloc
     if (event is SingleOpponentUpdate) {
       yield SingleOpponentSaving(state: currentState);
       try {
-        await teamBloc.coordinationBloc.databaseUpdateModel
+        await singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreOpponent(event.opponent.build());
         yield SingleOpponentLoaded(opponent: event.opponent.build());
       } catch (e) {
@@ -193,7 +195,7 @@ class SingleOpponentBloc
     // Delete the opponent.
     if (event is SingleOpponentDeleteOpponent) {
       try {
-        await teamBloc.coordinationBloc.databaseUpdateModel
+        await singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
             .deleteFirestoreOpponent(currentState.opponent);
         yield SingleOpponentDeleted();
       } catch (e) {
@@ -203,7 +205,7 @@ class SingleOpponentBloc
 
     if (event is SingleOpponentUpdate) {
       try {
-        await teamBloc.coordinationBloc.databaseUpdateModel
+        await singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreOpponent(event.opponent.build());
         yield SingleOpponentLoaded(opponent: event.opponent.build());
       } catch (e) {
@@ -212,7 +214,7 @@ class SingleOpponentBloc
     }
 
     if (event is SingleOpponentLoadGames) {
-      _gameSub = teamBloc.coordinationBloc.databaseUpdateModel
+      _gameSub = singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
           .getOpponentGames(currentState.opponent)
           .listen((Iterable<Game> g) {
         dispatch(_SingleTeamOpponentGamesLoaded(games: g));

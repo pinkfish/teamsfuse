@@ -29,7 +29,7 @@ class TeamPlayersState extends State<TeamPlayers> {
       BuildContext context, SingleTeamState teamState) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     List<Season> seasons = teamState.fullSeason.toList();
-    seasons.sort();
+    seasons.sort((Season s1, Season s2) => s1.name.compareTo(s2.name));
     for (Season s in seasons) {
       ret.add(
           new DropdownMenuItem<String>(child: new Text(s.name), value: s.uid));
@@ -179,6 +179,9 @@ class TeamPlayersState extends State<TeamPlayers> {
           if (state is SingleTeamDeleted) {
             return CircularProgressIndicator();
           } else {
+            if (_seasonUid == null) {
+              _seasonUid = state.team.currentSeason;
+            }
             return Column(
               children: <Widget>[
                 new Row(

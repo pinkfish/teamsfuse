@@ -90,24 +90,15 @@ abstract class TeamState extends Equatable {
   final BuiltMap<String, Team> playerTeams;
   final BuiltMap<String, BuiltMap<String, Team>> clubTeams;
   final BuiltMap<String, Team> publicTeams;
-  final BuiltMap<String, Opponent> opponents;
   final bool onlySql;
 
   TeamState(
       {@required this.playerTeams,
       @required this.onlySql,
-      @required this.opponents,
       @required this.adminTeams,
       @required this.clubTeams,
       @required this.publicTeams})
-      : super([
-          adminTeams,
-          playerTeams,
-          clubTeams,
-          publicTeams,
-          onlySql,
-          opponents
-        ]);
+      : super([adminTeams, playerTeams, clubTeams, publicTeams, onlySql]);
 
   ///
   /// Get the team from the various places it could exist.
@@ -181,19 +172,17 @@ class TeamLoaded extends TeamState {
       BuiltMap<String, Team> adminTeams,
       BuiltMap<String, BuiltMap<String, Team>> clubTeams,
       BuiltMap<String, Team> publicTeams,
-      BuiltMap<String, Opponent> opponents,
       bool onlySql})
       : super(
             playerTeams: teamsByPlayer ?? state.playerTeams,
             clubTeams: clubTeams ?? state.clubTeams,
             onlySql: onlySql ?? state.onlySql,
             publicTeams: publicTeams ?? state.publicTeams,
-            adminTeams: adminTeams ?? state.adminTeams,
-            opponents: opponents ?? state.opponents);
+            adminTeams: adminTeams ?? state.adminTeams);
 
   @override
   String toString() {
-    return 'TeamLoaded{playerTeams: ${playerTeams.length}, adminTeams: ${adminTeams.length}, clubTeams: ${clubTeams.length}, publicTeams: ${publicTeams}, onlySql: $onlySql} opponents: ${opponents.length}';
+    return 'TeamLoaded{playerTeams: ${playerTeams.length}, adminTeams: ${adminTeams.length}, clubTeams: ${clubTeams.length}, publicTeams: ${publicTeams}, onlySql: $onlySql}';
   }
 }
 
@@ -209,10 +198,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
   StreamSubscription<ClubState> _clubSub;
   StreamSubscription<Iterable<Team>> _adminTeamSub;
   StreamSubscription<Iterable<Team>> _userTeamSub;
-  Map<String, StreamSubscription<Iterable<Opponent>>>
-      _teamOpponentSubscriuption = {};
-  Map<String, StreamSubscription<TeamBuilder>> _teammDetailsSubscription = {};
-  TraceProxy _teamByPlayerTrace;
 
   TeamBloc({@required this.coordinationBloc, @required this.clubBloc}) {
     _coordSub = coordinationBloc.state.listen((CoordinationState state) {
@@ -246,18 +231,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
 
   void _cleanupSnaps() {
     _adminTeamSub?.cancel();
-    // Remove the updates in here...
-    for (StreamSubscription<Iterable<Opponent>> s
-        in _teamOpponentSubscriuption.values) {
-      s.cancel();
-    }
-    _teamOpponentSubscriuption.clear();
-
-    for (StreamSubscription<TeamBuilder> tb
-        in _teammDetailsSubscription.values) {
-      tb.cancel();
-    }
-    _teammDetailsSubscription.clear();
     _userTeamSub?.cancel();
   }
 
@@ -286,12 +259,13 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
       toRemove.removeAll(oldTeams.keys);
     }
     print('onTeamAdminsUpdated');
-
-    for (Team doc in newAdminTeams) {
-      coordinationBloc.loadingTrace?.incrementCounter("adminTeam");
-      coordinationBloc.persistentData
-          .updateElement(PersistenData.teamsTable, doc.uid, doc.toJSON());
-      toRemove.remove(doc.uid);
+    if (newAdminTeams != null) {
+      for (Team doc in newAdminTeams) {
+        coordinationBloc.loadingTrace?.incrementCounter("adminTeam");
+        coordinationBloc.persistentData
+            .updateElement(PersistenData.teamsTable, doc.uid, doc.toJSON());
+        toRemove.remove(doc.uid);
+      }
     }
     for (String teamId in toRemove) {
       coordinationBloc.persistentData
@@ -322,17 +296,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
         TeamBuilder team = Team.fromJSON(
             coordinationBloc.authenticationBloc.currentUser.uid, uid, input);
 
-        // Load opponents.
-        Map<String, Map<String, dynamic>> opponentData = await coordinationBloc
-            .persistentData
-            .getAllTeamElements(PersistenData.opponentsTable, uid);
-        for (String key in opponentData.keys) {
-          coordinationBloc.sqlTrace?.incrementCounter("opponent");
-          teamsTrace.incrementCounter("opponent");
-          Map<String, dynamic> innerData = opponentData[key];
-          Opponent op = Opponent.fromJSON(key, uid, innerData).build();
-          opponents[key] = op;
-        }
         Team realTeam = team.build();
         Club club;
         if (clubBloc.currentState.clubs.containsKey(realTeam.clubUid)) {
@@ -348,7 +311,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
           state: currentState,
           teamsByPlayer: BuiltMap.from(newTeams),
           adminTeams: BuiltMap.from(newAdminTeams),
-          opponents: opponents.build(),
           onlySql: true);
       coordinationBloc.dispatch(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Team, sql: true));

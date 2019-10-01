@@ -113,7 +113,12 @@ class PlayerLoading extends PlayerState {
 /// No data at all, we are uninitialized.
 ///
 class PlayerUninitialized extends PlayerState {
-  PlayerUninitialized() : super(players: BuiltMap(), onlySql: true, me: null);
+  PlayerUninitialized()
+      : super(
+            players: BuiltMap(),
+            extraPlayers: BuiltMap(),
+            onlySql: true,
+            me: null);
 
   @override
   String toString() {
