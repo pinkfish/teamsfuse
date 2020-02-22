@@ -39,7 +39,7 @@ void main() {
       authenticationBloc.state,
       emitsInOrder([]),
     );
-    authenticationBloc.dispose();
+    authenticationBloc.close();
   });
 
   group('AppStarted', () {
@@ -59,7 +59,7 @@ void main() {
         emitsInOrder(expectedResponse),
       );
 
-      authenticationBloc.dispatch(AuthenticationAppStarted());
+      authenticationBloc.add(AuthenticationAppStarted());
     });
 
     test('emits [uninitialized, authenticated] for real data', () {
@@ -82,7 +82,7 @@ void main() {
         emitsInOrder(expectedResponse),
       );
 
-      authenticationBloc.dispatch(AuthenticationAppStarted());
+      authenticationBloc.add(AuthenticationAppStarted());
     });
   });
 }

@@ -42,11 +42,13 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   String _seasonNameInternal;
   String _playerUid;
   TeamBuilder _teamToAdd;
-  AddTeamBloc _addTeamBloc = new AddTeamBloc();
+  AddTeamBloc _addTeamBloc ;
 
   @override
   void initState() {
     super.initState();
+    _addTeamBloc = new AddTeamBloc(
+        coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
     if (isActiveClub()) {
       _currentStep = 0;
       _detailsStepState = StepState.disabled;
@@ -77,7 +79,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
       if (_clubUid != null && _clubUid != ClubPicker.noClub) {
         _teamToAdd.clubUid = _clubUid;
       }
-      _addTeamBloc.dispatch(AddTeamEventCommit(
+      _addTeamBloc.add(AddTeamEventCommit(
           seasonName: _seasonNameInternal,
           team: _teamToAdd,
           playerUid: _playerUid,
@@ -212,7 +214,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
     var clubBloc = BlocProvider.of<ClubBloc>(context);
 
     // Only true if they are member of a club of some sort.
-    return clubBloc.currentState.clubs.values.any((Club c) => c.isAdmin());
+    return clubBloc.state.clubs.values.any((Club c) => c.isAdmin());
   }
 
   Widget _buildSummary() {
@@ -243,7 +245,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
           new ListTile(
             leading: const Icon(CommunityIcons.group),
             title: _clubUid != null && _clubUid != ClubPicker.noClub
-                ? new Text(clubBloc.currentState.clubs[_clubUid].name)
+                ? new Text(clubBloc.state.clubs[_clubUid].name)
                 : new Text(Messages.of(context).noclub),
             trailing: _clubUid != null && _clubUid != ClubPicker.noClub
                 ? new ClubImage(
@@ -277,7 +279,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   Widget _buildBody() {
     Messages messages = Messages.of(context);
     return BlocProvider(
-      builder: (BuildContext contex) => _addTeamBloc,
+      create: (BuildContext contex) => _addTeamBloc,
       child: BlocListener(
         bloc: _addTeamBloc,
         listener: (BuildContext context, AddItemState addState) {

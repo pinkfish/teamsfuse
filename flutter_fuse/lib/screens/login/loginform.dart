@@ -25,8 +25,10 @@ class LoginScreenState extends State<LoginScreen> {
   String errorText = '';
   LoginBloc _loginBloc;
 
+  @override
   void initState() {
     _loginBloc = BlocProvider.of<LoginBloc>(context);
+    super.initState();
   }
 
   void onPressed(String routeName) {
@@ -53,7 +55,7 @@ class LoginScreenState extends State<LoginScreen> {
       // Save the data and login.
       form.save();
       _loginBloc
-          .dispatch(LoginEventAttempt(email: email.trim(), password: password));
+          .add(LoginEventAttempt(email: email.trim(), password: password));
     }
   }
 

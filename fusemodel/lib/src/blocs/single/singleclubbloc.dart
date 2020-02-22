@@ -14,8 +14,10 @@ abstract class SingleClubState extends Equatable {
   final Iterable<InviteToClub> invites;
 
   SingleClubState(
-      {@required this.club, @required this.teams, @required this.invites})
-      : super([club, teams, invites]);
+      {@required this.club, @required this.teams, @required this.invites});
+
+  @override
+  List<Object> get props => [club, teams, invites];
 }
 
 ///
@@ -98,6 +100,9 @@ class SingleClubUpdate extends SingleClubEvent {
 
   SingleClubUpdate(
       {@required this.club, this.includeMembers = false, this.image});
+
+  @override
+  List<Object> get props => [club, includeMembers, image];
 }
 
 ///
@@ -105,6 +110,9 @@ class SingleClubUpdate extends SingleClubEvent {
 ///
 class SingleClubLoadInvites extends SingleClubEvent {
   SingleClubLoadInvites();
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -114,6 +122,9 @@ class SingleClubAdd extends SingleClubEvent {
   final Club newClub;
 
   SingleClubAdd({@required this.newClub});
+
+  @override
+  List<Object> get props => [newClub];
 }
 
 ///
@@ -123,6 +134,9 @@ class SingleClubUpdateImage extends SingleClubEvent {
   final File image;
 
   SingleClubUpdateImage({@required this.image});
+
+  @override
+  List<Object> get props => [image];
 }
 
 ///
@@ -133,6 +147,9 @@ class SingleClubAddMember extends SingleClubEvent {
   final bool admin;
 
   SingleClubAddMember({@required this.adminUid, this.admin});
+
+  @override
+  List<Object> get props => [adminUid, admin];
 }
 
 ///
@@ -142,6 +159,9 @@ class SingleClubDeleteMember extends SingleClubEvent {
   final String adminUid;
 
   SingleClubDeleteMember({@required this.adminUid});
+
+  @override
+  List<Object> get props => [adminUid];
 }
 
 ///
@@ -152,6 +172,9 @@ class SingleClubInviteMember extends SingleClubEvent {
   final bool admin;
 
   SingleClubInviteMember({@required this.email, this.admin = false});
+
+  @override
+  List<Object> get props => [email, admin];
 }
 
 ///
@@ -159,6 +182,9 @@ class SingleClubInviteMember extends SingleClubEvent {
 ///
 class SingleClubDelete extends SingleClubEvent {
   SingleClubDelete();
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -166,22 +192,34 @@ class SingleClubDelete extends SingleClubEvent {
 ///
 class SingleClubLoadTeams extends SingleClubEvent {
   SingleClubLoadTeams();
+
+  @override
+  List<Object> get props => [];
 }
 
 class _SingleClubNewClub extends SingleClubEvent {
   final Club newClub;
 
   _SingleClubNewClub({@required this.newClub});
+
+  @override
+  List<Object> get props => [];
 }
 
 class _SingleClubDeleted extends SingleClubEvent {
   _SingleClubDeleted();
+
+  @override
+  List<Object> get props => [];
 }
 
 class _SingleClubInvitesAdded extends SingleClubEvent {
   final Iterable<InviteToClub> invites;
 
   _SingleClubInvitesAdded({@required this.invites});
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -200,31 +238,31 @@ class SingleClubBloc extends Bloc<SingleClubEvent, SingleClubState> {
 
   SingleClubBloc({@required this.clubBloc, @required String clubUid}) {
     _clubUid = clubUid;
-    _clubSub = clubBloc.state.listen((ClubState state) {
-      Club club = state.clubs[clubUid];
+    _clubSub = clubBloc.listen((ClubState clubState) {
+      Club club = clubState.clubs[clubUid];
       if (club != null) {
         // Only send this if the club is not the same.
-        if (club != currentState.club) {
-          dispatch(_SingleClubNewClub(newClub: club));
+        if (club != state.club) {
+          add(_SingleClubNewClub(newClub: club));
         }
       } else {
-        dispatch(_SingleClubDeleted());
+        add(_SingleClubDeleted());
       }
     });
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _clubSub?.cancel();
     _inviteSub?.cancel();
   }
 
   @override
   SingleClubState get initialState {
-    if (clubBloc.currentState.clubs.containsKey(clubUid)) {
+    if (clubBloc.state.clubs.containsKey(clubUid)) {
       return SingleClubLoaded(
-          club: clubBloc.currentState.clubs[clubUid], teams: {}, invites: []);
+          club: clubBloc.state.clubs[clubUid], teams: {}, invites: []);
     }
     return SingleClubDeleted.empty();
   }
@@ -233,115 +271,108 @@ class SingleClubBloc extends Bloc<SingleClubEvent, SingleClubState> {
   Stream<SingleClubState> mapEventToState(SingleClubEvent event) async* {
     if (event is _SingleClubNewClub) {
       yield SingleClubLoaded(
-          club: event.newClub,
-          teams: currentState.teams,
-          invites: currentState.invites);
+          club: event.newClub, teams: state.teams, invites: state.invites);
     }
 
     // The club is deleted.
     if (event is _SingleClubDeleted) {
-      yield SingleClubDeleted(currentState);
+      yield SingleClubDeleted(state);
     }
 
     // Save the club.
     if (event is SingleClubUpdate) {
-      yield SingleClubSaving(singleClubState: currentState);
+      yield SingleClubSaving(singleClubState: state);
       try {
         Club club = event.club;
         if (event.image != null) {
           Uri clubUri = await clubBloc.coordinationBloc.databaseUpdateModel
-              .updateClubImage(currentState.club, event.image);
+              .updateClubImage(state.club, event.image);
           club = club.rebuild((b) => b..photoUrl = clubUri.toString());
         }
         await clubBloc.coordinationBloc.databaseUpdateModel
             .updateClub(club, includeMembers: event.includeMembers);
-        yield SingleClubLoaded(club: event.club, teams: currentState.teams);
+        yield SingleClubLoaded(
+            club: event.club, teams: state.teams, invites: state.invites);
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: currentState, error: e);
+        yield SingleClubSaveFailed(singleClubState: state, error: e);
       }
     }
 
     if (event is SingleClubUpdateImage) {
-      yield SingleClubSaving(singleClubState: currentState);
+      yield SingleClubSaving(singleClubState: state);
       try {
         Uri clubUri = await clubBloc.coordinationBloc.databaseUpdateModel
-            .updateClubImage(currentState.club, event.image);
+            .updateClubImage(state.club, event.image);
 
         yield SingleClubLoaded(
-            club: currentState.club
-                .rebuild((b) => b..photoUrl = clubUri.toString()),
-            teams: currentState.teams);
+            club: state.club.rebuild((b) => b..photoUrl = clubUri.toString()),
+            teams: state.teams,
+            invites: state.invites);
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: currentState, error: e);
+        yield SingleClubSaveFailed(singleClubState: state, error: e);
       }
     }
 
     // Create a new club.
     if (event is SingleClubAdd) {
-      yield SingleClubSaving(singleClubState: currentState);
+      yield SingleClubSaving(singleClubState: state);
       try {
         _clubUid = await clubBloc.coordinationBloc.databaseUpdateModel
             .addClub(null, event.newClub);
         yield SingleClubLoaded(
-            invites: currentState.invites,
-            club: event.newClub,
-            teams: currentState.teams);
+            invites: state.invites, club: event.newClub, teams: state.teams);
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: currentState, error: e);
+        yield SingleClubSaveFailed(singleClubState: state, error: e);
       }
     }
 
     if (event is SingleClubAddMember) {
-      yield SingleClubSaving(singleClubState: currentState);
+      yield SingleClubSaving(singleClubState: state);
       try {
         await clubBloc.coordinationBloc.databaseUpdateModel
             .addUserToClub(clubUid, event.adminUid, event.admin);
-        yield SingleClubLoaded.copy(currentState);
+        yield SingleClubLoaded.copy(state);
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: currentState, error: e);
+        yield SingleClubSaveFailed(singleClubState: state, error: e);
       }
     }
 
     if (event is SingleClubDeleteMember) {
-      yield SingleClubSaving(singleClubState: currentState);
+      yield SingleClubSaving(singleClubState: state);
       try {
         await clubBloc.coordinationBloc.databaseUpdateModel
-            .deleteClubMember(currentState.club, event.adminUid);
-        yield SingleClubLoaded.copy(currentState);
+            .deleteClubMember(state.club, event.adminUid);
+        yield SingleClubLoaded.copy(state);
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: currentState, error: e);
+        yield SingleClubSaveFailed(singleClubState: state, error: e);
       }
     }
 
     if (event is SingleClubInviteMember) {
-      yield SingleClubSaving(singleClubState: currentState);
+      yield SingleClubSaving(singleClubState: state);
       try {
         await clubBloc.coordinationBloc.databaseUpdateModel.inviteUserToClub(
-            clubName: currentState.club.name,
+            clubName: state.club.name,
             email: event.email,
             admin: event.admin,
             clubUid: clubUid);
         yield SingleClubLoaded(
-            club: currentState.club,
-            invites: currentState.invites,
-            teams: currentState.teams);
+            club: state.club, invites: state.invites, teams: state.teams);
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: currentState, error: e);
+        yield SingleClubSaveFailed(singleClubState: state, error: e);
       }
     }
 
     if (event is _SingleClubInvitesAdded) {
       yield SingleClubLoaded(
-          club: currentState.club,
-          teams: currentState.teams,
-          invites: event.invites);
+          club: state.club, teams: state.teams, invites: event.invites);
     }
 
     if (event is SingleClubLoadInvites) {
       _inviteSub = clubBloc.coordinationBloc.databaseUpdateModel
           .getInviteToClubStream(clubUid)
           .listen((Iterable<InviteToClub> invites) {
-        dispatch(_SingleClubInvitesAdded(invites: invites));
+        add(_SingleClubInvitesAdded(invites: invites));
       });
     }
   }

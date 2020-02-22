@@ -11,12 +11,11 @@ import 'results/scoredetails.dart';
 
 class EditResultDialog extends StatelessWidget {
   EditResultDialog(this._game) {
-    _game.dispatch(SingleGameLoadGameLog());
+    _game.add(SingleGameLoadGameLog());
   }
 
   final SingleGameBloc _game;
 
-  @override
   Widget buildGame(
       BuildContext context, Game game, Team team, Opponent opponent) {
     ThemeData theme = Theme.of(context);
@@ -73,6 +72,7 @@ class EditResultDialog extends StatelessWidget {
     );
   }
 
+  @override
   Widget build(BuildContext context) {
     return BlocListener(
       bloc: _game,
@@ -91,11 +91,11 @@ class EditResultDialog extends StatelessWidget {
             teamUid: state.game.teamUid,
             builder: (BuildContext context, SingleTeamBloc teamBloc) =>
                 BlocBuilder(
-                  bloc: teamBloc,
-                  builder: (BuildContext context, SingleTeamState teamState) =>
-                      buildGame(context, state.game, teamState.team,
-                          teamState.opponents[state.game.opponentUids[0]]),
-                ),
+              bloc: teamBloc,
+              builder: (BuildContext context, SingleTeamState teamState) =>
+                  buildGame(context, state.game, teamState.team,
+                      teamState.opponents[state.game.opponentUids[0]]),
+            ),
           );
         },
       ),

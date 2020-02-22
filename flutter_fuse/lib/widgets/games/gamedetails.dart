@@ -58,7 +58,7 @@ class GameDetailsState extends State<GameDetails> {
             return new AttendanceDialog(current: current);
           });
       if (attend != null) {
-        widget.gameBloc.dispatch(SingleGameUpdateAttendance(
+        widget.gameBloc.add(SingleGameUpdateAttendance(
             playerUid: player.uid, attendance: attend));
       }
     } else {
@@ -70,7 +70,7 @@ class GameDetailsState extends State<GameDetails> {
       );
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
-          widget.gameBloc.dispatch(SingleGameUpdateAttendance(
+          widget.gameBloc.add(SingleGameUpdateAttendance(
               playerUid: player.uid, attendance: attend));
         });
       }
@@ -87,10 +87,9 @@ class GameDetailsState extends State<GameDetails> {
     LeagueOrTournamentBloc leagueOrTournamentBloc =
         BlocProvider.of<LeagueOrTournamentBloc>(context);
 
-    if (leagueOrTournamentBloc.currentState.leagueOrTournaments
+    if (leagueOrTournamentBloc.state.leagueOrTournaments
         .containsKey(sharedData.leagueUid)) {
-      if (leagueOrTournamentBloc
-          .currentState.leagueOrTournaments[sharedData.leagueUid]
+      if (leagueOrTournamentBloc.state.leagueOrTournaments[sharedData.leagueUid]
           .isAdmin()) {
         // Show it and forget it.
         showDialog<bool>(
@@ -143,8 +142,7 @@ class GameDetailsState extends State<GameDetails> {
         newResult.scores[GamePeriod.penalty] = details.penaltyResult;
       }
       newResult.result = details.result;
-      widget.gameBloc
-          .dispatch(SingleGameUpdateResult(result: newResult.build()));
+      widget.gameBloc.add(SingleGameUpdateResult(result: newResult.build()));
     }
   }
 

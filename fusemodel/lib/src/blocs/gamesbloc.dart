@@ -25,8 +25,10 @@ class GameState extends Equatable {
       @required this.sharedGameData,
       @required this.onlySql,
       @required this.start,
-      @required this.end})
-      : super([gamesByTeam, sharedGameData, onlySql, start, end]);
+      @required this.end});
+
+  @override
+  List<Object> get props => [gamesByTeam, sharedGameData, onlySql, start, end];
 
   ///
   /// Finds the game in the currently loaded set of games.
@@ -93,7 +95,7 @@ class GameLoaded extends GameState {
   }
 }
 
-class GameEvent extends Equatable {}
+abstract class GameEvent extends Equatable {}
 
 class _GameEventUserLoaded extends GameEvent {
   final Set<String> teams;
@@ -104,15 +106,24 @@ class _GameEventUserLoaded extends GameEvent {
   String toString() {
     return '_GameEventUserLoaded{}';
   }
+
+  @override
+  List<Object> get props => [teams];
 }
 
-class _GameEventLogout extends GameEvent {}
+class _GameEventLogout extends GameEvent {
+  @override
+  List<Object> get props => [];
+}
 
 class _GameEventNewDataLoaded extends GameEvent {
   final Iterable<Game> games;
   final String teamUid;
 
   _GameEventNewDataLoaded({@required this.teamUid, @required this.games});
+
+  @override
+  List<Object> get props => [teamUid, games];
 }
 
 class GameEventSetBoundaries extends GameEvent {
@@ -120,6 +131,9 @@ class GameEventSetBoundaries extends GameEvent {
   final DateTime end;
 
   GameEventSetBoundaries({this.start, this.end});
+
+  @override
+  List<Object> get props => [start, end];
 }
 
 ///
@@ -137,27 +151,27 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   DateTime _end;
 
   GameBloc({@required this.coordinationBloc, @required this.teamBloc}) {
-    if (teamBloc.currentState is TeamLoaded) {
-      _onTeamsUpdates(teamBloc.currentState.allTeamUids, true);
+    if (teamBloc.state is TeamLoaded) {
+      _onTeamsUpdates(teamBloc.state.allTeamUids, true);
     }
-    _teamSub = teamBloc.state.listen((TeamState state) {
+    _teamSub = teamBloc.listen((TeamState state) {
       if (state is TeamLoaded) {
         _start = _start ?? new DateTime.now().subtract(new Duration(days: 60));
         _end = _end ?? new DateTime.now().add(new Duration(days: 240));
         if (state.onlySql) {
-          dispatch(_GameEventUserLoaded(teams: state.allTeamUids));
+          add(_GameEventUserLoaded(teams: state.allTeamUids));
         } else {
           _onTeamsUpdates(state.allTeamUids, false);
         }
       } else {
-        dispatch(_GameEventLogout());
+        add(_GameEventLogout());
       }
     });
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _cleanupStuff();
     _teamSub?.cancel();
     _teamSub = null;
@@ -182,8 +196,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         _gameSubscriptions[teamUid] = coordinationBloc.databaseUpdateModel
             .getBasicGames(start: _start, end: _end, teamUid: teamUid)
             .listen((GameSnapshotEvent gse) {
-          dispatch(
-              _GameEventNewDataLoaded(teamUid: myUid, games: gse.newGames));
+          add(_GameEventNewDataLoaded(teamUid: myUid, games: gse.newGames));
         });
       }
     }
@@ -229,12 +242,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       print(
           'End games ${coordinationBloc.start.difference(new DateTime.now())} ${newGames.length}');
       gamesTrace.stop();
-      coordinationBloc.dispatch(
+      coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Game, sql: true));
 
-      if (currentState.onlySql) {
+      if (state.onlySql) {
         yield GameLoaded(
-            state: currentState,
+            state: state,
             gamesByTeam: newGames.build(),
             sharedGames: gameSharedData.build(),
             onlySql: true,
@@ -246,7 +259,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     // New data from above.  Mark ourselves as done.
     if (event is _GameEventNewDataLoaded) {
       MapBuilder<String, BuiltMap<String, Game>> newGames =
-          currentState.gamesByTeam.toBuilder();
+          state.gamesByTeam.toBuilder();
       MapBuilder<String, Game> games = MapBuilder();
       for (Game g in event.games) {
         games[g.uid] = g;
@@ -258,13 +271,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         }
       }
       yield GameLoaded(
-          state: currentState,
+          state: state,
           sharedGames: sharedGameData.build(),
           gamesByTeam: newGames.build(),
           onlySql: false,
           start: _start,
           end: _end);
-      coordinationBloc.dispatch(
+      coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Game, sql: false));
     }
 
@@ -277,7 +290,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     if (event is GameEventSetBoundaries) {
       _start = event.start ?? _start;
       _end = event.end ?? _end;
-      _onTeamsUpdates(teamBloc.currentState.allTeamUids, true);
+      _onTeamsUpdates(teamBloc.state.allTeamUids, true);
     }
   }
 }

@@ -14,8 +14,10 @@ abstract class CoordinationState extends Equatable {
   final BuiltSet<BlocsToLoad> loaded;
   final String uid;
 
-  CoordinationState({@required this.uid, @required this.loaded})
-      : super([loaded, uid]);
+  CoordinationState({@required this.uid, @required this.loaded});
+
+  @override
+  List<Object> get props => [loaded, uid];
 }
 
 ///
@@ -95,12 +97,18 @@ class CoordinationEventLoadedData extends CoordinationEvent {
   final bool sql;
 
   CoordinationEventLoadedData({this.loaded, this.sql});
+
+  @override
+  List<Object> get props => [loaded, sql];
 }
 
 ///
 /// called when the system logs out at the auth level.
 ///
-class _CoordintationStateLoggedOut extends CoordinationEvent {}
+class _CoordintationStateLoggedOut extends CoordinationEvent {
+  @override
+  List<Object> get props => [];
+}
 
 ///
 /// Starts the whole process by logging in.
@@ -108,6 +116,9 @@ class _CoordintationStateLoggedOut extends CoordinationEvent {}
 class _CoordintationStateStart extends CoordinationEvent {
   final String uid;
   _CoordintationStateStart({this.uid});
+
+  @override
+  List<Object> get props => [uid];
 }
 
 ///
@@ -130,15 +141,15 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
       @required this.analytics,
       @required this.databaseUpdateModel,
       @required this.analyticsSubsystem}) {
-    authenticationBloc.state.listen((AuthenticationState state) {
-      if (state is AuthenticationLoggedIn) {
+    authenticationBloc.listen((AuthenticationState authState) {
+      if (authState is AuthenticationLoggedIn) {
         sqlTrace = analytics.newTrace("sqlTrace");
         loadingTrace = analytics.newTrace("fullLoadTrace");
         start = DateTime.now();
-        assert(state.user.uid != null);
-        dispatch(_CoordintationStateStart(uid: state.user.uid));
+        assert(authState.user.uid != null);
+        add(_CoordintationStateStart(uid: authState.user.uid));
       } else {
-        dispatch(_CoordintationStateLoggedOut());
+        add(_CoordintationStateLoggedOut());
       }
     });
   }
@@ -160,35 +171,35 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
 
     if (event is CoordinationEventLoadedData) {
       // In the sql loading state.
-      if (currentState is CoordinationStateStartLoadingSql ||
-          currentState is CoordinatiomnStateLoadingSql) {
+      if (state is CoordinationStateStartLoadingSql ||
+          state is CoordinatiomnStateLoadingSql) {
         BuiltSet<BlocsToLoad> loaded =
-            currentState.loaded.rebuild((b) => b..add(event.loaded));
+            state.loaded.rebuild((b) => b..add(event.loaded));
         if (loaded.length == BlocsToLoad.values.length) {
           // Close the sql trace part.
           sqlTrace.stop();
           sqlTrace = null;
-          yield CoordinationStateStartLoadingFirestore(uid: currentState.uid);
+          yield CoordinationStateStartLoadingFirestore(uid: state.uid);
         } else {
           yield CoordinatiomnStateLoadingSql(
-              loaded: BuiltSet.from(loaded), uid: currentState.uid);
+              loaded: BuiltSet.from(loaded), uid: state.uid);
         }
       }
-      if (currentState is CoordinationStateStartLoadingFirestore ||
-          currentState is CoordinationStateLoadingFirestore) {
-        if (!currentState.loaded.contains(currentState.loaded)) {
+      if (state is CoordinationStateStartLoadingFirestore ||
+          state is CoordinationStateLoadingFirestore) {
+        if (!state.loaded.contains(state.loaded)) {
           BuiltSet<BlocsToLoad> loaded =
-              currentState.loaded.rebuild((b) => b..add(event.loaded));
+              state.loaded.rebuild((b) => b..add(event.loaded));
           var loadedLeft = Set.from(BlocsToLoad.values);
           loadedLeft.removeAll(loaded);
           print("Update loaded ${event.loaded} ${loadedLeft}");
           if (loaded.length == BlocsToLoad.values.length) {
             loadingTrace.stop();
             loadingTrace = null;
-            yield CoordinationStateLoaded(uid: currentState.uid);
+            yield CoordinationStateLoaded(uid: state.uid);
           } else {
             yield CoordinationStateLoadingFirestore(
-                loaded: loaded, uid: currentState.uid);
+                loaded: loaded, uid: state.uid);
           }
         }
       }

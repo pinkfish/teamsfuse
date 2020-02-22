@@ -75,7 +75,7 @@ class TeamPlayersState extends State<TeamPlayers> {
     );
     if (result) {
       InviteBloc bloc = BlocProvider.of<InviteBloc>(context);
-      bloc.dispatch(InviteEventDeleteInvite(inviteUid: invite.uid));
+      bloc.add(InviteEventDeleteInvite(inviteUid: invite.uid));
     }
   }
 
@@ -166,6 +166,19 @@ class TeamPlayersState extends State<TeamPlayers> {
     return ret;
   }
 
+  Widget _buildSeason(BuildContext context, SingleTeamState teamState) {
+    return SingleSeasonProvider(
+      seasonUid: _seasonUid,
+      builder: (BuildContext context, SingleSeasonBloc seasonBloc) =>
+          BlocBuilder(
+        bloc: seasonBloc,
+        builder: (BuildContext context, SingleSeasonState seasonState) {
+          return Column(children: _buildPlayers(seasonState, teamState));
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -175,12 +188,12 @@ class TeamPlayersState extends State<TeamPlayers> {
       teamUid: widget._teamUid,
       builder: (BuildContext context, SingleTeamBloc bloc) => BlocBuilder(
         bloc: bloc,
-        builder: (BuildContext context, SingleTeamState state) {
-          if (state is SingleTeamDeleted) {
+        builder: (BuildContext context, SingleTeamState teamState) {
+          if (teamState is SingleTeamDeleted) {
             return CircularProgressIndicator();
           } else {
             if (_seasonUid == null) {
-              _seasonUid = state.team.currentSeason;
+              _seasonUid = teamState.team.currentSeason;
             }
             return Column(
               children: <Widget>[
@@ -189,7 +202,7 @@ class TeamPlayersState extends State<TeamPlayers> {
                     new DropdownButton<String>(
                       hint: new Text(messsages.seasonselect),
                       value: _seasonUid,
-                      items: _buildItems(context, state),
+                      items: _buildItems(context, teamState),
                       onChanged: (String val) {
                         print('changed $val');
                         setState(() {
@@ -206,19 +219,7 @@ class TeamPlayersState extends State<TeamPlayers> {
                         new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
                     decoration: new BoxDecoration(color: theme.cardColor),
                     child: new SingleChildScrollView(
-                      child: SingleSeasonProvider(
-                        seasonUid: _seasonUid,
-                        builder: (BuildContext context,
-                                SingleSeasonBloc seasonBloc) =>
-                            BlocBuilder(
-                          bloc: seasonBloc,
-                          builder: (BuildContext context,
-                              SingleSeasonState seasonState) {
-                            return Column(
-                                children: _buildPlayers(seasonState, state));
-                          },
-                        ),
-                      ),
+                      child: _buildSeason(context, teamState),
                     ),
                   ),
                 ),

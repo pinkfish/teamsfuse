@@ -23,8 +23,7 @@ class AddInviteToLeagueDialog extends Dialog {
     if (email == null) {
       return false;
     }
-    leagueOrTournament
-        .dispatch(SingleLeagueOrTournamentInviteAsAdmin(email: email));
+    leagueOrTournament.add(SingleLeagueOrTournamentInviteAsAdmin(email: email));
 
     return true;
   }
@@ -75,16 +74,16 @@ class AddInviteToLeagueDialog extends Dialog {
                   showDialog<bool>(
                     context: context,
                     builder: (BuildContext context) => new AlertDialog(
-                          title: Text(Messages.of(context).invalidemail),
-                          content: Text(Messages.of(context).invalidemail),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text(MaterialLocalizations.of(context)
-                                  .okButtonLabel),
-                              onPressed: () => Navigator.pop(context, true),
-                            )
-                          ],
-                        ),
+                      title: Text(Messages.of(context).invalidemail),
+                      content: Text(Messages.of(context).invalidemail),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text(
+                              MaterialLocalizations.of(context).okButtonLabel),
+                          onPressed: () => Navigator.pop(context, true),
+                        )
+                      ],
+                    ),
                   );
                 }
               },

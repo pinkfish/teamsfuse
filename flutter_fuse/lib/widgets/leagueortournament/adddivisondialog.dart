@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 class AddDivisonDialog extends Dialog {
   final TextEditingController _controller = new TextEditingController();
@@ -16,14 +15,9 @@ class AddDivisonDialog extends Dialog {
     if (divisonName == null) {
       return false;
     }
-    LeagueOrTournamentDivison divisonData = (LeagueOrTournamentDivisonBuilder()
-          ..name = divisonName
-          ..leagueOrTournmentSeasonUid =
-              seasonBloc.currentState.leagueOrTournamentSeason.uid)
-        .build();
     // Write it out to firestore.  Yay.
     seasonBloc
-        .dispatch(SingleLeagueOrTournamentSeasonAddDivision(name: divisonName));
+        .add(SingleLeagueOrTournamentSeasonAddDivision(name: divisonName));
     return true;
   }
 

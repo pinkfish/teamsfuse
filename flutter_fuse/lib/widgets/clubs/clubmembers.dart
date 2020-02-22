@@ -48,8 +48,7 @@ class ClubMembers extends StatelessWidget {
       },
     );
     if (result) {
-      clubBloc.dispatch(
-          ClubDeleteMember(clubUid: club.uid, memberUid: profile.uid));
+      clubBloc.add(ClubDeleteMember(clubUid: club.uid, memberUid: profile.uid));
     }
   }
 
@@ -86,10 +85,11 @@ class ClubMembers extends StatelessWidget {
     for (String adminUid in club.adminsUids) {
       var bloc = SingleProfileBloc(
           coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
-          profileUid: adminUid);
+          profileUid: adminUid,
+          playerBloc: BlocProvider.of<PlayerBloc>(context));
       members.add(
         BlocProvider(
-          builder: (BuildContext context) => bloc,
+          create: (BuildContext context) => bloc,
           child: BlocBuilder(
             bloc: bloc,
             builder: (BuildContext context, SingleProfileState state) =>
@@ -101,10 +101,11 @@ class ClubMembers extends StatelessWidget {
     for (String memberUid in club.members) {
       var bloc = SingleProfileBloc(
           coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
-          profileUid: memberUid);
+          profileUid: memberUid,
+          playerBloc: BlocProvider.of<PlayerBloc>(context));
       members.add(
         BlocProvider(
-          builder: (BuildContext context) => bloc,
+          create: (BuildContext context) => bloc,
           child: BlocBuilder(
             bloc: bloc,
             builder: (BuildContext context, SingleProfileState state) =>

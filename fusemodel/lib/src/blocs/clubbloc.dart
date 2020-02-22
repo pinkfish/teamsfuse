@@ -18,8 +18,10 @@ class ClubState extends Equatable {
   final BuiltMap<String, Iterable<Team>> teams;
 
   ClubState(
-      {@required this.clubs, @required this.onlySql, @required this.teams})
-      : super([clubs, onlySql, teams]);
+      {@required this.clubs, @required this.onlySql, @required this.teams});
+
+  @override
+  List<Object> get props => [clubs, onlySql, teams];
 }
 
 ///
@@ -51,7 +53,7 @@ class ClubLoaded extends ClubState {
   }
 }
 
-class ClubEvent extends Equatable {}
+abstract class ClubEvent extends Equatable {}
 
 class _ClubEventUserLoaded extends ClubEvent {
   final String uid;
@@ -62,6 +64,9 @@ class _ClubEventUserLoaded extends ClubEvent {
   String toString() {
     return '_ClubEventUserLoaded{}';
   }
+
+  @override
+  List<Object> get props => [uid];
 }
 
 class _ClubEventLoadFromFirestore extends ClubEvent {
@@ -73,14 +78,23 @@ class _ClubEventLoadFromFirestore extends ClubEvent {
   String toString() {
     return '_ClubEventLoadFromFirestore{}';
   }
+
+  @override
+  List<Object> get props => [uid];
 }
 
-class _ClubEventLogout extends ClubEvent {}
+class _ClubEventLogout extends ClubEvent {
+  @override
+  List<Object> get props => [];
+}
 
 class _ClubEventNewDataLoaded extends ClubEvent {
   final BuiltMap<String, Club> clubs;
 
   _ClubEventNewDataLoaded({@required this.clubs});
+
+  @override
+  List<Object> get props => [clubs];
 }
 
 class _ClubEventNewTeamsLoaded extends ClubEvent {
@@ -88,6 +102,9 @@ class _ClubEventNewTeamsLoaded extends ClubEvent {
   final Iterable<Team> teams;
 
   _ClubEventNewTeamsLoaded({@required this.clubUid, @required this.teams});
+
+  @override
+  List<Object> get props => [clubUid, teams];
 }
 
 ///
@@ -98,6 +115,9 @@ class ClubDeleteMember extends ClubEvent {
   final String clubUid;
 
   ClubDeleteMember({@required this.memberUid, @required this.clubUid});
+
+  @override
+  List<Object> get props => [memberUid, clubUid];
 }
 
 ///
@@ -112,23 +132,23 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
   Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions = {};
 
   ClubBloc({@required this.coordinationBloc}) {
-    _coordSub = coordinationBloc.state.listen((CoordinationState state) {
-      if (state is CoordinationStateStartLoadingSql) {
-        _startLoading(state);
+    _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
+      if (coordinationState is CoordinationStateStartLoadingSql) {
+        _startLoading(coordinationState);
       } else if (state is CoordinationStateLoggedOut) {
-        dispatch(_ClubEventLogout());
+        add(_ClubEventLogout());
       } else if (state is CoordinationStateStartLoadingFirestore) {
-        dispatch(_ClubEventLoadFromFirestore(uid: state.uid));
+        add(_ClubEventLoadFromFirestore(uid: coordinationState.uid));
       }
     });
-    if (!(coordinationBloc.currentState is CoordinationStateLoggedOut)) {
-      _startLoading(coordinationBloc.currentState);
+    if (!(coordinationBloc.state is CoordinationStateLoggedOut)) {
+      _startLoading(coordinationBloc.state);
     }
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _cleanupStuff();
     _coordSub?.cancel();
   }
@@ -144,7 +164,7 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
   }
 
   void _startLoading(CoordinationState state) {
-    dispatch(_ClubEventUserLoaded(uid: state.uid));
+    add(_ClubEventUserLoaded(uid: state.uid));
   }
 
   @override
@@ -164,13 +184,13 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
           // Add in all the teams in the list to the teams list and
           // filter out any that have a club on them that now don't
           // exist.
-          dispatch(_ClubEventNewTeamsLoaded(clubUid: clubUid, teams: teams));
+          add(_ClubEventNewTeamsLoaded(clubUid: clubUid, teams: teams));
         });
       }
       coordinationBloc.persistentData.updateElement(PersistenData.clubsTable,
           club.uid, club.toJson(includeMembers: true));
     }
-    dispatch(_ClubEventNewDataLoaded(clubs: newClubs.build()));
+    add(_ClubEventNewDataLoaded(clubs: newClubs.build()));
   }
 
   @override
@@ -197,10 +217,8 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
           'End clubs ${start.difference(new DateTime.now())} ${newClubs.length}');
       clubTrace.stop();
       yield ClubLoaded(
-          clubs: newClubs.build(),
-          onlySql: currentState.onlySql,
-          teams: BuiltMap());
-      coordinationBloc.dispatch(
+          clubs: newClubs.build(), onlySql: state.onlySql, teams: BuiltMap());
+      coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: true));
     }
 
@@ -216,9 +234,8 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
 
     // New data from above.  Mark ourselves as done.
     if (event is _ClubEventNewDataLoaded) {
-      yield ClubLoaded(
-          clubs: event.clubs, onlySql: false, teams: currentState.teams);
-      coordinationBloc.dispatch(
+      yield ClubLoaded(clubs: event.clubs, onlySql: false, teams: state.teams);
+      coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: false));
     }
 
@@ -229,22 +246,20 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
     }
 
     if (event is ClubDeleteMember) {
-      if (!currentState.clubs.containsKey(event.clubUid)) {
+      if (!state.clubs.containsKey(event.clubUid)) {
         return;
       }
       try {
-        await coordinationBloc.databaseUpdateModel.deleteClubMember(
-            currentState.clubs[event.clubUid], event.memberUid);
+        await coordinationBloc.databaseUpdateModel
+            .deleteClubMember(state.clubs[event.clubUid], event.memberUid);
       } catch (e) {}
     }
 
     if (event is _ClubEventNewTeamsLoaded) {
-      MapBuilder<String, Iterable<Team>> teams = currentState.teams.toBuilder();
+      MapBuilder<String, Iterable<Team>> teams = state.teams.toBuilder();
       teams[event.clubUid] = event.teams;
       yield ClubLoaded(
-          clubs: currentState.clubs,
-          onlySql: currentState.onlySql,
-          teams: teams.build());
+          clubs: state.clubs, onlySql: state.onlySql, teams: teams.build());
     }
   }
 }

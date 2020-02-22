@@ -50,33 +50,4 @@ abstract class Invite with BaseInviteType {
     ret[SENTBYUID] = invite.sentByUid;
     return ret;
   }
-
-  /*
-  Future<void> firestoreDelete() {
-    return UserDatabaseData.instance.updateModel.firestoreInviteDelete(this);
-  }
-
-  @override
-  String toString() {
-    return 'Invite{email: $email, uid: $uid, type: $type, sentByUid: $sentByUid}';
-  }
-
-  int baseCompareTo(Invite other) {
-    int ret = other.uid.compareTo(uid);
-    if (ret != 0) {
-      return ret;
-    }
-    ret = other.email.compareTo(email);
-    if (ret != 0) {
-      return ret;
-    }
-    if (type != other.type) {
-      return -1;
-    }
-    if (sentByUid.compareTo(other.sentByUid) != 0) {
-      return -1;
-    }
-    return 0;
-  }
-  */
 }

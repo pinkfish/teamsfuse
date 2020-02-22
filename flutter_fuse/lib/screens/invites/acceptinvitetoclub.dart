@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -33,13 +34,14 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
     _singleInviteBloc = SingleInviteBloc(
         inviteBloc: BlocProvider.of<InviteBloc>(context),
         inviteUid: widget._inviteUid,
-        teamBloc: BlocProvider.of<TeamBloc>(context));
+        teamBloc: BlocProvider.of<TeamBloc>(context),
+        seasonBloc: BlocProvider.of<SeasonBloc>(context));
   }
 
   @override
   void dispose() {
     super.dispose();
-    _singleInviteBloc?.dispose();
+    _singleInviteBloc?.close();
   }
 
   void _showInSnackBar(String value) {
@@ -48,16 +50,7 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
   }
 
   void _savePressed() async {
-    _singleInviteBloc.dispatch(SingleInviteEventAcceptInviteToClub());
-    await for (SingleInviteState state in _singleInviteBloc.state) {
-      if (state is SingleInviteSaveFailed) {
-        _showInSnackBar(Messages.of(context).formerror);
-      } else if (state is SingleInviteDeleted) {
-        Navigator.pop(context);
-      } else if (state is SingleInviteLoaded) {
-        return;
-      }
-    }
+    _singleInviteBloc.add(SingleInviteEventAcceptInviteToClub());
   }
 
   @override
@@ -76,7 +69,9 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
           child: BlocListener(
             bloc: _singleInviteBloc,
             listener: (BuildContext context, SingleInviteState state) {
-              if (state is SingleInviteDeleted) {
+              if (state is SingleInviteSaveFailed) {
+                _showInSnackBar(Messages.of(context).formerror);
+              } else if (state is SingleInviteDeleted) {
                 Navigator.pop(context);
               }
             },
@@ -88,30 +83,33 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
                   return Center(child: CircularProgressIndicator());
                 } else {
                   InviteToClub inviteToClub = state.invite as InviteToClub;
-                  return Column(
-                    children: <Widget>[
-                      new ListTile(
-                        leading: const Icon(CommunityIcons.houzz),
-                        title: new Text(inviteToClub.clubName),
-                        subtitle: new ByUserNameComponent(
-                            userId: inviteToClub.sentByUid),
-                      ),
-                      new Row(
-                        children: <Widget>[
-                          new RaisedButton(
-                            onPressed: _savePressed,
-                            child: new Text(messages.addinvite),
-                            color: theme.accentColor,
-                            textColor: Colors.white,
-                          ),
-                          new FlatButton(
-                            onPressed: () =>
-                                showDeleteInvite(context, _singleInviteBloc),
-                            child: new Text(messages.deleteinvite),
-                          ),
-                        ],
-                      ),
-                    ],
+                  return SavingOverlay(
+                    saving: state is SingleInviteSaving,
+                    child: Column(
+                      children: <Widget>[
+                        new ListTile(
+                          leading: const Icon(CommunityIcons.houzz),
+                          title: new Text(inviteToClub.clubName),
+                          subtitle: new ByUserNameComponent(
+                              userId: inviteToClub.sentByUid),
+                        ),
+                        new Row(
+                          children: <Widget>[
+                            new RaisedButton(
+                              onPressed: _savePressed,
+                              child: new Text(messages.addinvite),
+                              color: theme.accentColor,
+                              textColor: Colors.white,
+                            ),
+                            new FlatButton(
+                              onPressed: () =>
+                                  showDeleteInvite(context, _singleInviteBloc),
+                              child: new Text(messages.deleteinvite),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   );
                 }
               },

@@ -145,7 +145,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
     });
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      singlePlayerBloc.dispatch(SinglePlayerUpdate(
+      singlePlayerBloc.add(SinglePlayerUpdate(
           player: _player, image: _changedImage ? _imageFile : null));
     }
   }
@@ -169,7 +169,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
         ],
       ),
       body: BlocProvider(
-        builder: (BuildContext context) => singlePlayerBloc,
+        create: (BuildContext context) => singlePlayerBloc,
         child: BlocListener(
           bloc: singlePlayerBloc,
           listener: (BuildContext contex, SinglePlayerState playerState) {

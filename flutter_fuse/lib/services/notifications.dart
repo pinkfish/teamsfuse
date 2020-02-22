@@ -114,7 +114,7 @@ class Notifications {
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.getToken().then((String token) {
       print('We have token! $token');
-      auth.dispatch(AuthenticationNotificationToken(token));
+      auth.add(AuthenticationNotificationToken(token));
     });
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {

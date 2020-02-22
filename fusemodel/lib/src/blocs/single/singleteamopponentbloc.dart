@@ -14,8 +14,10 @@ abstract class SingleOpponentState extends Equatable {
   final bool gamesLoaded;
 
   SingleOpponentState(
-      {this.opponent, @required this.games, @required this.gamesLoaded})
-      : super([opponent, games, gamesLoaded]);
+      {this.opponent, @required this.games, @required this.gamesLoaded});
+
+  @override
+  List<Object> get props => [opponent, games, gamesLoaded];
 }
 
 ///
@@ -94,30 +96,48 @@ class SingleOpponentUpdate extends SingleOpponentEvent {
   final OpponentBuilder opponent;
 
   SingleOpponentUpdate({@required this.opponent});
+
+  @override
+  List<Object> get props => [opponent];
 }
 
 ///
 /// Delete this team from the world.
 ///
-class SingleOpponentDeleteOpponent extends SingleOpponentEvent {}
+class SingleOpponentDeleteOpponent extends SingleOpponentEvent {
+  @override
+  List<Object> get props => [];
+}
 
 class _SingleNewTeamOpponent extends SingleOpponentEvent {
   final Opponent newOpponent;
 
   _SingleNewTeamOpponent({@required this.newOpponent});
+
+  @override
+  List<Object> get props => [newOpponent];
 }
 
-class _SingleOpponentDeleted extends SingleOpponentEvent {}
+class _SingleOpponentDeleted extends SingleOpponentEvent {
+  @override
+  List<Object> get props => [];
+}
 
 class _SingleTeamOpponentGamesLoaded extends SingleOpponentEvent {
   final Iterable<Game> games;
   _SingleTeamOpponentGamesLoaded({@required this.games});
+
+  @override
+  List<Object> get props => [games];
 }
 
 ///
 /// Loads the games for this opponent.
 ///
-class SingleOpponentLoadGames extends SingleOpponentEvent {}
+class SingleOpponentLoadGames extends SingleOpponentEvent {
+  @override
+  List<Object> get props => [];
+}
 
 ///
 /// Bloc to handle updates and state of a specific team.
@@ -133,23 +153,23 @@ class SingleOpponentBloc
   StreamSubscription<Iterable<Game>> _gameSub;
 
   SingleOpponentBloc({this.singleTeamBloc, this.opponentUid}) {
-    _teamSub = singleTeamBloc.state.listen((SingleTeamState state) {
-      if (state.opponents.containsKey(opponentUid)) {
-        Opponent op = state.opponents[opponentUid];
+    _teamSub = singleTeamBloc.listen((SingleTeamState teamState) {
+      if (teamState.opponents.containsKey(opponentUid)) {
+        Opponent op = teamState.opponents[opponentUid];
 
         // Only send this if the team is not the same.
-        if (op != currentState.opponent) {
-          dispatch(_SingleNewTeamOpponent(newOpponent: op));
+        if (op != state.opponent) {
+          add(_SingleNewTeamOpponent(newOpponent: op));
         }
       } else {
-        dispatch(_SingleOpponentDeleted());
+        add(_SingleOpponentDeleted());
       }
     });
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _teamSub?.cancel();
     _teamSub = null;
     _gameSub?.cancel();
@@ -158,9 +178,10 @@ class SingleOpponentBloc
 
   @override
   SingleOpponentState get initialState {
-    if (singleTeamBloc.currentState.opponents.containsKey(opponentUid)) {
+    if (singleTeamBloc.state.opponents.containsKey(opponentUid)) {
       return SingleOpponentLoaded(
-          opponent: singleTeamBloc.currentState.opponents[opponentUid],
+          state: state,
+          opponent: singleTeamBloc.state.opponents[opponentUid],
           gamesLoaded: false,
           games: BuiltList());
     } else {
@@ -172,7 +193,7 @@ class SingleOpponentBloc
   Stream<SingleOpponentState> mapEventToState(
       SingleOpponentEvent event) async* {
     if (event is _SingleNewTeamOpponent) {
-      yield SingleOpponentLoaded(opponent: event.newOpponent);
+      yield SingleOpponentLoaded(opponent: event.newOpponent, state: state);
     }
 
     // The team is deleted.
@@ -182,13 +203,14 @@ class SingleOpponentBloc
 
     // Save the team.
     if (event is SingleOpponentUpdate) {
-      yield SingleOpponentSaving(state: currentState);
+      yield SingleOpponentSaving(state: state);
       try {
         await singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreOpponent(event.opponent.build());
-        yield SingleOpponentLoaded(opponent: event.opponent.build());
+        yield SingleOpponentLoaded(
+            opponent: event.opponent.build(), state: state);
       } catch (e) {
-        yield SingleOpponentSaveFailed(state: currentState, error: e);
+        yield SingleOpponentSaveFailed(state: state, error: e);
       }
     }
 
@@ -196,10 +218,10 @@ class SingleOpponentBloc
     if (event is SingleOpponentDeleteOpponent) {
       try {
         await singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
-            .deleteFirestoreOpponent(currentState.opponent);
+            .deleteFirestoreOpponent(state.opponent);
         yield SingleOpponentDeleted();
       } catch (e) {
-        yield SingleOpponentSaveFailed(state: currentState, error: e);
+        yield SingleOpponentSaveFailed(state: state, error: e);
       }
     }
 
@@ -207,25 +229,24 @@ class SingleOpponentBloc
       try {
         await singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreOpponent(event.opponent.build());
-        yield SingleOpponentLoaded(opponent: event.opponent.build());
+        yield SingleOpponentLoaded(
+            opponent: event.opponent.build(), state: state);
       } catch (e) {
-        yield SingleOpponentSaveFailed(state: currentState, error: e);
+        yield SingleOpponentSaveFailed(state: state, error: e);
       }
     }
 
     if (event is SingleOpponentLoadGames) {
       _gameSub = singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
-          .getOpponentGames(currentState.opponent)
+          .getOpponentGames(state.opponent)
           .listen((Iterable<Game> g) {
-        dispatch(_SingleTeamOpponentGamesLoaded(games: g));
+        add(_SingleTeamOpponentGamesLoaded(games: g));
       });
     }
 
     if (event is _SingleTeamOpponentGamesLoaded) {
       yield SingleOpponentLoaded(
-          state: currentState,
-          games: BuiltList.from(event.games),
-          gamesLoaded: true);
+          state: state, games: BuiltList.from(event.games), gamesLoaded: true);
     }
   }
 }

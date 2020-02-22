@@ -38,25 +38,21 @@ class _AcceptInviteToPlayerScreenState
     _singleInviteBloc = SingleInviteBloc(
         inviteBloc: BlocProvider.of<InviteBloc>(context),
         inviteUid: widget._inviteUid,
-        teamBloc: BlocProvider.of<TeamBloc>(context));
+        teamBloc: BlocProvider.of<TeamBloc>(context),
+        seasonBloc: BlocProvider.of<SeasonBloc>(context));
   }
 
   @override
   void dispose() {
     super.dispose();
-    _singleInviteBloc.dispose();
-  }
-
-  void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _singleInviteBloc.close();
   }
 
   void _savePressed() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
 
-      _singleInviteBloc.dispatch(SingleInviteEventAcceptInviteToPlayer(
+      _singleInviteBloc.add(SingleInviteEventAcceptInviteToPlayer(
         relationship: _relationship,
       ));
     }

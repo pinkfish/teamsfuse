@@ -39,12 +39,9 @@ abstract class Season implements Built<Season, SeasonBuilder> {
       dynamic val = playersData[key];
       SeasonPlayerBuilder player = new SeasonPlayerBuilder();
       player.playerUid = playerUid;
-      if (val != null) {
-        builder.players.add(
-            SeasonPlayer.fromJSON(val as Map<dynamic, dynamic>, playerUid));
-      }
+      builder.players
+          .add(SeasonPlayer.fromJSON(val as Map<dynamic, dynamic>, playerUid));
     }
-    print('Update Season ' + uid);
     return builder;
   }
 

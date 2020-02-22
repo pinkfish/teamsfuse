@@ -12,7 +12,10 @@ import 'package:meta/meta.dart';
 abstract class AuthenticationState extends Equatable {
   final UserData user;
 
-  AuthenticationState({@required this.user}) : super([user]);
+  AuthenticationState({@required this.user});
+
+  @override
+  List<Object> get props => [user];
 }
 
 class AuthenticationUninitialized extends AuthenticationState {
@@ -73,6 +76,9 @@ abstract class AuthenticationEvent extends Equatable {
 class AuthenticationAppStarted extends AuthenticationEvent {
   @override
   String toString() => "AppStarted";
+
+  @override
+  List<Object> get props => [];
 }
 
 class _AuthenticationLogIn extends AuthenticationEvent {
@@ -82,6 +88,9 @@ class _AuthenticationLogIn extends AuthenticationEvent {
 
   @override
   String toString() => "LoggedIn";
+
+  @override
+  List<Object> get props => [user];
 }
 
 ///
@@ -90,6 +99,9 @@ class _AuthenticationLogIn extends AuthenticationEvent {
 class AuthenticationLogOut extends AuthenticationEvent {
   @override
   String toString() => "LoggedOut";
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -98,7 +110,10 @@ class AuthenticationLogOut extends AuthenticationEvent {
 class AuthenticationNotificationToken extends AuthenticationEvent {
   final String notificationToken;
 
-  AuthenticationNotificationToken(@required this.notificationToken);
+  AuthenticationNotificationToken(this.notificationToken);
+
+  @override
+  List<Object> get props => [notificationToken];
 }
 
 ///
@@ -122,14 +137,14 @@ class AuthenticationBloc
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _listener?.cancel();
   }
 
   UserData get currentUser {
-    if (currentState is AuthenticationLoggedIn) {
-      return (currentState as AuthenticationLoggedIn).user;
+    if (state is AuthenticationLoggedIn) {
+      return (state as AuthenticationLoggedIn).user;
     }
     return null;
   }
@@ -196,9 +211,9 @@ class AuthenticationBloc
 
   void _authChanged(UserData user) async {
     if (user != null) {
-      dispatch(_AuthenticationLogIn(user: user));
+      add(_AuthenticationLogIn(user: user));
     } else {
-      dispatch(AuthenticationLogOut());
+      add(AuthenticationLogOut());
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/util/byusername.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -36,26 +37,18 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
     _singleInviteBloc = SingleInviteBloc(
         inviteBloc: BlocProvider.of<InviteBloc>(context),
         inviteUid: widget._inviteUid,
-        teamBloc: BlocProvider.of<TeamBloc>(context));
+        teamBloc: BlocProvider.of<TeamBloc>(context),
+        seasonBloc: BlocProvider.of<SeasonBloc>(context));
   }
 
   @override
   void dispose() {
     super.dispose();
-    _singleInviteBloc?.dispose();
+    _singleInviteBloc?.close();
   }
 
   void _savePressed() async {
-    _singleInviteBloc.dispatch(SingleInviteEventAcceptInviteAsAdmin());
-    await for (SingleInviteState state in _singleInviteBloc.state) {
-      if (state is SingleInviteSaveFailed) {
-        _showInSnackBar(Messages.of(context).formerror);
-      } else if (state is SingleInviteDeleted) {
-        Navigator.pop(context);
-      } else if (state is SingleInviteLoaded) {
-        return;
-      }
-    }
+    _singleInviteBloc.add(SingleInviteEventAcceptInviteAsAdmin());
   }
 
   @override
@@ -74,7 +67,9 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
           child: BlocListener(
             bloc: _singleInviteBloc,
             listener: (BuildContext context, SingleInviteState state) {
-              if (state is SingleInviteDeleted) {
+              if (state is SingleInviteSaveFailed) {
+                _showInSnackBar(Messages.of(context).formerror);
+              } else if (state is SingleInviteDeleted) {
                 Navigator.pop(context);
               }
             },
@@ -86,54 +81,57 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
                   return Center(child: CircularProgressIndicator());
                 } else {
                   InviteAsAdmin inviteAsAdmin = state.invite as InviteAsAdmin;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      new Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: new Text(
-                          Messages.of(context).acceptinviteasadmin,
-                          style: Theme.of(context).textTheme.subhead.copyWith(
-                              color: Theme.of(context).accentColor,
-                              fontWeight: FontWeight.bold),
+                  return SavingOverlay(
+                    saving: state is SingleInviteSaving,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        new Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: new Text(
+                            Messages.of(context).acceptinviteasadmin,
+                            style: Theme.of(context).textTheme.subhead.copyWith(
+                                color: Theme.of(context).accentColor,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                      new ListTile(
-                        leading: const Icon(CommunityIcons.tshirtCrew),
-                        title: new Text(inviteAsAdmin.teamName),
-                        subtitle: new Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        new ListTile(
+                          leading: const Icon(CommunityIcons.tshirtCrew),
+                          title: new Text(inviteAsAdmin.teamName),
+                          subtitle: new Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              new Text(Messages.of(context).administrator),
+                              new ByUserNameComponent(
+                                  userId: _singleInviteBloc
+                                      .inviteBloc
+                                      .coordinationBloc
+                                      .authenticationBloc
+                                      .currentUser
+                                      .uid),
+                            ],
+                          ),
+                        ),
+                        new SizedBox(height: 75.0),
+                        new Divider(),
+                        new Row(
                           children: <Widget>[
-                            new Text(Messages.of(context).administrator),
-                            new ByUserNameComponent(
-                                userId: _singleInviteBloc
-                                    .inviteBloc
-                                    .coordinationBloc
-                                    .authenticationBloc
-                                    .currentUser
-                                    .uid),
+                            new SizedBox(width: 5.0),
+                            new RaisedButton(
+                              onPressed: _savePressed,
+                              child: new Text(messages.addadmin),
+                              color: theme.accentColor,
+                              textColor: Colors.white,
+                            ),
+                            new FlatButton(
+                              onPressed: () =>
+                                  showDeleteInvite(context, _singleInviteBloc),
+                              child: new Text(messages.deleteinvitebutton),
+                            ),
                           ],
                         ),
-                      ),
-                      new SizedBox(height: 75.0),
-                      new Divider(),
-                      new Row(
-                        children: <Widget>[
-                          new SizedBox(width: 5.0),
-                          new RaisedButton(
-                            onPressed: _savePressed,
-                            child: new Text(messages.addadmin),
-                            color: theme.accentColor,
-                            textColor: Colors.white,
-                          ),
-                          new FlatButton(
-                            onPressed: () =>
-                                showDeleteInvite(context, _singleInviteBloc),
-                            child: new Text(messages.deleteinvitebutton),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   );
                 }
               },

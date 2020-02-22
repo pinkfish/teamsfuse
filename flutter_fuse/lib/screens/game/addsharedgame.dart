@@ -40,6 +40,7 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
   String _awayTeamUid;
   AddSharedGameBloc addSharedGameBloc;
 
+  @override
   void initState() {
     super.initState();
     addSharedGameBloc = AddSharedGameBloc(
@@ -118,7 +119,7 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
           _currentStep++;
         } else {
           addSharedGameBloc
-              .dispatch(AddSharedGameEventCommit(newSharedData: _initGame));
+              .add(AddSharedGameEventCommit(newSharedData: _initGame));
         }
       });
     }
@@ -176,7 +177,7 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
         title: new Text(messages.title),
       ),
       body: BlocProvider(
-        builder: (BuildContext context) => addSharedGameBloc,
+        create: (BuildContext context) => addSharedGameBloc,
         child: BlocListener(
           bloc: addSharedGameBloc,
           listener: (BuildContext conetext, AddItemState addState) {

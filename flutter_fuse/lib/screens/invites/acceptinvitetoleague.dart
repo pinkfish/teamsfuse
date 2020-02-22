@@ -30,17 +30,18 @@ class _AcceptInviteToLeagueScreenState
     _singleInviteBloc = SingleInviteBloc(
         inviteBloc: BlocProvider.of<InviteBloc>(context),
         inviteUid: widget._inviteUid,
-        teamBloc: BlocProvider.of<TeamBloc>(context));
+        teamBloc: BlocProvider.of<TeamBloc>(context),
+        seasonBloc: BlocProvider.of<SeasonBloc>(context));
   }
 
   @override
   void dispose() {
     super.dispose();
-    _singleInviteBloc?.dispose();
+    _singleInviteBloc?.close();
   }
 
   void _savePressed() async {
-    _singleInviteBloc.dispatch(SingleInviteEventAcceptInviteToLeagueAdmin());
+    _singleInviteBloc.add(SingleInviteEventAcceptInviteToLeagueAdmin());
     Navigator.pop(context);
   }
 

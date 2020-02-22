@@ -63,8 +63,6 @@ class LeagueTeamImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    LeagueOrTournamentBloc leagueOrTournamentBloc =
-        BlocProvider.of<LeagueOrTournamentBloc>(context);
     Widget blocBuilder = SingleLeagueOrTournamentTeamProvider(
       leagueTeamUid: leagueOrTeamUid,
       builder: (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
@@ -73,7 +71,7 @@ class LeagueTeamImage extends StatelessWidget {
         listener:
             (BuildContext context, SingleLeagueOrTournamentTeamState state) {
           if (state is SingleLeagueOrTournamentTeamLoaded) {
-            bloc.dispatch(SingleLeagueOrTournamentTeamLoadPublicTeam());
+            bloc.add(SingleLeagueOrTournamentTeamLoadPublicTeam());
           }
         },
         child: BlocBuilder(

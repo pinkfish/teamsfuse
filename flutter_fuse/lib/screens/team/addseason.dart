@@ -56,12 +56,12 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
         players.addAll(_seasonSelect.players);
       } else {
         PlayerBloc bloc = BlocProvider.of<PlayerBloc>(context);
-        var meUid = bloc.currentState.me.uid;
+        var meUid = bloc.state.me.uid;
         players.add(SeasonPlayer((b) => b
           ..playerUid = meUid
           ..role = RoleInTeam.NonPlayer));
       }
-      addSeasonBloc.dispatch(AddSeasonEventCommit(
+      addSeasonBloc.add(AddSeasonEventCommit(
           teamUid: widget.teamUid, name: _seasonName, players: players));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
@@ -102,9 +102,9 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
               labelText: Messages.of(context).copyseasonfrom,
             ),
             teamBloc: singleTeamBloc,
-            initialValue: singleTeamBloc.currentState.team.currentSeason,
+            initialValue: singleTeamBloc.state.team.currentSeason,
             onSaved: (String seasonUid) {
-              _seasonSelect = singleTeamBloc.currentState.getSeason(seasonUid);
+              _seasonSelect = singleTeamBloc.state.getSeason(seasonUid);
             },
           ),
           new FlatButton(
@@ -119,7 +119,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      builder: (BuildContext context) => addSeasonBloc,
+      create: (BuildContext context) => addSeasonBloc,
       child: SingleTeamProvider(
         teamUid: widget.teamUid,
         builder: (BuildContext contrext, SingleTeamBloc singleTeamBloc) =>

@@ -372,10 +372,10 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
         LeagueOrTournament leagueOrTournament;
         LeagueOrTournamentBloc leagueOrTournamentBloc =
             BlocProvider.of<LeagueOrTournamentBloc>(context);
-        if (leagueOrTournamentBloc.currentState.leagueOrTournaments
+        if (leagueOrTournamentBloc.state.leagueOrTournaments
             .containsValue(widget.game.leagueUid)) {
           leagueOrTournament = leagueOrTournamentBloc
-              .currentState.leagueOrTournaments[widget.game.leagueUid];
+              .state.leagueOrTournaments[widget.game.leagueUid];
         }
         if (leagueOrTournament?.isAdmin() ?? false) {
           body.add(ButtonBar(

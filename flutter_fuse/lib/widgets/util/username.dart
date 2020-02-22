@@ -6,12 +6,13 @@ import 'package:fusemodel/blocs.dart';
 import '../blocs/singleprofileprovider.dart';
 
 class UserName extends StatelessWidget {
+  UserName({@required this.userId, this.overflow, this.style});
+
   final String userId;
   final TextOverflow overflow;
   final TextStyle style;
 
-  UserName({@required this.userId, this.overflow, this.style});
-
+  @override
   Widget build(BuildContext context) {
     return SingleProfileProvider(
       userUid: userId,

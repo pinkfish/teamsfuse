@@ -13,23 +13,23 @@ import 'cachednetworkimage.dart';
 /// radius and fill the image to fit that circle.
 ///
 class PlayerImage extends StatelessWidget {
-  final double radius;
-  final Color backgroundColor;
-  final Key key;
-  final String playerUid;
-
   PlayerImage(
       {@required this.playerUid,
-      this.key,
+      Key key,
       this.backgroundColor,
-      this.radius = 20.0});
+      this.radius = 20.0})
+      : super(key: key);
+
+  final double radius;
+  final Color backgroundColor;
+  final String playerUid;
 
   static Future<String> getImageUrl(
       String playerUid, BuildContext context) async {
     PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
     print('Loading for player $playerUid');
-    if (playerBloc.currentState.players.containsKey(playerUid)) {
-      Player player = playerBloc.currentState.players[playerUid];
+    if (playerBloc.state.players.containsKey(playerUid)) {
+      Player player = playerBloc.state.players[playerUid];
 
       if (player.photoUrl != null && player.photoUrl.isNotEmpty) {
         print('Cached ${player.photoUrl}');
@@ -38,8 +38,8 @@ class PlayerImage extends StatelessWidget {
         return null;
       }
     } else {
-      playerBloc.dispatch(PlayerLoadPlayer(playerUid: playerUid));
-      await for (PlayerState state in playerBloc.state) {
+      playerBloc.add(PlayerLoadPlayer(playerUid: playerUid));
+      await for (PlayerState state in playerBloc) {
         Player player = state.getPlayer(playerUid);
         if (player != null) {
           if (player.photoUrl != null && player.photoUrl.isNotEmpty) {
@@ -50,8 +50,10 @@ class PlayerImage extends StatelessWidget {
         }
       }
     }
+    return null;
   }
 
+  @override
   Widget build(BuildContext context) {
     return ClipOval(
       key: key,

@@ -34,7 +34,7 @@ class ClubDetailsScreenState extends State<ClubDetailsScreen> {
   @override
   void dispose() {
     super.dispose();
-    _singleClubBloc.dispose();
+    _singleClubBloc.close();
   }
 
   Widget _buildBody(Club club) {

@@ -39,7 +39,7 @@ class EditGameScreenState extends State<EditGameScreen> {
 
   void _savePressed(BuildContext context, SingleGameBloc gameBloc) async {
     print('save pressed');
-    Game game = gameBloc.currentState.game;
+    Game game = gameBloc.state.game;
     EditFormBase baseForm;
     switch (game.sharedData.type) {
       case EventType.Game:
@@ -56,8 +56,7 @@ class EditGameScreenState extends State<EditGameScreen> {
     if (baseForm.validate()) {
       baseForm.save();
       print("updating firestore");
-      gameBloc
-          .dispatch(SingleGameUpdate(game: baseForm.finalGameResult.build()));
+      gameBloc.add(SingleGameUpdate(game: baseForm.finalGameResult.build()));
       print('finished update');
     } else {
       print('error?');

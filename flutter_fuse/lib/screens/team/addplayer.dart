@@ -46,7 +46,8 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
   void initState() {
     super.initState();
     _curSeasonUid = widget._seasonUid;
-    addInviteBloc = AddInviteBloc();
+    addInviteBloc = AddInviteBloc(
+        coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
   }
 
   void _showInSnackBar(String value) {
@@ -57,14 +58,17 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
     );
   }
 
-  void _handleSubmit() async {
+  void _handleSubmit(Team team) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       // Send the invite, cloud functions will handle the email
       // part of this.
-      addInviteBloc.dispatch(InvitePlayersToTeam(
-          seasonUid: widget._seasonUid,
-          invites: _emailNames.map((b) => b.data)));
+      addInviteBloc.add(InvitePlayersToTeam(
+        seasonUid: widget._seasonUid,
+        invites: _emailNames.map((b) => b.data),
+        teamUid: team.uid,
+        teamName: team.name,
+      ));
     } else {
       autovalidate = true;
       _showInSnackBar(Messages.of(context).formerror);
@@ -177,7 +181,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
               ),
             ),
             new FlatButton(
-              onPressed: _handleSubmit,
+              onPressed: () => _handleSubmit(singleTeamBloc.state.team),
               child: new Text(Messages.of(context).addplayer),
             )
           ],
@@ -189,7 +193,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      builder: (BuildContext context) => addInviteBloc,
+      create: (BuildContext context) => addInviteBloc,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: new AppBar(

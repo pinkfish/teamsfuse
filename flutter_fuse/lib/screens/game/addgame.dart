@@ -41,7 +41,7 @@ class AddGameScreenState extends State<AddGameScreen> {
   @override
   void initState() {
     ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
-    if (clubBloc.currentState.clubs.values.any((Club club) => club.isAdmin())) {
+    if (clubBloc.state.clubs.values.any((Club club) => club.isAdmin())) {
       _currentStep = 0;
       clubStepState = StepState.editing;
       teamStepState = StepState.disabled;
@@ -77,8 +77,7 @@ class AddGameScreenState extends State<AddGameScreen> {
       case 1:
         if (backwards) {
           ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
-          if (clubBloc.currentState.clubs.values
-              .any((Club club) => club.isAdmin())) {
+          if (clubBloc.state.clubs.values.any((Club club) => club.isAdmin())) {
             return true;
           }
           _showInSnackBar(Messages.of(context).formerror);
@@ -128,7 +127,7 @@ class AddGameScreenState extends State<AddGameScreen> {
           setState(() {
             //_saving = true;
           });
-          addGameBloc.dispatch(AddGameEventCommit(newGame: _initGame));
+          addGameBloc.add(AddGameEventCommit(newGame: _initGame));
         }
       });
     }
@@ -176,7 +175,7 @@ class AddGameScreenState extends State<AddGameScreen> {
 
     print(_team);
     return BlocProvider(
-      builder: (BuildContext context) => addGameBloc,
+      create: (BuildContext context) => addGameBloc,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: new AppBar(

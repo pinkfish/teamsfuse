@@ -38,7 +38,7 @@ class EditClubScreenState extends State<EditClubScreen> {
       if (club != null) {
         _doingSave = true;
         _singleClubState
-            .dispatch(SingleClubUpdate(club: club.build(), image: imageFile));
+            .add(SingleClubUpdate(club: club.build(), image: imageFile));
       } else {
         _showInSnackBar(Messages.of(context).formerror);
       }
@@ -75,15 +75,19 @@ class EditClubScreenState extends State<EditClubScreen> {
             }
           }
         },
-        child: BlocBuilder(
+        child: BlocListener(
           bloc: _singleClubState,
-          builder: (BuildContext context, SingleClubState state) {
+          listener: (BuildContext context, SingleClubState state) {
             if (state is SingleClubDeleted) {
               Navigator.pop(context);
-            } else {
-              return _buildBody(state);
             }
           },
+          child: BlocBuilder(
+            bloc: _singleClubState,
+            builder: (BuildContext context, SingleClubState state) {
+              return _buildBody(state);
+            },
+          ),
         ),
       ),
     );

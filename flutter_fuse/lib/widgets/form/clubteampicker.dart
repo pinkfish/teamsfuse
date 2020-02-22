@@ -26,7 +26,7 @@ class ClubTeamPicker extends StatefulWidget {
 
 class ClubTeamPickerState extends State<ClubTeamPicker> {
   ClubTeamPickerState() {
-    widget.clubBloc.dispatch(SingleClubLoadTeams());
+    widget.clubBloc.add(SingleClubLoadTeams());
   }
 
   @override
@@ -123,8 +123,8 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
                 widget.onChanged(val);
               },
             );
-            return _buildDecorator(inner);
           }
+          return _buildDecorator(inner);
         },
       );
     }

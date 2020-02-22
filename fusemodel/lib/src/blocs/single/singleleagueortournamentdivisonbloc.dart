@@ -15,8 +15,10 @@ abstract class SingleLeagueOrTournamentDivisonState extends Equatable {
   final LeagueOrTournamentDivison leagueOrTournamentDivison;
 
   SingleLeagueOrTournamentDivisonState(
-      {@required this.leagueOrTournamentDivison})
-      : super([leagueOrTournamentDivison]);
+      {@required this.leagueOrTournamentDivison});
+
+  @override
+  List<Object> get props => [leagueOrTournamentDivison];
 }
 
 ///
@@ -105,16 +107,25 @@ class _SingleLeagueOrTournamentEventLeagueDivisonLoaded
   String toString() {
     return '_SingleLeagueOrTournamentEventLeagueDivisonLoaded{}';
   }
+
+  @override
+  List<Object> get props => [leagueDivision];
 }
 
 class _SingleLeagueOrTournamentEventDivisonDeleted
-    extends SingleLeagueOrTournamentDivisonEvent {}
+    extends SingleLeagueOrTournamentDivisonEvent {
+  @override
+  List<Object> get props => [];
+}
 
 ///
 /// Loads the Teams for this league or tournament.
 ///
 class SingleLeagueOrTournamentDivisonLoadTeams
-    extends SingleLeagueOrTournamentDivisonEvent {}
+    extends SingleLeagueOrTournamentDivisonEvent {
+  @override
+  List<Object> get props => [];
+}
 
 ///
 /// Add a team to this division.
@@ -125,6 +136,8 @@ class SingleLeagueOrTournamentDivisonUpdate
 
   SingleLeagueOrTournamentDivisonUpdate(
       {@required this.leagueOrTournamentDivison});
+  @override
+  List<Object> get props => [leagueOrTournamentDivison];
 }
 
 //
@@ -135,6 +148,8 @@ class SingleLeagueOrTournamentDivisonAddTeam
   final String teamName;
 
   SingleLeagueOrTournamentDivisonAddTeam({@required this.teamName});
+  @override
+  List<Object> get props => [teamName];
 }
 
 ///
@@ -164,29 +179,29 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
               memberUid: coordinationBloc.authenticationBloc.currentUser.uid)
           .listen((LeagueOrTournamentDivison div) {
         if (div == null) {
-          dispatch(_SingleLeagueOrTournamentEventDivisonDeleted());
+          add(_SingleLeagueOrTournamentEventDivisonDeleted());
         } else {
-          dispatch(_SingleLeagueOrTournamentEventLeagueDivisonLoaded(
+          add(_SingleLeagueOrTournamentEventLeagueDivisonLoaded(
               leagueDivision: div));
         }
       });
     } else {
-      _coordSub = singleLeagueOrTournamentSeasonBloc.state
+      _coordSub = singleLeagueOrTournamentSeasonBloc
           .listen((SingleLeagueOrTournamentSeasonState state) {
         if (state is SingleLeagueOrTournamentSeasonLoaded) {
           if (state.leagueOrTournamentDivisons.containsKey(leagueDivisonUid)) {
           } else {}
         }
         if (state is SingleLeagueOrTournamentSeasonDeleted) {
-          dispatch(_SingleLeagueOrTournamentEventDivisonDeleted());
+          add(_SingleLeagueOrTournamentEventDivisonDeleted());
         }
       });
     }
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _cleanupStuff();
     _coordSub?.cancel();
     _divSub?.cancel();
@@ -198,12 +213,11 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
 
   @override
   SingleLeagueOrTournamentDivisonState get initialState {
-    if (singleLeagueOrTournamentSeasonBloc
-        .currentState.leagueOrTournamentDivisons
+    if (singleLeagueOrTournamentSeasonBloc.state.leagueOrTournamentDivisons
         .containsKey(leagueDivisonUid)) {
       return SingleLeagueOrTournamentDivisonLoaded(null,
           leagueOrTournamentDivison: singleLeagueOrTournamentSeasonBloc
-              .currentState.leagueOrTournamentDivisons[leagueDivisonUid]);
+              .state.leagueOrTournamentDivisons[leagueDivisonUid]);
     } else {
       return SingleLeagueOrTournamentDivisonDeleted.empty();
     }
@@ -215,42 +229,39 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
   Stream<SingleLeagueOrTournamentDivisonState> _updateLeagueOrTournamentDivison(
       {LeagueOrTournamentDivison divison}) async* {
     if (divison.uid == leagueDivisonUid) {
-      yield SingleLeagueOrTournamentDivisonSaving(
-          leagueOrTournament: currentState);
+      yield SingleLeagueOrTournamentDivisonSaving(leagueOrTournament: state);
       try {
         await singleLeagueOrTournamentSeasonBloc.singleLeagueOrTournamentBloc
             .leagueOrTournamentBloc.coordinationBloc.databaseUpdateModel
             .updateLeagueDivison(divison);
-        yield SingleLeagueOrTournamentDivisonLoaded(currentState,
-            leagueOrTournamentDivison: currentState.leagueOrTournamentDivison);
+        yield SingleLeagueOrTournamentDivisonLoaded(state,
+            leagueOrTournamentDivison: state.leagueOrTournamentDivison);
       } catch (e) {
         yield SingleLeagueOrTournamentDivisonSaveFailed(
-            leagueOrTournament: currentState, error: e);
+            leagueOrTournament: state, error: e);
       }
     } else {
       yield SingleLeagueOrTournamentDivisonSaveFailed(
-          leagueOrTournament: currentState,
+          leagueOrTournament: state,
           error: ArgumentError("league uids don't match"));
     }
   }
 
   Stream<SingleLeagueOrTournamentDivisonState> _addTeam(
       {String teamName}) async* {
-    yield SingleLeagueOrTournamentDivisonSaving(
-        leagueOrTournament: currentState);
+    yield SingleLeagueOrTournamentDivisonSaving(leagueOrTournament: state);
     try {
       LeagueOrTournamentTeam teamData = new LeagueOrTournamentTeam((b) => b
-        ..leagueOrTournamentDivisonUid =
-            currentState.leagueOrTournamentDivison.uid
+        ..leagueOrTournamentDivisonUid = state.leagueOrTournamentDivison.uid
         ..name = teamName);
       await singleLeagueOrTournamentSeasonBloc.singleLeagueOrTournamentBloc
           .leagueOrTournamentBloc.coordinationBloc.databaseUpdateModel
           .updateLeagueTeam(teamData);
-      yield SingleLeagueOrTournamentDivisonLoaded(currentState,
-          leagueOrTournamentDivison: currentState.leagueOrTournamentDivison);
+      yield SingleLeagueOrTournamentDivisonLoaded(state,
+          leagueOrTournamentDivison: state.leagueOrTournamentDivison);
     } catch (e) {
       yield SingleLeagueOrTournamentDivisonSaveFailed(
-          leagueOrTournament: currentState, error: e);
+          leagueOrTournament: state, error: e);
     }
   }
 
@@ -258,7 +269,7 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
   Stream<SingleLeagueOrTournamentDivisonState> mapEventToState(
       SingleLeagueOrTournamentDivisonEvent event) async* {
     if (event is _SingleLeagueOrTournamentEventLeagueDivisonLoaded) {
-      yield SingleLeagueOrTournamentDivisonLoaded(currentState,
+      yield SingleLeagueOrTournamentDivisonLoaded(state,
           leagueOrTournamentDivison: event.leagueDivision);
     }
 

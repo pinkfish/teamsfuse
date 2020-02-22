@@ -6,7 +6,7 @@ import 'package:fusemodel/fusemodel.dart';
 
 class GameLogView extends StatelessWidget {
   GameLogView(this.game) {
-    game.dispatch(SingleGameLoadGameLog());
+    game.add(SingleGameLoadGameLog());
   }
 
   final SingleGameBloc game;

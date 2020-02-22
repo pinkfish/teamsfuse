@@ -28,9 +28,16 @@ platform :android do
     gradle(task: "assembleRelease")
 
 
-    upload_to_play_store(
-       track: 'beta',
-    )
+    firebase_app_distribution(
+              apk_path: '../build/app/outputs/apk/release/app-release.apk'
+              app: "1:400199897683:android:5433fb56c222e6e8"
+              testers: "pinkfishfrog@gmail.com",
+              release_notes: "Lots of amazing new features to test out!",
+              firebase_cli_path: "/Users/david/.nvm/versions/node/v12.9.1/bin/firebase"
+   )
+    #upload_to_play_store(
+    #   track: 'beta',
+    #)
     #crashlytics(
    # #    api_token: '8e49e324965658b5d6497544fb73022fbf38e28f',
   #      build_secret: '400dd35eaffac89c5c40c740eb0c58950ac5bacec99c34ad13df30b8a0f26051',

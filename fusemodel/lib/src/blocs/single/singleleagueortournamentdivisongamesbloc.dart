@@ -15,8 +15,10 @@ abstract class SingleLeagueOrTournamentDivisonGamesState extends Equatable {
   final bool loadedGames;
 
   SingleLeagueOrTournamentDivisonGamesState(
-      {@required this.leagueOrTournamentGames, @required this.loadedGames})
-      : super([leagueOrTournamentGames, loadedGames]);
+      {@required this.leagueOrTournamentGames, @required this.loadedGames});
+
+  @override
+  List<Object> get props => [leagueOrTournamentGames, loadedGames];
 }
 
 ///
@@ -64,6 +66,9 @@ class _SingleLeagueOrTournamentEventDivisonGamesLoaded
   Iterable<GameSharedData> games;
 
   _SingleLeagueOrTournamentEventDivisonGamesLoaded({this.games});
+
+  @override
+  List<Object> get props => [games];
 }
 
 ///
@@ -91,8 +96,8 @@ class SingleLeagueOrTournamentDivisonGamesBloc extends Bloc<
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _cleanupStuff();
   }
 
@@ -107,14 +112,14 @@ class SingleLeagueOrTournamentDivisonGamesBloc extends Bloc<
   }
 
   void _updateGames(Iterable<GameSharedData> games) {
-    dispatch(_SingleLeagueOrTournamentEventDivisonGamesLoaded(games: games));
+    add(_SingleLeagueOrTournamentEventDivisonGamesLoaded(games: games));
   }
 
   @override
   Stream<SingleLeagueOrTournamentDivisonGamesState> mapEventToState(
       SingleLeagueOrTournamentDivisonGamesEvent event) async* {
     if (event is SingleLeagueOrTournamentDivisonLoadTeams) {
-      if (!currentState.loadedGames) {}
+      if (!state.loadedGames) {}
     }
 
     if (event is _SingleLeagueOrTournamentEventDivisonGamesLoaded) {
@@ -122,7 +127,7 @@ class SingleLeagueOrTournamentDivisonGamesBloc extends Bloc<
       for (GameSharedData game in event.games) {
         newTeams[game.uid] = game;
       }
-      yield SingleLeagueOrTournamentDivisonGamesLoaded(currentState,
+      yield SingleLeagueOrTournamentDivisonGamesLoaded(state,
           leagueOrTournamentGames: BuiltMap.from(newTeams), loadedGames: true);
     }
   }

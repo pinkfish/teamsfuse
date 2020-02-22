@@ -24,11 +24,12 @@ class TeamOpponents extends StatefulWidget {
 class _TeamOpponentsState extends State<TeamOpponents> {
   String _seasonUid;
 
+  @override
   void initState() {
     super.initState();
-    widget._teamBloc.dispatch(SingleTeamLoadAllSeasons());
-    widget._teamBloc.dispatch(SingleTeamLoadOpponents());
-    _seasonUid = widget._teamBloc.currentState.team.currentSeason;
+    widget._teamBloc.add(SingleTeamLoadAllSeasons());
+    widget._teamBloc.add(SingleTeamLoadOpponents());
+    _seasonUid = widget._teamBloc.state.team.currentSeason;
   }
 
   List<DropdownMenuItem<String>> _buildItems(
@@ -54,7 +55,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
           content: new SingleChildScrollView(
             child: new ListBody(
               children: <Widget>[
-                new Text(op.currentState.opponent.name),
+                new Text(op.state.opponent.name),
               ],
             ),
           ),
@@ -78,7 +79,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
       },
     );
     if (result) {
-      op.dispatch(SingleOpponentDeleteOpponent());
+      op.add(SingleOpponentDeleteOpponent());
     }
   }
 
@@ -171,7 +172,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                           );
                         }
                       } else {
-                        opBloc.dispatch(SingleOpponentLoadGames());
+                        opBloc.add(SingleOpponentLoadGames());
                         return new Center(
                           child: new Text(Messages.of(context).loading),
                         );

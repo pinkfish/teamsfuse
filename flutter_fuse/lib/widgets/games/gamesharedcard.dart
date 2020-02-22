@@ -81,10 +81,10 @@ class GameSharedCard extends StatelessWidget {
     LeagueOrTournament leagueOrTournament;
     LeagueOrTournamentBloc leagueOrTournamentBloc =
         BlocProvider.of<LeagueOrTournamentBloc>(context);
-    if (leagueOrTournamentBloc.currentState.leagueOrTournaments
+    if (leagueOrTournamentBloc.state.leagueOrTournaments
         .containsValue(game.leagueUid)) {
-      leagueOrTournament = leagueOrTournamentBloc
-          .currentState.leagueOrTournaments[game.leagueUid];
+      leagueOrTournament =
+          leagueOrTournamentBloc.state.leagueOrTournaments[game.leagueUid];
     }
     if (game.time < new DateTime.now().millisecondsSinceEpoch &&
         game.type == EventType.Game &&

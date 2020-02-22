@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'dart:async';
 
 import 'coordinationbloc.dart';
 
@@ -18,17 +19,23 @@ class LoadedStateBloc extends Bloc<LoadedEvent, LoadedState> {
   StreamSubscription<CoordinationState> _coordSub;
 
   LoadedStateBloc({@required this.coordinationBloc}) {
-    _coordSub = coordinationBloc.state.listen((CoordinationState state) {
+    _coordSub = coordinationBloc.listen((CoordinationState state) {
       if (state is CoordinationStateLoggedOut) {
-        dispatch(LoadedEvent.Logout);
+        add(LoadedEvent.Logout);
       } else if (state is CoordinationStateStartLoadingSql) {
-        dispatch(LoadedEvent.Start);
+        add(LoadedEvent.Start);
       } else if (state is CoordinationStateStartLoadingFirestore) {
-        dispatch(LoadedEvent.SQL);
+        add(LoadedEvent.SQL);
       } else if (state is CoordinationStateLoaded) {
-        dispatch(LoadedEvent.ALL);
+        add(LoadedEvent.ALL);
       }
     });
+  }
+
+  @override
+  Future<void> close() {
+    _coordSub.cancel();
+    return super.close();
   }
 
   @override

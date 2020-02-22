@@ -79,8 +79,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
       FusedUserProfile profile = profileState.profile.rebuild((b) => b
         ..displayName = _displayName
         ..phoneNumber = _phoneNumber);
-      profileBloc
-          .dispatch(SingleProfileUpdate(profile: profile, image: _imageFile));
+      profileBloc.add(SingleProfileUpdate(profile: profile, image: _imageFile));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
@@ -206,5 +205,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    streamListen.cancel();
+    super.dispose();
   }
 }

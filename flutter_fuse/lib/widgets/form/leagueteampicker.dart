@@ -18,7 +18,7 @@ class TournamentOrLeagueTeamPicker extends StatefulWidget {
       this.selectedTitle = false,
       this.includeAll = false}) {
     leagueOrTournamentDivisonBloc
-        .dispatch(SingleLeagueOrTournamentDivisonLoadTeams());
+        .add(SingleLeagueOrTournamentDivisonLoadTeams());
   }
 
   final ValueChanged<String> onChanged;
@@ -71,7 +71,7 @@ class _TournamentOrLeagueTeamPickerState
             : null,
       ),
       child: BlocProvider(
-        builder: (BuildContext context) =>
+        create: (BuildContext context) =>
             SingleLeagueOrTournamentDivisonTeamsBloc(
                 singleLeagueOrTournamentDivisonBloc:
                     widget.leagueOrTournamentDivisonBloc),

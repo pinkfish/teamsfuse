@@ -147,7 +147,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   Widget build(BuildContext context) {
     TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
     if (widget.game.teamUid == null ||
-        teamBloc.currentState.getTeam(widget.game.teamUid) == null) {
+        teamBloc.state.getTeam(widget.game.teamUid) == null) {
       return new Text('Invalid state');
     }
     List<Widget> firstRow = <Widget>[];
@@ -158,12 +158,12 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
           teamUid: builder.teamUid,
           builder: (BuildContext context, SingleTeamBloc teambloc) =>
               SeasonFormField(
-                initialValue: widget.game.seasonUid,
-                teamBloc: teambloc,
-                onSaved: (String value) {
-                  builder.seasonUid = value;
-                },
-              ),
+            initialValue: widget.game.seasonUid,
+            teamBloc: teambloc,
+            onSaved: (String value) {
+              builder.seasonUid = value;
+            },
+          ),
         ),
       ),
     );
@@ -178,24 +178,24 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
             teamUid: builder.teamUid,
             builder: (BuildContext context, SingleTeamBloc teambloc) =>
                 OpponentFormField(
-                  teamBloc: teambloc,
-                  key: _opponentState,
-                  initialValue: builder.opponentUids.length == 0
-                      ? 'none'
-                      : builder.opponentUids[0],
-                  validator: (String str) {
-                    return _validations.validateOpponent(context, str);
-                  },
-                  onFieldSubmitted: (String value) {
-                    if (value == 'add') {
-                      // Open up a picker to create an opponent.
-                      _openAddOpponentDialog();
-                    }
-                  },
-                  onSaved: (String value) {
-                    builder.opponentUids.addAll(<String>[value]);
-                  },
-                ),
+              teamBloc: teambloc,
+              key: _opponentState,
+              initialValue: builder.opponentUids.length == 0
+                  ? 'none'
+                  : builder.opponentUids[0],
+              validator: (String str) {
+                return _validations.validateOpponent(context, str);
+              },
+              onFieldSubmitted: (String value) {
+                if (value == 'add') {
+                  // Open up a picker to create an opponent.
+                  _openAddOpponentDialog();
+                }
+              },
+              onSaved: (String value) {
+                builder.opponentUids.addAll(<String>[value]);
+              },
+            ),
           ),
         ),
       );

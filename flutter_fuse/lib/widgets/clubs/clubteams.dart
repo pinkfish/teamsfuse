@@ -7,7 +7,7 @@ import 'package:fusemodel/fusemodel.dart';
 
 class ClubTeams extends StatelessWidget {
   ClubTeams(this.clubBloc) {
-    clubBloc.dispatch(SingleClubLoadTeams());
+    clubBloc.add(SingleClubLoadTeams());
   }
 
   final SingleClubBloc clubBloc;

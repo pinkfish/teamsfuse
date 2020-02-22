@@ -101,7 +101,7 @@ class PlayerDetailsScreen extends StatelessWidget {
       },
     );
     if (role != null) {
-      bloc.dispatch(SingleTeamSeasonPlayerUpdate(
+      bloc.add(SingleTeamSeasonPlayerUpdate(
           player: player.rebuild((b) => b..role = role)));
     }
   }
@@ -167,7 +167,7 @@ class PlayerDetailsScreen extends StatelessWidget {
           );
         });
     if (result) {
-      playerBloc.dispatch(SingleTeamSeasonPlayerDelete());
+      playerBloc.add(SingleTeamSeasonPlayerDelete());
     }
   }
 
@@ -340,8 +340,8 @@ class PlayerDetailsScreen extends StatelessWidget {
         context, "AddInviteToPlayer/" + state.seasonPlayer.playerUid);
   }
 
-  void _editPlayer(BuildContext context, SinglePlayerState state) {
-    Navigator.pushNamed(context, "EditPlayer/" + state.player.uid);
+  void _editPlayer(BuildContext context, String playrrUid) {
+    Navigator.pushNamed(context, "EditPlayer/" + playerUid);
   }
 
   @override
@@ -356,7 +356,6 @@ class PlayerDetailsScreen extends StatelessWidget {
         playerUid: playerUid,
         builder: (BuildContext context, SinglePlayerBloc singlePlayerBloc) =>
             SingleTeamSeasonPlayerProvider(
-          teamUid: teamUid,
           seasonUid: seasonUid,
           playerUid: playerUid,
           builder: (BuildContext context,
@@ -380,7 +379,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                 listener: (BuildContext context,
                     SinglePlayerState singlePlayerState) {
                   if (singlePlayerState is SinglePlayerLoaded) {
-                    singlePlayerBloc.dispatch(SinglePlayerLoadInvites());
+                    singlePlayerBloc.add(SinglePlayerLoadInvites());
                   }
                   if (singlePlayerState is SingleTeamSeasonPlayerSaveFailed) {
                     _showInSnackBar(Messages.of(context).formerror);
@@ -420,8 +419,8 @@ class PlayerDetailsScreen extends StatelessWidget {
                           singlePlayerState.player.users.containsKey(userUid)) {
                         // I am a member of this player, can edit them!
                         fab = new FloatingActionButton(
-                          onPressed: () =>
-                              _editPlayer(context, singlePlayerState),
+                          onPressed: () => _editPlayer(context,
+                              seasonPlayerState.seasonPlayer.playerUid),
                           child: const Icon(Icons.edit),
                         );
                       }

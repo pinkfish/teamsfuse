@@ -59,6 +59,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       ref.document(game.uid).updateData(game.toJSON());
       return game;
     }
+    return null;
   }
 
   @override
@@ -72,7 +73,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentReferenceWrapper mainShared =
         wrapper.collection(GAMES_SHARED_COLLECTION).document();
 
-    wrapper.runTransaction((TransactionWrapper tx) async {
+    return wrapper.runTransaction((TransactionWrapper tx) async {
       GameBuilder gameBuilder = game.toBuilder();
       // Add the shared stuff, then the game.
       if (game.sharedData.officialResults.homeTeamLeagueUid == null) {
@@ -218,7 +219,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Add or update this record into the database.
     CollectionReferenceWrapper ref = wrapper.collection("Messages");
     if (mess.uid == '' || mess.uid == null) {
-      // Add the game.
+      // Add the message.
       mess.timeSent = new DateTime.now().millisecondsSinceEpoch;
       Message messageStuff = mess.build();
       DocumentReferenceWrapper doc = await ref.add(messageStuff.toJSON());
@@ -234,6 +235,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             .add(rec.toJSON());
         mess.recipients[str] = rec.rebuild((b) => b..uid = recRef.documentID);
       }
+      return mess.build();
     } else {
       // Update the message.
       Message myMess = mess.build();

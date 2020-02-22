@@ -114,7 +114,7 @@ class TeamImage extends StatelessWidget {
           // Try and load the public team.
           if (t == null) {
             BlocProvider.of<TeamBloc>(context)
-                .dispatch(TeamLoadPublicTeam(teamUid: teamUid));
+                .add(TeamLoadPublicTeam(teamUid: teamUid));
           }
           inner = const Icon(Icons.group);
         }

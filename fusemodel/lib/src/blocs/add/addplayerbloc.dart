@@ -19,6 +19,10 @@ class AddPlayerEventCommit extends AddPlayerEvent {
 
   AddPlayerEventCommit(
       {@required this.playerName, @required this.relationship});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [playerName, relationship];
 }
 
 ///

@@ -18,6 +18,10 @@ class AddTrainingEventCommit extends AddTrainingEvent {
   final List<DateTime> repeatTimes;
 
   AddTrainingEventCommit({@required this.newGame, @required this.repeatTimes});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [newGame, repeatTimes];
 }
 
 ///

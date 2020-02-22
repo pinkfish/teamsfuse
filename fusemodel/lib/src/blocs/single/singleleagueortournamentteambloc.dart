@@ -21,8 +21,11 @@ abstract class SingleLeagueOrTournamentTeamState extends Equatable {
       {@required this.leagueOrTournamentTeam,
       @required this.games,
       @required this.invites,
-      @required this.publicTeam})
-      : super([leagueOrTournamentTeam, games, invites, publicTeam]);
+      @required this.publicTeam});
+
+  @override
+  List<Object> get props =>
+      [leagueOrTournamentTeam, games, invites, publicTeam];
 }
 
 ///
@@ -146,16 +149,25 @@ class _SingleLeagueOrTournamentEventLeagueTeamLoaded
   String toString() {
     return '_SingleLeagueOrTournamentEventLeagueTeamLoaded{}';
   }
+
+  @override
+  List<Object> get props => [leagueDivision];
 }
 
 class _SingleLeagueOrTournamentEventTeamDeleted
-    extends SingleLeagueOrTournamentTeamEvent {}
+    extends SingleLeagueOrTournamentTeamEvent {
+  @override
+  List<Object> get props => [];
+}
 
 class _SingleLeagueOrTournamentEventTeamGames
     extends SingleLeagueOrTournamentTeamEvent {
   Iterable<GameSharedData> games;
 
   _SingleLeagueOrTournamentEventTeamGames({this.games});
+
+  @override
+  List<Object> get props => [games];
 }
 
 class _SingleLeagueOrTournamentEventTeamInvites
@@ -163,25 +175,37 @@ class _SingleLeagueOrTournamentEventTeamInvites
   Iterable<InviteToLeagueTeam> invites;
 
   _SingleLeagueOrTournamentEventTeamInvites({this.invites});
+
+  @override
+  List<Object> get props => [invites];
 }
 
 ///
 /// Loads the Games for this league or tournament team.
 ///
 class SingleLeagueOrTournamentTeamLoadGames
-    extends SingleLeagueOrTournamentTeamEvent {}
+    extends SingleLeagueOrTournamentTeamEvent {
+  @override
+  List<Object> get props => [];
+}
 
 ///
 /// Loads the Invites for this league or tournament team.
 ///
 class SingleLeagueOrTournamentTeamLoadInvites
-    extends SingleLeagueOrTournamentTeamEvent {}
+    extends SingleLeagueOrTournamentTeamEvent {
+  @override
+  List<Object> get props => [];
+}
 
 ///
 /// Loads the public team associated with this league team.
 ///
 class SingleLeagueOrTournamentTeamLoadPublicTeam
-    extends SingleLeagueOrTournamentTeamEvent {}
+    extends SingleLeagueOrTournamentTeamEvent {
+  @override
+  List<Object> get props => [];
+}
 
 ///
 /// Loads the Invites for this league or tournament team.
@@ -191,6 +215,9 @@ class SingleLeagueOrTournamentTeamUpdate
   final LeagueOrTournamentTeam team;
 
   SingleLeagueOrTournamentTeamUpdate({this.team});
+
+  @override
+  List<Object> get props => [team];
 }
 
 ///
@@ -202,6 +229,9 @@ class SingleLeagueOrTournamentTeamUpdateWinRecord
   final WinRecord record;
 
   SingleLeagueOrTournamentTeamUpdateWinRecord({this.divison, this.record});
+
+  @override
+  List<Object> get props => [divison, record];
 }
 
 ///
@@ -212,6 +242,9 @@ class SingleLeagueOrTournamentTeamInviteMember
   final String email;
 
   SingleLeagueOrTournamentTeamInviteMember({this.email});
+
+  @override
+  List<Object> get props => [email];
 }
 
 ///
@@ -232,14 +265,13 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
     _teamSub = coordinationBloc.databaseUpdateModel
         .getLeagueTeamData(leagueTeamUid)
         .listen((LeagueOrTournamentTeam team) {
-      dispatch(
-          _SingleLeagueOrTournamentEventLeagueTeamLoaded(leagueDivision: team));
+      add(_SingleLeagueOrTournamentEventLeagueTeamLoaded(leagueDivision: team));
     });
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _cleanupStuff();
   }
 
@@ -254,22 +286,21 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
 
   @override
   SingleLeagueOrTournamentTeamState get initialState {
-    return SingleLeagueOrTournamentTeamLoading(
-        leagueOrTournament: currentState);
+    return SingleLeagueOrTournamentTeamLoading(leagueOrTournament: state);
   }
 
   void _updateGames(Iterable<GameSharedData> games) {
-    dispatch(_SingleLeagueOrTournamentEventTeamGames(games: games));
+    add(_SingleLeagueOrTournamentEventTeamGames(games: games));
   }
 
   void _updateInvites(Iterable<InviteToLeagueTeam> invites) {
-    dispatch(_SingleLeagueOrTournamentEventTeamInvites(invites: invites));
+    add(_SingleLeagueOrTournamentEventTeamInvites(invites: invites));
   }
 
   void _inviteMember(String email) {
     coordinationBloc.databaseUpdateModel.inviteUserToLeagueTeam(
-        leagueTeam: currentState.leagueOrTournamentTeam,
-        leagueSeasonUid: currentState.leagueOrTournamentTeam.seasonUid,
+        leagueTeam: state.leagueOrTournamentTeam,
+        leagueSeasonUid: state.leagueOrTournamentTeam.seasonUid,
         email: email,
         userUid: coordinationBloc.authenticationBloc.currentUser.uid);
   }
@@ -280,20 +311,20 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
   Stream<SingleLeagueOrTournamentTeamState> _updateLeagueOrTournamentTeam(
       LeagueOrTournamentTeam league) async* {
     if (league.uid == leagueTeamUid) {
-      yield SingleLeagueOrTournamentTeamSaving(
-          leagueOrTournament: currentState);
+      yield SingleLeagueOrTournamentTeamSaving(leagueOrTournament: state);
       try {
         await coordinationBloc.databaseUpdateModel.updateLeagueTeam(league);
         yield SingleLeagueOrTournamentTeamLoaded(
-            leagueOrTournamentTeam: currentState.leagueOrTournamentTeam,
-            games: currentState.games);
+            leagueOrTournamentTeam: state.leagueOrTournamentTeam,
+            games: state.games,
+            state: state);
       } catch (e) {
         yield SingleLeagueOrTournamentTeamSaveFailed(
-            leagueOrTournament: currentState, error: e);
+            leagueOrTournament: state, error: e);
       }
     } else {
       yield SingleLeagueOrTournamentTeamSaveFailed(
-          leagueOrTournament: currentState,
+          leagueOrTournament: state,
           error: ArgumentError("league uids don't match"));
     }
   }
@@ -304,16 +335,16 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
   Stream<SingleLeagueOrTournamentTeamState> _updateWinRecord(
       String divison, WinRecord record) async* {
     try {
-      yield SingleLeagueOrTournamentTeamSaving(
-          leagueOrTournament: currentState);
+      yield SingleLeagueOrTournamentTeamSaving(leagueOrTournament: state);
       await coordinationBloc.databaseUpdateModel.updateLeagueTeamRecord(
-          currentState.leagueOrTournamentTeam, divison, record);
+          state.leagueOrTournamentTeam, divison, record);
       yield SingleLeagueOrTournamentTeamLoaded(
-          leagueOrTournamentTeam: currentState.leagueOrTournamentTeam,
-          games: currentState.games);
+          leagueOrTournamentTeam: state.leagueOrTournamentTeam,
+          games: state.games,
+          state: state);
     } catch (e) {
       yield SingleLeagueOrTournamentTeamSaveFailed(
-          leagueOrTournament: currentState, error: e);
+          leagueOrTournament: state, error: e);
     }
   }
 
@@ -322,7 +353,7 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
       SingleLeagueOrTournamentTeamEvent event) async* {
     if (event is _SingleLeagueOrTournamentEventLeagueTeamLoaded) {
       yield SingleLeagueOrTournamentTeamLoaded(
-          state: currentState, leagueOrTournamentTeam: event.leagueDivision);
+          state: state, leagueOrTournamentTeam: event.leagueDivision);
     }
 
     if (event is _SingleLeagueOrTournamentEventTeamDeleted) {
@@ -349,14 +380,14 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
         newGames[game.uid] = game;
       }
       yield SingleLeagueOrTournamentTeamLoaded(
-          state: currentState,
-          leagueOrTournamentTeam: currentState.leagueOrTournamentTeam,
+          state: state,
+          leagueOrTournamentTeam: state.leagueOrTournamentTeam,
           games: BuiltMap.from(newGames));
     }
 
     if (event is _SingleLeagueOrTournamentEventTeamInvites) {
       yield SingleLeagueOrTournamentTeamLoaded(
-          state: currentState, invites: BuiltList.from(event.invites));
+          state: state, invites: BuiltList.from(event.invites));
     }
 
     if (event is SingleLeagueOrTournamentTeamUpdate) {
@@ -375,9 +406,9 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
       Team publicTeam = await coordinationBloc.databaseUpdateModel
           .getPublicTeamDetails(
               userUid: coordinationBloc.authenticationBloc.currentUser.uid,
-              teamUid: currentState.leagueOrTournamentTeam.teamUid);
+              teamUid: state.leagueOrTournamentTeam.teamUid);
       yield SingleLeagueOrTournamentTeamLoaded(
-          state: currentState, publicTeam: publicTeam);
+          state: state, publicTeam: publicTeam);
     }
   }
 }

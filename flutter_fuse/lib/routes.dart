@@ -43,7 +43,8 @@ class Routes {
     UserAuthImpl userAuthImpl = UserAuthImpl(firestore, persistentData);
     _authenticationBloc = AuthenticationBloc(
         userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
-    _loginBloc = new LoginBloc(userAuth: userAuthImpl);
+    _loginBloc = new LoginBloc(
+        userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
     DatabaseUpdateModel databaseUpdateModel =
         DatabaseUpdateModelImpl(new Firestore(), SqlData.instance);
     _coordinationBloc = CoordinationBloc(
@@ -68,32 +69,46 @@ class Routes {
         LeagueOrTournamentBloc(coordinationBloc: _coordinationBloc);
     _gameBloc =
         GameBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
-    _filteredGameBloc =
-        FilteredGameBloc(gameBloc: _gameBloc, teamBloc: _teamBloc);
+    _filteredGameBloc = FilteredGameBloc(
+        gameBloc: _gameBloc, teamBloc: _teamBloc, seasonBloc: _seasonBloc);
     _loadedStateBloc = LoadedStateBloc(coordinationBloc: _coordinationBloc);
 
-    _authenticationBloc.dispatch(AuthenticationAppStarted());
-    runApp(MultiBlocProvider(providers: [
+    _authenticationBloc.add(AuthenticationAppStarted());
+    runApp(MultiBlocProvider(providers: <BlocProvider>[
       BlocProvider<AuthenticationBloc>(
-          builder: (BuildContext context) => _authenticationBloc),
+          create: (BuildContext context) => _authenticationBloc),
       BlocProvider<CoordinationBloc>(
-          builder: (BuildContext context) => _coordinationBloc),
-      BlocProvider<LoginBloc>(builder: (BuildContext context) => _loginBloc),
-      BlocProvider<InviteBloc>(builder: (BuildContext context) => _inviteBloc),
-      BlocProvider<TeamBloc>(builder: (BuildContext context) => _teamBloc),
-      BlocProvider<SeasonBloc>(builder: (BuildContext context) => _seasonBloc),
+          create: (BuildContext context) => _coordinationBloc),
+      BlocProvider<LoginBloc>(create: (BuildContext context) => _loginBloc),
+      BlocProvider<InviteBloc>(create: (BuildContext context) => _inviteBloc),
+      BlocProvider<TeamBloc>(create: (BuildContext context) => _teamBloc),
+      BlocProvider<SeasonBloc>(create: (BuildContext context) => _seasonBloc),
       BlocProvider<MessagesBloc>(
-          builder: (BuildContext context) => _messagesBloc),
+          create: (BuildContext context) => _messagesBloc),
       BlocProvider<LeagueOrTournamentBloc>(
-          builder: (BuildContext context) => _leagueOrTournamentBloc),
-      BlocProvider<ClubBloc>(builder: (BuildContext context) => _clubBloc),
-      BlocProvider<GameBloc>(builder: (BuildContext context) => _gameBloc),
+          create: (BuildContext context) => _leagueOrTournamentBloc),
+      BlocProvider<ClubBloc>(create: (BuildContext context) => _clubBloc),
+      BlocProvider<GameBloc>(create: (BuildContext context) => _gameBloc),
       BlocProvider<FilteredGameBloc>(
-          builder: (BuildContext context) => _filteredGameBloc),
-      BlocProvider<PlayerBloc>(builder: (BuildContext context) => _playerBloc),
+          create: (BuildContext context) => _filteredGameBloc),
+      BlocProvider<PlayerBloc>(create: (BuildContext context) => _playerBloc),
       BlocProvider<LoadedStateBloc>(
-          builder: (BuildContext context) => _loadedStateBloc),
+          create: (BuildContext context) => _loadedStateBloc),
     ], child: app));
+
+    _loadedStateBloc.close();
+    _playerBloc.close();
+    _filteredGameBloc.close();
+    _gameBloc.close();
+    _clubBloc.close();
+    _leagueOrTournamentBloc.close();
+    _messagesBloc.close();
+    _teamBloc.close();
+    _seasonBloc.close();
+    _inviteBloc.close();
+    _loginBloc.close();
+    _coordinationBloc.close();
+    _authenticationBloc.close();
   }
 
   //UserData _currentUser;

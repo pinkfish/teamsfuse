@@ -17,6 +17,10 @@ class AddGameEventCommit extends AddGameEvent {
   final Game newGame;
 
   AddGameEventCommit({@required this.newGame});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [this.newGame];
 }
 
 ///

@@ -19,14 +19,16 @@ abstract class SinglePlayerState extends Equatable {
       {@required this.player,
       @required this.mePlayer,
       @required this.invites,
-      @required this.invitesLoaded})
-      : super([player, mePlayer, invitesLoaded, invites]);
+      @required this.invitesLoaded});
 
   SinglePlayerState.fromState(SinglePlayerState state)
       : mePlayer = state.mePlayer,
         player = state.player,
         invitesLoaded = state.invitesLoaded,
         invites = state.invites;
+
+  @override
+  List<Object> get props => [player, invites, invitesLoaded, mePlayer];
 }
 
 ///
@@ -121,6 +123,9 @@ class SinglePlayerUpdate extends SinglePlayerEvent {
   final File image;
 
   SinglePlayerUpdate({@required this.player, this.image});
+
+  @override
+  List<Object> get props => [player, image];
 }
 
 ///
@@ -130,6 +135,9 @@ class SinglePlayerUpdateImage extends SinglePlayerEvent {
   final File image;
 
   SinglePlayerUpdateImage({@required this.image});
+
+  @override
+  List<Object> get props => [image];
 }
 
 ///
@@ -140,6 +148,9 @@ class SinglePlayerInviteUser extends SinglePlayerEvent {
   final Relationship relationship;
 
   SinglePlayerInviteUser({@required this.email, this.relationship});
+
+  @override
+  List<Object> get props => [email, relationship];
 }
 
 ///
@@ -147,6 +158,9 @@ class SinglePlayerInviteUser extends SinglePlayerEvent {
 ///
 class SinglePlayerDelete extends SinglePlayerEvent {
   SinglePlayerDelete();
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -154,6 +168,9 @@ class SinglePlayerDelete extends SinglePlayerEvent {
 ///
 class SinglePlayerLoadInvites extends SinglePlayerEvent {
   SinglePlayerLoadInvites();
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -161,22 +178,34 @@ class SinglePlayerLoadInvites extends SinglePlayerEvent {
 ///
 class SinglePlayerLoadProfile extends SinglePlayerEvent {
   SinglePlayerLoadProfile();
+
+  @override
+  List<Object> get props => [];
 }
 
 class _SinglePlayerNewPlayer extends SinglePlayerEvent {
   final Player newPlayer;
 
   _SinglePlayerNewPlayer({@required this.newPlayer});
+
+  @override
+  List<Object> get props => [newPlayer];
 }
 
 class _SinglePlayerDeleted extends SinglePlayerEvent {
   _SinglePlayerDeleted();
+
+  @override
+  List<Object> get props => [];
 }
 
 class _SinglePlayerInvitesAdded extends SinglePlayerEvent {
   final Iterable<InviteToPlayer> invites;
 
   _SinglePlayerInvitesAdded({@required this.invites});
+
+  @override
+  List<Object> get props => [invites];
 }
 
 ///
@@ -190,34 +219,34 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
   StreamSubscription<Iterable<InviteToPlayer>> _inviteSub;
 
   SinglePlayerBloc({@required this.playerBloc, @required this.playerUid}) {
-    _playerSub = playerBloc.state.listen((PlayerState state) {
-      if (state.players.containsKey(playerUid)) {
-        Player player = state.players[playerUid];
+    _playerSub = playerBloc.listen((PlayerState playerState) {
+      if (playerState.players.containsKey(playerUid)) {
+        Player player = playerState.players[playerUid];
         // Only send this if the Player is not the same.
-        if (Player != currentState.player) {
-          dispatch(_SinglePlayerNewPlayer(newPlayer: player));
+        if (Player != state.player) {
+          add(_SinglePlayerNewPlayer(newPlayer: player));
         }
       } else {
-        dispatch(_SinglePlayerDeleted());
+        add(_SinglePlayerDeleted());
       }
     });
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _playerSub?.cancel();
     _inviteSub?.cancel();
   }
 
   @override
   SinglePlayerState get initialState {
-    if (playerBloc.currentState.players.containsKey(playerUid)) {
+    if (playerBloc.state.players.containsKey(playerUid)) {
       return SinglePlayerLoaded(
-          player: playerBloc.currentState.players[playerUid],
+          player: playerBloc.state.players[playerUid],
           invites: BuiltList(),
           state: null,
-          mePlayer: playerBloc.currentState.me?.uid == playerUid,
+          mePlayer: playerBloc.state.me?.uid == playerUid,
           invitesLoaded: false);
     } else {
       return SinglePlayerDeleted();
@@ -228,9 +257,9 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
   Stream<SinglePlayerState> mapEventToState(SinglePlayerEvent event) async* {
     if (event is _SinglePlayerNewPlayer) {
       yield SinglePlayerLoaded(
-          state: currentState,
+          state: state,
           player: event.newPlayer,
-          mePlayer: event.newPlayer.uid == playerBloc.currentState.me.uid);
+          mePlayer: event.newPlayer.uid == playerBloc.state.me.uid);
     }
 
     // The Player is deleted.
@@ -240,7 +269,7 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
 
     // Save the Player.
     if (event is SinglePlayerUpdate) {
-      yield SinglePlayerSaving(state: currentState);
+      yield SinglePlayerSaving(state: state);
 
       try {
         if (event.image != null) {
@@ -250,35 +279,36 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
         }
         await playerBloc.coordinationBloc.databaseUpdateModel
             .updateFirestorePlayer(event.player.build(), false);
-        yield SinglePlayerSaveDone(state: currentState);
+        yield SinglePlayerSaveDone(state: state);
         yield SinglePlayerLoaded(
-            state: currentState,
+            state: state,
             player: event.player.build(),
-            mePlayer: event.player.uid == playerBloc.currentState.me.uid);
+            mePlayer: event.player.uid == playerBloc.state.me.uid);
       } catch (e) {
-        yield SinglePlayerSaveFailed(state: currentState, error: e);
+        yield SinglePlayerSaveFailed(state: state, error: e);
       }
     }
 
     if (event is SinglePlayerInviteUser) {
-      yield SinglePlayerSaving(state: currentState);
+      yield SinglePlayerSaving(state: state);
       try {
         await playerBloc.coordinationBloc.databaseUpdateModel
             .inviteUserToPlayer(
                 playerUid: playerUid,
                 email: event.email,
-                playerName: currentState.player.name);
-        yield SinglePlayerSaveDone(state: currentState);
-        yield SinglePlayerLoaded(state: currentState);
+                playerName: state.player.name,
+                myUid: playerBloc.coordinationBloc.state.uid);
+        yield SinglePlayerSaveDone(state: state);
+        yield SinglePlayerLoaded(state: state);
       } catch (e) {
-        yield SinglePlayerSaveFailed(state: currentState, error: e);
+        yield SinglePlayerSaveFailed(state: state, error: e);
       }
     }
 
     if (event is _SinglePlayerInvitesAdded) {
       yield SinglePlayerLoaded(
-          state: currentState,
-          player: currentState.player,
+          state: state,
+          player: state.player,
           invites: BuiltList.from(event.invites),
           invitesLoaded: true);
     }
@@ -286,9 +316,9 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
     if (event is SinglePlayerLoadInvites) {
       if (_inviteSub == null) {
         _inviteSub = playerBloc.coordinationBloc.databaseUpdateModel
-            .getInviteForPlayerStream(playerUid: currentState.player.uid)
+            .getInviteForPlayerStream(playerUid: state.player.uid)
             .listen((Iterable<InviteToPlayer> invites) {
-          dispatch(_SinglePlayerInvitesAdded(invites: invites));
+          add(_SinglePlayerInvitesAdded(invites: invites));
         });
       }
     }

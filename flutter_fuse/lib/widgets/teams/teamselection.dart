@@ -81,8 +81,7 @@ class _TeamSelectionState extends State<TeamSelection> {
     if (widget.club == null) {
       widgets.add(
         new TeamPicker(
-          onChanged: (String str) =>
-              _teamChanged(bloc.currentState.getTeam(str)),
+          onChanged: (String str) => _teamChanged(bloc.state.getTeam(str)),
           teamUid: _team?.uid,
           disabled: _clubUid != null,
           selectedTitle: _team != null,

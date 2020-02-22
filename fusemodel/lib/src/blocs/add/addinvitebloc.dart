@@ -22,15 +22,31 @@ class InviteEventAddUserToPlayer extends AddInviteEvent {
       {@required this.playerUid,
       @required this.email,
       @required this.playerName});
+
+  @override
+  List<Object> get props => [this.playerName, this.email, this.playerName];
 }
 
+///
 /// Sends an invite to all the specified played to the team.
 ///
 class InvitePlayersToTeam extends AddInviteEvent {
   final Iterable<InviteTeamData> invites;
   final String seasonUid;
+  final String seasonName;
+  final String teamUid;
+  final String teamName;
 
-  InvitePlayersToTeam({@required this.invites, @required this.seasonUid});
+  InvitePlayersToTeam(
+      {@required this.invites,
+      @required this.seasonUid,
+      @required this.teamUid,
+      @required this.seasonName,
+      @required this.teamName});
+
+  @override
+  List<Object> get props =>
+      [this.invites, this.seasonUid, seasonName, teamUid, teamName];
 }
 
 ///
@@ -43,6 +59,10 @@ class InviteEventAddAsAdmin extends AddInviteEvent {
 
   InviteEventAddAsAdmin(
       {@required this.teamUid, @required this.email, @required this.teamName});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [this.teamName, this.email, this.teamUid];
 }
 
 ///
@@ -84,7 +104,10 @@ class AddInviteBloc extends Bloc<AddInviteEvent, AddItemState> {
               playername: data.playerName,
               role: data.role,
               email: data.email,
-              userId: coordinationBloc.authenticationBloc.currentUser.uid);
+              userId: coordinationBloc.authenticationBloc.currentUser.uid,
+              teamName: event.teamName,
+              teamUid: event.teamUid,
+              seasonName: event.seasonName);
         }
         yield AddItemDone(uid: 'done');
       } catch (e) {

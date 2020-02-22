@@ -74,7 +74,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     Uuid uuid = new Uuid();
     String seriesId = uuid.v4();
     _initGame = _initGame.rebuild((b) => b..seriesId = seriesId);
-    addTrainingBloc.dispatch(
+    addTrainingBloc.add(
         AddTrainingEventCommit(newGame: _initGame, repeatTimes: _repeatDates));
 
     return true;
@@ -279,7 +279,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
     Messages messages = Messages.of(context);
 
     return BlocProvider(
-      builder: (BuildContext c) => addTrainingBloc,
+      create: (BuildContext c) => addTrainingBloc,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: new AppBar(

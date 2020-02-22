@@ -94,7 +94,7 @@ class TeamDetails extends StatelessWidget {
         bloc: bloc,
         listener: (BuildContext context, SingleTeamState state) {
           if (state is SingleTeamLoaded) {
-            bloc.dispatch(SingleTeamLoadAllSeasons());
+            bloc.add(SingleTeamLoadAllSeasons());
           }
         },
         child: BlocBuilder(

@@ -73,6 +73,7 @@ class LeagueTeamScreen extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: LeagueOrTournamentTeamDetails(
                       leagueOrTournamentTeamUid: leagueTeamUid,
+                      leagueOrTournamentUid: leagueUid,
                     ),
                   ),
                 ),

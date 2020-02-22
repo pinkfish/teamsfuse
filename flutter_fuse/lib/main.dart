@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,17 +12,15 @@ import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/appconfiguration.dart';
 import 'package:flutter_fuse/services/firestore/firestore.dart' as fs;
 import 'package:flutter_fuse/services/loggingdata.dart';
+import 'package:flutter_fuse/services/printingblocdelegate.dart';
 import 'package:flutter_fuse/services/sqldata.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
-import 'package:bloc/bloc.dart';
-import 'package:flutter_fuse/services/printingblocdelegate.dart';
 
 void main() async {
   BlocSupervisor.delegate = PrintingBlocDelegate();
-
 
   TraceProxy trace = Analytics.instance.newTrace("startup");
   trace.start();
@@ -54,7 +53,7 @@ void main() async {
   // database
   print('Making stuff in here');
   // Setup the timestamps correctly.
-  await Firestore.instance.settings(timestampsInSnapshotsEnabled: true);
+  await Firestore.instance.settings();
 
   FirestoreWrapper firestoreWrapper = new fs.Firestore();
   //UserDatabaseData.instance = new UserDatabaseData(Analytics.instance,

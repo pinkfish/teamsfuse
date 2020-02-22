@@ -23,22 +23,17 @@ class AddOpponent extends StatefulWidget {
 }
 
 class _AddOpponentState extends State<AddOpponent> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-
   _AddOpponentState(this._opponent);
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   OpponentBuilder _opponent;
   FocusNode _focusNode = new FocusNode();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
-  void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
-  }
-
   void _savePressed(BuildContext context, SingleTeamBloc singleTeamBloc) async {
     _formKey.currentState.save();
-    singleTeamBloc.dispatch(SingleTeamAddOpponent(opponent: _opponent.build()));
+    singleTeamBloc.add(SingleTeamAddOpponent(opponent: _opponent.build()));
   }
 
   @override

@@ -210,8 +210,7 @@ class _LeagueOrTournamentDivisonDetailsState
                         Iterable<LeagueOrTournamentTeam> teams =
                             state.leagueOrTournamentTeams.values;
                         if (teams.length == 0) {
-                          if (leagueBloc.currentState.leagueOrTournament
-                              .isAdmin()) {
+                          if (leagueBloc.state.leagueOrTournament.isAdmin()) {
                             return Container(
                               margin: EdgeInsets.all(5.0),
                               child: Column(
@@ -245,7 +244,7 @@ class _LeagueOrTournamentDivisonDetailsState
                             teams.toList();
                         sortedTeams.sort(_sortTeams);
                         _updateTeams(
-                            leagueBloc.currentState.leagueOrTournament,
+                            leagueBloc.state.leagueOrTournament,
                             sortedTeams,
                             divisonState.leagueOrTournamentDivison);
                         _sortedTeams = sortedTeams;

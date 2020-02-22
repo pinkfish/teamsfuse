@@ -16,7 +16,7 @@ class ClubSettingsScreen extends StatelessWidget {
       appBar: new AppBar(
         title: new Text(
           Messages.of(context)
-              .titlewith(teams.currentState.getTeam(teamUid).name),
+              .titlewith(teams.state.getTeam(teamUid).name),
         ),
       ),
       body: new ClubSettings(teamUid),

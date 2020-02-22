@@ -9,8 +9,8 @@ import 'package:meta/meta.dart';
 ///
 /// Basic login state
 ///
-class LoginState extends Equatable {
-  LoginState({List props = const []}) : super(props);
+abstract class LoginState extends Equatable {
+  LoginState();
 }
 
 ///
@@ -21,6 +21,9 @@ class LoginInitial extends LoginState {
   String toString() {
     return 'LoginInitial{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -31,6 +34,9 @@ class LoginValidating extends LoginState {
   String toString() {
     return 'LoginValidating{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 enum LoginFailedReason {
@@ -44,13 +50,15 @@ class LoginFailed extends LoginState {
   final UserData userData;
   final LoginFailedReason reason;
 
-  LoginFailed({@required this.userData, @required this.reason})
-      : super(props: [userData, reason]);
+  LoginFailed({@required this.userData, @required this.reason});
 
   @override
   String toString() {
     return 'LoginFailed{}';
   }
+
+  @override
+  List<Object> get props => [userData, reason];
 }
 
 ///
@@ -59,12 +67,15 @@ class LoginFailed extends LoginState {
 class LoginSucceeded extends LoginState {
   final UserData userData;
 
-  LoginSucceeded({@required this.userData}) : super(props: [userData]);
+  LoginSucceeded({@required this.userData});
 
   @override
   String toString() {
     return 'LoginSucceeded{}';
   }
+
+  @override
+  List<Object> get props => [userData];
 }
 
 ///
@@ -73,12 +84,15 @@ class LoginSucceeded extends LoginState {
 class LoginEmailNotValidated extends LoginState {
   final UserData userData;
 
-  LoginEmailNotValidated({@required this.userData}) : super(props: [userData]);
+  LoginEmailNotValidated({@required this.userData});
 
   @override
   String toString() {
     return 'LoginEmailNotValidated{}';
   }
+
+  @override
+  List<Object> get props => [userData];
 }
 
 ///
@@ -89,6 +103,9 @@ class LoginValidatingForgotPassword extends LoginState {
   String toString() {
     return 'LoginValidatingForgotPassword{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -99,6 +116,9 @@ class LoginForgotPasswordDone extends LoginState {
   String toString() {
     return 'LoginForgotPasswordDone{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -107,12 +127,15 @@ class LoginForgotPasswordDone extends LoginState {
 class LoginForgotPasswordFailed extends LoginState {
   final Error error;
 
-  LoginForgotPasswordFailed({@required this.error}) : super(props: [error]);
+  LoginForgotPasswordFailed({@required this.error});
 
   @override
   String toString() {
     return 'LoginForgotPasswordDone{}';
   }
+
+  @override
+  List<Object> get props => [error];
 }
 
 ///
@@ -123,6 +146,9 @@ class LoginVerificationDone extends LoginState {
   String toString() {
     return 'LoginVerificationDone{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -131,12 +157,15 @@ class LoginVerificationDone extends LoginState {
 class LoginVerificationFailed extends LoginState {
   final Error error;
 
-  LoginVerificationFailed({@required this.error}) : super(props: [error]);
+  LoginVerificationFailed({@required this.error});
 
   @override
   String toString() {
     return 'LoginVerificationFailed{}';
   }
+
+  @override
+  List<Object> get props => [error];
 }
 
 ///
@@ -147,6 +176,9 @@ class LoginValidatingSignup extends LoginState {
   String toString() {
     return 'LoginValidatingSignup{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -156,13 +188,15 @@ class LoginSignupFailed extends LoginState {
   final UserData userData;
   final FusedUserProfile profile;
 
-  LoginSignupFailed({@required this.userData, @required this.profile})
-      : super(props: [userData, profile]);
+  LoginSignupFailed({@required this.userData, @required this.profile});
 
   @override
   String toString() {
     return 'LoginSignupFailed{}';
   }
+
+  @override
+  List<Object> get props => [userData, profile];
 }
 
 ///
@@ -171,15 +205,18 @@ class LoginSignupFailed extends LoginState {
 class LoginSignupSucceeded extends LoginState {
   final UserData userData;
 
-  LoginSignupSucceeded({@required this.userData}) : super(props: [userData]);
+  LoginSignupSucceeded({@required this.userData});
 
   @override
   String toString() {
     return 'LoginSignupSucceeded{}';
   }
+
+  @override
+  List<Object> get props => [userData];
 }
 
-class LoginEvent extends Equatable {}
+abstract class LoginEvent extends Equatable {}
 
 ///
 /// Reset the state of the login system
@@ -189,6 +226,9 @@ class LoginEventReset extends LoginEvent {
   String toString() {
     return 'LoginEventReset{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -199,26 +239,35 @@ class LoginEventReload extends LoginEvent {
   String toString() {
     return 'LoginEventReset{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
-/// Reloads the user to correct state
+/// Logs  the user to out
 ///
 class LoginEventLogout extends LoginEvent {
   @override
   String toString() {
     return 'LoginEventLogout{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
-/// Reloads the user to correct state
+/// Resends an email to the user.
 ///
 class LoginEventResendEmail extends LoginEvent {
   @override
   String toString() {
     return 'LoginEventResendEmail{}';
   }
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -234,6 +283,9 @@ class LoginEventAttempt extends LoginEvent {
   String toString() {
     return 'LoginEventAttempt{user: $email}';
   }
+
+  @override
+  List<Object> get props => [email, password];
 }
 
 ///
@@ -248,6 +300,9 @@ class LoginEventForgotPasswordSend extends LoginEvent {
   String toString() {
     return 'LoginEventForgotPassword{user: $email}';
   }
+
+  @override
+  List<Object> get props => [email];
 }
 
 ///
@@ -269,6 +324,9 @@ class LoginEventSignupUser extends LoginEvent {
   String toString() {
     return 'LoginEventSignupUser{user: $email}';
   }
+
+  @override
+  List<Object> get props => [email, password, displayName, phoneNumber];
 }
 
 ///

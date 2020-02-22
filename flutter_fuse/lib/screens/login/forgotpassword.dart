@@ -23,8 +23,10 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   String email = '';
   LoginBloc _loginBloc;
 
+  @override
   void initState() {
     _loginBloc = BlocProvider.of<LoginBloc>(context);
+    super.initState();
   }
 
   void onPressed(String routeName) {
@@ -43,7 +45,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      _loginBloc.dispatch(LoginEventForgotPasswordSend(email: email));
+      _loginBloc.add(LoginEventForgotPasswordSend(email: email));
     }
   }
 
@@ -87,7 +89,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 child: Text(Messages.of(context).createaccount),
                 textColor: Theme.of(context).accentColor,
                 onPressed: () {
-                  _loginBloc.dispatch(LoginEventReset());
+                  _loginBloc.add(LoginEventReset());
                   onPressed("/Login/SignUp");
                 },
               ),
@@ -95,7 +97,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 child: Text(Messages.of(context).login),
                 textColor: Theme.of(context).accentColor,
                 onPressed: () {
-                  _loginBloc.dispatch(LoginEventReset());
+                  _loginBloc.add(LoginEventReset());
                   onPressed("/Login/Home");
                 },
               ),
@@ -120,7 +122,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 child: Text(Messages.of(context).createaccount),
                 textColor: Theme.of(context).accentColor,
                 onPressed: () {
-                  _loginBloc.dispatch(LoginEventReset());
+                  _loginBloc.add(LoginEventReset());
                   onPressed("/Login/SignUp");
                 },
               ),
@@ -128,7 +130,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: Text(Messages.of(context).login),
                   textColor: Theme.of(context).accentColor,
                   onPressed: () {
-                    _loginBloc.dispatch(LoginEventReset());
+                    _loginBloc.add(LoginEventReset());
                     // Go back to the initial state.
                     onPressed("/Login/Home");
                   }),

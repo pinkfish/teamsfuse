@@ -57,7 +57,7 @@ class ProfileScreen extends StatelessWidget {
           );
         });
     if (result) {
-      bloc.dispatch(SinglePlayerDelete());
+      bloc.add(SinglePlayerDelete());
     }
   }
 
@@ -93,11 +93,12 @@ class ProfileScreen extends StatelessWidget {
     for (PlayerUser user in player.player.users.values) {
       var bloc = SingleProfileBloc(
           coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
-          profileUid: user.userUid);
+          profileUid: user.userUid,
+          playerBloc: BlocProvider.of<PlayerBloc>(context));
       ret.add(
         // Use a provider to cleanup the bloc.
         BlocProvider(
-          builder: (BuildContext context) => bloc,
+          create: (BuildContext context) => bloc,
           child: BlocBuilder(
             bloc: bloc,
             builder: (BuildContext context, SingleProfileState userState) {
@@ -204,14 +205,12 @@ class ProfileScreen extends StatelessWidget {
                       const AssetImage("assets/images/defaultavatar2.png");
                 }
                 TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
-                if (teamBloc.currentState.playerTeams.containsKey(player.uid)) {
-                  Iterable<Team> teams =
-                      teamBloc.currentState.playerTeams.values;
+                if (teamBloc.state.playerTeams.containsKey(player.uid)) {
+                  Iterable<Team> teams = teamBloc.state.playerTeams.values;
                   SeasonBloc seasonBloc = BlocProvider.of<SeasonBloc>(context);
 
                   for (Team team in teams) {
-                    for (Season season
-                        in seasonBloc.currentState.seasons.values) {
+                    for (Season season in seasonBloc.state.seasons.values) {
                       int index = season.players.indexWhere((SeasonPlayer sp) {
                         return sp.playerUid == player.uid;
                       });
@@ -280,10 +279,8 @@ class ProfileScreen extends StatelessWidget {
 
   void _editProfile(BuildContext context) {
     // Open up the edit profile dialog.
-    Navigator.pushNamed(
-        context,
-        "EditProfile/" +
-            BlocProvider.of<PlayerBloc>(context).currentState.me.uid);
+    Navigator.pushNamed(context,
+        "EditProfile/" + BlocProvider.of<PlayerBloc>(context).state.me.uid);
   }
 
   @override

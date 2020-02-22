@@ -12,7 +12,10 @@ import '../playerbloc.dart';
 abstract class SingleProfileState extends Equatable {
   final FusedUserProfile profile;
 
-  SingleProfileState({@required this.profile}) : super([profile]);
+  SingleProfileState({@required this.profile});
+
+  @override
+  List<Object> get props => [profile];
 }
 
 ///
@@ -104,16 +107,25 @@ class SingleProfileUpdate extends SingleProfileEvent {
   final File image;
 
   SingleProfileUpdate({@required this.profile, this.image});
+
+  @override
+  List<Object> get props => [profile, image];
 }
 
 class _SingleProfileNewProfile extends SingleProfileEvent {
   final FusedUserProfile profile;
 
   _SingleProfileNewProfile({@required this.profile});
+
+  @override
+  List<Object> get props => [profile];
 }
 
 class _SingleProfileDeleted extends SingleProfileEvent {
   _SingleProfileDeleted();
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -134,16 +146,16 @@ class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
         .getProfileStream(profileUid)
         .listen((FusedUserProfile profile) {
       if (profile == null) {
-        dispatch(_SingleProfileDeleted());
+        add(_SingleProfileDeleted());
       } else {
-        dispatch(_SingleProfileNewProfile(profile: profile));
+        add(_SingleProfileNewProfile(profile: profile));
       }
     });
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _profileSub?.cancel();
   }
 
@@ -153,7 +165,7 @@ class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
   @override
   Stream<SingleProfileState> mapEventToState(SingleProfileEvent event) async* {
     if (event is _SingleProfileNewProfile) {
-      if (event.profile != currentState.profile) {
+      if (event.profile != state.profile) {
         yield SingleProfileLoaded(profile: event.profile);
       }
     }
@@ -168,7 +180,7 @@ class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
         FusedUserProfile profile = event.profile;
         if (event.image != null) {
           var url = coordinationBloc.databaseUpdateModel
-              .updatePlayerImage(playerBloc.currentState.me.uid, event.image);
+              .updatePlayerImage(playerBloc.state.me.uid, event.image);
           //profile = profile.rebuild((b) b..)
         }
         await coordinationBloc.authenticationBloc.userAuth
@@ -176,7 +188,7 @@ class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
         yield SingleProfileSaveDone(profile: profile);
         yield SingleProfileLoaded(profile: profile);
       } catch (e) {
-        yield SingleProfileSaveFailed(profile: currentState.profile, error: e);
+        yield SingleProfileSaveFailed(profile: state.profile, error: e);
       }
     }
   }

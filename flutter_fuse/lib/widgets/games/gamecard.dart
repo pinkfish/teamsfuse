@@ -37,7 +37,7 @@ class GameCard extends StatelessWidget {
             return new AttendanceDialog(current: current);
           });
       if (attend != null) {
-        gameBloc.dispatch(SingleGameUpdateAttendance(
+        gameBloc.add(SingleGameUpdateAttendance(
             playerUid: player.uid, attendance: attend));
       }
     } else {
@@ -48,7 +48,7 @@ class GameCard extends StatelessWidget {
           });
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
-          gameBloc.dispatch(SingleGameUpdateAttendance(
+          gameBloc.add(SingleGameUpdateAttendance(
               playerUid: player.uid, attendance: attend));
         });
       }
@@ -79,9 +79,9 @@ class GameCard extends StatelessWidget {
 
   Widget _buildAvailability(BuildContext context, SingleGameBloc gameBloc,
       Season season, List<Player> players) {
-    Game game = gameBloc.currentState.game;
+    Game game = gameBloc.state.game;
     TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
-    Team team = teamBloc.currentState.getTeam(game.teamUid);
+    Team team = teamBloc.state.getTeam(game.teamUid);
     if (team == null) {
       return null;
     }
@@ -231,7 +231,7 @@ class GameCard extends StatelessWidget {
 
   Widget _buildTrailing(BuildContext context, SingleGameBloc gameBloc,
       Season season, List<Player> players) {
-    Game game = gameBloc.currentState.game;
+    Game game = gameBloc.state.game;
     // Only show attendence until the game/event is over.
     if (game.result.inProgress == GameInProgress.NotStarted) {
       if ((game.trackAttendance &&
@@ -460,7 +460,7 @@ class GameCard extends StatelessWidget {
     List<Player> players = <Player>[];
     PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
 
-    players = playerBloc.currentState.players.values
+    players = playerBloc.state.players.values
         .where((Player p) => seasonState.season.players
             .any((SeasonPlayer sp) => sp.playerUid == p.uid))
         .toList();

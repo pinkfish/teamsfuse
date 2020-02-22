@@ -28,7 +28,7 @@ class TeamResultsByOpponent extends StatelessWidget {
           BlocListener(
         bloc: teamBloc,
         listener: (BuildContext context, SingleOpponentState state) {
-          teamBloc.dispatch(SingleOpponentLoadGames());
+          teamBloc.add(SingleOpponentLoadGames());
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
           }
@@ -135,7 +135,7 @@ class TeamResultsBySeason extends StatelessWidget {
           BlocListener(
         bloc: seasonBloc,
         listener: (BuildContext context, SingleSeasonState state) {
-          seasonBloc.dispatch(SingleSeasonLoadGames());
+          seasonBloc.add(SingleSeasonLoadGames());
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
           }
@@ -143,7 +143,7 @@ class TeamResultsBySeason extends StatelessWidget {
         child: BlocBuilder(
           bloc: seasonBloc,
           builder: (BuildContext context, SingleSeasonState state) {
-            seasonBloc.dispatch(SingleSeasonLoadGames());
+            seasonBloc.add(SingleSeasonLoadGames());
             if (state is SingleOpponentDeleted) {
               return new Center(
                 child: new Text(Messages.of(context).teamdeleted),

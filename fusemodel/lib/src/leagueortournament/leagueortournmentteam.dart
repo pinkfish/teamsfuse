@@ -77,6 +77,7 @@ abstract class LeagueOrTournamentTeam
         }
       }
     }
+    return builder;
   }
 
   @override

@@ -22,8 +22,8 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     List<Widget> teams = <Widget>[];
     TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
 
-    for (String uid in teamBloc.currentState.allTeamUids) {
-      Team team = teamBloc.currentState.getTeam(uid);
+    for (String uid in teamBloc.state.allTeamUids) {
+      Team team = teamBloc.state.getTeam(uid);
       bool isOn = widget.details.teamUids.contains(uid);
       teams.add(_CheckboxDialogItem(
           initialValue: isOn,
@@ -61,7 +61,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     } else {
       TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
       pickerText = widget.details.teamUids
-          .map((String uid) => teamBloc.currentState.getTeam(uid).name)
+          .map((String uid) => teamBloc.state.getTeam(uid).name)
           .join((", "));
     }
     return new InkWell(
@@ -80,8 +80,8 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     List<Widget> players = <Widget>[];
     PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
 
-    for (String uid in playerBloc.currentState.players.keys) {
-      Player player = playerBloc.currentState.getPlayer(uid);
+    for (String uid in playerBloc.state.players.keys) {
+      Player player = playerBloc.state.getPlayer(uid);
       bool isOn = widget.details.playerUids.contains(uid);
       players.add(_CheckboxDialogItem(
           initialValue: isOn,
@@ -121,7 +121,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
       PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
 
       pickerText = widget.details.playerUids
-          .map((String uid) => playerBloc.currentState.getPlayer(uid).name)
+          .map((String uid) => playerBloc.state.getPlayer(uid).name)
           .join((", "));
     }
     return new InkWell(
@@ -258,9 +258,9 @@ class _CheckboxDialogItemState extends State<_CheckboxDialogItem> {
       leading: new Checkbox(
         value: _isOn,
         onChanged: (bool val) => setState(() {
-              _isOn = val;
-              widget.onChanged(val);
-            }),
+          _isOn = val;
+          widget.onChanged(val);
+        }),
       ),
       title: Text(widget.title),
     );

@@ -38,6 +38,7 @@ class AddAdminScreenState extends State<AddAdminScreen> {
 
   @override
   void initState() {
+    super.initState();
     addInviteBloc = AddInviteBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
   }
@@ -50,12 +51,14 @@ class AddAdminScreenState extends State<AddAdminScreen> {
       TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
       for (String en in _emailNames) {
         print("Sending to $en");
-        Analytics.analytics
-            .logShare(contentType: 'inviteAsAdmin', itemId: widget._teamUid);
-        addInviteBloc.dispatch(InviteEventAddAsAdmin(
+        Analytics.analytics.logShare(
+            contentType: 'inviteAsAdmin',
+            itemId: widget._teamUid,
+            method: 'handleSubmit');
+        addInviteBloc.add(InviteEventAddAsAdmin(
             teamUid: widget._teamUid,
             email: en,
-            teamName: teamBloc.currentState.getTeam(widget._teamUid).name));
+            teamName: teamBloc.state.getTeam(widget._teamUid).name));
       }
     } else {
       autovalidate = true;
@@ -124,7 +127,7 @@ class AddAdminScreenState extends State<AddAdminScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      builder: (BuildContext context) => addInviteBloc,
+      create: (BuildContext context) => addInviteBloc,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: new AppBar(

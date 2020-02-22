@@ -28,8 +28,10 @@ void mainShared(InjectorFactory injector) async {
   await initializeTimeZone();
   print('Startup checking user');
   UserAuthImpl userAuthImpl = UserAuthImpl(firestore, persistentData);
-  var authenticationBloc = AuthenticationBloc(userAuth: userAuthImpl);
-  var loginBloc = new LoginBloc(userAuth: userAuthImpl);
+  var authenticationBloc =
+      AuthenticationBloc(userAuth: userAuthImpl, analyticsSubsystem: analytics);
+  var loginBloc =
+      new LoginBloc(userAuth: userAuthImpl, analyticsSubsystem: analytics);
   DatabaseUpdateModel databaseUpdateModel =
       DatabaseUpdateModelImpl(firestore, SqlData.instance);
   var coordinationBloc = CoordinationBloc(

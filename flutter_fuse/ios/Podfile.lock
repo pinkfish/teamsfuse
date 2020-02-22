@@ -51,11 +51,15 @@ PODS:
     - Firebase/Core
     - Flutter
   - firebase_auth (0.0.1):
-    - Firebase/Auth (~> 6.0)
+    - Firebase/Auth (~> 6.3)
     - Firebase/Core
+    - Flutter
+  - firebase_auth_web (0.1.0):
     - Flutter
   - firebase_core (0.0.1):
     - Firebase/Core
+    - Flutter
+  - firebase_core_web (0.1.0):
     - Flutter
   - firebase_messaging (0.0.1):
     - Firebase/Core
@@ -160,6 +164,8 @@ PODS:
     - GoogleMaps
     - GooglePlacePicker
     - GooglePlaces
+  - flutter_plugin_android_lifecycle (0.0.1):
+    - Flutter
   - FMDB (2.7.5):
     - FMDB/standard (= 2.7.5)
   - FMDB/standard (2.7.5)
@@ -240,10 +246,18 @@ PODS:
   - Protobuf (3.9.0)
   - shared_preferences (0.0.1):
     - Flutter
+  - shared_preferences_macos (0.0.1):
+    - Flutter
+  - shared_preferences_web (0.0.1):
+    - Flutter
   - sqflite (0.0.1):
     - Flutter
     - FMDB (~> 2.7.2)
   - url_launcher (0.0.1):
+    - Flutter
+  - url_launcher_macos (0.0.1):
+    - Flutter
+  - url_launcher_web (0.0.1):
     - Flutter
 
 DEPENDENCIES:
@@ -253,7 +267,9 @@ DEPENDENCIES:
   - Firebase/Core
   - firebase_analytics (from `Pods/.symlinks/plugins/firebase_analytics/ios`)
   - firebase_auth (from `Pods/.symlinks/plugins/firebase_auth/ios`)
+  - firebase_auth_web (from `Pods/.symlinks/plugins/firebase_auth_web/ios`)
   - firebase_core (from `Pods/.symlinks/plugins/firebase_core/ios`)
+  - firebase_core_web (from `Pods/.symlinks/plugins/firebase_core_web/ios`)
   - firebase_messaging (from `Pods/.symlinks/plugins/firebase_messaging/ios`)
   - firebase_performance (from `Pods/.symlinks/plugins/firebase_performance/ios`)
   - firebase_remote_config (from `Pods/.symlinks/plugins/firebase_remote_config/ios`)
@@ -261,16 +277,21 @@ DEPENDENCIES:
   - Flutter (from `Pods/.symlinks/flutter/ios`)
   - flutter_native_timezone (from `Pods/.symlinks/plugins/flutter_native_timezone/ios`)
   - flutter_places_dialog (from `Pods/.symlinks/plugins/flutter_places_dialog/ios`)
+  - flutter_plugin_android_lifecycle (from `Pods/.symlinks/plugins/flutter_plugin_android_lifecycle/ios`)
   - GoogleAnalytics
   - image_picker (from `Pods/.symlinks/plugins/image_picker/ios`)
   - package_info (from `Pods/.symlinks/plugins/package_info/ios`)
   - path_provider (from `Pods/.symlinks/plugins/path_provider/ios`)
   - shared_preferences (from `Pods/.symlinks/plugins/shared_preferences/ios`)
+  - shared_preferences_macos (from `Pods/.symlinks/plugins/shared_preferences_macos/ios`)
+  - shared_preferences_web (from `Pods/.symlinks/plugins/shared_preferences_web/ios`)
   - sqflite (from `Pods/.symlinks/plugins/sqflite/ios`)
   - url_launcher (from `Pods/.symlinks/plugins/url_launcher/ios`)
+  - url_launcher_macos (from `Pods/.symlinks/plugins/url_launcher_macos/ios`)
+  - url_launcher_web (from `Pods/.symlinks/plugins/url_launcher_web/ios`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - Bolts
     - BoringSSL-GRPC
     - FBSDKCoreKit
@@ -316,8 +337,12 @@ EXTERNAL SOURCES:
     :path: Pods/.symlinks/plugins/firebase_analytics/ios
   firebase_auth:
     :path: Pods/.symlinks/plugins/firebase_auth/ios
+  firebase_auth_web:
+    :path: Pods/.symlinks/plugins/firebase_auth_web/ios
   firebase_core:
     :path: Pods/.symlinks/plugins/firebase_core/ios
+  firebase_core_web:
+    :path: Pods/.symlinks/plugins/firebase_core_web/ios
   firebase_messaging:
     :path: Pods/.symlinks/plugins/firebase_messaging/ios
   firebase_performance:
@@ -332,6 +357,8 @@ EXTERNAL SOURCES:
     :path: Pods/.symlinks/plugins/flutter_native_timezone/ios
   flutter_places_dialog:
     :path: Pods/.symlinks/plugins/flutter_places_dialog/ios
+  flutter_plugin_android_lifecycle:
+    :path: Pods/.symlinks/plugins/flutter_plugin_android_lifecycle/ios
   image_picker:
     :path: Pods/.symlinks/plugins/image_picker/ios
   package_info:
@@ -340,26 +367,36 @@ EXTERNAL SOURCES:
     :path: Pods/.symlinks/plugins/path_provider/ios
   shared_preferences:
     :path: Pods/.symlinks/plugins/shared_preferences/ios
+  shared_preferences_macos:
+    :path: Pods/.symlinks/plugins/shared_preferences_macos/ios
+  shared_preferences_web:
+    :path: Pods/.symlinks/plugins/shared_preferences_web/ios
   sqflite:
     :path: Pods/.symlinks/plugins/sqflite/ios
   url_launcher:
     :path: Pods/.symlinks/plugins/url_launcher/ios
+  url_launcher_macos:
+    :path: Pods/.symlinks/plugins/url_launcher_macos/ios
+  url_launcher_web:
+    :path: Pods/.symlinks/plugins/url_launcher_web/ios
 
 SPEC CHECKSUMS:
   Bolts: ac6567323eac61e203f6a9763667d0f711be34c8
   BoringSSL-GRPC: db8764df3204ccea016e1c8dd15d9a9ad63ff318
-  cloud_firestore: 0ac494d23db743f104b95d3291946afec187b74c
-  device_info: 3ebad48f726348f69abd802f3334a8d1ed795fbd
+  cloud_firestore: c5d1e4d114eecb1dfb535f008435685bcf6063f1
+  device_info: cbf09d2ec12aa7110e0b09fabe54b5bd6c8efe74
   FBSDKCoreKit: ae214474b25033399c131dc81d258e412582a2ba
   FBSDKLoginKit: 7a1e411d46acc8834588eca437daf34de42e1d52
   Firebase: a2b5951f30ff38fd3b3bdae9c7d340f940fd3c51
-  firebase_analytics: 045e7ebe7b8a4d27357168072868ff082dca15a6
-  firebase_auth: 1e3b7bdd37b9fbd4ef75ba1d985b00be09e02d3d
-  firebase_core: ae55ea92448ec8675d325da4db22cf3b4d58a54d
-  firebase_messaging: 0d5c04cc40f58bd4bf7f2992c91050f9bc01bec3
-  firebase_performance: f7b5c78075a37ae9c5e6f44822e377d57d4da6d8
-  firebase_remote_config: dadb2f94875e4f2e173b570a77b88f4df3b14631
-  firebase_storage: 52b0c06e27af628b627be28d32b4b540f6b67cf7
+  firebase_analytics: dacdcfc524d722fff13dcff942f0dfa47e6be567
+  firebase_auth: 1f46484071219159ad6c64d304af425ad7373052
+  firebase_auth_web: 0955c07bcc06e84af76b9d4e32e6f31518f2d7de
+  firebase_core: 0c84455537bed6d6b5b8c2dd611ff1fbb1ea5cbd
+  firebase_core_web: d501d8b946b60c8af265428ce483b0fff5ad52d1
+  firebase_messaging: 73b3e7dd7b3b6a7e4bdac10d5295211ca4f87f90
+  firebase_performance: bed42cee45cd3a44aadaf3e4fa18140f2fec3814
+  firebase_remote_config: b909942ae016c4b1dc115bc3846ae6181808a98d
+  firebase_storage: cee2383f53c26690269ab667b4dbfe25452c6caa
   FirebaseABTesting: a32c488eb75089a61eb3d86db061dfb909d765db
   FirebaseAnalytics: 48414ae5cbf6976d8a2f7177e0466540e5ab33ce
   FirebaseAnalyticsInterop: 0f250d71e8741352407a8db351e6de78c5c56d35
@@ -377,6 +414,7 @@ SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_native_timezone: e72ff1900460ff57cfd331d1758050c9269f3e99
   flutter_places_dialog: d6706ba5200150251c737166277e02a92b8fc141
+  flutter_plugin_android_lifecycle: 47de533a02850f070f5696a623995e93eddcdb9b
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   GoogleAnalytics: f42cc53a87a51fe94334821868d9c8481ff47a7b
   GoogleAppMeasurement: 47285fa897e5a125df56b9ef8750a1d81e4598a8
@@ -390,16 +428,20 @@ SPEC CHECKSUMS:
   "gRPC-C++": 9dfe7b44821e7b3e44aacad2af29d2c21f7cde83
   gRPC-Core: c9aef9a261a1247e881b18059b84d597293c9947
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
-  image_picker: 16e5fec1fbc87fd3b297c53e4048521eaf17cd06
+  image_picker: e3eacd46b94694dde7cf2705955cece853aa1a8f
   leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  package_info: 78cabb3c322943c55d39676f4a5bfc748c01d055
-  path_provider: f96fff6166a8867510d2c25fdcc346327cc4b259
+  package_info: 48b108e75b8802c2d5e126f208ef540561c98aef
+  path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
   Protobuf: 1097ca58584c8d9be81bfbf2c5ff5975648dd87a
-  shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
-  sqflite: ff1d9da63c06588cc8d1faf7256d741f16989d5a
-  url_launcher: 0067ddb8f10d36786672aa0722a21717dba3a298
+  shared_preferences: 430726339841afefe5142b9c1f50cb6bd7793e01
+  shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
+  shared_preferences_web: 141cce0c3ed1a1c5bf2a0e44f52d31eeb66e5ea9
+  sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
+  url_launcher: a1c0cc845906122c4784c542523d8cacbded5626
+  url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313
+  url_launcher_web: e5527357f037c87560776e36436bf2b0288b965c
 
 PODFILE CHECKSUM: f31239aa1aa6b6ffa09b90489f11a480ab96082d
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.8.1

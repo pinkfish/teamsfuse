@@ -17,7 +17,7 @@ class AddInviteToTeamDialog extends Dialog {
     if (email == null) {
       return false;
     }
-    leagueTeam.dispatch(SingleLeagueOrTournamentTeamInviteMember(email: email));
+    leagueTeam.add(SingleLeagueOrTournamentTeamInviteMember(email: email));
     return true;
   }
 
@@ -32,7 +32,7 @@ class AddInviteToTeamDialog extends Dialog {
     if (email == null) {
       return false;
     }
-    league.dispatch(SingleLeagueOrTournamentInviteToTeam(
+    league.add(SingleLeagueOrTournamentInviteToTeam(
         email: email,
         leagueTeamUid: leagueTeamUid,
         leagueSeasonUid: leagueSeasonUid));
@@ -85,16 +85,16 @@ class AddInviteToTeamDialog extends Dialog {
                   showDialog<bool>(
                     context: context,
                     builder: (BuildContext context) => new AlertDialog(
-                          title: Text(Messages.of(context).invalidemail),
-                          content: Text(Messages.of(context).invalidemail),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: Text(MaterialLocalizations.of(context)
-                                  .okButtonLabel),
-                              onPressed: () => Navigator.pop(context, true),
-                            )
-                          ],
-                        ),
+                      title: Text(Messages.of(context).invalidemail),
+                      content: Text(Messages.of(context).invalidemail),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text(
+                              MaterialLocalizations.of(context).okButtonLabel),
+                          onPressed: () => Navigator.pop(context, true),
+                        )
+                      ],
+                    ),
                   );
                 }
               },

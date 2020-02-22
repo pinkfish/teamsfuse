@@ -15,7 +15,7 @@ void showDeleteInvite(BuildContext context, SingleInviteBloc bloc) async {
             child: new SingleChildScrollView(
               child: new ListBody(
                 children: <Widget>[
-                  new Text(mess.confirmdelete(bloc.currentState.invite)),
+                  new Text(mess.confirmdelete(bloc.state.invite)),
                 ],
               ),
             ),
@@ -39,8 +39,8 @@ void showDeleteInvite(BuildContext context, SingleInviteBloc bloc) async {
         );
       });
   if (result) {
-    bloc.dispatch(
-        SingleInviteEventDeleteInvite(inviteUid: bloc.currentState.invite.uid));
+    bloc.add(SingleInviteEventDeleteInvite(inviteUid: bloc.state.invite.uid));
+    /*
     await for (SingleInviteState state in bloc.state) {
       if (state is SingleInviteDeleted) {
         Navigator.pop(context);
@@ -51,5 +51,7 @@ void showDeleteInvite(BuildContext context, SingleInviteBloc bloc) async {
         return;
       }
     }
+
+     */
   }
 }

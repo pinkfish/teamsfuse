@@ -9,17 +9,16 @@ import 'cachednetworkimage.dart';
 /// Displays the user image.
 ///
 class UserImage extends StatelessWidget {
-  final FusedUserProfile profile;
-  final Key key;
-  final double radius;
-  final Color backgroundColor;
-
   UserImage(
     this.profile, {
-    this.key,
+    Key key,
     this.radius = 20.0,
     this.backgroundColor,
-  });
+  }) : super(key: key);
+
+  final FusedUserProfile profile;
+  final double radius;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +30,7 @@ class UserImage extends StatelessWidget {
       backgroundColor: backgroundColor,
       radius: radius,
       child: BlocProvider(
-        builder: (BuildContext context) => bloc,
+        create: (BuildContext context) => bloc,
         child: BlocBuilder(
           bloc: bloc,
           builder: (BuildContext context, SingleUserState state) {

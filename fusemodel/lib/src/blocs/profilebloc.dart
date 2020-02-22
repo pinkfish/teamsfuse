@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
 
-class ProfileEvent extends Equatable {}
+abstract class ProfileEvent extends Equatable {}
 
 class _ProfileUserLoaded extends ProfileEvent {
   final String uid;
@@ -20,15 +20,24 @@ class _ProfileUserLoaded extends ProfileEvent {
   String toString() {
     return '_ProfileUserLoaded{}';
   }
+
+  @override
+  List<Object> get props => [uid];
 }
 
 class _ProfileNewProfile extends ProfileEvent {
   FusedUserProfile profile;
 
   _ProfileNewProfile({this.profile});
+
+  @override
+  List<Object> get props => [profile];
 }
 
-class _ProfileLoggedOut extends ProfileEvent {}
+class _ProfileLoggedOut extends ProfileEvent {
+  @override
+  List<Object> get props => [];
+}
 
 ///
 /// Basic state for all the user states.
@@ -36,7 +45,10 @@ class _ProfileLoggedOut extends ProfileEvent {}
 class ProfileState extends Equatable {
   final FusedUserProfile profile;
 
-  ProfileState({@required this.profile}) : super([profile]);
+  ProfileState({@required this.profile});
+
+  @override
+  List<Object> get props => [profile];
 }
 
 ///
@@ -76,11 +88,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ProfileBloc({
     @required this.coordinationBloc,
   }) {
-    _authSub = coordinationBloc.state.listen((CoordinationState state) {
-      if (state is CoordinationStateLoggedOut) {
-        dispatch(_ProfileLoggedOut());
-      } else if (state is CoordinationStateStartLoadingSql) {
-        dispatch(_ProfileUserLoaded(uid: state.uid));
+    _authSub = coordinationBloc.listen((CoordinationState coordState) {
+      if (coordState is CoordinationStateLoggedOut) {
+        add(_ProfileLoggedOut());
+      } else if (coordState is CoordinationStateStartLoadingSql) {
+        add(_ProfileUserLoaded(uid: coordState.uid));
       }
     });
   }
@@ -102,7 +114,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       _profileSub = coordinationBloc.authenticationBloc.userAuth
           .getProfileStream(event.uid)
           .listen((FusedUserProfile profile) {
-        dispatch(_ProfileNewProfile(profile: profile));
+        add(_ProfileNewProfile(profile: profile));
       });
     }
 

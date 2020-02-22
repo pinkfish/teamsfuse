@@ -43,7 +43,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
   void _savePressed(SinglePlayerState state) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      addInviteBloc.dispatch(InviteEventAddUserToPlayer(
+      addInviteBloc.add(InviteEventAddUserToPlayer(
           email: _email,
           playerUid: widget._playerUid,
           playerName: state.player.name));
@@ -55,7 +55,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
     Messages messages = Messages.of(context);
 
     return BlocProvider(
-      builder: (BuildContext c) => addInviteBloc,
+      create: (BuildContext c) => addInviteBloc,
       child: SinglePlayerProvider(
         playerUid: widget._playerUid,
         builder: (BuildContext context, SinglePlayerBloc playerBloc) =>
@@ -63,11 +63,11 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
           key: _scaffoldKey,
           appBar: new AppBar(
             title: new Text(messages.followplayer(
-                playerBloc.currentState?.player?.name ?? messages.loading)),
+                playerBloc.state?.player?.name ?? messages.loading)),
             actions: <Widget>[
               new FlatButton(
                 onPressed: () {
-                  _savePressed(playerBloc.currentState);
+                  _savePressed(playerBloc.state);
                 },
                 child: new Text(
                   Messages.of(context).savebuttontext,

@@ -196,7 +196,7 @@ class _LeagueOrTournamentDivisonDetailsState
           builder: (BuildContext context,
                   SingleLeagueOrTournamentDivisonBloc divisonBloc) =>
               BlocProvider(
-            builder: (BuildContext context) =>
+            create: (BuildContext context) =>
                 SingleLeagueOrTournamentDivisonGamesBloc(
                     singleLeagueOrTournamentDivisonBloc: divisonBloc),
             child: BlocBuilder(

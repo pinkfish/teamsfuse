@@ -56,8 +56,8 @@ class TeamScreenState extends State<TeamScreen> {
       Navigator.pushNamed(context, "TeamClub/" + widget.teamUid);
     }
     if (choice == 'archive') {
-      singleTeamBloc.dispatch(SingleTeamArchive(
-          archive: !singleTeamBloc.currentState.team.archived));
+      singleTeamBloc
+          .add(SingleTeamArchive(archive: !singleTeamBloc.state.team.archived));
     }
   }
 
@@ -101,8 +101,7 @@ class TeamScreenState extends State<TeamScreen> {
           return Scaffold(
             appBar: AppBar(
               title: new Text(
-                Messages.of(context)
-                    .titlewith(singleTeamBloc.currentState.team.name),
+                Messages.of(context).titlewith(singleTeamBloc.state.team.name),
               ),
               actions: actions,
             ),

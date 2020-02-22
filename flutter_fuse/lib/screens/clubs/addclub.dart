@@ -45,7 +45,7 @@ class AddClubScreenState extends State<AddClubScreen> {
 
   void _savePressed() async {
     if (_clubToAdd != null) {
-      clubBloc.dispatch(
+      clubBloc.add(
           AddClubEventCommit(club: _clubToAdd, imageFile: _imageFileToAdd));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
@@ -153,42 +153,42 @@ class AddClubScreenState extends State<AddClubScreen> {
     return BlocBuilder(
       bloc: clubBloc,
       builder: (BuildContext context, AddItemState state) => SavingOverlay(
-            saving: state is AddItemSaving,
-            child: new Stepper(
-              type: StepperType.horizontal,
-              currentStep: _currentStep,
-              onStepContinue: () {
-                _onStepperContinue(context);
-              },
-              onStepCancel: () {
-                // Go back
-                Navigator.of(context).pop();
-              },
-              onStepTapped: (int step) {
-                _onStepTapped(step);
-              },
-              steps: <Step>[
-                new Step(
-                  title: new Text(messages.details),
-                  state: _detailsStepState,
-                  isActive: true,
-                  content: new Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      new EditClubDetailsForm(_clubToAdd, _formKey),
-                    ],
-                  ),
-                ),
-                new Step(
-                  title: new Text(messages.create),
-                  state: _createStepStage,
-                  isActive: true,
-                  content: _buildSummary(),
-                ),
-              ],
+        saving: state is AddItemSaving,
+        child: new Stepper(
+          type: StepperType.horizontal,
+          currentStep: _currentStep,
+          onStepContinue: () {
+            _onStepperContinue(context);
+          },
+          onStepCancel: () {
+            // Go back
+            Navigator.of(context).pop();
+          },
+          onStepTapped: (int step) {
+            _onStepTapped(step);
+          },
+          steps: <Step>[
+            new Step(
+              title: new Text(messages.details),
+              state: _detailsStepState,
+              isActive: true,
+              content: new Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  new EditClubDetailsForm(_clubToAdd, _formKey),
+                ],
+              ),
             ),
-          ),
+            new Step(
+              title: new Text(messages.create),
+              state: _createStepStage,
+              isActive: true,
+              content: _buildSummary(),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

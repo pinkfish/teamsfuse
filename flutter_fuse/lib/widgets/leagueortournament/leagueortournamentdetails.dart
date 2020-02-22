@@ -29,7 +29,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
   Widget _buildSeason(LeagueOrTournamentSeason season, bool admin,
       SingleLeagueOrTournamentBloc leagueBloc) {
     if (season.uid == _openedPanel ||
-        season.uid == leagueBloc.currentState.leagueOrTournament) {
+        season.uid == leagueBloc.state.leagueOrTournament) {
       // Show all the divisions and details.
       return SingleLeagueOrTournamentSeasonProvider(
         leagueSeasonUid: season.uid,
@@ -242,7 +242,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                 }
                 if (state is SingleLeagueOrTournamentLoaded) {
                   // Tell it to load the seasons.
-                  leagueBloc.dispatch(SingleLeagueOrTournamentLoadSeasons());
+                  leagueBloc.add(SingleLeagueOrTournamentLoadSeasons());
                 }
               },
               child: BlocBuilder(

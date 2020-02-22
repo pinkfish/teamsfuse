@@ -34,6 +34,9 @@ class FusedDrawerHeader extends StatelessWidget {
                 : Messages.of(context).unknown),
           );
         }
+        return SizedBox(
+          height: 0,
+        );
       },
     );
   }

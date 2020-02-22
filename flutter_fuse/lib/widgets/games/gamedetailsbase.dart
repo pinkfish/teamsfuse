@@ -22,14 +22,6 @@ typedef void GameCopyResult(
 typedef void GameOpenAttendence(Game game, Map<Player, Attendance> attendence);
 
 class GameDetailsBase extends StatelessWidget {
-  final Game game;
-  final bool adding;
-  final GameCallback editResult;
-  final GameOpenAttendence openAttendence;
-  final GameCallback openNavigation;
-  final GameOfficialResult editOfficialResult;
-  final GameCopyResult copyOfficalResult;
-
   GameDetailsBase(
       {this.game,
       this.adding,
@@ -38,6 +30,14 @@ class GameDetailsBase extends StatelessWidget {
       this.openNavigation,
       this.editOfficialResult,
       this.copyOfficalResult});
+
+  final Game game;
+  final bool adding;
+  final GameCallback editResult;
+  final GameOpenAttendence openAttendence;
+  final GameCallback openNavigation;
+  final GameOfficialResult editOfficialResult;
+  final GameCopyResult copyOfficalResult;
 
   Widget _buildAttendence(Game game, Season season, PlayerState playerState) {
     List<Widget> availability = <Widget>[];
@@ -158,7 +158,6 @@ class GameDetailsBase extends StatelessWidget {
     );
   }
 
-  @override
   Widget _buildGame(BuildContext context, SingleTeamState teamState) {
     print(
         'lat: ${game.sharedData.place.latitude} long: ${game.sharedData.place.longitude} ${game.uid}');
@@ -486,7 +485,7 @@ class GameDetailsBase extends StatelessWidget {
         bloc: bloc,
         listener: (BuildContext context, SingleTeamState state) {
           if (state is SingleTeamLoaded) {
-            bloc.dispatch(SingleTeamLoadOpponents());
+            bloc.add(SingleTeamLoadOpponents());
           }
         },
         child: BlocBuilder(

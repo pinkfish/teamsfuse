@@ -53,7 +53,6 @@ abstract class InviteToTeam
       List<dynamic> nameList = data[NAME];
       builder.playerName
           .addAll(nameList.map((dynamic d) => d is String ? d : ""));
-      //playerName = nameList.map((dynamic d) => d is String ? d : "").toList();
     }
 
     return builder
@@ -75,38 +74,4 @@ abstract class InviteToTeam
     ret[ROLE] = role.toString();
     return ret;
   }
-
-  /*
-  @override
-  int compareTo(Invite other) {
-    if (baseCompareTo(other) != 0) {
-      return -1;
-    }
-    if (other is InviteToTeam) {
-      if (teamName.compareTo(other.teamName) != 0) {
-        return -1;
-      }
-      if (teamUid.compareTo(other.teamUid) != 0) {
-        return -1;
-      }
-      if (seasonUid.compareTo(other.seasonUid) != 0) {
-        return -1;
-      }
-      if (playerName.length != other.playerName.length) {
-        return 1;
-      }
-      if (playerName.any((p) => !other.playerName.contains(p)) != 0) {
-        return -1;
-      }
-      if (seasonName.compareTo(other.seasonName) != 0) {
-        return -1;
-      }
-      if (role != other.role) {
-        return -1;
-      }
-      return 0;
-    }
-    return 1;
-  }
-  */
 }

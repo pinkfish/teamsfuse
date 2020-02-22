@@ -31,11 +31,6 @@ class _SharedGameDetailsScreenState extends State<SharedGameDetailsScreen> {
     super.dispose();
   }
 
-  void _select(String choice) async {
-    // Causes the app to rebuild with the new _selectedChoice.
-    setState(() {});
-  }
-
   void _editGame() {
     Navigator.pushNamed(context, "EditSharedGame/" + widget.sharedGameUid);
   }

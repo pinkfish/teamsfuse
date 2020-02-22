@@ -161,7 +161,7 @@ class AddEventScreenState extends State<AddEventScreen> {
           currentStep++;
         } else {
           // Write the game out.
-          addGameBloc.dispatch(AddGameEventCommit(newGame: _initGame));
+          addGameBloc.add(AddGameEventCommit(newGame: _initGame));
         }
       });
     }
@@ -202,7 +202,7 @@ class AddEventScreenState extends State<AddEventScreen> {
     Messages messages = Messages.of(context);
 
     return BlocProvider(
-      builder: (BuildContext context) => addGameBloc,
+      create: (BuildContext context) => addGameBloc,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: new AppBar(

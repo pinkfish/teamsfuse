@@ -8,21 +8,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 ///
 class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
     extends StatefulWidget {
+  SingleBlocProvider({this.builder, this.keyUid, this.creator});
+
   final T Function(BuildContext context, String uid) creator;
   final Widget Function(BuildContext context, T bloc) builder;
   final String keyUid;
-
-  SingleBlocProvider({this.builder, this.keyUid, this.creator});
 
   @override
   State createState() => _SingleBlocProviderState<T>();
 }
 
 class _BlocProviderState<T extends Bloc<dynamic, dynamic>> {
+  _BlocProviderState(this.bloc) : ref = 0;
+
   final T bloc;
   int ref;
-
-  _BlocProviderState(this.bloc) : ref = 0;
 }
 
 class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>

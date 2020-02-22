@@ -8,11 +8,12 @@ import 'package:fusemodel/fusemodel.dart';
 /// Puts the name of the player in a nixe widget.
 ///
 class PlayerName extends StatelessWidget {
+  PlayerName({@required this.playerUid, this.style});
+
   final String playerUid;
   final TextStyle style;
 
-  PlayerName({@required this.playerUid, this.style});
-
+  @override
   Widget build(BuildContext context) {
     PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
 

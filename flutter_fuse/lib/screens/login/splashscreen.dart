@@ -96,6 +96,7 @@ class SplashScreen extends StatelessWidget {
           if (state is AuthenticationLoggedOut) {
             return _loadingScreen(context);
           }
+          return new Text(Messages.of(context).unknown);
         },
       ),
     );

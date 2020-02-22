@@ -16,7 +16,7 @@ class AddSeasonDialog extends Dialog {
       return false;
     }
     leagueOrTournamentBloc
-        .dispatch(SingleLeagueOrTournamentAddSeason(name: seasonName));
+        .add(SingleLeagueOrTournamentAddSeason(name: seasonName));
     // Write it out to firestore.  Yay.
     return true;
   }

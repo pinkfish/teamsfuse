@@ -32,7 +32,7 @@ class LeagueScreen extends StatelessWidget {
       File imgFile = await ImagePicker.pickImage(
           source: ImageSource.gallery, maxHeight: 200.0, maxWidth: 200.0);
       if (imgFile != null) {
-        bloc.dispatch(SingleLeagueOrTournamentUpdateImage(image: imgFile));
+        bloc.add(SingleLeagueOrTournamentUpdateImage(image: imgFile));
       }
     }
     if (action == "edit") {

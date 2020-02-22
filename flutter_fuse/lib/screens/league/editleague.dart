@@ -58,10 +58,10 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
     if (league != null) {
       File imageFile = _formState.currentState.imageFile;
       _saving = true;
-      bloc.dispatch(SingleLeagueOrTournamentUpdate(
+      bloc.add(SingleLeagueOrTournamentUpdate(
           leagueOrTournament: league.build(), includeMembers: false));
       if (imageFile != null) {
-        bloc.dispatch(SingleLeagueOrTournamentUpdateImage(image: imageFile));
+        bloc.add(SingleLeagueOrTournamentUpdateImage(image: imageFile));
       }
     } else {
       _showInSnackBar(Messages.of(context).formerror);
@@ -103,8 +103,7 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
                     child: Scrollbar(
                       child: SingleChildScrollView(
                         child: new LeagueOrTournamentEditForm(
-                          leagueOrTournament:
-                              bloc.currentState.leagueOrTournament,
+                          leagueOrTournament: bloc.state.leagueOrTournament,
                           key: _formState,
                         ),
                       ),

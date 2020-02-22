@@ -12,14 +12,14 @@ class InviteCard extends StatelessWidget {
     return BlocBuilder(
       bloc: bloc,
       builder: (BuildContext context, InviteState state) {
-        if (bloc.currentState.invites.length > 0) {
+        if (bloc.state.invites.length > 0) {
           Widget card = new Card(
             color: Colors.limeAccent,
             child: new ListTile(
               leading: const Icon(CommunityIcons.emailOpen),
               title: new Text(
                 Messages.of(context)
-                    .invitedpeople(bloc.currentState.invites.length),
+                    .invitedpeople(bloc.state.invites.length),
               ),
             ),
           );

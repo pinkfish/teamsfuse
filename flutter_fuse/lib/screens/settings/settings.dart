@@ -34,7 +34,7 @@ class SettingsScreenState extends State<SettingsScreen> {
       FusedUserProfile profile = singleProfileState.profile.rebuild((b) => b
         ..emailUpcomingGame = emailOnUpcoming
         ..emailOnUpdates = emailOnUpdate);
-      bloc.dispatch(SingleProfileUpdate(profile: profile));
+      bloc.add(SingleProfileUpdate(profile: profile));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }

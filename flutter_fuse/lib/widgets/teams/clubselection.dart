@@ -34,7 +34,7 @@ class _ClubSelectionState extends State<ClubSelection> {
       } else {
         _clubUid = clubUid;
         ClubBloc bloc = BlocProvider.of<ClubBloc>(context);
-        widget.onChanged(bloc.currentState.clubs[_clubUid]);
+        widget.onChanged(bloc.state.clubs[_clubUid]);
       }
     });
   }

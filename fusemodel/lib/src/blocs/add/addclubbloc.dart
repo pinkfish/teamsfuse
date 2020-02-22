@@ -19,6 +19,10 @@ class AddClubEventCommit extends AddClubEvent {
   final File imageFile;
 
   AddClubEventCommit({@required this.club, @required this.imageFile});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [this.club, this.imageFile];
 }
 
 ///

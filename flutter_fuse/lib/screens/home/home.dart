@@ -83,12 +83,17 @@ class _HomeScreenState extends State<HomeScreen> {
       BlocBuilder(
           bloc: BlocProvider.of<MessagesBloc>(context),
           builder: (BuildContext context, MessagesState state) {
-            return BadgeIconButton(
-              itemCount: state.unreadMessages.length,
-              hideZeroCount: true,
-              onPressed: () => Navigator.pushNamed(context, "Messages"),
-              icon: const Icon(Icons.mail),
-            );
+            return Badge(
+                badgeContent: Text(
+                  state.unreadMessages.isEmpty
+                      ? ''
+                      : state.unreadMessages.length.toString(),
+                  style: TextStyle(color: Colors.white),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.mail),
+                  onPressed: () => Navigator.pushNamed(context, "Messages"),
+                ));
           }),
     ];
 
@@ -108,6 +113,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             );
           case LoadedState.AllLoaded:
+            return SizedBox(height: 0);
+          default:
             return SizedBox(height: 0);
         }
       },

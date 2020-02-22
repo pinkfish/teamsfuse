@@ -6,10 +6,11 @@ import 'package:fusemodel/blocs.dart';
 import '../blocs/singleprofileprovider.dart';
 
 class ByUserNameComponent extends StatelessWidget {
-  final String userId;
-
   ByUserNameComponent({@required this.userId});
 
+  final String userId;
+
+  @override
   Widget build(BuildContext context) {
     return SingleProfileProvider(
       userUid: userId,

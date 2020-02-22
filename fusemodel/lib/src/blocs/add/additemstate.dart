@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 /// Basic state for all the data in this system.
 ///
 abstract class AddItemState extends Equatable {
-  AddItemState({List props = const []}) : super(props);
+  AddItemState() : super();
 }
 
 ///
@@ -18,6 +18,10 @@ class AddItemUninitialized extends AddItemState {
   String toString() {
     return 'AddItemUninitialized{}';
   }
+
+  @override
+  // TODO: implement props
+  List<Object> get props => null;
 }
 
 ///
@@ -30,6 +34,10 @@ class AddItemSaving extends AddItemState {
   String toString() {
     return 'AddItemSaving{}';
   }
+
+  @override
+  // TODO: implement props
+  List<Object> get props => null;
 }
 
 ///
@@ -38,12 +46,15 @@ class AddItemSaving extends AddItemState {
 class AddItemInvalidArguments extends AddItemState {
   final Error error;
 
-  AddItemInvalidArguments({@required this.error}) : super(props: [error]);
+  AddItemInvalidArguments({@required this.error}) : super();
 
-  @override
   String toString() {
     return 'AddItemInvalidArguments{}';
   }
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [error];
 }
 
 ///
@@ -52,12 +63,16 @@ class AddItemInvalidArguments extends AddItemState {
 class AddItemDone extends AddItemState {
   final String uid;
 
-  AddItemDone({@required this.uid}) : super(props: [uid]);
+  AddItemDone({@required this.uid}) : super();
 
   @override
   String toString() {
     return 'AddItemDone{}';
   }
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [uid];
 }
 
 ///
@@ -66,10 +81,14 @@ class AddItemDone extends AddItemState {
 class AddItemSaveFailed extends AddItemState {
   final Error error;
 
-  AddItemSaveFailed({@required this.error}) : super(props: [error]);
+  AddItemSaveFailed({@required this.error}) : super();
 
   @override
   String toString() {
     return 'AddItemSaveFailed{}';
   }
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [error];
 }

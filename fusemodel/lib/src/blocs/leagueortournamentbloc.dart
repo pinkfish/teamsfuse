@@ -21,8 +21,7 @@ class LeagueOrTournamentState extends Equatable {
   LeagueOrTournamentState(
       {@required this.leagueOrTournaments,
       @required this.onlySql,
-      @required this.adding})
-      : super([leagueOrTournaments, onlySql, adding]);
+      @required this.adding});
 
   LeagueOrTournamentLoaded rebuild(
       {Map<String, LeagueOrTournament> leagueOrTournamentsParam,
@@ -34,6 +33,9 @@ class LeagueOrTournamentState extends Equatable {
             leagueOrTournamentsParam ?? this.leagueOrTournaments,
         adding: adding ?? false);
   }
+
+  @override
+  List<Object> get props => [leagueOrTournaments, onlySql, adding];
 }
 
 ///
@@ -68,7 +70,7 @@ class LeagueOrTournamentLoaded extends LeagueOrTournamentState {
   }
 }
 
-class LeagueOrTournamentEvent extends Equatable {}
+abstract class LeagueOrTournamentEvent extends Equatable {}
 
 class _LeagueOrTournamentEventUserLoaded extends LeagueOrTournamentEvent {
   final String uid;
@@ -79,20 +81,32 @@ class _LeagueOrTournamentEventUserLoaded extends LeagueOrTournamentEvent {
   String toString() {
     return '_LeagueOrTournamentEventUserLoaded{}';
   }
+
+  @override
+  List<Object> get props => [uid];
 }
 
-class _LeagueOrTournamentEventLogout extends LeagueOrTournamentEvent {}
+class _LeagueOrTournamentEventLogout extends LeagueOrTournamentEvent {
+  @override
+  List<Object> get props => [];
+}
 
 class _LeagueOrTournamentEventNewDataLoaded extends LeagueOrTournamentEvent {
   final Map<String, LeagueOrTournament> leagueOrTournament;
 
   _LeagueOrTournamentEventNewDataLoaded({@required this.leagueOrTournament});
+
+  @override
+  List<Object> get props => [leagueOrTournament];
 }
 
 class _LeagueOrTournamentEventAddFailed extends LeagueOrTournamentEvent {
   final AddingState adding;
 
   _LeagueOrTournamentEventAddFailed({@required this.adding});
+
+  @override
+  List<Object> get props => [adding];
 }
 
 ///
@@ -102,6 +116,9 @@ class LeagueOrTournamentEventAddLeague extends LeagueOrTournamentEvent {
   LeagueOrTournamentBuilder league;
 
   LeagueOrTournamentEventAddLeague({this.league});
+
+  @override
+  List<Object> get props => [league];
 }
 
 ///
@@ -109,6 +126,9 @@ class LeagueOrTournamentEventAddLeague extends LeagueOrTournamentEvent {
 ///
 class LeagueOrTournamentEventReset extends LeagueOrTournamentEvent {
   LeagueOrTournamentEventReset();
+
+  @override
+  List<Object> get props => [];
 }
 
 class _LeagueOrTournamentEventFirestore extends LeagueOrTournamentEvent {
@@ -120,6 +140,9 @@ class _LeagueOrTournamentEventFirestore extends LeagueOrTournamentEvent {
   String toString() {
     return '_LeagueOrTournamentEventFirestore{}';
   }
+
+  @override
+  List<Object> get props => [uid];
 }
 
 ///
@@ -134,20 +157,20 @@ class LeagueOrTournamentBloc
   StreamSubscription<Iterable<LeagueOrTournament>> _leagueOrTournamentSnapshot;
 
   LeagueOrTournamentBloc({@required this.coordinationBloc}) {
-    _coordSub = coordinationBloc.state.listen((CoordinationState state) {
-      if (state is CoordinationStateLoggedOut) {
-        dispatch(_LeagueOrTournamentEventLogout());
+    _coordSub = coordinationBloc.listen((CoordinationState coordState) {
+      if (coordState is CoordinationStateLoggedOut) {
+        add(_LeagueOrTournamentEventLogout());
       } else if (state is CoordinationStateStartLoadingSql) {
-        _startLoading(state);
+        _startLoading(coordState);
       } else if (state is CoordinationStateStartLoadingFirestore) {
-        _startLoadingFirestore(state);
+        _startLoadingFirestore(coordState);
       }
     });
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _cleanupStuff();
     _coordSub?.cancel();
   }
@@ -158,11 +181,11 @@ class LeagueOrTournamentBloc
   }
 
   void _startLoading(CoordinationStateStartLoadingSql state) {
-    dispatch(_LeagueOrTournamentEventUserLoaded(uid: state.uid));
+    add(_LeagueOrTournamentEventUserLoaded(uid: state.uid));
   }
 
   void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
-    dispatch(_LeagueOrTournamentEventFirestore(uid: state.uid));
+    add(_LeagueOrTournamentEventFirestore(uid: state.uid));
   }
 
   @override
@@ -170,7 +193,7 @@ class LeagueOrTournamentBloc
 
   void _onLeagueOrTournamentsUpdated(Iterable<LeagueOrTournament> leagues) {
     Map<String, LeagueOrTournament> leagueOrTournsments = {};
-    Set<String> toRemove = Set.from(currentState.leagueOrTournaments.keys);
+    Set<String> toRemove = Set.from(state.leagueOrTournaments.keys);
     for (LeagueOrTournament league in leagues) {
       leagueOrTournsments[league.uid] = league;
       coordinationBloc.persistentData.updateElement(
@@ -183,7 +206,7 @@ class LeagueOrTournamentBloc
       coordinationBloc.persistentData
           .deleteElement(PersistenData.leagueOrTournamentTable, remove);
     }
-    dispatch(_LeagueOrTournamentEventNewDataLoaded(
+    add(_LeagueOrTournamentEventNewDataLoaded(
         leagueOrTournament: leagueOrTournsments));
   }
 
@@ -211,11 +234,11 @@ class LeagueOrTournamentBloc
       print(
           'End LeagueOrTournament ${coordinationBloc.start.difference(new DateTime.now())} ${newLeague.length}');
       leagueTrace.stop();
-      yield currentState.rebuild(
-          adding: currentState.adding,
+      yield state.rebuild(
+          adding: state.adding,
           onlySqlParam: true,
           leagueOrTournamentsParam: newLeague);
-      coordinationBloc.dispatch(CoordinationEventLoadedData(
+      coordinationBloc.add(CoordinationEventLoadedData(
           loaded: BlocsToLoad.LeagueOrTournament, sql: true));
     }
 
@@ -228,43 +251,42 @@ class LeagueOrTournamentBloc
 
     // New data from above.  Mark ourselves as done.
     if (event is _LeagueOrTournamentEventNewDataLoaded) {
-      yield currentState.rebuild(
+      yield state.rebuild(
           leagueOrTournamentsParam: event.leagueOrTournament,
-          adding: currentState.adding,
+          adding: state.adding,
           onlySqlParam: false);
-      coordinationBloc.dispatch(CoordinationEventLoadedData(
+      coordinationBloc.add(CoordinationEventLoadedData(
           loaded: BlocsToLoad.LeagueOrTournament, sql: false));
     }
 
     // New data from above.  Mark ourselves as done.
     if (event is _LeagueOrTournamentEventAddFailed) {
-      yield currentState.rebuild(
-          leagueOrTournamentsParam: currentState.leagueOrTournaments,
+      yield state.rebuild(
+          leagueOrTournamentsParam: state.leagueOrTournaments,
           adding: event.adding,
           onlySqlParam: false);
     }
 
     if (event is LeagueOrTournamentEventAddLeague) {
-      dispatch(_LeagueOrTournamentEventAddFailed(adding: AddingState.Success));
-      yield currentState.rebuild(
-          leagueOrTournamentsParam: currentState.leagueOrTournaments,
+      add(_LeagueOrTournamentEventAddFailed(adding: AddingState.Success));
+      yield state.rebuild(
+          leagueOrTournamentsParam: state.leagueOrTournaments,
           adding: AddingState.Adding,
-          onlySqlParam: currentState.onlySql);
+          onlySqlParam: state.onlySql);
       coordinationBloc.databaseUpdateModel
           .updateLeague(event.league.build())
           .then((String uid) {
-        dispatch(
-            _LeagueOrTournamentEventAddFailed(adding: AddingState.Success));
+        add(_LeagueOrTournamentEventAddFailed(adding: AddingState.Success));
       }, onError: (e, stacktrace) {
-        dispatch(_LeagueOrTournamentEventAddFailed(adding: AddingState.Failed));
+        add(_LeagueOrTournamentEventAddFailed(adding: AddingState.Failed));
       });
     }
 
     if (event is LeagueOrTournamentEventReset) {
-      yield currentState.rebuild(
-          leagueOrTournamentsParam: currentState.leagueOrTournaments,
+      yield state.rebuild(
+          leagueOrTournamentsParam: state.leagueOrTournaments,
           adding: AddingState.None,
-          onlySqlParam: currentState.onlySql);
+          onlySqlParam: state.onlySql);
     }
 
     // Unload everything.

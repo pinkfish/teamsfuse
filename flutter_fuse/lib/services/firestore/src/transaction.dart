@@ -1,10 +1,11 @@
 part of firestore_mobile;
 
 class Transaction extends wfs.TransactionWrapper {
-  fs.Transaction transaction;
-
   Transaction(this.transaction);
 
+  fs.Transaction transaction;
+
+  @override
   Future<wfs.DocumentSnapshotWrapper> get(
       wfs.DocumentReferenceWrapper ref) async {
     if (ref is DocumentReference) {
@@ -14,6 +15,7 @@ class Transaction extends wfs.TransactionWrapper {
     throw ArgumentError("Not a DocumentReference");
   }
 
+  @override
   Future<void> delete(wfs.DocumentReferenceWrapper ref) async {
     if (ref is DocumentReference) {
       await transaction.delete(ref._doc);
@@ -21,6 +23,7 @@ class Transaction extends wfs.TransactionWrapper {
     throw ArgumentError("Not a DocumentReference");
   }
 
+  @override
   Future<void> update(
       wfs.DocumentReferenceWrapper ref, Map<String, dynamic> data) async {
     if (ref is DocumentReference) {
@@ -29,6 +32,7 @@ class Transaction extends wfs.TransactionWrapper {
     throw ArgumentError("Not a DocumentReference");
   }
 
+  @override
   Future<void> set(
       wfs.DocumentReferenceWrapper ref, Map<String, dynamic> data) async {
     if (ref is DocumentReference) {

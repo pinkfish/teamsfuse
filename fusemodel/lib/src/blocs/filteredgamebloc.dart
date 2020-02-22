@@ -23,8 +23,10 @@ class FilteredGameState extends Equatable {
       {@required this.games,
       @required this.filter,
       @required this.start,
-      @required this.end})
-      : super([games, filter, start, end]);
+      @required this.end});
+
+  @override
+  List<Object> get props => [games, filter, start, end];
 }
 
 ///
@@ -61,20 +63,25 @@ class FilterGameLoading extends FilteredGameState {
       : super(games: games, filter: filter, start: start, end: end);
 }
 
-class FilteredGameEvent extends Equatable {}
+abstract class FilteredGameEvent extends Equatable {}
 
 class _FilteredGameEventGamesLoaded extends FilteredGameEvent {
   GameLoaded loaded;
 
   _FilteredGameEventGamesLoaded({@required this.loaded});
+
+  @override
+  List<Object> get props => [loaded];
 }
 
 class _FilteredGameEventGamesLogout extends FilteredGameEvent {
-  _FilteredGameEventGamesLogout();
+  @override
+  List<Object> get props => [];
 }
 
 class _FilteredGameEventUpdatedStuff extends FilteredGameEvent {
-  _FilteredGameEventUpdatedStuff();
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -84,6 +91,9 @@ class FilteredGameEventUpdateFilter extends FilteredGameEvent {
   final FilterDetails filter;
 
   FilteredGameEventUpdateFilter({@required this.filter});
+
+  @override
+  List<Object> get props => [filter];
 }
 
 ///
@@ -94,6 +104,9 @@ class FilteredGameEventUpdateDates extends FilteredGameEvent {
   final DateTime end;
 
   FilteredGameEventUpdateDates({@required this.start, @required this.end});
+
+  @override
+  List<Object> get props => [start, end];
 }
 
 ///
@@ -115,11 +128,11 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
       {@required this.gameBloc,
       @required this.teamBloc,
       @required this.seasonBloc}) {
-    _gameSub = gameBloc.state.listen((GameState state) {
-      if (state is GameLoaded) {
-        dispatch(_FilteredGameEventGamesLoaded(loaded: state));
+    _gameSub = gameBloc.listen((GameState gameState) {
+      if (gameState is GameLoaded) {
+        add(_FilteredGameEventGamesLoaded(loaded: gameState));
       } else {
-        dispatch(_FilteredGameEventGamesLogout());
+        add(_FilteredGameEventGamesLogout());
       }
     });
   }
@@ -128,8 +141,8 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
   FilteredGameState get initialState => FilteredGameUninitialized();
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _cleanup();
     _gameSub.cancel();
     _gameSub = null;
@@ -138,26 +151,26 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
   void _cleanup() {}
 
   void _loadMoreGames() {
-    if (currentState.start.isBefore(gameBloc.currentState.start)) {
+    if (state.start.isBefore(gameBloc.state.start)) {
       // Load all of this from the world of firestore.
       Map<String, Game> newGames = new Map<String, Game>();
-      for (String teamUid in teamBloc.currentState.allTeamUids) {
+      for (String teamUid in teamBloc.state.allTeamUids) {
         if (!_newerGameSubscriptions.containsKey(teamUid)) {
           String myUid = teamUid;
           _newerGameSubscriptions[teamUid] = gameBloc
               .coordinationBloc.databaseUpdateModel
               .getBasicGames(
-                  start: currentState.start,
-                  end: gameBloc.currentState.start,
+                  start: state.start,
+                  end: gameBloc.state.start,
                   teamUid: teamUid)
               .listen((GameSnapshotEvent gse) {
             _newerGamesByTeam[myUid] = gse.newGames;
-            dispatch(_FilteredGameEventUpdatedStuff());
+            add(_FilteredGameEventUpdatedStuff());
           });
         }
       }
     }
-    if (currentState.end.isAfter(gameBloc.currentState.end)) {}
+    if (state.end.isAfter(gameBloc.state.end)) {}
   }
 
   // Filter the games down by the current filter.  This is based on the
@@ -168,9 +181,9 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
 
     for (BuiltMap<String, Game> teamGames in state.gamesByTeam.values) {
       for (Game g in teamGames.values) {
-        Team t = teamBloc.currentState.getTeam(g.teamUid);
+        Team t = teamBloc.state.getTeam(g.teamUid);
         if (t != null) {
-          SeasonState seasonState = seasonBloc.currentState;
+          SeasonState seasonState = seasonBloc.state;
           // See if we have the eason.
           if (seasonState.seasons.containsKey(g.seasonUid)) {
             // We do.  Yay.
@@ -184,9 +197,9 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
     }
     for (Iterable<Game> gameList in _newerGamesByTeam.values) {
       for (Game g in gameList) {
-        Team t = teamBloc.currentState.getTeam(g.teamUid);
+        Team t = teamBloc.state.getTeam(g.teamUid);
         if (t != null) {
-          SeasonState seasonState = seasonBloc.currentState;
+          SeasonState seasonState = seasonBloc.state;
           // See if we have the eason.
           if (seasonState.seasons.containsKey(g.seasonUid)) {
             // We do.  Yay.
@@ -206,18 +219,18 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
     if (event is _FilteredGameEventGamesLoaded) {
       // Filter the loaded games :)
       yield FilteredGameLoaded(
-          games: _filterGames(event.loaded, currentState.filter),
-          filter: currentState.filter,
+          games: _filterGames(event.loaded, state.filter),
+          filter: state.filter,
           start: event.loaded.start,
           end: event.loaded.end);
     }
     if (event is FilteredGameEventUpdateFilter) {
       yield FilteredGameLoaded(
           games: _filterGames(
-              gameBloc.currentState.gamesByTeam as GameLoaded, event.filter),
+              gameBloc.state.gamesByTeam as GameLoaded, event.filter),
           filter: event.filter,
-          start: currentState.start,
-          end: currentState.end);
+          start: state.start,
+          end: state.end);
     }
     if (event is _FilteredGameEventGamesLogout) {
       _cleanup();
@@ -226,11 +239,11 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
     // Our internal set of stuff updated.
     if (event is _FilteredGameEventUpdatedStuff) {
       yield FilteredGameLoaded(
-          games: _filterGames(gameBloc.currentState.gamesByTeam as GameLoaded,
-              currentState.filter),
-          filter: currentState.filter,
-          start: currentState.start,
-          end: currentState.end);
+          games: _filterGames(
+              gameBloc.state.gamesByTeam as GameLoaded, state.filter),
+          filter: state.filter,
+          start: state.start,
+          end: state.end);
     }
   }
 }

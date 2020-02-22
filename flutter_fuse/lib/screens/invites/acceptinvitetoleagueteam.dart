@@ -43,13 +43,13 @@ class _AcceptInviteToLeagueTeamScreenState
     _singleInviteBloc = SingleInviteBloc(
         inviteBloc: BlocProvider.of<InviteBloc>(context),
         inviteUid: widget._inviteUid,
-        teamBloc: BlocProvider.of<TeamBloc>(context));
+        teamBloc: BlocProvider.of<TeamBloc>(context),seasonBloc: BlocProvider.of<SeasonBloc>(context));
   }
 
   @override
   void dispose() {
     super.dispose();
-    _singleInviteBloc?.dispose();
+    _singleInviteBloc?.close();
   }
 
   void _showInSnackBar(String value) {
@@ -71,7 +71,7 @@ class _AcceptInviteToLeagueTeamScreenState
         context: context,
         builder: (BuildContext context) {
           InviteToLeagueTeam inviteToLeagueTeam =
-              _singleInviteBloc.currentState.invite as InviteToLeagueTeam;
+              _singleInviteBloc.state.invite as InviteToLeagueTeam;
 
           return AlertDialog(
             title: Text(Messages.of(context).league),
@@ -99,7 +99,7 @@ class _AcceptInviteToLeagueTeamScreenState
         });
     if (res) {
       setState(() => _saving = true);
-      _singleInviteBloc.dispatch(SingleInviteEventAcceptInviteToLeagueTeam(
+      _singleInviteBloc.add(SingleInviteEventAcceptInviteToLeagueTeam(
           teamUid: _currentTeamUid, seasonUid: _seasonSelected));
     }
   }

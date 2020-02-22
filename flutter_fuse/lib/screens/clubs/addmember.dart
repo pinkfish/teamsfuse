@@ -40,7 +40,7 @@ class AddMemberScreenState extends State<AddMemberScreen> {
   @override
   void dispose() {
     super.dispose();
-    _singleClubBloc.dispose();
+    _singleClubBloc.close();
   }
 
   void _showInSnackBar(String value) {
@@ -54,9 +54,9 @@ class AddMemberScreenState extends State<AddMemberScreen> {
   void _savePressed() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      if (_singleClubBloc.currentState.club.isAdmin()) {
+      if (_singleClubBloc.state.club.isAdmin()) {
         _doingSave = true;
-        _singleClubBloc.dispatch(SingleClubInviteMember(
+        _singleClubBloc.add(SingleClubInviteMember(
             email: _emailToInvite, admin: _inviteAsAdmin));
       } else {
         _showInSnackBar(Messages.of(context).needtobeadmin);

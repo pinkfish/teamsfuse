@@ -88,8 +88,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
       case 1:
         if (backwards) {
           ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
-          if (clubBloc.currentState.clubs.values
-              .any((Club club) => club.isAdmin())) {
+          if (clubBloc.state.clubs.values.any((Club club) => club.isAdmin())) {
             return true;
           }
           _showInSnackBar(Messages.of(context).formerror);
@@ -108,8 +107,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
         } else {
           // Write the game out.
 
-          leagueBloc
-              .dispatch(LeagueOrTournamentEventAddLeague(league: _league));
+          leagueBloc.add(LeagueOrTournamentEventAddLeague(league: _league));
         }
       });
     }

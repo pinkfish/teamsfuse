@@ -21,7 +21,7 @@ class Availaility extends StatelessWidget {
           return new AttendanceDialog(current: current);
         });
     if (attend != null) {
-      _game.dispatch(SingleGameUpdateAttendance(
+      _game.add(SingleGameUpdateAttendance(
           playerUid: player.playerUid, attendance: attend));
     }
   }
@@ -29,7 +29,7 @@ class Availaility extends StatelessWidget {
   Widget _buildAvailability(
       BuildContext context, Game game, SeasonPlayer player) {
     PlayerBloc players = BlocProvider.of<PlayerBloc>(context);
-    if (players.currentState.players.containsKey(player.playerUid)) {
+    if (players.state.players.containsKey(player.playerUid)) {
       return new GestureDetector(
         onTap: () => _updateAttendance(
           context,
@@ -62,7 +62,7 @@ class Availaility extends StatelessWidget {
 
     return season.players.map((SeasonPlayer player) {
       PlayerBloc players = BlocProvider.of<PlayerBloc>(context);
-      bool canEdit = players.currentState.players.containsKey(player.playerUid);
+      bool canEdit = players.state.players.containsKey(player.playerUid);
       return new ListTile(
         onTap: () => _showPlayer(context, game, player.playerUid),
         leading: canEdit

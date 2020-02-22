@@ -13,7 +13,7 @@ import 'teambloc.dart';
 ///
 /// Basic state for all the data in this system.
 ///
-class MessagesState extends Equatable {
+abstract class MessagesState extends Equatable {
   final BuiltMap<String, Message> unreadMessages;
   final BuiltMap<String, Message> recentMessages;
   final bool onlySql;
@@ -21,8 +21,7 @@ class MessagesState extends Equatable {
   MessagesState(
       {@required this.unreadMessages,
       @required this.recentMessages,
-      @required this.onlySql})
-      : super([unreadMessages, recentMessages, onlySql]);
+      @required this.onlySql});
 
   Message getMessage(String uid) {
     if (recentMessages.containsKey(uid)) {
@@ -33,6 +32,9 @@ class MessagesState extends Equatable {
     }
     return null;
   }
+
+  @override
+  List<Object> get props => [unreadMessages, recentMessages, onlySql];
 }
 
 ///
@@ -70,7 +72,7 @@ class MessagesLoaded extends MessagesState {
   }
 }
 
-class MessagesEvent extends Equatable {}
+abstract class MessagesEvent extends Equatable {}
 
 class _MessagesEventUserLoaded extends MessagesEvent {
   final String uid;
@@ -81,20 +83,32 @@ class _MessagesEventUserLoaded extends MessagesEvent {
   String toString() {
     return '_MessagesEventUserLoaded{}';
   }
+
+  @override
+  List<Object> get props => [uid];
 }
 
-class _MessagesEventLogout extends MessagesEvent {}
+class _MessagesEventLogout extends MessagesEvent {
+  @override
+  List<Object> get props => [];
+}
 
 class _MessagesEventNewUnReadLoaded extends MessagesEvent {
   final Map<String, Message> unreadMessages;
 
   _MessagesEventNewUnReadLoaded({@required this.unreadMessages});
+
+  @override
+  List<Object> get props => [unreadMessages];
 }
 
 class _MessagesEventNewRecentLoaded extends MessagesEvent {
   final Map<String, Message> recentMessages;
 
   _MessagesEventNewRecentLoaded({@required this.recentMessages});
+
+  @override
+  List<Object> get props => [recentMessages];
 }
 
 class _MessagesEventFirestore extends MessagesEvent {
@@ -106,6 +120,9 @@ class _MessagesEventFirestore extends MessagesEvent {
   String toString() {
     return '_MessagesEventFirestore{}';
   }
+
+  @override
+  List<Object> get props => [uid];
 }
 
 ///
@@ -121,20 +138,20 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   StreamSubscription<Iterable<MessageRecipient>> _readMessageSnapshot;
 
   MessagesBloc({@required this.coordinationBloc, @required this.teamBloc}) {
-    _coordState = coordinationBloc.state.listen((CoordinationState state) {
-      if (state is CoordinationStateLoggedOut) {
-        dispatch(_MessagesEventLogout());
-      } else if (state is CoordinationStateStartLoadingSql) {
-        _startLoading(state);
-      } else if (state is CoordinationStateStartLoadingFirestore) {
-        _startLoadingFirestore(state);
+    _coordState = coordinationBloc.listen((CoordinationState coordState) {
+      if (coordState is CoordinationStateLoggedOut) {
+        add(_MessagesEventLogout());
+      } else if (coordState is CoordinationStateStartLoadingSql) {
+        _startLoading(coordState);
+      } else if (coordState is CoordinationStateStartLoadingFirestore) {
+        _startLoadingFirestore(coordState);
       }
     });
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _cleanupStuff();
     _coordState?.cancel();
     _coordState = null;
@@ -148,25 +165,25 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   }
 
   void _startLoading(CoordinationStateStartLoadingSql state) {
-    dispatch(_MessagesEventUserLoaded(uid: state.uid));
+    add(_MessagesEventUserLoaded(uid: state.uid));
   }
 
   void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
-    dispatch(_MessagesEventFirestore(uid: state.uid));
+    add(_MessagesEventFirestore(uid: state.uid));
   }
 
   @override
   MessagesState get initialState => MessagesUninitialized();
 
   void _onUnreadMessagesUpdated(Iterable<MessageRecipient> data) async {
-    Set<String> toRemove = Set.from(currentState.unreadMessages.keys);
+    Set<String> toRemove = Set.from(state.unreadMessages.keys);
     Map<String, Message> messages = {};
 
     // Fill in all the messages.
     for (MessageRecipient recipient in data) {
       coordinationBloc.loadingTrace?.incrementCounter("message");
 
-      Message mess = currentState.getMessage(recipient.messageId);
+      Message mess = state.getMessage(recipient.messageId);
       if (mess != null) {
         // Update just my recipient piece of this.
         MessageBuilder builder = mess.toBuilder();
@@ -198,19 +215,19 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
           .deleteElement(PersistenData.messagesTable, change);
     }
     print('Loaded unread');
-    dispatch(_MessagesEventNewUnReadLoaded(unreadMessages: messages));
-    coordinationBloc.dispatch(
+    add(_MessagesEventNewUnReadLoaded(unreadMessages: messages));
+    coordinationBloc.add(
         CoordinationEventLoadedData(loaded: BlocsToLoad.Messages, sql: false));
   }
 
   void _onReadMessagesUpdated(Iterable<MessageRecipient> data) async {
     Map<String, Message> messages = {};
-    Set<String> toRemove = Set.from(currentState.recentMessages.keys);
+    Set<String> toRemove = Set.from(state.recentMessages.keys);
 
     for (MessageRecipient recipient in data) {
       coordinationBloc.loadingTrace?.incrementCounter("message");
 
-      Message mess = currentState.getMessage(recipient.messageId);
+      Message mess = state.getMessage(recipient.messageId);
       if (mess != null) {
         // Update just my recipient piece of this.
         MessageBuilder builder = mess.toBuilder();
@@ -239,7 +256,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
           .deleteElement(PersistenData.messagesTable, remove);
     }
     print('Loaded read');
-    dispatch(_MessagesEventNewRecentLoaded(recentMessages: messages));
+    add(_MessagesEventNewRecentLoaded(recentMessages: messages));
   }
 
   @override
@@ -270,7 +287,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
           recentMessages: BuiltMap.from(newMessages),
           unreadMessages: BuiltMap.from(unreadMessages),
           onlySql: true);
-      coordinationBloc.dispatch(
+      coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Messages, sql: true));
     }
 
@@ -292,18 +309,18 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
 
     // New data from above.  Mark ourselves as done.
     if (event is _MessagesEventNewRecentLoaded) {
-      coordinationBloc.dispatch(CoordinationEventLoadedData(
+      coordinationBloc.add(CoordinationEventLoadedData(
           loaded: BlocsToLoad.LeagueOrTournament, sql: false));
 
       yield MessagesLoaded(
           recentMessages: BuiltMap.from(event.recentMessages),
-          unreadMessages: currentState.unreadMessages,
+          unreadMessages: state.unreadMessages,
           onlySql: false);
     }
 
     if (event is _MessagesEventNewUnReadLoaded) {
       yield MessagesLoaded(
-          recentMessages: currentState.recentMessages,
+          recentMessages: state.recentMessages,
           unreadMessages: BuiltMap.from(event.unreadMessages),
           onlySql: false);
     }

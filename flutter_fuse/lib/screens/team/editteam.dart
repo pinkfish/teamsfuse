@@ -32,7 +32,8 @@ class EditTeamScreenState extends State<EditTeamScreen> {
     singleTeamBloc = SingleTeamBloc(
         teamBloc: BlocProvider.of<TeamBloc>(context),
         teamUid: widget.teamUid,
-        clubBloc: BlocProvider.of<ClubBloc>(context));
+        clubBloc: BlocProvider.of<ClubBloc>(context),
+        seasonBloc: BlocProvider.of<SeasonBloc>(context));
   }
 
   void _showInSnackBar(String value) {
@@ -48,7 +49,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
     TeamBuilder team = _formKey.currentState.validateAndCreate();
     if (team != null) {
       File imageFile = _formKey.currentState.getImageFile();
-      singleTeamBloc.dispatch(SingleTeamUpdate(team: team, image: imageFile));
+      singleTeamBloc.add(SingleTeamUpdate(team: team, image: imageFile));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }

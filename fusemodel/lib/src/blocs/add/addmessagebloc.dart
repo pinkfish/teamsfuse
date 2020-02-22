@@ -25,6 +25,10 @@ class AddMessageEventCommit extends AddMessageEvent {
       @required this.subject,
       @required this.body,
       @required this.recipients});
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [teamUid, subject, body, recipients];
 }
 
 ///

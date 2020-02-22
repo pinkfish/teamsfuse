@@ -67,7 +67,7 @@ class TeamPicker extends StatelessWidget {
                   : BlocBuilder(
                       bloc: BlocProvider.of<TeamBloc>(context),
                       builder: (BuildContext context, TeamState state) {
-                        DropdownButton<String>(
+                        return DropdownButton<String>(
                           hint: new Text(Messages.of(context).teamselect),
                           items: _buildItems(context, state),
                           value: teamUid,

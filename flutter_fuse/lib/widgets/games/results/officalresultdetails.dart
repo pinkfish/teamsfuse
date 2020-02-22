@@ -85,8 +85,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
       // Show dialogs and stuff.
       _finishGame(bloc);
     } else {
-      bloc.dispatch(
-          SingleSharedGameUpdateOfficalResult(result: _results.build()));
+      bloc.add(SingleSharedGameUpdateOfficalResult(result: _results.build()));
     }
   }
 
@@ -218,8 +217,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
       setState(() {});
 
       // Save the game and exit.
-      bloc.dispatch(
-          SingleSharedGameUpdateOfficalResult(result: _results.build()));
+      bloc.add(SingleSharedGameUpdateOfficalResult(result: _results.build()));
     }
   }
 

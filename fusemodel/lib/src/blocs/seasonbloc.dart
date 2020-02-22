@@ -20,6 +20,9 @@ class _SeasonUserLoaded extends SeasonEvent {
   String toString() {
     return '_SeasonUserLoaded{}';
   }
+
+  @override
+  List<Object> get props => [uid];
 }
 
 class _SeasonFirestoreStart extends SeasonEvent {
@@ -31,20 +34,32 @@ class _SeasonFirestoreStart extends SeasonEvent {
   String toString() {
     return '_SeasonFirestoreStart{}';
   }
+
+  @override
+  List<Object> get props => [uid];
 }
 
-class _SeasonLoggedOut extends SeasonEvent {}
+class _SeasonLoggedOut extends SeasonEvent {
+  @override
+  List<Object> get props => [];
+}
 
 class _SeasonAdminUpdated extends SeasonEvent {
   final Map<String, Season> adminSeasons;
 
   _SeasonAdminUpdated({@required this.adminSeasons});
+
+  @override
+  List<Object> get props => [adminSeasons];
 }
 
 class _SeasonUpdate extends SeasonEvent {
   final BuiltMap<String, Season> newSeasons;
 
   _SeasonUpdate({@required this.newSeasons});
+
+  @override
+  List<Object> get props => [newSeasons];
 }
 
 ///
@@ -54,8 +69,10 @@ abstract class SeasonState extends Equatable {
   final BuiltMap<String, Season> seasons;
   final bool onlySql;
 
-  SeasonState({@required this.onlySql, @required this.seasons})
-      : super([onlySql, seasons]);
+  SeasonState({@required this.onlySql, @required this.seasons});
+
+  @override
+  List<Object> get props => [onlySql, seasons];
 }
 
 ///
@@ -105,23 +122,23 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
   TraceProxy _seasonByPlayerTrace;
 
   SeasonBloc({@required this.coordinationBloc}) {
-    _coordSub = coordinationBloc.state.listen((CoordinationState state) {
-      if (state is CoordinationStateLoggedOut) {
-        dispatch(_SeasonLoggedOut());
-      } else if (state is CoordinationStateStartLoadingSql) {
-        _startLoading(state);
-      } else if (state is CoordinationStateStartLoadingFirestore) {
-        _startLoadingFirestore(state);
+    _coordSub = coordinationBloc.listen((CoordinationState coordState) {
+      if (coordState is CoordinationStateLoggedOut) {
+        add(_SeasonLoggedOut());
+      } else if (coordState is CoordinationStateStartLoadingSql) {
+        _startLoading(coordState);
+      } else if (coordState is CoordinationStateStartLoadingFirestore) {
+        _startLoadingFirestore(coordState);
       }
     });
   }
 
   void _startLoading(CoordinationStateStartLoadingSql state) {
-    dispatch(_SeasonUserLoaded(uid: state.uid));
+    add(_SeasonUserLoaded(uid: state.uid));
   }
 
   void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
-    dispatch(_SeasonFirestoreStart(uid: state.uid));
+    add(_SeasonFirestoreStart(uid: state.uid));
   }
 
   @override
@@ -134,8 +151,8 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _cleanupSnaps();
     _coordSub?.cancel();
   }
@@ -184,10 +201,8 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
         newSeasons[uid] = season.build();
       }
       yield SeasonLoaded(
-          state: currentState,
-          seasons: BuiltMap.from(newSeasons),
-          onlySql: true);
-      coordinationBloc.dispatch(
+          state: state, seasons: BuiltMap.from(newSeasons), onlySql: true);
+      coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Season, sql: true));
     }
 
@@ -203,21 +218,21 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
         if (!seasonData.isCompleted) {
           seasonData.complete(data);
         }
-        dispatch(_SeasonAdminUpdated(
+        add(_SeasonAdminUpdated(
             adminSeasons:
                 Map.fromIterable(data, key: (t) => t.uid, value: (t) => t)));
       });
       coordinationBloc.loadingTrace?.incrementCounter("adminSeasons");
-      BuiltMap<String, Season> oldSeasons = currentState.seasons;
+      BuiltMap<String, Season> oldSeasons = state.seasons;
       Iterable<Season> startStuff = await seasonData.future;
       yield SeasonLoaded(
-          state: currentState,
+          state: state,
           adminSeasons: BuiltMap.from(Map.fromIterable(startStuff,
               key: (t) => t.uid, value: (t) => t)));
       _onSeasonUpdatePeristentData(oldSeasons, startStuff);
 
       adminTrace.stop();
-      coordinationBloc.dispatch(
+      coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Season, sql: false));
     }
 
@@ -227,12 +242,12 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
       _cleanupSnaps();
     }
 
-    // Hpdate just the admins.
+    // Update just the seasons.
     if (event is _SeasonUpdate) {
-      BuiltMap<String, Season> oldSeasons = currentState.seasons;
+      BuiltMap<String, Season> oldSeasons = state.seasons;
       yield SeasonLoaded(
-          state: currentState, seasons: event.newSeasons, onlySql: false);
-      coordinationBloc.dispatch(
+          state: state, seasons: event.newSeasons, onlySql: false);
+      coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Season, sql: true));
       _onSeasonUpdatePeristentData(oldSeasons, event.newSeasons.values);
     }

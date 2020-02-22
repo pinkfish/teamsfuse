@@ -26,7 +26,7 @@ class MessageList extends StatelessWidget {
     return new ListTile(
       onTap: () => Navigator.pushNamed(context, "/ShowMessage/" + mess.uid),
       leading: new TeamImage(
-        team: teamBloc.currentState.getTeam(mess.teamUid),
+        team: teamBloc.state.getTeam(mess.teamUid),
         width: 30.0,
       ),
       subtitle: new Row(

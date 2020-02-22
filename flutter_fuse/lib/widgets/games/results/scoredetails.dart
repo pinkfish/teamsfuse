@@ -45,18 +45,18 @@ class _ScoreDetailsState extends State<ScoreDetails> {
   void initState() {
     super.initState();
     print('init this state');
-    _details = widget.game.currentState.game.result.toBuilder();
-    if (widget.game.currentState.game.result.currentPeriod != null) {
-      _currentPeriodResults = widget.game.currentState.game.result
-          .scores[widget.game.currentState.game.result.currentPeriod]
+    _details = widget.game.state.game.result.toBuilder();
+    if (widget.game.state.game.result.currentPeriod != null) {
+      _currentPeriodResults = widget.game.state.game.result
+          .scores[widget.game.state.game.result.currentPeriod]
           .toBuilder();
     }
     GamePeriod periodZero = new GamePeriod((b) => b
-      ..type = widget.game.currentState.game.result.currentPeriod.type
+      ..type = widget.game.state.game.result.currentPeriod.type
       ..periodNumber = 0);
     if (_currentPeriodResults == null) {
       _currentPeriodResults =
-          widget.game.currentState.game.result.scores[periodZero].toBuilder();
+          widget.game.state.game.result.scores[periodZero].toBuilder();
     }
     if (_currentPeriodResults == null) {
       GameScoreBuilder gameScoreBuilder = GameScoreBuilder()
@@ -118,7 +118,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     _currentPeriodResults.period = newPeriod.toBuilder();
     _details.currentPeriod = newPeriod.toBuilder();
     _writeLog(GameLogType.PeriodStart);
-    widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
+    widget.game.add(SingleGameUpdateResult(result: _details.build()));
   }
 
   void _setPeriodType(GamePeriod newPeriod) {
@@ -145,7 +145,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
 
   void _sendUpdate(List<bool> results) {
     print('Writing update to firestore ${_details}');
-    widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
+    widget.game.add(SingleGameUpdateResult(result: _details.build()));
   }
 
   void _updateScore() async {
@@ -222,7 +222,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         _writeLog(GameLogType.PeriodStop);
       });
       // Save the game and exit.
-      widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
+      widget.game.add(SingleGameUpdateResult(result: _details.build()));
       Navigator.pop(context);
     }
   }
@@ -270,7 +270,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
           ..type = GamePeriodType.Regulation
           ..periodNumber = 1;
         _writeLog(GameLogType.PeriodStart);
-        widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
+        widget.game.add(SingleGameUpdateResult(result: _details.build()));
       });
     }
   }
@@ -313,13 +313,13 @@ class _ScoreDetailsState extends State<ScoreDetails> {
           ..type = GamePeriodType.Regulation
           ..periodNumber = 1;
         _writeLog(GameLogType.PeriodStart);
-        widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
+        widget.game.add(SingleGameUpdateResult(result: _details.build()));
       });
     }
   }
 
   void _writeLog(GameLogType type, {String message}) {
-    widget.game.dispatch(SingleGameAddGameLog(
+    widget.game.add(SingleGameAddGameLog(
         log: (GameLogBuilder()
               ..type = type
               ..message = message
@@ -349,7 +349,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       });
     }
     print("Update result $_details");
-    widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
+    widget.game.add(SingleGameUpdateResult(result: _details.build()));
   }
 
   void _resetTimer() async {
@@ -390,7 +390,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
           _details.time.currentOffsetInternal = 0;
         });
       }
-      widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
+      widget.game.add(SingleGameUpdateResult(result: _details.build()));
     }
   }
 
@@ -401,7 +401,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         _details.time = time.toBuilder();
       });
 
-      widget.game.dispatch(SingleGameUpdateResult(result: _details.build()));
+      widget.game.add(SingleGameUpdateResult(result: _details.build()));
     }
   }
 
@@ -410,15 +410,13 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     GameResultDetailsBuilder details =
         await changeScoreDialog(context, _details.build());
     if (details != null) {
-      widget.game.dispatch(SingleGameUpdateResult(result: details.build()));
+      widget.game.add(SingleGameUpdateResult(result: details.build()));
       _writeLog(GameLogType.UpdateScore);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-
     print("Stuff in here ${_details.inProgress}");
     return BlocListener(
       bloc: widget.game,

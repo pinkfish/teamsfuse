@@ -10,7 +10,10 @@ import '../gamesbloc.dart';
 abstract class SingleSharedGameState extends Equatable {
   final GameSharedData sharedData;
 
-  SingleSharedGameState({@required this.sharedData}) : super([sharedData]);
+  SingleSharedGameState({@required this.sharedData});
+
+  @override
+  List<Object> get props => [sharedData];
 }
 
 ///
@@ -78,6 +81,9 @@ class SingleSharedGameUpdateData extends SingleSharedGameEvent {
   final GameSharedData sharedData;
 
   SingleSharedGameUpdateData({@required this.sharedData});
+
+  @override
+  List<Object> get props => [sharedData];
 }
 
 ///
@@ -87,16 +93,25 @@ class SingleSharedGameUpdateOfficalResult extends SingleSharedGameEvent {
   final GameOfficialResults result;
 
   SingleSharedGameUpdateOfficalResult({@required this.result});
+
+  @override
+  List<Object> get props => [result];
 }
 
 class _SingleSharedGameNewSharedGame extends SingleSharedGameEvent {
   final GameSharedData sharedData;
 
   _SingleSharedGameNewSharedGame({@required this.sharedData});
+
+  @override
+  List<Object> get props => [sharedData];
 }
 
 class _SingleSharedGameDeleted extends SingleSharedGameEvent {
   _SingleSharedGameDeleted();
+
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -115,31 +130,31 @@ class SingleSharedGameBloc
 
   SingleSharedGameBloc({@required this.gameBloc, @required String gameUid}) {
     _sharedGameUid = gameUid;
-    _gameSub = gameBloc.state.listen((GameState state) {
-      GameSharedData data = state.getSharedData(gameUid);
+    _gameSub = gameBloc.listen((GameState gameState) {
+      GameSharedData data = gameState.getSharedData(gameUid);
       if (data != null) {
         // Only send this if the game is not the same.
-        if (data != currentState.sharedData) {
-          dispatch(_SingleSharedGameNewSharedGame(sharedData: data));
+        if (data != state.sharedData) {
+          add(_SingleSharedGameNewSharedGame(sharedData: data));
         }
       } else {
-        dispatch(_SingleSharedGameDeleted());
+        add(_SingleSharedGameDeleted());
       }
     });
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _gameSub?.cancel();
   }
 
   @override
   SingleSharedGameState get initialState {
-    GameSharedData g = gameBloc.currentState.getSharedData(sharedGameUid);
+    GameSharedData g = gameBloc.state.getSharedData(sharedGameUid);
 
     if (g != null) {
-      return SingleSharedGameLoaded(sharedData: g);
+      return SingleSharedGameLoaded(sharedData: g, state: state);
     }
     return SingleSharedGameDeleted.empty();
   }
@@ -148,8 +163,7 @@ class SingleSharedGameBloc
   Stream<SingleSharedGameState> mapEventToState(
       SingleSharedGameEvent event) async* {
     if (event is _SingleSharedGameNewSharedGame) {
-      yield SingleSharedGameLoaded(
-          state: currentState, sharedData: event.sharedData);
+      yield SingleSharedGameLoaded(state: state, sharedData: event.sharedData);
     }
 
     // The game is deleted.
@@ -159,29 +173,29 @@ class SingleSharedGameBloc
 
     // Update the shared data of the game.
     if (event is SingleSharedGameUpdateData) {
-      yield SingleSharedGameSaving(singleSharedGameState: currentState);
+      yield SingleSharedGameSaving(singleSharedGameState: state);
       try {
         await gameBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreSharedGame(event.sharedData);
         yield SingleSharedGameLoaded(
-            state: currentState, sharedData: event.sharedData);
+            state: state, sharedData: event.sharedData);
       } catch (e) {
         yield SingleSharedGameSaveFailed(
-            singleSharedGameState: currentState, error: e);
+            singleSharedGameState: state, error: e);
       }
     }
 
     // Update offical game result
     if (event is SingleSharedGameUpdateOfficalResult) {
-      yield SingleSharedGameSaving(singleSharedGameState: currentState);
+      yield SingleSharedGameSaving(singleSharedGameState: state);
       try {
         await gameBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreOfficalGameResult(
-                currentState.sharedData.uid, event.result);
-        yield SingleSharedGameLoaded(state: currentState);
+                state.sharedData.uid, event.result);
+        yield SingleSharedGameLoaded(state: state);
       } catch (e) {
         yield SingleSharedGameSaveFailed(
-            singleSharedGameState: currentState, error: e);
+            singleSharedGameState: state, error: e);
       }
     }
   }

@@ -10,7 +10,7 @@ import 'gamecard.dart';
 Future<bool> deleteGameDialog(
     BuildContext context, SingleGameBloc gameBloc) async {
   Messages mess = Messages.of(context);
-  Game game = gameBloc.currentState.game;
+  Game game = gameBloc.state.game;
 
   bool result = await showDialog<bool>(
       context: context,
@@ -42,7 +42,7 @@ Future<bool> deleteGameDialog(
         );
       });
   if (result) {
-    gameBloc.dispatch(SingleGameDelete());
+    gameBloc.add(SingleGameDelete());
   }
   return result;
 }

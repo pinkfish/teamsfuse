@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 const TextStyle _kStepStyle = const TextStyle(
   fontSize: 12.0,
@@ -99,7 +99,6 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
       widget.steps.length,
       (int i) => new GlobalKey(),
     );
-
 
     for (int i = 0; i < widget.steps.length; i += 1) {
       _oldStates[i] = widget.steps[i].state;
@@ -503,11 +502,12 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
       if (!_isLast(i)) {
         children.add(
           /*new Expanded(
-            child: */new Container(
-              margin: const EdgeInsets.symmetric(horizontal: 8.0),
-              height: 1.0,
-              color: Colors.grey.shade400,
-            ),
+            child: */
+          new Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+            height: 1.0,
+            color: Colors.grey.shade400,
+          ),
           //),
         );
       }
@@ -528,19 +528,19 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
         ),
         new Expanded(
           child: new Scrollbar(
-            child:new ListView(
-
-            padding: const EdgeInsets.all(24.0),
-            children: <Widget>[
-              new AnimatedSize(
-                curve: Curves.fastOutSlowIn,
-                duration: kThemeAnimationDuration,
-                vsync: this,
-                child: widget.steps[widget.currentStep].content,
-              ),
-            ],
+            child: new ListView(
+              padding: const EdgeInsets.all(24.0),
+              children: <Widget>[
+                new AnimatedSize(
+                  curve: Curves.fastOutSlowIn,
+                  duration: kThemeAnimationDuration,
+                  vsync: this,
+                  child: widget.steps[widget.currentStep].content,
+                ),
+              ],
+            ),
           ),
-        ),),
+        ),
         _buildVerticalControls(),
       ],
     );
@@ -550,7 +550,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterial(context));
     assert(() {
-      if (context.ancestorWidgetOfExactType(Stepper) != null)
+      if (context.findAncestorWidgetOfExactType<Stepper>() != null)
         throw new FlutterError(
             'Steppers must not be nested. The material specification advises '
             'that one should avoid embedding steppers within steppers. '

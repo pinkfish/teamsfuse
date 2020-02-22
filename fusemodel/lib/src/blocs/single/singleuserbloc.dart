@@ -9,7 +9,10 @@ import 'package:meta/meta.dart';
 abstract class SingleUserState extends Equatable {
   final BuiltList<Player> players;
 
-  SingleUserState({@required this.players}) : super([players]);
+  SingleUserState({@required this.players});
+
+  @override
+  List<Object> get props => [players];
 }
 
 ///
@@ -55,10 +58,14 @@ class _SingleUserNewProfile extends SingleUserEvent {
   final Iterable<Player> players;
 
   _SingleUserNewProfile({@required this.players});
+
+  @override
+  List<Object> get props => [players];
 }
 
 class _SingleUserDeleted extends SingleUserEvent {
-  _SingleUserDeleted();
+  @override
+  List<Object> get props => [];
 }
 
 ///
@@ -74,16 +81,16 @@ class SingleUserBloc extends Bloc<SingleUserEvent, SingleUserState> {
     _playerSub = databaseUpdateModel.getPlayers(userUid).listen(
         (Iterable<Player> players) {
       if (players.length == 0) {
-        dispatch(_SingleUserDeleted());
+        add(_SingleUserDeleted());
       } else {
-        dispatch(_SingleUserNewProfile(players: players));
+        add(_SingleUserNewProfile(players: players));
       }
-    }, onError: (Error e) => dispatch(_SingleUserDeleted()));
+    }, onError: (Error e) => add(_SingleUserDeleted()));
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _playerSub?.cancel();
   }
 

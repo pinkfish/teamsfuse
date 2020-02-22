@@ -44,7 +44,7 @@ Future<bool> deleteInviteDialog(BuildContext context, Invite invite) async {
       });
   if (result) {
     InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
-    inviteBloc.dispatch(InviteEventDeleteInvite(inviteUid: invite.uid));
+    inviteBloc.add(InviteEventDeleteInvite(inviteUid: invite.uid));
   }
   return result;
 }

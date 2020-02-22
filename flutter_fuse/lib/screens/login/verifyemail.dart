@@ -16,10 +16,11 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   bool autovalidate = false;
   LoginBloc _loginBloc;
 
+  @override
   void initState() {
     super.initState();
     _loginBloc = BlocProvider.of<LoginBloc>(context);
-    _loginBloc.dispatch(LoginEventReload());
+    _loginBloc.add(LoginEventReload());
   }
 
   void onPressed(String routeName) {
@@ -32,17 +33,17 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   void _handleSubmitted() {
-    _loginBloc.dispatch(LoginEventResendEmail());
+    _loginBloc.add(LoginEventResendEmail());
   }
 
   void _onLogout(BuildContext context) async {
-    _loginBloc.dispatch(LoginEventLogout());
+    _loginBloc.add(LoginEventLogout());
     // Now navigate back to the login screen.
     Navigator.pushNamed(context, "/Login/Home");
   }
 
   void _onSignup(BuildContext context) async {
-    _loginBloc.dispatch(LoginEventLogout());
+    _loginBloc.add(LoginEventLogout());
     // Now navigate back to the signup screen.
     Navigator.pushNamed(context, "/Login/SignUp");
   }
@@ -75,16 +76,16 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
               showDialog<bool>(
                 context: context,
                 builder: (BuildContext context) => new AlertDialog(
-                      content: new Text(Messages.of(context).verifyemailsent),
-                      actions: <Widget>[
-                        new FlatButton(
-                            onPressed: () {
-                              Navigator.pop(context, true);
-                            },
-                            child: new Text(MaterialLocalizations.of(context)
-                                .okButtonLabel))
-                      ],
-                    ),
+                  content: new Text(Messages.of(context).verifyemailsent),
+                  actions: <Widget>[
+                    new FlatButton(
+                        onPressed: () {
+                          Navigator.pop(context, true);
+                        },
+                        child: new Text(
+                            MaterialLocalizations.of(context).okButtonLabel))
+                  ],
+                ),
               ).then((bool res) {
                 Navigator.pushNamed(context, "/");
               });

@@ -55,8 +55,7 @@ class GameListCalendarState {
   }
 
   void initState() {
-    _listening =
-        gameBloc.state.listen((GameState newState) => _setGames(newState));
+    _listening = gameBloc.listen((GameState newState) => _setGames(newState));
   }
 
   void dispose() {
@@ -72,7 +71,7 @@ class GameListCalendarState {
   }
 
   void _resubscribe() {
-    gameBloc.dispatch(GameEventSetBoundaries(start: startPoint, end: endPoint));
+    gameBloc.add(GameEventSetBoundaries(start: startPoint, end: endPoint));
   }
 
   void _setGames(GameState res) {

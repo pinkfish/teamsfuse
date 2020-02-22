@@ -53,7 +53,7 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
             bloc: teamBloc,
             listener: (BuildContext context, SingleTeamState state) {
               if (state is SingleTeamLoaded) {
-                teamBloc.dispatch(SingleTeamLoadOpponents());
+                teamBloc.add(SingleTeamLoadOpponents());
               }
             },
             child: BlocBuilder(

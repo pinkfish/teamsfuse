@@ -14,8 +14,10 @@ import '../seasonbloc.dart';
 abstract class SingleTeamSeasonPlayerState extends Equatable {
   final SeasonPlayer seasonPlayer;
 
-  SingleTeamSeasonPlayerState({@required this.seasonPlayer})
-      : super([seasonPlayer]);
+  SingleTeamSeasonPlayerState({@required this.seasonPlayer});
+
+  @override
+  List<Object> get props => [seasonPlayer];
 }
 
 ///
@@ -88,19 +90,29 @@ class SingleTeamSeasonPlayerUpdate extends SingleTeamSeasonPlayerEvent {
   final SeasonPlayer player;
 
   SingleTeamSeasonPlayerUpdate({@required this.player});
+
+  @override
+  List<Object> get props => [player];
 }
 
 class _SingleTeamNewTeamSeasonPlayer extends SingleTeamSeasonPlayerEvent {
   final SeasonPlayer newPlayer;
 
   _SingleTeamNewTeamSeasonPlayer({@required this.newPlayer});
+
+  @override
+  List<Object> get props => [newPlayer];
 }
 
 class _SingleTeamSeasonPlayerDeleted extends SingleTeamSeasonPlayerEvent {
-  _SingleTeamSeasonPlayerDeleted();
+  @override
+  List<Object> get props => [];
 }
 
-class SingleTeamSeasonPlayerDelete extends SingleTeamSeasonPlayerEvent {}
+class SingleTeamSeasonPlayerDelete extends SingleTeamSeasonPlayerEvent {
+  @override
+  List<Object> get props => [];
+}
 
 ///
 /// Bloc to handle updates and state of a specific team.
@@ -116,44 +128,43 @@ class SingleTeamSeasonPlayerBloc
 
   SingleTeamSeasonPlayerBloc(
       {this.playerBloc, this.seasonBloc, this.seasonUid, this.playerUid}) {
-    _seasonSub = seasonBloc.state.listen((SeasonState state) {
-      if (state.seasons.containsKey(seasonUid)) {
-        Season season = state.seasons[seasonUid];
+    _seasonSub = seasonBloc.listen((SeasonState seasonState) {
+      if (seasonState.seasons.containsKey(seasonUid)) {
+        Season season = seasonState.seasons[seasonUid];
 
         // Only send this if the season is not the same.
         if (season.players.any((SeasonPlayer p) => p.playerUid == playerUid)) {
           SeasonPlayer player = season.players.firstWhere(
               (SeasonPlayer p) => p.playerUid == playerUid,
               orElse: () => null);
-
-          if (player != currentState.seasonPlayer) {
-            dispatch(_SingleTeamNewTeamSeasonPlayer(newPlayer: player));
+          if (player != state.seasonPlayer) {
+            add(_SingleTeamNewTeamSeasonPlayer(newPlayer: player));
           }
         }
       } else {
-        dispatch(_SingleTeamSeasonPlayerDeleted());
+        add(_SingleTeamSeasonPlayerDeleted());
       }
     });
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Future<void> close() async {
+    await super.close();
     _seasonSub?.cancel();
     _seasonSub = null;
   }
 
   @override
   SingleTeamSeasonPlayerState get initialState {
-    if (seasonBloc.currentState.seasons.containsKey(seasonUid)) {
-      Season season = seasonBloc.currentState.seasons[seasonUid];
+    if (seasonBloc.state.seasons.containsKey(seasonUid)) {
+      Season season = seasonBloc.state.seasons[seasonUid];
       if (season.players.any((SeasonPlayer p) => p.playerUid == playerUid)) {
         SeasonPlayer player = season.players
             .firstWhere((SeasonPlayer p) => p.playerUid == playerUid);
-        if (playerBloc.currentState.getPlayer(player.playerUid) != null) {
+        if (playerBloc.state.getPlayer(player.playerUid) != null) {
           return SingleTeamSeasonPlayerLoaded(
               seasonPlayer: player,
-              player: playerBloc.currentState.getPlayer(player.playerUid));
+              player: playerBloc.state.getPlayer(player.playerUid));
         } else {
           return SingleTeamSeasonPlayerLoaded(seasonPlayer: player);
         }
@@ -167,7 +178,7 @@ class SingleTeamSeasonPlayerBloc
       SingleTeamSeasonPlayerEvent event) async* {
     if (event is _SingleTeamNewTeamSeasonPlayer) {
       yield SingleTeamSeasonPlayerLoaded(
-          seasonPlayer: event.newPlayer, state: currentState);
+          seasonPlayer: event.newPlayer, state: state);
     }
 
     // The team is deleted.
@@ -177,27 +188,27 @@ class SingleTeamSeasonPlayerBloc
 
     if (event is SingleTeamSeasonPlayerDelete) {
       // Do its thing and it should remove ourselves whern it saves.
-      yield SingleTeamSeasonPlayerSaving(state: currentState);
+      yield SingleTeamSeasonPlayerSaving(state: state);
       try {
         seasonBloc.coordinationBloc.databaseUpdateModel
             .removePlayerFromSeason(seasonUid, playerUid);
       } catch (e) {
-        yield SingleTeamSeasonPlayerSaveFailed(state: currentState, error: e);
+        yield SingleTeamSeasonPlayerSaveFailed(state: state, error: e);
       }
     }
 
     // Save the team.
     if (event is SingleTeamSeasonPlayerUpdate) {
-      yield SingleTeamSeasonPlayerSaving(state: currentState);
+      yield SingleTeamSeasonPlayerSaving(state: state);
       try {
-        if (seasonBloc.currentState.seasons.containsKey(seasonUid)) {
-          Season season = seasonBloc.currentState.seasons[seasonUid];
+        if (seasonBloc.state.seasons.containsKey(seasonUid)) {
+          Season season = seasonBloc.state.seasons[seasonUid];
           await seasonBloc.coordinationBloc.databaseUpdateModel
               .updateRoleInTeamForSeason(
                   season, event.player, event.player.role);
         }
       } catch (e) {
-        yield SingleTeamSeasonPlayerSaveFailed(state: currentState, error: e);
+        yield SingleTeamSeasonPlayerSaveFailed(state: state, error: e);
       }
     }
   }

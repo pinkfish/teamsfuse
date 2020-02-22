@@ -57,7 +57,7 @@ class TeamSettingsState extends State<TeamSettings> {
     );
     if (result) {
       InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
-      inviteBloc.dispatch(InviteEventDeleteInvite(inviteUid: adminUid));
+      inviteBloc.add(InviteEventDeleteInvite(inviteUid: adminUid));
     }
   }
 
@@ -98,7 +98,7 @@ class TeamSettingsState extends State<TeamSettings> {
     );
     if (result) {
       InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
-      inviteBloc.dispatch(InviteEventDeleteInvite(inviteUid: adm.uid));
+      inviteBloc.add(InviteEventDeleteInvite(inviteUid: adm.uid));
     }
   }
 
@@ -117,40 +117,40 @@ class TeamSettingsState extends State<TeamSettings> {
         SinglePlayerProvider(
           playerUid: uid,
           builder: (BuildContext contxt, SinglePlayerBloc bloc) => BlocBuilder(
-                bloc: bloc,
-                builder: (BuildContext context, SinglePlayerState state) {
-                  if (state is SinglePlayerDeleted) {
-                    return new ListTile(
-                      leading: const Icon(Icons.person),
-                      title: new Text(Messages.of(context).deleteplayer),
-                      trailing: new IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: null,
-                      ),
-                    );
-                  }
-                  if (state is SinglePlayerLoaded) {
-                    return new ListTile(
-                      leading: const Icon(Icons.person),
-                      title: new Text(state.player.name),
-                      trailing: new IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: state.mePlayer
-                            ? null
-                            : () => _deleteAdmin(uid, state.player.name),
-                      ),
-                    );
-                  }
-                  return new ListTile(
-                    leading: const Icon(Icons.person),
-                    title: new Text(Messages.of(context).loading),
-                    trailing: new IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: null,
-                    ),
-                  );
-                },
-              ),
+            bloc: bloc,
+            builder: (BuildContext context, SinglePlayerState state) {
+              if (state is SinglePlayerDeleted) {
+                return new ListTile(
+                  leading: const Icon(Icons.person),
+                  title: new Text(Messages.of(context).deleteplayer),
+                  trailing: new IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: null,
+                  ),
+                );
+              }
+              if (state is SinglePlayerLoaded) {
+                return new ListTile(
+                  leading: const Icon(Icons.person),
+                  title: new Text(state.player.name),
+                  trailing: new IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: state.mePlayer
+                        ? null
+                        : () => _deleteAdmin(uid, state.player.name),
+                  ),
+                );
+              }
+              return new ListTile(
+                leading: const Icon(Icons.person),
+                title: new Text(Messages.of(context).loading),
+                trailing: new IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: null,
+                ),
+              );
+            },
+          ),
         ),
       );
     }
@@ -171,14 +171,14 @@ class TeamSettingsState extends State<TeamSettings> {
           children: invites
               .map(
                 (InviteAsAdmin adm) => new ListTile(
-                      leading: const Icon(Icons.person_add),
-                      title: new Text(adm.email),
-                      subtitle: new ByUserNameComponent(userId: adm.sentByUid),
-                      trailing: new IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _deleteInvite(adm),
-                      ),
-                    ),
+                  leading: const Icon(Icons.person_add),
+                  title: new Text(adm.email),
+                  subtitle: new ByUserNameComponent(userId: adm.sentByUid),
+                  trailing: new IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _deleteInvite(adm),
+                  ),
+                ),
               )
               .toList(),
         ),
@@ -220,14 +220,14 @@ class TeamSettingsState extends State<TeamSettings> {
                 teamUid: widget._teamUid,
                 builder: (BuildContext contex, SingleTeamBloc bloc) =>
                     BlocBuilder(
-                      bloc: bloc,
-                      builder: (BuildContext context, SingleTeamState state) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: _buildBody(state),
-                        );
-                      },
-                    ),
+                  bloc: bloc,
+                  builder: (BuildContext context, SingleTeamState state) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _buildBody(state),
+                    );
+                  },
+                ),
               ),
             ),
           ),

@@ -44,7 +44,9 @@ class LeagueOrTournamentEditFormState
   File _imageFile;
   LeagueOrTournamentBuilder builder;
 
+  @override
   void initState() {
+    super.initState();
     builder = widget.leagueOrTournament.toBuilder();
   }
 
@@ -119,7 +121,7 @@ class LeagueOrTournamentEditFormState
               }
               if (state is SingleLeagueOrTournamentLoaded) {
                 // Tell it to load the seasons.
-                leagueBloc.dispatch(SingleLeagueOrTournamentLoadSeasons());
+                leagueBloc.add(SingleLeagueOrTournamentLoadSeasons());
               }
             },
             child: BlocBuilder(

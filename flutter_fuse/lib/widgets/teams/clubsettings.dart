@@ -6,9 +6,9 @@ import 'package:fusemodel/fusemodel.dart';
 
 import '../blocs/singleteamprovider.dart';
 
-/**
- * The settings for the club for this team.
- */
+///
+/// The settings for the club for this team.
+///
 class ClubSettings extends StatefulWidget {
   ClubSettings(this._teamUid);
 
@@ -27,7 +27,7 @@ class ClubSettingsState extends State<ClubSettings> {
 
   void _setClub(SingleTeamBloc singleTeamBloc) async {
     ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
-    if (clubBloc.currentState.clubs.length == 0) {
+    if (clubBloc.state.clubs.length == 0) {
       showDialog<bool>(
           context: context,
           builder: (BuildContext context) {
@@ -52,7 +52,7 @@ class ClubSettingsState extends State<ClubSettings> {
           builder: (BuildContext context) {
             return new SimpleDialog(
               title: new Text(Messages.of(context).selectclub),
-              children: clubBloc.currentState.clubs.values
+              children: clubBloc.state.clubs.values
                   .where((Club c) => c.isAdmin())
                   .map((Club c) {
                 return new SimpleDialogOption(
@@ -63,7 +63,7 @@ class ClubSettingsState extends State<ClubSettings> {
           });
       if (str != null) {
         // Update the club settings.
-        singleTeamBloc.dispatch(SingleTeamUpdateClub(clubUid: str));
+        singleTeamBloc.add(SingleTeamUpdateClub(clubUid: str));
       }
     }
   }
@@ -127,14 +127,14 @@ class ClubSettingsState extends State<ClubSettings> {
                 teamUid: widget._teamUid,
                 builder: (BuildContext context, SingleTeamBloc bloc) =>
                     BlocBuilder(
-                      bloc: bloc,
-                      builder: (BuildContext context, SingleTeamState state) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: _buildBody(state.team, bloc),
-                        );
-                      },
-                    ),
+                  bloc: bloc,
+                  builder: (BuildContext context, SingleTeamState state) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: _buildBody(state.team, bloc),
+                    );
+                  },
+                ),
               ),
             ),
           ),

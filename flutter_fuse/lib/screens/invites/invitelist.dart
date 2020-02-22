@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
+import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -48,22 +49,12 @@ class InviteListScreen extends StatefulWidget {
       SingleInviteBloc singleInviteBloc = SingleInviteBloc(
           inviteBloc: BlocProvider.of<InviteBloc>(context),
           inviteUid: invite.uid,
-          teamBloc: BlocProvider.of<TeamBloc>(context));
+          teamBloc: BlocProvider.of<TeamBloc>(context),seasonBloc: BlocProvider.of<SeasonBloc>(context));
       try {
         singleInviteBloc
-            .dispatch(SingleInviteEventDeleteInvite(inviteUid: invite.uid));
-        await for (SingleInviteState state in singleInviteBloc.state) {
-          if (state is SingleInviteDeleted) {
-            Navigator.pop(context);
-            return;
-          }
-          if (state is SingleInviteSaveFailed) {
-            Navigator.pop(context);
-            return;
-          }
-        }
+            .add(SingleInviteEventDeleteInvite(inviteUid: invite.uid));
       } finally {
-        singleInviteBloc.dispose();
+        singleInviteBloc.close();
       }
     }
   }
@@ -325,13 +316,29 @@ class InviteListScreenState extends State<InviteListScreen> {
       ),
       body: new Scrollbar(
         child: new SingleChildScrollView(
-          child: BlocBuilder(
-              bloc: inviteBloc,
-              builder: (BuildContext context, InviteState state) {
-                return Column(
-                  children: _buildInviteList(state.invites),
-                );
-              }),
+          child: BlocListener(
+            bloc: inviteBloc,
+            listener: (BuildContext context, InviteState state) {
+              if (state is SingleInviteDeleted) {
+                Navigator.pop(context);
+                return;
+              }
+              if (state is SingleInviteSaveFailed) {
+                Navigator.pop(context);
+                return;
+              }
+            },
+            child: BlocBuilder(
+                bloc: inviteBloc,
+                builder: (BuildContext context, InviteState state) {
+                  return SavingOverlay(
+                    saving: state is SingleInviteSaving,
+                    child: Column(
+                      children: _buildInviteList(state.invites),
+                    ),
+                  );
+                }),
+          ),
         ),
       ),
     );

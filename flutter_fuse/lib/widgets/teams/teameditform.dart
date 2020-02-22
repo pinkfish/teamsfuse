@@ -60,6 +60,7 @@ class TeamEditFormState extends State<TeamEditForm> {
 
   @override
   void initState() {
+    super.initState();
     builder = widget.team.toBuilder();
   }
 
@@ -106,8 +107,6 @@ class TeamEditFormState extends State<TeamEditForm> {
     return new Image.file(_imageFile);
   }
 
-  Widget _buildBody(Team team) {}
-
   @override
   Widget build(BuildContext context) {
     ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
@@ -117,8 +116,8 @@ class TeamEditFormState extends State<TeamEditForm> {
 
     Club club;
     if (widget.team.clubUid != null) {
-      if (clubBloc.currentState.clubs.containsKey(widget.team.clubUid)) {
-        club = clubBloc.currentState.clubs[widget.team.clubUid];
+      if (clubBloc.state.clubs.containsKey(widget.team.clubUid)) {
+        club = clubBloc.state.clubs[widget.team.clubUid];
       }
     }
     final Size screenSize = MediaQuery.of(context).size;

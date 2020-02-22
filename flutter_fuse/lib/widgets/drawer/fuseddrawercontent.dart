@@ -80,7 +80,7 @@ class FusedDrawerContent extends StatelessWidget {
     for (Team team in state.playerTeams.values) {
       if (!team.archived) {
         if (team.clubUid == null ||
-            !clubBloc.currentState.clubs.containsKey(team.clubUid)) {
+            !clubBloc.state.clubs.containsKey(team.clubUid)) {
           data.add(
             new TeamTile(
               team.uid,
@@ -166,7 +166,7 @@ class FusedDrawerContent extends StatelessWidget {
           // Do the logout dance.
           AuthenticationBloc authenticationBloc =
               BlocProvider.of<AuthenticationBloc>(context);
-          authenticationBloc.dispatch(AuthenticationLogOut());
+          authenticationBloc.add(AuthenticationLogOut());
 
           await overlayEntry.remove();
 

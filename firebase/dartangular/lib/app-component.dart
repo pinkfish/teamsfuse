@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:angular/angular.dart';
-import 'package:angular_bloc/angular_bloc.dart';
 import 'package:angular_components/angular_components.dart';
 import 'package:angular_components/content/deferred_content.dart';
 import 'package:angular_components/material_button/material_button.dart';
@@ -10,7 +9,6 @@ import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:fusemodel/firestore.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 import 'route_paths.dart';
 import 'routes.dart';

@@ -18,7 +18,7 @@ class AddTeamDialog extends Dialog {
     print('team name $teamName');
     // Write it out to firestore.  Yay.
     leagueOrTournmantDivison
-        .dispatch(SingleLeagueOrTournamentDivisonAddTeam(teamName: teamName));
+        .add(SingleLeagueOrTournamentDivisonAddTeam(teamName: teamName));
     return true;
   }
 

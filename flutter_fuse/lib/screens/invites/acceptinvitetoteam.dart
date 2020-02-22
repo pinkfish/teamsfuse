@@ -44,13 +44,14 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     _singleInviteBloc = SingleInviteBloc(
         inviteBloc: BlocProvider.of<InviteBloc>(context),
         inviteUid: widget._inviteUid,
-        teamBloc: BlocProvider.of<TeamBloc>(context));
+        teamBloc: BlocProvider.of<TeamBloc>(context),
+        seasonBloc: BlocProvider.of<SeasonBloc>(context));
   }
 
   @override
   void dispose() {
     super.dispose();
-    _singleInviteBloc.dispose();
+    _singleInviteBloc.close();
   }
 
   void _showInSnackBar(String value) {
@@ -72,7 +73,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
         PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
         _current[name] = uid;
         _data[name] = authenticationBloc.currentUser.profile.displayName;
-        _relationship[name] = playerBloc.currentState.players[uid]
+        _relationship[name] = playerBloc.state.players[uid]
             .users[authenticationBloc.currentUser.uid].relationship;
       }
     });
@@ -107,9 +108,9 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
           BlocProvider.of<AuthenticationBloc>(context);
       PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
       String myUid = authenticationBloc.currentUser.uid;
-      if (playerBloc.currentState.players.containsKey(found)) {
+      if (playerBloc.state.players.containsKey(found)) {
         _relationship[name] =
-            playerBloc.currentState.players[found].users[myUid].relationship;
+            playerBloc.state.players[found].users[myUid].relationship;
       } else {
         _relationship[name] = Relationship.Friend;
       }
@@ -131,7 +132,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
 
       currentCopy
           .removeWhere((String name, String uid) => _checked.contains(name));
-      _singleInviteBloc.dispatch(SingleInviteEventAcceptInviteToTeam(
+      _singleInviteBloc.add(SingleInviteEventAcceptInviteToTeam(
         relationship: _relationship,
         playerNameToUid: currentCopy,
       ));
@@ -177,7 +178,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
 
     List<Widget> players = <Widget>[];
     ThemeData theme = Theme.of(context);
-    InviteToTeam invite = _singleInviteBloc.currentState.invite as InviteToTeam;
+    InviteToTeam invite = _singleInviteBloc.state.invite as InviteToTeam;
     invite.playerName.forEach(
       (String name) {
         if (!_controllers.containsKey(name)) {
@@ -204,7 +205,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                 bloc: BlocProvider.of<PlayerBloc>(context),
                 builder: (BuildContext context, PlayerState state) {
                   if (state is PlayerLoaded) {
-                    _showPlayerDropdown(name, state);
+                    return _showPlayerDropdown(name, state);
                   } else {
                     return Text(Messages.of(context).unknown);
                   }

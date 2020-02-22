@@ -14,17 +14,17 @@ class ShowMessageScreen extends StatelessWidget {
 
   void _archiveMessage(BuildContext context) {
     SingleMessageBloc bloc = BlocProvider.of<SingleMessageBloc>(context);
-    bloc.dispatch(SingleMessageArchive());
+    bloc.add(SingleMessageArchive());
   }
 
   void _deleteMessage(BuildContext context) {
     SingleMessageBloc bloc = BlocProvider.of<SingleMessageBloc>(context);
-    bloc.dispatch(SingleMessageDelete());
+    bloc.add(SingleMessageDelete());
   }
 
   void _readMessage(BuildContext context) {
     SingleMessageBloc bloc = BlocProvider.of<SingleMessageBloc>(context);
-    bloc.dispatch(SingleMessageRead());
+    bloc.add(SingleMessageRead());
   }
 
   Widget _showMessage(BuildContext context, SingleMessageState state) {
@@ -48,7 +48,7 @@ class ShowMessageScreen extends StatelessWidget {
           width: 30.0,
         ),
         title: new Text(
-          teamBloc.currentState.getTeam(mess.teamUid).name,
+          teamBloc.state.getTeam(mess.teamUid).name,
         ),
       ),
     );
@@ -134,7 +134,7 @@ class ShowMessageScreen extends StatelessWidget {
         title: new Text(messages.message),
       ),
       body: BlocProvider(
-        builder: (BuildContext context) => bloc,
+        create: (BuildContext context) => bloc,
         child: BlocListener(
           bloc: bloc,
           listener: (BuildContext context, SingleMessageState state) {

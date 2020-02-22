@@ -54,7 +54,7 @@ class _LeagueOrTournamentTeamDetailsState
           listener: (BuildContext context,
               SingleLeagueOrTournamentTeamState teamState) {
             if (teamState is SingleLeagueOrTournamentTeamLoaded) {
-              bloc.dispatch(SingleLeagueOrTournamentTeamLoadInvites());
+              bloc.add(SingleLeagueOrTournamentTeamLoadInvites());
             }
           },
           child: BlocBuilder(
@@ -82,7 +82,7 @@ class _LeagueOrTournamentTeamDetailsState
                               SingleLeagueOrTournamentDivisonBloc
                                   divisonBloc) =>
                           BlocProvider(
-                        builder: (BuildContext context) =>
+                        create: (BuildContext context) =>
                             SingleLeagueOrTournamentDivisonGamesBloc(
                                 singleLeagueOrTournamentDivisonBloc:
                                     divisonBloc),
