@@ -72,10 +72,8 @@ class InviteEventAddAsAdmin extends AddInviteEvent {
 class AddInviteBloc extends Bloc<AddInviteEvent, AddItemState> {
   final CoordinationBloc coordinationBloc;
 
-  AddInviteBloc({@required this.coordinationBloc}) {}
-
-  @override
-  AddItemState get initialState => new AddItemUninitialized();
+  AddInviteBloc({@required this.coordinationBloc})
+      : super(AddItemUninitialized());
 
   @override
   Stream<AddItemState> mapEventToState(AddInviteEvent event) async* {

@@ -43,7 +43,7 @@ class LeagueHomeScreen extends StatelessWidget {
             height: 3.0,
           ),
           BlocBuilder(
-            bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
+            cubit: BlocProvider.of<LeagueOrTournamentBloc>(context),
             builder: (BuildContext context, LeagueOrTournamentState state) {
               Iterable<LeagueOrTournament> league = state
                   .leagueOrTournaments.values
@@ -76,7 +76,7 @@ class LeagueHomeScreen extends StatelessWidget {
             height: 3.0,
           ),
           BlocBuilder(
-            bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
+            cubit: BlocProvider.of<LeagueOrTournamentBloc>(context),
             builder: (BuildContext context, LeagueOrTournamentState state) {
               Iterable<LeagueOrTournament> tournament = state
                   .leagueOrTournaments.values

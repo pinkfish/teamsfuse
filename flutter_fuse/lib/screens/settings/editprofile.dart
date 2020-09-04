@@ -93,7 +93,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
       userUid: authBloc.currentUser.uid,
       builder: (BuildContext context, SingleProfileBloc profileBloc) =>
           BlocListener(
-        bloc: profileBloc,
+        cubit: profileBloc,
         listener: (BuildContext context, SingleProfileState profileState) {
           if (profileState is SingleProfileSaveDone ||
               profileState is SingleProfileDeleted) {
@@ -101,7 +101,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
           }
         },
         child: BlocBuilder(
-          bloc: profileBloc,
+          cubit: profileBloc,
           builder: (BuildContext context, SingleProfileState profileState) {
             return Scaffold(
               appBar: new AppBar(

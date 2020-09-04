@@ -131,7 +131,7 @@ class PlayerDetailsScreen extends StatelessWidget {
             content: new Scrollbar(
               child: new SingleChildScrollView(
                 child: BlocBuilder(
-                    bloc: bloc,
+                    cubit: bloc,
                     builder: (BuildContext context, SinglePlayerState state) {
                       var arr = <Widget>[];
 
@@ -215,7 +215,7 @@ class PlayerDetailsScreen extends StatelessWidget {
             userUid: userUid,
             builder: (BuildContext context, SingleProfileBloc singleUserBloc) =>
                 BlocBuilder(
-              bloc: singleUserBloc,
+              cubit: singleUserBloc,
               builder: (BuildContext context, SingleProfileState userState) {
                 if (userState is SingleProfileUnitialized) {
                   return new Text(messages.loading);
@@ -361,10 +361,10 @@ class PlayerDetailsScreen extends StatelessWidget {
           builder: (BuildContext context,
                   SingleTeamSeasonPlayerBloc seasonPlayerBloc) =>
               BlocBuilder(
-            bloc: teamBloc,
+            cubit: teamBloc,
             builder: (BuildContext context, SingleTeamState teamState) =>
                 BlocListener(
-              bloc: seasonPlayerBloc,
+              cubit: seasonPlayerBloc,
               listener: (BuildContext context,
                   SingleTeamSeasonPlayerState playerState) {
                 if (playerState is SingleTeamSeasonPlayerDeleted) {
@@ -375,7 +375,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                 }
               },
               child: BlocListener(
-                bloc: singlePlayerBloc,
+                cubit: singlePlayerBloc,
                 listener: (BuildContext context,
                     SinglePlayerState singlePlayerState) {
                   if (singlePlayerState is SinglePlayerLoaded) {
@@ -386,11 +386,11 @@ class PlayerDetailsScreen extends StatelessWidget {
                   }
                 },
                 child: BlocBuilder(
-                  bloc: seasonPlayerBloc,
+                  cubit: seasonPlayerBloc,
                   builder: (BuildContext context,
                           SingleTeamSeasonPlayerState seasonPlayerState) =>
                       BlocBuilder(
-                    bloc: singlePlayerBloc,
+                    cubit: singlePlayerBloc,
                     builder: (BuildContext context,
                         SinglePlayerState singlePlayerState) {
                       Messages messages = Messages.of(context);

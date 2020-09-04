@@ -67,7 +67,7 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
       body: new Scrollbar(
         child: new SingleChildScrollView(
           child: BlocListener(
-            bloc: _singleInviteBloc,
+            cubit: _singleInviteBloc,
             listener: (BuildContext context, SingleInviteState state) {
               if (state is SingleInviteSaveFailed) {
                 _showInSnackBar(Messages.of(context).formerror);
@@ -76,7 +76,7 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
               }
             },
             child: BlocBuilder(
-              bloc: _singleInviteBloc,
+              cubit: _singleInviteBloc,
               builder: (BuildContext context, SingleInviteState state) {
                 if (state is SingleInviteDeleted) {
                   // Deleted.

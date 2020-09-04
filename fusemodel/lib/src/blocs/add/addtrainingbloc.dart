@@ -31,10 +31,8 @@ class AddTrainingEventCommit extends AddTrainingEvent {
 class AddTrainingBloc extends Bloc<AddTrainingEvent, AddItemState> {
   final CoordinationBloc coordinationBloc;
 
-  AddTrainingBloc({@required this.coordinationBloc}) {}
-
-  @override
-  AddItemState get initialState => new AddItemUninitialized();
+  AddTrainingBloc({@required this.coordinationBloc})
+      : super(AddItemUninitialized());
 
   @override
   Stream<AddItemState> mapEventToState(AddTrainingEvent event) async* {

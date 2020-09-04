@@ -64,7 +64,7 @@ class EditClubScreenState extends State<EditClubScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: BlocListener(
-        bloc: _singleClubState,
+        cubit: _singleClubState,
         listener: (BuildContext context, SingleClubState state) {
           if (state is SingleClubDeleted) {
             Navigator.pop(context);
@@ -76,14 +76,14 @@ class EditClubScreenState extends State<EditClubScreen> {
           }
         },
         child: BlocListener(
-          bloc: _singleClubState,
+          cubit: _singleClubState,
           listener: (BuildContext context, SingleClubState state) {
             if (state is SingleClubDeleted) {
               Navigator.pop(context);
             }
           },
           child: BlocBuilder(
-            bloc: _singleClubState,
+            cubit: _singleClubState,
             builder: (BuildContext context, SingleClubState state) {
               return _buildBody(state);
             },

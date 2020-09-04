@@ -18,7 +18,7 @@ class LoadedStateBloc extends Bloc<LoadedEvent, LoadedState> {
 
   StreamSubscription<CoordinationState> _coordSub;
 
-  LoadedStateBloc({@required this.coordinationBloc}) {
+  LoadedStateBloc({@required this.coordinationBloc}) : super(LoadedState.Logout) {
     _coordSub = coordinationBloc.listen((CoordinationState state) {
       if (state is CoordinationStateLoggedOut) {
         add(LoadedEvent.Logout);
@@ -56,6 +56,4 @@ class LoadedStateBloc extends Bloc<LoadedEvent, LoadedState> {
     }
   }
 
-  @override
-  LoadedState get initialState => LoadedState.Logout;
 }

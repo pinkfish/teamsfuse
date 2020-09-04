@@ -76,7 +76,7 @@ class _TournamentOrLeagueTeamPickerState
                 singleLeagueOrTournamentDivisonBloc:
                     widget.leagueOrTournamentDivisonBloc),
         child: BlocBuilder(
-          bloc: BlocProvider.of<SingleLeagueOrTournamentDivisonTeamsBloc>(
+          cubit: BlocProvider.of<SingleLeagueOrTournamentDivisonTeamsBloc>(
               context),
           builder: (BuildContext context,
               SingleLeagueOrTournamentDivisonTeamsState state) {

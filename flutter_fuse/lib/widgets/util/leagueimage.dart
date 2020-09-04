@@ -50,7 +50,7 @@ class LeagueImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var blocBuilder = BlocBuilder(
-        bloc: BlocProvider.of<LeagueOrTournamentBloc>(context),
+        cubit: BlocProvider.of<LeagueOrTournamentBloc>(context),
         builder: (BuildContext context, LeagueOrTournamentState leagueState) {
           Widget inner;
           if (leagueState is LeagueOrTournamentLoaded) {

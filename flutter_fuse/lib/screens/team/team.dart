@@ -69,7 +69,7 @@ class TeamScreenState extends State<TeamScreen> {
       teamUid: widget.teamUid,
       builder: (BuildContext contextl, SingleTeamBloc singleTeamBloc) =>
           BlocBuilder(
-        bloc: singleTeamBloc,
+        cubit: singleTeamBloc,
         builder: (BuildContext context, SingleTeamState state) {
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
@@ -127,7 +127,7 @@ class TeamScreenState extends State<TeamScreen> {
                   ),
                 ]),
             floatingActionButton: BlocBuilder(
-              bloc: singleTeamBloc,
+              cubit: singleTeamBloc,
               builder: (BuildContext context, SingleTeamState state) {
                 if (state.isAdmin() && _tabIndex == 0) {
                   fab = new FloatingActionButton(

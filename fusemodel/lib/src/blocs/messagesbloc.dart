@@ -137,7 +137,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   StreamSubscription<Iterable<MessageRecipient>> _messageSnapshot;
   StreamSubscription<Iterable<MessageRecipient>> _readMessageSnapshot;
 
-  MessagesBloc({@required this.coordinationBloc, @required this.teamBloc}) {
+  MessagesBloc({@required this.coordinationBloc, @required this.teamBloc}) : super(MessagesUninitialized()){
     _coordState = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         add(_MessagesEventLogout());
@@ -171,9 +171,6 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
     add(_MessagesEventFirestore(uid: state.uid));
   }
-
-  @override
-  MessagesState get initialState => MessagesUninitialized();
 
   void _onUnreadMessagesUpdated(Iterable<MessageRecipient> data) async {
     Set<String> toRemove = Set.from(state.unreadMessages.keys);

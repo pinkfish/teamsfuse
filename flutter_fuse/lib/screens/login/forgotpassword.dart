@@ -153,7 +153,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             children: <Widget>[
               LoginHeader(),
               BlocBuilder(
-                  bloc: _loginBloc,
+                  cubit: _loginBloc,
                   builder: (BuildContext context, LoginState state) {
                     bool loading = LoginState is LoginValidatingForgotPassword;
                     if (state is LoginForgotPasswordFailed) {

@@ -128,7 +128,11 @@ class SingleSharedGameBloc
 
   StreamSubscription<GameState> _gameSub;
 
-  SingleSharedGameBloc({@required this.gameBloc, @required String gameUid}) {
+  SingleSharedGameBloc({@required this.gameBloc, @required String gameUid})
+      : super(gameBloc.state.getSharedData(gameUid) != null
+            ? SingleSharedGameLoaded(
+                sharedData: gameBloc.state.getSharedData(gameUid), state: null)
+            : SingleSharedGameDeleted.empty()) {
     _sharedGameUid = gameUid;
     _gameSub = gameBloc.listen((GameState gameState) {
       GameSharedData data = gameState.getSharedData(gameUid);
@@ -150,14 +154,7 @@ class SingleSharedGameBloc
   }
 
   @override
-  SingleSharedGameState get initialState {
-    GameSharedData g = gameBloc.state.getSharedData(sharedGameUid);
-
-    if (g != null) {
-      return SingleSharedGameLoaded(sharedData: g, state: state);
-    }
-    return SingleSharedGameDeleted.empty();
-  }
+  SingleSharedGameState get initialState {}
 
   @override
   Stream<SingleSharedGameState> mapEventToState(

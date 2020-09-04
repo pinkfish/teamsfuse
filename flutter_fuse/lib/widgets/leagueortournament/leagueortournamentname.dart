@@ -24,7 +24,7 @@ class LeagueOrTournamentName extends StatelessWidget {
       builder:
           (BuildContext context, SingleLeagueOrTournamentDivisonBloc data) =>
               BlocBuilder(
-        bloc: data,
+        cubit: data,
         builder:
             (BuildContext context, SingleLeagueOrTournamentDivisonState state) {
           Widget inner;
@@ -58,7 +58,7 @@ class LeagueOrTournamentName extends StatelessWidget {
       builder: (BuildContext context,
               SingleLeagueOrTournamentBloc singleLeagueOrTournmanetBloc) =>
           BlocBuilder(
-        bloc: singleLeagueOrTournmanetBloc,
+        cubit: singleLeagueOrTournmanetBloc,
         builder: (BuildContext context, SingleLeagueOrTournamentState state) {
           Widget inner;
 

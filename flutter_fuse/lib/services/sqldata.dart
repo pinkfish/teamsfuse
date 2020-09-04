@@ -54,29 +54,6 @@ class SqlData implements PersistenData {
     _database = await openDatabase(_path, version: 6,
         onUpgrade: (Database db, int oldVersion, int newVersion) async {
       print('Upgrading db $oldVersion $newVersion');
-      if (newVersion == 5) {
-        await db.execute("DROP TABLE " + PersistenData.gameTable);
-        return db.execute("CREATE TABLE IF NOT EXISTS " +
-            PersistenData.gameTable +
-            "(" +
-            indexColumn +
-            " text PRIMARY KEY, " +
-            teamUidColumn +
-            " text NOT NULL, " +
-            dataColumn +
-            " text NOT NULL);");
-      } else if (newVersion == 6) {
-        print('Making league table');
-        return db.execute("CREATE TABLE IF NOT EXISTS " +
-            PersistenData.leagueOrTournamentTable +
-            "(" +
-            indexColumn +
-            " text PRIMARY KEY, " +
-            teamUidColumn +
-            " text NOT NULL, " +
-            dataColumn +
-            " text NOT NULL);");
-      }
       print('Finish upgrade');
     }, onCreate: (Database db, int version) async {
       await Future.forEach(_tables, (String table) async {

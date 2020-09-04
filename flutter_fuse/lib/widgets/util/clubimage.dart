@@ -43,7 +43,7 @@ class ClubImage extends StatelessWidget {
     return SingleClubProvider(
       clubUid: clubUid,
       builder: (BuildContext context, SingleClubBloc bloc) => BlocBuilder(
-        bloc: bloc,
+        cubit: bloc,
         builder: (BuildContext context, SingleClubState state) {
           if (state is SingleClubDeleted) {
             return CachedNetworkImage(

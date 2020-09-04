@@ -60,10 +60,10 @@ class _AddOpponentState extends State<AddOpponent> {
           ],
         ),
         body: BlocListener(
-          bloc: bloc,
+          cubit: bloc,
           listener: (BuildContext context, SingleTeamState state) {},
           child: BlocBuilder(
-            bloc: bloc,
+            cubit: bloc,
             builder: (BuildContext context, SingleTeamState state) =>
                 SavingOverlay(
               saving: state is SingleTeamSaving,

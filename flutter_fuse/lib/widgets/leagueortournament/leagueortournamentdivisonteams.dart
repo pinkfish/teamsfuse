@@ -163,14 +163,14 @@ class _LeagueOrTournamentDivisonDetailsState
       SingleLeagueOrTournamentSeasonBloc seasonBloc,
       SingleLeagueOrTournamentDivisonBloc divisonBloc) {
     return BlocBuilder(
-      bloc: leagueBloc,
+      cubit: leagueBloc,
       builder: (BuildContext congtext, SingleLeagueOrTournamentState state) =>
           BlocBuilder(
-        bloc: seasonBloc,
+        cubit: seasonBloc,
         builder: (BuildContext context,
                 SingleLeagueOrTournamentSeasonState seasonState) =>
             BlocBuilder(
-          bloc: divisonBloc,
+          cubit: divisonBloc,
           builder: (BuildContext context,
               SingleLeagueOrTournamentDivisonState divisonState) {
             return Container(
@@ -196,7 +196,7 @@ class _LeagueOrTournamentDivisonDetailsState
                     ),
                   ),
                   BlocBuilder(
-                    bloc: new SingleLeagueOrTournamentDivisonTeamsBloc(
+                    cubit: new SingleLeagueOrTournamentDivisonTeamsBloc(
                         singleLeagueOrTournamentDivisonBloc: divisonBloc),
                     builder: (BuildContext context,
                         SingleLeagueOrTournamentDivisonTeamsState state) {

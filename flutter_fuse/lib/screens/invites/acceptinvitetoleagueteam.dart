@@ -43,7 +43,8 @@ class _AcceptInviteToLeagueTeamScreenState
     _singleInviteBloc = SingleInviteBloc(
         inviteBloc: BlocProvider.of<InviteBloc>(context),
         inviteUid: widget._inviteUid,
-        teamBloc: BlocProvider.of<TeamBloc>(context),seasonBloc: BlocProvider.of<SeasonBloc>(context));
+        teamBloc: BlocProvider.of<TeamBloc>(context),
+        seasonBloc: BlocProvider.of<SeasonBloc>(context));
   }
 
   @override
@@ -179,14 +180,14 @@ class _AcceptInviteToLeagueTeamScreenState
             child: Scrollbar(
               child: new SingleChildScrollView(
                 child: BlocListener(
-                  bloc: _singleInviteBloc,
+                  cubit: _singleInviteBloc,
                   listener: (BuildContext context, SingleInviteState state) {
                     if (state is SingleInviteDeleted) {
                       Navigator.pop(context);
                     }
                   },
                   child: BlocBuilder(
-                    bloc: _singleInviteBloc,
+                    cubit: _singleInviteBloc,
                     builder: (BuildContext context, SingleInviteState state) {
                       if (state is SingleInviteDeleted) {
                         // Deleted.

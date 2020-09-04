@@ -136,7 +136,7 @@ class ShowMessageScreen extends StatelessWidget {
       body: BlocProvider(
         create: (BuildContext context) => bloc,
         child: BlocListener(
-          bloc: bloc,
+          cubit: bloc,
           listener: (BuildContext context, SingleMessageState state) {
             if (state is SingleMessageDeleted) {
               Navigator.pop(context);
@@ -145,7 +145,7 @@ class ShowMessageScreen extends StatelessWidget {
             if (state is SingleMessageSaveFailed) {}
           },
           child: BlocBuilder(
-            bloc: bloc,
+            cubit: bloc,
             builder: (BuildContext context, SingleMessageState state) =>
                 SavingOverlay(
               saving: state is SingleMessageSaving,

@@ -134,7 +134,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
               initiallyExpanded: false,
               children: <Widget>[
                 new BlocBuilder(
-                    bloc: opBloc,
+                    cubit: opBloc,
                     builder: (BuildContext context, SingleOpponentState state) {
                       if (state is SingleOpponentDeleted) {
                         return new Center(
@@ -208,7 +208,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
             initiallyExpanded: false,
             children: <Widget>[
               new BlocBuilder(
-                bloc: opBloc,
+                cubit: opBloc,
                 builder: (BuildContext context, SingleOpponentState state) {
                   if (state is SingleOpponentDeleted) {
                     return new Center(
@@ -270,7 +270,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
     Messages messsages = Messages.of(context);
 
     return BlocListener(
-      bloc: widget._teamBloc,
+      cubit: widget._teamBloc,
       listener: (BuildContext context, SingleTeamState state) {
         print("State is $state");
         if (state is SingleTeamLoaded) {
@@ -282,7 +282,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
           new Row(
             children: <Widget>[
               BlocBuilder(
-                bloc: widget._teamBloc,
+                cubit: widget._teamBloc,
                 builder: (BuildContext context, SingleTeamState teamState) =>
                     DropdownButton<String>(
                   hint: new Text(messsages.seasonselect),
@@ -305,7 +305,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
               decoration: new BoxDecoration(color: theme.cardColor),
               child: new SingleChildScrollView(
                 child: BlocBuilder(
-                  bloc: widget._teamBloc,
+                  cubit: widget._teamBloc,
                   builder: (BuildContext context, SingleTeamState teamState) =>
                       Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

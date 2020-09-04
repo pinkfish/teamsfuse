@@ -168,7 +168,13 @@ class SingleMessageBloc extends Bloc<SingleMessageEvent, SingleMessageState> {
   StreamSubscription<MessagesState> _messageSub;
   StreamSubscription<String> _bodyState;
 
-  SingleMessageBloc({@required this.messageBloc, @required this.messageUid}) {
+  SingleMessageBloc({@required this.messageBloc, @required this.messageUid})
+      : super(messageBloc.state.getMessage(messageUid) != null
+            ? SingleMessageLoaded(
+                message: messageBloc.state.getMessage(messageUid),
+                state: null,
+                body: null)
+            : SingleMessageDeleted()) {
     _messageSub = messageBloc.listen((MessagesState messageState) {
       Message message = messageState.getMessage(messageUid);
       if (message != null) {
@@ -196,16 +202,6 @@ class SingleMessageBloc extends Bloc<SingleMessageEvent, SingleMessageState> {
     await super.close();
     _messageSub?.cancel();
     _bodyState?.cancel();
-  }
-
-  @override
-  SingleMessageState get initialState {
-    Message message = messageBloc.state.getMessage(messageUid);
-    if (message != null) {
-      return SingleMessageLoaded(message: message, state: null, body: null);
-    } else {
-      return SingleMessageDeleted();
-    }
   }
 
   @override

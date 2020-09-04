@@ -29,10 +29,8 @@ class AddSharedGameEventCommit extends AddSharedGameEvent {
 class AddSharedGameBloc extends Bloc<AddSharedGameEvent, AddItemState> {
   final CoordinationBloc coordinationBloc;
 
-  AddSharedGameBloc({@required this.coordinationBloc}) {}
-
-  @override
-  AddItemState get initialState => new AddItemUninitialized();
+  AddSharedGameBloc({@required this.coordinationBloc})
+      : super(AddItemUninitialized());
 
   @override
   Stream<AddItemState> mapEventToState(AddSharedGameEvent event) async* {

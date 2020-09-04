@@ -202,7 +202,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
               },
             ),
             title: BlocBuilder(
-                bloc: BlocProvider.of<PlayerBloc>(context),
+                cubit: BlocProvider.of<PlayerBloc>(context),
                 builder: (BuildContext context, PlayerState state) {
                   if (state is PlayerLoaded) {
                     return _showPlayerDropdown(name, state);
@@ -277,7 +277,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     );
 
     return BlocListener(
-      bloc: _singleInviteBloc,
+      cubit: _singleInviteBloc,
       listener: (BuildContext context, SingleInviteState state) {
         if (state is SingleInviteDeleted) {
           Navigator.pop(context);
@@ -307,7 +307,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
           body: new Scrollbar(
             child: new SingleChildScrollView(
               child: BlocListener(
-                bloc: _singleInviteBloc,
+                cubit: _singleInviteBloc,
                 listener: (BuildContext context, SingleInviteState state) {
                   if (state is SingleInviteDeleted) {
                     // go back!
@@ -315,7 +315,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                   }
                 },
                 child: BlocBuilder(
-                  bloc: _singleInviteBloc,
+                  cubit: _singleInviteBloc,
                   builder: (BuildContext context, SingleInviteState state) {
                     if (state is SingleInviteDeleted) {
                       // Go back!

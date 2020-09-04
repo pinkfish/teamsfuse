@@ -84,7 +84,7 @@ class SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       key: _scaffoldKey,
       body: BlocListener(
-        bloc: _loginBloc,
+        cubit: _loginBloc,
         listener: (BuildContext context, LoginState state) {
           if (state is LoginSignupFailed) {
             showInSnackBar(Messages.of(context).errorcreatinguser);
@@ -108,7 +108,7 @@ class SignupScreenState extends State<SignupScreen> {
           }
         },
         child: BlocBuilder(
-          bloc: _loginBloc,
+          cubit: _loginBloc,
           builder: (BuildContext context, LoginState state) => SavingOverlay(
             saving: state is LoginValidatingSignup,
             child: new SingleChildScrollView(

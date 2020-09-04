@@ -336,12 +336,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final UserAuthImpl userAuth;
   final AnalyticsSubsystem analyticsSubsystem;
 
-  LoginBloc({@required this.userAuth, @required this.analyticsSubsystem});
-
-  @override
-  LoginState get initialState {
-    return new LoginInitial();
-  }
+  LoginBloc({@required this.userAuth, @required this.analyticsSubsystem})
+      : super(LoginInitial());
 
   @override
   Stream<LoginState> mapEventToState(LoginEvent event) async* {
@@ -360,7 +356,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     if (event is LoginEventAttempt) {
       yield LoginValidating();
       LoginEventAttempt attempt = event;
-      UserData data = new UserData((b) => b
+      UserData data = UserData((b) => b
+        ..uid = "unknown"
+        ..isEmailVerified = false
         ..email = attempt.email
         ..password = attempt.password);
       print(data);

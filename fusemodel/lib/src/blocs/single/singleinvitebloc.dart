@@ -179,7 +179,10 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       {@required this.inviteBloc,
       @required this.teamBloc,
       @required this.seasonBloc,
-      @required this.inviteUid}) {
+      @required this.inviteUid})
+      : super(inviteBloc.state.invites.containsKey(inviteUid)
+            ? SingleInviteLoaded(invite: inviteBloc.state.invites[inviteUid])
+            : SingleInviteDeleted()) {
     _inviteState = inviteBloc.listen((InviteState inviteState) {
       if (inviteState is InviteLoaded) {
         if (inviteState.invites.containsKey(inviteUid)) {
@@ -209,13 +212,7 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
   }
 
   @override
-  SingleInviteState get initialState {
-    if (inviteBloc.state.invites.containsKey(inviteUid)) {
-      return SingleInviteLoaded(invite: inviteBloc.state.invites[inviteUid]);
-    } else {
-      return SingleInviteDeleted();
-    }
-  }
+  SingleInviteState get initialState {}
 
   Future<SingleInviteState> _acceptInviteToClub(
       SingleInviteEventAcceptInviteToClub event, Invite invite) async {

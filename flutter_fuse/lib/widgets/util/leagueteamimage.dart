@@ -67,7 +67,7 @@ class LeagueTeamImage extends StatelessWidget {
       leagueTeamUid: leagueOrTeamUid,
       builder: (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
           BlocListener(
-        bloc: bloc,
+        cubit: bloc,
         listener:
             (BuildContext context, SingleLeagueOrTournamentTeamState state) {
           if (state is SingleLeagueOrTournamentTeamLoaded) {
@@ -75,7 +75,7 @@ class LeagueTeamImage extends StatelessWidget {
           }
         },
         child: BlocBuilder(
-          bloc: bloc,
+          cubit: bloc,
           builder: (BuildContext context,
               SingleLeagueOrTournamentTeamState leagueState) {
             Widget inner;

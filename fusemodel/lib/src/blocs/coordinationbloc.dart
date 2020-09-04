@@ -140,7 +140,8 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
       @required this.authenticationBloc,
       @required this.analytics,
       @required this.databaseUpdateModel,
-      @required this.analyticsSubsystem}) {
+      @required this.analyticsSubsystem})
+      : super(CoordinationStateLoggedOut()) {
     authenticationBloc.listen((AuthenticationState authState) {
       if (authState is AuthenticationLoggedIn) {
         sqlTrace = analytics.newTrace("sqlTrace");
@@ -152,11 +153,6 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
         add(_CoordintationStateLoggedOut());
       }
     });
-  }
-
-  @override
-  CoordinationState get initialState {
-    return CoordinationStateLoggedOut();
   }
 
   @override
@@ -181,6 +177,8 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
           sqlTrace = null;
           yield CoordinationStateStartLoadingFirestore(uid: state.uid);
         } else {
+          print(
+              "Loaded $loaded ${BlocsToLoad.values.where((f) => !loaded.contains(f))}");
           yield CoordinatiomnStateLoadingSql(
               loaded: BuiltSet.from(loaded), uid: state.uid);
         }

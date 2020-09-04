@@ -2,14 +2,12 @@ package com.teamfuse.flutterfuse;
 
 import android.os.Bundle;
 
-import io.flutter.app.FlutterActivity;
-import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.flutter.embedding.android.FlutterActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
-import android.os.Bundle;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -32,8 +30,7 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler {
     public static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         GeneratedPluginRegistrant.registerWith(this);
 
         Log.i(TAG, "MainActivity");

@@ -171,7 +171,7 @@ class TeamPlayersState extends State<TeamPlayers> {
       seasonUid: _seasonUid,
       builder: (BuildContext context, SingleSeasonBloc seasonBloc) =>
           BlocBuilder(
-        bloc: seasonBloc,
+        cubit: seasonBloc,
         builder: (BuildContext context, SingleSeasonState seasonState) {
           return Column(children: _buildPlayers(seasonState, teamState));
         },
@@ -187,7 +187,7 @@ class TeamPlayersState extends State<TeamPlayers> {
     return SingleTeamProvider(
       teamUid: widget._teamUid,
       builder: (BuildContext context, SingleTeamBloc bloc) => BlocBuilder(
-        bloc: bloc,
+        cubit: bloc,
         builder: (BuildContext context, SingleTeamState teamState) {
           if (teamState is SingleTeamDeleted) {
             return CircularProgressIndicator();

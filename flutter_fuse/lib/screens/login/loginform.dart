@@ -143,7 +143,7 @@ class LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       key: _scaffoldKey,
       body: BlocListener(
-        bloc: _loginBloc,
+        cubit: _loginBloc,
         listener: (BuildContext context, LoginState state) {
           if (state is LoginFailed) {
             errorText = Messages.of(context).passwordnotcorrect;
@@ -156,7 +156,7 @@ class LoginScreenState extends State<LoginScreen> {
           }
         },
         child: BlocBuilder(
-          bloc: _loginBloc,
+          cubit: _loginBloc,
           builder: (BuildContext context, LoginState state) {
             return SavingOverlay(
                 saving: state is LoginValidating, child: _buildLoginForm());

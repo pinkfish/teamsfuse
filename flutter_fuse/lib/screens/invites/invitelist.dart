@@ -49,7 +49,8 @@ class InviteListScreen extends StatefulWidget {
       SingleInviteBloc singleInviteBloc = SingleInviteBloc(
           inviteBloc: BlocProvider.of<InviteBloc>(context),
           inviteUid: invite.uid,
-          teamBloc: BlocProvider.of<TeamBloc>(context),seasonBloc: BlocProvider.of<SeasonBloc>(context));
+          teamBloc: BlocProvider.of<TeamBloc>(context),
+          seasonBloc: BlocProvider.of<SeasonBloc>(context));
       try {
         singleInviteBloc
             .add(SingleInviteEventDeleteInvite(inviteUid: invite.uid));
@@ -317,7 +318,7 @@ class InviteListScreenState extends State<InviteListScreen> {
       body: new Scrollbar(
         child: new SingleChildScrollView(
           child: BlocListener(
-            bloc: inviteBloc,
+            cubit: inviteBloc,
             listener: (BuildContext context, InviteState state) {
               if (state is SingleInviteDeleted) {
                 Navigator.pop(context);
@@ -329,7 +330,7 @@ class InviteListScreenState extends State<InviteListScreen> {
               }
             },
             child: BlocBuilder(
-                bloc: inviteBloc,
+                cubit: inviteBloc,
                 builder: (BuildContext context, InviteState state) {
                   return SavingOverlay(
                     saving: state is SingleInviteSaving,

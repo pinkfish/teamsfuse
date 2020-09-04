@@ -171,7 +171,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
       body: BlocProvider(
         create: (BuildContext context) => singlePlayerBloc,
         child: BlocListener(
-          bloc: singlePlayerBloc,
+          cubit: singlePlayerBloc,
           listener: (BuildContext contex, SinglePlayerState playerState) {
             if (playerState is SinglePlayerLoaded) {
               _player = playerState.player.toBuilder();
@@ -181,7 +181,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
             }
           },
           child: BlocBuilder(
-            bloc: singlePlayerBloc,
+            cubit: singlePlayerBloc,
             builder: (BuildContext context, SinglePlayerState playerState) =>
                 Container(
               padding: new EdgeInsets.all(10.0),

@@ -29,7 +29,7 @@ class OpponentFormField extends FormField<String> {
                     const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             return BlocBuilder(
-              bloc: teamBloc,
+              cubit: teamBloc,
               builder:
                   (BuildContext context, SingleTeamState singleTeamState) =>
                       InputDecorator(

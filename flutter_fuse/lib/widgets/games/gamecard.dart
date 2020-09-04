@@ -485,7 +485,7 @@ class GameCard extends StatelessWidget {
         opponentUid: _opponentUid(game),
         builder: (BuildContext context, SingleOpponentBloc opBloc) =>
             BlocBuilder(
-          bloc: opBloc,
+          cubit: opBloc,
           builder: (BuildContext context, SingleOpponentState opState) => Text(
             _titleWidget(context, game, leagueTeam, opState),
             overflow: TextOverflow.clip,
@@ -496,7 +496,7 @@ class GameCard extends StatelessWidget {
       subtitle: SingleTeamProvider(
         teamUid: game.teamUid,
         builder: (BuildContext context, SingleTeamBloc teamBloc) => BlocBuilder(
-            bloc: teamBloc,
+            cubit: teamBloc,
             builder: (BuildContext context, SingleTeamState state) {
               for (Player play in players) {
                 subtitle.add(
@@ -542,7 +542,7 @@ class GameCard extends StatelessWidget {
 
   Widget _buildFromnState(BuildContext context, SingleGameBloc gameBloc) {
     return BlocBuilder(
-      bloc: gameBloc,
+      cubit: gameBloc,
       builder: (BuildContext context, SingleGameState state) {
         if (state is SingleGameDeleted) {
           return SizedBox();
@@ -557,14 +557,14 @@ class GameCard extends StatelessWidget {
             builder: (BuildContext context,
                     SingleLeagueOrTournamentTeamBloc leagueTeamBloc) =>
                 BlocBuilder(
-              bloc: leagueTeamBloc,
+              cubit: leagueTeamBloc,
               builder: (BuildContext context,
                       SingleLeagueOrTournamentTeamState teamState) =>
                   SingleSeasonProvider(
                 seasonUid: game.seasonUid,
                 builder: (BuildContext contrext, SingleSeasonBloc seasonBloc) =>
                     BlocBuilder(
-                  bloc: seasonBloc,
+                  cubit: seasonBloc,
                   builder:
                       (BuildContext context, SingleSeasonState seasonState) {
                     return _buildMain(context, state, gameBloc,
@@ -579,7 +579,7 @@ class GameCard extends StatelessWidget {
           seasonUid: game.seasonUid,
           builder: (BuildContext contrext, SingleSeasonBloc seasonBloc) =>
               BlocBuilder(
-            bloc: seasonBloc,
+            cubit: seasonBloc,
             builder: (BuildContext context, SingleSeasonState seasonState) =>
                 _buildMain(context, state, gameBloc, null, seasonState),
           ),

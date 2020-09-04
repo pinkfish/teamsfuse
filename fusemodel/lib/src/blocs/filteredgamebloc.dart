@@ -127,7 +127,8 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
   FilteredGameBloc(
       {@required this.gameBloc,
       @required this.teamBloc,
-      @required this.seasonBloc}) {
+      @required this.seasonBloc})
+      : super(FilteredGameUninitialized()) {
     _gameSub = gameBloc.listen((GameState gameState) {
       if (gameState is GameLoaded) {
         add(_FilteredGameEventGamesLoaded(loaded: gameState));
@@ -136,9 +137,6 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
       }
     });
   }
-
-  @override
-  FilteredGameState get initialState => FilteredGameUninitialized();
 
   @override
   Future<void> close() async {

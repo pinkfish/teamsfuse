@@ -419,7 +419,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
   Widget build(BuildContext context) {
     print("Stuff in here ${_details.inProgress}");
     return BlocListener(
-      bloc: widget.game,
+      cubit: widget.game,
       listener: (BuildContext context, SingleGameState state) {
         if (state is SingleGameDeleted) {
           // Go back where we came from.
@@ -429,7 +429,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         }
       },
       child: BlocBuilder(
-        bloc: widget.game,
+        cubit: widget.game,
         builder: (BuildContext context, SingleGameState state) {
           if (state is SingleGameDeleted) {
             return CircularProgressIndicator();

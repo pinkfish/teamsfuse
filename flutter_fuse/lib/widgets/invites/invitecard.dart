@@ -10,7 +10,7 @@ class InviteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     InviteBloc bloc = BlocProvider.of<InviteBloc>(context);
     return BlocBuilder(
-      bloc: bloc,
+      cubit: bloc,
       builder: (BuildContext context, InviteState state) {
         if (bloc.state.invites.length > 0) {
           Widget card = new Card(
@@ -18,8 +18,7 @@ class InviteCard extends StatelessWidget {
             child: new ListTile(
               leading: const Icon(CommunityIcons.emailOpen),
               title: new Text(
-                Messages.of(context)
-                    .invitedpeople(bloc.state.invites.length),
+                Messages.of(context).invitedpeople(bloc.state.invites.length),
               ),
             ),
           );

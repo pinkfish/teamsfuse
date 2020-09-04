@@ -23,7 +23,7 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
 
   /// This document's given or generated ID in the collection.
   @override
-  String get documentID => _doc.documentID;
+  String get documentID => _doc.id;
 
   /// Writes to the document referred to by this [DocumentReference].
   ///
@@ -33,7 +33,7 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   /// existing document instead of overwriting.
   @override
   Future<void> setData(Map<String, dynamic> data, {bool merge: false}) {
-    return _doc.setData(data, merge: merge);
+    return _doc.set(data, fs.SetOptions(merge: merge));
   }
 
   /// Updates fields in the document referred to by this [DocumentReference].
@@ -41,7 +41,7 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   /// If no document exists yet, the update will fail.
   @override
   Future<void> updateData(Map<String, dynamic> data) {
-    return _doc.updateData(data);
+    return _doc.update(data);
   }
 
   /// Reads the document referenced by this [DocumentReference].

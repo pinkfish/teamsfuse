@@ -45,19 +45,19 @@ class GameDetailsScreenState extends State<GameDetailsScreen> {
     return SingleGameProvider(
       gameUid: widget.gameUid,
       builder: (BuildContext conrtext, SingleGameBloc gameBloc) => BlocBuilder(
-        bloc: gameBloc,
+        cubit: gameBloc,
         builder: (BuildContext context, SingleGameState gameState) =>
             SingleTeamProvider(
           teamUid: gameState.game.teamUid,
           builder: (BuildContext c, SingleTeamBloc teamBloc) => BlocListener(
-            bloc: teamBloc,
+            cubit: teamBloc,
             listener: (BuildContext context, SingleTeamState state) {
               if (state is SingleTeamLoaded) {
                 teamBloc.add(SingleTeamLoadOpponents());
               }
             },
             child: BlocBuilder(
-              bloc: teamBloc,
+              cubit: teamBloc,
               builder: (BuildContext context, SingleTeamState singleTeamState) {
                 Game game = gameState.game;
                 Widget body;

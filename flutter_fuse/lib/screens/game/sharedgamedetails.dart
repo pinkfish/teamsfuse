@@ -41,7 +41,7 @@ class _SharedGameDetailsScreenState extends State<SharedGameDetailsScreen> {
       sharedGameUid: widget.sharedGameUid,
       builder: (BuildContext context, SingleSharedGameBloc sharedGameBloc) =>
           BlocListener(
-        bloc: sharedGameBloc,
+        cubit: sharedGameBloc,
         listener:
             (BuildContext context, SingleSharedGameState sharedGameState) {
           if (sharedGameState is SingleSharedGameDeleted) {
@@ -49,7 +49,7 @@ class _SharedGameDetailsScreenState extends State<SharedGameDetailsScreen> {
           }
         },
         child: BlocBuilder(
-          bloc: sharedGameBloc,
+          cubit: sharedGameBloc,
           builder:
               (BuildContext context, SingleSharedGameState sharedGameState) {
             List<Widget> actions = <Widget>[];

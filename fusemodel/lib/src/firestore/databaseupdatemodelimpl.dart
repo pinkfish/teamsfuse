@@ -41,7 +41,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         gameBuilder.uid = ref.documentID;
         // Add the game.
         tx.set(ref, gameBuilder.build().toJSON());
-        return gameBuilder.build();
+        return gameBuilder.build().toJSON();
       });
     } else {
       if (sharedData) {

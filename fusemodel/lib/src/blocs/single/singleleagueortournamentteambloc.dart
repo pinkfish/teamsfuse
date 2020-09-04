@@ -261,7 +261,8 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
   StreamSubscription<LeagueOrTournamentTeam> _teamSub;
 
   SingleLeagueOrTournamentTeamBloc(
-      {@required this.leagueTeamUid, @required this.coordinationBloc}) {
+      {@required this.leagueTeamUid, @required this.coordinationBloc})
+      : super(SingleLeagueOrTournamentTeamLoading()) {
     _teamSub = coordinationBloc.databaseUpdateModel
         .getLeagueTeamData(leagueTeamUid)
         .listen((LeagueOrTournamentTeam team) {
@@ -282,11 +283,6 @@ class SingleLeagueOrTournamentTeamBloc extends Bloc<
     _inviteSnapshot = null;
     _teamSub?.cancel();
     _teamSub = null;
-  }
-
-  @override
-  SingleLeagueOrTournamentTeamState get initialState {
-    return SingleLeagueOrTournamentTeamLoading(leagueOrTournament: state);
   }
 
   void _updateGames(Iterable<GameSharedData> games) {

@@ -59,7 +59,7 @@ class SplashScreen extends StatelessWidget {
         BlocProvider.of<AuthenticationBloc>(context);
 
     return BlocListener(
-      bloc: _authenticationBloc,
+      cubit: _authenticationBloc,
       listener: (BuildContext context, AuthenticationState state) {
         if (state is AuthenticationLoggedIn) {
           Notifications.instance.initForNotification();
@@ -81,7 +81,7 @@ class SplashScreen extends StatelessWidget {
         }
       },
       child: BlocBuilder(
-        bloc: _authenticationBloc,
+        cubit: _authenticationBloc,
         builder: (BuildContext context, AuthenticationState state) {
           if (state is AuthenticationUninitialized ||
               state is AuthenticationLoading) {

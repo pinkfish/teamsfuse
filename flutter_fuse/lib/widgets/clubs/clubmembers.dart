@@ -91,7 +91,7 @@ class ClubMembers extends StatelessWidget {
         BlocProvider(
           create: (BuildContext context) => bloc,
           child: BlocBuilder(
-            bloc: bloc,
+            cubit: bloc,
             builder: (BuildContext context, SingleProfileState state) =>
                 _buildFromFuture(context, state, true, adminUid),
           ),
@@ -107,7 +107,7 @@ class ClubMembers extends StatelessWidget {
         BlocProvider(
           create: (BuildContext context) => bloc,
           child: BlocBuilder(
-            bloc: bloc,
+            cubit: bloc,
             builder: (BuildContext context, SingleProfileState state) =>
                 _buildFromFuture(context, state, false, memberUid),
           ),

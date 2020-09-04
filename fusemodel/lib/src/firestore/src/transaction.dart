@@ -1,6 +1,7 @@
 part of firestore_wrapper;
 
-typedef Future<dynamic> TransactionHandler(TransactionWrapper transaction);
+typedef Future<Map<String, dynamic>> TransactionHandler(
+    TransactionWrapper transaction);
 
 ///
 /// Wrapper class to handle transactions through firestore.

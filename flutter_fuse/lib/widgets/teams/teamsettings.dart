@@ -117,7 +117,7 @@ class TeamSettingsState extends State<TeamSettings> {
         SinglePlayerProvider(
           playerUid: uid,
           builder: (BuildContext contxt, SinglePlayerBloc bloc) => BlocBuilder(
-            bloc: bloc,
+            cubit: bloc,
             builder: (BuildContext context, SinglePlayerState state) {
               if (state is SinglePlayerDeleted) {
                 return new ListTile(
@@ -220,7 +220,7 @@ class TeamSettingsState extends State<TeamSettings> {
                 teamUid: widget._teamUid,
                 builder: (BuildContext contex, SingleTeamBloc bloc) =>
                     BlocBuilder(
-                  bloc: bloc,
+                  cubit: bloc,
                   builder: (BuildContext context, SingleTeamState state) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

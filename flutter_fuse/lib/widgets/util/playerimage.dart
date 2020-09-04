@@ -63,7 +63,7 @@ class PlayerImage extends StatelessWidget {
         child: FittedBox(
           fit: BoxFit.cover,
           child: BlocBuilder(
-            bloc: BlocProvider.of<PlayerBloc>(context),
+            cubit: BlocProvider.of<PlayerBloc>(context),
             builder: (BuildContext context, PlayerState playerState) {
               return CachedNetworkImage(
                 placeholder: new Image(

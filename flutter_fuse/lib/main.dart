@@ -2,28 +2,35 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_fuse/cache/cachemanager.dart';
-import 'package:flutter_fuse/routes.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/appconfiguration.dart';
 import 'package:flutter_fuse/services/firestore/firestore.dart' as fs;
 import 'package:flutter_fuse/services/loggingdata.dart';
-import 'package:flutter_fuse/services/printingblocdelegate.dart';
 import 'package:flutter_fuse/services/sqldata.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:timezone/timezone.dart';
 
-void main() async {
-  BlocSupervisor.delegate = PrintingBlocDelegate();
+import 'flutterfuseapp.dart';
 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Trace as the first thing in the system.
   TraceProxy trace = Analytics.instance.newTrace("startup");
   trace.start();
+
+  Bloc.observer = _SimpleBlocDelegate();
+
+  // Load up the data for the hydrated bloc stuff.
+  HydratedBloc.storage = await HydratedStorage.build();
 
   String currentTimeZone;
   ByteData loadedData;
@@ -53,7 +60,10 @@ void main() async {
   // database
   print('Making stuff in here');
   // Setup the timestamps correctly.
-  await Firestore.instance.settings();
+
+  //await Firestore.instance.settings();
+
+  await Firebase.initializeApp();
 
   FirestoreWrapper firestoreWrapper = new fs.Firestore();
   //UserDatabaseData.instance = new UserDatabaseData(Analytics.instance,
@@ -83,5 +93,18 @@ void main() async {
   });
   trace.stop();
 
-  new Routes(firestoreWrapper, SqlData.instance);
+  runApp(FlutterFuseApp(firestoreWrapper, SqlData.instance));
+}
+
+///
+/// Simple delegate to print out the transitions.
+///
+class _SimpleBlocDelegate extends BlocObserver {
+  @override
+  void onTransition(Bloc bloc, Transition transition) {
+    super.onTransition(bloc, transition);
+    print("Transition: ${transition.currentState.runtimeType.toString()} "
+        "event: ${transition.event.runtimeType.toString()} "
+        "nextState: ${transition.nextState.runtimeType.toString()}");
+  }
 }

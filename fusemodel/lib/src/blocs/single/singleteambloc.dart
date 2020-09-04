@@ -397,7 +397,22 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       {@required this.teamBloc,
       @required this.clubBloc,
       @required this.seasonBloc,
-      @required this.teamUid}) {
+      @required this.teamUid})
+      : super(teamBloc.state.getTeam(teamUid) != null
+            ? SingleTeamLoaded(
+                team: teamBloc.state.getTeam(teamUid),
+                club: clubBloc
+                    .state.clubs[teamBloc.state.getTeam(teamUid).clubUid],
+                fullSeason: BuiltList(),
+                invitesAsAdmin: BuiltList(),
+                opponents: BuiltMap(),
+                state: null,
+                loadedOpponents: false,
+                loadedSeasons: false)
+            : SingleTeamDeleted()) {
+    if (teamBloc.state.getTeam(teamUid) != null) {
+      _setupClubSub();
+    }
     _teamSub = teamBloc.listen((TeamState teamState) {
       Team team = teamState.getTeam(teamUid);
       if (team != null) {
@@ -497,25 +512,7 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
   }
 
   @override
-  SingleTeamState get initialState {
-    Team t = teamBloc.state.getTeam(teamUid);
-    if (t != null) {
-      _setupClubSub();
-      Club club = clubBloc.state.clubs[t.clubUid];
-
-      return SingleTeamLoaded(
-          team: t,
-          club: club,
-          fullSeason: BuiltList(),
-          invitesAsAdmin: BuiltList(),
-          opponents: BuiltMap(),
-          state: null,
-          loadedOpponents: false,
-          loadedSeasons: false);
-    } else {
-      return SingleTeamDeleted();
-    }
-  }
+  SingleTeamState get initialState {}
 
   @override
   Stream<SingleTeamState> mapEventToState(SingleTeamEvent event) async* {

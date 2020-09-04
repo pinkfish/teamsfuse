@@ -18,7 +18,7 @@ class PlayerName extends StatelessWidget {
     PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
 
     return BlocBuilder(
-      bloc: playerBloc,
+      cubit: playerBloc,
       builder: (BuildContext context, PlayerState playerState) {
         Player play = playerState.getPlayer(playerUid);
 

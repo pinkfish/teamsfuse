@@ -244,7 +244,13 @@ class SingleLeagueOrTournamentBloc
       _leagueOrTournamentSnapshot;
 
   SingleLeagueOrTournamentBloc(
-      {@required this.leagueOrTournamentBloc, @required this.leagueUid}) {
+      {@required this.leagueOrTournamentBloc, @required this.leagueUid})
+      : super(leagueOrTournamentBloc.state.leagueOrTournaments
+                .containsKey(leagueUid)
+            ? SingleLeagueOrTournamentLoaded(
+                leagueOrTournament:
+                    leagueOrTournamentBloc.state.leagueOrTournaments[leagueUid])
+            : SingleLeagueOrTournamentDeleted.empty()) {
     _coordSub =
         leagueOrTournamentBloc.listen((LeagueOrTournamentState leagueState) {
       if (leagueState is LeagueOrTournamentLoaded) {
@@ -274,16 +280,7 @@ class SingleLeagueOrTournamentBloc
   }
 
   @override
-  SingleLeagueOrTournamentState get initialState {
-    if (leagueOrTournamentBloc.state.leagueOrTournaments
-        .containsKey(leagueUid)) {
-      return SingleLeagueOrTournamentLoaded(
-          leagueOrTournament:
-              leagueOrTournamentBloc.state.leagueOrTournaments[leagueUid]);
-    } else {
-      return SingleLeagueOrTournamentDeleted.empty();
-    }
-  }
+  SingleLeagueOrTournamentState get initialState {}
 
   void _updateSeasons(Iterable<LeagueOrTournamentSeason> seasons) {
     add(_SingleLeagueOrTournamentEventSeasons(seasons: seasons));

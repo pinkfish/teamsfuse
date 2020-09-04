@@ -68,7 +68,7 @@ class AddMemberScreenState extends State<AddMemberScreen> {
 
   Widget _buildBody() {
     return BlocListener(
-      bloc: _singleClubBloc,
+      cubit: _singleClubBloc,
       listener: (BuildContext context, SingleClubState state) {
         if (state is SingleClubSaveFailed) {
           _showInSnackBar(Messages.of(context).formerror);
@@ -81,7 +81,7 @@ class AddMemberScreenState extends State<AddMemberScreen> {
         }
       },
       child: BlocBuilder(
-        bloc: _singleClubBloc,
+        cubit: _singleClubBloc,
         builder: (BuildContext context, SingleClubState state) {
           return SavingOverlay(
             saving: state is SingleClubSaving,

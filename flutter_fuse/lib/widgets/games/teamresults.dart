@@ -26,7 +26,7 @@ class TeamResultsByOpponent extends StatelessWidget {
       opponentUid: opponentUid,
       builder: (BuildContext context, SingleOpponentBloc teamBloc) =>
           BlocListener(
-        bloc: teamBloc,
+        cubit: teamBloc,
         listener: (BuildContext context, SingleOpponentState state) {
           teamBloc.add(SingleOpponentLoadGames());
           if (state is SingleTeamDeleted) {
@@ -34,7 +34,7 @@ class TeamResultsByOpponent extends StatelessWidget {
           }
         },
         child: BlocBuilder(
-          bloc: teamBloc,
+          cubit: teamBloc,
           builder: (BuildContext context, SingleOpponentState state) {
             if (state is SingleOpponentDeleted) {
               return new Center(
@@ -95,7 +95,7 @@ class TeamResultsByOpponent extends StatelessWidget {
                       builder:
                           (BuildContext context, SingleGameBloc gameBloc) =>
                               BlocBuilder(
-                        bloc: gameBloc,
+                        cubit: gameBloc,
                         builder: (BuildContext context, SingleGameState state) {
                           return GameCard(gameUid: state.game.uid);
                         },
@@ -133,7 +133,7 @@ class TeamResultsBySeason extends StatelessWidget {
       seasonUid: seasonUid,
       builder: (BuildContext context, SingleSeasonBloc seasonBloc) =>
           BlocListener(
-        bloc: seasonBloc,
+        cubit: seasonBloc,
         listener: (BuildContext context, SingleSeasonState state) {
           seasonBloc.add(SingleSeasonLoadGames());
           if (state is SingleTeamDeleted) {
@@ -141,7 +141,7 @@ class TeamResultsBySeason extends StatelessWidget {
           }
         },
         child: BlocBuilder(
-          bloc: seasonBloc,
+          cubit: seasonBloc,
           builder: (BuildContext context, SingleSeasonState state) {
             seasonBloc.add(SingleSeasonLoadGames());
             if (state is SingleOpponentDeleted) {
@@ -203,7 +203,7 @@ class TeamResultsBySeason extends StatelessWidget {
                       builder:
                           (BuildContext context, SingleGameBloc gameBloc) =>
                               BlocBuilder(
-                        bloc: gameBloc,
+                        cubit: gameBloc,
                         builder: (BuildContext context, SingleGameState state) {
                           if (state is SingleGameLoaded) {
                             print("Display ${state.game.uid}");

@@ -83,7 +83,8 @@ class SingleLeagueOrTournamentDivisonTeamsBloc extends Bloc<
       _leagueOrTournamentSnapshot;
 
   SingleLeagueOrTournamentDivisonTeamsBloc(
-      {@required this.singleLeagueOrTournamentDivisonBloc}) {
+      {@required this.singleLeagueOrTournamentDivisonBloc})
+      : super(SingleLeagueOrTournamentDivisonTeamsLoading.empty()) {
     _leagueOrTournamentSnapshot = singleLeagueOrTournamentDivisonBloc
         .singleLeagueOrTournamentSeasonBloc
         .singleLeagueOrTournamentBloc
@@ -105,11 +106,6 @@ class SingleLeagueOrTournamentDivisonTeamsBloc extends Bloc<
   void _cleanupStuff() {
     _leagueOrTournamentSnapshot?.cancel();
     _leagueOrTournamentSnapshot = null;
-  }
-
-  @override
-  SingleLeagueOrTournamentDivisonTeamsState get initialState {
-    return SingleLeagueOrTournamentDivisonTeamsLoading.empty();
   }
 
   void _updateTeams(Iterable<LeagueOrTournamentTeam> teams) {

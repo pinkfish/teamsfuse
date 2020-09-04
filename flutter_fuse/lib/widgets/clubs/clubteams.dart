@@ -61,7 +61,7 @@ class ClubTeams extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      bloc: clubBloc,
+      cubit: clubBloc,
       builder: (BuildContext context, SingleClubState state) {
         return _buildTeams(context, state);
       },

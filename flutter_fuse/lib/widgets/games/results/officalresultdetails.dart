@@ -270,14 +270,14 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
       sharedGameUid: widget.game.uid,
       builder: (BuildContext context, SingleSharedGameBloc bloc) =>
           BlocListener(
-        bloc: bloc,
+        cubit: bloc,
         listener: (BuildContext contect, SingleSharedGameState state) {
           if (state is SingleSharedGameDeleted) {
             Navigator.pop(context);
           }
         },
         child: BlocBuilder(
-          bloc: bloc,
+          cubit: bloc,
           builder: (BuildContext context, SingleSharedGameState state) {
             if (state is SingleSharedGameDeleted) {
               return Center(child: Text(Messages.of(context).nogames));

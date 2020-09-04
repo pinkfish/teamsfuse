@@ -1,7 +1,6 @@
-import 'package:fluro/fluro.dart';
+import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/approuter.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
@@ -26,7 +25,7 @@ class TeamTile extends StatelessWidget {
     return SingleTeamProvider(
       teamUid: teamUid,
       builder: (BuildContext c, SingleTeamBloc teamBloc) => BlocBuilder(
-        bloc: teamBloc,
+        cubit: teamBloc,
         builder: (BuildContext context, SingleTeamState teamState) {
           if (teamState is SingleTeamDeleted) {
             return ListTile(
@@ -46,7 +45,7 @@ class TeamTile extends StatelessWidget {
                     showIcon: showIconForTeam,
                   ),
                   title: BlocBuilder(
-                    bloc: seasonBloc,
+                    cubit: seasonBloc,
                     builder:
                         (BuildContext context, SingleSeasonState seasonState) {
                       String seasonName = "";
@@ -91,7 +90,7 @@ class TeamTile extends StatelessWidget {
                   isThreeLine: false,
                   dense: true,
                   subtitle: BlocBuilder(
-                    bloc: seasonBloc,
+                    cubit: seasonBloc,
                     builder:
                         (BuildContext context, SingleSeasonState seasonState) {
                       if (seasonState is SingleSeasonLoaded) {
@@ -107,9 +106,9 @@ class TeamTile extends StatelessWidget {
                     if (popBeforeNavigate) {
                       Navigator.pop(context);
                     }
-                    AppRouter.instance.navigateTo(
+                    RepositoryProvider.of<fluro.Router>(context).navigateTo(
                         context, "Team/" + teamState.team.uid,
-                        transition: TransitionType.inFromRight);
+                        transition: fluro.TransitionType.inFromRight);
                   },
                 );
               });

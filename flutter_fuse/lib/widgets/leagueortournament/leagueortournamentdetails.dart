@@ -37,7 +37,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
         builder: (BuildContext context,
                 SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
             BlocBuilder(
-          bloc: seasonBloc,
+          cubit: seasonBloc,
           builder: (BuildContext context,
               SingleLeagueOrTournamentSeasonState seasonState) {
             if (!seasonState.loadedDivisons) {
@@ -233,7 +233,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
             builder: (BuildContext context,
                     SingleLeagueOrTournamentBloc leagueBloc) =>
                 BlocListener(
-              bloc: leagueBloc,
+              cubit: leagueBloc,
               listener:
                   (BuildContext context, SingleLeagueOrTournamentState state) {
                 if (state is SingleLeagueOrTournamentDeleted) {
@@ -246,7 +246,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                 }
               },
               child: BlocBuilder(
-                bloc: leagueBloc,
+                cubit: leagueBloc,
                 builder: (BuildContext context,
                     SingleLeagueOrTournamentState state) {
                   if (state is SingleLeagueOrTournamentDeleted) {

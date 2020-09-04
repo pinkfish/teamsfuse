@@ -64,14 +64,14 @@ class ClubDetailsScreenState extends State<ClubDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      bloc: _singleClubBloc,
+      cubit: _singleClubBloc,
       listener: (BuildContext context, SingleClubState state) {
         if (state is SingleClubDeleted) {
           Navigator.pop(context);
         }
       },
       child: BlocBuilder(
-          bloc: _singleClubBloc,
+          cubit: _singleClubBloc,
           builder: (BuildContext context, SingleClubState state) {
             String title;
             if (state is SingleClubDeleted) {

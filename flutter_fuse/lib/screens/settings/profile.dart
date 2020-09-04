@@ -100,7 +100,7 @@ class ProfileScreen extends StatelessWidget {
         BlocProvider(
           create: (BuildContext context) => bloc,
           child: BlocBuilder(
-            bloc: bloc,
+            cubit: bloc,
             builder: (BuildContext context, SingleProfileState userState) {
               if (userState is SingleProfileUnitialized ||
                   userState is SingleProfileDeleted) {
@@ -191,7 +191,7 @@ class ProfileScreen extends StatelessWidget {
             playerUid: player.uid,
             builder: (BuildContext context, SinglePlayerBloc playerBloc) =>
                 BlocBuilder(
-              bloc: playerBloc,
+              cubit: playerBloc,
               builder: (BuildContext context, SinglePlayerState playerState) {
                 // List the teams they are in.
                 List<Widget> teamNames = <Widget>[];
@@ -301,7 +301,7 @@ class ProfileScreen extends StatelessWidget {
       body: new Scrollbar(
         child: new SingleChildScrollView(
           child: BlocBuilder(
-            bloc: BlocProvider.of<PlayerBloc>(context),
+            cubit: BlocProvider.of<PlayerBloc>(context),
             builder: (BuildContext context, PlayerState state) {
               if (state is PlayerUninitialized) {
                 return Text(Messages.of(context).formerror);

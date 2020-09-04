@@ -229,7 +229,8 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
   StreamSubscription<Iterable<Team>> _adminTeamSub;
   StreamSubscription<Iterable<Team>> _userTeamSub;
 
-  TeamBloc({@required this.coordinationBloc, @required this.clubBloc}) {
+  TeamBloc({@required this.coordinationBloc, @required this.clubBloc})
+      : super(TeamUninitialized()) {
     _coordSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         add(_TeamLoggedOut());
@@ -252,11 +253,6 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
 
   void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
     add(_TeamFirestoreStart(uid: state.uid));
-  }
-
-  @override
-  TeamState get initialState {
-    return new TeamUninitialized();
   }
 
   void _cleanupSnaps() {

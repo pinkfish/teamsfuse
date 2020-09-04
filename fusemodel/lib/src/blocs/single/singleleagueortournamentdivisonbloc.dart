@@ -169,7 +169,14 @@ class SingleLeagueOrTournamentDivisonBloc extends Bloc<
   SingleLeagueOrTournamentDivisonBloc(
       {this.coordinationBloc,
       @required this.leagueDivisonUid,
-      this.singleLeagueOrTournamentSeasonBloc}) {
+      this.singleLeagueOrTournamentSeasonBloc})
+      : super(singleLeagueOrTournamentSeasonBloc
+                .state.leagueOrTournamentDivisons
+                .containsKey(leagueDivisonUid)
+            ? SingleLeagueOrTournamentDivisonLoaded(null,
+                leagueOrTournamentDivison: singleLeagueOrTournamentSeasonBloc
+                    .state.leagueOrTournamentDivisons[leagueDivisonUid])
+            : SingleLeagueOrTournamentDivisonDeleted.empty()) {
     assert(this.coordinationBloc != null ||
         this.singleLeagueOrTournamentSeasonBloc != null);
     if (coordinationBloc != null) {

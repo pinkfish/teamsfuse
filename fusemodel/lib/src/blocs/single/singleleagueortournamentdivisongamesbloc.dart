@@ -83,7 +83,8 @@ class SingleLeagueOrTournamentDivisonGamesBloc extends Bloc<
   StreamSubscription<Iterable<GameSharedData>> _leagueOrTournamentSnapshot;
 
   SingleLeagueOrTournamentDivisonGamesBloc(
-      {@required this.singleLeagueOrTournamentDivisonBloc}) {
+      {@required this.singleLeagueOrTournamentDivisonBloc})
+      : super(SingleLeagueOrTournamentDivisonGamesLoading.empty()) {
     _leagueOrTournamentSnapshot = singleLeagueOrTournamentDivisonBloc
         .singleLeagueOrTournamentSeasonBloc
         .singleLeagueOrTournamentBloc
@@ -104,11 +105,6 @@ class SingleLeagueOrTournamentDivisonGamesBloc extends Bloc<
   void _cleanupStuff() {
     _leagueOrTournamentSnapshot?.cancel();
     _leagueOrTournamentSnapshot = null;
-  }
-
-  @override
-  SingleLeagueOrTournamentDivisonGamesState get initialState {
-    return SingleLeagueOrTournamentDivisonGamesLoading.empty();
   }
 
   void _updateGames(Iterable<GameSharedData> games) {

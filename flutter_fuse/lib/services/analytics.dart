@@ -83,8 +83,7 @@ class Analytics extends AnalyticsSubsystem {
     Trace trace = FirebasePerformance.instance.newTrace(name);
 
     trace.putAttribute("os", Platform.operatingSystem);
-    trace.putAttribute(
-        "osVersion", Platform.operatingSystemVersion.substring(0, 30));
+    trace.putAttribute("osVersion", Platform.operatingSystemVersion);
 
     trace.putAttribute("version", packageInfo.version);
     trace.putAttribute("build", packageInfo.buildNumber);

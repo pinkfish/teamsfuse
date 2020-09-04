@@ -127,7 +127,8 @@ class SingleTeamSeasonPlayerBloc
   StreamSubscription<SeasonState> _seasonSub;
 
   SingleTeamSeasonPlayerBloc(
-      {this.playerBloc, this.seasonBloc, this.seasonUid, this.playerUid}) {
+      {this.playerBloc, this.seasonBloc, this.seasonUid, this.playerUid})
+      : super(_getInitialState(seasonBloc, seasonUid, playerBloc, playerUid)) {
     _seasonSub = seasonBloc.listen((SeasonState seasonState) {
       if (seasonState.seasons.containsKey(seasonUid)) {
         Season season = seasonState.seasons[seasonUid];
@@ -155,7 +156,8 @@ class SingleTeamSeasonPlayerBloc
   }
 
   @override
-  SingleTeamSeasonPlayerState get initialState {
+  static SingleTeamSeasonPlayerState _getInitialState(SeasonBloc seasonBloc,
+      String seasonUid, PlayerBloc playerBloc, String playerUid) {
     if (seasonBloc.state.seasons.containsKey(seasonUid)) {
       Season season = seasonBloc.state.seasons[seasonUid];
       if (season.players.any((SeasonPlayer p) => p.playerUid == playerUid)) {

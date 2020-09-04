@@ -32,7 +32,7 @@ abstract class FusedUserProfile
       ..phoneNumber = data[_PHONE]
       ..emailOnUpdates = getBool(data[_EMAIL_ON_UPDATES])
       ..emailUpcomingGame = getBool(data[_EMAIL_UPCOMING])
-      ..notifyOnlyForGames = getBool(data[_ONLY_FOR_GAMES] ?? true);
+      ..notifyOnlyForGames = getBool(data[_ONLY_FOR_GAMES]) ?? true;
   }
 
   /// The initials for the user.

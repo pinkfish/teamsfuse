@@ -246,7 +246,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
           ],
         ),
         body: BlocListener(
-          bloc: addMessageBloc,
+          cubit: addMessageBloc,
           listener: (BuildContext context, AddItemState state) {
             if (state is AddItemDone) {
               Navigator.pop(context);
@@ -257,7 +257,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
             }
           },
           child: BlocBuilder(
-            bloc: addMessageBloc,
+            cubit: addMessageBloc,
             builder: (BuildContext context, AddItemState state) =>
                 SavingOverlay(
               saving: state is AddItemSaving,

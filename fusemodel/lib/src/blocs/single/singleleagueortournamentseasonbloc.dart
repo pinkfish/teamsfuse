@@ -201,7 +201,15 @@ class SingleLeagueOrTournamentSeasonBloc extends Bloc<
 
   SingleLeagueOrTournamentSeasonBloc(
       {@required this.singleLeagueOrTournamentBloc,
-      @required this.leagueSeasonUid}) {
+      @required this.leagueSeasonUid})
+      : super(singleLeagueOrTournamentBloc.state.leagueOrTournamentSeasons
+                .containsKey(leagueSeasonUid)
+            ? SingleLeagueOrTournamentSeasonLoaded(
+                leagueOrTournamentSeason: singleLeagueOrTournamentBloc
+                    .state.leagueOrTournamentSeasons[leagueSeasonUid],
+                leagueOrTournamentDivisons: BuiltMap(),
+                loadedDivisons: false)
+            : SingleLeagueOrTournamentSeasonDeleted.empty()) {
     _coordSub = singleLeagueOrTournamentBloc
         .listen((SingleLeagueOrTournamentState state) {
       if (state is SingleLeagueOrTournamentLoaded) {
@@ -228,20 +236,6 @@ class SingleLeagueOrTournamentSeasonBloc extends Bloc<
   void _cleanupStuff() {
     _leagueOrTournamentSnapshot?.cancel();
     _leagueOrTournamentSnapshot = null;
-  }
-
-  @override
-  SingleLeagueOrTournamentSeasonState get initialState {
-    if (singleLeagueOrTournamentBloc.state.leagueOrTournamentSeasons
-        .containsKey(leagueSeasonUid)) {
-      return SingleLeagueOrTournamentSeasonLoaded(
-          leagueOrTournamentSeason: singleLeagueOrTournamentBloc
-              .state.leagueOrTournamentSeasons[leagueSeasonUid],
-          leagueOrTournamentDivisons: BuiltMap(),
-          loadedDivisons: false);
-    } else {
-      return SingleLeagueOrTournamentSeasonDeleted.empty();
-    }
   }
 
   void _updateDivisons(Iterable<LeagueOrTournamentDivison> divisons) {

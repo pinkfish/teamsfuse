@@ -77,7 +77,7 @@ class SingleUserBloc extends Bloc<SingleUserEvent, SingleUserState> {
 
   StreamSubscription<Iterable<Player>> _playerSub;
 
-  SingleUserBloc({@required this.databaseUpdateModel, @required this.userUid}) {
+  SingleUserBloc({@required this.databaseUpdateModel, @required this.userUid}) : super(SingleUserUnitialized()) {
     _playerSub = databaseUpdateModel.getPlayers(userUid).listen(
         (Iterable<Player> players) {
       if (players.length == 0) {
@@ -93,9 +93,6 @@ class SingleUserBloc extends Bloc<SingleUserEvent, SingleUserState> {
     await super.close();
     _playerSub?.cancel();
   }
-
-  @override
-  SingleUserState get initialState => SingleUserUnitialized();
 
   @override
   Stream<SingleUserState> mapEventToState(SingleUserEvent event) async* {

@@ -218,7 +218,15 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
   StreamSubscription<PlayerState> _playerSub;
   StreamSubscription<Iterable<InviteToPlayer>> _inviteSub;
 
-  SinglePlayerBloc({@required this.playerBloc, @required this.playerUid}) {
+  SinglePlayerBloc({@required this.playerBloc, @required this.playerUid})
+      : super(playerBloc.state.players.containsKey(playerUid)
+            ? SinglePlayerLoaded(
+                player: playerBloc.state.players[playerUid],
+                invites: BuiltList(),
+                state: null,
+                mePlayer: playerBloc.state.me?.uid == playerUid,
+                invitesLoaded: false)
+            : SinglePlayerDeleted()) {
     _playerSub = playerBloc.listen((PlayerState playerState) {
       if (playerState.players.containsKey(playerUid)) {
         Player player = playerState.players[playerUid];
@@ -237,20 +245,6 @@ class SinglePlayerBloc extends Bloc<SinglePlayerEvent, SinglePlayerState> {
     await super.close();
     _playerSub?.cancel();
     _inviteSub?.cancel();
-  }
-
-  @override
-  SinglePlayerState get initialState {
-    if (playerBloc.state.players.containsKey(playerUid)) {
-      return SinglePlayerLoaded(
-          player: playerBloc.state.players[playerUid],
-          invites: BuiltList(),
-          state: null,
-          mePlayer: playerBloc.state.me?.uid == playerUid,
-          invitesLoaded: false);
-    } else {
-      return SinglePlayerDeleted();
-    }
   }
 
   @override

@@ -11,7 +11,7 @@ class FusedDrawerHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      bloc: BlocProvider.of<AuthenticationBloc>(context),
+      cubit: BlocProvider.of<AuthenticationBloc>(context),
       builder: (BuildContext context, AuthenticationState state) {
         if (state is AuthenticationLoggedIn) {
           return UserAccountsDrawerHeader(

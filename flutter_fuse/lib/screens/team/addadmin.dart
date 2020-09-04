@@ -134,7 +134,7 @@ class AddAdminScreenState extends State<AddAdminScreen> {
           title: new Text(Messages.of(context).addadmin),
         ),
         body: BlocListener(
-          bloc: addInviteBloc,
+          cubit: addInviteBloc,
           listener: (BuildContext context, AddItemState state) {
             if (state is AddItemDone) {
               Navigator.pop(context);
@@ -144,7 +144,7 @@ class AddAdminScreenState extends State<AddAdminScreen> {
             }
           },
           child: BlocBuilder(
-            bloc: addInviteBloc,
+            cubit: addInviteBloc,
             builder: (BuildContext context, AddItemState state) =>
                 SavingOverlay(
               saving: state is AddItemSaving,

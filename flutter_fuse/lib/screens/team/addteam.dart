@@ -42,7 +42,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   String _seasonNameInternal;
   String _playerUid;
   TeamBuilder _teamToAdd;
-  AddTeamBloc _addTeamBloc ;
+  AddTeamBloc _addTeamBloc;
 
   @override
   void initState() {
@@ -281,7 +281,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
     return BlocProvider(
       create: (BuildContext contex) => _addTeamBloc,
       child: BlocListener(
-        bloc: _addTeamBloc,
+        cubit: _addTeamBloc,
         listener: (BuildContext context, AddItemState addState) {
           if (addState is AddItemDone) {
             Navigator.pop(context);
@@ -291,7 +291,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
           }
         },
         child: BlocBuilder(
-          bloc: _addTeamBloc,
+          cubit: _addTeamBloc,
           builder: (BuildContext context, AddItemState addState) =>
               SavingOverlay(
             saving: addState is AddItemSaving,

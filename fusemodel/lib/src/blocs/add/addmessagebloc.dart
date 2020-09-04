@@ -38,10 +38,8 @@ class AddMessageEventCommit extends AddMessageEvent {
 class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
   final CoordinationBloc coordinationBloc;
 
-  AddMessageBloc({@required this.coordinationBloc}) {}
-
-  @override
-  AddItemState get initialState => new AddItemUninitialized();
+  AddMessageBloc({@required this.coordinationBloc})
+      : super(AddItemUninitialized());
 
   @override
   Stream<AddItemState> mapEventToState(AddMessageEvent event) async* {

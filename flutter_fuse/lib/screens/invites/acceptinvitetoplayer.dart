@@ -68,7 +68,7 @@ class _AcceptInviteToPlayerScreenState
         key: _scaffoldKey,
         appBar: new AppBar(
           title: BlocBuilder(
-            bloc: _singleInviteBloc,
+            cubit: _singleInviteBloc,
             builder: (BuildContext context, SingleInviteState state) {
               if (state is SingleInviteDeleted) {
                 return Text(messages.loading);
@@ -96,14 +96,14 @@ class _AcceptInviteToPlayerScreenState
         body: new Scrollbar(
           child: new SingleChildScrollView(
             child: BlocListener(
-              bloc: _singleInviteBloc,
+              cubit: _singleInviteBloc,
               listener: (BuildContext context, SingleInviteState state) {
                 if (state is SingleInviteDeleted) {
                   Navigator.pop(context);
                 }
               },
               child: BlocBuilder(
-                bloc: _singleInviteBloc,
+                cubit: _singleInviteBloc,
                 builder: (BuildContext context, SingleInviteState state) {
                   if (state is SingleInviteDeleted) {
                     // Deleted.

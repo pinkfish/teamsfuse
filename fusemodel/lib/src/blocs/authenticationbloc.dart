@@ -126,13 +126,9 @@ class AuthenticationBloc
 
   StreamSubscription<UserData> _listener;
 
-  @override
-  AuthenticationState get initialState {
-    return AuthenticationUninitialized();
-  }
-
   AuthenticationBloc(
-      {@required this.userAuth, @required this.analyticsSubsystem}) {
+      {@required this.userAuth, @required this.analyticsSubsystem})
+      : super(AuthenticationUninitialized()) {
     _listener = userAuth.onAuthChanged().listen(_authChanged);
   }
 

@@ -181,7 +181,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   PlayerBloc({
     @required this.coordinationBloc,
-  }) {
+  }) : super(PlayerUninitialized()) {
     _authSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         add(_PlayerLoggedOut());
@@ -201,10 +201,6 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     add(_PlayerFirestore());
   }
 
-  @override
-  PlayerState get initialState {
-    return new PlayerUninitialized();
-  }
 
   @override
   Future<void> close() {

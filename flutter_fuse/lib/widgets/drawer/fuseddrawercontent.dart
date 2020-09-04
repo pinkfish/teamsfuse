@@ -1,4 +1,3 @@
-import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/approuter.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_fuse/widgets/teams/teamtile.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fluro/fluro.dart' as fluro;
 
 import 'fuseddrawer.dart';
 import 'fuseddrawerheader.dart';
@@ -45,7 +45,7 @@ class FusedDrawerContent extends StatelessWidget {
               ),
             ),
             subtitle: BlocBuilder(
-                bloc: BlocProvider.of<TeamBloc>(context),
+                cubit: BlocProvider.of<TeamBloc>(context),
                 builder: (BuildContext build, TeamState state) {
                   //if (snap.hasData) {
                   return new Text(
@@ -62,8 +62,9 @@ class FusedDrawerContent extends StatelessWidget {
                 }),
             onTap: () {
               Navigator.pop(context);
-              AppRouter.instance.navigateTo(context, "Club/" + club.uid,
-                  transition: TransitionType.inFromRight);
+              RepositoryProvider.of<fluro.Router>(context).
+              navigateTo(context, "Club/" + club.uid,
+                  transition: fluro.TransitionType.inFromRight);
             },
           ),
         );
@@ -109,13 +110,13 @@ class FusedDrawerContent extends StatelessWidget {
     final List<Widget> children = <Widget>[
       new FusedDrawerHeader(),
       new BlocBuilder(
-        bloc: BlocProvider.of<ClubBloc>(context),
+        cubit: BlocProvider.of<ClubBloc>(context),
         builder: (BuildContext context, ClubState state) {
           return _buildClubSection(context, state);
         },
       ),
       new BlocBuilder(
-        bloc: BlocProvider.of<TeamBloc>(context),
+        cubit: BlocProvider.of<TeamBloc>(context),
         builder: (BuildContext context, TeamState state) {
           return _buildTeamSection(context, state);
         },

@@ -131,7 +131,7 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
   StreamSubscription<Iterable<Club>> _clubChangeSub;
   Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions = {};
 
-  ClubBloc({@required this.coordinationBloc}) {
+  ClubBloc({@required this.coordinationBloc}) : super(ClubUninitialized()) {
     _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
       if (coordinationState is CoordinationStateStartLoadingSql) {
         _startLoading(coordinationState);
@@ -166,9 +166,6 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
   void _startLoading(CoordinationState state) {
     add(_ClubEventUserLoaded(uid: state.uid));
   }
-
-  @override
-  ClubState get initialState => ClubUninitialized();
 
   void _onClubsUpdated(Iterable<Club> clubs) {
     MapBuilder<String, Club> newClubs = MapBuilder();

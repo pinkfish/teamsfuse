@@ -20,10 +20,8 @@ class AppConfiguration {
     sharedPreferences = await SharedPreferences.getInstance();
     print('Loading app config');
 
-    FirebaseApp.instance.options.then((FirebaseOptions opt) {
-      print("Firstbase client id${opt.clientID}");
-    }).catchError((dynamic e, StackTrace st) =>
-        print("Got error loading the firebase options $st"));
+    var opt = Firebase.app().options;
+    print("Firstbase client id${opt.androidClientId}");
     loadingFuture = _completer.future.then((bool done) => loaded = done);
     config = await RemoteConfig.instance;
     await config.fetch();

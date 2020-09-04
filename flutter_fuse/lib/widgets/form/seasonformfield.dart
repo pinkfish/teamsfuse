@@ -34,7 +34,7 @@ class SeasonFormField extends FormField<String> {
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             if (teamBloc != null) {
               return BlocBuilder(
-                bloc: teamBloc,
+                cubit: teamBloc,
                 builder:
                     (BuildContext context, SingleTeamState singleTeamState) {
                   return InputDecorator(
@@ -62,7 +62,7 @@ class SeasonFormField extends FormField<String> {
                 builder:
                     (BuildContext context, SingleTeamBloc singleTeamBloc) =>
                         BlocBuilder(
-                  bloc: singleTeamBloc,
+                  cubit: singleTeamBloc,
                   builder:
                       (BuildContext context, SingleTeamState singleTeamState) =>
                           InputDecorator(

@@ -141,7 +141,7 @@ class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
   SingleProfileBloc(
       {@required this.coordinationBloc,
       @required this.profileUid,
-      @required this.playerBloc}) {
+      @required this.playerBloc}) : super(SingleProfileUnitialized()) {
     _profileSub = coordinationBloc.authenticationBloc.userAuth
         .getProfileStream(profileUid)
         .listen((FusedUserProfile profile) {
@@ -158,9 +158,6 @@ class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
     await super.close();
     _profileSub?.cancel();
   }
-
-  @override
-  SingleProfileState get initialState => SingleProfileUnitialized();
 
   @override
   Stream<SingleProfileState> mapEventToState(SingleProfileEvent event) async* {

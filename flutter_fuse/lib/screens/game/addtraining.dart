@@ -286,7 +286,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
           title: new Text(messages.title),
         ),
         body: BlocListener(
-          bloc: addTrainingBloc,
+          cubit: addTrainingBloc,
           listener: (BuildContext context, AddItemState state) {
             if (state is AddItemDone) {
               Navigator.pop(context);
@@ -304,7 +304,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
             }
           },
           child: BlocBuilder(
-            bloc: addTrainingBloc,
+            cubit: addTrainingBloc,
             builder: (BuildContext context, AddItemState addState) =>
                 SavingOverlay(
               saving: addState is AddItemSaving,

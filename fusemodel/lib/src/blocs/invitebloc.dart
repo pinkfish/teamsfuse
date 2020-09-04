@@ -120,7 +120,8 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
       {@required this.coordinationBloc,
       @required this.persistentData,
       @required this.analyticsSubsystem,
-      @required this.databaseUpdateModel}) {
+      @required this.databaseUpdateModel})
+      : super(InviteUninitialized()) {
     _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
       if (coordinationState is CoordinationStateLoggedOut) {
         add(_InviteEventLogout());
@@ -150,9 +151,6 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
   void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
     add(_InviteEventLoadFirestore(uid: state.uid));
   }
-
-  @override
-  InviteState get initialState => new InviteUninitialized();
 
   void _onInviteUpdated(Iterable<Invite> invites) {
     Map<String, Invite> newInvites = new Map<String, Invite>();

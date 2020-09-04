@@ -127,7 +127,7 @@ class ClubSettingsState extends State<ClubSettings> {
                 teamUid: widget._teamUid,
                 builder: (BuildContext context, SingleTeamBloc bloc) =>
                     BlocBuilder(
-                  bloc: bloc,
+                  cubit: bloc,
                   builder: (BuildContext context, SingleTeamState state) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

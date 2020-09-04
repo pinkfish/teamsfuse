@@ -179,7 +179,7 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
       body: BlocProvider(
         create: (BuildContext context) => addSharedGameBloc,
         child: BlocListener(
-          bloc: addSharedGameBloc,
+          cubit: addSharedGameBloc,
           listener: (BuildContext conetext, AddItemState addState) {
             if (addState is AddItemDone) {
               Navigator.pop(context);
@@ -196,7 +196,7 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
             }
           },
           child: BlocBuilder(
-            bloc: addSharedGameBloc,
+            cubit: addSharedGameBloc,
             builder: (BuildContext context, AddItemState addState) =>
                 SavingOverlay(
               saving: addState is AddItemSaving,

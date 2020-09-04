@@ -206,6 +206,7 @@ class UserAuthImpl {
       userProfile.phoneNumber = "";
       userProfile.emailOnUpdates = true;
       userProfile.emailUpcomingGame = true;
+      userProfile.notifyOnlyForGames = false;
     }
     UserData user = new UserData((b) => b
       ..email = input.email

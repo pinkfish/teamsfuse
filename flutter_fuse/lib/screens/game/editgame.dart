@@ -69,7 +69,7 @@ class EditGameScreenState extends State<EditGameScreen> {
     return SingleGameProvider(
       gameUid: widget.gameuid,
       builder: (BuildContext context, SingleGameBloc gameBloc) => BlocListener(
-        bloc: gameBloc,
+        cubit: gameBloc,
         listener: (BuildContext context, SingleGameState state) {
           if (state is SingleGameSaveFailed) {
             print('error?');
@@ -87,7 +87,7 @@ class EditGameScreenState extends State<EditGameScreen> {
           body: new Container(
             padding: new EdgeInsets.all(16.0),
             child: BlocBuilder(
-                bloc: gameBloc,
+                cubit: gameBloc,
                 builder: (BuildContext context, SingleGameState gameState) {
                   Widget form;
                   switch (gameState.game.sharedData.type) {

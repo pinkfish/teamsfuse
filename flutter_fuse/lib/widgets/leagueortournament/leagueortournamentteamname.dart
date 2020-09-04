@@ -20,7 +20,7 @@ class LeagueOrTournamentTeamName extends StatelessWidget {
       leagueTeamUid: leagueOrTournmentTeamUid,
       builder: (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
           BlocBuilder(
-        bloc: bloc,
+        cubit: bloc,
         builder:
             (BuildContext context, SingleLeagueOrTournamentTeamState state) {
           Widget inner;

@@ -54,7 +54,7 @@ class SettingsScreenState extends State<SettingsScreen> {
         userUid: authenticationBloc.currentUser.uid,
         builder: (BuildContext context, SingleProfileBloc singleProfileBloc) =>
             BlocListener(
-          bloc: singleProfileBloc,
+          cubit: singleProfileBloc,
           listener:
               (BuildContext context, SingleProfileState singleProfileState) {
             if (singleProfileState is SingleProfileSaveDone ||
@@ -63,7 +63,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             }
           },
           child: BlocBuilder(
-            bloc: singleProfileBloc,
+            cubit: singleProfileBloc,
             builder:
                 (BuildContext vontext, SingleProfileState singleProfileState) {
               if (singleProfileState is SingleProfileUnitialized) {

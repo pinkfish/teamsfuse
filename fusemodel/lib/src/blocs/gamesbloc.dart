@@ -150,7 +150,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   DateTime _start;
   DateTime _end;
 
-  GameBloc({@required this.coordinationBloc, @required this.teamBloc}) {
+  GameBloc({@required this.coordinationBloc, @required this.teamBloc}) : super(GameUninitialized()) {
     if (teamBloc.state is TeamLoaded) {
       _onTeamsUpdates(teamBloc.state.allTeamUids, true);
     }
@@ -201,9 +201,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       }
     }
   }
-
-  @override
-  GameState get initialState => GameUninitialized();
 
   @override
   Stream<GameState> mapEventToState(GameEvent event) async* {

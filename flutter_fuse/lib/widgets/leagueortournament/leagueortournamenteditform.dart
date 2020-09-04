@@ -112,7 +112,7 @@ class LeagueOrTournamentEditFormState
           builder:
               (BuildContext context, SingleLeagueOrTournamentBloc leagueBloc) =>
                   BlocListener(
-            bloc: leagueBloc,
+            cubit: leagueBloc,
             listener:
                 (BuildContext context, SingleLeagueOrTournamentState state) {
               if (state is SingleLeagueOrTournamentDeleted) {
@@ -125,7 +125,7 @@ class LeagueOrTournamentEditFormState
               }
             },
             child: BlocBuilder(
-              bloc: leagueBloc,
+              cubit: leagueBloc,
               builder:
                   (BuildContext context, SingleLeagueOrTournamentState state) {
                 return new Form(

@@ -236,7 +236,11 @@ class SingleClubBloc extends Bloc<SingleClubEvent, SingleClubState> {
   StreamSubscription<ClubState> _clubSub;
   StreamSubscription<Iterable<InviteToClub>> _inviteSub;
 
-  SingleClubBloc({@required this.clubBloc, @required String clubUid}) {
+  SingleClubBloc({@required this.clubBloc, @required String clubUid})
+      : super(clubBloc.state.clubs.containsKey(clubUid)
+            ? SingleClubLoaded(
+                club: clubBloc.state.clubs[clubUid], teams: {}, invites: [])
+            : SingleClubDeleted.empty()) {
     _clubUid = clubUid;
     _clubSub = clubBloc.listen((ClubState clubState) {
       Club club = clubState.clubs[clubUid];
@@ -260,11 +264,7 @@ class SingleClubBloc extends Bloc<SingleClubEvent, SingleClubState> {
 
   @override
   SingleClubState get initialState {
-    if (clubBloc.state.clubs.containsKey(clubUid)) {
-      return SingleClubLoaded(
-          club: clubBloc.state.clubs[clubUid], teams: {}, invites: []);
-    }
-    return SingleClubDeleted.empty();
+    ;
   }
 
   @override

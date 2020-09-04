@@ -121,7 +121,7 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
   StreamSubscription<Iterable<Season>> _seasonSub;
   TraceProxy _seasonByPlayerTrace;
 
-  SeasonBloc({@required this.coordinationBloc}) {
+  SeasonBloc({@required this.coordinationBloc}) : super(SeasonUninitialized()) {
     _coordSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         add(_SeasonLoggedOut());
@@ -139,11 +139,6 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
 
   void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
     add(_SeasonFirestoreStart(uid: state.uid));
-  }
-
-  @override
-  SeasonState get initialState {
-    return new SeasonUninitialized();
   }
 
   void _cleanupSnaps() {

@@ -90,7 +90,7 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder(
-      bloc: BlocProvider.of<TeamBloc>(context),
+      cubit: BlocProvider.of<TeamBloc>(context),
       builder: (BuildContext context, TeamState state) {
         if (state is TeamUninitialized) {
           return CircularProgressIndicator();

@@ -61,7 +61,7 @@ class ClubPicker extends StatelessWidget {
           new Expanded(
               flex: 1,
               child: BlocBuilder(
-                  bloc: BlocProvider.of<ClubBloc>(context),
+                  cubit: BlocProvider.of<ClubBloc>(context),
                   builder: (BuildContext context, ClubState state) {
                     return DropdownButton<String>(
                       hint: new Text(Messages.of(context).selectclub),

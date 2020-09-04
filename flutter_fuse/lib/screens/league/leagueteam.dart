@@ -30,14 +30,14 @@ class LeagueTeamScreen extends StatelessWidget {
       leagueUid: leagueUid,
       builder: (BuildContext context, SingleLeagueOrTournamentBloc bloc) =>
           BlocListener(
-        bloc: bloc,
+        cubit: bloc,
         listener: (BuildContext context, SingleLeagueOrTournamentState state) {
           if (state is SingleLeagueOrTournamentDeleted) {
             Navigator.pop(context);
           }
         },
         child: BlocBuilder(
-          bloc: bloc,
+          cubit: bloc,
           builder: (BuildContext context, SingleLeagueOrTournamentState state) {
             FloatingActionButton fab;
             List<Widget> actions = <Widget>[];

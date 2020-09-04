@@ -41,10 +41,8 @@ class AddTeamEventCommit extends AddTeamEvent {
 class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
   final CoordinationBloc coordinationBloc;
 
-  AddTeamBloc({@required this.coordinationBloc}) {}
-
-  @override
-  AddItemState get initialState => new AddItemUninitialized();
+  AddTeamBloc({@required this.coordinationBloc})
+      : super(AddItemUninitialized());
 
   @override
   Stream<AddItemState> mapEventToState(AddTeamEvent event) async* {

@@ -19,14 +19,15 @@ class Auth extends wfs.AuthWrapper {
 
   @override
   Future<wfs.FirebaseUserWrapper> currentUser() async {
-    fa.FirebaseUser user = await fa.FirebaseAuth.instance.currentUser();
+    var u = fa.FirebaseAuth.instance.currentUser;
+    fa.User user = u;
     return new FirebaseUser(user);
   }
 
   @override
   Future<wfs.FirebaseUserWrapper> signInWithEmailAndPassword(
       {String email, String password}) async {
-    fa.AuthResult user = await fa.FirebaseAuth.instance
+    fa.UserCredential user = await fa.FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
     return new FirebaseUser(user.user);
   }
@@ -34,7 +35,7 @@ class Auth extends wfs.AuthWrapper {
   @override
   Future<wfs.FirebaseUserWrapper> createUserWithEmailAndPassword(
       {String email, String password}) async {
-    fa.AuthResult user = await fa.FirebaseAuth.instance
+    fa.UserCredential user = await fa.FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
     return new FirebaseUser(user.user);
   }
@@ -44,11 +45,11 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
   FirebaseUser(this._user)
       : super(
             email: _user?.email,
-            isEmailVerified: _user?.isEmailVerified,
+            isEmailVerified: _user?.emailVerified,
             uid: _user?.uid,
             loggedIn: _user != null);
 
-  fa.FirebaseUser _user;
+  fa.User _user;
 
   @override
   Future<void> reload() {
@@ -62,7 +63,7 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
 }
 
 class UserTransformer
-    extends StreamTransformerBase<fa.FirebaseUser, wfs.FirebaseUserWrapper> {
+    extends StreamTransformerBase<fa.User, wfs.FirebaseUserWrapper> {
   UserTransformer() {
     _controller = new StreamController<wfs.FirebaseUserWrapper>(
         onListen: _onListen,
@@ -77,10 +78,10 @@ class UserTransformer
 
   StreamController<wfs.FirebaseUserWrapper> _controller;
 
-  StreamSubscription<fa.FirebaseUser> _subscription;
+  StreamSubscription<fa.User> _subscription;
 
   // Original Stream
-  Stream<fa.FirebaseUser> _stream;
+  Stream<fa.User> _stream;
 
   void _onListen() {
     _subscription = _stream.listen(onData,
@@ -96,7 +97,7 @@ class UserTransformer
   /// Transformation
   ///
 
-  void onData(fa.FirebaseUser data) {
+  void onData(fa.User data) {
     print('Adding $data');
     _controller.add(new FirebaseUser(data));
   }
@@ -105,7 +106,7 @@ class UserTransformer
   ///Bind
   ///
   @override
-  Stream<wfs.FirebaseUserWrapper> bind(Stream<fa.FirebaseUser> stream) {
+  Stream<wfs.FirebaseUserWrapper> bind(Stream<fa.User> stream) {
     _stream = stream;
     return _controller.stream;
   }

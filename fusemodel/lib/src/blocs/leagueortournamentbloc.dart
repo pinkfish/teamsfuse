@@ -156,13 +156,20 @@ class LeagueOrTournamentBloc
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<LeagueOrTournament>> _leagueOrTournamentSnapshot;
 
-  LeagueOrTournamentBloc({@required this.coordinationBloc}) {
+  LeagueOrTournamentBloc({@required this.coordinationBloc})
+      : super(LeagueOrTournamentUninitialized()) {
+    print("LeagueOrTournament bigglers");
+
     _coordSub = coordinationBloc.listen((CoordinationState coordState) {
+      print("LeagueOrTournament state... $coordState");
       if (coordState is CoordinationStateLoggedOut) {
+        print("LeagueOrTournament fluff");
         add(_LeagueOrTournamentEventLogout());
       } else if (state is CoordinationStateStartLoadingSql) {
+        print("LeagueOrTournament fluffy");
         _startLoading(coordState);
       } else if (state is CoordinationStateStartLoadingFirestore) {
+        print("LeagueOrTournament fluff2");
         _startLoadingFirestore(coordState);
       }
     });
@@ -181,15 +188,13 @@ class LeagueOrTournamentBloc
   }
 
   void _startLoading(CoordinationStateStartLoadingSql state) {
+    print("LeagueOrTournament _startLoading");
     add(_LeagueOrTournamentEventUserLoaded(uid: state.uid));
   }
 
   void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
     add(_LeagueOrTournamentEventFirestore(uid: state.uid));
   }
-
-  @override
-  LeagueOrTournamentState get initialState => LeagueOrTournamentUninitialized();
 
   void _onLeagueOrTournamentsUpdated(Iterable<LeagueOrTournament> leagues) {
     Map<String, LeagueOrTournament> leagueOrTournsments = {};
@@ -214,12 +219,15 @@ class LeagueOrTournamentBloc
   Stream<LeagueOrTournamentState> mapEventToState(
       LeagueOrTournamentEvent event) async* {
     if (event is _LeagueOrTournamentEventUserLoaded) {
+      print("LeagueOrTournament start");
       TraceProxy leagueTrace = coordinationBloc.analyticsSubsystem
           .newTrace("leagueOrTournamentData");
       leagueTrace.start();
+      print("LeagueOrTournament getting data");
       Map<String, Map<String, dynamic>> leagueData = await coordinationBloc
           .persistentData
           .getAllElements(PersistenData.leagueOrTournamentTable);
+      print("LeagueOrTournament everything");
       Map<String, LeagueOrTournament> newLeague =
           new Map<String, LeagueOrTournament>();
       leagueData.forEach((String uid, Map<String, dynamic> input) {

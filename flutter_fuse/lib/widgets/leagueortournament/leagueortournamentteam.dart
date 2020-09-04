@@ -50,7 +50,7 @@ class _LeagueOrTournamentTeamDetailsState
         builder:
             (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
                 BlocListener(
-          bloc: bloc,
+          cubit: bloc,
           listener: (BuildContext context,
               SingleLeagueOrTournamentTeamState teamState) {
             if (teamState is SingleLeagueOrTournamentTeamLoaded) {
@@ -58,7 +58,7 @@ class _LeagueOrTournamentTeamDetailsState
             }
           },
           child: BlocBuilder(
-              bloc: bloc,
+              cubit: bloc,
               builder: (BuildContext context,
                   SingleLeagueOrTournamentTeamState teamState) {
                 if (teamState is SingleLeagueOrTournamentTeamLoading ||
@@ -87,7 +87,7 @@ class _LeagueOrTournamentTeamDetailsState
                                 singleLeagueOrTournamentDivisonBloc:
                                     divisonBloc),
                         child: BlocBuilder(
-                          bloc: leagueBloc,
+                          cubit: leagueBloc,
                           builder: (BuildContext context,
                                   SingleLeagueOrTournamentState leagueState) =>
                               Column(
@@ -121,7 +121,7 @@ class _LeagueOrTournamentTeamDetailsState
                                   leagueSeasonBloc: seasonBloc,
                                   style: Theme.of(context).textTheme.subhead),
                               BlocBuilder(
-                                bloc: BlocProvider.of<
+                                cubit: BlocProvider.of<
                                         SingleLeagueOrTournamentDivisonGamesBloc>(
                                     context),
                                 builder: (BuildContext context,

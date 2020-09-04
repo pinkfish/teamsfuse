@@ -7,16 +7,19 @@ part of firestore_mobile;
 class Firestore extends wfs.FirestoreWrapper {
   wfs.AuthWrapper authWrapper;
 
+  Firestore() {}
+
   /// Gets a [CollectionReference] for the specified Firestore path.
   @override
   wfs.CollectionReferenceWrapper collection(String path) {
-    return new CollectionReference(fs.Firestore.instance.collection(path));
+    return new CollectionReference(
+        fs.FirebaseFirestore.instance.collection(path));
   }
 
   /// Gets a [DocumentReference] for the specified Firestore path.
   @override
   wfs.DocumentReferenceWrapper document(String path) {
-    return new DocumentReference(fs.Firestore.instance.document(path));
+    return new DocumentReference(fs.FirebaseFirestore.instance.document(path));
   }
 
   @override
@@ -36,8 +39,10 @@ class Firestore extends wfs.FirestoreWrapper {
   Future<Map<String, dynamic>> runTransaction(
       wfs.TransactionHandler transactionHandler,
       {Duration timeout = const Duration(seconds: 5)}) {
-    return fs.Firestore.instance.runTransaction((fs.Transaction transaction) {
-      return transactionHandler(Transaction(transaction));
+    return fs.FirebaseFirestore.instance
+        .runTransaction((fs.Transaction transaction) {
+      var t = Transaction(transaction);
+      return transactionHandler(t);
     });
   }
 }

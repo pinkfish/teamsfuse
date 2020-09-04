@@ -98,7 +98,7 @@ class TeamImage extends StatelessWidget {
       return _buildImageBit(null);
     }
     return BlocBuilder(
-      bloc: BlocProvider.of<TeamBloc>(context),
+      cubit: BlocProvider.of<TeamBloc>(context),
       builder: (BuildContext context, TeamState teamState) {
         Widget inner;
         Team t = team;

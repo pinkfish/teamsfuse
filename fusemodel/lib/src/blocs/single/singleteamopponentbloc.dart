@@ -152,7 +152,14 @@ class SingleOpponentBloc
   StreamSubscription<SingleTeamState> _teamSub;
   StreamSubscription<Iterable<Game>> _gameSub;
 
-  SingleOpponentBloc({this.singleTeamBloc, this.opponentUid}) {
+  SingleOpponentBloc({this.singleTeamBloc, this.opponentUid})
+      : super(singleTeamBloc.state.opponents.containsKey(opponentUid)
+            ? SingleOpponentLoaded(
+                state: null,
+                opponent: singleTeamBloc.state.opponents[opponentUid],
+                gamesLoaded: false,
+                games: BuiltList())
+            : SingleOpponentDeleted()) {
     _teamSub = singleTeamBloc.listen((SingleTeamState teamState) {
       if (teamState.opponents.containsKey(opponentUid)) {
         Opponent op = teamState.opponents[opponentUid];
@@ -177,17 +184,7 @@ class SingleOpponentBloc
   }
 
   @override
-  SingleOpponentState get initialState {
-    if (singleTeamBloc.state.opponents.containsKey(opponentUid)) {
-      return SingleOpponentLoaded(
-          state: state,
-          opponent: singleTeamBloc.state.opponents[opponentUid],
-          gamesLoaded: false,
-          games: BuiltList());
-    } else {
-      return SingleOpponentDeleted();
-    }
-  }
+  SingleOpponentState get initialState {}
 
   @override
   Stream<SingleOpponentState> mapEventToState(

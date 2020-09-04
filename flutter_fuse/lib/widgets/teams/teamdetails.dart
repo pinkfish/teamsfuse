@@ -91,14 +91,14 @@ class TeamDetails extends StatelessWidget {
     return SingleTeamProvider(
       teamUid: teamuid,
       builder: (BuildContext context, SingleTeamBloc bloc) => BlocListener(
-        bloc: bloc,
+        cubit: bloc,
         listener: (BuildContext context, SingleTeamState state) {
           if (state is SingleTeamLoaded) {
             bloc.add(SingleTeamLoadAllSeasons());
           }
         },
         child: BlocBuilder(
-          bloc: bloc,
+          cubit: bloc,
           builder: (BuildContext context, SingleTeamState teamState) {
             if (teamState is SingleTeamDeleted) {
               return Column(

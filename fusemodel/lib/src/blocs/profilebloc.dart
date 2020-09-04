@@ -87,7 +87,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   ProfileBloc({
     @required this.coordinationBloc,
-  }) {
+  }) : super(ProfileUninitialized()) {
     _authSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         add(_ProfileLoggedOut());
@@ -95,10 +95,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         add(_ProfileUserLoaded(uid: coordState.uid));
       }
     });
-  }
-  @override
-  ProfileState get initialState {
-    return new ProfileUninitialized();
   }
 
   @override

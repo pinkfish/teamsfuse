@@ -34,10 +34,8 @@ class AddSeasonEventCommit extends AddSeasonEvent {
 class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
   final CoordinationBloc coordinationBloc;
 
-  AddSeasonBloc({@required this.coordinationBloc}) {}
-
-  @override
-  AddItemState get initialState => new AddItemUninitialized();
+  AddSeasonBloc({@required this.coordinationBloc})
+      : super(AddItemUninitialized());
 
   @override
   Stream<AddItemState> mapEventToState(AddSeasonEvent event) async* {

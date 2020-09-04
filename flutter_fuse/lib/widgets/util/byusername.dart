@@ -15,7 +15,7 @@ class ByUserNameComponent extends StatelessWidget {
     return SingleProfileProvider(
       userUid: userId,
       builder: (BuildContext context, SingleProfileBloc bloc) => BlocBuilder(
-        bloc: bloc,
+        cubit: bloc,
         builder: (BuildContext context, SingleProfileState state) {
           Widget inner;
           if (state is SingleProfileLoaded) {

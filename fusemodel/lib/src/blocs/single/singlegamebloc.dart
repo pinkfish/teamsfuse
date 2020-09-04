@@ -218,7 +218,8 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
   StreamSubscription<Iterable<GameLog>> _gameLogSub;
   StreamSubscription<Game> _singleGameSub;
 
-  SingleGameBloc({@required this.gameBloc, @required this.gameUid}) {
+  SingleGameBloc({@required this.gameBloc, @required this.gameUid})
+      : super(_getInitialState(gameBloc, gameUid)) {
     _gameSub = gameBloc.listen((GameState gameState) {
       Game game = gameState.getGame(gameUid);
       if (game != null) {
@@ -228,6 +229,18 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
         }
       }
     });
+    Game g = gameBloc.state.getGame(gameUid);
+    if (g == null) {
+      _singleGameSub = gameBloc.coordinationBloc.databaseUpdateModel
+          .getGame(gameUid)
+          .listen((Game g) {
+        if (g == null) {
+          add(_SingleGameDeleted());
+        } else {
+          add(_SingleGameNewGame(newGame: g));
+        }
+      });
+    }
   }
 
   @override
@@ -239,22 +252,13 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
   }
 
   @override
-  SingleGameState get initialState {
+  static SingleGameState _getInitialState(GameBloc gameBloc, String gameUid) {
     Game g = gameBloc.state.getGame(gameUid);
 
     if (g != null) {
-      return SingleGameLoaded(game: g, gamelog: [], state: state);
+      return SingleGameLoaded(game: g, gamelog: []);
     }
 
-    _singleGameSub = gameBloc.coordinationBloc.databaseUpdateModel
-        .getGame(gameUid)
-        .listen((Game g) {
-      if (g == null) {
-        add(_SingleGameDeleted());
-      } else {
-        add(_SingleGameNewGame(newGame: g));
-      }
-    });
     return SingleGameLoading();
   }
 

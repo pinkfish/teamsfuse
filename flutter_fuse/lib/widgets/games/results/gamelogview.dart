@@ -60,7 +60,7 @@ class GameLogView extends StatelessWidget {
   Widget build(BuildContext context) {
     // Force the logs to load if they are not already.
     return BlocBuilder(
-      bloc: game,
+      cubit: game,
       builder: (BuildContext context, SingleGameState state) {
         TextStyle subheadStyle = Theme.of(context)
             .textTheme

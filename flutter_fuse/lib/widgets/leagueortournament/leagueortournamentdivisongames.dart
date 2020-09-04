@@ -58,7 +58,7 @@ class _LeagueOrTournamentDivisonDetailsState
     SingleLeagueOrTournamentDivisonGamesBloc bloc =
         BlocProvider.of<SingleLeagueOrTournamentDivisonGamesBloc>(context);
     return BlocBuilder(
-      bloc: bloc,
+      cubit: bloc,
       builder: (BuildContext context,
           SingleLeagueOrTournamentDivisonGamesState gamesState) {
         if (!gamesState.loadedGames) {
@@ -200,7 +200,7 @@ class _LeagueOrTournamentDivisonDetailsState
                 SingleLeagueOrTournamentDivisonGamesBloc(
                     singleLeagueOrTournamentDivisonBloc: divisonBloc),
             child: BlocBuilder(
-              bloc: leagueBloc,
+              cubit: leagueBloc,
               builder: (BuildContext context,
                   SingleLeagueOrTournamentState leagueState) {
                 if (leagueState is SingleLeagueOrTournamentDeleted) {
@@ -208,11 +208,11 @@ class _LeagueOrTournamentDivisonDetailsState
                 }
 
                 return BlocBuilder(
-                  bloc: seasonBloc,
+                  cubit: seasonBloc,
                   builder: (BuildContext context,
                           SingleLeagueOrTournamentSeasonState seasonState) =>
                       BlocBuilder(
-                    bloc: divisonBloc,
+                    cubit: divisonBloc,
                     builder: (BuildContext context,
                             SingleLeagueOrTournamentDivisonState
                                 divisonState) =>

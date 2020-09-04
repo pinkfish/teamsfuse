@@ -186,7 +186,16 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
   StreamSubscription<GameSnapshotEvent> _gameSub;
 
   // Create the bloc and do exciting things with it.
-  SingleSeasonBloc({this.seasonBloc, this.seasonUid}) {
+  SingleSeasonBloc({this.seasonBloc, this.seasonUid})
+      : super(seasonBloc.state.seasons.containsKey(seasonUid)
+            ? SingleSeasonLoaded(
+                season: seasonBloc.state.seasons[seasonUid],
+                loadedGames: false,
+                loadedInvites: false,
+                games: BuiltList(),
+                state: null,
+                invites: BuiltList())
+            : SingleSeasonDeleted()) {
     _seasonSub = seasonBloc.listen((SeasonState seasonState) {
       if (seasonState.seasons.containsKey(seasonUid)) {
         Season season = seasonState.seasons[seasonUid];
@@ -214,21 +223,7 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
   }
 
   @override
-  SingleSeasonState get initialState {
-    if (seasonBloc.state.seasons.containsKey(seasonUid)) {
-      print('SingleSeasonBLoc: found $seasonUid}');
-      return SingleSeasonLoaded(
-          season: seasonBloc.state.seasons[seasonUid],
-          loadedGames: false,
-          loadedInvites: false,
-          games: BuiltList(),
-          state: null,
-          invites: BuiltList());
-    } else {
-      print('SingleSeasonBLoc: deleted $seasonUid ${seasonBloc.state.seasons}');
-      return SingleSeasonDeleted();
-    }
-  }
+  SingleSeasonState get initialState {}
 
   @override
   Stream<SingleSeasonState> mapEventToState(SingleSeasonEvent event) async* {
