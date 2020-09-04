@@ -125,7 +125,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
         if (!seasonData.isCompleted) {
           seasonData.complete(data);
         }
-        if (state.onlyLocal) {
+        if (!state.loadedFirestore) {
           coordinationBloc.loadingTrace?.incrementCounter("seasons");
           coordinationBloc.add(CoordinationEventLoadedData(
               loaded: BlocsToLoad.Season, sql: false));
@@ -148,7 +148,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
       BuiltMap<String, Season> oldSeasons = state.seasons;
       yield (SeasonLoaded.fromState(state)
             ..seasons = event.newSeasons.toBuilder()
-            ..onlyLocal = false)
+            ..loadedFirestore = true)
           .build();
       coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Season, sql: true));

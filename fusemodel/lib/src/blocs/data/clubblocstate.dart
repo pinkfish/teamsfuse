@@ -30,7 +30,7 @@ class ClubBlocStateType extends EnumClass {
 abstract class ClubState {
   BuiltMap<String, Club> get clubs;
   @BuiltValueField(serialize: false)
-  bool get onlyLocal;
+  bool get loadedFirestore;
   @BuiltValueField(serialize: false)
   bool get loadedTeams;
   @BuiltValueField(serialize: false)
@@ -41,7 +41,7 @@ abstract class ClubState {
   static ClubStateBuilder fromState(ClubState state, ClubStateBuilder builder) {
     return builder
       ..clubs = state.clubs.toBuilder()
-      ..onlyLocal = state.onlyLocal
+      ..onlyLocal = state.loadedFirestore
       ..loadedTeams = state.loadedTeams
       ..teams = state.teams.toBuilder();
   }
