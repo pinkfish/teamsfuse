@@ -28,7 +28,6 @@ class ClubBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class ClubState {
-  @nullable
   BuiltMap<String, Club> get clubs;
   @BuiltValueField(serialize: false)
   bool get onlyLocal;
