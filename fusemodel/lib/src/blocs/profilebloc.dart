@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
+import 'data/profileblocstate.dart';
 
 abstract class ProfileEvent extends Equatable {}
 
@@ -40,65 +41,21 @@ class _ProfileLoggedOut extends ProfileEvent {
 }
 
 ///
-/// Basic state for all the user states.
-///
-class ProfileState extends Equatable {
-  final FusedUserProfile profile;
-
-  ProfileState({@required this.profile});
-
-  @override
-  List<Object> get props => [profile];
-}
-
-///
-/// No data at all, we are uninitialized.
-///
-class ProfileUninitialized extends ProfileState {
-  ProfileUninitialized() : super(profile: null);
-
-  @override
-  String toString() {
-    return 'UserUninitialized{users: ${profile.uid}}';
-  }
-}
-
-///
-/// User data is loaded and everything is fluffy.
-///
-class ProfileLoaded extends ProfileState {
-  ProfileLoaded({@required FusedUserProfile profile}) : super(profile: profile);
-
-  @override
-  String toString() {
-    return 'UserData{users: ${profile.uid}}';
-  }
-}
-
-///
 /// User bloc handles the profile flow.  Loading  the profile from
 /// firestore.
 ///
-class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
+class ProfileBloc extends HydratedBloc<ProfileEvent, ProfileBlocState> {
   final CoordinationBloc coordinationBloc;
 
   StreamSubscription<CoordinationState> _authSub;
   StreamSubscription<FusedUserProfile> _profileSub;
 
-  bool _loadedSql = false;
-
   ProfileBloc({
     @required this.coordinationBloc,
-  }) : super(ProfileUninitialized()) {
+  }) : super(ProfileBlocUninitialized()) {
     _authSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
-        _loadedSql = false;
         add(_ProfileLoggedOut());
-      } else if (coordState is CoordinationStateLoadingSql) {
-        if (_loadedSql) {
-          _loadedSql = true;
-          add(_ProfileUserLoaded(uid: coordState.uid));
-        }
       }
     });
   }
@@ -109,9 +66,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   }
 
   @override
-  Stream<ProfileState> mapEventToState(ProfileEvent event) async* {
+  Stream<ProfileBlocState> mapEventToState(ProfileEvent event) async* {
     if (event is _ProfileUserLoaded) {
-      yield ProfileLoaded(profile: null);
+      yield (ProfileBlocLoaded.fromState(state)..profile = null).build();
       // Load the current uswers profile.
       _profileSub = coordinationBloc.authenticationBloc.userAuth
           .getProfileStream(event.uid)
@@ -121,14 +78,37 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
 
     if (event is _ProfileNewProfile) {
-      yield ProfileLoaded(profile: event.profile);
+      yield (ProfileBlocLoaded.fromState(state)
+            ..profile = event.profile.toBuilder())
+          .build();
     }
 
     // Unload everything.
     if (event is _ProfileLoggedOut) {
-      yield ProfileUninitialized();
+      yield ProfileBlocUninitialized();
       _profileSub?.cancel();
       _profileSub = null;
     }
+  }
+
+  @override
+  ProfileBlocState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return ProfileBlocUninitialized();
+    }
+    ProfileBlocStateType type = ProfileBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case ProfileBlocStateType.Uninitialized:
+        return ProfileBlocUninitialized();
+      case ProfileBlocStateType.Loaded:
+        return ProfileBlocLoaded.fromMap(json);
+      default:
+        return ProfileBlocUninitialized();
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(ProfileBlocState state) {
+    return state.toMap();
   }
 }

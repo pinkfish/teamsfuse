@@ -54,7 +54,7 @@ class ClubMembers extends StatelessWidget {
 
   Widget _buildFromFuture(
       BuildContext context, SingleProfileState state, bool admin, String uid) {
-    if ((state is ProfileLoaded)) {
+    if ((state is SingleProfileLoaded)) {
       FusedUserProfile profile = state.profile;
       if (profile != null) {
         AuthenticationBloc authenticationBloc =

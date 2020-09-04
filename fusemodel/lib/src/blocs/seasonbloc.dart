@@ -177,7 +177,7 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
     for (Season doc in newSeasons) {
       coordinationBloc.loadingTrace?.incrementCounter("season");
       coordinationBloc.persistentData
-          .updateElement(PersistenData.seasonTable, doc.uid, doc.toJSON());
+          .updateElement(PersistenData.seasonTable, doc.uid, doc.toMap());
       toRemove.remove(doc.uid);
     }
     for (String SeasonId in toRemove) {
@@ -204,10 +204,9 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
         coordinationBloc.sqlTrace?.incrementCounter("season");
         SeasonsTrace.incrementCounter("season");
         Map<String, dynamic> input = data[uid];
-        SeasonBuilder season = Season.fromJSON(uid, input);
 
         // Load opponents.
-        newSeasons[uid] = season.build();
+        newSeasons[uid] = Season.fromMap(input);
       }
       yield SeasonLoaded(
           state: state, seasons: BuiltMap.from(newSeasons), onlySql: true);

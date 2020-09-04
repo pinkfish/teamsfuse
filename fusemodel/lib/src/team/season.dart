@@ -1,64 +1,54 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 import 'package:fusemodel/src/team/team.dart';
 
 import '../club.dart';
-import '../common.dart';
+import '../serializer.dart';
 import '../winrecord.dart';
 import 'seasonplayer.dart';
 
 part 'season.g.dart';
 
+///
+/// Season details for the team.
+///
 abstract class Season implements Built<Season, SeasonBuilder> {
   String get name;
   String get uid;
+  @BuiltValueField(wireName: TEAMUID)
   String get teamUid;
   WinRecord get record;
-  BuiltList<SeasonPlayer> get players;
+  @BuiltValueField(wireName: PLAYERS)
+  BuiltMap<String, SeasonPlayer> get playersData;
 
   Season._();
   factory Season([updates(SeasonBuilder b)]) = _$Season;
 
-  static const String RECORD = 'record';
-  static const String PLAYERS = 'players';
-  static const String TEAMUID = 'teamUid';
-  static const String USER = 'users';
-
-  static SeasonBuilder fromJSON(String uid, Map<String, dynamic> data) {
-    SeasonBuilder builder = SeasonBuilder();
-    builder.uid = uid;
-    builder.name = getString(data[NAME]);
-    builder.record = WinRecord.fromJSON(data[RECORD] as Map<dynamic, dynamic>);
-    builder.teamUid = data[TEAMUID];
-    Map<dynamic, dynamic> playersData = data[PLAYERS];
-    if (playersData == null) {
-      playersData = {};
-    }
-    for (dynamic key in playersData.keys) {
-      String playerUid = key;
-      dynamic val = playersData[key];
-      SeasonPlayerBuilder player = new SeasonPlayerBuilder();
-      player.playerUid = playerUid;
-      builder.players
-          .add(SeasonPlayer.fromJSON(val as Map<dynamic, dynamic>, playerUid));
-    }
-    return builder;
-  }
-
-  Map<String, dynamic> toJSON({bool includePlayers: false}) {
-    Map<String, dynamic> ret = new Map<String, dynamic>();
-    ret[NAME] = name;
-    ret[RECORD] = record.toJSON();
-    ret[TEAMUID] = teamUid;
+  Map<String, dynamic> toMap({bool includePlayers = false}) {
+    Map<String, dynamic> ret =
+        serializers.serializeWith(Season.serializer, this);
     if (includePlayers) {
-      Map<String, dynamic> output = new Map<String, dynamic>();
-      players.forEach((value) {
-        output[value.playerUid] = value.toJSON();
-      });
-      ret[PLAYERS] = output;
+      return ret;
     }
+
+    ret.remove(PLAYERS);
     return ret;
   }
+
+  static Season fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(Season.serializer, jsonData);
+  }
+
+  static Serializer<Season> get serializer => _$seasonSerializer;
+
+  static const String TEAMUID = "teamUid";
+  static const String PLAYERS = "players";
+  // Used for indexing the invisible user field that has permissions.
+  static const String USER = "user";
+
+  @memoized
+  BuiltList<SeasonPlayer> get players => BuiltList.from(playersData.values);
 
   ///
   /// Is the current user an admin for this season

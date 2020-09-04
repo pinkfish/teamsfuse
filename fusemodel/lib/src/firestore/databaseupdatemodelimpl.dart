@@ -388,19 +388,16 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen,
       Season season, File imageFile) async {
     // Add or update this record into the database.
-    CollectionReferenceWrapper ref = wrapper.collection(TEAMS_COLLECTION);
     if (pregen == null) {
       pregen = wrapper.collection(TEAMS_COLLECTION).document();
     }
     DocumentReferenceWrapper pregenSeason =
         wrapper.collection(SEASONS_COLLECTION).document();
     wrapper.runTransaction((TransactionWrapper tx) async {
-      await tx.set(pregen, team.toJSON());
       await tx.set(
-          pregenSeason,
-          season
-              .rebuild((b) => b..uid = pregen.documentID)
-              .toJSON(includePlayers: true));
+          pregen, team.rebuild((b) => b..uid = pregen.documentID).toJSON());
+      await tx.set(pregenSeason,
+          season.rebuild((b) => b..uid = pregenSeason.documentID).toMap());
       if (imageFile != null) {}
     });
     if (imageFile != null) {
@@ -700,11 +697,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(SEASONS_COLLECTION)
         .where(Season.PLAYERS + "." + playerUid + "." + ADDED, isEqualTo: true);
     QuerySnapshotWrapper wrap = await ref.getDocuments();
-    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        Season.fromJSON(snap.documentID, snap.data).build());
+    yield wrap.documents
+        .map((DocumentSnapshotWrapper snap) => Season.fromMap(snap.data));
     await for (QuerySnapshotWrapper doc in ref.snapshots()) {
-      yield doc.documents.map((DocumentSnapshotWrapper snap) =>
-          Season.fromJSON(snap.documentID, snap.data).build());
+      yield doc.documents
+          .map((DocumentSnapshotWrapper snap) => Season.fromMap(snap.data));
     }
   }
 
@@ -825,9 +822,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Update the game.
     await ref
         .document(season.uid)
-        .updateData(season.toJSON(includePlayers: includePlayers));
+        .updateData(season.toMap(includePlayers: includePlayers));
     persistenData.updateElement(PersistenData.seasonTable, season.uid,
-        season.toJSON(includePlayers: true));
+        season.toMap(includePlayers: true));
   }
 
   Future<Season> addFirestoreSeason(
@@ -836,12 +833,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Add the game.
     DocumentReferenceWrapper doc;
     if (pregenDoc != null) {
-      await pregenDoc.setData(season.toJSON(includePlayers: true));
+      await pregenDoc.setData(season.toMap(includePlayers: true));
     } else {
-      doc = await ref.add(season.toJSON(includePlayers: true));
+      doc = await ref.add(season.toMap(includePlayers: true));
     }
     persistenData.updateElement(PersistenData.seasonTable, season.uid,
-        season.toJSON(includePlayers: true));
+        season.toMap(includePlayers: true));
     return season.rebuild((b) => b..uid = doc.documentID);
   }
 
@@ -978,11 +975,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
     DocumentSnapshotWrapper snap = await doc.get();
     if (snap.exists) {
-      yield Season.fromJSON(doc.documentID, snap.data).build();
+      yield Season.fromMap(snap.data);
     }
     yield null;
     await for (DocumentSnapshotWrapper snap in doc.snapshots()) {
-      yield Season.fromJSON(doc.documentID, snap.data).build();
+      yield Season.fromMap(snap.data);
     }
   }
 
@@ -994,14 +991,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     QuerySnapshotWrapper snap = await query.getDocuments();
     List<Season> seasons = [];
     for (DocumentSnapshotWrapper doc in snap.documents) {
-      seasons.add(Season.fromJSON(doc.documentID, doc.data).build());
+      seasons.add(Season.fromMap(doc.data));
     }
     yield seasons;
 
     await for (QuerySnapshotWrapper snap in query.snapshots()) {
       List<Season> seasons = [];
       for (DocumentSnapshotWrapper doc in snap.documents) {
-        seasons.add(Season.fromJSON(doc.documentID, doc.data).build());
+        seasons.add(Season.fromMap(doc.data));
       }
       yield seasons;
     }
@@ -1013,7 +1010,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentReferenceWrapper doc =
         await wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
     Map<String, dynamic> data = <String, dynamic>{};
-    data[Season.PLAYERS + "." + seasonPlayer.playerUid] = seasonPlayer.toJSON();
+    data[Season.PLAYERS + "." + seasonPlayer.playerUid] = seasonPlayer.toMap();
     doc.updateData(data);
     return;
   }
@@ -1036,7 +1033,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     List<Season> seasons = [];
     var snap = await query.getDocuments();
     for (DocumentSnapshotWrapper doc in snap.documents) {
-      Season season = Season.fromJSON(doc.documentID, doc.data).build();
+      Season season = Season.fromMap(doc.data);
       persistenData.updateElement(
           PersistenData.seasonTable, season.uid, doc.data);
       seasons.add(season);
@@ -1045,7 +1042,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     await for (QuerySnapshotWrapper snap in query.snapshots()) {
       List<Season> seasons = [];
       for (DocumentSnapshotWrapper doc in snap.documents) {
-        Season season = Season.fromJSON(doc.documentID, doc.data).build();
+        Season season = Season.fromMap(doc.data);
         persistenData.updateElement(
             PersistenData.seasonTable, season.uid, doc.data);
         seasons.add(season);

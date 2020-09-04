@@ -1,13 +1,27 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
-import '../common.dart';
+import '../serializer.dart';
 
 part 'seasonplayer.g.dart';
 
 ///
 /// What role the user has in the team.
 ///
-enum RoleInTeam { Player, Coach, NonPlayer }
+class RoleInTeam extends EnumClass {
+  static Serializer<RoleInTeam> get serializer => _$roleInTeamSerializer;
+
+  static const RoleInTeam Player = _$player;
+  static const RoleInTeam Coach = _$coach;
+  static const RoleInTeam NonPlayer = _$nonPlayer;
+
+  const RoleInTeam._(String name) : super(name);
+
+  static BuiltSet<RoleInTeam> get values => _$values;
+
+  static RoleInTeam valueOf(String name) => _$valueOf(name);
+}
 
 ///
 /// The player associated with the season.  This contains season specific
@@ -16,6 +30,7 @@ enum RoleInTeam { Player, Coach, NonPlayer }
 abstract class SeasonPlayer
     implements Built<SeasonPlayer, SeasonPlayerBuilder> {
   String get playerUid;
+  @BuiltValueField(wireName: ROLE)
   RoleInTeam get role;
   String get jerseyNumber;
   String get position;
@@ -23,26 +38,14 @@ abstract class SeasonPlayer
   SeasonPlayer._();
   factory SeasonPlayer([updates(SeasonPlayerBuilder b)]) = _$SeasonPlayer;
 
-  static const String ROLE = 'role';
-  static const String _JERSEY = 'jerseyNumber';
-  static const String _POSITION = 'position';
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(SeasonPlayer.serializer, this);
+  }
+  static const String ROLE = "role";
 
-  static SeasonPlayer fromJSON(Map<dynamic, dynamic> data, String playerUid) {
-    SeasonPlayerBuilder builder = new SeasonPlayerBuilder();
-    builder.role =
-        RoleInTeam.values.firstWhere((e) => e.toString() == data[ROLE]);
-    builder.position = getString(data[_POSITION]) ?? "";
-    builder.jerseyNumber = getString(data[_JERSEY]) ?? "";
-    builder.playerUid = playerUid;
-    return builder.build();
+  static SeasonPlayer fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(SeasonPlayer.serializer, jsonData);
   }
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = new Map<String, dynamic>();
-    ret[ROLE] = role.toString();
-    ret[ADDED] = true;
-    ret[_JERSEY] = jerseyNumber;
-    ret[_POSITION] = position;
-    return ret;
-  }
+  static Serializer<SeasonPlayer> get serializer => _$seasonPlayerSerializer;
 }

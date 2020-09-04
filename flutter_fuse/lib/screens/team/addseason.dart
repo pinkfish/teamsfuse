@@ -62,7 +62,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
           ..role = RoleInTeam.NonPlayer));
       }
       addSeasonBloc.add(AddSeasonEventCommit(
-          teamUid: widget.teamUid, name: _seasonName, players: players));
+          teamUid: widget.teamUid, name: _seasonName, players: players.build()));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }

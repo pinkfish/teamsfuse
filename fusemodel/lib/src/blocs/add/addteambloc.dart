@@ -52,13 +52,16 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
 
       try {
         // Create the season too.
-        ListBuilder<SeasonPlayer> players = ListBuilder<SeasonPlayer>();
+        List<SeasonPlayer> players = List<SeasonPlayer>();
         players.add(SeasonPlayer((b) => b
           ..playerUid = event.playerUid
           ..role = RoleInTeam.Player));
         Season season = Season((b) => b
           ..name = event.seasonName
-          ..players = players);
+          ..playersData = MapBuilder(Map<String, SeasonPlayer>.fromIterable(
+              players,
+              key: (p) => p.playerUid,
+              value: (p) => p)));
 
         String uid = await coordinationBloc.databaseUpdateModel
             .addFirestoreTeam(

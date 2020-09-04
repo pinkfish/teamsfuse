@@ -1,3 +1,11 @@
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
+
+import 'serializer.dart';
+
+part 'common.g.dart';
+
 ///
 /// Used to get data from a json blob, makes sure it is actually a string.
 ///
@@ -126,8 +134,57 @@ String normalizeEmail(String eMail) {
 }
 
 /// The sport the team is involved in
-enum Sport { Basketball, Softball, Soccer, Other, None }
+class Sport extends EnumClass {
+  static Serializer<Sport> get serializer => _$sportSerializer;
+
+  static const Sport Basketball = _$basketball;
+  static const Sport Softball = _$softball;
+  static const Sport Soccer = _$soccer;
+  static const Sport Other = _$other;
+  static const Sport None = _$none;
+
+  const Sport._(String name) : super(name);
+
+  static BuiltSet<Sport> get values => _$sportValues;
+
+  static Sport valueOf(String name) => _$sportValueOf(name);
+}
 
 /// The gender associated with the team.
-enum Gender { Female, Male, Coed, NA }
+class Gender extends EnumClass {
+  static Serializer<Gender> get serializer => _$genderSerializer;
 
+  static const Gender Female = _$female;
+  static const Gender Male = _$mole;
+  static const Gender Coed = _$coed;
+  static const Gender NA = _$nA;
+
+  const Gender._(String name) : super(name);
+
+  static BuiltSet<Gender> get values => _$genderValues;
+
+  static Gender valueOf(String name) => _$genderValueOf(name);
+}
+
+///
+/// Tracks if the sectoin is added (or not)
+///
+abstract class AddedUid implements Built<AddedUid, AddedUidBuilder> {
+  bool get added;
+
+  AddedUid._();
+  factory AddedUid([void Function(AddedUidBuilder) updates]) = _$AddedUid;
+
+  /// Defaults for the state.  Always default to no games loaded.
+  static void _initializeBuilder(AddedUidBuilder b) => b..added = true;
+
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(AddedUid.serializer, this);
+  }
+
+  static AddedUid fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(AddedUid.serializer, jsonData);
+  }
+
+  static Serializer<AddedUid> get serializer => _$addedUidSerializer;
+}

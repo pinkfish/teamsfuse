@@ -317,11 +317,11 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
           ..name = invite.leagueSeasonName
           ..teamUid = team.uid
           ..record = WinRecordBuilder()
-          ..players = ListBuilder([
-            SeasonPlayer((b) => b
+          ..playersData = MapBuilder({
+            inviteBloc.state.uid: SeasonPlayer((b) => b
               ..playerUid = inviteBloc.state.uid
               ..role = RoleInTeam.NonPlayer)
-          ]));
+          }));
         team.currentSeason = pregenSeason.documentID;
         LeagueOrTournamentTeam leagueTeam = await inviteBloc.databaseUpdateModel
             .getLeagueTeamData(invite.leagueTeamUid)

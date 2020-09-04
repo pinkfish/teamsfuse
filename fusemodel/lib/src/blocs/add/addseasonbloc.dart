@@ -17,7 +17,7 @@ abstract class AddSeasonEvent extends Equatable {}
 class AddSeasonEventCommit extends AddSeasonEvent {
   final String teamUid;
   final String name;
-  final ListBuilder<SeasonPlayer> players;
+  final BuiltList<SeasonPlayer> players;
 
   AddSeasonEventCommit(
       {@required this.teamUid, @required this.name, @required this.players});
@@ -44,10 +44,12 @@ class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
       yield AddItemSaving();
 
       try {
+        var map = Map<String, SeasonPlayer>.fromIterable(event.players,
+            key: (p) => p.playerUid, value: (p) => p);
         Season season = Season((b) => b
           ..teamUid = event.teamUid
           ..name = event.name
-          ..players = event.players);
+          ..playersData = MapBuilder(map));
         Season ret = await coordinationBloc.databaseUpdateModel
             .addFirestoreSeason(season, null);
         yield AddItemDone(uid: ret.uid);

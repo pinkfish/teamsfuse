@@ -66,7 +66,7 @@ class UserAuthImpl {
       user.sendEmailVerification();
       DocumentReferenceWrapper ref =
           wrapper.collection(USER_DATA_COLLECTION).document(user.uid);
-      return ref.setData(profile.toJSON()).then((void data) async {
+      return ref.setData(profile.toMap()).then((void data) async {
         // With update uid.
         // Create a 'me' user.
         PlayerBuilder player = new PlayerBuilder();
@@ -158,7 +158,7 @@ class UserAuthImpl {
   Future<void> updateProfile(String uid, FusedUserProfile profile) async {
     DocumentReferenceWrapper ref =
         wrapper.collection(USER_DATA_COLLECTION).document(uid);
-    await ref.updateData(profile.toJSON());
+    await ref.updateData(profile.toMap());
   }
 
   Stream<FusedUserProfile> getProfileStream(String userId) async* {
@@ -168,11 +168,10 @@ class UserAuthImpl {
     DocumentSnapshotWrapper snap = await ref.get();
     print("Found $userId ${snap.data}");
     if (snap.exists) {
-      FusedUserProfile profile =
-          FusedUserProfile.fromJSON(ref.documentID, snap.data).build();
+      FusedUserProfile profile = FusedUserProfile.fromMap(snap.data);
       yield profile;
       await for (DocumentSnapshotWrapper snap in ref.snapshots()) {
-        yield FusedUserProfile.fromJSON(ref.documentID, snap.data).build();
+        yield FusedUserProfile.fromMap(snap.data);
       }
     }
     yield null;
@@ -183,7 +182,8 @@ class UserAuthImpl {
       persistenData.updateElement(
           PersistenData.profileTable, doc.documentID, doc.data);
       FusedUserProfileBuilder profile =
-          FusedUserProfile.fromJSON(doc.documentID, doc.data);
+          FusedUserProfile.fromMap(doc.data).toBuilder();
+      profile.uid = doc.documentID;
       _currentUser = _currentUser.rebuild((b) => b..profile = profile);
       _controller.add(_currentUser);
     }
@@ -198,7 +198,8 @@ class UserAuthImpl {
         await persistenData.getElement(PersistenData.profileTable, input.uid);
     FusedUserProfileBuilder userProfile;
     if (data != null) {
-      userProfile = FusedUserProfile.fromJSON(input.uid, data);
+      userProfile = FusedUserProfile.fromMap(data).toBuilder();
+      userProfile.uid = input.uid;
     } else {
       userProfile = FusedUserProfileBuilder();
       userProfile.displayName = input.email.split("@")[0];
@@ -225,7 +226,8 @@ class UserAuthImpl {
         ref.then((DocumentSnapshotWrapper doc) {
           print('Loaded from firestore');
           FusedUserProfileBuilder profile =
-              FusedUserProfile.fromJSON(doc.documentID, doc.data);
+              FusedUserProfile.fromMap(doc.data).toBuilder();
+          profile.uid = user.uid;
           user = user.rebuild((b) => b..profile = profile);
           persistenData.updateElement(
               PersistenData.profileTable, doc.documentID, data);
