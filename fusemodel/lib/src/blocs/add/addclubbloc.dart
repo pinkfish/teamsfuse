@@ -44,8 +44,9 @@ class AddClubBloc extends Bloc<AddClubEvent, AddItemState> {
       try {
         ClubBuilder updated = event.club.toBuilder();
         var wrap = coordinationBloc.databaseUpdateModel.precreateClubUid();
-        updated.adminsUids
-            .add(coordinationBloc.authenticationBloc.currentUser.uid);
+        updated.membersData[coordinationBloc.authenticationBloc.currentUser
+            .uid] = AddedOrAdmin((b) => b..admin = true);
+        updated.uid = wrap.documentID;
         String uid = await coordinationBloc.databaseUpdateModel
             .addClub(wrap, updated.build());
         if (event.imageFile != null) {

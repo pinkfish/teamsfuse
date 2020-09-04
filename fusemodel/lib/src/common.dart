@@ -74,7 +74,19 @@ const String LEAGUE_TEAM_COLLECTION = "LeagueTeam";
 enum UpdateReason { Delete, Update }
 
 /// Handles a yes/no/unset setup.
-enum Tristate { Yes, No, Unset }
+class Tristate extends EnumClass {
+  static Serializer<Tristate> get serializer => _$tristateSerializer;
+
+  static const Tristate Yes = _$yes;
+  static const Tristate No = _$no;
+  static const Tristate Unset = _$unset;
+
+  const Tristate._(String name) : super(name);
+
+  static BuiltSet<Tristate> get values => _$tristateValues;
+
+  static Tristate valueOf(String name) => _$tristateValueOf(name);
+}
 
 ///
 /// Class to handle turning email into a normalized setup.
@@ -167,7 +179,7 @@ class Gender extends EnumClass {
 }
 
 ///
-/// Tracks if the sectoin is added (or not)
+/// Tracks if the section is added (or not).  Used to handle memberships.
 ///
 abstract class AddedUid implements Built<AddedUid, AddedUidBuilder> {
   bool get added;
@@ -187,4 +199,33 @@ abstract class AddedUid implements Built<AddedUid, AddedUidBuilder> {
   }
 
   static Serializer<AddedUid> get serializer => _$addedUidSerializer;
+}
+
+///
+/// Class to track added and admin for clubs and other places this is
+/// needed.
+///
+abstract class AddedOrAdmin
+    implements Built<AddedOrAdmin, AddedOrAdminBuilder> {
+  bool get admin;
+  bool get added;
+
+  AddedOrAdmin._();
+  factory AddedOrAdmin([void Function(AddedOrAdminBuilder) updates]) =
+      _$AddedOrAdmin;
+
+  /// Defaults for the state.  Always default to no games loaded.
+  static void _initializeBuilder(AddedOrAdminBuilder b) => b
+    ..added = true
+    ..admin = false;
+
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(AddedOrAdmin.serializer, this);
+  }
+
+  static AddedOrAdmin fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(AddedOrAdmin.serializer, jsonData);
+  }
+
+  static Serializer<AddedOrAdmin> get serializer => _$addedOrAdminSerializer;
 }

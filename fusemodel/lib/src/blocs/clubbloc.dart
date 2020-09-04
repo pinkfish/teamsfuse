@@ -1,73 +1,16 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
+import 'data/clubblocstate.dart';
 import 'internal/blocstoload.dart';
 
-///
-/// Basic state for all the data in this system.
-///
-class ClubState extends Equatable {
-  final BuiltMap<String, Club> clubs;
-  final bool onlySql;
-  final BuiltMap<String, Iterable<Team>> teams;
-
-  ClubState(
-      {@required this.clubs, @required this.onlySql, @required this.teams});
-
-  @override
-  List<Object> get props => [clubs, onlySql, teams];
-}
-
-///
-/// No data at all yet.
-///
-class ClubUninitialized extends ClubState {
-  ClubUninitialized()
-      : super(clubs: BuiltMap(), onlySql: true, teams: BuiltMap());
-
-  @override
-  String toString() {
-    return 'ClubUninitialized{}';
-  }
-}
-
-///
-/// Doing something.
-///
-class ClubLoaded extends ClubState {
-  ClubLoaded(
-      {@required BuiltMap<String, Club> clubs,
-      @required bool onlySql,
-      @required BuiltMap<String, Iterable<Team>> teams})
-      : super(clubs: clubs, onlySql: onlySql, teams: teams);
-
-  @override
-  String toString() {
-    return 'ClubLoaded{}';
-  }
-}
-
 abstract class ClubEvent extends Equatable {}
-
-class _ClubEventUserLoaded extends ClubEvent {
-  final String uid;
-
-  _ClubEventUserLoaded({@required this.uid});
-
-  @override
-  String toString() {
-    return '_ClubEventUserLoaded{}';
-  }
-
-  @override
-  List<Object> get props => [uid];
-}
 
 class _ClubEventLoadFromFirestore extends ClubEvent {
   final String uid;
@@ -124,9 +67,8 @@ class ClubDeleteMember extends ClubEvent {
 /// Handles the work around the clubs and club system inside of
 /// the app.
 ///
-class ClubBloc extends Bloc<ClubEvent, ClubState> {
+class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
   final CoordinationBloc coordinationBloc;
-  bool _loadingSql = false;
   bool _loadingFirestore = false;
 
   StreamSubscription<CoordinationState> _coordSub;
@@ -134,17 +76,9 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
   Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions = {};
 
   ClubBloc({@required this.coordinationBloc}) : super(ClubUninitialized()) {
-    coordinationBloc
-        .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Club));
     _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
-      if (coordinationState is CoordinationStateLoadingSql) {
-        if (!_loadingSql) {
-          _loadingSql = true;
-          _startLoading(coordinationState);
-        }
-      } else if (state is CoordinationStateLoggedOut) {
+      if (state is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
-        _loadingSql = false;
         add(_ClubEventLogout());
       } else if (state is CoordinationStateLoadingFirestore) {
         if (!_loadingFirestore) {
@@ -154,7 +88,10 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
       }
     });
     if (!(coordinationBloc.state is CoordinationStateLoggedOut)) {
-      _startLoading(coordinationBloc.state);
+      if (!_loadingFirestore) {
+        _loadingFirestore = true;
+        add(_ClubEventLoadFromFirestore(uid: coordinationBloc.state.uid));
+      }
     }
   }
 
@@ -175,10 +112,6 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
     _clubTeamsSubscriptions.clear();
   }
 
-  void _startLoading(CoordinationState state) {
-    add(_ClubEventUserLoaded(uid: state.uid));
-  }
-
   void _onClubsUpdated(Iterable<Club> clubs) {
     MapBuilder<String, Club> newClubs = MapBuilder();
 
@@ -196,41 +129,14 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
           add(_ClubEventNewTeamsLoaded(clubUid: clubUid, teams: teams));
         });
       }
-      coordinationBloc.persistentData.updateElement(PersistenData.clubsTable,
-          club.uid, club.toJson(includeMembers: true));
+      coordinationBloc.persistentData.updateElement(
+          PersistenData.clubsTable, club.uid, club.toMap(includeMembers: true));
     }
     add(_ClubEventNewDataLoaded(clubs: newClubs.build()));
   }
 
   @override
   Stream<ClubState> mapEventToState(ClubEvent event) async* {
-    if (event is _ClubEventUserLoaded) {
-      // Reset stuff first.
-      // Club data;
-      TraceProxy clubTrace =
-          coordinationBloc.analyticsSubsystem.newTrace("clubData");
-      clubTrace.start();
-      DateTime start = new DateTime.now();
-      Map<String, Map<String, dynamic>> data = await coordinationBloc
-          .persistentData
-          .getAllElements(PersistenData.clubsTable);
-      MapBuilder<String, Club> newClubs = new MapBuilder<String, Club>();
-      data.forEach((String uid, Map<String, dynamic> input) {
-        coordinationBloc.sqlTrace.incrementCounter("club");
-        Club club = Club.fromJSON(
-                coordinationBloc.authenticationBloc.currentUser.uid, uid, input)
-            .build();
-        newClubs[uid] = club;
-      });
-      print(
-          'End clubs ${start.difference(new DateTime.now())} ${newClubs.length}');
-      clubTrace.stop();
-      yield ClubLoaded(
-          clubs: newClubs.build(), onlySql: state.onlySql, teams: BuiltMap());
-      coordinationBloc.add(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: true));
-    }
-
     if (event is _ClubEventLoadFromFirestore) {
       // Load the clubs first.
       _clubChangeSub?.cancel();
@@ -243,7 +149,10 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
 
     // New data from above.  Mark ourselves as done.
     if (event is _ClubEventNewDataLoaded) {
-      yield ClubLoaded(clubs: event.clubs, onlySql: false, teams: state.teams);
+      yield (ClubLoaded.fromState(state)
+            ..clubs = event.clubs.toBuilder()
+            ..onlyLocal = false)
+          .build();
       coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: false));
     }
@@ -267,8 +176,35 @@ class ClubBloc extends Bloc<ClubEvent, ClubState> {
     if (event is _ClubEventNewTeamsLoaded) {
       MapBuilder<String, Iterable<Team>> teams = state.teams.toBuilder();
       teams[event.clubUid] = event.teams;
-      yield ClubLoaded(
-          clubs: state.clubs, onlySql: state.onlySql, teams: teams.build());
+      yield (ClubLoaded.fromState(state)..teams = teams).build();
     }
+  }
+
+  @override
+  ClubState fromJson(Map<String, dynamic> json) {
+    ClubBlocStateType type = ClubBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case ClubBlocStateType.Uninitialized:
+        return ClubUninitialized();
+      case ClubBlocStateType.Loaded:
+        TraceProxy clubTrace =
+            coordinationBloc.analyticsSubsystem.newTrace("clubData");
+        clubTrace.start();
+        DateTime start = new DateTime.now();
+        // If recovered this way it is only local data.
+        var loaded = ClubLoaded.fromMap(json);
+        coordinationBloc.sqlTrace.incrementCounter("club");
+        print(
+            'End clubs ${start.difference(new DateTime.now())} ${loaded.clubs.length}');
+        clubTrace.stop();
+        return loaded;
+      default:
+        return ClubUninitialized();
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(ClubState state) {
+    return state.toMap();
   }
 }

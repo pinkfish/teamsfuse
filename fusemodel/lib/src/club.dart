@@ -1,8 +1,10 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'common.dart';
+import 'serializer.dart';
 
 part 'club.g.dart';
 
@@ -34,83 +36,49 @@ abstract class Club implements Built<Club, ClubBuilder> {
   int get arriveBeforeGame;
 
   /// List of admin user ids. This is all user ids (not players)
-  BuiltSet<String> get adminsUids;
+  @BuiltValueField(wireName: MEMBERS)
+  BuiltMap<String, AddedOrAdmin> get membersData;
 
   /// List of member user ids.  This is all user ids (not players)
-  BuiltSet<String> get members;
+  @memoized
+  BuiltSet<String> get members => BuiltSet.of(membersData.keys);
 
+  @memoized
+  BuiltSet<String> get adminsUids =>
+      BuiltSet.of(membersData.keys.where((e) => membersData[e].admin));
+
+  @BuiltValueField(serialize: false)
   String get userUid;
 
   Club._();
   factory Club([updates(ClubBuilder b)]) => _$Club((b) => b..about = "");
 
-  ///
-  /// Load this from the wire format.
-  ///
-  static ClubBuilder fromJSON(
-      String userUid, String myUid, Map<String, dynamic> data) {
-    ClubBuilder builder = ClubBuilder();
-    builder
-      ..userUid = userUid
-      ..uid = myUid
-      ..name = data[NAME]
-      ..photoUrl = data[PHOTOURL]
-      ..about = data[_ABOUT] ?? ""
-      ..arriveBeforeGame = data[_ARRIVEBEFOREGAME] ?? 0
-      ..trackAttendence = Tristate.values.firstWhere(
-          (Tristate state) => state.toString() == data[_TRACKATTENDENCE],
-          orElse: () => Tristate.Unset);
-    if (data.containsKey(_SPORT)) {
-      builder.sport = Sport.values.firstWhere(
-          (Sport s) => s.toString() == data[_SPORT],
-          orElse: () => Sport.None);
-    } else {
-      builder.sport = Sport.None;
-    }
+  /// Defaults for the state.  Always default to no games loaded.
+  static void _initializeBuilder(ClubBuilder b) => b
+    ..about = ""
+    ..arriveBeforeGame = 0
+    ..trackAttendence = Tristate.Yes
+    ..userUid = "";
 
-    for (String adminUid in data[MEMBERS].keys) {
-      Map<dynamic, dynamic> adminData = data[MEMBERS][adminUid];
-      if (adminData[ADDED]) {
-        if (adminData[ADMIN]) {
-          builder.adminsUids.add(adminUid.toString());
-        } else {
-          builder.members.add(adminUid.toString());
-        }
-      }
-    }
-    return builder;
-  }
-
-  static const String _TRACKATTENDENCE = "trackAttendence";
-  static const String MEMBERS = "members";
-  static const String _ARRIVEBEFOREGAME = "arriveBefore";
-  static const String _SPORT = "sport";
-  static const String _ABOUT = "about";
-  static const String ADMIN = "admin";
-
-  ///
-  /// Convrt this club into the format to use to send over the wire.
-  ///
-  Map<String, dynamic> toJson({String myUid, bool includeMembers = false}) {
-    Map<String, dynamic> ret = <String, dynamic>{};
-    ret[NAME] = name;
-    ret[PHOTOURL] = photoUrl;
-    ret[_TRACKATTENDENCE] = trackAttendence.toString();
-    ret[_SPORT] = sport.toString();
-    ret[_ABOUT] = about;
-    ret[_ARRIVEBEFOREGAME] = arriveBeforeGame;
-    Map<String, dynamic> data = <String, dynamic>{};
+  Map<String, dynamic> toMap({bool includeMembers}) {
+    Map<String, dynamic> ret = serializers.serializeWith(Club.serializer, this);
     if (includeMembers) {
-      for (String admin in adminsUids) {
-        data[admin] = <String, bool>{ADDED: true, ADMIN: true};
-      }
-      for (String member in members) {
-        data[member] = <String, bool>{ADDED: true, ADMIN: false};
-      }
-      ret[MEMBERS] = data;
+      return ret;
     }
+    ret.remove(MEMBERS);
     return ret;
   }
+
+  static Club fromMap(String userUid, Map<String, dynamic> jsonData) {
+    return serializers
+        .deserializeWith(Club.serializer, jsonData)
+        .rebuild((b) => b..userUid = userUid);
+  }
+
+  static Serializer<Club> get serializer => _$clubSerializer;
+
+  static const String MEMBERS = "members";
+  static const String ADMIN = "admin";
 
   bool isUserMember(String myUid) {
     return adminsUids.contains(myUid) || members.contains(myUid);
@@ -129,80 +97,4 @@ abstract class Club implements Built<Club, ClubBuilder> {
   bool isAdmin() {
     return isUserAdmin(userUid);
   }
-
-  /*
-  Iterable<Team> get cachedTeams => _teams;
-
-  /// Get the teams for this club.
-  Stream<Iterable<Team>> get teamStream {
-    if (_teamSub == null) {
-      _teamSub = UserDatabaseData.instance.updateModel.getClubTeams(this);
-      _teamSub.stream.listen((Iterable<Team> teams) {
-        _teams = teams;
-        _teamController.add(_teams);
-      });
-      _teamStream = _teamController.stream.asBroadcastStream();
-    }
-    return _teamStream;
-  }
-
-
-  ///
-  /// Updates the club from another club.
-  ///
-  void updateFrom(Club club) {
-    name = club.name;
-    photoUrl = club.photoUrl;
-    trackAttendence = club.trackAttendence;
-    arriveBeforeGame = club.arriveBeforeGame;
-    members = club.members;
-  }
-
-  /// Close everything.
-  void dispose() {
-    _teamController?.close();
-    _teamController = null;
-    _teamSub?.dispose();
-    _teamSub = null;
-  }
-
-  Future<String> updateFirestore({bool includeMembers = false}) {
-    return UserDatabaseData.instance.updateModel
-        .updateClub(this, includeMembers: includeMembers)
-        .then((String newUid) {
-      if (uid == null) {
-        uid = newUid;
-      }
-      return newUid;
-    });
-  }
-
-  Future<Uri> updateImage(File imageFile) {
-    return UserDatabaseData.instance.updateModel
-        .updateClubImage(this, imageFile);
-  }
-
-  Future<void> deleteClubMember(String memberUid) {
-    return UserDatabaseData.instance.updateModel
-        .deleteClubMember(this, memberUid);
-  }
-
-  ///
-  /// Sends the invite to this club.
-  ///
-  Future<String> invite(String email, bool asAdmin) {
-    InviteToClub inviteToClub = new InviteToClub((b) => b
-      ..sentByUid = _userUid
-      ..email = email
-      ..admin = asAdmin
-      ..clubUid = uid
-      ..clubName = name);
-    return UserDatabaseData.instance.updateModel.inviteUserToClub(inviteToClub);
-  }
-
-  @override
-  String toString() {
-    return 'Club{uid: $uid, name: $name, photoUrl: $photoUrl, trackAttendence: $trackAttendence, arriveBeforeGame: $arriveBeforeGame, adminsUids: $adminsUids, members: $members}';
-  }
-  */
 }

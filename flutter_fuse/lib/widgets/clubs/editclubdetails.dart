@@ -65,7 +65,8 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
       // New club, add in the default admin.
       if (club.uid == null) {
         AuthenticationBloc bloc = BlocProvider.of<AuthenticationBloc>(context);
-        club.adminsUids.add(bloc.currentUser.uid);
+        club.membersData[bloc.currentUser.uid] =
+            AddedOrAdmin((b) => b..admin = true);
       }
       return club;
     }

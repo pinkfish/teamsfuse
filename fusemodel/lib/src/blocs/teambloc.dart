@@ -9,6 +9,7 @@ import 'package:meta/meta.dart';
 import 'clubbloc.dart';
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
+import 'data/clubblocstate.dart';
 
 abstract class TeamEvent extends Equatable {}
 

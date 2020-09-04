@@ -1,5 +1,4 @@
 export 'src/analytics.dart';
-export 'src/blocs/data/profileblocstate.dart';
 export 'src/club.dart';
 export 'src/common.dart';
 export 'src/databaseupdatemodel.dart';

@@ -4,6 +4,8 @@ import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
 
+import 'blocs/data/clubblocstate.dart';
+import 'blocs/data/profileblocstate.dart';
 import 'club.dart';
 import 'common.dart';
 import 'game.dart';
@@ -22,8 +24,13 @@ part 'serializer.g.dart';
 ///
 @SerializersFor([
   AddedUid,
+  AddedOrAdmin,
   Attendance,
   Club,
+  ClubBlocStateType,
+  ClubLoaded,
+  ClubState,
+  ClubUninitialized,
   Game,
   Invite,
   InviteAsAdmin,
@@ -43,11 +50,16 @@ part 'serializer.g.dart';
   LeagueOrTournamentSeason,
   Opponent,
   Player,
+  ProfileBlocLoaded,
+  ProfileBlocState,
+  ProfileBlocStateType,
+  ProfileBlocUninitialized,
   RoleInTeam,
   Season,
   SeasonPlayer,
   Sport,
   Team,
+  Tristate,
 ])
 final Serializers serializers = (_$serializers.toBuilder()
       ..add(TimestampSerializer())

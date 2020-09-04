@@ -8,6 +8,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../clubbloc.dart';
+import '../data/clubblocstate.dart';
 import '../seasonbloc.dart';
 import '../teambloc.dart';
 

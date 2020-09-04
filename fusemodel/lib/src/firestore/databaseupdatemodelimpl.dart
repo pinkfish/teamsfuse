@@ -1102,7 +1102,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<String> addClub(DocumentReferenceWrapper ref, Club club) async {
-    Map<String, dynamic> data = club.toJson(includeMembers: true);
+    Map<String, dynamic> data = club.toMap(includeMembers: true);
     if (ref != null) {
       ref = await wrapper.collection(CLUB_COLLECTION).add(data);
     } else {
@@ -1113,13 +1113,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<String> updateClub(Club club, {bool includeMembers = false}) async {
-    Map<String, dynamic> data = club.toJson(includeMembers: includeMembers);
+    Map<String, dynamic> data = club.toMap(includeMembers: includeMembers);
     await wrapper
         .collection(CLUB_COLLECTION)
         .document(club.uid)
         .updateData(data);
     persistenData.updateElement(
-        PersistenData.clubsTable, club.uid, club.toJson(includeMembers: true));
+        PersistenData.clubsTable, club.uid, club.toMap(includeMembers: true));
 
     return club.uid;
   }
@@ -1138,7 +1138,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     print('photurl ${club.photoUrl}');
     persistenData.updateElement(
-        PersistenData.clubsTable, club.uid, club.toJson(includeMembers: true));
+        PersistenData.clubsTable, club.uid, club.toMap(includeMembers: true));
     return snapshot.downloadUrl;
   }
 
@@ -1156,7 +1156,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       persistenData.updateElement(
           PersistenData.clubsTable, snap.documentID, snap.data);
 
-      return Club.fromJSON(userUid, snap.documentID, snap.data).build();
+      return Club.fromMap(userUid, snap.data);
     }
     return null;
   }
@@ -1573,11 +1573,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(CLUB_COLLECTION)
         .where(Club.MEMBERS + "." + userUid + "." + ADDED, isEqualTo: true);
     QuerySnapshotWrapper wrap = await query.getDocuments();
-    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        Club.fromJSON(userUid, snap.documentID, snap.data).build());
+    yield wrap.documents.map(
+        (DocumentSnapshotWrapper snap) => Club.fromMap(userUid, snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
-      yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          Club.fromJSON(userUid, snap.documentID, snap.data).build());
+      yield wrap.documents.map(
+          (DocumentSnapshotWrapper snap) => Club.fromMap(userUid, snap.data));
     }
   }
 
