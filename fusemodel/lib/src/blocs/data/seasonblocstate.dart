@@ -37,11 +37,11 @@ abstract class SeasonState {
       SeasonState state, SeasonStateBuilder builder) {
     return builder
       ..seasons = state.seasons.toBuilder()
-      ..onlyLocal = state.loadedFirestore;
+      ..loadedFirestore = state.loadedFirestore;
   }
 
   static void initializeStateBuilder(SeasonStateBuilder b) =>
-      b..onlyLocal = false;
+      b..loadedFirestore = false;
 
   Map<String, dynamic> toMap();
 }

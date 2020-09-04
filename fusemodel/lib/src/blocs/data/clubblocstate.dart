@@ -41,14 +41,14 @@ abstract class ClubState {
   static ClubStateBuilder fromState(ClubState state, ClubStateBuilder builder) {
     return builder
       ..clubs = state.clubs.toBuilder()
-      ..onlyLocal = state.loadedFirestore
+      ..loadedFirestore = state.loadedFirestore
       ..loadedTeams = state.loadedTeams
       ..teams = state.teams.toBuilder();
   }
 
   static void initializeStateBuilder(ClubStateBuilder b) => b
     ..loadedTeams = false
-    ..onlyLocal = false;
+    ..loadedFirestore = false;
 
   Map<String, dynamic> toMap();
 }

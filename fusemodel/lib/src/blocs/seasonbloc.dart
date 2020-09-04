@@ -145,7 +145,6 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
 
     // Update just the seasons.
     if (event is _SeasonUpdate) {
-      BuiltMap<String, Season> oldSeasons = state.seasons;
       yield (SeasonLoaded.fromState(state)
             ..seasons = event.newSeasons.toBuilder()
             ..loadedFirestore = true)

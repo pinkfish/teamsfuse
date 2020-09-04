@@ -151,7 +151,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
     if (event is _ClubEventNewDataLoaded) {
       yield (ClubLoaded.fromState(state)
             ..clubs = event.clubs.toBuilder()
-            ..onlyLocal = false)
+            ..loadedFirestore = true)
           .build();
       coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: false));
