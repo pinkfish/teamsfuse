@@ -6,6 +6,7 @@ import 'package:built_value/standard_json_plugin.dart';
 
 import 'blocs/data/clubblocstate.dart';
 import 'blocs/data/profileblocstate.dart';
+import 'blocs/data/seasonblocstate.dart';
 import 'club.dart';
 import 'common.dart';
 import 'game.dart';
@@ -56,7 +57,11 @@ part 'serializer.g.dart';
   ProfileBlocUninitialized,
   RoleInTeam,
   Season,
+  SeasonBlocStateType,
   SeasonPlayer,
+  SeasonLoaded,
+  SeasonState,
+  SeasonUninitialized,
   Sport,
   Team,
   Tristate,

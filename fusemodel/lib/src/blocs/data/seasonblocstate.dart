@@ -2,7 +2,6 @@ import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-import '../../season.dart';
 import '../../serializer.dart';
 import '../../team.dart';
 
@@ -41,9 +40,8 @@ abstract class SeasonState {
       ..onlyLocal = state.onlyLocal;
   }
 
-  static void initializeStateBuilder(SeasonStateBuilder b) => b
-    ..loadedTeams = false
-    ..onlyLocal = false;
+  static void initializeStateBuilder(SeasonStateBuilder b) =>
+      b..onlyLocal = false;
 
   Map<String, dynamic> toMap();
 }

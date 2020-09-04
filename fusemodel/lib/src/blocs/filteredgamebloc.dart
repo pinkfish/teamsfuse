@@ -9,6 +9,7 @@ import 'package:meta/meta.dart';
 import 'gamesbloc.dart';
 import 'seasonbloc.dart';
 import 'teambloc.dart';
+import 'data/seasonblocstate.dart';
 
 ///
 /// The set of filtered games.
