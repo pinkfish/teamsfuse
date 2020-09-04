@@ -165,17 +165,18 @@ class LeagueOrTournamentBloc
         CoordinationEventTrackLoading(toLoad: BlocsToLoad.LeagueOrTournament));
 
     _coordSub = coordinationBloc.listen((CoordinationState coordState) {
+      print("LeagueOrTournment $_loadingSql $coordState");
       if (coordState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
         _loadingSql = false;
         add(_LeagueOrTournamentEventLogout());
-      } else if (state is CoordinationStateLoadingSql) {
+      } else if (coordState is CoordinationStateLoadingSql) {
         if (!_loadingSql) {
           _loadingSql = true;
-
+          print("LeagueOrTournment loading sql");
           _startLoading(coordState);
         }
-      } else if (state is CoordinationStateLoadingFirestore) {
+      } else if (coordState is CoordinationStateLoadingFirestore) {
         if (!_loadingFirestore) {
           _loadingFirestore = true;
 
