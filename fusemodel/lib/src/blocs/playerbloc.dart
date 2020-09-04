@@ -179,28 +179,41 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   bool _createdMePlayer = false;
   StreamSubscription<CoordinationState> _authSub;
 
+  bool _loadingSql = false;
+  bool _loadingFirestore = false;
+
   PlayerBloc({
     @required this.coordinationBloc,
   }) : super(PlayerUninitialized()) {
+    coordinationBloc
+        .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Player));
+
     _authSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
+        _loadingFirestore = false;
+        _loadingSql = false;
         add(_PlayerLoggedOut());
-      } else if (coordState is CoordinationStateStartLoadingSql) {
-        _startLoading(coordState);
-      } else if (coordState is CoordinationStateStartLoadingFirestore) {
-        _startLoadingFirestore(coordState);
+      } else if (coordState is CoordinationStateLoadingSql) {
+        if (!_loadingSql) {
+          _loadingSql = true;
+          _startLoading(coordState);
+        }
+      } else if (coordState is CoordinationStateLoadingFirestore) {
+        if (!_loadingFirestore) {
+          _loadingFirestore = true;
+          _startLoadingFirestore(coordState);
+        }
       }
     });
   }
 
-  void _startLoading(CoordinationStateStartLoadingSql state) {
+  void _startLoading(CoordinationStateLoadingSql state) {
     add(_PlayerUserLoaded());
   }
 
-  void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
+  void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
     add(_PlayerFirestore());
   }
-
 
   @override
   Future<void> close() {

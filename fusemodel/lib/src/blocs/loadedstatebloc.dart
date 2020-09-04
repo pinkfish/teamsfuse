@@ -18,13 +18,14 @@ class LoadedStateBloc extends Bloc<LoadedEvent, LoadedState> {
 
   StreamSubscription<CoordinationState> _coordSub;
 
-  LoadedStateBloc({@required this.coordinationBloc}) : super(LoadedState.Logout) {
+  LoadedStateBloc({@required this.coordinationBloc})
+      : super(LoadedState.Logout) {
     _coordSub = coordinationBloc.listen((CoordinationState state) {
       if (state is CoordinationStateLoggedOut) {
         add(LoadedEvent.Logout);
-      } else if (state is CoordinationStateStartLoadingSql) {
+      } else if (state is CoordinationStateLoadingSql) {
         add(LoadedEvent.Start);
-      } else if (state is CoordinationStateStartLoadingFirestore) {
+      } else if (state is CoordinationStateLoadingFirestore) {
         add(LoadedEvent.SQL);
       } else if (state is CoordinationStateLoaded) {
         add(LoadedEvent.ALL);
@@ -55,5 +56,4 @@ class LoadedStateBloc extends Bloc<LoadedEvent, LoadedState> {
         break;
     }
   }
-
 }

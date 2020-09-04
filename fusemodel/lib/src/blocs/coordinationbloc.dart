@@ -12,29 +12,32 @@ import 'internal/blocstoload.dart';
 ///
 abstract class CoordinationState extends Equatable {
   final BuiltSet<BlocsToLoad> loaded;
+  final BuiltSet<BlocsToLoad> toLoad;
   final String uid;
 
-  CoordinationState({@required this.uid, @required this.loaded});
+  CoordinationState(
+      {@required this.uid, @required this.loaded, @required this.toLoad});
+
+  CoordinationState update(BuiltSet<BlocsToLoad> toLoad);
 
   @override
-  List<Object> get props => [loaded, uid];
-}
-
-///
-/// Start loading the bits from sql.
-///
-class CoordinationStateStartLoadingSql extends CoordinationState {
-  CoordinationStateStartLoadingSql({@required String uid})
-      : super(loaded: BuiltSet<BlocsToLoad>(), uid: uid);
+  List<Object> get props => [loaded, uid, toLoad];
 }
 
 ///
 /// Yay, we are loading from sql and having fun.
 ///
-class CoordinatiomnStateLoadingSql extends CoordinationState {
-  CoordinatiomnStateLoadingSql(
-      {@required String uid, BuiltSet<BlocsToLoad> loaded})
-      : super(loaded: loaded, uid: uid);
+class CoordinationStateLoadingSql extends CoordinationState {
+  CoordinationStateLoadingSql(
+      {@required String uid,
+      @required BuiltSet<BlocsToLoad> loaded,
+      @required BuiltSet<BlocsToLoad> toLoad})
+      : super(loaded: loaded, uid: uid, toLoad: toLoad);
+
+  CoordinationState update(BuiltSet<BlocsToLoad> toLoad) {
+    return CoordinationStateLoadingSql(
+        uid: uid, loaded: loaded, toLoad: toLoad);
+  }
 
   @override
   String toString() {
@@ -43,25 +46,19 @@ class CoordinatiomnStateLoadingSql extends CoordinationState {
 }
 
 ///
-/// Now we are off to load from firestore.
-///
-class CoordinationStateStartLoadingFirestore extends CoordinationState {
-  CoordinationStateStartLoadingFirestore({@required String uid})
-      : super(loaded: BuiltSet(), uid: uid);
-
-  @override
-  String toString() {
-    return 'CoordinationStateStartLoadingFirestore{loaded: $loaded}';
-  }
-}
-
-///
 /// Yay, we are loading from firestore and yayness.
 ///
 class CoordinationStateLoadingFirestore extends CoordinationState {
   CoordinationStateLoadingFirestore(
-      {@required String uid, BuiltSet<BlocsToLoad> loaded})
-      : super(loaded: loaded, uid: uid);
+      {@required String uid,
+      @required BuiltSet<BlocsToLoad> loaded,
+      @required BuiltSet<BlocsToLoad> toLoad})
+      : super(loaded: loaded, uid: uid, toLoad: toLoad);
+
+  CoordinationState update(BuiltSet<BlocsToLoad> toLoad) {
+    return CoordinationStateLoadingFirestore(
+        uid: uid, loaded: loaded, toLoad: toLoad);
+  }
 
   @override
   String toString() {
@@ -73,15 +70,25 @@ class CoordinationStateLoadingFirestore extends CoordinationState {
 /// We are now fully loaded.
 ///
 class CoordinationStateLoaded extends CoordinationState {
-  CoordinationStateLoaded({@required String uid})
-      : super(uid: uid, loaded: BuiltSet.from(BlocsToLoad.values));
+  CoordinationState update(BuiltSet<BlocsToLoad> toLoad) {
+    return CoordinationStateLoaded(uid: uid, toLoad: toLoad);
+  }
+
+  CoordinationStateLoaded(
+      {@required String uid, @required BuiltSet<BlocsToLoad> toLoad})
+      : super(uid: uid, loaded: BuiltSet(), toLoad: toLoad);
 }
 
 ///
 /// Logged out amd not doing any loading.
 ///
 class CoordinationStateLoggedOut extends CoordinationState {
-  CoordinationStateLoggedOut() : super(loaded: BuiltSet(), uid: '');
+  CoordinationStateLoggedOut(@required BuiltSet<BlocsToLoad> newToLoad)
+      : super(loaded: BuiltSet(), uid: '', toLoad: newToLoad);
+
+  CoordinationState update(BuiltSet<BlocsToLoad> newToLoad) {
+    return CoordinationStateLoggedOut(newToLoad);
+  }
 }
 
 ///
@@ -100,6 +107,18 @@ class CoordinationEventLoadedData extends CoordinationEvent {
 
   @override
   List<Object> get props => [loaded, sql];
+}
+
+///
+/// The blocs dispatch this to sau they want to be loaded.
+///
+class CoordinationEventTrackLoading extends CoordinationEvent {
+  final BlocsToLoad toLoad;
+
+  CoordinationEventTrackLoading({this.toLoad});
+
+  @override
+  List<Object> get props => [toLoad];
 }
 
 ///
@@ -141,7 +160,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
       @required this.analytics,
       @required this.databaseUpdateModel,
       @required this.analyticsSubsystem})
-      : super(CoordinationStateLoggedOut()) {
+      : super(CoordinationStateLoggedOut(BuiltSet())) {
     authenticationBloc.listen((AuthenticationState authState) {
       if (authState is AuthenticationLoggedIn) {
         sqlTrace = analytics.newTrace("sqlTrace");
@@ -155,49 +174,59 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
     });
   }
 
+  void addCoordinationPiece(BlocsToLoad toLoad) {}
+
   @override
   Stream<CoordinationState> mapEventToState(CoordinationEvent event) async* {
     if (event is _CoordintationStateStart) {
-      yield CoordinationStateStartLoadingSql(uid: event.uid);
+      yield CoordinationStateLoadingSql(
+          uid: event.uid, toLoad: state.toLoad, loaded: BuiltSet());
     }
 
     if (event is _CoordintationStateLoggedOut) {
-      yield CoordinationStateLoggedOut();
+      yield CoordinationStateLoggedOut(state.toLoad);
+    }
+
+    if (event is CoordinationEventTrackLoading) {
+      BuiltSet<BlocsToLoad> toLoad =
+          state.toLoad.rebuild((b) => b..add(event.toLoad));
+      yield state.update(toLoad);
     }
 
     if (event is CoordinationEventLoadedData) {
       // In the sql loading state.
-      if (state is CoordinationStateStartLoadingSql ||
-          state is CoordinatiomnStateLoadingSql) {
+      if (state is CoordinationStateLoadingSql) {
         BuiltSet<BlocsToLoad> loaded =
             state.loaded.rebuild((b) => b..add(event.loaded));
-        if (loaded.length == BlocsToLoad.values.length) {
+        if (loaded.containsAll(state.toLoad)) {
           // Close the sql trace part.
           sqlTrace.stop();
           sqlTrace = null;
-          yield CoordinationStateStartLoadingFirestore(uid: state.uid);
+          yield CoordinationStateLoadingFirestore(
+              uid: state.uid, toLoad: state.toLoad, loaded: BuiltSet());
         } else {
           print(
-              "Loaded $loaded ${BlocsToLoad.values.where((f) => !loaded.contains(f))}");
-          yield CoordinatiomnStateLoadingSql(
-              loaded: BuiltSet.from(loaded), uid: state.uid);
+              "Loaded Coord $loaded ${state.toLoad.where((f) => !loaded.contains(f))}");
+          yield CoordinationStateLoadingSql(
+              loaded: BuiltSet.from(loaded),
+              uid: state.uid,
+              toLoad: state.toLoad);
         }
       }
-      if (state is CoordinationStateStartLoadingFirestore ||
-          state is CoordinationStateLoadingFirestore) {
+      if (state is CoordinationStateLoadingFirestore) {
         if (!state.loaded.contains(state.loaded)) {
           BuiltSet<BlocsToLoad> loaded =
               state.loaded.rebuild((b) => b..add(event.loaded));
-          var loadedLeft = Set.from(BlocsToLoad.values);
+          var loadedLeft = Set.from(state.toLoad);
           loadedLeft.removeAll(loaded);
           print("Update loaded ${event.loaded} ${loadedLeft}");
-          if (loaded.length == BlocsToLoad.values.length) {
+          if (loaded.containsAll(state.toLoad)) {
             loadingTrace.stop();
             loadingTrace = null;
-            yield CoordinationStateLoaded(uid: state.uid);
+            yield CoordinationStateLoaded(uid: state.uid, toLoad: state.toLoad);
           } else {
             yield CoordinationStateLoadingFirestore(
-                loaded: loaded, uid: state.uid);
+                loaded: loaded, uid: state.uid, toLoad: state.toLoad);
           }
         }
       }

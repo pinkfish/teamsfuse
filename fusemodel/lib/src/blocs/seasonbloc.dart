@@ -121,23 +121,37 @@ class SeasonBloc extends Bloc<SeasonEvent, SeasonState> {
   StreamSubscription<Iterable<Season>> _seasonSub;
   TraceProxy _seasonByPlayerTrace;
 
+  bool _loadingSql = false;
+  bool _loadingFirestore = false;
+
   SeasonBloc({@required this.coordinationBloc}) : super(SeasonUninitialized()) {
+    coordinationBloc
+        .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Season));
+
     _coordSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
+        _loadingFirestore = false;
+        _loadingSql = false;
         add(_SeasonLoggedOut());
-      } else if (coordState is CoordinationStateStartLoadingSql) {
-        _startLoading(coordState);
-      } else if (coordState is CoordinationStateStartLoadingFirestore) {
-        _startLoadingFirestore(coordState);
+      } else if (coordState is CoordinationStateLoadingSql) {
+        if (!_loadingSql) {
+          _loadingSql = true;
+          _startLoading(coordState);
+        }
+      } else if (coordState is CoordinationStateLoadingFirestore) {
+        if (!_loadingFirestore) {
+          _loadingFirestore = true;
+          _startLoadingFirestore(coordState);
+        }
       }
     });
   }
 
-  void _startLoading(CoordinationStateStartLoadingSql state) {
+  void _startLoading(CoordinationState state) {
     add(_SeasonUserLoaded(uid: state.uid));
   }
 
-  void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
+  void _startLoadingFirestore(CoordinationState state) {
     add(_SeasonFirestoreStart(uid: state.uid));
   }
 

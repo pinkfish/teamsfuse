@@ -229,15 +229,29 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
   StreamSubscription<Iterable<Team>> _adminTeamSub;
   StreamSubscription<Iterable<Team>> _userTeamSub;
 
+  bool _loadingSql = false;
+  bool _loadingFirestore = false;
+
   TeamBloc({@required this.coordinationBloc, @required this.clubBloc})
       : super(TeamUninitialized()) {
+    coordinationBloc
+        .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Team));
+
     _coordSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
+        _loadingFirestore = false;
+        _loadingSql = false;
         add(_TeamLoggedOut());
-      } else if (coordState is CoordinationStateStartLoadingSql) {
-        _startSqLoading(coordState);
-      } else if (state is CoordinationStateStartLoadingFirestore) {
-        _startLoadingFirestore(coordState);
+      } else if (coordState is CoordinationStateLoadingSql) {
+        if (!_loadingSql) {
+          _loadingSql = true;
+          _startSqLoading(coordState);
+        }
+      } else if (state is CoordinationStateLoadingFirestore) {
+        if (!_loadingFirestore) {
+          _loadingFirestore = true;
+          _startLoadingFirestore(coordState);
+        }
       }
     });
     _clubSub = clubBloc.listen((ClubState state) {
@@ -247,11 +261,11 @@ class TeamBloc extends Bloc<TeamEvent, TeamState> {
     });
   }
 
-  void _startSqLoading(CoordinationStateStartLoadingSql state) {
+  void _startSqLoading(CoordinationState state) {
     add(_TeamUserLoaded(uid: state.uid));
   }
 
-  void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
+  void _startLoadingFirestore(CoordinationState state) {
     add(_TeamFirestoreStart(uid: state.uid));
   }
 

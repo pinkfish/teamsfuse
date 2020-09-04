@@ -156,21 +156,31 @@ class LeagueOrTournamentBloc
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<LeagueOrTournament>> _leagueOrTournamentSnapshot;
 
+  bool _loadingSql = false;
+  bool _loadingFirestore = false;
+
   LeagueOrTournamentBloc({@required this.coordinationBloc})
       : super(LeagueOrTournamentUninitialized()) {
-    print("LeagueOrTournament bigglers");
+    coordinationBloc.add(
+        CoordinationEventTrackLoading(toLoad: BlocsToLoad.LeagueOrTournament));
 
     _coordSub = coordinationBloc.listen((CoordinationState coordState) {
-      print("LeagueOrTournament state... $coordState");
       if (coordState is CoordinationStateLoggedOut) {
-        print("LeagueOrTournament fluff");
+        _loadingFirestore = false;
+        _loadingSql = false;
         add(_LeagueOrTournamentEventLogout());
-      } else if (state is CoordinationStateStartLoadingSql) {
-        print("LeagueOrTournament fluffy");
-        _startLoading(coordState);
-      } else if (state is CoordinationStateStartLoadingFirestore) {
-        print("LeagueOrTournament fluff2");
-        _startLoadingFirestore(coordState);
+      } else if (state is CoordinationStateLoadingSql) {
+        if (!_loadingSql) {
+          _loadingSql = true;
+
+          _startLoading(coordState);
+        }
+      } else if (state is CoordinationStateLoadingFirestore) {
+        if (!_loadingFirestore) {
+          _loadingFirestore = true;
+
+          _startLoadingFirestore(coordState);
+        }
       }
     });
   }
@@ -187,12 +197,12 @@ class LeagueOrTournamentBloc
     _leagueOrTournamentSnapshot = null;
   }
 
-  void _startLoading(CoordinationStateStartLoadingSql state) {
+  void _startLoading(CoordinationStateLoadingSql state) {
     print("LeagueOrTournament _startLoading");
     add(_LeagueOrTournamentEventUserLoaded(uid: state.uid));
   }
 
-  void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
+  void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
     add(_LeagueOrTournamentEventFirestore(uid: state.uid));
   }
 
@@ -223,11 +233,9 @@ class LeagueOrTournamentBloc
       TraceProxy leagueTrace = coordinationBloc.analyticsSubsystem
           .newTrace("leagueOrTournamentData");
       leagueTrace.start();
-      print("LeagueOrTournament getting data");
       Map<String, Map<String, dynamic>> leagueData = await coordinationBloc
           .persistentData
           .getAllElements(PersistenData.leagueOrTournamentTable);
-      print("LeagueOrTournament everything");
       Map<String, LeagueOrTournament> newLeague =
           new Map<String, LeagueOrTournament>();
       leagueData.forEach((String uid, Map<String, dynamic> input) {

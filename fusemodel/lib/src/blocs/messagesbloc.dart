@@ -137,14 +137,29 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   StreamSubscription<Iterable<MessageRecipient>> _messageSnapshot;
   StreamSubscription<Iterable<MessageRecipient>> _readMessageSnapshot;
 
-  MessagesBloc({@required this.coordinationBloc, @required this.teamBloc}) : super(MessagesUninitialized()){
+  bool _loadingSql = false;
+  bool _loadingFirestore = false;
+
+  MessagesBloc({@required this.coordinationBloc, @required this.teamBloc})
+      : super(MessagesUninitialized()) {
+    coordinationBloc
+        .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Messages));
+
     _coordState = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
+        _loadingFirestore = false;
+        _loadingSql = false;
         add(_MessagesEventLogout());
-      } else if (coordState is CoordinationStateStartLoadingSql) {
-        _startLoading(coordState);
-      } else if (coordState is CoordinationStateStartLoadingFirestore) {
-        _startLoadingFirestore(coordState);
+      } else if (coordState is CoordinationStateLoadingSql) {
+        if (!_loadingSql) {
+          _loadingSql = true;
+          _startLoading(coordState);
+        }
+      } else if (coordState is CoordinationStateLoadingFirestore) {
+        if (!_loadingFirestore) {
+          _loadingFirestore = true;
+          _startLoadingFirestore(coordState);
+        }
       }
     });
   }
@@ -164,11 +179,11 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     _readMessageSnapshot = null;
   }
 
-  void _startLoading(CoordinationStateStartLoadingSql state) {
+  void _startLoading(CoordinationStateLoadingSql state) {
     add(_MessagesEventUserLoaded(uid: state.uid));
   }
 
-  void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
+  void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
     add(_MessagesEventFirestore(uid: state.uid));
   }
 

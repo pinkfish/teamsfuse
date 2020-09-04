@@ -85,14 +85,20 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   StreamSubscription<CoordinationState> _authSub;
   StreamSubscription<FusedUserProfile> _profileSub;
 
+  bool _loadedSql = false;
+
   ProfileBloc({
     @required this.coordinationBloc,
   }) : super(ProfileUninitialized()) {
     _authSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
+        _loadedSql = false;
         add(_ProfileLoggedOut());
-      } else if (coordState is CoordinationStateStartLoadingSql) {
-        add(_ProfileUserLoaded(uid: coordState.uid));
+      } else if (coordState is CoordinationStateLoadingSql) {
+        if (_loadedSql) {
+          _loadedSql = true;
+          add(_ProfileUserLoaded(uid: coordState.uid));
+        }
       }
     });
   }

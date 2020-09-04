@@ -126,19 +126,31 @@ class ClubDeleteMember extends ClubEvent {
 ///
 class ClubBloc extends Bloc<ClubEvent, ClubState> {
   final CoordinationBloc coordinationBloc;
+  bool _loadingSql = false;
+  bool _loadingFirestore = false;
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<Club>> _clubChangeSub;
   Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions = {};
 
   ClubBloc({@required this.coordinationBloc}) : super(ClubUninitialized()) {
+    coordinationBloc
+        .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Club));
     _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
-      if (coordinationState is CoordinationStateStartLoadingSql) {
-        _startLoading(coordinationState);
+      if (coordinationState is CoordinationStateLoadingSql) {
+        if (!_loadingSql) {
+          _loadingSql = true;
+          _startLoading(coordinationState);
+        }
       } else if (state is CoordinationStateLoggedOut) {
+        _loadingFirestore = false;
+        _loadingSql = false;
         add(_ClubEventLogout());
-      } else if (state is CoordinationStateStartLoadingFirestore) {
-        add(_ClubEventLoadFromFirestore(uid: coordinationState.uid));
+      } else if (state is CoordinationStateLoadingFirestore) {
+        if (!_loadingFirestore) {
+          _loadingFirestore = true;
+          add(_ClubEventLoadFromFirestore(uid: coordinationState.uid));
+        }
       }
     });
     if (!(coordinationBloc.state is CoordinationStateLoggedOut)) {

@@ -116,23 +116,42 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<Invite>> _inviteChangeSub;
 
+  bool _loadingSql = false;
+  bool _loadingFirestore = false;
+
   InviteBloc(
       {@required this.coordinationBloc,
       @required this.persistentData,
       @required this.analyticsSubsystem,
       @required this.databaseUpdateModel})
       : super(InviteUninitialized()) {
+    coordinationBloc
+        .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Invite));
     _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
       if (coordinationState is CoordinationStateLoggedOut) {
+        _loadingFirestore = false;
+        _loadingSql = false;
+
         add(_InviteEventLogout());
-      } else if (coordinationState is CoordinationStateStartLoadingSql) {
-        _startLoading(coordinationState);
-      } else if (coordinationState is CoordinationStateStartLoadingFirestore) {
-        _startLoadingFirestore(coordinationState);
+      } else if (coordinationState is CoordinationStateLoadingSql) {
+        if (!_loadingSql) {
+          _loadingSql = true;
+
+          _startLoading(coordinationState);
+        }
+      } else if (coordinationState is CoordinationStateLoadingFirestore) {
+        if (!_loadingFirestore) {
+          _loadingFirestore = true;
+
+          _startLoadingFirestore(coordinationState);
+        }
       }
     });
-    if (coordinationBloc.state is CoordinationStateStartLoadingSql) {
-      _startLoading(coordinationBloc.state);
+    if (coordinationBloc.state is CoordinationStateLoadingSql) {
+      if (!_loadingSql) {
+        _loadingSql = true;
+        _startLoading(coordinationBloc.state);
+      }
     }
   }
 
@@ -144,11 +163,11 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
     return super.close();
   }
 
-  void _startLoading(CoordinationStateStartLoadingSql state) {
+  void _startLoading(CoordinationStateLoadingSql state) {
     add(_InviteEventUserLoaded(uid: state.uid));
   }
 
-  void _startLoadingFirestore(CoordinationStateStartLoadingFirestore state) {
+  void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
     add(_InviteEventLoadFirestore(uid: state.uid));
   }
 
