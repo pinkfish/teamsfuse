@@ -1,90 +1,16 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
+import 'data/leagueortournamentblocstate.dart';
 import 'internal/blocstoload.dart';
 
-enum AddingState { None, Adding, Failed, Success }
-
-///
-/// Basic state for all the data in this system.
-///
-class LeagueOrTournamentState extends Equatable {
-  final Map<String, LeagueOrTournament> leagueOrTournaments;
-  final bool onlySql;
-  final AddingState adding;
-
-  LeagueOrTournamentState(
-      {@required this.leagueOrTournaments,
-      @required this.onlySql,
-      @required this.adding});
-
-  LeagueOrTournamentLoaded rebuild(
-      {Map<String, LeagueOrTournament> leagueOrTournamentsParam,
-      @required bool onlySqlParam,
-      AddingState adding}) {
-    return LeagueOrTournamentLoaded(
-        onlySql: onlySqlParam ?? onlySql,
-        leagueOrTournaments:
-            leagueOrTournamentsParam ?? this.leagueOrTournaments,
-        adding: adding ?? false);
-  }
-
-  @override
-  List<Object> get props => [leagueOrTournaments, onlySql, adding];
-}
-
-///
-/// No data at all yet.
-///
-class LeagueOrTournamentUninitialized extends LeagueOrTournamentState {
-  LeagueOrTournamentUninitialized()
-      : super(leagueOrTournaments: {}, onlySql: true, adding: AddingState.None);
-
-  @override
-  String toString() {
-    return 'LeagueOrTournamentUninitialized{}';
-  }
-}
-
-///
-/// Doing something.
-///
-class LeagueOrTournamentLoaded extends LeagueOrTournamentState {
-  LeagueOrTournamentLoaded(
-      {@required Map<String, LeagueOrTournament> leagueOrTournaments,
-      @required bool onlySql,
-      AddingState adding})
-      : super(
-            leagueOrTournaments: leagueOrTournaments,
-            onlySql: onlySql,
-            adding: adding);
-
-  @override
-  String toString() {
-    return 'LeagueOrTournamentLoaded{}';
-  }
-}
-
 abstract class LeagueOrTournamentEvent extends Equatable {}
-
-class _LeagueOrTournamentEventUserLoaded extends LeagueOrTournamentEvent {
-  final String uid;
-
-  _LeagueOrTournamentEventUserLoaded({@required this.uid});
-
-  @override
-  String toString() {
-    return '_LeagueOrTournamentEventUserLoaded{}';
-  }
-
-  @override
-  List<Object> get props => [uid];
-}
 
 class _LeagueOrTournamentEventLogout extends LeagueOrTournamentEvent {
   @override
@@ -92,7 +18,7 @@ class _LeagueOrTournamentEventLogout extends LeagueOrTournamentEvent {
 }
 
 class _LeagueOrTournamentEventNewDataLoaded extends LeagueOrTournamentEvent {
-  final Map<String, LeagueOrTournament> leagueOrTournament;
+  final BuiltMap<String, LeagueOrTournament> leagueOrTournament;
 
   _LeagueOrTournamentEventNewDataLoaded({@required this.leagueOrTournament});
 
@@ -150,13 +76,12 @@ class _LeagueOrTournamentEventFirestore extends LeagueOrTournamentEvent {
 /// the app.
 ///
 class LeagueOrTournamentBloc
-    extends Bloc<LeagueOrTournamentEvent, LeagueOrTournamentState> {
+    extends HydratedBloc<LeagueOrTournamentEvent, LeagueOrTournamentState> {
   final CoordinationBloc coordinationBloc;
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<LeagueOrTournament>> _leagueOrTournamentSnapshot;
 
-  bool _loadingSql = false;
   bool _loadingFirestore = false;
 
   LeagueOrTournamentBloc({@required this.coordinationBloc})
@@ -165,17 +90,9 @@ class LeagueOrTournamentBloc
         CoordinationEventTrackLoading(toLoad: BlocsToLoad.LeagueOrTournament));
 
     _coordSub = coordinationBloc.listen((CoordinationState coordState) {
-      print("LeagueOrTournment $_loadingSql $coordState");
       if (coordState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
-        _loadingSql = false;
         add(_LeagueOrTournamentEventLogout());
-      } else if (coordState is CoordinationStateLoadingSql) {
-        if (!_loadingSql) {
-          _loadingSql = true;
-          print("LeagueOrTournment loading sql");
-          _startLoading(coordState);
-        }
       } else if (coordState is CoordinationStateLoadingFirestore) {
         if (!_loadingFirestore) {
           _loadingFirestore = true;
@@ -198,11 +115,6 @@ class LeagueOrTournamentBloc
     _leagueOrTournamentSnapshot = null;
   }
 
-  void _startLoading(CoordinationStateLoadingSql state) {
-    print("LeagueOrTournament _startLoading");
-    add(_LeagueOrTournamentEventUserLoaded(uid: state.uid));
-  }
-
   void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
     add(_LeagueOrTournamentEventFirestore(uid: state.uid));
   }
@@ -223,42 +135,12 @@ class LeagueOrTournamentBloc
           .deleteElement(PersistenData.leagueOrTournamentTable, remove);
     }
     add(_LeagueOrTournamentEventNewDataLoaded(
-        leagueOrTournament: leagueOrTournsments));
+        leagueOrTournament: BuiltMap.of(leagueOrTournsments)));
   }
 
   @override
   Stream<LeagueOrTournamentState> mapEventToState(
       LeagueOrTournamentEvent event) async* {
-    if (event is _LeagueOrTournamentEventUserLoaded) {
-      print("LeagueOrTournament start");
-      TraceProxy leagueTrace = coordinationBloc.analyticsSubsystem
-          .newTrace("leagueOrTournamentData");
-      leagueTrace.start();
-      Map<String, Map<String, dynamic>> leagueData = await coordinationBloc
-          .persistentData
-          .getAllElements(PersistenData.leagueOrTournamentTable);
-      Map<String, LeagueOrTournament> newLeague =
-          new Map<String, LeagueOrTournament>();
-      leagueData.forEach((String uid, Map<String, dynamic> input) {
-        coordinationBloc.sqlTrace?.incrementCounter("league");
-        LeagueOrTournament league = LeagueOrTournament.fromJSON(
-                myUid: uid,
-                data: input,
-                userUid: coordinationBloc.authenticationBloc.currentUser.uid)
-            .build();
-        newLeague[uid] = league;
-      });
-      print(
-          'End LeagueOrTournament ${coordinationBloc.start.difference(new DateTime.now())} ${newLeague.length}');
-      leagueTrace.stop();
-      yield state.rebuild(
-          adding: state.adding,
-          onlySqlParam: true,
-          leagueOrTournamentsParam: newLeague);
-      coordinationBloc.add(CoordinationEventLoadedData(
-          loaded: BlocsToLoad.LeagueOrTournament, sql: true));
-    }
-
     if (event is _LeagueOrTournamentEventFirestore) {
       _leagueOrTournamentSnapshot = coordinationBloc.databaseUpdateModel
           .getMainLeagueOrTournaments(event.uid)
@@ -268,28 +150,25 @@ class LeagueOrTournamentBloc
 
     // New data from above.  Mark ourselves as done.
     if (event is _LeagueOrTournamentEventNewDataLoaded) {
-      yield state.rebuild(
-          leagueOrTournamentsParam: event.leagueOrTournament,
-          adding: state.adding,
-          onlySqlParam: false);
+      yield (LeagueOrTournamentLoaded.fromState(state)
+            ..leagueOrTournaments = event.leagueOrTournament.toBuilder()
+            ..loadedFirestore = true)
+          .build();
       coordinationBloc.add(CoordinationEventLoadedData(
           loaded: BlocsToLoad.LeagueOrTournament, sql: false));
     }
 
     // New data from above.  Mark ourselves as done.
     if (event is _LeagueOrTournamentEventAddFailed) {
-      yield state.rebuild(
-          leagueOrTournamentsParam: state.leagueOrTournaments,
-          adding: event.adding,
-          onlySqlParam: false);
+      yield (LeagueOrTournamentLoaded.fromState(state)..adding = event.adding)
+          .build();
     }
 
     if (event is LeagueOrTournamentEventAddLeague) {
       add(_LeagueOrTournamentEventAddFailed(adding: AddingState.Success));
-      yield state.rebuild(
-          leagueOrTournamentsParam: state.leagueOrTournaments,
-          adding: AddingState.Adding,
-          onlySqlParam: state.onlySql);
+      yield (LeagueOrTournamentLoaded.fromState(state)
+            ..adding = AddingState.Adding)
+          .build();
       coordinationBloc.databaseUpdateModel
           .updateLeague(event.league.build())
           .then((String uid) {
@@ -300,10 +179,9 @@ class LeagueOrTournamentBloc
     }
 
     if (event is LeagueOrTournamentEventReset) {
-      yield state.rebuild(
-          leagueOrTournamentsParam: state.leagueOrTournaments,
-          adding: AddingState.None,
-          onlySqlParam: state.onlySql);
+      yield (LeagueOrTournamentLoaded.fromState(state)
+            ..adding = AddingState.None)
+          .build();
     }
 
     // Unload everything.
@@ -311,5 +189,37 @@ class LeagueOrTournamentBloc
       yield LeagueOrTournamentUninitialized();
       _cleanupStuff();
     }
+  }
+
+  @override
+  LeagueOrTournamentState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return LeagueOrTournamentUninitialized();
+    }
+    LeagueOrTournamentBlocStateType type =
+        LeagueOrTournamentBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case LeagueOrTournamentBlocStateType.Uninitialized:
+        return LeagueOrTournamentUninitialized();
+      case LeagueOrTournamentBlocStateType.Loaded:
+        print("LeagueOrTournament start");
+        TraceProxy leagueTrace = coordinationBloc.analyticsSubsystem
+            .newTrace("leagueOrTournamentData");
+        leagueTrace.start();
+        var loaded = LeagueOrTournamentLoaded.fromMap(json);
+        print(
+            'End LeagueOrTournament ${coordinationBloc.start.difference(new DateTime.now())} ${loaded.leagueOrTournaments.length}');
+        leagueTrace.stop();
+        coordinationBloc.add(CoordinationEventLoadedData(
+            loaded: BlocsToLoad.LeagueOrTournament, sql: true));
+        return loaded;
+      default:
+        return LeagueOrTournamentUninitialized();
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(LeagueOrTournamentState state) {
+    return state.toMap();
   }
 }

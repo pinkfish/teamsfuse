@@ -182,6 +182,10 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
 
   @override
   ClubState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return ClubUninitialized();
+    }
+
     ClubBlocStateType type = ClubBlocStateType.valueOf(json["type"]);
     switch (type) {
       case ClubBlocStateType.Uninitialized:

@@ -28,10 +28,11 @@ class SeasonBlocStateType extends EnumClass {
 @BuiltValue(instantiable: false)
 abstract class SeasonState {
   BuiltMap<String, Season> get seasons;
+  SeasonBlocStateType get type;
+
+  // Don't save this stuff.
   @BuiltValueField(serialize: false)
   bool get loadedFirestore;
-
-  SeasonBlocStateType get type;
 
   static SeasonStateBuilder fromState(
       SeasonState state, SeasonStateBuilder builder) {

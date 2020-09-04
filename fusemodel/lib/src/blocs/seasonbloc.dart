@@ -156,6 +156,10 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
 
   @override
   SeasonState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return SeasonUninitialized();
+    }
+
     SeasonBlocStateType type = SeasonBlocStateType.valueOf(json["type"]);
     switch (type) {
       case SeasonBlocStateType.Uninitialized:

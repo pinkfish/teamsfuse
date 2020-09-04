@@ -8,6 +8,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../leagueortournamentbloc.dart';
+import '../data/leagueortournamentblocstate.dart';
 
 ///
 /// Basic state for all the data in this system.

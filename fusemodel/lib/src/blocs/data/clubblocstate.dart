@@ -29,14 +29,15 @@ class ClubBlocStateType extends EnumClass {
 @BuiltValue(instantiable: false)
 abstract class ClubState {
   BuiltMap<String, Club> get clubs;
+  ClubBlocStateType get type;
+
+  // Don't save this stuff
   @BuiltValueField(serialize: false)
   bool get loadedFirestore;
   @BuiltValueField(serialize: false)
   bool get loadedTeams;
   @BuiltValueField(serialize: false)
   BuiltMap<String, Iterable<Team>> get teams;
-
-  ClubBlocStateType get type;
 
   static ClubStateBuilder fromState(ClubState state, ClubStateBuilder builder) {
     return builder
