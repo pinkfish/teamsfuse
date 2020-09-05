@@ -26,16 +26,52 @@ class TeamBlocStateType extends EnumClass {
 /// exciting team stuff.
 ///
 @BuiltValue(instantiable: false)
-abstract class TeamState {
+abstract class TeamState with TeamStateUpdates {
+  @override
   BuiltMap<String, Team> get adminTeams;
+  @override
   BuiltMap<String, Team> get playerTeams;
+  @override
   BuiltMap<String, BuiltMap<String, Team>> get clubTeams;
+  @override
   BuiltMap<String, Team> get publicTeams;
   TeamBlocStateType get type;
 
   // Don't save this stuff.
   @BuiltValueField(serialize: false)
   bool get loadedFirestore;
+
+  @memoized
+  @override
+  Set<String> get allTeamUids {
+    Set<String> set = Set.from(adminTeams.keys);
+    clubTeams.forEach(
+        (String clubUid, BuiltMap<String, Team> data) => set.addAll(data.keys));
+    set.addAll(clubTeams.keys);
+    set.addAll(playerTeams.keys);
+    return set;
+  }
+
+  static TeamStateBuilder fromState(TeamState state, TeamStateBuilder builder) {
+    return builder
+      ..adminTeams = state.adminTeams.toBuilder()
+      ..playerTeams = state.playerTeams.toBuilder()
+      ..clubTeams = state.clubTeams.toBuilder()
+      ..publicTeams = state.publicTeams.toBuilder()
+      ..loadedFirestore = state.loadedFirestore;
+  }
+
+  static void initializeStateBuilder(TeamStateBuilder b) =>
+      b..loadedFirestore = false;
+
+  Map<String, dynamic> toMap();
+}
+
+abstract class TeamStateUpdates {
+  BuiltMap<String, Team> get playerTeams;
+  BuiltMap<String, Team> get adminTeams;
+  BuiltMap<String, BuiltMap<String, Team>> get clubTeams;
+  BuiltMap<String, Team> get publicTeams;
 
   ///
   /// Get the team from the various places it could exist.
@@ -71,35 +107,21 @@ abstract class TeamState {
     return t;
   }
 
-  @memoized
   Set<String> get allTeamUids {
     Set<String> set = Set.from(adminTeams.keys);
     clubTeams.forEach(
-        (String clubUid, BuiltMap<String, Team> data) => set.addAll(data.keys));
+            (String clubUid, BuiltMap<String, Team> data) => set.addAll(data.keys));
     set.addAll(clubTeams.keys);
     set.addAll(playerTeams.keys);
     return set;
   }
-
-  static TeamStateBuilder fromState(TeamState state, TeamStateBuilder builder) {
-    return builder
-      ..adminTeams = state.adminTeams.toBuilder()
-      ..playerTeams = state.playerTeams.toBuilder()
-      ..clubTeams = state.clubTeams.toBuilder()
-      ..publicTeams = state.publicTeams.toBuilder()
-      ..loadedFirestore = state.loadedFirestore;
-  }
-
-  static void initializeStateBuilder(TeamStateBuilder b) =>
-      b..loadedFirestore = false;
-
-  Map<String, dynamic> toMap();
 }
 
 ///
 /// The team loaded from the database.
 ///
 abstract class TeamLoaded
+    with TeamStateUpdates
     implements TeamState, Built<TeamLoaded, TeamLoadedBuilder> {
   TeamLoaded._();
   factory TeamLoaded([void Function(TeamLoadedBuilder) updates]) = _$TeamLoaded;
@@ -130,6 +152,7 @@ abstract class TeamLoaded
 /// The team bloc that is unitialized.
 ///
 abstract class TeamUninitialized
+    with TeamStateUpdates
     implements TeamState, Built<TeamUninitialized, TeamUninitializedBuilder> {
   TeamUninitialized._();
   factory TeamUninitialized([void Function(TeamUninitializedBuilder) updates]) =

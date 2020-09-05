@@ -5,8 +5,10 @@ import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
 
 import 'blocs/data/clubblocstate.dart';
+import 'blocs/data/leagueortournamentblocstate.dart';
 import 'blocs/data/profileblocstate.dart';
 import 'blocs/data/seasonblocstate.dart';
+import 'blocs/data/teamblocstate.dart';
 import 'club.dart';
 import 'common.dart';
 import 'game.dart';
@@ -26,6 +28,7 @@ part 'serializer.g.dart';
 @SerializersFor([
   AddedUid,
   AddedOrAdmin,
+  AddingState,
   Attendance,
   Club,
   ClubBlocStateType,
@@ -49,6 +52,10 @@ part 'serializer.g.dart';
   LeagueOrTournament,
   LeagueOrTournamentDivison,
   LeagueOrTournamentSeason,
+  LeagueOrTournamentLoaded,
+  LeagueOrTournamentState,
+  LeagueOrTournamentBlocStateType,
+  LeagueOrTournamentUninitialized,
   Opponent,
   Player,
   ProfileBlocLoaded,
@@ -64,6 +71,10 @@ part 'serializer.g.dart';
   SeasonUninitialized,
   Sport,
   Team,
+  TeamLoaded,
+  TeamState,
+  TeamBlocStateType,
+  TeamUninitialized,
   Tristate,
 ])
 final Serializers serializers = (_$serializers.toBuilder()

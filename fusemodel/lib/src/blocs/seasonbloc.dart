@@ -174,6 +174,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
             'Start Seasons ${coordinationBloc.start.difference(new DateTime.now())}');
         coordinationBloc.add(
             CoordinationEventLoadedData(loaded: BlocsToLoad.Season, sql: true));
+        SeasonsTrace.stop();
         return loaded;
       default:
         return SeasonUninitialized();

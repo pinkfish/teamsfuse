@@ -12,6 +12,7 @@ import '../data/clubblocstate.dart';
 import '../data/seasonblocstate.dart';
 import '../seasonbloc.dart';
 import '../teambloc.dart';
+import '../data/teamblocstate.dart';
 
 ///
 /// The basic team state for this team.

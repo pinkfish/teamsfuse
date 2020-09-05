@@ -7,6 +7,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
+import 'data/teamblocstate.dart';
 import 'internal/blocstoload.dart';
 import 'teambloc.dart';
 
@@ -150,7 +151,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   DateTime _start;
   DateTime _end;
 
-  GameBloc({@required this.coordinationBloc, @required this.teamBloc}) : super(GameUninitialized()) {
+  GameBloc({@required this.coordinationBloc, @required this.teamBloc})
+      : super(GameUninitialized()) {
     if (teamBloc.state is TeamLoaded) {
       _onTeamsUpdates(teamBloc.state.allTeamUids, true);
     }
@@ -158,7 +160,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       if (state is TeamLoaded) {
         _start = _start ?? new DateTime.now().subtract(new Duration(days: 60));
         _end = _end ?? new DateTime.now().add(new Duration(days: 240));
-        if (state.onlySql) {
+        if (!state.loadedFirestore) {
           add(_GameEventUserLoaded(teams: state.allTeamUids));
         } else {
           _onTeamsUpdates(state.allTeamUids, false);
