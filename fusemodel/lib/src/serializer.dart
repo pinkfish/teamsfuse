@@ -6,6 +6,7 @@ import 'package:built_value/standard_json_plugin.dart';
 
 import 'blocs/data/clubblocstate.dart';
 import 'blocs/data/leagueortournamentblocstate.dart';
+import 'blocs/data/playerblocstate.dart';
 import 'blocs/data/profileblocstate.dart';
 import 'blocs/data/seasonblocstate.dart';
 import 'blocs/data/teamblocstate.dart';
@@ -58,6 +59,10 @@ part 'serializer.g.dart';
   LeagueOrTournamentUninitialized,
   Opponent,
   Player,
+  PlayerBlocStateType,
+  PlayerLoaded,
+  PlayerState,
+  PlayerUninitialized,
   ProfileBlocLoaded,
   ProfileBlocState,
   ProfileBlocStateType,

@@ -13,6 +13,7 @@ export 'src/blocs/clubbloc.dart';
 export 'src/blocs/coordinationbloc.dart';
 export 'src/blocs/data/clubblocstate.dart';
 export 'src/blocs/data/leagueortournamentblocstate.dart';
+export 'src/blocs/data/playerblocstate.dart';
 export 'src/blocs/data/profileblocstate.dart';
 export 'src/blocs/data/seasonblocstate.dart';
 export 'src/blocs/data/teamblocstate.dart';

@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
+import '../data/playerblocstate.dart';
 import '../playerbloc.dart';
 
 abstract class SinglePlayerState extends Equatable {

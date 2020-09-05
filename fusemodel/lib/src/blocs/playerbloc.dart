@@ -1,27 +1,16 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
+import 'data/playerblocstate.dart';
 import 'internal/blocstoload.dart';
 
 abstract class PlayerEvent extends Equatable {}
-
-class _PlayerUserLoaded extends PlayerEvent {
-  _PlayerUserLoaded();
-
-  @override
-  String toString() {
-    return '_PlayerUserLoaded{}';
-  }
-
-  @override
-  List<Object> get props => [];
-}
 
 class _PlayerFirestore extends PlayerEvent {
   _PlayerFirestore();
@@ -75,111 +64,16 @@ class _PlayerNewPlayersLoaded extends PlayerEvent {
 }
 
 ///
-/// Basic state for all the player states.
-///
-abstract class PlayerState extends Equatable {
-  final BuiltMap<String, Player> players;
-  final BuiltMap<String, Player> extraPlayers;
-  final Player me;
-  final bool onlySql;
-
-  PlayerState(
-      {@required this.players,
-      @required this.onlySql,
-      @required this.me,
-      @required this.extraPlayers});
-
-  ///
-  /// Look up the specific player in the current state.
-  ///
-  Player getPlayer(String uid) {
-    if (players.containsKey(uid)) {
-      return players[uid];
-    }
-    if (extraPlayers.containsKey(uid)) {
-      return extraPlayers[uid];
-    }
-    return null;
-  }
-
-  @override
-  List<Object> get props => [players, extraPlayers, me, onlySql];
-}
-
-///
-/// Data is currently leading, although there is also data in here
-/// possibly too.
-///
-class PlayerLoading extends PlayerState {
-  PlayerLoading(
-      {@required PlayerState playerState,
-      BuiltMap<String, Player> players,
-      BuiltMap<String, Player> extraPlayers,
-      Player me,
-      bool onlySql})
-      : super(
-            players: players ?? playerState.players,
-            onlySql: onlySql ?? playerState.onlySql,
-            me: me ?? playerState.me,
-            extraPlayers: extraPlayers ?? playerState.extraPlayers);
-
-  @override
-  String toString() {
-    return 'PlayerLoading{players: ${players.length}, onlySql: $onlySql}';
-  }
-}
-
-///
-/// No data at all, we are uninitialized.
-///
-class PlayerUninitialized extends PlayerState {
-  PlayerUninitialized()
-      : super(
-            players: BuiltMap(),
-            extraPlayers: BuiltMap(),
-            onlySql: true,
-            me: null);
-
-  @override
-  String toString() {
-    return 'PlayerUninitialized{players: ${players.length}, onlySql: $onlySql}';
-  }
-}
-
-///
-/// Player data is loaded and everything is fluffy.
-///
-class PlayerLoaded extends PlayerState {
-  PlayerLoaded(
-      {@required PlayerState playerState,
-      BuiltMap<String, Player> players,
-      BuiltMap<String, Player> extraPlayers,
-      Player me,
-      bool onlySql})
-      : super(
-            players: players ?? playerState.players,
-            me: me ?? playerState.me,
-            onlySql: onlySql ?? playerState.onlySql,
-            extraPlayers: extraPlayers ?? playerState.extraPlayers);
-
-  @override
-  String toString() {
-    return 'PlayerLoaded{players.length: ${players.length}, extraPlayers.length: ${extraPlayers?.length}, me: $me, onlySql: $onlySql}';
-  }
-}
-
-///
 /// Player bloc handles the player flow.  Loading all the players from
 /// firestore.
 ///
-class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
+class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
   final CoordinationBloc coordinationBloc;
 
   StreamSubscription<Iterable<Player>> _playerSnapshot;
   bool _createdMePlayer = false;
   StreamSubscription<CoordinationState> _authSub;
 
-  bool _loadingSql = false;
   bool _loadingFirestore = false;
 
   PlayerBloc({
@@ -191,13 +85,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     _authSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
-        _loadingSql = false;
         add(_PlayerLoggedOut());
-      } else if (coordState is CoordinationStateLoadingSql) {
-        if (!_loadingSql) {
-          _loadingSql = true;
-          _startLoading(coordState);
-        }
       } else if (coordState is CoordinationStateLoadingFirestore) {
         if (!_loadingFirestore) {
           _loadingFirestore = true;
@@ -205,10 +93,6 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         }
       }
     });
-  }
-
-  void _startLoading(CoordinationStateLoadingSql state) {
-    add(_PlayerUserLoaded());
   }
 
   void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
@@ -284,39 +168,6 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   @override
   Stream<PlayerState> mapEventToState(PlayerEvent event) async* {
-    if (event is _PlayerUserLoaded) {
-      yield PlayerLoading(playerState: state, onlySql: true);
-      TraceProxy playerTrace =
-          coordinationBloc.analyticsSubsystem.newTrace("playerData");
-      playerTrace.start();
-      Map<String, Map<String, dynamic>> data = await coordinationBloc
-          .persistentData
-          .getAllElements(PersistenData.playersTable);
-      Map<String, Player> newPlayers = new Map<String, Player>();
-      Player me;
-      String userUid = coordinationBloc.state.uid;
-
-      data.forEach((String uid, Map<String, dynamic> input) {
-        coordinationBloc.sqlTrace?.incrementCounter("player");
-        playerTrace.incrementCounter("player");
-        Player player = Player.fromJSON(uid, input).build();
-        newPlayers[uid] = player;
-        if (player.users[userUid].relationship == Relationship.Me) {
-          me = player;
-        }
-      });
-      print(
-          'End players ${coordinationBloc.start.difference(new DateTime.now())}');
-      playerTrace.stop();
-      yield PlayerLoaded(
-          playerState: state,
-          players: BuiltMap.from(newPlayers),
-          onlySql: true,
-          me: me);
-      coordinationBloc.add(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Player, sql: true));
-    }
-
     if (event is _PlayerFirestore) {
       // Load from firestore.
       _playerSnapshot = coordinationBloc.databaseUpdateModel
@@ -335,11 +186,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
     // Update the data from an event.
     if (event is _PlayerNewPlayersLoaded) {
-      yield PlayerLoaded(
-          playerState: state,
-          players: event.players,
-          onlySql: false,
-          me: event.me);
+      yield (PlayerLoaded.fromState(state)
+            ..players = event.players.toBuilder()
+            ..loadedFirestore = true
+            ..me = event.me.toBuilder())
+          .build();
       coordinationBloc.add(
           CoordinationEventLoadedData(loaded: BlocsToLoad.Player, sql: false));
     }
@@ -355,7 +206,38 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     if (event is _PlayerLoadedExtra) {
       MapBuilder<String, Player> extras = state.extraPlayers.toBuilder();
       extras[event.playerUid] = event.player;
-      yield PlayerLoaded(playerState: state, extraPlayers: extras.build());
+      yield (PlayerLoaded.fromState(state)..extraPlayers = extras).build();
     }
+  }
+
+  @override
+  PlayerState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return PlayerUninitialized();
+    }
+
+    PlayerBlocStateType type = PlayerBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case PlayerBlocStateType.Uninitialized:
+        return PlayerUninitialized();
+      case PlayerBlocStateType.Loaded:
+        TraceProxy playerTrace =
+            coordinationBloc.analyticsSubsystem.newTrace("playerData");
+        playerTrace.start();
+        var loaded = PlayerLoaded.fromMap(json);
+        print(
+            'End players ${coordinationBloc.start.difference(new DateTime.now())}');
+        playerTrace.stop();
+        coordinationBloc.add(
+            CoordinationEventLoadedData(loaded: BlocsToLoad.Player, sql: true));
+        return loaded;
+      default:
+        return PlayerUninitialized();
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(PlayerState state) {
+    return state.toMap();
   }
 }
