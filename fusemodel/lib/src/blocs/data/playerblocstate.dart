@@ -31,6 +31,7 @@ abstract class PlayerState with PlayerMixin {
   BuiltMap<String, Player> get players;
   @override
   BuiltMap<String, Player> get extraPlayers;
+  @nullable
   Player get me;
   PlayerBlocStateType get type;
 
@@ -42,6 +43,8 @@ abstract class PlayerState with PlayerMixin {
       PlayerState state, PlayerStateBuilder builder) {
     return builder
       ..players = state.players.toBuilder()
+      ..extraPlayers = state.extraPlayers.toBuilder()
+      ..me = state.me.toBuilder()
       ..loadedFirestore = state.loadedFirestore;
   }
 

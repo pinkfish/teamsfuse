@@ -6,6 +6,7 @@ import 'package:built_value/standard_json_plugin.dart';
 
 import 'blocs/data/clubblocstate.dart';
 import 'blocs/data/leagueortournamentblocstate.dart';
+import 'blocs/data/messagesblocstate.dart';
 import 'blocs/data/playerblocstate.dart';
 import 'blocs/data/profileblocstate.dart';
 import 'blocs/data/seasonblocstate.dart';
@@ -43,6 +44,10 @@ part 'serializer.g.dart';
   InviteToLeagueAsAdmin,
   Game,
   Message,
+  MessagesBlocStateType,
+  MessagesLoaded,
+  MessagesState,
+  MessagesUninitialized,
   FusedUserProfile,
   GamePeriod,
   GamePlace,

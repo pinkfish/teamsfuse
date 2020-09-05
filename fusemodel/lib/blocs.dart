@@ -11,6 +11,7 @@ export 'src/blocs/add/addtrainingbloc.dart';
 export 'src/blocs/authenticationbloc.dart';
 export 'src/blocs/clubbloc.dart';
 export 'src/blocs/coordinationbloc.dart';
+export 'src/blocs/data/messagesblocstate.dart';
 export 'src/blocs/data/clubblocstate.dart';
 export 'src/blocs/data/leagueortournamentblocstate.dart';
 export 'src/blocs/data/playerblocstate.dart';

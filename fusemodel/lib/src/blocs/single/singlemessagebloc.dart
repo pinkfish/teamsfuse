@@ -6,6 +6,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../messagesbloc.dart';
+import '../data/messagesblocstate.dart';
 
 abstract class SingleMessageState extends Equatable {
   final Message message;
