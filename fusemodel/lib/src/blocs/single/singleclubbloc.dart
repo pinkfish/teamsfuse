@@ -2,92 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../clubbloc.dart';
 import '../data/clubblocstate.dart';
-
-abstract class SingleClubState extends Equatable {
-  final Club club;
-  final Iterable<Team> teams;
-  final Iterable<InviteToClub> invites;
-
-  SingleClubState(
-      {@required this.club, @required this.teams, @required this.invites});
-
-  @override
-  List<Object> get props => [club, teams, invites];
-}
-
-///
-/// We have a club, default state.
-///
-class SingleClubLoaded extends SingleClubState {
-  SingleClubLoaded(
-      {@required Club club,
-      @required Iterable<Team> teams,
-      @required Iterable<InviteToClub> invites})
-      : super(club: club, teams: teams, invites: invites);
-
-  SingleClubLoaded.copy(SingleClubState state)
-      : super(club: state.club, teams: state.teams, invites: state.invites);
-
-  @override
-  String toString() {
-    return 'SingleClubLoaded{}';
-  }
-}
-
-///
-/// Saving operation in progress.
-///
-class SingleClubSaving extends SingleClubState {
-  SingleClubSaving({@required SingleClubState singleClubState})
-      : super(
-            club: singleClubState.club,
-            teams: singleClubState.teams,
-            invites: singleClubState.invites);
-
-  @override
-  String toString() {
-    return 'SingleClubSaving{}';
-  }
-}
-
-///
-/// Saving operation failed (goes back to loaded for success).
-///
-class SingleClubSaveFailed extends SingleClubState {
-  final Error error;
-
-  SingleClubSaveFailed({@required SingleClubState singleClubState, this.error})
-      : super(
-            club: singleClubState.club,
-            teams: singleClubState.teams,
-            invites: singleClubState.invites);
-
-  @override
-  String toString() {
-    return 'SingleClubSaveFailed{}';
-  }
-}
-
-///
-/// Club got deleted.
-///
-class SingleClubDeleted extends SingleClubState {
-  SingleClubDeleted(@required SingleClubState state)
-      : super(club: state.club, teams: state.teams, invites: state.invites);
-
-  SingleClubDeleted.empty() : super(club: null, teams: {}, invites: []);
-
-  @override
-  String toString() {
-    return 'SingleClubDeleted{}';
-  }
-}
+import 'data/singleclubbloc.dart';
 
 abstract class SingleClubEvent extends Equatable {}
 
@@ -215,7 +137,7 @@ class _SingleClubDeleted extends SingleClubEvent {
 }
 
 class _SingleClubInvitesAdded extends SingleClubEvent {
-  final Iterable<InviteToClub> invites;
+  final BuiltList<InviteToClub> invites;
 
   _SingleClubInvitesAdded({@required this.invites});
 
@@ -240,8 +162,8 @@ class SingleClubBloc extends Bloc<SingleClubEvent, SingleClubState> {
   SingleClubBloc({@required this.clubBloc, @required String clubUid})
       : super(clubBloc.state.clubs.containsKey(clubUid)
             ? SingleClubLoaded(
-                club: clubBloc.state.clubs[clubUid], teams: {}, invites: [])
-            : SingleClubDeleted.empty()) {
+                (b) => b..club = clubBloc.state.clubs[clubUid].toBuilder())
+            : SingleClubDeleted()) {
     _clubUid = clubUid;
     _clubSub = clubBloc.listen((ClubState clubState) {
       Club club = clubState.clubs[clubUid];
@@ -271,18 +193,19 @@ class SingleClubBloc extends Bloc<SingleClubEvent, SingleClubState> {
   @override
   Stream<SingleClubState> mapEventToState(SingleClubEvent event) async* {
     if (event is _SingleClubNewClub) {
-      yield SingleClubLoaded(
-          club: event.newClub, teams: state.teams, invites: state.invites);
+      yield (SingleClubLoaded.fromState(state)
+            ..club = event.newClub.toBuilder())
+          .build();
     }
 
     // The club is deleted.
     if (event is _SingleClubDeleted) {
-      yield SingleClubDeleted(state);
+      yield SingleClubDeleted.fromState(state).build();
     }
 
     // Save the club.
     if (event is SingleClubUpdate) {
-      yield SingleClubSaving(singleClubState: state);
+      yield SingleClubSaving.fromState(state).build();
       try {
         Club club = event.club;
         if (event.image != null) {
@@ -292,81 +215,86 @@ class SingleClubBloc extends Bloc<SingleClubEvent, SingleClubState> {
         }
         await clubBloc.coordinationBloc.databaseUpdateModel
             .updateClub(club, includeMembers: event.includeMembers);
-        yield SingleClubLoaded(
-            club: event.club, teams: state.teams, invites: state.invites);
+        yield (SingleClubLoaded.fromState(state)..club = event.club.toBuilder())
+            .build();
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: state, error: e);
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
+        yield SingleClubLoaded.fromState(state).build();
       }
     }
 
     if (event is SingleClubUpdateImage) {
-      yield SingleClubSaving(singleClubState: state);
+      yield SingleClubSaving.fromState(state).build();
       try {
         Uri clubUri = await clubBloc.coordinationBloc.databaseUpdateModel
             .updateClubImage(state.club, event.image);
 
-        yield SingleClubLoaded(
-            club: state.club.rebuild((b) => b..photoUrl = clubUri.toString()),
-            teams: state.teams,
-            invites: state.invites);
+        yield (SingleClubLoaded.fromState(state)
+              ..club = (state.club.toBuilder()..photoUrl = clubUri.toString()))
+            .build();
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: state, error: e);
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
+        yield SingleClubLoaded.fromState(state).build();
       }
     }
 
     // Create a new club.
     if (event is SingleClubAdd) {
-      yield SingleClubSaving(singleClubState: state);
+      yield SingleClubSaving.fromState(state).build();
       try {
         _clubUid = await clubBloc.coordinationBloc.databaseUpdateModel
             .addClub(null, event.newClub);
-        yield SingleClubLoaded(
-            invites: state.invites, club: event.newClub, teams: state.teams);
+        yield (SingleClubLoaded.fromState(state)
+              ..club = event.newClub.toBuilder())
+            .build();
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: state, error: e);
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     if (event is SingleClubAddMember) {
-      yield SingleClubSaving(singleClubState: state);
+      yield SingleClubSaving.fromState(state).build();
       try {
         await clubBloc.coordinationBloc.databaseUpdateModel
             .addUserToClub(clubUid, event.adminUid, event.admin);
-        yield SingleClubLoaded.copy(state);
+        yield SingleClubLoaded.fromState(state).build();
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: state, error: e);
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
+        yield SingleClubLoaded.fromState(state).build();
       }
     }
 
     if (event is SingleClubDeleteMember) {
-      yield SingleClubSaving(singleClubState: state);
+      yield SingleClubSaving.fromState(state).build();
       try {
         await clubBloc.coordinationBloc.databaseUpdateModel
             .deleteClubMember(state.club, event.adminUid);
-        yield SingleClubLoaded.copy(state);
+        yield SingleClubLoaded.fromState(state).build();
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: state, error: e);
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
+        yield SingleClubLoaded.fromState(state).build();
       }
     }
 
     if (event is SingleClubInviteMember) {
-      yield SingleClubSaving(singleClubState: state);
+      yield SingleClubSaving.fromState(state).build();
       try {
         await clubBloc.coordinationBloc.databaseUpdateModel.inviteUserToClub(
             clubName: state.club.name,
             email: event.email,
             admin: event.admin,
             clubUid: clubUid);
-        yield SingleClubLoaded(
-            club: state.club, invites: state.invites, teams: state.teams);
+        yield SingleClubLoaded.fromState(state).build();
       } catch (e) {
-        yield SingleClubSaveFailed(singleClubState: state, error: e);
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
+        yield SingleClubLoaded.fromState(state).build();
       }
     }
 
     if (event is _SingleClubInvitesAdded) {
-      yield SingleClubLoaded(
-          club: state.club, teams: state.teams, invites: event.invites);
+      yield (SingleClubLoaded.fromState(state)
+            ..invites = event.invites.toBuilder())
+          .build();
     }
 
     if (event is SingleClubLoadInvites) {

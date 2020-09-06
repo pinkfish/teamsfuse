@@ -5,12 +5,14 @@ import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
 
 import 'blocs/data/clubblocstate.dart';
+import 'blocs/data/gameblocstate.dart';
 import 'blocs/data/leagueortournamentblocstate.dart';
 import 'blocs/data/messagesblocstate.dart';
 import 'blocs/data/playerblocstate.dart';
 import 'blocs/data/profileblocstate.dart';
 import 'blocs/data/seasonblocstate.dart';
 import 'blocs/data/teamblocstate.dart';
+import 'blocs/single/data/singleclubbloc.dart';
 import 'club.dart';
 import 'common.dart';
 import 'game.dart';
@@ -38,6 +40,10 @@ part 'serializer.g.dart';
   ClubState,
   ClubUninitialized,
   Game,
+  GameBlocStateType,
+  GameLoaded,
+  GameState,
+  GameUninitialized,
   Invite,
   InviteAsAdmin,
   InviteToClub,
@@ -79,6 +85,13 @@ part 'serializer.g.dart';
   SeasonLoaded,
   SeasonState,
   SeasonUninitialized,
+  SingleClubLoaded,
+  SingleClubState,
+  SingleClubBlocStateType,
+  SingleClubUninitialized,
+  SingleClubDeleted,
+  SingleClubSaving,
+  SingleClubSaveFailed,
   Sport,
   Team,
   TeamLoaded,

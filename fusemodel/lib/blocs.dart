@@ -8,6 +8,7 @@ export 'src/blocs/add/addplayerbloc.dart';
 export 'src/blocs/add/addseasonbloc.dart';
 export 'src/blocs/add/addsharedgamebloc.dart';
 export 'src/blocs/add/addteambloc.dart';
+export 'src/blocs/single/data/singleclubbloc.dart';
 export 'src/blocs/add/addtrainingbloc.dart';
 export 'src/blocs/authenticationbloc.dart';
 export 'src/blocs/clubbloc.dart';
