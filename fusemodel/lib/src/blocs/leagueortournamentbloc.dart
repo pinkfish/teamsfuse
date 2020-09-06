@@ -26,37 +26,6 @@ class _LeagueOrTournamentEventNewDataLoaded extends LeagueOrTournamentEvent {
   List<Object> get props => [leagueOrTournament];
 }
 
-class _LeagueOrTournamentEventAddFailed extends LeagueOrTournamentEvent {
-  final AddingState adding;
-
-  _LeagueOrTournamentEventAddFailed({@required this.adding});
-
-  @override
-  List<Object> get props => [adding];
-}
-
-///
-/// Adds a league or a tournament to the system.
-///
-class LeagueOrTournamentEventAddLeague extends LeagueOrTournamentEvent {
-  LeagueOrTournamentBuilder league;
-
-  LeagueOrTournamentEventAddLeague({this.league});
-
-  @override
-  List<Object> get props => [league];
-}
-
-///
-/// Resets the adding state of the bloc.
-///
-class LeagueOrTournamentEventReset extends LeagueOrTournamentEvent {
-  LeagueOrTournamentEventReset();
-
-  @override
-  List<Object> get props => [];
-}
-
 class _LeagueOrTournamentEventFirestore extends LeagueOrTournamentEvent {
   final String uid;
 
@@ -156,32 +125,6 @@ class LeagueOrTournamentBloc
           .build();
       coordinationBloc.add(CoordinationEventLoadedData(
           loaded: BlocsToLoad.LeagueOrTournament, sql: false));
-    }
-
-    // New data from above.  Mark ourselves as done.
-    if (event is _LeagueOrTournamentEventAddFailed) {
-      yield (LeagueOrTournamentLoaded.fromState(state)..adding = event.adding)
-          .build();
-    }
-
-    if (event is LeagueOrTournamentEventAddLeague) {
-      add(_LeagueOrTournamentEventAddFailed(adding: AddingState.Success));
-      yield (LeagueOrTournamentLoaded.fromState(state)
-            ..adding = AddingState.Adding)
-          .build();
-      coordinationBloc.databaseUpdateModel
-          .updateLeague(event.league.build())
-          .then((String uid) {
-        add(_LeagueOrTournamentEventAddFailed(adding: AddingState.Success));
-      }, onError: (e, stacktrace) {
-        add(_LeagueOrTournamentEventAddFailed(adding: AddingState.Failed));
-      });
-    }
-
-    if (event is LeagueOrTournamentEventReset) {
-      yield (LeagueOrTournamentLoaded.fromState(state)
-            ..adding = AddingState.None)
-          .build();
     }
 
     // Unload everything.

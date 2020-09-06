@@ -49,21 +49,17 @@ abstract class LeagueOrTournamentState {
 
   // Don't save this stuff.
   @BuiltValueField(serialize: false)
-  AddingState get adding;
-  @BuiltValueField(serialize: false)
   bool get loadedFirestore;
 
   static LeagueOrTournamentStateBuilder fromState(
       LeagueOrTournamentState state, LeagueOrTournamentStateBuilder builder) {
     return builder
       ..leagueOrTournaments = state.leagueOrTournaments.toBuilder()
-      ..loadedFirestore = state.loadedFirestore
-      ..adding = state.adding;
+      ..loadedFirestore = state.loadedFirestore;
   }
 
-  static void initializeStateBuilder(LeagueOrTournamentStateBuilder b) => b
-    ..loadedFirestore = false
-    ..adding = AddingState.None;
+  static void initializeStateBuilder(LeagueOrTournamentStateBuilder b) =>
+      b..loadedFirestore = false;
 
   Map<String, dynamic> toMap();
 }

@@ -19,7 +19,6 @@ class AddGameEventCommit extends AddGameEvent {
   AddGameEventCommit({@required this.newGame});
 
   @override
-  // TODO: implement props
   List<Object> get props => [this.newGame];
 }
 
@@ -30,7 +29,8 @@ class AddGameEventCommit extends AddGameEvent {
 class AddGameBloc extends Bloc<AddGameEvent, AddItemState> {
   final CoordinationBloc coordinationBloc;
 
-  AddGameBloc({@required this.coordinationBloc}): super(AddItemUninitialized());
+  AddGameBloc({@required this.coordinationBloc})
+      : super(AddItemUninitialized());
 
   @override
   Stream<AddItemState> mapEventToState(AddGameEvent event) async* {

@@ -19,7 +19,6 @@ class AddSharedGameEventCommit extends AddSharedGameEvent {
   AddSharedGameEventCommit({@required this.newSharedData});
 
   @override
-  // TODO: implement props
   List<Object> get props => [newSharedData];
 }
 

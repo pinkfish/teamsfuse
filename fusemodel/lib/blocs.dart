@@ -2,6 +2,7 @@ export 'src/blocs/add/addclubbloc.dart';
 export 'src/blocs/add/addgamebloc.dart';
 export 'src/blocs/add/addinvitebloc.dart';
 export 'src/blocs/add/additemstate.dart';
+export 'src/blocs/add/addleagueortournamentbloc.dart';
 export 'src/blocs/add/addmessagebloc.dart';
 export 'src/blocs/add/addplayerbloc.dart';
 export 'src/blocs/add/addseasonbloc.dart';

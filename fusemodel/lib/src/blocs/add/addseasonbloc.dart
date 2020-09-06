@@ -23,7 +23,6 @@ class AddSeasonEventCommit extends AddSeasonEvent {
       {@required this.teamUid, @required this.name, @required this.players});
 
   @override
-  // TODO: implement props
   List<Object> get props => [teamUid, name, players];
 }
 

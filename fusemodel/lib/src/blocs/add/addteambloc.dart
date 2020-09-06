@@ -30,7 +30,6 @@ class AddTeamEventCommit extends AddTeamEvent {
       this.teamImage});
 
   @override
-  // TODO: implement props
   List<Object> get props => [team, playerUid, seasonName, clubUid, teamImage];
 }
 

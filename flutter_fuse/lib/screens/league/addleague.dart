@@ -32,7 +32,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
 
   LeagueOrTournamentBuilder _league;
   File _leagueImage;
-  LeagueOrTournamentBloc leagueBloc;
+  AddLeagueOrTournamentBloc addBloc;
 
   @override
   void initState() {
@@ -47,7 +47,14 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
       ..shortDescription = ""
       ..longDescription = ""
       ..adminsUids = set;
-    leagueBloc = BlocProvider.of<LeagueOrTournamentBloc>(context);
+    addBloc = AddLeagueOrTournamentBloc(
+        coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    addBloc.close();
   }
 
   void _showInSnackBar(String value) {
@@ -107,7 +114,8 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
         } else {
           // Write the game out.
 
-          leagueBloc.add(LeagueOrTournamentEventAddLeague(league: _league));
+          addBloc.add(AddLeagueOrTournamentEventCommit(
+              leagueOrTournament: _league.build(), imageFile: _leagueImage));
         }
       });
     }
@@ -155,66 +163,74 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
 
-    return new Scaffold(
-      key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(messages.title),
-      ),
-      body: BlocListener(
-        cubit: BlocProvider.of<LeagueOrTournamentBloc>(context),
-        listener: (BuildContext context, LeagueOrTournamentState state) {
-          if (state.adding == AddingState.Failed) {
-            showDialog<bool>(
-                context: context,
-                builder: (BuildContext context) {
-                  return new AlertDialog(
-                    title: new Text("Error"),
-                    content: new Text("Error saving the game"),
-                  );
-                });
-          }
-        },
-        child: BlocBuilder(
-          cubit: BlocProvider.of<LeagueOrTournamentBloc>(context),
-          builder: (BuildContext context, LeagueOrTournamentState state) {
-            return SavingOverlay(
-              saving: state.adding == AddingState.Adding,
-              child: new Container(
-                padding: new EdgeInsets.all(5.0),
-                child: new StepperAlwaysVisible(
-                  type: StepperType.horizontal,
-                  currentStep: _currentStep,
-                  onStepContinue: () {
-                    _onStepperContinue(context);
-                  },
-                  onStepCancel: () {
-                    // Go back
-                    Navigator.of(context).pop();
-                  },
-                  onStepTapped: (int step) {
-                    _onStepTapped(step);
-                  },
-                  steps: <Step>[
-                    new Step(
-                      title: new Text(messages.league),
-                      state: leagueStepState,
-                      isActive: true,
-                      content: new LeagueOrTournamentEditForm(
-                        leagueOrTournament: _league.build(),
-                        key: _formState,
-                      ),
+    return BlocProvider(
+      create: (BuildContext context) => addBloc,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: new AppBar(
+          title: new Text(messages.title),
+        ),
+        body: Builder(
+          builder: (BuildContext context) => BlocListener(
+            cubit: BlocProvider.of<AddLeagueOrTournamentBloc>(context),
+            listener: (BuildContext context, AddItemState state) {
+              if (state is AddItemSaveFailed) {
+                showDialog<bool>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return new AlertDialog(
+                        title: new Text("Error"),
+                        content: new Text("Error saving the league"),
+                      );
+                    });
+              }
+              if (state is AddItemDone) {
+                Navigator.pop(context);
+              }
+            },
+            child: BlocBuilder(
+              cubit: BlocProvider.of<AddLeagueOrTournamentBloc>(context),
+              builder: (BuildContext context, AddItemState state) {
+                return SavingOverlay(
+                  saving: state is AddItemSaving,
+                  child: new Container(
+                    padding: new EdgeInsets.all(5.0),
+                    child: new StepperAlwaysVisible(
+                      type: StepperType.horizontal,
+                      currentStep: _currentStep,
+                      onStepContinue: () {
+                        _onStepperContinue(context);
+                      },
+                      onStepCancel: () {
+                        // Go back
+                        Navigator.of(context).pop();
+                      },
+                      onStepTapped: (int step) {
+                        _onStepTapped(step);
+                      },
+                      steps: <Step>[
+                        new Step(
+                          title: new Text(messages.league),
+                          state: leagueStepState,
+                          isActive: true,
+                          content: new LeagueOrTournamentEditForm(
+                            leagueOrTournament: _league.build(),
+                            key: _formState,
+                          ),
+                        ),
+                        new Step(
+                          title: new Text(messages.create),
+                          state: createStepStage,
+                          isActive: leagueStepState == StepState.complete,
+                          content: _buildSummary(context),
+                        )
+                      ],
                     ),
-                    new Step(
-                      title: new Text(messages.create),
-                      state: createStepStage,
-                      isActive: leagueStepState == StepState.complete,
-                      content: _buildSummary(context),
-                    )
-                  ],
-                ),
-              ),
-            );
-          },
+                  ),
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
