@@ -6,6 +6,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../gamesbloc.dart';
+import '../data/gameblocstate.dart';
 
 abstract class SingleSharedGameState extends Equatable {
   final GameSharedData sharedData;

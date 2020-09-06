@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
+import '../data/gameblocstate.dart';
 import '../gamesbloc.dart';
 
 abstract class SingleGameState extends Equatable {

@@ -1,10 +1,10 @@
 enum BlocsToLoad {
-  Club,
+  Club, // done
   Game,
   Invite,
-  LeagueOrTournament,
-  Messages,
-  Player,
-  Team,
-  Season
+  LeagueOrTournament, // done
+  Messages, // done
+  Player, // done
+  Team, // done
+  Season // done
 }

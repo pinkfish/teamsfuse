@@ -10,6 +10,7 @@ import 'gamesbloc.dart';
 import 'seasonbloc.dart';
 import 'teambloc.dart';
 import 'data/seasonblocstate.dart';
+import 'data/gameblocstate.dart';
 
 ///
 /// The set of filtered games.
