@@ -14,20 +14,6 @@ import 'teambloc.dart';
 
 abstract class GameEvent extends Equatable {}
 
-class _GameEventUserLoaded extends GameEvent {
-  final Set<String> teams;
-
-  _GameEventUserLoaded({@required this.teams});
-
-  @override
-  String toString() {
-    return '_GameEventUserLoaded{}';
-  }
-
-  @override
-  List<Object> get props => [teams];
-}
-
 class _GameEventLogout extends GameEvent {
   @override
   List<Object> get props => [];
@@ -118,8 +104,6 @@ class GameBloc extends HydratedBloc<GameEvent, GameState> {
 
   @override
   Stream<GameState> mapEventToState(GameEvent event) async* {
-    if (event is _GameEventUserLoaded) {}
-
     // New data from above.  Mark ourselves as done.
     if (event is _GameEventNewDataLoaded) {
       MapBuilder<String, BuiltMap<String, Game>> newGames =
