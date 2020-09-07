@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/src/async_hydrated_bloc/asynchydratedbloc.dart';
 import 'package:meta/meta.dart';
 
 import '../clubbloc.dart';
@@ -148,7 +148,8 @@ class _SingleClubInvitesAdded extends SingleClubEvent {
 ///
 /// Bloc to handle updates and state of a specific club.
 ///
-class SingleClubBloc extends Bloc<SingleClubEvent, SingleClubState> {
+class SingleClubBloc
+    extends AsyncHydratedBloc<SingleClubEvent, SingleClubState> {
   final ClubBloc clubBloc;
   String _clubUid;
 
@@ -160,10 +161,12 @@ class SingleClubBloc extends Bloc<SingleClubEvent, SingleClubState> {
   StreamSubscription<Iterable<InviteToClub>> _inviteSub;
 
   SingleClubBloc({@required this.clubBloc, @required String clubUid})
-      : super(clubBloc.state.clubs.containsKey(clubUid)
-            ? SingleClubLoaded(
-                (b) => b..club = clubBloc.state.clubs[clubUid].toBuilder())
-            : SingleClubDeleted()) {
+      : super(
+            clubBloc.state.clubs.containsKey(clubUid)
+                ? SingleClubLoaded(
+                    (b) => b..club = clubBloc.state.clubs[clubUid].toBuilder())
+                : SingleClubDeleted(),
+            "Singleclub" + clubUid) {
     _clubUid = clubUid;
     _clubSub = clubBloc.listen((ClubState clubState) {
       Club club = clubState.clubs[clubUid];
@@ -304,5 +307,32 @@ class SingleClubBloc extends Bloc<SingleClubEvent, SingleClubState> {
         add(_SingleClubInvitesAdded(invites: invites));
       });
     }
+  }
+
+  @override
+  SingleClubState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return SingleClubUninitialized();
+    }
+
+    SingleClubBlocStateType type =
+        SingleClubBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case SingleClubBlocStateType.Uninitialized:
+        return SingleClubUninitialized();
+      case SingleClubBlocStateType.Loaded:
+        return SingleClubLoaded.fromMap(json);
+      case SingleClubBlocStateType.Deleted:
+        return SingleClubDeleted.fromMap(json);
+      case SingleClubBlocStateType.SaveFailed:
+        return SingleClubSaveFailed.fromMap(json);
+      case SingleClubBlocStateType.Saving:
+        return SingleClubSaving.fromMap(json);
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(SingleClubState state) {
+    return state.toMap();
   }
 }
