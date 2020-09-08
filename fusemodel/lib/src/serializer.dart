@@ -48,6 +48,7 @@ part 'serializer.g.dart';
   GameState,
   GameUninitialized,
   Invite,
+  InviteType,
   InviteAsAdmin,
   InviteToClub,
   InviteToLeagueAsAdmin,

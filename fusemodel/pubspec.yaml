@@ -22,3 +22,5 @@ dev_dependencies:
   mockito: any
   build_runner: ^1.10.0
   built_value_generator: ^7.1.0
+  flutter_test:
+    sdk: flutter

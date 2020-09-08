@@ -32,9 +32,10 @@ abstract class AsyncHydratedCubit<State> extends Cubit<State>
   AsyncStorage storage;
 
   /// {@macro hydrated_cubit}
-  AsyncHydratedCubit(State state, String boxName)
-      : storage = AsyncHydratedStorage(boxName),
-        super(state) {
+  AsyncHydratedCubit(State state, String boxName, {AsyncStorage asyncStorage})
+      : super(state) {
+    storage = asyncStorage ??
+        AsyncHydratedStorage("${runtimeType.toString()}$boxName");
     hydrate();
   }
 }
@@ -234,18 +235,9 @@ mixin AsyncHydratedMixin<State> on Cubit<State> {
     _seen.removeLast();
   }
 
-  /// `id` is used to uniquely identify multiple instances
-  /// of the same `HydratedCubit` type.
-  /// In most cases it is not necessary;
-  /// however, if you wish to intentionally have multiple instances
-  /// of the same `HydratedCubit`, then you must override `id`
-  /// and return a unique identifier for each `HydratedCubit` instance
-  /// in order to keep the caches independent of each other.
-  String get id => '';
-
   /// `storageToken` is used as registration token for hydrated storage.
   @nonVirtual
-  String get storageToken => '${runtimeType.toString()}${id ?? ''}';
+  String get storageToken => '${runtimeType.toString()}}';
 
   /// `clear` is used to wipe or invalidate the cache of a `HydratedCubit`.
   /// Calling `clear` will delete the cached state of the cubit

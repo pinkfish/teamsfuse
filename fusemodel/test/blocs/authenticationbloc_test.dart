@@ -36,7 +36,7 @@ void main() {
 
   test('dispose does not emit new states', () {
     expectLater(
-      authenticationBloc.state,
+      authenticationBloc,
       emitsInOrder([]),
     );
     authenticationBloc.close();
@@ -45,8 +45,7 @@ void main() {
   group('AppStarted', () {
     test('emits [uninitialized, unauthenticated] for invalid token', () {
       final expectedResponse = [
-        AuthenticationUninitialized(),
-        AuthenticationLoggedOut()
+        AuthenticationLoggedOut(),
       ];
 
       when(userAuth.onAuthChanged())
@@ -55,7 +54,7 @@ void main() {
       when(userAuth.currentUser()).thenAnswer((_) => null);
 
       expectLater(
-        authenticationBloc.state,
+        authenticationBloc,
         emitsInOrder(expectedResponse),
       );
 
@@ -67,10 +66,7 @@ void main() {
         ..email = "frog@frog.com"
         ..uid = "ububng"
         ..isEmailVerified = true);
-      final expectedResponse = [
-        AuthenticationUninitialized(),
-        AuthenticationLoggedIn(user: userData)
-      ];
+      final expectedResponse = [AuthenticationLoggedIn(user: userData)];
 
       when(userAuth.onAuthChanged())
           .thenAnswer((_) => _streamController.stream);
@@ -78,7 +74,7 @@ void main() {
       when(userAuth.currentUser()).thenAnswer((_) => Future.value(userData));
 
       expectLater(
-        authenticationBloc.state,
+        authenticationBloc,
         emitsInOrder(expectedResponse),
       );
 

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 
+import 'asyncstorage.dart';
 import 'hydratedcubit.dart';
 
 /// {@template hydrated_bloc}
@@ -9,8 +10,13 @@ import 'hydratedcubit.dart';
 /// {@endtemplate}
 abstract class AsyncHydratedBloc<Event, State> extends Bloc<Event, State>
     with AsyncHydratedMixin {
+  AsyncStorage storage;
+
   /// {@macro hydrated_bloc}
-  AsyncHydratedBloc(State state, String boxName) : super(state) {
+  AsyncHydratedBloc(State state, String boxName, {AsyncStorage asyncStorage})
+      : super(state) {
+    storage = asyncStorage ??
+        AsyncHydratedStorage("${runtimeType.toString()}.$boxName");
     hydrate();
   }
 }
