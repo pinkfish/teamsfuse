@@ -1,7 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
 import '../common.dart';
+import '../serializer.dart';
 import '../winrecord.dart';
 
 part 'opponent.g.dart';
@@ -15,65 +17,27 @@ abstract class Opponent implements Built<Opponent, OpponentBuilder> {
   @nullable
   String get contact;
   String get uid;
-  BuiltList<String> get leagueTeamUid;
+  @BuiltValueField(wireName: _LEAGUETEAMUID)
+  BuiltMap<String, AddedUid> get leagueTeamUidData;
+  @BuiltValueField(wireName: _SEASONS)
   BuiltMap<String, WinRecord> get record;
 
   Opponent._();
   factory Opponent([updates(OpponentBuilder b)]) = _$Opponent;
 
-  static const String _CONTACT = 'contact';
   static const String _SEASONS = 'seasons';
   static const String _LEAGUETEAMUID = 'leagueTeamUid';
 
-  static OpponentBuilder fromJSON(
-      String uid, String teamUid, Map<String, dynamic> data) {
-    OpponentBuilder builder = OpponentBuilder();
-    builder.uid = uid;
-    builder.teamUid = teamUid;
-    builder.name = getString(data[NAME]);
-    builder.contact = getString(data[_CONTACT]);
-    if (data[_LEAGUETEAMUID] != null) {
-      List<String> newLeagues = new List<String>();
-      data[_LEAGUETEAMUID].forEach((dynamic key, dynamic data) {
-        if (data is Map<dynamic, dynamic>) {
-          if (data[ADDED]) {
-            newLeagues.add(key as String);
-          }
-        }
-      });
-      builder.leagueTeamUid.addAll(newLeagues);
-    }
-    Map<String, WinRecord> newRecord = new Map<String, WinRecord>();
-    if (data[_SEASONS] != null) {
-      Map<dynamic, dynamic> innerSeason =
-          data[_SEASONS] as Map<dynamic, dynamic>;
-      // Load the seasons.
-      innerSeason.forEach((dynamic seasonUid, dynamic value) {
-        WinRecordBuilder newData =
-            WinRecord.fromJSON(value as Map<dynamic, dynamic>);
-        newRecord[seasonUid.toString()] = newData.build();
-      });
-    }
-    builder.record.addAll(newRecord);
-    return builder;
+  /// Defaults for the state.  Always default to no games loaded.
+  static void _initializeBuilder(OpponentBuilder b) => b..name = "none";
+
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(Opponent.serializer, this);
   }
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = new Map<String, dynamic>();
-    ret[NAME] = name;
-    ret[_CONTACT] = contact;
-    Map<String, Map<String, dynamic>> fluff = <String, Map<String, dynamic>>{};
-    for (String league in leagueTeamUid) {
-      fluff[league] = <String, dynamic>{
-        ADDED: true,
-      };
-    }
-    ret[_LEAGUETEAMUID] = fluff;
-    Map<String, dynamic> recordSection = new Map<String, dynamic>();
-    record.forEach((String key, WinRecord record) {
-      recordSection[key] = record.toJSON();
-    });
-    ret[_SEASONS] = recordSection;
-    return ret;
+  static Opponent fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(Opponent.serializer, jsonData);
   }
+
+  static Serializer<Opponent> get serializer => _$opponentSerializer;
 }

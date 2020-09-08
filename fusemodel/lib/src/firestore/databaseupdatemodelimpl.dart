@@ -292,7 +292,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(opponent.teamUid)
         .collection(OPPONENT_COLLECTION);
     // Update the game.
-    await ref.document(opponent.uid).updateData(opponent.toJSON());
+    await ref.document(opponent.uid).updateData(opponent.toMap());
     return opponent.uid;
   }
 
@@ -304,7 +304,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(opponent.teamUid)
         .collection(OPPONENT_COLLECTION);
     // Add the game.
-    DocumentReferenceWrapper doc = await ref.add(opponent.toJSON());
+    DocumentReferenceWrapper doc = await ref.add(opponent.toMap());
     return opponent.rebuild((b) => b..uid = doc.documentID);
   }
 
@@ -365,11 +365,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(OPPONENT_COLLECTION);
     QuerySnapshotWrapper queryOpponentSnap = await opCollection.getDocuments();
 
-    yield queryOpponentSnap.documents.map((DocumentSnapshotWrapper doc) =>
-        Opponent.fromJSON(doc.documentID, teamUid, doc.data).build());
+    yield queryOpponentSnap.documents
+        .map((DocumentSnapshotWrapper doc) => Opponent.fromMap(doc.data));
     await for (QuerySnapshotWrapper query in opCollection.snapshots()) {
       yield query.documents.map((DocumentSnapshotWrapper doc) =>
-          Opponent.fromJSON(doc.documentID, teamUid, doc.data).build());
+          Opponent.fromMap( doc.data));
     }
   }
 

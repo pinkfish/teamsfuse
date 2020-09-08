@@ -26,6 +26,7 @@ import 'serializer/inviteserializer.dart';
 import 'serializer/timestampserializer.dart';
 import 'team.dart';
 import 'userprofile.dart';
+import 'winrecord.dart';
 
 part 'serializer.g.dart';
 
@@ -76,6 +77,7 @@ part 'serializer.g.dart';
   LeagueOrTournamentState,
   LeagueOrTournamentBlocStateType,
   LeagueOrTournamentUninitialized,
+  LeagueOrTournamentTeam,
   Opponent,
   Player,
   PlayerBlocStateType,
@@ -116,6 +118,7 @@ part 'serializer.g.dart';
   TeamBlocStateType,
   TeamUninitialized,
   Tristate,
+  WinRecord
 ])
 final Serializers serializers = (_$serializers.toBuilder()
       ..add(TimestampSerializer())

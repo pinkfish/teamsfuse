@@ -1,7 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
 import '../common.dart';
+import '../serializer.dart';
 
 part 'leagueortournamentseason.g.dart';
 
@@ -17,48 +19,35 @@ abstract class LeagueOrTournamentSeason
   String get uid;
   String get leagueOrTournmentUid;
 
+  @BuiltValueField(wireName: MEMBERS)
+  BuiltMap<String, AddedOrAdmin> get membersData;
+
   /// List of admin user ids. This is all user ids (not players)
-  BuiltSet<String> get adminsUids;
+  @memoized
+  BuiltSet<String> get adminsUids =>
+      membersData.keys.where((uid) => membersData[uid].admin);
 
   /// List of member user ids.  This is all user ids (not players)
-  BuiltSet<String> get members;
+  @memoized
+  BuiltSet<String> get members =>
+      membersData.keys.where((uid) => !membersData[uid].admin);
 
   LeagueOrTournamentSeason._();
   factory LeagueOrTournamentSeason(
           [updates(LeagueOrTournamentSeasonBuilder b)]) =
       _$LeagueOrTournamentSeason;
 
-  static LeagueOrTournamentSeasonBuilder fromJSON(
-      String myUid, Map<String, dynamic> data) {
-    LeagueOrTournamentSeasonBuilder builder = LeagueOrTournamentSeasonBuilder();
-    builder
-      ..uid = myUid
-      ..name = data[NAME]
-      ..leagueOrTournmentUid = data[LEAGUEORTOURNMENTUID];
-    if (data.containsKey(MEMBERS)) {
-      for (String adminUid in data[MEMBERS].keys) {
-        Map<dynamic, dynamic> adminData = data[MEMBERS][adminUid];
-        if (adminData[ADDED]) {
-          if (adminData[ADMIN]) {
-            builder.adminsUids.add(adminUid.toString());
-          } else {
-            builder.members.add(adminUid.toString());
-          }
-        }
-      }
-    }
-    return builder;
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(LeagueOrTournamentSeason.serializer, this);
   }
 
-  static const String LEAGUEORTOURNMENTUID = "leagueUid";
+  static LeagueOrTournamentSeason fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(
+        LeagueOrTournamentSeason.serializer, jsonData);
+  }
+
+  static Serializer<LeagueOrTournamentSeason> get serializer =>
+      _$leagueOrTournamentSeasonSerializer;
+
   static const String MEMBERS = "members";
-  static const String ADMIN = "admin";
-
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = <String, dynamic>{};
-
-    ret[NAME] = name;
-    ret[LEAGUEORTOURNMENTUID] = leagueOrTournmentUid;
-    return ret;
-  }
 }

@@ -1,7 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
 import '../common.dart';
+import '../serializer.dart';
 import '../winrecord.dart';
 
 part 'leagueortournmentteam.g.dart';
@@ -40,45 +42,15 @@ abstract class LeagueOrTournamentTeam
   factory LeagueOrTournamentTeam([updates(LeagueOrTournamentTeamBuilder b)]) =
       _$LeagueOrTournamentTeam;
 
-  ///
-  /// Convrt this league team into the format to use to send over the wire.
-  ///
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = <String, dynamic>{};
-    ret[NAME] = name;
-    ret[SEASONUID] = seasonUid;
-    ret[TEAMUID] = teamUid;
-    ret[LEAGUEORTOURNMENTDIVISONUID] = leagueOrTournamentDivisonUid;
-    Map<String, dynamic> inner = {};
-    for (String str in record.keys) {
-      inner[str] = record[str].toJSON();
-    }
-    ret[WINRECORD] = inner;
-    return ret;
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(LeagueOrTournamentTeam.serializer, this);
   }
 
-  ///
-  /// Load this from the wire format.
-  ///
-  static LeagueOrTournamentTeamBuilder fromJSON(
-      String myUid, Map<String, dynamic> data) {
-    LeagueOrTournamentTeamBuilder builder = LeagueOrTournamentTeamBuilder();
-    builder
-      ..teamUid = data[TEAMUID]
-      ..seasonUid = data[SEASONUID]
-      ..name = data[NAME]
-      ..uid = myUid
-      ..leagueOrTournamentDivisonUid = data[LEAGUEORTOURNMENTDIVISONUID];
-    if (data[WINRECORD] is Map<dynamic, dynamic>) {
-      Map<dynamic, dynamic> stuff = data[WINRECORD] as Map<dynamic, dynamic>;
-      for (String key in stuff.keys) {
-        if (stuff[key] is Map<dynamic, dynamic>) {
-          builder.record[key] = WinRecord.fromJSON(stuff[key]).build();
-        }
-      }
-    }
-    return builder;
+  static LeagueOrTournamentTeam fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(LeagueOrTournamentTeam.serializer, jsonData);
   }
+
+  static Serializer<LeagueOrTournamentTeam> get serializer => _$leagueOrTournamentTeamSerializer;
 
   @override
   String toString() {
