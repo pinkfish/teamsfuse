@@ -129,8 +129,6 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
           add(_ClubEventNewTeamsLoaded(clubUid: clubUid, teams: teams));
         });
       }
-      coordinationBloc.persistentData.updateElement(
-          PersistenData.clubsTable, club.uid, club.toMap(includeMembers: true));
     }
     add(_ClubEventNewDataLoaded(clubs: newClubs.build()));
   }

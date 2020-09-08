@@ -7,7 +7,6 @@ import 'userdata.dart';
 
 class UserAuthImpl {
   FirestoreWrapper wrapper;
-  PersistenData persistenData;
   UserData _currentUser;
   FirebaseUserWrapper _currentFirebaseUser;
   StreamController<UserData> _controller = new StreamController<UserData>();
@@ -16,7 +15,7 @@ class UserAuthImpl {
   String _token;
   StreamSubscription<FirebaseUserWrapper> _updateStream;
 
-  UserAuthImpl(this.wrapper, this.persistenData) {
+  UserAuthImpl(this.wrapper) {
     _updateStream = wrapper.auth.onAuthStateChanged
         .listen((FirebaseUserWrapper input) async {
       print('onAuthStateChanged $input');
@@ -179,8 +178,6 @@ class UserAuthImpl {
 
   void _onProfileUpdates(DocumentSnapshotWrapper doc) {
     if (doc.exists) {
-      persistenData.updateElement(
-          PersistenData.profileTable, doc.documentID, doc.data);
       FusedUserProfileBuilder profile =
           FusedUserProfile.fromMap(doc.data).toBuilder();
       profile.uid = doc.documentID;
@@ -194,30 +191,25 @@ class UserAuthImpl {
     // Read from sql for the profile details first, assume the snap
     // shot listener will catch the actual firebase stuff when
     // it exists.
-    Map<String, dynamic> data =
-        await persistenData.getElement(PersistenData.profileTable, input.uid);
     FusedUserProfileBuilder userProfile;
-    if (data != null) {
-      userProfile = FusedUserProfile.fromMap(data).toBuilder();
-      userProfile.uid = input.uid;
-    } else {
-      userProfile = FusedUserProfileBuilder();
-      userProfile.displayName = input.email.split("@")[0];
-      userProfile.email = input.email;
-      userProfile.phoneNumber = "";
-      userProfile.emailOnUpdates = true;
-      userProfile.emailUpcomingGame = true;
-      userProfile.notifyOnlyForGames = false;
-    }
+    userProfile = FusedUserProfileBuilder();
+    userProfile.displayName = input.email.split("@")[0];
+    userProfile.email = input.email;
+    userProfile.phoneNumber = "";
+    userProfile.emailOnUpdates = true;
+    userProfile.emailUpcomingGame = true;
+    userProfile.notifyOnlyForGames = false;
+
     UserData user = new UserData((b) => b
       ..email = input.email
       ..uid = input.uid
       ..isEmailVerified = input.isEmailVerified
       ..profile = userProfile);
     _currentFirebaseUser = input;
-    if (data == null && forceProfile) {
+    if (forceProfile) {
       Future<DocumentSnapshotWrapper> ref =
           wrapper.collection(USER_DATA_COLLECTION).document(input.uid).get();
+      Map<String, dynamic> data;
       if (forceProfile) {
         DocumentSnapshotWrapper doc = await ref;
         data = doc.data;
@@ -229,8 +221,6 @@ class UserAuthImpl {
               FusedUserProfile.fromMap(doc.data).toBuilder();
           profile.uid = user.uid;
           user = user.rebuild((b) => b..profile = profile);
-          persistenData.updateElement(
-              PersistenData.profileTable, doc.documentID, data);
         });
       }
     }

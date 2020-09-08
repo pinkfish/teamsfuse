@@ -124,7 +124,6 @@ class _CoordintationStateStart extends CoordinationEvent {
 class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
   final AuthenticationBloc authenticationBloc;
   final AnalyticsSubsystem analytics;
-  final PersistenData persistentData;
   final DatabaseUpdateModel databaseUpdateModel;
   final AnalyticsSubsystem analyticsSubsystem;
 
@@ -132,8 +131,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
   DateTime start;
 
   CoordinationBloc(
-      {@required this.persistentData,
-      @required this.authenticationBloc,
+      {@required this.authenticationBloc,
       @required this.analytics,
       @required this.databaseUpdateModel,
       @required this.analyticsSubsystem})

@@ -59,7 +59,6 @@ class InviteEventDeleteInvite extends InviteEvent {
 ///
 class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
   final CoordinationBloc coordinationBloc;
-  final PersistenData persistentData;
   final DatabaseUpdateModel databaseUpdateModel;
   final AnalyticsSubsystem analyticsSubsystem;
 
@@ -70,7 +69,6 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
 
   InviteBloc(
       {@required this.coordinationBloc,
-      @required this.persistentData,
       @required this.analyticsSubsystem,
       @required this.databaseUpdateModel})
       : super(InviteUninitialized()) {

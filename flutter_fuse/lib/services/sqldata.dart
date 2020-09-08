@@ -7,7 +7,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class SqlData implements PersistenData {
+class SqlData {
   SqlData() {
     _initialized = _completer.future;
   }
@@ -26,18 +26,18 @@ class SqlData implements PersistenData {
   static const String teamUidColumn = "teamuid";
 
   static const List<String> _tables = const <String>[
-    PersistenData.teamsTable,
-    PersistenData.seasonTable,
-    PersistenData.playersTable,
-    PersistenData.invitesTable,
-    PersistenData.profileTable,
-    PersistenData.messagesTable,
-    PersistenData.clubsTable,
-    PersistenData.leagueOrTournamentTable,
+    PersistenDataFrog.teamsTable,
+    PersistenDataFrog.seasonTable,
+    PersistenDataFrog.playersTable,
+    PersistenDataFrog.invitesTable,
+    PersistenDataFrog.profileTable,
+    PersistenDataFrog.messagesTable,
+    PersistenDataFrog.clubsTable,
+    PersistenDataFrog.leagueOrTournamentTable,
   ];
   static const List<String> _teamSpecificTables = const <String>[
-    PersistenData.opponentsTable,
-    PersistenData.gameTable
+    PersistenDataFrog.opponentsTable,
+    PersistenDataFrog.gameTable
   ];
 
   static SqlData get instance {

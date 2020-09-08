@@ -93,15 +93,7 @@ class LeagueOrTournamentBloc
     Set<String> toRemove = Set.from(state.leagueOrTournaments.keys);
     for (LeagueOrTournament league in leagues) {
       leagueOrTournsments[league.uid] = league;
-      coordinationBloc.persistentData.updateElement(
-          PersistenData.leagueOrTournamentTable,
-          league.uid,
-          league.toJson(includeMembers: true));
       toRemove.remove(league.uid);
-    }
-    for (String remove in toRemove) {
-      coordinationBloc.persistentData
-          .deleteElement(PersistenData.leagueOrTournamentTable, remove);
     }
     add(_LeagueOrTournamentEventNewDataLoaded(
         leagueOrTournament: BuiltMap.of(leagueOrTournsments)));

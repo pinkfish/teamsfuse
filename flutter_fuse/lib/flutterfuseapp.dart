@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/approuter.dart';
 import 'package:flutter_fuse/services/firestore/firestore.dart';
-import 'package:flutter_fuse/services/sqldata.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -13,9 +12,8 @@ import 'fusematerialapp.dart';
 
 class FlutterFuseApp extends StatefulWidget {
   final FirestoreWrapper firestore;
-  final PersistenData persistentData;
 
-  FlutterFuseApp(this.firestore, this.persistentData);
+  FlutterFuseApp(this.firestore);
 
   @override
   State<StatefulWidget> createState() {
@@ -62,16 +60,14 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   @override
   void initState() {
     super.initState();
-    UserAuthImpl userAuthImpl =
-        UserAuthImpl(widget.firestore, widget.persistentData);
+    UserAuthImpl userAuthImpl = UserAuthImpl(widget.firestore);
     _authenticationBloc = AuthenticationBloc(
         userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
     _loginBloc = new LoginBloc(
         userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
     DatabaseUpdateModel databaseUpdateModel =
-        DatabaseUpdateModelImpl(new Firestore(), SqlData.instance);
+        DatabaseUpdateModelImpl(new Firestore());
     _coordinationBloc = CoordinationBloc(
-        persistentData: widget.persistentData,
         authenticationBloc: _authenticationBloc,
         analytics: Analytics.instance,
         databaseUpdateModel: databaseUpdateModel,
@@ -79,7 +75,6 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     _playerBloc = new PlayerBloc(coordinationBloc: _coordinationBloc);
     _inviteBloc = new InviteBloc(
         coordinationBloc: _coordinationBloc,
-        persistentData: widget.persistentData,
         analyticsSubsystem: Analytics.instance,
         databaseUpdateModel: databaseUpdateModel);
     _messagesBloc =

@@ -128,13 +128,9 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
       }
       players[player.uid] = player;
       toDeletePlayers.remove(player.uid);
-      coordinationBloc.persistentData.updateElement(PersistenData.playersTable,
-          player.uid, player.toJSON(includeUsers: true));
     }
     toDeletePlayers.forEach((String id) {
       players.remove(id);
-      coordinationBloc.persistentData
-          .deleteElement(PersistenData.playersTable, id);
     });
     if (data.length == 0) {
       if (!foundMe && !_createdMePlayer) {

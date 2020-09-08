@@ -93,7 +93,7 @@ void main() async {
   });
   trace.stop();
 
-  runApp(FlutterFuseApp(firestoreWrapper, SqlData.instance));
+  runApp(FlutterFuseApp(firestoreWrapper));
 }
 
 ///

@@ -132,8 +132,6 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
         messages[mess.uid] = builder.build();
         toRemove.remove(mess.uid);
         mess = builder.build();
-        coordinationBloc.persistentData.updateElement(
-            PersistenData.messagesTable, mess.uid, mess.toJSON(forSQL: true));
       } else {
         // Otherwise we need to load it.
         mess = await coordinationBloc.databaseUpdateModel
@@ -144,15 +142,11 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
           MessageBuilder builder = mess.toBuilder();
           builder.recipients[recipient.userId] = recipient;
           mess = builder.build();
-          coordinationBloc.persistentData.updateElement(
-              PersistenData.messagesTable, mess.uid, mess.toJSON(forSQL: true));
         }
       }
     }
     for (String change in toRemove) {
       coordinationBloc.loadingTrace?.incrementCounter("deletemessage");
-      coordinationBloc.persistentData
-          .deleteElement(PersistenData.messagesTable, change);
     }
     print('Loaded unread');
     add(_MessagesEventNewUnReadLoaded(unreadMessages: messages));
@@ -174,8 +168,6 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
         builder.recipients[recipient.userId] = recipient;
         messages[mess.uid] = builder.build();
         toRemove.remove(mess.uid);
-        coordinationBloc.persistentData.updateElement(
-            PersistenData.messagesTable, mess.uid, mess.toJSON(forSQL: true));
       } else {
         // Otherwise we need to load it.
         Message mess = await coordinationBloc.databaseUpdateModel
@@ -185,15 +177,11 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
           builder.recipients[recipient.userId] = recipient;
           messages[mess.uid] = builder.build();
           toRemove.remove(mess.uid);
-          coordinationBloc.persistentData.updateElement(
-              PersistenData.messagesTable, mess.uid, mess.toJSON(forSQL: true));
         }
       }
     }
     for (String remove in toRemove) {
       coordinationBloc.loadingTrace?.incrementCounter("deletemessage");
-      coordinationBloc.persistentData
-          .deleteElement(PersistenData.messagesTable, remove);
     }
     print('Loaded read');
     add(_MessagesEventNewRecentLoaded(recentMessages: messages));

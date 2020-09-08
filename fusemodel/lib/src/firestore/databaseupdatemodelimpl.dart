@@ -12,9 +12,8 @@ import 'firestore.dart';
 class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   static const int maxMessages = 20;
   FirestoreWrapper wrapper;
-  PersistenData persistenData;
 
-  DatabaseUpdateModelImpl(this.wrapper, this.persistenData);
+  DatabaseUpdateModelImpl(this.wrapper);
 
   // Stuff for game updates.
   @override
@@ -821,8 +820,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     await ref
         .document(season.uid)
         .updateData(season.toMap(includePlayers: includePlayers));
-    persistenData.updateElement(PersistenData.seasonTable, season.uid,
-        season.toMap(includePlayers: true));
   }
 
   Future<Season> addFirestoreSeason(
@@ -835,8 +832,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     } else {
       doc = await ref.add(season.toMap(includePlayers: true));
     }
-    persistenData.updateElement(PersistenData.seasonTable, season.uid,
-        season.toMap(includePlayers: true));
     return season.rebuild((b) => b..uid = doc.documentID);
   }
 
@@ -1032,8 +1027,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var snap = await query.getDocuments();
     for (DocumentSnapshotWrapper doc in snap.documents) {
       Season season = Season.fromMap(doc.data);
-      persistenData.updateElement(
-          PersistenData.seasonTable, season.uid, doc.data);
       seasons.add(season);
     }
     yield seasons;
@@ -1041,8 +1034,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       List<Season> seasons = [];
       for (DocumentSnapshotWrapper doc in snap.documents) {
         Season season = Season.fromMap(doc.data);
-        persistenData.updateElement(
-            PersistenData.seasonTable, season.uid, doc.data);
         seasons.add(season);
       }
       yield seasons;
@@ -1116,8 +1107,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(CLUB_COLLECTION)
         .document(club.uid)
         .updateData(data);
-    persistenData.updateElement(
-        PersistenData.clubsTable, club.uid, club.toMap(includeMembers: true));
 
     return club.uid;
   }
@@ -1135,8 +1124,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .updateData({PHOTOURL: photoUrl});
 
     print('photurl ${club.photoUrl}');
-    persistenData.updateElement(
-        PersistenData.clubsTable, club.uid, club.toMap(includeMembers: true));
     return snapshot.downloadUrl;
   }
 
@@ -1151,9 +1138,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentSnapshotWrapper snap =
         await wrapper.collection(CLUB_COLLECTION).document(clubUid).get();
     if (snap.exists) {
-      persistenData.updateElement(
-          PersistenData.clubsTable, snap.documentID, snap.data);
-
       return Club.fromMap(userUid, snap.data);
     }
     return null;
@@ -1339,8 +1323,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .document(league.uid)
           .updateData(data);
     }
-    persistenData.updateElement(PersistenData.leagueOrTournamentTable,
-        league.uid, league.toJson(includeMembers: true));
 
     return league.uid;
   }
@@ -1358,8 +1340,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(league.uid)
         .updateData({PHOTOURL: photoUrl});
     print('photurl ${league.photoUrl}');
-    persistenData.updateElement(PersistenData.leagueOrTournamentTable,
-        league.uid, league.toJson(includeMembers: true));
     return snapshot.downloadUrl;
   }
 
@@ -1379,8 +1359,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentSnapshotWrapper snap =
         await wrapper.collection(LEAGUE_COLLECTON).document(leagueUid).get();
     if (snap.exists) {
-      persistenData.updateElement(
-          PersistenData.leagueOrTournamentTable, snap.documentID, snap.data);
       return LeagueOrTournament.fromJSON(
               userUid: userUid, myUid: snap.documentID, data: snap.data)
           .build();

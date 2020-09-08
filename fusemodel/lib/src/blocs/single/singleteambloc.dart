@@ -449,26 +449,13 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
     if (!_doingLoad) {
       _doingLoad = true;
       print("Loading opponents inside");
-      Map<String, Map<String, dynamic>> opponentData = await teamBloc
-          .coordinationBloc.persistentData
-          .getAllTeamElements(PersistenData.opponentsTable, teamUid);
-      MapBuilder<String, Opponent> opponents = MapBuilder<String, Opponent>();
-      for (String key in opponentData.keys) {
-        Map<String, dynamic> innerData = opponentData[key];
-        Opponent op = Opponent.fromJSON(key, teamUid, innerData).build();
-        opponents[key] = op;
-      }
-      add(_SingleTeamLoadedOpponents(opponents: opponents.build()));
-      print("Loading opponents sql $opponents");
+      print("Loading opponents from firestore");
       _opponentSub = teamBloc.coordinationBloc.databaseUpdateModel
           .getTeamOpponents(teamUid)
           .listen((Iterable<Opponent> ops) {
         MapBuilder<String, Opponent> opponents = MapBuilder<String, Opponent>();
         for (Opponent op in ops) {
           opponents[op.uid] = op;
-          // Write out to sql as well.
-          teamBloc.coordinationBloc.persistentData.updateTeamElement(
-              PersistenData.opponentsTable, op.uid, teamUid, op.toJSON());
         }
         add(_SingleTeamLoadedOpponents(opponents: opponents.build()));
         print("Loading opponents firestore $opponents");
