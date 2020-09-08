@@ -153,8 +153,8 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
             ..clubs = event.clubs.toBuilder()
             ..loadedFirestore = true)
           .build();
-      coordinationBloc.add(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Club, sql: false));
+      coordinationBloc
+          .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Club));
     }
 
     // Unload everything.
@@ -197,7 +197,6 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
         DateTime start = new DateTime.now();
         // If recovered this way it is only local data.
         var loaded = ClubLoaded.fromMap(json);
-        coordinationBloc.sqlTrace.incrementCounter("club");
         print(
             'End clubs ${start.difference(new DateTime.now())} ${loaded.clubs.length}');
         clubTrace.stop();

@@ -111,10 +111,6 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
     _readMessageSnapshot = null;
   }
 
-  void _startLoading(CoordinationStateLoadingSql state) {
-    add(_MessagesEventUserLoaded(uid: state.uid));
-  }
-
   void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
     add(_MessagesEventFirestore(uid: state.uid));
   }
@@ -160,8 +156,8 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
     }
     print('Loaded unread');
     add(_MessagesEventNewUnReadLoaded(unreadMessages: messages));
-    coordinationBloc.add(
-        CoordinationEventLoadedData(loaded: BlocsToLoad.Messages, sql: false));
+    coordinationBloc
+        .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Messages));
   }
 
   void _onReadMessagesUpdated(Iterable<MessageRecipient> data) async {
@@ -223,8 +219,8 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
 
     // New data from above.  Mark ourselves as done.
     if (event is _MessagesEventNewRecentLoaded) {
-      coordinationBloc.add(CoordinationEventLoadedData(
-          loaded: BlocsToLoad.LeagueOrTournament, sql: false));
+      coordinationBloc.add(
+          CoordinationEventLoadedData(loaded: BlocsToLoad.LeagueOrTournament));
 
       yield (MessagesLoaded.fromState(state)
             ..recentMessages = event.recentMessages
@@ -264,8 +260,6 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
         print(
             'End messages ${coordinationBloc.start.difference(new DateTime.now())}');
         messagesTrace.stop();
-        coordinationBloc.add(CoordinationEventLoadedData(
-            loaded: BlocsToLoad.Messages, sql: true));
         return loaded;
       default:
         return MessagesUninitialized();

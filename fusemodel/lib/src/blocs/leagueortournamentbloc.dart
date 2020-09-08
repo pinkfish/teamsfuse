@@ -123,8 +123,8 @@ class LeagueOrTournamentBloc
             ..leagueOrTournaments = event.leagueOrTournament.toBuilder()
             ..loadedFirestore = true)
           .build();
-      coordinationBloc.add(CoordinationEventLoadedData(
-          loaded: BlocsToLoad.LeagueOrTournament, sql: false));
+      coordinationBloc.add(
+          CoordinationEventLoadedData(loaded: BlocsToLoad.LeagueOrTournament));
     }
 
     // Unload everything.
@@ -153,8 +153,6 @@ class LeagueOrTournamentBloc
         print(
             'End LeagueOrTournament ${coordinationBloc.start.difference(new DateTime.now())} ${loaded.leagueOrTournaments.length}');
         leagueTrace.stop();
-        coordinationBloc.add(CoordinationEventLoadedData(
-            loaded: BlocsToLoad.LeagueOrTournament, sql: true));
         return loaded;
       default:
         return LeagueOrTournamentUninitialized();

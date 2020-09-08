@@ -191,8 +191,8 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
             ..loadedFirestore = true
             ..me = event.me.toBuilder())
           .build();
-      coordinationBloc.add(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Player, sql: false));
+      coordinationBloc
+          .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Player));
     }
 
     if (event is PlayerLoadPlayer) {
@@ -228,8 +228,6 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
         print(
             'End players ${coordinationBloc.start.difference(new DateTime.now())}');
         playerTrace.stop();
-        coordinationBloc.add(
-            CoordinationEventLoadedData(loaded: BlocsToLoad.Player, sql: true));
         return loaded;
       default:
         return PlayerUninitialized();

@@ -7,7 +7,7 @@ import 'coordinationbloc.dart';
 
 enum LoadedState { Logout, Loading, SqlLoaded, AllLoaded }
 
-enum LoadedEvent { Start, SQL, ALL, Logout }
+enum LoadedEvent { Start, ALL, Logout }
 
 ///
 /// Simple bloc on top fo ther loading state to track the loading state at
@@ -23,10 +23,8 @@ class LoadedStateBloc extends Bloc<LoadedEvent, LoadedState> {
     _coordSub = coordinationBloc.listen((CoordinationState state) {
       if (state is CoordinationStateLoggedOut) {
         add(LoadedEvent.Logout);
-      } else if (state is CoordinationStateLoadingSql) {
-        add(LoadedEvent.Start);
       } else if (state is CoordinationStateLoadingFirestore) {
-        add(LoadedEvent.SQL);
+        add(LoadedEvent.Start);
       } else if (state is CoordinationStateLoaded) {
         add(LoadedEvent.ALL);
       }
@@ -44,9 +42,6 @@ class LoadedStateBloc extends Bloc<LoadedEvent, LoadedState> {
     switch (event) {
       case LoadedEvent.Start:
         yield LoadedState.Loading;
-        break;
-      case LoadedEvent.SQL:
-        yield LoadedState.SqlLoaded;
         break;
       case LoadedEvent.ALL:
         yield LoadedState.AllLoaded;

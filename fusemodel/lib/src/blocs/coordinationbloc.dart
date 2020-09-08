@@ -25,27 +25,6 @@ abstract class CoordinationState extends Equatable {
 }
 
 ///
-/// Yay, we are loading from sql and having fun.
-///
-class CoordinationStateLoadingSql extends CoordinationState {
-  CoordinationStateLoadingSql(
-      {@required String uid,
-      @required BuiltSet<BlocsToLoad> loaded,
-      @required BuiltSet<BlocsToLoad> toLoad})
-      : super(loaded: loaded, uid: uid, toLoad: toLoad);
-
-  CoordinationState update(BuiltSet<BlocsToLoad> toLoad) {
-    return CoordinationStateLoadingSql(
-        uid: uid, loaded: loaded, toLoad: toLoad);
-  }
-
-  @override
-  String toString() {
-    return 'CoordinatiomnStateLoadingSql{loaded: $loaded}';
-  }
-}
-
-///
 /// Yay, we are loading from firestore and yayness.
 ///
 class CoordinationStateLoadingFirestore extends CoordinationState {
@@ -101,12 +80,11 @@ abstract class CoordinationEvent extends Equatable {}
 ///
 class CoordinationEventLoadedData extends CoordinationEvent {
   final BlocsToLoad loaded;
-  final bool sql;
 
-  CoordinationEventLoadedData({this.loaded, this.sql});
+  CoordinationEventLoadedData({this.loaded});
 
   @override
-  List<Object> get props => [loaded, sql];
+  List<Object> get props => [loaded];
 }
 
 ///
@@ -151,7 +129,6 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
   final AnalyticsSubsystem analyticsSubsystem;
 
   TraceProxy loadingTrace;
-  TraceProxy sqlTrace;
   DateTime start;
 
   CoordinationBloc(
@@ -163,7 +140,6 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
       : super(CoordinationStateLoggedOut(BuiltSet())) {
     authenticationBloc.listen((AuthenticationState authState) {
       if (authState is AuthenticationLoggedIn) {
-        sqlTrace = analytics.newTrace("sqlTrace");
         loadingTrace = analytics.newTrace("fullLoadTrace");
         start = DateTime.now();
         assert(authState.user.uid != null);
@@ -179,7 +155,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
   @override
   Stream<CoordinationState> mapEventToState(CoordinationEvent event) async* {
     if (event is _CoordintationStateStart) {
-      yield CoordinationStateLoadingSql(
+      yield CoordinationStateLoadingFirestore(
           uid: event.uid, toLoad: state.toLoad, loaded: BuiltSet());
     }
 
@@ -195,24 +171,6 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
 
     if (event is CoordinationEventLoadedData) {
       // In the sql loading state.
-      if (state is CoordinationStateLoadingSql) {
-        BuiltSet<BlocsToLoad> loaded =
-            state.loaded.rebuild((b) => b..add(event.loaded));
-        if (loaded.containsAll(state.toLoad)) {
-          // Close the sql trace part.
-          sqlTrace.stop();
-          sqlTrace = null;
-          yield CoordinationStateLoadingFirestore(
-              uid: state.uid, toLoad: state.toLoad, loaded: BuiltSet());
-        } else {
-          print(
-              "Loaded Coord $loaded ${state.toLoad.where((f) => !loaded.contains(f))}");
-          yield CoordinationStateLoadingSql(
-              loaded: BuiltSet.from(loaded),
-              uid: state.uid,
-              toLoad: state.toLoad);
-        }
-      }
       if (state is CoordinationStateLoadingFirestore) {
         if (!state.loaded.contains(state.loaded)) {
           BuiltSet<BlocsToLoad> loaded =

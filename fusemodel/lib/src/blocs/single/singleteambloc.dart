@@ -10,9 +10,9 @@ import 'package:meta/meta.dart';
 import '../clubbloc.dart';
 import '../data/clubblocstate.dart';
 import '../data/seasonblocstate.dart';
+import '../data/teamblocstate.dart';
 import '../seasonbloc.dart';
 import '../teambloc.dart';
-import '../data/teamblocstate.dart';
 
 ///
 /// The basic team state for this team.
@@ -454,7 +454,6 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
           .getAllTeamElements(PersistenData.opponentsTable, teamUid);
       MapBuilder<String, Opponent> opponents = MapBuilder<String, Opponent>();
       for (String key in opponentData.keys) {
-        teamBloc.coordinationBloc.sqlTrace?.incrementCounter("opponent");
         Map<String, dynamic> innerData = opponentData[key];
         Opponent op = Opponent.fromJSON(key, teamUid, innerData).build();
         opponents[key] = op;

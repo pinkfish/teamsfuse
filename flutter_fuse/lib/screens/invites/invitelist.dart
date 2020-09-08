@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
@@ -270,7 +271,7 @@ class InviteListScreenState extends State<InviteListScreen> {
     );
   }
 
-  List<Widget> _buildInviteList(Map<String, Invite> invites) {
+  List<Widget> _buildInviteList(BuiltMap<String, Invite> invites) {
     List<Widget> inviteWidgets = <Widget>[];
     if (invites.length == 0) {
       inviteWidgets.add(new SizedBox(height: 50.0));

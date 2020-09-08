@@ -456,12 +456,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(Invite.TYPE, isEqualTo: InviteType.Admin.toString())
         .where(InviteAsAdmin.TEAMUID, isEqualTo: team.uid);
     QuerySnapshotWrapper wrap = await snap.getDocuments();
-    yield wrap.documents.map((DocumentSnapshotWrapper wrap) =>
-        InviteAsAdmin.fromJSON(wrap.documentID, wrap.data).build());
+    yield wrap.documents.map(
+        (DocumentSnapshotWrapper wrap) => InviteAsAdmin.fromMap(wrap.data));
 
     await for (QuerySnapshotWrapper wrap in snap.snapshots()) {
-      yield wrap.documents.map((DocumentSnapshotWrapper wrap) =>
-          InviteAsAdmin.fromJSON(wrap.documentID, wrap.data).build());
+      yield wrap.documents.map(
+          (DocumentSnapshotWrapper wrap) => InviteAsAdmin.fromMap(wrap.data));
     }
   }
 
@@ -476,8 +476,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     QuerySnapshotWrapper queryData = await query.getDocuments();
     List<InviteAsAdmin> ret = <InviteAsAdmin>[];
     for (DocumentSnapshotWrapper doc in queryData.documents) {
-      InviteAsAdmin invite =
-          InviteAsAdmin.fromJSON(doc.documentID, doc.data).build();
+      InviteAsAdmin invite = InviteAsAdmin.fromMap(doc.data);
       ret.add(invite);
     }
     yield ret;
@@ -485,8 +484,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       List<InviteAsAdmin> ret = <InviteAsAdmin>[];
 
       for (DocumentSnapshotWrapper doc in data.documents) {
-        InviteAsAdmin invite =
-            InviteAsAdmin.fromJSON(doc.documentID, doc.data).build();
+        InviteAsAdmin invite = InviteAsAdmin.fromMap(doc.data);
         ret.add(invite);
       }
       yield ret;
@@ -757,7 +755,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..playerName = playerName
         ..sentByUid = myUid);
 
-      var doc = await ref.add(invite.toJSON());
+      var doc = await ref.add(invite.toMap());
       return doc.documentID;
     }
     return snapshot.documents[0].documentID;
@@ -783,7 +781,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..teamName = teamName
         ..sentByUid = myUid);
 
-      var doc = await ref.add(invite.toJSON());
+      var doc = await ref.add(invite.toMap());
       return doc.documentID;
     }
     return snapshot.documents[0].documentID;
@@ -798,11 +796,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(Invite.TYPE, isEqualTo: InviteType.Player.toString())
         .where(InviteToPlayer.PLAYERUID, isEqualTo: playerUid);
     QuerySnapshotWrapper wrap = await query.getDocuments();
-    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        InviteToPlayer.fromJSON(snap.documentID, snap.data).build());
+    yield wrap.documents.map(
+        (DocumentSnapshotWrapper snap) => InviteToPlayer.fromMap(snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
-      yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          InviteToPlayer.fromJSON(snap.documentID, snap.data).build());
+      yield wrap.documents.map(
+          (DocumentSnapshotWrapper snap) => InviteToPlayer.fromMap(snap.data));
     }
   }
 
@@ -924,7 +922,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..teamName = teamName
         ..seasonName = seasonName
         ..role = role);
-      snapshot.documents[0].reference.updateData(updatedInvite.toJSON());
+      snapshot.documents[0].reference.updateData(updatedInvite.toMap());
       return snapshot.documents[0].documentID;
     } else {
       InviteToTeam invite = new InviteToTeam((b) => b
@@ -937,7 +935,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..seasonName = seasonName
         ..role = role);
 
-      var doc = await ref.add(invite.toJSON());
+      var doc = await ref.add(invite.toMap());
       return doc.documentID;
     }
   }
@@ -955,12 +953,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(InviteToTeam.TEAMUID, isEqualTo: teamUid);
 
     QuerySnapshotWrapper wrap = await query.getDocuments();
-    yield wrap.documents.map((DocumentSnapshotWrapper doc) =>
-        InviteToTeam.fromJSON(doc.documentID, doc.data).build());
+    yield wrap.documents
+        .map((DocumentSnapshotWrapper doc) => InviteToTeam.fromMap(doc.data));
 
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
-      yield wrap.documents.map((DocumentSnapshotWrapper doc) =>
-          InviteToTeam.fromJSON(doc.documentID, doc.data).build());
+      yield wrap.documents
+          .map((DocumentSnapshotWrapper doc) => InviteToTeam.fromMap(doc.data));
     }
   }
 
@@ -1096,7 +1094,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       ..clubName = clubName
       ..email = email);
     DocumentReferenceWrapper ref =
-        await wrapper.collection(INVITE_COLLECTION).add(invite.toJSON());
+        await wrapper.collection(INVITE_COLLECTION).add(invite.toMap());
     return ref.documentID;
   }
 
@@ -1280,7 +1278,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<String> inviteUserToLeague(InviteToLeagueAsAdmin invite) async {
     DocumentReferenceWrapper ref =
-        await wrapper.collection(INVITE_COLLECTION).add(invite.toJSON());
+        await wrapper.collection(INVITE_COLLECTION).add(invite.toMap());
     return ref.documentID;
   }
 
@@ -1305,7 +1303,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       ..leagueTeamUid = leagueTeam.uid);
     // Write it out to firestore.  Yay.
     var doc =
-        await wrapper.collection(INVITE_COLLECTION).add(teamInvite.toJSON());
+        await wrapper.collection(INVITE_COLLECTION).add(teamInvite.toMap());
     return doc.documentID;
   }
 
@@ -1319,11 +1317,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(InviteToLeagueTeam.LEAGUETEAMUID, isEqualTo: leagueTeamUid);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        InviteToLeagueTeam.fromJSON(snap.documentID, snap.data).build());
+        InviteToLeagueTeam.fromMap(snap.data));
 
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
       yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          InviteToLeagueTeam.fromJSON(snap.documentID, snap.data).build());
+          InviteToLeagueTeam.fromMap(snap.data));
     }
   }
 
@@ -1694,11 +1692,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(Invite.TYPE, isEqualTo: InviteType.Club.toString());
 
     QuerySnapshotWrapper wrap = await snapshot.getDocuments();
-    yield wrap.documents.map((DocumentSnapshotWrapper doc) =>
-        InviteToClub.fromJSON(doc.documentID, doc.data).build());
+    yield wrap.documents
+        .map((DocumentSnapshotWrapper doc) => InviteToClub.fromMap(doc.data));
     await for (QuerySnapshotWrapper wrap in snapshot.snapshots()) {
-      yield wrap.documents.map((DocumentSnapshotWrapper doc) =>
-          InviteToClub.fromJSON(doc.documentID, doc.data).build());
+      yield wrap.documents
+          .map((DocumentSnapshotWrapper doc) => InviteToClub.fromMap(doc.data));
     }
   }
 }

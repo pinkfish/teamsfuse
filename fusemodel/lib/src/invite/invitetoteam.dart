@@ -1,7 +1,8 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
-import '../common.dart';
+import '../serializer.dart';
 import '../team.dart';
 import 'invite.dart';
 
@@ -34,8 +35,6 @@ abstract class InviteToTeam
   RoleInTeam get role;
   BuiltList<String> get playerName;
 
-  InviteType getType() => InviteType.Team;
-
   factory InviteToTeam([void Function(InviteToTeamBuilder) updates]) =
       _$InviteToTeam;
   InviteToTeam._();
@@ -46,32 +45,16 @@ abstract class InviteToTeam
   static const String SEASONUID = 'seasonUid';
   static const String ROLE = 'role';
 
-  static InviteToTeamBuilder fromJSON(String uid, Map<String, dynamic> data) {
-    InviteToTeamBuilder builder = InviteToTeamBuilder();
-    Invite.fromJSON(builder, uid, data);
-    if (data.containsKey(NAME) && data[NAME] is List) {
-      List<dynamic> nameList = data[NAME];
-      builder.playerName
-          .addAll(nameList.map((dynamic d) => d is String ? d : ""));
-    }
-
-    return builder
-      ..teamUid = getString(data[TEAMUID])
-      ..seasonUid = getString(data[SEASONUID])
-      ..teamName = getString(data[TEAMNAME])
-      ..seasonName = getString(data[SEASONNAME])
-      ..role = RoleInTeam.values.firstWhere((e) => e.toString() == data[ROLE],
-          orElse: () => RoleInTeam.NonPlayer);
+  Map<String, dynamic> toMap({bool includeMembers}) {
+    return serializers.serializeWith(InviteToTeam.serializer, this);
   }
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = Invite.toJSONInternal(this);
-    ret[TEAMUID] = teamUid;
-    ret[SEASONUID] = seasonUid;
-    ret[NAME] = playerName;
-    ret[TEAMNAME] = teamName;
-    ret[SEASONNAME] = seasonName;
-    ret[ROLE] = role.toString();
-    return ret;
+  static InviteToTeam fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(InviteToTeam.serializer, jsonData);
   }
+
+  static Serializer<InviteToTeam> get serializer => _$inviteToTeamSerializer;
+
+  static void _initializeBuilder(InviteToTeamBuilder b) =>
+      b..type = InviteType.Team;
 }

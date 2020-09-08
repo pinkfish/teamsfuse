@@ -129,34 +129,6 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
   @override
   void onClubUpdated(FirestoreWrappedData data) {}
 
-  void _onTeamAdminsUpdatePeristentData(
-      {BuiltMap<String, Team> oldTeams,
-      BuiltMap<String, Team> oldTeamsByPlayer,
-      Iterable<Team> newAdminTeams,
-      Iterable<Team> newPlayerTeam}) {
-    Set<String> toRemove;
-    if (newAdminTeams != null) {
-      toRemove = Set.of(oldTeams.keys);
-      toRemove.removeAll(oldTeamsByPlayer.keys);
-    } else {
-      toRemove = Set.of(oldTeamsByPlayer.keys);
-      toRemove.removeAll(oldTeams.keys);
-    }
-    print('onTeamAdminsUpdated');
-    if (newAdminTeams != null) {
-      for (Team doc in newAdminTeams) {
-        coordinationBloc.loadingTrace?.incrementCounter("adminTeam");
-        coordinationBloc.persistentData
-            .updateElement(PersistenData.teamsTable, doc.uid, doc.toJSON());
-        toRemove.remove(doc.uid);
-      }
-    }
-    for (String teamId in toRemove) {
-      coordinationBloc.persistentData
-          .deleteElement(PersistenData.teamsTable, teamId);
-    }
-  }
-
   @override
   Stream<TeamState> mapEventToState(TeamEvent event) async* {
     // Start the firestore loading.
@@ -205,14 +177,10 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
             ..adminTeams = MapBuilder(Map.fromIterable(adminStartStuff,
                 key: (t) => t.uid, value: (t) => t)))
           .build();
-      _onTeamAdminsUpdatePeristentData(
-          oldTeams: oldAdminTeams,
-          oldTeamsByPlayer: oldUserTeams,
-          newAdminTeams: adminStartStuff);
 
       adminTrace.stop();
-      coordinationBloc.add(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Team, sql: false));
+      coordinationBloc
+          .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Team));
     }
 
     // Unload everything.
@@ -227,20 +195,11 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
       yield (TeamLoaded.fromState(state)
             ..adminTeams = event.adminTeams.toBuilder())
           .build();
-      coordinationBloc.add(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Team, sql: true));
-      _onTeamAdminsUpdatePeristentData(
-          oldTeams: oldAdminTeams,
-          oldTeamsByPlayer: state.playerTeams,
-          newAdminTeams: event.adminTeams.values);
+      coordinationBloc
+          .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Team));
     }
 
     if (event is _TeamUserUpdated) {
-      _onTeamAdminsUpdatePeristentData(
-          oldTeams: state.playerTeams,
-          oldTeamsByPlayer: state.playerTeams,
-          newPlayerTeam: event.userTeams.values);
-
       yield (TeamLoaded.fromState(state)
             ..playerTeams = event.userTeams.toBuilder())
           .build();
@@ -289,8 +248,6 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
         teamsTrace.start();
         print(
             'Start teams ${coordinationBloc.start.difference(new DateTime.now())}');
-        coordinationBloc.add(
-            CoordinationEventLoadedData(loaded: BlocsToLoad.Team, sql: true));
         var loaded = TeamLoaded.fromMap(json);
         teamsTrace.stop();
         return loaded;

@@ -6,6 +6,7 @@ import 'package:built_value/standard_json_plugin.dart';
 
 import 'blocs/data/clubblocstate.dart';
 import 'blocs/data/gameblocstate.dart';
+import 'blocs/data/inviteblocstate.dart';
 import 'blocs/data/leagueortournamentblocstate.dart';
 import 'blocs/data/messagesblocstate.dart';
 import 'blocs/data/playerblocstate.dart';
@@ -13,6 +14,7 @@ import 'blocs/data/profileblocstate.dart';
 import 'blocs/data/seasonblocstate.dart';
 import 'blocs/data/teamblocstate.dart';
 import 'blocs/single/data/singleclubbloc.dart';
+import 'blocs/single/data/singleplayerbloc.dart';
 import 'club.dart';
 import 'common.dart';
 import 'game.dart';
@@ -20,8 +22,9 @@ import 'invite.dart';
 import 'leagueortournament.dart';
 import 'message.dart';
 import 'player.dart';
+import 'serializer/inviteserializer.dart';
+import 'serializer/timestampserializer.dart';
 import 'team.dart';
-import 'timestampserializer.dart';
 import 'userprofile.dart';
 
 part 'serializer.g.dart';
@@ -61,6 +64,10 @@ part 'serializer.g.dart';
   Gender,
   InviteToTeam,
   InviteType,
+  InviteLoaded,
+  InviteState,
+  InviteBlocStateType,
+  InviteUninitialized,
   LeagueOrTournament,
   LeagueOrTournamentDivison,
   LeagueOrTournamentSeason,
@@ -92,6 +99,15 @@ part 'serializer.g.dart';
   SingleClubDeleted,
   SingleClubSaving,
   SingleClubSaveFailed,
+  SingleClubSaveDone,
+  SinglePlayerLoaded,
+  SinglePlayerState,
+  SinglePlayerBlocStateType,
+  SinglePlayerUninitialized,
+  SinglePlayerDeleted,
+  SinglePlayerSaving,
+  SinglePlayerSaveFailed,
+  SinglePlayerSaveDone,
   Sport,
   Team,
   TeamLoaded,
@@ -102,5 +118,6 @@ part 'serializer.g.dart';
 ])
 final Serializers serializers = (_$serializers.toBuilder()
       ..add(TimestampSerializer())
+      ..add(InviteSerializer())
       ..addPlugin(StandardJsonPlugin()))
     .build();

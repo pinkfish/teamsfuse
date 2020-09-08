@@ -1,16 +1,11 @@
 import 'package:built_value/built_value.dart';
 
-import '../common.dart';
-
 part 'invite.g.dart';
 
 /// The type of the invite.
 enum InviteType { Player, Team, Admin, Club, LeagueAdmin, LeagueTeam }
 
-abstract class BaseInviteType {
-  /// The type of the invite.
-  InviteType getType();
-}
+abstract class BaseInviteType {}
 
 ///
 /// Base class for all invites.
@@ -18,6 +13,7 @@ abstract class BaseInviteType {
 @BuiltValue(instantiable: false)
 abstract class Invite with BaseInviteType {
   /// email invites.
+  @BuiltValueField(wireName: EMAIL)
   String get email;
 
   /// uid of the invite itself
@@ -26,28 +22,12 @@ abstract class Invite with BaseInviteType {
   // Who sent the invite.
   String get sentByUid;
 
+  @BuiltValueField(wireName: TYPE)
+  InviteType get type;
+
   Invite rebuild(void Function(InviteBuilder) updates);
   InviteBuilder toBuilder();
 
-  static const String EMAIL = 'email';
   static const String TYPE = 'type';
-  static const String SENTBYUID = 'sentbyUid';
-
-  static InviteBuilder fromJSON(
-      InviteBuilder builder, String myUid, Map<String, dynamic> data) {
-    return builder
-      ..email = getString(data[EMAIL])
-      ..uid = myUid
-      ..sentByUid = getString(data[SENTBYUID]);
-  }
-
-  Map<String, dynamic> toJSON();
-
-  static Map<String, dynamic> toJSONInternal(Invite invite) {
-    Map<String, dynamic> ret = new Map<String, dynamic>();
-    ret[EMAIL] = invite.email;
-    ret[TYPE] = invite.getType().toString();
-    ret[SENTBYUID] = invite.sentByUid;
-    return ret;
-  }
+  static const String EMAIL = 'email';
 }

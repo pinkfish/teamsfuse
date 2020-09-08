@@ -18,6 +18,7 @@ class SingleClubBlocStateType extends EnumClass {
   static const SingleClubBlocStateType Deleted = _$deleted;
   static const SingleClubBlocStateType SaveFailed = _$saveFailed;
   static const SingleClubBlocStateType Saving = _$saving;
+  static const SingleClubBlocStateType SaveDone = _$saveDone;
 
   const SingleClubBlocStateType._(String name) : super(name);
 
@@ -129,7 +130,7 @@ abstract class SingleClubUninitialized
 }
 
 ///
-/// The singleClub bloc that is unitialized.
+/// The singleClub bloc that is deleted.
 ///
 abstract class SingleClubDeleted
     implements
@@ -164,7 +165,7 @@ abstract class SingleClubDeleted
 }
 
 ///
-/// The singleClub bloc that is unitialized.
+/// The singleClub bloc that has failed to save, with error.
 ///
 abstract class SingleClubSaveFailed
     implements
@@ -202,7 +203,7 @@ abstract class SingleClubSaveFailed
 }
 
 ///
-/// The singleClub bloc that is unitialized.
+/// The singleClub bloc that is saving.
 ///
 abstract class SingleClubSaving
     implements
@@ -233,4 +234,39 @@ abstract class SingleClubSaving
 
   static Serializer<SingleClubSaving> get serializer =>
       _$singleClubSavingSerializer;
+}
+
+///
+/// The singleClub bloc that is saving.
+///
+abstract class SingleClubSaveDone
+    implements
+        SingleClubState,
+        Built<SingleClubSaveDone, SingleClubSaveDoneBuilder> {
+  SingleClubSaveDone._();
+  factory SingleClubSaveDone(
+          [void Function(SingleClubSaveDoneBuilder) updates]) =
+      _$SingleClubSaveDone;
+
+  static SingleClubSaveDoneBuilder fromState(SingleClubState state) {
+    return SingleClubState.fromState(state, SingleClubSaveDoneBuilder());
+  }
+
+  /// Defaults for the state.  Always default to no games loaded.
+  static void _initializeBuilder(SingleClubSaveDoneBuilder b) {
+    SingleClubState.initializeStateBuilder(b);
+
+    b..type = SingleClubBlocStateType.SaveDone;
+  }
+
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(SingleClubSaveDone.serializer, this);
+  }
+
+  static SingleClubSaveDone fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(SingleClubSaveDone.serializer, jsonData);
+  }
+
+  static Serializer<SingleClubSaveDone> get serializer =>
+      _$singleClubSaveDoneSerializer;
 }

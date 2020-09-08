@@ -16,23 +16,22 @@ class InviteFactory {
         .firstWhere((InviteType ty) => ty.toString() == data[Invite.TYPE]);
     switch (type) {
       case InviteType.Player:
-        InviteToPlayer ret = InviteToPlayer.fromJSON(uid, data).build();
+        InviteToPlayer ret = InviteToPlayer.fromMap(data);
         return ret;
       case InviteType.Team:
-        InviteToTeam ret = InviteToTeam.fromJSON(uid, data).build();
+        InviteToTeam ret = InviteToTeam.fromMap(data);
         return ret;
       case InviteType.Admin:
-        InviteAsAdmin ret = InviteAsAdmin.fromJSON(uid, data).build();
+        InviteAsAdmin ret = InviteAsAdmin.fromMap(data);
         return ret;
       case InviteType.Club:
-        InviteToClub ret = InviteToClub.fromJSON(uid, data).build();
+        InviteToClub ret = InviteToClub.fromMap(data);
         return ret;
       case InviteType.LeagueAdmin:
-        InviteToLeagueAsAdmin ret =
-            InviteToLeagueAsAdmin.fromJSON(uid, data).build();
+        InviteToLeagueAsAdmin ret = InviteToLeagueAsAdmin.fromMap(data);
         return ret;
       case InviteType.LeagueTeam:
-        InviteToLeagueTeam ret = InviteToLeagueTeam.fromJSON(uid, data).build();
+        InviteToLeagueTeam ret = InviteToLeagueTeam.fromMap(data);
         return ret;
       default:
         throw new FormatException();

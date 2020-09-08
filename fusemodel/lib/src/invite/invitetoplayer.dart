@@ -1,6 +1,7 @@
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
-import '../common.dart';
+import '../serializer.dart';
 import 'invite.dart';
 
 part 'invitetoplayer.g.dart';
@@ -13,29 +14,23 @@ abstract class InviteToPlayer
   String get playerUid;
   String get playerName;
 
-  /// The type of the invite.
-  @override
-  InviteType getType() => InviteType.Player;
-
   factory InviteToPlayer([void Function(InviteToPlayerBuilder) updates]) =
       _$InviteToPlayer;
   InviteToPlayer._();
 
   static const String PLAYERUID = 'playerUid';
 
-  static InviteToPlayerBuilder fromJSON(String uid, Map<String, dynamic> data) {
-    InviteToPlayerBuilder builder = InviteToPlayerBuilder();
-    Invite.fromJSON(builder, uid, data);
-    return builder
-      ..playerUid = getString(data[PLAYERUID])
-      ..playerName = getString(data[NAME]);
+  Map<String, dynamic> toMap({bool includeMembers}) {
+    return serializers.serializeWith(InviteToPlayer.serializer, this);
   }
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = Invite.toJSONInternal(this);
-    ret[PLAYERUID] = playerUid;
-    ret[NAME] = playerName;
-
-    return ret;
+  static InviteToPlayer fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(InviteToPlayer.serializer, jsonData);
   }
+
+  static Serializer<InviteToPlayer> get serializer =>
+      _$inviteToPlayerSerializer;
+
+  static void _initializeBuilder(InviteToPlayerBuilder b) =>
+      b..type = InviteType.Player;
 }

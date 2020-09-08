@@ -1,66 +1,16 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
+import 'data/inviteblocstate.dart';
 import 'internal/blocstoload.dart';
 
-///
-/// Basic state for all the data in this system.
-///
-class InviteState extends Equatable {
-  final Map<String, Invite> invites;
-  final String uid;
-
-  InviteState({@required this.invites, @required this.uid});
-
-  @override
-  List<Object> get props => [invites, uid];
-}
-
-///
-/// No data at all yet.
-///
-class InviteUninitialized extends InviteState {
-  InviteUninitialized() : super(invites: {}, uid: null);
-
-  @override
-  String toString() {
-    return 'InviteUninitialized{}';
-  }
-}
-
-///
-/// Doing something.
-///
-class InviteLoaded extends InviteState {
-  InviteLoaded({@required Map<String, Invite> invites, @required String uid})
-      : super(invites: invites, uid: uid);
-
-  @override
-  String toString() {
-    return 'InviteUninitialized{}';
-  }
-}
-
 abstract class InviteEvent extends Equatable {}
-
-class _InviteEventUserLoaded extends InviteEvent {
-  final String uid;
-
-  _InviteEventUserLoaded({@required this.uid});
-
-  @override
-  String toString() {
-    return '_InviteEventUserLoaded{}';
-  }
-
-  @override
-  List<Object> get props => [uid];
-}
 
 class _InviteEventLogout extends InviteEvent {
   @override
@@ -68,7 +18,7 @@ class _InviteEventLogout extends InviteEvent {
 }
 
 class _InviteEventNewDataLoaded extends InviteEvent {
-  final Map<String, Invite> invites;
+  final BuiltMap<String, Invite> invites;
   final String uid;
 
   _InviteEventNewDataLoaded({@required this.invites, @required this.uid});
@@ -107,7 +57,7 @@ class InviteEventDeleteInvite extends InviteEvent {
 /// Handles the work around the invites and invites system inside of
 /// the app.
 ///
-class InviteBloc extends Bloc<InviteEvent, InviteState> {
+class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
   final CoordinationBloc coordinationBloc;
   final PersistenData persistentData;
   final DatabaseUpdateModel databaseUpdateModel;
@@ -116,7 +66,6 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<Invite>> _inviteChangeSub;
 
-  bool _loadingSql = false;
   bool _loadingFirestore = false;
 
   InviteBloc(
@@ -130,15 +79,8 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
     _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
       if (coordinationState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
-        _loadingSql = false;
 
         add(_InviteEventLogout());
-      } else if (coordinationState is CoordinationStateLoadingSql) {
-        if (!_loadingSql) {
-          _loadingSql = true;
-
-          _startLoading(coordinationState);
-        }
       } else if (coordinationState is CoordinationStateLoadingFirestore) {
         if (!_loadingFirestore) {
           _loadingFirestore = true;
@@ -147,12 +89,6 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
         }
       }
     });
-    if (coordinationBloc.state is CoordinationStateLoadingSql) {
-      if (!_loadingSql) {
-        _loadingSql = true;
-        _startLoading(coordinationBloc.state);
-      }
-    }
   }
 
   @override
@@ -163,53 +99,18 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
     return super.close();
   }
 
-  void _startLoading(CoordinationStateLoadingSql state) {
-    add(_InviteEventUserLoaded(uid: state.uid));
-  }
-
   void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
     add(_InviteEventLoadFirestore(uid: state.uid));
   }
 
   void _onInviteUpdated(Iterable<Invite> invites) {
-    Map<String, Invite> newInvites = new Map<String, Invite>();
+    MapBuilder<String, Invite> newInvites = new MapBuilder<String, Invite>();
 
-    // Completely clear the invite table.
-    persistentData.clearTable(PersistenData.invitesTable);
-    for (Invite invite in invites) {
-      newInvites[invite.uid] = invite;
-      persistentData.updateElement(
-          PersistenData.invitesTable, invite.uid, invite.toJSON());
-    }
-    add(_InviteEventNewDataLoaded(invites: newInvites, uid: state.uid));
+    add(_InviteEventNewDataLoaded(invites: newInvites.build(), uid: state.uid));
   }
 
   @override
   Stream<InviteState> mapEventToState(InviteEvent event) async* {
-    if (event is _InviteEventUserLoaded) {
-      // Reset stuff first.
-      _inviteChangeSub?.cancel();
-      _inviteChangeSub = null;
-
-      TraceProxy invitesTrace = analyticsSubsystem.newTrace("invitesData");
-      invitesTrace.start();
-      Map<String, Map<String, dynamic>> data =
-          await persistentData.getAllElements(PersistenData.invitesTable);
-      Map<String, Invite> newInvites = new Map<String, Invite>();
-      data.forEach((String uid, Map<String, dynamic> input) {
-        coordinationBloc.sqlTrace.incrementCounter("invites");
-        invitesTrace.incrementCounter("invites");
-        Invite invite = InviteFactory.makeInviteFromJSON(uid, input);
-        newInvites[uid] = invite;
-      });
-      print(
-          'End invites ${coordinationBloc.start.difference(new DateTime.now())}');
-      invitesTrace.stop();
-      yield InviteLoaded(invites: newInvites, uid: event.uid);
-      coordinationBloc.add(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Invite, sql: true));
-    }
-
     if (event is _InviteEventLoadFirestore) {
       print('getting invites');
       _inviteChangeSub = databaseUpdateModel
@@ -224,9 +125,12 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
 
     // New data from above.  Mark ourselves as done.
     if (event is _InviteEventNewDataLoaded) {
-      yield InviteLoaded(invites: event.invites, uid: event.uid);
-      coordinationBloc.add(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Invite, sql: false));
+      yield (InviteLoaded.fromState(state)
+            ..invites = event.invites.toBuilder()
+            ..uid = event.uid)
+          .build();
+      coordinationBloc
+          .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Invite));
     }
 
     // Unload everything.
@@ -240,5 +144,33 @@ class InviteBloc extends Bloc<InviteEvent, InviteState> {
       coordinationBloc.databaseUpdateModel
           .firestoreInviteDelete(event.inviteUid);
     }
+  }
+
+  @override
+  InviteState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return InviteUninitialized();
+    }
+
+    InviteBlocStateType type = InviteBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case InviteBlocStateType.Uninitialized:
+        return InviteUninitialized();
+      case InviteBlocStateType.Loaded:
+        TraceProxy invitesTrace = analyticsSubsystem.newTrace("invitesData");
+        invitesTrace.start();
+        var loaded = InviteLoaded.fromMap(json);
+        print(
+            'End invites ${coordinationBloc.start.difference(new DateTime.now())} ${loaded.invites.length}');
+        invitesTrace.stop();
+        return loaded;
+      default:
+        return InviteUninitialized();
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(InviteState state) {
+    return state.toMap();
   }
 }

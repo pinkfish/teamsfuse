@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
+import '../data/inviteblocstate.dart';
 import '../invitebloc.dart';
 import '../seasonbloc.dart';
 import '../teambloc.dart';

@@ -125,8 +125,8 @@ class GameBloc extends HydratedBloc<GameEvent, GameState> {
             ..start = _start
             ..end = _end)
           .build();
-      coordinationBloc.add(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Game, sql: false));
+      coordinationBloc
+          .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Game));
     }
 
     // Unload everything.
@@ -160,8 +160,6 @@ class GameBloc extends HydratedBloc<GameEvent, GameState> {
         print(
             'End games ${coordinationBloc.start.difference(new DateTime.now())} ${loaded.gamesByTeam.length}');
         gamesTrace.stop();
-        coordinationBloc.add(
-            CoordinationEventLoadedData(loaded: BlocsToLoad.Game, sql: true));
         return loaded;
       default:
         return GameUninitialized();

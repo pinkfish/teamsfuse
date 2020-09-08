@@ -1,6 +1,7 @@
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
-import '../common.dart';
+import '../serializer.dart';
 import 'invite.dart';
 
 part 'invitetoleagueasadmin.g.dart';
@@ -23,10 +24,6 @@ abstract class InviteToLeagueAsAdmin
   /// If this is not null, invite as the season admin.
   String get leagueSeasonUid;
 
-  /// The type of the invite.
-  @override
-  InviteType getType() => InviteType.LeagueAdmin;
-
   factory InviteToLeagueAsAdmin(
           [void Function(InviteToLeagueAsAdminBuilder) updates]) =
       _$InviteToLeagueAsAdmin;
@@ -37,23 +34,18 @@ abstract class InviteToLeagueAsAdmin
   static const String LEAGUEDIVISONUID = 'leagueDivisonUid';
   static const String LEAGUENAME = 'leagueName';
 
-  static InviteToLeagueAsAdminBuilder fromJSON(
-      String uid, Map<String, dynamic> data) {
-    InviteToLeagueAsAdminBuilder b = InviteToLeagueAsAdminBuilder();
-    Invite.fromJSON(b, uid, data);
-    return b
-      ..leagueUid = getString(data[LEAGUEUID])
-      ..leagueName = getString(data[LEAGUENAME])
-      ..leagueDivisonUid = data[LEAGUEDIVISONUID] ?? ""
-      ..leagueSeasonUid = data[LEAGUESEASONUID] ?? "";
+  Map<String, dynamic> toMap({bool includeMembers}) {
+    return serializers.serializeWith(InviteToLeagueAsAdmin.serializer, this);
   }
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = Invite.toJSONInternal(this);
-    ret[LEAGUENAME] = leagueName;
-    ret[LEAGUEUID] = leagueUid;
-    ret[LEAGUESEASONUID] = leagueSeasonUid;
-    ret[LEAGUEDIVISONUID] = leagueDivisonUid;
-    return ret;
+  static InviteToLeagueAsAdmin fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(
+        InviteToLeagueAsAdmin.serializer, jsonData);
   }
+
+  static Serializer<InviteToLeagueAsAdmin> get serializer =>
+      _$inviteToLeagueAsAdminSerializer;
+
+  static void _initializeBuilder(InviteToLeagueAsAdminBuilder b) =>
+      b..type = InviteType.LeagueAdmin;
 }

@@ -127,8 +127,8 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
         }
         if (!state.loadedFirestore) {
           coordinationBloc.loadingTrace?.incrementCounter("seasons");
-          coordinationBloc.add(CoordinationEventLoadedData(
-              loaded: BlocsToLoad.Season, sql: false));
+          coordinationBloc
+              .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Season));
           adminTrace.stop();
         }
         add(_SeasonUpdate(
@@ -149,8 +149,8 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
             ..seasons = event.newSeasons.toBuilder()
             ..loadedFirestore = true)
           .build();
-      coordinationBloc.add(
-          CoordinationEventLoadedData(loaded: BlocsToLoad.Season, sql: true));
+      coordinationBloc
+          .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Season));
     }
   }
 
@@ -172,8 +172,6 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
         var loaded = SeasonLoaded.fromMap(json);
         print(
             'Start Seasons ${coordinationBloc.start.difference(new DateTime.now())}');
-        coordinationBloc.add(
-            CoordinationEventLoadedData(loaded: BlocsToLoad.Season, sql: true));
         SeasonsTrace.stop();
         return loaded;
       default:

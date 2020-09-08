@@ -1,6 +1,7 @@
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
-import '../common.dart';
+import '../serializer.dart';
 import 'invite.dart';
 
 part 'invitetoclub.g.dart';
@@ -11,35 +12,26 @@ part 'invitetoclub.g.dart';
 abstract class InviteToClub
     implements Invite, Built<InviteToClub, InviteToClubBuilder> {
   String get clubName;
+  @BuiltValueField(wireName: CLUBUID)
   String get clubUid;
   bool get admin;
 
-  /// The type of the invite.
-  @override
-  InviteType getType() => InviteType.Club;
+  static const String CLUBUID = "clubUid";
 
   factory InviteToClub([void Function(InviteToClubBuilder) updates]) =
       _$InviteToClub;
   InviteToClub._();
 
-  static const String CLUBUID = 'clubUid';
-  static const String CLUBNAME = 'clubName';
-  static const String ADMIN = 'admin';
-
-  static InviteToClubBuilder fromJSON(String uid, Map<String, dynamic> data) {
-    InviteToClubBuilder b = InviteToClubBuilder();
-    Invite.fromJSON(b, uid, data);
-    return b
-      ..clubUid = getString(data[CLUBUID])
-      ..clubName = getString(data[CLUBNAME])
-      ..admin = getBool(data[ADMIN]);
+  Map<String, dynamic> toMap({bool includeMembers}) {
+    return serializers.serializeWith(InviteToClub.serializer, this);
   }
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = Invite.toJSONInternal(this);
-    ret[CLUBNAME] = clubName;
-    ret[CLUBUID] = clubUid;
-    ret[ADMIN] = admin;
-    return ret;
+  static InviteToClub fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(InviteToClub.serializer, jsonData);
   }
+
+  static Serializer<InviteToClub> get serializer => _$inviteToClubSerializer;
+
+  static void _initializeBuilder(InviteToClubBuilder b) =>
+      b..type = InviteType.Club;
 }

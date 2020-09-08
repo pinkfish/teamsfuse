@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/src/async_hydrated_bloc/asynchydratedbloc.dart';
 import 'package:meta/meta.dart';
@@ -218,6 +219,7 @@ class SingleClubBloc
         }
         await clubBloc.coordinationBloc.databaseUpdateModel
             .updateClub(club, includeMembers: event.includeMembers);
+        yield SingleClubSaveDone.fromState(state).build();
         yield (SingleClubLoaded.fromState(state)..club = event.club.toBuilder())
             .build();
       } catch (e) {
@@ -232,6 +234,7 @@ class SingleClubBloc
         Uri clubUri = await clubBloc.coordinationBloc.databaseUpdateModel
             .updateClubImage(state.club, event.image);
 
+        yield SingleClubSaveDone.fromState(state).build();
         yield (SingleClubLoaded.fromState(state)
               ..club = (state.club.toBuilder()..photoUrl = clubUri.toString()))
             .build();
@@ -247,6 +250,7 @@ class SingleClubBloc
       try {
         _clubUid = await clubBloc.coordinationBloc.databaseUpdateModel
             .addClub(null, event.newClub);
+        yield SingleClubSaveDone.fromState(state).build();
         yield (SingleClubLoaded.fromState(state)
               ..club = event.newClub.toBuilder())
             .build();
@@ -260,6 +264,7 @@ class SingleClubBloc
       try {
         await clubBloc.coordinationBloc.databaseUpdateModel
             .addUserToClub(clubUid, event.adminUid, event.admin);
+        yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
       } catch (e) {
         yield (SingleClubSaveFailed.fromState(state)..error = e).build();
@@ -272,6 +277,7 @@ class SingleClubBloc
       try {
         await clubBloc.coordinationBloc.databaseUpdateModel
             .deleteClubMember(state.club, event.adminUid);
+        yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
       } catch (e) {
         yield (SingleClubSaveFailed.fromState(state)..error = e).build();
@@ -287,6 +293,7 @@ class SingleClubBloc
             email: event.email,
             admin: event.admin,
             clubUid: clubUid);
+        yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
       } catch (e) {
         yield (SingleClubSaveFailed.fromState(state)..error = e).build();
@@ -328,6 +335,8 @@ class SingleClubBloc
         return SingleClubSaveFailed.fromMap(json);
       case SingleClubBlocStateType.Saving:
         return SingleClubSaving.fromMap(json);
+      case SingleClubBlocStateType.SaveDone:
+        return SingleClubSaveDone.fromMap(json);
     }
   }
 
