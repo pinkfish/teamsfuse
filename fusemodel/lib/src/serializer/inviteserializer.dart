@@ -49,8 +49,7 @@ class InviteSerializer implements StructuredSerializer<Invite> {
         }
       }
     }
-    // TODO: implement deserialize
-    return null;
+    throw ArgumentError('Unknow invite type');
   }
 
   @override

@@ -104,7 +104,7 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
   void _onInviteUpdated(Iterable<Invite> invites) {
     MapBuilder<String, Invite> newInvites = new MapBuilder<String, Invite>();
 
-    add(_InviteEventNewDataLoaded(invites: newInvites.build(), uid: state.uid));
+    add(_InviteEventNewDataLoaded(invites: newInvites.build()));
   }
 
   @override
@@ -123,9 +123,7 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
 
     // New data from above.  Mark ourselves as done.
     if (event is _InviteEventNewDataLoaded) {
-      yield (InviteLoaded.fromState(state)
-            ..invites = event.invites.toBuilder()
-            ..uid = event.uid)
+      yield (InviteLoaded.fromState(state)..invites = event.invites.toBuilder())
           .build();
       coordinationBloc
           .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Invite));
@@ -158,8 +156,6 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
         TraceProxy invitesTrace = analyticsSubsystem.newTrace("invitesData");
         invitesTrace.start();
         var loaded = InviteLoaded.fromMap(json);
-        print(
-            'End invites ${coordinationBloc.start.difference(new DateTime.now())} ${loaded.invites.length}');
         invitesTrace.stop();
         return loaded;
       default:

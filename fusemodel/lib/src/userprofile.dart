@@ -12,11 +12,11 @@ abstract class FusedUserProfile
     implements Built<FusedUserProfile, FusedUserProfileBuilder> {
   String get displayName;
   String get email;
+  @nullable
   String get phoneNumber;
   bool get emailUpcomingGame;
   bool get emailOnUpdates;
   bool get notifyOnlyForGames;
-  @nullable
   String get uid;
 
   FusedUserProfile._();
@@ -34,6 +34,11 @@ abstract class FusedUserProfile
   }
 
   static const String TOKENS = "tokens";
+
+  static void _initializeBuilder(FusedUserProfileBuilder b) => b
+    ..emailUpcomingGame = true
+    ..emailOnUpdates = true
+    ..notifyOnlyForGames = false;
 
   /// Load from the json
   Map<String, dynamic> toMap() {

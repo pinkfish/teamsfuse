@@ -12,6 +12,5 @@ export 'src/message.dart';
 export 'src/persistendata.dart';
 export 'src/player.dart';
 export 'src/team.dart';
-export 'src/userdatabasedata.dart';
 export 'src/userprofile.dart';
 export 'src/winrecord.dart';

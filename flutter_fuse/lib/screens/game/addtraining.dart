@@ -268,7 +268,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
       ..seasonUid = team.currentSeason
       ..trackAttendance = team.trackAttendenceInternal);
 
-    print('team changed ${_initGame.toJSON()}');
+    print('team changed ${_initGame.toMap()}');
     setState(() {
       _team = team;
     });

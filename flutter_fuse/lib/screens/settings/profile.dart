@@ -102,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
           child: BlocBuilder(
             cubit: bloc,
             builder: (BuildContext context, SingleProfileState userState) {
-              if (userState is SingleProfileUnitialized ||
+              if (userState is SingleProfileUninitialized ||
                   userState is SingleProfileDeleted) {
                 return new ListTile(
                   title: new Text(Messages.of(context).displaynamerelationship(

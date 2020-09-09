@@ -194,7 +194,7 @@ class AddEventScreenState extends State<AddEventScreen> {
       ..trackAttendance = _team.trackAttendenceInternal
       ..sharedData.time = start.millisecondsSinceEpoch
       ..sharedData.endTime = start.millisecondsSinceEpoch);
-    print('team changed ${_initGame.toJSON()}');
+    print('team changed ${_initGame.toMap()}');
   }
 
   @override

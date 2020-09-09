@@ -245,8 +245,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
             coordinationBloc.analyticsSubsystem.newTrace("messagesTrace");
         messagesTrace.start();
         var loaded = MessagesLoaded.fromMap(json);
-        print(
-            'End messages ${coordinationBloc.start.difference(new DateTime.now())}');
+        print('End messages ');
         messagesTrace.stop();
         return loaded;
       default:

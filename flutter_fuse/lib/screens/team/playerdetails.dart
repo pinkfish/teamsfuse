@@ -217,7 +217,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                 BlocBuilder(
               cubit: singleUserBloc,
               builder: (BuildContext context, SingleProfileState userState) {
-                if (userState is SingleProfileUnitialized) {
+                if (userState is SingleProfileUninitialized) {
                   return new Text(messages.loading);
                 }
                 if (userState is SingleProfileLoaded) {

@@ -10,9 +10,20 @@ part 'leagueortournament.g.dart';
 ///
 /// The type of the league or tournment.
 ///
-enum LeagueOrTournamentType {
-  Tournament,
-  League,
+class LeagueOrTournamentType extends EnumClass {
+  static Serializer<LeagueOrTournamentType> get serializer =>
+      _$leagueOrTournamentTypeSerializer;
+
+  static const LeagueOrTournamentType Tournament = _$Tournament;
+  static const LeagueOrTournamentType League = _$League;
+
+  const LeagueOrTournamentType._(String name) : super(name);
+
+  static BuiltSet<LeagueOrTournamentType> get values =>
+      _$LeagueOrTournamentTypeValues;
+
+  static LeagueOrTournamentType valueOf(String name) =>
+      _$LeagueOrTournamentTypeValueOf(name);
 }
 
 ///
@@ -22,13 +33,17 @@ abstract class LeagueOrTournament
     implements Built<LeagueOrTournament, LeagueOrTournamentBuilder> {
   String get uid;
   String get name;
+  @nullable
   String get photoUrl;
   String get currentSeason;
   String get shortDescription;
+  @BuiltValueField(wireName: LONGDESCRIPTION)
   String get longDescription;
   LeagueOrTournamentType get type;
   Gender get gender;
   Sport get sport;
+  @BuiltValueField(serialize: false)
+  @nullable
   String get userUid;
 
   @BuiltValueField(wireName: MEMBERS)
@@ -62,15 +77,17 @@ abstract class LeagueOrTournament
     return ret;
   }
 
-  static LeagueOrTournament fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(LeagueOrTournament.serializer, jsonData);
+  static LeagueOrTournament fromMap(
+      String userUid, Map<String, dynamic> jsonData) {
+    return serializers
+        .deserializeWith(LeagueOrTournament.serializer, jsonData)
+        .rebuild((b) => b..userUid = userUid);
   }
 
   static Serializer<LeagueOrTournament> get serializer =>
       _$leagueOrTournamentSerializer;
 
   static const String TYPE = "type";
-  static const String SHORTDESCRIPTION = "shortDescription";
   static const String LONGDESCRIPTION = "description";
   static const String MEMBERS = "members";
   static const String ADMIN = "admin";

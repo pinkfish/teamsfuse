@@ -1,16 +1,24 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 import 'package:timezone/timezone.dart';
+
+import '../serializer.dart';
 
 part 'repeatdata.g.dart';
 
-enum RepeatPeriod {
-  // ignore: camel_case_types, constant_identifier_names
-  None,
-  // ignore: camel_case_types, constant_identifier_names
-  Weekly,
-  // ignore: camel_case_types, constant_identifier_names
-  Monthly,
+class RepeatPeriod extends EnumClass {
+  static Serializer<RepeatPeriod> get serializer => _$repeatPeriodSerializer;
+
+  static const RepeatPeriod None = _$None;
+  static const RepeatPeriod Weekly = _$Weekly;
+  static const RepeatPeriod Monthly = _$Monthly;
+
+  const RepeatPeriod._(String name) : super(name);
+
+  static BuiltSet<RepeatPeriod> get values => _$RepeatPeriodValues;
+
+  static RepeatPeriod valueOf(String name) => _$RepeatPeriodValueOf(name);
 }
 
 abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
@@ -77,4 +85,14 @@ abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
     }
     return newDates;
   }
+
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(RepeatData.serializer, this);
+  }
+
+  static RepeatData fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(RepeatData.serializer, jsonData);
+  }
+
+  static Serializer<RepeatData> get serializer => _$repeatDataSerializer;
 }

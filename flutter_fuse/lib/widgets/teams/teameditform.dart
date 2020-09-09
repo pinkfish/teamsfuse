@@ -74,7 +74,7 @@ class TeamEditFormState extends State<TeamEditForm> {
         AuthenticationBloc authenticationBloc =
             BlocProvider.of<AuthenticationBloc>(context);
         // Add the current user as the admin.
-        builder.admins.add(authenticationBloc.currentUser.uid);
+        builder.adminsData[authenticationBloc.currentUser.uid] = true;
       }
     }
     return builder;

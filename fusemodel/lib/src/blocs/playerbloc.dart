@@ -135,11 +135,12 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
     if (data.length == 0) {
       if (!foundMe && !_createdMePlayer) {
         print('Docs are empty');
-        PlayerUser playerUser = new PlayerUser((b) => b
-          ..userUid = coordinationBloc.authenticationBloc.currentUser.uid
+        PlayerUserInternal playerUser = new PlayerUserInternal((b) => b
+          ..added = true
           ..relationship = Relationship.Me);
         PlayerBuilder player = PlayerBuilder();
-        player.users[playerUser.userUid] = playerUser;
+        player.usersData[coordinationBloc.authenticationBloc.currentUser.uid] =
+            playerUser;
         player.name = coordinationBloc
                 .authenticationBloc.currentUser.profile?.displayName ??
             "Frog";
@@ -221,8 +222,7 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
             coordinationBloc.analyticsSubsystem.newTrace("playerData");
         playerTrace.start();
         var loaded = PlayerLoaded.fromMap(json);
-        print(
-            'End players ${coordinationBloc.start.difference(new DateTime.now())}');
+        print('End players ');
         playerTrace.stop();
         return loaded;
       default:

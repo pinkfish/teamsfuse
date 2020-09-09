@@ -1,14 +1,36 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 import 'package:timezone/timezone.dart';
 
-import '../common.dart';
+import '../serializer.dart';
 import 'gameperiod.dart';
 import 'gamescore.dart';
 
 part 'gamelog.g.dart';
 
-enum GameLogType { ScoreUpdate, Message, PeriodStart, PeriodStop, UpdateScore }
+///
+/// The game log event type.
+///
+class GameLogType extends EnumClass {
+  static Serializer<GameLogType> get serializer => _$gameLogTypeSerializer;
 
+  static const GameLogType ScoreUpdate = _$scoreUpdate;
+  static const GameLogType Message = _$message;
+  static const GameLogType PeriodStart = _$periodStart;
+  static const GameLogType PeriodStop = _$periodStop;
+  static const GameLogType UpdateScore = _$updateScore;
+
+  const GameLogType._(String name) : super(name);
+
+  static BuiltSet<GameLogType> get values => _$GameLogTypeValues;
+
+  static GameLogType valueOf(String name) => _$GameLogTypeValueOf(name);
+}
+
+///
+/// The game log class that tracks log entries in the game.
+///
 abstract class GameLog implements Built<GameLog, GameLogBuilder> {
   GameLogType get type;
   String get message;
@@ -21,23 +43,15 @@ abstract class GameLog implements Built<GameLog, GameLogBuilder> {
   GameLog._();
   factory GameLog([updates(GameLogBuilder b)]) = _$GameLog;
 
-  static GameLogBuilder fromJson(String uid, Map<String, dynamic> data) {
-    GameScoreBuilder scoreBuilder = GameScoreBuilder()
-      ..ptsFor = 0
-      ..ptsAgainst = 0;
-    GamePeriod newPeriod = GamePeriod.fromIndex(data[_PERIOD]);
-    return GameLogBuilder()
-      ..type = GameLogType.values.firstWhere(
-          (GameLogType ty) => ty.toString() == data[_TYPE],
-          orElse: () => GameLogType.Message)
-      ..message = getString(data[_MESSAGE])
-      ..eventTimeInternal = getNum(data[_EVENT_TIME])
-      ..displayName = getString(data[NAME])
-      ..period = newPeriod.toBuilder()
-      ..score = data.containsKey(GameScore.PTS_FOR)
-          ? GameScore.fromJSON(data)
-          : scoreBuilder;
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(GameLog.serializer, this);
   }
+
+  static GameLog fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(GameLog.serializer, jsonData);
+  }
+
+  static Serializer<GameLog> get serializer => _$gameLogSerializer;
 
   String initials() {
     return displayName.splitMapJoin(" ",
@@ -46,34 +60,6 @@ abstract class GameLog implements Built<GameLog, GameLogBuilder> {
 
   TZDateTime get eventTime {
     return new TZDateTime.fromMillisecondsSinceEpoch(local, eventTimeInternal);
-  }
-
-  /*
-  set eventTime(TZDateTime time) {
-    _eventTime = time.millisecondsSinceEpoch;
-  }
-  */
-
-  static const String _TYPE = 'type';
-  static const String _MESSAGE = 'message';
-  static const String _EVENT_TIME = 'time';
-  static const String _PERIOD = 'period';
-
-  void _fromJSON(String uid, Map<String, dynamic> data) {}
-
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = {};
-    ret[_TYPE] = type.toString();
-    ret[_MESSAGE] = message;
-    ret[_EVENT_TIME] = eventTimeInternal;
-    ret[NAME] = displayName;
-    if (period != null) {
-      ret[_PERIOD] = period.toIndex();
-    }
-    if (score != null) {
-      score.toJSON(ret);
-    }
-    return ret;
   }
 
   String toString() {

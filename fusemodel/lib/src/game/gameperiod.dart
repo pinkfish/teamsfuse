@@ -1,10 +1,28 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
 import '../common.dart';
+import '../serializer.dart';
 
 part 'gameperiod.g.dart';
 
-enum GamePeriodType { Break, Overtime, Penalty, Regulation, OvertimeBreak }
+class GamePeriodType extends EnumClass {
+  static Serializer<GamePeriodType> get serializer =>
+      _$gamePeriodTypeSerializer;
+
+  static const GamePeriodType Break = _$break;
+  static const GamePeriodType Overtime = _$overtime;
+  static const GamePeriodType Penalty = _$penalty;
+  static const GamePeriodType Regulation = _$regulation;
+  static const GamePeriodType OvertimeBreak = _$overtimeBreak;
+
+  const GamePeriodType._(String name) : super(name);
+
+  static BuiltSet<GamePeriodType> get values => _$GamePeriodTypeValues;
+
+  static GamePeriodType valueOf(String name) => _$GamePeriodTypeValueOf(name);
+}
 
 abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
   GamePeriodType get type;
@@ -14,9 +32,6 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
   factory GamePeriod([updates(GamePeriodBuilder b)]) = _$GamePeriod;
 
   static const String _BREAK = "--";
-
-  //bool isEqualTo(GamePeriod cmp) =>
-  //    cmp.periodNumber == periodNumber && cmp.type == type;
 
   String toIndex() {
     if (periodNumber > 0) {
@@ -124,41 +139,20 @@ abstract class GamePeriodTime
         return new Duration(milliseconds: currentOffsetInternal - diff);
       }
     }
-    /*
-    if (currentOffsetInternal == null) {
-      if (timeCountUp) {
-        currentOffsetInternal = 0;
-      } else {
-        currentOffsetInternal = defaultPeriodDuration;
-      }
-    }
-    */
+
     return Duration(milliseconds: currentOffsetInternal);
   }
 
-  static const String _START_TIME = 'start';
-  static const String _OFFSET = 'offset';
-  static const String _TIMECOUNTUP = 'countUp';
-  static const String _DEFAULTDURATION = 'defaultDuration';
-
-  static GamePeriodTimeBuilder fromJSON(Map<dynamic, dynamic> data) {
-    GamePeriodTimeBuilder builder = GamePeriodTimeBuilder();
-    builder.currentPeriodStartInternal = getNum(data[_START_TIME]);
-    builder.currentOffsetInternal = getNum(data[_OFFSET]);
-    builder.timeCountUp = getBool(data[_TIMECOUNTUP]);
-    builder.defaultPeriodDurationInternal = getNum(data[_DEFAULTDURATION]);
-    return builder;
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(GamePeriodTime.serializer, this);
   }
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = {};
-
-    ret[_START_TIME] = currentPeriodStartInternal;
-    ret[_DEFAULTDURATION] = defaultPeriodDurationInternal;
-    ret[_TIMECOUNTUP] = timeCountUp;
-    ret[_OFFSET] = currentOffsetInternal;
-    return ret;
+  static GamePeriodTime fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(GamePeriodTime.serializer, jsonData);
   }
+
+  static Serializer<GamePeriodTime> get serializer =>
+      _$gamePeriodTimeSerializer;
 
   Duration get currentOffset => Duration(milliseconds: currentOffsetInternal);
   Duration get defaultPeriodDuration =>

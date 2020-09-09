@@ -195,8 +195,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
         DateTime start = new DateTime.now();
         // If recovered this way it is only local data.
         var loaded = ClubLoaded.fromMap(json);
-        print(
-            'End clubs ${start.difference(new DateTime.now())} ${loaded.clubs.length}');
+        print('End clubs  ${loaded.clubs.length}');
         clubTrace.stop();
         return loaded;
       default:

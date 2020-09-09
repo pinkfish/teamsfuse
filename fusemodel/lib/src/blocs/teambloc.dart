@@ -246,8 +246,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
         TraceProxy teamsTrace =
             coordinationBloc.analyticsSubsystem.newTrace("teamData");
         teamsTrace.start();
-        print(
-            'Start teams ${coordinationBloc.start.difference(new DateTime.now())}');
+        print('End teams ');
         var loaded = TeamLoaded.fromMap(json);
         teamsTrace.stop();
         return loaded;

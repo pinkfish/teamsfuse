@@ -27,17 +27,24 @@ class GameBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class GameState with GameMixin {
-  @override
-  BuiltMap<String, BuiltMap<String, Game>> get gamesByTeam;
-  @override
-  BuiltMap<String, GameSharedData> get sharedGameData;
   DateTime get start;
   DateTime get end;
   GameBlocStateType get type;
 
+  @override
+  BuiltMap<String, Game> get gamesByTeamToSerialize;
+  @override
+  BuiltMap<String, GameSharedData> get sharedGameDataToSerialize;
+
   // Don't save this stuff
   @BuiltValueField(serialize: false)
   bool get loadedFirestore;
+  @override
+  @BuiltValueField(serialize: false)
+  BuiltMap<String, BuiltMap<String, Game>> get gamesByTeam;
+  @override
+  @BuiltValueField(serialize: false)
+  BuiltMap<String, GameSharedData> get sharedGameData;
 
   static GameStateBuilder fromState(GameState state, GameStateBuilder builder) {
     return builder
@@ -48,8 +55,10 @@ abstract class GameState with GameMixin {
       ..loadedFirestore = state.loadedFirestore;
   }
 
-  static void initializeStateBuilder(GameStateBuilder b) =>
-      b..loadedFirestore = false;
+  static void initializeStateBuilder(GameStateBuilder b) => b
+    ..loadedFirestore = false
+    ..start = new DateTime.now().subtract(new Duration(days: 60)).toUtc()
+    ..end = new DateTime.now().add(new Duration(days: 240)).toUtc();
 
   Map<String, dynamic> toMap();
 }
@@ -113,7 +122,7 @@ abstract class GameLoaded
 }
 
 ///
-/// The game bloc that is unitialized.
+/// The game bloc that is uninitialized.
 ///
 abstract class GameUninitialized
     with GameMixin
@@ -123,7 +132,10 @@ abstract class GameUninitialized
       _$GameUninitialized;
 
   static GameUninitializedBuilder fromState(GameState state) {
-    return GameState.fromState(state, GameUninitializedBuilder());
+    return GameUninitializedBuilder()
+      ..gamesByTeam.clear()
+      ..sharedGameData.clear()
+      ..loadedFirestore = false;
   }
 
   /// Defaults for the state.  Always default to no games loaded.

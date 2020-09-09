@@ -1,8 +1,10 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
 import '../club.dart';
 import '../common.dart';
+import '../serializer.dart';
 
 part 'team.g.dart';
 
@@ -30,9 +32,11 @@ abstract class Team implements Built<Team, TeamBuilder> {
   String get league;
   Sport get sport;
   String get uid;
+  @nullable
   String get photoUrl;
   bool get archived;
   // The user id in this team.
+  @BuiltValueField(serialize: false)
   String get userUid;
 
   /// If this is not null signifies that this team is a member of a club.
@@ -47,7 +51,11 @@ abstract class Team implements Built<Team, TeamBuilder> {
   bool get trackAttendenceInternal;
 
   /// This is a list of user ids, not player Ids.
-  BuiltSet<String> get admins;
+  @BuiltValueField(wireName: ADMINS)
+  BuiltMap<String, bool> get adminsData;
+
+  @memoized
+  BuiltSet<String> get admins => BuiltSet.of(adminsData.keys);
 
   Team._();
   factory Team([updates(TeamBuilder b)]) = _$Team;
@@ -64,39 +72,17 @@ abstract class Team implements Built<Team, TeamBuilder> {
   static const String USER = 'users';
 
   /// Deserialize the team.
-  static TeamBuilder fromJSON(
-      String userUid, String teamUid, Map<String, dynamic> data,
-      {bool publicOnly = false}) {
-    TeamBuilder builder = TeamBuilder();
-    builder.publicOnly = publicOnly;
-    builder.uid = teamUid;
-
-    onTeamUpdated(
-        builder: builder, teamUid: teamUid, userUid: userUid, data: data);
-    return builder;
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(Team.serializer, this);
   }
 
-  /// Serialize the team.
-  Map<String, dynamic> toJSON() {
-    assert(!publicOnly);
-    Map<String, dynamic> ret = new Map<String, dynamic>();
-    ret[NAME] = name;
-    ret[ARRIVALTIME] = arriveEarlyInternal;
-    ret[_CURRENTSEASON] = currentSeason;
-    ret[_LEAGUE] = league;
-    ret[_GENDER] = gender.toString();
-    ret[_SPORT] = sport.toString();
-    ret[PHOTOURL] = photoUrl;
-    ret[_TRACKATTENDENDCE] = trackAttendenceInternal;
-    ret[CLUBUID] = clubUid;
-    ret[ARCHIVED + "." + userUid] = archived;
-    Map<String, bool> adminMap = new Map<String, bool>();
-    admins.forEach((String key) {
-      adminMap[key] = true;
-    });
-    ret[ADMINS] = adminMap;
-    return ret;
+  static Team fromMap(String userUid, Map<String, dynamic> jsonData) {
+    return serializers
+        .deserializeWith(Team.serializer, jsonData)
+        .rebuild((b) => b..userUid = userUid);
   }
+
+  static Serializer<Team> get serializer => _$teamSerializer;
 
   static void onTeamUpdated(
       {TeamBuilder builder,
@@ -127,13 +113,11 @@ abstract class Team implements Built<Team, TeamBuilder> {
         getBool(data[_TRACKATTENDENDCE], defaultValue: true);
     if (!builder.publicOnly) {
       if (data[ADMINS] != null) {
-        List<String> newAdmin = new List<String>();
         data[ADMINS].forEach((dynamic key, dynamic data) {
           if (data is bool && data) {
-            newAdmin.add(key as String);
+            builder.adminsData[key] = true;
           }
         });
-        builder.admins.addAll(newAdmin);
       }
     }
   }

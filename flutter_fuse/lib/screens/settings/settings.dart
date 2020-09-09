@@ -66,7 +66,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             cubit: singleProfileBloc,
             builder:
                 (BuildContext vontext, SingleProfileState singleProfileState) {
-              if (singleProfileState is SingleProfileUnitialized) {
+              if (singleProfileState is SingleProfileUninitialized) {
                 return new SavingOverlay(
                   saving: true,
                   child: new Text(Messages.of(context).title),

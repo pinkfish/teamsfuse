@@ -1,101 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/src/async_hydrated_bloc/asynchydratedbloc.dart';
 import 'package:meta/meta.dart';
 
 import '../coordinationbloc.dart';
 import '../playerbloc.dart';
-
-abstract class SingleProfileState extends Equatable {
-  final FusedUserProfile profile;
-
-  SingleProfileState({@required this.profile});
-
-  @override
-  List<Object> get props => [profile];
-}
-
-///
-/// We have a Profile, default state.
-///
-class SingleProfileUnitialized extends SingleProfileState {
-  SingleProfileUnitialized() : super(profile: null);
-
-  @override
-  String toString() {
-    return 'SingleProfileLoaded{}';
-  }
-}
-
-///
-/// We have a Profile, default state.
-///
-class SingleProfileLoaded extends SingleProfileState {
-  SingleProfileLoaded({@required FusedUserProfile profile})
-      : super(profile: profile);
-
-  @override
-  String toString() {
-    return 'SingleProfileLoaded{}';
-  }
-}
-
-///
-/// Saving operation in progress.
-///
-class SingleProfileSaving extends SingleProfileState {
-  SingleProfileSaving({@required FusedUserProfile profile})
-      : super(profile: profile);
-
-  @override
-  String toString() {
-    return 'SingleProfileSaving{}';
-  }
-}
-
-///
-/// Saving operation failed (goes back to loaded for success).
-///
-class SingleProfileSaveFailed extends SingleProfileState {
-  final Error error;
-
-  SingleProfileSaveFailed(
-      {@required FusedUserProfile profile, @required this.error})
-      : super(profile: profile);
-
-  @override
-  String toString() {
-    return 'SingleProfileSaveFailed{}';
-  }
-}
-
-///
-/// Saving operation done.
-///
-class SingleProfileSaveDone extends SingleProfileState {
-  SingleProfileSaveDone({@required FusedUserProfile profile})
-      : super(profile: profile);
-
-  @override
-  String toString() {
-    return 'SingleProfileSaveDone{}';
-  }
-}
-
-///
-/// Profile got deleted.
-///
-class SingleProfileDeleted extends SingleProfileState {
-  SingleProfileDeleted() : super(profile: null);
-
-  @override
-  String toString() {
-    return 'SingleProfileDeleted{}';
-  }
-}
+import 'data/singleprofilebloc.dart';
 
 abstract class SingleProfileEvent extends Equatable {}
 
@@ -131,7 +44,8 @@ class _SingleProfileDeleted extends SingleProfileEvent {
 ///
 /// Bloc to handle updates and state of a specific Profile.
 ///
-class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
+class SingleProfileBloc
+    extends AsyncHydratedBloc<SingleProfileEvent, SingleProfileState> {
   final CoordinationBloc coordinationBloc;
   final PlayerBloc playerBloc;
   final String profileUid;
@@ -141,7 +55,8 @@ class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
   SingleProfileBloc(
       {@required this.coordinationBloc,
       @required this.profileUid,
-      @required this.playerBloc}) : super(SingleProfileUnitialized()) {
+      @required this.playerBloc})
+      : super(SingleProfileUninitialized(), profileUid) {
     _profileSub = coordinationBloc.authenticationBloc.userAuth
         .getProfileStream(profileUid)
         .listen((FusedUserProfile profile) {
@@ -163,7 +78,9 @@ class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
   Stream<SingleProfileState> mapEventToState(SingleProfileEvent event) async* {
     if (event is _SingleProfileNewProfile) {
       if (event.profile != state.profile) {
-        yield SingleProfileLoaded(profile: event.profile);
+        yield (SingleProfileLoaded.fromState(state)
+              ..profile = event.profile.toBuilder())
+            .build();
       }
     }
 
@@ -182,11 +99,44 @@ class SingleProfileBloc extends Bloc<SingleProfileEvent, SingleProfileState> {
         }
         await coordinationBloc.authenticationBloc.userAuth
             .updateProfile(profileUid, profile);
-        yield SingleProfileSaveDone(profile: profile);
-        yield SingleProfileLoaded(profile: profile);
+        yield (SingleProfileSaveDone.fromState(state)
+              ..profile = profile.toBuilder())
+            .build();
+        yield (SingleProfileLoaded.fromState(state)
+              ..profile = profile.toBuilder())
+            .build();
       } catch (e) {
-        yield SingleProfileSaveFailed(profile: state.profile, error: e);
+        yield (SingleProfileSaveFailed.fromState(state)..error = e).build();
       }
     }
+  }
+
+  @override
+  SingleProfileState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return SingleProfileUninitialized();
+    }
+
+    SingleProfileBlocStateType type =
+        SingleProfileBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case SingleProfileBlocStateType.Uninitialized:
+        return SingleProfileUninitialized();
+      case SingleProfileBlocStateType.Loaded:
+        return SingleProfileLoaded.fromMap(json);
+      case SingleProfileBlocStateType.Deleted:
+        return SingleProfileDeleted.fromMap(json);
+      case SingleProfileBlocStateType.SaveFailed:
+        return SingleProfileSaveFailed.fromMap(json);
+      case SingleProfileBlocStateType.Saving:
+        return SingleProfileSaving.fromMap(json);
+      case SingleProfileBlocStateType.SaveDone:
+        return SingleProfileSaveDone.fromMap(json);
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(SingleProfileState state) {
+    return state.toMap();
   }
 }

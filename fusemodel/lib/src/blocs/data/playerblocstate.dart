@@ -44,7 +44,7 @@ abstract class PlayerState with PlayerMixin {
     return builder
       ..players = state.players.toBuilder()
       ..extraPlayers = state.extraPlayers.toBuilder()
-      ..me = state.me.toBuilder()
+      ..me = state.me?.toBuilder()
       ..loadedFirestore = state.loadedFirestore;
   }
 

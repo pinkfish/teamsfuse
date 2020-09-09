@@ -1,38 +1,93 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
-import 'package:collection/collection.dart';
+import 'package:built_value/serializer.dart';
 
+import '../serializer.dart';
 import 'gameperiod.dart';
 import 'gameresultshareddetails.dart';
 import 'gamescore.dart';
 
 part 'gameresult.g.dart';
 
-enum GameResult { Win, Loss, Tie, Unknown }
-enum GameInProgress { NotStarted, InProgress, Final }
-enum GameDivisionsType { Halves, Quarters, Thirds }
+class GameResult extends EnumClass {
+  static Serializer<GameResult> get serializer => _$gameResultSerializer;
 
+  static const GameResult Win = _$win;
+  static const GameResult Loss = _$loss;
+  static const GameResult Tie = _$penalty;
+  static const GameResult Unknown = _$unknown;
+
+  const GameResult._(String name) : super(name);
+
+  static BuiltSet<GameResult> get values => _$GameResultalues;
+
+  static GameResult valueOf(String name) => _$GameResultValueOf(name);
+}
+
+class GameInProgress extends EnumClass {
+  static Serializer<GameInProgress> get serializer =>
+      _$gameInProgressSerializer;
+
+  static const GameInProgress NotStarted = _$NotStarted;
+  static const GameInProgress InProgress = _$InProgress;
+  static const GameInProgress Final = _$Final;
+
+  const GameInProgress._(String name) : super(name);
+
+  static BuiltSet<GameInProgress> get values => _$GameInProgressValues;
+
+  static GameInProgress valueOf(String name) => _$GameInProgressValueOf(name);
+
+  static List<GameInProgress> valuesByIndex = [
+    GameInProgress.NotStarted,
+    GameInProgress.InProgress,
+    GameInProgress.Final,
+  ];
+
+  static int getIndex(GameInProgress g) => valuesByIndex.indexOf(g);
+}
+
+class GameDivisionsType extends EnumClass {
+  static Serializer<GameDivisionsType> get serializer =>
+      _$gameDivisionsTypeSerializer;
+
+  static const GameDivisionsType Halves = _$Halves;
+  static const GameDivisionsType Quarters = _$Quarters;
+  static const GameDivisionsType Thirds = _$Thirds;
+
+  const GameDivisionsType._(String name) : super(name);
+
+  static BuiltSet<GameDivisionsType> get values => _$GameDivisionsTypeValues;
+
+  static GameDivisionsType valueOf(String name) =>
+      _$GameDivisionsTypeValueOf(name);
+}
+
+///
+/// The result of the game per period.
+///
 abstract class GameResultPerPeriod
     implements Built<GameResultPerPeriod, GameResultPerPeriodBuilder> {
   GamePeriod get period;
+
   GameScore get score;
 
   GameResultPerPeriod._();
+
   factory GameResultPerPeriod([updates(GameResultPerPeriodBuilder b)]) =
       _$GameResultPerPeriod;
 
-  static GameResultPerPeriodBuilder fromJSON(
-      GamePeriod period, Map<dynamic, dynamic> data) {
-    return GameResultPerPeriodBuilder()
-      ..period = period.toBuilder()
-      ..score = GameScore.fromJSON(data);
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(GameResultPerPeriod.serializer, this);
   }
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = {};
-    score.toJSON(ret);
-    return ret;
+  static GameResultPerPeriod fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(
+        GameResultPerPeriod.serializer, jsonData);
   }
+
+  static Serializer<GameResultPerPeriod> get serializer =>
+      _$gameResultPerPeriodSerializer;
 }
 
 abstract class GameResultDetails
@@ -43,94 +98,38 @@ abstract class GameResultDetails
   //CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> get scores =
   //    new CanonicalizedMap((GamePeriod p) => p.toIndex());
   GameResult get result;
+
   GameInProgress get inProgress;
+
   GamePeriod get currentPeriod; // Null until the game started.
   GameDivisionsType get divisions; // = GameDivisionsType.Halves;
   GamePeriodTime get time;
 
   GameResultDetails._();
+
   factory GameResultDetails([updates(GameResultDetailsBuilder b)]) =
       _$GameResultDetails;
 
-  static const String _SCORES = 'scores';
-  static const String _RESULT = 'result';
-  static const String _INPROGRESS = 'inProgress';
-  static const String _PERIOD = 'period';
-  static const String _DIVISIONS = 'divisions';
-  static const String _TIME_DETAILS = 'timeDetails';
+  /// Defaults for the state.  Always default to no games loaded.
+  static void _initializeBuilder(GameResultDetailsBuilder b) =>
+      b..currentPeriod = GamePeriod.regulation.toBuilder();
 
-  static GameResultDetailsBuilder fromJSON(Map<dynamic, dynamic> data) {
-    GameResultDetailsBuilder builder = GameResultDetailsBuilder();
-    if (data.containsKey(_SCORES)) {
-      Map<dynamic, dynamic> scoreData = data[_SCORES];
-      CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> newResults =
-          new CanonicalizedMap((GamePeriod p) => p.toIndex());
-      scoreData.forEach((dynamic periodStd, dynamic data) {
-        GamePeriod period = GamePeriod.fromIndex(periodStd);
-        GameResultPerPeriod newResult =
-            GameResultPerPeriod.fromJSON(period, data).build();
-        builder.scores[period] = newResult;
-        //newResults[period] = newResult;
-      });
-      //scores = newResults;
-    }
-    if (data[_INPROGRESS] == null) {
-      builder.inProgress = GameInProgress.NotStarted;
-    } else {
-      String str = data[_INPROGRESS];
-      if (!str.startsWith('GameInProgress')) {
-        builder.inProgress = GameInProgress.NotStarted;
-      } else {
-        builder.inProgress = GameInProgress.values
-            .firstWhere((e) => e.toString() == data[_INPROGRESS]);
-      }
-    }
-    builder.result = GameResult.values.firstWhere(
-        (e) => e.toString() == data[_RESULT],
-        orElse: () => GameResult.Unknown);
-    if (builder.result == null) {
-      builder.result = GameResult.Unknown;
-    }
-    if (data[_PERIOD] is String) {
-      builder.currentPeriod = GamePeriod.fromIndex(data[_PERIOD]).toBuilder();
-    } else {
-      builder.currentPeriod = GamePeriod.regulation.toBuilder();
-    }
-    if (data.containsKey(_DIVISIONS) && data[_DIVISIONS] != null) {
-      builder.divisions = GameDivisionsType.values
-          .firstWhere((e) => e.toString() == data[_DIVISIONS]);
-    } else {
-      builder.divisions = GameDivisionsType.Halves;
-    }
-    if (data.containsKey(_TIME_DETAILS)) {
-      builder.time = GamePeriodTime.fromJSON(data[_TIME_DETAILS]);
-    } else {
-      builder.time = GamePeriodTimeBuilder()..timeCountUp = false;
-    }
-    return builder;
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(GameResultDetails.serializer, this);
   }
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = {};
-    Map<String, dynamic> retScores = {};
-    for (GameResultPerPeriod p in scores.values) {
-      Map<String, dynamic> periodExtra = p.toJSON();
-      retScores[p.period.toIndex()] = periodExtra;
-    }
-    ret[_SCORES] = retScores;
-    ret[_RESULT] = result.toString();
-    ret[_INPROGRESS] = inProgress.toString();
-    ret[_PERIOD] = currentPeriod?.toIndex() ?? "";
-    ret[_TIME_DETAILS] = time.toJSON();
-    ret[_DIVISIONS] =
-        divisions?.toString() ?? GameDivisionsType.Halves.toString();
-    return ret;
+  static GameResultDetails fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(GameResultDetails.serializer, jsonData);
   }
+
+  static Serializer<GameResultDetails> get serializer =>
+      _$gameResultDetailsSerializer;
 
   ///
   /// Result for the regulation period.
   /// (can be null!)
   ///
+  @memoized
   GameResultPerPeriod get regulationResult =>
       scores.containsKey(GamePeriod.regulation)
           ? scores[GamePeriod.regulation]
@@ -140,6 +139,7 @@ abstract class GameResultDetails
   /// Result for the overtime period.
   /// (can be null!)
   ///
+  @memoized
   GameResultPerPeriod get overtimeResult =>
       scores.containsKey(GamePeriod.overtime)
           ? scores[GamePeriod.overtime]
@@ -149,6 +149,7 @@ abstract class GameResultDetails
   /// Result for the penalty period.
   /// (can be null!)
   ///
+  @memoized
   GameResultPerPeriod get penaltyResult =>
       scores.containsKey(GamePeriod.penalty)
           ? scores[GamePeriod.penalty]
@@ -157,6 +158,7 @@ abstract class GameResultDetails
   ///
   /// If this game is currently finished.
   ///
+  @memoized
   bool get isGameFinished => inProgress == GameInProgress.Final;
 
   @override

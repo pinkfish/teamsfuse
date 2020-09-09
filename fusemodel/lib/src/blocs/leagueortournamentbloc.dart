@@ -142,8 +142,7 @@ class LeagueOrTournamentBloc
             .newTrace("leagueOrTournamentData");
         leagueTrace.start();
         var loaded = LeagueOrTournamentLoaded.fromMap(json);
-        print(
-            'End LeagueOrTournament ${coordinationBloc.start.difference(new DateTime.now())} ${loaded.leagueOrTournaments.length}');
+        print('End LeagueOrTournament ${loaded.leagueOrTournaments.length}');
         leagueTrace.stop();
         return loaded;
       default:

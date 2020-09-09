@@ -70,13 +70,13 @@ class UserAuthImpl {
         // Create a 'me' user.
         PlayerBuilder player = new PlayerBuilder();
         player.name = userData.profile.displayName;
-        PlayerUserBuilder playerUser = new PlayerUserBuilder();
-        playerUser.userUid = user.uid;
+        PlayerUserInternalBuilder playerUser = new PlayerUserInternalBuilder();
         playerUser.relationship = Relationship.Me;
-        player.users[user.uid] = playerUser.build();
+        playerUser.added = true;
+        player.usersData[user.uid] = playerUser.build();
         wrapper
             .collection(PLAYERS_COLLECTION)
-            .add(player.build().toJSON(includeUsers: true));
+            .add(player.build().toMap(includeUsers: true));
         await signIn(userData);
         return newData;
       });
@@ -199,6 +199,7 @@ class UserAuthImpl {
     userProfile.emailOnUpdates = true;
     userProfile.emailUpcomingGame = true;
     userProfile.notifyOnlyForGames = false;
+    userProfile.uid = input.uid;
 
     UserData user = new UserData((b) => b
       ..email = input.email

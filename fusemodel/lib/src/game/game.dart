@@ -1,14 +1,30 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 import 'package:timezone/timezone.dart';
 
-import '../common.dart';
+import '../serializer.dart';
 import 'gameresult.dart';
 import 'gamesharedata.dart';
 
 part 'game.g.dart';
 
-enum Attendance { Yes, No, Maybe }
+///
+/// Tracking the attendance for the game.
+///
+class Attendance extends EnumClass {
+  static Serializer<Attendance> get serializer => _$attendanceSerializer;
+
+  static const Attendance Yes = _$Yes;
+  static const Attendance No = _$No;
+  static const Attendance Maybe = _$Maybe;
+
+  const Attendance._(String name) : super(name);
+
+  static BuiltSet<Attendance> get values => _$AttendanceValues;
+
+  static Attendance valueOf(String name) => _$AttendanceValueOf(name);
+}
 
 ///
 /// This is the game details and it is kept in a team specific format, so that
@@ -35,150 +51,36 @@ abstract class Game implements Built<Game, GameBuilder> {
   Game._();
   factory Game([updates(GameBuilder b)]) = _$Game;
 
-  static GameBuilder fromJSON(String teamContext, String gameUid,
-      Map<String, dynamic> data, GameSharedData inputSharedData) {
-    assert(inputSharedData != null);
-
-    GameBuilder builder = GameBuilder()
-      ..leagueOpponentUid = data[LEAGUEOPPONENTUID]
-      ..uid = gameUid
-      ..sharedDataUid = getString(data[SHAREDDATAUID])
-      ..arriveTime = data[ARRIVALTIME] == null || getNum(data[ARRIVALTIME]) == 0
-          ? inputSharedData.time
-          : getNum(data[ARRIVALTIME])
-      ..sharedData = inputSharedData.toBuilder()
-      ..seasonUid = getString(data[SEASONUID])
-      ..uniform = getString(data[_UNIFORM])
-      ..teamUid = getString(data[TEAMUID])
-      ..opponentUids = BuiltList.of([getString(data[OPPONENTUID])]).toBuilder()
-      ..arriveTime = getNum(data[ARRIVALTIME])
-      ..notes = getString(data[NOTES])
-      ..result =
-          GameResultDetails.fromJSON(data[RESULT] as Map<dynamic, dynamic>)
-      ..trackAttendance =
-          data[_TRACKATTENDANCE] == null || getBool(data[_TRACKATTENDANCE])
-      ..seriesId = getString(data[_SERIESID]);
-    builder.allTeamUids.add(builder.teamUid);
-    builder.allTeamUids.add(builder.opponentUids[0]);
-
-    // Work out attendance for our team only.
-    Map<String, Attendance> newAttendanceData = new Map<String, Attendance>();
-    Map<dynamic, dynamic> attendanceData =
-        data[ATTENDANCE] as Map<dynamic, dynamic>;
-    if (attendanceData != null) {
-      for (String key in attendanceData.keys) {
-        if (attendanceData[key] is Map &&
-            attendanceData[key].containsKey(ATTENDANCEVALUE)) {
-          if (attendanceData[key][ATTENDANCEVALUE] is String &&
-              attendanceData[key][ATTENDANCEVALUE].startsWith("Attendance")) {
-            builder.attendance[key.toString()] = Attendance.values.firstWhere(
-                (e) => e.toString() == attendanceData[key][ATTENDANCEVALUE]);
-          }
-        }
-      }
-    }
-    return builder;
-  }
-
   bool get homegame => sharedData.officialResults.homeTeamLeagueUid == teamUid;
-  /*
-  set homegame(bool val) => val
-      ? sharedData.leagueUid != null
-          ? sharedData.officialResults.homeTeamLeagueUid = teamUid
-          : null
-      : sharedData.leagueUid != null
-          ? sharedData.officialResults.homeTeamLeagueUid =
-              opponentUids.length > 0 ? opponentUids[0] : ""
-          : null;
-          */
 
   TZDateTime get tzArriveTime => new TZDateTime.fromMillisecondsSinceEpoch(
       sharedData.location, arriveTime);
 
   static const String SEASONUID = 'seasonUid';
-  static const String _UNIFORM = 'uniform';
   static const String RESULT = 'result';
   static const String ATTENDANCE = 'attendance';
   static const String ATTENDANCEVALUE = 'value';
   static const String TEAMUID = 'teamUid';
-  static const String _SERIESID = 'seriesId';
-  static const String _TRACKATTENDANCE = 'trackAttendance';
   static const String OPPONENTUID = 'opponentUid';
   static const String SHAREDDATAUID = 'sharedDataUid';
   static const String LEAGUEOPPONENTUID = 'leagueOpponentUid';
   static const String GAMESHAREDDATA = 'sharedData';
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = new Map<String, dynamic>();
-    ret[ARRIVALTIME] = arriveTime;
-    ret[NOTES] = notes;
-    ret[SEASONUID] = seasonUid;
-    ret[_UNIFORM] = uniform;
-    ret[LEAGUEOPPONENTUID] = leagueOpponentUid;
-    // My teamuid.
-    ret[TEAMUID] = teamUid;
-    // Set the team specific values.
-    ret[NOTES] = notes;
-    ret[_TRACKATTENDANCE] = trackAttendance;
-    ret[RESULT] = result.toJSON();
-    ret[SHAREDDATAUID] = sharedDataUid;
-    if (opponentUids.length > 0) {
-      ret[OPPONENTUID] = opponentUids[0];
-    }
+  /// Defaults for the state.  Always default to no games loaded.
+  static void _initializeBuilder(GameBuilder b) => b..trackAttendance = true;
 
-    ret[_SERIESID] = seriesId;
-    attendance.forEach((String key, Attendance value) {
-      Map<String, dynamic> attendanceInner = new Map<String, dynamic>();
-      attendanceInner[ATTENDANCEVALUE] = value.toString();
-      // Only update the attendence for our team.
-      ret[ATTENDANCE + "." + key] = attendanceInner;
-    });
-
-    return ret;
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(Game.serializer, this);
   }
 
-  /*
-  void updateLogs(List<GameLog> logs) {
-    _gameLogs = logs;
-    _updateThisLogGame.add(_gameLogs);
+  static Game fromMap(
+      Map<String, dynamic> jsonData, GameSharedData sharedData) {
+    return serializers
+        .deserializeWith(Game.serializer, jsonData)
+        .rebuild((b) => b..sharedData = sharedData.toBuilder());
   }
 
-  Future<void> updateFirestore(bool sharedData) {
-    return UserDatabaseData.instance.updateModel
-        .updateFirestoreGame(this, sharedData);
-  }
-
-  Future<void> updateFirestoreAttendence(String playerUid, Attendance attend) {
-    return UserDatabaseData.instance.updateModel
-        .updateFirestoreGameAttendence(this, playerUid, attend);
-  }
-
-  Future<void> updateFirestoreResult(GameResultDetails result) {
-    return UserDatabaseData.instance.updateModel
-        .updateFirestoreGameResult(this, result);
-  }
-
-  Future<void> deleteFromFirestore() {
-    return UserDatabaseData.instance.updateModel.deleteFirestoreGame(this);
-  }
-
-  Future<String> addGameLog(GameLog log) {
-    return UserDatabaseData.instance.updateModel.addFirestoreGameLog(this, log);
-  }
-
-  Future<List<GameLog>> loadGameLogs() async {
-    if (_gameLogs != null) {
-      return _gameLogs;
-    }
-    GameLogReturnData data =
-        UserDatabaseData.instance.updateModel.readGameLogs(this);
-    _gameLogSubcription = data.myLogStream;
-    List<GameLog> logs = await data.logs;
-    _gameLogs = logs;
-    _updateThisLogGame.add(_gameLogs);
-    return logs;
-  }
-  */
+  static Serializer<Game> get serializer => _$gameSerializer;
 
   @override
   String toString() {
@@ -188,16 +90,4 @@ abstract class Game implements Built<Game, GameBuilder> {
         'teamUid: $teamUid, uniform: $uniform, seriesId: $seriesId, '
         'result: $result, attendance: $attendance, sharedData: $sharedData}';
   }
-
-  /// We are hashed based on the uid.
-  //@override
-  //int get hashCode => uid.hashCode;
-
-  ///
-  /// Equal if the uid is the same.  Compare to string to handle removal from
-  /// sets
-  ///
-  //@override
-  //bool operator ==(Object other) =>
-  //   other is Game && other.uid == uid || other is String && uid == other;
 }

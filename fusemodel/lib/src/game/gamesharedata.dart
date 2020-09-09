@@ -1,12 +1,28 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 import 'package:timezone/timezone.dart';
 
 import '../common.dart';
+import '../serializer.dart';
 import 'gameofficialresults.dart';
 
 part 'gamesharedata.g.dart';
 
-enum EventType { Game, Practice, Event }
+//  The event type.
+class EventType extends EnumClass {
+  static Serializer<EventType> get serializer => _$eventTypeSerializer;
+
+  static const EventType Game = _$game;
+  static const EventType Practice = _$practice;
+  static const EventType Event = _$event;
+
+  const EventType._(String name) : super(name);
+
+  static BuiltSet<EventType> get values => _$EventTypeValues;
+
+  static EventType valueOf(String name) => _$EventTypeValueOf(name);
+}
 
 abstract class GamePlace implements Built<GamePlace, GamePlaceBuilder> {
   String get name;
@@ -76,51 +92,16 @@ abstract class GameSharedData
 
   GameSharedData._();
   factory GameSharedData([updates(GameSharedDataBuilder b)]) = _$GameSharedData;
-
-  static GameSharedDataBuilder fromJSON(
-      String uid, Map<dynamic, dynamic> data) {
-    assert(uid != null);
-    GameSharedDataBuilder builder = GameSharedDataBuilder()
-      ..uid = uid
-      ..time = getNum(data[_TIME])
-      ..endTime = getNum(data[_ENDTIME])
-      ..timezone = getString(data[_TIMEZONE])
-      ..type = EventType.values.firstWhere((e) => e.toString() == data[TYPE],
-          orElse: () => EventType.Game)
-      ..place = GamePlace.fromJSON(data[_PLACE] as Map<dynamic, dynamic>)
-      ..name = getString(data[NAME])
-      ..leagueUid = data[_LEAGUEUID]
-      ..leagueDivisionUid = data[LEAGUEDIVISIONUID];
-    if (builder.endTime == 0) {
-      builder.endTime = builder.time;
-    }
-
-    if (data.containsKey(OFFICIALRESULT)) {
-      builder.officialResults =
-          GameOfficialResults.fromJSON(data[OFFICIALRESULT]);
-    } else {
-      builder.officialResults = GameOfficialResultsBuilder()
-        ..result = OfficialResult.NotStarted;
-    }
-
-    return builder;
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(GameSharedData.serializer, this);
   }
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> data = <String, dynamic>{};
-    data[_TIME] = time;
-    data[_ENDTIME] = endTime;
-    data[_PLACE] = place.toJSON();
-    data[TYPE] = type.toString();
-    data[NAME] = name;
-    data[_TIMEZONE] = timezone;
-    data[_LEAGUEUID] = leagueUid;
-    data[LEAGUEDIVISIONUID] = leagueDivisionUid;
-    if (officialResults != null) {
-      data[OFFICIALRESULT] = officialResults.toJSON();
-    }
-    return data;
+  static GameSharedData fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(GameSharedData.serializer, jsonData);
   }
+
+  static Serializer<GameSharedData> get serializer =>
+      _$gameSharedDataSerializer;
 
   Location get location {
     return getLocation(this.timezone);

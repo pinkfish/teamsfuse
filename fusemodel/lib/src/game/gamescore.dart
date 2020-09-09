@@ -1,6 +1,8 @@
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 
 import '../common.dart';
+import '../serializer.dart';
 
 part 'gamescore.g.dart';
 
@@ -13,21 +15,22 @@ abstract class GameScore implements Built<GameScore, GameScoreBuilder> {
   bool get intermediate;
 
   static const String PTS_FOR = 'ptsFor';
-  static const String _PTS_AGAINST = 'ptsAgainst';
-  static const String _INTERMEDIATE = 'intermediate';
 
-  static GameScoreBuilder fromJSON(Map<dynamic, dynamic> data) {
-    return GameScoreBuilder()
-      ..ptsAgainst = getNum(data[_PTS_AGAINST])
-      ..ptsFor = getNum(data[PTS_FOR])
-      ..intermediate = getBool(data[_INTERMEDIATE]);
+  /// Defaults for the state.  Always default to no games loaded.
+  static void _initializeBuilder(GameScoreBuilder b) => b
+    ..ptsFor = 0
+    ..ptsAgainst = 0
+    ..intermediate = false;
+
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(GameScore.serializer, this);
   }
 
-  void toJSON(Map<String, dynamic> data) {
-    data[PTS_FOR] = ptsFor;
-    data[_PTS_AGAINST] = ptsAgainst;
-    data[_INTERMEDIATE] = intermediate;
+  static GameScore fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(GameScore.serializer, jsonData);
   }
+
+  static Serializer<GameScore> get serializer => _$gameScoreSerializer;
 
   String toString() {
     return "GameScore[ ptsFor: $ptsFor, ptsAgainst: $ptsAgainst, intermediate $intermediate]";

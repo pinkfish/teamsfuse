@@ -49,23 +49,21 @@ class AsyncHydratedStorage implements AsyncStorage {
   /// return HydratedAesCipher(byteskey);
   /// ```
   AsyncHydratedStorage(this.boxName) : _box = null {
-    print(_box);
     _lock.synchronized(() async {
-      print("lock");
       // Use HiveImpl directly to avoid conflicts with existing Hive.init
       // https://github.com/hivedb/hive/issues/336
       hive = HiveImpl();
       Box<dynamic> box;
       if (isWeb) {
         box = await hive.openBox<dynamic>(
-          boxName,
+          "${runtimeType.toString()}.$boxName",
           encryptionCipher: encryptionCipher,
         );
       } else {
         final directory = storageDirectory ?? await getTemporaryDirectory();
         hive.init(directory.path);
         box = await hive.openBox<dynamic>(
-          boxName,
+          "${runtimeType.toString()}.$boxName",
           encryptionCipher: encryptionCipher,
         );
         await _migrate(directory, box);
@@ -83,7 +81,8 @@ class AsyncHydratedStorage implements AsyncStorage {
   }
 
   Future _migrate(Directory directory, Box box) async {
-    final file = File('${directory.path}/.${boxName}.json');
+    final file =
+        File('${directory.path}/.${runtimeType.toString()}.$boxName.json');
     if (await file.exists()) {
       try {
         final dynamic storageJson = json.decode(await file.readAsString());

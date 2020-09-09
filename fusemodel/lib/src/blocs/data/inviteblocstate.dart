@@ -28,7 +28,6 @@ class InviteBlocStateType extends EnumClass {
 @BuiltValue(instantiable: false)
 abstract class InviteState {
   BuiltMap<String, Invite> get invites;
-  String get uid;
   InviteBlocStateType get type;
 
   // Don't save this stuff
@@ -39,7 +38,6 @@ abstract class InviteState {
       InviteState state, InviteStateBuilder builder) {
     return builder
       ..invites = state.invites.toBuilder()
-      ..uid = state.uid
       ..loadedFirestore = false;
   }
 

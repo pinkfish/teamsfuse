@@ -15,7 +15,8 @@ class InProgressGamePicker extends StatelessWidget {
     this.listViewWidth = defaultListViewWidth,
   })  : assert(initialValue != null),
         scrollController = new ScrollController(
-          initialScrollOffset: ((initialValue.index) * itemExtent).toDouble(),
+          initialScrollOffset:
+              ((GameInProgress.getIndex(initialValue)) * itemExtent).toDouble(),
         ),
         _listViewHeight = 3 * itemExtent,
         super(key: key);
@@ -52,7 +53,8 @@ class InProgressGamePicker extends StatelessWidget {
   //
 
   void animateMove(GameInProgress valueToSelect) {
-    _animate(scrollController, (valueToSelect.index) * itemExtent);
+    _animate(
+        scrollController, GameInProgress.getIndex(valueToSelect) * itemExtent);
   }
 
   //
@@ -95,7 +97,7 @@ class InProgressGamePicker extends StatelessWidget {
               return new Container();
             }
             //define special style for selected (middle) element
-            GameInProgress value = GameInProgress.values[index - 1];
+            GameInProgress value = GameInProgress.valuesByIndex[index];
             final TextStyle itemStyle =
                 value == initialValue ? selectedStyle : defaultStyle;
 
@@ -126,7 +128,7 @@ class InProgressGamePicker extends StatelessWidget {
 
       if (_userStoppedScrolling(notification, scrollController)) {
         //center selected value
-        animateMove(GameInProgress.values[intValueInTheMiddle]);
+        animateMove(GameInProgress.valuesByIndex[intValueInTheMiddle]);
       }
 
       //update selection
@@ -138,7 +140,7 @@ class InProgressGamePicker extends StatelessWidget {
       } else if (intValueInTheMiddle >= GameInProgress.values.length) {
         intValueInTheMiddle = GameInProgress.values.length - 1;
       }
-      newValue = GameInProgress.values[intValueInTheMiddle];
+      newValue = GameInProgress.valuesByIndex[intValueInTheMiddle];
 
       onChanged(newValue);
     }

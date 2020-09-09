@@ -15,6 +15,7 @@ import 'blocs/data/seasonblocstate.dart';
 import 'blocs/data/teamblocstate.dart';
 import 'blocs/single/data/singleclubbloc.dart';
 import 'blocs/single/data/singleplayerbloc.dart';
+import 'blocs/single/data/singleprofilebloc.dart';
 import 'club.dart';
 import 'common.dart';
 import 'game.dart';
@@ -22,6 +23,7 @@ import 'invite.dart';
 import 'leagueortournament.dart';
 import 'message.dart';
 import 'player.dart';
+import 'serializer/gameperiodserializer.dart';
 import 'serializer/inviteserializer.dart';
 import 'serializer/timestampserializer.dart';
 import 'team.dart';
@@ -43,10 +45,18 @@ part 'serializer.g.dart';
   ClubLoaded,
   ClubState,
   ClubUninitialized,
+  EventType,
   Game,
   GameBlocStateType,
+  GameDivisionsType,
+  GameInProgress,
   GameLoaded,
+  GameLog,
+  GameLogType,
+  GameResult,
+  GameResultPerPeriod,
   GameState,
+  GamePeriodType,
   GameUninitialized,
   Invite,
   InviteType,
@@ -60,8 +70,14 @@ part 'serializer.g.dart';
   MessagesState,
   MessagesUninitialized,
   FusedUserProfile,
+  GameDivisionsType,
+  GameInProgress,
   GamePeriod,
+  GamePeriodType,
   GamePlace,
+  GameResult,
+  GameResultPerPeriod,
+  GameScore,
   GameSharedData,
   Gender,
   InviteToTeam,
@@ -78,16 +94,22 @@ part 'serializer.g.dart';
   LeagueOrTournamentBlocStateType,
   LeagueOrTournamentUninitialized,
   LeagueOrTournamentTeam,
+  MessageState,
+  OfficialResult,
   Opponent,
   Player,
   PlayerBlocStateType,
   PlayerLoaded,
   PlayerState,
   PlayerUninitialized,
+  PlayerUserInternal,
   ProfileBlocLoaded,
   ProfileBlocState,
   ProfileBlocStateType,
   ProfileBlocUninitialized,
+  Relationship,
+  RepeatData,
+  RepeatPeriod,
   RoleInTeam,
   Season,
   SeasonBlocStateType,
@@ -111,6 +133,14 @@ part 'serializer.g.dart';
   SinglePlayerSaving,
   SinglePlayerSaveFailed,
   SinglePlayerSaveDone,
+  SinglePlayerLoaded,
+  SingleProfileState,
+  SingleProfileBlocStateType,
+  SingleProfileUninitialized,
+  SingleProfileDeleted,
+  SingleProfileSaving,
+  SingleProfileSaveFailed,
+  SingleProfileSaveDone,
   Sport,
   Team,
   TeamLoaded,
@@ -123,5 +153,6 @@ part 'serializer.g.dart';
 final Serializers serializers = (_$serializers.toBuilder()
       ..add(TimestampSerializer())
       ..add(InviteSerializer())
+      ..add(GamePeriodSerializer())
       ..addPlugin(StandardJsonPlugin()))
     .build();

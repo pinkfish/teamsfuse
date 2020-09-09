@@ -35,27 +35,27 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
               game.teamUid;
         }
         gameBuilder.sharedData.uid = refShared.documentID;
-        tx.set(refShared, game.sharedData.toJSON());
+        tx.set(refShared, game.sharedData.toMap());
         gameBuilder.sharedDataUid = refShared.documentID;
         gameBuilder.uid = ref.documentID;
         // Add the game.
-        tx.set(ref, gameBuilder.build().toJSON());
-        return gameBuilder.build().toJSON();
+        tx.set(ref, gameBuilder.build().toMap());
+        return gameBuilder.build().toMap();
       });
     } else {
       if (sharedData) {
         if (game.sharedDataUid.isEmpty) {
           DocumentReferenceWrapper sharedDoc =
-              await refShared.add(game.sharedData.toJSON());
+              await refShared.add(game.sharedData.toMap());
           game = game.rebuild((b) => b..sharedDataUid = sharedDoc.documentID);
         } else {
           refShared
               .document(game.sharedDataUid)
-              .updateData(game.sharedData.toJSON());
+              .updateData(game.sharedData.toMap());
         }
       }
       // Update the game.
-      ref.document(game.uid).updateData(game.toJSON());
+      ref.document(game.uid).updateData(game.toMap());
       return game;
     }
     return null;
@@ -74,24 +74,23 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     return wrapper.runTransaction((TransactionWrapper tx) async {
       GameBuilder gameBuilder = game.toBuilder();
+      gameBuilder.uid = mainRef.documentID;
       // Add the shared stuff, then the game.
       if (game.sharedData.officialResults.homeTeamLeagueUid == null) {
         gameBuilder.sharedData.officialResults.homeTeamLeagueUid = game.teamUid;
       }
-      tx.set(mainShared, game.sharedData.toJSON());
+      var s = game.sharedData.rebuild((b) => b..uid = mainShared.documentID);
+      tx.set(mainShared, s.toMap());
       gameBuilder.sharedDataUid = mainShared.documentID;
       // Add the game.
-      tx.set(mainRef, gameBuilder.build().toJSON());
+      tx.set(mainRef, gameBuilder.build().toMap());
       for (int i = 0; i < dates.length; i++) {
         DateTime time = dates.elementAt(i);
         if (game.sharedData.time != time.millisecondsSinceEpoch) {
-          Game newGame = game.rebuild((b) => b
-            ..uid = null
-            ..sharedData.time = time.millisecondsSinceEpoch);
-          tx.set(refShared[i], game.sharedData.toJSON());
+          tx.set(refShared[i], game.sharedData.toMap());
           gameBuilder.sharedDataUid = refShared[i].documentID;
           // Add the game.
-          tx.set(ref[i], gameBuilder.build().toJSON());
+          tx.set(ref[i], gameBuilder.build().toMap());
         }
       }
     });
@@ -104,11 +103,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         wrapper.collection(GAMES_SHARED_COLLECTION);
     if (game.uid == null || game.uid == '') {
       // Add the shared stuff, then the game.
-      DocumentReferenceWrapper sharedDoc = await refShared.add(game.toJSON());
+      DocumentReferenceWrapper sharedDoc = await refShared.add(game.toMap());
       // Add the game.
       return sharedDoc.documentID;
     } else {
-      await refShared.document(game.uid).updateData(game.toJSON());
+      await refShared.document(game.uid).updateData(game.toMap());
 
       // Update the game.
       return game.uid;
@@ -143,7 +142,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         wrapper.collection(GAMES_COLLECTION).document(gameUid);
 
     Map<String, dynamic> data = <String, dynamic>{};
-    data[Game.RESULT] = result.toJSON();
+    data[Game.RESULT] = result.toMap();
     return ref.updateData(data);
   }
 
@@ -153,7 +152,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
 
     Map<String, dynamic> data = <String, dynamic>{};
-    data[GameSharedData.OFFICIALRESULT] = result.toJSON();
+    data[GameSharedData.OFFICIALRESULT] = result.toMap();
     return ref.updateData(data);
   }
 
@@ -187,12 +186,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(game.uid)
         .collection(GAME_LOG_COLLECTION);
     QuerySnapshotWrapper snap = await coll.getDocuments();
-    yield snap.documents.map((DocumentSnapshotWrapper doc) =>
-        GameLog.fromJson(doc.documentID, doc.data).build());
+    yield snap.documents
+        .map((DocumentSnapshotWrapper doc) => GameLog.fromMap(doc.data));
 
     await for (QuerySnapshotWrapper snap in coll.snapshots()) {
-      yield snap.documents.map((DocumentSnapshotWrapper doc) =>
-          GameLog.fromJson(doc.documentID, doc.data).build());
+      yield snap.documents
+          .map((DocumentSnapshotWrapper doc) => GameLog.fromMap(doc.data));
     }
   }
 
@@ -202,9 +201,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(GAMES_COLLECTION)
         .document(game.uid)
         .collection(GAME_LOG_COLLECTION);
-    log = log.rebuild((b) =>
-        b..eventTimeInternal = TZDateTime.now(local).millisecondsSinceEpoch);
-    return coll.add(log.toJSON()).then((DocumentReferenceWrapper ref) {
+    var ref = coll.document();
+
+    log = log.rebuild((b) => b
+      ..eventTimeInternal = TZDateTime.now(local).millisecondsSinceEpoch
+      ..uid = ref.documentID);
+    return ref.setData(log.toMap()).then((v) {
       return ref.documentID;
     }).catchError((Error e) {
       print("Got error $e");
@@ -220,25 +222,27 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (mess.uid == '' || mess.uid == null) {
       // Add the message.
       mess.timeSent = new DateTime.now().millisecondsSinceEpoch;
+      var newDoc = ref.document();
+      mess.uid = newDoc.documentID;
       Message messageStuff = mess.build();
-      DocumentReferenceWrapper doc = await ref.add(messageStuff.toJSON());
-      mess.uid = doc.documentID;
+      await newDoc.setData(messageStuff.toMap());
 
       // Add in the recipients collection.
       for (String str in messageStuff.recipients.keys) {
+        var docRef =
+            wrapper.collection(MESSAGE_RECIPIENTS_COLLECTION).document();
         MessageRecipient rec = mess.recipients[str].rebuild((b) => b
           ..messageId = mess.uid
-          ..sentAt = mess.timeSent);
-        DocumentReferenceWrapper recRef = await wrapper
-            .collection(MESSAGE_RECIPIENTS_COLLECTION)
-            .add(rec.toJSON());
-        mess.recipients[str] = rec.rebuild((b) => b..uid = recRef.documentID);
+          ..sentAt = mess.timeSent
+          ..uid = docRef.documentID);
+        await docRef.setData(rec.toMap());
+        mess.recipients[str] = rec;
       }
       return mess.build();
     } else {
       // Update the message.
       Message myMess = mess.build();
-      await ref.document(mess.uid).updateData(mess.build().toJSON());
+      await ref.document(mess.uid).updateData(mess.build().toMap());
       return myMess;
     }
   }
@@ -278,7 +282,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentSnapshotWrapper ref =
         await wrapper.collection(MESSAGES_COLLECTION).document(messageId).get();
     if (ref.exists) {
-      return Message.fromJSON(ref.documentID, ref.data).build();
+      return Message.fromMap(ref.data);
     }
     return null;
   }
@@ -303,9 +307,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(TEAMS_COLLECTION)
         .document(opponent.teamUid)
         .collection(OPPONENT_COLLECTION);
+    var docRef = ref.document();
+    opponent = opponent.rebuild((b) => b..uid = docRef.documentID);
     // Add the game.
-    DocumentReferenceWrapper doc = await ref.add(opponent.toMap());
-    return opponent.rebuild((b) => b..uid = doc.documentID);
+    await docRef.setData(opponent.toMap());
+    return opponent;
   }
 
   @override
@@ -324,15 +330,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     GameSharedData sharedData;
     if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
       print(snap.data[Game.GAMESHAREDDATA]);
-      sharedData = GameSharedData.fromJSON(sharedGameUid,
-              snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>)
-          .build();
+      sharedData = GameSharedData.fromMap(
+          snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>);
     } else {
       // Missing shared data uid.
-      sharedData = GameSharedData.fromJSON("", snap.data).build();
+      sharedData = GameSharedData.fromMap(snap.data);
     }
-    return Game.fromJSON(teamUid, snap.documentID, snap.data, sharedData)
-        .build();
+    return Game.fromMap(snap.data, sharedData);
   }
 
   @override
@@ -379,7 +383,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     CollectionReferenceWrapper ref = wrapper.collection(TEAMS_COLLECTION);
 
     // Update the game.
-    await ref.document(team.uid).updateData(team.toJSON());
+    await ref.document(team.uid).updateData(team.toMap());
     return team.uid;
   }
 
@@ -394,7 +398,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         wrapper.collection(SEASONS_COLLECTION).document();
     wrapper.runTransaction((TransactionWrapper tx) async {
       await tx.set(
-          pregen, team.rebuild((b) => b..uid = pregen.documentID).toJSON());
+          pregen, team.rebuild((b) => b..uid = pregen.documentID).toMap());
       await tx.set(pregenSeason,
           season.rebuild((b) => b..uid = pregenSeason.documentID).toMap());
       if (imageFile != null) {}
@@ -496,27 +500,25 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentSnapshotWrapper snap =
         await wrapper.collection(TEAMS_COLLECTION).document(teamUid).get();
     if (snap.exists) {
-      Team team =
-          Team.fromJSON(userUid, snap.documentID, snap.data, publicOnly: true)
-              .build();
+      Team team = Team.fromMap(userUid, snap.data);
       return team;
     }
     return null;
   }
 
   @override
-  Stream<TeamBuilder> getTeamDetails(
+  Stream<Team> getTeamDetails(
       {@required String userUid, @required String teamUid}) async* {
     DocumentReferenceWrapper referenceWrapper =
         wrapper.collection(TEAMS_COLLECTION).document(teamUid);
     DocumentSnapshotWrapper snap = await referenceWrapper.get();
     if (snap.exists) {
-      yield Team.fromJSON(userUid, snap.documentID, snap.data);
+      yield Team.fromMap(userUid, snap.data);
     } else {
-      yield TeamBuilder()..uid = teamUid;
+      yield Team((b) => b..uid = teamUid);
     }
     await for (DocumentSnapshotWrapper doc in referenceWrapper.snapshots()) {
-      yield Team.fromJSON(userUid, doc.documentID, doc.data);
+      yield Team.fromMap(userUid, doc.data);
     }
   }
 
@@ -547,15 +549,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       GameSharedData sharedData;
       if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
         print(snap.data[Game.GAMESHAREDDATA]);
-        sharedData = GameSharedData.fromJSON(sharedGameUid,
-                snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>)
-            .build();
+        sharedData = GameSharedData.fromMap(
+            snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>);
       } else {
         // Missing shared data uid.
-        sharedData = GameSharedData.fromJSON("", snap.data).build();
+        sharedData = GameSharedData.fromMap(snap.data);
       }
-      Game g = Game.fromJSON(teamUid, snap.documentID, snap.data, sharedData)
-          .build();
+      Game g = Game.fromMap(snap.data, sharedData);
       data.add(g);
     }
     yield GameSnapshotEvent(teamUid: teamUid, newGames: data, deletedGames: []);
@@ -570,16 +570,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         GameSharedData sharedData;
         sharedGameUid = snap.data[Game.SHAREDDATAUID] as String;
         if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-          sharedData = GameSharedData.fromJSON(
-                  sharedGameUid, snap.data[Game.GAMESHAREDDATA])
-              .build();
+          sharedData = GameSharedData.fromMap(snap.data[Game.GAMESHAREDDATA]);
         } else {
-          sharedData = GameSharedData.fromJSON("", snap.data).build();
+          sharedData = GameSharedData.fromMap(snap.data);
         }
 
-        Game newGame =
-            Game.fromJSON(teamUid, snap.documentID, snap.data, sharedData)
-                .build();
+        Game newGame = Game.fromMap(snap.data, sharedData);
         data.add(newGame);
       }
       Iterable<String> toDelete = queryGameSnap.documentChanges
@@ -603,9 +599,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentReferenceWrapper ref =
         wrapper.collection(GAMES_SHARED_COLLECTION).document(sharedGameUid);
     DocumentSnapshotWrapper wrap = await ref.get();
-    yield GameSharedData.fromJSON(wrap.documentID, wrap.data).build();
+    yield GameSharedData.fromMap(wrap.data);
     await for (DocumentSnapshotWrapper wrap in ref.snapshots()) {
-      yield GameSharedData.fromJSON(wrap.documentID, wrap.data).build();
+      yield GameSharedData.fromMap(wrap.data);
     }
   }
 
@@ -620,30 +616,22 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String sharedGameUid = snap.data[Game.SHAREDDATAUID];
       GameSharedData shared;
       if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-        shared = GameSharedData.fromJSON(
-                sharedGameUid, snap.data[Game.GAMESHAREDDATA])
-            .build();
+        shared = GameSharedData.fromMap(snap.data[Game.GAMESHAREDDATA]);
       } else {
-        shared = GameSharedData.fromJSON("", snap.data).build();
+        shared = GameSharedData.fromMap(snap.data);
       }
-      Game game =
-          Game.fromJSON(snap.data[Game.TEAMUID], gameUid, snap.data, shared)
-              .build();
+      Game game = Game.fromMap(snap.data, shared);
       yield game;
 
       await for (DocumentSnapshotWrapper snap in ref.snapshots()) {
         String sharedGameUid = snap.data[Game.SHAREDDATAUID];
         GameSharedData shared;
         if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-          shared = GameSharedData.fromJSON(
-                  sharedGameUid, snap.data[Game.GAMESHAREDDATA])
-              .build();
+          shared = GameSharedData.fromMap(snap.data[Game.GAMESHAREDDATA]);
         } else {
-          shared = GameSharedData.fromJSON("", snap.data).build();
+          shared = GameSharedData.fromMap(snap.data);
         }
-        Game game =
-            Game.fromJSON(snap.data[Game.TEAMUID], gameUid, snap.data, shared)
-                .build();
+        Game game = Game.fromMap(snap.data, shared);
         yield game;
       }
     }
@@ -657,7 +645,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Update the game.
     await ref
         .document(player.uid)
-        .updateData(player.toJSON(includeUsers: includeUsers));
+        .updateData(player.toMap(includeUsers: includeUsers));
   }
 
   // Player stuff
@@ -665,10 +653,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<String> addFirestorePlayer(Player player) async {
     // Add or update this record into the database.
     CollectionReferenceWrapper ref = wrapper.collection(PLAYERS_COLLECTION);
+    var docRef = ref.document();
     // Add the game.
-    DocumentReferenceWrapper doc =
-        await ref.add(player.toJSON(includeUsers: true));
-    return doc.documentID;
+    var p = player.rebuild((b) => b..uid = docRef.documentID);
+    await docRef.setData(player.toMap(includeUsers: true));
+    return docRef.documentID;
   }
 
   @override
@@ -708,8 +697,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         await wrapper.collection(PLAYERS_COLLECTION).document(playerUid).get();
     if (doc.exists) {
       // Yay!  We have a player.
+      var playerInternal = PlayerUserInternal((b) => b
+        ..added = true
+        ..relationship = player.relationship);
       Map<String, dynamic> data = <String, dynamic>{};
-      data[Player.USERS + "." + player.userUid] = player.toJSON();
+      data[Player.USERS + "." + player.userUid] = playerInternal.toMap();
       doc.reference.updateData(data);
       return true;
     }
@@ -720,7 +712,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<String> createPlayer(Player player) async {
     CollectionReferenceWrapper ref = wrapper.collection(PLAYERS_COLLECTION);
     DocumentReferenceWrapper doc =
-        await ref.add(player.toJSON(includeUsers: true));
+        await ref.add(player.toMap(includeUsers: true));
     return doc.documentID;
   }
 
@@ -877,7 +869,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentSnapshotWrapper doc =
         await wrapper.collection(PLAYERS_COLLECTION).document(uid).get();
     if (doc.exists) {
-      Player player = Player.fromJSON(uid, doc.data).build();
+      Player player = Player.fromMap(doc.data);
       return player;
     }
     return null;
@@ -1010,10 +1002,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   Future<Team> _loadTeamFromClub(
       String userUid, DocumentSnapshotWrapper snap, Club club) async {
-    final TeamBuilder team = Team.fromJSON(userUid, snap.documentID, snap.data,
-        publicOnly: !club.isAdmin());
-
-    return team.build();
+    return Team.fromMap(userUid, snap.data);
   }
 
   // Loads the seasons for the team.  This is only used for
@@ -1169,11 +1158,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     // Snapshot and the main query.
     QuerySnapshotWrapper wrap = await query.getDocuments();
-    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        GameSharedData.fromJSON(snap.documentID, snap.data).build());
+    yield wrap.documents.map(
+        (DocumentSnapshotWrapper snap) => GameSharedData.fromMap(snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
-      yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          GameSharedData.fromJSON(snap.documentID, snap.data).build());
+      yield wrap.documents.map(
+          (DocumentSnapshotWrapper snap) => GameSharedData.fromMap(snap.data));
     }
   }
 
@@ -1191,12 +1180,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     Map<String, GameSharedData> games = {};
     QuerySnapshotWrapper wrapHome = await queryHome.getDocuments();
     wrapHome.documents.forEach((DocumentSnapshotWrapper wrap) =>
-        games[wrap.documentID] =
-            GameSharedData.fromJSON(wrap.documentID, wrap.data).build());
+        games[wrap.documentID] = GameSharedData.fromMap(wrap.data));
     QuerySnapshotWrapper wrapAway = await queryAway.getDocuments();
     wrapAway.documents.forEach((DocumentSnapshotWrapper wrap) =>
-        games[wrap.documentID] =
-            GameSharedData.fromJSON(wrap.documentID, wrap.data).build());
+        games[wrap.documentID] = GameSharedData.fromMap(wrap.data));
     yield games.values;
 
     StreamGroup<QuerySnapshotWrapper> str = StreamGroup<QuerySnapshotWrapper>();
@@ -1208,9 +1195,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         if (change.type == DocumentChangeTypeWrapper.removed) {
           games.remove(change.document.documentID);
         } else {
-          games[change.document.documentID] = GameSharedData.fromJSON(
-                  change.document.documentID, change.document.data)
-              .build();
+          games[change.document.documentID] =
+              GameSharedData.fromMap(change.document.data);
         }
       });
 
@@ -1357,7 +1343,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentSnapshotWrapper snap =
         await wrapper.collection(LEAGUE_COLLECTON).document(leagueUid).get();
     if (snap.exists) {
-      return LeagueOrTournament.fromMap(snap.data);
+      return LeagueOrTournament.fromMap(userUid, snap.data);
     }
     return null;
   }
@@ -1550,10 +1536,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         isEqualTo: true);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        LeagueOrTournament.fromMap(snap.data));
+        LeagueOrTournament.fromMap(userUid, snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
       yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          LeagueOrTournament.fromMap( snap.data));
+          LeagueOrTournament.fromMap(userUid, snap.data));
     }
   }
 
@@ -1563,11 +1549,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(PLAYERS_COLLECTION)
         .where(Player.USERS + "." + userUid + "." + ADDED, isEqualTo: true);
     QuerySnapshotWrapper wrap = await query.getDocuments();
-    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        Player.fromJSON(snap.documentID, snap.data).build());
+    yield wrap.documents
+        .map((DocumentSnapshotWrapper snap) => Player.fromMap(snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
-      yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          Player.fromJSON(snap.documentID, snap.data).build());
+      yield wrap.documents
+          .map((DocumentSnapshotWrapper snap) => Player.fromMap(snap.data));
     }
   }
 
@@ -1589,11 +1575,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .limit(maxMessages);
     }
     QuerySnapshotWrapper wrap = await query.getDocuments();
-    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        MessageRecipient.fromJSON(snap.documentID, snap.data).build());
+    yield wrap.documents.map(
+        (DocumentSnapshotWrapper snap) => MessageRecipient.fromMap(snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
       yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          MessageRecipient.fromJSON(snap.documentID, snap.data).build());
+          MessageRecipient.fromMap(snap.data));
     }
   }
 
@@ -1619,11 +1605,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(Team.ADMINS + "." + userUid, isEqualTo: true);
 
     QuerySnapshotWrapper wrap = await teamCollection.getDocuments();
-    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        Team.fromJSON(userUid, snap.documentID, snap.data).build());
+    yield wrap.documents.map(
+        (DocumentSnapshotWrapper snap) => Team.fromMap(userUid, snap.data));
     await for (QuerySnapshotWrapper wrap in teamCollection.snapshots()) {
-      yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          Team.fromJSON(userUid, snap.documentID, snap.data).build());
+      yield wrap.documents.map(
+          (DocumentSnapshotWrapper snap) => Team.fromMap(userUid, snap.data));
     }
   }
 
@@ -1634,11 +1620,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(Team.USER + "." + userUid + ".added", isEqualTo: true);
 
     QuerySnapshotWrapper wrap = await teamCollection.getDocuments();
-    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        Team.fromJSON(userUid, snap.documentID, snap.data).build());
+    yield wrap.documents.map(
+        (DocumentSnapshotWrapper snap) => Team.fromMap(userUid, snap.data));
     await for (QuerySnapshotWrapper wrap in teamCollection.snapshots()) {
-      yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          Team.fromJSON(userUid, snap.documentID, snap.data).build());
+      yield wrap.documents.map(
+          (DocumentSnapshotWrapper snap) => Team.fromMap(userUid, snap.data));
     }
   }
 

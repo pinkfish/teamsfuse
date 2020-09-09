@@ -54,14 +54,17 @@ class GameBloc extends HydratedBloc<GameEvent, GameState> {
   DateTime _end;
 
   GameBloc({@required this.coordinationBloc, @required this.teamBloc})
-      : super(GameUninitialized()) {
+      : _start = new DateTime.now().subtract(new Duration(days: 60)).toUtc(),
+        _end = new DateTime.now().add(new Duration(days: 240)).toUtc(),
+        super(GameUninitialized()) {
     if (teamBloc.state is TeamLoaded) {
       _onTeamsUpdates(teamBloc.state.allTeamUids, true);
     }
     _teamSub = teamBloc.listen((TeamState state) {
       if (state is TeamLoaded) {
-        _start = _start ?? new DateTime.now().subtract(new Duration(days: 60));
-        _end = _end ?? new DateTime.now().add(new Duration(days: 240));
+        _start = _start ??
+            new DateTime.now().subtract(new Duration(days: 60)).toUtc();
+        _end = _end ?? new DateTime.now().add(new Duration(days: 240)).toUtc();
         _onTeamsUpdates(state.allTeamUids, false);
       } else {
         add(_GameEventLogout());
@@ -108,22 +111,32 @@ class GameBloc extends HydratedBloc<GameEvent, GameState> {
     if (event is _GameEventNewDataLoaded) {
       MapBuilder<String, BuiltMap<String, Game>> newGames =
           state.gamesByTeam.toBuilder();
-      MapBuilder<String, Game> games = MapBuilder();
+      MapBuilder<String, Game> gamesToSerialize = MapBuilder();
       for (Game g in event.games) {
-        games[g.uid] = g;
+        if (g.sharedData.tzTime.isAfter(state.start) &&
+            g.sharedData.tzTime.isBefore(state.end)) {
+          gamesToSerialize[g.uid] = g;
+        }
       }
       MapBuilder<String, GameSharedData> sharedGameData = MapBuilder();
+      MapBuilder<String, GameSharedData> sharedGameToSerialize = MapBuilder();
       for (Game g in event.games) {
         if (g.sharedDataUid.isNotEmpty) {
           sharedGameData[g.sharedDataUid] = g.sharedData;
+          if (g.sharedData.tzTime.isAfter(state.start) &&
+              g.sharedData.tzTime.isBefore(state.end)) {
+            sharedGameToSerialize[g.sharedDataUid] = g.sharedData;
+          }
         }
       }
       yield (GameLoaded.fromState(state)
             ..sharedGameData = sharedGameData
+            ..sharedGameDataToSerialize = sharedGameToSerialize
+            ..gamesByTeamToSerialize = gamesToSerialize
             ..gamesByTeam = newGames
             ..loadedFirestore = true
-            ..start = _start
-            ..end = _end)
+            ..start = _start.toUtc()
+            ..end = _end.toUtc())
           .build();
       coordinationBloc
           .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Game));
@@ -131,7 +144,9 @@ class GameBloc extends HydratedBloc<GameEvent, GameState> {
 
     // Unload everything.
     if (event is _GameEventLogout) {
-      yield GameUninitialized();
+      yield GameUninitialized((b) => b
+        ..start = state.start
+        ..end = state.end);
       _cleanupStuff();
     }
 
@@ -157,8 +172,16 @@ class GameBloc extends HydratedBloc<GameEvent, GameState> {
             coordinationBloc.analyticsSubsystem.newTrace("gamaData");
         gamesTrace.start();
         var loaded = GameLoaded.fromMap(json);
-        print(
-            'End games ${coordinationBloc.start.difference(new DateTime.now())} ${loaded.gamesByTeam.length}');
+        MapBuilder<String, dynamic> gamesByTeam =
+            MapBuilder<String, Map<String, Game>>();
+        for (Game g in loaded.gamesByTeamToSerialize.values) {
+          gamesByTeam.putIfAbsent(g.teamUid, () => MapBuilder<String, Game>());
+          gamesByTeam[g.teamUid][g.uid] = g;
+        }
+        gamesByTeam.updateAllValues((uid, b) => b.build());
+
+        loaded = loaded.rebuild((b) => b..gamesByTeam = gamesByTeam);
+        print('End games  ${loaded.gamesByTeam.length}');
         gamesTrace.stop();
         return loaded;
       default:

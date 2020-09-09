@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
@@ -39,14 +38,16 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
     AuthenticationBloc authenticationBloc =
         BlocProvider.of<AuthenticationBloc>(context);
     super.initState();
-    SetBuilder<String> set = SetBuilder<String>();
-    set.add(authenticationBloc.currentUser.uid);
     _league = LeagueOrTournamentBuilder()
       ..type = widget.type
       ..name = ""
       ..shortDescription = ""
-      ..longDescription = ""
-      ..adminsUids = set;
+      ..longDescription = "";
+    _league.membersData[authenticationBloc.currentUser.uid] =
+        AddedOrAdmin((b) => b
+          ..admin = true
+          ..added = true);
+
     addBloc = AddLeagueOrTournamentBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
   }

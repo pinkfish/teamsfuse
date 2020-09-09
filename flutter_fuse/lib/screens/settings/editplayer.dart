@@ -96,8 +96,9 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
     );
 
     // Add in all the associated users and their relationships.
-    print("building dfor ${_player.users}");
-    for (PlayerUser user in _player.users.build().values) {
+    print("building dfor ${_player.usersData}");
+    for (String uid in _player.usersData.build().keys) {
+      PlayerUserInternal user = _player.usersData[uid];
       //  ret.add(new Item)
       ret.add(
         new DropdownButtonHideUnderline(
@@ -107,7 +108,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
             children: <Widget>[
               new Expanded(
                 child: UserName(
-                  userId: user.userUid,
+                  userId: uid,
                   overflow: TextOverflow.clip,
                   style: Theme.of(context).textTheme.subhead,
                 ),
@@ -115,9 +116,9 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
               new Flexible(
                 child: new RelationshipFormField(
                   initialValue: user.relationship,
-                  onSaved: (Relationship rel) => _player.users.updateValue(
-                      user.userUid,
-                      (PlayerUser u) =>
+                  onSaved: (Relationship rel) => _player.usersData.updateValue(
+                      uid,
+                      (PlayerUserInternal u) =>
                           u.rebuild((b) => b..relationship = rel)),
                 ),
               ),

@@ -170,8 +170,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
             coordinationBloc.analyticsSubsystem.newTrace("SeasonData");
         SeasonsTrace.start();
         var loaded = SeasonLoaded.fromMap(json);
-        print(
-            'Start Seasons ${coordinationBloc.start.difference(new DateTime.now())}');
+        print('End Seasons ');
         SeasonsTrace.stop();
         return loaded;
       default:

@@ -269,7 +269,7 @@ abstract class DatabaseUpdateModel {
       {@required String userUid, @required String teamUid});
   Stream<Iterable<InviteAsAdmin>> getInvitesForTeam(String teamUid);
   Stream<Iterable<Opponent>> getTeamOpponents(String teamUid);
-  Stream<TeamBuilder> getTeamDetails(
+  Stream<Team> getTeamDetails(
       {@required String userUid, @required String teamUid});
   Stream<Iterable<Season>> getSeasonsForTeam(String teamUid);
   Stream<Iterable<Team>> getTeams(String userUid);

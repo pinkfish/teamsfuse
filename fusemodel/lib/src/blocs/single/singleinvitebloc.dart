@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
@@ -221,8 +222,10 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       //
       // Invite to club.
       //
-      await inviteBloc.databaseUpdateModel
-          .addUserToClub(invite.clubUid, inviteBloc.state.uid, invite.admin);
+      await inviteBloc.databaseUpdateModel.addUserToClub(
+          invite.clubUid,
+          inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
+          invite.admin);
       // This should cause the data to update
       await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
@@ -242,16 +245,22 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       // Invite to league admin
       //
       if (invite.leagueUid != null) {
-        await inviteBloc.databaseUpdateModel
-            .addUserToLeague(invite.leagueUid, inviteBloc.state.uid, true);
+        await inviteBloc.databaseUpdateModel.addUserToLeague(
+            invite.leagueUid,
+            inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
+            true);
       }
       if (invite.leagueSeasonUid != null) {
         await inviteBloc.databaseUpdateModel.addUserToLeagueSeason(
-            invite.leagueSeasonUid, inviteBloc.state.uid, true);
+            invite.leagueSeasonUid,
+            inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
+            true);
       }
       if (invite.leagueDivisonUid != null) {
         await inviteBloc.databaseUpdateModel.addUserToLeagueDivison(
-            invite.leagueDivisonUid, inviteBloc.state.uid, true);
+            invite.leagueDivisonUid,
+            inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
+            true);
       }
 
       // This should cause the data to update
@@ -285,9 +294,9 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
             error: ArgumentError("already added to player"));
       }
       // Yay!  We have a player.
-      PlayerUser playerUser = new PlayerUser((b) => b
-        ..userUid = inviteBloc.state.uid
-        ..relationship = event.relationship);
+      PlayerUser playerUser = PlayerUser(
+          inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
+          event.relationship);
       await inviteBloc.databaseUpdateModel
           .addUserToPlayer(invite.playerUid, playerUser);
 
@@ -309,7 +318,8 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       if (event.teamUid == SingleInviteBloc.createNew) {
         TeamBuilder team = new TeamBuilder();
         team.name = invite.leagueTeamName;
-        team.admins.add(inviteBloc.state.uid);
+        team.adminsData[inviteBloc
+            .coordinationBloc.authenticationBloc.currentUser.uid] = true;
         var pregen = inviteBloc.databaseUpdateModel.precreateTeamUid();
         var pregenSeason = inviteBloc.databaseUpdateModel.precreateUidSeason();
         team.uid = pregen.documentID;
@@ -319,8 +329,10 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
           ..teamUid = team.uid
           ..record = WinRecordBuilder()
           ..playersData = MapBuilder({
-            inviteBloc.state.uid: SeasonPlayer((b) => b
-              ..playerUid = inviteBloc.state.uid
+            inviteBloc.coordinationBloc.authenticationBloc.currentUser
+                .uid: SeasonPlayer((b) => b
+              ..playerUid =
+                  inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid
               ..role = RoleInTeam.NonPlayer)
           }));
         team.currentSeason = pregenSeason.documentID;
@@ -349,7 +361,9 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       } else {
         Season season = seasonBloc.state.seasons[event.seasonUid];
         await inviteBloc.databaseUpdateModel.connectLeagueTeamToSeason(
-            invite.leagueTeamUid, inviteBloc.state.uid, season);
+            invite.leagueTeamUid,
+            inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
+            season);
       }
       // This should cause the data to update
       await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
@@ -367,8 +381,8 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       //
       // Invite as admin.
       //
-      await inviteBloc.databaseUpdateModel
-          .addAdmin(invite.teamUid, inviteBloc.state.uid);
+      await inviteBloc.databaseUpdateModel.addAdmin(invite.teamUid,
+          inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid);
 
       // This should cause the data to update
       await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
@@ -410,11 +424,10 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
             0) {
           PlayerBuilder player = new PlayerBuilder();
           player.name = name;
-          player.users[inviteBloc.coordinationBloc.authenticationBloc
-              .currentUser.uid] = new PlayerUser((b) => b
+          player.usersData[inviteBloc.coordinationBloc.authenticationBloc
+              .currentUser.uid] = PlayerUserInternal((b) => b
             ..relationship = event.relationship[name]
-            ..userUid =
-                inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid);
+            ..added = true);
           playerUid =
               await inviteBloc.databaseUpdateModel.createPlayer(player.build());
         } else {

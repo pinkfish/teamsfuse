@@ -1,13 +1,33 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
+import 'package:built_value/serializer.dart';
 import 'package:collection/collection.dart';
 
+import '../serializer.dart';
 import 'gameperiod.dart';
 import 'gameresult.dart';
 
 part 'gameofficialresults.g.dart';
 
-enum OfficialResult { HomeTeamWon, AwayTeamWon, Tie, NotStarted, InProgress }
+///
+/// The offical result for the game
+///
+class OfficialResult extends EnumClass {
+  static Serializer<OfficialResult> get serializer =>
+      _$officialResultSerializer;
+
+  static const OfficialResult HomeTeamWon = _$homeTeamWon;
+  static const OfficialResult AwayTeamWon = _$awayTeamWon;
+  static const OfficialResult Tie = _$tie;
+  static const OfficialResult NotStarted = _$notStarted;
+  static const OfficialResult InProgress = _$inProgress;
+
+  const OfficialResult._(String name) : super(name);
+
+  static BuiltSet<OfficialResult> get values => _$OfficialResultValues;
+
+  static OfficialResult valueOf(String name) => _$OfficialResultValueOf(name);
+}
 
 ///
 /// The offical results we have for this game.  This only exists when the
@@ -29,8 +49,6 @@ abstract class GameOfficialResults
 
   OfficialResult get result;
 
-  static const String _OFFICIALRESULT = 'officialResult';
-  static const String _SCORES = 'scores';
   static const String HOMETEAMUID = 'homeTeamUid';
   static const String AWAYTEAMUID = 'awayTeamUid';
 
@@ -38,41 +56,15 @@ abstract class GameOfficialResults
   factory GameOfficialResults([updates(GameOfficialResultsBuilder b)]) =
       _$GameOfficialResults;
 
-  static GameOfficialResultsBuilder fromJSON(Map<dynamic, dynamic> data) {
-    GameOfficialResultsBuilder builder = GameOfficialResultsBuilder();
-    builder
-      ..result = OfficialResult.values.firstWhere(
-          (e) => e.toString() == data[_OFFICIALRESULT],
-          orElse: () => OfficialResult.NotStarted)
-      ..homeTeamLeagueUid = data[HOMETEAMUID]
-      ..awayTeamLeagueUid = data[AWAYTEAMUID];
-    if (data.containsKey(_SCORES)) {
-      Map<dynamic, dynamic> scoreData = data[_SCORES];
-      CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> newResults =
-          new CanonicalizedMap((GamePeriod p) => p.toIndex());
-      scoreData.forEach((dynamic periodStd, dynamic data) {
-        GamePeriod period = GamePeriod.fromIndex(periodStd);
-        GameResultPerPeriod newResult =
-            GameResultPerPeriod.fromJSON(period, data).build();
-
-        builder.scores[period] = newResult;
-      });
-      //scores.addAll(newResults);
-    }
-    return builder;
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(GameOfficialResults.serializer, this);
   }
 
-  Map<String, dynamic> toJSON() {
-    Map<String, dynamic> ret = {};
-    Map<String, dynamic> retScores = {};
-    for (GameResultPerPeriod p in scores.values) {
-      Map<String, dynamic> periodExtra = p.toJSON();
-      retScores[p.period.toIndex()] = periodExtra;
-    }
-    ret[_SCORES] = retScores;
-    ret[_OFFICIALRESULT] = result.toString();
-    ret[AWAYTEAMUID] = awayTeamLeagueUid;
-    ret[HOMETEAMUID] = homeTeamLeagueUid;
-    return ret;
+  static GameOfficialResults fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(
+        GameOfficialResults.serializer, jsonData);
   }
+
+  static Serializer<GameOfficialResults> get serializer =>
+      _$gameOfficialResultsSerializer;
 }

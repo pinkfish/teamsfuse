@@ -109,7 +109,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
-    print("${widget.game.toJSON()}");
+    print("${widget.game.toMap()}");
     return new Scrollbar(
       child: new SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -127,16 +127,16 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                   teamUid: builder.teamUid,
                   builder: (BuildContext context, SingleTeamBloc teamBloc) =>
                       SeasonFormField(
-                        decoration: new InputDecoration(
-                          icon: const Icon(CommunityIcons.calendarQuestion),
-                          labelText: messages.season,
-                        ),
-                        initialValue: widget.game.seasonUid,
-                        teamBloc: teamBloc,
-                        onSaved: (String value) {
-                          builder.seasonUid = value;
-                        },
-                      ),
+                    decoration: new InputDecoration(
+                      icon: const Icon(CommunityIcons.calendarQuestion),
+                      labelText: messages.season,
+                    ),
+                    initialValue: widget.game.seasonUid,
+                    teamBloc: teamBloc,
+                    onSaved: (String value) {
+                      builder.seasonUid = value;
+                    },
+                  ),
                 ),
                 new DateTimeFormField(
                   labelText: Messages.of(context).gametime,
