@@ -18,6 +18,7 @@ abstract class LeagueOrTournamentDivison
         Built<LeagueOrTournamentDivison, LeagueOrTournamentDivisonBuilder> {
   String get name;
   String get uid;
+  @BuiltValueField(wireName: LEAGUEORTOURNMENTSEASONUID)
   String get leagueOrTournmentSeasonUid;
   String get userUid;
 
@@ -51,7 +52,9 @@ abstract class LeagueOrTournamentDivison
 
   static Serializer<LeagueOrTournamentDivison> get serializer =>
       _$leagueOrTournamentDivisonSerializer;
+
   static const String MEMBERS = "members";
+  static const String LEAGUEORTOURNMENTSEASONUID = "seasonUid";
 
   bool isUserAdmin(String myUid) {
     return adminsUids.contains(myUid);

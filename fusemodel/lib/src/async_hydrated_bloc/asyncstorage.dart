@@ -49,7 +49,9 @@ class AsyncHydratedStorage implements AsyncStorage {
   /// return HydratedAesCipher(byteskey);
   /// ```
   AsyncHydratedStorage(this.boxName) : _box = null {
+    print(_box);
     _lock.synchronized(() async {
+      print("lock");
       // Use HiveImpl directly to avoid conflicts with existing Hive.init
       // https://github.com/hivedb/hive/issues/336
       hive = HiveImpl();

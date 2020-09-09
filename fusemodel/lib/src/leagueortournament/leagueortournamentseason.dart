@@ -17,6 +17,7 @@ abstract class LeagueOrTournamentSeason
         Built<LeagueOrTournamentSeason, LeagueOrTournamentSeasonBuilder> {
   String get name;
   String get uid;
+  @BuiltValueField(wireName: LEAGUEORTOURNMENTUID )
   String get leagueOrTournmentUid;
 
   @BuiltValueField(wireName: MEMBERS)
@@ -50,4 +51,5 @@ abstract class LeagueOrTournamentSeason
       _$leagueOrTournamentSeasonSerializer;
 
   static const String MEMBERS = "members";
+  static const String LEAGUEORTOURNMENTUID = "leagueUid";
 }

@@ -1,7 +1,6 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
-import 'package:meta/meta.dart';
 
 import '../common.dart';
 import '../serializer.dart';
@@ -54,8 +53,13 @@ abstract class LeagueOrTournament
     ..sport = Sport.Other
     ..type = LeagueOrTournamentType.League;
 
-  Map<String, dynamic> toMap() {
-    return serializers.serializeWith(LeagueOrTournament.serializer, this);
+  Map<String, dynamic> toMap({bool includeMembers = false}) {
+    Map<String, dynamic> ret =
+        serializers.serializeWith(LeagueOrTournament.serializer, this);
+    if (!includeMembers) {
+      ret.remove(MEMBERS);
+    }
+    return ret;
   }
 
   static LeagueOrTournament fromMap(Map<String, dynamic> jsonData) {

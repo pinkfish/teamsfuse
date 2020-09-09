@@ -368,8 +368,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     yield queryOpponentSnap.documents
         .map((DocumentSnapshotWrapper doc) => Opponent.fromMap(doc.data));
     await for (QuerySnapshotWrapper query in opCollection.snapshots()) {
-      yield query.documents.map((DocumentSnapshotWrapper doc) =>
-          Opponent.fromMap( doc.data));
+      yield query.documents
+          .map((DocumentSnapshotWrapper doc) => Opponent.fromMap(doc.data));
     }
   }
 
@@ -1153,10 +1153,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Snapshot and the main query.
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        LeagueOrTournamentTeam.fromJSON(snap.documentID, snap.data).build());
+        LeagueOrTournamentTeam.fromMap(snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
       yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          LeagueOrTournamentTeam.fromJSON(snap.documentID, snap.data).build());
+          LeagueOrTournamentTeam.fromMap(snap.data));
     }
   }
 
@@ -1238,10 +1238,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(LEAGUE_SEASON_COLLECTION)
         .document(leagueUid)
         .updateData(<String, dynamic>{
-      LeagueOrTournamentSeason.MEMBERS + "." + userUid: <String, dynamic>{
-        ADDED: true,
-        LeagueOrTournamentSeason.ADMIN: admin
-      }
+      LeagueOrTournamentSeason.MEMBERS + "." + userUid: AddedOrAdmin((b) => b
+        ..added = true
+        ..admin = admin).toMap()
     });
   }
 
@@ -1252,10 +1251,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(LEAGUE_COLLECTON)
         .document(leagueUid)
         .updateData(<String, dynamic>{
-      LeagueOrTournamentDivison.MEMBERS + "." + userUid: <String, dynamic>{
-        ADDED: true,
-        LeagueOrTournamentDivison.ADMIN: admin
-      }
+      LeagueOrTournamentDivison.MEMBERS + "." + userUid: AddedOrAdmin((b) => b
+        ..added = true
+        ..admin = admin)
     });
   }
 
@@ -1312,7 +1310,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<String> updateLeague(LeagueOrTournament league,
       {bool includeMembers = false}) async {
-    Map<String, dynamic> data = league.toJson(includeMembers: includeMembers);
+    Map<String, dynamic> data = league.toMap(includeMembers: includeMembers);
     if (league.uid == null) {
       DocumentReferenceWrapper ref =
           await wrapper.collection(LEAGUE_COLLECTON).add(data);
@@ -1359,9 +1357,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentSnapshotWrapper snap =
         await wrapper.collection(LEAGUE_COLLECTON).document(leagueUid).get();
     if (snap.exists) {
-      return LeagueOrTournament.fromJSON(
-              userUid: userUid, myUid: snap.documentID, data: snap.data)
-          .build();
+      return LeagueOrTournament.fromMap(snap.data);
     }
     return null;
   }
@@ -1374,11 +1370,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         isEqualTo: leagueUid);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        LeagueOrTournamentSeason.fromJSON(snap.documentID, snap.data).build());
+        LeagueOrTournamentSeason.fromMap(snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
       yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          LeagueOrTournamentSeason.fromJSON(snap.documentID, snap.data)
-              .build());
+          LeagueOrTournamentSeason.fromMap(snap.data));
     }
   }
 
@@ -1390,14 +1385,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         isEqualTo: leagueSeasonUid);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        LeagueOrTournamentDivison.fromJSON(
-                snap.documentID, memberUid, snap.data)
-            .build());
+        LeagueOrTournamentDivison.fromMap(snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
       yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          LeagueOrTournamentDivison.fromJSON(
-                  snap.documentID, memberUid, snap.data)
-              .build());
+          LeagueOrTournamentDivison.fromMap(snap.data));
     }
   }
 
@@ -1409,10 +1400,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(LeagueOrTournamentTeam.SEASONUID, isEqualTo: teamSeasonUid);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        LeagueOrTournamentTeam.fromJSON(snap.documentID, snap.data).build());
+        LeagueOrTournamentTeam.fromMap(snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
       yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          LeagueOrTournamentTeam.fromJSON(snap.documentID, snap.data).build());
+          LeagueOrTournamentTeam.fromMap(snap.data));
     }
   }
 
@@ -1424,16 +1415,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(leagueDivisionUid);
     DocumentSnapshotWrapper wrap = await doc.get();
     if (wrap.exists) {
-      yield LeagueOrTournamentDivison.fromJSON(
-              wrap.documentID, memberUid, wrap.data)
-          .build();
+      yield LeagueOrTournamentDivison.fromMap(wrap.data);
     } else {
       yield null;
     }
     await for (DocumentSnapshotWrapper wrap in doc.snapshots()) {
-      yield LeagueOrTournamentDivison.fromJSON(
-              wrap.documentID, memberUid, wrap.data)
-          .build();
+      yield LeagueOrTournamentDivison.fromMap(wrap.data);
     }
   }
 
@@ -1445,8 +1432,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(leagueSeasonUid)
         .get();
     if (doc.exists) {
-      return LeagueOrTournamentSeason.fromJSON(doc.documentID, doc.data)
-          .build();
+      return LeagueOrTournamentSeason.fromMap(doc.data);
     }
     return null;
   }
@@ -1456,13 +1442,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (division.uid == null) {
       DocumentReferenceWrapper doc = await wrapper
           .collection(LEAGUE_DIVISION_COLLECTION)
-          .add(division.toJSON());
+          .add(division.toMap());
       return doc.documentID;
     }
     await wrapper
         .collection(LEAGUE_DIVISION_COLLECTION)
         .document(division.uid)
-        .updateData(division.toJSON());
+        .updateData(division.toMap());
     return division.uid;
   }
 
@@ -1471,13 +1457,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (season.uid == null) {
       DocumentReferenceWrapper doc = await wrapper
           .collection(LEAGUE_SEASON_COLLECTION)
-          .add(season.toJSON());
+          .add(season.toMap());
       return doc.documentID;
     }
     await wrapper
         .collection(LEAGUE_SEASON_COLLECTION)
         .document(season.uid)
-        .updateData(season.toJSON());
+        .updateData(season.toMap());
     return season.uid;
   }
 
@@ -1485,13 +1471,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<String> updateLeagueTeam(LeagueOrTournamentTeam team) async {
     if (team.uid == null) {
       DocumentReferenceWrapper doc =
-          await wrapper.collection(LEAGUE_TEAM_COLLECTION).add(team.toJSON());
+          await wrapper.collection(LEAGUE_TEAM_COLLECTION).add(team.toMap());
       return doc.documentID;
     }
     await wrapper
         .collection(LEAGUE_TEAM_COLLECTION)
         .document(team.uid)
-        .updateData(team.toJSON());
+        .updateData(team.toMap());
     return team.uid;
   }
 
@@ -1501,7 +1487,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentReferenceWrapper doc =
         await wrapper.collection(LEAGUE_TEAM_COLLECTION).document(team.uid);
     Map<String, dynamic> data = <String, dynamic>{};
-    data[LeagueOrTournamentTeam.WINRECORD + "." + divison] = record.toJSON();
+    data[LeagueOrTournamentTeam.WINRECORD + "." + divison] = record.toMap();
     doc.updateData(data);
   }
 
@@ -1510,9 +1496,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentReferenceWrapper ref =
         wrapper.collection(LEAGUE_TEAM_COLLECTION).document(teamUid);
     DocumentSnapshotWrapper snap = await ref.get();
-    yield LeagueOrTournamentTeam.fromJSON(snap.documentID, snap.data).build();
+    yield LeagueOrTournamentTeam.fromMap(snap.data);
     await for (DocumentSnapshotWrapper snap in ref.snapshots()) {
-      yield LeagueOrTournamentTeam.fromJSON(snap.documentID, snap.data).build();
+      yield LeagueOrTournamentTeam.fromMap(snap.data);
     }
   }
 
@@ -1526,8 +1512,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (!doc.exists) {
       return false;
     }
-    LeagueOrTournamentTeam team =
-        LeagueOrTournamentTeam.fromJSON(doc.documentID, doc.data).build();
+    LeagueOrTournamentTeam team = LeagueOrTournamentTeam.fromMap(doc.data);
     if (team.seasonUid != null) {
       return false;
     }
@@ -1565,14 +1550,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         isEqualTo: true);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        LeagueOrTournament.fromJSON(
-                myUid: snap.documentID, data: snap.data, userUid: userUid)
-            .build());
+        LeagueOrTournament.fromMap(snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
       yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          LeagueOrTournament.fromJSON(
-                  myUid: snap.documentID, data: snap.data, userUid: userUid)
-              .build());
+          LeagueOrTournament.fromMap( snap.data));
     }
   }
 
