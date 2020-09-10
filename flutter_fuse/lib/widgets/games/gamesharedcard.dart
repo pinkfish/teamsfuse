@@ -88,7 +88,7 @@ class GameSharedCard extends StatelessWidget {
     }
     if (game.time < new DateTime.now().millisecondsSinceEpoch &&
         game.type == EventType.Game &&
-        game.officialResults.result == OfficialResult.NotStarted &&
+        game.officialResult.result == OfficialResult.NotStarted &&
         (leagueOrTournament?.isAdmin() ?? false)) {
       // Show a result button (if an admin).
       buttons.add(
@@ -126,18 +126,18 @@ class GameSharedCard extends StatelessWidget {
     TextStyle homeStyle = Theme.of(context).textTheme.body1;
     TextStyle awayStyle = Theme.of(context).textTheme.body1;
 
-    if (game.officialResults.result == OfficialResult.AwayTeamWon) {
+    if (game.officialResult.result == OfficialResult.AwayTeamWon) {
       awayStyle =
           awayStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w600);
     }
-    if (game.officialResults.result == OfficialResult.HomeTeamWon) {
+    if (game.officialResult.result == OfficialResult.HomeTeamWon) {
       homeStyle =
           homeStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w700);
     }
 
     List<Widget> homeTeamDetails = <Widget>[
       LeagueOrTournamentTeamName(
-        game.officialResults.homeTeamLeagueUid,
+        game.officialResult.homeTeamLeagueUid,
         textAlign: TextAlign.start,
         overflow: TextOverflow.ellipsis,
         style: homeStyle,
@@ -145,7 +145,7 @@ class GameSharedCard extends StatelessWidget {
     ];
     List<Widget> awayTeamDetails = <Widget>[
       LeagueOrTournamentTeamName(
-        game.officialResults.awayTeamLeagueUid,
+        game.officialResult.awayTeamLeagueUid,
         textAlign: TextAlign.start,
         overflow: TextOverflow.ellipsis,
         style: awayStyle,
@@ -158,48 +158,48 @@ class GameSharedCard extends StatelessWidget {
             .gametitleshared(format, endTimeFormat, tzShortName);
 
         // Add in the offical results.
-        if (game.officialResults.result != OfficialResult.NotStarted) {
+        if (game.officialResult.result != OfficialResult.NotStarted) {
           TextStyle homeStyle =
               Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
           TextStyle awayStyle =
               Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
-          if (game.officialResults.result == OfficialResult.AwayTeamWon) {
+          if (game.officialResult.result == OfficialResult.AwayTeamWon) {
             awayStyle = awayStyle.copyWith(color: Colors.green);
           }
-          if (game.officialResults.result == OfficialResult.HomeTeamWon) {
+          if (game.officialResult.result == OfficialResult.HomeTeamWon) {
             homeStyle = homeStyle.copyWith(color: Colors.green);
           }
-          if (game.officialResults.scores.containsKey(GamePeriod.regulation)) {
+          if (game.officialResult.scores.containsKey(GamePeriod.regulation)) {
             TextStyle tmpHomeStyle = homeStyle;
             TextStyle tmpAwayStyle = awayStyle;
-            if (game.officialResults.scores.length > 1) {
+            if (game.officialResult.scores.length > 1) {
               tmpHomeStyle = homeStyle.copyWith(fontSize: 20.0);
               tmpAwayStyle = awayStyle.copyWith(fontSize: 20.0);
             }
             homeTeamDetails.add(Text(
-                game.officialResults.scores[GamePeriod.regulation].score.ptsFor
+                game.officialResult.scores[GamePeriod.regulation].score.ptsFor
                     .toString(),
                 style: tmpHomeStyle));
             awayTeamDetails.add(Text(
-                game.officialResults.scores[GamePeriod.regulation].score
+                game.officialResult.scores[GamePeriod.regulation].score
                     .ptsAgainst
                     .toString(),
                 style: tmpAwayStyle));
           }
-          if (game.officialResults.scores.containsKey(GamePeriod.overtime)) {
+          if (game.officialResult.scores.containsKey(GamePeriod.overtime)) {
             homeTeamDetails.add(Text(
-                "OT ${game.officialResults.scores[GamePeriod.overtime].score.ptsFor}",
+                "OT ${game.officialResult.scores[GamePeriod.overtime].score.ptsFor}",
                 style: homeStyle));
             awayTeamDetails.add(Text(
-                "OT ${game.officialResults.scores[GamePeriod.overtime].score.ptsAgainst}",
+                "OT ${game.officialResult.scores[GamePeriod.overtime].score.ptsAgainst}",
                 style: awayStyle));
           }
-          if (game.officialResults.scores.containsKey(GamePeriod.penalty)) {
+          if (game.officialResult.scores.containsKey(GamePeriod.penalty)) {
             homeTeamDetails.add(Text(
-                "PT ${game.officialResults.scores[GamePeriod.penalty].score.ptsFor}",
+                "PT ${game.officialResult.scores[GamePeriod.penalty].score.ptsFor}",
                 style: homeStyle));
             awayTeamDetails.add(Text(
-                "PT ${game.officialResults.scores[GamePeriod.penalty].score.ptsAgainst}",
+                "PT ${game.officialResult.scores[GamePeriod.penalty].score.ptsAgainst}",
                 style: awayStyle));
           }
         }
@@ -226,7 +226,7 @@ class GameSharedCard extends StatelessWidget {
               Navigator.pushNamed(context, "/SharedGame/" + game.uid);
             },
             leading: new LeagueTeamImage(
-              leagueOrTeamUid: game.officialResults.homeTeamLeagueUid,
+              leagueOrTeamUid: game.officialResult.homeTeamLeagueUid,
               width: 50.0,
               height: 50.0,
               overlay: HomeAwayOverlay.none,
@@ -243,7 +243,7 @@ class GameSharedCard extends StatelessWidget {
               ),
             ),
             trailing: new LeagueTeamImage(
-              leagueOrTeamUid: game.officialResults.awayTeamLeagueUid,
+              leagueOrTeamUid: game.officialResult.awayTeamLeagueUid,
               width: 50.0,
               height: 50.0,
               overlay: HomeAwayOverlay.none,

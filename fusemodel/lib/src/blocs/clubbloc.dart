@@ -87,7 +87,8 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
         }
       }
     });
-    if (!(coordinationBloc.state is CoordinationStateLoggedOut)) {
+    if (!(coordinationBloc.state is CoordinationStateLoggedOut) &&
+        !(coordinationBloc.state is CoordinationStateUninitialized)) {
       if (!_loadingFirestore) {
         _loadingFirestore = true;
         add(_ClubEventLoadFromFirestore(uid: coordinationBloc.state.uid));

@@ -72,8 +72,6 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
       @required this.analyticsSubsystem,
       @required this.databaseUpdateModel})
       : super(InviteUninitialized()) {
-    coordinationBloc
-        .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Invite));
     _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
       if (coordinationState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;

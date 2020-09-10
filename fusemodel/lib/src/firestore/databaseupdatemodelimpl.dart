@@ -30,7 +30,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       wrapper.runTransaction((TransactionWrapper tx) async {
         GameBuilder gameBuilder = game.toBuilder();
         // Add the shared stuff, then the game.
-        if (game.sharedData.officialResults.homeTeamLeagueUid == null) {
+        if (game.sharedData.officialResult.homeTeamLeagueUid == null) {
           gameBuilder.sharedData.officialResults.homeTeamLeagueUid =
               game.teamUid;
         }
@@ -76,7 +76,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       GameBuilder gameBuilder = game.toBuilder();
       gameBuilder.uid = mainRef.documentID;
       // Add the shared stuff, then the game.
-      if (game.sharedData.officialResults.homeTeamLeagueUid == null) {
+      if (game.sharedData.officialResult.homeTeamLeagueUid == null) {
         gameBuilder.sharedData.officialResults.homeTeamLeagueUid = game.teamUid;
       }
       var s = game.sharedData.rebuild((b) => b..uid = mainShared.documentID);

@@ -102,8 +102,6 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (BuildContext context, LoadedState state) {
         switch (state) {
           case LoadedState.Logout:
-          case LoadedState.Loading:
-          case LoadedState.SqlLoaded:
             return SizedBox(
               width: 15.0,
               height: 15.0,
@@ -112,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     new AlwaysStoppedAnimation<Color>(Colors.greenAccent),
               ),
             );
+          case LoadedState.Loading:
           case LoadedState.AllLoaded:
             return SizedBox(height: 0);
           default:
@@ -132,10 +131,9 @@ class _HomeScreenState extends State<HomeScreen> {
           bool loading = false;
           switch (state) {
             case LoadedState.Logout:
-            case LoadedState.Loading:
               loading = true;
               break;
-            case LoadedState.SqlLoaded:
+            case LoadedState.Loading:
             case LoadedState.AllLoaded:
               loading = false;
               break;

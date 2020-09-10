@@ -401,9 +401,9 @@ class GameCard extends StatelessWidget {
     if (game.sharedData.time < new DateTime.now().millisecondsSinceEpoch &&
         game.sharedData.type == EventType.Game &&
         game.result.result == GameResult.Unknown) {
-      if (game.sharedData.officialResults != null &&
-          game.sharedData.officialResults.result != OfficialResult.InProgress &&
-          game.sharedData.officialResults.result != OfficialResult.NotStarted) {
+      if (game.sharedData.officialResult != null &&
+          game.sharedData.officialResult.result != OfficialResult.InProgress &&
+          game.sharedData.officialResult.result != OfficialResult.NotStarted) {
         buttons.add(new FlatButton(
           onPressed: () => _officalResult(context),
           child: new Text(Messages.of(context).useofficialresultbutton),

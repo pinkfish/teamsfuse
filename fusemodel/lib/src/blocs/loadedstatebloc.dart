@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
 
-enum LoadedState { Logout, Loading, SqlLoaded, AllLoaded }
+enum LoadedState { Logout, Loading, AllLoaded }
 
 enum LoadedEvent { Start, ALL, Logout }
 

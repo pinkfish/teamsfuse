@@ -51,7 +51,7 @@ abstract class Game implements Built<Game, GameBuilder> {
   Game._();
   factory Game([updates(GameBuilder b)]) = _$Game;
 
-  bool get homegame => sharedData.officialResults.homeTeamLeagueUid == teamUid;
+  bool get homegame => sharedData.officialResult.homeTeamLeagueUid == teamUid;
 
   TZDateTime get tzArriveTime => new TZDateTime.fromMillisecondsSinceEpoch(
       sharedData.location, arriveTime);

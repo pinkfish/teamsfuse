@@ -80,7 +80,7 @@ abstract class GameSharedData
   num get endTime;
   EventType get type;
   GamePlace get place;
-  GameOfficialResults get officialResults;
+  GameOfficialResults get officialResult;
 
   /// The league associated with this game, null if there is none.
   @nullable

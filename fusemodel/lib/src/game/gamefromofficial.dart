@@ -21,26 +21,26 @@ class GameFromOfficial extends GameResultSharedDetails {
 
   GameFromOfficial(this.game, this.awayTeamLeageUid)
       : _finalResult = _swapResult(
-            game.officialResults.scores,
+            game.officialResult.scores,
             GamePeriod.regulation,
-            game.officialResults.homeTeamLeagueUid != awayTeamLeageUid),
+            game.officialResult.homeTeamLeagueUid != awayTeamLeageUid),
         _overtimeResult = _swapResult(
-            game.officialResults.scores,
+            game.officialResult.scores,
             GamePeriod.overtime,
-            game.officialResults.homeTeamLeagueUid != awayTeamLeageUid),
+            game.officialResult.homeTeamLeagueUid != awayTeamLeageUid),
         _penaltyResult = _swapResult(
-            game.officialResults.scores,
+            game.officialResult.scores,
             GamePeriod.penalty,
-            game.officialResults.homeTeamLeagueUid != awayTeamLeageUid);
+            game.officialResult.homeTeamLeagueUid != awayTeamLeageUid);
 
   /// If the game is finished.
   bool get isGameFinished =>
-      game.officialResults.result != OfficialResult.InProgress &&
-      game.officialResults.result != OfficialResult.NotStarted;
+      game.officialResult.result != OfficialResult.InProgress &&
+      game.officialResult.result != OfficialResult.NotStarted;
 
   /// Is this a home game?
   bool get isHomeGame =>
-      game.officialResults.homeTeamLeagueUid != awayTeamLeageUid;
+      game.officialResult.homeTeamLeagueUid != awayTeamLeageUid;
 
   /// The regulation result for the game
   GameResultPerPeriod get regulationResult => _finalResult;
@@ -100,7 +100,7 @@ class GameFromOfficial extends GameResultSharedDetails {
   }
 
   GameResult get result {
-    switch (game.officialResults.result) {
+    switch (game.officialResult.result) {
       case OfficialResult.HomeTeamWon:
         if (isHomeGame) {
           return GameResult.Win;

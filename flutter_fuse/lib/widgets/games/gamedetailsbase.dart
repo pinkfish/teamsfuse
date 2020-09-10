@@ -330,7 +330,7 @@ class GameDetailsBase extends StatelessWidget {
             true,
             game.sharedData,
             officalData,
-            game.sharedData.officialResults.result == OfficialResult.InProgress,
+            game.sharedData.officialResult.result == OfficialResult.InProgress,
             officalData.isSameAs(game.result)));
         if (!officalData.isSameAs(game.result)) {
           if (copyOfficalResult != null) {

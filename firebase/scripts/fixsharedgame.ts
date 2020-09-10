@@ -18,30 +18,16 @@ async function updateSharedGames() {
               ret.push((function(myDoc) {
                   var myDoc = snap.docs[index]
                   var sharedData = myDoc.data()
-                  return db.collection("Games")
-                      .where("sharedDataUid", "==", myDoc.id)
-                      .get()
-                      .then(snapshot => {
-                          var inner = [];
-    
-                          if (snapshot.docs.length == 0) {
-                             console.log('Docs for ' + myDoc.id);
-                          }
-                          for (var index in snapshot.docs) {
-                            inner.push((function(gameDoc) {
-                                return db.collection("Games").doc(gameDoc.id).update({
-                                   'sharedData': sharedData
-                                })
-                                console.log('Updated ' + gameDoc.id)
-                            })(snapshot.docs[index]))
-                          }
-                          if (snapshot.docs.length == 0) {
-                             console.log('Fo0und no docs for ' + myDoc.id);
-                          }
-                          return Promise.all(inner);
-                      });
-                  
-               })(snap.docs[index]))
+
+                  if (sharedData.officialResult != undefined) {
+                      sharedData.officialResult.divisions = sharedData.officialResult.divisions.replace("GameDivisionsType.", "");
+                      sharedData.officialResult.inProgress = sharedData.officialResult.divisions.replace("GameInProgress.", "");
+                      sharedData.officialResult.result = sharedData.officialResult.divisions.replace("GameResult.", "");
+                  }
+                  sharedData.type = sharedData.type.replace("EventType.", "");
+                  sharedData.uid = myDoc.id;
+                  return db.collection("GamesShared").document(myDoc.id).update(sharedData);
+              })(snap.docs[index]))
            }
            return Promise.all(ret);
         })
@@ -56,26 +42,13 @@ async function updateAllGames() {
             var d = snap.docs[index];
             (function(myDoc){
             var data = myDoc.data()
-            if (data != null && data.sharedDataUid == null) {
-                var sharedData = {
-                  endTime: data.endTime,
-                  name: data.name,
-                  place: data.place,
-                  time: data.time,
-                  timezone: data.timezone,
-                  type: data.type,
-                  leagueDivisonUid: null,
-                  leagueUid: null,
-                }
-                if (data.leagueDivisonUid) {
-                  sharedData.leagueDivisonUid = data.leagueDivisonUid
-                  sharedData.leagueUid = data.leagueUid
-                }
+            if (data != null) {
                 // Add in the data and update the game.
-                ret.push(db.collection("GamesShared").add(sharedData).then(ref => {
-                   console.log("Updated " + myDoc.id + " with " + ref.id);
-                   return db.collection("Games").doc(myDoc.id).update({sharedDataUid: ref.id})
-                }))
+                data.result.result = data.result.result.replace("GameResult.");
+                data.result.inProgress = data.result.inProgress.replace("GameInProgress.");
+                data.type = data.type.replace("EventType.");
+                data.uid = mydoc.id;
+                ret.push( db.collection("Games").doc(myDoc.id).update(data));
             }
 
           })(d)
@@ -84,4 +57,4 @@ async function updateAllGames() {
 }
 
 updateSharedGames()
-//updateAllGames()
+updateAllGames()

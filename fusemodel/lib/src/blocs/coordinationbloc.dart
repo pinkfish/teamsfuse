@@ -71,6 +71,18 @@ class CoordinationStateLoggedOut extends CoordinationState {
 }
 
 ///
+/// Before we have worked out if we are logged in or logged out.
+///
+class CoordinationStateUninitialized extends CoordinationState {
+  CoordinationStateUninitialized(@required BuiltSet<BlocsToLoad> newToLoad)
+      : super(loaded: BuiltSet(), uid: '', toLoad: newToLoad);
+
+  CoordinationState update(BuiltSet<BlocsToLoad> newToLoad) {
+    return CoordinationStateUninitialized(newToLoad);
+  }
+}
+
+///
 /// The base event for the bloc.
 ///
 abstract class CoordinationEvent extends Equatable {}
@@ -135,7 +147,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
       @required this.analytics,
       @required this.databaseUpdateModel,
       @required this.analyticsSubsystem})
-      : super(CoordinationStateLoggedOut(BuiltSet())) {
+      : super(CoordinationStateUninitialized(BuiltSet())) {
     authenticationBloc.listen((AuthenticationState authState) {
       if (authState is AuthenticationLoggedIn) {
         loadingTrace = analytics.newTrace("fullLoadTrace");

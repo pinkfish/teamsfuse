@@ -69,8 +69,8 @@ class _LeagueOrTournamentDivisonDetailsState
             gamesState.leagueOrTournamentGames.values;
         if (_currentTeamConstraint != TournamentOrLeagueTeamPicker.all) {
           games = games.where((GameSharedData g) =>
-              g.officialResults.homeTeamLeagueUid == _currentTeamConstraint ||
-              g.officialResults.awayTeamLeagueUid == _currentTeamConstraint);
+              g.officialResult.homeTeamLeagueUid == _currentTeamConstraint ||
+              g.officialResult.awayTeamLeagueUid == _currentTeamConstraint);
         }
         if (games.length == 0) {
           if (leagueState.leagueOrTournament.isAdmin()) {

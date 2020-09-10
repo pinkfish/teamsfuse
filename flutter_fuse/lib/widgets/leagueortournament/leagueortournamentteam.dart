@@ -135,10 +135,10 @@ class _LeagueOrTournamentTeamDetailsState
                                   List<GameSharedData> sortedGames = gamesState
                                       .leagueOrTournamentGames.values
                                       .where((GameSharedData g) =>
-                                          g.officialResults.homeTeamLeagueUid ==
+                                          g.officialResult.homeTeamLeagueUid ==
                                               widget
                                                   .leagueOrTournamentTeamUid ||
-                                          g.officialResults.awayTeamLeagueUid ==
+                                          g.officialResult.awayTeamLeagueUid ==
                                               widget.leagueOrTournamentTeamUid)
                                       .toList();
                                   if (sortedGames.length == 0) {

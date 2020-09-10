@@ -41,7 +41,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
     super.initState();
     print('init this state');
     // Make our own copy of it.
-    _results = widget.game.officialResults.toBuilder();
+    _results = widget.game.officialResult.toBuilder();
     if (_results.result == OfficialResult.NotStarted) {
       _currentState = DetailsState.notStarted;
     } else if (_results.result == OfficialResult.InProgress) {
@@ -51,7 +51,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
       _startedAsFinal = true;
     }
 
-    if (widget.game.officialResults.scores.containsKey(GamePeriod.regulation)) {
+    if (widget.game.officialResult.scores.containsKey(GamePeriod.regulation)) {
       _regulationHomePts = TextEditingController(
           text: _results.scores[GamePeriod.regulation].score.ptsFor.toString());
       _regulationAwayPts = TextEditingController(
@@ -60,7 +60,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
     }
 
     _overtimePeriod =
-        widget.game.officialResults.scores.containsKey(GamePeriod.overtime);
+        widget.game.officialResult.scores.containsKey(GamePeriod.overtime);
     if (_overtimePeriod) {
       _overtimeHomePts = TextEditingController(
           text: _results.scores[GamePeriod.overtime].score.ptsFor.toString());
@@ -69,7 +69,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
               _results.scores[GamePeriod.overtime].score.ptsAgainst.toString());
     }
     _penaltyPeriod =
-        widget.game.officialResults.scores.containsKey(GamePeriod.penalty);
+        widget.game.officialResult.scores.containsKey(GamePeriod.penalty);
     if (_penaltyPeriod) {
       _penaltyHomePts = TextEditingController(
           text: _results.scores[GamePeriod.penalty].score.ptsFor.toString());
