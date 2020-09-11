@@ -342,14 +342,14 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                         initialValue: widget.game.homegame,
                         onSaved: (bool value) {
                           if (value) {
-                            builder.sharedData.officialResults
+                            builder.sharedData.officialResult
                                 .homeTeamLeagueUid = builder.teamUid;
-                            builder.sharedData.officialResults
+                            builder.sharedData.officialResult
                                 .awayTeamLeagueUid = builder.opponentUids[0];
                           } else {
-                            builder.sharedData.officialResults
+                            builder.sharedData.officialResult
                                 .homeTeamLeagueUid = builder.opponentUids[0];
-                            builder.sharedData.officialResults
+                            builder.sharedData.officialResult
                                 .awayTeamLeagueUid = builder.teamUid;
                           }
                         },

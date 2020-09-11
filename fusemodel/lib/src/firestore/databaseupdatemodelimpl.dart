@@ -31,7 +31,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         GameBuilder gameBuilder = game.toBuilder();
         // Add the shared stuff, then the game.
         if (game.sharedData.officialResult.homeTeamLeagueUid == null) {
-          gameBuilder.sharedData.officialResults.homeTeamLeagueUid =
+          gameBuilder.sharedData.officialResult.homeTeamLeagueUid =
               game.teamUid;
         }
         gameBuilder.sharedData.uid = refShared.documentID;
@@ -77,7 +77,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       gameBuilder.uid = mainRef.documentID;
       // Add the shared stuff, then the game.
       if (game.sharedData.officialResult.homeTeamLeagueUid == null) {
-        gameBuilder.sharedData.officialResults.homeTeamLeagueUid = game.teamUid;
+        gameBuilder.sharedData.officialResult.homeTeamLeagueUid = game.teamUid;
       }
       var s = game.sharedData.rebuild((b) => b..uid = mainShared.documentID);
       tx.set(mainShared, s.toMap());

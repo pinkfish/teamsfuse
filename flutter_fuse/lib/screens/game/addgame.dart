@@ -145,7 +145,7 @@ class AddGameScreenState extends State<AddGameScreen> {
     print('Team $team');
     //_gameFormKey.currentState.setTeam(str);
     GameSharedDataBuilder sharedGameData = GameSharedDataBuilder()
-      ..officialResults.homeTeamLeagueUid = team.uid
+      ..officialResult.homeTeamLeagueUid = team.uid
       ..type = EventType.Game;
     DateTime start = new DateTime.now().add(const Duration(days: 1));
     _initGame = new Game((b) => b

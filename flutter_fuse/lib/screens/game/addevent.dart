@@ -178,7 +178,7 @@ class AddEventScreenState extends State<AddEventScreen> {
   void newGame() {
     GameSharedDataBuilder sharedGameData = new GameSharedDataBuilder()
       ..type = EventType.Event
-      ..officialResults.homeTeamLeagueUid = _team.uid;
+      ..officialResult.homeTeamLeagueUid = _team.uid;
     _initGame = new Game((b) => b
       ..teamUid = _team.uid
       ..sharedData = sharedGameData

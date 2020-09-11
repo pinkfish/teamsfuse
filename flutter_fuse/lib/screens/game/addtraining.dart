@@ -251,7 +251,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   void newGame() {
     GameSharedData sharedGameData = new GameSharedData((b) => b
       ..type = EventType.Practice
-      ..officialResults.homeTeamLeagueUid = _team.uid);
+      ..officialResult.homeTeamLeagueUid = _team.uid);
     _initGame = new Game((b) => b
       ..teamUid = _team.uid
       ..sharedData = sharedGameData.toBuilder()
