@@ -14,10 +14,7 @@ export const onSeasonUpdate = functions.firestore.document('/Sessons/{seasonId}'
         const newData = updateUsers(data.users);
         if (newData.size > 0) {
             // Do the update.
-            return db
-                .collection('Seasons')
-                .doc(inputData.after.id)
-                .update(newData);
+            return db.collection('Seasons').doc(inputData.after.id).update(newData);
         }
     }
     return data;

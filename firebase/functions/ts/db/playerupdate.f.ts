@@ -35,24 +35,14 @@ async function addUser(user: string, playerId: string): Promise<any> {
         .collection('Seasons')
         .where('players.' + playerId + '.added', '==', true)
         .get()
-        .then(snapshot => {
+        .then((snapshot) => {
             const innerRet: Promise<any>[] = [];
-            snapshot.docs.forEach(doc => {
+            snapshot.docs.forEach((doc) => {
                 const updateData: Record<string, any> = {};
                 updateData['users.' + user + '.added'] = true;
                 updateData['users.' + user + '.' + playerId] = true;
-                innerRet.push(
-                    db
-                        .collection('Seasons')
-                        .doc(doc.id)
-                        .update(updateData),
-                );
-                innerRet.push(
-                    db
-                        .collection('Teams')
-                        .doc(doc.data().teamUid)
-                        .update(updateData),
-                );
+                innerRet.push(db.collection('Seasons').doc(doc.id).update(updateData));
+                innerRet.push(db.collection('Teams').doc(doc.data().teamUid).update(updateData));
             });
             return Promise.all(innerRet);
         });
@@ -64,24 +54,14 @@ async function removeUser(user: string, playerId: string): Promise<any> {
         .collection('Seasons')
         .where('players.' + playerId + '.added', '==', true)
         .get()
-        .then(snapshot => {
+        .then((snapshot) => {
             const innerRet: Promise<any>[] = [];
-            snapshot.docs.forEach(doc => {
+            snapshot.docs.forEach((doc) => {
                 // Remove just the player, or everything.
                 const updateData: Record<string, any> = {};
                 updateData['users.' + user + '.' + playerId] = FieldValue.delete();
-                innerRet.push(
-                    db
-                        .collection('Seasons')
-                        .doc(doc.id)
-                        .update(updateData),
-                );
-                innerRet.push(
-                    db
-                        .collection('Teams')
-                        .doc(doc.data().teamUid)
-                        .update(updateData),
-                );
+                innerRet.push(db.collection('Seasons').doc(doc.id).update(updateData));
+                innerRet.push(db.collection('Teams').doc(doc.data().teamUid).update(updateData));
             });
             return Promise.all(innerRet);
         });

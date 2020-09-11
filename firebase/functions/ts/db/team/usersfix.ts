@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { updateUsers, updateAdmins } from '../../util/updateusers';
 const db = admin.firestore();
 
-export const fixUsers = function(
+export const fixUsers = function (
     id: string,
     data: Record<string, any | undefined> | undefined,
     previousData: Record<string, any | undefined> | undefined,
@@ -14,12 +14,7 @@ export const fixUsers = function(
         const newData = updateUsers(data.user);
         if (newData.size > 0) {
             // Do the update.
-            ret.push(
-                db
-                    .collection('Teams')
-                    .doc(id)
-                    .update(newData),
-            );
+            ret.push(db.collection('Teams').doc(id).update(newData));
         }
     }
     if (data && previousData) {
@@ -33,16 +28,11 @@ export const fixUsers = function(
                     .collection('Seasons')
                     .where('teamUid', '==', id)
                     .get()
-                    .then(snap => {
+                    .then((snap) => {
                         const innerRet: Promise<any>[] = [];
                         for (const docIdx in snap.docs) {
                             const doc = snap.docs[docIdx];
-                            innerRet.push(
-                                db
-                                    .collection('Seasons')
-                                    .doc(doc.id)
-                                    .update(toUpdate),
-                            );
+                            innerRet.push(db.collection('Seasons').doc(doc.id).update(toUpdate));
                         }
                         return Promise.all(innerRet);
                     }),

@@ -13,7 +13,7 @@ const mailgunOptions = {
 
 const mailTransport = mailgunTransport(mailgunOptions);
 
-exports.sendMail = mailOptions => {
+exports.sendMail = (mailOptions) => {
     const emailClient = nodemailer.createTransport(mailTransport);
     console.log(mailOptions);
     return emailClient.sendMail(mailOptions);

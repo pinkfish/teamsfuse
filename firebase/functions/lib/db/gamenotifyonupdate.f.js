@@ -26,21 +26,21 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onUpd
         }
         const bing = true;
         if (data.uniform !== previousData.uniform || data.opponentUid !== previousData.opponentUid || bing) {
-            if (data.type === 'EventType.Practice') {
+            if (data.type === 'Practice') {
                 payload = {
                     notification: {
                         title: 'Practice location {{team.name}}',
                         body: 'Arrive at {{arrivalTime}}',
                     },
                 };
-            } else if (data.type === 'EventType.Game') {
+            } else if (data.type === 'Game') {
                 payload = {
                     notification: {
                         title: 'Game Location vs {{opponent.name}}',
                         body: 'Arrive by {{arrivalTime}}',
                     },
                 };
-            } else if (data.type === 'EventType.Event') {
+            } else if (data.type === 'Event') {
                 payload = {
                     notification: {
                         title: 'Event location for {{team.name}}',
@@ -49,21 +49,21 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onUpd
                 };
             }
         } else if (data.arrivalTime !== previousData.arrivalTime) {
-            if (data.type === 'EventType.Practice') {
+            if (data.type === 'Practice') {
                 payload = {
                     notification: {
                         title: 'Practice time {{team.name}}',
                         body: 'Arrive at {{arrivalTime}}',
                     },
                 };
-            } else if (data.type === 'EventType.Game') {
+            } else if (data.type === 'Game') {
                 payload = {
                     notification: {
                         title: 'Game time vs {{opponent.name}}',
                         body: 'Arrive by {{arrivalTime}}',
                     },
                 };
-            } else if (data.type === 'EventType.Event') {
+            } else if (data.type === 'Event') {
                 payload = {
                     notification: {
                         title: 'Event time for {{team.name}}',

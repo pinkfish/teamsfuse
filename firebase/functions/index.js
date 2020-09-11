@@ -22,14 +22,14 @@ let skipped = [];
 glob.sync(`./**/*.f.js`, {
     cwd: path.resolve(__dirname, ENDPOINT_FOLDER),
 })
-    .map(file => ({
+    .map((file) => ({
         path: file.slice(2),
         components: file.slice(2, -5).split(/[\/.]/g),
     }))
     .sort((a, b) => b.components.length - a.components.length)
-    .forEach(file => {
+    .forEach((file) => {
         // ignore by name
-        if (file.components.find(c => IGNORE.test(c))) return;
+        if (file.components.find((c) => IGNORE.test(c))) return;
 
         // firebase naming standard
         const FB_NAME = file.components.join('-');
@@ -38,7 +38,7 @@ glob.sync(`./**/*.f.js`, {
         is.triggered = process.env.FUNCTION_NAME === FB_NAME;
 
         // only deploy files locally or if allowed to deploy
-        is.deployable = is.emulating || !file.components.find(c => DO_NOT_DEPLOY.test(c));
+        is.deployable = is.emulating || !file.components.find((c) => DO_NOT_DEPLOY.test(c));
 
         // export module if triggered or deploying
         if (is.triggered || (is.deploying && is.deployable)) {

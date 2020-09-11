@@ -31,17 +31,14 @@ exports = module.exports = functions.firestore.document('/Invites/{id}').onWrite
         .collection('UserData')
         .doc(data.sentbyUid)
         .get()
-        .then(sentByDoc => {
+        .then((sentByDoc) => {
             return mailToSender(inputData.after, sentByDoc);
         })
-        .then(stuff => {
+        .then((stuff) => {
             console.log('Sent email to ' + data.email);
-            return db
-                .collection('Invites')
-                .doc(inputData.after.id)
-                .update({ emailedInvite: true });
+            return db.collection('Invites').doc(inputData.after.id).update({ emailedInvite: true });
         })
-        .catch(error => console.error('There was an error while sending the email:', error));
+        .catch((error) => console.error('There was an error while sending the email:', error));
 });
 
 function mailToSender(inviteDoc, sentByDoc) {
@@ -74,13 +71,13 @@ function mailToSender(inviteDoc, sentByDoc) {
         invite: inviteDoc.data(),
     };
 
-    if (data.type === 'InviteType.Team' || data.type === 'InviteType.Admin') {
+    if (data.type === 'Team' || data.type === 'Admin') {
         // Find the team details.
         return db
             .collection('Teams')
             .doc(data.teamUid)
             .get()
-            .then(snapshot => {
+            .then((snapshot) => {
                 if (snapshot.exists) {
                     const teamData = snapshot.data();
 
@@ -94,7 +91,7 @@ function mailToSender(inviteDoc, sentByDoc) {
                     // Building Email message.
                     context.teamimg = 'cid:teamurl';
                     context.team = teamData;
-                    if (data.type === 'InviteType.Team') {
+                    if (data.type === 'Team') {
                         mailOptions.subject = 'Invitation to join ' + data.teamName;
                     } else {
                         mailOptions.subject = 'Invitation to be an admin for ' + teamData.name;
@@ -107,7 +104,7 @@ function mailToSender(inviteDoc, sentByDoc) {
                     return null;
                 }
             })
-            .then(data => {
+            .then((data) => {
                 if (data === null) {
                     return null;
                 }
@@ -123,12 +120,12 @@ function mailToSender(inviteDoc, sentByDoc) {
                 });
                 return mailTransport.sendMail(mailOptions);
             });
-    } else if (data.type === 'InviteType.Player') {
+    } else if (data.type === 'Player') {
         return db
             .collection('Players')
             .doc(data.playerUid)
             .get()
-            .then(snapshot => {
+            .then((snapshot) => {
                 if (snapshot.exists) {
                     const playerData = snapshot.data();
 
@@ -151,7 +148,7 @@ function mailToSender(inviteDoc, sentByDoc) {
                     return null;
                 }
             })
-            .then(data => {
+            .then((data) => {
                 if (data === null) {
                     return null;
                 }
@@ -167,12 +164,12 @@ function mailToSender(inviteDoc, sentByDoc) {
                 });
                 return mailTransport.sendMail(mailOptions);
             });
-    } else if (data.type === 'InviteType.LeagueAdmin' || data.type === 'InviteType.LeagueTeam') {
+    } else if (data.type === 'LeagueAdmin' || data.type === 'LeagueTeam') {
         return db
             .collection('League')
             .doc(data.leagueUid)
             .get()
-            .then(snapshot => {
+            .then((snapshot) => {
                 if (snapshot.exists) {
                     let url;
                     if (snapshot.data().photourl) {
@@ -186,7 +183,7 @@ function mailToSender(inviteDoc, sentByDoc) {
                     context.league.gender = context.league.gender.replace('Gender.', '').toLowerCase();
                     context.league.sport = context.league.sport.replace('Sport.', '').toLowerCase();
 
-                    if (data.type === 'InviteType.LeagueAdmin') {
+                    if (data.type === 'LeagueAdmin') {
                         mailOptions.subject = 'Invitation to join Leguae ' + data.leagueName;
                     } else {
                         mailOptions.subject =
@@ -199,7 +196,7 @@ function mailToSender(inviteDoc, sentByDoc) {
                     return null;
                 }
             })
-            .then(data => {
+            .then((data) => {
                 if (data === null) {
                     console.log('No league');
                     return null;
@@ -216,12 +213,12 @@ function mailToSender(inviteDoc, sentByDoc) {
                 });
                 return mailTransport.sendMail(mailOptions);
             });
-    } else if (data.type === 'InviteType.Club') {
+    } else if (data.type === 'Club') {
         return db
             .collection('Club')
             .doc(data.clubUid)
             .get()
-            .then(snapshot => {
+            .then((snapshot) => {
                 let url;
                 if (snapshot.data().photourl) {
                     url = snapshot.data().photourl;
@@ -238,7 +235,7 @@ function mailToSender(inviteDoc, sentByDoc) {
 
                 return Promise.all([mailOptions, getImageFromUrl(url)]);
             })
-            .then(data => {
+            .then((data) => {
                 if (data === null) {
                     console.log('No league');
                     return null;

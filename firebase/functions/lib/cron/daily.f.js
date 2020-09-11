@@ -22,7 +22,7 @@ exports = module.exports = functions.pubsub.topic('daily-tick').onPublish((data,
         .where('arrivalTime', '>', cutoff.valueOf())
         .where('arrivalTime', '<', now.valueOf())
         .get()
-        .then(snapshot => {
+        .then((snapshot) => {
             const promiseEmail = [snapshot.docs];
             for (const index in snapshot.docs) {
                 if (Object.prototype.hasOwnProperty.call(snapshot.docs, index)) {

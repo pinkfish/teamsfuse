@@ -28,7 +28,7 @@ export function updateAdmins(admins: Set<string>, oldAdmins: Set<string>): Recor
     }
 
     if (oldAdmins) {
-        const difference = new Set([...oldAdmins].filter(x => !admins.has(x)));
+        const difference = new Set([...oldAdmins].filter((x) => !admins.has(x)));
         for (const toRemove in difference) {
             ret[toRemove].admin = FieldValue.delete();
         }

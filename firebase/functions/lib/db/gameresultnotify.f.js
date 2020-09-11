@@ -68,7 +68,7 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onUpd
         }
     }
     if (
-        data.result.inProgress !== 'GameInProgress.NotStarted' &&
+        data.result.inProgress !== 'NotStarted' &&
         (data.result.inProgress !== previousData.result.inProgress ||
             diff ||
             data.result.result !== previousData.result.result)
@@ -82,7 +82,7 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onUpd
         console.log(data.result);
         console.log(curScores);
         let mess = '';
-        if (data.result.inProgress === 'GameInProgrsss.Final') {
+        if (data.result.inProgress === 'Final') {
             if (result === 0) {
                 console.log(data.result);
                 console.log(curScores);

@@ -8,15 +8,9 @@ exports.createGameFromShared = (sharedGameDoc, leagueTeamDoc) => {
     // Lookup the team details.
     return Promises.all(
         [
-            db
-                .collection('Teams')
-                .document(leagueTeamDoc.teamUid)
-                .get(),
-            db
-                .collection('Teams')
-                .document(leagueTeamDoc.teamUid)
-                .collection('Opponents'),
-        ].then(stuff => {
+            db.collection('Teams').document(leagueTeamDoc.teamUid).get(),
+            db.collection('Teams').document(leagueTeamDoc.teamUid).collection('Opponents'),
+        ].then((stuff) => {
             const teamDoc = stuff[0];
             const opponents = stuff[1];
             // Setup the arrival time based on the team details.
@@ -30,10 +24,7 @@ exports.createGameFromShared = (sharedGameDoc, leagueTeamDoc) => {
             // See if we need to create an opponent and connect this up.
             let opponentUid;
             let opponentNameUid;
-            const compareName = leagueTeamDoc
-                .data()
-                .name.trim()
-                .toLowerCase();
+            const compareName = leagueTeamDoc.data().name.trim().toLowerCase();
             if (opponents.docs.length === 0) {
                 // Look at all the opponents and see what we can do.
                 for (const doc in opponents.docs) {
@@ -41,12 +32,7 @@ exports.createGameFromShared = (sharedGameDoc, leagueTeamDoc) => {
                         // This is us.
                         opponentUid = doc.id;
                     }
-                    if (
-                        doc
-                            .data()
-                            .name.trim()
-                            .toLowerCase() === compareName
-                    ) {
+                    if (doc.data().name.trim().toLowerCase() === compareName) {
                         opponentNameUid = doc.id;
                     }
                 }
@@ -63,11 +49,7 @@ exports.createGameFromShared = (sharedGameDoc, leagueTeamDoc) => {
                 };
                 newOpponent['leagueTeamUid'][leagueTeamDoc.id] = { added: true };
                 ret = [
-                    db
-                        .collection('Teams')
-                        .document(eagueTeamDoc.teamUid)
-                        .collection('Opponents')
-                        .add(newOpponent),
+                    db.collection('Teams').document(eagueTeamDoc.teamUid).collection('Opponents').add(newOpponent),
                     null,
                 ];
             } else {
@@ -75,7 +57,7 @@ exports.createGameFromShared = (sharedGameDoc, leagueTeamDoc) => {
             }
             return Promises.all(ret);
         }),
-    ).then(snap => {
+    ).then((snap) => {
         let opponentUid = snap[1];
         if (snap[0] !== null) {
             opponentUid = snap[0].id;
@@ -112,21 +94,17 @@ exports.createOpponentForShared = (sharedGameUid, leagueTeamDoc, teamDoc, oppone
 
     return opponents
         .get()
-        .then(snapshot => {
+        .then((snapshot) => {
             // Go through the opponents and match based on the ones that match the case
             // insensitive name.
             if (snapshot.docs.length === 0) {
                 // Look at all the opponents and try that way.
-                const opponents = db
-                    .collection('Teams')
-                    .doc(teamDoc.id)
-                    .collection('Opponents')
-                    .get();
+                const opponents = db.collection('Teams').doc(teamDoc.id).collection('Opponents').get();
                 return Promises.all([null, opponents]);
             }
             return Promises.all([snapshot.docs[0].id]);
         })
-        .then(opponentUpdate => {
+        .then((opponentUpdate) => {
             if (opponentUpdate[0] !== null) {
                 return Promises.all([opponentUpdate]);
             }
@@ -155,11 +133,7 @@ exports.createOpponentForShared = (sharedGameUid, leagueTeamDoc, teamDoc, oppone
             newOpponentData['leagueTeamUid'][leagueTeamDoc.id] = { added: true };
             return Promises.all([
                 null,
-                db
-                    .collection('Teams')
-                    .doc(teamDoc.id)
-                    .collection('Opponents')
-                    .add(newOpponentData),
+                db.collection('Teams').doc(teamDoc.id).collection('Opponents').add(newOpponentData),
             ]);
         });
 };

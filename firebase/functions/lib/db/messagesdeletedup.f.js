@@ -20,7 +20,7 @@ exports = module.exports = functions.firestore
                 .where('userId', '==', data.userId)
                 .where('messageId', '==', data.messageId)
                 .get()
-                .then(snapshot => {
+                .then((snapshot) => {
                     console.log('checking for duplicates ' + snapshot.docs.length);
 
                     const docsStuff = [];
@@ -29,7 +29,7 @@ exports = module.exports = functions.firestore
                         docsStuff.push(
                             inputData.after.ref.update(
                                 {
-                                    state: 'MesasageState.Archived',
+                                    state: 'Archived',
                                     userId: 'ignore',
                                 },
                                 { merge: true },

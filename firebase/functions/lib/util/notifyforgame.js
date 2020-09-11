@@ -14,10 +14,7 @@ exports.notifyForGame = (game, payload, excludeUser, onlyGames, sharedGameData) 
     // Send notification to users, get all the players.
     // Get all the players users.
     // Send notifications.
-    const seasonRef = db
-        .collection('Seasons')
-        .doc(game.data().seasonUid)
-        .get();
+    const seasonRef = db.collection('Seasons').doc(game.data().seasonUid).get();
     const teamRef = db.collection('Teams').doc(game.data().teamUid);
     const sharedGameRef = db.collection('GamesShared').doc(game.data().sharedDataUid);
 
@@ -27,10 +24,7 @@ exports.notifyForGame = (game, payload, excludeUser, onlyGames, sharedGameData) 
         payload.notification.body = handlebars.compile(payload.notification.body);
     }
     if (game.data().opponentUid !== null && game.data().opponentUid !== '') {
-        opponent = teamRef
-            .collection('Opponents')
-            .doc(game.data().opponentUid)
-            .get();
+        opponent = teamRef.collection('Opponents').doc(game.data().opponentUid).get();
     }
 
     // Put in all the default pieces.  This will mean we always open a game for these
@@ -45,7 +39,7 @@ exports.notifyForGame = (game, payload, excludeUser, onlyGames, sharedGameData) 
     const sharedGame = sharedGameData === null ? sharedGameRef.get() : sharedGameData;
 
     return Promise.all([teamRef.get(), opponent, seasonRef, sharedGame])
-        .then(data => {
+        .then((data) => {
             const team = data[0];
             const opponent = data[1];
             const season = data[2];
@@ -65,17 +59,14 @@ exports.notifyForGame = (game, payload, excludeUser, onlyGames, sharedGameData) 
             for (const playerId in seasonData.players) {
                 if (Object.prototype.hasOwnProperty.call(seasonData.players, playerId)) {
                     // Send the notification to this player.
-                    const players = db
-                        .collection('Players')
-                        .doc(playerId)
-                        .get();
+                    const players = db.collection('Players').doc(playerId).get();
                     promises.push(Promise.all([[game, team, opponent, season, sharedGame], players]));
                     console.log('Found player  ' + playerId);
                 }
             }
             return Promise.all(promises);
         })
-        .then(allPlayers => {
+        .then((allPlayers) => {
             const inner = [];
             // Now we have the player, this links to all the users.
             for (const key in allPlayers) {
@@ -90,10 +81,7 @@ exports.notifyForGame = (game, payload, excludeUser, onlyGames, sharedGameData) 
                     if (Object.prototype.hasOwnProperty.call(player.user, userId)) {
                         const excludeUser = extra[5];
                         if (excludeUser !== userId) {
-                            const tokens = db
-                                .collection('UserData')
-                                .doc(userId)
-                                .get();
+                            const tokens = db.collection('UserData').doc(userId).get();
                             inner.push(Promise.all([extra, tokens]));
                             console.log('Tokens for  ' + userId);
                         } else {
@@ -104,7 +92,7 @@ exports.notifyForGame = (game, payload, excludeUser, onlyGames, sharedGameData) 
             }
             return Promise.all(inner);
         })
-        .then(allTokens => {
+        .then((allTokens) => {
             const allRets = [];
 
             for (const key in allTokens) {
@@ -224,10 +212,10 @@ exports.notifyForGame = (game, payload, excludeUser, onlyGames, sharedGameData) 
 
             return Promise.all(allRets);
         })
-        .then(response => {
+        .then((response) => {
             return handleNotifyResponse(response, tokenKey);
         })
-        .catch(error => console.error('There was an error while sending the notification:', error));
+        .catch((error) => console.error('There was an error while sending the notification:', error));
 };
 
 function handleNotifyResponse(resppnse) {
@@ -302,15 +290,9 @@ exports.emailForGame = (game, payload, excludeUser, userFlag) => {
     // Send notification to users, get all the players.
     // Get all the players users.
     // Send notifications.
-    const seasonRef = db
-        .collection('Seasons')
-        .doc(game.data().seasonUid)
-        .get();
+    const seasonRef = db.collection('Seasons').doc(game.data().seasonUid).get();
     const teamRef = db.collection('Teams').doc(game.data().teamUid);
-    const sharedGameRef = db
-        .collection('GamesShared')
-        .doc(game.data().sharedDataUid)
-        .get();
+    const sharedGameRef = db.collection('GamesShared').doc(game.data().sharedDataUid).get();
 
     payload.subject = handlebars.compile(payload.subject);
     payload.text = handlebars.compile(payload.text);
@@ -319,10 +301,7 @@ exports.emailForGame = (game, payload, excludeUser, userFlag) => {
 
     let opponent = null;
     if (game.data().opponentUid !== null && game.data().opponentUid !== '') {
-        opponent = teamRef
-            .collection('Opponents')
-            .doc(game.data().opponentUid)
-            .get();
+        opponent = teamRef.collection('Opponents').doc(game.data().opponentUid).get();
     }
 
     // Put in all the default pieces.  This will mean we always open a game for these
@@ -334,7 +313,7 @@ exports.emailForGame = (game, payload, excludeUser, userFlag) => {
     };
 
     return Promise.all([teamRef.get(), opponent, seasonRef, sharedGameRef])
-        .then(data => {
+        .then((data) => {
             const team = data[0];
             const opponent = data[1];
             const season = data[2];
@@ -346,17 +325,14 @@ exports.emailForGame = (game, payload, excludeUser, userFlag) => {
             for (const playerId in seasonData.players) {
                 if (Object.prototype.hasOwnProperty.call(seasonData.players, playerId)) {
                     // Send the notification to this player.
-                    const players = db
-                        .collection('Players')
-                        .doc(playerId)
-                        .get();
+                    const players = db.collection('Players').doc(playerId).get();
                     promises.push(Promise.all([[game, team, opponent, season, sharedGame], players]));
                     console.log('Found player  ' + playerId);
                 }
             }
             return Promise.all(promises);
         })
-        .then(allPlayers => {
+        .then((allPlayers) => {
             const inner = [];
             // Now we have the player, this links to all the users.
             for (const key in allPlayers) {
@@ -371,10 +347,7 @@ exports.emailForGame = (game, payload, excludeUser, userFlag) => {
                     if (Object.prototype.hasOwnProperty.call(player.user, userId)) {
                         const excludeUser = extra[5];
                         if (excludeUser !== userId) {
-                            const userData = db
-                                .collection('UserData')
-                                .doc(userId)
-                                .get();
+                            const userData = db.collection('UserData').doc(userId).get();
                             inner.push(Promise.all([extra, userData]));
                             console.log('UserData for  ' + userId);
                         } else {
@@ -385,7 +358,7 @@ exports.emailForGame = (game, payload, excludeUser, userFlag) => {
             }
             return Promise.all(inner);
         })
-        .then(allUsers => {
+        .then((allUsers) => {
             const allRets = [];
 
             for (const key in allUsers) {
@@ -525,5 +498,5 @@ exports.emailForGame = (game, payload, excludeUser, userFlag) => {
 
             return Promise.all(allRets);
         })
-        .catch(error => console.error('There was an error while sending the notification:', error));
+        .catch((error) => console.error('There was an error while sending the notification:', error));
 };

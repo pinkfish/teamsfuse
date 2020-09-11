@@ -17,10 +17,10 @@ exports = module.exports = functions.pubsub.topic('weekly-tick').onPublish((data
         .collection('Games')
         .where('result.inProgress', '==', 'GameInProgress.Final')
         .get()
-        .then(snapshot => {
+        .then((snapshot) => {
             const promises = [];
             const scores = {};
-            snapshot.docs.forEach(doc => {
+            snapshot.docs.forEach((doc) => {
                 if (!(doc.data().teamUid in scores)) {
                     scores[doc.data().teamUid] = { seasons: {} };
                 }
@@ -68,12 +68,7 @@ exports = module.exports = functions.pubsub.topic('weekly-tick').onPublish((data
                             snap['record.win'] = seasonScores.win;
                             snap['record.tie'] = seasonScores.tie;
                             snap['record.loss'] = seasonScores.loss;
-                            promises.push(
-                                db
-                                    .collection('Seasons')
-                                    .doc(seasonUid)
-                                    .update(snap),
-                            );
+                            promises.push(db.collection('Seasons').doc(seasonUid).update(snap));
 
                             for (const opponentUid in seasonScores.opponents) {
                                 if (Object.prototype.hasOwnProperty.call(seasonScores.opponents, opponentUid)) {

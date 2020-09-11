@@ -17,23 +17,21 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
         .collection('Games')
         .where('sharedDataUid', '==', inputData.id)
         .get()
-        .then(snapshot => {
+        .then((snapshot) => {
             if (snapshot.empty) {
                 console.log('No matching games?');
                 return;
             }
 
-            snapshot.forEach(doc => {
+            snapshot.forEach((doc) => {
                 // Update the data in the doc.
-                db.collection('Games')
-                    .doc(doc.id)
-                    .update({
-                        sharedData: data,
-                    });
+                db.collection('Games').doc(doc.id).update({
+                    sharedData: data,
+                });
             });
             return;
         })
-        .catch(err => {
+        .catch((err) => {
             console.log('Error getting documents', err);
         });
     finalRet.push(updateGame);
@@ -55,16 +53,10 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
             // Then lookup the team itself.
             finalRet.push(
                 Promise.all([
-                    db
-                        .collection('LeagueTeam')
-                        .document(data.officialResult.awayTeamUid)
-                        .get(),
-                    db
-                        .collection('LeagueTeam')
-                        .document(data.officialResult.homeTeamUid)
-                        .get(),
+                    db.collection('LeagueTeam').document(data.officialResult.awayTeamUid).get(),
+                    db.collection('LeagueTeam').document(data.officialResult.homeTeamUid).get(),
                 ])
-                    .then(teams => {
+                    .then((teams) => {
                         const ret = [teams];
                         if (teams[0].exists) {
                             ret.push(
@@ -86,7 +78,7 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
                         }
                         return Promise.all(ret);
                     })
-                    .then(games => {
+                    .then((games) => {
                         let foundHome = false;
                         let foundAway = false;
                         let homeDoc;
@@ -137,10 +129,9 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
     // Created with this, or updates with this result.
     if (
         data.officialResult !== null &&
-        (data.officialResult.officialResult !== 'OfficialResult.NotStarted' &&
-            data.officialResult.officialResult !== 'OfficialResult.InProgress' &&
-            (previousData === null ||
-                data.officialResult.officialResult !== previousData.officialResult.officialResult))
+        data.officialResult.officialResult !== 'NotStarted' &&
+        data.officialResult.officialResult !== 'InProgress' &&
+        (previousData === null || data.officialResult.officialResult !== previousData.officialResult.officialResult)
     ) {
         console.log('Updating ' + data.officialResult.awayTeamUid + ' ' + data.officialResult.homeTeamUid);
         const bits = [];
@@ -149,7 +140,7 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
                 .collection('GamesShared')
                 .where('leagueDivisonUid', '==', data.leagueDivisonUid)
                 .get()
-                .then(snapshot => {
+                .then((snapshot) => {
                     console.log('Divison for ', data.leagueDivisonUid);
                     // Adding up for away team and home team.
                     const awayUid = data.officialResult.awayTeamUid;
@@ -186,7 +177,7 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
                             }
                             console.log(res);
 
-                            if (res === 'OfficialResult.HomeTeamWon') {
+                            if (res === 'HomeTeamWon') {
                                 if (doc.data().officialResult.homeTeamUid === homeUid) {
                                     homeWin++;
                                     homePtDiff += diff;
@@ -194,7 +185,7 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
                                     awayWin++;
                                     awayPtDiff += diff;
                                 }
-                            } else if (res === 'OfficialResult.AwayTeamWon') {
+                            } else if (res === 'AwayTeamWon') {
                                 if (doc.data().officialResult.homeTeamUid === homeUid) {
                                     homeLoss++;
                                     homePtDiff += diff;
@@ -202,7 +193,7 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
                                     awayLoss++;
                                     awayPtDiff += diff;
                                 }
-                            } else if (res === 'OfficialResult.Tie') {
+                            } else if (res === 'Tie') {
                                 if (doc.data().officialResult.homeTeamUid === homeUid) {
                                     homeTie++;
                                 } else if (doc.data().officialResult.homeTeamUid === awayUid) {
@@ -226,7 +217,7 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
                             }
                             res = doc.data().officialResult.officialResult;
                             console.log(res);
-                            if (res === 'OfficialResult.HomeTeamWon') {
+                            if (res === 'HomeTeamWon') {
                                 if (doc.data().officialResult.awayTeamUid === homeUid) {
                                     homeLoss++;
                                     homePtDiff += diffAway;
@@ -234,7 +225,7 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
                                     awayLoss++;
                                     awayPtDiff += diffAway;
                                 }
-                            } else if (res === 'OfficialResult.AwayTeamWon') {
+                            } else if (res === 'AwayTeamWon') {
                                 if (doc.data().officialResult.awayTeamUid === homeUid) {
                                     homeWin++;
                                     homePtDiff += diffAway;
@@ -242,7 +233,7 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
                                     awayWin++;
                                     awayPtDiff += diffAway;
                                 }
-                            } else if (res === 'OfficialResult.Tie') {
+                            } else if (res === 'Tie') {
                                 if (doc.data().officialResult.awayTeamUid === homeUid) {
                                     homeTie++;
                                 } else if (doc.data().officialResult.awayTeamUid === awayUid) {
@@ -264,14 +255,8 @@ exports = module.exports = functions.firestore.document('/GamesShared/{gameid}')
                     console.log(homeSnap);
                     console.log(awaySnap);
                     return Promise.all([
-                        db
-                            .collection('LeagueTeam')
-                            .doc(homeUid)
-                            .update(homeSnap),
-                        db
-                            .collection('LeagueTeam')
-                            .doc(awayUid)
-                            .update(awaySnap),
+                        db.collection('LeagueTeam').doc(homeUid).update(homeSnap),
+                        db.collection('LeagueTeam').doc(awayUid).update(awaySnap),
                     ]);
                 }),
         );

@@ -14,10 +14,10 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onWri
     // Created with this, or updates with this result.
     if (
         data.result !== null &&
-        (data.result.inProgress === 'GameInProgress.Final' &&
-            (previousData === null ||
-                data.result.inProgress !== previousData.result.inProgress ||
-                data.result.result !== previousData.result.result))
+        data.result.inProgress === 'Final' &&
+        (previousData === null ||
+            data.result.inProgress !== previousData.result.inProgress ||
+            data.result.result !== previousData.result.result)
     ) {
         console.log('Updating ' + data.teamUid);
         const bits = [];
@@ -26,22 +26,22 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onWri
                 .collection('Games')
                 .where('opponentUid', '==', data.opponentUid)
                 .where('teamUid', '==', data.teamUid)
-                .where('result.inProgress', '==', 'GameInProgress.Final')
+                .where('result.inProgress', '==', 'Final')
                 .get()
-                .then(snapshot => {
+                .then((snapshot) => {
                     console.log('Team for season', data.seasonUid);
                     let loss = 0;
                     let win = 0;
                     let tie = 0;
-                    snapshot.docs.forEach(doc => {
+                    snapshot.docs.forEach((doc) => {
                         const res = doc.data().result.result;
-                        if (res === 'GameResult.Win') {
+                        if (res === 'Win') {
                             win++;
                         }
-                        if (res === 'GameResult.Loss') {
+                        if (res === 'Loss') {
                             loss++;
                         }
-                        if (res === 'GameResult.Tie') {
+                        if (res === 'Tie') {
                             tie++;
                         }
                     });
@@ -63,22 +63,22 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onWri
                 .collection('Games')
                 .where('seasonUid', '==', data.seasonUid)
                 .where('teamUid', '==', data.teamUid)
-                .where('result.inProgress', '==', 'GameInProgress.Final')
+                .where('result.inProgress', '==', 'Final')
                 .get()
-                .then(snapshot => {
+                .then((snapshot) => {
                     console.log('For season', data.seasonUid);
                     let loss = 0;
                     let win = 0;
                     let tie = 0;
-                    snapshot.docs.forEach(doc => {
+                    snapshot.docs.forEach((doc) => {
                         const res = doc.data().result.result;
-                        if (res === 'GameResult.Win') {
+                        if (res === 'Win') {
                             win++;
                         }
-                        if (res === 'GameResult.Loss') {
+                        if (res === 'Loss') {
                             loss++;
                         }
-                        if (res === 'GameResult.Tie') {
+                        if (res === 'Tie') {
                             tie++;
                         }
                     });
@@ -87,10 +87,7 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onWri
                     snap['record.tie'] = tie;
                     snap['record.loss'] = loss;
                     console.log(snap);
-                    return db
-                        .collection('Seasons')
-                        .doc(data.seasonUid)
-                        .update(snap);
+                    return db.collection('Seasons').doc(data.seasonUid).update(snap);
                 }),
         );
         return Promise.all(bits);

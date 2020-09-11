@@ -13,7 +13,7 @@ const fs = require('fs');
  *
  * FYI!!!! Disabled currently.
  */
-exports.generateSmallerImage = functions.storage.object().onFinalize(object => {
+exports.generateSmallerImage = functions.storage.object().onFinalize((object) => {
     const fileBucket = object.bucket; // The Storage bucket that contains the file.
     const filePath = object.name; // File path in the bucket.
     const contentType = object.contentType; // File content type.

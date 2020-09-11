@@ -31,7 +31,7 @@ exports = module.exports = functions.firestore.document('/LeagueTeam/{teamId}').
                     .collection('GamesShared')
                     .where('officialResult.awayTeamUid', '==', inputData.after.id)
                     .get()
-                    .then(snap => {
+                    .then((snap) => {
                         const ret = [];
                         for (const index in snap.docs) {
                             const doc = snap.docs[index];
@@ -47,7 +47,7 @@ exports = module.exports = functions.firestore.document('/LeagueTeam/{teamId}').
                     .collection('GamesShared')
                     .where('officialResult.homeTeamUid', '==', inputData.after.id)
                     .get()
-                    .then(snap => {
+                    .then((snap) => {
                         const retHome = [];
                         for (const indexHome in snap.docs) {
                             const docHome = snap.docs[indexHome];

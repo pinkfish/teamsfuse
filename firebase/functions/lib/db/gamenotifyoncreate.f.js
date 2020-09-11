@@ -26,14 +26,14 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onCre
                     body: 'New practice at {{arrivalTime}}',
                 },
             };
-        } else if (data.type === 'EventType.Game') {
+        } else if (data.type === 'Game') {
             payload = {
                 notification: {
                     title: 'New Game vs {{opponent.name}}',
                     body: 'New game at {{arrivalTime}}',
                 },
             };
-        } else if (data.type === 'EventType.Event') {
+        } else if (data.type === 'Event') {
             payload = {
                 notification: {
                     title: 'New event for {{team.name}}',

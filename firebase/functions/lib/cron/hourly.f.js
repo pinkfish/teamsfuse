@@ -20,7 +20,7 @@ exports = module.exports = functions.pubsub.topic('hourly-tick').onPublish((data
         .where('arrivalTime', '>', cutoff.valueOf())
         .where('arrivalTime', '<', now.valueOf())
         .get()
-        .then(snapshot => {
+        .then((snapshot) => {
             const promiseSeasons = [];
             const sharedGames = [];
             for (const index in snapshot.docs) {
@@ -33,16 +33,13 @@ exports = module.exports = functions.pubsub.topic('hourly-tick').onPublish((data
                         continue;
                     }
                     // Get the shared data for the game too.
-                    var sharedGame = db
-                        .collection('GamesShared')
-                        .doc(doc.data().sharedDataUid)
-                        .get();
+                    var sharedGame = db.collection('GamesShared').doc(doc.data().sharedDataUid).get();
                     sharedGames.push(Promise.all([doc, sharedGame]));
                 }
             }
             return Promise.all(sharedGames);
         })
-        .then(results => {
+        .then((results) => {
             const promiseSeasons = [];
             for (const index in results) {
                 if (Object.prototype.hasOwnProperty.call(results, index) && results[index] !== null) {
@@ -114,18 +111,13 @@ exports = module.exports = functions.pubsub.topic('hourly-tick').onPublish((data
             }
             return Promise.all(promiseSeasons);
         })
-        .then(results => {
+        .then((results) => {
             const allRets = [];
             for (const gameId in results) {
                 if (Object.prototype.hasOwnProperty.call(results, gameId)) {
                     game = games[gameId];
                     // Mark this as notified.
-                    allRets.push(
-                        db
-                            .collection('Games')
-                            .doc(game.id)
-                            .update({ notifiedHour: true }),
-                    );
+                    allRets.push(db.collection('Games').doc(game.id).update({ notifiedHour: true }));
                 }
             }
             return Promise.all(allRets);

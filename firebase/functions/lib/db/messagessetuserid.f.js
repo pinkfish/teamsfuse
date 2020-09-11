@@ -19,7 +19,7 @@ exports = module.exports = functions.firestore
                 .collection('Players')
                 .doc(data.playerId)
                 .get()
-                .then(snapshot => {
+                .then((snapshot) => {
                     const docsStuff = [];
                     if (snapshot.exists) {
                         const users = snapshot.data().user;
@@ -62,7 +62,7 @@ exports = module.exports = functions.firestore
                     }
                     return Promise.all(docsStuff);
                 })
-                .then(allSnaps => {
+                .then((allSnaps) => {
                     const allUpdates = [];
                     for (key in allSnaps) {
                         const snap = allSnaps[key];

@@ -2,27 +2,34 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    "format": "prettier --write **/*.js",
-    "lint": "./node_modules/.bin/eslint .",
+    "build": "npm run lint && tsc --resolveJsonModule",
+    "pretty": "prettier --write **/*.ts",
+    "lint": "eslint --ext .ts,.js,.jsx,.tsx src",
     "serve": "firebase serve --only functions",
     "shell": "firebase experimental:functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:9090' mocha --reporter spec"
+    "test": "cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:9090' mocha --reporter spec",
+    "fixsharedgame": "npm run build && node lib/fixsharedgame.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,css,md,ts}": "prettier --write"
   },
   "dependencies": {
-    "algoliasearch": "^3.34.0",
     "camelcase": "^5.3.1",
     "cors": "^2.8.5",
     "detect-mocha": "^0.1.0",
     "dotenv": "^8.1.0",
-    "firebase": "^6.5.0",
-    "firebase-admin": "^8.4.0",
-    "firebase-functions": "^3.2.0",
+    "firebase": "^7.20.0",
+    "firebase-admin": "^9.1.1",
+    "firebase-functions": "^3.11.0",
     "glob": "^7.1.4",
-    "handlebars": "^4.2.0",
-    "moment-timezone": "^0.5.26",
     "nodemailer": "^6.3.0",
     "nodemailer-mailgun-transport": "^1.4.0",
     "request": "^2.88.0",
@@ -30,15 +37,19 @@
     "request-promise-native": "^1.0.7"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.1.0",
+    "@typescript-eslint/parser": "^4.1.0",
     "chai": "^4.2.0",
     "cross-env": "^5.2.1",
     "eslint": "^6.3.0",
+    "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-promise": "^4.2.1",
     "filesystem": "^1.0.1",
     "firebase-functions-test": "^0.1.6",
     "firestore-security-tests": "^1.4.0",
     "mocha": "^6.2.0",
     "prettier": "^1.18.2",
+    "prettier-plugin-packagejson": "^2.2.5",
     "sinon": "^7.4.2",
     "typescript": "^3.6.3"
   },

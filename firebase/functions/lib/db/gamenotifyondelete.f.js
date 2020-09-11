@@ -19,18 +19,18 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onDel
     if (diff <= 7 && nowTime.valueOf() < data.time) {
         console.log('Changed in here');
         // Notify the user of the new event/training/game.
-        if (data.type === 'EventType.Practice') {
+        if (data.type === 'Practice') {
             payload = {
                 notification: {
-                    title: 'DELETE practice for {{team.name}}',
-                    body: 'Delete practice at {[arrivalTime}}',
+                    title: 'CANCELLED practice for {{team.name}}',
+                    body: 'Cancelled practice at {[arrivalTime}}',
                 },
             };
-        } else if (data.type === 'EventType.Game') {
+        } else if (data.type === 'Game') {
             payload = {
                 notification: {
-                    title: 'DELETE Game vs {{opponent.name}}',
-                    body: 'Delete game at {{arrivalTime}}',
+                    title: 'CANCELLED Game vs {{opponent.name}}',
+                    body: 'Cancelled game at {{arrivalTime}}',
                 },
             };
         } else if (data.type === 'EventType.Event') {
