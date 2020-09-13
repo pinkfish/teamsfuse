@@ -9,6 +9,9 @@ import '../../../team.dart';
 
 part 'singleclubbloc.g.dart';
 
+///
+/// The type of the club bloc state.
+///
 class SingleClubBlocStateType extends EnumClass {
   static Serializer<SingleClubBlocStateType> get serializer =>
       _$singleClubBlocStateTypeSerializer;

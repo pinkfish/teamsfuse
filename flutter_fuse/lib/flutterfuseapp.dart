@@ -66,7 +66,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     _loginBloc = new LoginBloc(
         userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
     DatabaseUpdateModel databaseUpdateModel =
-        DatabaseUpdateModelImpl(new Firestore());
+        DatabaseUpdateModelImpl(new Firestore(), _authenticationBloc);
     _coordinationBloc = CoordinationBloc(
         authenticationBloc: _authenticationBloc,
         analytics: Analytics.instance,
@@ -94,6 +94,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     _authenticationBloc.add(AuthenticationAppStarted());
   }
 
+  @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [

@@ -48,7 +48,7 @@ class InviteListScreen extends StatefulWidget {
         });
     if (result) {
       SingleInviteBloc singleInviteBloc = SingleInviteBloc(
-          inviteBloc: BlocProvider.of<InviteBloc>(context),
+          analytisSubsystem: RepositoryProvider.of<AnalyticsSubsystem>(context),
           inviteUid: invite.uid,
           teamBloc: BlocProvider.of<TeamBloc>(context),
           seasonBloc: BlocProvider.of<SeasonBloc>(context));

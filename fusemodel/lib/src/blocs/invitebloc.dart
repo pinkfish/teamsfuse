@@ -19,12 +19,13 @@ class _InviteEventLogout extends InviteEvent {
 
 class _InviteEventNewDataLoaded extends InviteEvent {
   final BuiltMap<String, Invite> invites;
-  final String uid;
 
-  _InviteEventNewDataLoaded({@required this.invites, @required this.uid});
+  _InviteEventNewDataLoaded({@required this.invites});
 
   @override
-  List<Object> get props => [invites, uid];
+  List<Object> get props => [
+        invites,
+      ];
 }
 
 class _InviteEventLoadFirestore extends InviteEvent {
@@ -112,9 +113,8 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
   Stream<InviteState> mapEventToState(InviteEvent event) async* {
     if (event is _InviteEventLoadFirestore) {
       print('getting invites');
-      _inviteChangeSub = databaseUpdateModel
-          .getInvites(coordinationBloc.authenticationBloc.currentUser.email)
-          .listen((Iterable<Invite> invites) {
+      _inviteChangeSub =
+          databaseUpdateModel.getInvites().listen((Iterable<Invite> invites) {
         coordinationBloc.loadingTrace?.incrementCounter("invite");
         this._onInviteUpdated(invites);
       });

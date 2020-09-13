@@ -28,7 +28,7 @@ class _AcceptInviteToLeagueScreenState
     super.initState();
     // Default to empty.
     _singleInviteBloc = SingleInviteBloc(
-        inviteBloc: BlocProvider.of<InviteBloc>(context),
+        analytisSubsystem: RepositoryProvider.of<AnalyticsSubsystem>(context),
         inviteUid: widget._inviteUid,
         teamBloc: BlocProvider.of<TeamBloc>(context),
         seasonBloc: BlocProvider.of<SeasonBloc>(context));

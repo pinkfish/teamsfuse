@@ -253,10 +253,7 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
       if (_inviteSub == null) {
         _inviteSub = seasonBloc.coordinationBloc.databaseUpdateModel
             .getInviteForSeasonStream(
-                userUid: seasonBloc
-                    .coordinationBloc.authenticationBloc.currentUser.uid,
-                seasonUid: seasonUid,
-                teamUid: state.season.teamUid)
+                seasonUid: seasonUid, teamUid: state.season.teamUid)
             .listen((Iterable<InviteToTeam> invites) {
           add(_SingleSeasonLoadedInvites(invites: invites));
         });

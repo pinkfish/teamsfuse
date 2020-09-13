@@ -1,79 +1,15 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
-import '../data/inviteblocstate.dart';
-import '../invitebloc.dart';
 import '../seasonbloc.dart';
 import '../teambloc.dart';
-
-///
-/// Basic state for all the data in this system.
-///
-class SingleInviteState extends Equatable {
-  final Invite invite;
-
-  SingleInviteState({@required this.invite});
-
-  @override
-  List<Object> get props => [invite];
-}
-
-///
-/// Doing something.
-///
-class SingleInviteLoaded extends SingleInviteState {
-  SingleInviteLoaded({@required Invite invite}) : super(invite: invite);
-
-  @override
-  String toString() {
-    return 'SingleInviteLoaded{}';
-  }
-}
-
-///
-/// Doing something.
-///
-class SingleInviteSaving extends SingleInviteState {
-  SingleInviteSaving({@required Invite invite}) : super(invite: invite);
-
-  @override
-  String toString() {
-    return 'SingleInviteLoaded{}';
-  }
-}
-
-///
-/// Data is now loaded.
-///
-class SingleInviteDeleted extends SingleInviteState {
-  SingleInviteDeleted() : super(invite: null);
-
-  @override
-  String toString() {
-    return 'SingleInviteDeleted{}';
-  }
-}
-
-///
-/// Failed to save the invite (this could be an accept or an add).
-///
-class SingleInviteSaveFailed extends SingleInviteState {
-  final Error error;
-
-  SingleInviteSaveFailed({@required Invite failedInvite, @required this.error})
-      : super(invite: failedInvite);
-
-  @override
-  String toString() {
-    return 'SingleInviteSaveFailed{}';
-  }
-}
+import 'data/singleinvitebloc.dart';
 
 class SingleInviteEvent extends Equatable {
   @override
@@ -157,59 +93,47 @@ class _SingleInviteUpdated extends SingleInviteEvent {
 /// Started the whole process for this bloc.
 ///
 class SingleInviteEventLoaded extends SingleInviteEvent {
-  final String inviteUid;
+  final Invite invite;
 
-  SingleInviteEventLoaded({@required this.inviteUid});
+  SingleInviteEventLoaded({@required this.invite});
 }
 
 ///
 /// Deals with specific invites to allow for accepting/deleting/etc of the
 /// invites.
 ///
-class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
-  final InviteBloc inviteBloc;
+class SingleInviteBloc
+    extends HydratedBloc<SingleInviteEvent, SingleInviteState> {
   final TeamBloc teamBloc;
   final SeasonBloc seasonBloc;
   final String inviteUid;
+  final DatabaseUpdateModel db;
+  final AnalyticsSubsystem analytisSubsystem;
 
-  StreamSubscription<InviteState> _inviteState;
+  StreamSubscription<Invite> _inviteListen;
 
   /// Used for the season/team etc if we want to make a new one.
   static String createNew = "createNew";
 
   SingleInviteBloc(
-      {@required this.inviteBloc,
+      {@required this.db,
+      @required this.analytisSubsystem,
       @required this.teamBloc,
       @required this.seasonBloc,
       @required this.inviteUid})
-      : super(inviteBloc.state.invites.containsKey(inviteUid)
-            ? SingleInviteLoaded(invite: inviteBloc.state.invites[inviteUid])
-            : SingleInviteDeleted()) {
-    _inviteState = inviteBloc.listen((InviteState inviteState) {
-      if (inviteState is InviteLoaded) {
-        if (inviteState.invites.containsKey(inviteUid)) {
-          if (inviteState.invites[inviteUid] == state.invite) {
-            add(_SingleInviteUpdated(
-                invite: inviteState.invites[state.invite.uid]));
-          }
-        }
+      : super(SingleInviteUninitialized()) {
+    _inviteListen = db.getSingleInvite(inviteUid).listen((event) {
+      if (event != null) {
+        add(_SingleInviteUpdated(invite: event));
       } else {
         add(_SingleInviteEventUnloaded());
       }
     });
-    if (inviteBloc.state is InviteLoaded) {
-      if (inviteBloc.state.invites.containsKey(inviteUid)) {
-        if (inviteBloc.state.invites[inviteUid] == state.invite) {
-          add(_SingleInviteUpdated(
-              invite: inviteBloc.state.invites[state.invite.uid]));
-        }
-      }
-    }
   }
 
   @override
   Future<void> close() async {
-    _inviteState?.cancel();
+    _inviteListen?.cancel();
     await super.close();
   }
 
@@ -222,19 +146,17 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       //
       // Invite to club.
       //
-      await inviteBloc.databaseUpdateModel.addUserToClub(
-          invite.clubUid,
-          inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
-          invite.admin);
+      await db.addUserToClub(invite.clubUid, db.currentUser.uid, invite.admin);
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
+      await db.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
       //
       // End this thing.
       //
-      return SingleInviteSaveFailed(
-          failedInvite: invite, error: ArgumentError('Not a club invite'));
+      return (SingleInviteSaveFailed.fromState(state)
+            ..error = ArgumentError('Not a club invite'))
+          .build();
     }
   }
 
@@ -245,31 +167,22 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       // Invite to league admin
       //
       if (invite.leagueUid != null) {
-        await inviteBloc.databaseUpdateModel.addUserToLeague(
-            invite.leagueUid,
-            inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
-            true);
+        await db.addUserToLeague(invite.leagueUid, true);
       }
       if (invite.leagueSeasonUid != null) {
-        await inviteBloc.databaseUpdateModel.addUserToLeagueSeason(
-            invite.leagueSeasonUid,
-            inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
-            true);
+        await db.addUserToLeagueSeason(invite.leagueSeasonUid, true);
       }
       if (invite.leagueDivisonUid != null) {
-        await inviteBloc.databaseUpdateModel.addUserToLeagueDivison(
-            invite.leagueDivisonUid,
-            inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
-            true);
+        await db.addUserToLeagueDivison(invite.leagueDivisonUid, true);
       }
 
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
+      await db.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
-      return SingleInviteSaveFailed(
-          failedInvite: invite,
-          error: ArgumentError('Not a league admin invite'));
+      return (SingleInviteSaveFailed.fromState(state)
+            ..error = ArgumentError('Not a league admin invite'))
+          .build();
     }
   }
 
@@ -280,32 +193,30 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       // Invite to player!!!
       //
       if (event.relationship == null) {
-        return SingleInviteSaveFailed(
-            failedInvite: invite,
-            error: ArgumentError("Relationship incorrect"));
+        return (SingleInviteSaveFailed.fromState(state)
+              ..error = ArgumentError('Relationship incorrec'))
+            .build();
       }
-      inviteBloc.analyticsSubsystem.logSignUp(signUpMethod: "inviteToPlayer");
+      analytisSubsystem.logSignUp(signUpMethod: "inviteToPlayer");
       // Add ourselves to the player.
-      bool exists =
-          await inviteBloc.databaseUpdateModel.playerExists(invite.playerUid);
+      bool exists = await db.playerExists(invite.playerUid);
       if (!exists) {
-        return SingleInviteSaveFailed(
-            failedInvite: invite,
-            error: ArgumentError("already added to player"));
+        return (SingleInviteSaveFailed.fromState(state)
+              ..error = ArgumentError('Already added to player'))
+            .build();
       }
       // Yay!  We have a player.
-      PlayerUser playerUser = PlayerUser(
-          inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
-          event.relationship);
-      await inviteBloc.databaseUpdateModel
-          .addUserToPlayer(invite.playerUid, playerUser);
+      PlayerUser playerUser =
+          PlayerUser(db.currentUser.uid, event.relationship);
+      await db.addUserToPlayer(invite.playerUid, playerUser);
 
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
+      await db.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
-      return SingleInviteSaveFailed(
-          failedInvite: invite, error: ArgumentError('Not a player invite'));
+      return (SingleInviteSaveFailed.fromState(state)
+            ..error = ArgumentError('Not a player invite'))
+          .build();
     }
   }
 
@@ -318,10 +229,9 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       if (event.teamUid == SingleInviteBloc.createNew) {
         TeamBuilder team = new TeamBuilder();
         team.name = invite.leagueTeamName;
-        team.adminsData[inviteBloc
-            .coordinationBloc.authenticationBloc.currentUser.uid] = true;
-        var pregen = inviteBloc.databaseUpdateModel.precreateTeamUid();
-        var pregenSeason = inviteBloc.databaseUpdateModel.precreateUidSeason();
+        team.adminsData[db.currentUser.uid] = true;
+        var pregen = db.precreateTeamUid();
+        var pregenSeason = db.precreateUidSeason();
         team.uid = pregen.documentID;
         Season season = new Season((b) => b
           ..uid = pregenSeason.documentID
@@ -329,49 +239,41 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
           ..teamUid = team.uid
           ..record = WinRecordBuilder()
           ..playersData = MapBuilder({
-            inviteBloc.coordinationBloc.authenticationBloc.currentUser
-                .uid: SeasonPlayer((b) => b
-              ..playerUid =
-                  inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid
+            db.currentUser.uid: SeasonPlayer((b) => b
+              ..playerUid = db.currentUser.uid
               ..role = RoleInTeam.NonPlayer)
           }));
         team.currentSeason = pregenSeason.documentID;
-        LeagueOrTournamentTeam leagueTeam = await inviteBloc.databaseUpdateModel
-            .getLeagueTeamData(invite.leagueTeamUid)
-            .first;
+        LeagueOrTournamentTeam leagueTeam =
+            await db.getLeagueTeamData(invite.leagueTeamUid).first;
         if (leagueTeam.seasonUid != null) {
           // Someone beat them to it!
           // TODO: Say someone beat them to it.
         } else {
           leagueTeam =
               leagueTeam.rebuild((b) => b..seasonUid = pregenSeason.documentID);
-          await inviteBloc.databaseUpdateModel.updateLeagueTeam(leagueTeam);
-          inviteBloc.coordinationBloc.databaseUpdateModel
-              .addFirestoreTeam(team.build(), pregen, season, null);
+          await db.updateLeagueTeam(leagueTeam);
+          await db.addFirestoreTeam(team.build(), pregen, season, null);
         }
       } else if (event.seasonUid == SingleInviteBloc.createNew) {
-        var pregenSeason = inviteBloc.databaseUpdateModel.precreateUidSeason();
+        var pregenSeason = db.precreateUidSeason();
 
         Season season = new Season((b) => b
           ..uid = pregenSeason.documentID
           ..name = invite.leagueSeasonName
           ..teamUid = event.teamUid);
-        inviteBloc.coordinationBloc.databaseUpdateModel
-            .addFirestoreSeason(season, pregenSeason);
+        await db.addFirestoreSeason(season, pregenSeason);
       } else {
         Season season = seasonBloc.state.seasons[event.seasonUid];
-        await inviteBloc.databaseUpdateModel.connectLeagueTeamToSeason(
-            invite.leagueTeamUid,
-            inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid,
-            season);
+        await db.connectLeagueTeamToSeason(invite.leagueTeamUid, season);
       }
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
+      await db.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
-      return SingleInviteSaveFailed(
-          failedInvite: invite,
-          error: ArgumentError('Not a league team invite'));
+      return (SingleInviteSaveFailed.fromState(state)
+            ..error = ArgumentError('Not a league team invite'))
+          .build();
     }
   }
 
@@ -381,15 +283,15 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       //
       // Invite as admin.
       //
-      await inviteBloc.databaseUpdateModel.addAdmin(invite.teamUid,
-          inviteBloc.coordinationBloc.authenticationBloc.currentUser.uid);
+      await db.addAdmin(invite.teamUid, db.currentUser.uid);
 
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
+      await db.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
-      return SingleInviteSaveFailed(
-          failedInvite: invite, error: ArgumentError('Not an admin invite'));
+      return (SingleInviteSaveFailed.fromState(state)
+            ..error = ArgumentError('Not an admin invite'))
+          .build();
     }
   }
 
@@ -402,20 +304,18 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
       if (event.playerNameToUid == null ||
           event.relationship == null ||
           invite.seasonUid == null) {
-        return SingleInviteSaveFailed(
-            failedInvite: invite,
-            error: ArgumentError(
-                "Relationship or playerNameToUse or seasonUid incorrect"));
+        return (SingleInviteSaveFailed.fromState(state)
+              ..error = ArgumentError(
+                  'Relationship or playerNameToUse or seasonUid incorrect'))
+            .build();
       }
-      inviteBloc.analyticsSubsystem.logSignUp(signUpMethod: "inviteToTeam");
+      analytisSubsystem.logSignUp(signUpMethod: "inviteToTeam");
       // We add ourselves to the season.
-      Season doc = await inviteBloc.databaseUpdateModel
-          .getSingleSeason(invite.seasonUid)
-          .first;
+      Season doc = await db.getSingleSeason(invite.seasonUid).first;
       if (doc == null) {
-        return SingleInviteSaveFailed(
-            failedInvite: invite,
-            error: ArgumentError("season already added to team"));
+        return (SingleInviteSaveFailed.fromState(state)
+              ..error = ArgumentError('Season alreeady added to tea,'))
+            .build();
       }
       //invite.playerName.clear();
       for (String name in event.playerNameToUid.keys) {
@@ -424,12 +324,10 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
             0) {
           PlayerBuilder player = new PlayerBuilder();
           player.name = name;
-          player.usersData[inviteBloc.coordinationBloc.authenticationBloc
-              .currentUser.uid] = PlayerUserInternal((b) => b
+          player.usersData[db.currentUser.uid] = PlayerUserInternal((b) => b
             ..relationship = event.relationship[name]
             ..added = true);
-          playerUid =
-              await inviteBloc.databaseUpdateModel.createPlayer(player.build());
+          playerUid = await db.createPlayer(player.build());
         } else {
           playerUid = event.playerNameToUid[name];
         }
@@ -437,111 +335,119 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
         teamBloc.coordinationBloc.analyticsSubsystem
             .logSignUp(signUpMethod: "inviteToTeam");
         // We add ourselves to the season.
-        Season doc = await inviteBloc.databaseUpdateModel
-            .getSingleSeason(invite.seasonUid)
-            .first;
+        Season doc = await db.getSingleSeason(invite.seasonUid).first;
         if (doc != null) {
           // Update it!  First we add to the player.
           SeasonPlayer seasonPlayer = new SeasonPlayer((b) => b
             ..playerUid = playerUid
             ..role = invite.role);
-          await inviteBloc.databaseUpdateModel
-              .addPlayerToSeason(invite.seasonUid, seasonPlayer);
-          await inviteBloc.databaseUpdateModel
-              .firestoreInviteDelete(invite.uid);
+          await db.addPlayerToSeason(invite.seasonUid, seasonPlayer);
+          await db.firestoreInviteDelete(invite.uid);
         }
       }
 
       // This should cause the data to update
-      await inviteBloc.databaseUpdateModel.firestoreInviteDelete(invite.uid);
+      await db.firestoreInviteDelete(invite.uid);
       return SingleInviteDeleted();
     } else {
-      return SingleInviteSaveFailed(
-          failedInvite: invite, error: ArgumentError('Not a team invite'));
+      return (SingleInviteSaveFailed.fromState(state)
+            ..error = ArgumentError('Not a team invite'))
+          .build();
     }
   }
 
   @override
+  String get id => inviteUid;
+
+  @override
   Stream<SingleInviteState> mapEventToState(SingleInviteEvent event) async* {
     if (event is SingleInviteEventLoaded) {
-      if (inviteBloc.state.invites.containsKey(event.inviteUid)) {
-        yield SingleInviteLoaded(
-            invite: inviteBloc.state.invites[event.inviteUid]);
-      } else {
-        yield SingleInviteDeleted();
-      }
+      yield (SingleInviteLoaded.fromState(state)..invite = event.invite)
+          .build();
     }
     // Delete the invite
     if (event is SingleInviteEventDeleteInvite) {
-      yield SingleInviteSaving(invite: state.invite);
+      yield SingleInviteSaving.fromState(state).build();
       // Leave it to do it's thing.  The main loop above should push back with
       // a change when it is committed.
       try {
-        await inviteBloc.databaseUpdateModel
-            .firestoreInviteDelete(state.invite.uid);
+        await db.firestoreInviteDelete(state.invite.uid);
+        yield SingleInviteSaveDone.fromState(state).build();
         yield SingleInviteDeleted();
       } catch (e) {
-        yield SingleInviteSaveFailed(error: e, failedInvite: state.invite);
+        yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     // Accept the invite to the team.
     if (event is SingleInviteEventAcceptInviteToTeam) {
-      yield SingleInviteSaving(invite: state.invite);
+      yield SingleInviteSaving.fromState(state).build();
       try {
         yield await _acceptInviteToTeam(event, state.invite);
+        yield SingleInviteSaveDone.fromState(state).build();
+        yield SingleInviteDeleted();
       } catch (e) {
-        yield SingleInviteSaveFailed(error: e, failedInvite: state.invite);
+        yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     // Accept the invite to the team.
     if (event is SingleInviteEventAcceptInviteToPlayer) {
-      yield SingleInviteSaving(invite: state.invite);
+      yield SingleInviteSaving.fromState(state).build();
       try {
         yield await _acceptInviteToPlayer(event, state.invite);
+        yield SingleInviteSaveDone.fromState(state).build();
+        yield SingleInviteDeleted();
       } catch (e) {
-        yield SingleInviteSaveFailed(error: e, failedInvite: state.invite);
+        yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     // Accept the invite to the team.
     if (event is SingleInviteEventAcceptInviteToLeagueAdmin) {
-      yield SingleInviteSaving(invite: state.invite);
+      yield SingleInviteSaving.fromState(state).build();
       try {
         yield await _acceptInviteToLeagueAdmin(event, state.invite);
+        yield SingleInviteSaveDone.fromState(state).build();
+        yield SingleInviteDeleted();
       } catch (e) {
-        yield SingleInviteSaveFailed(error: e, failedInvite: state.invite);
+        yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     // Accept the invite to the team.
     if (event is SingleInviteEventAcceptInviteToLeagueTeam) {
-      yield SingleInviteSaving(invite: state.invite);
+      yield SingleInviteSaving.fromState(state).build();
       try {
         yield await _acceptInviteToLeagueTeam(event, state.invite);
+        yield SingleInviteSaveDone.fromState(state).build();
+        yield SingleInviteDeleted();
       } catch (e) {
-        yield SingleInviteSaveFailed(error: e, failedInvite: state.invite);
+        yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     // Accept the invite to the team.
     if (event is SingleInviteEventAcceptInviteAsAdmin) {
-      yield SingleInviteSaving(invite: state.invite);
+      yield SingleInviteSaving.fromState(state).build();
       try {
         yield await _acceptInviteAsAdmin(event, state.invite);
+        yield SingleInviteSaveDone.fromState(state).build();
+        yield SingleInviteDeleted();
       } catch (e) {
-        yield SingleInviteSaveFailed(error: e, failedInvite: state.invite);
+        yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     // Accept the invite to the team.
     if (event is SingleInviteEventAcceptInviteToClub) {
-      yield SingleInviteSaving(invite: state.invite);
+      yield SingleInviteSaving.fromState(state).build();
       try {
         yield await _acceptInviteToClub(event, state.invite);
+        yield SingleInviteSaveDone.fromState(state).build();
+        yield SingleInviteDeleted();
       } catch (e) {
-        yield SingleInviteSaveFailed(error: e, failedInvite: state.invite);
+        yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
       }
     }
 
@@ -550,7 +456,39 @@ class SingleInviteBloc extends Bloc<SingleInviteEvent, SingleInviteState> {
     }
 
     if (event is _SingleInviteUpdated) {
-      yield SingleInviteLoaded(invite: event.invite);
+      yield (SingleInviteLoaded.fromState(state)..invite = event.invite)
+          .build();
     }
+  }
+
+  @override
+  SingleInviteState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return SingleInviteUninitialized();
+    }
+
+    SingleInviteBlocStateType type =
+        SingleInviteBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case SingleInviteBlocStateType.Uninitialized:
+        return SingleInviteUninitialized();
+      case SingleInviteBlocStateType.Loaded:
+        var ret = SingleInviteLoaded.fromMap(json);
+
+        return ret;
+      case SingleInviteBlocStateType.Deleted:
+        return SingleInviteDeleted.fromMap(json);
+      case SingleInviteBlocStateType.SaveFailed:
+        return SingleInviteSaveFailed.fromMap(json);
+      case SingleInviteBlocStateType.Saving:
+        return SingleInviteSaving.fromMap(json);
+      case SingleInviteBlocStateType.SaveDone:
+        return SingleInviteSaveDone.fromMap(json);
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(SingleInviteState state) {
+    return state.toMap();
   }
 }

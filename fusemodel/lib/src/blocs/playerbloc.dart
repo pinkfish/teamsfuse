@@ -171,7 +171,7 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
     if (event is _PlayerFirestore) {
       // Load from firestore.
       _playerSnapshot = coordinationBloc.databaseUpdateModel
-          .getPlayers(coordinationBloc.state.uid)
+          .getPlayers()
           .listen((Iterable<Player> players) {
         this._onPlayerUpdated(players);
       });

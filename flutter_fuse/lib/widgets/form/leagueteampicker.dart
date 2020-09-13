@@ -71,16 +71,15 @@ class _TournamentOrLeagueTeamPickerState
             : null,
       ),
       child: BlocProvider(
-        create: (BuildContext context) =>
-            SingleLeagueOrTournamentDivisonTeamsBloc(
-                singleLeagueOrTournamentDivisonBloc:
-                    widget.leagueOrTournamentDivisonBloc),
+        create: (BuildContext context) => SingleLeagueOrTournamentDivisonBloc(
+            db: RepositoryProvider.of<DatabaseUpdateModel>(context)),
         child: BlocBuilder(
-          cubit: BlocProvider.of<SingleLeagueOrTournamentDivisonTeamsBloc>(
-              context),
+          cubit: BlocProvider.of<SingleLeagueOrTournamentDivisonBloc>(context),
           builder: (BuildContext context,
-              SingleLeagueOrTournamentDivisonTeamsState state) {
-            if (state.leagueOrTournamentTeams.length == 0) {
+              SingleLeagueOrTournamentDivisonState state) {
+            BlocProvider.of<SingleLeagueOrTournamentDivisonBloc>(context)
+                .add(SingleLeagueOrTournamentDivisonLoadTeams());
+            if (state.teams.length == 0) {
               if (widget.disabled) {
                 return Text(
                   Messages.of(context).teamselect,
@@ -108,8 +107,7 @@ class _TournamentOrLeagueTeamPickerState
                         )
                       : new DropdownButton<String>(
                           hint: new Text(Messages.of(context).teamselect),
-                          items:
-                              _buildItems(state.leagueOrTournamentTeams.values),
+                          items: _buildItems(state.teams.values),
                           value: widget.initialTeamUid,
                           onChanged: (String val) {
                             widget.onChanged(val);

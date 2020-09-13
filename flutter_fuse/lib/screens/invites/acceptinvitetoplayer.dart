@@ -36,7 +36,7 @@ class _AcceptInviteToPlayerScreenState
   void initState() {
     super.initState();
     _singleInviteBloc = SingleInviteBloc(
-        inviteBloc: BlocProvider.of<InviteBloc>(context),
+        analytisSubsystem: RepositoryProvider.of<AnalyticsSubsystem>(context),
         inviteUid: widget._inviteUid,
         teamBloc: BlocProvider.of<TeamBloc>(context),
         seasonBloc: BlocProvider.of<SeasonBloc>(context));

@@ -8,6 +8,9 @@ import '../../../serializer.dart';
 
 part 'singleplayerbloc.g.dart';
 
+///
+/// The type of the player bloc state.
+///
 class SinglePlayerBlocStateType extends EnumClass {
   static Serializer<SinglePlayerBlocStateType> get serializer =>
       _$singlePlayerBlocStateTypeSerializer;

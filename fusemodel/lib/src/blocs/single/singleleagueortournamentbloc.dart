@@ -7,8 +7,8 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import '../leagueortournamentbloc.dart';
 import '../data/leagueortournamentblocstate.dart';
+import '../leagueortournamentbloc.dart';
 
 ///
 /// Basic state for all the data in this system.
@@ -365,10 +365,9 @@ class SingleLeagueOrTournamentBloc
 
       await leagueOrTournamentBloc.coordinationBloc.databaseUpdateModel
           .inviteUserToLeagueTeam(
-              leagueTeam: team,
-              leagueSeasonUid: season.uid,
-              userUid: leagueOrTournamentBloc
-                  .coordinationBloc.authenticationBloc.currentUser.uid);
+        leagueTeam: team,
+        leagueSeasonUid: season.uid,
+      );
       yield SingleLeagueOrTournamentLoaded(
           leagueOrTournament: state.leagueOrTournament,
           leagueOrTournamentSeasons: state.leagueOrTournamentSeasons,
@@ -443,9 +442,8 @@ class SingleLeagueOrTournamentBloc
         _leagueOrTournamentSnapshot = leagueOrTournamentBloc
             .coordinationBloc.databaseUpdateModel
             .getLeagueSeasons(
-                leagueUid: leagueUid,
-                userUid: leagueOrTournamentBloc
-                    .coordinationBloc.authenticationBloc.currentUser.uid)
+              leagueUid: leagueUid,
+            )
             .listen((Iterable<LeagueOrTournamentSeason> seasons) =>
                 _updateSeasons(seasons));
       }

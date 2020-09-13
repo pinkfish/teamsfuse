@@ -121,8 +121,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
       String clubUid = club.uid;
       if (!_clubTeamsSubscriptions.containsKey(club.uid)) {
         _clubTeamsSubscriptions[club.uid] = coordinationBloc.databaseUpdateModel
-            .getClubTeams(
-                coordinationBloc.authenticationBloc.currentUser.uid, club)
+            .getClubTeams(club)
             .listen((Iterable<Team> teams) {
           // Add in all the teams in the list to the teams list and
           // filter out any that have a club on them that now don't
@@ -140,7 +139,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
       // Load the clubs first.
       _clubChangeSub?.cancel();
       Stream<Iterable<Club>> clubData =
-          coordinationBloc.databaseUpdateModel.getMainClubs(event.uid);
+          coordinationBloc.databaseUpdateModel.getMainClubs();
       _clubChangeSub = clubData.listen((Iterable<Club> clubs) {
         _onClubsUpdated(clubs);
       });

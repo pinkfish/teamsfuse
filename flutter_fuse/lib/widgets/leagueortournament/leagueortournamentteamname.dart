@@ -24,7 +24,7 @@ class LeagueOrTournamentTeamName extends StatelessWidget {
         builder:
             (BuildContext context, SingleLeagueOrTournamentTeamState state) {
           Widget inner;
-          if (state is SingleLeagueOrTournamentTeamLoading) {
+          if (state is SingleLeagueOrTournamentTeamUninitialized) {
             inner = Text(
               Messages.of(context).loading,
               style: style,

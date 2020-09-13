@@ -77,9 +77,10 @@ class SingleUserBloc extends Bloc<SingleUserEvent, SingleUserState> {
 
   StreamSubscription<Iterable<Player>> _playerSub;
 
-  SingleUserBloc({@required this.databaseUpdateModel, @required this.userUid}) : super(SingleUserUnitialized()) {
-    _playerSub = databaseUpdateModel.getPlayers(userUid).listen(
-        (Iterable<Player> players) {
+  SingleUserBloc({@required this.databaseUpdateModel, @required this.userUid})
+      : super(SingleUserUnitialized()) {
+    _playerSub =
+        databaseUpdateModel.getPlayers().listen((Iterable<Player> players) {
       if (players.length == 0) {
         add(_SingleUserDeleted());
       } else {

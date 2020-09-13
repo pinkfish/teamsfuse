@@ -181,13 +181,13 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
     // The fireatore atart up.
     if (event is _MessagesEventFirestore) {
       _messageSnapshot = coordinationBloc.databaseUpdateModel
-          .getMessages(event.uid, true)
+          .getMessages(true)
           .listen((Iterable<MessageRecipient> messages) {
         coordinationBloc.loadingTrace?.incrementCounter("message");
         _onUnreadMessagesUpdated(messages);
       });
       _readMessageSnapshot = coordinationBloc.databaseUpdateModel
-          .getMessages(event.uid, false)
+          .getMessages(false)
           .listen((Iterable<MessageRecipient> messages) {
         coordinationBloc.loadingTrace?.incrementCounter("message");
         this._onReadMessagesUpdated(messages);

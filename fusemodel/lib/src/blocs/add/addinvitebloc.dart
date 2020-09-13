@@ -102,7 +102,6 @@ class AddInviteBloc extends Bloc<AddInviteEvent, AddItemState> {
               playername: data.playerName,
               role: data.role,
               email: data.email,
-              userId: coordinationBloc.authenticationBloc.currentUser.uid,
               teamName: event.teamName,
               teamUid: event.teamUid,
               seasonName: event.seasonName);

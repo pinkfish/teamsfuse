@@ -107,7 +107,7 @@ class LeagueOrTournamentBloc
       LeagueOrTournamentEvent event) async* {
     if (event is _LeagueOrTournamentEventFirestore) {
       _leagueOrTournamentSnapshot = coordinationBloc.databaseUpdateModel
-          .getMainLeagueOrTournaments(event.uid)
+          .getMainLeagueOrTournaments()
           .listen((Iterable<LeagueOrTournament> leagues) =>
               this._onLeagueOrTournamentsUpdated(leagues));
     }

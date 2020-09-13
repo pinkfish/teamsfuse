@@ -1,123 +1,11 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/src/async_hydrated_bloc/asynchydratedbloc.dart';
 import 'package:meta/meta.dart';
 
-import '../data/gameblocstate.dart';
-import '../gamesbloc.dart';
-
-abstract class SingleGameState extends Equatable {
-  final Game game;
-  final BuiltList<GameLog> gameLog;
-  final bool loadedLogs;
-
-  SingleGameState(
-      {@required this.game, @required this.gameLog, @required this.loadedLogs});
-
-  @override
-  // TODO: implement props
-  List<Object> get props => [game, gameLog, loadedLogs];
-}
-
-///
-/// Game in the process of being loaded.
-///
-class SingleGameLoading extends SingleGameState {
-  SingleGameLoading()
-      : super(game: null, gameLog: BuiltList(), loadedLogs: false);
-}
-
-///
-/// We have a game, default state.
-///
-class SingleGameLoaded extends SingleGameState {
-  SingleGameLoaded(
-      {@required SingleGameState state,
-      Game game,
-      Iterable<GameLog> gamelog,
-      bool loadedLogs})
-      : super(
-            game: game ?? state.game,
-            gameLog: gamelog ?? state.gameLog,
-            loadedLogs: loadedLogs ?? state.loadedLogs);
-
-  SingleGameLoaded.copy(SingleGameState state)
-      : super(
-            game: state.game,
-            gameLog: state.gameLog,
-            loadedLogs: state.loadedLogs);
-
-  @override
-  String toString() {
-    return 'SingleGameLoaded{}';
-  }
-}
-
-///
-/// Saving operation in progress.
-///
-class SingleGameSaving extends SingleGameState {
-  SingleGameSaving({@required SingleGameState singleGameState})
-      : super(
-            game: singleGameState.game,
-            gameLog: singleGameState.gameLog,
-            loadedLogs: singleGameState.loadedLogs);
-
-  @override
-  String toString() {
-    return 'SingleGameSaving{}';
-  }
-}
-
-///
-/// Saving operation failed (goes back to loaded for success).
-///
-class SingleGameSaveFailed extends SingleGameState {
-  final Error error;
-
-  SingleGameSaveFailed({@required SingleGameState singleGameState, this.error})
-      : super(
-            game: singleGameState.game,
-            gameLog: singleGameState.gameLog,
-            loadedLogs: singleGameState.loadedLogs);
-
-  @override
-  String toString() {
-    return 'SingleGameSaveFailed{}';
-  }
-}
-
-///
-/// State for when the saving is done.
-///
-class SingleGameSaveDone extends SingleGameState {
-  SingleGameSaveDone({@required SingleGameState state})
-      : super(
-            game: state.game,
-            gameLog: state.gameLog,
-            loadedLogs: state.loadedLogs);
-
-  @override
-  String toString() {
-    return 'SingleGameSaveDone()';
-  }
-}
-
-///
-/// Game got deleted.
-///
-class SingleGameDeleted extends SingleGameState {
-  SingleGameDeleted.empty()
-      : super(game: null, gameLog: BuiltList(), loadedLogs: false);
-
-  @override
-  String toString() {
-    return 'SingleGameDeleted{}';
-  }
-}
+import 'data/singlegamebloc.dart';
 
 abstract class SingleGameEvent {}
 
@@ -197,51 +85,36 @@ class _SingleGameNewGame extends SingleGameEvent {
   _SingleGameNewGame({@required this.newGame});
 }
 
-class _SingleGameDeleted extends SingleGameEvent {
-  _SingleGameDeleted();
-}
+class _SingleGameDeleted extends SingleGameEvent {}
 
 class _SingleGameNewLogs extends SingleGameEvent {
-  final Iterable<GameLog> logs;
+  final BuiltList<GameLog> logs;
   _SingleGameNewLogs({@required this.logs});
 }
 
 ///
 /// Bloc to handle updates and state of a specific game.
 ///
-class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
+class SingleGameBloc
+    extends AsyncHydratedBloc<SingleGameEvent, SingleGameState> {
   final String gameUid;
-  final GameBloc gameBloc;
+  final DatabaseUpdateModel db;
 
   static String createNew = "new";
 
-  StreamSubscription<GameState> _gameSub;
+  StreamSubscription<Game> _gameSub;
   StreamSubscription<Iterable<GameLog>> _gameLogSub;
   StreamSubscription<Game> _singleGameSub;
 
-  SingleGameBloc({@required this.gameBloc, @required this.gameUid})
-      : super(_getInitialState(gameBloc, gameUid)) {
-    _gameSub = gameBloc.listen((GameState gameState) {
-      Game game = gameState.getGame(gameUid);
-      if (game != null) {
-        // Only send this if the game is not the same.
-        if (game != state.game) {
-          add(_SingleGameNewGame(newGame: game));
-        }
+  SingleGameBloc({@required this.gameUid, @required this.db})
+      : super(SingleGameUninitialized(), 'SingleGamw' + gameUid) {
+    _gameSub = db.getGame(gameUid).listen((g) {
+      if (g != null) {
+        add(_SingleGameNewGame(newGame: g));
+      } else {
+        add(_SingleGameDeleted());
       }
     });
-    Game g = gameBloc.state.getGame(gameUid);
-    if (g == null) {
-      _singleGameSub = gameBloc.coordinationBloc.databaseUpdateModel
-          .getGame(gameUid)
-          .listen((Game g) {
-        if (g == null) {
-          add(_SingleGameDeleted());
-        } else {
-          add(_SingleGameNewGame(newGame: g));
-        }
-      });
-    }
   }
 
   @override
@@ -253,132 +126,151 @@ class SingleGameBloc extends Bloc<SingleGameEvent, SingleGameState> {
   }
 
   @override
-  static SingleGameState _getInitialState(GameBloc gameBloc, String gameUid) {
-    Game g = gameBloc.state.getGame(gameUid);
-
-    if (g != null) {
-      return SingleGameLoaded(game: g, gamelog: []);
-    }
-
-    return SingleGameLoading();
-  }
-
-  @override
   Stream<SingleGameState> mapEventToState(SingleGameEvent event) async* {
     if (event is _SingleGameNewGame) {
       print("exist update $gameUid");
-      yield SingleGameLoaded(game: event.newGame, state: state);
+      yield (SingleGameLoaded.fromState(state)
+            ..game = event.newGame.toBuilder())
+          .build();
     }
 
     // The game is deleted.
     if (event is _SingleGameDeleted) {
-      yield SingleGameDeleted.empty();
+      yield SingleGameDeleted.fromState(state).build();
     }
 
     // Update the game.
     if (event is SingleGameUpdate) {
-      yield SingleGameSaving(singleGameState: state);
+      yield SingleGameSaving.fromState(state).build();
       try {
-        await gameBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreGame(event.game, false);
-        yield SingleGameSaveDone(state: state);
-        yield SingleGameLoaded(state: state, game: event.game);
+        await db.updateFirestoreGame(event.game, false);
+        yield SingleGameSaveDone.fromState(state).build();
+        yield (SingleGameLoaded.fromState(state)..game = event.game.toBuilder())
+            .build();
       } catch (e) {
-        yield SingleGameSaveFailed(singleGameState: state, error: e);
+        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     // Update the shared data of the game.
     if (event is SingleGameUpdateSharedData) {
-      yield SingleGameSaving(singleGameState: state);
+      yield SingleGameSaving.fromState(state).build();
       try {
-        await gameBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreSharedGame(event.sharedData);
-        yield SingleGameSaveDone(state: state);
-        yield SingleGameLoaded(
-            state: state,
-            game: state.game
-                .rebuild((b) => b..sharedData = event.sharedData.toBuilder()));
+        await db.updateFirestoreSharedGame(event.sharedData);
+        yield SingleGameSaveDone.fromState(state).build();
+        yield (SingleGameLoaded.fromState(state)
+              ..game = (state.game.toBuilder()
+                ..sharedData = event.sharedData.toBuilder()))
+            .build();
       } catch (e) {
-        yield SingleGameSaveFailed(singleGameState: state, error: e);
+        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     // Add a gane log.
     if (event is SingleGameAddGameLog) {
-      yield SingleGameSaving(singleGameState: state);
+      yield SingleGameSaving.fromState(state).build();
       try {
-        await gameBloc.coordinationBloc.databaseUpdateModel
-            .addFirestoreGameLog(state.game, event.log);
-        List<GameLog> logs = state.gameLog.toList();
+        await db.addFirestoreGameLog(state.game, event.log);
+        ListBuilder<GameLog> logs = state.gameLog.toBuilder();
         logs.add(event.log);
-        yield SingleGameSaveDone(state: state);
-        yield SingleGameLoaded(state: state, gamelog: logs);
+        yield SingleGameSaveDone.fromState(state).build();
+        yield (SingleGameLoaded.fromState(state)..gameLog = logs).build();
       } catch (e) {
-        yield SingleGameSaveFailed(singleGameState: state, error: e);
+        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     // Update attendence
     if (event is SingleGameUpdateAttendance) {
-      yield SingleGameSaving(singleGameState: state);
+      yield SingleGameSaving.fromState(state).build();
       try {
-        await gameBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreGameAttendence(
-                state.game, event.playerUid, event.attendance);
+        await db.updateFirestoreGameAttendence(
+            state.game, event.playerUid, event.attendance);
         GameBuilder builder = state.game.toBuilder();
         builder.attendance[event.playerUid] = event.attendance;
-        yield SingleGameSaveDone(state: state);
-        yield SingleGameLoaded(game: builder.build(), state: state);
+        yield SingleGameSaveDone.fromState(state).build();
+        yield (SingleGameLoaded.fromState(state)..game = builder).build();
       } catch (e) {
-        yield SingleGameSaveFailed(singleGameState: state, error: e);
+        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     // Update game result
     if (event is SingleGameUpdateResult) {
-      yield SingleGameSaving(singleGameState: state);
+      yield SingleGameSaving.fromState(state).build();
       try {
-        await gameBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreGameResult(state.game.uid, event.result);
-        yield SingleGameSaveDone(state: state);
-        yield SingleGameLoaded(
-            game:
-                state.game.rebuild((b) => b..result = event.result.toBuilder()),
-            state: state);
+        await db.updateFirestoreGameResult(state.game.uid, event.result);
+        yield SingleGameSaveDone.fromState(state).build();
+        yield (SingleGameLoaded.fromState(state)
+              ..game =
+                  (state.game.toBuilder()..result = event.result.toBuilder()))
+            .build();
       } catch (e) {
-        yield SingleGameSaveFailed(singleGameState: state, error: e);
+        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     // Update offical game result
     if (event is SingleGameUpdateOfficalResult) {
-      yield SingleGameSaving(singleGameState: state);
+      yield SingleGameSaving.fromState(state).build();
       try {
-        await gameBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreOfficalGameResult(
-                state.game.sharedData.uid, event.result);
-        yield SingleGameSaveDone(state: state);
-        yield SingleGameLoaded(state: state);
+        await db.updateFirestoreOfficalGameResult(
+            state.game.sharedData.uid, event.result);
+        yield SingleGameSaveDone.fromState(state).build();
+        yield (SingleGameLoaded.fromState(state)).build();
       } catch (e) {
-        yield SingleGameSaveFailed(singleGameState: state, error: e);
+        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     if (event is _SingleGameNewLogs) {
-      yield SingleGameLoaded(
-          game: state.game,
-          gamelog: event.logs,
-          loadedLogs: true,
-          state: state);
+      yield (SingleGameLoaded.fromState(state)
+            ..gameLog = event.logs.toBuilder()
+            ..loadedLogs = true
+            ..firestoreLogSetup = true)
+          .build();
     }
 
     if (event is SingleGameLoadGameLog) {
-      _gameLogSub = gameBloc.coordinationBloc.databaseUpdateModel
-          .readGameLogs(state.game)
-          .listen((Iterable<GameLog> logs) {
+      _gameLogSub?.cancel();
+      _gameLogSub =
+          db.readGameLogs(state.game).listen((Iterable<GameLog> logs) {
         add(_SingleGameNewLogs(logs: logs));
       });
     }
+  }
+
+  @override
+  SingleGameState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return SingleGameUninitialized();
+    }
+
+    SingleGameBlocStateType type =
+        SingleGameBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case SingleGameBlocStateType.Uninitialized:
+        return SingleGameUninitialized();
+      case SingleGameBlocStateType.Loaded:
+        var ret = SingleGameLoaded.fromMap(json);
+        if (ret.loadedLogs) {
+          add(SingleGameLoadGameLog());
+        }
+        return ret;
+      case SingleGameBlocStateType.Deleted:
+        return SingleGameDeleted.fromMap(json);
+      case SingleGameBlocStateType.SaveFailed:
+        return SingleGameSaveFailed.fromMap(json);
+      case SingleGameBlocStateType.Saving:
+        return SingleGameSaving.fromMap(json);
+      case SingleGameBlocStateType.SaveDone:
+        return SingleGameSaveDone.fromMap(json);
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(SingleGameState state) {
+    return state.toMap();
   }
 }

@@ -27,9 +27,7 @@ class _SeasonUserLoaded extends SeasonEvent {
 }
 
 class _SeasonFirestoreStart extends SeasonEvent {
-  final String uid;
-
-  _SeasonFirestoreStart({@required this.uid});
+  _SeasonFirestoreStart();
 
   @override
   String toString() {
@@ -37,7 +35,7 @@ class _SeasonFirestoreStart extends SeasonEvent {
   }
 
   @override
-  List<Object> get props => [uid];
+  List<Object> get props => [];
 }
 
 class _SeasonLoggedOut extends SeasonEvent {
@@ -92,7 +90,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
   void _startLoadingFirestore(CoordinationState state) {
     if (!_loadingFirestore) {
       _loadingFirestore = true;
-      add(_SeasonFirestoreStart(uid: state.uid));
+      add(_SeasonFirestoreStart());
     }
   }
 
@@ -118,7 +116,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
       TraceProxy adminTrace =
           coordinationBloc.analytics.newTrace('adminSeasons');
       Stream<Iterable<Season>> initialState =
-          coordinationBloc.databaseUpdateModel.getSeasons(event.uid);
+          coordinationBloc.databaseUpdateModel.getSeasons();
       Completer<Iterable<Season>> seasonData = Completer();
       _seasonSub = initialState.listen((Iterable<Season> data) {
         if (!seasonData.isCompleted) {

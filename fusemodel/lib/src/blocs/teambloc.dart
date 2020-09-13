@@ -142,7 +142,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
       // Do the admin team loading thing.
       TraceProxy adminTrace = coordinationBloc.analytics.newTrace('adminTeams');
       Stream<Iterable<Team>> adminTeamStream =
-          coordinationBloc.databaseUpdateModel.getTeamAdmins(event.uid);
+          coordinationBloc.databaseUpdateModel.getTeamAdmins();
 
       Completer<Iterable<Team>> adminData = Completer();
       _adminTeamSub?.cancel();
@@ -161,7 +161,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
       Iterable<Team> adminStartStuff = await adminData.future;
 
       Stream<Iterable<Team>> userTeamStream =
-          coordinationBloc.databaseUpdateModel.getTeams(event.uid);
+          coordinationBloc.databaseUpdateModel.getTeams();
 
       Completer<Iterable<Team>> userData = Completer();
       _userTeamSub?.cancel();
@@ -228,9 +228,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
     if (event is TeamLoadPublicTeam) {
       if (state.getPublicTeam(event.teamUid) == null) {
         Team t = await coordinationBloc.databaseUpdateModel
-            .getPublicTeamDetails(
-                userUid: coordinationBloc.authenticationBloc.currentUser.uid,
-                teamUid: event.teamUid);
+            .getPublicTeamDetails(teamUid: event.teamUid);
         MapBuilder<String, Team> publicStuff = state.publicTeams.toBuilder();
         publicStuff[event.teamUid] = t;
         yield (TeamLoaded.fromState(state)..publicTeams = publicStuff).build();

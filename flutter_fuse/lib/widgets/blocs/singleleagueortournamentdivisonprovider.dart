@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'base/singleprovider.dart';
 
@@ -29,10 +30,7 @@ class SingleLeagueOrTournamentDivisonProvider
       String uid,
       SingleLeagueOrTournamentSeasonBloc singleLeagueOrTournamentSeasonBloc) {
     return SingleLeagueOrTournamentDivisonBloc(
-        coordinationBloc: singleLeagueOrTournamentSeasonBloc == null
-            ? BlocProvider.of<CoordinationBloc>(context)
-            : null,
-        singleLeagueOrTournamentSeasonBloc: singleLeagueOrTournamentSeasonBloc,
+        db: RepositoryProvider.of<DatabaseUpdateModel>(context),
         leagueDivisonUid: uid);
   }
 }

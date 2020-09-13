@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 import 'package:timezone/timezone.dart';
@@ -11,9 +12,23 @@ import 'firestore.dart';
 
 class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   static const int maxMessages = 20;
-  FirestoreWrapper wrapper;
+  final FirestoreWrapper wrapper;
+  final AuthenticationBloc authenticationBloc;
+  UserData userData;
 
-  DatabaseUpdateModelImpl(this.wrapper);
+  DatabaseUpdateModelImpl(this.wrapper, this.authenticationBloc) {
+    authenticationBloc.listen((state) {
+      if (state is AuthenticationLoggedIn) {
+        userData = state.user;
+      }
+      if (state is AuthenticationLoggedOut) {
+        userData = null;
+      }
+    });
+  }
+
+  @override
+  UserData get currentUser => userData;
 
   // Stuff for game updates.
   @override
@@ -495,30 +510,28 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Team> getPublicTeamDetails(
-      {@required String userUid, @required String teamUid}) async {
+  Future<Team> getPublicTeamDetails({@required String teamUid}) async {
     DocumentSnapshotWrapper snap =
         await wrapper.collection(TEAMS_COLLECTION).document(teamUid).get();
     if (snap.exists) {
-      Team team = Team.fromMap(userUid, snap.data);
+      Team team = Team.fromMap(userData.uid, snap.data);
       return team;
     }
     return null;
   }
 
   @override
-  Stream<Team> getTeamDetails(
-      {@required String userUid, @required String teamUid}) async* {
+  Stream<Team> getTeamDetails({@required String teamUid}) async* {
     DocumentReferenceWrapper referenceWrapper =
         wrapper.collection(TEAMS_COLLECTION).document(teamUid);
     DocumentSnapshotWrapper snap = await referenceWrapper.get();
     if (snap.exists) {
-      yield Team.fromMap(userUid, snap.data);
+      yield Team.fromMap(userData.uid, snap.data);
     } else {
       yield Team((b) => b..uid = teamUid);
     }
     await for (DocumentSnapshotWrapper doc in referenceWrapper.snapshots()) {
-      yield Team.fromMap(userUid, doc.data);
+      yield Team.fromMap(userData.uid, doc.data);
     }
   }
 
@@ -929,9 +942,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<Iterable<InviteToTeam>> getInviteForSeasonStream(
-      {@required String userUid,
-      @required String seasonUid,
-      @required String teamUid}) async* {
+      {@required String seasonUid, @required String teamUid}) async* {
     CollectionReferenceWrapper ref = wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     QueryWrapper query = ref
@@ -969,10 +980,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<Iterable<Season>> getSeasons(String userUid) async* {
+  Stream<Iterable<Season>> getSeasons() async* {
     QueryWrapper query = wrapper
         .collection(SEASONS_COLLECTION)
-        .where(Season.USER + "." + userUid + ".added", isEqualTo: true);
+        .where(Season.USER + "." + userData.uid + ".added", isEqualTo: true);
     QuerySnapshotWrapper snap = await query.getDocuments();
     List<Season> seasons = [];
     for (DocumentSnapshotWrapper doc in snap.documents) {
@@ -1001,8 +1012,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   Future<Team> _loadTeamFromClub(
-      String userUid, DocumentSnapshotWrapper snap, Club club) async {
-    return Team.fromMap(userUid, snap.data);
+      DocumentSnapshotWrapper snap, Club club) async {
+    return Team.fromMap(userData.uid, snap.data);
   }
 
   // Loads the seasons for the team.  This is only used for
@@ -1031,21 +1042,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   // clubs!
   @override
-  Stream<Iterable<Team>> getClubTeams(String userUid, Club club) async* {
+  Stream<Iterable<Team>> getClubTeams(Club club) async* {
     QueryWrapper query = wrapper
         .collection(TEAMS_COLLECTION)
         .where(Team.CLUBUID, isEqualTo: club.uid);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     List<Team> teams = [];
     for (DocumentSnapshotWrapper snap in wrap.documents) {
-      Team t = await _loadTeamFromClub(userUid, snap, club);
+      Team t = await _loadTeamFromClub(snap, club);
       teams.add(t);
     }
     yield teams;
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
       List<Team> teams = [];
       for (DocumentSnapshotWrapper snap in wrap.documents) {
-        Team t = await _loadTeamFromClub(userUid, snap, club);
+        Team t = await _loadTeamFromClub(snap, club);
         teams.add(t);
       }
       yield teams;
@@ -1053,12 +1064,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<void> addUserToClub(String clubUid, String userUid, bool admin) {
+  Future<void> addUserToClub(String clubUid, String newUserUid, bool admin) {
     return wrapper
         .collection(CLUB_COLLECTION)
         .document(clubUid)
         .updateData(<String, dynamic>{
-      Club.MEMBERS + "." + userUid: <String, dynamic>{
+      Club.MEMBERS + "." + newUserUid: <String, dynamic>{
         ADDED: true,
         Club.ADMIN: admin
       }
@@ -1123,11 +1134,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Club> getClubData({String userUid, String clubUid}) async {
+  Future<Club> getClubData({String clubUid}) async {
     DocumentSnapshotWrapper snap =
         await wrapper.collection(CLUB_COLLECTION).document(clubUid).get();
     if (snap.exists) {
-      return Club.fromMap(userUid, snap.data);
+      return Club.fromMap(userData.uid, snap.data);
     }
     return null;
   }
@@ -1205,12 +1216,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<void> addUserToLeague(String leagueUid, String userUid, bool admin) {
+  Future<void> addUserToLeague(String leagueUid, bool admin) {
     return wrapper
         .collection(LEAGUE_COLLECTON)
         .document(leagueUid)
         .updateData(<String, dynamic>{
-      LeagueOrTournament.MEMBERS + "." + userUid: <String, dynamic>{
+      LeagueOrTournament.MEMBERS + "." + userData.uid: <String, dynamic>{
         ADDED: true,
         LeagueOrTournament.ADMIN: admin
       }
@@ -1218,28 +1229,28 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<void> addUserToLeagueSeason(
-      String leagueUid, String userUid, bool admin) {
+  Future<void> addUserToLeagueSeason(String leagueUid, bool admin) {
     return wrapper
         .collection(LEAGUE_SEASON_COLLECTION)
         .document(leagueUid)
         .updateData(<String, dynamic>{
-      LeagueOrTournamentSeason.MEMBERS + "." + userUid: AddedOrAdmin((b) => b
-        ..added = true
-        ..admin = admin).toMap()
+      LeagueOrTournamentSeason.MEMBERS + "." + userData.uid:
+          AddedOrAdmin((b) => b
+            ..added = true
+            ..admin = admin).toMap()
     });
   }
 
   @override
-  Future<void> addUserToLeagueDivison(
-      String leagueUid, String userUid, bool admin) {
+  Future<void> addUserToLeagueDivison(String leagueUid, bool admin) {
     return wrapper
         .collection(LEAGUE_COLLECTON)
         .document(leagueUid)
         .updateData(<String, dynamic>{
-      LeagueOrTournamentDivison.MEMBERS + "." + userUid: AddedOrAdmin((b) => b
-        ..added = true
-        ..admin = admin)
+      LeagueOrTournamentDivison.MEMBERS + "." + userData.uid:
+          AddedOrAdmin((b) => b
+            ..added = true
+            ..admin = admin)
     });
   }
 
@@ -1251,19 +1262,18 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   Future<String> inviteUserToLeagueTeam(
-      {String userUid,
-      String leagueSeasonUid,
+      {String leagueSeasonUid,
       LeagueOrTournamentTeam leagueTeam,
       String email}) async {
     LeagueOrTournamentSeason season =
         await getLeagueSeasonData(leagueSeasonUid);
-    LeagueOrTournament leagueOrTournament = await getLeagueData(
-        userUid: userUid, leagueUid: season.leagueOrTournmentUid);
+    LeagueOrTournament leagueOrTournament =
+        await getLeagueData(leagueUid: season.leagueOrTournmentUid);
 
     InviteToLeagueTeam teamInvite = new InviteToLeagueTeam((b) => b
       ..email = email
       ..leagueName = leagueOrTournament.name
-      ..sentByUid = userUid
+      ..sentByUid = userData.uid
       ..leagueDivisonUid = leagueTeam.leagueOrTournamentDivisonUid
       ..leagueTeamName = leagueTeam.name
       ..leagueUid = leagueOrTournament.uid
@@ -1338,19 +1348,18 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<LeagueOrTournament> getLeagueData(
-      {String userUid, String leagueUid}) async {
+  Future<LeagueOrTournament> getLeagueData({String leagueUid}) async {
     DocumentSnapshotWrapper snap =
         await wrapper.collection(LEAGUE_COLLECTON).document(leagueUid).get();
     if (snap.exists) {
-      return LeagueOrTournament.fromMap(userUid, snap.data);
+      return LeagueOrTournament.fromMap(userData.uid, snap.data);
     }
     return null;
   }
 
   @override
   Stream<Iterable<LeagueOrTournamentSeason>> getLeagueSeasons(
-      {String userUid, String leagueUid}) async* {
+      {String leagueUid}) async* {
     QueryWrapper query = wrapper.collection(LEAGUE_SEASON_COLLECTION).where(
         LeagueOrTournamentSeason.LEAGUEORTOURNMENTUID,
         isEqualTo: leagueUid);
@@ -1489,7 +1498,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   Future<bool> connectLeagueTeamToSeason(
-      String leagueTeamUid, String userUid, Season season) async {
+      String leagueTeamUid, Season season) async {
     DocumentSnapshotWrapper doc = await wrapper
         .collection(LEAGUE_TEAM_COLLECTION)
         .document(leagueTeamUid)
@@ -1515,39 +1524,38 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   // Initial data
   @override
-  Stream<Iterable<Club>> getMainClubs(String userUid) async* {
-    QueryWrapper query = wrapper
-        .collection(CLUB_COLLECTION)
-        .where(Club.MEMBERS + "." + userUid + "." + ADDED, isEqualTo: true);
-    QuerySnapshotWrapper wrap = await query.getDocuments();
-    yield wrap.documents.map(
-        (DocumentSnapshotWrapper snap) => Club.fromMap(userUid, snap.data));
-    await for (QuerySnapshotWrapper wrap in query.snapshots()) {
-      yield wrap.documents.map(
-          (DocumentSnapshotWrapper snap) => Club.fromMap(userUid, snap.data));
-    }
-  }
-
-  @override
-  Stream<Iterable<LeagueOrTournament>> getMainLeagueOrTournaments(
-      String userUid) async* {
-    QueryWrapper query = wrapper.collection(LEAGUE_COLLECTON).where(
-        LeagueOrTournament.MEMBERS + "." + userUid + "." + ADDED,
+  Stream<Iterable<Club>> getMainClubs() async* {
+    QueryWrapper query = wrapper.collection(CLUB_COLLECTION).where(
+        Club.MEMBERS + "." + userData.uid + "." + ADDED,
         isEqualTo: true);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-        LeagueOrTournament.fromMap(userUid, snap.data));
+        Club.fromMap(userData.uid, snap.data));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
       yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
-          LeagueOrTournament.fromMap(userUid, snap.data));
+          Club.fromMap(userData.uid, snap.data));
     }
   }
 
   @override
-  Stream<Iterable<Player>> getPlayers(String userUid) async* {
-    QueryWrapper query = wrapper
-        .collection(PLAYERS_COLLECTION)
-        .where(Player.USERS + "." + userUid + "." + ADDED, isEqualTo: true);
+  Stream<Iterable<LeagueOrTournament>> getMainLeagueOrTournaments() async* {
+    QueryWrapper query = wrapper.collection(LEAGUE_COLLECTON).where(
+        LeagueOrTournament.MEMBERS + "." + userData.uid + "." + ADDED,
+        isEqualTo: true);
+    QuerySnapshotWrapper wrap = await query.getDocuments();
+    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
+        LeagueOrTournament.fromMap(userData.uid, snap.data));
+    await for (QuerySnapshotWrapper wrap in query.snapshots()) {
+      yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
+          LeagueOrTournament.fromMap(userData.uid, snap.data));
+    }
+  }
+
+  @override
+  Stream<Iterable<Player>> getPlayers() async* {
+    QueryWrapper query = wrapper.collection(PLAYERS_COLLECTION).where(
+        Player.USERS + "." + userData.uid + "." + ADDED,
+        isEqualTo: true);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents
         .map((DocumentSnapshotWrapper snap) => Player.fromMap(snap.data));
@@ -1558,19 +1566,18 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<Iterable<MessageRecipient>> getMessages(
-      String userUid, bool unread) async* {
+  Stream<Iterable<MessageRecipient>> getMessages(bool unread) async* {
     QueryWrapper query;
     if (unread) {
       query = wrapper
           .collection(MESSAGE_RECIPIENTS_COLLECTION)
-          .where(MessageRecipient.USERID, isEqualTo: userUid)
+          .where(MessageRecipient.USERID, isEqualTo: userData.uid)
           .where(MessageRecipient.STATE,
               isEqualTo: MessageState.Unread.toString());
     } else {
       query = wrapper
           .collection(MESSAGE_RECIPIENTS_COLLECTION)
-          .where(MessageRecipient.USERID, isEqualTo: userUid)
+          .where(MessageRecipient.USERID, isEqualTo: userData.uid)
           .orderBy(MessageRecipient.SENTAT)
           .limit(maxMessages);
     }
@@ -1584,10 +1591,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<Iterable<Invite>> getInvites(String email) async* {
+  Stream<Iterable<Invite>> getInvites() async* {
     QueryWrapper query = wrapper
         .collection(INVITE_COLLECTION)
-        .where(Invite.EMAIL, isEqualTo: normalizeEmail(email));
+        .where(Invite.EMAIL, isEqualTo: normalizeEmail(userData.email));
 
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
@@ -1599,32 +1606,51 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<Iterable<Team>> getTeamAdmins(String userUid) async* {
-    QueryWrapper teamCollection = wrapper
-        .collection(TEAMS_COLLECTION)
-        .where(Team.ADMINS + "." + userUid, isEqualTo: true);
+  Stream<Invite> getSingleInvite(String inviteUid) async* {
+    var ref = await wrapper.collection(INVITE_COLLECTION).document(inviteUid);
 
-    QuerySnapshotWrapper wrap = await teamCollection.getDocuments();
-    yield wrap.documents.map(
-        (DocumentSnapshotWrapper snap) => Team.fromMap(userUid, snap.data));
-    await for (QuerySnapshotWrapper wrap in teamCollection.snapshots()) {
-      yield wrap.documents.map(
-          (DocumentSnapshotWrapper snap) => Team.fromMap(userUid, snap.data));
+    var doc = await ref.get();
+    if (doc.exists) {
+      yield InviteFactory.makeInviteFromJSON(doc.documentID, doc.data);
+    } else {
+      yield null;
+    }
+    await for (DocumentSnapshotWrapper wrap in ref.snapshots()) {
+      if (wrap.exists) {
+        yield InviteFactory.makeInviteFromJSON(wrap.documentID, wrap.data);
+      } else {
+        yield null;
+      }
     }
   }
 
   @override
-  Stream<Iterable<Team>> getTeams(String userUid) async* {
+  Stream<Iterable<Team>> getTeamAdmins() async* {
     QueryWrapper teamCollection = wrapper
         .collection(TEAMS_COLLECTION)
-        .where(Team.USER + "." + userUid + ".added", isEqualTo: true);
+        .where(Team.ADMINS + "." + userData.uid, isEqualTo: true);
 
     QuerySnapshotWrapper wrap = await teamCollection.getDocuments();
-    yield wrap.documents.map(
-        (DocumentSnapshotWrapper snap) => Team.fromMap(userUid, snap.data));
+    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
+        Team.fromMap(userData.uid, snap.data));
     await for (QuerySnapshotWrapper wrap in teamCollection.snapshots()) {
-      yield wrap.documents.map(
-          (DocumentSnapshotWrapper snap) => Team.fromMap(userUid, snap.data));
+      yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
+          Team.fromMap(userData.uid, snap.data));
+    }
+  }
+
+  @override
+  Stream<Iterable<Team>> getTeams() async* {
+    QueryWrapper teamCollection = wrapper
+        .collection(TEAMS_COLLECTION)
+        .where(Team.USER + "." + userData.uid + ".added", isEqualTo: true);
+
+    QuerySnapshotWrapper wrap = await teamCollection.getDocuments();
+    yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
+        Team.fromMap(userData.uid, snap.data));
+    await for (QuerySnapshotWrapper wrap in teamCollection.snapshots()) {
+      yield wrap.documents.map((DocumentSnapshotWrapper snap) =>
+          Team.fromMap(userData.uid, snap.data));
     }
   }
 

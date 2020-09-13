@@ -326,10 +326,12 @@ class _ScoreDetailsState extends State<ScoreDetails> {
               ..score = _currentPeriodResults.score
               ..period = _currentPeriodResults.period
               ..eventTimeInternal = new DateTime.now().millisecondsSinceEpoch
-              ..uid = widget.game.gameBloc.coordinationBloc.authenticationBloc
-                  .currentUser.uid
-              ..displayName = widget.game.gameBloc.coordinationBloc
-                  .authenticationBloc.currentUser.profile.displayName)
+              ..uid =
+                  BlocProvider.of<AuthenticationBloc>(context).currentUser.uid
+              ..displayName = BlocProvider.of<AuthenticationBloc>(context)
+                  .currentUser
+                  .profile
+                  .displayName)
             .build()));
   }
 

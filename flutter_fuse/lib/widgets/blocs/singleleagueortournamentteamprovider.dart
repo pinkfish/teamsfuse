@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'base/singleprovider.dart';
 
@@ -22,7 +23,7 @@ class SingleLeagueOrTournamentTeamProvider
   static SingleLeagueOrTournamentTeamBloc _createBloc(
       BuildContext context, String uid) {
     return SingleLeagueOrTournamentTeamBloc(
-        coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
+        db: RepositoryProvider.of<DatabaseUpdateModel>(context),
         leagueTeamUid: uid);
   }
 }

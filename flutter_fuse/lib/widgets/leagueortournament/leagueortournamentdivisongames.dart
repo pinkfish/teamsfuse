@@ -55,18 +55,19 @@ class _LeagueOrTournamentDivisonDetailsState
 
   Widget _buildGamesList(SingleLeagueOrTournamentState leagueState,
       SingleLeagueOrTournamentDivisonState divisonState) {
-    SingleLeagueOrTournamentDivisonGamesBloc bloc =
-        BlocProvider.of<SingleLeagueOrTournamentDivisonGamesBloc>(context);
+    SingleLeagueOrTournamentDivisonBloc bloc =
+        BlocProvider.of<SingleLeagueOrTournamentDivisonBloc>(context);
     return BlocBuilder(
       cubit: bloc,
       builder: (BuildContext context,
-          SingleLeagueOrTournamentDivisonGamesState gamesState) {
+          SingleLeagueOrTournamentDivisonState gamesState) {
         if (!gamesState.loadedGames) {
           return Text(Messages.of(context).loading);
         }
+        BlocProvider.of<SingleLeagueOrTournamentDivisonBloc>(context)
+            .add(SingleLeagueOrTournamentDivisonLoadGames());
         // Filter only the ones we want.
-        Iterable<GameSharedData> games =
-            gamesState.leagueOrTournamentGames.values;
+        Iterable<GameSharedData> games = gamesState.games.values;
         if (_currentTeamConstraint != TournamentOrLeagueTeamPicker.all) {
           games = games.where((GameSharedData g) =>
               g.officialResult.homeTeamLeagueUid == _currentTeamConstraint ||
@@ -84,8 +85,7 @@ class _LeagueOrTournamentDivisonDetailsState
                   Align(
                     alignment: Alignment.topLeft,
                     child: FlatButton(
-                      onPressed: () =>
-                          _addGame(divisonState.leagueOrTournamentDivison.uid),
+                      onPressed: () => _addGame(bloc.leagueDivisonUid),
                       child: Text(Messages.of(context).addgame,
                           style: Theme.of(context)
                               .textTheme
@@ -191,78 +191,84 @@ class _LeagueOrTournamentDivisonDetailsState
         builder: (BuildContext context,
                 SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
             SingleLeagueOrTournamentDivisonProvider(
-          leagueDivisonUid: widget.leagueOrTournamentDivisonUid,
-          singleLeagueOrTournamentSeasonBloc: seasonBloc,
-          builder: (BuildContext context,
-                  SingleLeagueOrTournamentDivisonBloc divisonBloc) =>
-              BlocProvider(
-            create: (BuildContext context) =>
-                SingleLeagueOrTournamentDivisonGamesBloc(
-                    singleLeagueOrTournamentDivisonBloc: divisonBloc),
-            child: BlocBuilder(
-              cubit: leagueBloc,
-              builder: (BuildContext context,
-                  SingleLeagueOrTournamentState leagueState) {
-                if (leagueState is SingleLeagueOrTournamentDeleted) {
-                  return Text(Messages.of(context).loading);
-                }
-
-                return BlocBuilder(
-                  cubit: seasonBloc,
-                  builder: (BuildContext context,
-                          SingleLeagueOrTournamentSeasonState seasonState) =>
-                      BlocBuilder(
-                    cubit: divisonBloc,
+                leagueDivisonUid: widget.leagueOrTournamentDivisonUid,
+                singleLeagueOrTournamentSeasonBloc: seasonBloc,
+                builder: (BuildContext context,
+                    SingleLeagueOrTournamentDivisonBloc divisonBloc) {
+                  divisonBloc.add(SingleLeagueOrTournamentDivisonLoadGames());
+                  return BlocBuilder(
+                    cubit: leagueBloc,
                     builder: (BuildContext context,
-                            SingleLeagueOrTournamentDivisonState
-                                divisonState) =>
-                        Container(
-                      alignment: Alignment.topLeft,
-                      margin: EdgeInsets.all(5.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          new ListTile(
-                            leading: LeagueImage(
-                              leagueOrTournamentUid:
-                                  widget.leagueOrTournamentUid,
-                              width: 50.0,
-                              height: 50.0,
-                            ),
-                            title: Text(
-                              leagueState.leagueOrTournament.name,
-                              style: Theme.of(context).textTheme.headline,
-                            ),
-                            subtitle: Text(
-                              "${seasonState.leagueOrTournamentSeason.name} ${divisonState.leagueOrTournamentDivison.name}",
-                              style: Theme.of(context).textTheme.subhead,
-                            ),
-                          ),
-                          TournamentOrLeagueTeamPicker(
-                            leagueOrTournamentDivisonBloc: divisonBloc,
-                            initialTeamUid: _currentTeamConstraint,
-                            includeAll: true,
-                            onChanged: (String str) =>
-                                setState(() => _currentTeamConstraint = str),
-                          ),
-                          Expanded(
-                            child: Scrollbar(
-                              child: SingleChildScrollView(
-                                child:
-                                    _buildGamesList(leagueState, divisonState),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
+                        SingleLeagueOrTournamentState leagueState) {
+                      if (leagueState is SingleLeagueOrTournamentDeleted) {
+                        return Text(Messages.of(context).loading);
+                      }
+
+                      return BlocBuilder(
+                        cubit: seasonBloc,
+                        builder: (BuildContext context,
+                                SingleLeagueOrTournamentSeasonState
+                                    seasonState) =>
+                            BlocBuilder(
+                                cubit: divisonBloc,
+                                builder: (BuildContext context,
+                                    SingleLeagueOrTournamentDivisonState
+                                        divisonState) {
+                                  return Container(
+                                    alignment: Alignment.topLeft,
+                                    margin: EdgeInsets.all(5.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        new ListTile(
+                                          leading: LeagueImage(
+                                            leagueOrTournamentUid:
+                                                widget.leagueOrTournamentUid,
+                                            width: 50.0,
+                                            height: 50.0,
+                                          ),
+                                          title: Text(
+                                            leagueState.leagueOrTournament.name,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headline,
+                                          ),
+                                          subtitle: Text(
+                                            "${seasonState.leagueOrTournamentSeason.name} ${divisonState.divison.name}",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subhead,
+                                          ),
+                                        ),
+                                        TournamentOrLeagueTeamPicker(
+                                          leagueOrTournamentDivisonBloc:
+                                              divisonBloc,
+                                          initialTeamUid:
+                                              _currentTeamConstraint,
+                                          includeAll: true,
+                                          onChanged: (String str) => setState(
+                                              () =>
+                                                  _currentTeamConstraint = str),
+                                        ),
+                                        Expanded(
+                                          child: Scrollbar(
+                                            child: SingleChildScrollView(
+                                              child: _buildGamesList(
+                                                  leagueState, divisonState),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                      );
+                    },
+                  );
+                }),
       ),
     );
   }
