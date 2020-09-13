@@ -95,13 +95,13 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
       if (coordState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
         add(_TeamLoggedOut());
-      } else if (state is CoordinationStateLoadingFirestore) {
-        if (!_loadingFirestore) {
-          _loadingFirestore = true;
-          _startLoadingFirestore(coordState);
-        }
+      } else if (coordState is CoordinationStateLoadingFirestore) {
+        _startLoadingFirestore(coordState);
       }
     });
+    if (coordinationBloc.state is CoordinationStateLoadingFirestore) {
+      _startLoadingFirestore(coordinationBloc.state);
+    }
     _clubSub = clubBloc.listen((ClubState state) {
       if (state is ClubLoaded) {
         add(_NewClubTeams(teams: state.teams));
@@ -110,7 +110,12 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
   }
 
   void _startLoadingFirestore(CoordinationState state) {
-    add(_TeamFirestoreStart(uid: state.uid));
+    print("TeamBloc doing $_loadingFirestore $state");
+    if (!_loadingFirestore) {
+      print("TeamBloc really firestore");
+      _loadingFirestore = true;
+      add(_TeamFirestoreStart(uid: state.uid));
+    }
   }
 
   void _cleanupSnaps() {
@@ -133,6 +138,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
   Stream<TeamState> mapEventToState(TeamEvent event) async* {
     // Start the firestore loading.
     if (event is _TeamFirestoreStart) {
+      print("TeamBloc start loading firestore");
       // Do the admin team loading thing.
       TraceProxy adminTrace = coordinationBloc.analytics.newTrace('adminTeams');
       Stream<Iterable<Team>> adminTeamStream =
@@ -148,9 +154,10 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
             adminTeams: BuiltMap.of(
                 Map.fromIterable(data, key: (t) => t.uid, value: (t) => t))));
       });
+      _adminTeamSub.onError((e) {
+        print("Failed to get teams $e");
+      });
       coordinationBloc.loadingTrace?.incrementCounter("teamAdmin");
-      BuiltMap<String, Team> oldAdminTeams = state.adminTeams;
-      BuiltMap<String, Team> oldUserTeams = state.playerTeams;
       Iterable<Team> adminStartStuff = await adminData.future;
 
       Stream<Iterable<Team>> userTeamStream =

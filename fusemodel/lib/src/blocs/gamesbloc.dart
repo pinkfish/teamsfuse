@@ -172,15 +172,20 @@ class GameBloc extends HydratedBloc<GameEvent, GameState> {
             coordinationBloc.analyticsSubsystem.newTrace("gamaData");
         gamesTrace.start();
         var loaded = GameLoaded.fromMap(json);
-        MapBuilder<String, dynamic> gamesByTeam =
-            MapBuilder<String, Map<String, Game>>();
+        MapBuilder<String, MapBuilder<String, Game>> gamesByTeam =
+            MapBuilder<String, MapBuilder<String, Game>>();
         for (Game g in loaded.gamesByTeamToSerialize.values) {
           gamesByTeam.putIfAbsent(g.teamUid, () => MapBuilder<String, Game>());
           gamesByTeam[g.teamUid][g.uid] = g;
         }
-        gamesByTeam.updateAllValues((uid, b) => b.build());
 
-        loaded = loaded.rebuild((b) => b..gamesByTeam = gamesByTeam);
+        var rebuilt = MapBuilder<String, BuiltMap<String, Game>>();
+        gamesByTeam.updateAllValues((k, v) {
+          rebuilt[k] = v.build();
+          return v;
+        });
+
+        loaded = loaded.rebuild((b) => b..gamesByTeam = rebuilt);
         print('End games  ${loaded.gamesByTeam.length}');
         gamesTrace.stop();
         return loaded;

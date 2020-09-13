@@ -63,13 +63,12 @@ class LeagueOrTournamentBloc
         _loadingFirestore = false;
         add(_LeagueOrTournamentEventLogout());
       } else if (coordState is CoordinationStateLoadingFirestore) {
-        if (!_loadingFirestore) {
-          _loadingFirestore = true;
-
-          _startLoadingFirestore(coordState);
-        }
+        _startLoadingFirestore(coordState);
       }
     });
+    if (coordinationBloc.state is CoordinationStateLoadingFirestore) {
+      _startLoadingFirestore(coordinationBloc.state);
+    }
   }
 
   @override
@@ -85,7 +84,11 @@ class LeagueOrTournamentBloc
   }
 
   void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
-    add(_LeagueOrTournamentEventFirestore(uid: state.uid));
+    if (!_loadingFirestore) {
+      _loadingFirestore = true;
+
+      add(_LeagueOrTournamentEventFirestore(uid: state.uid));
+    }
   }
 
   void _onLeagueOrTournamentsUpdated(Iterable<LeagueOrTournament> leagues) {

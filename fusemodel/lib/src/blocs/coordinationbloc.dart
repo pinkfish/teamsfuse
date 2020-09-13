@@ -160,8 +160,6 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
     });
   }
 
-  void addCoordinationPiece(BlocsToLoad toLoad) {}
-
   @override
   Stream<CoordinationState> mapEventToState(CoordinationEvent event) async* {
     if (event is _CoordintationStateStart) {

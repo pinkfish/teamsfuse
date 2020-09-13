@@ -81,20 +81,19 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
         _loadingFirestore = false;
         add(_SeasonLoggedOut());
       } else if (coordState is CoordinationStateLoadingFirestore) {
-        if (!_loadingFirestore) {
-          _loadingFirestore = true;
-          _startLoadingFirestore(coordState);
-        }
+        _startLoadingFirestore(coordState);
       }
     });
-  }
-
-  void _startLoading(CoordinationState state) {
-    add(_SeasonUserLoaded(uid: state.uid));
+    if (coordinationBloc.state is CoordinationStateLoadingFirestore) {
+      _startLoadingFirestore(coordinationBloc.state);
+    }
   }
 
   void _startLoadingFirestore(CoordinationState state) {
-    add(_SeasonFirestoreStart(uid: state.uid));
+    if (!_loadingFirestore) {
+      _loadingFirestore = true;
+      add(_SeasonFirestoreStart(uid: state.uid));
+    }
   }
 
   void _cleanupSnaps() {

@@ -78,13 +78,12 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
 
         add(_InviteEventLogout());
       } else if (coordinationState is CoordinationStateLoadingFirestore) {
-        if (!_loadingFirestore) {
-          _loadingFirestore = true;
-
-          _startLoadingFirestore(coordinationState);
-        }
+        _startLoadingFirestore(coordinationState);
       }
     });
+    if (coordinationBloc.state is CoordinationStateLoadingFirestore) {
+      _startLoadingFirestore(coordinationBloc.state);
+    }
   }
 
   @override
@@ -96,7 +95,11 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
   }
 
   void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
-    add(_InviteEventLoadFirestore(uid: state.uid));
+    if (!_loadingFirestore) {
+      _loadingFirestore = true;
+
+      add(_InviteEventLoadFirestore(uid: state.uid));
+    }
   }
 
   void _onInviteUpdated(Iterable<Invite> invites) {

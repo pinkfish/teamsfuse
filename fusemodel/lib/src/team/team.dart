@@ -26,6 +26,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
 
   /// How early people should arrive for the game by default.  This is
   /// overridden by the club potentially.
+  @BuiltValueField(wireName: ARRIVALTIME)
   num get arriveEarlyInternal;
   String get currentSeason;
   Gender get gender;
@@ -34,7 +35,8 @@ abstract class Team implements Built<Team, TeamBuilder> {
   String get uid;
   @nullable
   String get photoUrl;
-  bool get archived;
+  @BuiltValueField(wireName: ARCHIVED)
+  BuiltMap<String, bool> get archivedData;
   // The user id in this team.
   @BuiltValueField(serialize: false)
   String get userUid;
@@ -44,10 +46,12 @@ abstract class Team implements Built<Team, TeamBuilder> {
   String get clubUid;
 
   /// If we can only see public details of this team.
+  @BuiltValueField(serialize: false)
   bool get publicOnly;
 
   /// If we should track attendecne for games in this team.  This is
   /// overridden by the club potentially.
+  @BuiltValueField(wireName: ATTENDANCE)
   bool get trackAttendenceInternal;
 
   /// This is a list of user ids, not player Ids.
@@ -57,19 +61,23 @@ abstract class Team implements Built<Team, TeamBuilder> {
   @memoized
   BuiltSet<String> get admins => BuiltSet.of(adminsData.keys);
 
+  @memoized
+  bool get archived =>
+      archivedData.containsKey(userUid) && archivedData[userUid];
+
   Team._();
   factory Team([updates(TeamBuilder b)]) = _$Team;
 
-  static const String _CURRENTSEASON = 'currentSeason';
-  static const String _LEAGUE = 'league';
-  static const String _GENDER = 'gender';
-  static const String _SPORT = 'sport';
   static const String ADMINS = 'admins';
-  static const String _TRACKATTENDENDCE = 'trackAttendence';
+  static const String ATTENDANCE = 'trackAttendence';
   static const String CLUBUID = 'clubUid';
   static const String LEAGUEUID = 'leagueuid';
   static const String ARCHIVED = 'archived';
   static const String USER = 'users';
+
+  static void _initializeBuilder(TeamBuilder b) => b
+    ..userUid = ""
+    ..publicOnly = false;
 
   /// Deserialize the team.
   Map<String, dynamic> toMap() {
@@ -89,36 +97,21 @@ abstract class Team implements Built<Team, TeamBuilder> {
       String teamUid,
       String userUid,
       Map<String, dynamic> data}) {
+    var newTeam = Team.fromMap(userUid, data);
     builder.uid = teamUid;
     builder.userUid = userUid;
-    builder.name = getString(data[NAME]);
-    builder.arriveEarlyInternal = getNum(data[ARRIVALTIME]);
-    builder.currentSeason = getString(data[_CURRENTSEASON]);
-    builder.league = getString(data[_LEAGUE]);
-    builder.photoUrl = getString(data[PHOTOURL]);
-    builder.archived = false;
-    if (data[ARCHIVED] != null) {
-      if (data[ARCHIVED] is Map<dynamic, dynamic>) {
-        Map<dynamic, dynamic> stuff = data[ARCHIVED] as Map<dynamic, dynamic>;
-        builder.archived = getBool(stuff[userUid]);
-      }
-    }
-    builder.clubUid = data[CLUBUID];
-    builder.gender = Gender.values.firstWhere(
-        (e) => e.toString() == data[_GENDER],
-        orElse: () => Gender.NA);
-    builder.sport = Sport.values.firstWhere((e) => e.toString() == data[_SPORT],
-        orElse: () => Sport.Other);
-    builder.trackAttendenceInternal =
-        getBool(data[_TRACKATTENDENDCE], defaultValue: true);
+    builder.name = newTeam.name;
+    builder.arriveEarlyInternal = newTeam.arriveEarlyInternal;
+    builder.currentSeason = newTeam.currentSeason;
+    builder.league = newTeam.league;
+    builder.photoUrl = newTeam.photoUrl;
+    builder.archivedData = newTeam.archivedData.toBuilder();
+    builder.clubUid = newTeam.clubUid;
+    builder.gender = newTeam.gender;
+    builder.sport = newTeam.sport;
+    builder.trackAttendenceInternal = newTeam.trackAttendenceInternal;
     if (!builder.publicOnly) {
-      if (data[ADMINS] != null) {
-        data[ADMINS].forEach((dynamic key, dynamic data) {
-          if (data is bool && data) {
-            builder.adminsData[key] = true;
-          }
-        });
-      }
+      builder.adminsData = newTeam.adminsData.toBuilder();
     }
   }
 

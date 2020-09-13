@@ -87,16 +87,19 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
         _loadingFirestore = false;
         add(_PlayerLoggedOut());
       } else if (coordState is CoordinationStateLoadingFirestore) {
-        if (!_loadingFirestore) {
-          _loadingFirestore = true;
-          _startLoadingFirestore(coordState);
-        }
+        _startLoadingFirestore(coordState);
       }
     });
+    if (coordinationBloc.state is CoordinationStateLoadingFirestore) {
+      _startLoadingFirestore(coordinationBloc.state);
+    }
   }
 
   void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
-    add(_PlayerFirestore());
+    if (!_loadingFirestore) {
+      _loadingFirestore = true;
+      add(_PlayerFirestore());
+    }
   }
 
   @override

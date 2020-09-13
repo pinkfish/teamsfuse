@@ -13,20 +13,6 @@ import 'teambloc.dart';
 
 abstract class MessagesEvent extends Equatable {}
 
-class _MessagesEventUserLoaded extends MessagesEvent {
-  final String uid;
-
-  _MessagesEventUserLoaded({@required this.uid});
-
-  @override
-  String toString() {
-    return '_MessagesEventUserLoaded{}';
-  }
-
-  @override
-  List<Object> get props => [uid];
-}
-
 class _MessagesEventLogout extends MessagesEvent {
   @override
   List<Object> get props => [];
@@ -88,12 +74,12 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
         _loadingFirestore = false;
         add(_MessagesEventLogout());
       } else if (coordState is CoordinationStateLoadingFirestore) {
-        if (!_loadingFirestore) {
-          _loadingFirestore = true;
-          _startLoadingFirestore(coordState);
-        }
+        _startLoadingFirestore(coordState);
       }
     });
+    if (coordinationBloc.state is CoordinationStateLoadingFirestore) {
+      _startLoadingFirestore(coordinationBloc.state);
+    }
   }
 
   @override
@@ -112,7 +98,10 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
   }
 
   void _startLoadingFirestore(CoordinationStateLoadingFirestore state) {
-    add(_MessagesEventFirestore(uid: state.uid));
+    if (!_loadingFirestore) {
+      _loadingFirestore = true;
+      add(_MessagesEventFirestore(uid: state.uid));
+    }
   }
 
   void _onUnreadMessagesUpdated(Iterable<MessageRecipient> data) async {

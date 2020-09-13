@@ -680,7 +680,8 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
 
     if (event is SingleTeamArchive) {
       try {
-        Team myTeam = state.team.rebuild((b) => b..archived = event.archive);
+        Team myTeam = state.team.rebuild(
+            (b) => b..archivedData[state.team.userUid] = event.archive);
         await teamBloc.coordinationBloc.databaseUpdateModel
             .updateFirestoreTeam(myTeam);
         yield SingleTeamSaveDone(state: state);
