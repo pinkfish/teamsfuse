@@ -81,7 +81,6 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
   }) : super(PlayerUninitialized()) {
     coordinationBloc
         .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Player));
-
     _authSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
@@ -162,6 +161,8 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
         print('Loaded for fluff');
       }
     }
+    coordinationBloc
+        .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Player));
     add(_PlayerNewPlayersLoaded(
         players: players.build(), deleted: toDeletePlayers, me: me));
   }
