@@ -6,7 +6,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_fuse/cache/cachemanager.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/appconfiguration.dart';
 import 'package:flutter_fuse/services/firestore/firestore.dart' as fs;
@@ -72,11 +71,14 @@ void main() async {
   // Start the loading, but don't block on it,
   // Load notifications after the app config has loaded.
   AppConfiguration.instance.load().then((void a) {
+    /*
     CacheManager.getInstance().then((CacheManager man) {
       print('got manager');
     }).catchError((dynamic error) {
       print('Got error $error');
     });
+
+     */
   });
 
   Analytics.analytics.logAppOpen();

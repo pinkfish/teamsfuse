@@ -8,30 +8,30 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter_fuse/services/appconfiguration.dart';
 import 'package:http/http.dart' as http;
 import 'package:synchronized/synchronized.dart';
 
+import '../services/appconfiguration.dart';
 import 'cacheobject.dart';
 
-class CacheManager {
-  CacheManager._();
+class CacheManagerFluff {
+  CacheManagerFluff._();
 
   static const String _keyCacheData = "lib_cached_image_data";
   static const String _keyCacheCleanDate = "lib_cached_image_data_last_clean";
 
-  static Duration inBetweenCleans = new Duration(days: 7);
-  static Duration maxAgeCacheObject = new Duration(days: 30);
+  static Duration inBetweenCleans = Duration(days: 7);
+  static Duration maxAgeCacheObject = Duration(days: 30);
   static int maxNrOfCacheObjects = 200;
   static bool showDebugLogs = false;
 
-  static CacheManager _instance;
+  static CacheManagerFluff _instance;
 
-  static Future<CacheManager> getInstance() async {
+  static Future<CacheManagerFluff> getInstance() async {
     if (_instance == null) {
       await _lock.synchronized(() async {
         if (_instance == null) {
-          _instance = new CacheManager._();
+          _instance = CacheManagerFluff._();
           await _instance._init();
         }
       });
@@ -39,33 +39,33 @@ class CacheManager {
     return _instance;
   }
 
-  Map<String, CacheObject> _cacheData;
+  Map<String, CacheObjectFluff> _cacheData;
   DateTime lastCacheClean;
 
-  static Lock _lock = new Lock();
+  static final Lock _lock = Lock();
 
   ///Shared preferences is used to keep track of the information about the files
   Future<void> _init() async {
     _getSavedCacheDataFromPreferences();
     _getLastCleanTimestampFromPreferences();
-    CacheObject.initDirectory();
+    CacheObjectFluff.initDirectory();
   }
 
   bool _isStoringData = false;
   bool _shouldStoreDataAgain = false;
-  Lock _storeLock = new Lock();
+  final Lock _storeLock = Lock();
 
   void _getSavedCacheDataFromPreferences() {
     //get saved cache data from shared prefs
     String jsonCacheString =
         AppConfiguration.instance.sharedPreferences.getString(_keyCacheData);
-    _cacheData = <String, CacheObject>{};
+    _cacheData = <String, CacheObjectFluff>{};
     if (jsonCacheString != null) {
       Map<String, dynamic> jsonCache =
           json.decode(jsonCacheString) as Map<String, dynamic>;
       jsonCache.forEach((String keyOb, dynamic dataOb) {
-        _cacheData[keyOb] =
-            new CacheObject.fromMap(keyOb, dataOb as Map<dynamic, dynamic>);
+        _cacheData[keyOb] = new CacheObjectFluff.fromMap(
+            keyOb, dataOb as Map<dynamic, dynamic>);
       });
     }
   }
@@ -106,7 +106,7 @@ class CacheManager {
     Map<String, dynamic> jsonMap = <String, dynamic>{};
 
     await _lock.synchronized(() {
-      _cacheData.forEach((String key, CacheObject cache) {
+      _cacheData.forEach((String key, CacheObjectFluff cache) {
         if (jsonMap[key] != null) {
           jsonMap[key] = cache.toMap();
         }
@@ -154,9 +154,10 @@ class CacheManager {
     DateTime oldestDateAllowed = new DateTime.now().subtract(maxAgeCacheObject);
 
     //Remove old objects
-    Iterable<CacheObject> oldValues = _cacheData.values.where(
-        (CacheObject c) => c == null || c.touched.isBefore(oldestDateAllowed));
-    for (CacheObject oldValue in oldValues) {
+    Iterable<CacheObjectFluff> oldValues = _cacheData.values.where(
+        (CacheObjectFluff c) =>
+            c == null || c.touched.isBefore(oldestDateAllowed));
+    for (CacheObjectFluff oldValue in oldValues) {
       await _removeFile(oldValue);
     }
   }
@@ -164,18 +165,18 @@ class CacheManager {
   Future<void> _shrinkLargeCache() async {
     //Remove oldest objects when cache contains to many items
     if (_cacheData.length > maxNrOfCacheObjects) {
-      List<CacheObject> allValues = _cacheData.values.toList();
-      allValues.sort((CacheObject c1, CacheObject c2) =>
+      List<CacheObjectFluff> allValues = _cacheData.values.toList();
+      allValues.sort((CacheObjectFluff c1, CacheObjectFluff c2) =>
           c1.touched.compareTo(c2.touched)); // sort OLDEST first
-      Iterable<CacheObject> oldestValues =
+      Iterable<CacheObjectFluff> oldestValues =
           allValues.take(_cacheData.length - maxNrOfCacheObjects); // get them
-      for (CacheObject item in oldestValues) {
+      for (CacheObjectFluff item in oldestValues) {
         await _removeFile(item);
       } //remove them
     }
   }
 
-  Future<void> _removeFile(CacheObject cacheObject) async {
+  Future<void> _removeFile(CacheObjectFluff cacheObject) async {
     //Ensure the file has been downloaded
     if (cacheObject.relativePath == null) {
       return;
@@ -192,7 +193,7 @@ class CacheManager {
   /// Figure out if the file is cached or not.
   Future<bool> isCached(String url) async {
     if (_cacheData.containsKey(url)) {
-      CacheObject cacheObject = _cacheData[url];
+      CacheObjectFluff cacheObject = _cacheData[url];
       String filePath = cacheObject.getFilePath();
       if (filePath != null) {
         File cachedFile = new File(filePath);
@@ -211,12 +212,12 @@ class CacheManager {
     if (!_cacheData.containsKey(url) || _cacheData[url] == null) {
       await _lock.synchronized(() {
         if (!_cacheData.containsKey(url) || _cacheData[url] == null) {
-          _cacheData[url] = new CacheObject(url);
+          _cacheData[url] = new CacheObjectFluff(url);
         }
       });
     }
 
-    CacheObject cacheObject = _cacheData[url];
+    CacheObjectFluff cacheObject = _cacheData[url];
     await cacheObject.lock.synchronized(() async {
       // Set touched date to show that this object is being used recently
       cacheObject.touch();
@@ -251,7 +252,8 @@ class CacheManager {
       if (cacheObject.validTill == null ||
           cacheObject.validTill.isBefore(new DateTime.now())) {
         log = "$log\nUpdating file in cache.";
-        CacheObject newCacheData = await downloadFile(url, useFirebase, headers,
+        CacheObjectFluff newCacheData = await downloadFile(
+            url, useFirebase, headers,
             relativePath: cacheObject.relativePath, eTag: cacheObject.eTag);
         if (newCacheData != null) {
           _cacheData[url] = newCacheData;
@@ -269,7 +271,7 @@ class CacheManager {
     if (showDebugLogs) {
       print(log);
     }
-    CacheObject ob = _cacheData[url];
+    CacheObjectFluff ob = _cacheData[url];
     if (ob == null) {
       return null;
     }
@@ -281,11 +283,11 @@ class CacheManager {
   }
 
   ///Download the file from the url
-  Future<CacheObject> downloadFile(
+  Future<CacheObjectFluff> downloadFile(
       String url, bool useFirebase, Map<String, String> headers,
       {String relativePath, String eTag}) async {
     print("[Flutter Cache Manager] Download file $url");
-    CacheObject newCache = new CacheObject(url);
+    CacheObjectFluff newCache = new CacheObjectFluff(url);
     newCache.setRelativePath(relativePath);
     if (eTag != null) {
       headers["If-None-Match"] = eTag;

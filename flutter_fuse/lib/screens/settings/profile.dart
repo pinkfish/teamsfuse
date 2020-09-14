@@ -1,8 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
-import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'package:flutter_fuse/widgets/util/playerimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -198,8 +198,8 @@ class ProfileScreen extends StatelessWidget {
                 ImageProvider leading;
                 if (playerState.player.photoUrl != null &&
                     playerState.player.photoUrl.isNotEmpty) {
-                  leading = new CachedNetworkImageProvider(
-                      urlNow: playerState.player.photoUrl);
+                  leading =
+                      CachedNetworkImageProvider(playerState.player.photoUrl);
                 } else {
                   leading =
                       const AssetImage("assets/images/defaultavatar2.png");
@@ -243,7 +243,7 @@ class ProfileScreen extends StatelessWidget {
                   child: new Column(
                     children: <Widget>[
                       new ListTile(
-                        leading: new CircleAvatar(backgroundImage: leading),
+                        leading: CircleAvatar(backgroundImage: leading),
                         trailing: new IconButton(
                           onPressed: () {
                             _editPlayer(context, player.uid);

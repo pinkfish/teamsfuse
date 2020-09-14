@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,7 +7,6 @@ import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../blocs/singleleagueortournamentteamprovider.dart';
-import 'cachednetworkimage.dart';
 
 /// Some overlay text onto the team to say home/away.
 enum HomeAwayOverlay { home, away, none }
@@ -42,23 +42,16 @@ class LeagueTeamImage extends StatelessWidget {
   final bool matchTextDirection;
   final HomeAwayOverlay overlay;
 
-  ImageProvider _providerFromTeam(Team team) {
-    if (team == null) {
-      return const AssetImage("assets/images/leagueteam.png");
-    }
-    String photoUrl = team.photoUrl;
-    if (photoUrl != null && photoUrl.isNotEmpty) {
-      return new CachedNetworkImageProvider(urlNow: photoUrl);
-    }
+  Widget _getDefaultForSport(Team team) {
     switch (team.sport) {
       case Sport.Basketball:
-        return const AssetImage("assets/sports/Sport.Basketball.png");
+        return Image.asset("assets/sports/Sport.Basketball.png");
       case Sport.Soccer:
-        return const AssetImage("assets/sports/Sport.Soccer.png");
+        return Image.asset("assets/sports/Sport.Soccer.png");
       default:
         break;
     }
-    return const AssetImage("assets/images/leagueteam.png");
+    return Image.asset("assets/images/leagueteam.png");
   }
 
   @override
@@ -85,15 +78,21 @@ class LeagueTeamImage extends StatelessWidget {
             } else {
               // Yay!
 
-              inner = FadeInImage(
-                image: _providerFromTeam(leagueState.publicTeam),
-                height: height,
-                width: width,
-                fit: fit,
-                alignment: alignment,
-                repeat: repeat,
-                matchTextDirection: matchTextDirection,
-                placeholder: AssetImage("assets/images/leagueteam.png"),
+              inner = CachedNetworkImage(
+                imageUrl: leagueState.publicTeam.photoUrl,
+                imageBuilder: (context, imageProvider) => FadeInImage(
+                  image: imageProvider,
+                  height: height,
+                  width: width,
+                  fit: fit,
+                  alignment: alignment,
+                  repeat: repeat,
+                  matchTextDirection: matchTextDirection,
+                ),
+                placeholder: (context, url) =>
+                    _getDefaultForSport(leagueState.publicTeam),
+                errorWidget: (context, url, error) =>
+                    _getDefaultForSport(leagueState.publicTeam),
               );
             }
             return AnimatedSwitcher(
@@ -140,24 +139,5 @@ class LeagueTeamImage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  static ImageProvider getImageURL(Team team) {
-    if (team == null) {
-      return const AssetImage("assets/images/leagueteam.png");
-    }
-    String photoUrl = team.photoUrl;
-    if (photoUrl != null && photoUrl.isNotEmpty) {
-      return new CachedNetworkImageProvider(urlNow: photoUrl);
-    }
-    switch (team.sport) {
-      case Sport.Basketball:
-        return const AssetImage("assets/sports/Sport.Basketball.png");
-      case Sport.Soccer:
-        return const AssetImage("assets/sports/Sport.Soccer.png");
-      default:
-        break;
-    }
-    return const AssetImage("assets/images/leagueteam.png");
   }
 }

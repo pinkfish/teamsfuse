@@ -1,12 +1,11 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
-
-import 'cachednetworkimage.dart';
 
 class TeamImage extends StatelessWidget {
   TeamImage(
@@ -40,36 +39,17 @@ class TeamImage extends StatelessWidget {
   final bool matchTextDirection;
   final bool showIcon;
 
-  ImageProvider _providerFromTeam(Team team) {
-    if (teamImage != null) {
-      return FileImage(teamImage);
-    }
-    String photoUrl = team.photoUrl;
-    if (photoUrl != null && photoUrl.isNotEmpty) {
-      return new CachedNetworkImageProvider(urlNow: photoUrl);
-    }
+  Widget getSportWidget(Team team) {
     switch (team.sport) {
       case Sport.Basketball:
-        return const AssetImage("assets/sports/Sport.Basketball.png");
+        return Image.asset("assets/sports/Sport.Basketball.png");
       case Sport.Soccer:
-        return const AssetImage("assets/sports/Sport.Soccer.png");
+        return Image.asset("assets/sports/Sport.Soccer.png");
       default:
         break;
     }
-    return const AssetImage("assets/images/defaultavatar2.png");
+    return Image.asset("assets/images/defaultavatar2.png");
   }
-
-  /*
-  Future<ImageProvider> get imageUrl async {
-    if (team != null) {
-      return _providerFromTeam(team);
-    }
-    // Team uid, lookup the team first.
-    Team publicTeam = await UserDatabaseData.instance.updateModel
-        .getPublicTeamDetails(teamUid);
-    return _providerFromTeam(publicTeam);
-  }
-  */
 
   Widget _buildImageBit(Team t) {
     return ClipOval(
@@ -78,14 +58,15 @@ class TeamImage extends StatelessWidget {
         height: width < height ? width : height,
         child: FittedBox(
           fit: fit,
-          child: FadeInImage(
+          child: CachedNetworkImage(
+            imageUrl: t.photoUrl,
             fadeInDuration: Duration(milliseconds: 200),
             fadeOutDuration: Duration(milliseconds: 200),
-            image: _providerFromTeam(t),
             alignment: alignment,
             repeat: repeat,
             matchTextDirection: matchTextDirection,
-            placeholder: AssetImage("assets/images/defaultavatar2.png"),
+            placeholder: (context, url) => getSportWidget(t),
+            errorWidget: (context, url, e) => getSportWidget(t),
           ),
         ),
       ),
@@ -130,24 +111,5 @@ class TeamImage extends StatelessWidget {
         );
       },
     );
-  }
-
-  static ImageProvider getImageURL(Team team) {
-    if (team == null) {
-      return const AssetImage("assets/images/defaultavatar2.png");
-    }
-    String photoUrl = team.photoUrl;
-    if (photoUrl != null && photoUrl.isNotEmpty) {
-      return new CachedNetworkImageProvider(urlNow: photoUrl);
-    }
-    switch (team.sport) {
-      case Sport.Basketball:
-        return const AssetImage("assets/sports/Sport.Basketball.png");
-      case Sport.Soccer:
-        return const AssetImage("assets/sports/Sport.Soccer.png");
-      default:
-        break;
-    }
-    return const AssetImage("assets/images/defaultavatar2.png");
   }
 }

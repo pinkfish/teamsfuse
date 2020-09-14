@@ -1,14 +1,6 @@
 library cached_network_image;
 
-import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
-import 'dart:ui' as ui show instantiateImageCodec, Codec;
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_fuse/cache/cachemanager.dart';
-
+/*
 ///
 /// CachedNetworkImage for Flutter
 ///
@@ -480,10 +472,10 @@ class CachedNetworkImageProvider
   }
 
   @override
-  ImageStreamCompleter load(
-      CachedNetworkImageProvider key, DecoderCallback decoderCallback) {
+  ImageStreamCompleter load(CachedNetworkImageProvider key,
+      DecoderCallback decoderCallback) {
     return new MultiFrameImageStreamCompleter(
-        codec: _loadAsync(key),
+        codec: _loadAsync(key, context),
         scale: key.scale,
         informationCollector: () {
           return <DiagnosticsNode>[
@@ -493,17 +485,18 @@ class CachedNetworkImageProvider
         });
   }
 
-  Future<ui.Codec> _loadAsync(CachedNetworkImageProvider key) async {
+  Future<ui.Codec> _loadAsync(
+      CachedNetworkImageProvider key, BuildContext context) async {
     Completer<ui.Codec> completer = new Completer<ui.Codec>();
-    _internalLoadAsync(key, completer);
+    _internalLoadAsync(key, completer, context);
 
     return completer.future;
   }
 
-  void _internalLoadAsync(
-      CachedNetworkImageProvider key, Completer<ui.Codec> completer) async {
+  void _internalLoadAsync(CachedNetworkImageProvider key,
+      Completer<ui.Codec> completer, BuildContext context) async {
     print("Stuff");
-    CacheManager cacheManager = await CacheManager.getInstance();
+    var cacheManager = RepositoryProvider.of<BaseCacheManager>(context);
     String myUrl = urlNow;
     print('Before this $myUrl');
     if (urlNow == null) {
@@ -517,7 +510,7 @@ class CachedNetworkImageProvider
         throw new Exception("Couldn't download or retreive file.");
       }
     }
-    File file = await cacheManager.getFile(myUrl, headers: headers);
+    File file = await cacheManager.getSingleFile(myUrl, headers: headers);
     if (file == null) {
       if (errorListener != null) {
         errorListener();
@@ -565,3 +558,4 @@ class CachedNetworkImageProvider
   @override
   String toString() => '$runtimeType("$urlNow", scale: $scale)';
 }
+*/

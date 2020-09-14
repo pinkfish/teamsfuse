@@ -1,12 +1,12 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../blocs/singleclubprovider.dart';
-import 'cachednetworkimage.dart';
 
 class ClubImage extends StatelessWidget {
   ClubImage(
@@ -50,12 +50,12 @@ class ClubImage extends StatelessWidget {
                 key: key,
                 width: width,
                 height: height,
-                placeholder: new Image.asset(
-                  "assets/images/defaultavatar.png",
-                  width: width,
-                  height: height,
-                  fit: fit,
-                ),
+                placeholder: (context, url) => Image.asset(
+                      "assets/images/defaultavatar.png",
+                      width: width,
+                      height: height,
+                      fit: fit,
+                    ),
                 alignment: alignment,
                 repeat: repeat,
                 matchTextDirection: matchTextDirection,
@@ -65,7 +65,7 @@ class ClubImage extends StatelessWidget {
               key: key,
               width: width,
               height: height,
-              placeholder: new Image.asset(
+              placeholder: (context, url) => Image.asset(
                 "assets/images/defaultavatar.png",
                 width: width,
                 height: height,

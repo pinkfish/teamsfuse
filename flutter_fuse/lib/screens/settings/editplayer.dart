@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/validations.dart';
 import 'package:flutter_fuse/widgets/form/relationshipformfield.dart';
-import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'package:flutter_fuse/widgets/util/username.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -65,10 +65,9 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
 
     ImageProvider provider;
     if (_imageFile != null) {
-      provider = new FileImage(_imageFile);
+      provider = FileImage(_imageFile);
     } else {
-      provider = new CachedNetworkImageProvider(
-          urlNow: singlePlayerState.player.photoUrl);
+      provider = CachedNetworkImageProvider(singlePlayerState.player.photoUrl);
     }
     ret.add(
       new Center(

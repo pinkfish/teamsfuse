@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/map.dart';
@@ -7,7 +8,6 @@ import 'package:flutter_fuse/services/map_view/marker.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
 import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
-import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:flutter_fuse/widgets/util/leagueteamimage.dart';
@@ -108,14 +108,14 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     List<Widget> body = <Widget>[];
     // Map view.
     body.add(
-      new Container(
+      Container(
         height: 250.0,
-        child: new Stack(
+        child: Stack(
           children: <Widget>[
-            new Center(
-              child: new CachedNetworkImage(
-                placeholder: new Center(
-                  child: new Container(
+            Center(
+              child: CachedNetworkImage(
+                placeholder: (context, url) => Center(
+                  child: Container(
                     padding: const EdgeInsets.all(20.0),
                     child: loadingWidget,
                   ),

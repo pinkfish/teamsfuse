@@ -1,10 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/map.dart';
 import 'package:flutter_fuse/services/map_view/marker.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/games/attendanceicon.dart';
-import 'package:flutter_fuse/widgets/util/cachednetworkimage.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:fusemodel/blocs.dart';
@@ -214,8 +214,8 @@ class GameDetailsBase extends StatelessWidget {
         child: new Stack(
           children: <Widget>[
             new Center(
-              child: new CachedNetworkImage(
-                placeholder: new Center(
+              child: CachedNetworkImage(
+                placeholder: (context, url) => Center(
                   child: new Container(
                     padding: const EdgeInsets.all(20.0),
                     child: loadingWidget,

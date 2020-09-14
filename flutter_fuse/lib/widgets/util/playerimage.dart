@@ -1,12 +1,11 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
-
-import 'cachednetworkimage.dart';
 
 ///
 /// Image of the specific player.  Will make an oval clip rect of the specific
@@ -62,19 +61,19 @@ class PlayerImage extends StatelessWidget {
         height: radius * 2,
         child: FittedBox(
           fit: BoxFit.cover,
-          child: BlocBuilder(
-            cubit: BlocProvider.of<PlayerBloc>(context),
-            builder: (BuildContext context, PlayerState playerState) {
-              return CachedNetworkImage(
-                placeholder: new Image(
-                    image:
-                        const AssetImage("assets/images/defaultavatar2.png")),
-                errorWidget: new Image(
-                    image: const AssetImage("assets/images/defaultavatar.png")),
-                imageFuture: getImageUrl(playerUid, context),
-              );
-            },
-          ),
+          child: FutureBuilder(
+              future: getImageUrl(playerUid, context),
+              builder: (BuildContext context, AsyncSnapshot<String> snap) {
+                return CachedNetworkImage(
+                  useOldImageOnUrlChange: true,
+                  imageUrl: snap.data ?? "",
+                  placeholder: (BuildContext context, String url) =>
+                      new Image.asset("assets/images/defaultavatar2.png"),
+                  errorWidget: (BuildContext context, String url, e) => Image(
+                      image:
+                          const AssetImage("assets/images/defaultavatar2.png")),
+                );
+              }),
         ),
       ),
     );

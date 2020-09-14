@@ -1,10 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
-
-import 'cachednetworkimage.dart';
 
 ///
 /// Image for the league, handling the fade in/out and caching of the
@@ -38,15 +37,6 @@ class LeagueImage extends StatelessWidget {
   final bool matchTextDirection;
   final BlendMode colorBlendMode;
 
-  ImageProvider _providerFromLeague(LeagueOrTournament league) {
-    String photoUrl = league.photoUrl;
-    if (photoUrl != null && photoUrl.isNotEmpty) {
-      return new CachedNetworkImageProvider(urlNow: photoUrl);
-    }
-
-    return const AssetImage("assets/images/defaultavatar.png");
-  }
-
   @override
   Widget build(BuildContext context) {
     var blocBuilder = BlocBuilder(
@@ -57,19 +47,26 @@ class LeagueImage extends StatelessWidget {
             if (leagueState.leagueOrTournaments
                 .containsKey(leagueOrTournamentUid)) {
               // Yay!
-              inner = FadeInImage(
-                image: _providerFromLeague(
-                    leagueState.leagueOrTournaments[leagueOrTournamentUid]),
-                height: height,
-                width: width,
-                fit: fit,
-                alignment: alignment,
-                repeat: repeat,
-                matchTextDirection: matchTextDirection,
-                placeholder: AssetImage("assets/images/defaultavatar.png"),
+              inner = CachedNetworkImage(
+                imageUrl: leagueState
+                    .leagueOrTournaments[leagueOrTournamentUid].photoUrl,
+                imageBuilder: (context, imageProvider) => FadeInImage(
+                  image: imageProvider,
+                  height: height,
+                  width: width,
+                  fit: fit,
+                  alignment: alignment,
+                  repeat: repeat,
+                  matchTextDirection: matchTextDirection,
+                  placeholder: AssetImage("assets/images/defaultavatar.png"),
+                ),
+                placeholder: (context, url) =>
+                    Image.asset("assets/images/defaultavatar.png"),
+                errorWidget: (context, url, error) =>
+                    Image.asset("assets/images/defaultavatar.png"),
               );
             } else {
-              inner = FadeInImage(
+              return FadeInImage(
                 image: AssetImage("assets/images/defaultavatar.png"),
                 height: height,
                 width: width,
@@ -94,24 +91,5 @@ class LeagueImage extends StatelessWidget {
         });
 
     return SizedBox(width: width, height: height, child: blocBuilder);
-  }
-
-  static ImageProvider getImageURL(Team team) {
-    if (team == null) {
-      return const AssetImage("assets/images/defaultavatar.png");
-    }
-    String photoUrl = team.photoUrl;
-    if (photoUrl != null && photoUrl.isNotEmpty) {
-      return new CachedNetworkImageProvider(urlNow: photoUrl);
-    }
-    switch (team.sport) {
-      case Sport.Basketball:
-        return const AssetImage("assets/sports/Sport.Basketball.png");
-      case Sport.Soccer:
-        return const AssetImage("assets/sports/Sport.Soccer.png");
-      default:
-        break;
-    }
-    return const AssetImage("assets/images/defaultavatar.png");
   }
 }

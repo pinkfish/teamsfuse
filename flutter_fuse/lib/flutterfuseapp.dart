@@ -1,6 +1,7 @@
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_fuse/services/approuter.dart';
 import 'package:flutter_fuse/services/firestore/firestore.dart';
@@ -35,6 +36,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   CoordinationBloc _coordinationBloc;
   LoadedStateBloc _loadedStateBloc;
   SeasonBloc _seasonBloc;
+  DatabaseUpdateModel _databaseUpdateModel;
 
   final ThemeData theme = new ThemeData(
     // This is the theme of your application.
@@ -65,18 +67,18 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
     _loginBloc = new LoginBloc(
         userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
-    DatabaseUpdateModel databaseUpdateModel =
+    _databaseUpdateModel =
         DatabaseUpdateModelImpl(new Firestore(), _authenticationBloc);
     _coordinationBloc = CoordinationBloc(
         authenticationBloc: _authenticationBloc,
         analytics: Analytics.instance,
-        databaseUpdateModel: databaseUpdateModel,
+        databaseUpdateModel: _databaseUpdateModel,
         analyticsSubsystem: Analytics.instance);
     _playerBloc = new PlayerBloc(coordinationBloc: _coordinationBloc);
     _inviteBloc = new InviteBloc(
         coordinationBloc: _coordinationBloc,
         analyticsSubsystem: Analytics.instance,
-        databaseUpdateModel: databaseUpdateModel);
+        databaseUpdateModel: _databaseUpdateModel);
     _messagesBloc =
         MessagesBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
     _clubBloc = ClubBloc(coordinationBloc: _coordinationBloc);
@@ -101,6 +103,10 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         RepositoryProvider<fluro.Router>(
           create: (BuildContext context) => AppRouter.createAppRouter(),
         ),
+        RepositoryProvider<DatabaseUpdateModel>(
+            create: (BuildContext context) => _databaseUpdateModel),
+        RepositoryProvider<BaseCacheManager>(
+            create: (BuildContext context) => DefaultCacheManager())
       ],
       child: MultiBlocProvider(
         providers: <BlocProvider>[

@@ -10,13 +10,13 @@ import 'package:synchronized/synchronized.dart';
 import 'package:uuid/uuid.dart';
 
 ///Cache information of one file
-class CacheObject {
-  CacheObject(this.url) {
+class CacheObjectFluff {
+  CacheObjectFluff(this.url) {
     touch();
     lock = new Lock();
   }
 
-  CacheObject.fromMap(this.url, Map<dynamic, dynamic> map) {
+  CacheObjectFluff.fromMap(this.url, Map<dynamic, dynamic> map) {
     if (map.containsKey(_keyFilePath)) {
       relativePath = map[_keyFilePath].toString();
     }
