@@ -139,7 +139,12 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     _teamSub = db
         .getLeagueTeamData(leagueTeamUid)
         .listen((LeagueOrTournamentTeam team) {
-      add(_SingleLeagueOrTournamentEventLeagueTeamLoaded(leagueDivision: team));
+      if (team != null) {
+        add(_SingleLeagueOrTournamentEventLeagueTeamLoaded(
+            leagueDivision: team));
+      } else {
+        add(_SingleLeagueOrTournamentEventTeamDeleted());
+      }
     });
   }
 
