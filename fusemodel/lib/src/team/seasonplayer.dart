@@ -38,9 +38,14 @@ abstract class SeasonPlayer
   SeasonPlayer._();
   factory SeasonPlayer([updates(SeasonPlayerBuilder b)]) = _$SeasonPlayer;
 
+  static void _initializeBuilder(SeasonPlayerBuilder b) => b
+    ..jerseyNumber = ""
+    ..position = "";
+
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(SeasonPlayer.serializer, this);
   }
+
   static const String ROLE = "role";
 
   static SeasonPlayer fromMap(Map<String, dynamic> jsonData) {

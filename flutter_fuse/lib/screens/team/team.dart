@@ -9,36 +9,37 @@ import 'package:fusemodel/blocs.dart';
 
 import '../../widgets/blocs/singleteamprovider.dart';
 
+///
+/// Shows all the details about a single team.
+///
 class TeamScreen extends StatefulWidget {
   TeamScreen(this.teamUid);
 
   final String teamUid;
 
   @override
-  TeamScreenState createState() {
-    return new TeamScreenState();
+  _TeamScreenState createState() {
+    return _TeamScreenState();
   }
 }
 
-class TeamScreenState extends State<TeamScreen> {
-  TeamScreenState();
-
+class _TeamScreenState extends State<TeamScreen> {
   int _tabIndex = 0;
 
   Widget _buildBody(SingleTeamBloc singleTeamBloc) {
     if (_tabIndex == 0) {
-      return new Scrollbar(
-        child: new SingleChildScrollView(
-          child: new TeamDetails(widget.teamUid),
+      return Scrollbar(
+        child: SingleChildScrollView(
+          child: TeamDetails(widget.teamUid),
         ),
       );
     } else if (_tabIndex == 2) {
-      return new TeamOpponents(singleTeamBloc);
+      return TeamOpponents(singleTeamBloc);
     } else if (_tabIndex == 3) {
-      return new TeamSettings(widget.teamUid);
+      return TeamSettings(widget.teamUid);
     }
     print("$_tabIndex");
-    return new TeamPlayers(widget.teamUid);
+    return TeamPlayers(widget.teamUid);
   }
 
   void _onEditTeam(BuildContext context) {
@@ -73,23 +74,23 @@ class TeamScreenState extends State<TeamScreen> {
         builder: (BuildContext context, SingleTeamState state) {
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
-            return Text(Messages.of(context).loading);
+            return Text(Messages.of(context).teamdeleted);
           }
           if (state.isAdmin() && _tabIndex == 0) {
             actions.add(
-              new PopupMenuButton<String>(
+              PopupMenuButton<String>(
                 onSelected: (String str) => _select(str, singleTeamBloc),
                 itemBuilder: (BuildContext context) {
                   return <PopupMenuItem<String>>[
-                    new PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: "settings",
                       child: new Text(Messages.of(context).settings),
                     ),
-                    new PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: "club",
                       child: new Text(Messages.of(context).club),
                     ),
-                    new PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'archive',
                       child: Text(Messages.of(context).archiveteam),
                     )
@@ -100,12 +101,12 @@ class TeamScreenState extends State<TeamScreen> {
           }
           return Scaffold(
             appBar: AppBar(
-              title: new Text(
+              title: Text(
                 Messages.of(context).titlewith(singleTeamBloc.state.team.name),
               ),
               actions: actions,
             ),
-            bottomNavigationBar: new BottomNavigationBar(
+            bottomNavigationBar: BottomNavigationBar(
                 onTap: (int index) {
                   setState(() {
                     _tabIndex = index;
@@ -113,30 +114,30 @@ class TeamScreenState extends State<TeamScreen> {
                 },
                 currentIndex: _tabIndex,
                 items: <BottomNavigationBarItem>[
-                  new BottomNavigationBarItem(
+                  BottomNavigationBarItem(
                     icon: const Icon(Icons.gamepad),
-                    title: new Text(Messages.of(context).details),
+                    title: Text(Messages.of(context).details),
                   ),
-                  new BottomNavigationBarItem(
+                  BottomNavigationBarItem(
                     icon: const Icon(Icons.people),
-                    title: new Text(Messages.of(context).players),
+                    title: Text(Messages.of(context).players),
                   ),
-                  new BottomNavigationBarItem(
+                  BottomNavigationBarItem(
                     icon: const Icon(Icons.flag),
-                    title: new Text(Messages.of(context).opponent),
+                    title: Text(Messages.of(context).opponent),
                   ),
                 ]),
             floatingActionButton: BlocBuilder(
               cubit: singleTeamBloc,
               builder: (BuildContext context, SingleTeamState state) {
                 if (state.isAdmin() && _tabIndex == 0) {
-                  fab = new FloatingActionButton(
+                  fab = FloatingActionButton(
                     onPressed: () => _onEditTeam(context),
                     child: new Icon(Icons.edit),
                   );
                   return fab;
                 }
-                return new Text("");
+                return Text("");
               },
             ),
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

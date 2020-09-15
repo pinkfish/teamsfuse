@@ -228,7 +228,7 @@ abstract class DatabaseUpdateModel {
   Future<void> deleteClubMember(Club club, String memberUid);
   DocumentReferenceWrapper precreateTeamUid();
   Stream<Iterable<InviteToClub>> getInviteToClubStream(String clubUid);
-  Future<Club> getClubData({@required String clubUid});
+  Stream<Club> getClubData({@required String clubUid});
 
   // League and stuff.
   Stream<Iterable<GameSharedData>> getLeagueGamesForDivison(
@@ -247,7 +247,7 @@ abstract class DatabaseUpdateModel {
   Future<void> addUserToLeagueDivison(String leagueUid, bool admin);
   Future<String> inviteUserToLeague(InviteToLeagueAsAdmin invite);
   Future<void> deleteLeagueMember(LeagueOrTournament league, String memberUid);
-  Future<LeagueOrTournament> getLeagueData({String leagueUid});
+  Stream<LeagueOrTournament> getLeagueData({String leagueUid});
   Stream<LeagueOrTournamentTeam> getLeagueTeamData(String teamUid);
   Future<void> updateLeagueTeam(LeagueOrTournamentTeam team);
   Future<void> updateLeagueTeamRecord(
@@ -262,7 +262,7 @@ abstract class DatabaseUpdateModel {
   // League Season/Division.
   Stream<LeagueOrTournamentDivison> getLeagueDivisionData(
       {String leagueDivisionUid, String memberUid});
-  Future<LeagueOrTournamentSeason> getLeagueSeasonData(String leagueSeasonUid);
+  Stream<LeagueOrTournamentSeason> getLeagueSeasonData(String leagueSeasonUid);
   Future<void> updateLeagueSeason(LeagueOrTournamentSeason season);
   Future<void> updateLeagueDivison(LeagueOrTournamentDivison division);
   Stream<Iterable<LeagueOrTournamentTeam>> getLeagueDivisionTeams(

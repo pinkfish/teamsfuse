@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -61,12 +60,11 @@ class AsyncHydratedStorage implements AsyncStorage {
         );
       } else {
         final directory = storageDirectory ?? await getTemporaryDirectory();
-        hive.init(directory.path);
+        hive.init(directory.path + "/async");
         box = await hive.openBox<dynamic>(
           "${runtimeType.toString()}.$boxName",
           encryptionCipher: encryptionCipher,
         );
-        await _migrate(directory, box);
       }
       _boxCompleter.complete(box);
       _box = box;
@@ -78,25 +76,6 @@ class AsyncHydratedStorage implements AsyncStorage {
   ///
   Future<void> dispose() {
     return _box?.close();
-  }
-
-  Future _migrate(Directory directory, Box box) async {
-    final file =
-        File('${directory.path}/.${runtimeType.toString()}.$boxName.json');
-    if (await file.exists()) {
-      try {
-        final dynamic storageJson = json.decode(await file.readAsString());
-        final cache = (storageJson as Map).cast<String, String>();
-        for (final key in cache.keys) {
-          try {
-            final string = cache[key];
-            final dynamic object = json.decode(string);
-            await box.put(key, object);
-          } on dynamic catch (_) {}
-        }
-      } on dynamic catch (_) {}
-      await file.delete();
-    }
   }
 
   /// Internal flag which determines if running on the web platform.

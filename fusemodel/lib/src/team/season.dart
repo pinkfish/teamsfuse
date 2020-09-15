@@ -45,7 +45,7 @@ abstract class Season implements Built<Season, SeasonBuilder> {
   static const String TEAMUID = "teamUid";
   static const String PLAYERS = "players";
   // Used for indexing the invisible user field that has permissions.
-  static const String USER = "user";
+  static const String USER = "users";
 
   @memoized
   BuiltList<SeasonPlayer> get players => BuiltList.from(playersData.values);

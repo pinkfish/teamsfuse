@@ -14,8 +14,13 @@ import 'blocs/data/profileblocstate.dart';
 import 'blocs/data/seasonblocstate.dart';
 import 'blocs/data/teamblocstate.dart';
 import 'blocs/single/data/singleclubbloc.dart';
+import 'blocs/single/data/singleleagueortournamentbloc.dart';
+import 'blocs/single/data/singleleagueortournamentdivisonbloc.dart';
+import 'blocs/single/data/singleleagueortournamentseasonbloc.dart';
+import 'blocs/single/data/singleleagueortournamentteambloc.dart';
 import 'blocs/single/data/singleplayerbloc.dart';
 import 'blocs/single/data/singleprofilebloc.dart';
+import 'blocs/single/data/singleteambloc.dart';
 import 'club.dart';
 import 'common.dart';
 import 'game.dart';
@@ -55,6 +60,7 @@ part 'serializer.g.dart';
   GameLogType,
   GameResult,
   GameResultPerPeriod,
+  GameSharedData,
   GameState,
   GamePeriodType,
   GameUninitialized,
@@ -125,6 +131,38 @@ part 'serializer.g.dart';
   SingleClubSaving,
   SingleClubSaveFailed,
   SingleClubSaveDone,
+  SingleLeagueOrTournamentLoaded,
+  SingleLeagueOrTournamentState,
+  SingleLeagueOrTournamentBlocStateType,
+  SingleLeagueOrTournamentUninitialized,
+  SingleLeagueOrTournamentDeleted,
+  SingleLeagueOrTournamentSaving,
+  SingleLeagueOrTournamentSaveFailed,
+  SingleLeagueOrTournamentSaveDone,
+  SingleLeagueOrTournamentTeamLoaded,
+  SingleLeagueOrTournamentTeamState,
+  SingleLeagueOrTournamentTeamBlocStateType,
+  SingleLeagueOrTournamentTeamUninitialized,
+  SingleLeagueOrTournamentTeamDeleted,
+  SingleLeagueOrTournamentTeamSaving,
+  SingleLeagueOrTournamentTeamSaveFailed,
+  SingleLeagueOrTournamentTeamSaveDone,
+  SingleLeagueOrTournamentSeasonLoaded,
+  SingleLeagueOrTournamentSeasonState,
+  SingleLeagueOrTournamentSeasonBlocStateType,
+  SingleLeagueOrTournamentSeasonUninitialized,
+  SingleLeagueOrTournamentSeasonDeleted,
+  SingleLeagueOrTournamentSeasonSaving,
+  SingleLeagueOrTournamentSeasonSaveFailed,
+  SingleLeagueOrTournamentSeasonSaveDone,
+  SingleLeagueOrTournamentDivisonLoaded,
+  SingleLeagueOrTournamentDivisonState,
+  SingleLeagueOrTournamentDivisonBlocStateType,
+  SingleLeagueOrTournamentDivisonUninitialized,
+  SingleLeagueOrTournamentDivisonDeleted,
+  SingleLeagueOrTournamentDivisonSaving,
+  SingleLeagueOrTournamentDivisonSaveFailed,
+  SingleLeagueOrTournamentDivisonSaveDone,
   SinglePlayerLoaded,
   SinglePlayerState,
   SinglePlayerBlocStateType,
@@ -141,6 +179,14 @@ part 'serializer.g.dart';
   SingleProfileSaving,
   SingleProfileSaveFailed,
   SingleProfileSaveDone,
+  SingleTeamLoaded,
+  SingleTeamState,
+  SingleTeamBlocStateType,
+  SingleTeamUninitialized,
+  SingleTeamDeleted,
+  SingleTeamSaving,
+  SingleTeamSaveFailed,
+  SingleTeamSaveDone,
   Sport,
   Team,
   TeamLoaded,

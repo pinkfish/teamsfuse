@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
+import 'data/singleteambloc.dart';
 import 'singleteambloc.dart';
 
 abstract class SingleOpponentState extends Equatable {
@@ -202,8 +203,7 @@ class SingleOpponentBloc
     if (event is SingleOpponentUpdate) {
       yield SingleOpponentSaving(state: state);
       try {
-        await singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreOpponent(event.opponent.build());
+        await singleTeamBloc.db.updateFirestoreOpponent(event.opponent.build());
         yield SingleOpponentLoaded(
             opponent: event.opponent.build(), state: state);
       } catch (e) {
@@ -214,8 +214,7 @@ class SingleOpponentBloc
     // Delete the opponent.
     if (event is SingleOpponentDeleteOpponent) {
       try {
-        await singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
-            .deleteFirestoreOpponent(state.opponent);
+        await singleTeamBloc.db.deleteFirestoreOpponent(state.opponent);
         yield SingleOpponentDeleted();
       } catch (e) {
         yield SingleOpponentSaveFailed(state: state, error: e);
@@ -224,8 +223,7 @@ class SingleOpponentBloc
 
     if (event is SingleOpponentUpdate) {
       try {
-        await singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreOpponent(event.opponent.build());
+        await singleTeamBloc.db.updateFirestoreOpponent(event.opponent.build());
         yield SingleOpponentLoaded(
             opponent: event.opponent.build(), state: state);
       } catch (e) {
@@ -234,7 +232,7 @@ class SingleOpponentBloc
     }
 
     if (event is SingleOpponentLoadGames) {
-      _gameSub = singleTeamBloc.teamBloc.coordinationBloc.databaseUpdateModel
+      _gameSub = singleTeamBloc.db
           .getOpponentGames(state.opponent)
           .listen((Iterable<Game> g) {
         add(_SingleTeamOpponentGamesLoaded(games: g));

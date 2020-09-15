@@ -18,6 +18,7 @@ class FuseMaterialApp extends StatelessWidget {
 
   FuseMaterialApp(this.theme);
 
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
@@ -45,7 +46,7 @@ class FuseMaterialApp extends StatelessWidget {
 
   Route<dynamic> _buildRoute(
       BuildContext context, RouteSettings routeSettings) {
-    print("${routeSettings.name}");
+    print("Route ${routeSettings.name}");
     // States on routes.
     var router = RepositoryProvider.of<fluro.Router>(context);
     return router.generator(routeSettings);

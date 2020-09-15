@@ -1,176 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/src/async_hydrated_bloc/asynchydratedbloc.dart';
 import 'package:meta/meta.dart';
 
-import '../clubbloc.dart';
-import '../data/clubblocstate.dart';
 import '../data/seasonblocstate.dart';
-import '../data/teamblocstate.dart';
-import '../seasonbloc.dart';
-import '../teambloc.dart';
-
-///
-/// The basic team state for this team.
-///
-abstract class SingleTeamState extends Equatable {
-  final Team team;
-  final Club club;
-  final BuiltList<InviteAsAdmin> invitesAsAdmin;
-  final BuiltList<Season> fullSeason;
-  final BuiltMap<String, Opponent> opponents;
-  final bool loadedOpponents;
-  final bool loadedSeasons;
-
-  SingleTeamState(
-      {@required this.team,
-      @required this.club,
-      @required this.invitesAsAdmin,
-      @required this.fullSeason,
-      @required this.opponents,
-      @required this.loadedOpponents,
-      @required this.loadedSeasons});
-
-  @override
-  List<Object> get props => [
-        team,
-        club,
-        invitesAsAdmin,
-        fullSeason,
-        opponents,
-        loadedOpponents,
-        loadedSeasons,
-      ];
-
-  ///
-  /// Gets the specified sweason.
-  ///
-  Season getSeason(String uid) {
-    return fullSeason.firstWhere((Season s) => s.uid == uid,
-        orElse: () => null);
-  }
-
-  ///
-  /// Checks to see if the user is an admin for this team.
-  ///
-  bool isAdmin() {
-    return team.isAdmin(club);
-  }
-}
-
-///
-/// We have a team, default state.
-///
-class SingleTeamLoaded extends SingleTeamState {
-  SingleTeamLoaded(
-      {@required SingleTeamState state,
-      Team team,
-      Club club,
-      BuiltList<InviteAsAdmin> invitesAsAdmin,
-      BuiltList<Season> fullSeason,
-      BuiltMap<String, Opponent> opponents,
-      bool loadedOpponents,
-      bool loadedSeasons})
-      : super(
-            team: team ?? state.team,
-            invitesAsAdmin: invitesAsAdmin ?? state.invitesAsAdmin,
-            club: club ?? state?.club,
-            fullSeason: fullSeason ?? state.fullSeason,
-            opponents: opponents ?? state.opponents,
-            loadedOpponents: loadedOpponents ?? state.loadedOpponents,
-            loadedSeasons: loadedSeasons ?? state.loadedSeasons);
-
-  @override
-  String toString() {
-    return 'SingleTeamLoaded{}';
-  }
-}
-
-///
-/// Saving operation in progress.
-///
-class SingleTeamSaving extends SingleTeamState {
-  SingleTeamSaving({@required SingleTeamState state})
-      : super(
-            team: state.team,
-            club: state.club,
-            invitesAsAdmin: state.invitesAsAdmin,
-            fullSeason: state.fullSeason,
-            opponents: state.opponents,
-            loadedOpponents: state.loadedOpponents,
-            loadedSeasons: state.loadedSeasons);
-
-  @override
-  String toString() {
-    return 'SingleTeamSaving{}';
-  }
-}
-
-///
-/// Saving operation is done.
-///
-class SingleTeamSaveDone extends SingleTeamState {
-  SingleTeamSaveDone({@required SingleTeamState state})
-      : super(
-            team: state.team,
-            club: state.club,
-            invitesAsAdmin: state.invitesAsAdmin,
-            fullSeason: state.fullSeason,
-            opponents: state.opponents,
-            loadedOpponents: state.loadedOpponents,
-            loadedSeasons: state.loadedSeasons);
-
-  @override
-  String toString() {
-    return 'SingleTeamSaving{}';
-  }
-}
-
-///
-/// Saving operation failed (goes back to loaded for success).
-///
-class SingleTeamSaveFailed extends SingleTeamState {
-  final Error error;
-
-  SingleTeamSaveFailed({@required SingleTeamState state, @required this.error})
-      : super(
-            team: state.team,
-            club: state.club,
-            invitesAsAdmin: state.invitesAsAdmin,
-            fullSeason: state.fullSeason,
-            opponents: state.opponents,
-            loadedOpponents: state.loadedOpponents,
-            loadedSeasons: state.loadedSeasons);
-
-  @override
-  String toString() {
-    return 'SingleTeamSaveFailed{}';
-  }
-}
-
-///
-/// Team got deleted.
-///
-class SingleTeamDeleted extends SingleTeamState {
-  SingleTeamDeleted()
-      : super(
-            team: null,
-            invitesAsAdmin: BuiltList(),
-            fullSeason: BuiltList(),
-            opponents: BuiltMap(),
-            club: null,
-            loadedOpponents: false,
-            loadedSeasons: false);
-
-  @override
-  String toString() {
-    return 'SingleTeamDeleted{}';
-  }
-}
+import 'data/singleteambloc.dart';
 
 abstract class SingleTeamEvent extends Equatable {}
 
@@ -268,7 +106,7 @@ class SingleTeamLoadInvites extends SingleTeamEvent {
 ///
 /// Loads the seasons from firebase.
 ///
-class SingleTeamLoadAllSeasons extends SingleTeamEvent {
+class SingleTeamLoadSeasons extends SingleTeamEvent {
   @override
   List<Object> get props => [];
 }
@@ -307,25 +145,11 @@ class SingleTeamAddOpponent extends SingleTeamEvent {
 
 class _SingleTeamNewTeam extends SingleTeamEvent {
   final Team newTeam;
-  final BuiltMap<String, Opponent> opponents;
-  final BuiltList<Season> seasons;
 
-  _SingleTeamNewTeam(
-      {@required this.newTeam,
-      @required this.opponents,
-      @required this.seasons});
+  _SingleTeamNewTeam({@required this.newTeam});
 
   @override
-  List<Object> get props => [newTeam, opponents, seasons];
-}
-
-class _SingleTeamNewSeasons extends SingleTeamEvent {
-  final BuiltList<Season> seasons;
-
-  _SingleTeamNewSeasons({@required this.seasons});
-
-  @override
-  List<Object> get props => [seasons];
+  List<Object> get props => [newTeam];
 }
 
 class _SingleTeamDeleted extends SingleTeamEvent {
@@ -334,7 +158,7 @@ class _SingleTeamDeleted extends SingleTeamEvent {
 }
 
 class _SingleTeamInvitesAdminLoaded extends SingleTeamEvent {
-  final Iterable<InviteAsAdmin> invites;
+  final BuiltList<InviteAsAdmin> invites;
 
   _SingleTeamInvitesAdminLoaded({@required this.invites});
 
@@ -343,7 +167,7 @@ class _SingleTeamInvitesAdminLoaded extends SingleTeamEvent {
 }
 
 class _SingleTeamSeasonDataLoaded extends SingleTeamEvent {
-  final Iterable<Season> seasons;
+  final BuiltList<Season> seasons;
   final bool fullUpdate;
 
   _SingleTeamSeasonDataLoaded(
@@ -379,80 +203,41 @@ class _SingleTeamLoadedOpponents extends SingleTeamEvent {
 ///
 /// Bloc to handle updates and state of a specific team.
 ///
-class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
-  final TeamBloc teamBloc;
-  final ClubBloc clubBloc;
-  final SeasonBloc seasonBloc;
+class SingleTeamBloc
+    extends AsyncHydratedBloc<SingleTeamEvent, SingleTeamState> {
   final String teamUid;
+  final DatabaseUpdateModel db;
 
   static String createNew = "new";
 
-  StreamSubscription<TeamState> _teamSub;
-  StreamSubscription<ClubState> _clubSub;
+  StreamSubscription<Team> _teamSub;
+  StreamSubscription<Club> _clubSub;
   StreamSubscription<Iterable<InviteAsAdmin>> _inviteAdminSub;
   StreamSubscription<Iterable<Season>> _seasonSub;
   StreamSubscription<Iterable<Opponent>> _opponentSub;
   StreamSubscription<SeasonState> _seasonStateSub;
 
-  bool _doingLoad = false;
-
-  SingleTeamBloc(
-      {@required this.teamBloc,
-      @required this.clubBloc,
-      @required this.seasonBloc,
-      @required this.teamUid})
-      : super(teamBloc.state.getTeam(teamUid) != null
-            ? SingleTeamLoaded(
-                team: teamBloc.state.getTeam(teamUid),
-                club: clubBloc
-                    .state.clubs[teamBloc.state.getTeam(teamUid).clubUid],
-                fullSeason: BuiltList(),
-                invitesAsAdmin: BuiltList(),
-                opponents: BuiltMap(),
-                state: null,
-                loadedOpponents: false,
-                loadedSeasons: false)
-            : SingleTeamDeleted()) {
-    if (teamBloc.state.getTeam(teamUid) != null) {
-      _setupClubSub();
-    }
-    _teamSub = teamBloc.listen((TeamState teamState) {
-      Team team = teamState.getTeam(teamUid);
+  SingleTeamBloc({@required this.db, @required this.teamUid})
+      : super(SingleTeamUninitialized(), "TeamState.$teamUid") {
+    _teamSub = db.getTeamDetails(teamUid: teamUid).listen((team) {
       if (team != null) {
-        // Only send this if the team is not the same.
-        var builder = MapBuilder<String, Opponent>();
         add(
           _SingleTeamNewTeam(
             newTeam: team,
-            opponents: builder.build(),
-            seasons: ListBuilder<Season>().build(),
           ),
         );
-        _setupClubSub();
+        _setupClubSub(team);
       } else {
-        print('Deleted team $teamUid');
         add(_SingleTeamDeleted());
-      }
-    });
-    _seasonStateSub = seasonBloc.listen((SeasonState seasonState) {
-      Iterable<Season> seasons =
-          seasonState.seasons.values.where((Season s) => s.teamUid == teamUid);
-      if (!state.loadedSeasons) {
-        // Update the season data.
-        add(_SingleTeamSeasonDataLoaded(fullUpdate: false, seasons: seasons));
       }
     });
   }
 
   void _loadOpponents() async {
     print("Loading opponents");
-    if (!_doingLoad) {
-      _doingLoad = true;
-      print("Loading opponents inside");
-      print("Loading opponents from firestore");
-      _opponentSub = teamBloc.coordinationBloc.databaseUpdateModel
-          .getTeamOpponents(teamUid)
-          .listen((Iterable<Opponent> ops) {
+    if (_opponentSub == null) {
+      _opponentSub =
+          db.getTeamOpponents(teamUid).listen((Iterable<Opponent> ops) {
         MapBuilder<String, Opponent> opponents = MapBuilder<String, Opponent>();
         for (Opponent op in ops) {
           opponents[op.uid] = op;
@@ -477,22 +262,11 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
     _seasonStateSub = null;
   }
 
-  void _setupClubSub() {
-    if (_clubSub == null) {
-      if (clubBloc.state is ClubLoaded) {
-        Team t = teamBloc.state.getTeam(teamUid);
-        if (t.clubUid != null && clubBloc.state.clubs.containsKey(t.clubUid)) {
-          add(_SingleTeamNewClub(club: clubBloc.state.clubs[t.clubUid]));
-        }
-      }
-      _clubSub = clubBloc.listen((ClubState clubState) {
-        Team t = teamBloc.state.getTeam(teamUid);
-        if (t.clubUid != null && clubState.clubs.containsKey(t.clubUid)) {
-          Club club = clubState.clubs[t.clubUid];
-
-          if (club != state.club) {
-            add(_SingleTeamNewClub(club: club));
-          }
+  void _setupClubSub(Team t) {
+    if (t.clubUid != null && _clubSub != null) {
+      _clubSub = db.getClubData(clubUid: t.clubUid).listen((c) {
+        if (c != null) {
+          add(_SingleTeamNewClub(club: c));
         } else {
           add(_SingleTeamNoClub());
         }
@@ -506,10 +280,9 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
   @override
   Stream<SingleTeamState> mapEventToState(SingleTeamEvent event) async* {
     if (event is _SingleTeamNewTeam) {
-      yield SingleTeamLoaded(
-          state: state,
-          team: event.newTeam,
-          invitesAsAdmin: state.invitesAsAdmin);
+      yield (SingleTeamLoaded.fromState(state)
+            ..team = event.newTeam.toBuilder())
+          .build();
     }
 
     // The team is deleted.
@@ -519,109 +292,107 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
 
     // Save the team.
     if (event is SingleTeamUpdate) {
-      yield SingleTeamSaving(state: state);
+      yield SingleTeamSaving.fromState(state).build();
       if (state.team.publicOnly) {
-        yield SingleTeamSaveFailed(
-            state: state, error: ArgumentError("Cannot save a public team"));
+        yield (SingleTeamSaveFailed.fromState(state)
+              ..error = ArgumentError("Cannot save a public team"))
+            .build();
       } else {
         try {
           if (event.image != null) {
-            await teamBloc.coordinationBloc.databaseUpdateModel
-                .updateTeamImage(teamUid, event.image);
+            await db.updateTeamImage(teamUid, event.image);
           }
-          await teamBloc.coordinationBloc.databaseUpdateModel
-              .updateFirestoreTeam(event.team.build());
-          yield SingleTeamSaveDone(state: state);
-          yield SingleTeamLoaded(state: state, team: event.team.build());
+          await db.updateFirestoreTeam(event.team.build());
+          yield SingleTeamSaveDone.fromState(state).build();
+          yield (SingleTeamLoaded.fromState(state)..team = event.team).build();
         } catch (e) {
-          yield SingleTeamSaveFailed(state: state, error: e);
-          yield SingleTeamLoaded(state: state);
+          yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+          yield SingleTeamLoaded.fromState(state).build();
         }
       }
     }
 
     // Save the team image.
     if (event is SingleTeamUpdateImage) {
-      yield SingleTeamSaving(state: state);
+      yield SingleTeamSaving.fromState(state).build();
       if (state.team.publicOnly) {
-        yield SingleTeamSaveFailed(
-            state: state, error: ArgumentError("Cannot save a public team"));
+        yield (SingleTeamSaveFailed.fromState(state)
+              ..error = ArgumentError("Cannot save a public team"))
+            .build();
       } else {
         try {
-          await teamBloc.coordinationBloc.databaseUpdateModel
-              .updateTeamImage(teamUid, event.image);
-          yield SingleTeamSaveDone(state: state);
-          yield SingleTeamLoaded(state: state);
+          await db.updateTeamImage(teamUid, event.image);
+          yield SingleTeamSaveDone.fromState(state).build();
+          yield SingleTeamLoaded.fromState(state).build();
         } catch (e) {
-          yield SingleTeamSaveFailed(state: state, error: e);
-          yield SingleTeamLoaded(state: state);
+          yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+          yield SingleTeamLoaded.fromState(state).build();
         }
       }
     }
 
     if (event is SingleTeamAddAdmin) {
-      yield SingleTeamSaving(state: state);
+      yield SingleTeamSaving.fromState(state).build();
       try {
-        await teamBloc.coordinationBloc.databaseUpdateModel
-            .addAdmin(teamUid, event.adminUid);
-        yield SingleTeamSaveDone(state: state);
-        yield SingleTeamLoaded(state: state);
+        await db.addAdmin(teamUid, event.adminUid);
+        yield SingleTeamSaveDone.fromState(state).build();
+        yield SingleTeamLoaded.fromState(state).build();
       } catch (e) {
-        yield SingleTeamSaveFailed(state: state, error: e);
-        yield SingleTeamLoaded(state: state);
+        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+        yield SingleTeamLoaded.fromState(state).build();
       }
     }
 
     if (event is SingleTeamDeleteAdmin) {
-      yield SingleTeamSaving(state: state);
+      yield SingleTeamSaving.fromState(state).build();
       try {
-        await teamBloc.coordinationBloc.databaseUpdateModel
-            .deleteAdmin(state.team, event.adminUid);
-        yield SingleTeamSaveDone(state: state);
-        yield SingleTeamLoaded(state: state);
+        await db.deleteAdmin(state.team, event.adminUid);
+        yield SingleTeamSaveDone.fromState(state).build();
+        yield SingleTeamLoaded.fromState(state).build();
       } catch (e) {
-        yield SingleTeamSaveFailed(state: state, error: e);
-        yield SingleTeamLoaded(state: state);
+        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+        yield SingleTeamLoaded.fromState(state).build();
       }
     }
 
     if (event is SingleTeamInviteAdmin) {
-      yield SingleTeamSaving(state: state);
+      yield SingleTeamSaving.fromState(state).build();
       try {
-        await teamBloc.coordinationBloc.databaseUpdateModel.inviteAdminToTeam(
+        await db.inviteAdminToTeam(
             teamUid: state.team.uid,
             email: event.email,
             teamName: state.team.name,
-            myUid: teamBloc.coordinationBloc.state.uid);
-        yield SingleTeamSaveDone(state: state);
-        yield SingleTeamLoaded(state: state);
+            myUid: db.currentUser.uid);
+        yield SingleTeamSaveDone.fromState(state).build();
+        yield SingleTeamLoaded.fromState(state).build();
       } catch (e) {
-        yield SingleTeamSaveFailed(state: state, error: e);
-        yield SingleTeamLoaded(state: state);
+        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+        yield SingleTeamLoaded.fromState(state).build();
       }
     }
 
     if (event is SingleTeamAddOpponent) {
       try {
-        await teamBloc.coordinationBloc.databaseUpdateModel
-            .addFirestoreOpponent(
-                event.opponent.rebuild((b) => b..teamUid = teamUid));
-        yield SingleTeamSaveDone(state: state);
-        yield SingleTeamLoaded(state: state);
+        await db.addFirestoreOpponent(
+            event.opponent.rebuild((b) => b..teamUid = teamUid));
+        yield SingleTeamSaveDone.fromState(state).build();
+        yield SingleTeamLoaded.fromState(state).build();
       } catch (e) {
-        yield SingleTeamSaveFailed(state: state, error: e);
-        yield SingleTeamLoaded(state: state);
+        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+        yield SingleTeamLoaded.fromState(state).build();
       }
     }
 
     if (event is _SingleTeamInvitesAdminLoaded) {
-      yield SingleTeamLoaded(
-          state: state, invitesAsAdmin: BuiltList.from(event.invites));
+      yield (SingleTeamLoaded.fromState(state)
+            ..invitesAsAdmin = event.invites.toBuilder()
+            ..loadedInvites = true)
+          .build();
     }
 
     if (event is SingleTeamLoadInvites) {
-      if (_inviteAdminSub != null) {
-        _inviteAdminSub = teamBloc.coordinationBloc.databaseUpdateModel
+      if (_inviteAdminSub == null) {
+        _inviteAdminSub = db
             .getInvitesForTeam(teamUid)
             .listen((Iterable<InviteAsAdmin> invites) {
           add(_SingleTeamInvitesAdminLoaded(invites: invites));
@@ -629,21 +400,20 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
       }
     }
 
-    if (event is SingleTeamLoadAllSeasons) {
-      _seasonSub = teamBloc.coordinationBloc.databaseUpdateModel
-          .getSeasonsForTeam(teamUid)
-          .listen((Iterable<Season> seasons) {
-        add(_SingleTeamSeasonDataLoaded(seasons: seasons, fullUpdate: true));
-      });
-    }
-
-    if (event is _SingleTeamNewSeasons) {
-      yield SingleTeamLoaded(fullSeason: event.seasons, state: state);
+    if (event is SingleTeamLoadSeasons) {
+      if (_seasonSub == null) {
+        _seasonSub =
+            db.getSeasonsForTeam(teamUid).listen((Iterable<Season> seasons) {
+          add(_SingleTeamSeasonDataLoaded(seasons: seasons, fullUpdate: true));
+        });
+      }
     }
 
     if (event is _SingleTeamLoadedOpponents) {
-      yield SingleTeamLoaded(
-          state: state, loadedOpponents: true, opponents: event.opponents);
+      yield (SingleTeamLoaded.fromState(state)
+            ..loadedOpponents = true
+            ..opponents = event.opponents.toBuilder())
+          .build();
     }
 
     if (event is SingleTeamLoadOpponents) {
@@ -651,45 +421,78 @@ class SingleTeamBloc extends Bloc<SingleTeamEvent, SingleTeamState> {
     }
 
     if (event is _SingleTeamSeasonDataLoaded) {
-      yield SingleTeamLoaded(
-          state: state,
-          fullSeason: BuiltList.from(event.seasons),
-          loadedSeasons: true);
+      yield (SingleTeamLoaded.fromState(state)
+            ..fullSeason = event.seasons.toBuilder()
+            ..loadedSeasons = true)
+          .build();
     }
 
     if (event is _SingleTeamNewClub) {
-      yield SingleTeamLoaded(state: state, club: event.club);
+      yield (SingleTeamLoaded.fromState(state)..club = event.club.toBuilder())
+          .build();
     }
 
     if (event is _SingleTeamNoClub) {
-      yield SingleTeamLoaded(state: state, club: null);
+      yield (SingleTeamLoaded.fromState(state)..club = null).build();
     }
 
     if (event is SingleTeamUpdateClub) {
+      yield SingleTeamSaving.fromState(state).build();
       try {
         Team myTeam = state.team.rebuild((b) => b..clubUid = event.clubUid);
-        await teamBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreTeam(myTeam);
-        yield SingleTeamSaveDone(state: state);
-        yield SingleTeamLoaded(state: state, team: myTeam);
+        await db.updateFirestoreTeam(myTeam);
+        yield SingleTeamSaveDone.fromState(state).build();
+        yield (SingleTeamLoaded.fromState(state)..team = myTeam.toBuilder())
+            .build();
       } catch (e) {
-        yield SingleTeamSaveFailed(state: state, error: e);
-        yield SingleTeamLoaded(state: state);
+        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+        yield SingleTeamLoaded.fromState(state).build();
       }
     }
 
     if (event is SingleTeamArchive) {
+      yield SingleTeamSaving.fromState(state).build();
       try {
         Team myTeam = state.team.rebuild(
             (b) => b..archivedData[state.team.userUid] = event.archive);
-        await teamBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreTeam(myTeam);
-        yield SingleTeamSaveDone(state: state);
-        yield SingleTeamLoaded(state: state, team: myTeam);
+        await db.updateFirestoreTeam(myTeam);
+        yield SingleTeamSaveDone.fromState(state).build();
+        yield (SingleTeamLoaded.fromState(state)..team = myTeam.toBuilder())
+            .build();
       } catch (e) {
-        yield SingleTeamSaveFailed(state: state, error: e);
-        yield SingleTeamLoaded(state: state);
+        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+        yield SingleTeamLoaded.fromState(state).build();
       }
     }
+  }
+
+  @override
+  SingleTeamState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return SingleTeamUninitialized();
+    }
+
+    SingleTeamBlocStateType type =
+        SingleTeamBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case SingleTeamBlocStateType.Uninitialized:
+        return SingleTeamUninitialized();
+      case SingleTeamBlocStateType.Loaded:
+        var ret = SingleTeamLoaded.fromMap(json);
+        return ret;
+      case SingleTeamBlocStateType.Deleted:
+        return SingleTeamDeleted.fromMap(json);
+      case SingleTeamBlocStateType.SaveFailed:
+        return SingleTeamSaveFailed.fromMap(json);
+      case SingleTeamBlocStateType.Saving:
+        return SingleTeamSaving.fromMap(json);
+      case SingleTeamBlocStateType.SaveDone:
+        return SingleTeamSaveDone.fromMap(json);
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(SingleTeamState state) {
+    return state.toMap();
   }
 }

@@ -94,6 +94,7 @@ mixin AsyncHydratedMixin<State> on Cubit<State> {
   State get state {
     if (storage == null) throw const StorageNotFound();
     if (_state != null) return _state;
+    return super.state;
   }
 
   @override

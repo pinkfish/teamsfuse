@@ -74,7 +74,7 @@ class _LeagueOrTournamentDivisonDetailsState
               g.officialResult.awayTeamLeagueUid == _currentTeamConstraint);
         }
         if (games.length == 0) {
-          if (leagueState.leagueOrTournament.isAdmin()) {
+          if (leagueState.league.isAdmin()) {
             return Container(
               margin: EdgeInsets.all(5.0),
               child: Column(
@@ -187,7 +187,6 @@ class _LeagueOrTournamentDivisonDetailsState
           (BuildContext context, SingleLeagueOrTournamentBloc leagueBloc) =>
               SingleLeagueOrTournamentSeasonProvider(
         leagueSeasonUid: widget.leagueOrTournamentSeasonUid,
-        tournmentBloc: leagueBloc,
         builder: (BuildContext context,
                 SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
             SingleLeagueOrTournamentDivisonProvider(
@@ -231,13 +230,13 @@ class _LeagueOrTournamentDivisonDetailsState
                                             height: 50.0,
                                           ),
                                           title: Text(
-                                            leagueState.leagueOrTournament.name,
+                                            leagueState.league.name,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline,
                                           ),
                                           subtitle: Text(
-                                            "${seasonState.leagueOrTournamentSeason.name} ${divisonState.divison.name}",
+                                            "${seasonState.season.name} ${divisonState.divison.name}",
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .subhead,

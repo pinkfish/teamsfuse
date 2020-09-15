@@ -24,19 +24,25 @@ class TeamTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleTeamProvider(
       teamUid: teamUid,
-      builder: (BuildContext c, SingleTeamBloc teamBloc) => BlocBuilder(
-        cubit: teamBloc,
+      builder: (BuildContext c, SingleTeamBloc singleTeamBloc) => BlocBuilder(
+        cubit: singleTeamBloc,
         builder: (BuildContext context, SingleTeamState teamState) {
           if (teamState is SingleTeamDeleted) {
             return ListTile(
                 leading: Icon(Icons.delete),
                 title: Text(Messages.of(context).teamdeleted));
           }
+          if (teamState is SingleTeamUninitialized) {
+            return ListTile(
+                leading: Icon(Icons.circle),
+                title: Text(Messages.of(context).loading));
+          }
+          print("TeamState $teamState");
 
           return SingleSeasonProvider(
               seasonUid: teamState.team.currentSeason,
               builder: (BuildContext c, SingleSeasonBloc seasonBloc) {
-                return new ListTile(
+                return ListTile(
                   leading: TeamImage(
                     width: 40.0,
                     height: 40.0,
@@ -54,13 +60,13 @@ class TeamTile extends StatelessWidget {
                       }
 
                       return RichText(
-                        text: new TextSpan(
+                        text: TextSpan(
                           text: teamState.team.name,
                           style: Theme.of(context).textTheme.subhead.copyWith(
                               fontWeight: FontWeight.bold, fontSize: 17.0),
                           children: <TextSpan>[
-                            new TextSpan(text: "  "),
-                            new TextSpan(
+                            TextSpan(text: "  "),
+                            TextSpan(
                               text: seasonName,
                               style: Theme.of(context)
                                   .textTheme
@@ -69,7 +75,7 @@ class TeamTile extends StatelessWidget {
                                       fontStyle: FontStyle.italic,
                                       fontSize: 15.0),
                             ),
-                            new TextSpan(
+                            TextSpan(
                               text: teamState.isAdmin()
                                   ? "\n" + Messages.of(context).administrator
                                   : "",

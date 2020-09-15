@@ -143,7 +143,6 @@ class _LeagueOrTournamentDivisonDetailsState
           (BuildContext context, SingleLeagueOrTournamentBloc leagueBloc) =>
               SingleLeagueOrTournamentSeasonProvider(
         leagueSeasonUid: widget.leagueOrTournamentSeasonUid,
-        tournmentBloc: leagueBloc,
         builder: (BuildContext context,
                 SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
             SingleLeagueOrTournamentDivisonProvider(
@@ -183,16 +182,16 @@ class _LeagueOrTournamentDivisonDetailsState
                 children: <Widget>[
                   new ListTile(
                     leading: LeagueImage(
-                      leagueOrTournament: state.leagueOrTournament,
+                      leagueOrTournament: state.league,
                       width: 50.0,
                       height: 50.0,
                     ),
                     title: Text(
-                      state.leagueOrTournament.name,
+                      state.league.name,
                       style: Theme.of(context).textTheme.headline,
                     ),
                     subtitle: Text(
-                      "${seasonState.leagueOrTournamentSeason.name} ${divisonState.divison.name}",
+                      "${seasonState.season.name} ${divisonState.divison.name}",
                       style: Theme.of(context).textTheme.subhead,
                     ),
                   ),
@@ -210,7 +209,7 @@ class _LeagueOrTournamentDivisonDetailsState
                         Iterable<LeagueOrTournamentTeam> teams =
                             state.teams.values;
                         if (teams.length == 0) {
-                          if (leagueBloc.state.leagueOrTournament.isAdmin()) {
+                          if (leagueBloc.state.league.isAdmin()) {
                             return Container(
                               margin: EdgeInsets.all(5.0),
                               child: Column(
@@ -243,8 +242,8 @@ class _LeagueOrTournamentDivisonDetailsState
                         List<LeagueOrTournamentTeam> sortedTeams =
                             teams.toList();
                         sortedTeams.sort(_sortTeams);
-                        _updateTeams(leagueBloc.state.leagueOrTournament,
-                            sortedTeams, divisonState.divison);
+                        _updateTeams(leagueBloc.state.league, sortedTeams,
+                            divisonState.divison);
                         _sortedTeams = sortedTeams;
                         return Expanded(
                           child: Scrollbar(

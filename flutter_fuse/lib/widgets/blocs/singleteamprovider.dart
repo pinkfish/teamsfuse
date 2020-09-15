@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'base/singleprovider.dart';
 
@@ -19,10 +20,10 @@ class SingleTeamProvider extends SingleBlocProvider<SingleTeamBloc> {
       : super(keyUid: teamUid, creator: _createBloc, builder: builder);
 
   static SingleTeamBloc _createBloc(BuildContext context, String uid) {
+    print("Making bloc $uid");
     return SingleTeamBloc(
-        teamBloc: BlocProvider.of<TeamBloc>(context),
-        seasonBloc: BlocProvider.of<SeasonBloc>(context),
-        teamUid: uid,
-        clubBloc: BlocProvider.of<ClubBloc>(context));
+      db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+      teamUid: uid,
+    );
   }
 }

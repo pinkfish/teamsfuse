@@ -16,6 +16,10 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 import 'package:timezone/timezone.dart';
 
+///
+/// The main home screen for the app, once the user is loaded.  Co-ordinates
+/// the controls and the loading state of the app currently.
+///
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() {
@@ -226,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class HeaderInviteDelegate extends SliverPersistentHeaderDelegate {
+class _HeaderInviteDelegate extends SliverPersistentHeaderDelegate {
   @override
   double get maxExtent => 64.0;
 
@@ -247,5 +251,5 @@ class HeaderInviteDelegate extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  bool shouldRebuild(HeaderInviteDelegate oldDelegate) => false;
+  bool shouldRebuild(_HeaderInviteDelegate oldDelegate) => false;
 }

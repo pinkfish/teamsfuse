@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'base/singleprovider.dart';
 
@@ -13,19 +15,21 @@ typedef SingleLeagueOrTournamentSeasonProviderBuilder = Widget Function(
 ///
 class SingleLeagueOrTournamentSeasonProvider
     extends SingleBlocProvider<SingleLeagueOrTournamentSeasonBloc> {
-  SingleLeagueOrTournamentSeasonProvider(
-      {String leagueSeasonUid,
-      SingleLeagueOrTournamentSeasonProviderBuilder builder,
-      SingleLeagueOrTournamentBloc tournmentBloc})
-      : super(
+  SingleLeagueOrTournamentSeasonProvider({
+    String leagueSeasonUid,
+    SingleLeagueOrTournamentSeasonProviderBuilder builder,
+  }) : super(
             keyUid: leagueSeasonUid,
-            creator: (BuildContext context, String uid) =>
-                _createBloc(context, uid, tournmentBloc),
+            creator: (BuildContext context, String uid) => _createBloc(
+                  context,
+                  uid,
+                ),
             builder: builder);
 
-  static SingleLeagueOrTournamentSeasonBloc _createBloc(BuildContext context,
-      String uid, SingleLeagueOrTournamentBloc tournmentBloc) {
+  static SingleLeagueOrTournamentSeasonBloc _createBloc(
+      BuildContext context, String uid) {
     return SingleLeagueOrTournamentSeasonBloc(
-        singleLeagueOrTournamentBloc: tournmentBloc, leagueSeasonUid: uid);
+        db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+        leagueSeasonUid: uid);
   }
 }

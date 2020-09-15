@@ -23,7 +23,6 @@ class LeagueOrTournamentSeasonName extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleLeagueOrTournamentSeasonProvider(
       leagueSeasonUid: leagueOrTournmentSeasonUid,
-      tournmentBloc: leagueBloc,
       builder:
           (BuildContext context, SingleLeagueOrTournamentSeasonBloc bloc) =>
               BlocBuilder(
@@ -40,7 +39,7 @@ class LeagueOrTournamentSeasonName extends StatelessWidget {
             );
           } else {
             inner = Text(
-              state.leagueOrTournamentSeason.name,
+              state.season.name,
               style: style,
               textAlign: textAlign,
               overflow: overflow,

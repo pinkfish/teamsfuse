@@ -196,7 +196,7 @@ packages:
       name: equatable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.4"
+    version: "1.2.5"
   fake_async:
     dependency: transitive
     description:
@@ -243,7 +243,7 @@ packages:
     source: hosted
     version: "0.2.0"
   hive:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: hive
       url: "https://pub.dartlang.org"

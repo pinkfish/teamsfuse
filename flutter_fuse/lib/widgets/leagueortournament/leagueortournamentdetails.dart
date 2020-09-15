@@ -28,12 +28,10 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
 
   Widget _buildSeason(LeagueOrTournamentSeason season, bool admin,
       SingleLeagueOrTournamentBloc leagueBloc) {
-    if (season.uid == _openedPanel ||
-        season.uid == leagueBloc.state.leagueOrTournament) {
+    if (season.uid == _openedPanel || season.uid == leagueBloc.state.league) {
       // Show all the divisions and details.
       return SingleLeagueOrTournamentSeasonProvider(
         leagueSeasonUid: season.uid,
-        tournmentBloc: leagueBloc,
         builder: (BuildContext context,
                 SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
             BlocBuilder(
@@ -44,7 +42,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
               return Text(Messages.of(context).loading);
             }
 
-            if (seasonState.leagueOrTournamentDivisons.length == 0) {
+            if (seasonState.divisons.length == 0) {
               if (admin) {
                 return Container(
                   margin: EdgeInsets.all(5.0),
@@ -77,7 +75,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
             }
 
             List<LeagueOrTournamentDivison> sortedDivisons =
-                seasonState.leagueOrTournamentDivisons.values.toList();
+                seasonState.divisons.values.toList();
             sortedDivisons.sort(
                 (LeagueOrTournamentDivison d1, LeagueOrTournamentDivison d2) =>
                     d1.name.compareTo(d2.name));
@@ -139,8 +137,8 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
       return Text(Messages.of(context).loading);
     }
 
-    if (state.leagueOrTournamentSeasons == 0) {
-      if (state.leagueOrTournament.isAdmin()) {
+    if (state.seasons == 0) {
+      if (state.league.isAdmin()) {
         return FlatButton(
             onPressed: () => _addSeason(leagueOrTournamentBloc),
             child: Text(Messages.of(context).addseason,
@@ -155,18 +153,16 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
         );
       }
     }
-    List<LeagueOrTournamentSeason> seasonSorted =
-        state.leagueOrTournamentSeasons.values.toList();
+    List<LeagueOrTournamentSeason> seasonSorted = state.seasons.values.toList();
     seasonSorted
         .sort((LeagueOrTournamentSeason c1, LeagueOrTournamentSeason c2) {
-      if (c1.uid == state.leagueOrTournament.currentSeason) {
+      if (c1.uid == state.league.currentSeason) {
         return -200000;
       }
       return c1.name.compareTo(c2.name);
     });
     Widget expansionList = ExpansionPanelList.radio(
-      initialOpenPanelValue:
-          state.leagueOrTournament.currentSeason ?? seasonSorted[0],
+      initialOpenPanelValue: state.league.currentSeason ?? seasonSorted[0],
       expansionCallback: (int pos, bool opened) {
         print('Opening $pos $opened');
         if (!opened) {
@@ -177,8 +173,8 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
       children: seasonSorted.map(
         (LeagueOrTournamentSeason season) {
           return ExpansionPanelRadio(
-            body: _buildSeason(season, state.leagueOrTournament.isAdmin(),
-                leagueOrTournamentBloc),
+            body: _buildSeason(
+                season, state.league.isAdmin(), leagueOrTournamentBloc),
             value: season.uid,
             headerBuilder: (BuildContext context, bool expanded) {
               return Container(
@@ -195,7 +191,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
         },
       ).toList(),
     );
-    if (state.leagueOrTournament.isAdmin()) {
+    if (state.league.isAdmin()) {
       return Column(
         children: <Widget>[
           ButtonBar(
@@ -240,15 +236,15 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                   Navigator.pop(context);
                   return;
                 }
-                if (state is SingleLeagueOrTournamentLoaded) {
-                  // Tell it to load the seasons.
-                  leagueBloc.add(SingleLeagueOrTournamentLoadSeasons());
-                }
               },
               child: BlocBuilder(
                 cubit: leagueBloc,
                 builder: (BuildContext context,
                     SingleLeagueOrTournamentState state) {
+                  if (state is SingleLeagueOrTournamentLoaded) {
+                    // Tell it to load the seasons.
+                    leagueBloc.add(SingleLeagueOrTournamentLoadSeasons());
+                  }
                   if (state is SingleLeagueOrTournamentDeleted) {
                     return Text(Messages.of(context).loading);
                   }
@@ -268,7 +264,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                             Container(
                               margin: EdgeInsets.only(right: 10.0),
                               child: LeagueImage(
-                                leagueOrTournament: state.leagueOrTournament,
+                                leagueOrTournament: state.league,
                                 width: 100.0,
                                 height: 100.0,
                               ),
@@ -280,7 +276,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Flexible(
-                                    child: Text(state.leagueOrTournament.name,
+                                    child: Text(state.league.name,
                                         style: Theme.of(context)
                                             .textTheme
                                             .headline
@@ -288,15 +284,13 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                                                 color: Theme.of(context)
                                                     .primaryColorDark)),
                                   ),
-                                  state.leagueOrTournament.shortDescription
-                                          .isEmpty
+                                  state.league.shortDescription.isEmpty
                                       ? SizedBox(
                                           height: 0.0,
                                         )
                                       : Flexible(
                                           child: Text(
-                                              state.leagueOrTournament
-                                                  .shortDescription,
+                                              state.league.shortDescription,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .subhead
@@ -311,8 +305,8 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
-                                          Messages.of(context).sportname(
-                                              state.leagueOrTournament.sport),
+                                          Messages.of(context)
+                                              .sportname(state.league.sport),
                                           style: Theme.of(context)
                                               .textTheme
                                               .body1
@@ -322,8 +316,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                                       Expanded(
                                         child: Align(
                                           alignment: Alignment.centerRight,
-                                          child: GenderIcon(
-                                              state.leagueOrTournament.gender,
+                                          child: GenderIcon(state.league.gender,
                                               size: 20.0),
                                         ),
                                       ),
@@ -335,15 +328,14 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                           ],
                         ),
                       ),
-                      state.leagueOrTournament.longDescription.isEmpty
+                      state.league.longDescription.isEmpty
                           ? SizedBox(height: 0.0)
                           : Container(
                               padding: EdgeInsets.only(
                                   left: 15.0, bottom: 5.0, right: 5.0),
                               child: RichText(
                                   text: TextSpan(
-                                      text: state
-                                          .leagueOrTournament.longDescription,
+                                      text: state.league.longDescription,
                                       style: Theme.of(context)
                                           .textTheme
                                           .subhead))),

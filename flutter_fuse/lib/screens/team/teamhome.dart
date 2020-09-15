@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/teams/teamanimatedlist.dart';
 
+///
+/// The base screen to display all the details about all the teams.  This page
+/// shows a list of teams and the ability to select between them.
+///
 class TeamHomeScreen extends StatelessWidget {
   void _addTeam(BuildContext context) {
     Navigator.pushNamed(context, "/AddTeam");

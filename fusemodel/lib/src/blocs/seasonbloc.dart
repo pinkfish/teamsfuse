@@ -12,20 +12,6 @@ import 'internal/blocstoload.dart';
 
 abstract class SeasonEvent extends Equatable {}
 
-class _SeasonUserLoaded extends SeasonEvent {
-  final String uid;
-
-  _SeasonUserLoaded({@required this.uid});
-
-  @override
-  String toString() {
-    return '_SeasonUserLoaded{}';
-  }
-
-  @override
-  List<Object> get props => [uid];
-}
-
 class _SeasonFirestoreStart extends SeasonEvent {
   _SeasonFirestoreStart();
 
@@ -74,6 +60,8 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
   bool _loadingFirestore = false;
 
   SeasonBloc({@required this.coordinationBloc}) : super(SeasonUninitialized()) {
+    coordinationBloc
+        .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Season));
     _coordSub = coordinationBloc.listen((CoordinationState coordState) {
       if (coordState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
@@ -121,8 +109,6 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
       _seasonSub = initialState.listen((Iterable<Season> data) {
         if (!seasonData.isCompleted) {
           seasonData.complete(data);
-        }
-        if (!state.loadedFirestore) {
           coordinationBloc.loadingTrace?.incrementCounter("seasons");
           coordinationBloc
               .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Season));

@@ -30,10 +30,9 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   void initState() {
     super.initState();
     singleTeamBloc = SingleTeamBloc(
-        teamBloc: BlocProvider.of<TeamBloc>(context),
-        teamUid: widget.teamUid,
-        clubBloc: BlocProvider.of<ClubBloc>(context),
-        seasonBloc: BlocProvider.of<SeasonBloc>(context));
+      db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+      teamUid: widget.teamUid,
+    );
   }
 
   void _showInSnackBar(String value) {

@@ -56,21 +56,25 @@ class TeamDetails extends StatelessWidget {
     // Show all the seasons here, not just the ones we know.
     List<Widget> happyData = <Widget>[];
 
-    Iterable<Season> seasons =
-        team.fullSeason.where((Season s) => s.teamUid == team.team.uid);
-    if (seasons.length == 0) {
-      ret.add(Text(Messages.of(context).noseasons));
+    if (!team.loadedSeasons) {
+      ret.add(Text(Messages.of(context).loading));
     } else {
-      for (Season season in seasons) {
-        happyData.add(_buildSeasonExpansionTitle(team.team, season));
+      Iterable<Season> seasons =
+          team.fullSeason.where((Season s) => s.teamUid == team.team.uid);
+      if (seasons.length == 0) {
+        ret.add(Text(Messages.of(context).noseasons));
+      } else {
+        for (Season season in seasons) {
+          happyData.add(_buildSeasonExpansionTitle(team.team, season));
+        }
       }
+      ret.add(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: happyData,
+        ),
+      );
     }
-    ret.add(
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: happyData,
-      ),
-    );
 
     return new Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,7 +98,7 @@ class TeamDetails extends StatelessWidget {
         cubit: bloc,
         listener: (BuildContext context, SingleTeamState state) {
           if (state is SingleTeamLoaded) {
-            bloc.add(SingleTeamLoadAllSeasons());
+            bloc.add(SingleTeamLoadSeasons());
           }
         },
         child: BlocBuilder(

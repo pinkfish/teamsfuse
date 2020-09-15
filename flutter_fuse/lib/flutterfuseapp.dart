@@ -38,25 +38,13 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   SeasonBloc _seasonBloc;
   DatabaseUpdateModel _databaseUpdateModel;
 
-  final ThemeData theme = new ThemeData(
-    // This is the theme of your application.
-    //
-    // Try running your application with "flutter run". You'll see the
-    // application has a blue toolbar. Then, without quitting the app, try
-    // changing the primarySwatch below to Colors.green and then invoke
-    // "hot reload" (press "r" in the console where you ran "flutter run",
-    // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
-    // counter didn't reset back to zero; the application is not restarted.
+  final ThemeData _theme = new ThemeData(
     primarySwatch: Colors.green,
   );
 
   Widget _materialApp(BuildContext context) {
-    // Subscribe to auth changes.
-    //UserDatabaseData.instance.userAuth.onAuthChanged().listen(_authChanged);
-    // Start loading stuff.
-    //_authChanged(data);
     // Setup the app and do exciting things.
-    return FuseMaterialApp(theme);
+    return FuseMaterialApp(_theme);
   }
 
   @override
@@ -155,6 +143,4 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     _coordinationBloc.close();
     _authenticationBloc.close();
   }
-
-  //UserData _currentUser;
 }

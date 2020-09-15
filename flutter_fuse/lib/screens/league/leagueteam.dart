@@ -43,7 +43,7 @@ class LeagueTeamScreen extends StatelessWidget {
             List<Widget> actions = <Widget>[];
 
             if (!(state is SingleLeagueOrTournamentDeleted)) {
-              if (state.leagueOrTournament.isAdmin()) {
+              if (state.league.isAdmin()) {
                 actions.add(
                   new PopupMenuButton<String>(
                     onSelected: (String str) => _doAction(context, str, bloc),

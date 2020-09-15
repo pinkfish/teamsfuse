@@ -103,7 +103,7 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
                     child: Scrollbar(
                       child: SingleChildScrollView(
                         child: new LeagueOrTournamentEditForm(
-                          leagueOrTournament: bloc.state.leagueOrTournament,
+                          leagueOrTournament: bloc.state.league,
                           key: _formState,
                         ),
                       ),

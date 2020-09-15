@@ -27,7 +27,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
   @override
   void initState() {
     super.initState();
-    widget._teamBloc.add(SingleTeamLoadAllSeasons());
+    widget._teamBloc.add(SingleTeamLoadSeasons());
     widget._teamBloc.add(SingleTeamLoadOpponents());
     _seasonUid = widget._teamBloc.state.team.currentSeason;
   }

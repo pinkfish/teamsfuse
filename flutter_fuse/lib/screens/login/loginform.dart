@@ -7,14 +7,18 @@ import 'package:flutter_fuse/widgets/login/loginheader.dart';
 import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 
+///
+/// Shows a login screen with the username/password setup as well as a
+/// connection to a google signin.
+///
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key key}) : super(key: key);
 
   @override
-  LoginScreenState createState() => new LoginScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   ScrollController scrollController = new ScrollController();
@@ -31,12 +35,11 @@ class LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
-  void onPressed(String routeName) {
+  void _onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
   }
 
-  void showInSnackBar(String value) {
-    print("Showing snack of $value");
+  void _showInSnackBar(String value) {
     _scaffoldKey.currentState
         .showSnackBar(new SnackBar(content: new Text(value)));
   }
@@ -50,7 +53,7 @@ class LoginScreenState extends State<LoginScreen> {
       setState(() {
         errorText = Messages.of(context).formerror;
       });
-      showInSnackBar(errorText);
+      _showInSnackBar(errorText);
     } else {
       // Save the data and login.
       form.save();
@@ -120,12 +123,12 @@ class LoginScreenState extends State<LoginScreen> {
                       FlatButton(
                         child: Text(Messages.of(context).createaccount),
                         textColor: Theme.of(context).accentColor,
-                        onPressed: () => onPressed("/Login/SignUp"),
+                        onPressed: () => _onPressed("/Login/SignUp"),
                       ),
                       FlatButton(
                         child: Text(Messages.of(context).forgotPassword),
                         textColor: Theme.of(context).accentColor,
-                        onPressed: () => onPressed("/Login/ForgotPassword"),
+                        onPressed: () => _onPressed("/Login/ForgotPassword"),
                       ),
                     ],
                   )
@@ -147,7 +150,7 @@ class LoginScreenState extends State<LoginScreen> {
         listener: (BuildContext context, LoginState state) {
           if (state is LoginFailed) {
             errorText = Messages.of(context).passwordnotcorrect;
-            showInSnackBar(errorText);
+            _showInSnackBar(errorText);
           } else if (state is LoginSucceeded) {
             Navigator.pushNamedAndRemoveUntil(
                 context, "/Login/Home", (Route<dynamic> d) => false);

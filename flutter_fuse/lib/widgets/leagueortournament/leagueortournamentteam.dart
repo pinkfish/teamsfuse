@@ -72,7 +72,6 @@ class _LeagueOrTournamentTeamDetailsState
                           SingleLeagueOrTournamentBloc leagueBloc) =>
                       SingleLeagueOrTournamentSeasonProvider(
                     leagueSeasonUid: teamState.leagueOrTournamentTeam.seasonUid,
-                    tournmentBloc: leagueBloc,
                     builder: (BuildContext context,
                             SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
                         SingleLeagueOrTournamentDivisonProvider(
@@ -162,8 +161,7 @@ class _LeagueOrTournamentTeamDetailsState
                                         if (teamState.leagueOrTournamentTeam
                                                     .uid ==
                                                 null &&
-                                            leagueState.leagueOrTournament
-                                                .isAdmin()) {
+                                            leagueState.league.isAdmin()) {
                                           children.add(new ExpansionTile(
                                             title: Text(
                                               Messages.of(context)

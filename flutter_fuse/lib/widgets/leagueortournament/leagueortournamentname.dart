@@ -72,7 +72,7 @@ class LeagueOrTournamentName extends StatelessWidget {
             );
           } else {
             inner = Text(
-              state.leagueOrTournament.name,
+              state.league.name,
               style: style,
               textAlign: textAlign,
             );

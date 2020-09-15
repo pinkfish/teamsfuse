@@ -22,17 +22,17 @@ class FusedDrawerContent extends StatelessWidget {
     for (Club club in state.clubs.values) {
       if (club.isMember()) {
         data.add(
-          new ListTile(
+           ListTile(
             leading: const Icon(CommunityIcons.cardsClub),
-            title: new RichText(
-              text: new TextSpan(
+            title:  RichText(
+              text:  TextSpan(
                 text: club.name,
                 style: Theme.of(context)
                     .textTheme
                     .subhead
                     .copyWith(fontWeight: FontWeight.bold, fontSize: 17.0),
                 children: <TextSpan>[
-                  new TextSpan(
+                   TextSpan(
                       text: club.isAdmin()
                           ? "\n" + Messages.of(context).administrator
                           : "",
@@ -48,7 +48,7 @@ class FusedDrawerContent extends StatelessWidget {
                 cubit: BlocProvider.of<TeamBloc>(context),
                 builder: (BuildContext build, TeamState state) {
                   //if (snap.hasData) {
-                  return new Text(
+                  return  Text(
                     Messages.of(context).teamnumbers(state.playerTeams.length),
                   );
                   /*}
@@ -70,7 +70,7 @@ class FusedDrawerContent extends StatelessWidget {
         );
       }
     }
-    return new Column(children: data);
+    return  Column(children: data);
   }
 
   Widget _buildTeamSection(BuildContext context, TeamState state) {
@@ -83,7 +83,7 @@ class FusedDrawerContent extends StatelessWidget {
         if (team.clubUid == null ||
             !clubBloc.state.clubs.containsKey(team.clubUid)) {
           data.add(
-            new TeamTile(
+             TeamTile(
               team.uid,
               popBeforeNavigate: true,
               showIconForTeam: true,
@@ -93,71 +93,71 @@ class FusedDrawerContent extends StatelessWidget {
       }
     }
     data.add(
-      new ListTile(
+       ListTile(
         leading: const Icon(CommunityIcons.teamviewer),
-        title: new Text(
+        title:  Text(
           Messages.of(context).allteamsbbutton,
           style: Theme.of(context).textTheme.button,
         ),
         onTap: () => Navigator.popAndPushNamed(context, "AllTeams"),
       ),
     );
-    return new Column(children: data);
+    return  Column(children: data);
   }
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> children = <Widget>[
-      new FusedDrawerHeader(),
-      new BlocBuilder(
+       FusedDrawerHeader(),
+       BlocBuilder(
         cubit: BlocProvider.of<ClubBloc>(context),
         builder: (BuildContext context, ClubState state) {
           return _buildClubSection(context, state);
         },
       ),
-      new BlocBuilder(
+       BlocBuilder(
         cubit: BlocProvider.of<TeamBloc>(context),
         builder: (BuildContext context, TeamState state) {
           return _buildTeamSection(context, state);
         },
       ),
-      new Divider(),
+       Divider(),
       mode == DrawerMode.gameList
-          ? new ListTile(
+          ?  ListTile(
               leading: const Icon(Icons.people_outline),
-              title: new Text(Messages.of(context).leaguetournament),
+              title:  Text(Messages.of(context).leaguetournament),
               onTap: () {
                 Navigator.popAndPushNamed(context, "/League/Home");
               },
             )
-          : new ListTile(
+          :  ListTile(
               leading: const Icon(Icons.list),
               title: new Text(Messages.of(context).allgames),
               onTap: () {
                 Navigator.popAndPushNamed(context, "/Home");
               },
             ),
-      new Divider(),
-      new ListTile(
+       Divider(),
+       ListTile(
         leading: const Icon(Icons.people_outline),
-        title: new Text(Messages.of(context).players),
+        title:  Text(Messages.of(context).players),
         onTap: () {
           Navigator.popAndPushNamed(context, "/Players");
         },
       ),
-      new ListTile(
+       ListTile(
         leading: const Icon(Icons.exit_to_app),
-        title: new Text(Messages.of(context).signout),
+        title:  Text(Messages.of(context).signout),
         onTap: () async {
           OverlayState overlayState = Overlay.of(context);
           OverlayEntry overlayEntry =
-              new OverlayEntry(builder: (BuildContext context) {
+               OverlayEntry(builder: (BuildContext context) {
             return new Positioned(
               top: 50.0,
               left: 50.0,
-              child: new Material(
+              child:  Material(
                 color: Colors.transparent,
-                child: new Icon(Icons.warning, color: Colors.purple),
+                child:  Icon(Icons.warning, color: Colors.purple),
               ),
             );
           });
@@ -175,14 +175,14 @@ class FusedDrawerContent extends StatelessWidget {
               context, "/Login/Home", (Route<dynamic> d) => false);
         },
       ),
-      new ListTile(
+       ListTile(
         leading: const Icon(Icons.settings),
-        title: new Text(Messages.of(context).settings),
+        title:  Text(Messages.of(context).settings),
         onTap: () {
           Navigator.popAndPushNamed(context, "/Settings");
         },
       ),
-      new ListTile(
+       ListTile(
         leading: const Icon(Icons.help),
         title: new Text(Messages.of(context).about),
         onTap: () {
@@ -190,6 +190,6 @@ class FusedDrawerContent extends StatelessWidget {
         },
       ),
     ];
-    return new ListView(children: children);
+    return  ListView(children: children);
   }
 }

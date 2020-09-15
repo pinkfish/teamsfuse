@@ -1134,13 +1134,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Club> getClubData({String clubUid}) async {
-    DocumentSnapshotWrapper snap =
-        await wrapper.collection(CLUB_COLLECTION).document(clubUid).get();
+  Stream<Club> getClubData({String clubUid}) async* {
+    var ref = wrapper.collection(CLUB_COLLECTION).document(clubUid);
+    DocumentSnapshotWrapper snap = await ref.get();
     if (snap.exists) {
-      return Club.fromMap(userData.uid, snap.data);
+      yield Club.fromMap(userData.uid, snap.data);
     }
-    return null;
+    await for (var wrap in ref.snapshots()) {
+      yield Club.fromMap(userData.uid, wrap.data);
+    }
   }
 
   // leagues!
@@ -1266,9 +1268,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       LeagueOrTournamentTeam leagueTeam,
       String email}) async {
     LeagueOrTournamentSeason season =
-        await getLeagueSeasonData(leagueSeasonUid);
-    LeagueOrTournament leagueOrTournament =
-        await getLeagueData(leagueUid: season.leagueOrTournmentUid);
+        await getLeagueSeasonData(leagueSeasonUid).single;
+    var str = getLeagueData(leagueUid: season.leagueOrTournmentUid);
+    LeagueOrTournament leagueOrTournament = await str.single;
 
     InviteToLeagueTeam teamInvite = new InviteToLeagueTeam((b) => b
       ..email = email
@@ -1348,13 +1350,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<LeagueOrTournament> getLeagueData({String leagueUid}) async {
-    DocumentSnapshotWrapper snap =
-        await wrapper.collection(LEAGUE_COLLECTON).document(leagueUid).get();
-    if (snap.exists) {
-      return LeagueOrTournament.fromMap(userData.uid, snap.data);
+  Stream<LeagueOrTournament> getLeagueData({String leagueUid}) async* {
+    var ref = await wrapper.collection(LEAGUE_COLLECTON).document(leagueUid);
+    var data = await ref.get();
+    if (data.exists) {
+      yield LeagueOrTournament.fromMap(userData.uid, data.data);
+    } else {
+      yield null;
     }
-    return null;
+    await for (var data in ref.snapshots()) {
+      if (data.exists) {
+        yield LeagueOrTournament.fromMap(userData.uid, data.data);
+      } else {
+        yield null;
+      }
+    }
   }
 
   @override
@@ -1420,16 +1430,19 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<LeagueOrTournamentSeason> getLeagueSeasonData(
-      String leagueSeasonUid) async {
-    DocumentSnapshotWrapper doc = await wrapper
+  Stream<LeagueOrTournamentSeason> getLeagueSeasonData(
+      String leagueSeasonUid) async* {
+    var ref = await wrapper
         .collection(LEAGUE_SEASON_COLLECTION)
-        .document(leagueSeasonUid)
-        .get();
+        .document(leagueSeasonUid);
+
+    var doc = await ref.get();
     if (doc.exists) {
-      return LeagueOrTournamentSeason.fromMap(doc.data);
+      yield LeagueOrTournamentSeason.fromMap(doc.data);
+    } else {
+      yield null;
     }
-    return null;
+    await for (var doc in ref.snapshots()) {}
   }
 
   @override

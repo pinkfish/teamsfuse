@@ -58,8 +58,8 @@ class LeagueScreen extends StatelessWidget {
                 if (state is SingleLeagueOrTournamentDeleted) {
                   Navigator.pop(context);
                 } else {
-                  print('league stuff ${state.leagueOrTournament}');
-                  if (state.leagueOrTournament.isAdmin()) {
+                  print('league stuff ${state.league}');
+                  if (state.league.isAdmin()) {
                     actions.add(
                       new PopupMenuButton<String>(
                         onSelected: (String str) =>
