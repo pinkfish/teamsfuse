@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/games/eventeditform.dart';
-import 'package:flutter_fuse/widgets/teams/teamselection.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-class AddEventScreen extends StatefulWidget {
-  AddEventScreen();
+import '../../services/messages.dart';
+import '../../widgets/games/eventeditform.dart';
+import '../../widgets/teams/teamselection.dart';
+import '../../widgets/util/communityicons.dart';
+import '../../widgets/util/savingoverlay.dart';
 
+///
+/// Add screen to event to the game
+///
+class AddEventScreen extends StatefulWidget {
   @override
-  AddEventScreenState createState() {
-    return new AddEventScreenState();
+  _AddEventScreenState createState() {
+    return _AddEventScreenState();
   }
 }
 
-class AddEventScreenState extends State<AddEventScreen> {
-  AddEventScreenState();
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+class _AddEventScreenState extends State<AddEventScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<EventEditFormState> _eventFormKey =
-      new GlobalKey<EventEditFormState>();
+      GlobalKey<EventEditFormState>();
   StepState teamStepState = StepState.editing;
   StepState detailsStepState = StepState.disabled;
   StepState createStepStage = StepState.disabled;
@@ -35,20 +35,20 @@ class AddEventScreenState extends State<AddEventScreen> {
   void initState() {
     newGame();
     super.initState();
-    addGameBloc = new AddGameBloc(
+    addGameBloc = AddGameBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
   }
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(
-      new SnackBar(
-        content: new Text(value),
+      SnackBar(
+        content: Text(value),
       ),
     );
   }
 
   Widget _buildForm(BuildContext context) {
-    return new EventEditForm(
+    return EventEditForm(
       game: _initGame,
       key: _eventFormKey,
     );
@@ -56,61 +56,61 @@ class AddEventScreenState extends State<AddEventScreen> {
 
   Widget _buildRepeatSummary() {
     print("${_eventFormKey.currentState}");
-    Game myGame = _initGame;
+    var myGame = _initGame;
     String timeStr;
     print("game -- ${myGame.sharedData.time} ${myGame.sharedData.endTime}");
     if (myGame.sharedData.time != myGame.sharedData.endTime) {
-      timeStr = MaterialLocalizations.of(context).formatTimeOfDay(
-              new TimeOfDay.fromDateTime(myGame.sharedData.tzTime)) +
-          " - " +
-          MaterialLocalizations.of(context).formatTimeOfDay(
-              new TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
+      var start = MaterialLocalizations.of(context)
+          .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
+      var end = MaterialLocalizations.of(context)
+          .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
+      timeStr = "$start - $end";
     } else {
-      timeStr = MaterialLocalizations.of(context).formatTimeOfDay(
-          new TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
+      timeStr = MaterialLocalizations.of(context)
+          .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
     }
-    List<Widget> cols = <Widget>[
-      new RaisedButton(
-        child: new Text(Messages.of(context).createnew),
+    var cols = <Widget>[
+      RaisedButton(
+        child: Text(Messages.of(context).createnew),
         color: Theme.of(context).accentColor,
         textColor: Colors.white,
         onPressed: () => _onStepperContinue(context),
       ),
-      new ListTile(
-        leading: const Icon(Icons.calendar_today),
-        title: new Text(MaterialLocalizations.of(context)
+      ListTile(
+        leading: Icon(Icons.calendar_today),
+        title: Text(MaterialLocalizations.of(context)
             .formatFullDate(myGame.sharedData.tzTime)),
-        subtitle: new Text(timeStr),
+        subtitle: Text(timeStr),
       ),
-      new ListTile(
-        leading: const Icon(Icons.place),
-        title: new Text(
-            myGame.sharedData.place.name ?? Messages.of(context).unknown),
-        subtitle: new Text(myGame.sharedData.place.address ?? ""),
+      ListTile(
+        leading: Icon(Icons.place),
+        title:
+            Text(myGame.sharedData.place.name ?? Messages.of(context).unknown),
+        subtitle: Text(myGame.sharedData.place.address ?? ""),
       ),
     ];
 
     if (myGame.notes.isNotEmpty) {
       cols.add(
-        new ListTile(
-          leading: const Icon(Icons.note),
-          title: new Text(myGame.notes),
+        ListTile(
+          leading: Icon(Icons.note),
+          title: Text(myGame.notes),
         ),
       );
     }
     if (myGame.uniform.isNotEmpty) {
       cols.add(
-        new ListTile(
-          leading: const Icon(CommunityIcons.tshirtCrew),
-          title: new Text(myGame.uniform),
+        ListTile(
+          leading: Icon(CommunityIcons.tshirtCrew),
+          title: Text(myGame.uniform),
         ),
       );
     }
 
-    return new Scrollbar(
-      child: new SingleChildScrollView(
+    return Scrollbar(
+      child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: new Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: cols,
         ),
@@ -176,10 +176,10 @@ class AddEventScreenState extends State<AddEventScreen> {
   }
 
   void newGame() {
-    GameSharedDataBuilder sharedGameData = new GameSharedDataBuilder()
+    var sharedGameData = GameSharedDataBuilder()
       ..type = EventType.Event
       ..officialResult.homeTeamLeagueUid = _team.uid;
-    _initGame = new Game((b) => b
+    _initGame = Game((b) => b
       ..teamUid = _team.uid
       ..sharedData = sharedGameData
       ..uniform = ""
@@ -187,7 +187,7 @@ class AddEventScreenState extends State<AddEventScreen> {
   }
 
   void _teamChanged(Team team) {
-    DateTime start = new DateTime.now().add(const Duration(days: 0));
+    var start = DateTime.now().add(const Duration(days: 0));
     _initGame = _initGame.rebuild((b) => b
       ..teamUid = _team.uid
       ..seasonUid = _team.currentSeason
@@ -199,28 +199,28 @@ class AddEventScreenState extends State<AddEventScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
     return BlocProvider(
-      create: (BuildContext context) => addGameBloc,
+      create: (context) => addGameBloc,
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(messages.title),
+        appBar: AppBar(
+          title: Text(messages.title),
         ),
         body: BlocListener(
           cubit: addGameBloc,
-          listener: (BuildContext context, AddItemState state) {
+          listener: (context, state) {
             if (state is AddItemDone) {
               Navigator.pop(context);
             }
             if (state is AddItemSaveFailed) {
               showDialog<bool>(
                 context: context,
-                builder: (BuildContext context) {
-                  return new AlertDialog(
-                    title: new Text("Error"),
-                    content: new Text("Error saving the event"),
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text("Error"),
+                    content: Text("Error saving the event"),
                   );
                 },
               );
@@ -228,12 +228,11 @@ class AddEventScreenState extends State<AddEventScreen> {
           },
           child: BlocBuilder(
             cubit: addGameBloc,
-            builder: (BuildContext context, AddItemState state) =>
-                SavingOverlay(
+            builder: (context, state) => SavingOverlay(
               saving: state is AddItemSaving,
               child: Container(
-                padding: new EdgeInsets.all(16.0),
-                child: new Stepper(
+                padding: EdgeInsets.all(16.0),
+                child: Stepper(
                   type: StepperType.horizontal,
                   currentStep: currentStep,
                   onStepContinue: () {
@@ -243,29 +242,29 @@ class AddEventScreenState extends State<AddEventScreen> {
                     // Go back
                     Navigator.of(context).pop();
                   },
-                  onStepTapped: (int step) {
+                  onStepTapped: (step) {
                     _onStepTapped(step);
                   },
                   steps: <Step>[
-                    new Step(
-                      title: new Text(messages.team),
+                    Step(
+                      title: Text(messages.team),
                       state: teamStepState,
                       isActive: true,
-                      content: new TeamSelection(
+                      content: TeamSelection(
                         club: null,
                         onChanged: _teamChanged,
                         initialTeam: _team,
                       ),
                     ),
-                    new Step(
-                      title: new Text(messages.details),
+                    Step(
+                      title: Text(messages.details),
                       state: detailsStepState,
                       isActive:
                           _team != null && ((_team?.uid?.isNotEmpty) ?? false),
                       content: _buildForm(context),
                     ),
-                    new Step(
-                      title: new Text(messages.create),
+                    Step(
+                      title: Text(messages.create),
                       state: createStepStage,
                       isActive: _eventFormKey != null &&
                           _eventFormKey.currentState != null &&

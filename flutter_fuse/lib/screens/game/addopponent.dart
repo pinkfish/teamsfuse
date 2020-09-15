@@ -1,35 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
+import '../../widgets/util/ensurevisiblewhenfocused.dart';
+import '../../widgets/util/savingoverlay.dart';
 
+///
+/// Add an opponent to the specific team.
+///
 class AddOpponent extends StatefulWidget {
+  /// Constructore with the team to add tne opponent too.
   AddOpponent(this.teamUid);
 
+  /// TeamUid to add the opponent too.
   final String teamUid;
 
   @override
   State createState() {
-    OpponentBuilder opponent = new OpponentBuilder();
+    var opponent = OpponentBuilder();
     opponent.teamUid = teamUid;
 
-    return new _AddOpponentState(opponent);
+    return _AddOpponentState(opponent);
   }
 }
 
 class _AddOpponentState extends State<AddOpponent> {
   _AddOpponentState(this._opponent);
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  OpponentBuilder _opponent;
-  FocusNode _focusNode = new FocusNode();
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final OpponentBuilder _opponent;
+  final FocusNode _focusNode = FocusNode();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   void _savePressed(BuildContext context, SingleTeamBloc singleTeamBloc) async {
     _formKey.currentState.save();
@@ -40,20 +45,20 @@ class _AddOpponentState extends State<AddOpponent> {
   Widget build(BuildContext context) {
     return SingleTeamProvider(
       teamUid: widget.teamUid,
-      builder: (BuildContext context, SingleTeamBloc bloc) => Scaffold(
+      builder: (context, bloc) => Scaffold(
         key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(Messages.of(context).addopponent),
+        appBar: AppBar(
+          title: Text(Messages.of(context).addopponent),
           actions: <Widget>[
-            new FlatButton(
+            FlatButton(
               onPressed: () {
                 _savePressed(context, bloc);
               },
-              child: new Text(
+              child: Text(
                 Messages.of(context).savebuttontext,
                 style: Theme.of(context)
                     .textTheme
-                    .subhead
+                    .subtitle1
                     .copyWith(color: Colors.white),
               ),
             ),
@@ -61,44 +66,43 @@ class _AddOpponentState extends State<AddOpponent> {
         ),
         body: BlocListener(
           cubit: bloc,
-          listener: (BuildContext context, SingleTeamState state) {},
+          listener: (context, state) {},
           child: BlocBuilder(
             cubit: bloc,
-            builder: (BuildContext context, SingleTeamState state) =>
-                SavingOverlay(
+            builder: (context, state) => SavingOverlay(
               saving: state is SingleTeamSaving,
-              child: new Container(
-                padding: new EdgeInsets.all(16.0),
-                child: new Form(
+              child: Container(
+                padding: EdgeInsets.all(16.0),
+                child: Form(
                   key: _formKey,
-                  child: new Column(
+                  child: Column(
                     children: <Widget>[
-                      new EnsureVisibleWhenFocused(
+                      EnsureVisibleWhenFocused(
                         focusNode: _focusNode,
-                        child: new TextFormField(
-                          decoration: new InputDecoration(
-                            icon: const Icon(Icons.short_text),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            icon: Icon(Icons.short_text),
                             hintText: Messages.of(context).opponentnamehint,
                             labelText: Messages.of(context).opponentname,
                           ),
                           keyboardType: TextInputType.text,
                           obscureText: false,
-                          onSaved: (String value) {
+                          onSaved: (value) {
                             _opponent.name = value;
                           },
                         ),
                       ),
-                      new EnsureVisibleWhenFocused(
+                      EnsureVisibleWhenFocused(
                         focusNode: _focusNode,
-                        child: new TextFormField(
-                          decoration: new InputDecoration(
-                            icon: const Icon(Icons.email),
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            icon: Icon(Icons.email),
                             hintText: Messages.of(context).opponentcontacthint,
                             labelText: Messages.of(context).opponentcontact,
                           ),
                           keyboardType: TextInputType.text,
                           obscureText: false,
-                          onSaved: (String value) {
+                          onSaved: (value) {
                             _opponent.contact = value;
                           },
                         ),
