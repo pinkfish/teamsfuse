@@ -6,24 +6,22 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_fuse/services/analytics.dart';
-import 'package:flutter_fuse/services/appconfiguration.dart';
-import 'package:flutter_fuse/services/firestore/firestore.dart' as fs;
-import 'package:flutter_fuse/services/loggingdata.dart';
-import 'package:flutter_fuse/services/sqldata.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
-import 'package:fusemodel/firestore.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:timezone/timezone.dart';
 
 import 'flutterfuseapp.dart';
+import 'services/analytics.dart';
+import 'services/appconfiguration.dart';
+import 'services/firestore/firestore.dart' as fs;
+import 'services/loggingdata.dart';
+import 'services/sqldata.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Trace as the first thing in the system.
-  TraceProxy trace = Analytics.instance.newTrace("startup");
+  var trace = Analytics.instance.newTrace("startup");
   trace.start();
 
   Bloc.observer = _SimpleBlocDelegate();
@@ -35,15 +33,13 @@ void main() async {
   ByteData loadedData;
   await Future.wait<dynamic>(<Future<dynamic>>[
     SqlData.instance.initDatabase(),
-    rootBundle
-        .load('assets/timezone/2018c.tzf')
-        .then<ByteData>((ByteData data) {
+    rootBundle.load('assets/timezone/2018c.tzf').then<ByteData>((data) {
       loadedData = data;
       print('loaded data');
       return data;
     }),
     FlutterNativeTimezone.getLocalTimezone()
-        .then<String>((String str) => currentTimeZone = str)
+        .then<String>((str) => currentTimeZone = str)
   ]);
 
   // Timezone
@@ -64,13 +60,13 @@ void main() async {
 
   await Firebase.initializeApp();
 
-  FirestoreWrapper firestoreWrapper = new fs.Firestore();
+  var firestoreWrapper = fs.Firestore();
   //UserDatabaseData.instance = new UserDatabaseData(Analytics.instance,
   //    LoggingData.instance, SqlData.instance, firestoreWrapper);
 
   // Start the loading, but don't block on it,
   // Load notifications after the app config has loaded.
-  AppConfiguration.instance.load().then((void a) {
+  AppConfiguration.instance.load().then((a) {
     /*
     CacheManager.getInstance().then((CacheManager man) {
       print('got manager');
@@ -84,7 +80,7 @@ void main() async {
   Analytics.analytics.logAppOpen();
 
   // Send error logs up to sentry.
-  FlutterError.onError = (FlutterErrorDetails details) {
+  FlutterError.onError = (details) {
     LoggingData.instance.logFlutterError(details);
   };
 

@@ -2,25 +2,29 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/clubs/editclubdetails.dart';
-import 'package:flutter_fuse/widgets/util/clubimage.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../../widgets/clubs/editclubdetails.dart';
+import '../../widgets/util/clubimage.dart';
+import '../../widgets/util/savingoverlay.dart';
+
+///
+/// Adds a club to the system.
+///
 class AddClubScreen extends StatefulWidget {
   @override
-  AddClubScreenState createState() {
-    return new AddClubScreenState();
+  _AddClubScreenState createState() {
+    return _AddClubScreenState();
   }
 }
 
-class AddClubScreenState extends State<AddClubScreen> {
+class _AddClubScreenState extends State<AddClubScreen> {
   final GlobalKey<EditClubDetailsFormState> _formKey =
-      new GlobalKey<EditClubDetailsFormState>();
+      GlobalKey<EditClubDetailsFormState>();
   int _currentStep = 0;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   StepState _detailsStepState = StepState.editing;
   StepState _createStepStage = StepState.disabled;
   Club _clubToAdd;
@@ -32,15 +36,14 @@ class AddClubScreenState extends State<AddClubScreen> {
     super.initState();
     clubBloc = AddClubBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
-    _clubToAdd = new Club((b) => b
+    _clubToAdd = Club((b) => b
       ..name = ""
       ..arriveBeforeGame = 0
       ..trackAttendence = Tristate.Unset);
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed() async {
@@ -116,31 +119,31 @@ class AddClubScreenState extends State<AddClubScreen> {
 
   Widget _buildImage() {
     if (_imageFileToAdd == null) {
-      return new ClubImage(
+      return ClubImage(
         clubUid: _clubToAdd.uid,
       );
     }
-    return new Image.file(_imageFileToAdd);
+    return Image.file(_imageFileToAdd);
   }
 
   Widget _buildSummary() {
     print('$_clubToAdd');
-    return new SingleChildScrollView(
-      child: new Column(
+    return SingleChildScrollView(
+      child: Column(
         children: <Widget>[
           _buildImage(),
-          new ListTile(
-            leading: const Icon(Icons.title),
-            title: new Text(_clubToAdd.name),
+          ListTile(
+            leading: Icon(Icons.title),
+            title: Text(_clubToAdd.name),
           ),
-          new ListTile(
-            leading: const Icon(Icons.timer),
-            title: new Text(
+          ListTile(
+            leading: Icon(Icons.timer),
+            title: Text(
                 Messages.of(context).arrivebefore(_clubToAdd.arriveBeforeGame)),
           ),
-          new ListTile(
-            leading: const Icon(Icons.check),
-            title: new Text(Messages.of(context)
+          ListTile(
+            leading: Icon(Icons.check),
+            title: Text(Messages.of(context)
                 .trackattendence(_clubToAdd.trackAttendence)),
           ),
         ],
@@ -149,12 +152,12 @@ class AddClubScreenState extends State<AddClubScreen> {
   }
 
   Widget _buildBody() {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
     return BlocBuilder(
       cubit: clubBloc,
-      builder: (BuildContext context, AddItemState state) => SavingOverlay(
+      builder: (context, state) => SavingOverlay(
         saving: state is AddItemSaving,
-        child: new Stepper(
+        child: Stepper(
           type: StepperType.horizontal,
           currentStep: _currentStep,
           onStepContinue: () {
@@ -164,24 +167,24 @@ class AddClubScreenState extends State<AddClubScreen> {
             // Go back
             Navigator.of(context).pop();
           },
-          onStepTapped: (int step) {
+          onStepTapped: (step) {
             _onStepTapped(step);
           },
           steps: <Step>[
-            new Step(
-              title: new Text(messages.details),
+            Step(
+              title: Text(messages.details),
               state: _detailsStepState,
               isActive: true,
-              content: new Column(
+              content: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new EditClubDetailsForm(_clubToAdd, _formKey),
+                  EditClubDetailsForm(_clubToAdd, _formKey),
                 ],
               ),
             ),
-            new Step(
-              title: new Text(messages.create),
+            Step(
+              title: Text(messages.create),
               state: _createStepStage,
               isActive: true,
               content: _buildSummary(),
@@ -196,7 +199,7 @@ class AddClubScreenState extends State<AddClubScreen> {
   Widget build(BuildContext context) {
     return BlocListener(
       cubit: clubBloc,
-      listener: (BuildContext context, AddItemState state) {
+      listener: (context, state) {
         if (state is AddItemDone) {
           Navigator.pop(context);
         } else if (state is AddItemSaveFailed) {
@@ -204,12 +207,12 @@ class AddClubScreenState extends State<AddClubScreen> {
         }
       },
       child: Scaffold(
-        appBar: new AppBar(
-          title: new Text(Messages.of(context).title),
+        appBar: AppBar(
+          title: Text(Messages.of(context).title),
         ),
         floatingActionButton: _currentStep == 1
-            ? new FloatingActionButton(
-                onPressed: () => _savePressed(),
+            ? FloatingActionButton(
+                onPressed: _savePressed,
                 child: const Icon(Icons.check),
               )
             : null,

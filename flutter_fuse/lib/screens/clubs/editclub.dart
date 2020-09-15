@@ -1,40 +1,42 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/clubs/editclubdetails.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../../widgets/clubs/editclubdetails.dart';
+import '../../widgets/util/savingoverlay.dart';
+
+///
+/// The screen to edit the club.
+///
 class EditClubScreen extends StatefulWidget {
+  /// Constructor.
   EditClubScreen(this.clubUid);
 
+  /// Club uid to edit the club for.
   final String clubUid;
 
   @override
-  EditClubScreenState createState() {
-    return new EditClubScreenState();
+  _EditClubScreenState createState() {
+    return _EditClubScreenState();
   }
 }
 
-class EditClubScreenState extends State<EditClubScreen> {
+class _EditClubScreenState extends State<EditClubScreen> {
   final GlobalKey<EditClubDetailsFormState> _formKey =
-      new GlobalKey<EditClubDetailsFormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+      GlobalKey<EditClubDetailsFormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   SingleClubBloc _singleClubState;
   bool _doingSave = false;
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed() async {
     try {
-      ClubBuilder club = _formKey.currentState.validateAndCreate();
-      File imageFile = _formKey.currentState.getImageFile();
+      var club = _formKey.currentState.validateAndCreate();
+      var imageFile = _formKey.currentState.getImageFile();
       if (club != null) {
         _doingSave = true;
         _singleClubState
@@ -46,26 +48,26 @@ class EditClubScreenState extends State<EditClubScreen> {
   }
 
   Widget _buildBody(SingleClubState state) {
-    return new SavingOverlay(
+    return SavingOverlay(
       saving: state is SingleClubSaving,
-      child: new EditClubDetailsForm(state.club, _formKey),
+      child: EditClubDetailsForm(state.club, _formKey),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Messages.of(context).title),
       ),
-      floatingActionButton: new FloatingActionButton(
-        onPressed: () => _savePressed(),
-        child: const Icon(Icons.check),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _savePressed,
+        child: Icon(Icons.check),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: BlocListener(
         cubit: _singleClubState,
-        listener: (BuildContext context, SingleClubState state) {
+        listener: (context, state) {
           if (state is SingleClubDeleted) {
             Navigator.pop(context);
           } else if (state is SingleClubLoaded) {
@@ -77,14 +79,14 @@ class EditClubScreenState extends State<EditClubScreen> {
         },
         child: BlocListener(
           cubit: _singleClubState,
-          listener: (BuildContext context, SingleClubState state) {
+          listener: (context, state) {
             if (state is SingleClubDeleted) {
               Navigator.pop(context);
             }
           },
           child: BlocBuilder(
             cubit: _singleClubState,
-            builder: (BuildContext context, SingleClubState state) {
+            builder: (context, state) {
               return _buildBody(state);
             },
           ),

@@ -2,10 +2,10 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/analytics.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'screens/home/splash.dart';
+import 'services/analytics.dart';
 import 'services/messages.dart';
 
 ///
@@ -14,33 +14,35 @@ import 'services/messages.dart';
 ///
 ///
 class FuseMaterialApp extends StatelessWidget {
-  final ThemeData theme;
+  final ThemeData _theme;
 
-  FuseMaterialApp(this.theme);
+  ///
+  /// Create the material app pieces.
+  ///
+  FuseMaterialApp(this._theme);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
-        const MessagesDelegate(),
+        MessagesDelegate(),
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const <Locale>[
-        const Locale('en', 'US'),
-        const Locale('en', 'UK'),
-        const Locale('en', 'AU'),
+        Locale('en', 'US'),
+        Locale('en', 'UK'),
+        Locale('en', 'AU'),
       ],
       navigatorObservers: <NavigatorObserver>[
         FirebaseAnalyticsObserver(analytics: Analytics.analytics),
       ],
       title: "Team Fuse",
-      theme: theme,
+      theme: _theme,
       initialRoute: "Home",
       home: SplashScreen(),
-      onGenerateRoute: (RouteSettings settings) =>
-          _buildRoute(context, settings),
+      onGenerateRoute: (settings) => _buildRoute(context, settings),
     );
   }
 

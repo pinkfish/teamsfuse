@@ -1,30 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/form/switchformfield.dart';
-import 'package:flutter_fuse/widgets/util/clubimage.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 
+import '../../services/messages.dart';
+import '../../services/validations.dart';
+import '../../widgets/form/switchformfield.dart';
+import '../../widgets/util/clubimage.dart';
+import '../../widgets/util/ensurevisiblewhenfocused.dart';
+import '../../widgets/util/savingoverlay.dart';
+
+///
+/// Add a member to the league screen.
+///
 class AddMemberScreen extends StatefulWidget {
+  /// Main constructor.
   AddMemberScreen(this.clubUid);
 
+  ///
+  /// The club uid to add members too.
+  ///
   final String clubUid;
 
   @override
-  AddMemberScreenState createState() {
-    return new AddMemberScreenState();
+  _AddMemberScreenState createState() {
+    return _AddMemberScreenState();
   }
 }
 
-class AddMemberScreenState extends State<AddMemberScreen> {
-  final FocusNode _nameField = new FocusNode();
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  static final Validations validations = new Validations();
-  bool _autoValidate = false;
+class _AddMemberScreenState extends State<AddMemberScreen> {
+  final FocusNode _nameField = FocusNode();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  static final Validations validations = Validations();
+  final bool _autoValidate = false;
   String _emailToInvite;
   bool _inviteAsAdmin;
   bool _doingSave = false;
@@ -45,8 +53,8 @@ class AddMemberScreenState extends State<AddMemberScreen> {
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(
-      new SnackBar(
-        content: new Text(value),
+      SnackBar(
+        content: Text(value),
       ),
     );
   }
@@ -69,7 +77,7 @@ class AddMemberScreenState extends State<AddMemberScreen> {
   Widget _buildBody() {
     return BlocListener(
       cubit: _singleClubBloc,
-      listener: (BuildContext context, SingleClubState state) {
+      listener: (context, state) {
         if (state is SingleClubSaveFailed) {
           _showInSnackBar(Messages.of(context).formerror);
         } else if (state is SingleClubDeleted) {
@@ -82,19 +90,19 @@ class AddMemberScreenState extends State<AddMemberScreen> {
       },
       child: BlocBuilder(
         cubit: _singleClubBloc,
-        builder: (BuildContext context, SingleClubState state) {
+        builder: (context, state) {
           return SavingOverlay(
             saving: state is SingleClubSaving,
-            child: new SingleChildScrollView(
-              child: new Form(
+            child: SingleChildScrollView(
+              child: Form(
                 key: _formKey,
                 autovalidate: _autoValidate,
-                child: new Column(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    new ListTile(
+                    ListTile(
                       leading: ClubImage(
                         width: 40.0,
                         height: 40.0,
@@ -103,29 +111,29 @@ class AddMemberScreenState extends State<AddMemberScreen> {
                       title: Text(state.club.name,
                           style: Theme.of(context)
                               .textTheme
-                              .subhead
+                              .subtitle1
                               .copyWith(fontWeight: FontWeight.bold)),
                     ),
-                    new ListTile(
+                    ListTile(
                       leading: const Icon(Icons.email),
-                      title: new EnsureVisibleWhenFocused(
-                        child: new TextFormField(
-                          decoration: new InputDecoration(
+                      title: EnsureVisibleWhenFocused(
+                        child: TextFormField(
+                          decoration: InputDecoration(
                               labelText: Messages.of(context).email,
                               hintText: Messages.of(context).playeremailHint),
                           initialValue: "",
-                          validator: (String value) =>
+                          validator: (value) =>
                               validations.validateEmail(context, value),
-                          onSaved: (String value) => _emailToInvite = value,
+                          onSaved: (value) => _emailToInvite = value,
                         ),
                         focusNode: _nameField,
                       ),
                     ),
-                    new SwitchFormField(
+                    SwitchFormField(
                       icon: Icons.person_add,
-                      child: new Text(Messages.of(context).administrator),
+                      child: Text(Messages.of(context).administrator),
                       initialValue: false,
-                      onSaved: (bool value) => _inviteAsAdmin = value,
+                      onSaved: (value) => _inviteAsAdmin = value,
                     )
                   ],
                 ),
@@ -139,12 +147,12 @@ class AddMemberScreenState extends State<AddMemberScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).addclubmemebertitle),
+      appBar: AppBar(
+        title: Text(Messages.of(context).addclubmemebertitle),
       ),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: _savePressed,
         child: const Icon(Icons.check),
       ),

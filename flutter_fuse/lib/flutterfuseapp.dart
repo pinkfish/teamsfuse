@@ -2,19 +2,25 @@ import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:flutter_fuse/services/analytics.dart';
-import 'package:flutter_fuse/services/approuter.dart';
-import 'package:flutter_fuse/services/firestore/firestore.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'fusematerialapp.dart';
+import 'services/analytics.dart';
+import 'services/approuter.dart';
+import 'services/firestore/firestore.dart';
 
+///
+/// The main app for the system.
+///
 class FlutterFuseApp extends StatefulWidget {
-  final FirestoreWrapper firestore;
+  final FirestoreWrapper _firestore;
 
-  FlutterFuseApp(this.firestore);
+  ///
+  /// Create the app.
+  ///
+  FlutterFuseApp(this._firestore);
 
   @override
   State<StatefulWidget> createState() {
@@ -38,7 +44,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   SeasonBloc _seasonBloc;
   DatabaseUpdateModel _databaseUpdateModel;
 
-  final ThemeData _theme = new ThemeData(
+  final ThemeData _theme = ThemeData(
     primarySwatch: Colors.green,
   );
 
@@ -50,20 +56,20 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   @override
   void initState() {
     super.initState();
-    UserAuthImpl userAuthImpl = UserAuthImpl(widget.firestore);
+    var userAuthImpl = UserAuthImpl(widget._firestore);
     _authenticationBloc = AuthenticationBloc(
         userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
-    _loginBloc = new LoginBloc(
+    _loginBloc = LoginBloc(
         userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
     _databaseUpdateModel =
-        DatabaseUpdateModelImpl(new Firestore(), _authenticationBloc);
+        DatabaseUpdateModelImpl(Firestore(), _authenticationBloc);
     _coordinationBloc = CoordinationBloc(
         authenticationBloc: _authenticationBloc,
         analytics: Analytics.instance,
         databaseUpdateModel: _databaseUpdateModel,
         analyticsSubsystem: Analytics.instance);
-    _playerBloc = new PlayerBloc(coordinationBloc: _coordinationBloc);
-    _inviteBloc = new InviteBloc(
+    _playerBloc = PlayerBloc(coordinationBloc: _coordinationBloc);
+    _inviteBloc = InviteBloc(
         coordinationBloc: _coordinationBloc,
         analyticsSubsystem: Analytics.instance,
         databaseUpdateModel: _databaseUpdateModel);
@@ -71,8 +77,8 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         MessagesBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
     _clubBloc = ClubBloc(coordinationBloc: _coordinationBloc);
     _teamBloc =
-        new TeamBloc(coordinationBloc: _coordinationBloc, clubBloc: _clubBloc);
-    _seasonBloc = new SeasonBloc(coordinationBloc: _coordinationBloc);
+        TeamBloc(coordinationBloc: _coordinationBloc, clubBloc: _clubBloc);
+    _seasonBloc = SeasonBloc(coordinationBloc: _coordinationBloc);
     _leagueOrTournamentBloc =
         LeagueOrTournamentBloc(coordinationBloc: _coordinationBloc);
     _gameBloc =
@@ -89,38 +95,33 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<fluro.Router>(
-          create: (BuildContext context) => AppRouter.createAppRouter(),
+          create: (context) => AppRouter.createAppRouter(),
         ),
         RepositoryProvider<DatabaseUpdateModel>(
-            create: (BuildContext context) => _databaseUpdateModel),
+            create: (context) => _databaseUpdateModel),
         RepositoryProvider<BaseCacheManager>(
-            create: (BuildContext context) => DefaultCacheManager())
+            create: (context) => DefaultCacheManager())
       ],
       child: MultiBlocProvider(
         providers: <BlocProvider>[
           BlocProvider<AuthenticationBloc>(
-            create: (BuildContext context) => _authenticationBloc,
+            create: (context) => _authenticationBloc,
           ),
           BlocProvider<CoordinationBloc>(
-              create: (BuildContext context) => _coordinationBloc),
-          BlocProvider<LoginBloc>(create: (BuildContext context) => _loginBloc),
-          BlocProvider<InviteBloc>(
-              create: (BuildContext context) => _inviteBloc),
-          BlocProvider<TeamBloc>(create: (BuildContext context) => _teamBloc),
-          BlocProvider<SeasonBloc>(
-              create: (BuildContext context) => _seasonBloc),
-          BlocProvider<MessagesBloc>(
-              create: (BuildContext context) => _messagesBloc),
+              create: (context) => _coordinationBloc),
+          BlocProvider<LoginBloc>(create: (context) => _loginBloc),
+          BlocProvider<InviteBloc>(create: (context) => _inviteBloc),
+          BlocProvider<TeamBloc>(create: (context) => _teamBloc),
+          BlocProvider<SeasonBloc>(create: (context) => _seasonBloc),
+          BlocProvider<MessagesBloc>(create: (context) => _messagesBloc),
           BlocProvider<LeagueOrTournamentBloc>(
-              create: (BuildContext context) => _leagueOrTournamentBloc),
-          BlocProvider<ClubBloc>(create: (BuildContext context) => _clubBloc),
-          BlocProvider<GameBloc>(create: (BuildContext context) => _gameBloc),
+              create: (context) => _leagueOrTournamentBloc),
+          BlocProvider<ClubBloc>(create: (context) => _clubBloc),
+          BlocProvider<GameBloc>(create: (context) => _gameBloc),
           BlocProvider<FilteredGameBloc>(
-              create: (BuildContext context) => _filteredGameBloc),
-          BlocProvider<PlayerBloc>(
-              create: (BuildContext context) => _playerBloc),
-          BlocProvider<LoadedStateBloc>(
-              create: (BuildContext context) => _loadedStateBloc),
+              create: (context) => _filteredGameBloc),
+          BlocProvider<PlayerBloc>(create: (context) => _playerBloc),
+          BlocProvider<LoadedStateBloc>(create: (context) => _loadedStateBloc),
         ],
         child: _materialApp(context),
       ),
@@ -129,6 +130,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
 
   @override
   void dispose() {
+    super.dispose();
     _loadedStateBloc.close();
     _playerBloc.close();
     _filteredGameBloc.close();
