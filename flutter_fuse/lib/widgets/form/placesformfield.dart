@@ -26,15 +26,15 @@ class PlacesFormField extends FormField<LocationAndPlace> {
               final TextStyle valueStyle =
                   Theme.of(field.context).textTheme.title;
               final InputDecoration effectiveDecoration = (decoration ??
-                      new InputDecoration(labelText: labelText))
+                      InputDecoration(labelText: labelText))
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme)
                   .copyWith(labelText: labelText);
 
               List<Widget> children = <Widget>[];
               children.add(const SizedBox(width: 12.0));
-              children.add(new Expanded(
+              children.add(Expanded(
                 flex: 1,
-                child: new InputDropdown(
+                child: InputDropdown(
                   decoration: effectiveDecoration,
                   errorText: field.errorText,
                   valueText: _renderPlaceName(field.context, field.value),
@@ -45,7 +45,7 @@ class PlacesFormField extends FormField<LocationAndPlace> {
                 ),
               ));
 
-              return new Row(
+              return Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: children);
             });
@@ -63,7 +63,7 @@ class PlacesFormField extends FormField<LocationAndPlace> {
   final String labelText;
 
   @override
-  PlacesFormFieldState createState() => new PlacesFormFieldState();
+  PlacesFormFieldState createState() => PlacesFormFieldState();
 }
 
 class PlacesFormFieldState extends FormFieldState<LocationAndPlace> {

@@ -22,22 +22,21 @@ class ScoreDetails extends StatefulWidget {
 
   @override
   State createState() {
-    return new _ScoreDetailsState();
+    return _ScoreDetailsState();
   }
 }
 
 class _ScoreDetailsState extends State<ScoreDetails> {
-  MyStopwatch stopwatch = new MyStopwatch();
+  MyStopwatch stopwatch = MyStopwatch();
   GameResultPerPeriodBuilder _currentPeriodResults;
   GameResultDetailsBuilder _details;
   num _ptsFor;
   num _ptsAgainst;
   Debouncer<bool> _debouncer;
-  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  GlobalKey<NumberPickerState> _ptsForState =
-      new GlobalKey<NumberPickerState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  GlobalKey<NumberPickerState> _ptsForState = GlobalKey<NumberPickerState>();
   GlobalKey<NumberPickerState> _ptsAgainstState =
-      new GlobalKey<NumberPickerState>();
+      GlobalKey<NumberPickerState>();
 
   Game _lastGame;
 
@@ -51,7 +50,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
           .scores[widget.game.state.game.result.currentPeriod]
           .toBuilder();
     }
-    GamePeriod periodZero = new GamePeriod((b) => b
+    GamePeriod periodZero = GamePeriod((b) => b
       ..type = widget.game.state.game.result.currentPeriod.type
       ..periodNumber = 0);
     if (_currentPeriodResults == null) {
@@ -62,7 +61,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       GameScoreBuilder gameScoreBuilder = GameScoreBuilder()
         ..ptsAgainst = 0
         ..ptsFor = 0;
-      _currentPeriodResults = new GameResultPerPeriodBuilder()
+      _currentPeriodResults = GameResultPerPeriodBuilder()
         ..period = periodZero.toBuilder()
         ..score = gameScoreBuilder;
 
@@ -71,7 +70,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     if (_details.currentPeriod == null) {
       _details.currentPeriod = _currentPeriodResults.period;
     }
-    _debouncer = new Debouncer<bool>(new Duration(seconds: 1), _sendUpdate,
+    _debouncer = Debouncer<bool>(Duration(seconds: 1), _sendUpdate,
         resetOnAdd: false, atBegin: true);
     _ptsFor = _currentPeriodResults.score.ptsFor;
     _ptsAgainst = _currentPeriodResults.score.ptsAgainst;
@@ -86,7 +85,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
 
   void _updateGame(Game game) {
     // Change scores and timers.
-    GamePeriod period = new GamePeriod((b) => b
+    GamePeriod period = GamePeriod((b) => b
       ..type = game.result.currentPeriod.type
       ..periodNumber = 0);
     if (game.result.scores.containsKey(period)) {
@@ -126,7 +125,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       ..type = _currentPeriodResults.period.type
       ..periodNumber = 0;
     _details.scores[scoreUpdate.build()] = _currentPeriodResults.build();
-    // Create a new score type.
+    // Create a score type.
     GamePeriodBuilder newScoreUpdate = newPeriod.toBuilder()..periodNumber = 0;
     if (!_details.scores.build().containsKey(newScoreUpdate)) {
       var builder = GameScoreBuilder()
@@ -180,23 +179,22 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     bool ret = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text(Messages.of(context).finalscore),
-            content: new Text(Messages.of(context).finalscorebody(
+          return AlertDialog(
+            title: Text(Messages.of(context).finalscore),
+            content: Text(Messages.of(context).finalscorebody(
                 _currentPeriodResults.score.ptsFor,
                 _currentPeriodResults.score.ptsAgainst,
                 gameResult.toString())),
             actions: <Widget>[
-              new FlatButton(
-                child:
-                    new Text(MaterialLocalizations.of(context).okButtonLabel),
+              FlatButton(
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
               ),
-              new FlatButton(
-                child: new Text(
-                    MaterialLocalizations.of(context).cancelButtonLabel),
+              FlatButton(
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
@@ -213,7 +211,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         if (_ptsFor != null) {
           _currentPeriodResults.score.ptsFor = _ptsFor;
         }
-        _currentPeriodResults.period = new GamePeriodBuilder()
+        _currentPeriodResults.period = GamePeriodBuilder()
           ..type = GamePeriodType.Regulation;
         _details.scores[_currentPeriodResults.period.build()] =
             _currentPeriodResults.build();
@@ -235,22 +233,22 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     GameDivisionsType ret = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return new SimpleDialog(
-            title: new Text(Messages.of(context).choosedivisions),
+          return SimpleDialog(
+            title: Text(Messages.of(context).choosedivisions),
             children: <Widget>[
-              new SimpleDialogOption(
+              SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context, GameDivisionsType.Halves);
                 },
                 child: const Text('Halves'),
               ),
-              new SimpleDialogOption(
+              SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context, GameDivisionsType.Thirds);
                 },
                 child: const Text('Thirds'),
               ),
-              new SimpleDialogOption(
+              SimpleDialogOption(
                 onPressed: () {
                   Navigator.pop(context, GameDivisionsType.Quarters);
                 },
@@ -266,7 +264,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         _details.inProgress = GameInProgress.InProgress;
         _details.time.currentPeriodStartInternal = null;
         _details.time.currentOffsetInternal = 0;
-        _details.currentPeriod = new GamePeriodBuilder()
+        _details.currentPeriod = GamePeriodBuilder()
           ..type = GamePeriodType.Regulation
           ..periodNumber = 1;
         _writeLog(GameLogType.PeriodStart);
@@ -280,20 +278,19 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     bool ret = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text(Messages.of(context).startgame),
-            content: new Text(Messages.of(context).startgamebody),
+          return AlertDialog(
+            title: Text(Messages.of(context).startgame),
+            content: Text(Messages.of(context).startgamebody),
             actions: <Widget>[
-              new FlatButton(
-                child:
-                    new Text(MaterialLocalizations.of(context).okButtonLabel),
+              FlatButton(
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
               ),
-              new FlatButton(
-                child: new Text(
-                    MaterialLocalizations.of(context).cancelButtonLabel),
+              FlatButton(
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
@@ -309,7 +306,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         // Timer not running.
         _details.time.currentPeriodStartInternal = null;
         _details.time.currentOffsetInternal = 0;
-        _details.currentPeriod = new GamePeriodBuilder()
+        _details.currentPeriod = GamePeriodBuilder()
           ..type = GamePeriodType.Regulation
           ..periodNumber = 1;
         _writeLog(GameLogType.PeriodStart);
@@ -325,7 +322,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
               ..message = message
               ..score = _currentPeriodResults.score
               ..period = _currentPeriodResults.period
-              ..eventTimeInternal = new DateTime.now().millisecondsSinceEpoch
+              ..eventTimeInternal = DateTime.now().millisecondsSinceEpoch
               ..uid =
                   BlocProvider.of<AuthenticationBloc>(context).currentUser.uid
               ..displayName = BlocProvider.of<AuthenticationBloc>(context)
@@ -347,7 +344,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       stopwatch.start();
       setState(() {
         _details.time.currentPeriodStartInternal =
-            new TZDateTime.now(local).millisecondsSinceEpoch;
+            TZDateTime.now(local).millisecondsSinceEpoch;
       });
     }
     print("Update result $_details");
@@ -358,20 +355,19 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     bool ret = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text(Messages.of(context).resettimer),
-            content: new Text(Messages.of(context).resettimerbody),
+          return AlertDialog(
+            title: Text(Messages.of(context).resettimer),
+            content: Text(Messages.of(context).resettimerbody),
             actions: <Widget>[
-              new FlatButton(
-                child:
-                    new Text(MaterialLocalizations.of(context).okButtonLabel),
+              FlatButton(
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
               ),
-              new FlatButton(
-                child: new Text(
-                    MaterialLocalizations.of(context).cancelButtonLabel),
+              FlatButton(
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.pop(context, false);
                 },
@@ -384,7 +380,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       if (stopwatch.isRunning) {
         setState(() {
           _details.time.currentPeriodStartInternal =
-              new DateTime.now().millisecondsSinceEpoch;
+              DateTime.now().millisecondsSinceEpoch;
           _details.time.currentOffsetInternal = 0;
         });
       } else {
@@ -444,20 +440,20 @@ class _ScoreDetailsState extends State<ScoreDetails> {
 
   Widget _buildForm() {
     if (_details.inProgress == GameInProgress.NotStarted) {
-      return new Form(
+      return Form(
         key: _formKey,
-        child: new Column(
+        child: Column(
           children: <Widget>[
-            new Row(
+            Row(
               children: <Widget>[
-                new Expanded(
-                  child: new Container(
-                    margin: new EdgeInsets.all(5.0),
-                    child: new RaisedButton(
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.all(5.0),
+                    child: RaisedButton(
                       onPressed: _startGame,
                       color: Theme.of(context).accentColor,
                       textColor: Colors.white,
-                      child: new Text(Messages.of(context).startgame),
+                      child: Text(Messages.of(context).startgame),
                     ),
                   ),
                 )
@@ -484,31 +480,31 @@ class _ScoreDetailsState extends State<ScoreDetails> {
           resultStr = Messages.of(context).gameresult(_details.result);
           break;
       }
-      return new Form(
+      return Form(
         key: _formKey,
-        child: new Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            new SizedBox(height: 10.0),
-            new Text(
+            SizedBox(height: 10.0),
+            Text(
               resultStr,
               style: Theme.of(context).textTheme.title.copyWith(color: color),
             ),
-            new SizedBox(
+            SizedBox(
               height: 10.0,
             ),
-            new Row(
+            Row(
               children: <Widget>[
-                new Expanded(
-                  child: new Container(
-                    margin: new EdgeInsets.all(5.0),
-                    child: new RaisedButton(
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.all(5.0),
+                    child: RaisedButton(
                       onPressed: _changeResult,
                       color: Theme.of(context).accentColor,
                       textColor: Colors.white,
-                      child: new Text("Change score"),
+                      child: Text("Change score"),
                     ),
                   ),
                 )
@@ -519,7 +515,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       );
     } else {
       List<Widget> children = <Widget>[
-        new PeriodSelector(
+        PeriodSelector(
           currentPeriod: _details.currentPeriod.build(),
           divisionsType: _details.divisions,
           team: widget.team,
@@ -528,38 +524,38 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       ];
       if (MediaQuery.of(context).viewInsets.bottom == 0.0) {
         children.add(
-          new Row(
+          Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              new Expanded(
+              Expanded(
                 flex: 1,
-                child: new Container(
-                  decoration: new BoxDecoration(),
-                  margin: new EdgeInsets.only(bottom: 5.0),
-                  child: new Column(
+                child: Container(
+                  decoration: BoxDecoration(),
+                  margin: EdgeInsets.only(bottom: 5.0),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                      new Text(
+                      Text(
                         Messages.of(context).forpts,
                         style: Theme.of(context).textTheme.subhead.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).accentColor,
                             ),
                       ),
-                      new Container(
-                        decoration: new BoxDecoration(
-                          border: new Border.all(
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
                               color: Theme.of(context).dividerColor,
                               width: 1.0),
-                          gradient: new LinearGradient(
+                          gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerLeft,
                             tileMode: TileMode.mirror,
                             colors: <Color>[Colors.grey.shade300, Colors.white],
                           ),
                         ),
-                        child: new NumberPicker.integer(
+                        child: NumberPicker.integer(
                           key: _ptsForState,
                           listViewWidth: 80.0,
                           itemExtent: 40.0,
@@ -578,31 +574,31 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                   ),
                 ),
               ),
-              new Expanded(
+              Expanded(
                 flex: 1,
-                child: new Container(
-                  decoration: new BoxDecoration(),
-                  margin: new EdgeInsets.only(bottom: 5.0, top: 5.0),
-                  child: new Column(
+                child: Container(
+                  decoration: BoxDecoration(),
+                  margin: EdgeInsets.only(bottom: 5.0, top: 5.0),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
-                      new Row(
+                      Row(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          new IconButton(
+                          IconButton(
                             icon: const Icon(Icons.restore),
                             onPressed: _resetTimer,
                           ),
-                          new IconButton(
+                          IconButton(
                             icon: const Icon(Icons.settings),
                             onPressed: _timerSettings,
                           ),
                         ],
                       ),
-                      new Container(
-                        child: new StopwatchDisplay(
+                      Container(
+                        child: StopwatchDisplay(
                           stopwatch: stopwatch,
                           style: Theme.of(context)
                               .textTheme
@@ -610,7 +606,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                               .copyWith(fontSize: 25.0),
                         ),
                       ),
-                      new IconButton(
+                      IconButton(
                         icon: stopwatch.isRunning
                             ? const Icon(Icons.pause)
                             : const Icon(Icons.play_arrow),
@@ -621,35 +617,35 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                   ),
                 ),
               ),
-              new Expanded(
+              Expanded(
                 flex: 1,
-                child: new Container(
-                  decoration: new BoxDecoration(),
-                  margin: new EdgeInsets.only(bottom: 5.0),
-                  child: new Column(
+                child: Container(
+                  decoration: BoxDecoration(),
+                  margin: EdgeInsets.only(bottom: 5.0),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      new Text(
+                      Text(
                         Messages.of(context).againstpts,
                         style: Theme.of(context).textTheme.subhead.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).accentColor,
                             ),
                       ),
-                      new Container(
-                        decoration: new BoxDecoration(
-                          border: new Border.all(
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
                               color: Theme.of(context).dividerColor,
                               width: 1.0),
-                          gradient: new LinearGradient(
+                          gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.centerLeft,
                             tileMode: TileMode.mirror,
                             colors: <Color>[Colors.grey.shade300, Colors.white],
                           ),
                         ),
-                        child: new NumberPicker.integer(
+                        child: NumberPicker.integer(
                           listViewWidth: 80.0,
                           itemExtent: 40.0,
                           key: _ptsAgainstState,
@@ -672,36 +668,35 @@ class _ScoreDetailsState extends State<ScoreDetails> {
           ),
         );
         children.add(
-          new Row(
+          Row(
             children: <Widget>[
-              new Expanded(
-                child: new Container(
-                  margin:
-                      new EdgeInsets.only(left: 5.0, right: 5.0, bottom: 5.0),
-                  child: new RaisedButton(
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.only(left: 5.0, right: 5.0, bottom: 5.0),
+                  child: RaisedButton(
                     onPressed: _updateScore,
                     color: Colors.blue,
                     textColor: Colors.white,
-                    child: new Text(Messages.of(context).updatescorebutton),
+                    child: Text(Messages.of(context).updatescorebutton),
                   ),
                 ),
               ),
-              new Container(
-                margin: new EdgeInsets.only(right: 5.0, bottom: 5.0),
-                child: new RaisedButton(
+              Container(
+                margin: EdgeInsets.only(right: 5.0, bottom: 5.0),
+                child: RaisedButton(
                   onPressed: _finishGame,
                   color: Theme.of(context).accentColor,
                   textColor: Colors.white,
-                  child: new Text(Messages.of(context).finishgamebutton),
+                  child: Text(Messages.of(context).finishgamebutton),
                 ),
               ),
             ],
           ),
         );
       }
-      return new Form(
+      return Form(
         key: _formKey,
-        child: new Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: children,

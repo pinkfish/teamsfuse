@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/screens/home/home.dart';
-import 'package:flutter_fuse/screens/login/verifyemail.dart';
-import 'package:flutter_fuse/services/analytics.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/notifications.dart';
 import 'package:fusemodel/blocs.dart';
+
+import '../../screens/home/home.dart';
+import '../../screens/login/verifyemail.dart';
+import '../../services/analytics.dart';
+import '../../services/messages.dart';
+import '../../services/notifications.dart';
 
 class SplashScreen extends StatelessWidget {
   Widget _loadingScreen(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
 
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Messages.of(context).title),
       ),
-      body: new Container(
-        padding: new EdgeInsets.all(16.0),
-        //decoration: new BoxDecoration(image: backgroundImage),
-        child: new Column(
+      body: Container(
+        padding: EdgeInsets.all(16.0),
+        //decoration: BoxDecoration(image: backgroundImage),
+        child: Column(
           children: <Widget>[
-            new Container(
-              child: new Column(
+            Container(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new Center(
-                      child: new Image(
-                    image:
-                        new ExactAssetImage("assets/images/abstractsport.png"),
+                  Center(
+                      child: Image(
+                    image: ExactAssetImage("assets/images/abstractsport.png"),
                     width: (screenSize.width < 500)
                         ? 120.0
                         : (screenSize.width / 4) + 12.0,
@@ -37,13 +37,13 @@ class SplashScreen extends StatelessWidget {
                 ],
               ),
             ),
-            new Container(
-              child: new Column(
+            Container(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  new CircularProgressIndicator(),
-                  new Text(Messages.of(context).loading),
+                  CircularProgressIndicator(),
+                  Text(Messages.of(context).loading),
                 ],
               ),
             )
@@ -88,15 +88,15 @@ class SplashScreen extends StatelessWidget {
             return _loadingScreen(context);
           }
           if (state is AuthenticationLoggedIn) {
-            return new HomeScreen();
+            return HomeScreen();
           }
           if (state is AuthenticationLoggedInUnverified) {
-            return new VerifyEmailScreen();
+            return VerifyEmailScreen();
           }
           if (state is AuthenticationLoggedOut) {
             return _loadingScreen(context);
           }
-          return new Text(Messages.of(context).unknown);
+          return Text(Messages.of(context).unknown);
         },
       ),
     );

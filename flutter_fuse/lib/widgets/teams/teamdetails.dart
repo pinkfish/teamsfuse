@@ -19,9 +19,9 @@ class TeamDetails extends StatelessWidget {
   final String teamuid;
 
   Widget _buildSeasonExpansionTitle(Team team, Season season) {
-    return new ExpansionTile(
-      key: new PageStorageKey<Season>(season),
-      title: new Text(
+    return ExpansionTile(
+      key: PageStorageKey<Season>(season),
+      title: Text(
         season.name +
             " W:" +
             season.record.win.toString() +
@@ -31,7 +31,7 @@ class TeamDetails extends StatelessWidget {
             season.record.tie.toString(),
       ),
       children: <Widget>[
-        new TeamResultsBySeason(
+        TeamResultsBySeason(
           teamUid: team.uid,
           seasonUid: season.uid,
         ),
@@ -46,10 +46,10 @@ class TeamDetails extends StatelessWidget {
 
     if (team.isAdmin()) {
       ret.add(
-        new FlatButton(
+        FlatButton(
           onPressed: () =>
               Navigator.pushNamed(context, "AddSeason/" + team.team.uid),
-          child: new Text(Messages.of(context).addseason),
+          child: Text(Messages.of(context).addseason),
         ),
       );
     }
@@ -76,7 +76,7 @@ class TeamDetails extends StatelessWidget {
       );
     }
 
-    return new Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: ret,
     );
@@ -109,17 +109,16 @@ class TeamDetails extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  new Center(
-                    child: new Image(
-                      image: new ExactAssetImage(
-                          "assets/images/abstractsport.png"),
+                  Center(
+                    child: Image(
+                      image: ExactAssetImage("assets/images/abstractsport.png"),
                       width: (screenSize.width < 500)
                           ? 120.0
                           : (screenSize.width / 4) + 12.0,
                       height: screenSize.height / 4 + 20,
                     ),
                   ),
-                  new ListTile(title: new Text(Messages.of(context).unknown)),
+                  ListTile(title: Text(Messages.of(context).unknown)),
                   _buildSeasons(
                       context, teamState, teamState.club, teamState.fullSeason)
                 ],
@@ -130,20 +129,20 @@ class TeamDetails extends StatelessWidget {
             Team team = teamState.team;
             if (team.clubUid != null) {
               if (teamState.club == null) {
-                club = new Text(Messages.of(context).loading);
+                club = Text(Messages.of(context).loading);
               } else {
-                club = new Text(teamState.club.name);
+                club = Text(teamState.club.name);
               }
             } else {
-              club = new Text(Messages.of(context).noclub);
+              club = Text(Messages.of(context).noclub);
             }
 
-            return new Column(
+            return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                new Center(
-                  child: new TeamImage(
+                Center(
+                  child: TeamImage(
                     team: team,
                     width: (screenSize.width < 500)
                         ? 120.0
@@ -151,25 +150,25 @@ class TeamDetails extends StatelessWidget {
                     height: screenSize.height / 4 + 20,
                   ),
                 ),
-                new ListTile(
+                ListTile(
                   leading: const Icon(Icons.people),
-                  title: new Text(team.name),
-                  subtitle: new Text(
-                      team.sport.toString() + "(" + team.league + ") "),
-                  trailing: new GenderIcon(team.gender),
+                  title: Text(team.name),
+                  subtitle:
+                      Text(team.sport.toString() + "(" + team.league + ") "),
+                  trailing: GenderIcon(team.gender),
                 ),
-                new ListTile(
+                ListTile(
                   leading: const Icon(CommunityIcons.cardsClub),
                   title: club,
                   onTap: () => _openClub(context, team),
                 ),
-                new ListTile(
+                ListTile(
                   leading: const Icon(Icons.archive),
                   title: team.archived
                       ? Text(Messages.of(context).archived)
                       : Text(Messages.of(context).notarchived),
                 ),
-                new ListTile(
+                ListTile(
                   leading: const Icon(Icons.timer),
                   title:
                       teamState.club == null && teamState.team.clubUid != null
@@ -180,7 +179,7 @@ class TeamDetails extends StatelessWidget {
                               ),
                             ),
                 ),
-                new ListTile(
+                ListTile(
                   leading: const Icon(CommunityIcons.trafficLight),
                   title:
                       teamState.club == null && teamState.team.clubUid != null

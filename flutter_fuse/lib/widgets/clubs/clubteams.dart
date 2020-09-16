@@ -20,13 +20,13 @@ class ClubTeams extends StatelessWidget {
     if (myTeam.length == 0) {
       // Put in a no teams marker...
       teamWidgets.add(
-        new SizedBox(
+        SizedBox(
           height: 40.0,
         ),
       );
       teamWidgets.add(
-        new Center(
-          child: new Text(Messages.of(context).noteams,
+        Center(
+          child: Text(Messages.of(context).noteams,
               style: Theme.of(context).textTheme.title),
         ),
       );
@@ -34,7 +34,7 @@ class ClubTeams extends StatelessWidget {
 
     for (Team team in myTeam) {
       teamWidgets.add(
-        new TeamTile(team.uid),
+        TeamTile(team.uid),
       );
     }
     return teamWidgets;
@@ -46,11 +46,11 @@ class ClubTeams extends StatelessWidget {
       if (singleClubState.teams.length != 0) {
         teamWidgets = _teamTiles(context, singleClubState.teams);
       } else {
-        teamWidgets.add(new Text(Messages.of(context).loading));
+        teamWidgets.add(Text(Messages.of(context).loading));
       }
     }
 
-    return new Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,

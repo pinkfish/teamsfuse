@@ -23,11 +23,11 @@ class RelationshipFormField extends FormField<Relationship> {
             final InputDecoration effectiveDecoration = (decoration ??
                     const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-            return new InputDecorator(
+            return InputDecorator(
               decoration:
                   effectiveDecoration.copyWith(errorText: field.errorText),
-              child: new DropdownButton<Relationship>(
-                hint: new Text(Messages.of(state.context).relationshipselect),
+              child: DropdownButton<Relationship>(
+                hint: Text(Messages.of(state.context).relationshipselect),
                 items: state._buildItems(state.context),
                 value: state.value,
                 onChanged: (Relationship val) {
@@ -43,7 +43,7 @@ class RelationshipFormField extends FormField<Relationship> {
         );
 
   @override
-  RelationshipFormFieldState createState() => new RelationshipFormFieldState();
+  RelationshipFormFieldState createState() => RelationshipFormFieldState();
 }
 
 class RelationshipFormFieldState extends FormFieldState<Relationship> {
@@ -54,19 +54,18 @@ class RelationshipFormFieldState extends FormFieldState<Relationship> {
   List<DropdownMenuItem<Relationship>> _buildItems(BuildContext context) {
     List<DropdownMenuItem<Relationship>> ret =
         <DropdownMenuItem<Relationship>>[];
-    ret.add(new DropdownMenuItem<Relationship>(
-      child: new Text(Messages.of(context).relationships(Relationship.Friend)),
+    ret.add(DropdownMenuItem<Relationship>(
+      child: Text(Messages.of(context).relationships(Relationship.Friend)),
       value: Relationship.Friend,
     ));
 
-    ret.add(new DropdownMenuItem<Relationship>(
-      child: new Text(Messages.of(context).relationships(Relationship.Parent)),
+    ret.add(DropdownMenuItem<Relationship>(
+      child: Text(Messages.of(context).relationships(Relationship.Parent)),
       value: Relationship.Parent,
     ));
 
-    ret.add(new DropdownMenuItem<Relationship>(
-      child:
-          new Text(Messages.of(context).relationships(Relationship.Guardian)),
+    ret.add(DropdownMenuItem<Relationship>(
+      child: Text(Messages.of(context).relationships(Relationship.Guardian)),
       value: Relationship.Guardian,
     ));
 

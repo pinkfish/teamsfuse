@@ -4,7 +4,7 @@ class Auth extends wfs.AuthWrapper {
   @override
   Stream<wfs.FirebaseUserWrapper> get onAuthStateChanged {
     return fa.FirebaseAuth.instance.onAuthStateChanged
-        .transform(new UserTransformer());
+        .transform(UserTransformer());
   }
 
   @override
@@ -21,7 +21,7 @@ class Auth extends wfs.AuthWrapper {
   Future<wfs.FirebaseUserWrapper> currentUser() async {
     var u = fa.FirebaseAuth.instance.currentUser;
     fa.User user = u;
-    return new FirebaseUser(user);
+    return FirebaseUser(user);
   }
 
   @override
@@ -29,7 +29,7 @@ class Auth extends wfs.AuthWrapper {
       {String email, String password}) async {
     fa.UserCredential user = await fa.FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
-    return new FirebaseUser(user.user);
+    return FirebaseUser(user.user);
   }
 
   @override
@@ -37,7 +37,7 @@ class Auth extends wfs.AuthWrapper {
       {String email, String password}) async {
     fa.UserCredential user = await fa.FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
-    return new FirebaseUser(user.user);
+    return FirebaseUser(user.user);
   }
 }
 
@@ -65,7 +65,7 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
 class UserTransformer
     extends StreamTransformerBase<fa.User, wfs.FirebaseUserWrapper> {
   UserTransformer() {
-    _controller = new StreamController<wfs.FirebaseUserWrapper>(
+    _controller = StreamController<wfs.FirebaseUserWrapper>(
         onListen: _onListen,
         onCancel: _onCancel,
         onPause: () {
@@ -99,7 +99,7 @@ class UserTransformer
 
   void onData(fa.User data) {
     print('Adding $data');
-    _controller.add(new FirebaseUser(data));
+    _controller.add(FirebaseUser(data));
   }
 
   ///

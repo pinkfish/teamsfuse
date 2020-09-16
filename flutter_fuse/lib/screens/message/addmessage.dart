@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/form/teampicker.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/playername.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
+import '../../widgets/form/seasonformfield.dart';
+import '../../widgets/form/teampicker.dart';
+import '../../widgets/util/communityicons.dart';
+import '../../widgets/util/ensurevisiblewhenfocused.dart';
+import '../../widgets/util/playername.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 class AddMessageScreen extends StatefulWidget {
   AddMessageScreen({this.teamUid, this.seasonUid, this.playerUid});
@@ -21,20 +21,20 @@ class AddMessageScreen extends StatefulWidget {
 
   @override
   AddMessageScreenState createState() {
-    return new AddMessageScreenState();
+    return AddMessageScreenState();
   }
 }
 
 class AddMessageScreenState extends State<AddMessageScreen> {
-  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _seasonUid;
   String _sendAs;
   List<String> _possiblePlayers = <String>[];
   bool _allPlayers = true;
   bool _includeMyself = false;
-  FocusNode _focusNodeSubject = new FocusNode();
-  FocusNode _focusNodeBody = new FocusNode();
+  FocusNode _focusNodeSubject = FocusNode();
+  FocusNode _focusNodeBody = FocusNode();
   TeamBloc _teamBloc;
   SeasonBloc _seasonBloc;
   String _messageBody;
@@ -51,7 +51,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
 
     _teamUid = widget.teamUid;
     _seasonUid = widget.seasonUid;
-    addMessageBloc = new AddMessageBloc(
+    addMessageBloc = AddMessageBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
 
     if (widget.playerUid != null) {
@@ -72,7 +72,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+        .showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _sendMessage() {
@@ -108,7 +108,7 @@ class AddMessageScreenState extends State<AddMessageScreen> {
     if (_teamUid != null) {
       // Build the rest of the form.
       ret.add(
-        new SeasonFormField(
+        SeasonFormField(
             teamBloc: singleTeamBloc,
             initialValue: _seasonUid,
             onSaved: (String seasonUid) => _seasonUid = seasonUid),
@@ -120,15 +120,15 @@ class AddMessageScreenState extends State<AddMessageScreen> {
         // option.
         if (_possiblePlayers.length > 1) {
           ret.add(
-            new ListTile(
+            ListTile(
               leading: const Icon(Icons.person_outline),
-              title: new DropdownButton<String>(
+              title: DropdownButton<String>(
                   value: _sendAs,
                   items: _possiblePlayers.map((String str) {
                     PlayerBloc playerBloc =
                         BlocProvider.of<PlayerBloc>(context);
-                    return new DropdownMenuItem<String>(
-                        child: new Text(playerBloc.state.players[str].name),
+                    return DropdownMenuItem<String>(
+                        child: Text(playerBloc.state.players[str].name),
                         value: str);
                   }).toList(),
                   onChanged: (String str) {
@@ -138,31 +138,31 @@ class AddMessageScreenState extends State<AddMessageScreen> {
           );
         } else {
           ret.add(
-            new ListTile(
+            ListTile(
               leading: const Icon(Icons.person_outline),
-              title: new Text(playerBloc.state.players[_sendAs].name),
+              title: Text(playerBloc.state.players[_sendAs].name),
             ),
           );
         }
         // Show the player selection details.
         ret.add(
-          new CheckboxListTile(
+          CheckboxListTile(
             secondary: const Icon(Icons.people),
             controlAffinity: ListTileControlAffinity.trailing,
             value: _allPlayers,
             onChanged: (bool newVal) => setState(() => _allPlayers = newVal),
-            title: new Text(Messages.of(context).everyone),
+            title: Text(Messages.of(context).everyone),
           ),
         );
         if (_allPlayers) {
           ret.add(
-            new CheckboxListTile(
+            CheckboxListTile(
               secondary: const Icon(Icons.person),
               controlAffinity: ListTileControlAffinity.trailing,
               value: _includeMyself,
               onChanged: (bool newVal) =>
                   setState(() => _includeMyself = newVal),
-              title: new Text(Messages.of(context).includemyself),
+              title: Text(Messages.of(context).includemyself),
             ),
           );
         } else {
@@ -171,10 +171,10 @@ class AddMessageScreenState extends State<AddMessageScreen> {
 
           season.players.forEach((SeasonPlayer player) {
             ret.add(
-              new CheckboxListTile(
-                title: new PlayerName(playerUid: player.playerUid),
+              CheckboxListTile(
+                title: PlayerName(playerUid: player.playerUid),
                 subtitle:
-                    new Text(Messages.of(context).roleingame(player.role)),
+                    Text(Messages.of(context).roleingame(player.role)),
                 value: _recipients.contains(player.playerUid),
                 onChanged: (bool toAdd) {
                   if (toAdd) {
@@ -189,9 +189,9 @@ class AddMessageScreenState extends State<AddMessageScreen> {
         }
         // Add in the message box itself :)
         ret.add(
-          new EnsureVisibleWhenFocused(
-            child: new TextFormField(
-              decoration: new InputDecoration(
+          EnsureVisibleWhenFocused(
+            child: TextFormField(
+              decoration: InputDecoration(
                 icon: const Icon(Icons.subject),
                 labelText: Messages.of(context).subject,
               ),
@@ -203,10 +203,10 @@ class AddMessageScreenState extends State<AddMessageScreen> {
           ),
         );
         ret.add(
-          new EnsureVisibleWhenFocused(
+          EnsureVisibleWhenFocused(
             focusNode: _focusNodeBody,
-            child: new TextFormField(
-              decoration: new InputDecoration(
+            child: TextFormField(
+              decoration: InputDecoration(
                 icon: const Icon(Icons.message),
                 labelText: Messages.of(context).message,
               ),
@@ -230,12 +230,12 @@ class AddMessageScreenState extends State<AddMessageScreen> {
       teamUid: widget.teamUid,
       builder: (BuildContext conext, SingleTeamBloc teamBloc) => Scaffold(
         key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(messages.title),
+        appBar: AppBar(
+          title: Text(messages.title),
           actions: <Widget>[
-            new FlatButton(
+            FlatButton(
               onPressed: _sendMessage,
-              child: new Text(
+              child: Text(
                 Messages.of(context).sendmessagebuttontext,
                 style: Theme.of(context)
                     .textTheme
@@ -262,15 +262,15 @@ class AddMessageScreenState extends State<AddMessageScreen> {
                 SavingOverlay(
               saving: state is AddItemSaving,
               child: Scrollbar(
-                child: new SingleChildScrollView(
-                  child: new DropdownButtonHideUnderline(
+                child: SingleChildScrollView(
+                  child: DropdownButtonHideUnderline(
                     child: Form(
                       key: _formKey,
                       child: Column(
                         children: <Widget>[
-                              new ListTile(
+                              ListTile(
                                 leading: const Icon(CommunityIcons.tshirtCrew),
-                                title: new TeamPicker(
+                                title: TeamPicker(
                                   onChanged: _changeTeam,
                                 ),
                               ),

@@ -71,7 +71,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
     }
     var cols = <Widget>[
       RaisedButton(
-        child: Text(Messages.of(context).createnew),
+        child: Text(Messages.of(context).createNew),
         color: Theme.of(context).accentColor,
         textColor: Colors.white,
         onPressed: () => _onStepperContinue(context),

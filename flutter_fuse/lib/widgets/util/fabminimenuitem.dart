@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import 'package:flutter/foundation.dart';
+
 import 'fabdialer.dart';
 
 typedef void OnFabMiniMenuItemPressed();
@@ -28,7 +29,7 @@ class FabMiniMenuItemWidget extends StatelessWidget {
   final Icon icon;
   final Color fabColor;
   final OnFabMiniMenuItemPressed onPressed;
-  final MenuDetails details = new MenuDetails();
+  final MenuDetails details = MenuDetails();
 
   final Color chipColor;
   final String tooltip;
@@ -51,29 +52,29 @@ class FabMiniMenuItemWidget extends StatelessWidget {
       textColor = Theme.of(context).textTheme.body1.color;
     }
 
-    return new Container(
-      margin: new EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
-      child: new Row(
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          new Container(
-            margin: new EdgeInsets.symmetric(horizontal: 8.0),
-            child: new ScaleTransition(
-              scale: new CurvedAnimation(
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 8.0),
+            child: ScaleTransition(
+              scale: CurvedAnimation(
                 parent: details.controller,
-                curve: new Interval(
+                curve: Interval(
                   ((details.index + 1) / 10),
                   1.0,
                   curve: Curves.linear,
                 ),
               ),
               child: text != null
-                  ? new Chip(
-                      label: new Text(
+                  ? Chip(
+                      label: Text(
                         text,
                         textAlign: TextAlign.center,
                         overflow: TextOverflow.ellipsis,
-                        style: new TextStyle(
+                        style: TextStyle(
                             color: textColor, fontWeight: FontWeight.bold),
                       ),
                       backgroundColor: chipColor,
@@ -81,13 +82,13 @@ class FabMiniMenuItemWidget extends StatelessWidget {
                   : null,
             ),
           ),
-          new ScaleTransition(
-            scale: new CurvedAnimation(
+          ScaleTransition(
+            scale: CurvedAnimation(
               parent: details.controller,
-              curve: new Interval(((details.index + 1) / 10), 1.0,
+              curve: Interval(((details.index + 1) / 10), 1.0,
                   curve: Curves.linear),
             ),
-            child: new FloatingActionButton(
+            child: FloatingActionButton(
               elevation: elevation,
               mini: true,
               backgroundColor: fabColor,

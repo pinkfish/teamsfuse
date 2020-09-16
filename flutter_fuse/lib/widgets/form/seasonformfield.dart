@@ -40,7 +40,7 @@ class SeasonFormField extends FormField<String> {
                   return InputDecorator(
                     decoration: effectiveDecoration,
                     child: DropdownButton<String>(
-                        hint: new Text(Messages.of(state.context).seasonselect),
+                        hint: Text(Messages.of(state.context).seasonselect),
                         value: state.value,
                         items:
                             state._buildItems(state.context, singleTeamState),
@@ -68,7 +68,7 @@ class SeasonFormField extends FormField<String> {
                           InputDecorator(
                     decoration: effectiveDecoration,
                     child: DropdownButton<String>(
-                        hint: new Text(Messages.of(state.context).seasonselect),
+                        hint: Text(Messages.of(state.context).seasonselect),
                         value: state.value,
                         items:
                             state._buildItems(state.context, singleTeamState),
@@ -96,7 +96,7 @@ class SeasonFormField extends FormField<String> {
 
   @override
   SeasonFormFieldState createState() =>
-      new SeasonFormFieldState(includeNone, includeNew);
+      SeasonFormFieldState(includeNone, includeNew);
 }
 
 class SeasonFormFieldState extends FormFieldState<String> {
@@ -115,20 +115,20 @@ class SeasonFormFieldState extends FormFieldState<String> {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     if (_teamUid != null) {
       if (_includeNone) {
-        ret.add(new DropdownMenuItem<String>(
+        ret.add(DropdownMenuItem<String>(
           child: Text(Messages.of(context).noseasons),
           value: SeasonFormField.none,
         ));
       }
       if (_includeNew) {
-        ret.add(new DropdownMenuItem<String>(
+        ret.add(DropdownMenuItem<String>(
           child: Text(Messages.of(context).addseason),
           value: SeasonFormField.createNew,
         ));
       }
       state.fullSeason.forEach((Season season) {
-        ret.add(new DropdownMenuItem<String>(
-            child: new Text(season.name), value: season.uid));
+        ret.add(DropdownMenuItem<String>(
+            child: Text(season.name), value: season.uid));
       });
     }
 

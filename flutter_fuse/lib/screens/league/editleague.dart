@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamenteditform.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
 import '../../widgets/blocs/singleleagueortournamentprovider.dart';
+import '../../widgets/leagueortournament/leagueortournamenteditform.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 class EditLeagueScreen extends StatefulWidget {
   EditLeagueScreen(this.leagueOrTournamentUid);
@@ -22,9 +22,9 @@ class EditLeagueScreen extends StatefulWidget {
 }
 
 class _EditLeagueScreenState extends State<EditLeagueScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<LeagueOrTournamentEditFormState> _formState =
-      new GlobalKey<LeagueOrTournamentEditFormState>();
+      GlobalKey<LeagueOrTournamentEditFormState>();
 
   bool _saving = false;
 
@@ -39,8 +39,7 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed(
@@ -77,8 +76,8 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
       builder: (BuildContext context, SingleLeagueOrTournamentBloc bloc) =>
           Scaffold(
         key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(messages.title),
+        appBar: AppBar(
+          title: Text(messages.title),
         ),
         body: BlocListener(
           cubit: bloc,
@@ -96,13 +95,13 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
                 (BuildContext context, SingleLeagueOrTournamentState state) {
               return SavingOverlay(
                 saving: state is SingleLeagueOrTournamentSaving,
-                child: new Container(
-                  padding: new EdgeInsets.all(5.0),
-                  child: new SavingOverlay(
+                child: Container(
+                  padding: EdgeInsets.all(5.0),
+                  child: SavingOverlay(
                     saving: state is SingleLeagueOrTournamentSaving,
                     child: Scrollbar(
                       child: SingleChildScrollView(
-                        child: new LeagueOrTournamentEditForm(
+                        child: LeagueOrTournamentEditForm(
                           leagueOrTournament: bloc.state.league,
                           key: _formState,
                         ),
@@ -114,7 +113,7 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
             },
           ),
         ),
-        floatingActionButton: new FloatingActionButton(
+        floatingActionButton: FloatingActionButton(
           onPressed: () => _savePressed(context, bloc),
           child: const Icon(Icons.check),
         ),

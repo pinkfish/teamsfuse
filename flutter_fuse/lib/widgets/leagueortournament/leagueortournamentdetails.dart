@@ -19,7 +19,7 @@ class LeagueOrTournamentDetails extends StatefulWidget {
 
   @override
   State createState() {
-    return new _LeagueOrTournamentDetailsState();
+    return _LeagueOrTournamentDetailsState();
   }
 }
 
@@ -97,7 +97,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
             ).toList();
 
             if (admin) {
-              children.add(new SizedBox(height: 10.0));
+              children.add(SizedBox(height: 10.0));
               children.add(
                 FlatButton(
                   onPressed: () => _addDivison(seasonBloc),
@@ -112,7 +112,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
               );
             }
 
-            return new Column(
+            return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: children);

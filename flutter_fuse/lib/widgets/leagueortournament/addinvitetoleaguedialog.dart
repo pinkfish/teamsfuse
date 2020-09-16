@@ -8,7 +8,7 @@ import 'package:fusemodel/blocs.dart';
 class AddInviteToLeagueDialog extends Dialog {
   AddInviteToLeagueDialog({@required this.leagueOrTournament});
 
-  final TextEditingController _controller = new TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   final Validations validations = Validations();
 
   final SingleLeagueOrTournamentBloc leagueOrTournament;
@@ -18,8 +18,8 @@ class AddInviteToLeagueDialog extends Dialog {
       SingleLeagueOrTournamentBloc leagueOrTournament) async {
     String email = await showDialog<String>(
         context: context,
-        builder: (BuildContext context) => new AddInviteToLeagueDialog(
-            leagueOrTournament: leagueOrTournament));
+        builder: (BuildContext context) =>
+            AddInviteToLeagueDialog(leagueOrTournament: leagueOrTournament));
     if (email == null) {
       return false;
     }
@@ -53,7 +53,7 @@ class AddInviteToLeagueDialog extends Dialog {
             autofocus: true,
             controller: _controller,
             keyboardType: TextInputType.emailAddress,
-            decoration: new InputDecoration(
+            decoration: InputDecoration(
               labelText: Messages.of(context).email,
             ),
           ),
@@ -73,7 +73,7 @@ class AddInviteToLeagueDialog extends Dialog {
                 } else {
                   showDialog<bool>(
                     context: context,
-                    builder: (BuildContext context) => new AlertDialog(
+                    builder: (BuildContext context) => AlertDialog(
                       title: Text(Messages.of(context).invalidemail),
                       content: Text(Messages.of(context).invalidemail),
                       actions: <Widget>[
@@ -103,6 +103,6 @@ class AddInviteToLeagueDialog extends Dialog {
       ),
     );
 
-    return new Dialog(child: dialogChild);
+    return Dialog(child: dialogChild);
   }
 }

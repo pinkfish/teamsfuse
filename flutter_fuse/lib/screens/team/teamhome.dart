@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/teams/teamanimatedlist.dart';
+
+import '../../services/messages.dart';
+import '../../widgets/teams/teamanimatedlist.dart';
 
 ///
 /// The base screen to display all the details about all the teams.  This page
@@ -13,9 +14,9 @@ class TeamHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
           Messages.of(context).teams,
         ),
       ),

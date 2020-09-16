@@ -15,7 +15,7 @@ class SqlData {
   Database _database;
   static SqlData _instance;
   String _path;
-  Completer<bool> _completer = new Completer<bool>();
+  Completer<bool> _completer = Completer<bool>();
   Future<bool> _initialized;
   bool _recreating = false;
 
@@ -42,7 +42,7 @@ class SqlData {
 
   static SqlData get instance {
     if (_instance == null) {
-      _instance = new SqlData();
+      _instance = SqlData();
     }
     return _instance;
   }
@@ -90,7 +90,7 @@ class SqlData {
     }
     _recreating = true;
     try {
-      _completer = new Completer<bool>();
+      _completer = Completer<bool>();
       _initialized = _completer.future;
       await _database.close();
       await deleteDatabase(_path);

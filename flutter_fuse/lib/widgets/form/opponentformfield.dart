@@ -36,8 +36,8 @@ class OpponentFormField extends FormField<String> {
                 decoration: effectiveDecoration.copyWith(
                   errorText: field.errorText,
                 ),
-                child: new DropdownButton<String>(
-                  hint: new Text(Messages.of(state.context).opponentselect,
+                child: DropdownButton<String>(
+                  hint: Text(Messages.of(state.context).opponentselect,
                       overflow: TextOverflow.clip),
                   items: state._buildItems(context, singleTeamState),
                   value: state.value,
@@ -55,7 +55,7 @@ class OpponentFormField extends FormField<String> {
         );
 
   @override
-  OpponentFormFieldState createState() => new OpponentFormFieldState();
+  OpponentFormFieldState createState() => OpponentFormFieldState();
 }
 
 class OpponentFormFieldState extends FormFieldState<String> {
@@ -68,8 +68,8 @@ class OpponentFormFieldState extends FormFieldState<String> {
   List<DropdownMenuItem<String>> _buildItems(
       BuildContext context, SingleTeamState state) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
-    ret.add(new DropdownMenuItem<String>(
-      child: new Text(
+    ret.add(DropdownMenuItem<String>(
+      child: Text(
         Messages.of(context).opponentselect,
         overflow: TextOverflow.clip,
       ),
@@ -77,8 +77,8 @@ class OpponentFormFieldState extends FormFieldState<String> {
     ));
 
     ret.add(
-      new DropdownMenuItem<String>(
-          child: new Text(Messages.of(context).addopponent,
+      DropdownMenuItem<String>(
+          child: Text(Messages.of(context).addopponent,
               overflow: TextOverflow.clip),
           value: 'add'),
     );
@@ -89,8 +89,8 @@ class OpponentFormFieldState extends FormFieldState<String> {
     for (String opponentUid in uids) {
       Opponent opponent = state.opponents[opponentUid];
       if (opponent.name != null) {
-        ret.add(new DropdownMenuItem<String>(
-            child: new Text(opponent.name, overflow: TextOverflow.clip),
+        ret.add(DropdownMenuItem<String>(
+            child: Text(opponent.name, overflow: TextOverflow.clip),
             value: opponent.uid));
       }
     }

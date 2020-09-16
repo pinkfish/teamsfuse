@@ -18,7 +18,7 @@ class Availaility extends StatelessWidget {
     Attendance attend = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return new AttendanceDialog(current: current);
+          return AttendanceDialog(current: current);
         });
     if (attend != null) {
       _game.add(SingleGameUpdateAttendance(
@@ -30,18 +30,18 @@ class Availaility extends StatelessWidget {
       BuildContext context, Game game, SeasonPlayer player) {
     PlayerBloc players = BlocProvider.of<PlayerBloc>(context);
     if (players.state.players.containsKey(player.playerUid)) {
-      return new GestureDetector(
+      return GestureDetector(
         onTap: () => _updateAttendance(
           context,
           player,
           game.attendance[player.playerUid],
         ),
-        child: new AttendanceIcon(
+        child: AttendanceIcon(
           game.attendance[player.playerUid],
         ),
       );
     }
-    return new AttendanceIcon(game.attendance[player.playerUid]);
+    return AttendanceIcon(game.attendance[player.playerUid]);
   }
 
   void _showPlayer(BuildContext context, Game game, String playerUid) {
@@ -63,12 +63,12 @@ class Availaility extends StatelessWidget {
     return season.players.map((SeasonPlayer player) {
       PlayerBloc players = BlocProvider.of<PlayerBloc>(context);
       bool canEdit = players.state.players.containsKey(player.playerUid);
-      return new ListTile(
+      return ListTile(
         onTap: () => _showPlayer(context, game, player.playerUid),
         leading: canEdit
-            ? new Icon(Icons.person, color: theme.accentColor)
+            ? Icon(Icons.person, color: theme.accentColor)
             : const Icon(Icons.person),
-        title: new PlayerName(playerUid: player.playerUid),
+        title: PlayerName(playerUid: player.playerUid),
         trailing: _buildAvailability(context, game, player),
       );
     });

@@ -22,11 +22,11 @@ class SportFormField extends FormField<Sport> {
               final InputDecoration effectiveDecoration = (decoration ??
                       const InputDecoration())
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-              return new InputDecorator(
+              return InputDecorator(
                   decoration:
                       effectiveDecoration.copyWith(errorText: field.errorText),
-                  child: new DropdownButton<Sport>(
-                      hint: new Text(Messages.of(state.context).opponentselect),
+                  child: DropdownButton<Sport>(
+                      hint: Text(Messages.of(state.context).opponentselect),
                       items: state._buildItems(state.context),
                       value: state.value,
                       onChanged: (Sport val) {
@@ -39,7 +39,7 @@ class SportFormField extends FormField<Sport> {
             });
 
   @override
-  SportFormFieldState createState() => new SportFormFieldState();
+  SportFormFieldState createState() => SportFormFieldState();
 }
 
 class SportFormFieldState extends FormFieldState<Sport> {
@@ -51,8 +51,8 @@ class SportFormFieldState extends FormFieldState<Sport> {
     List<DropdownMenuItem<Sport>> ret = <DropdownMenuItem<Sport>>[];
 
     Sport.values.forEach((Sport sport) {
-      ret.add(new DropdownMenuItem<Sport>(
-        child: new Text(Messages.of(context).sportname(sport)),
+      ret.add(DropdownMenuItem<Sport>(
+        child: Text(Messages.of(context).sportname(sport)),
         value: sport,
       ));
     });

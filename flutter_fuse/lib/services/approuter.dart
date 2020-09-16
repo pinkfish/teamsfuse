@@ -57,126 +57,126 @@ class AppRouter {
     router.define("/Home",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new SplashScreen()));
+                SplashScreen()));
     router.define("/Profile",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new ProfileScreen(
+                ProfileScreen(
                   onlyPlayer: false,
                 )));
     router.define("/Players",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new ProfileScreen(
+                ProfileScreen(
                   onlyPlayer: true,
                 )));
     router.define("/EditProfile/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditProfileScreen(vals["id"][0].toString())));
+                EditProfileScreen(vals["id"][0].toString())));
     router.define("/EditPlayer/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditPlayerScreen(playerUid: vals["id"][0].toString())));
+                EditPlayerScreen(playerUid: vals["id"][0].toString())));
     router.define("/Settings",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new SettingsScreen()));
+                SettingsScreen()));
     router.define("/About",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AboutScreen()));
+                AboutScreen()));
     router.define("/Invites",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new InviteListScreen()));
+                InviteListScreen()));
     router.define("/AcceptInviteToTeam/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AcceptInviteToTeamScreen(vals["id"][0].toString())));
+                AcceptInviteToTeamScreen(vals["id"][0].toString())));
     router.define("/AddInviteToPlayer/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddInviteToPlayerScreen(vals["id"][0].toString())));
+                AddInviteToPlayerScreen(vals["id"][0].toString())));
     router.define("/AcceptInviteToPlayer/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AcceptInviteToPlayerScreen(vals["id"][0].toString())));
+                AcceptInviteToPlayerScreen(vals["id"][0].toString())));
     router.define("/AcceptInviteAsAdmin/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AcceptInviteAsAdminScreen(vals["id"][0].toString())));
+                AcceptInviteAsAdminScreen(vals["id"][0].toString())));
     router.define("/AcceptInviteToClub/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AcceptInviteToClubScreen(vals["id"][0].toString())));
+                AcceptInviteToClubScreen(vals["id"][0].toString())));
     router.define("/AcceptInviteToClub/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AcceptInviteToClubScreen(vals["id"][0].toString())));
+                AcceptInviteToClubScreen(vals["id"][0].toString())));
     router.define("/AcceptInviteToLeague/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AcceptInviteToLeagueScreen(vals["id"][0].toString())));
+                AcceptInviteToLeagueScreen(vals["id"][0].toString())));
     router.define("/AcceptInviteToLeagueTeam/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AcceptInviteToLeagueTeamScreen(vals["id"][0].toString())));
+                AcceptInviteToLeagueTeamScreen(vals["id"][0].toString())));
     router.define("/Team/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new TeamScreen(vals["id"][0].toString())));
+                TeamScreen(vals["id"][0].toString())));
     router.define("/AddTeam",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddTeamScreen()));
+                AddTeamScreen()));
     router.define("/AllTeams",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new TeamHomeScreen()));
+                TeamHomeScreen()));
     router.define("/EditTeam/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditTeamScreen(vals["id"][0].toString())));
+                EditTeamScreen(vals["id"][0].toString())));
     router.define("/TeamSettings/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new TeamSettingsScreen(vals["id"][0].toString())));
+                TeamSettingsScreen(vals["id"][0].toString())));
     router.define("/TeamAddAdmin/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddAdminScreen(vals["id"][0].toString())));
+                AddAdminScreen(vals["id"][0].toString())));
     router.define("/TeamClub/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new ClubSettingsScreen(vals["id"][0].toString())));
+                ClubSettingsScreen(vals["id"][0].toString())));
     router.define("/AddSeason/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddSeasonScreen(vals["id"][0].toString())));
+                AddSeasonScreen(vals["id"][0].toString())));
     router.define("/AddPlayer/:team/:season",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddPlayerScreen(
+                AddPlayerScreen(
                     vals["team"][0].toString(), vals["season"][0].toString())));
     router.define("/PlayerDetails/:team/:season/:player",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new PlayerDetailsScreen(
+                PlayerDetailsScreen(
                     vals["team"][0].toString(),
                     vals["season"][0].toString(),
                     vals["player"][0].toString())));
     router.define("/EditGame/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditGameScreen(vals["id"][0].toString())));
+                EditGameScreen(vals["id"][0].toString())));
     router.define("/Game/:id", handler: fluro.Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> vals) {
       Analytics.analytics.logViewItem(
           itemId: vals["id"][0].toString(),
           itemName: "Game",
           itemCategory: "Game");
-      return new GameDetailsScreen(vals["id"][0].toString());
+      return GameDetailsScreen(vals["id"][0].toString());
     }));
     router.define("/SharedGame/:id", handler: fluro.Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> vals) {
@@ -184,29 +184,29 @@ class AppRouter {
           itemId: vals["id"][0].toString(),
           itemName: "Game",
           itemCategory: "Game");
-      return new SharedGameDetailsScreen(vals["id"][0].toString());
+      return SharedGameDetailsScreen(vals["id"][0].toString());
     }));
 
     router.define("/AddEvent",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddEventScreen()));
+                AddEventScreen()));
     router.define("/AddGame",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddGameScreen()));
+                AddGameScreen()));
     router.define("/AddTraining",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddTrainingScreen()));
+                AddTrainingScreen()));
     router.define("/Messages",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new MessagesScreen()));
+                MessagesScreen()));
     router.define("/AddMessage",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddMessageScreen()));
+                AddMessageScreen()));
     router.define("/ShowMessage/:id", handler: fluro.Handler(
         handlerFunc: (BuildContext context, Map<String, dynamic> vals) {
       Analytics.analytics.logViewItem(
@@ -214,16 +214,16 @@ class AppRouter {
           itemName: "Message",
           itemCategory: "Message");
 
-      return new ShowMessageScreen(messageUid: vals["id"][0].toString());
+      return ShowMessageScreen(messageUid: vals["id"][0].toString());
     }));
     router.define("/AddMessageTeam/:team",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddMessageScreen(teamUid: vals["team"].toString())));
+                AddMessageScreen(teamUid: vals["team"].toString())));
     router.define("/AddMessagePlayer/:team/:season/:player",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddMessageScreen(
+                AddMessageScreen(
                   teamUid: vals["team"][0].toString(),
                   seasonUid: vals["season"][0].toString(),
                   playerUid: vals["player"][0].toString(),
@@ -232,49 +232,49 @@ class AppRouter {
     router.define("/Club/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new ClubDetailsScreen(vals["id"][0].toString())));
+                ClubDetailsScreen(vals["id"][0].toString())));
     router.define("/EditClub/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditClubScreen(vals["id"][0].toString())));
+                EditClubScreen(vals["id"][0].toString())));
     router.define("/AddClubMember/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddMemberScreen(vals["id"][0].toString())));
+                AddMemberScreen(vals["id"][0].toString())));
     router.define("/AddClubTeam/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddTeamScreen(clubUid: vals["id"][0].toString())));
+                AddTeamScreen(clubUid: vals["id"][0].toString())));
     router.define("/AddClub",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddClubScreen()));
+                AddClubScreen()));
 
     // League screens.
     router.define('/League/Home',
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new LeagueHomeScreen()));
+                LeagueHomeScreen()));
     router.define('/League/AddLeague',
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddLeagueScreen(LeagueOrTournamentType.League)));
+                AddLeagueScreen(LeagueOrTournamentType.League)));
     router.define('/League/AddTournament',
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new AddLeagueScreen(LeagueOrTournamentType.League)));
+                AddLeagueScreen(LeagueOrTournamentType.League)));
     router.define("/League/Main/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new LeagueScreen(vals["id"][0].toString())));
+                LeagueScreen(vals["id"][0].toString())));
     router.define("/League/Edit/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new EditLeagueScreen(vals["id"][0].toString())));
+                EditLeagueScreen(vals["id"][0].toString())));
     router.define("/League/Divison/:id/:season/:divison",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new LeagueDivisonScreen(
+                LeagueDivisonScreen(
                   vals["id"][0].toString(),
                   vals["season"][0].toString(),
                   vals["divison"][0].toString(),
@@ -282,7 +282,7 @@ class AppRouter {
     router.define("/League/Team/:league/:season/:id",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new LeagueTeamScreen(
+                LeagueTeamScreen(
                   vals["league"][0].toString(),
                   vals["season"][0].toString(),
                   vals["id"][0].toString(),
@@ -292,19 +292,19 @@ class AppRouter {
     router.define("/Login/Home",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new LoginScreen()));
+                LoginScreen()));
     router.define("/Login/Verify",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new VerifyEmailScreen()));
+                VerifyEmailScreen()));
     router.define("/Login/SignUp",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new SignupScreen()));
+                SignupScreen()));
     router.define("/Login/ForgotPassword",
         handler: fluro.Handler(
             handlerFunc: (BuildContext context, Map<String, dynamic> vals) =>
-                new ForgotPasswordScreen()));
+                ForgotPasswordScreen()));
     return router;
   }
 }

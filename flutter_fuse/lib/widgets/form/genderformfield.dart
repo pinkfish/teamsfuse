@@ -22,11 +22,11 @@ class GenderFormField extends FormField<Gender> {
             final InputDecoration effectiveDecoration = (decoration ??
                     const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-            return new InputDecorator(
+            return InputDecorator(
               decoration:
                   effectiveDecoration.copyWith(errorText: field.errorText),
-              child: new DropdownButton<Gender>(
-                hint: new Text(Messages.of(state.context).genderselect),
+              child: DropdownButton<Gender>(
+                hint: Text(Messages.of(state.context).genderselect),
                 items: state._buildItems(state.context),
                 value: state.value,
                 onChanged: (Gender val) {
@@ -42,7 +42,7 @@ class GenderFormField extends FormField<Gender> {
         );
 
   @override
-  GenderFormFieldState createState() => new GenderFormFieldState();
+  GenderFormFieldState createState() => GenderFormFieldState();
 }
 
 class GenderFormFieldState extends FormFieldState<Gender> {
@@ -58,23 +58,23 @@ class GenderFormFieldState extends FormFieldState<Gender> {
 
   List<DropdownMenuItem<Gender>> _buildItems(BuildContext context) {
     List<DropdownMenuItem<Gender>> ret = <DropdownMenuItem<Gender>>[];
-    ret.add(new DropdownMenuItem<Gender>(
-      child: new Text(Messages.of(context).genderfemale),
+    ret.add(DropdownMenuItem<Gender>(
+      child: Text(Messages.of(context).genderfemale),
       value: Gender.Female,
     ));
 
-    ret.add(new DropdownMenuItem<Gender>(
-      child: new Text(Messages.of(context).gendermale),
+    ret.add(DropdownMenuItem<Gender>(
+      child: Text(Messages.of(context).gendermale),
       value: Gender.Male,
     ));
 
-    ret.add(new DropdownMenuItem<Gender>(
-      child: new Text(Messages.of(context).gendercoed),
+    ret.add(DropdownMenuItem<Gender>(
+      child: Text(Messages.of(context).gendercoed),
       value: Gender.Coed,
     ));
 
-    ret.add(new DropdownMenuItem<Gender>(
-      child: new Text(Messages.of(context).genderna),
+    ret.add(DropdownMenuItem<Gender>(
+      child: Text(Messages.of(context).genderna),
       value: Gender.NA,
     ));
 

@@ -1,6 +1,6 @@
 class MapLocation {
   factory MapLocation.fromMap(Map<String, double> map) {
-    return new MapLocation(map["latitude"], map["longitude"]);
+    return MapLocation(map["latitude"], map["longitude"]);
   }
 
   const MapLocation(this.latitude, this.longitude);
@@ -19,6 +19,6 @@ class MapLocation {
 }
 
 class MapLocations {
-  static MapLocation portland = new MapLocation(45.512794, -122.679565);
-  static MapLocation centerOfUSA = new MapLocation(37.0902, -95.7192);
+  static MapLocation portland = MapLocation(45.512794, -122.679565);
+  static MapLocation centerOfUSA = MapLocation(37.0902, -95.7192);
 }

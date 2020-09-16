@@ -27,19 +27,19 @@ class LeagueOrTournamentEditForm extends StatefulWidget {
 
   @override
   LeagueOrTournamentEditFormState createState() {
-    return new LeagueOrTournamentEditFormState();
+    return LeagueOrTournamentEditFormState();
   }
 }
 
 class LeagueOrTournamentEditFormState
     extends State<LeagueOrTournamentEditForm> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool autovalidate = false;
-  Validations _validations = new Validations();
-  ScrollController _scrollController = new ScrollController();
-  FocusNode _focusNodeName = new FocusNode();
-  FocusNode _focusNodeShortDescription = new FocusNode();
-  FocusNode _focusNodeLongDescription = new FocusNode();
+  Validations _validations = Validations();
+  ScrollController _scrollController = ScrollController();
+  FocusNode _focusNodeName = FocusNode();
+  FocusNode _focusNodeShortDescription = FocusNode();
+  FocusNode _focusNodeLongDescription = FocusNode();
   bool _changedImage = false;
   File _imageFile;
   LeagueOrTournamentBuilder builder;
@@ -75,9 +75,9 @@ class LeagueOrTournamentEditFormState
 
   Widget _buildImage() {
     if (!_changedImage) {
-      return new LeagueImage(leagueOrTournament: widget.leagueOrTournament);
+      return LeagueImage(leagueOrTournament: widget.leagueOrTournament);
     }
-    return new Image.file(_imageFile);
+    return Image.file(_imageFile);
   }
 
   File get imageFile {
@@ -104,7 +104,7 @@ class LeagueOrTournamentEditFormState
 
     return // Show the divisons in the current season.
         Scrollbar(
-      child: new SingleChildScrollView(
+      child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         controller: _scrollController,
         child: SingleLeagueOrTournamentProvider(
@@ -128,26 +128,26 @@ class LeagueOrTournamentEditFormState
               cubit: leagueBloc,
               builder:
                   (BuildContext context, SingleLeagueOrTournamentState state) {
-                return new Form(
+                return Form(
                   key: _formKey,
                   autovalidate: autovalidate,
-                  child: new DropdownButtonHideUnderline(
-                    child: new Column(
+                  child: DropdownButtonHideUnderline(
+                    child: Column(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        new IconButton(
+                        IconButton(
                           onPressed: _selectImage,
                           iconSize: (screenSize.width < 500)
                               ? 120.0
                               : (screenSize.width / 4) + 12.0,
                           icon: _buildImage(),
                         ),
-                        new EnsureVisibleWhenFocused(
+                        EnsureVisibleWhenFocused(
                           focusNode: _focusNodeName,
-                          child: new TextFormField(
-                            decoration: new InputDecoration(
+                          child: TextFormField(
+                            decoration: InputDecoration(
                               icon: const Icon(CommunityIcons.textbox),
                               hintText: Messages.of(context).league,
                             ),
@@ -162,7 +162,7 @@ class LeagueOrTournamentEditFormState
                             },
                           ),
                         ),
-                        new GenderFormField(
+                        GenderFormField(
                           decoration: InputDecoration(
                             icon: const Icon(CommunityIcons.genderTransgender),
                             hintText: Messages.of(context).needtoselectgender,
@@ -172,7 +172,7 @@ class LeagueOrTournamentEditFormState
                             builder.gender = g;
                           },
                         ),
-                        new SportFormField(
+                        SportFormField(
                           decoration: InputDecoration(
                             icon: const Icon(CommunityIcons.basketball),
                           ),
@@ -181,10 +181,10 @@ class LeagueOrTournamentEditFormState
                             builder.sport = s;
                           },
                         ),
-                        new EnsureVisibleWhenFocused(
+                        EnsureVisibleWhenFocused(
                           focusNode: _focusNodeShortDescription,
-                          child: new TextFormField(
-                            decoration: new InputDecoration(
+                          child: TextFormField(
+                            decoration: InputDecoration(
                               icon: const Icon(CommunityIcons.textShort),
                               hintText:
                                   Messages.of(context).shortDescriptionHint,
@@ -200,10 +200,10 @@ class LeagueOrTournamentEditFormState
                             },
                           ),
                         ),
-                        new EnsureVisibleWhenFocused(
+                        EnsureVisibleWhenFocused(
                           focusNode: _focusNodeLongDescription,
-                          child: new TextFormField(
-                            decoration: new InputDecoration(
+                          child: TextFormField(
+                            decoration: InputDecoration(
                               icon: const Icon(CommunityIcons.text),
                               hintText:
                                   Messages.of(context).longDescriptionHint,

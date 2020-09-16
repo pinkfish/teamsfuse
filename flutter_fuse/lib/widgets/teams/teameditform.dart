@@ -32,19 +32,19 @@ class TeamEditForm extends StatefulWidget {
 
   @override
   TeamEditFormState createState() {
-    return new TeamEditFormState();
+    return TeamEditFormState();
   }
 }
 
 class TeamEditFormState extends State<TeamEditForm> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autovalidate = false;
-  Validations _validations = new Validations();
-  ScrollController _scrollController = new ScrollController();
-  FocusNode _focusNodeName = new FocusNode();
-  FocusNode _focusNodeNotes = new FocusNode();
-  FocusNode _focusNodeSeason = new FocusNode();
-  FocusNode _focusNodeArriveBefore = new FocusNode();
+  Validations _validations = Validations();
+  ScrollController _scrollController = ScrollController();
+  FocusNode _focusNodeName = FocusNode();
+  FocusNode _focusNodeNotes = FocusNode();
+  FocusNode _focusNodeSeason = FocusNode();
+  FocusNode _focusNodeArriveBefore = FocusNode();
   File _imageFile;
   bool _changedImage = false;
   String _seasonName = "";
@@ -100,18 +100,18 @@ class TeamEditFormState extends State<TeamEditForm> {
 
   Widget _buildImage() {
     if (!_changedImage) {
-      return new TeamImage(
+      return TeamImage(
         teamUid: builder.uid,
       );
     }
-    return new Image.file(_imageFile);
+    return Image.file(_imageFile);
   }
 
   @override
   Widget build(BuildContext context) {
     ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
     if (widget.team == null) {
-      return new Text('Invalid state');
+      return Text('Invalid state');
     }
 
     Club club;
@@ -127,10 +127,10 @@ class TeamEditFormState extends State<TeamEditForm> {
     Widget adminNameWidget;
     if (builder.uid == null) {
       // Adding a team
-      seasonWidget = new EnsureVisibleWhenFocused(
+      seasonWidget = EnsureVisibleWhenFocused(
         focusNode: _focusNodeSeason,
-        child: new TextFormField(
-          decoration: new InputDecoration(
+        child: TextFormField(
+          decoration: InputDecoration(
             icon: const Icon(Icons.calendar_today),
             hintText: Messages.of(context).season,
             labelText: Messages.of(context).seasonhint,
@@ -148,8 +148,8 @@ class TeamEditFormState extends State<TeamEditForm> {
         ),
       );
     } else {
-      seasonWidget = new SeasonFormField(
-        decoration: new InputDecoration(
+      seasonWidget = SeasonFormField(
+        decoration: InputDecoration(
           icon: const Icon(Icons.calendar_today),
           hintText: Messages.of(context).seasonselect,
           labelText: Messages.of(context).seasonselect,
@@ -165,16 +165,16 @@ class TeamEditFormState extends State<TeamEditForm> {
     List<Widget> fields = <Widget>[];
     if (widget.startSection != StartSection.end) {
       fields.addAll(<Widget>[
-        new IconButton(
+        IconButton(
           onPressed: _selectImage,
           iconSize:
               (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
           icon: _buildImage(),
         ),
-        new EnsureVisibleWhenFocused(
+        EnsureVisibleWhenFocused(
           focusNode: _focusNodeName,
-          child: new TextFormField(
-            decoration: new InputDecoration(
+          child: TextFormField(
+            decoration: InputDecoration(
               icon: const Icon(Icons.event_note),
               hintText: Messages.of(context).team,
               labelText: Messages.of(context).teamnamehint,
@@ -191,8 +191,8 @@ class TeamEditFormState extends State<TeamEditForm> {
             },
           ),
         ),
-        new SportFormField(
-          decoration: new InputDecoration(
+        SportFormField(
+          decoration: InputDecoration(
             icon: const Icon(Icons.people),
             hintText: Messages.of(context).sportselect,
             labelText: Messages.of(context).sportselect,
@@ -205,8 +205,8 @@ class TeamEditFormState extends State<TeamEditForm> {
             builder.sport = value;
           },
         ),
-        new GenderFormField(
-          decoration: new InputDecoration(
+        GenderFormField(
+          decoration: InputDecoration(
             icon: const Icon(CommunityIcons.genderMaleFemale),
             hintText: Messages.of(context).genderselect,
             labelText: Messages.of(context).genderselect,
@@ -221,10 +221,10 @@ class TeamEditFormState extends State<TeamEditForm> {
     }
     if (widget.startSection != StartSection.start) {
       fields.addAll(<Widget>[
-        new EnsureVisibleWhenFocused(
+        EnsureVisibleWhenFocused(
           focusNode: _focusNodeNotes,
-          child: new TextFormField(
-            decoration: new InputDecoration(
+          child: TextFormField(
+            decoration: InputDecoration(
               icon: const Icon(Icons.event_note),
               hintText: Messages.of(context).league,
               labelText: Messages.of(context).leaguehint,
@@ -238,10 +238,10 @@ class TeamEditFormState extends State<TeamEditForm> {
             },
           ),
         ),
-        new EnsureVisibleWhenFocused(
+        EnsureVisibleWhenFocused(
           focusNode: _focusNodeArriveBefore,
-          child: new TextFormField(
-            decoration: new InputDecoration(
+          child: TextFormField(
+            decoration: InputDecoration(
               icon: const Icon(Icons.timer),
               hintText: Messages.of(context).arrivebeforehint,
               labelText: Messages.of(context).arrivebeforelabel,
@@ -255,7 +255,7 @@ class TeamEditFormState extends State<TeamEditForm> {
             },
           ),
         ),
-        new SwitchFormField(
+        SwitchFormField(
           initialValue: builder.trackAttendenceInternal,
           icon: CommunityIcons.trafficLight,
           enabled: club != null ? club.trackAttendence != null : true,
@@ -272,18 +272,18 @@ class TeamEditFormState extends State<TeamEditForm> {
       fields.add(adminRelationshipWidget);
     }
 
-    return new SingleChildScrollView(
+    return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       controller: _scrollController,
-      child: new Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Form(
             key: _formKey,
             autovalidate: _autovalidate,
-            child: new DropdownButtonHideUnderline(
-              child: new Column(children: fields),
+            child: DropdownButtonHideUnderline(
+              child: Column(children: fields),
             ),
           ),
         ],

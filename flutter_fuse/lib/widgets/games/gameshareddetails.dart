@@ -26,7 +26,7 @@ class GameSharedDetails extends StatefulWidget {
 
   @override
   _GameSharedDetailsState createState() {
-    return new _GameSharedDetailsState();
+    return _GameSharedDetailsState();
   }
 }
 
@@ -58,7 +58,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     await fullScreenDialog(
       context: context,
       builder: (BuildContext context) {
-        return new OfficialResultDialog(widget.game);
+        return OfficialResultDialog(widget.game);
       },
     );
   }
@@ -72,15 +72,15 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
   Widget build(BuildContext context) {
     print(
         'lat: ${widget.game.place.latitude} long: ${widget.game.place.longitude} ${widget.game.uid}');
-    Marker marker = new Marker(
+    Marker marker = Marker(
         widget.game.place.placeId,
         widget.game.place.address,
         widget.game.place.latitude.toDouble(),
         widget.game.place.longitude.toDouble());
     Uri uri = MapData.instance.provider
         .getStaticUriWithMarkers(<Marker>[marker], width: 900, height: 400);
-    TimeOfDay day = new TimeOfDay.fromDateTime(widget.game.tzTime);
-    TimeOfDay dayEnd = new TimeOfDay.fromDateTime(widget.game.tzEndTime);
+    TimeOfDay day = TimeOfDay.fromDateTime(widget.game.tzTime);
+    TimeOfDay dayEnd = TimeOfDay.fromDateTime(widget.game.tzEndTime);
     String dateStr =
         MaterialLocalizations.of(context).formatFullDate(widget.game.tzTime);
     String timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
@@ -98,10 +98,10 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
 
     ThemeData theme = Theme.of(context);
 
-    Widget loadingWidget = new Column(
+    Widget loadingWidget = Column(
       children: <Widget>[
-        new Text(Messages.of(context).loading),
-        new CircularProgressIndicator()
+        Text(Messages.of(context).loading),
+        CircularProgressIndicator()
       ],
     );
 
@@ -123,10 +123,10 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
                 imageUrl: uri.toString(),
               ),
             ),
-            new Positioned(
+            Positioned(
               right: 20.0,
               bottom: 0.0,
-              child: new FloatingActionButton(
+              child: FloatingActionButton(
                 onPressed: openNavigation,
                 child: const Icon(Icons.directions),
                 backgroundColor: Colors.orange,
@@ -287,9 +287,9 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
 
     // Map details
     body.add(
-      new ListTile(
-        leading: new Icon(Icons.directions),
-        title: new Text(
+      ListTile(
+        leading: Icon(Icons.directions),
+        title: Text(
           dateStr +
               " " +
               timeStr +
@@ -298,11 +298,11 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
                   : " - " + endTimeStr + (tzShortName ?? "")),
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
         ),
-        subtitle: new Column(
+        subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new Text(widget.game.place.name ?? ''),
-            new Text(widget.game.place.address ?? Messages.of(context).unknown),
+            Text(widget.game.place.name ?? ''),
+            Text(widget.game.place.address ?? Messages.of(context).unknown),
           ],
         ),
       ),
@@ -312,9 +312,9 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     if (widget.game.type == EventType.Game) {
       if (widget.adding) {
         body.add(
-          new ListTile(
-            leading: new Icon(CommunityIcons.bookOpenVariant),
-            title: new Text(Messages.of(context).gametype),
+          ListTile(
+            leading: Icon(CommunityIcons.bookOpenVariant),
+            title: Text(Messages.of(context).gametype),
           ),
         );
       } else {
@@ -349,7 +349,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
             break;
         }
         body.add(
-          new ListTile(
+          ListTile(
             onTap: _editResult,
             leading: LeagueImage(
               leagueOrTournamentUid: widget.game.leagueUid,
@@ -363,7 +363,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
                 textAlign: TextAlign.start,
               ),
             ),
-            subtitle: new Text(
+            subtitle: Text(
               title,
               textAlign: TextAlign.start,
             ),
@@ -392,22 +392,22 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
       // Tell people this is a practice or special event.
       if (widget.game.type == EventType.Practice) {
         body.add(
-          new ListTile(
+          ListTile(
             leading: const Icon(Icons.train),
-            title: new Text(Messages.of(context).trainingtype),
+            title: Text(Messages.of(context).trainingtype),
           ),
         );
       } else if (widget.game.type == EventType.Event) {
         body.add(
-          new ListTile(
+          ListTile(
             leading: const Icon(Icons.plus_one),
-            title: new Text(Messages.of(context).eventtype),
+            title: Text(Messages.of(context).eventtype),
           ),
         );
       }
     }
 
-    return new Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: body,

@@ -16,7 +16,7 @@ class TeamPlayers extends StatefulWidget {
 
   @override
   TeamPlayersState createState() {
-    return new TeamPlayersState();
+    return TeamPlayersState();
   }
 }
 
@@ -31,8 +31,7 @@ class TeamPlayersState extends State<TeamPlayers> {
     List<Season> seasons = teamState.fullSeason.toList();
     seasons.sort((Season s1, Season s2) => s1.name.compareTo(s2.name));
     for (Season s in seasons) {
-      ret.add(
-          new DropdownMenuItem<String>(child: new Text(s.name), value: s.uid));
+      ret.add(DropdownMenuItem<String>(child: Text(s.name), value: s.uid));
     }
 
     return ret;
@@ -45,26 +44,25 @@ class TeamPlayersState extends State<TeamPlayers> {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(mess.deleteinvite),
-          content: new SingleChildScrollView(
-            child: new ListBody(
+        return AlertDialog(
+          title: Text(mess.deleteinvite),
+          content: SingleChildScrollView(
+            child: ListBody(
               children: <Widget>[
-                new Text(mess.confirmdelete(invite)),
+                Text(mess.confirmdelete(invite)),
               ],
             ),
           ),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
             ),
-            new FlatButton(
-              child:
-                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
@@ -86,7 +84,7 @@ class TeamPlayersState extends State<TeamPlayers> {
 
     for (SeasonPlayer player in state.season.players) {
       ret.add(
-        new GestureDetector(
+        GestureDetector(
           onTap: () {
             Navigator.pushNamed(
                 context,
@@ -97,10 +95,10 @@ class TeamPlayersState extends State<TeamPlayers> {
                     "/" +
                     player.playerUid);
           },
-          child: new ListTile(
-            leading: new PlayerImage(playerUid: player.playerUid),
-            title: new PlayerName(playerUid: player.playerUid),
-            subtitle: new Text(
+          child: ListTile(
+            leading: PlayerImage(playerUid: player.playerUid),
+            title: PlayerName(playerUid: player.playerUid),
+            subtitle: Text(
               Messages.of(context).roleingame(player.role),
             ),
           ),
@@ -108,14 +106,14 @@ class TeamPlayersState extends State<TeamPlayers> {
       );
     }
     ret.add(
-      new ListTile(
-        title: new FlatButton(
+      ListTile(
+        title: FlatButton(
           textColor: Theme.of(context).accentColor,
           onPressed: () {
             Navigator.pushNamed(
                 context, "AddPlayer/" + widget._teamUid + "/" + _seasonUid);
           },
-          child: new Text(Messages.of(context).addplayer),
+          child: Text(Messages.of(context).addplayer),
         ),
       ),
     );
@@ -127,29 +125,28 @@ class TeamPlayersState extends State<TeamPlayers> {
       List<Widget> kids = <Widget>[];
       for (InviteToTeam inv in state.invites) {
         kids.add(
-          new ListTile(
-            title: new Row(
+          ListTile(
+            title: Row(
               children: inv.playerName.map((String name) {
-                return new Chip(
-                    backgroundColor: Colors.lightBlueAccent,
-                    label: new Text(name));
+                return Chip(
+                    backgroundColor: Colors.lightBlueAccent, label: Text(name));
               }).toList(),
             ),
             leading: const Icon(Icons.email),
-            subtitle: new Column(
+            subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const SizedBox(height: 5.0),
-                new Text(
+                Text(
                   inv.email,
                   style: theme.textTheme.body1
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 5.0),
-                new Text(Messages.of(context).roleingame(inv.role)),
+                Text(Messages.of(context).roleingame(inv.role)),
               ],
             ),
-            trailing: new IconButton(
+            trailing: IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
                 _deleteInvite(inv);
@@ -158,9 +155,8 @@ class TeamPlayersState extends State<TeamPlayers> {
           ),
         );
       }
-      ret.add(new ExpansionTile(
-          title: new Text(
-              Messages.of(context).invitedpeople(state.invites.length)),
+      ret.add(ExpansionTile(
+          title: Text(Messages.of(context).invitedpeople(state.invites.length)),
           children: kids));
     }
     return ret;
@@ -197,10 +193,10 @@ class TeamPlayersState extends State<TeamPlayers> {
             }
             return Column(
               children: <Widget>[
-                new Row(
+                Row(
                   children: <Widget>[
-                    new DropdownButton<String>(
-                      hint: new Text(messsages.seasonselect),
+                    DropdownButton<String>(
+                      hint: Text(messsages.seasonselect),
                       value: _seasonUid,
                       items: _buildItems(context, teamState),
                       onChanged: (String val) {
@@ -212,13 +208,12 @@ class TeamPlayersState extends State<TeamPlayers> {
                     ),
                   ],
                 ),
-                new Expanded(
-                  child: new Container(
-                    constraints: new BoxConstraints(),
-                    margin:
-                        new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-                    decoration: new BoxDecoration(color: theme.cardColor),
-                    child: new SingleChildScrollView(
+                Expanded(
+                  child: Container(
+                    constraints: BoxConstraints(),
+                    margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+                    decoration: BoxDecoration(color: theme.cardColor),
+                    child: SingleChildScrollView(
                       child: _buildSeason(context, teamState),
                     ),
                   ),

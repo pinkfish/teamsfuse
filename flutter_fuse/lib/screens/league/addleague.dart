@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamenteditform.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../services/messages.dart';
+import '../../widgets/leagueortournament/leagueortournamenteditform.dart';
+import '../../widgets/util/leagueimage.dart';
+import '../../widgets/util/savingoverlay.dart';
+import '../../widgets/util/stepperalwaysvisible.dart';
 
 class AddLeagueScreen extends StatefulWidget {
   AddLeagueScreen(this.type);
@@ -23,9 +24,9 @@ class AddLeagueScreen extends StatefulWidget {
 
 class _AddLeagueScreenState extends State<AddLeagueScreen> {
   int _currentStep = 0;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<LeagueOrTournamentEditFormState> _formState =
-      new GlobalKey<LeagueOrTournamentEditFormState>();
+      GlobalKey<LeagueOrTournamentEditFormState>();
   StepState leagueStepState = StepState.editing;
   StepState createStepStage = StepState.disabled;
 
@@ -60,7 +61,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+        .showSnackBar(SnackBar(content: Text(value)));
   }
 
   bool _leaveCurrentState(bool backwards) {
@@ -168,8 +169,8 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
       create: (BuildContext context) => addBloc,
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(messages.title),
+        appBar: AppBar(
+          title: Text(messages.title),
         ),
         body: Builder(
           builder: (BuildContext context) => BlocListener(
@@ -179,9 +180,9 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
                 showDialog<bool>(
                     context: context,
                     builder: (BuildContext context) {
-                      return new AlertDialog(
-                        title: new Text("Error"),
-                        content: new Text("Error saving the league"),
+                      return AlertDialog(
+                        title: Text("Error"),
+                        content: Text("Error saving the league"),
                       );
                     });
               }
@@ -194,9 +195,9 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
               builder: (BuildContext context, AddItemState state) {
                 return SavingOverlay(
                   saving: state is AddItemSaving,
-                  child: new Container(
-                    padding: new EdgeInsets.all(5.0),
-                    child: new StepperAlwaysVisible(
+                  child: Container(
+                    padding: EdgeInsets.all(5.0),
+                    child: StepperAlwaysVisible(
                       type: StepperType.horizontal,
                       currentStep: _currentStep,
                       onStepContinue: () {
@@ -210,17 +211,17 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
                         _onStepTapped(step);
                       },
                       steps: <Step>[
-                        new Step(
-                          title: new Text(messages.league),
+                        Step(
+                          title: Text(messages.league),
                           state: leagueStepState,
                           isActive: true,
-                          content: new LeagueOrTournamentEditForm(
+                          content: LeagueOrTournamentEditForm(
                             leagueOrTournament: _league.build(),
                             key: _formState,
                           ),
                         ),
-                        new Step(
-                          title: new Text(messages.create),
+                        Step(
+                          title: Text(messages.create),
                           state: createStepStage,
                           isActive: leagueStepState == StepState.complete,
                           content: _buildSummary(context),

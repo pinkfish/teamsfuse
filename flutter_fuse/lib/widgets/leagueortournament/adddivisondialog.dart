@@ -5,13 +5,13 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 
 class AddDivisonDialog extends Dialog {
-  final TextEditingController _controller = new TextEditingController();
+  final TextEditingController _controller = TextEditingController();
 
   static Future<bool> showSeasonDialog(BuildContext context,
       SingleLeagueOrTournamentSeasonBloc seasonBloc) async {
     String divisonName = await showDialog<String>(
         context: context,
-        builder: (BuildContext context) => new AddDivisonDialog());
+        builder: (BuildContext context) => AddDivisonDialog());
     if (divisonName == null) {
       return false;
     }
@@ -46,7 +46,7 @@ class AddDivisonDialog extends Dialog {
             autofocus: true,
             controller: _controller,
             keyboardType: TextInputType.text,
-            decoration: new InputDecoration(
+            decoration: InputDecoration(
               labelText: Messages.of(context).divison,
               hintText: Messages.of(context).newdivisonhint,
             ),
@@ -76,6 +76,6 @@ class AddDivisonDialog extends Dialog {
       ),
     );
 
-    return new Dialog(child: dialogChild);
+    return Dialog(child: dialogChild);
   }
 }

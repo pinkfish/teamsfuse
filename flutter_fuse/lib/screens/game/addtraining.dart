@@ -2,42 +2,42 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/games/repeatdetails.dart';
-import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
-import 'package:flutter_fuse/widgets/teams/teamselection.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 import 'package:uuid/uuid.dart';
 
-class AddTrainingScreen extends StatefulWidget {
-  AddTrainingScreen();
+import '../../services/messages.dart';
+import '../../widgets/games/repeatdetails.dart';
+import '../../widgets/games/trainingeditform.dart';
+import '../../widgets/teams/teamselection.dart';
+import '../../widgets/util/communityicons.dart';
+import '../../widgets/util/savingoverlay.dart';
+import '../../widgets/util/stepperalwaysvisible.dart';
 
+///
+/// Adds a traning session.
+///
+class AddTrainingScreen extends StatefulWidget {
   @override
-  AddTrainingScreenState createState() {
-    return new AddTrainingScreenState();
+  _AddTrainingScreenState createState() {
+    return _AddTrainingScreenState();
   }
 }
 
-class AddTrainingScreenState extends State<AddTrainingScreen> {
-  AddTrainingScreenState();
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+class _AddTrainingScreenState extends State<AddTrainingScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<TrainingEditFormState> _trainingFormKey =
-      new GlobalKey<TrainingEditFormState>();
+      GlobalKey<TrainingEditFormState>();
   final GlobalKey<RepeatDetailsState> _repeatKey =
-      new GlobalKey<RepeatDetailsState>();
+      GlobalKey<RepeatDetailsState>();
   StepState teamStepState = StepState.editing;
   StepState detailsStepState = StepState.disabled;
   StepState repeatStepState = StepState.disabled;
   StepState createStepStage = StepState.disabled;
   Team _team;
   Game _initGame;
-  RepeatData _repeatData = new RepeatData();
+  RepeatData _repeatData = RepeatData();
   int currentStep = 0;
   List<TZDateTime> _repeatDates;
   AddTrainingBloc addTrainingBloc;
@@ -51,19 +51,18 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   Widget _buildForm(BuildContext context) {
-    return new TrainingEditForm(
+    return TrainingEditForm(
       game: _initGame,
       key: _trainingFormKey,
     );
   }
 
   Widget _buildRepeat(BuildContext context) {
-    return new RepeatDetailsWidget(
+    return RepeatDetailsWidget(
       _initGame.sharedData.tzTime,
       _repeatData,
       key: _repeatKey,
@@ -71,8 +70,8 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   Future<bool> _saveTraining() async {
-    Uuid uuid = new Uuid();
-    String seriesId = uuid.v4();
+    var uuid = Uuid();
+    var seriesId = uuid.v4();
     _initGame = _initGame.rebuild((b) => b..seriesId = seriesId);
     addTrainingBloc.add(
         AddTrainingEventCommit(newGame: _initGame, repeatTimes: _repeatDates));
@@ -83,40 +82,40 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   Widget _buildRepeatSummary() {
     print("${_trainingFormKey.currentState} ${_repeatKey.currentState}");
     if (_repeatDates == null) {
-      return new Text(Messages.of(context).unknown);
+      return Text(Messages.of(context).unknown);
     }
-    Game myGame = _initGame;
+    var myGame = _initGame;
     String timeStr;
     print("game -- ${myGame.sharedData.time} ${myGame.sharedData.endTime}");
+    var start = MaterialLocalizations.of(context)
+        .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
+    var end = MaterialLocalizations.of(context)
+        .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
     if (myGame.sharedData.time != myGame.sharedData.endTime) {
-      timeStr = MaterialLocalizations.of(context).formatTimeOfDay(
-              new TimeOfDay.fromDateTime(myGame.sharedData.tzTime)) +
-          " - " +
-          MaterialLocalizations.of(context).formatTimeOfDay(
-              new TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
+      timeStr = "$start - $end";
     } else {
-      timeStr = MaterialLocalizations.of(context).formatTimeOfDay(
-          new TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
+      timeStr = MaterialLocalizations.of(context)
+          .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
     }
-    List<Widget> cols = <Widget>[
-      new RaisedButton(
-        child: new Text(Messages.of(context).createnew),
+    var cols = <Widget>[
+      RaisedButton(
+        child: Text(Messages.of(context).createNew),
         color: Theme.of(context).accentColor,
         textColor: Colors.white,
         onPressed: () => _onStepperContinue(context),
       ),
-      new ListTile(
-        leading: const Icon(Icons.calendar_today),
-        title: new Text(MaterialLocalizations.of(context)
+      ListTile(
+        leading: Icon(Icons.calendar_today),
+        title: Text(MaterialLocalizations.of(context)
             .formatFullDate(myGame.sharedData.tzTime)),
-        subtitle: new Text(timeStr),
+        subtitle: Text(timeStr),
       ),
-      new ListTile(
-        leading: const Icon(Icons.place),
-        title: new Text(myGame.sharedData.place.name != null
+      ListTile(
+        leading: Icon(Icons.place),
+        title: Text(myGame.sharedData.place.name != null
             ? myGame.sharedData.place.name
             : ""),
-        subtitle: new Text(myGame.sharedData.place.address != null
+        subtitle: Text(myGame.sharedData.place.address != null
             ? myGame.sharedData.place.address
             : ""),
       ),
@@ -124,42 +123,42 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
 
     if (myGame.notes.isNotEmpty) {
       cols.add(
-        new ListTile(
-          leading: const Icon(Icons.note),
-          title: new Text(myGame.notes),
+        ListTile(
+          leading: Icon(Icons.note),
+          title: Text(myGame.notes),
         ),
       );
     }
     if (myGame.uniform.isNotEmpty) {
       cols.add(
-        new ListTile(
-          leading: const Icon(CommunityIcons.tshirtCrew),
-          title: new Text(myGame.uniform),
+        ListTile(
+          leading: Icon(CommunityIcons.tshirtCrew),
+          title: Text(myGame.uniform),
         ),
       );
     }
     cols.add(
-      new Text(
+      Text(
         Messages.of(context).trainingtimes,
-        style: Theme.of(context).textTheme.headline,
+        style: Theme.of(context).textTheme.subtitle1,
       ),
     );
 
-    _repeatDates.forEach((DateTime t) {
+    for (var t in _repeatDates) {
       cols.add(
-        new ListTile(
-          leading: const Icon(CommunityIcons.calendarPlus),
-          title: new Text(
+        ListTile(
+          leading: Icon(CommunityIcons.calendarPlus),
+          title: Text(
             MaterialLocalizations.of(context).formatFullDate(t),
           ),
         ),
       );
-    });
+    }
 
-    return new Scrollbar(
-      child: new SingleChildScrollView(
+    return Scrollbar(
+      child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: new Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: cols,
         ),
@@ -223,15 +222,15 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
           currentStep++;
         } else {
           // Write the game out.
-          _saveTraining().then((void y) {
+          _saveTraining().then((y) {
             Navigator.pop(context);
-          }).catchError((Error e) {
+          }).catchError((e) {
             showDialog<bool>(
                 context: context,
-                builder: (BuildContext context) {
-                  return new AlertDialog(
-                    title: new Text("Error"),
-                    content: new Text("Error saving the training"),
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text("Error"),
+                    content: Text("Error saving the training"),
                   );
                 });
           });
@@ -249,10 +248,10 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   void newGame() {
-    GameSharedData sharedGameData = new GameSharedData((b) => b
+    var sharedGameData = GameSharedData((b) => b
       ..type = EventType.Practice
       ..officialResult.homeTeamLeagueUid = _team.uid);
-    _initGame = new Game((b) => b
+    _initGame = Game((b) => b
       ..teamUid = _team.uid
       ..sharedData = sharedGameData.toBuilder()
       ..uniform = ""
@@ -260,7 +259,7 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   void _teamChanged(Team team) {
-    DateTime start = new DateTime.now().add(const Duration(days: 0));
+    var start = DateTime.now().add(const Duration(days: 0));
     _initGame = _initGame.rebuild((b) => b
       ..teamUid = team.uid
       ..sharedData.time = start.millisecondsSinceEpoch
@@ -276,28 +275,28 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
     return BlocProvider(
-      create: (BuildContext c) => addTrainingBloc,
+      create: (c) => addTrainingBloc,
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(messages.title),
+        appBar: AppBar(
+          title: Text(messages.title),
         ),
         body: BlocListener(
           cubit: addTrainingBloc,
-          listener: (BuildContext context, AddItemState state) {
+          listener: (context, state) {
             if (state is AddItemDone) {
               Navigator.pop(context);
             }
             if (state is AddItemSaveFailed) {
               showDialog<bool>(
                 context: context,
-                builder: (BuildContext context) {
-                  return new AlertDialog(
-                    title: new Text("Error"),
-                    content: new Text("Error saving the training"),
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text("Error"),
+                    content: Text("Error saving the training"),
                   );
                 },
               );
@@ -305,12 +304,11 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
           },
           child: BlocBuilder(
             cubit: addTrainingBloc,
-            builder: (BuildContext context, AddItemState addState) =>
-                SavingOverlay(
+            builder: (context, addState) => SavingOverlay(
               saving: addState is AddItemSaving,
               child: Container(
-                padding: new EdgeInsets.all(16.0),
-                child: new StepperAlwaysVisible(
+                padding: EdgeInsets.all(16.0),
+                child: StepperAlwaysVisible(
                   type: StepperType.horizontal,
                   currentStep: currentStep,
                   onStepContinue: () {
@@ -320,34 +318,34 @@ class AddTrainingScreenState extends State<AddTrainingScreen> {
                     // Go back
                     Navigator.of(context).pop();
                   },
-                  onStepTapped: (int step) {
+                  onStepTapped: (step) {
                     _onStepTapped(step);
                   },
                   steps: <Step>[
-                    new Step(
-                      title: new Text(messages.team),
+                    Step(
+                      title: Text(messages.team),
                       state: teamStepState,
                       isActive: true,
-                      content: new TeamSelection(
+                      content: TeamSelection(
                         club: null,
                         onChanged: _teamChanged,
                         initialTeam: _team,
                       ),
                     ),
-                    new Step(
-                      title: new Text(messages.details),
+                    Step(
+                      title: Text(messages.details),
                       state: detailsStepState,
                       isActive: _team != null ? _team?.uid?.isNotEmpty : false,
                       content: _buildForm(context),
                     ),
-                    new Step(
-                      title: new Text(messages.repeat),
+                    Step(
+                      title: Text(messages.repeat),
                       state: repeatStepState,
                       isActive: _team != null ? _team?.uid?.isNotEmpty : false,
                       content: _buildRepeat(context),
                     ),
-                    new Step(
-                      title: new Text(messages.create),
+                    Step(
+                      title: Text(messages.create),
                       state: createStepStage,
                       isActive: _trainingFormKey != null &&
                           _trainingFormKey.currentState != null &&

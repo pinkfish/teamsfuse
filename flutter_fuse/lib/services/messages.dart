@@ -15,7 +15,7 @@ class Messages {
     return initializeMessages(localeName).then((dynamic _) {
       Intl.defaultLocale = localeName;
       print(localeName);
-      return new Messages();
+      return Messages();
     });
   }
 
@@ -111,7 +111,7 @@ class Messages {
         "Error creating user, maybe the email address is already used");
   }
 
-  String get createnew {
+  String get create {
     return Intl.message(
       'Create new',
       name: 'Create new account button text',
@@ -918,7 +918,7 @@ class Messages {
       Opponent opponent, String seasonUid, String seasonName) {
     WinRecord rec = opponent.record[seasonUid];
     if (rec == null) {
-      rec = new WinRecord();
+      rec = WinRecord();
     }
     return Intl.message('Win: ${rec.win} Loss: ${rec.loss} Tie: ${rec.tie}',
         name: 'Win record for an opponent for this season',
@@ -1008,7 +1008,7 @@ class Messages {
     return Intl.message('Delete admin invite');
   }
 
-  String get create {
+  String get createNew {
     return Intl.message('Create',
         name: 'Title for the step to create a game or team in a stepper');
   }
@@ -1342,19 +1342,19 @@ class Messages {
   /*
   String gameofficalinprogressscore(GameOfficialResults offical) {
     GameResultPerPeriod finalScore;
-    GamePeriod finalReg = new GamePeriod(type: GamePeriodType.Regulation);
+    GamePeriod finalReg = GamePeriod(type: GamePeriodType.Regulation);
     if (offical.scores.containsKey(finalReg)) {
       finalScore = offical.scores[finalReg];
     } else {
-      finalScore = new GameResultPerPeriod(
-          period: finalReg, score: new GameScore(ptsFor: 0, ptsAgainst: 0));
+      finalScore = GameResultPerPeriod(
+          period: finalReg, score: GameScore(ptsFor: 0, ptsAgainst: 0));
     }
-    GamePeriod overtimePeriod = new GamePeriod(type: GamePeriodType.Overtime);
+    GamePeriod overtimePeriod = GamePeriod(type: GamePeriodType.Overtime);
     GameResultPerPeriod overtimeScore;
     if (offical.scores.containsKey(overtimePeriod)) {
       overtimeScore = offical.scores[overtimePeriod];
     }
-    GamePeriod penaltyPeriod = new GamePeriod(type: GamePeriodType.Penalty);
+    GamePeriod penaltyPeriod = GamePeriod(type: GamePeriodType.Penalty);
     GameResultPerPeriod penaltyScore;
     if (offical.scores.containsKey(penaltyPeriod)) {
       penaltyScore = offical.scores[penaltyPeriod];
@@ -2070,11 +2070,11 @@ class Messages {
   QuoteAndAuthor quoteforsaving(int quoteId) {
     switch (quoteId % 4) {
       case 0:
-        return new QuoteAndAuthor(
+        return QuoteAndAuthor(
             quote: Intl.message("Lies, Damn Lies and Statistics"),
             author: Intl.message("Mark Twain"));
       case 1:
-        return new QuoteAndAuthor(
+        return QuoteAndAuthor(
             quote: Intl.message(
                 "I've missed more than 9000 shots in my career. "
                 "I've lost almost 300 games. 26 times, "
@@ -2083,13 +2083,13 @@ class Messages {
                 "And that is why I succeed."),
             author: Intl.message("Michael Jordan"));
       case 2:
-        return new QuoteAndAuthor(
+        return QuoteAndAuthor(
           quote: Intl.message(
               "I know I am getting better at golf because I am hitting fewer spectators."),
           author: Intl.message("Gerald R. Ford"),
         );
       default:
-        return new QuoteAndAuthor(
+        return QuoteAndAuthor(
             quote: Intl.message("Don't Panic"),
             author: Intl.message("Douglas Adams"));
     }

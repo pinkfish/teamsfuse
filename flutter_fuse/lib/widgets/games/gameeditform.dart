@@ -30,7 +30,7 @@ class GameEditForm extends StatefulWidget {
 
   @override
   GameEditFormState createState() {
-    return new GameEditFormState();
+    return GameEditFormState();
   }
 }
 
@@ -38,18 +38,18 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   GameEditFormState();
 
   final GlobalKey<DateTimeFormFieldState> _arriveByKey =
-      new GlobalKey<DateTimeFormFieldState>();
+      GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<DateTimeFormFieldState> _atEndKEy =
-      new GlobalKey<DateTimeFormFieldState>();
+      GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<OpponentFormFieldState> _opponentState =
-      new GlobalKey<OpponentFormFieldState>();
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+      GlobalKey<OpponentFormFieldState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool autovalidate = false;
-  Validations _validations = new Validations();
-  ScrollController _scrollController = new ScrollController();
-  FocusNode _focusNodeNotes = new FocusNode();
-  FocusNode _focusNodePlaceNotes = new FocusNode();
-  FocusNode _focusNodeUniform = new FocusNode();
+  Validations _validations = Validations();
+  ScrollController _scrollController = ScrollController();
+  FocusNode _focusNodeNotes = FocusNode();
+  FocusNode _focusNodePlaceNotes = FocusNode();
+  FocusNode _focusNodeUniform = FocusNode();
   DateTime _atDate;
   DateTime _atArrival;
   DateTime _atEnd;
@@ -85,7 +85,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
     } else {
       _formKey.currentState.save();
       // Add the date time and the time together.
-      builder.sharedData.time = new TZDateTime(
+      builder.sharedData.time = TZDateTime(
               getLocation(widget.game.sharedData.timezone),
               _atDate.year,
               _atDate.month,
@@ -96,9 +96,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
       // Move forward a day so it is in the next day.
       DateTime arrival = _atArrival;
       if (_atArrival.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
-        arrival.add(new Duration(days: 1));
+        arrival.add(Duration(days: 1));
       }
-      builder.arriveTime = new TZDateTime(
+      builder.arriveTime = TZDateTime(
               getLocation(widget.game.sharedData.timezone),
               arrival.year,
               arrival.month,
@@ -108,9 +108,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
           .millisecondsSinceEpoch;
       DateTime end = _atEnd;
       if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
-        end.add(new Duration(days: 1));
+        end.add(Duration(days: 1));
       }
-      builder.sharedData.endTime = new TZDateTime(
+      builder.sharedData.endTime = TZDateTime(
               getLocation(widget.game.sharedData.timezone),
               end.year,
               end.month,
@@ -130,10 +130,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   }
 
   void _openAddOpponentDialog() async {
-    String save =
-        await Navigator.of(context).push(new MaterialPageRoute<String>(
+    String save = await Navigator.of(context).push(MaterialPageRoute<String>(
       builder: (BuildContext context) {
-        return new AddOpponent(widget.game.teamUid);
+        return AddOpponent(widget.game.teamUid);
       },
       fullscreenDialog: true,
     ));
@@ -148,11 +147,11 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
     TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
     if (widget.game.teamUid == null ||
         teamBloc.state.getTeam(widget.game.teamUid) == null) {
-      return new Text('Invalid state');
+      return Text('Invalid state');
     }
     List<Widget> firstRow = <Widget>[];
     firstRow.add(
-      new Expanded(
+      Expanded(
         flex: 1,
         child: SingleTeamProvider(
           teamUid: builder.teamUid,
@@ -172,7 +171,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
         const SizedBox(width: 12.0),
       );
       firstRow.add(
-        new Expanded(
+        Expanded(
           flex: 1,
           child: SingleTeamProvider(
             teamUid: builder.teamUid,
@@ -201,26 +200,26 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
       );
     }
 
-    return new Scrollbar(
-      child: new SingleChildScrollView(
+    return Scrollbar(
+      child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         controller: _scrollController,
-        child: new Form(
+        child: Form(
           key: _formKey,
           autovalidate: autovalidate,
-          child: new DropdownButtonHideUnderline(
-            child: new Column(
+          child: DropdownButtonHideUnderline(
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: firstRow,
                 ),
-                new DateTimeFormField(
+                DateTimeFormField(
                   labelText: Messages.of(context).gametime,
                   initialValue: _atDate,
                   hideDate: false,
@@ -229,14 +228,14 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   },
                   onFieldChanged: _changeAtTime,
                 ),
-                new Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
-                    new Expanded(
+                    Expanded(
                       flex: 4,
-                      child: new DateTimeFormField(
+                      child: DateTimeFormField(
                         key: _arriveByKey,
                         labelText: Messages.of(context).arriveat,
                         initialValue: _atArrival,
@@ -247,9 +246,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                       ),
                     ),
                     const SizedBox(width: 12.0),
-                    new Expanded(
+                    Expanded(
                       flex: 4,
-                      child: new DateTimeFormField(
+                      child: DateTimeFormField(
                         key: _atEndKEy,
                         labelText: Messages.of(context).gameend,
                         initialValue: _atEnd,
@@ -261,8 +260,8 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                     ),
                   ],
                 ),
-                new PlacesFormField(
-                  initialValue: new LocationAndPlace.fromGame(
+                PlacesFormField(
+                  initialValue: LocationAndPlace.fromGame(
                       builder.sharedData.place.build(),
                       builder.sharedData.timezone),
                   labelText: Messages.of(context).selectplace,
@@ -282,10 +281,10 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                     });
                   },
                 ),
-                new EnsureVisibleWhenFocused(
+                EnsureVisibleWhenFocused(
                   focusNode: _focusNodePlaceNotes,
-                  child: new TextFormField(
-                    decoration: new InputDecoration(
+                  child: TextFormField(
+                    decoration: InputDecoration(
                       icon: const Icon(CommunityIcons.tshirtCrew),
                       hintText: Messages.of(context).placesnoteshint,
                       labelText: Messages.of(context).placesnotes,
@@ -299,10 +298,10 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                     },
                   ),
                 ),
-                new EnsureVisibleWhenFocused(
+                EnsureVisibleWhenFocused(
                   focusNode: _focusNodeUniform,
-                  child: new TextFormField(
-                    decoration: new InputDecoration(
+                  child: TextFormField(
+                    decoration: InputDecoration(
                       icon: const Icon(CommunityIcons.tshirtCrew),
                       hintText: Messages.of(context).uniformhint,
                       labelText: Messages.of(context).uniform,
@@ -316,9 +315,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                     },
                   ),
                 ),
-                new EnsureVisibleWhenFocused(
+                EnsureVisibleWhenFocused(
                   focusNode: _focusNodeNotes,
-                  child: new TextFormField(
+                  child: TextFormField(
                     decoration: const InputDecoration(
                         icon: const Icon(Icons.note),
                         hintText: 'Game notes',
@@ -332,11 +331,11 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                     },
                   ),
                 ),
-                new Row(
+                Row(
                   children: <Widget>[
-                    new Expanded(
+                    Expanded(
                       flex: 1,
-                      child: new SwitchFormField(
+                      child: SwitchFormField(
                         icon: CommunityIcons.home,
                         label: Messages.of(context).homeaway,
                         initialValue: widget.game.homegame,

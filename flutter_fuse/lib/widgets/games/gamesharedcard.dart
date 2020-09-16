@@ -21,7 +21,7 @@ class GameSharedCard extends StatelessWidget {
     await fullScreenDialog(
       context: context,
       builder: (BuildContext context) {
-        return new OfficialResultDialog(game);
+        return OfficialResultDialog(game);
       },
     );
   }
@@ -45,9 +45,9 @@ class GameSharedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> buttons = <Widget>[];
 
-    TZDateTime timeNow = new TZDateTime.now(local);
+    TZDateTime timeNow = TZDateTime.now(local);
     Duration dur = timeNow.difference(game.tzTime).abs();
-    TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
+    TimeOfDay day = TimeOfDay.fromDateTime(game.tzTime);
     String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeFormat;
     String tzShortName;
@@ -58,7 +58,7 @@ class GameSharedCard extends StatelessWidget {
     print(
         "Times: ${game.time} ${game.endTime} ${game.tzTime} ${game.tzEndTime}");
     if (game.time != game.endTime) {
-      TimeOfDay endDay = new TimeOfDay.fromDateTime(game.tzEndTime);
+      TimeOfDay endDay = TimeOfDay.fromDateTime(game.tzEndTime);
       endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
     }
 
@@ -69,9 +69,9 @@ class GameSharedCard extends StatelessWidget {
                 Duration.millisecondsPerHour * 24) {
       // Put in directions buttons.
       buttons.add(
-        new FlatButton(
+        FlatButton(
           onPressed: () => _showDirections(context),
-          child: new Text(
+          child: Text(
             Messages.of(context).directionsbuttons,
           ),
         ),
@@ -86,15 +86,15 @@ class GameSharedCard extends StatelessWidget {
       leagueOrTournament =
           leagueOrTournamentBloc.state.leagueOrTournaments[game.leagueUid];
     }
-    if (game.time < new DateTime.now().millisecondsSinceEpoch &&
+    if (game.time < DateTime.now().millisecondsSinceEpoch &&
         game.type == EventType.Game &&
         game.officialResult.result == OfficialResult.NotStarted &&
         (leagueOrTournament?.isAdmin() ?? false)) {
       // Show a result button (if an admin).
       buttons.add(
-        new FlatButton(
+        FlatButton(
           onPressed: () => _editResult(context),
-          child: new Text(Messages.of(context).addresultbutton),
+          child: Text(Messages.of(context).addresultbutton),
         ),
       );
     }
@@ -102,14 +102,14 @@ class GameSharedCard extends StatelessWidget {
     List<TextSpan> subtitle = <TextSpan>[];
     if (game.place.name.isNotEmpty) {
       subtitle.add(
-        new TextSpan(
+        TextSpan(
           style: Theme.of(context).textTheme.subhead,
           text: game.place.name + "\n",
         ),
       );
     } else {
       subtitle.add(
-        new TextSpan(
+        TextSpan(
           style: Theme.of(context).textTheme.subhead,
           text: game.place.address + "\n",
         ),
@@ -225,24 +225,24 @@ class GameSharedCard extends StatelessWidget {
             onTap: () {
               Navigator.pushNamed(context, "/SharedGame/" + game.uid);
             },
-            leading: new LeagueTeamImage(
+            leading: LeagueTeamImage(
               leagueOrTeamUid: game.officialResult.homeTeamLeagueUid,
               width: 50.0,
               height: 50.0,
               overlay: HomeAwayOverlay.none,
             ),
-            title: new Text(
+            title: Text(
               title,
               overflow: TextOverflow.clip,
-              style: new TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: new RichText(
-              text: new TextSpan(
+            subtitle: RichText(
+              text: TextSpan(
                 //style: Theme.of(context).textTheme.subhead,
                 children: subtitle,
               ),
             ),
-            trailing: new LeagueTeamImage(
+            trailing: LeagueTeamImage(
               leagueOrTeamUid: game.officialResult.awayTeamLeagueUid,
               width: 50.0,
               height: 50.0,
@@ -275,17 +275,17 @@ class GameSharedCard extends StatelessWidget {
       ),
     );
     if (buttons.length > 0) {
-      return new Card(
+      return Card(
         color: color,
-        child: new Column(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             tile,
-            new ButtonTheme.bar(
+            ButtonTheme.bar(
               // make buttons use the appropriate styles for cards
-              child: new ButtonBar(
+              child: ButtonBar(
                 children: buttons,
               ),
             ),
@@ -293,7 +293,7 @@ class GameSharedCard extends StatelessWidget {
         ),
       );
     } else {
-      return new Card(
+      return Card(
         color: color,
         child: tile,
       );

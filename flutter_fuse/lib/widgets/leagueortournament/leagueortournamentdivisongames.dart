@@ -28,7 +28,7 @@ class LeagueOrTournamentDivisonDetails extends StatefulWidget {
 
   @override
   State createState() {
-    return new _LeagueOrTournamentDivisonDetailsState();
+    return _LeagueOrTournamentDivisonDetailsState();
   }
 }
 
@@ -36,10 +36,9 @@ class _LeagueOrTournamentDivisonDetailsState
     extends State<LeagueOrTournamentDivisonDetails> {
   String _currentTeamConstraint = TournamentOrLeagueTeamPicker.all;
 
-  static DateFormat monthFormat = new DateFormat(DateFormat.ABBR_MONTH);
-  static DateFormat dayOfWeekFormat = new DateFormat(DateFormat.ABBR_WEEKDAY);
-  static DateFormat dayOfMonthFormat =
-      new DateFormat(DateFormat.ABBR_MONTH_DAY);
+  static DateFormat monthFormat = DateFormat(DateFormat.ABBR_MONTH);
+  static DateFormat dayOfWeekFormat = DateFormat(DateFormat.ABBR_WEEKDAY);
+  static DateFormat dayOfMonthFormat = DateFormat(DateFormat.ABBR_MONTH_DAY);
   static const double widthFirst = 40.0;
   static const double inset = 5.0;
 
@@ -114,7 +113,7 @@ class _LeagueOrTournamentDivisonDetailsState
               fontWeight: FontWeight.w300,
             );
         List<Widget> displayEvents = <Widget>[];
-        DateTime day = new DateTime(1970);
+        DateTime day = DateTime(1970);
         final Size screenSize = MediaQuery.of(context).size;
         double widthSecond = screenSize.width - widthFirst - inset - 20.0;
 
@@ -125,34 +124,34 @@ class _LeagueOrTournamentDivisonDetailsState
           }
           displayEvents.add(GameSharedCard(g));
           if (day.month != g.tzTime.month || day.day != g.tzTime.day) {
-            children.add(new Row(
+            children.add(Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                new Container(
-                  constraints: new BoxConstraints.tightFor(width: widthFirst),
-                  margin: new EdgeInsets.only(top: 5.0, left: inset),
-                  child: new Column(
+                Container(
+                  constraints: BoxConstraints.tightFor(width: widthFirst),
+                  margin: EdgeInsets.only(top: 5.0, left: inset),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      new Text(
+                      Text(
                         dayOfWeekFormat.format(day),
                         style: style,
                       ),
-                      new Text(
+                      Text(
                         dayOfMonthFormat.format(day),
                         style: style.copyWith(fontSize: 10.0),
                       ),
                     ],
                   ),
                 ),
-                new Container(
-                  constraints: new BoxConstraints.tightFor(width: widthSecond),
-                  margin: new EdgeInsets.only(top: 10.0),
-                  child: new Column(
+                Container(
+                  constraints: BoxConstraints.tightFor(width: widthSecond),
+                  margin: EdgeInsets.only(top: 10.0),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -161,7 +160,7 @@ class _LeagueOrTournamentDivisonDetailsState
                 ),
               ],
             ));
-            day = new DateTime(g.tzTime.year, g.tzTime.month, g.tzTime.day);
+            day = DateTime(g.tzTime.year, g.tzTime.month, g.tzTime.day);
             displayEvents = <Widget>[];
           }
         }
@@ -222,7 +221,7 @@ class _LeagueOrTournamentDivisonDetailsState
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: <Widget>[
-                                        new ListTile(
+                                        ListTile(
                                           leading: LeagueImage(
                                             leagueOrTournamentUid:
                                                 widget.leagueOrTournamentUid,

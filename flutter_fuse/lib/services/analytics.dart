@@ -7,7 +7,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:package_info/package_info.dart';
 
 class Analytics extends AnalyticsSubsystem {
-  static FirebaseAnalytics _analytics = new FirebaseAnalytics();
+  static FirebaseAnalytics _analytics = FirebaseAnalytics();
   static Analytics _instance;
 
   PackageInfo packageInfo;
@@ -18,7 +18,7 @@ class Analytics extends AnalyticsSubsystem {
 
   static Analytics get instance {
     if (_instance == null) {
-      _instance = new Analytics();
+      _instance = Analytics();
       _instance.load();
       FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
     }
@@ -30,13 +30,13 @@ class Analytics extends AnalyticsSubsystem {
     assert(_debugMode = true);
 
     // Load the device and package info.
-    packageInfo = new PackageInfo(
+    packageInfo = PackageInfo(
         version: "unknown", packageName: "unknown", buildNumber: "unknown");
     PackageInfo.fromPlatform().then((PackageInfo info) {
       packageInfo = info;
     });
 
-    deviceInfo = new DeviceInfoPlugin();
+    deviceInfo = DeviceInfoPlugin();
     if (Platform.isIOS) {
       deviceInfo.iosInfo.then((IosDeviceInfo info) {
         iosDeviceInfo = info;
@@ -94,7 +94,7 @@ class Analytics extends AnalyticsSubsystem {
       trace.putAttribute(
           "emulator", androidDeviceInfo.isPhysicalDevice.toString());
     }
-    return new FirebaseTrace(trace);
+    return FirebaseTrace(trace);
   }
 
   String getVersion() {

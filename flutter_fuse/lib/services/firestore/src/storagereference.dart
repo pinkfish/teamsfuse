@@ -12,7 +12,7 @@ class StorageReference extends wfs.StorageReferenceWrapper {
 
   @override
   Future<wfs.StorageMetadata> updateMetadata(wfs.StorageMetadata metadata) {
-    st.StorageMetadata newMetadata = new st.StorageMetadata(
+    st.StorageMetadata newMetadata = st.StorageMetadata(
       cacheControl: metadata?.cacheControl,
       contentDisposition: metadata?.contentDisposition,
       contentEncoding: metadata?.contentEncoding,
@@ -23,7 +23,7 @@ class StorageReference extends wfs.StorageReferenceWrapper {
     return _ref
         .updateMetadata(newMetadata)
         .then((st.StorageMetadata updatedMetadata) {
-      return new wfs.StorageMetadata(
+      return wfs.StorageMetadata(
           customMetadata: updatedMetadata.customMetadata,
           contentType: updatedMetadata.contentType,
           contentLanguage: updatedMetadata.contentLanguage,
@@ -82,13 +82,13 @@ class StorageReference extends wfs.StorageReferenceWrapper {
   @override
   wfs.StorageUploadTaskWrapper putData(Uint8List data,
       [wfs.StorageMetadata metadata]) {
-    return new StorageUploadTask(_ref.putData(data));
+    return StorageUploadTask(_ref.putData(data));
   }
 
   @override
   wfs.StorageUploadTaskWrapper putFile(File file,
       [wfs.StorageMetadata metadata]) {
-    return new StorageUploadTask(_ref.putFile(
+    return StorageUploadTask(_ref.putFile(
         file,
         metadata != null
             ? st.StorageMetadata(
@@ -104,7 +104,7 @@ class StorageReference extends wfs.StorageReferenceWrapper {
 
   @override
   wfs.StorageUploadTaskWrapper put(File file, [wfs.StorageMetadata metadata]) {
-    return new StorageUploadTask(_ref.putFile(
+    return StorageUploadTask(_ref.putFile(
         file,
         metadata != null
             ? st.StorageMetadata(
@@ -120,7 +120,7 @@ class StorageReference extends wfs.StorageReferenceWrapper {
 
   @override
   wfs.StorageReferenceWrapper child(String path) {
-    return new StorageReference(_ref.child(path));
+    return StorageReference(_ref.child(path));
   }
 }
 
@@ -132,7 +132,7 @@ class StorageUploadTask extends wfs.StorageUploadTaskWrapper {
   @override
   Future<wfs.UploadTaskSnapshotWrapper> get future {
     return _task.onComplete.then((st.StorageTaskSnapshot f) {
-      return new wfs.UploadTaskSnapshotWrapper(downloadUrl: f.uploadSessionUri);
+      return wfs.UploadTaskSnapshotWrapper(downloadUrl: f.uploadSessionUri);
     });
   }
 }

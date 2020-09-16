@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/login/loginheader.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
+
+import '../../services/messages.dart';
+import '../../services/validations.dart';
+import '../../widgets/login/loginheader.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 ///
 /// Shows a login screen with the username/password setup as well as a
@@ -19,11 +20,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  ScrollController scrollController = new ScrollController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  ScrollController scrollController = ScrollController();
   bool autovalidate = false;
-  Validations validations = new Validations();
+  Validations validations = Validations();
   String email;
   String password;
   String errorText = '';
@@ -41,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+        .showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _handleSubmitted() async {
@@ -67,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: scrollController,
       child: Container(
         padding: EdgeInsets.all(16.0),
-        //decoration: new BoxDecoration(image: backgroundImage),
+        //decoration: BoxDecoration(image: backgroundImage),
         child: Column(
           children: <Widget>[
             LoginHeader(),

@@ -16,24 +16,23 @@ Future<bool> deleteGameDialog(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(mess.deletegame(game.sharedData)),
-          content: new Scrollbar(
-            child: new SingleChildScrollView(
-              child: new GameCard(gameUid: game.uid),
+        return AlertDialog(
+          title: Text(mess.deletegame(game.sharedData)),
+          content: Scrollbar(
+            child: SingleChildScrollView(
+              child: GameCard(gameUid: game.uid),
             ),
           ),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
             ),
-            new FlatButton(
-              child:
-                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },

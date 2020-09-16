@@ -25,7 +25,7 @@ class PlayerFormField extends FormField<String> {
             final InputDecoration effectiveDecoration = (decoration ??
                     const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-            return new InputDecorator(
+            return InputDecorator(
                 decoration: effectiveDecoration.copyWith(
                   errorText: field.errorText,
                 ),
@@ -33,8 +33,7 @@ class PlayerFormField extends FormField<String> {
                     cubit: BlocProvider.of<PlayerBloc>(state.context),
                     builder: (BuildContext context, PlayerState playerState) {
                       return DropdownButton<String>(
-                        hint: new Text(
-                            Messages.of(state.context).playerselecthint),
+                        hint: Text(Messages.of(state.context).playerselecthint),
                         items: state._buildItems(state.context, playerState),
                         value: state.value,
                         onChanged: (String val) {
@@ -55,7 +54,7 @@ class PlayerFormField extends FormField<String> {
   final bool addNew;
 
   @override
-  PlayerFormFieldState createState() => new PlayerFormFieldState();
+  PlayerFormFieldState createState() => PlayerFormFieldState();
 }
 
 class PlayerFormFieldState extends FormFieldState<String> {
@@ -73,23 +72,23 @@ class PlayerFormFieldState extends FormFieldState<String> {
       BuildContext context, PlayerState state) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     ret.add(
-      new DropdownMenuItem<String>(
-        child: new Text(Messages.of(context).playerselect),
+      DropdownMenuItem<String>(
+        child: Text(Messages.of(context).playerselect),
         value: PlayerFormField.nonePlayer,
       ),
     );
 
     if (widget.addNew) {
-      ret.add(new DropdownMenuItem<String>(
-          child: new Text(Messages.of(context).addplayer),
+      ret.add(DropdownMenuItem<String>(
+          child: Text(Messages.of(context).addplayer),
           value: PlayerFormField.addPlayer));
     }
 
     for (Player player in state.players.values) {
       if (player.name != null) {
         ret.add(
-          new DropdownMenuItem<String>(
-            child: new Text(player.name),
+          DropdownMenuItem<String>(
+            child: Text(player.name),
             value: player.uid,
           ),
         );

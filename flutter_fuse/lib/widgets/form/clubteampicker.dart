@@ -20,7 +20,7 @@ class ClubTeamPicker extends StatefulWidget {
 
   @override
   ClubTeamPickerState createState() {
-    return new ClubTeamPickerState();
+    return ClubTeamPickerState();
   }
 }
 
@@ -55,8 +55,8 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
       List<Team> sorted = state.teams.toList();
       sorted.sort();
       for (Team teamDrop in sorted) {
-        ret.add(new DropdownMenuItem<Team>(
-          child: new Text(teamDrop.name),
+        ret.add(DropdownMenuItem<Team>(
+          child: Text(teamDrop.name),
           value: teamDrop,
         ));
       }
@@ -66,8 +66,8 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
   }
 
   Widget _buildDecorator(Widget inner) {
-    return new InputDecorator(
-      decoration: new InputDecoration(
+    return InputDecorator(
+      decoration: InputDecoration(
         labelText: Messages.of(context).team,
         labelStyle: widget.selectedTitle
             ? Theme.of(context)
@@ -76,11 +76,11 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
                 .copyWith(fontWeight: FontWeight.bold)
             : null,
       ),
-      child: new Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          new Expanded(flex: 1, child: inner),
+          Expanded(flex: 1, child: inner),
         ],
       ),
     );
@@ -89,9 +89,9 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
   @override
   Widget build(BuildContext context) {
     if (widget.clubBloc == null) {
-      Widget inner = new ListTile(
+      Widget inner = ListTile(
         //trailing: const Icon(CommunityIcons.update),
-        title: new Text(
+        title: Text(
           Messages.of(context).selectclub,
           style: Theme.of(context)
               .textTheme
@@ -108,15 +108,15 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
 
           if (state.teams.length == 0) {
             inner = ListTile(
-              leading: new CircularProgressIndicator(),
-              title: new Text(
+              leading: CircularProgressIndicator(),
+              title: Text(
                 Messages.of(context).loading,
                 style: Theme.of(context).textTheme.body1,
               ),
             );
           } else {
-            inner = new DropdownButton<Team>(
-              hint: new Text(Messages.of(context).teamselect),
+            inner = DropdownButton<Team>(
+              hint: Text(Messages.of(context).teamselect),
               items: _buildItems(state),
               value: widget.team,
               onChanged: (Team val) {

@@ -27,16 +27,16 @@ class DateTimeFormField extends FormField<DateTime> {
               final TextStyle valueStyle =
                   Theme.of(field.context).textTheme.title;
               final InputDecoration effectiveDecoration = (decoration ??
-                      new InputDecoration(labelText: labelText))
+                      InputDecoration(labelText: labelText))
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme)
                   .copyWith(labelText: labelText);
               print('label ${effectiveDecoration.labelText} $labelText');
 
               List<Widget> children = <Widget>[];
               if (!hideDate && !hideTime) {
-                children.add(new Expanded(
+                children.add(Expanded(
                   flex: 4,
-                  child: new InputDropdown(
+                  child: InputDropdown(
                     decoration: effectiveDecoration,
                     errorText: field.errorText,
                     valueText: MaterialLocalizations.of(field.context)
@@ -48,14 +48,14 @@ class DateTimeFormField extends FormField<DateTime> {
                   ),
                 ));
                 children.add(const SizedBox(width: 12.0));
-                children.add(new Expanded(
+                children.add(Expanded(
                   flex: 3,
-                  child: new InputDropdown(
-                    valueText: new TimeOfDay(
+                  child: InputDropdown(
+                    valueText: TimeOfDay(
                       hour: field.value.hour,
                       minute: field.value.minute,
                     ).format(field.context),
-                    decoration: new InputDecoration(),
+                    decoration: InputDecoration(),
                     valueStyle: valueStyle,
                     onPressed: () {
                       field._selectTime(onFieldSubmitted, onFieldChanged);
@@ -63,9 +63,9 @@ class DateTimeFormField extends FormField<DateTime> {
                   ),
                 ));
               } else if (hideTime) {
-                children.add(new Expanded(
+                children.add(Expanded(
                   flex: 1,
-                  child: new InputDropdown(
+                  child: InputDropdown(
                     decoration: effectiveDecoration,
                     errorText: field.errorText,
                     valueText: MaterialLocalizations.of(field.context)
@@ -77,11 +77,11 @@ class DateTimeFormField extends FormField<DateTime> {
                   ),
                 ));
               } else {
-                children.add(new Expanded(
+                children.add(Expanded(
                   flex: 1,
-                  child: new InputDropdown(
+                  child: InputDropdown(
                     decoration: effectiveDecoration,
-                    valueText: new TimeOfDay(
+                    valueText: TimeOfDay(
                             hour: field.value.hour, minute: field.value.minute)
                         .format(field.context),
                     valueStyle: valueStyle,
@@ -92,7 +92,7 @@ class DateTimeFormField extends FormField<DateTime> {
                 ));
               }
 
-              return new Row(
+              return Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: children);
             });
@@ -102,7 +102,7 @@ class DateTimeFormField extends FormField<DateTime> {
   final bool hideTime;
 
   @override
-  DateTimeFormFieldState createState() => new DateTimeFormFieldState();
+  DateTimeFormFieldState createState() => DateTimeFormFieldState();
 }
 
 class DateTimeFormFieldState extends FormFieldState<DateTime> {
@@ -120,14 +120,14 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
       ValueChanged<Duration> onFieldChanged) async {
     final DateTime picked = await showDatePicker(
         context: context,
-        initialDate: new DateTime(value.year, value.month, value.day),
-        firstDate: new DateTime(2015, 8),
-        lastDate: new DateTime(2101));
+        initialDate: DateTime(value.year, value.month, value.day),
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
     if (picked != null &&
         (picked.day != value.day ||
             picked.month != value.month ||
             picked.year != value.year)) {
-      DateTime newTime = new DateTime(
+      DateTime newTime = DateTime(
           picked.year, picked.month, picked.day, value.hour, value.minute);
       Duration diff = value.difference(newTime);
 
@@ -145,11 +145,11 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
       ValueChanged<Duration> onFieldChanged) async {
     final TimeOfDay picked = await showTimePicker(
       context: context,
-      initialTime: new TimeOfDay.fromDateTime(value),
+      initialTime: TimeOfDay.fromDateTime(value),
     );
     if (picked != null &&
         (picked.minute != value.minute || picked.hour != value.hour)) {
-      DateTime newTime = new DateTime(
+      DateTime newTime = DateTime(
           value.year, value.month, value.day, picked.hour, picked.minute);
       Duration diff = value.difference(newTime);
       didChange(newTime);

@@ -14,7 +14,7 @@ class InProgressGamePicker extends StatelessWidget {
     this.itemExtent = defaultItemExtent,
     this.listViewWidth = defaultListViewWidth,
   })  : assert(initialValue != null),
-        scrollController = new ScrollController(
+        scrollController = ScrollController(
           initialScrollOffset:
               ((GameInProgress.getIndex(initialValue)) * itemExtent).toDouble(),
         ),
@@ -80,29 +80,29 @@ class InProgressGamePicker extends StatelessWidget {
 
     int itemCount = GameInProgress.values.length + 2;
 
-    return new NotificationListener<Notification>(
-      child: new Container(
+    return NotificationListener<Notification>(
+      child: Container(
         height: _listViewHeight,
         width: listViewWidth,
-        child: new ListView.builder(
+        child: ListView.builder(
           controller: scrollController,
           itemExtent: itemExtent,
           itemCount: itemCount,
           physics: disabled
-              ? new NeverScrollableScrollPhysics()
-              : new AlwaysScrollableScrollPhysics(),
+              ? NeverScrollableScrollPhysics()
+              : AlwaysScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
             bool isExtra = index == 0 || index == itemCount - 1;
             if (isExtra) {
-              return new Container();
+              return Container();
             }
             //define special style for selected (middle) element
             GameInProgress value = GameInProgress.valuesByIndex[index];
             final TextStyle itemStyle =
                 value == initialValue ? selectedStyle : defaultStyle;
 
-            return new Center(
-              child: new Text(Messages.of(context).gameinprogress(value),
+            return Center(
+              child: Text(Messages.of(context).gameinprogress(value),
                   style: itemStyle),
             );
           },
@@ -159,6 +159,6 @@ class InProgressGamePicker extends StatelessWidget {
   ///scroll to selected value
   void _animate(ScrollController scrollController, double value) {
     scrollController.animateTo(value,
-        duration: new Duration(seconds: 1), curve: new ElasticOutCurve());
+        duration: Duration(seconds: 1), curve: ElasticOutCurve());
   }
 }

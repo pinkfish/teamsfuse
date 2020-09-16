@@ -15,7 +15,7 @@ class TeamSettings extends StatefulWidget {
 
   @override
   TeamSettingsState createState() {
-    return new TeamSettingsState();
+    return TeamSettingsState();
   }
 }
 
@@ -27,26 +27,25 @@ class TeamSettingsState extends State<TeamSettings> {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(mess.deleteadmin),
-          content: new SingleChildScrollView(
-            child: new ListBody(
+        return AlertDialog(
+          title: Text(mess.deleteadmin),
+          content: SingleChildScrollView(
+            child: ListBody(
               children: <Widget>[
-                new Text(name),
+                Text(name),
               ],
             ),
           ),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
             ),
-            new FlatButton(
-              child:
-                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
@@ -68,26 +67,25 @@ class TeamSettingsState extends State<TeamSettings> {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(mess.deleteadmininvite),
-          content: new SingleChildScrollView(
-            child: new ListBody(
+        return AlertDialog(
+          title: Text(mess.deleteadmininvite),
+          content: SingleChildScrollView(
+            child: ListBody(
               children: <Widget>[
-                new Text(adm.email),
+                Text(adm.email),
               ],
             ),
           ),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
             ),
-            new FlatButton(
-              child:
-                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
@@ -109,7 +107,7 @@ class TeamSettingsState extends State<TeamSettings> {
   List<Widget> _buildAdmins(List<Widget> ret, SingleTeamState state) {
     ThemeData theme = Theme.of(context);
 
-    ret.add(new Text("Admins", style: theme.textTheme.title));
+    ret.add(Text("Admins", style: theme.textTheme.title));
 
     for (String uid in state.team.admins) {
       print('$uid');
@@ -120,20 +118,20 @@ class TeamSettingsState extends State<TeamSettings> {
             cubit: bloc,
             builder: (BuildContext context, SinglePlayerState state) {
               if (state is SinglePlayerDeleted) {
-                return new ListTile(
+                return ListTile(
                   leading: const Icon(Icons.person),
-                  title: new Text(Messages.of(context).deleteplayer),
-                  trailing: new IconButton(
+                  title: Text(Messages.of(context).deleteplayer),
+                  trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: null,
                   ),
                 );
               }
               if (state is SinglePlayerLoaded) {
-                return new ListTile(
+                return ListTile(
                   leading: const Icon(Icons.person),
-                  title: new Text(state.player.name),
-                  trailing: new IconButton(
+                  title: Text(state.player.name),
+                  trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: state.mePlayer
                         ? null
@@ -141,10 +139,10 @@ class TeamSettingsState extends State<TeamSettings> {
                   ),
                 );
               }
-              return new ListTile(
+              return ListTile(
                 leading: const Icon(Icons.person),
-                title: new Text(Messages.of(context).loading),
-                trailing: new IconButton(
+                title: Text(Messages.of(context).loading),
+                trailing: IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: null,
                 ),
@@ -155,9 +153,9 @@ class TeamSettingsState extends State<TeamSettings> {
       );
     }
     ret.add(
-      new FlatButton(
+      FlatButton(
         onPressed: _addAdmin,
-        child: new Text("ADD ADMIN"),
+        child: Text("ADD ADMIN"),
         textColor: Theme.of(context).accentColor,
       ),
     );
@@ -167,14 +165,14 @@ class TeamSettingsState extends State<TeamSettings> {
     if (invites != null && invites.length > 0) {
       ret.add(
         ExpansionTile(
-          title: new Text(Messages.of(context).pendinginvites(invites.length)),
+          title: Text(Messages.of(context).pendinginvites(invites.length)),
           children: invites
               .map(
-                (InviteAsAdmin adm) => new ListTile(
+                (InviteAsAdmin adm) => ListTile(
                   leading: const Icon(Icons.person_add),
-                  title: new Text(adm.email),
-                  subtitle: new ByUserNameComponent(userId: adm.sentByUid),
-                  trailing: new IconButton(
+                  title: Text(adm.email),
+                  subtitle: ByUserNameComponent(userId: adm.sentByUid),
+                  trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () => _deleteInvite(adm),
                   ),
@@ -195,9 +193,9 @@ class TeamSettingsState extends State<TeamSettings> {
 
     _buildAdmins(ret, state);
     ret.add(
-      new SwitchListTile(
+      SwitchListTile(
         value: state.team.trackAttendence(state.club),
-        title: new Text("Track Attendence"),
+        title: Text("Track Attendence"),
         onChanged: (bool attend) => null,
       ),
     );
@@ -208,14 +206,14 @@ class TeamSettingsState extends State<TeamSettings> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
-    return new Column(
+    return Column(
       children: <Widget>[
-        new Expanded(
-          child: new Container(
-            constraints: new BoxConstraints(),
-            margin: new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-            decoration: new BoxDecoration(color: theme.cardColor),
-            child: new SingleChildScrollView(
+        Expanded(
+          child: Container(
+            constraints: BoxConstraints(),
+            margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+            decoration: BoxDecoration(color: theme.cardColor),
+            child: SingleChildScrollView(
               child: SingleTeamProvider(
                 teamUid: widget._teamUid,
                 builder: (BuildContext contex, SingleTeamBloc bloc) =>

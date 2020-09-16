@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../services/messages.dart';
+import '../../widgets/drawer/fuseddrawer.dart';
+import '../../widgets/util/leagueimage.dart';
 
 ///
 /// This shows all the basic stuff about the league/tournaments the person
@@ -109,23 +110,23 @@ class LeagueHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: Text(Messages.of(context).leaguetournament),
         actions: <Widget>[
-          new PopupMenuButton<String>(
+          PopupMenuButton<String>(
             onSelected: (String str) => _doAction(context, str),
             itemBuilder: (BuildContext context) {
               return <PopupMenuItem<String>>[
-                new PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: "league",
-                  child: new Text(Messages.of(context).addleague),
+                  child: Text(Messages.of(context).addleague),
                 ),
-                new PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: "tournament",
-                  child: new Text(Messages.of(context).addtournament),
+                  child: Text(Messages.of(context).addtournament),
                 ),
-                new PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'edit',
                   child: Text(Messages.of(context).editbuttontext),
                 )
@@ -134,7 +135,7 @@ class LeagueHomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      drawer: new FusedDrawer(DrawerMode.league),
+      drawer: FusedDrawer(DrawerMode.league),
       body: Scrollbar(
         child: SingleChildScrollView(
           child: _buildBody(context),

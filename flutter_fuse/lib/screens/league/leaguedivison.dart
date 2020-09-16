@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdivisongames.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdivisonteams.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
+
+import '../../services/messages.dart';
+import '../../widgets/leagueortournament/leagueortournamentdivisongames.dart';
+import '../../widgets/leagueortournament/leagueortournamentdivisonteams.dart';
+import '../../widgets/leagueortournament/leagueortournamentname.dart';
 
 class LeagueDivisonScreen extends StatefulWidget {
   LeagueDivisonScreen(
@@ -48,9 +49,9 @@ class _LeagueDivisonScreenState extends State<LeagueDivisonScreen> {
     FloatingActionButton fab;
     List<Widget> actions = <Widget>[];
 
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new LeagueOrTournamentName(
+    return Scaffold(
+      appBar: AppBar(
+        title: LeagueOrTournamentName(
           widget.leagueUid,
           leagueOrTournamentDivisonUid: widget.leagueDivisonUid,
         ),

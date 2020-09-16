@@ -20,19 +20,19 @@ class SharedGameEditForm extends StatefulWidget {
 
   @override
   SharedGameEditFormState createState() {
-    return new SharedGameEditFormState();
+    return SharedGameEditFormState();
   }
 }
 
 class SharedGameEditFormState extends State<SharedGameEditForm> {
   final GlobalKey<DateTimeFormFieldState> _arriveByKey =
-      new GlobalKey<DateTimeFormFieldState>();
+      GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<DateTimeFormFieldState> _atEndKEy =
-      new GlobalKey<DateTimeFormFieldState>();
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+      GlobalKey<DateTimeFormFieldState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool autovalidate = false;
-  ScrollController _scrollController = new ScrollController();
-  FocusNode _focusNodePlaceNotes = new FocusNode();
+  ScrollController _scrollController = ScrollController();
+  FocusNode _focusNodePlaceNotes = FocusNode();
   DateTime _atDate;
   DateTime _atEnd;
   GameSharedDataBuilder builder;
@@ -63,15 +63,15 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
     } else {
       _formKey.currentState.save();
       // Add the date time and the time together.
-      builder.time = new TZDateTime(getLocation(builder.timezone), _atDate.year,
+      builder.time = TZDateTime(getLocation(builder.timezone), _atDate.year,
               _atDate.month, _atDate.day, _atDate.hour, _atDate.minute)
           .millisecondsSinceEpoch;
       // Move forward a day so it is in the next day.
       DateTime end = _atEnd;
       if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
-        end.add(new Duration(days: 1));
+        end.add(Duration(days: 1));
       }
-      builder.endTime = new TZDateTime(getLocation(builder.timezone), end.year,
+      builder.endTime = TZDateTime(getLocation(builder.timezone), end.year,
               end.month, end.day, end.hour, end.minute)
           .millisecondsSinceEpoch;
     }
@@ -89,26 +89,26 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
   Widget build(BuildContext context) {
     List<Widget> firstRow = <Widget>[];
 
-    return new Scrollbar(
-      child: new SingleChildScrollView(
+    return Scrollbar(
+      child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         controller: _scrollController,
-        child: new Form(
+        child: Form(
           key: _formKey,
           autovalidate: autovalidate,
-          child: new DropdownButtonHideUnderline(
-            child: new Column(
+          child: DropdownButtonHideUnderline(
+            child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: firstRow,
                 ),
-                new DateTimeFormField(
+                DateTimeFormField(
                   labelText: Messages.of(context).gametime,
                   initialValue: _atDate,
                   hideDate: false,
@@ -117,14 +117,14 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                   },
                   onFieldChanged: _changeAtTime,
                 ),
-                new Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
-                    new Expanded(
+                    Expanded(
                       flex: 4,
-                      child: new DateTimeFormField(
+                      child: DateTimeFormField(
                         key: _atEndKEy,
                         labelText: Messages.of(context).gameend,
                         initialValue: _atEnd,
@@ -136,8 +136,8 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                     ),
                   ],
                 ),
-                new PlacesFormField(
-                  initialValue: new LocationAndPlace.fromGame(
+                PlacesFormField(
+                  initialValue: LocationAndPlace.fromGame(
                       builder.place.build(), builder.timezone),
                   labelText: Messages.of(context).selectplace,
                   decoration:
@@ -154,10 +154,10 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                     });
                   },
                 ),
-                new EnsureVisibleWhenFocused(
+                EnsureVisibleWhenFocused(
                   focusNode: _focusNodePlaceNotes,
-                  child: new TextFormField(
-                    decoration: new InputDecoration(
+                  child: TextFormField(
+                    decoration: InputDecoration(
                       icon: const Icon(CommunityIcons.tshirtCrew),
                       hintText: Messages.of(context).placesnoteshint,
                       labelText: Messages.of(context).placesnotes,

@@ -16,37 +16,37 @@ class GameLogView extends StatelessWidget {
     Widget subtitle;
     switch (log.type) {
       case GameLogType.Message:
-        subtitle = new Text(log.message, style: subheadStyle);
+        subtitle = Text(log.message, style: subheadStyle);
         break;
       case GameLogType.PeriodStart:
-        subtitle = new Text(Messages.of(context).periodstart(log),
-            style: subheadStyle);
+        subtitle =
+            Text(Messages.of(context).periodstart(log), style: subheadStyle);
         break;
       case GameLogType.PeriodStop:
-        subtitle = new Text(
+        subtitle = Text(
           Messages.of(context).periodstop(log),
           style: subheadStyle,
         );
         break;
       case GameLogType.ScoreUpdate:
-        subtitle = new Text(
+        subtitle = Text(
           Messages.of(context).onlyscore(log.score),
           style: subheadStyle,
         );
         break;
       case GameLogType.UpdateScore:
-        subtitle = new Text(
+        subtitle = Text(
           Messages.of(context).fixscore(log),
           style: subheadStyle,
         );
         break;
     }
     print("$log");
-    return new ListTile(
-      leading: new CircleAvatar(
-        child: new Text(log.initials()),
+    return ListTile(
+      leading: CircleAvatar(
+        child: Text(log.initials()),
       ),
-      title: new Text(
+      title: Text(
           MaterialLocalizations.of(context).formatFullDate(log.eventTime),
           style: Theme.of(context)
               .textTheme
@@ -68,7 +68,7 @@ class GameLogView extends StatelessWidget {
             .copyWith(color: Colors.black, fontSize: 20.0);
         List<GameLog> logs = state.gameLog.toList();
 
-        return new ListView.builder(
+        return ListView.builder(
           scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context, int index) {
             return _buildGameItem(context, logs[index], subheadStyle);

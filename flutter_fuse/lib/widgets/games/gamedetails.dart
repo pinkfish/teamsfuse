@@ -20,7 +20,7 @@ class GameDetails extends StatefulWidget {
 
   @override
   GameDetailsState createState() {
-    return new GameDetailsState();
+    return GameDetailsState();
   }
 }
 
@@ -41,7 +41,7 @@ class GameDetailsState extends State<GameDetails> {
       context: context,
       builder: (BuildContext context) {
         print("$widget");
-        return new EditResultDialog(widget.gameBloc);
+        return EditResultDialog(widget.gameBloc);
       },
     );
   }
@@ -55,7 +55,7 @@ class GameDetailsState extends State<GameDetails> {
       Attendance attend = await showDialog<Attendance>(
           context: context,
           builder: (BuildContext context) {
-            return new AttendanceDialog(current: current);
+            return AttendanceDialog(current: current);
           });
       if (attend != null) {
         widget.gameBloc.add(SingleGameUpdateAttendance(
@@ -65,7 +65,7 @@ class GameDetailsState extends State<GameDetails> {
       Map<Player, Attendance> attend = await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return new MultipleAttendanceDialog(attendence);
+          return MultipleAttendanceDialog(attendence);
         },
       );
       if (attend != null) {

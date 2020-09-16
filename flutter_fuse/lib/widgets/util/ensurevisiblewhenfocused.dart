@@ -1,7 +1,8 @@
 import 'dart:async';
-import 'package:meta/meta.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:meta/meta.dart';
 
 /// A widget that ensures it is always visible when focused.
 class EnsureVisibleWhenFocused extends StatefulWidget {
@@ -31,7 +32,7 @@ class EnsureVisibleWhenFocused extends StatefulWidget {
 
   @override
   EnsureVisibleWhenFocusedState createState() =>
-      new EnsureVisibleWhenFocusedState();
+      EnsureVisibleWhenFocusedState();
 }
 
 class EnsureVisibleWhenFocusedState extends State<EnsureVisibleWhenFocused> {
@@ -52,7 +53,7 @@ class EnsureVisibleWhenFocusedState extends State<EnsureVisibleWhenFocused> {
     // TODO: position doesn't seem to notify listeners when metrics change,
     // perhaps a NotificationListener around the scrollable could avoid
     // the need insert a delay here.
-    await new Future<Duration>.delayed(const Duration(milliseconds: 300));
+    await Future<Duration>.delayed(const Duration(milliseconds: 300));
 
     if (!widget.focusNode.hasFocus) {
       return;

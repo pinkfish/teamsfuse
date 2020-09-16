@@ -14,14 +14,13 @@ class GameListCalendarState {
   DateTime startPoint;
   DateTime endPoint;
   FilterDetails details;
-  StreamController<UpdateReason> _controller =
-      new StreamController<UpdateReason>();
+  StreamController<UpdateReason> _controller = StreamController<UpdateReason>();
   Stream<UpdateReason> _myStream;
   GlobalKey<CalendarWidgetState> state;
   GameBloc gameBloc;
 
   Widget buildWidget(BuildContext context, CalendarEvent event) {
-    return new GameCard(gameUid: _listToShow[event.index].uid);
+    return GameCard(gameUid: _listToShow[event.index].uid);
   }
 
   List<CalendarEvent> getEvents(DateTime start, DateTime end) {
@@ -38,7 +37,7 @@ class GameListCalendarState {
     List<CalendarEvent> events = <CalendarEvent>[];
     int pos = 0;
     for (Game g in _listToShow) {
-      events.add(new CalendarEvent(
+      events.add(CalendarEvent(
           instant: g.sharedData.tzTime,
           instantEnd: g.sharedData.tzEndTime,
           index: pos++));

@@ -27,16 +27,16 @@ class PlayerName extends StatelessWidget {
         CrossFadeState state = CrossFadeState.showFirst;
 
         if (play != null) {
-          widgetTwo = new Text(Messages.of(context).unknown, style: style);
+          widgetTwo = Text(Messages.of(context).unknown, style: style);
           if (play.name != null) {
-            widgetTwo = new Text(play.name, style: style);
+            widgetTwo = Text(play.name, style: style);
           }
           state = CrossFadeState.showSecond;
         } else {
-          widgetTwo = new Text("");
+          widgetTwo = Text("");
         }
 
-        widgetOne = new Text(Messages.of(context).loading, style: style);
+        widgetOne = Text(Messages.of(context).loading, style: style);
         return AnimatedCrossFade(
           firstChild: widgetOne,
           secondChild: widgetTwo,

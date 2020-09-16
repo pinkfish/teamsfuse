@@ -9,7 +9,7 @@ import 'package:sentry/sentry.dart';
 class LoggingData extends LoggingDataBase {
   LoggingData() {
     assert(debugMode = true);
-    DeviceInfoPlugin plugin = new DeviceInfoPlugin();
+    DeviceInfoPlugin plugin = DeviceInfoPlugin();
     if (Platform.isIOS) {
       tags["ios"] = Platform.operatingSystemVersion;
       plugin.iosInfo.then((IosDeviceInfo info) {
@@ -67,7 +67,7 @@ class LoggingData extends LoggingDataBase {
       });
     }
     tags["locale"] = Platform.localeName;
-    packageInfo = new PackageInfo(
+    packageInfo = PackageInfo(
         version: "unknown", packageName: "unknown", buildNumber: "unknown");
     PackageInfo.fromPlatform().then((PackageInfo info) {
       tags["buildNumber"] = info.buildNumber;
@@ -76,7 +76,7 @@ class LoggingData extends LoggingDataBase {
     });
   }
 
-  static LoggingData instance = new LoggingData();
+  static LoggingData instance = LoggingData();
 
   Map<String, dynamic> extra = <String, dynamic>{};
   Map<String, String> tags = <String, String>{};
@@ -84,7 +84,7 @@ class LoggingData extends LoggingDataBase {
   bool realDevice = true;
   bool debugMode = false;
 
-  final SentryClient sentry = new SentryClient(
+  final SentryClient sentry = SentryClient(
       dsn:
           'https://5691b440eb64430d9ba2917166fa17a1:7978cf6a0a5a4f7ab7702a51f524620a@sentry.io/1200691');
 
@@ -95,7 +95,7 @@ class LoggingData extends LoggingDataBase {
     FlutterError.dumpErrorToConsole(details, forceReport: true);
     // Don't capture on emulators.
     if (realDevice && !debugMode) {
-      final Event event = new Event(
+      final Event event = Event(
           release: LoggingData.instance.packageInfo.version,
           exception: details.exception,
           stackTrace: details.stack,
@@ -109,7 +109,7 @@ class LoggingData extends LoggingDataBase {
   void logError(FusedErrorDetails details) {
     // Don't capture on emulators.
     if (realDevice && !debugMode) {
-      final Event event = new Event(
+      final Event event = Event(
           release: LoggingData.instance.packageInfo.version,
           exception: details.exception,
           stackTrace: details.stack,

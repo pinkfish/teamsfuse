@@ -8,27 +8,25 @@ import 'package:fusemodel/fusemodel.dart';
 Future<GamePeriodTime> timerSetupDialog(
     BuildContext context, GameResultDetails details) async {
   Messages mess = Messages.of(context);
-  GlobalKey<_TimerDetailsState> detailsState =
-      new GlobalKey<_TimerDetailsState>();
+  GlobalKey<_TimerDetailsState> detailsState = GlobalKey<_TimerDetailsState>();
 
   GamePeriodTime result = await showDialog<GamePeriodTime>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(mess.deleteinvite),
-          content: new _TimerDetails(details.time, detailsState),
+        return AlertDialog(
+          title: Text(mess.deleteinvite),
+          content: _TimerDetails(details.time, detailsState),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(detailsState.currentState.save());
               },
             ),
-            new FlatButton(
-              child:
-                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(null);
               },
@@ -45,11 +43,11 @@ class _TimerDetails extends StatefulWidget {
         super(key: key);
 
   final GamePeriodTimeBuilder _periodTime;
-  final GlobalKey<FormState> _formState = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formState = GlobalKey<FormState>();
 
   @override
   State createState() {
-    return new _TimerDetailsState();
+    return _TimerDetailsState();
   }
 }
 
@@ -61,17 +59,17 @@ class _TimerDetailsState extends State<_TimerDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scrollbar(
-      child: new Form(
+    return Scrollbar(
+      child: Form(
         key: widget._formState,
         autovalidate: false,
-        child: new SingleChildScrollView(
-          child: new Column(
+        child: SingleChildScrollView(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              new SwitchFormField(
+              SwitchFormField(
                 label: Messages.of(context).timercountup,
                 initialValue: widget._periodTime.timeCountUp,
                 onSaved: (bool value) => widget._periodTime.timeCountUp = value,

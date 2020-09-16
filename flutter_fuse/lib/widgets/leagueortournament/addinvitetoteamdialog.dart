@@ -6,14 +6,14 @@ import 'package:flutter_fuse/services/validations.dart';
 import 'package:fusemodel/blocs.dart';
 
 class AddInviteToTeamDialog extends Dialog {
-  final TextEditingController _controller = new TextEditingController();
+  final TextEditingController _controller = TextEditingController();
   final Validations validations = Validations();
 
   static Future<bool> showAddTeamInviteDialog(
       BuildContext context, SingleLeagueOrTournamentTeamBloc leagueTeam) async {
     String email = await showDialog<String>(
         context: context,
-        builder: (BuildContext context) => new AddInviteToTeamDialog());
+        builder: (BuildContext context) => AddInviteToTeamDialog());
     if (email == null) {
       return false;
     }
@@ -28,7 +28,7 @@ class AddInviteToTeamDialog extends Dialog {
       String leagueTeamUid) async {
     String email = await showDialog<String>(
         context: context,
-        builder: (BuildContext context) => new AddInviteToTeamDialog());
+        builder: (BuildContext context) => AddInviteToTeamDialog());
     if (email == null) {
       return false;
     }
@@ -64,7 +64,7 @@ class AddInviteToTeamDialog extends Dialog {
             autofocus: true,
             controller: _controller,
             keyboardType: TextInputType.emailAddress,
-            decoration: new InputDecoration(
+            decoration: InputDecoration(
               labelText: Messages.of(context).email,
             ),
           ),
@@ -84,7 +84,7 @@ class AddInviteToTeamDialog extends Dialog {
                 } else {
                   showDialog<bool>(
                     context: context,
-                    builder: (BuildContext context) => new AlertDialog(
+                    builder: (BuildContext context) => AlertDialog(
                       title: Text(Messages.of(context).invalidemail),
                       content: Text(Messages.of(context).invalidemail),
                       actions: <Widget>[
@@ -114,6 +114,6 @@ class AddInviteToTeamDialog extends Dialog {
       ),
     );
 
-    return new Dialog(child: dialogChild);
+    return Dialog(child: dialogChild);
   }
 }

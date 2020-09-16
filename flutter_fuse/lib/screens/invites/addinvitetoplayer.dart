@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 
+import '../../services/messages.dart';
 import '../../widgets/blocs/singleplayerprovider.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 // Shows the current invites pending for this user.
 class AddInviteToPlayerScreen extends StatefulWidget {
@@ -14,21 +14,18 @@ class AddInviteToPlayerScreen extends StatefulWidget {
 
   @override
   _AddInviteToPlayerScreenState createState() {
-    return new _AddInviteToPlayerScreenState();
+    return _AddInviteToPlayerScreenState();
   }
 }
 
 class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _email;
   AddInviteBloc addInviteBloc;
 
-  static const String newAddInvite = 'new';
-
   void showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   @override
@@ -61,15 +58,15 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
         builder: (BuildContext context, SinglePlayerBloc playerBloc) =>
             Scaffold(
           key: _scaffoldKey,
-          appBar: new AppBar(
-            title: new Text(messages.followplayer(
+          appBar: AppBar(
+            title: Text(messages.followplayer(
                 playerBloc.state?.player?.name ?? messages.loading)),
             actions: <Widget>[
-              new FlatButton(
+              FlatButton(
                 onPressed: () {
                   _savePressed(playerBloc.state);
                 },
-                child: new Text(
+                child: Text(
                   Messages.of(context).savebuttontext,
                   style: Theme.of(context)
                       .textTheme
@@ -96,15 +93,15 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
                 builder: (BuildContext context, SinglePlayerState state) {
                   if (state is SinglePlayerLoaded) {
                     return Scrollbar(
-                      child: new SingleChildScrollView(
+                      child: SingleChildScrollView(
                         child: SavingOverlay(
                           saving: addState is AddItemSaving,
                           child: Form(
                             key: _formKey,
-                            child: new Column(
+                            child: Column(
                               children: <Widget>[
-                                new TextFormField(
-                                  decoration: new InputDecoration(
+                                TextFormField(
+                                  decoration: InputDecoration(
                                     labelText: messages.email,
                                     hintText: messages.playeremailHint,
                                   ),

@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'messages.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import 'messages.dart';
 
 class Validations {
   String validateName(BuildContext context, String value) {
     if (value.isEmpty) {
       return Messages.of(context).namerequired;
     }
-    final RegExp nameExp = new RegExp(r'^[A-za-z ]+$');
+    final RegExp nameExp = RegExp(r'^[A-za-z ]+$');
     if (!nameExp.hasMatch(value)) {
-      return Messages
-          .of(context)
-          .invalidname;
+      return Messages.of(context).invalidname;
     }
     return null;
   }
@@ -27,7 +26,7 @@ class Validations {
     if (value.isEmpty) {
       return Messages.of(context).emailrequired;
     }
-    final RegExp nameExp = new RegExp(r'^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$');
+    final RegExp nameExp = RegExp(r'^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$');
     if (!nameExp.hasMatch(value)) {
       return Messages.of(context).invalidemail;
     }

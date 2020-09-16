@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/byusername.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../../widgets/util/byusername.dart';
+import '../../widgets/util/leagueimage.dart';
 import 'dialog/deleteinvite.dart';
 
+///
+/// Accept the invite to the leage, displaying the invite and accept flow.
+///
 class AcceptInviteToLeagueScreen extends StatefulWidget {
+  /// Constructor.
   AcceptInviteToLeagueScreen(this._inviteUid);
 
   final String _inviteUid;
 
   @override
   _AcceptInviteToLeagueScreenState createState() {
-    return new _AcceptInviteToLeagueScreenState();
+    return _AcceptInviteToLeagueScreenState();
   }
 }
 
@@ -28,6 +32,7 @@ class _AcceptInviteToLeagueScreenState
     super.initState();
     // Default to empty.
     _singleInviteBloc = SingleInviteBloc(
+        db: RepositoryProvider.of<DatabaseUpdateModel>(context),
         analytisSubsystem: RepositoryProvider.of<AnalyticsSubsystem>(context),
         inviteUid: widget._inviteUid,
         teamBloc: BlocProvider.of<TeamBloc>(context),
@@ -51,12 +56,12 @@ class _AcceptInviteToLeagueScreenState
 
     ThemeData theme = Theme.of(context);
 
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).league),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Messages.of(context).league),
       ),
-      body: new Scrollbar(
-        child: new SingleChildScrollView(
+      body: Scrollbar(
+        child: SingleChildScrollView(
           child: BlocBuilder(
             cubit: _singleInviteBloc,
             builder: (BuildContext context, SingleInviteState state) {
@@ -70,35 +75,35 @@ class _AcceptInviteToLeagueScreenState
 
                 return Column(
                   children: <Widget>[
-                    new ListTile(
+                    ListTile(
                       leading: LeagueImage(
                         leagueOrTournamentUid: inviteToLeagueAsAdmin.leagueUid,
                         width: 50.0,
                         height: 50.0,
                       ),
-                      title: new Text(inviteToLeagueAsAdmin.leagueName),
-                      subtitle: new ByUserNameComponent(
+                      title: Text(inviteToLeagueAsAdmin.leagueName),
+                      subtitle: ByUserNameComponent(
                           userId: inviteToLeagueAsAdmin.sentByUid),
                     ),
-                    new ButtonBar(
+                    ButtonBar(
                       children: <Widget>[
-                        new RaisedButton(
+                        RaisedButton(
                           onPressed: _savePressed,
-                          child: new Text(messages.joinleague),
+                          child: Text(messages.joinleague),
                           color: theme.accentColor,
                           textColor: Colors.white,
                         ),
-                        new FlatButton(
+                        FlatButton(
                           onPressed: () => Navigator.pushNamed(
                               context,
                               "/League/Main/" +
                                   inviteToLeagueAsAdmin.leagueUid),
                           child: Text(messages.openbutton),
                         ),
-                        new FlatButton(
+                        FlatButton(
                           onPressed: () =>
                               showDeleteInvite(context, _singleInviteBloc),
-                          child: new Icon(Icons.delete),
+                          child: Icon(Icons.delete),
                         ),
                       ],
                     ),
@@ -109,7 +114,7 @@ class _AcceptInviteToLeagueScreenState
           ),
         ),
       ),
-      floatingActionButton: new FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () => _savePressed(),
         child: const Icon(Icons.check),
       ),

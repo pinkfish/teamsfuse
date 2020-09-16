@@ -3,16 +3,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/blocs/singleprofileprovider.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:flutter_fuse/widgets/util/userimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../services/messages.dart';
+import '../../services/validations.dart';
+import '../../widgets/blocs/singleprofileprovider.dart';
+import '../../widgets/util/ensurevisiblewhenfocused.dart';
+import '../../widgets/util/savingoverlay.dart';
+import '../../widgets/util/userimage.dart';
 
 class EditProfileScreen extends StatefulWidget {
   EditProfileScreen(this.meUid);
@@ -21,17 +22,17 @@ class EditProfileScreen extends StatefulWidget {
 
   @override
   EditProfileScreenState createState() {
-    return new EditProfileScreenState();
+    return EditProfileScreenState();
   }
 }
 
 class EditProfileScreenState extends State<EditProfileScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autovalidate = false;
-  Validations _validations = new Validations();
-  ScrollController _scrollController = new ScrollController();
-  FocusNode _focusNode = new FocusNode();
+  Validations _validations = Validations();
+  ScrollController _scrollController = ScrollController();
+  FocusNode _focusNode = FocusNode();
   File _imageFile;
   bool _changedImage = false;
   StreamSubscription<UserData> streamListen;
@@ -62,14 +63,13 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildImage(SingleProfileState profileState) {
     if (!_changedImage) {
-      return new UserImage(profileState.profile);
+      return UserImage(profileState.profile);
     }
-    return new Image.file(_imageFile);
+    return Image.file(_imageFile);
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed(BuildContext context, SingleProfileState profileState,
@@ -104,15 +104,15 @@ class EditProfileScreenState extends State<EditProfileScreen> {
           cubit: profileBloc,
           builder: (BuildContext context, SingleProfileState profileState) {
             return Scaffold(
-              appBar: new AppBar(
-                title: new Text(Messages.of(context).title),
+              appBar: AppBar(
+                title: Text(Messages.of(context).title),
                 key: _scaffoldKey,
                 actions: <Widget>[
-                  new FlatButton(
+                  FlatButton(
                     onPressed: () {
                       _savePressed(context, profileState, profileBloc);
                     },
-                    child: new Text(
+                    child: Text(
                       Messages.of(context).savebuttontext,
                       style: Theme.of(context)
                           .textTheme
@@ -125,30 +125,30 @@ class EditProfileScreenState extends State<EditProfileScreen> {
               body: SavingOverlay(
                 saving: profileState is SingleProfileSaving,
                 child: Scrollbar(
-                  child: new SingleChildScrollView(
+                  child: SingleChildScrollView(
                     scrollDirection: Axis.vertical,
                     controller: _scrollController,
-                    child: new Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        new Form(
+                        Form(
                           key: _formKey,
                           autovalidate: _autovalidate,
-                          child: new DropdownButtonHideUnderline(
-                            child: new Column(
+                          child: DropdownButtonHideUnderline(
+                            child: Column(
                               children: <Widget>[
-                                new IconButton(
+                                IconButton(
                                   onPressed: _selectImage,
                                   iconSize: (screenSize.width < 500)
                                       ? 120.0
                                       : (screenSize.width / 4) + 12.0,
                                   icon: _buildImage(profileState),
                                 ),
-                                new EnsureVisibleWhenFocused(
+                                EnsureVisibleWhenFocused(
                                   focusNode: _focusNode,
-                                  child: new TextFormField(
-                                    decoration: new InputDecoration(
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
                                       icon: const Icon(Icons.person),
                                       hintText:
                                           Messages.of(context).displayname,
@@ -168,10 +168,10 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                                     },
                                   ),
                                 ),
-                                new EnsureVisibleWhenFocused(
+                                EnsureVisibleWhenFocused(
                                   focusNode: _focusNode,
-                                  child: new TextFormField(
-                                    decoration: new InputDecoration(
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
                                       icon: const Icon(Icons.phone),
                                       hintText:
                                           Messages.of(context).phonenumber,

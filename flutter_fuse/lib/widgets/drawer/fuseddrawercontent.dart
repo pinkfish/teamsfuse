@@ -1,12 +1,11 @@
+import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/approuter.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/teams/teamtile.dart';
 import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:fluro/fluro.dart' as fluro;
 
 import 'fuseddrawer.dart';
 import 'fuseddrawerheader.dart';
@@ -22,17 +21,17 @@ class FusedDrawerContent extends StatelessWidget {
     for (Club club in state.clubs.values) {
       if (club.isMember()) {
         data.add(
-           ListTile(
+          ListTile(
             leading: const Icon(CommunityIcons.cardsClub),
-            title:  RichText(
-              text:  TextSpan(
+            title: RichText(
+              text: TextSpan(
                 text: club.name,
                 style: Theme.of(context)
                     .textTheme
                     .subhead
                     .copyWith(fontWeight: FontWeight.bold, fontSize: 17.0),
                 children: <TextSpan>[
-                   TextSpan(
+                  TextSpan(
                       text: club.isAdmin()
                           ? "\n" + Messages.of(context).administrator
                           : "",
@@ -48,29 +47,29 @@ class FusedDrawerContent extends StatelessWidget {
                 cubit: BlocProvider.of<TeamBloc>(context),
                 builder: (BuildContext build, TeamState state) {
                   //if (snap.hasData) {
-                  return  Text(
+                  return Text(
                     Messages.of(context).teamnumbers(state.playerTeams.length),
                   );
                   /*}
                   //if (club.cachedTeams != null) {
-                    return new Text(
+                    return Text(
                       Messages.of(context).teamnumbers(state.clubTeams.length),
                     );
                   //}
-                  return new Text(Messages.of(context).loading);
+                  return Text(Messages.of(context).loading);
                   */
                 }),
             onTap: () {
               Navigator.pop(context);
-              RepositoryProvider.of<fluro.Router>(context).
-              navigateTo(context, "Club/" + club.uid,
+              RepositoryProvider.of<fluro.Router>(context).navigateTo(
+                  context, "Club/" + club.uid,
                   transition: fluro.TransitionType.inFromRight);
             },
           ),
         );
       }
     }
-    return  Column(children: data);
+    return Column(children: data);
   }
 
   Widget _buildTeamSection(BuildContext context, TeamState state) {
@@ -83,7 +82,7 @@ class FusedDrawerContent extends StatelessWidget {
         if (team.clubUid == null ||
             !clubBloc.state.clubs.containsKey(team.clubUid)) {
           data.add(
-             TeamTile(
+            TeamTile(
               team.uid,
               popBeforeNavigate: true,
               showIconForTeam: true,
@@ -93,71 +92,71 @@ class FusedDrawerContent extends StatelessWidget {
       }
     }
     data.add(
-       ListTile(
+      ListTile(
         leading: const Icon(CommunityIcons.teamviewer),
-        title:  Text(
+        title: Text(
           Messages.of(context).allteamsbbutton,
           style: Theme.of(context).textTheme.button,
         ),
         onTap: () => Navigator.popAndPushNamed(context, "AllTeams"),
       ),
     );
-    return  Column(children: data);
+    return Column(children: data);
   }
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> children = <Widget>[
-       FusedDrawerHeader(),
-       BlocBuilder(
+      FusedDrawerHeader(),
+      BlocBuilder(
         cubit: BlocProvider.of<ClubBloc>(context),
         builder: (BuildContext context, ClubState state) {
           return _buildClubSection(context, state);
         },
       ),
-       BlocBuilder(
+      BlocBuilder(
         cubit: BlocProvider.of<TeamBloc>(context),
         builder: (BuildContext context, TeamState state) {
           return _buildTeamSection(context, state);
         },
       ),
-       Divider(),
+      Divider(),
       mode == DrawerMode.gameList
-          ?  ListTile(
+          ? ListTile(
               leading: const Icon(Icons.people_outline),
-              title:  Text(Messages.of(context).leaguetournament),
+              title: Text(Messages.of(context).leaguetournament),
               onTap: () {
                 Navigator.popAndPushNamed(context, "/League/Home");
               },
             )
-          :  ListTile(
+          : ListTile(
               leading: const Icon(Icons.list),
-              title: new Text(Messages.of(context).allgames),
+              title: Text(Messages.of(context).allgames),
               onTap: () {
                 Navigator.popAndPushNamed(context, "/Home");
               },
             ),
-       Divider(),
-       ListTile(
+      Divider(),
+      ListTile(
         leading: const Icon(Icons.people_outline),
-        title:  Text(Messages.of(context).players),
+        title: Text(Messages.of(context).players),
         onTap: () {
           Navigator.popAndPushNamed(context, "/Players");
         },
       ),
-       ListTile(
+      ListTile(
         leading: const Icon(Icons.exit_to_app),
-        title:  Text(Messages.of(context).signout),
+        title: Text(Messages.of(context).signout),
         onTap: () async {
           OverlayState overlayState = Overlay.of(context);
           OverlayEntry overlayEntry =
-               OverlayEntry(builder: (BuildContext context) {
-            return new Positioned(
+              OverlayEntry(builder: (BuildContext context) {
+            return Positioned(
               top: 50.0,
               left: 50.0,
-              child:  Material(
+              child: Material(
                 color: Colors.transparent,
-                child:  Icon(Icons.warning, color: Colors.purple),
+                child: Icon(Icons.warning, color: Colors.purple),
               ),
             );
           });
@@ -175,21 +174,21 @@ class FusedDrawerContent extends StatelessWidget {
               context, "/Login/Home", (Route<dynamic> d) => false);
         },
       ),
-       ListTile(
+      ListTile(
         leading: const Icon(Icons.settings),
-        title:  Text(Messages.of(context).settings),
+        title: Text(Messages.of(context).settings),
         onTap: () {
           Navigator.popAndPushNamed(context, "/Settings");
         },
       ),
-       ListTile(
+      ListTile(
         leading: const Icon(Icons.help),
-        title: new Text(Messages.of(context).about),
+        title: Text(Messages.of(context).about),
         onTap: () {
           Navigator.popAndPushNamed(context, "/About");
         },
       ),
     ];
-    return  ListView(children: children);
+    return ListView(children: children);
   }
 }

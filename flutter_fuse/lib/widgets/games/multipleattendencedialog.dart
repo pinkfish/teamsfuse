@@ -9,8 +9,8 @@ class MultipleAttendanceDialog extends StatefulWidget {
 
   @override
   MultipleAttendanceDialogState createState() {
-    return new MultipleAttendanceDialogState(
-        new Map<Player, Attendance>.from(attendance));
+    return MultipleAttendanceDialogState(
+        Map<Player, Attendance>.from(attendance));
   }
 }
 
@@ -18,31 +18,31 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
   MultipleAttendanceDialogState(this._attendance);
 
   Map<Player, Attendance> _attendance;
-  Set<Player> _changed = new Set<Player>();
+  Set<Player> _changed = Set<Player>();
 
   List<Widget> _buildAttendenceSet(BuildContext context) {
     List<Widget> ret = <Widget>[];
 
     ThemeData theme = Theme.of(context);
-    BoxDecoration selected = new BoxDecoration(
+    BoxDecoration selected = BoxDecoration(
       color: theme.highlightColor,
     );
 
     _attendance.forEach((Player player, Attendance attend) {
       ret.add(
-        new Row(
+        Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            new Expanded(child: new Text(player.name)),
-            new Container(
+            Expanded(child: Text(player.name)),
+            Container(
               width: 150.0,
-              child: new Row(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
-                  new Container(
+                  Container(
                     decoration: (attend == Attendance.Yes ? selected : null),
-                    child: new IconButton(
+                    child: IconButton(
                       iconSize: 24.0,
                       onPressed: () {
                         setState(() {
@@ -51,12 +51,12 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
                         });
                       },
                       padding: EdgeInsets.zero,
-                      icon: new Icon(Icons.check, color: theme.accentColor),
+                      icon: Icon(Icons.check, color: theme.accentColor),
                     ),
                   ),
-                  new Container(
+                  Container(
                     decoration: (attend == Attendance.No ? selected : null),
-                    child: new IconButton(
+                    child: IconButton(
                       iconSize: 24.0,
                       onPressed: () {
                         setState(() {
@@ -65,12 +65,12 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
                         });
                       },
                       padding: EdgeInsets.zero,
-                      icon: new Icon(Icons.clear, color: theme.errorColor),
+                      icon: Icon(Icons.clear, color: theme.errorColor),
                     ),
                   ),
-                  new Container(
+                  Container(
                     decoration: (attend == Attendance.Maybe ? selected : null),
-                    child: new IconButton(
+                    child: IconButton(
                       iconSize: 24.0,
                       onPressed: () {
                         setState(() {
@@ -79,7 +79,7 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
                         });
                       },
                       padding: EdgeInsets.zero,
-                      icon: new Icon(Icons.help, color: theme.disabledColor),
+                      icon: Icon(Icons.help, color: theme.disabledColor),
                     ),
                   ),
                 ],
@@ -108,32 +108,32 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return new Dialog(
-      child: new IntrinsicWidth(
+    return Dialog(
+      child: IntrinsicWidth(
         stepWidth: 56.0,
-        child: new ConstrainedBox(
+        child: ConstrainedBox(
           constraints: const BoxConstraints(minWidth: 280.0),
-          child: new Column(
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              new Padding(
+              Padding(
                 padding:
                     const EdgeInsetsDirectional.fromSTEB(24.0, 24.0, 24.0, 0.0),
-                child: new DefaultTextStyle(
+                child: DefaultTextStyle(
                     style: Theme.of(context).textTheme.title,
-                    child: new Text(Messages.of(context).attendanceselect)),
+                    child: Text(Messages.of(context).attendanceselect)),
               ),
-              new Flexible(
-                child: new SingleChildScrollView(
+              Flexible(
+                child: SingleChildScrollView(
                   padding: const EdgeInsetsDirectional.fromSTEB(
                       12.0, 12.0, 0.0, 16.0),
-                  child: new ListBody(children: _buildAttendenceSet(context)),
+                  child: ListBody(children: _buildAttendenceSet(context)),
                 ),
               ),
-              new FlatButton(
+              FlatButton(
                   onPressed: _saveDialog,
-                  child: new Text(Messages.of(context).savebuttontext))
+                  child: Text(Messages.of(context).savebuttontext))
             ],
           ),
         ),

@@ -11,26 +11,26 @@ Future<GameResultDetailsBuilder> changeScoreDialog(
     BuildContext context, GameResultDetails details) async {
   Messages mess = Messages.of(context);
   GlobalKey<_ChangeScoreState> detailsState =
-      new GlobalKey<_ChangeScoreState>();
+      GlobalKey<_ChangeScoreState>();
 
   GameResultDetailsBuilder result = await showDialog<GameResultDetailsBuilder>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(mess.changescore),
-          content: new _ChangeScore(details.toBuilder(), detailsState),
+        return AlertDialog(
+          title: Text(mess.changescore),
+          content: _ChangeScore(details.toBuilder(), detailsState),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(detailsState.currentState.save());
               },
             ),
-            new FlatButton(
+            FlatButton(
               child:
-                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+                  Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(null);
               },
@@ -46,11 +46,11 @@ class _ChangeScore extends StatefulWidget {
       : super(key: key);
 
   final GameResultDetailsBuilder _details;
-  final GlobalKey<FormState> _formState = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formState = GlobalKey<FormState>();
 
   @override
   State createState() {
-    return new _ChangeScoreState();
+    return _ChangeScoreState();
   }
 }
 
@@ -64,23 +64,23 @@ class _ChangeScoreState extends State<_ChangeScore> {
     List<Widget> ret = <Widget>[];
     for (GamePeriod period in widget._details.scores.build().keys) {
       GameResultPerPeriod result = widget._details.scores[period];
-      ret.add(new Text(
+      ret.add(Text(
         Messages.of(context).periodname(result.period),
         style: Theme.of(context)
             .textTheme
             .subhead
             .copyWith(fontWeight: FontWeight.bold),
       ));
-      ret.add(new Row(
+      ret.add(Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          new Text(Messages.of(context).forpts),
-          new SizedBox(
+          Text(Messages.of(context).forpts),
+          SizedBox(
             width: 5.0,
           ),
-          new SizedBox(
+          SizedBox(
             width: 40.0,
-            child: new TextFormField(
+            child: TextFormField(
               keyboardType: TextInputType.number,
               initialValue: result.score.ptsFor.toString(),
               onSaved: (String str) {
@@ -91,13 +91,13 @@ class _ChangeScoreState extends State<_ChangeScore> {
               },
             ),
           ),
-          new Text(Messages.of(context).againstpts),
-          new SizedBox(
+          Text(Messages.of(context).againstpts),
+          SizedBox(
             width: 5.0,
           ),
-          new SizedBox(
+          SizedBox(
             width: 40.0,
-            child: new TextFormField(
+            child: TextFormField(
               keyboardType: TextInputType.number,
               initialValue: result.score.ptsAgainst.toString(),
               onSaved: (String str) {
@@ -116,12 +116,12 @@ class _ChangeScoreState extends State<_ChangeScore> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scrollbar(
-      child: new Form(
+    return Scrollbar(
+      child: Form(
         key: widget._formState,
         autovalidate: false,
-        child: new SingleChildScrollView(
-          child: new Column(
+        child: SingleChildScrollView(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,

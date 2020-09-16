@@ -18,17 +18,17 @@ class EditClubDetailsForm extends StatefulWidget {
 
   @override
   EditClubDetailsFormState createState() {
-    return new EditClubDetailsFormState();
+    return EditClubDetailsFormState();
   }
 }
 
 class EditClubDetailsFormState extends State<EditClubDetailsForm> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _autovalidate = false;
-  Validations _validations = new Validations();
-  ScrollController _scrollController = new ScrollController();
-  FocusNode _focusNodeName = new FocusNode();
-  FocusNode _focusNodeArriveBefore = new FocusNode();
+  Validations _validations = Validations();
+  ScrollController _scrollController = ScrollController();
+  FocusNode _focusNodeName = FocusNode();
+  FocusNode _focusNodeArriveBefore = FocusNode();
   File _imageFile;
   bool _changedImage = false;
   String _clubName;
@@ -62,7 +62,7 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
         ..arriveBeforeGame = _clubArriveBefore
         ..trackAttendence = _clubTrackAttendence;
 
-      // New club, add in the default admin.
+      // club, add in the default admin.
       if (club.uid == null) {
         AuthenticationBloc bloc = BlocProvider.of<AuthenticationBloc>(context);
         club.membersData[bloc.currentUser.uid] =
@@ -90,30 +90,30 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
 
   Widget _buildImage() {
     if (!_changedImage) {
-      return new ClubImage(clubUid: widget.club.uid);
+      return ClubImage(clubUid: widget.club.uid);
     }
-    return new Image.file(_imageFile);
+    return Image.file(_imageFile);
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.club == null) {
-      return new Text('Invalid state');
+      return Text('Invalid state');
     }
 
     final Size screenSize = MediaQuery.of(context).size;
 
     List<Widget> fields = <Widget>[
-      new IconButton(
+      IconButton(
         onPressed: _selectImage,
         iconSize:
             (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,
         icon: _buildImage(),
       ),
-      new EnsureVisibleWhenFocused(
+      EnsureVisibleWhenFocused(
         focusNode: _focusNodeName,
-        child: new TextFormField(
-          decoration: new InputDecoration(
+        child: TextFormField(
+          decoration: InputDecoration(
             icon: const Icon(Icons.event_note),
             hintText: Messages.of(context).team,
             labelText: Messages.of(context).teamnamehint,
@@ -130,10 +130,10 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
           },
         ),
       ),
-      new EnsureVisibleWhenFocused(
+      EnsureVisibleWhenFocused(
         focusNode: _focusNodeArriveBefore,
-        child: new TextFormField(
-          decoration: new InputDecoration(
+        child: TextFormField(
+          decoration: InputDecoration(
             icon: const Icon(Icons.timer),
             hintText: Messages.of(context).arrivebeforehint,
             labelText: Messages.of(context).arrivebeforelabel,
@@ -149,18 +149,18 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
       ),
     ];
 
-    return new SingleChildScrollView(
+    return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       controller: _scrollController,
-      child: new Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          new Form(
+          Form(
             key: _formKey,
             autovalidate: _autovalidate,
-            child: new DropdownButtonHideUnderline(
-              child: new Column(children: fields),
+            child: DropdownButtonHideUnderline(
+              child: Column(children: fields),
             ),
           ),
         ],

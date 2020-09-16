@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/addinvitetoteamdialog.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteam.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 
+import '../../services/messages.dart';
 import '../../widgets/blocs/singleleagueortournamentprovider.dart';
+import '../../widgets/leagueortournament/addinvitetoteamdialog.dart';
+import '../../widgets/leagueortournament/leagueortournamentteam.dart';
+import '../../widgets/leagueortournament/leagueortournamentteamname.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 class LeagueTeamScreen extends StatelessWidget {
   LeagueTeamScreen(this.leagueUid, this.leagueSeasonUid, this.leagueTeamUid);
@@ -45,13 +45,13 @@ class LeagueTeamScreen extends StatelessWidget {
             if (!(state is SingleLeagueOrTournamentDeleted)) {
               if (state.league.isAdmin()) {
                 actions.add(
-                  new PopupMenuButton<String>(
+                  PopupMenuButton<String>(
                     onSelected: (String str) => _doAction(context, str, bloc),
                     itemBuilder: (BuildContext context) {
                       return <PopupMenuItem<String>>[
-                        new PopupMenuItem<String>(
+                        PopupMenuItem<String>(
                           value: "invite",
-                          child: new Text(Messages.of(context).addteamadmin),
+                          child: Text(Messages.of(context).addteamadmin),
                         ),
                       ];
                     },
@@ -60,8 +60,8 @@ class LeagueTeamScreen extends StatelessWidget {
               }
             }
             return Scaffold(
-              appBar: new AppBar(
-                title: new LeagueOrTournamentTeamName(leagueTeamUid),
+              appBar: AppBar(
+                title: LeagueOrTournamentTeamName(leagueTeamUid),
                 actions: actions,
               ),
               floatingActionButton: fab,

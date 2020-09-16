@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/form/roleinteamformfield.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../../services/validations.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
+import '../../widgets/form/roleinteamformfield.dart';
+import '../../widgets/form/seasonformfield.dart';
+import '../../widgets/util/ensurevisiblewhenfocused.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 class AddPlayerScreen extends StatefulWidget {
   AddPlayerScreen(this._teamUid, this._seasonUid);
@@ -19,28 +19,28 @@ class AddPlayerScreen extends StatefulWidget {
 
   @override
   AddPlayerScreenState createState() {
-    return new AddPlayerScreenState();
+    return AddPlayerScreenState();
   }
 }
 
 class EmailName {
   final GlobalKey<FormFieldState<String>> nameKey =
-      new GlobalKey<FormFieldState<String>>();
+      GlobalKey<FormFieldState<String>>();
   InviteTeamData data;
-  FocusNode focusNodeEmail = new FocusNode();
-  FocusNode focusNodeName = new FocusNode();
+  FocusNode focusNodeEmail = FocusNode();
+  FocusNode focusNodeName = FocusNode();
 }
 
 class AddPlayerScreenState extends State<AddPlayerScreen> {
-  final Validations _validations = new Validations();
+  final Validations _validations = Validations();
   List<EmailName> _emailNames = <EmailName>[];
   bool autovalidate = false;
   String _curSeasonUid;
 
   AddInviteBloc addInviteBloc;
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -52,8 +52,8 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(
-      new SnackBar(
-        content: new Text(value),
+      SnackBar(
+        content: Text(value),
       ),
     );
   }
@@ -80,8 +80,8 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
     Messages messages = Messages.of(context);
 
     rows.add(
-      new DropdownButtonHideUnderline(
-        child: new SeasonFormField(
+      DropdownButtonHideUnderline(
+        child: SeasonFormField(
           initialValue: _curSeasonUid,
           teamBloc: singleTeamBloc,
           onSaved: (String value) {
@@ -93,16 +93,16 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
 
     if (_emailNames.length == 0) {
       // Add in the start elements.
-      _emailNames.add(new EmailName());
+      _emailNames.add(EmailName());
     }
     for (EmailName en in _emailNames) {
       rows.add(
-        new EnsureVisibleWhenFocused(
+        EnsureVisibleWhenFocused(
           focusNode: en.focusNodeName,
-          child: new TextFormField(
+          child: TextFormField(
             key: en.nameKey,
             initialValue: '',
-            decoration: new InputDecoration(
+            decoration: InputDecoration(
                 icon: const Icon(Icons.person),
                 labelText: messages.displayname,
                 hintText: messages.displaynamehint),
@@ -119,11 +119,11 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
       );
 
       rows.add(
-        new EnsureVisibleWhenFocused(
+        EnsureVisibleWhenFocused(
           focusNode: en.focusNodeEmail,
-          child: new TextFormField(
+          child: TextFormField(
             initialValue: '',
-            decoration: new InputDecoration(
+            decoration: InputDecoration(
                 icon: const Icon(Icons.email),
                 labelText: messages.email,
                 hintText: messages.playeremailHint),
@@ -137,7 +137,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
                   en.nameKey.currentState.value.isNotEmpty &&
                   en == _emailNames.last) {
                 setState(() {
-                  _emailNames.add(new EmailName());
+                  _emailNames.add(EmailName());
                 });
               }
             },
@@ -149,9 +149,9 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
       );
 
       rows.add(
-        new RoleInTeamFormField(
+        RoleInTeamFormField(
           initialValue: 'none',
-          decoration: new InputDecoration(
+          decoration: InputDecoration(
             icon: const Icon(Icons.message),
             labelText: messages.roleselect,
           ),
@@ -167,22 +167,22 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
       );
     }
 
-    return new SingleChildScrollView(
-      child: new Form(
+    return SingleChildScrollView(
+      child: Form(
         autovalidate: autovalidate,
         key: _formKey,
-        child: new Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            new Scrollbar(
-              child: new SingleChildScrollView(
-                child: new Column(children: rows),
+            Scrollbar(
+              child: SingleChildScrollView(
+                child: Column(children: rows),
               ),
             ),
-            new FlatButton(
+            FlatButton(
               onPressed: () => _handleSubmit(singleTeamBloc.state.team),
-              child: new Text(Messages.of(context).addplayer),
+              child: Text(Messages.of(context).addplayer),
             )
           ],
         ),
@@ -196,8 +196,8 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
       create: (BuildContext context) => addInviteBloc,
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(Messages.of(context).addplayer),
+        appBar: AppBar(
+          title: Text(Messages.of(context).addplayer),
         ),
         body: BlocListener(
           cubit: addInviteBloc,

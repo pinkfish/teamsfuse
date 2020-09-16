@@ -5,13 +5,12 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 
 class AddSeasonDialog extends Dialog {
-  final TextEditingController _controller = new TextEditingController();
+  final TextEditingController _controller = TextEditingController();
 
   static Future<bool> showSeasonDialog(BuildContext context,
       SingleLeagueOrTournamentBloc leagueOrTournamentBloc) async {
     String seasonName = await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => new AddSeasonDialog());
+        context: context, builder: (BuildContext context) => AddSeasonDialog());
     if (seasonName == null) {
       return false;
     }
@@ -46,7 +45,7 @@ class AddSeasonDialog extends Dialog {
             autofocus: true,
             controller: _controller,
             keyboardType: TextInputType.text,
-            decoration: new InputDecoration(
+            decoration: InputDecoration(
               labelText: Messages.of(context).season,
               hintText: Messages.of(context).newseasonhint,
             ),
@@ -76,6 +75,6 @@ class AddSeasonDialog extends Dialog {
       ),
     );
 
-    return new Dialog(child: dialogChild);
+    return Dialog(child: dialogChild);
   }
 }

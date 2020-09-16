@@ -8,10 +8,10 @@ enum Experiments { calendarView }
 
 // Handle the connection to remote config and do experiment controls.
 class AppConfiguration {
-  static AppConfiguration instance = new AppConfiguration();
+  static AppConfiguration instance = AppConfiguration();
 
   RemoteConfig config;
-  Completer<bool> _completer = new Completer<bool>();
+  Completer<bool> _completer = Completer<bool>();
   bool loaded;
   Future<bool> loadingFuture;
   SharedPreferences sharedPreferences;

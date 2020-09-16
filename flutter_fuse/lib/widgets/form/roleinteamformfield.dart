@@ -23,11 +23,11 @@ class RoleInTeamFormField extends FormField<String> {
               final InputDecoration effectiveDecoration = (decoration ??
                       const InputDecoration())
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-              return new InputDecorator(
+              return InputDecorator(
                 decoration:
                     effectiveDecoration.copyWith(errorText: field.errorText),
-                child: new DropdownButton<String>(
-                  hint: new Text(Messages.of(state.context).opponentselect),
+                child: DropdownButton<String>(
+                  hint: Text(Messages.of(state.context).opponentselect),
                   items: state._buildItems(state.context),
                   value: state.value,
                   onChanged: (String val) {
@@ -42,7 +42,7 @@ class RoleInTeamFormField extends FormField<String> {
             });
 
   @override
-  RoleInTeamFormFieldState createState() => new RoleInTeamFormFieldState();
+  RoleInTeamFormFieldState createState() => RoleInTeamFormFieldState();
 }
 
 class RoleInTeamFormFieldState extends FormFieldState<String> {
@@ -52,14 +52,14 @@ class RoleInTeamFormFieldState extends FormFieldState<String> {
 
   List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
-    ret.add(new DropdownMenuItem<String>(
-      child: new Text(Messages.of(context).roleselect),
+    ret.add(DropdownMenuItem<String>(
+      child: Text(Messages.of(context).roleselect),
       value: 'none',
     ));
 
     RoleInTeam.values.forEach((RoleInTeam role) {
-      ret.add(new DropdownMenuItem<String>(
-        child: new Text(Messages.of(context).roleingame(role)),
+      ret.add(DropdownMenuItem<String>(
+        child: Text(Messages.of(context).roleingame(role)),
         value: role.toString(),
       ));
     });

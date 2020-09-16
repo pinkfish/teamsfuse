@@ -1,11 +1,12 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/invites/deleteinvitedialog.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../services/messages.dart';
+import '../../widgets/invites/deleteinvitedialog.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 // Shows the current invites pending for this user.
 class InviteListScreen extends StatefulWidget {
@@ -16,29 +17,28 @@ class InviteListScreen extends StatefulWidget {
         context: context,
         barrierDismissible: false, // user must tap button!
         builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text(mess.deleteinvite),
-            content: new Scrollbar(
-              child: new SingleChildScrollView(
-                child: new ListBody(
+          return AlertDialog(
+            title: Text(mess.deleteinvite),
+            content: Scrollbar(
+              child: SingleChildScrollView(
+                child: ListBody(
                   children: <Widget>[
-                    new Text(mess.confirmdelete(invite)),
+                    Text(mess.confirmdelete(invite)),
                   ],
                 ),
               ),
             ),
             actions: <Widget>[
-              new FlatButton(
-                child:
-                    new Text(MaterialLocalizations.of(context).okButtonLabel),
+              FlatButton(
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   // Do the delete.
                   Navigator.of(context).pop(true);
                 },
               ),
-              new FlatButton(
-                child: new Text(
-                    MaterialLocalizations.of(context).cancelButtonLabel),
+              FlatButton(
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
@@ -63,7 +63,7 @@ class InviteListScreen extends StatefulWidget {
 
   @override
   InviteListScreenState createState() {
-    return new InviteListScreenState();
+    return InviteListScreenState();
   }
 }
 
@@ -118,34 +118,33 @@ class InviteListScreenState extends State<InviteListScreen> {
   Card _buildInviteToTeam(InviteToTeam invite) {
     Messages messages = Messages.of(context);
     ThemeData theme = Theme.of(context);
-    return new Card(
-      child: new ListTile(
-        leading: new IconButton(
+    return Card(
+      child: ListTile(
+        leading: IconButton(
           icon: const Icon(Icons.add),
           color: theme.accentColor,
           onPressed: () {
             _addInviteToTeam(invite);
           },
         ),
-        title: new Text(
+        title: Text(
           messages.teamandseason(invite.teamName, invite.seasonName),
         ),
-        subtitle: new Column(
+        subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const SizedBox(height: 5.0),
-            new Text(Messages.of(context).roleingame(invite.role)),
+            Text(Messages.of(context).roleingame(invite.role)),
             const SizedBox(height: 5.0),
-            new Row(
+            Row(
               children: invite.playerName.map((String name) {
-                return new Chip(
-                    backgroundColor: Colors.lightBlueAccent,
-                    label: new Text(name));
+                return Chip(
+                    backgroundColor: Colors.lightBlueAccent, label: Text(name));
               }).toList(),
             ),
           ],
         ),
-        trailing: new IconButton(
+        trailing: IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
             _deleteInvite(invite);
@@ -157,18 +156,18 @@ class InviteListScreenState extends State<InviteListScreen> {
 
   Card _buildInviteAsAdmin(InviteAsAdmin invite) {
     ThemeData theme = Theme.of(context);
-    return new Card(
-      child: new ListTile(
-        leading: new IconButton(
+    return Card(
+      child: ListTile(
+        leading: IconButton(
           icon: const Icon(Icons.add),
           color: theme.accentColor,
           onPressed: () {
             _addInviteAsAdmin(invite);
           },
         ),
-        title: new Text(invite.teamName),
-        subtitle: new Text(Messages.of(context).administrator),
-        trailing: new IconButton(
+        title: Text(invite.teamName),
+        subtitle: Text(Messages.of(context).administrator),
+        trailing: IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
             _deleteInvite(invite);
@@ -180,17 +179,17 @@ class InviteListScreenState extends State<InviteListScreen> {
 
   Card _buildInviteToClub(InviteToClub invite) {
     ThemeData theme = Theme.of(context);
-    return new Card(
-      child: new ListTile(
-        leading: new IconButton(
+    return Card(
+      child: ListTile(
+        leading: IconButton(
           icon: const Icon(Icons.add),
           color: theme.accentColor,
           onPressed: () {
             _addInviteToClub(invite);
           },
         ),
-        title: new Text(invite.clubName),
-        trailing: new IconButton(
+        title: Text(invite.clubName),
+        trailing: IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
             _deleteInvite(invite);
@@ -202,16 +201,16 @@ class InviteListScreenState extends State<InviteListScreen> {
 
   Card _buildInviteToPlayer(InviteToPlayer invite) {
     ThemeData theme = Theme.of(context);
-    return new Card(
-      child: new ListTile(
-        leading: new IconButton(
+    return Card(
+      child: ListTile(
+        leading: IconButton(
           icon: const Icon(Icons.add),
           color: theme.accentColor,
           onPressed: () => _addInviteToPlayer(invite),
         ),
         onTap: () => _addInviteToPlayer(invite),
-        title: new Text(Messages.of(context).followplayer(invite.playerName)),
-        trailing: new IconButton(
+        title: Text(Messages.of(context).followplayer(invite.playerName)),
+        trailing: IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () => _deleteInvite(invite),
         ),
@@ -221,18 +220,18 @@ class InviteListScreenState extends State<InviteListScreen> {
 
   Card _buildInviteToLeague(InviteToLeagueAsAdmin invite) {
     ThemeData theme = Theme.of(context);
-    return new Card(
-      child: new ListTile(
-        leading: new IconButton(
+    return Card(
+      child: ListTile(
+        leading: IconButton(
           icon: const Icon(Icons.add),
           color: theme.accentColor,
           onPressed: () {
             _addInviteToLeague(invite);
           },
         ),
-        title: new Text(invite.leagueName),
+        title: Text(invite.leagueName),
         subtitle: Text(Messages.of(context).leaguetournament),
-        trailing: new IconButton(
+        trailing: IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
             _deleteInvite(invite);
@@ -244,16 +243,16 @@ class InviteListScreenState extends State<InviteListScreen> {
 
   Card _buildInviteToLeagueTeam(InviteToLeagueTeam invite) {
     ThemeData theme = Theme.of(context);
-    return new Card(
-      child: new ListTile(
-        leading: new IconButton(
+    return Card(
+      child: ListTile(
+        leading: IconButton(
           icon: const Icon(Icons.add),
           color: theme.accentColor,
           onPressed: () {
             _addInviteToLeagueTeam(invite);
           },
         ),
-        title: new Text(invite.leagueTeamName),
+        title: Text(invite.leagueTeamName),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -261,7 +260,7 @@ class InviteListScreenState extends State<InviteListScreen> {
             Text(Messages.of(context).leaguetournament),
           ],
         ),
-        trailing: new IconButton(
+        trailing: IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
             _deleteInvite(invite);
@@ -274,10 +273,10 @@ class InviteListScreenState extends State<InviteListScreen> {
   List<Widget> _buildInviteList(BuiltMap<String, Invite> invites) {
     List<Widget> inviteWidgets = <Widget>[];
     if (invites.length == 0) {
-      inviteWidgets.add(new SizedBox(height: 50.0));
+      inviteWidgets.add(SizedBox(height: 50.0));
       inviteWidgets.add(
-        new Center(
-          child: new Text(
+        Center(
+          child: Text(
             Messages.of(context).noinvites,
             style: Theme.of(context).textTheme.display1,
           ),
@@ -312,12 +311,12 @@ class InviteListScreenState extends State<InviteListScreen> {
   Widget build(BuildContext context) {
     InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
 
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).invite),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Messages.of(context).invite),
       ),
-      body: new Scrollbar(
-        child: new SingleChildScrollView(
+      body: Scrollbar(
+        child: SingleChildScrollView(
           child: BlocListener(
             cubit: inviteBloc,
             listener: (BuildContext context, InviteState state) {

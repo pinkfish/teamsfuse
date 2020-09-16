@@ -32,7 +32,7 @@ class TournamentOrLeagueTeamPicker extends StatefulWidget {
 
   @override
   _TournamentOrLeagueTeamPickerState createState() {
-    return new _TournamentOrLeagueTeamPickerState();
+    return _TournamentOrLeagueTeamPickerState();
   }
 }
 
@@ -44,14 +44,14 @@ class _TournamentOrLeagueTeamPickerState
       Iterable<LeagueOrTournamentTeam> teams) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     if (widget.includeAll) {
-      ret.add(new DropdownMenuItem<String>(
+      ret.add(DropdownMenuItem<String>(
         child: Text(Messages.of(context).allteams),
         value: TournamentOrLeagueTeamPicker.all,
       ));
     }
     for (LeagueOrTournamentTeam team in teams) {
-      ret.add(new DropdownMenuItem<String>(
-        child: new Text(team.name),
+      ret.add(DropdownMenuItem<String>(
+        child: Text(team.name),
         value: team.uid,
       ));
     }
@@ -60,8 +60,8 @@ class _TournamentOrLeagueTeamPickerState
 
   @override
   Widget build(BuildContext context) {
-    return new InputDecorator(
-      decoration: new InputDecoration(
+    return InputDecorator(
+      decoration: InputDecoration(
         labelText: Messages.of(context).team,
         labelStyle: widget.selectedTitle
             ? Theme.of(context)
@@ -87,26 +87,26 @@ class _TournamentOrLeagueTeamPickerState
                       color: Theme.of(context).disabledColor, height: 3.0),
                 );
               }
-              return new Text(
+              return Text(
                 Messages.of(context).loading,
                 style: Theme.of(context).textTheme.body1.copyWith(height: 3.0),
               );
             }
-            return new Row(
+            return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                new Expanded(
+                Expanded(
                   flex: 1,
                   child: widget.disabled
-                      ? new Text(
+                      ? Text(
                           Messages.of(context).teamselect,
                           style: Theme.of(context).textTheme.body1.copyWith(
                               color: Theme.of(context).disabledColor,
                               height: 3.0),
                         )
-                      : new DropdownButton<String>(
-                          hint: new Text(Messages.of(context).teamselect),
+                      : DropdownButton<String>(
+                          hint: Text(Messages.of(context).teamselect),
                           items: _buildItems(state.teams.values),
                           value: widget.initialTeamUid,
                           onChanged: (String val) {

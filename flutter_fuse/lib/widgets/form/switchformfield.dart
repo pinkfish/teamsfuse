@@ -37,23 +37,23 @@ class SwitchFormField extends FormField<bool> {
                   color: Theme.of(field.context).disabledColor);
             }
 
-            return new Row(
+            return Row(
               children: <Widget>[
-                new Container(
-                  padding: new EdgeInsets.only(left: 15.0, right: 30.0),
-                  child: new Icon(
+                Container(
+                  padding: EdgeInsets.only(left: 15.0, right: 30.0),
+                  child: Icon(
                     icon,
                     color: _getDefaultIconColor(Theme.of(field.context)),
                   ),
                 ),
-                new Expanded(
+                Expanded(
                   child: child ??
-                      new Text(
+                      Text(
                         label,
                         style: textStyle,
                       ),
                 ),
-                new Switch(
+                Switch(
                   value: state.value,
                   onChanged: onChanged,
                 ),
@@ -74,7 +74,7 @@ class SwitchFormField extends FormField<bool> {
   }
 
   @override
-  _SwitchFormFieldState createState() => new _SwitchFormFieldState();
+  _SwitchFormFieldState createState() => _SwitchFormFieldState();
 }
 
 class _SwitchFormFieldState extends FormFieldState<bool> {}

@@ -32,8 +32,8 @@ class TeamPicker extends StatelessWidget {
     }
     for (String teamUid in state.allTeamUids) {
       Team team = state.getTeam(teamUid);
-      ret.add(new DropdownMenuItem<String>(
-        child: new Text(team.name),
+      ret.add(DropdownMenuItem<String>(
+        child: Text(team.name),
         value: team.uid,
       ));
     }
@@ -42,8 +42,8 @@ class TeamPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new InputDecorator(
-      decoration: new InputDecoration(
+    return InputDecorator(
+      decoration: InputDecoration(
         labelText: Messages.of(context).team,
         labelStyle: selectedTitle
             ? Theme.of(context)
@@ -52,14 +52,14 @@ class TeamPicker extends StatelessWidget {
                 .copyWith(fontWeight: FontWeight.bold)
             : null,
       ),
-      child: new Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          new Expanded(
+          Expanded(
               flex: 1,
               child: disabled
-                  ? new Text(
+                  ? Text(
                       Messages.of(context).teamselect,
                       style: Theme.of(context).textTheme.body1.copyWith(
                           color: Theme.of(context).disabledColor, height: 3.0),
@@ -68,7 +68,7 @@ class TeamPicker extends StatelessWidget {
                       cubit: BlocProvider.of<TeamBloc>(context),
                       builder: (BuildContext context, TeamState state) {
                         return DropdownButton<String>(
-                          hint: new Text(Messages.of(context).teamselect),
+                          hint: Text(Messages.of(context).teamselect),
                           items: _buildItems(context, state),
                           value: teamUid,
                           onChanged: (String val) {

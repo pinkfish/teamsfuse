@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
+
+import '../../services/messages.dart';
+import '../../services/validations.dart';
+import '../../widgets/util/ensurevisiblewhenfocused.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key key}) : super(key: key);
 
   @override
-  SignupScreenState createState() => new SignupScreenState();
+  SignupScreenState createState() => SignupScreenState();
 }
 
 class SignupScreenState extends State<SignupScreen> {
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormFieldState<String>> _passwordFieldKey =
-      new GlobalKey<FormFieldState<String>>();
-  ScrollController _scrollController = new ScrollController();
+      GlobalKey<FormFieldState<String>>();
+  ScrollController _scrollController = ScrollController();
   bool _autovalidate = false;
 
   // Profile details.
@@ -27,16 +28,16 @@ class SignupScreenState extends State<SignupScreen> {
   String _phoneNumber;
   String _email;
   String _password;
-  FocusNode _focusNodeDisplayName = new FocusNode();
-  FocusNode _focusNodePhoneNumber = new FocusNode();
-  FocusNode _focusNodeEmail = new FocusNode();
-  FocusNode _focusNodePassword = new FocusNode();
-  FocusNode _focusNodePasswordVerify = new FocusNode();
+  FocusNode _focusNodeDisplayName = FocusNode();
+  FocusNode _focusNodePhoneNumber = FocusNode();
+  FocusNode _focusNodeEmail = FocusNode();
+  FocusNode _focusNodePassword = FocusNode();
+  FocusNode _focusNodePasswordVerify = FocusNode();
   LoginBloc _loginBloc;
 
   @override
   void initState() {
-    //_person.profile = new FusedUserProfile(null);
+    //_person.profile = FusedUserProfile(null);
     super.initState();
     _loginBloc = BlocProvider.of<LoginBloc>(context);
   }
@@ -46,8 +47,7 @@ class SignupScreenState extends State<SignupScreen> {
   }
 
   void showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _handleSubmitted() async {
@@ -79,7 +79,7 @@ class SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     //print(context.widget.toString());
-    Validations validations = new Validations();
+    Validations validations = Validations();
 
     return Scaffold(
       key: _scaffoldKey,
@@ -91,15 +91,15 @@ class SignupScreenState extends State<SignupScreen> {
           } else if (state is LoginSignupSucceeded) {
             showDialog<bool>(
               context: context,
-              builder: (BuildContext context) => new AlertDialog(
-                content: new Text(Messages.of(context).createdaccount),
+              builder: (BuildContext context) => AlertDialog(
+                content: Text(Messages.of(context).createdaccount),
                 actions: <Widget>[
-                  new FlatButton(
+                  FlatButton(
                       onPressed: () {
                         Navigator.pop(context, true);
                       },
-                      child: new Text(
-                          MaterialLocalizations.of(context).okButtonLabel))
+                      child:
+                          Text(MaterialLocalizations.of(context).okButtonLabel))
                 ],
               ),
             ).then((bool ok) {
@@ -111,21 +111,21 @@ class SignupScreenState extends State<SignupScreen> {
           cubit: _loginBloc,
           builder: (BuildContext context, LoginState state) => SavingOverlay(
             saving: state is LoginValidatingSignup,
-            child: new SingleChildScrollView(
+            child: SingleChildScrollView(
               controller: _scrollController,
-              child: new Container(
-                padding: new EdgeInsets.all(16.0),
-                //decoration: new BoxDecoration(image: backgroundImage),
-                child: new Column(
+              child: Container(
+                padding: EdgeInsets.all(16.0),
+                //decoration: BoxDecoration(image: backgroundImage),
+                child: Column(
                   children: <Widget>[
-                    new Container(
-                      child: new Column(
+                    Container(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          new Center(
-                              child: new Image(
-                            image: new ExactAssetImage(
+                          Center(
+                              child: Image(
+                            image: ExactAssetImage(
                                 "assets/images/abstractsport.png"),
                             width: (screenSize.width < 500)
                                 ? 120.0
@@ -135,20 +135,20 @@ class SignupScreenState extends State<SignupScreen> {
                         ],
                       ),
                     ),
-                    new Container(
-                      child: new Column(
+                    Container(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          new Form(
+                          Form(
                             key: _formKey,
                             autovalidate: _autovalidate,
-                            child: new Column(
+                            child: Column(
                               children: <Widget>[
-                                new EnsureVisibleWhenFocused(
+                                EnsureVisibleWhenFocused(
                                   focusNode: _focusNodeDisplayName,
-                                  child: new TextFormField(
-                                    decoration: new InputDecoration(
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
                                         icon: const Icon(Icons.account_box),
                                         hintText: Messages.of(context)
                                             .displaynamehint,
@@ -166,10 +166,10 @@ class SignupScreenState extends State<SignupScreen> {
                                     },
                                   ),
                                 ),
-                                new EnsureVisibleWhenFocused(
+                                EnsureVisibleWhenFocused(
                                   focusNode: _focusNodeEmail,
-                                  child: new TextFormField(
-                                    decoration: new InputDecoration(
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
                                       icon: const Icon(Icons.email),
                                       hintText:
                                           Messages.of(context).youremailHint,
@@ -187,10 +187,10 @@ class SignupScreenState extends State<SignupScreen> {
                                     },
                                   ),
                                 ),
-                                new EnsureVisibleWhenFocused(
+                                EnsureVisibleWhenFocused(
                                   focusNode: _focusNodePhoneNumber,
-                                  child: new TextFormField(
-                                    decoration: new InputDecoration(
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
                                       icon: const Icon(Icons.phone),
                                       hintText: Messages.of(context)
                                           .phonenumberhintoptional,
@@ -209,10 +209,10 @@ class SignupScreenState extends State<SignupScreen> {
                                     },
                                   ),
                                 ),
-                                new EnsureVisibleWhenFocused(
+                                EnsureVisibleWhenFocused(
                                   focusNode: _focusNodePassword,
-                                  child: new TextFormField(
-                                    decoration: new InputDecoration(
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
                                       icon: const Icon(Icons.lock),
                                       hintText: Messages.of(context).password,
                                       labelText: Messages.of(context).password,
@@ -229,10 +229,10 @@ class SignupScreenState extends State<SignupScreen> {
                                     },
                                   ),
                                 ),
-                                new EnsureVisibleWhenFocused(
+                                EnsureVisibleWhenFocused(
                                   focusNode: _focusNodePasswordVerify,
-                                  child: new TextFormField(
-                                    decoration: new InputDecoration(
+                                  child: TextFormField(
+                                    decoration: InputDecoration(
                                       icon: const Icon(Icons.lock),
                                       hintText:
                                           Messages.of(context).verifypassword,
@@ -245,30 +245,30 @@ class SignupScreenState extends State<SignupScreen> {
                                     onSaved: (String password) {},
                                   ),
                                 ),
-                                new Container(
-                                  child: new RaisedButton(
-                                      child: new Text(
+                                Container(
+                                  child: RaisedButton(
+                                      child: Text(
                                           Messages.of(context).createaccount),
                                       color: Theme.of(context).primaryColor,
                                       textColor: Colors.white,
                                       onPressed: _handleSubmitted),
-                                  margin: new EdgeInsets.only(
-                                      top: 20.0, bottom: 20.0),
+                                  margin:
+                                      EdgeInsets.only(top: 20.0, bottom: 20.0),
                                 ),
                               ],
                             ),
                           ),
-                          new Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              new FlatButton(
-                                child: new Text(Messages.of(context).login),
+                              FlatButton(
+                                child: Text(Messages.of(context).login),
                                 textColor: Theme.of(context).accentColor,
                                 onPressed: () => _onPressed("/Login/Home"),
                               ),
-                              new FlatButton(
-                                child: new Text(
-                                    Messages.of(context).forgotPassword),
+                              FlatButton(
+                                child:
+                                    Text(Messages.of(context).forgotPassword),
                                 textColor: Theme.of(context).accentColor,
                                 onPressed: () =>
                                     _onPressed("/Login/ForgotPassword"),

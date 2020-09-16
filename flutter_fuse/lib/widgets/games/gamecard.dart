@@ -34,7 +34,7 @@ class GameCard extends StatelessWidget {
       Attendance attend = await showDialog<Attendance>(
           context: context,
           builder: (BuildContext context) {
-            return new AttendanceDialog(current: current);
+            return AttendanceDialog(current: current);
           });
       if (attend != null) {
         gameBloc.add(SingleGameUpdateAttendance(
@@ -44,7 +44,7 @@ class GameCard extends StatelessWidget {
       Map<Player, Attendance> attend = await showDialog(
           context: context,
           builder: (BuildContext context) {
-            return new MultipleAttendanceDialog(attendence);
+            return MultipleAttendanceDialog(attendence);
           });
       if (attend != null) {
         attend.forEach((Player player, Attendance attend) {
@@ -60,7 +60,7 @@ class GameCard extends StatelessWidget {
     await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        return new EditResultDialog(gameBloc);
+        return EditResultDialog(gameBloc);
       },
     );
   }
@@ -71,7 +71,7 @@ class GameCard extends StatelessWidget {
     await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        return new EditResultDialog(game);
+        return EditResultDialog(game);
       },
     );
     */
@@ -102,13 +102,13 @@ class GameCard extends StatelessWidget {
     }
     List<Widget> widgets = <Widget>[];
     attendence.forEach((Player player, Attendance attend) {
-      widgets.add(new AttendanceIcon(attend));
+      widgets.add(AttendanceIcon(attend));
     });
-    return new GestureDetector(
+    return GestureDetector(
       onTap: () {
         _openAttendance(context, gameBloc);
       },
-      child: new Column(children: widgets),
+      child: Column(children: widgets),
     );
   }
 
@@ -135,20 +135,20 @@ class GameCard extends StatelessWidget {
     }
     List<Widget> children = <Widget>[];
     children.add(
-      new Text(
+      Text(
         Messages.of(context).gameresult(result),
         style: style,
       ),
     );
     children.add(
-      new Text(
+      Text(
         "${finalResult.score.ptsFor} - ${finalResult.score.ptsAgainst}",
         style: style,
       ),
     );
     if (overtimeResult != null) {
       children.add(
-        new Text(
+        Text(
           "OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score.ptsAgainst}",
           style: style,
         ),
@@ -156,7 +156,7 @@ class GameCard extends StatelessWidget {
     }
     if (penaltyResult != null) {
       children.add(
-        new Text(
+        Text(
           "PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score.ptsAgainst}",
           style: style,
         ),
@@ -198,7 +198,7 @@ class GameCard extends StatelessWidget {
                 .add(Icon(Icons.error, color: Theme.of(context).errorColor));
           }
         }
-        return new Column(
+        return Column(
           children: children,
         );
       }
@@ -217,12 +217,12 @@ class GameCard extends StatelessWidget {
         );
       }
     }
-    return new Column(
+    return Column(
       children: <Widget>[
-        new Text(
+        Text(
           Messages.of(context).gameinprogress(game.result.inProgress),
         ),
-        new Text(
+        Text(
           Messages.of(context).cardresultinprogress(game.result),
         ),
       ],
@@ -236,8 +236,8 @@ class GameCard extends StatelessWidget {
     if (game.result.inProgress == GameInProgress.NotStarted) {
       if ((game.trackAttendance &&
           game.sharedData.time >
-              new DateTime.now()
-                  .subtract(new Duration(hours: 2))
+              DateTime.now()
+                  .subtract(Duration(hours: 2))
                   .millisecondsSinceEpoch)) {
         return _buildAvailability(context, gameBloc, season, players);
       }
@@ -263,7 +263,7 @@ class GameCard extends StatelessWidget {
 
     Opponent op = _opponentData(context, game, leagueTeam, opState);
 
-    TimeOfDay day = new TimeOfDay.fromDateTime(game.sharedData.tzTime);
+    TimeOfDay day = TimeOfDay.fromDateTime(game.sharedData.tzTime);
     String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeFormat;
     String tzShortName;
@@ -274,7 +274,7 @@ class GameCard extends StatelessWidget {
     }
 
     if (game.sharedData.time != game.sharedData.endTime) {
-      TimeOfDay endDay = new TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
+      TimeOfDay endDay = TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
       endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
     }
     switch (game.sharedData.type) {
@@ -365,11 +365,11 @@ class GameCard extends StatelessWidget {
       season = team.seasons[game.seasonUid];
     }
     if (season == null) {
-      season = new Season();
+      season = Season();
     }
     */
 
-    TZDateTime timeNow = new TZDateTime.now(local);
+    TZDateTime timeNow = TZDateTime.now(local);
     Duration dur = timeNow.difference(game.sharedData.tzTime).abs();
 
     String arriveFormat;
@@ -378,7 +378,7 @@ class GameCard extends StatelessWidget {
         game.sharedData.type == EventType.Game &&
         timeNow.millisecondsSinceEpoch <
             game.arriveTime + Duration.millisecondsPerHour) {
-      TimeOfDay arriveDay = new TimeOfDay.fromDateTime(game.tzArriveTime);
+      TimeOfDay arriveDay = TimeOfDay.fromDateTime(game.tzArriveTime);
       arriveFormat =
           MaterialLocalizations.of(context).formatTimeOfDay(arriveDay);
     }
@@ -389,31 +389,31 @@ class GameCard extends StatelessWidget {
             timeNow.millisecondsSinceEpoch - Duration.millisecondsPerHour * 3) {
       // Put in directions buttons.
       buttons.add(
-        new FlatButton(
+        FlatButton(
           onPressed: () => _showDirections(context, game),
-          child: new Text(
+          child: Text(
             Messages.of(context).directionsbuttons,
           ),
         ),
       );
     }
 
-    if (game.sharedData.time < new DateTime.now().millisecondsSinceEpoch &&
+    if (game.sharedData.time < DateTime.now().millisecondsSinceEpoch &&
         game.sharedData.type == EventType.Game &&
         game.result.result == GameResult.Unknown) {
       if (game.sharedData.officialResult != null &&
           game.sharedData.officialResult.result != OfficialResult.InProgress &&
           game.sharedData.officialResult.result != OfficialResult.NotStarted) {
-        buttons.add(new FlatButton(
+        buttons.add(FlatButton(
           onPressed: () => _officalResult(context),
-          child: new Text(Messages.of(context).useofficialresultbutton),
+          child: Text(Messages.of(context).useofficialresultbutton),
         ));
       }
       // Show a result button.
       buttons.add(
-        new FlatButton(
+        FlatButton(
           onPressed: () => _editResult(context, gameBloc),
-          child: new Text(Messages.of(context).addresultbutton),
+          child: Text(Messages.of(context).addresultbutton),
         ),
       );
     }
@@ -425,7 +425,7 @@ class GameCard extends StatelessWidget {
         addr = game.sharedData.place.name;
       }
       subtitle.add(
-        new TextSpan(
+        TextSpan(
           style: Theme.of(context)
               .textTheme
               .subhead
@@ -437,7 +437,7 @@ class GameCard extends StatelessWidget {
     } else {
       if (game.sharedData.place.name.isNotEmpty) {
         subtitle.add(
-          new TextSpan(
+          TextSpan(
             style: Theme.of(context)
                 .textTheme
                 .subhead
@@ -447,7 +447,7 @@ class GameCard extends StatelessWidget {
         );
       } else {
         subtitle.add(
-          new TextSpan(
+          TextSpan(
             style: Theme.of(context)
                 .textTheme
                 .subhead
@@ -472,11 +472,11 @@ class GameCard extends StatelessWidget {
       color = Colors.lightBlueAccent;
     }
 
-    ListTile tile = new ListTile(
+    ListTile tile = ListTile(
       onTap: () {
         Navigator.pushNamed(context, "/Game/" + game.uid);
       },
-      leading: new TeamImage(
+      leading: TeamImage(
         teamUid: game.teamUid,
         width: 50.0,
         height: 50.0,
@@ -489,7 +489,7 @@ class GameCard extends StatelessWidget {
           builder: (BuildContext context, SingleOpponentState opState) => Text(
             _titleWidget(context, game, leagueTeam, opState),
             overflow: TextOverflow.clip,
-            style: new TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
       ),
@@ -508,7 +508,7 @@ class GameCard extends StatelessWidget {
               }
 
               return RichText(
-                text: new TextSpan(
+                text: TextSpan(
                   style: Theme.of(context).textTheme.subhead,
                   children: subtitle,
                 ),
@@ -518,14 +518,14 @@ class GameCard extends StatelessWidget {
       trailing: _buildTrailing(context, gameBloc, seasonState.season, players),
     );
     if (buttons.length > 0) {
-      return new Card(
+      return Card(
         color: color,
-        child: new Column(
+        child: Column(
           children: <Widget>[
             tile,
-            new ButtonTheme.bar(
+            ButtonTheme.bar(
               // make buttons use the appropriate styles for cards
-              child: new ButtonBar(
+              child: ButtonBar(
                 children: buttons,
               ),
             ),
@@ -533,7 +533,7 @@ class GameCard extends StatelessWidget {
         ),
       );
     } else {
-      return new Card(
+      return Card(
         color: color,
         child: tile,
       );

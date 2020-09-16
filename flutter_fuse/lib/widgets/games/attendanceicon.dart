@@ -12,16 +12,16 @@ class AttendanceIcon extends StatelessWidget {
     if (attend != null) {
       switch (attend) {
         case Attendance.Yes:
-          return new Icon(Icons.check, color: theme.accentColor);
+          return Icon(Icons.check, color: theme.accentColor);
           break;
         case Attendance.No:
-          return new Icon(Icons.clear, color: theme.errorColor);
+          return Icon(Icons.clear, color: theme.errorColor);
           break;
         case Attendance.Maybe:
-          return new Icon(Icons.help, color: theme.disabledColor);
+          return Icon(Icons.help, color: theme.disabledColor);
           break;
       }
     }
-    return new Icon(Icons.help, color: theme.disabledColor);
+    return Icon(Icons.help, color: theme.disabledColor);
   }
 }

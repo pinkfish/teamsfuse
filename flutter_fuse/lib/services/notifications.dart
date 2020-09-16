@@ -19,15 +19,15 @@ class Notifications {
 
   static final Notifications instance = Notifications();
 
-  final FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   //final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  //   new FlutterLocalNotificationsPlugin();
+  //   FlutterLocalNotificationsPlugin();
 
-  StreamController<String> _notificationRoutes = new StreamController<String>();
+  StreamController<String> _notificationRoutes = StreamController<String>();
   Stream<String> routeStream;
   StreamSubscription<UpdateReason> _gameStream;
   Map<String, int> _notificationMapping = <String, int>{};
-  Random random = new Random.secure();
+  Random random = Random.secure();
   //State<SplashScreen> _state;
 
   static const String actionStr = 'action';
@@ -52,7 +52,7 @@ class Notifications {
   }
 
   void _createGameNotification(Game game, int id) {
-    GameNotification not = new GameNotification(
+    GameNotification not = GameNotification(
         game, UserDatabaseData.instance.teams[game.teamUid]);
 
     not.showNotification(id, flutterLocalNotificationsPlugin,
@@ -72,16 +72,16 @@ class Notifications {
   void _onGamesUpdated() {
     Map<String, Game> data = UserDatabaseData.instance.gamesCache;
     Set<String> stillHere = _notificationMapping.keys.toSet();
-    DateTime now = new DateTime.now();
+    DateTime now = DateTime.now();
     for (Game game in data.values) {
       stillHere.remove(game.uid);
-      DateTime gameDate = new DateTime.fromMillisecondsSinceEpoch(game.sharedData.time.toInt());
-      DateTime oldest = new DateTime.now().subtract(timeoutNotifiation);
-      DateTime newest = new DateTime.now().add(notifyStart);
+      DateTime gameDate = DateTime.fromMillisecondsSinceEpoch(game.sharedData.time.toInt());
+      DateTime oldest = DateTime.now().subtract(timeoutNotifiation);
+      DateTime newest = DateTime.now().add(notifyStart);
       // If it is older then 2 days, then delete it.
       if (gameDate.isAfter(oldest)) {
         DateTime frog =
-            new DateTime.fromMillisecondsSinceEpoch(game.sharedData.time.toInt()).add(notifyStart);
+            DateTime.fromMillisecondsSinceEpoch(game.sharedData.time.toInt()).add(notifyStart);
         print('Checking ${game.uid} $frog $now');
         if (!_notificationMapping.containsKey(game.uid) &&
             gameDate.isBefore(newest)) {
@@ -148,23 +148,23 @@ class Notifications {
   void initForNotification() async {
     /*
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        new FlutterLocalNotificationsPlugin();
+        FlutterLocalNotificationsPlugin();
     InitializationSettingsAndroid initializationSettingsAndroid =
-        new InitializationSettingsAndroid('app_icon');
+        InitializationSettingsAndroid('app_icon');
     InitializationSettingsIOS initializationSettingsIOS =
-        new InitializationSettingsIOS(categorySetup: <IOSCategoryDetails>[
-      new IOSCategoryDetails(id: "GAMES", actions: <IOSActionDetails>[
-        new IOSActionDetails(
+        InitializationSettingsIOS(categorySetup: <IOSCategoryDetails>[
+      IOSCategoryDetails(id: "GAMES", actions: <IOSActionDetails>[
+        IOSActionDetails(
           id: 'directions',
           title: 'DIRECTIONS',
         ),
-        new IOSActionDetails(
+        IOSActionDetails(
           id: 'details',
           title: 'DETAILS',
         )
       ])
     ]);
-    InitializationSettings initializationSettings = new InitializationSettings(
+    InitializationSettings initializationSettings = InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
     /*

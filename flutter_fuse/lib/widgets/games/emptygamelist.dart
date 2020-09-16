@@ -18,22 +18,22 @@ class EmptyGameList extends StatelessWidget {
     RaisedButton button;
     TeamBloc teams = BlocProvider.of<TeamBloc>(context);
     if (teams.state.allTeamUids.length == 0) {
-      button = new RaisedButton(
+      button = RaisedButton(
         onPressed: () => _addTeam(context),
-        child: new Text(Messages.of(context).addteam),
+        child: Text(Messages.of(context).addteam),
       );
     } else {
-      button = new RaisedButton(
+      button = RaisedButton(
         onPressed: () => _addGame(context),
-        child: new Text(Messages.of(context).addgame),
+        child: Text(Messages.of(context).addgame),
       );
     }
 
-    return new Column(
+    return Column(
       children: <Widget>[
-        new Center(
-            child: new Image(
-          image: new ExactAssetImage("assets/images/abstractsport.png"),
+        Center(
+            child: Image(
+          image: ExactAssetImage("assets/images/abstractsport.png"),
           width: screenSize.width < screenSize.height
               ? screenSize.width - 30.0
               : screenSize.height - 30.0,

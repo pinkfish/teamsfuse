@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/login/loginheader.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
+
+import '../../services/messages.dart';
+import '../../services/validations.dart';
+import '../../widgets/login/loginheader.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key key}) : super(key: key);
 
   @override
-  ForgotPasswordScreenState createState() => new ForgotPasswordScreenState();
+  ForgotPasswordScreenState createState() => ForgotPasswordScreenState();
 }
 
 class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  ScrollController scrollController = new ScrollController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  ScrollController scrollController = ScrollController();
   bool autovalidate = false;
-  Validations validations = new Validations();
+  Validations validations = Validations();
   String email = '';
   LoginBloc _loginBloc;
 
@@ -34,8 +35,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   void showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _handleSubmitted() {
@@ -143,7 +143,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       key: _scaffoldKey,
       body: SingleChildScrollView(
         controller: scrollController,

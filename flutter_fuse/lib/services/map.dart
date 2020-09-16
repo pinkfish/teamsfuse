@@ -12,11 +12,11 @@ class LocationAndPlace {
   LocationAndPlace(this.details, this.loc);
 
   LocationAndPlace.fromGame(GamePlace place, String tz)
-      : details = new PlaceDetails(
+      : details = PlaceDetails(
             name: place.name,
             address: place.address,
             placeid: place.placeId,
-            location: new PlaceLatLong(
+            location: PlaceLatLong(
                 latitude: place.latitude, longitude: place.longitude)),
         loc = Future<Location>.value(getLocation(tz));
 
@@ -26,7 +26,7 @@ class LocationAndPlace {
 
 class MapData {
   MapData() {
-    _providerData = new StaticMapProvider(apiKey);
+    _providerData = StaticMapProvider(apiKey);
     FlutterPlacesDialog.setGoogleApiKey(iosApiKey);
   }
 
@@ -40,7 +40,7 @@ class MapData {
 
   static MapData get instance {
     if (_instance == null) {
-      _instance = new MapData();
+      _instance = MapData();
     }
     return _instance;
   }
@@ -55,8 +55,8 @@ class MapData {
       'timestamp': ms.toString(),
       'key': apiKey
     };
-    Uri uri = new Uri.https(urlAuth, urlPath, query);
-    HttpClient httpClient = new HttpClient();
+    Uri uri = Uri.https(urlAuth, urlPath, query);
+    HttpClient httpClient = HttpClient();
     HttpClientRequest request = await httpClient.getUrl(uri);
     HttpClientResponse response = await request.close();
     print("Response $response");
@@ -76,8 +76,8 @@ class MapData {
     PlaceDetails details = await FlutterPlacesDialog.getPlacesDialog();
     print("Looking up timezone for $details.location");
     Future<Location> tz = getTimezoneFromLocation(
-        details.location, new DateTime.now().millisecondsSinceEpoch / 1000);
+        details.location, DateTime.now().millisecondsSinceEpoch / 1000);
     print('tz $tz');
-    return new LocationAndPlace(details, tz);
+    return LocationAndPlace(details, tz);
   }
 }

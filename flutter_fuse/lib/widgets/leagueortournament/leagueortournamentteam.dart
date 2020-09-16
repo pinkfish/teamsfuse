@@ -29,7 +29,7 @@ class LeagueOrTournamentTeamDetails extends StatefulWidget {
 
   @override
   State createState() {
-    return new _LeagueOrTournamentTeamDetailsState();
+    return _LeagueOrTournamentTeamDetailsState();
   }
 }
 
@@ -162,7 +162,7 @@ class _LeagueOrTournamentTeamDetailsState
                                                     .uid ==
                                                 null &&
                                             leagueState.league.isAdmin()) {
-                                          children.add(new ExpansionTile(
+                                          children.add(ExpansionTile(
                                             title: Text(
                                               Messages.of(context)
                                                   .invitedpeople(

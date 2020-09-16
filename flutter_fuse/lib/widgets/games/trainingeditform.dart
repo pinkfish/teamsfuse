@@ -21,21 +21,21 @@ class TrainingEditForm extends StatefulWidget {
 
   @override
   TrainingEditFormState createState() {
-    return new TrainingEditFormState();
+    return TrainingEditFormState();
   }
 }
 
 class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
-  ScrollController _scrollController = new ScrollController();
+  ScrollController _scrollController = ScrollController();
   GlobalKey<DateTimeFormFieldState> _endTimeKey =
-      new GlobalKey<DateTimeFormFieldState>();
+      GlobalKey<DateTimeFormFieldState>();
   bool autoValidate = false;
-  GlobalKey<FormState> _formState = new GlobalKey<FormState>();
+  GlobalKey<FormState> _formState = GlobalKey<FormState>();
   DateTime _atDate;
   DateTime _atEnd;
-  FocusNode _focusNodePlaceNotes = new FocusNode();
-  FocusNode _focusNodeNotes = new FocusNode();
-  FocusNode _focusNodeUniform = new FocusNode();
+  FocusNode _focusNodePlaceNotes = FocusNode();
+  FocusNode _focusNodeNotes = FocusNode();
+  FocusNode _focusNodeUniform = FocusNode();
   GameBuilder builder;
 
   @override
@@ -81,7 +81,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   GameBuilder get finalGameResult {
     _formState.currentState.save();
     // Add the date time and the time together.
-    builder.sharedData.time = new TZDateTime(
+    builder.sharedData.time = TZDateTime(
             getLocation(widget.game.sharedData.timezone),
             _atDate.year,
             _atDate.month,
@@ -92,9 +92,9 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
     builder.arriveTime = widget.game.sharedData.time;
     DateTime end = _atEnd;
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
-      end.add(new Duration(days: 1));
+      end.add(Duration(days: 1));
     }
-    builder.sharedData.endTime = new TZDateTime(
+    builder.sharedData.endTime = TZDateTime(
             getLocation(widget.game.sharedData.timezone),
             end.year,
             end.month,
@@ -110,15 +110,15 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
     print("${widget.game.toMap()}");
-    return new Scrollbar(
-      child: new SingleChildScrollView(
+    return Scrollbar(
+      child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         controller: _scrollController,
-        child: new Form(
+        child: Form(
           key: _formState,
           autovalidate: autoValidate,
-          child: new DropdownButtonHideUnderline(
-            child: new Column(
+          child: DropdownButtonHideUnderline(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
@@ -127,7 +127,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                   teamUid: builder.teamUid,
                   builder: (BuildContext context, SingleTeamBloc teamBloc) =>
                       SeasonFormField(
-                    decoration: new InputDecoration(
+                    decoration: InputDecoration(
                       icon: const Icon(CommunityIcons.calendarQuestion),
                       labelText: messages.season,
                     ),
@@ -138,9 +138,9 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     },
                   ),
                 ),
-                new DateTimeFormField(
+                DateTimeFormField(
                   labelText: Messages.of(context).gametime,
-                  decoration: new InputDecoration(
+                  decoration: InputDecoration(
                     icon: const Icon(Icons.calendar_today),
                   ),
                   initialValue: _atDate,
@@ -150,10 +150,10 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     _atDate = value;
                   },
                 ),
-                new DateTimeFormField(
+                DateTimeFormField(
                   labelText: Messages.of(context).trainingend,
                   key: _endTimeKey,
-                  decoration: new InputDecoration(
+                  decoration: InputDecoration(
                     icon: const Icon(CommunityIcons.calendarRange),
                   ),
                   initialValue: _atEnd,
@@ -162,21 +162,20 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     _atEnd = value;
                   },
                 ),
-                new ListTile(
+                ListTile(
                   onTap: _showPlacesPicker,
                   leading: const Icon(Icons.place),
-                  title: new Text(widget.game.sharedData.place.name == null
+                  title: Text(widget.game.sharedData.place.name == null
                       ? messages.unknown
                       : widget.game.sharedData.place.name),
-                  subtitle: new Text(
-                      widget.game.sharedData.place.address == null
-                          ? messages.unknown
-                          : widget.game.sharedData.place.address),
+                  subtitle: Text(widget.game.sharedData.place.address == null
+                      ? messages.unknown
+                      : widget.game.sharedData.place.address),
                 ),
-                new EnsureVisibleWhenFocused(
+                EnsureVisibleWhenFocused(
                   focusNode: _focusNodePlaceNotes,
-                  child: new TextFormField(
-                    decoration: new InputDecoration(
+                  child: TextFormField(
+                    decoration: InputDecoration(
                       icon: const Icon(CommunityIcons.tshirtCrew),
                       hintText: Messages.of(context).placesnoteshint,
                       labelText: Messages.of(context).placesnotes,
@@ -190,11 +189,11 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     },
                   ),
                 ),
-                new EnsureVisibleWhenFocused(
+                EnsureVisibleWhenFocused(
                   focusNode: _focusNodeUniform,
-                  child: new TextFormField(
+                  child: TextFormField(
                     initialValue: widget.game.uniform,
-                    decoration: new InputDecoration(
+                    decoration: InputDecoration(
                         hintText: messages.uniformhint,
                         labelText: messages.uniform,
                         icon: const Icon(CommunityIcons.tshirtCrew)),
@@ -204,11 +203,11 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     focusNode: _focusNodeUniform,
                   ),
                 ),
-                new EnsureVisibleWhenFocused(
+                EnsureVisibleWhenFocused(
                   focusNode: _focusNodeNotes,
-                  child: new TextFormField(
+                  child: TextFormField(
                     initialValue: widget.game.notes,
-                    decoration: new InputDecoration(
+                    decoration: InputDecoration(
                       hintText: messages.trainingnoteshint,
                       labelText: messages.trainingnotes,
                       icon: const Icon(Icons.note),

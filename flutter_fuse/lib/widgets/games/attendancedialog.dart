@@ -9,7 +9,7 @@ class AttendanceDialog extends StatefulWidget {
 
   @override
   AttendanceDialogState createState() {
-    return new AttendanceDialogState();
+    return AttendanceDialogState();
   }
 }
 
@@ -20,13 +20,13 @@ class AttendanceDialogState extends State<AttendanceDialog> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
-    return new SimpleDialog(
-      title: new Text(Messages.of(context).attendanceselect),
+    return SimpleDialog(
+      title: Text(Messages.of(context).attendanceselect),
       children: <Widget>[
-        new SimpleDialogOption(
-          child: new ListTile(
-            leading: new Icon(Icons.check, color: theme.accentColor),
-            title: new Text(Messages.of(context).attendanceyes),
+        SimpleDialogOption(
+          child: ListTile(
+            leading: Icon(Icons.check, color: theme.accentColor),
+            title: Text(Messages.of(context).attendanceyes),
             dense: true,
             selected: widget.current == Attendance.Yes,
           ),
@@ -34,11 +34,11 @@ class AttendanceDialogState extends State<AttendanceDialog> {
             Navigator.pop(context, Attendance.Yes);
           },
         ),
-        new Divider(),
-        new SimpleDialogOption(
-          child: new ListTile(
-            leading: new Icon(Icons.clear, color: theme.errorColor),
-            title: new Text(Messages.of(context).attendanceno),
+        Divider(),
+        SimpleDialogOption(
+          child: ListTile(
+            leading: Icon(Icons.clear, color: theme.errorColor),
+            title: Text(Messages.of(context).attendanceno),
             dense: true,
             selected: widget.current == Attendance.No,
           ),
@@ -46,11 +46,11 @@ class AttendanceDialogState extends State<AttendanceDialog> {
             Navigator.pop(context, Attendance.No);
           },
         ),
-        new Divider(),
-        new SimpleDialogOption(
-          child: new ListTile(
-            leading: new Icon(Icons.help, color: theme.disabledColor),
-            title: new Text(Messages.of(context).attendncemaybe),
+        Divider(),
+        SimpleDialogOption(
+          child: ListTile(
+            leading: Icon(Icons.help, color: theme.disabledColor),
+            title: Text(Messages.of(context).attendncemaybe),
             dense: true,
             selected: widget.current == Attendance.Maybe,
           ),

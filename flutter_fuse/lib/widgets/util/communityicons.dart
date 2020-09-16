@@ -371,7 +371,7 @@ class CommunityIcons {
       const IconData(0xF068, fontFamily: 'CommunityIcons');
   static const IconData autoUpload =
       const IconData(0xF069, fontFamily: 'CommunityIcons');
-  static const IconData autorenew =
+  static const IconData autore=
       const IconData(0xF06A, fontFamily: 'CommunityIcons');
   static const IconData avTimer =
       const IconData(0xF06B, fontFamily: 'CommunityIcons');
@@ -3249,7 +3249,7 @@ class CommunityIcons {
       const IconData(0xF5CC, fontFamily: 'CommunityIcons');
   static const IconData openInApp =
       const IconData(0xF3CB, fontFamily: 'CommunityIcons');
-  static const IconData openInNew =
+  static const IconData openIn=
       const IconData(0xF3CC, fontFamily: 'CommunityIcons');
   static const IconData openid =
       const IconData(0xF3CD, fontFamily: 'CommunityIcons');

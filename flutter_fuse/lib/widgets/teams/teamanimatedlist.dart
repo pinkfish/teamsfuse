@@ -22,7 +22,7 @@ class TeamAnimatedList extends StatefulWidget {
 
 class _TeamAnimatedListState extends State<TeamAnimatedList> {
   List<Team> _currentData = [];
-  GlobalKey<AnimatedListState> _listState = new GlobalKey<AnimatedListState>();
+  GlobalKey<AnimatedListState> _listState = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
     List<Team> oldList = _currentData;
     _currentData = newTeams;
     if (oldList == null || _listState.currentState == null) {
-      //  Build the new layout.
+      //  Build the layout.
       return;
     }
 

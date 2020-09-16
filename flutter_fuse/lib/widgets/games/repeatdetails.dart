@@ -14,14 +14,14 @@ class RepeatDetailsWidget extends StatefulWidget {
 
   @override
   RepeatDetailsState createState() {
-    return new RepeatDetailsState();
+    return RepeatDetailsState();
   }
 }
 
 class RepeatDetailsState extends State<RepeatDetailsWidget> {
-  ScrollController _scrollController = new ScrollController();
+  ScrollController _scrollController = ScrollController();
   bool autoValidate = false;
-  GlobalKey<FormState> _formState = new GlobalKey<FormState>();
+  GlobalKey<FormState> _formState = GlobalKey<FormState>();
   RepeatData _updatedRepeat;
 
   @override
@@ -46,18 +46,18 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
       BuildContext context) {
     List<DropdownMenuItem<RepeatPeriod>> ret =
         <DropdownMenuItem<RepeatPeriod>>[];
-    ret.add(new DropdownMenuItem<RepeatPeriod>(
-      child: new Text(Messages.of(context).noneperiod),
+    ret.add(DropdownMenuItem<RepeatPeriod>(
+      child: Text(Messages.of(context).noneperiod),
       value: RepeatPeriod.None,
     ));
 
-    ret.add(new DropdownMenuItem<RepeatPeriod>(
-      child: new Text(Messages.of(context).weeklyperiod),
+    ret.add(DropdownMenuItem<RepeatPeriod>(
+      child: Text(Messages.of(context).weeklyperiod),
       value: RepeatPeriod.Weekly,
     ));
 
-    ret.add(new DropdownMenuItem<RepeatPeriod>(
-      child: new Text(Messages.of(context).monthlyperiod),
+    ret.add(DropdownMenuItem<RepeatPeriod>(
+      child: Text(Messages.of(context).monthlyperiod),
       value: RepeatPeriod.Monthly,
     ));
 
@@ -68,8 +68,8 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
     Messages messages = Messages.of(context);
     List<Widget> ret = <Widget>[];
     ret.add(
-      new DropdownButton<RepeatPeriod>(
-        hint: new Text(messages.repeat),
+      DropdownButton<RepeatPeriod>(
+        hint: Text(messages.repeat),
         items: _buildRepeatIntervalItems(context),
         value: _updatedRepeat.period,
         onChanged: (RepeatPeriod val) {
@@ -82,22 +82,22 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
     print('$_updatedRepeat.endRepeat');
     switch (_updatedRepeat.period) {
       case RepeatPeriod.Weekly:
-        ret.add(new Row(
+        ret.add(Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            new DropdownButton<bool>(
+            DropdownButton<bool>(
               value: _updatedRepeat.repeatUntil,
               items: <DropdownMenuItem<bool>>[
-                new DropdownMenuItem<bool>(
-                  child: new Text(
+                DropdownMenuItem<bool>(
+                  child: Text(
                     messages.repeat,
                   ),
                   value: true,
                 ),
-                new DropdownMenuItem<bool>(
-                  child: new Text(
+                DropdownMenuItem<bool>(
+                  child: Text(
                     messages.until,
                   ),
                   value: false,
@@ -107,12 +107,12 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                   _updatedRepeat.rebuild((b) => b.repeatUntil = val),
             ),
             _updatedRepeat.repeatUntil
-                ? new Container(
-                    constraints: new BoxConstraints.loose(
-                      new Size.fromWidth(20.0),
+                ? Container(
+                    constraints: BoxConstraints.loose(
+                      Size.fromWidth(20.0),
                     ),
-                    margin: new EdgeInsets.only(left: 10.0),
-                    child: new TextFormField(
+                    margin: EdgeInsets.only(left: 10.0),
+                    child: TextFormField(
                       initialValue: "1",
                       keyboardType: TextInputType.number,
                       onSaved: (String val) {
@@ -121,9 +121,9 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                       },
                     ),
                   )
-                : new Flexible(
+                : Flexible(
                     flex: 1,
-                    child: new DateTimeFormField(
+                    child: DateTimeFormField(
                       initialValue: _updatedRepeat.endRepeat,
                       hideTime: true,
                       onSaved: (DateTime tim) {
@@ -142,29 +142,29 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
         for (int i = first; i < first + days.length; i++) {
           int pos = i % days.length;
           daysWidgets.add(
-            new Container(
-              margin: new EdgeInsets.only(left: 10.0),
-              child: new GestureDetector(
+            Container(
+              margin: EdgeInsets.only(left: 10.0),
+              child: GestureDetector(
                 onTap: () {
                   setState(() {
                     _updatedRepeat = _updatedRepeat.rebuild((b) =>
                         b..dayRepeats[pos] = !_updatedRepeat.dayRepeats[pos]);
                   });
                 },
-                child: new Chip(
+                child: Chip(
                   backgroundColor: _updatedRepeat.dayRepeats[pos]
                       ? Theme.of(context).accentColor
                       : Theme.of(context).disabledColor,
-                  label: new Text(days[pos]),
+                  label: Text(days[pos]),
                 ),
               ),
             ),
           );
         }
         ret.add(
-          new Container(
-            margin: new EdgeInsets.only(top: 10.0, bottom: 10.0),
-            child: new Row(
+          Container(
+            margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -175,10 +175,10 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
         break;
       case RepeatPeriod.Monthly:
         ret.add(
-          new TextFormField(
+          TextFormField(
             initialValue: "1",
             keyboardType: TextInputType.number,
-            decoration: new InputDecoration(
+            decoration: InputDecoration(
               labelText: messages.repeat,
               icon: const Icon(Icons.repeat),
             ),
@@ -198,15 +198,15 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scrollbar(
-      child: new SingleChildScrollView(
+    return Scrollbar(
+      child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         controller: _scrollController,
-        child: new Form(
+        child: Form(
           key: _formState,
           autovalidate: autoValidate,
-          child: new DropdownButtonHideUnderline(
-            child: new Column(
+          child: DropdownButtonHideUnderline(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,

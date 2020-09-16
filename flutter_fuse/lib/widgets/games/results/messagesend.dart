@@ -7,7 +7,7 @@ import 'package:fusemodel/fusemodel.dart';
 class MessageSendBox extends StatelessWidget {
   MessageSendBox(this.game);
 
-  final TextEditingController _textController = new TextEditingController();
+  final TextEditingController _textController = TextEditingController();
   final SingleGameBloc game;
 
   void _sendMessage(BuildContext context, String mess) {
@@ -28,9 +28,9 @@ class MessageSendBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new TextField(
+    return TextField(
       controller: _textController,
-      decoration: new InputDecoration(
+      decoration: InputDecoration(
         suffixIcon: const Icon(Icons.send),
         labelText: Messages.of(context).message,
         fillColor: Colors.white,

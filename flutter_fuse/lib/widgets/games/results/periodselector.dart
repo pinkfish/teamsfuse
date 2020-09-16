@@ -23,7 +23,7 @@ class PeriodTypeSelector extends StatelessWidget {
         periodNumber = 1;
         break;
     }
-    GamePeriod period = new GamePeriod((b) => b
+    GamePeriod period = GamePeriod((b) => b
       ..type = type
       ..periodNumber = periodNumber);
     onChanged(period);
@@ -32,46 +32,46 @@ class PeriodTypeSelector extends StatelessWidget {
   List<Widget> _buildNextPeriods() {
     // We use the current period as a guide to work out where we go next.
     if (currentPeriod == null) {
-      return <Widget>[new Text("")];
+      return <Widget>[Text("")];
     }
     List<Widget> ret = <Widget>[];
     ret.add(
-      new Container(
-        padding: new EdgeInsets.only(left: 3.0, right: 3.0),
-        child: new RaisedButton(
+      Container(
+        padding: EdgeInsets.only(left: 3.0, right: 3.0),
+        child: RaisedButton(
           disabledColor: Colors.blue,
           onPressed: (currentPeriod.type == GamePeriodType.Regulation ||
                   currentPeriod.type == GamePeriodType.Break)
               ? null
               : () => _setPeriodType(GamePeriodType.Regulation),
           disabledTextColor: Colors.white,
-          child: new Text("Regulation"),
+          child: Text("Regulation"),
         ),
       ),
     );
     ret.add(
-      new Container(
-        padding: new EdgeInsets.only(left: 3.0, right: 3.0),
-        child: new RaisedButton(
+      Container(
+        padding: EdgeInsets.only(left: 3.0, right: 3.0),
+        child: RaisedButton(
           disabledColor: Colors.blue,
           onPressed: (currentPeriod.type == GamePeriodType.Overtime ||
                   currentPeriod.type == GamePeriodType.OvertimeBreak)
               ? null
               : () => _setPeriodType(GamePeriodType.Overtime),
-          child: new Text("Overtime"),
+          child: Text("Overtime"),
         ),
       ),
     );
     if (team.sport == Sport.Soccer) {
       ret.add(
-        new Container(
-          padding: new EdgeInsets.only(left: 3.0, right: 3.0),
-          child: new RaisedButton(
+        Container(
+          padding: EdgeInsets.only(left: 3.0, right: 3.0),
+          child: RaisedButton(
             disabledColor: Colors.blue,
             onPressed: (currentPeriod.type == GamePeriodType.Penalty)
                 ? null
                 : () => _setPeriodType(GamePeriodType.Penalty),
-            child: new Text("Penalty"),
+            child: Text("Penalty"),
           ),
         ),
       );
@@ -81,10 +81,10 @@ class PeriodTypeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      constraints: new BoxConstraints.tightFor(height: 40.0),
-      padding: new EdgeInsets.all(5.0),
-      child: new ListView(
+    return Container(
+      constraints: BoxConstraints.tightFor(height: 40.0),
+      padding: EdgeInsets.all(5.0),
+      child: ListView(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
         children: _buildNextPeriods(),
@@ -107,11 +107,11 @@ class PeriodNumberSelector extends StatelessWidget {
   void _setPeriodNumber(int periodNumber) {
     GamePeriod period;
     if (currentPeriod.type == GamePeriodType.OvertimeBreak) {
-      period = new GamePeriod((b) => b
+      period = GamePeriod((b) => b
         ..type = GamePeriodType.Overtime
         ..periodNumber = periodNumber);
     } else {
-      period = new GamePeriod((b) => b
+      period = GamePeriod((b) => b
         ..type = GamePeriodType.Regulation
         ..periodNumber = periodNumber);
     }
@@ -122,11 +122,11 @@ class PeriodNumberSelector extends StatelessWidget {
     GamePeriod period;
 
     if (currentPeriod.type == GamePeriodType.Overtime) {
-      period = new GamePeriod((b) => b
+      period = GamePeriod((b) => b
         ..type = GamePeriodType.OvertimeBreak
         ..periodNumber = currentPeriod.periodNumber);
     } else {
-      period = new GamePeriod((b) => b
+      period = GamePeriod((b) => b
         ..type = GamePeriodType.Break
         ..periodNumber = currentPeriod.periodNumber);
     }
@@ -134,9 +134,9 @@ class PeriodNumberSelector extends StatelessWidget {
   }
 
   Widget _makePeriodButton(String text, int period) {
-    return new Container(
-      padding: new EdgeInsets.only(left: 3.0, right: 3.0),
-      child: new RaisedButton(
+    return Container(
+      padding: EdgeInsets.only(left: 3.0, right: 3.0),
+      child: RaisedButton(
         disabledColor: Colors.blue,
         disabledTextColor: Colors.white,
         onPressed: (currentPeriod.type == GamePeriodType.Regulation ||
@@ -144,15 +144,15 @@ class PeriodNumberSelector extends StatelessWidget {
                 currentPeriod.periodNumber == period
             ? null
             : () => _setPeriodNumber(period),
-        child: new Text(text),
+        child: Text(text),
       ),
     );
   }
 
   Widget _makeBreakButton(String text, int period) {
-    return new Container(
-      padding: new EdgeInsets.only(left: 3.0, right: 3.0),
-      child: new RaisedButton(
+    return Container(
+      padding: EdgeInsets.only(left: 3.0, right: 3.0),
+      child: RaisedButton(
         disabledColor: Colors.blue,
         disabledTextColor: Colors.white,
         onPressed: (currentPeriod.type == GamePeriodType.Break ||
@@ -160,7 +160,7 @@ class PeriodNumberSelector extends StatelessWidget {
                 currentPeriod.periodNumber == period
             ? null
             : () => _endPeriod(period),
-        child: new Text(text),
+        child: Text(text),
       ),
     );
   }
@@ -197,10 +197,10 @@ class PeriodNumberSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      constraints: new BoxConstraints.tightFor(height: itemExtent),
-      padding: new EdgeInsets.all(5.0),
-      child: new ListView(
+    return Container(
+      constraints: BoxConstraints.tightFor(height: itemExtent),
+      padding: EdgeInsets.all(5.0),
+      child: ListView(
         scrollDirection: Axis.horizontal,
         controller: controller,
         shrinkWrap: true,
@@ -226,19 +226,19 @@ class PeriodSelector extends StatelessWidget {
       BuildContext context) {
     List<DropdownMenuItem<GamePeriodType>> ret =
         <DropdownMenuItem<GamePeriodType>>[
-      new DropdownMenuItem<GamePeriodType>(
-        child: new Text("Regulation"),
+      DropdownMenuItem<GamePeriodType>(
+        child: Text("Regulation"),
         value: GamePeriodType.Regulation,
       ),
-      new DropdownMenuItem<GamePeriodType>(
-        child: new Text("Overtime"),
+      DropdownMenuItem<GamePeriodType>(
+        child: Text("Overtime"),
         value: GamePeriodType.Overtime,
       ),
     ];
     if (team.sport == Sport.Soccer) {
       ret.add(
-        new DropdownMenuItem<GamePeriodType>(
-          child: new Text("Penalty"),
+        DropdownMenuItem<GamePeriodType>(
+          child: Text("Penalty"),
           value: GamePeriodType.Penalty,
         ),
       );
@@ -247,15 +247,15 @@ class PeriodSelector extends StatelessWidget {
   }
 
   DropdownMenuItem<int> _makePeriodButton(String text, int period) {
-    return new DropdownMenuItem<int>(
-      child: new Text(text, overflow: TextOverflow.clip),
+    return DropdownMenuItem<int>(
+      child: Text(text, overflow: TextOverflow.clip),
       value: period,
     );
   }
 
   DropdownMenuItem<int> _makeBreakButton(String text, int period) {
-    return new DropdownMenuItem<int>(
-      child: new Text(
+    return DropdownMenuItem<int>(
+      child: Text(
         text,
         overflow: TextOverflow.clip,
       ),
@@ -315,7 +315,7 @@ class PeriodSelector extends StatelessWidget {
         periodNumber = 1;
         break;
     }
-    GamePeriod period = new GamePeriod((b) => b
+    GamePeriod period = GamePeriod((b) => b
       ..type = type
       ..periodNumber = periodNumber);
     onChanged(period);
@@ -327,11 +327,11 @@ class PeriodSelector extends StatelessWidget {
     }
     GamePeriod period;
     if (currentPeriod.type == GamePeriodType.OvertimeBreak) {
-      period = new GamePeriod((b) => b
+      period = GamePeriod((b) => b
         ..type = GamePeriodType.Overtime
         ..periodNumber = periodNumber);
     } else {
-      period = new GamePeriod((b) => b
+      period = GamePeriod((b) => b
         ..type = GamePeriodType.Regulation
         ..periodNumber
         ..periodNumber);
@@ -343,11 +343,11 @@ class PeriodSelector extends StatelessWidget {
     GamePeriod period;
 
     if (currentPeriod.type == GamePeriodType.Overtime) {
-      period = new GamePeriod((b) => b
+      period = GamePeriod((b) => b
         ..type = GamePeriodType.OvertimeBreak
         ..periodNumber = periodNumber);
     } else {
-      period = new GamePeriod((b) => b
+      period = GamePeriod((b) => b
         ..type = GamePeriodType.Break
         ..periodNumber = periodNumber);
     }
@@ -373,27 +373,27 @@ class PeriodSelector extends StatelessWidget {
       selected = GamePeriodType.Overtime;
       selectedPeriod += 1000;
     }
-    return new Container(
-      padding: new EdgeInsets.only(left: 5.0, right: 5.0),
-      decoration: new BoxDecoration(color: Colors.lightBlue.shade50),
-      child: new DropdownButtonHideUnderline(
-        child: new Row(
+    return Container(
+      padding: EdgeInsets.only(left: 5.0, right: 5.0),
+      decoration: BoxDecoration(color: Colors.lightBlue.shade50),
+      child: DropdownButtonHideUnderline(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            new Expanded(
+            Expanded(
               flex: 1,
-              child: new DropdownButton<int>(
+              child: DropdownButton<int>(
                 items: _buildDurationTypes(context),
                 value: selectedPeriod,
                 onChanged: (int val) => _setPeriodVal(val),
               ),
             ),
-            new SizedBox(
+            SizedBox(
               width: 10.0,
             ),
-            new DropdownButton<GamePeriodType>(
+            DropdownButton<GamePeriodType>(
               value: selected,
               items: _buildPeriodTypes(context),
               onChanged: (GamePeriodType ty) => _setPeriodType(ty),

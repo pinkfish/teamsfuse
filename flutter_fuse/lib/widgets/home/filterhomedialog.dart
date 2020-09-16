@@ -12,7 +12,7 @@ class FilterHomeDialog extends StatefulWidget {
 
   @override
   _FilterHomeDialogState createState() {
-    return new _FilterHomeDialogState();
+    return _FilterHomeDialogState();
   }
 }
 
@@ -43,8 +43,8 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        return new SimpleDialog(
-          title: new Text(messages.teamselect),
+        return SimpleDialog(
+          title: Text(messages.teamselect),
           children: teams,
         );
       },
@@ -64,10 +64,10 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
           .map((String uid) => teamBloc.state.getTeam(uid).name)
           .join((", "));
     }
-    return new InkWell(
-      child: new Row(
+    return InkWell(
+      child: Row(
         children: <Widget>[
-          new Text(pickerText),
+          Text(pickerText),
           const Icon(Icons.arrow_drop_down, color: Colors.black54),
         ],
       ),
@@ -101,8 +101,8 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        return new SimpleDialog(
-          title: new Text(messages.playerselect),
+        return SimpleDialog(
+          title: Text(messages.playerselect),
           children: players,
         );
       },
@@ -124,10 +124,10 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
           .map((String uid) => playerBloc.state.getPlayer(uid).name)
           .join((", "));
     }
-    return new InkWell(
-      child: new Row(
+    return InkWell(
+      child: Row(
         children: <Widget>[
-          new Text(pickerText),
+          Text(pickerText),
           const Icon(Icons.arrow_drop_down, color: Colors.black54),
         ],
       ),
@@ -139,9 +139,9 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
 
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(messages.title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(messages.title),
         actions: const <Widget>[],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -149,41 +149,41 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
         onPressed: () => Navigator.pop(context),
         child: const Icon(Icons.check),
       ),
-      body: new SingleChildScrollView(
-        child: new Column(
+      body: SingleChildScrollView(
+        child: Column(
           children: <Widget>[
             // Open up a drop down with checkboxes for teams.
-            new ListTile(
+            ListTile(
               leading: const Icon(Icons.people),
               title: _showTeamPicker(),
             ),
-            new ListTile(
+            ListTile(
               leading: const Icon(Icons.person),
               title: _showPlayerPicker(),
             ),
-            new ListTile(
+            ListTile(
               leading: const Icon(Icons.gamepad),
-              title: new DropdownButton<GameResult>(
+              title: DropdownButton<GameResult>(
                 value: widget.details.result,
                 items: <DropdownMenuItem<GameResult>>[
-                  new DropdownMenuItem<GameResult>(
-                    child: new Text(messages.noresult),
+                  DropdownMenuItem<GameResult>(
+                    child: Text(messages.noresult),
                     value: null,
                   ),
-                  new DropdownMenuItem<GameResult>(
-                    child: new Text(messages.win),
+                  DropdownMenuItem<GameResult>(
+                    child: Text(messages.win),
                     value: GameResult.Win,
                   ),
-                  new DropdownMenuItem<GameResult>(
-                    child: new Text(messages.loss),
+                  DropdownMenuItem<GameResult>(
+                    child: Text(messages.loss),
                     value: GameResult.Loss,
                   ),
-                  new DropdownMenuItem<GameResult>(
-                    child: new Text(messages.tie),
+                  DropdownMenuItem<GameResult>(
+                    child: Text(messages.tie),
                     value: GameResult.Tie,
                   ),
-                  new DropdownMenuItem<GameResult>(
-                    child: new Text(messages.notfinished),
+                  DropdownMenuItem<GameResult>(
+                    child: Text(messages.notfinished),
                     value: GameResult.Unknown,
                   ),
                 ],
@@ -194,25 +194,25 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
                 },
               ),
             ),
-            new ListTile(
+            ListTile(
               leading: const Icon(CommunityIcons.tshirtCrew),
-              title: new DropdownButton<EventType>(
+              title: DropdownButton<EventType>(
                 value: widget.details.eventType,
                 items: <DropdownMenuItem<EventType>>[
-                  new DropdownMenuItem<EventType>(
-                    child: new Text(messages.noevent),
+                  DropdownMenuItem<EventType>(
+                    child: Text(messages.noevent),
                     value: null,
                   ),
-                  new DropdownMenuItem<EventType>(
-                    child: new Text(messages.gametype),
+                  DropdownMenuItem<EventType>(
+                    child: Text(messages.gametype),
                     value: EventType.Game,
                   ),
-                  new DropdownMenuItem<EventType>(
-                    child: new Text(messages.trainingtype),
+                  DropdownMenuItem<EventType>(
+                    child: Text(messages.trainingtype),
                     value: EventType.Practice,
                   ),
-                  new DropdownMenuItem<EventType>(
-                    child: new Text(messages.eventtype),
+                  DropdownMenuItem<EventType>(
+                    child: Text(messages.eventtype),
                     value: EventType.Event,
                   ),
                 ],
@@ -254,8 +254,8 @@ class _CheckboxDialogItemState extends State<_CheckboxDialogItem> {
 
   @override
   Widget build(BuildContext context) {
-    return new ListTile(
-      leading: new Checkbox(
+    return ListTile(
+      leading: Checkbox(
         value: _isOn,
         onChanged: (bool val) => setState(() {
           _isOn = val;

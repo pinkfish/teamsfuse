@@ -27,14 +27,14 @@ class LeagueOrTournamentDivisonTeamDetails extends StatefulWidget {
 
   @override
   State createState() {
-    return new _LeagueOrTournamentDivisonDetailsState();
+    return _LeagueOrTournamentDivisonDetailsState();
   }
 }
 
 class _LeagueOrTournamentDivisonDetailsState
     extends State<LeagueOrTournamentDivisonTeamDetails> {
   List<LeagueOrTournamentTeam> _sortedTeams;
-  GlobalKey<AnimatedListState> _listState = new GlobalKey<AnimatedListState>();
+  GlobalKey<AnimatedListState> _listState = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
@@ -87,7 +87,7 @@ class _LeagueOrTournamentDivisonDetailsState
     List<LeagueOrTournamentTeam> oldList = _sortedTeams;
     _sortedTeams = newTeams;
     if (oldList == null || _listState.currentState == null) {
-      //  Build the new layout.
+      //  Build the layout.
       return;
     }
 
@@ -180,7 +180,7 @@ class _LeagueOrTournamentDivisonDetailsState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  new ListTile(
+                  ListTile(
                     leading: LeagueImage(
                       leagueOrTournament: state.league,
                       width: 50.0,

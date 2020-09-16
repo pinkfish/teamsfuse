@@ -1,45 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/blocs/singlegameprovider.dart';
-import 'package:flutter_fuse/widgets/games/editformbase.dart';
-import 'package:flutter_fuse/widgets/games/eventeditform.dart';
-import 'package:flutter_fuse/widgets/games/gameeditform.dart';
-import 'package:flutter_fuse/widgets/games/trainingeditform.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../../widgets/blocs/singlegameprovider.dart';
+import '../../widgets/games/editformbase.dart';
+import '../../widgets/games/eventeditform.dart';
+import '../../widgets/games/gameeditform.dart';
+import '../../widgets/games/trainingeditform.dart';
+import '../../widgets/util/savingoverlay.dart';
+
+///
+/// Edit the specific game.
+///
 class EditGameScreen extends StatefulWidget {
+  /// Constructor.
   EditGameScreen(this.gameuid);
 
+  /// The uid of the game to edit.
   final String gameuid;
 
   @override
-  EditGameScreenState createState() {
-    return new EditGameScreenState();
+  _EditGameScreenState createState() {
+    return _EditGameScreenState();
   }
 }
 
-class EditGameScreenState extends State<EditGameScreen> {
-  EditGameScreenState();
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  GlobalKey<GameEditFormState> _gameFormKey =
-      new GlobalKey<GameEditFormState>();
-  GlobalKey<TrainingEditFormState> _trainingFormKey =
-      new GlobalKey<TrainingEditFormState>();
-  GlobalKey<EventEditFormState> _eventFormKey =
-      new GlobalKey<EventEditFormState>();
+class _EditGameScreenState extends State<EditGameScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<GameEditFormState> _gameFormKey =
+      GlobalKey<GameEditFormState>();
+  final GlobalKey<TrainingEditFormState> _trainingFormKey =
+      GlobalKey<TrainingEditFormState>();
+  final GlobalKey<EventEditFormState> _eventFormKey =
+      GlobalKey<EventEditFormState>();
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed(BuildContext context, SingleGameBloc gameBloc) async {
     print('save pressed');
-    Game game = gameBloc.state.game;
+    var game = gameBloc.state.game;
     EditFormBase baseForm;
     switch (game.sharedData.type) {
       case EventType.Game:
@@ -68,9 +71,9 @@ class EditGameScreenState extends State<EditGameScreen> {
   Widget build(BuildContext context) {
     return SingleGameProvider(
       gameUid: widget.gameuid,
-      builder: (BuildContext context, SingleGameBloc gameBloc) => BlocListener(
+      builder: (context, gameBloc) => BlocListener(
         cubit: gameBloc,
-        listener: (BuildContext context, SingleGameState state) {
+        listener: (context, state) {
           if (state is SingleGameSaveFailed) {
             print('error?');
             _showInSnackBar(Messages.of(context).formerror);
@@ -81,26 +84,26 @@ class EditGameScreenState extends State<EditGameScreen> {
         },
         child: Scaffold(
           key: _scaffoldKey,
-          appBar: new AppBar(
-            title: new Text(Messages.of(context).title),
+          appBar: AppBar(
+            title: Text(Messages.of(context).title),
           ),
-          body: new Container(
-            padding: new EdgeInsets.all(16.0),
+          body: Container(
+            padding: EdgeInsets.all(16.0),
             child: BlocBuilder(
                 cubit: gameBloc,
-                builder: (BuildContext context, SingleGameState gameState) {
+                builder: (context, gameState) {
                   Widget form;
                   switch (gameState.game.sharedData.type) {
                     case EventType.Game:
-                      form = new GameEditForm(
-                          game: gameState.game, key: _gameFormKey);
+                      form =
+                          GameEditForm(game: gameState.game, key: _gameFormKey);
                       break;
                     case EventType.Event:
-                      form = new EventEditForm(
+                      form = EventEditForm(
                           game: gameState.game, key: _eventFormKey);
                       break;
                     case EventType.Practice:
-                      form = new TrainingEditForm(
+                      form = TrainingEditForm(
                           game: gameState.game, key: _trainingFormKey);
                       break;
                   }
@@ -110,7 +113,7 @@ class EditGameScreenState extends State<EditGameScreen> {
                   );
                 }),
           ),
-          floatingActionButton: new FloatingActionButton(
+          floatingActionButton: FloatingActionButton(
             onPressed: () => _savePressed(context, gameBloc),
             child: const Icon(Icons.check),
           ),

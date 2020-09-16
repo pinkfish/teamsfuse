@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/byusername.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../../widgets/util/byusername.dart';
+import '../../widgets/util/communityicons.dart';
+import '../../widgets/util/savingoverlay.dart';
 import 'dialog/deleteinvite.dart';
 
 ///
@@ -19,7 +19,7 @@ class AcceptInviteToTeamScreen extends StatefulWidget {
 
   @override
   _AcceptInviteToTeamScreenState createState() {
-    return new _AcceptInviteToTeamScreenState();
+    return _AcceptInviteToTeamScreenState();
   }
 }
 
@@ -27,21 +27,22 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   Set<String> _checked;
   Map<String, String> _data;
   Map<String, String> _original = <String, String>{};
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Map<String, String> _current = <String, String>{};
   Map<String, Relationship> _relationship = <String, Relationship>{};
   Map<String, TextEditingController> _controllers =
       <String, TextEditingController>{};
   SingleInviteBloc _singleInviteBloc;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     // Default to empty.
-    _checked = new Set<String>();
+    _checked = Set<String>();
     _data = <String, String>{};
     _singleInviteBloc = SingleInviteBloc(
+        db: RepositoryProvider.of<DatabaseUpdateModel>(context),
         analytisSubsystem: RepositoryProvider.of<AnalyticsSubsystem>(context),
         inviteUid: widget._inviteUid,
         teamBloc: BlocProvider.of<TeamBloc>(context),
@@ -55,8 +56,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _onChangedPlayer(String name, String uid) {
@@ -90,13 +90,12 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
         found = uid;
       }
       dropdowns.add(
-        new DropdownMenuItem<String>(
-            child: new Text(play.name), value: play.uid),
+        DropdownMenuItem<String>(child: Text(play.name), value: play.uid),
       );
     });
     dropdowns.add(
-      new DropdownMenuItem<String>(
-          child: new Text(Messages.of(context).createnew),
+      DropdownMenuItem<String>(
+          child: Text(Messages.of(context).createNew),
           value: SingleInviteBloc.createNew),
     );
     if (found == null) {
@@ -115,8 +114,8 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
         _relationship[name] = Relationship.Friend;
       }
     }
-    return new Container(
-        child: new DropdownButton<String>(
+    return Container(
+        child: DropdownButton<String>(
       items: dropdowns,
       onChanged: (String val) {
         _onChangedPlayer(name, val);
@@ -148,8 +147,8 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     Relationship.values.forEach((Relationship rel) {
       if (rel != Relationship.Me || disabled) {
         dropdowns.add(
-          new DropdownMenuItem<Relationship>(
-              child: new Text(messages.relationships(rel)), value: rel),
+          DropdownMenuItem<Relationship>(
+              child: Text(messages.relationships(rel)), value: rel),
         );
       }
     });
@@ -160,7 +159,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
       );
     }
     print("${_relationship[name]} $_relationship");
-    return new DropdownButton<Relationship>(
+    return DropdownButton<Relationship>(
       items: dropdowns,
       style: textStyle,
       onChanged: disabled
@@ -182,12 +181,12 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     invite.playerName.forEach(
       (String name) {
         if (!_controllers.containsKey(name)) {
-          _controllers[name] = new TextEditingController();
+          _controllers[name] = TextEditingController();
         }
 
         players.add(
-          new ListTile(
-            leading: new Checkbox(
+          ListTile(
+            leading: Checkbox(
               value: _checked.contains(name),
               onChanged: (bool value) {
                 setState(
@@ -211,14 +210,14 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                   }
                 }),
             subtitle: _current[name].compareTo(SingleInviteBloc.createNew) == 0
-                ? new Column(
+                ? Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       _buildRelationshopDropDown(name, false),
-                      new TextFormField(
+                      TextFormField(
                         controller: _controllers[name],
-                        decoration: new InputDecoration(
+                        decoration: InputDecoration(
                           labelText: messages.newplayername,
                           hintText: messages.newplayernamehint,
                         ),
@@ -227,21 +226,21 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                           _data[name] = newName;
                         },
                       ),
-                      new ByUserNameComponent(userId: invite.sentByUid),
+                      ByUserNameComponent(userId: invite.sentByUid),
                     ],
                   )
-                : new FocusScope(
-                    node: new FocusScopeNode(),
-                    child: new Column(
+                : FocusScope(
+                    node: FocusScopeNode(),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         _buildRelationshopDropDown(name, true),
-                        new TextFormField(
+                        TextFormField(
                           controller: _controllers[name],
                           style: theme.textTheme.subhead.copyWith(
                             color: theme.disabledColor,
                           ),
-                          decoration: new InputDecoration(
+                          decoration: InputDecoration(
                             labelText: messages.newplayername,
                             hintText: messages.newplayernamehint,
                           ),
@@ -250,7 +249,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                             _data[name] = newName;
                           },
                         ),
-                        new ByUserNameComponent(userId: invite.sentByUid),
+                        ByUserNameComponent(userId: invite.sentByUid),
                       ],
                     ),
                   ),
@@ -260,17 +259,17 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     );
 
     players.add(
-      new Row(
+      Row(
         children: <Widget>[
-          new RaisedButton(
+          RaisedButton(
             onPressed: _savePressed,
-            child: new Text(messages.addinvite),
+            child: Text(messages.addinvite),
             color: theme.accentColor,
             textColor: Colors.white,
           ),
-          new FlatButton(
+          FlatButton(
             onPressed: () => showDeleteInvite(context, _singleInviteBloc),
-            child: new Text(messages.deleteinvite),
+            child: Text(messages.deleteinvite),
           ),
         ],
       ),
@@ -287,14 +286,14 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
         value: _singleInviteBloc,
         child: Scaffold(
           key: _scaffoldKey,
-          appBar: new AppBar(
-            title: new Text(Messages.of(context).title),
+          appBar: AppBar(
+            title: Text(Messages.of(context).title),
             actions: <Widget>[
-              new FlatButton(
+              FlatButton(
                 onPressed: () {
                   _savePressed();
                 },
-                child: new Text(
+                child: Text(
                   Messages.of(context).savebuttontext,
                   style: Theme.of(context)
                       .textTheme
@@ -304,8 +303,8 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
               ),
             ],
           ),
-          body: new Scrollbar(
-            child: new SingleChildScrollView(
+          body: Scrollbar(
+            child: SingleChildScrollView(
               child: BlocListener(
                 cubit: _singleInviteBloc,
                 listener: (BuildContext context, SingleInviteState state) {
@@ -329,13 +328,13 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                         saving: !(state is SingleInviteLoaded),
                         child: Form(
                           key: _formKey,
-                          child: new Column(
+                          child: Column(
                             children: <Widget>[
-                                  new ListTile(
+                                  ListTile(
                                     leading:
                                         const Icon(CommunityIcons.tshirtCrew),
-                                    title: new Text(invite.teamName),
-                                    subtitle: new Text(invite.seasonName),
+                                    title: Text(invite.teamName),
+                                    subtitle: Text(invite.seasonName),
                                   )
                                 ] +
                                 players,

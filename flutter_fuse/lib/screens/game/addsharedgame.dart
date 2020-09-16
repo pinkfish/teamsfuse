@@ -1,36 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/blocs/singleleagueortournamentdivisonprovider.dart';
-import 'package:flutter_fuse/widgets/form/leagueteampicker.dart';
-import 'package:flutter_fuse/widgets/games/gameshareddetails.dart';
-import 'package:flutter_fuse/widgets/games/sharedgameeditform.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../services/messages.dart';
+import '../../widgets/blocs/singleleagueortournamentdivisonprovider.dart';
+import '../../widgets/form/leagueteampicker.dart';
+import '../../widgets/games/gameshareddetails.dart';
+import '../../widgets/games/sharedgameeditform.dart';
+import '../../widgets/util/savingoverlay.dart';
+import '../../widgets/util/stepperalwaysvisible.dart';
 
 ///
 /// Screen to display when doing a game add sequence.
 ///
 class AddSharedGameScreen extends StatefulWidget {
+  /// Constructor.
   AddSharedGameScreen(this.leagueUid, this.leagueDivisonUid);
 
+  /// The league divison to add the game to.
   final String leagueDivisonUid;
+
+  /// The league to add the game to.
   final String leagueUid;
 
   @override
   _AddSharedGameScreenState createState() {
-    return new _AddSharedGameScreenState();
+    return _AddSharedGameScreenState();
   }
 }
 
 class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
   _AddSharedGameScreenState();
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<SharedGameEditFormState> _gameFormKey =
-      new GlobalKey<SharedGameEditFormState>();
+      GlobalKey<SharedGameEditFormState>();
   StepState homeAwayStepState = StepState.editing;
   StepState detailsStepState = StepState.disabled;
   StepState createStepStage = StepState.disabled;
@@ -48,16 +53,15 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   Widget _buildForm(BuildContext context) {
-    return new SharedGameEditForm(game: _initGame, key: _gameFormKey);
+    return SharedGameEditForm(game: _initGame, key: _gameFormKey);
   }
 
   Widget _buildSummary(BuildContext context) {
-    return new GameSharedDetails(
+    return GameSharedDetails(
       _initGame,
       adding: true,
     );
@@ -136,31 +140,29 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
   Widget _buildHomeAwayChooser() {
     return SingleLeagueOrTournamentDivisonProvider(
       leagueDivisonUid: widget.leagueDivisonUid,
-      builder: (BuildContext context,
-              SingleLeagueOrTournamentDivisonBloc divisonBloc) =>
-          Column(
+      builder: (context, divisonBloc) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Text(
             Messages.of(context).home,
-            style: Theme.of(context).textTheme.subhead,
+            style: Theme.of(context).textTheme.subtitle1,
           ),
           TournamentOrLeagueTeamPicker(
             leagueOrTournamentDivisonBloc: divisonBloc,
             //tournamentOrLeagueDivisonUid: widget.leagueDivisonUid,
             initialTeamUid: _homeTeamUid,
-            onChanged: (String str) => _homeTeamUid = str,
+            onChanged: (str) => _homeTeamUid = str,
           ),
           Text(
             Messages.of(context).away,
-            style: Theme.of(context).textTheme.subhead,
+            style: Theme.of(context).textTheme.subtitle1,
           ),
           TournamentOrLeagueTeamPicker(
             leagueOrTournamentDivisonBloc: divisonBloc,
             //tournamentOrLeagueDivisonUid: widget.leagueDivisonUid,
             initialTeamUid: _awayTeamUid,
-            onChanged: (String str) => _awayTeamUid = str,
+            onChanged: (str) => _awayTeamUid = str,
           ),
         ],
       ),
@@ -169,40 +171,39 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
-    return new Scaffold(
+    return Scaffold(
       key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(messages.title),
+      appBar: AppBar(
+        title: Text(messages.title),
       ),
       body: BlocProvider(
-        create: (BuildContext context) => addSharedGameBloc,
+        create: (context) => addSharedGameBloc,
         child: BlocListener(
           cubit: addSharedGameBloc,
-          listener: (BuildContext conetext, AddItemState addState) {
+          listener: (conetext, addState) {
             if (addState is AddItemDone) {
               Navigator.pop(context);
             }
             if (addState is AddItemSaveFailed) {
               showDialog<bool>(
                   context: context,
-                  builder: (BuildContext context) {
-                    return new AlertDialog(
-                      title: new Text("Error"),
-                      content: new Text("Error saving the game"),
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text("Error"),
+                      content: Text("Error saving the game"),
                     );
                   });
             }
           },
           child: BlocBuilder(
             cubit: addSharedGameBloc,
-            builder: (BuildContext context, AddItemState addState) =>
-                SavingOverlay(
+            builder: (context, addState) => SavingOverlay(
               saving: addState is AddItemSaving,
-              child: new Container(
-                padding: new EdgeInsets.all(5.0),
-                child: new StepperAlwaysVisible(
+              child: Container(
+                padding: EdgeInsets.all(5.0),
+                child: StepperAlwaysVisible(
                   type: StepperType.horizontal,
                   currentStep: _currentStep,
                   onStepContinue: () {
@@ -212,24 +213,24 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
                     // Go back
                     Navigator.of(context).pop();
                   },
-                  onStepTapped: (int step) {
+                  onStepTapped: (step) {
                     _onStepTapped(step);
                   },
                   steps: <Step>[
-                    new Step(
-                      title: new Text(messages.homeaway),
+                    Step(
+                      title: Text(messages.homeaway),
                       state: homeAwayStepState,
                       isActive: false,
                       content: _buildHomeAwayChooser(),
                     ),
-                    new Step(
-                      title: new Text(messages.details),
+                    Step(
+                      title: Text(messages.details),
                       state: detailsStepState,
                       isActive: _homeTeamUid != null && _awayTeamUid != null,
                       content: _buildForm(context),
                     ),
-                    new Step(
-                      title: new Text(messages.create),
+                    Step(
+                      title: Text(messages.create),
                       state: createStepStage,
                       isActive: _gameFormKey != null &&
                           _gameFormKey.currentState != null &&

@@ -38,9 +38,9 @@ class EditResultDialog extends StatelessWidget {
       }
     }
 
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
           Messages.of(context).gametitlevs(game.sharedData, opponent.name) +
               "  " +
               resultStr,
@@ -49,24 +49,24 @@ class EditResultDialog extends StatelessWidget {
       ),
       backgroundColor: Colors.grey.shade100,
       resizeToAvoidBottomPadding: true,
-      body: new Column(
+      body: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          new Expanded(
-            child: new Container(
-              constraints: new BoxConstraints(),
-              margin: new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-              decoration: new BoxDecoration(color: theme.cardColor),
-              child: new GameLogView(_game),
+          Expanded(
+            child: Container(
+              constraints: BoxConstraints(),
+              margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+              decoration: BoxDecoration(color: theme.cardColor),
+              child: GameLogView(_game),
             ),
           ),
-          new Container(
-            margin: new EdgeInsets.only(
+          Container(
+            margin: EdgeInsets.only(
                 left: 10.0, right: 10.0, bottom: 10.0, top: 1.0),
-            child: new MessageSendBox(_game),
+            child: MessageSendBox(_game),
           ),
-          new ScoreDetails(_game, team),
+          ScoreDetails(_game, team),
         ],
       ),
     );

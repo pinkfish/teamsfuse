@@ -54,10 +54,10 @@ class GameDetailsBase extends StatelessWidget {
           }
           availavilityResult[player] = attend;
           availability.add(
-            new Row(
+            Row(
               children: <Widget>[
-                new Expanded(child: new Text(player.name)),
-                new AttendanceIcon(attend),
+                Expanded(child: Text(player.name)),
+                AttendanceIcon(attend),
               ],
             ),
           );
@@ -66,13 +66,13 @@ class GameDetailsBase extends StatelessWidget {
     }
 
     // Not started, show availability.
-    return new ListTile(
+    return ListTile(
       leading: const Icon(CommunityIcons.bookOpenVariant),
-      title: new GestureDetector(
+      title: GestureDetector(
         onTap: () => openAttendence != null
             ? openAttendence(game, availavilityResult)
             : null,
-        child: new Column(
+        child: Column(
           children: availability,
         ),
       ),
@@ -145,7 +145,7 @@ class GameDetailsBase extends StatelessWidget {
               ? Icon(Icons.error, color: theme.errorColor)
               : Icon(CommunityIcons.bookOpen))
           : Icon(CommunityIcons.bookOpenVariant),
-      title: new RichText(text: title),
+      title: RichText(text: title),
       subtitle: dontMatch
           ? Text(
               Messages.of(context).officialdontmatch,
@@ -161,16 +161,16 @@ class GameDetailsBase extends StatelessWidget {
   Widget _buildGame(BuildContext context, SingleTeamState teamState) {
     print(
         'lat: ${game.sharedData.place.latitude} long: ${game.sharedData.place.longitude} ${game.uid}');
-    Marker marker = new Marker(
+    Marker marker = Marker(
         game.sharedData.place.placeId,
         game.sharedData.place.address,
         game.sharedData.place.latitude.toDouble(),
         game.sharedData.place.longitude.toDouble());
     Uri uri = MapData.instance.provider
         .getStaticUriWithMarkers(<Marker>[marker], width: 900, height: 400);
-    TimeOfDay day = new TimeOfDay.fromDateTime(game.sharedData.tzTime);
-    TimeOfDay dayArrive = new TimeOfDay.fromDateTime(game.tzArriveTime);
-    TimeOfDay dayEnd = new TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
+    TimeOfDay day = TimeOfDay.fromDateTime(game.sharedData.tzTime);
+    TimeOfDay dayArrive = TimeOfDay.fromDateTime(game.tzArriveTime);
+    TimeOfDay dayEnd = TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
     String dateStr = MaterialLocalizations.of(context)
         .formatFullDate(game.sharedData.tzTime);
     String timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
@@ -199,24 +199,24 @@ class GameDetailsBase extends StatelessWidget {
 
     ThemeData theme = Theme.of(context);
 
-    Widget loadingWidget = new Column(
+    Widget loadingWidget = Column(
       children: <Widget>[
-        new Text(Messages.of(context).loading),
-        new CircularProgressIndicator()
+        Text(Messages.of(context).loading),
+        CircularProgressIndicator()
       ],
     );
 
     List<Widget> body = <Widget>[];
     // Map view.
     body.add(
-      new Container(
+      Container(
         height: 250.0,
-        child: new Stack(
+        child: Stack(
           children: <Widget>[
-            new Center(
+            Center(
               child: CachedNetworkImage(
                 placeholder: (context, url) => Center(
-                  child: new Container(
+                  child: Container(
                     padding: const EdgeInsets.all(20.0),
                     child: loadingWidget,
                   ),
@@ -224,10 +224,10 @@ class GameDetailsBase extends StatelessWidget {
                 imageUrl: uri.toString(),
               ),
             ),
-            new Positioned(
+            Positioned(
               right: 20.0,
               bottom: 0.0,
-              child: new FloatingActionButton(
+              child: FloatingActionButton(
                 onPressed: () =>
                     openNavigation != null ? openNavigation(game) : null,
                 child: const Icon(Icons.directions),
@@ -242,16 +242,16 @@ class GameDetailsBase extends StatelessWidget {
 
     // Team details
     body.add(
-      new ListTile(
-        leading: new TeamImage(
+      ListTile(
+        leading: TeamImage(
           team: teamState.team,
           width: 50.0,
           height: 50.0,
         ),
-        title: new Text(teamState.team.name, style: theme.textTheme.title),
+        title: Text(teamState.team.name, style: theme.textTheme.title),
         subtitle:
             arriveAttimeStr != null && game.sharedData.type == EventType.Game
-                ? new Text('arrive at ' + arriveAttimeStr,
+                ? Text('arrive at ' + arriveAttimeStr,
                     style: theme.textTheme.subhead)
                 : null,
         trailing: game.homegame ? const Icon(Icons.home) : null,
@@ -260,9 +260,9 @@ class GameDetailsBase extends StatelessWidget {
 
     // Map details
     body.add(
-      new ListTile(
-        leading: new Icon(Icons.directions),
-        title: new Text(
+      ListTile(
+        leading: Icon(Icons.directions),
+        title: Text(
           dateStr +
               " " +
               timeStr +
@@ -271,12 +271,11 @@ class GameDetailsBase extends StatelessWidget {
                   : " - " + endTimeStr + (tzShortName ?? "")),
           style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
         ),
-        subtitle: new Column(
+        subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new Text(game.sharedData.place.name ?? ''),
-            new Text(
-                game.sharedData.place.address ?? Messages.of(context).unknown),
+            Text(game.sharedData.place.name ?? ''),
+            Text(game.sharedData.place.address ?? Messages.of(context).unknown),
           ],
         ),
       ),
@@ -286,9 +285,9 @@ class GameDetailsBase extends StatelessWidget {
     if (game.sharedData.type == EventType.Game) {
       if (adding) {
         body.add(
-          new ListTile(
-            leading: new Icon(CommunityIcons.bookOpenVariant),
-            title: new Text(Messages.of(context).gametype),
+          ListTile(
+            leading: Icon(CommunityIcons.bookOpenVariant),
+            title: Text(Messages.of(context).gametype),
           ),
         );
       } else {
@@ -306,7 +305,7 @@ class GameDetailsBase extends StatelessWidget {
         body.add(_buildGameResult(context, false, game.sharedData, game.result,
             game.result.inProgress == GameInProgress.InProgress, false));
         if (game.sharedData.time >
-                new DateTime.now()
+                DateTime.now()
                     .subtract(const Duration(hours: 1))
                     .millisecondsSinceEpoch &&
             !game.result.isGameFinished) {
@@ -350,16 +349,16 @@ class GameDetailsBase extends StatelessWidget {
       // Tell people this is a practice or special event.
       if (game.sharedData.type == EventType.Practice) {
         body.add(
-          new ListTile(
+          ListTile(
             leading: const Icon(Icons.train),
-            title: new Text(Messages.of(context).trainingtype),
+            title: Text(Messages.of(context).trainingtype),
           ),
         );
       } else if (game.sharedData.type == EventType.Event) {
         body.add(
-          new ListTile(
+          ListTile(
             leading: const Icon(Icons.plus_one),
-            title: new Text(Messages.of(context).eventtype),
+            title: Text(Messages.of(context).eventtype),
           ),
         );
       }
@@ -367,7 +366,7 @@ class GameDetailsBase extends StatelessWidget {
       if (!adding &&
           game.trackAttendance &&
           game.sharedData.time >
-              new DateTime.now()
+              DateTime.now()
                   .subtract(const Duration(hours: 1))
                   .millisecondsSinceEpoch) {
         body.add(
@@ -383,9 +382,9 @@ class GameDetailsBase extends StatelessWidget {
     // Uniform
     if (game.uniform != null && game.uniform.isNotEmpty) {
       body.add(
-        new ListTile(
+        ListTile(
           leading: const Icon(CommunityIcons.tshirtCrew),
-          title: new Text(game.uniform == null ? 'fluff' : game.uniform),
+          title: Text(game.uniform == null ? 'fluff' : game.uniform),
         ),
       );
     }
@@ -393,9 +392,9 @@ class GameDetailsBase extends StatelessWidget {
     // Notes.
     if (game.notes != null && game.notes.isNotEmpty) {
       body.add(
-        new ListTile(
+        ListTile(
           leading: const Icon(Icons.note),
-          title: new Text(game.notes),
+          title: Text(game.notes),
         ),
       );
     }
@@ -409,14 +408,14 @@ class GameDetailsBase extends StatelessWidget {
         seasonName = Messages.of(context).unknown;
       }
       body.add(
-        new ExpansionTile(
-          title: new Column(
+        ExpansionTile(
+          title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              new Text(
+              Text(
                 Messages.of(context).opponentseason(opponent, seasonName),
               ),
-              new Text(
+              Text(
                 Messages.of(context)
                     .opponentwinrecord(opponent, game.seasonUid, seasonName),
               ),
@@ -425,7 +424,7 @@ class GameDetailsBase extends StatelessWidget {
           initiallyExpanded: false,
           leading: const Icon(Icons.people),
           children: <Widget>[
-            new TeamResultsBySeason(
+            TeamResultsBySeason(
               teamUid: teamState.team.uid,
               seasonUid: season.uid,
               opponentUid: game.opponentUids[0],
@@ -441,18 +440,18 @@ class GameDetailsBase extends StatelessWidget {
             seasonName = otherSeason.name;
 
             cols.add(
-              new Text(
+              Text(
                 Messages.of(context).opponentseason(opponent, seasonName),
               ),
             );
             cols.add(
-              new Text(
+              Text(
                 Messages.of(context)
                     .opponentwinrecord(opponent, otherSeason.uid, seasonName),
               ),
             );
             cols.add(
-              new TeamResultsBySeason(
+              TeamResultsBySeason(
                 teamUid: teamState.team.uid,
                 seasonUid: otherSeason.uid,
                 opponentUid: game.opponentUids[0],
@@ -461,8 +460,8 @@ class GameDetailsBase extends StatelessWidget {
           }
         }
         body.add(
-          new ExpansionTile(
-            title: new Text(Messages.of(context).previousSeasons),
+          ExpansionTile(
+            title: Text(Messages.of(context).previousSeasons),
             initiallyExpanded: false,
             leading: const Icon(Icons.people),
             children: cols,
@@ -471,7 +470,7 @@ class GameDetailsBase extends StatelessWidget {
       }
     }
 
-    return new Column(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: body,
     );

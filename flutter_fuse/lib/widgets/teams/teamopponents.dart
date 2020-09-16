@@ -17,7 +17,7 @@ class TeamOpponents extends StatefulWidget {
 
   @override
   _TeamOpponentsState createState() {
-    return new _TeamOpponentsState();
+    return _TeamOpponentsState();
   }
 }
 
@@ -36,8 +36,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
       BuildContext context, SingleTeamState teamState) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     for (Season s in teamState.fullSeason) {
-      ret.add(
-          new DropdownMenuItem<String>(child: new Text(s.name), value: s.uid));
+      ret.add(DropdownMenuItem<String>(child: Text(s.name), value: s.uid));
     }
 
     return ret;
@@ -50,26 +49,25 @@ class _TeamOpponentsState extends State<TeamOpponents> {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(mess.deleteopponent),
-          content: new SingleChildScrollView(
-            child: new ListBody(
+        return AlertDialog(
+          title: Text(mess.deleteopponent),
+          content: SingleChildScrollView(
+            child: ListBody(
               children: <Widget>[
-                new Text(op.state.opponent.name),
+                Text(op.state.opponent.name),
               ],
             ),
           ),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
             ),
-            new FlatButton(
-              child:
-                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
@@ -88,8 +86,8 @@ class _TeamOpponentsState extends State<TeamOpponents> {
     ThemeData theme = Theme.of(context);
 
     ret.add(
-      new RichText(
-        text: new TextSpan(
+      RichText(
+        text: TextSpan(
           text: Messages.of(context).opponentwithresult,
           style: theme.textTheme.title,
         ),
@@ -114,8 +112,8 @@ class _TeamOpponentsState extends State<TeamOpponents> {
           singleTeamBloc: widget._teamBloc,
           builder: (BuildContext context, SingleOpponentBloc opBloc) {
             return ExpansionTile(
-              title: new RichText(
-                text: new TextSpan(
+              title: RichText(
+                text: TextSpan(
                   style: theme.textTheme.subhead.copyWith(
                       color: record.win > record.loss
                           ? Colors.green
@@ -133,22 +131,22 @@ class _TeamOpponentsState extends State<TeamOpponents> {
               ),
               initiallyExpanded: false,
               children: <Widget>[
-                new BlocBuilder(
+                BlocBuilder(
                     cubit: opBloc,
                     builder: (BuildContext context, SingleOpponentState state) {
                       if (state is SingleOpponentDeleted) {
-                        return new Center(
-                          child: new Text(Messages.of(context).teamdeleted),
+                        return Center(
+                          child: Text(Messages.of(context).teamdeleted),
                         );
                       }
                       if (state.gamesLoaded) {
                         if (state.games.length == 0) {
-                          return new Row(
+                          return Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              new Center(
-                                child: new Text(
+                              Center(
+                                child: Text(
                                     Messages.of(context).unabletoloadgames),
                               ),
                             ],
@@ -165,16 +163,16 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                             }
                           }
                           if (newData.length == 0) {
-                            newData.add(new Text(Messages.of(context).nogames));
+                            newData.add(Text(Messages.of(context).nogames));
                           }
-                          return new Column(
+                          return Column(
                             children: newData,
                           );
                         }
                       } else {
                         opBloc.add(SingleOpponentLoadGames());
-                        return new Center(
-                          child: new Text(Messages.of(context).loading),
+                        return Center(
+                          child: Text(Messages.of(context).loading),
                         );
                       }
                     }),
@@ -185,8 +183,8 @@ class _TeamOpponentsState extends State<TeamOpponents> {
       );
     }
     ret.add(
-      new RichText(
-        text: new TextSpan(
+      RichText(
+        text: TextSpan(
           text: Messages.of(context).opponentwithnoresult,
           style: theme.textTheme.title,
         ),
@@ -204,27 +202,27 @@ class _TeamOpponentsState extends State<TeamOpponents> {
           singleTeamBloc: widget._teamBloc,
           builder: (BuildContext context, SingleOpponentBloc opBloc) =>
               ExpansionTile(
-            title: new Text(op.name),
+            title: Text(op.name),
             initiallyExpanded: false,
             children: <Widget>[
-              new BlocBuilder(
+              BlocBuilder(
                 cubit: opBloc,
                 builder: (BuildContext context, SingleOpponentState state) {
                   if (state is SingleOpponentDeleted) {
-                    return new Center(
-                      child: new Text(Messages.of(context).loading),
+                    return Center(
+                      child: Text(Messages.of(context).loading),
                     );
                   }
 
                   if (state.games.length == 0) {
-                    return new Row(
+                    return Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        new Center(
-                          child: new Text(Messages.of(context).nogames),
+                        Center(
+                          child: Text(Messages.of(context).nogames),
                         ),
-                        new IconButton(
+                        IconButton(
                           onPressed: () => _deleteOpponent(opBloc),
                           icon: const Icon(Icons.delete),
                           color: Theme.of(context).primaryColorDark,
@@ -246,10 +244,9 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                       }
                     }
                     if (newData.length == 0) {
-                      newData.add(
-                          new Text(Messages.of(context).nogamesthisseason));
+                      newData.add(Text(Messages.of(context).nogamesthisseason));
                     }
-                    return new Column(
+                    return Column(
                       children: newData,
                     );
                   }
@@ -279,13 +276,13 @@ class _TeamOpponentsState extends State<TeamOpponents> {
       },
       child: Column(
         children: <Widget>[
-          new Row(
+          Row(
             children: <Widget>[
               BlocBuilder(
                 cubit: widget._teamBloc,
                 builder: (BuildContext context, SingleTeamState teamState) =>
                     DropdownButton<String>(
-                  hint: new Text(messsages.seasonselect),
+                  hint: Text(messsages.seasonselect),
                   value: _seasonUid,
                   items: _buildItems(context, teamState),
                   onChanged: (String val) {
@@ -298,12 +295,12 @@ class _TeamOpponentsState extends State<TeamOpponents> {
               ),
             ],
           ),
-          new Expanded(
-            child: new Container(
-              constraints: new BoxConstraints(),
-              margin: new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-              decoration: new BoxDecoration(color: theme.cardColor),
-              child: new SingleChildScrollView(
+          Expanded(
+            child: Container(
+              constraints: BoxConstraints(),
+              margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+              decoration: BoxDecoration(color: theme.cardColor),
+              child: SingleChildScrollView(
                 child: BlocBuilder(
                   cubit: widget._teamBloc,
                   builder: (BuildContext context, SingleTeamState teamState) =>

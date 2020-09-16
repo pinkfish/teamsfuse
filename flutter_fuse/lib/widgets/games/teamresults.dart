@@ -37,13 +37,13 @@ class TeamResultsByOpponent extends StatelessWidget {
           cubit: teamBloc,
           builder: (BuildContext context, SingleOpponentState state) {
             if (state is SingleOpponentDeleted) {
-              return new Center(
-                child: new Text(Messages.of(context).loading),
+              return Center(
+                child: Text(Messages.of(context).loading),
               );
             }
             if (!state.gamesLoaded) {
-              return new Center(
-                child: new Text(Messages.of(context).nogames),
+              return Center(
+                child: Text(Messages.of(context).nogames),
               );
             } else {
               List<Widget> newData = <Widget>[];
@@ -77,9 +77,9 @@ class TeamResultsByOpponent extends StatelessWidget {
                           .formatMediumDate(game.sharedData.tzTime);
                     }
                     newData.add(
-                      new Container(
+                      Container(
                         margin: const EdgeInsets.only(top: 10.0, left: 10.0),
-                        child: new Text(
+                        child: Text(
                           textToShow,
                           style: Theme.of(context).textTheme.subhead.copyWith(
                                 color: Theme.of(context).accentColor,
@@ -106,9 +106,9 @@ class TeamResultsByOpponent extends StatelessWidget {
               }
 
               if (newData.length == 0) {
-                newData.add(new Text(Messages.of(context).nogames));
+                newData.add(Text(Messages.of(context).nogames));
               }
-              return new Column(
+              return Column(
                 children: newData,
               );
             }
@@ -145,13 +145,13 @@ class TeamResultsBySeason extends StatelessWidget {
           builder: (BuildContext context, SingleSeasonState state) {
             seasonBloc.add(SingleSeasonLoadGames());
             if (state is SingleOpponentDeleted) {
-              return new Center(
-                child: new Text(Messages.of(context).teamdeleted),
+              return Center(
+                child: Text(Messages.of(context).teamdeleted),
               );
             }
             if (!state.loadedGames) {
-              return new Center(
-                child: new Text(Messages.of(context).loading),
+              return Center(
+                child: Text(Messages.of(context).loading),
               );
             } else {
               List<Widget> newData = <Widget>[];
@@ -185,9 +185,9 @@ class TeamResultsBySeason extends StatelessWidget {
                           .formatMediumDate(game.sharedData.tzTime);
                     }
                     newData.add(
-                      new Container(
+                      Container(
                         margin: const EdgeInsets.only(top: 10.0, left: 10.0),
-                        child: new Text(
+                        child: Text(
                           textToShow,
                           style: Theme.of(context).textTheme.subhead.copyWith(
                                 color: Theme.of(context).accentColor,
@@ -209,8 +209,8 @@ class TeamResultsBySeason extends StatelessWidget {
                             print("Display ${state.game.uid}");
                             return GameCard(gameUid: state.game.uid);
                           }
-                          return new Center(
-                            child: new Text(Messages.of(context).loading),
+                          return Center(
+                            child: Text(Messages.of(context).loading),
                           );
                         },
                       ),
@@ -220,9 +220,9 @@ class TeamResultsBySeason extends StatelessWidget {
               }
 
               if (newData.length == 0) {
-                newData.add(new Text(Messages.of(context).nogames));
+                newData.add(Text(Messages.of(context).nogames));
               }
-              return new Column(
+              return Column(
                 children: newData,
               );
             }

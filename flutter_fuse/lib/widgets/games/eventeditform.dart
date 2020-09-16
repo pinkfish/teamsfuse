@@ -21,21 +21,21 @@ class EventEditForm extends StatefulWidget {
 
   @override
   EventEditFormState createState() {
-    return new EventEditFormState();
+    return EventEditFormState();
   }
 }
 
 class EventEditFormState extends State<EventEditForm> with EditFormBase {
-  ScrollController _scrollController = new ScrollController();
+  ScrollController _scrollController = ScrollController();
   GlobalKey<DateTimeFormFieldState> _endTimeKey =
-      new GlobalKey<DateTimeFormFieldState>();
+      GlobalKey<DateTimeFormFieldState>();
   bool autoValidate = false;
-  GlobalKey<FormState> _formState = new GlobalKey<FormState>();
+  GlobalKey<FormState> _formState = GlobalKey<FormState>();
   DateTime _atDate;
   DateTime _atEnd;
   GamePlaceBuilder _place;
   String _timezone;
-  FocusNode _focusNodeNotes = new FocusNode();
+  FocusNode _focusNodeNotes = FocusNode();
   GameBuilder builder;
 
   @override
@@ -60,21 +60,16 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
   GameBuilder get finalGameResult {
     _formState.currentState.save();
     // Add the date time and the time together.
-    builder.sharedData.time = new TZDateTime(
-            getLocation(_timezone),
-            _atDate.year,
-            _atDate.month,
-            _atDate.day,
-            _atDate.hour,
-            _atDate.minute)
+    builder.sharedData.time = TZDateTime(getLocation(_timezone), _atDate.year,
+            _atDate.month, _atDate.day, _atDate.hour, _atDate.minute)
         .millisecondsSinceEpoch;
     builder.arriveTime = widget.game.sharedData.time;
     DateTime end = _atEnd;
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
-      end.add(new Duration(days: 1));
+      end.add(Duration(days: 1));
     }
-    builder.sharedData.endTime = new TZDateTime(getLocation(_timezone),
-            end.year, end.month, end.day, end.hour, end.minute)
+    builder.sharedData.endTime = TZDateTime(getLocation(_timezone), end.year,
+            end.month, end.day, end.hour, end.minute)
         .millisecondsSinceEpoch;
     builder.sharedData.endTime = _atEnd.millisecondsSinceEpoch;
     builder.sharedData.place = _place;
@@ -106,15 +101,15 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
   @override
   Widget build(BuildContext context) {
     Messages messages = Messages.of(context);
-    return new Scrollbar(
-      child: new SingleChildScrollView(
+    return Scrollbar(
+      child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         controller: _scrollController,
-        child: new Form(
+        child: Form(
           key: _formState,
           autovalidate: autoValidate,
-          child: new DropdownButtonHideUnderline(
-            child: new Column(
+          child: DropdownButtonHideUnderline(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
@@ -123,20 +118,20 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                   teamUid: builder.teamUid,
                   builder: (BuildContext context, SingleTeamBloc teamBloc) =>
                       SeasonFormField(
-                        decoration: new InputDecoration(
-                          icon: const Icon(CommunityIcons.calendarQuestion),
-                          labelText: messages.season,
-                        ),
-                        initialValue: widget.game.seasonUid,
-                        teamBloc: teamBloc,
-                        onSaved: (String value) {
-                          builder.seasonUid = value;
-                        },
-                      ),
+                    decoration: InputDecoration(
+                      icon: const Icon(CommunityIcons.calendarQuestion),
+                      labelText: messages.season,
+                    ),
+                    initialValue: widget.game.seasonUid,
+                    teamBloc: teamBloc,
+                    onSaved: (String value) {
+                      builder.seasonUid = value;
+                    },
+                  ),
                 ),
-                new DateTimeFormField(
+                DateTimeFormField(
                   labelText: Messages.of(context).gametime,
-                  decoration: new InputDecoration(
+                  decoration: InputDecoration(
                     icon: const Icon(Icons.calendar_today),
                   ),
                   initialValue: _atDate,
@@ -146,10 +141,10 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                     _atDate = value;
                   },
                 ),
-                new DateTimeFormField(
+                DateTimeFormField(
                   labelText: Messages.of(context).trainingend,
                   key: _endTimeKey,
-                  decoration: new InputDecoration(
+                  decoration: InputDecoration(
                     icon: const Icon(CommunityIcons.calendarRange),
                   ),
                   initialValue: _atEnd,
@@ -158,17 +153,17 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                     _atEnd = value;
                   },
                 ),
-                new ListTile(
+                ListTile(
                   onTap: _showPlacesPicker,
                   leading: const Icon(Icons.place),
-                  title: new Text(_place.name ?? messages.unknown),
-                  subtitle: new Text(_place.address ?? messages.unknown),
+                  title: Text(_place.name ?? messages.unknown),
+                  subtitle: Text(_place.address ?? messages.unknown),
                 ),
-                new EnsureVisibleWhenFocused(
+                EnsureVisibleWhenFocused(
                   focusNode: _focusNodeNotes,
-                  child: new TextFormField(
+                  child: TextFormField(
                     initialValue: widget.game.notes,
-                    decoration: new InputDecoration(
+                    decoration: InputDecoration(
                       hintText: messages.trainingnoteshint,
                       labelText: messages.trainingnotes,
                       icon: const Icon(Icons.note),

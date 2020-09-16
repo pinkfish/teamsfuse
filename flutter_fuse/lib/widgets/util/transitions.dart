@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
+import 'package:flutter/material.dart';
 
 SlideTransition makeSlideTransition(
     bool fromLeft, Animation<double> animation) {
@@ -16,7 +16,7 @@ SlideTransition makeSlideTransition(
     endOffset = topLeft;
   }
 
-  return new SlideTransition(
-      position: new Tween<Offset>(begin: startOffset, end: endOffset)
-          .animate(animation));
+  return SlideTransition(
+      position:
+          Tween<Offset>(begin: startOffset, end: endOffset).animate(animation));
 }

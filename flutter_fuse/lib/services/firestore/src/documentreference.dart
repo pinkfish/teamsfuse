@@ -51,7 +51,7 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   Future<wfs.DocumentSnapshotWrapper> get() async {
     fs.DocumentSnapshot snap = await _doc.get();
     if (snap != null) {
-      return new DocumentSnapshot(doc: snap);
+      return DocumentSnapshot(doc: snap);
     }
     return null;
   }
@@ -66,22 +66,20 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   /// document.
   @override
   wfs.CollectionReferenceWrapper collection(String collectionPath) {
-    return new CollectionReference(_doc.collection(collectionPath));
+    return CollectionReference(_doc.collection(collectionPath));
   }
 
   /// Notifies of documents at this location
   @override
   Stream<wfs.DocumentSnapshotWrapper> snapshots() {
-    return _doc
-        .snapshots()
-        .transform(new DocumentSnapshotStreamTransformer(this));
+    return _doc.snapshots().transform(DocumentSnapshotStreamTransformer(this));
   }
 }
 
 class DocumentSnapshotStreamTransformer extends StreamTransformerBase<
     fs.DocumentSnapshot, wfs.DocumentSnapshotWrapper> {
   DocumentSnapshotStreamTransformer(this.ref) {
-    _controller = new StreamController<wfs.DocumentSnapshotWrapper>(
+    _controller = StreamController<wfs.DocumentSnapshotWrapper>(
         onListen: _onListen,
         onCancel: _onCancel,
         onPause: () {
@@ -115,7 +113,7 @@ class DocumentSnapshotStreamTransformer extends StreamTransformerBase<
   //
 
   void onData(fs.DocumentSnapshot data) {
-    _controller.add(new DocumentSnapshot(doc: data));
+    _controller.add(DocumentSnapshot(doc: data));
   }
 
   ///

@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/addinvitetoleaguedialog.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/addseasondialog.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdetails.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../services/messages.dart';
 import '../../widgets/blocs/singleleagueortournamentprovider.dart';
+import '../../widgets/drawer/fuseddrawer.dart';
+import '../../widgets/leagueortournament/addinvitetoleaguedialog.dart';
+import '../../widgets/leagueortournament/addseasondialog.dart';
+import '../../widgets/leagueortournament/leagueortournamentdetails.dart';
+import '../../widgets/leagueortournament/leagueortournamentname.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 class LeagueScreen extends StatelessWidget {
   LeagueScreen(this.leagueUid);
@@ -61,25 +61,24 @@ class LeagueScreen extends StatelessWidget {
                   print('league stuff ${state.league}');
                   if (state.league.isAdmin()) {
                     actions.add(
-                      new PopupMenuButton<String>(
+                      PopupMenuButton<String>(
                         onSelected: (String str) =>
                             _doAction(context, str, bloc),
                         itemBuilder: (BuildContext context) {
                           return <PopupMenuItem<String>>[
-                            new PopupMenuItem<String>(
+                            PopupMenuItem<String>(
                               value: "season",
-                              child: new Text(Messages.of(context).addseason),
+                              child: Text(Messages.of(context).addseason),
                             ),
-                            new PopupMenuItem<String>(
-                              child: new Text(Messages.of(context).addadmin),
+                            PopupMenuItem<String>(
+                              child: Text(Messages.of(context).addadmin),
                               value: "admin",
                             ),
-                            new PopupMenuItem<String>(
-                              child: new Text(
-                                  Messages.of(context).editimagebutton),
+                            PopupMenuItem<String>(
+                              child: Text(Messages.of(context).editimagebutton),
                               value: "image",
                             ),
-                            new PopupMenuItem<String>(
+                            PopupMenuItem<String>(
                               value: 'edit',
                               child: Text(Messages.of(context).editbuttontext),
                             )
@@ -91,11 +90,11 @@ class LeagueScreen extends StatelessWidget {
                 }
 
                 return Scaffold(
-                  appBar: new AppBar(
-                    title: new LeagueOrTournamentName(leagueUid),
+                  appBar: AppBar(
+                    title: LeagueOrTournamentName(leagueUid),
                     actions: actions,
                   ),
-                  drawer: new FusedDrawer(DrawerMode.league),
+                  drawer: FusedDrawer(DrawerMode.league),
                   floatingActionButton: fab,
                   floatingActionButtonLocation:
                       FloatingActionButtonLocation.endFloat,

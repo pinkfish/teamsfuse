@@ -19,26 +19,25 @@ class ClubMembers extends StatelessWidget {
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text(mess.deletemember),
-          content: new SingleChildScrollView(
-            child: new ListBody(
+        return AlertDialog(
+          title: Text(mess.deletemember),
+          content: SingleChildScrollView(
+            child: ListBody(
               children: <Widget>[
-                new Text(mess.confirmdeletemember(profile)),
+                Text(mess.confirmdeletemember(profile)),
               ],
             ),
           ),
           actions: <Widget>[
-            new FlatButton(
-              child: new Text(MaterialLocalizations.of(context).okButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
             ),
-            new FlatButton(
-              child:
-                  new Text(MaterialLocalizations.of(context).cancelButtonLabel),
+            FlatButton(
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
@@ -59,13 +58,13 @@ class ClubMembers extends StatelessWidget {
       if (profile != null) {
         AuthenticationBloc authenticationBloc =
             BlocProvider.of<AuthenticationBloc>(context);
-        return new ListTile(
-          leading: new UserImage(profile),
-          title: new Text(profile.displayName),
-          subtitle: new Text(admin ? Messages.of(context).administrator : ""),
+        return ListTile(
+          leading: UserImage(profile),
+          title: Text(profile.displayName),
+          subtitle: Text(admin ? Messages.of(context).administrator : ""),
           trailing: club.isAdmin() &&
                   profile.uid != authenticationBloc.currentUser.uid
-              ? new IconButton(
+              ? IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () => _deleteMember(context, profile),
                 )
@@ -73,9 +72,9 @@ class ClubMembers extends StatelessWidget {
         );
       }
     }
-    return new ListTile(
+    return ListTile(
       leading: const Icon(Icons.help),
-      title: new Text(Messages.of(context).loading),
+      title: Text(Messages.of(context).loading),
     );
   }
 
@@ -119,8 +118,8 @@ class ClubMembers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new SingleChildScrollView(
-      child: new Column(
+    return SingleChildScrollView(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: _buildMembers(context),

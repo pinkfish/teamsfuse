@@ -24,10 +24,10 @@ class NumberPickerFormField extends FormField<num> {
               final InputDecoration effectiveDecoration = (decoration ??
                       const InputDecoration())
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme);
-              return new InputDecorator(
+              return InputDecorator(
                   decoration:
                       effectiveDecoration.copyWith(errorText: field.errorText),
-                  child: new NumberPicker.integer(
+                  child: NumberPicker.integer(
                       initialValue: state.value.toInt(),
                       minValue: minValue.toInt(),
                       maxValue: maxValue.toInt(),
@@ -38,7 +38,7 @@ class NumberPickerFormField extends FormField<num> {
             });
 
   @override
-  NumberPickerFormFieldState createState() => new NumberPickerFormFieldState();
+  NumberPickerFormFieldState createState() => NumberPickerFormFieldState();
 }
 
 class NumberPickerFormFieldState extends FormFieldState<num> {}

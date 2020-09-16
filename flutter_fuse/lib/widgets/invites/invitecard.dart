@@ -13,11 +13,11 @@ class InviteCard extends StatelessWidget {
       cubit: bloc,
       builder: (BuildContext context, InviteState state) {
         if (bloc.state.invites.length > 0) {
-          Widget card = new Card(
+          Widget card = Card(
             color: Colors.limeAccent,
-            child: new ListTile(
+            child: ListTile(
               leading: const Icon(CommunityIcons.emailOpen),
-              title: new Text(
+              title: Text(
                 Messages.of(context).invitedpeople(bloc.state.invites.length),
               ),
             ),
@@ -25,7 +25,7 @@ class InviteCard extends StatelessWidget {
           return card;
         }
 
-        return new SizedBox(
+        return SizedBox(
           width: 1.0,
         );
       },

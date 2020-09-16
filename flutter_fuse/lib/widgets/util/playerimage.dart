@@ -32,7 +32,7 @@ class PlayerImage extends StatelessWidget {
 
       if (player.photoUrl != null && player.photoUrl.isNotEmpty) {
         print('Cached ${player.photoUrl}');
-        return new Future<String>(() => player.photoUrl);
+        return Future<String>(() => player.photoUrl);
       } else {
         return null;
       }
@@ -68,7 +68,7 @@ class PlayerImage extends StatelessWidget {
                   useOldImageOnUrlChange: true,
                   imageUrl: snap.data ?? "",
                   placeholder: (BuildContext context, String url) =>
-                      new Image.asset("assets/images/defaultavatar2.png"),
+                      Image.asset("assets/images/defaultavatar2.png"),
                   errorWidget: (BuildContext context, String url, e) => Image(
                       image:
                           const AssetImage("assets/images/defaultavatar2.png")),

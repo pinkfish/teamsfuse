@@ -19,7 +19,7 @@ class ClubSelection extends StatefulWidget {
 
   @override
   _ClubSelectionState createState() {
-    return new _ClubSelectionState();
+    return _ClubSelectionState();
   }
 }
 
@@ -44,15 +44,15 @@ class _ClubSelectionState extends State<ClubSelection> {
     List<Widget> widgets = <Widget>[];
     print('$_clubUid');
     widgets.add(
-      new ClubPicker(
+      ClubPicker(
         onChanged: _updateClub,
         clubUid: _clubUid ?? ClubPicker.noClub,
         selectedTitle: _clubUid != null,
       ),
     );
 
-    return new DropdownButtonHideUnderline(
-      child: new Column(
+    return DropdownButtonHideUnderline(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: widgets,

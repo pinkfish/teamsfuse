@@ -10,7 +10,7 @@ class Transaction extends wfs.TransactionWrapper {
       wfs.DocumentReferenceWrapper ref) async {
     if (ref is DocumentReference) {
       fs.DocumentSnapshot snap = await transaction.get(ref._doc);
-      return new DocumentSnapshot(doc: snap);
+      return DocumentSnapshot(doc: snap);
     }
     throw ArgumentError("Not a DocumentReference");
   }

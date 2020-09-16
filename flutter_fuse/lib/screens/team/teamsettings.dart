@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
-import 'package:flutter_fuse/widgets/teams/teamsettings.dart';
 import 'package:fusemodel/blocs.dart';
+
+import '../../services/messages.dart';
+import '../../widgets/blocs/singleteamprovider.dart';
+import '../../widgets/teams/teamsettings.dart';
 
 class TeamSettingsScreen extends StatelessWidget {
   TeamSettingsScreen(this.teamUid);
@@ -12,8 +13,8 @@ class TeamSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: SingleTeamProvider(
           teamUid: teamUid,
           builder: (BuildContext context, SingleTeamBloc bloc) => BlocBuilder(
@@ -24,7 +25,7 @@ class TeamSettingsScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: new TeamSettings(teamUid),
+      body: TeamSettings(teamUid),
     );
   }
 }

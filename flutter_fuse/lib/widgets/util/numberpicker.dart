@@ -25,7 +25,7 @@ class NumberPicker extends StatefulWidget {
         assert(initialValue >= minValue && initialValue <= maxValue),
         selectedDecimalValue = -1,
         decimalPlaces = 0,
-        intScrollController = new ScrollController(
+        intScrollController = ScrollController(
           initialScrollOffset: (initialValue - minValue) * itemExtent,
         ),
         decimalScrollController = null,
@@ -52,10 +52,10 @@ class NumberPicker extends StatefulWidget {
         selectedDecimalValue = ((initialValue - initialValue.floorToDouble()) *
                 pow(10, decimalPlaces))
             .round(),
-        intScrollController = new ScrollController(
+        intScrollController = ScrollController(
           initialScrollOffset: (initialValue.floor() - minValue) * itemExtent,
         ),
-        decimalScrollController = new ScrollController(
+        decimalScrollController = ScrollController(
           initialScrollOffset: ((initialValue - initialValue.floorToDouble()) *
                       pow(10, decimalPlaces))
                   .roundToDouble() *
@@ -109,7 +109,7 @@ class NumberPicker extends StatefulWidget {
 
   @override
   NumberPickerState createState() {
-    return new NumberPickerState();
+    return NumberPickerState();
   }
 }
 
@@ -147,7 +147,7 @@ class NumberPickerState extends State<NumberPicker> {
     if (widget.decimalPlaces == 0) {
       return _integerListView(themeData);
     } else {
-      return new Row(
+      return Row(
         children: <Widget>[
           _integerListView(themeData),
           _decimalListView(themeData),
@@ -168,17 +168,17 @@ class NumberPickerState extends State<NumberPicker> {
 
     int itemCount = widget.maxValue - widget.minValue + 3;
 
-    return new NotificationListener<Notification>(
-      child: new Container(
+    return NotificationListener<Notification>(
+      child: Container(
         height: widget._listViewHeight,
         width: widget.listViewWidth,
-        child: new ListView.builder(
+        child: ListView.builder(
           controller: widget.intScrollController,
           itemExtent: widget.itemExtent,
           itemCount: itemCount,
           physics: widget.disabled
-              ? new NeverScrollableScrollPhysics()
-              : new AlwaysScrollableScrollPhysics(),
+              ? NeverScrollableScrollPhysics()
+              : AlwaysScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
             final int value = widget.minValue + index - 1;
 
@@ -189,9 +189,9 @@ class NumberPickerState extends State<NumberPicker> {
             bool isExtra = index == 0 || index == itemCount - 1;
 
             return isExtra
-                ? new Container() //empty first and last element
-                : new Center(
-                    child: new Text(value.toString(), style: itemStyle),
+                ? Container() //empty first and last element
+                : Center(
+                    child: Text(value.toString(), style: itemStyle),
                   );
           },
         ),
@@ -209,17 +209,17 @@ class NumberPickerState extends State<NumberPicker> {
         ? 3
         : (pow(10, widget.decimalPlaces) + 2).toInt();
 
-    return new NotificationListener<Notification>(
-      child: new Container(
+    return NotificationListener<Notification>(
+      child: Container(
         height: widget._listViewHeight,
         width: widget.listViewWidth,
-        child: new ListView.builder(
+        child: ListView.builder(
           controller: widget.decimalScrollController,
           itemExtent: widget.itemExtent,
           itemCount: itemCount,
           physics: widget.disabled
-              ? new NeverScrollableScrollPhysics()
-              : new AlwaysScrollableScrollPhysics(),
+              ? NeverScrollableScrollPhysics()
+              : AlwaysScrollableScrollPhysics(),
           itemBuilder: (BuildContext context, int index) {
             final int value = index - 1;
 
@@ -231,9 +231,9 @@ class NumberPickerState extends State<NumberPicker> {
             bool isExtra = index == 0 || index == itemCount - 1;
 
             return isExtra
-                ? new Container() //empty first and last element
-                : new Center(
-                    child: new Text(
+                ? Container() //empty first and last element
+                : Center(
+                    child: Text(
                         value.toString().padLeft(widget.decimalPlaces, '0'),
                         style: itemStyle),
                   );
@@ -272,7 +272,7 @@ class NumberPickerState extends State<NumberPicker> {
           newValue = (intValueInTheMiddle);
         } else {
           if (intValueInTheMiddle == widget.maxValue) {
-            //if new value is maxValue, then return that value and ignore decimal
+            //if value is maxValue, then return that value and ignore decimal
             newValue = (intValueInTheMiddle.toDouble());
             animateDecimal(0);
           } else {
@@ -334,6 +334,6 @@ class NumberPickerState extends State<NumberPicker> {
   ///scroll to selected value
   void _animate(ScrollController scrollController, double value) {
     scrollController.animateTo(value,
-        duration: new Duration(seconds: 1), curve: new ElasticOutCurve());
+        duration: Duration(seconds: 1), curve: ElasticOutCurve());
   }
 }

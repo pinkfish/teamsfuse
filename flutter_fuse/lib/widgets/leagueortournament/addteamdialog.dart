@@ -5,13 +5,12 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 
 class AddTeamDialog extends Dialog {
-  final TextEditingController _controller = new TextEditingController();
+  final TextEditingController _controller = TextEditingController();
 
   static Future<bool> showTeamDialog(BuildContext context,
       SingleLeagueOrTournamentDivisonBloc leagueOrTournmantDivison) async {
     String teamName = await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => new AddTeamDialog());
+        context: context, builder: (BuildContext context) => AddTeamDialog());
     if (teamName == null) {
       return false;
     }
@@ -47,7 +46,7 @@ class AddTeamDialog extends Dialog {
             autofocus: true,
             controller: _controller,
             keyboardType: TextInputType.text,
-            decoration: new InputDecoration(
+            decoration: InputDecoration(
               labelText: Messages.of(context).teamname,
               hintText: Messages.of(context).teamnamehint,
             ),
@@ -77,6 +76,6 @@ class AddTeamDialog extends Dialog {
       ),
     );
 
-    return new Dialog(child: dialogChild);
+    return Dialog(child: dialogChild);
   }
 }

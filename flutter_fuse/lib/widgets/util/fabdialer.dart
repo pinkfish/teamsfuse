@@ -16,7 +16,7 @@ class FabDialer extends StatefulWidget {
   final bool disabled;
 
   @override
-  FabDialerState createState() => new FabDialerState();
+  FabDialerState createState() => FabDialerState();
 }
 
 class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
@@ -29,7 +29,7 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    controller = new AnimationController(
+    controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 180),
     );
@@ -87,21 +87,21 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
     });
 
     // Update all the menu items.
-    return new Container(
-      margin: new EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-      child: new Column(
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          new Column(
+          Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: widget.menu,
           ),
-          new Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              new FloatingActionButton(
-                child: new RotationTransition(
-                  turns: new AlwaysStoppedAnimation<double>(_angle / 360),
+              FloatingActionButton(
+                child: RotationTransition(
+                  turns: AlwaysStoppedAnimation<double>(_angle / 360),
                   child: widget.icon,
                 ),
                 backgroundColor: widget.color,

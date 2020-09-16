@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/playername.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../services/messages.dart';
+import '../../widgets/util/playername.dart';
+import '../../widgets/util/savingoverlay.dart';
+import '../../widgets/util/teamimage.dart';
 
 class ShowMessageScreen extends StatelessWidget {
   ShowMessageScreen({this.messageUid});
@@ -33,21 +34,21 @@ class ShowMessageScreen extends StatelessWidget {
     List<Widget> kids = <Widget>[];
     _readMessage(context);
     kids.add(
-      new ListTile(
+      ListTile(
         leading: const Icon(Icons.subject),
-        title: new Text(mess.subject),
+        title: Text(mess.subject),
       ),
     );
 
     TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
 
     kids.add(
-      new ListTile(
-        leading: new TeamImage(
+      ListTile(
+        leading: TeamImage(
           teamUid: mess.teamUid,
           width: 30.0,
         ),
-        title: new Text(
+        title: Text(
           teamBloc.state.getTeam(mess.teamUid).name,
         ),
       ),
@@ -56,43 +57,43 @@ class ShowMessageScreen extends StatelessWidget {
     List<Widget> players = <Widget>[];
     mess.recipients.forEach((String id, MessageRecipient rec) {
       players.add(
-        new ListTile(
+        ListTile(
           leading: const Icon(Icons.person),
-          title: new PlayerName(playerUid: rec.playerId),
+          title: PlayerName(playerUid: rec.playerId),
         ),
       );
     });
     kids.add(
-      new ExpansionTile(
+      ExpansionTile(
         leading: const Icon(Icons.people),
-        title: new Text(messages.players),
+        title: Text(messages.players),
         children: players,
       ),
     );
 
     kids.add(
-      new ListTile(
+      ListTile(
         leading: const Icon(Icons.calendar_today),
-        title: new Text(
+        title: Text(
           MaterialLocalizations.of(context).formatMediumDate(mess.tzTimeSent) +
               " " +
               MaterialLocalizations.of(context).formatTimeOfDay(
-                new TimeOfDay.fromDateTime(mess.tzTimeSent),
+                TimeOfDay.fromDateTime(mess.tzTimeSent),
               ),
         ),
       ),
     );
     kids.add(
-      new Row(
+      Row(
         children: <Widget>[
-          new FlatButton(
+          FlatButton(
             onPressed: () => _archiveMessage(context),
-            child: new Text(messages.archivemessage),
+            child: Text(messages.archivemessage),
             textColor: Theme.of(context).accentColor,
           ),
-          new FlatButton(
+          FlatButton(
             onPressed: () => _deleteMessage(context),
-            child: new Text(messages.deletemessage),
+            child: Text(messages.deletemessage),
             textColor: Theme.of(context).accentColor,
           ),
         ],
@@ -100,23 +101,23 @@ class ShowMessageScreen extends StatelessWidget {
     );
 
     kids.add(
-      new Divider(
+      Divider(
         color: Colors.grey.shade700,
       ),
     );
 
     kids.add(
-      new Container(
+      Container(
         alignment: Alignment.topLeft,
-        margin: new EdgeInsets.only(left: 15.0),
-        child: new Text(
+        margin: EdgeInsets.only(left: 15.0),
+        child: Text(
             state.body == null ? Messages.of(context).loading : state.body),
       ),
     );
 
-    return new Scrollbar(
-      child: new SingleChildScrollView(
-        child: new Column(
+    return Scrollbar(
+      child: SingleChildScrollView(
+        child: Column(
           children: kids,
         ),
       ),
@@ -129,9 +130,9 @@ class ShowMessageScreen extends StatelessWidget {
     var bloc = SingleMessageBloc(
         messageUid: messageUid,
         messageBloc: BlocProvider.of<MessagesBloc>(context));
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(messages.message),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(messages.message),
       ),
       body: BlocProvider(
         create: (BuildContext context) => bloc,

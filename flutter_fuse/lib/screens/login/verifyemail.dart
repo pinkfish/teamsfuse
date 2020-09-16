@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
+
+import '../../services/messages.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   const VerifyEmailScreen({Key key}) : super(key: key);
 
   @override
-  VerifyEmailScreenState createState() => new VerifyEmailScreenState();
+  VerifyEmailScreenState createState() => VerifyEmailScreenState();
 }
 
 class VerifyEmailScreenState extends State<VerifyEmailScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  ScrollController scrollController = new ScrollController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  ScrollController scrollController = ScrollController();
   bool autovalidate = false;
   LoginBloc _loginBloc;
 
@@ -28,8 +29,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   void showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _handleSubmitted() {
@@ -64,10 +64,10 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
     }
     return Scaffold(
       key: _scaffoldKey,
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+      appBar: AppBar(
+        title: Text(Messages.of(context).title),
       ),
-      body: new SingleChildScrollView(
+      body: SingleChildScrollView(
         controller: scrollController,
         child: BlocListener(
           cubit: _loginBloc,
@@ -75,14 +75,14 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
             if (state is LoginVerificationDone) {
               showDialog<bool>(
                 context: context,
-                builder: (BuildContext context) => new AlertDialog(
-                  content: new Text(Messages.of(context).verifyemailsent),
+                builder: (BuildContext context) => AlertDialog(
+                  content: Text(Messages.of(context).verifyemailsent),
                   actions: <Widget>[
-                    new FlatButton(
+                    FlatButton(
                         onPressed: () {
                           Navigator.pop(context, true);
                         },
-                        child: new Text(
+                        child: Text(
                             MaterialLocalizations.of(context).okButtonLabel))
                   ],
                 ),
@@ -99,21 +99,21 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
             cubit: _loginBloc,
             builder: (BuildContext context, LoginState state) {
               if (state is LoginEmailNotValidated) {
-                return new Container(
-                  padding: new EdgeInsets.all(16.0),
-                  //decoration: new BoxDecoration(image: backgroundImage),
-                  child: new Column(
+                return Container(
+                  padding: EdgeInsets.all(16.0),
+                  //decoration: BoxDecoration(image: backgroundImage),
+                  child: Column(
                     children: <Widget>[
-                      new Container(
-                        child: new Column(
+                      Container(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             // Show a circle avatar just to make it clear that this is signed in page.
-                            new Center(
-                              child: new CircleAvatar(
+                            Center(
+                              child: CircleAvatar(
                                 radius: width / 2,
-                                child: new Text(
+                                child: Text(
                                     state.userData.profile?.initials() ??
                                         Messages.of(context).unknown),
                               ),
@@ -121,35 +121,34 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                           ],
                         ),
                       ),
-                      new Container(
-                        child: new Column(
+                      Container(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            new Text(messages
+                            Text(messages
                                 .verifyexplanation(state.userData.email)),
-                            new Container(
-                              child: new RaisedButton(
-                                  child: new Text(messages.resendverify),
+                            Container(
+                              child: RaisedButton(
+                                  child: Text(messages.resendverify),
                                   color: Theme.of(context).primaryColor,
                                   textColor: Colors.white,
                                   onPressed: _handleSubmitted),
-                              margin:
-                                  new EdgeInsets.only(top: 20.0, bottom: 20.0),
+                              margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                             ),
                           ],
                         ),
                       ),
-                      new Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          new FlatButton(
-                            child: new Text(messages.createaccount),
+                          FlatButton(
+                            child: Text(messages.createaccount),
                             textColor: Theme.of(context).accentColor,
                             onPressed: () => _onSignup(context),
                           ),
-                          new FlatButton(
-                            child: new Text(messages.logout),
+                          FlatButton(
+                            child: Text(messages.logout),
                             textColor: Theme.of(context).accentColor,
                             onPressed: () => _onLogout(context),
                           ),

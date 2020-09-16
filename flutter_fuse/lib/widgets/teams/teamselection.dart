@@ -29,7 +29,7 @@ class TeamSelection extends StatefulWidget {
 
   @override
   _TeamSelectionState createState() {
-    return new _TeamSelectionState();
+    return _TeamSelectionState();
   }
 }
 
@@ -45,12 +45,12 @@ class _TeamSelectionState extends State<TeamSelection> {
 
   Widget _buildCurrentTeam(BuildContext context) {
     if (_team == null) {
-      return new Row(
+      return Row(
         children: <Widget>[
-          new Expanded(
-            child: new Card(
-              child: new ListTile(
-                title: new Text(
+          Expanded(
+            child: Card(
+              child: ListTile(
+                title: Text(
                   Messages.of(context).team,
                   style: Theme.of(context)
                       .textTheme
@@ -63,8 +63,8 @@ class _TeamSelectionState extends State<TeamSelection> {
         ],
       );
     }
-    return new Card(
-      child: new TeamTile(_team.uid),
+    return Card(
+      child: TeamTile(_team.uid),
     );
   }
 
@@ -80,7 +80,7 @@ class _TeamSelectionState extends State<TeamSelection> {
     print('$_clubUid');
     if (widget.club == null) {
       widgets.add(
-        new TeamPicker(
+        TeamPicker(
           onChanged: (String str) => _teamChanged(bloc.state.getTeam(str)),
           teamUid: _team?.uid,
           disabled: _clubUid != null,
@@ -102,8 +102,8 @@ class _TeamSelectionState extends State<TeamSelection> {
     }
     widgets.addAll(
       <Widget>[
-        new SizedBox(height: 20.0),
-        new Text(
+        SizedBox(height: 20.0),
+        Text(
           Messages.of(context).teamselected,
           style: Theme.of(context).textTheme.subhead.copyWith(
               fontWeight: FontWeight.bold,
@@ -112,8 +112,8 @@ class _TeamSelectionState extends State<TeamSelection> {
         _buildCurrentTeam(context),
       ],
     );
-    return new DropdownButtonHideUnderline(
-      child: new Column(
+    return DropdownButtonHideUnderline(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: widgets,

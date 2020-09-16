@@ -17,6 +17,6 @@ class FusedDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Drawer(child: new FusedDrawerContent(mode: mode));
+    return Drawer(child: FusedDrawerContent(mode: mode));
   }
 }

@@ -24,16 +24,16 @@ class ClubPicker extends StatelessWidget {
       BuildContext context, ClubState state) {
     List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
     ret.add(
-      new DropdownMenuItem<String>(
-        child: new Text(Messages.of(context).noclub),
+      DropdownMenuItem<String>(
+        child: Text(Messages.of(context).noclub),
         value: noClub,
       ),
     );
     for (Club club in state.clubs.values) {
       if (adminOnly && club.isAdmin()) {
         ret.add(
-          new DropdownMenuItem<String>(
-            child: new Text(club.name),
+          DropdownMenuItem<String>(
+            child: Text(club.name),
             value: club.uid,
           ),
         );
@@ -44,8 +44,8 @@ class ClubPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new InputDecorator(
-      decoration: new InputDecoration(
+    return InputDecorator(
+      decoration: InputDecoration(
         labelText: Messages.of(context).club,
         labelStyle: selectedTitle
             ? Theme.of(context)
@@ -54,17 +54,17 @@ class ClubPicker extends StatelessWidget {
                 .copyWith(fontWeight: FontWeight.bold)
             : null,
       ),
-      child: new Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          new Expanded(
+          Expanded(
               flex: 1,
               child: BlocBuilder(
                   cubit: BlocProvider.of<ClubBloc>(context),
                   builder: (BuildContext context, ClubState state) {
                     return DropdownButton<String>(
-                      hint: new Text(Messages.of(context).selectclub),
+                      hint: Text(Messages.of(context).selectclub),
                       items: _buildItems(context, state),
                       value: clubUid,
                       onChanged: (String val) {

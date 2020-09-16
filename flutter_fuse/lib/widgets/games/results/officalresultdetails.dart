@@ -19,7 +19,7 @@ class OfficalScoreDetails extends StatefulWidget {
 
   @override
   State createState() {
-    return new _OfficalScoreDetailsState();
+    return _OfficalScoreDetailsState();
   }
 }
 
@@ -186,21 +186,20 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
       ret = await showDialog(
           context: context,
           builder: (BuildContext context) {
-            return new AlertDialog(
-              title: new Text(Messages.of(context).finalscore),
-              content: new Text(
+            return AlertDialog(
+              title: Text(Messages.of(context).finalscore),
+              content: Text(
                   Messages.of(context).finalofficalscorebody(_results.build())),
               actions: <Widget>[
-                new FlatButton(
-                  child:
-                      new Text(MaterialLocalizations.of(context).okButtonLabel),
+                FlatButton(
+                  child: Text(MaterialLocalizations.of(context).okButtonLabel),
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
                 ),
-                new FlatButton(
-                  child: new Text(
-                      MaterialLocalizations.of(context).cancelButtonLabel),
+                FlatButton(
+                  child:
+                      Text(MaterialLocalizations.of(context).cancelButtonLabel),
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
@@ -209,7 +208,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
             );
           });
     } else {
-      // Already final, so just update it to the new result.
+      // Already final, so just update it to the result.
       ret = true;
     }
     if (ret != null && ret == true) {

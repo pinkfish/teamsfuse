@@ -15,9 +15,9 @@ class FusedDrawerHeader extends StatelessWidget {
       builder: (BuildContext context, AuthenticationState state) {
         if (state is AuthenticationLoggedIn) {
           return UserAccountsDrawerHeader(
-            decoration: new BoxDecoration(
-              image: new DecorationImage(
-                  image: new AssetImage('assets/images/banner.jpg'),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('assets/images/banner.jpg'),
                   fit: BoxFit.cover),
             ),
             currentAccountPicture: const CircleAvatar(
@@ -26,10 +26,10 @@ class FusedDrawerHeader extends StatelessWidget {
               ),
             ),
             onDetailsPressed: () => _showProfile(context),
-            accountName: new Text(state.user.profile != null
+            accountName: Text(state.user.profile != null
                 ? state.user.profile.displayName
                 : Messages.of(context).unknown),
-            accountEmail: new Text(state.user.profile != null
+            accountEmail: Text(state.user.profile != null
                 ? state.user.email
                 : Messages.of(context).unknown),
           );

@@ -22,7 +22,7 @@ class GameNotification {
 
     Opponent op;
     if (team == null || !team.opponents.containsKey(game.opponentUid)) {
-      op = new Opponent(name: messages.unknown);
+      op = Opponent(name: messages.unknown);
     } else {
       op = team.opponents[game.opponentUid];
     }
@@ -33,11 +33,11 @@ class GameNotification {
       season = team.seasons[game.seasonUid];
     }
     if (season == null) {
-      season = new Season();
+      season = Season();
     }
 
-    TZDateTime timeNow = new TZDateTime.now(local);
-    TimeOfDay day = new TimeOfDay.fromDateTime(game.tzTime);
+    TZDateTime timeNow = TZDateTime.now(local);
+    TimeOfDay day = TimeOfDay.fromDateTime(game.tzTime);
     String format = materialLocalizations.formatTimeOfDay(day);
     String endTimeFormat;
     String tzShortName;
@@ -46,7 +46,7 @@ class GameNotification {
     }
 
     if (game.time != game.endTime) {
-      TimeOfDay endDay = new TimeOfDay.fromDateTime(game.tzEndTime);
+      TimeOfDay endDay = TimeOfDay.fromDateTime(game.tzEndTime);
       endTimeFormat = materialLocalizations.formatTimeOfDay(endDay);
     }
     String arriveFormat;
@@ -55,7 +55,7 @@ class GameNotification {
         game.type == EventType.Game &&
         timeNow.millisecondsSinceEpoch <
             game.arriveTime + Duration.millisecondsPerHour) {
-      TimeOfDay arriveDay = new TimeOfDay.fromDateTime(game.tzArriveTime);
+      TimeOfDay arriveDay = TimeOfDay.fromDateTime(game.tzArriveTime);
       arriveFormat = materialLocalizations.formatTimeOfDay(arriveDay);
     }
 
@@ -129,16 +129,16 @@ class GameNotification {
     }
 
     NotificationDetailsAndroid android =
-        new NotificationDetailsAndroid("Game", "Games", "Games notifications");
-    NotificationDetailsIOS iOS = new NotificationDetailsIOS();
-    NotificationDetails details = new NotificationDetails(android, iOS);
+        NotificationDetailsAndroid("Game", "Games", "Games notifications");
+    NotificationDetailsIOS iOS = NotificationDetailsIOS();
+    NotificationDetails details = NotificationDetails(android, iOS);
     print("$title $body $details");
     /*
     if (game.arriveTime > scheduleToShow) {
       await notification.show(id, title, body, details);
     } else {
       await notification.schedule(id, title, body,
-          new DateTime.fromMillisecondsSinceEpoch(scheduleToShow), details);
+          DateTime.fromMillisecondsSinceEpoch(scheduleToShow), details);
     }
     */
     return id;

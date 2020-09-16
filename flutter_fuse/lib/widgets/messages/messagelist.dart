@@ -14,7 +14,7 @@ class MessageList extends StatelessWidget {
 
     if (mess.timeSent < dayCutoff.millisecondsSinceEpoch) {
       timeMess = MaterialLocalizations.of(context)
-          .formatTimeOfDay(new TimeOfDay.fromDateTime(mess.tzTimeSent));
+          .formatTimeOfDay(TimeOfDay.fromDateTime(mess.tzTimeSent));
     } else {
       timeMess =
           MaterialLocalizations.of(context).formatMediumDate(mess.tzTimeSent);
@@ -23,22 +23,22 @@ class MessageList extends StatelessWidget {
 
     TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
 
-    return new ListTile(
+    return ListTile(
       onTap: () => Navigator.pushNamed(context, "/ShowMessage/" + mess.uid),
-      leading: new TeamImage(
+      leading: TeamImage(
         team: teamBloc.state.getTeam(mess.teamUid),
         width: 30.0,
       ),
-      subtitle: new Row(
+      subtitle: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
-          new Expanded(
-            child: new Container(
-              margin: new EdgeInsets.only(top: 3.0),
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.only(top: 3.0),
               alignment: AlignmentDirectional.centerStart,
-              child: new PlayerName(
+              child: PlayerName(
                 playerUid: mess.fromUid,
                 style:
                     mess.recipients[authenticationBloc.currentUser.uid].state ==
@@ -49,16 +49,16 @@ class MessageList extends StatelessWidget {
               ),
             ),
           ),
-          new Container(
-            margin: new EdgeInsets.only(top: 3.0),
+          Container(
+            margin: EdgeInsets.only(top: 3.0),
             alignment: AlignmentDirectional.centerEnd,
-            child: new Text(
+            child: Text(
               timeMess,
             ),
           ),
         ],
       ),
-      title: new Text(
+      title: Text(
         mess.subject,
         overflow: TextOverflow.clip,
         style: mess.recipients[authenticationBloc.currentUser.uid].state ==
@@ -78,8 +78,8 @@ class MessageList extends StatelessWidget {
       builder: (BuildContext context, MessagesState state) {
         if (state.unreadMessages.length == 0 &&
             state.recentMessages.length == 0) {
-          return new Center(
-            child: new Text(Messages.of(context).nomessages),
+          return Center(
+            child: Text(Messages.of(context).nomessages),
           );
         }
         // Make a sorted list of the messages.
@@ -96,8 +96,8 @@ class MessageList extends StatelessWidget {
           messages
               .add(_buildMessage(context, mess, dayCutoff, authenticationBloc));
         }
-        return new SingleChildScrollView(
-          child: new Column(
+        return SingleChildScrollView(
+          child: Column(
             children: messages,
           ),
         );

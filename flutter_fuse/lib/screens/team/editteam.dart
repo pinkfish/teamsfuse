@@ -2,11 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/teams/teameditform.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../services/messages.dart';
+import '../../widgets/teams/teameditform.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 class EditTeamScreen extends StatefulWidget {
   EditTeamScreen(this.teamUid);
@@ -15,15 +16,14 @@ class EditTeamScreen extends StatefulWidget {
 
   @override
   EditTeamScreenState createState() {
-    return new EditTeamScreenState();
+    return EditTeamScreenState();
   }
 }
 
 class EditTeamScreenState extends State<EditTeamScreen> {
   Team _team;
-  final GlobalKey<TeamEditFormState> _formKey =
-      new GlobalKey<TeamEditFormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<TeamEditFormState> _formKey = GlobalKey<TeamEditFormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   SingleTeamBloc singleTeamBloc;
 
   @override
@@ -36,12 +36,11 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   Widget _buildForm(BuildContext context) {
-    return new TeamEditForm(_team, _formKey);
+    return TeamEditForm(_team, _formKey);
   }
 
   void _savePressed(BuildContext context) async {
@@ -73,20 +72,20 @@ class EditTeamScreenState extends State<EditTeamScreen> {
         cubit: singleTeamBloc,
         builder: (BuildContext context, SingleTeamState teamState) => Scaffold(
           key: _scaffoldKey,
-          appBar: new AppBar(
-            title: new Text(
+          appBar: AppBar(
+            title: Text(
               Messages.of(context).titlewith(
                   teamState.team?.name ?? Messages.of(context).unknown),
             ),
           ),
-          body: new Container(
-            padding: new EdgeInsets.all(16.0),
-            child: new SavingOverlay(
+          body: Container(
+            padding: EdgeInsets.all(16.0),
+            child: SavingOverlay(
               saving: teamState is SingleTeamSaving,
               child: _buildForm(context),
             ),
           ),
-          floatingActionButton: new FloatingActionButton(
+          floatingActionButton: FloatingActionButton(
             onPressed: () => _savePressed(context),
             child: const Icon(Icons.check),
           ),

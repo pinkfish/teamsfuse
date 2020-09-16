@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/form/teampicker.dart';
-import 'package:flutter_fuse/widgets/util/byusername.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../../services/validations.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
+import '../../widgets/form/seasonformfield.dart';
+import '../../widgets/form/teampicker.dart';
+import '../../widgets/util/byusername.dart';
+import '../../widgets/util/ensurevisiblewhenfocused.dart';
+import '../../widgets/util/leagueimage.dart';
+import '../../widgets/util/savingoverlay.dart';
 import 'dialog/deleteinvite.dart';
 
 class AcceptInviteToLeagueTeamScreen extends StatefulWidget {
@@ -21,18 +21,18 @@ class AcceptInviteToLeagueTeamScreen extends StatefulWidget {
 
   @override
   _AcceptInviteToLeagueTeamScreenState createState() {
-    return new _AcceptInviteToLeagueTeamScreenState();
+    return _AcceptInviteToLeagueTeamScreenState();
   }
 }
 
 class _AcceptInviteToLeagueTeamScreenState
     extends State<AcceptInviteToLeagueTeamScreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _currentTeamUid;
   String _seasonSelected = SeasonFormField.none;
-  GlobalKey<FormState> _seasonForm = new GlobalKey<FormState>();
-  FocusNode _focusNodeSeason = new FocusNode();
-  Validations _validations = new Validations();
+  GlobalKey<FormState> _seasonForm = GlobalKey<FormState>();
+  FocusNode _focusNodeSeason = FocusNode();
+  Validations _validations = Validations();
   String _seasonName;
   bool _saving = false;
   SingleInviteBloc _singleInviteBloc;
@@ -41,6 +41,7 @@ class _AcceptInviteToLeagueTeamScreenState
   void initState() {
     super.initState();
     _singleInviteBloc = SingleInviteBloc(
+        db: RepositoryProvider.of<DatabaseUpdateModel>(context),
         analytisSubsystem: RepositoryProvider.of<AnalyticsSubsystem>(context),
         inviteUid: widget._inviteUid,
         teamBloc: BlocProvider.of<TeamBloc>(context),
@@ -54,8 +55,7 @@ class _AcceptInviteToLeagueTeamScreenState
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(new SnackBar(content: new Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed() async {
@@ -108,8 +108,8 @@ class _AcceptInviteToLeagueTeamScreenState
   Widget _buildSeasonTextField(InviteToLeagueTeam invite) {
     return EnsureVisibleWhenFocused(
       focusNode: _focusNodeSeason,
-      child: new TextFormField(
-        decoration: new InputDecoration(
+      child: TextFormField(
+        decoration: InputDecoration(
           icon: const Icon(Icons.calendar_today),
           hintText: Messages.of(context).season,
           labelText: Messages.of(context).seasonhint,
@@ -170,15 +170,15 @@ class _AcceptInviteToLeagueTeamScreenState
       value: _singleInviteBloc,
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(Messages.of(context).league),
+        appBar: AppBar(
+          title: Text(Messages.of(context).league),
         ),
         body: SavingOverlay(
           saving: _saving,
           child: Container(
             margin: EdgeInsets.all(10.0),
             child: Scrollbar(
-              child: new SingleChildScrollView(
+              child: SingleChildScrollView(
                 child: BlocListener(
                   cubit: _singleInviteBloc,
                   listener: (BuildContext context, SingleInviteState state) {
@@ -198,15 +198,14 @@ class _AcceptInviteToLeagueTeamScreenState
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            new ListTile(
+                            ListTile(
                               leading: LeagueImage(
                                 leagueOrTournamentUid:
                                     inviteToLeagueTeam.leagueUid,
                                 width: 50.0,
                                 height: 50.0,
                               ),
-                              title:
-                                  new Text(inviteToLeagueTeam.leagueTeamName),
+                              title: Text(inviteToLeagueTeam.leagueTeamName),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
@@ -230,23 +229,23 @@ class _AcceptInviteToLeagueTeamScreenState
                             ),
                             ButtonBar(
                               children: <Widget>[
-                                new RaisedButton(
+                                RaisedButton(
                                   onPressed: _savePressed,
-                                  child: new Text(messages.addteam),
+                                  child: Text(messages.addteam),
                                   color: theme.accentColor,
                                   textColor: Colors.white,
                                 ),
-                                new FlatButton(
+                                FlatButton(
                                   onPressed: () => Navigator.pushNamed(
                                       context,
                                       "/League/Main/" +
                                           inviteToLeagueTeam.leagueUid),
                                   child: Text(messages.openbutton),
                                 ),
-                                new FlatButton(
+                                FlatButton(
                                   onPressed: () => showDeleteInvite(
                                       context, _singleInviteBloc),
-                                  child: new Icon(Icons.delete),
+                                  child: Icon(Icons.delete),
                                 ),
                               ],
                             ),
@@ -260,7 +259,7 @@ class _AcceptInviteToLeagueTeamScreenState
             ),
           ),
         ),
-        floatingActionButton: new FloatingActionButton(
+        floatingActionButton: FloatingActionButton(
           onPressed: () => _savePressed(),
           child: const Icon(Icons.check),
         ),

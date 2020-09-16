@@ -11,9 +11,9 @@ class OfficialResultDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
           Messages.of(context).gameend,
           overflow: TextOverflow.clip,
         ),

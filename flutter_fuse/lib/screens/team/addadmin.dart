@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/analytics.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
+
+import '../../services/analytics.dart';
+import '../../services/messages.dart';
+import '../../services/validations.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 class AddAdminScreen extends StatefulWidget {
   AddAdminScreen(this._teamUid);
@@ -12,26 +13,26 @@ class AddAdminScreen extends StatefulWidget {
 
   @override
   AddAdminScreenState createState() {
-    return new AddAdminScreenState();
+    return AddAdminScreenState();
   }
 }
 
 class AddAdminScreenState extends State<AddAdminScreen> {
   AddAdminScreenState();
 
-  final Validations _validations = new Validations();
+  final Validations _validations = Validations();
   List<String> _emailNames = <String>[];
   bool autovalidate = false;
 
   AddInviteBloc addInviteBloc;
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(
-      new SnackBar(
-        content: new Text(value),
+      SnackBar(
+        content: Text(value),
       ),
     );
   }
@@ -81,9 +82,9 @@ class AddAdminScreenState extends State<AddAdminScreen> {
     for (int i = 0; i < _emailNames.length; i++) {
       String en = _emailNames[i];
       rows.add(
-        new TextFormField(
+        TextFormField(
           initialValue: '',
-          decoration: new InputDecoration(
+          decoration: InputDecoration(
               icon: const Icon(Icons.email),
               labelText: messages.email,
               hintText: messages.playeremailHint),
@@ -105,17 +106,17 @@ class AddAdminScreenState extends State<AddAdminScreen> {
       );
     }
 
-    return new SingleChildScrollView(
-      child: new Form(
+    return SingleChildScrollView(
+      child: Form(
         autovalidate: autovalidate,
         key: _formKey,
-        child: new Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            new Scrollbar(
-              child: new SingleChildScrollView(
-                child: new Column(children: rows),
+            Scrollbar(
+              child: SingleChildScrollView(
+                child: Column(children: rows),
               ),
             ),
           ],
@@ -130,8 +131,8 @@ class AddAdminScreenState extends State<AddAdminScreen> {
       create: (BuildContext context) => addInviteBloc,
       child: Scaffold(
         key: _scaffoldKey,
-        appBar: new AppBar(
-          title: new Text(Messages.of(context).addadmin),
+        appBar: AppBar(
+          title: Text(Messages.of(context).addadmin),
         ),
         body: BlocListener(
           cubit: addInviteBloc,
@@ -152,7 +153,7 @@ class AddAdminScreenState extends State<AddAdminScreen> {
             ),
           ),
         ),
-        floatingActionButton: new FloatingActionButton(
+        floatingActionButton: FloatingActionButton(
           onPressed: () => save(),
           child: const Icon(Icons.check),
         ),

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/teams/teamdetails.dart';
-import 'package:flutter_fuse/widgets/teams/teamopponents.dart';
-import 'package:flutter_fuse/widgets/teams/teamplayers.dart';
-import 'package:flutter_fuse/widgets/teams/teamsettings.dart';
 import 'package:fusemodel/blocs.dart';
 
+import '../../services/messages.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
+import '../../widgets/teams/teamdetails.dart';
+import '../../widgets/teams/teamopponents.dart';
+import '../../widgets/teams/teamplayers.dart';
+import '../../widgets/teams/teamsettings.dart';
 
 ///
 /// Shows all the details about a single team.
@@ -47,7 +47,7 @@ class _TeamScreenState extends State<TeamScreen> {
   }
 
   void _select(String choice, SingleTeamBloc singleTeamBloc) async {
-    // Causes the app to rebuild with the new _selectedChoice.
+    // Causes the app to rebuild with the _selectedChoice.
     setState(() {});
     if (choice == 'settings') {
       // Show a dialog and then delete it!
@@ -84,11 +84,11 @@ class _TeamScreenState extends State<TeamScreen> {
                   return <PopupMenuItem<String>>[
                     PopupMenuItem<String>(
                       value: "settings",
-                      child: new Text(Messages.of(context).settings),
+                      child: Text(Messages.of(context).settings),
                     ),
                     PopupMenuItem<String>(
                       value: "club",
-                      child: new Text(Messages.of(context).club),
+                      child: Text(Messages.of(context).club),
                     ),
                     PopupMenuItem<String>(
                       value: 'archive',
@@ -133,7 +133,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 if (state.isAdmin() && _tabIndex == 0) {
                   fab = FloatingActionButton(
                     onPressed: () => _onEditTeam(context),
-                    child: new Icon(Icons.edit),
+                    child: Icon(Icons.edit),
                   );
                   return fab;
                 }

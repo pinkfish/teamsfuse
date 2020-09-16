@@ -2,18 +2,19 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/clubpicker.dart';
-import 'package:flutter_fuse/widgets/form/playerformfield.dart';
-import 'package:flutter_fuse/widgets/teams/teameditform.dart';
-import 'package:flutter_fuse/widgets/util/clubimage.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/gendericon.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
-import 'package:flutter_fuse/widgets/util/stepperalwaysvisible.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../services/messages.dart';
+import '../../widgets/form/clubpicker.dart';
+import '../../widgets/form/playerformfield.dart';
+import '../../widgets/teams/teameditform.dart';
+import '../../widgets/util/clubimage.dart';
+import '../../widgets/util/communityicons.dart';
+import '../../widgets/util/gendericon.dart';
+import '../../widgets/util/savingoverlay.dart';
+import '../../widgets/util/stepperalwaysvisible.dart';
+import '../../widgets/util/teamimage.dart';
 
 class AddTeamScreen extends StatefulWidget {
   AddTeamScreen({this.clubUid});
@@ -22,16 +23,16 @@ class AddTeamScreen extends StatefulWidget {
 
   @override
   AddTeamScreenState createState() {
-    return new AddTeamScreenState();
+    return AddTeamScreenState();
   }
 }
 
 class AddTeamScreenState extends State<AddTeamScreen> {
   final GlobalKey<TeamEditFormState> _formKeyTeam =
-      new GlobalKey<TeamEditFormState>();
-  final GlobalKey<FormState> _formKeyPlayer = new GlobalKey<FormState>();
+      GlobalKey<TeamEditFormState>();
+  final GlobalKey<FormState> _formKeyPlayer = GlobalKey<FormState>();
   int _currentStep;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   StepState _detailsStepState = StepState.disabled;
   StepState _detailsSecondStepState = StepState.disabled;
   StepState _createStepStage = StepState.disabled;
@@ -47,7 +48,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   @override
   void initState() {
     super.initState();
-    _addTeamBloc = new AddTeamBloc(
+    _addTeamBloc = AddTeamBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
     if (isActiveClub()) {
       _currentStep = 0;
@@ -71,7 +72,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState
-        ?.showSnackBar(new SnackBar(content: new Text(value)));
+        ?.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed() async {
@@ -203,11 +204,11 @@ class AddTeamScreenState extends State<AddTeamScreen> {
 
   Widget _buildImage() {
     if (_imageFileToAdd == null) {
-      return new TeamImage(
+      return TeamImage(
         team: _teamToAdd.build(),
       );
     }
-    return new TeamImage(teamImage: _imageFileToAdd);
+    return TeamImage(teamImage: _imageFileToAdd);
   }
 
   bool isActiveClub() {
@@ -220,53 +221,53 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   Widget _buildSummary() {
     var clubBloc = BlocProvider.of<ClubBloc>(context);
     return SingleChildScrollView(
-      child: new Column(
+      child: Column(
         children: <Widget>[
           _buildImage(),
-          new ListTile(
+          ListTile(
             leading: const Icon(Icons.title),
-            subtitle: new RichText(
-              text: new TextSpan(
+            subtitle: RichText(
+              text: TextSpan(
                 text: _teamToAdd.currentSeason,
                 children: <TextSpan>[
-                  new TextSpan(
+                  TextSpan(
                     text: Messages.of(context).sportname(_teamToAdd.sport),
                   ),
                 ],
               ),
             ),
-            title: new Text(_teamToAdd.name),
-            trailing: new GenderIcon(_teamToAdd.gender),
+            title: Text(_teamToAdd.name),
+            trailing: GenderIcon(_teamToAdd.gender),
           ),
-          new ListTile(
+          ListTile(
             leading: const Icon(Icons.calendar_today),
-            title: new Text(_seasonName()),
+            title: Text(_seasonName()),
           ),
-          new ListTile(
+          ListTile(
             leading: const Icon(CommunityIcons.group),
             title: _clubUid != null && _clubUid != ClubPicker.noClub
-                ? new Text(clubBloc.state.clubs[_clubUid].name)
-                : new Text(Messages.of(context).noclub),
+                ? Text(clubBloc.state.clubs[_clubUid].name)
+                : Text(Messages.of(context).noclub),
             trailing: _clubUid != null && _clubUid != ClubPicker.noClub
-                ? new ClubImage(
+                ? ClubImage(
                     clubUid: _clubUid,
                     width: 20.0,
                     height: 20.0,
                   )
                 : null,
           ),
-          new ListTile(
+          ListTile(
             leading: const Icon(CommunityIcons.tshirtCrew),
-            title: new Text(_teamToAdd.league),
+            title: Text(_teamToAdd.league),
           ),
-          new ListTile(
+          ListTile(
             leading: const Icon(Icons.timer),
-            title: new Text(Messages.of(context)
+            title: Text(Messages.of(context)
                 .arrivebefore(_teamToAdd.arriveEarlyInternal.toInt())),
           ),
-          new ListTile(
+          ListTile(
             leading: const Icon(CommunityIcons.trafficLight),
-            title: new Text(Messages.of(context).trackattendence(
+            title: Text(Messages.of(context).trackattendence(
                 _teamToAdd.trackAttendenceInternal
                     ? Tristate.Yes
                     : Tristate.No)),
@@ -295,7 +296,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
           builder: (BuildContext context, AddItemState addState) =>
               SavingOverlay(
             saving: addState is AddItemSaving,
-            child: new StepperAlwaysVisible(
+            child: StepperAlwaysVisible(
               type: StepperType.horizontal,
               currentStep: _currentStep,
               onStepContinue: () {
@@ -309,53 +310,53 @@ class AddTeamScreenState extends State<AddTeamScreen> {
                 _onStepTapped(step);
               },
               steps: <Step>[
-                new Step(
-                  title: new Text(messages.club),
+                Step(
+                  title: Text(messages.club),
                   state: _clubStepState,
                   isActive: isActiveClub(),
-                  content: new ClubPicker(
+                  content: ClubPicker(
                     clubUid: _clubUid,
                     onChanged: (String val) => setState(() => _clubUid = val),
                   ),
                 ),
-                new Step(
-                  title: new Text(messages.player),
+                Step(
+                  title: Text(messages.player),
                   state: _playerStepState,
                   isActive: true,
-                  content: new Form(
+                  content: Form(
                     key: _formKeyPlayer,
-                    child: new PlayerFormField(
+                    child: PlayerFormField(
                       initialValue: PlayerFormField.nonePlayer,
                       onSaved: (String player) => _playerUid = player,
                     ),
                   ),
                 ),
-                new Step(
-                  title: new Text(messages.team),
+                Step(
+                  title: Text(messages.team),
                   state: _detailsStepState,
                   isActive: true,
-                  content: new SingleChildScrollView(
-                    child: new TeamEditForm(
+                  content: SingleChildScrollView(
+                    child: TeamEditForm(
                       _teamToAdd.build(),
                       _formKeyTeam,
                       startSection: StartSection.start,
                     ),
                   ),
                 ),
-                new Step(
-                  title: new Text(messages.details),
+                Step(
+                  title: Text(messages.details),
                   state: _detailsSecondStepState,
                   isActive: true,
-                  content: new SingleChildScrollView(
-                    child: new TeamEditForm(
+                  content: SingleChildScrollView(
+                    child: TeamEditForm(
                       _teamToAdd.build(),
                       _formKeyTeam,
                       startSection: StartSection.end,
                     ),
                   ),
                 ),
-                new Step(
-                  title: new Text(messages.create),
+                Step(
+                  title: Text(messages.create),
                   state: _createStepStage,
                   isActive: true,
                   content: _buildSummary(),
@@ -370,12 +371,12 @@ class AddTeamScreenState extends State<AddTeamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(Messages.of(context).title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Messages.of(context).title),
       ),
       floatingActionButton: _currentStep == 4
-          ? new FloatingActionButton(
+          ? FloatingActionButton(
               onPressed: () => _savePressed(),
               child: const Icon(Icons.check),
             )

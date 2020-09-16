@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class InputDropdown extends StatelessWidget {
   const InputDropdown(
@@ -18,24 +18,24 @@ class InputDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new InkWell(
+    return InkWell(
       onTap: onPressed,
-      child: new InputDecorator(
+      child: InputDecorator(
         decoration: decoration.copyWith(errorText: errorText),
         baseStyle: valueStyle,
-        child: new Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            new Flexible(
-            child: new Text(
-              valueText,
-              style: valueStyle,
-              overflow: TextOverflow.clip,
-              maxLines: 1,
+            Flexible(
+              child: Text(
+                valueText,
+                style: valueStyle,
+                overflow: TextOverflow.clip,
+                maxLines: 1,
+              ),
             ),
-            ),
-            new Icon(Icons.arrow_drop_down,
+            Icon(Icons.arrow_drop_down,
                 color: Theme.of(context).brightness == Brightness.light
                     ? Colors.grey.shade700
                     : Colors.white70),

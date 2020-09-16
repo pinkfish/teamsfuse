@@ -45,14 +45,14 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
 
   // We inflate widgets at two different times:
   //  1. When we ourselves are told to rebuild (see performRebuild).
-  //  2. When our render object needs a new child (see createChild).
+  //  2. When our render object needs a child (see createChild).
   // In both cases, we cache the results of calling into our delegate to get the widget,
   // so that if we do case 2 later, we don't call the builder again.
   // Any time we do case 1, though, we reset the cache.
 
-  final Map<int, Widget> _childWidgetsMe = new HashMap<int, Widget>();
+  final Map<int, Widget> _childWidgetsMe = HashMap<int, Widget>();
   final SplayTreeMap<int, Element> _childElementsMe =
-      new SplayTreeMap<int, Element>();
+      SplayTreeMap<int, Element>();
   RenderBox _currentBeforeChildMe;
 
   @override
@@ -377,7 +377,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
           // We ran out of children before reaching the scroll offset.
           // We must inform our parent that this sliver cannot fulfill
           // its contract and that we need a scroll offset correction.
-          geometry = new SliverGeometry(
+          geometry = SliverGeometry(
             scrollOffsetCorrection: -scrollOffset,
           );
           //print("Geometry correct ${childParentData.layoutOffset}");
@@ -403,7 +403,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
           earliestUsefulChild = insertAndLayoutLeadingChild(childConstraints,
               parentUsesSize: true);
         }
-        geometry = new SliverGeometry(
+        geometry = SliverGeometry(
           scrollOffsetCorrection: correction - earliestScrollOffset,
         );
         final SliverMultiBoxAdaptorParentData childParentData =
@@ -502,7 +502,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
         assert(firstChild == lastChild);
         final double extent =
             childScrollOffset(lastChild) + paintExtentOf(lastChild);
-        geometry = new SliverGeometry(
+        geometry = SliverGeometry(
           scrollExtent: extent,
           paintExtent: 0.0,
           maxPaintExtent: extent,
@@ -554,7 +554,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
       from: childScrollOffset(firstChild),
       to: endScrollOffset,
     );
-    geometry = new SliverGeometry(
+    geometry = SliverGeometry(
       scrollExtent: estimatedMaxScrollOffset,
       paintExtent: paintExtent,
       maxPaintExtent: estimatedMaxScrollOffset,
@@ -565,7 +565,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
     //print('fluffy rabbits $geometry');
 
     // We may have started the layout while scrolled to the end, which would not
-    // expose a new child.
+    // expose a child.
     if (estimatedMaxScrollOffset == endScrollOffset)
       childManager.setDidUnderflow(true);
     childManager.didFinishLayout();
@@ -588,13 +588,13 @@ class SliverListCenter extends RenderObjectWidget {
 
   @override
   CenterSliverMultiBoxAdaptorElement createElement() =>
-      new CenterSliverMultiBoxAdaptorElement(this);
+      CenterSliverMultiBoxAdaptorElement(this);
 
   @override
   RenderSliverCenterList createRenderObject(BuildContext context) {
     final CenterSliverMultiBoxAdaptorElement element =
         context as CenterSliverMultiBoxAdaptorElement;
-    return new RenderSliverCenterList(
+    return RenderSliverCenterList(
         childManager: element, startIndex: startIndex);
   }
 
@@ -639,7 +639,7 @@ class SliverListCenter extends RenderObjectWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-        new DiagnosticsProperty<SliverChildDelegate>('delegate', delegate));
+    properties
+        .add(DiagnosticsProperty<SliverChildDelegate>('delegate', delegate));
   }
 }

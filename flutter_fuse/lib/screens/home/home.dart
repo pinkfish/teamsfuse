@@ -3,18 +3,19 @@ import 'dart:async';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/drawer/fuseddrawer.dart';
-import 'package:flutter_fuse/widgets/games/gameslistcalendar.dart';
-import 'package:flutter_fuse/widgets/home/filterhomedialog.dart';
-import 'package:flutter_fuse/widgets/invites/invitecard.dart';
-import 'package:flutter_fuse/widgets/util/fabdialer.dart';
-import 'package:flutter_fuse/widgets/util/fabminimenuitem.dart';
-import 'package:flutter_fuse/widgets/util/savingoverlay.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 import 'package:timezone/timezone.dart';
+
+import '../../services/messages.dart';
+import '../../widgets/drawer/fuseddrawer.dart';
+import '../../widgets/games/gameslistcalendar.dart';
+import '../../widgets/home/filterhomedialog.dart';
+import '../../widgets/invites/invitecard.dart';
+import '../../widgets/util/fabdialer.dart';
+import '../../widgets/util/fabminimenuitem.dart';
+import '../../widgets/util/savingoverlay.dart';
 
 ///
 /// The main home screen for the app, once the user is loaded.  Co-ordinates
@@ -23,23 +24,23 @@ import 'package:timezone/timezone.dart';
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() {
-    return new _HomeScreenState();
+    return _HomeScreenState();
   }
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription<UpdateReason> _calendarSub;
-  FilterDetails _details = new FilterDetails();
-  GlobalKey<CalendarWidgetState> _calendarState =
-      new GlobalKey<CalendarWidgetState>();
+  final FilterDetails _details = FilterDetails();
+  final GlobalKey<CalendarWidgetState> _calendarState =
+      GlobalKey<CalendarWidgetState>();
   int quoteId = SavingOverlay.randomNum.nextInt(20000);
   GameListCalendarState _calendarEvents;
 
   void _showFilterDialog() async {
     await showDialog<bool>(
       context: context,
-      builder: (BuildContext context) {
-        return new FilterHomeDialog(_details);
+      builder: (context) {
+        return FilterHomeDialog(_details);
       },
     );
 
@@ -56,27 +57,27 @@ class _HomeScreenState extends State<HomeScreen> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-    Messages messages = Messages.of(context);
-    TZDateTime nowTime = new TZDateTime.now(local);
+    var theme = Theme.of(context);
+    var messages = Messages.of(context);
+    var nowTime = TZDateTime.now(local);
 
-    List<Widget> actions = <Widget>[
-      new IconButton(
+    var actions = <Widget>[
+      IconButton(
         icon: const Icon(Icons.tune),
         onPressed: _showFilterDialog,
       ),
-      new Stack(
-        alignment: new Alignment(0.0, 0.0),
+      Stack(
+        alignment: Alignment(0.0, 0.0),
         children: <Widget>[
-          new IconButton(
+          IconButton(
             icon: const Icon(Icons.calendar_today, color: Colors.white),
-            onPressed: () => _calendarState.currentState
-                .scrollToDay(new TZDateTime.now(local)),
+            onPressed: () =>
+                _calendarState.currentState.scrollToDay(TZDateTime.now(local)),
           ),
-          new Positioned(
+          Positioned(
             top: 22.0,
             right: 17.0,
-            child: new Text(
+            child: Text(
               nowTime.day.toString(),
               style: theme.textTheme.button
                   .copyWith(color: Colors.white, fontSize: 11.5),
@@ -86,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       BlocBuilder(
           cubit: BlocProvider.of<MessagesBloc>(context),
-          builder: (BuildContext context, MessagesState state) {
+          builder: (context, state) {
             return Badge(
                 badgeContent: Text(
                   state.unreadMessages.isEmpty
@@ -103,15 +104,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     actions.add(BlocBuilder(
       cubit: BlocProvider.of<LoadedStateBloc>(context),
-      builder: (BuildContext context, LoadedState state) {
+      builder: (context, state) {
         switch (state) {
           case LoadedState.Logout:
             return SizedBox(
               width: 15.0,
               height: 15.0,
-              child: new CircularProgressIndicator(
-                valueColor:
-                    new AlwaysStoppedAnimation<Color>(Colors.greenAccent),
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.greenAccent),
               ),
             );
           case LoadedState.Loading:
@@ -123,16 +123,16 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     ));
 
-    return new Scaffold(
-      drawer: new FusedDrawer(DrawerMode.gameList),
-      appBar: new AppBar(
-        title: new Text(messages.title),
+    return Scaffold(
+      drawer: FusedDrawer(DrawerMode.gameList),
+      appBar: AppBar(
+        title: Text(messages.title),
         actions: actions,
       ),
       body: BlocBuilder(
         cubit: BlocProvider.of<LoadedStateBloc>(context),
-        builder: (BuildContext context, LoadedState state) {
-          bool loading = false;
+        builder: (context, state) {
+          var loading = false;
           switch (state) {
             case LoadedState.Logout:
               loading = true;
@@ -145,22 +145,21 @@ class _HomeScreenState extends State<HomeScreen> {
           return SavingOverlay(
             quoteId: quoteId,
             saving: loading,
-            child: new Column(
+            child: Column(
               children: <Widget>[
-                new GestureDetector(
-                  child: new InviteCard(),
+                GestureDetector(
+                  child: InviteCard(),
                   onTap: () => Navigator.pushNamed(context, "Invites"),
                 ),
-                new Expanded(
-                  child: new CalendarWidget(
-                    initialDate: new TZDateTime.now(local),
+                Expanded(
+                  child: CalendarWidget(
+                    initialDate: TZDateTime.now(local),
                     key: _calendarState,
                     getEvents: _calendarEvents.getEvents,
                     buildItem: _calendarEvents.buildWidget,
                     bannerHeader:
-                        new AssetImage("assets/images/calendarheader.png"),
-                    monthHeader:
-                        new AssetImage("assets/images/calendarbanner.jpg"),
+                        AssetImage("assets/images/calendarheader.png"),
+                    monthHeader: AssetImage("assets/images/calendarbanner.jpg"),
                   ),
                 ),
               ],
@@ -170,29 +169,29 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: BlocBuilder(
           cubit: BlocProvider.of<TeamBloc>(context),
-          builder: (BuildContext context, TeamState state) {
+          builder: (context, state) {
             return FabDialer(
               disabled: state.allTeamUids.length == 0,
               menu: <FabMiniMenuItemWidget>[
-                new FabMiniMenuItemWidget(
+                FabMiniMenuItemWidget(
                   icon: const Icon(Icons.mail),
                   fabColor: Colors.lightBlueAccent,
                   text: messages.newmail,
                   onPressed: () => Navigator.pushNamed(context, "AddMessage"),
                 ),
-                new FabMiniMenuItemWidget(
+                FabMiniMenuItemWidget(
                   icon: const Icon(Icons.calendar_today),
                   fabColor: Colors.blueAccent,
                   text: messages.addevent,
                   onPressed: () => Navigator.pushNamed(context, "AddEvent"),
                 ),
-                new FabMiniMenuItemWidget(
+                FabMiniMenuItemWidget(
                   icon: const Icon(Icons.people),
                   fabColor: Colors.blueGrey,
                   text: messages.addtraining,
                   onPressed: () => Navigator.pushNamed(context, "AddTraining"),
                 ),
-                new FabMiniMenuItemWidget(
+                FabMiniMenuItemWidget(
                   icon: const Icon(Icons.gamepad),
                   fabColor: theme.accentColor,
                   text: messages.addgame,
@@ -202,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: state.allTeamUids.length == 0
                   ? theme.disabledColor
                   : theme.accentColor,
-              icon: new Icon(Icons.add),
+              icon: Icon(Icons.add),
             );
           }),
     );
@@ -212,12 +211,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    _calendarEvents = new GameListCalendarState(
+    _calendarEvents = GameListCalendarState(
         _details, _calendarState, BlocProvider.of<GameBloc>(context));
-    _calendarEvents.loadGames(_details).then((void d) {
+    _calendarEvents.loadGames(_details).then((d) {
       setState(() {});
     });
-    _calendarSub = _calendarEvents.stream.listen((UpdateReason readon) {
+    _calendarSub = _calendarEvents.stream.listen((readon) {
       setState(() {});
     });
   }
@@ -228,28 +227,4 @@ class _HomeScreenState extends State<HomeScreen> {
     _calendarSub?.cancel();
     _calendarSub = null;
   }
-}
-
-class _HeaderInviteDelegate extends SliverPersistentHeaderDelegate {
-  @override
-  double get maxExtent => 64.0;
-
-  @override
-  double get minExtent => 64.0;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return new Container(
-      constraints:
-          new BoxConstraints(minHeight: minExtent, maxHeight: maxExtent),
-      child: new GestureDetector(
-        child: new InviteCard(),
-        onTap: () => Navigator.pushNamed(context, "Invites"),
-      ),
-    );
-  }
-
-  @override
-  bool shouldRebuild(_HeaderInviteDelegate oldDelegate) => false;
 }

@@ -16,5 +16,5 @@ class DocumentSnapshot extends wfs.DocumentSnapshotWrapper {
 
   /// The reference that produced this snapshot
   @override
-  DocumentReference get reference => new DocumentReference(doc.reference);
+  DocumentReference get reference => DocumentReference(doc.reference);
 }

@@ -1,15 +1,15 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/form/switchformfield.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../../services/validations.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
+import '../../widgets/form/seasonformfield.dart';
+import '../../widgets/form/switchformfield.dart';
+import '../../widgets/util/communityicons.dart';
 import '../../widgets/util/savingoverlay.dart';
 
 class AddSeasonScreen extends StatefulWidget {
@@ -19,17 +19,17 @@ class AddSeasonScreen extends StatefulWidget {
 
   @override
   AddSeasonScreenState createState() {
-    return new AddSeasonScreenState();
+    return AddSeasonScreenState();
   }
 }
 
 class AddSeasonScreenState extends State<AddSeasonScreen> {
   Season _seasonSelect;
-  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _seasonName;
   bool _importPlayers;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  Validations _validations = new Validations();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  Validations _validations = Validations();
   AddSeasonBloc addSeasonBloc;
 
   @override
@@ -41,8 +41,8 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
 
   void _showInSnackBar(String value) {
     _scaffoldKey.currentState.showSnackBar(
-      new SnackBar(
-        content: new Text(value),
+      SnackBar(
+        content: Text(value),
       ),
     );
   }
@@ -50,7 +50,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
   void _handleSubmit() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      // Make a new season.
+      // Make a season.
       ListBuilder<SeasonPlayer> players = ListBuilder<SeasonPlayer>();
       if (_importPlayers) {
         players.addAll(_seasonSelect.players);
@@ -62,7 +62,9 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
           ..role = RoleInTeam.NonPlayer));
       }
       addSeasonBloc.add(AddSeasonEventCommit(
-          teamUid: widget.teamUid, name: _seasonName, players: players.build()));
+          teamUid: widget.teamUid,
+          name: _seasonName,
+          players: players.build()));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
@@ -71,11 +73,11 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
   Widget _buildResults(BuildContext context, SingleTeamBloc singleTeamBloc) {
     return Form(
       key: _formKey,
-      child: new Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          new TextFormField(
-            decoration: new InputDecoration(
+          TextFormField(
+            decoration: InputDecoration(
               icon: const Icon(Icons.event_note),
               hintText: Messages.of(context).season,
               labelText: Messages.of(context).newseasonhint,
@@ -89,15 +91,15 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
               _seasonName = value;
             },
           ),
-          new SizedBox(height: 40.0),
-          new SwitchFormField(
+          SizedBox(height: 40.0),
+          SwitchFormField(
             initialValue: false,
             icon: Icons.import_contacts,
             onSaved: (bool b) => _importPlayers = b,
             label: Messages.of(context).importplayers,
           ),
-          new SeasonFormField(
-            decoration: new InputDecoration(
+          SeasonFormField(
+            decoration: InputDecoration(
               icon: const Icon(CommunityIcons.tshirtCrew),
               labelText: Messages.of(context).copyseasonfrom,
             ),
@@ -107,9 +109,9 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
               _seasonSelect = singleTeamBloc.state.getSeason(seasonUid);
             },
           ),
-          new FlatButton(
+          FlatButton(
             onPressed: _handleSubmit,
-            child: new Text(Messages.of(context).addseason),
+            child: Text(Messages.of(context).addseason),
           )
         ],
       ),
@@ -137,8 +139,8 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
           },
           child: Scaffold(
             key: _scaffoldKey,
-            appBar: new AppBar(
-              title: new Text(Messages.of(context).addseason),
+            appBar: AppBar(
+              title: Text(Messages.of(context).addseason),
             ),
             backgroundColor: Colors.grey.shade100,
             resizeToAvoidBottomPadding: true,
@@ -161,7 +163,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      new Flexible(
+                      Flexible(
                         fit: FlexFit.tight,
                         flex: 0,
                         child: _buildResults(context, singleTeamBloc),

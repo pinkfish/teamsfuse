@@ -16,7 +16,7 @@ class ClubSettings extends StatefulWidget {
 
   @override
   ClubSettingsState createState() {
-    return new ClubSettingsState();
+    return ClubSettingsState();
   }
 }
 
@@ -31,13 +31,12 @@ class ClubSettingsState extends State<ClubSettings> {
       showDialog<bool>(
           context: context,
           builder: (BuildContext context) {
-            return new AlertDialog(
-              title: new Text(Messages.of(context).selectclub),
-              content: new Text(Messages.of(context).noclub),
+            return AlertDialog(
+              title: Text(Messages.of(context).selectclub),
+              content: Text(Messages.of(context).noclub),
               actions: <Widget>[
-                new FlatButton(
-                  child:
-                      new Text(MaterialLocalizations.of(context).okButtonLabel),
+                FlatButton(
+                  child: Text(MaterialLocalizations.of(context).okButtonLabel),
                   onPressed: () {
                     Navigator.of(context).pop(true);
                   },
@@ -50,14 +49,14 @@ class ClubSettingsState extends State<ClubSettings> {
       String str = await showDialog<String>(
           context: context,
           builder: (BuildContext context) {
-            return new SimpleDialog(
-              title: new Text(Messages.of(context).selectclub),
+            return SimpleDialog(
+              title: Text(Messages.of(context).selectclub),
               children: clubBloc.state.clubs.values
                   .where((Club c) => c.isAdmin())
                   .map((Club c) {
-                return new SimpleDialogOption(
+                return SimpleDialogOption(
                     onPressed: () => Navigator.pop(context, c.uid),
-                    child: new Text(c.name));
+                    child: Text(c.name));
               }).toList(),
             );
           });
@@ -71,22 +70,22 @@ class ClubSettingsState extends State<ClubSettings> {
   List<Widget> _buildBody(Team team, SingleTeamBloc singleTeamBloc) {
     List<Widget> ret = <Widget>[];
     if (team.clubUid == null) {
-      ret.add(new Text(
+      ret.add(Text(
         Messages.of(context).clubsettingdescription,
         softWrap: true,
         style: Theme.of(context).textTheme.body1.copyWith(fontSize: 20.0),
       ));
       ret.add(
-        new SizedBox(
+        SizedBox(
           height: 20.0,
         ),
       );
       ret.add(
-        new Row(
+        Row(
           children: <Widget>[
-            new FlatButton(
+            FlatButton(
               onPressed: () => _setClub(singleTeamBloc),
-              child: new Text(
+              child: Text(
                 Messages.of(context).setclub,
                 style: Theme.of(context)
                     .textTheme
@@ -94,9 +93,9 @@ class ClubSettingsState extends State<ClubSettings> {
                     .copyWith(color: Theme.of(context).accentColor),
               ),
             ),
-            new FlatButton(
+            FlatButton(
               onPressed: _addClub,
-              child: new Text(
+              child: Text(
                 Messages.of(context).addclub,
                 style: Theme.of(context)
                     .textTheme
@@ -115,14 +114,14 @@ class ClubSettingsState extends State<ClubSettings> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
-    return new Column(
+    return Column(
       children: <Widget>[
-        new Expanded(
-          child: new Container(
-            constraints: new BoxConstraints(),
-            margin: new EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-            decoration: new BoxDecoration(color: theme.cardColor),
-            child: new SingleChildScrollView(
+        Expanded(
+          child: Container(
+            constraints: BoxConstraints(),
+            margin: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+            decoration: BoxDecoration(color: theme.cardColor),
+            child: SingleChildScrollView(
               child: SingleTeamProvider(
                 teamUid: widget._teamUid,
                 builder: (BuildContext context, SingleTeamBloc bloc) =>

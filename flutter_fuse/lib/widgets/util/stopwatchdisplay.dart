@@ -15,7 +15,7 @@ class StopwatchDisplay extends StatefulWidget {
 
   @override
   State createState() {
-    return new _StopwatchDisplayState();
+    return _StopwatchDisplayState();
   }
 }
 
@@ -25,7 +25,7 @@ class _StopwatchDisplayState extends State<StopwatchDisplay> {
   @override
   void initState() {
     super.initState();
-    timer = new Timer.periodic(new Duration(seconds: 1),
+    timer = Timer.periodic(Duration(seconds: 1),
         (Timer t) => widget.stopwatch.isRunning ? setState(() {}) : null);
   }
 
@@ -57,7 +57,7 @@ class _StopwatchDisplayState extends State<StopwatchDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    return new AnimatedSwitcher(
+    return AnimatedSwitcher(
       duration: Duration(milliseconds: 100),
       child: Text(format(widget.stopwatch.elapsedMilliseconds),
           style: widget.style),
@@ -75,11 +75,11 @@ class MyStopwatch {
   ///    The following example shows how to start a [Stopwatch]
   ///    immediately after allocation.
   ///    ```
-  ///    var stopwatch = new Stopwatch()..start();
+  ///    var stopwatch = Stopwatch()..start();
   ///    ```
   MyStopwatch({this.initialValue});
 
-  Stopwatch watch = new Stopwatch();
+  Stopwatch watch = Stopwatch();
 
   // The _start and _stop fields capture the time when [start] and [stop]
   // are called respectively.
@@ -160,7 +160,7 @@ class MyStopwatch {
   /// The [elapsedTicks] counter converted to a [Duration].
   ///
   Duration get elapsed {
-    return new Duration(microseconds: elapsedMicroseconds);
+    return Duration(microseconds: elapsedMicroseconds);
   }
 
   ///
@@ -183,6 +183,6 @@ class MyStopwatch {
   bool get isRunning => _stop == null;
 
   int _now() {
-    return new DateTime.now().microsecondsSinceEpoch;
+    return DateTime.now().microsecondsSinceEpoch;
   }
 }

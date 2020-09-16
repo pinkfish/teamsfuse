@@ -22,7 +22,7 @@ class FirebaseMessaging {
       : _channel = channel,
         _platform = platform;
 
-  static final FirebaseMessaging _instance = new FirebaseMessaging.private(
+  static final FirebaseMessaging _instance = FirebaseMessaging.private(
       const MethodChannel('plugins.flutter.io/firebase_messaging'),
       const LocalPlatform());
 
@@ -48,7 +48,7 @@ class FirebaseMessaging {
   }
 
   final StreamController<IosNotificationSettings> _iosSettingsStreamController =
-      new StreamController<IosNotificationSettings>.broadcast();
+      StreamController<IosNotificationSettings>.broadcast();
 
   /// Stream that fires when the user changes their notification settings.
   ///
@@ -71,18 +71,16 @@ class FirebaseMessaging {
   }
 
   final StreamController<String> _tokenStreamController =
-      new StreamController<String>.broadcast();
+      StreamController<String>.broadcast();
 
-  /// Fires when a new FCM token is generated.
+  /// Fires when a FCM token is generated.
   Stream<String> get onTokenRefresh {
     return _tokenStreamController.stream;
   }
 
   /// Returns the FCM token.
   Future<String> getToken() {
-    return _token != null
-        ? new Future<String>.value(_token)
-        : onTokenRefresh.first;
+    return _token != null ? Future<String>.value(_token) : onTokenRefresh.first;
   }
 
   /// Subscribe to topic in background.
@@ -108,7 +106,7 @@ class FirebaseMessaging {
         }
         return null;
       case "onIosSettingsRegistered":
-        _iosSettingsStreamController.add(new IosNotificationSettings._fromMap(
+        _iosSettingsStreamController.add(IosNotificationSettings._fromMap(
             call.arguments.cast<String, bool>() as Map<String, bool>));
         return null;
       case "onMessage":
@@ -121,7 +119,7 @@ class FirebaseMessaging {
         return _onResume(
             call.arguments.cast<String, dynamic>() as Map<String, dynamic>);
       default:
-        throw new UnsupportedError("Unrecognized JSON message");
+        throw UnsupportedError("Unrecognized JSON message");
     }
   }
 }
