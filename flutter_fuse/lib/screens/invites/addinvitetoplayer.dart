@@ -6,8 +6,11 @@ import '../../services/messages.dart';
 import '../../widgets/blocs/singleplayerprovider.dart';
 import '../../widgets/util/savingoverlay.dart';
 
-// Shows the current invites pending for this user.
+///
+/// Adds an invite to a player, displaying the invite and accept flow.
+///
 class AddInviteToPlayerScreen extends StatefulWidget {
+  /// Constructor.
   AddInviteToPlayerScreen(this._playerUid);
 
   final String _playerUid;
@@ -49,14 +52,13 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
     return BlocProvider(
-      create: (BuildContext c) => addInviteBloc,
+      create: (c) => addInviteBloc,
       child: SinglePlayerProvider(
         playerUid: widget._playerUid,
-        builder: (BuildContext context, SinglePlayerBloc playerBloc) =>
-            Scaffold(
+        builder: (context, playerBloc) => Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
             title: Text(messages.followplayer(
@@ -70,7 +72,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
                   Messages.of(context).savebuttontext,
                   style: Theme.of(context)
                       .textTheme
-                      .subhead
+                      .subtitle1
                       .copyWith(color: Colors.white),
                 ),
               ),
@@ -78,19 +80,19 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
           ),
           body: BlocListener(
             cubit: addInviteBloc,
-            listener: (BuildContext c, AddItemState addState) {
+            listener: (c, addState) {
               if (addState is AddItemDone) {
                 Navigator.pop(context);
               }
               if (addState is AddItemSaveFailed) {
-                showInSnackBar("Error " + addState.error.toString());
+                showInSnackBar("Error ${addState.error.toString()}");
               }
             },
             child: BlocBuilder(
               cubit: addInviteBloc,
-              builder: (BuildContext c, AddItemState addState) => BlocBuilder(
+              builder: (c, addState) => BlocBuilder(
                 cubit: playerBloc,
-                builder: (BuildContext context, SinglePlayerState state) {
+                builder: (context, state) {
                   if (state is SinglePlayerLoaded) {
                     return Scrollbar(
                       child: SingleChildScrollView(
@@ -107,7 +109,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
                                   ),
                                   keyboardType: TextInputType.emailAddress,
                                   initialValue: _email,
-                                  onSaved: (String newName) {
+                                  onSaved: (newName) {
                                     _email = newName.toLowerCase();
                                   },
                                 ),

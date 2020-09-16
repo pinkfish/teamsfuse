@@ -10,9 +10,10 @@ import '../../widgets/util/savingoverlay.dart';
 import 'dialog/deleteinvite.dart';
 
 ///
-/// Shows the invite the team screen.
+/// Shows the invite the team screen. and allow accepting.
 ///
 class AcceptInviteToTeamScreen extends StatefulWidget {
+  /// Constructor.
   AcceptInviteToTeamScreen(this._inviteUid);
 
   final String _inviteUid;
@@ -26,11 +27,11 @@ class AcceptInviteToTeamScreen extends StatefulWidget {
 class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   Set<String> _checked;
   Map<String, String> _data;
-  Map<String, String> _original = <String, String>{};
+  final Map<String, String> _original = <String, String>{};
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Map<String, String> _current = <String, String>{};
-  Map<String, Relationship> _relationship = <String, Relationship>{};
-  Map<String, TextEditingController> _controllers =
+  final Map<String, String> _current = <String, String>{};
+  final Map<String, Relationship> _relationship = <String, Relationship>{};
+  final Map<String, TextEditingController> _controllers =
       <String, TextEditingController>{};
   SingleInviteBloc _singleInviteBloc;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -68,9 +69,8 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
           _relationship[name] = Relationship.Friend;
         }
       } else {
-        AuthenticationBloc authenticationBloc =
-            BlocProvider.of<AuthenticationBloc>(context);
-        PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+        var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+        var playerBloc = BlocProvider.of<PlayerBloc>(context);
         _current[name] = uid;
         _data[name] = authenticationBloc.currentUser.profile.displayName;
         _relationship[name] = playerBloc.state.players[uid]
@@ -80,19 +80,19 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   }
 
   Widget _showPlayerDropdown(String name, PlayerState state) {
-    List<DropdownMenuItem<String>> dropdowns = <DropdownMenuItem<String>>[];
+    var dropdowns = <DropdownMenuItem<String>>[];
 
     String found;
-    String lowerName = name.toLowerCase().trim();
+    var lowerName = name.toLowerCase().trim();
 
-    state.players.forEach((String uid, Player play) {
-      if (play.name.toLowerCase().trim().compareTo(lowerName) == 0) {
-        found = uid;
+    for (var play in state.players.entries) {
+      if (play.value.name.toLowerCase().trim().compareTo(lowerName) == 0) {
+        found = play.key;
       }
       dropdowns.add(
-        DropdownMenuItem<String>(child: Text(play.name), value: play.uid),
+        DropdownMenuItem<String>(child: Text(play.value.name), value: play.key),
       );
-    });
+    }
     dropdowns.add(
       DropdownMenuItem<String>(
           child: Text(Messages.of(context).createNew),
@@ -103,10 +103,9 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     }
     if (!_current.containsKey(name)) {
       _current[name] = found;
-      AuthenticationBloc authenticationBloc =
-          BlocProvider.of<AuthenticationBloc>(context);
-      PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
-      String myUid = authenticationBloc.currentUser.uid;
+      var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+      var playerBloc = BlocProvider.of<PlayerBloc>(context);
+      var myUid = authenticationBloc.currentUser.uid;
       if (playerBloc.state.players.containsKey(found)) {
         _relationship[name] =
             playerBloc.state.players[found].users[myUid].relationship;
@@ -117,7 +116,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
     return Container(
         child: DropdownButton<String>(
       items: dropdowns,
-      onChanged: (String val) {
+      onChanged: (val) {
         _onChangedPlayer(name, val);
       },
       value: _current[name],
@@ -127,10 +126,9 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   void _savePressed() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      Map<String, String> currentCopy = Map<String, String>.from(_current);
+      var currentCopy = Map<String, String>.from(_current);
 
-      currentCopy
-          .removeWhere((String name, String uid) => _checked.contains(name));
+      currentCopy.removeWhere((name, uid) => _checked.contains(name));
       _singleInviteBloc.add(SingleInviteEventAcceptInviteToTeam(
         relationship: _relationship,
         playerNameToUid: currentCopy,
@@ -139,20 +137,19 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   }
 
   Widget _buildRelationshopDropDown(String name, bool disabled) {
-    List<DropdownMenuItem<Relationship>> dropdowns =
-        <DropdownMenuItem<Relationship>>[];
-    ThemeData theme = Theme.of(context);
-    Messages messages = Messages.of(context);
+    var dropdowns = <DropdownMenuItem<Relationship>>[];
+    var theme = Theme.of(context);
+    var messages = Messages.of(context);
 
-    Relationship.values.forEach((Relationship rel) {
+    for (var rel in Relationship.values) {
       if (rel != Relationship.Me || disabled) {
         dropdowns.add(
           DropdownMenuItem<Relationship>(
               child: Text(messages.relationships(rel)), value: rel),
         );
       }
-    });
-    TextStyle textStyle = theme.textTheme.subhead;
+    }
+    var textStyle = theme.textTheme.subtitle1;
     if (disabled) {
       textStyle = textStyle.copyWith(
         color: theme.disabledColor,
@@ -164,7 +161,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
       style: textStyle,
       onChanged: disabled
           ? null
-          : (Relationship val) {
+          : (val) {
               _relationship[name] = val;
             },
       value: _relationship[name],
@@ -173,90 +170,88 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
-    List<Widget> players = <Widget>[];
-    ThemeData theme = Theme.of(context);
-    InviteToTeam invite = _singleInviteBloc.state.invite as InviteToTeam;
-    invite.playerName.forEach(
-      (String name) {
-        if (!_controllers.containsKey(name)) {
-          _controllers[name] = TextEditingController();
-        }
+    var players = <Widget>[];
+    var theme = Theme.of(context);
+    var invite = _singleInviteBloc.state.invite as InviteToTeam;
+    for (var name in invite.playerName) {
+      if (!_controllers.containsKey(name)) {
+        _controllers[name] = TextEditingController();
+      }
 
-        players.add(
-          ListTile(
-            leading: Checkbox(
-              value: _checked.contains(name),
-              onChanged: (bool value) {
-                setState(
-                  () {
-                    if (value) {
-                      _checked.add(name);
-                    } else {
-                      _checked.remove(name);
-                    }
-                  },
-                );
-              },
-            ),
-            title: BlocBuilder(
-                cubit: BlocProvider.of<PlayerBloc>(context),
-                builder: (BuildContext context, PlayerState state) {
-                  if (state is PlayerLoaded) {
-                    return _showPlayerDropdown(name, state);
+      players.add(
+        ListTile(
+          leading: Checkbox(
+            value: _checked.contains(name),
+            onChanged: (value) {
+              setState(
+                () {
+                  if (value) {
+                    _checked.add(name);
                   } else {
-                    return Text(Messages.of(context).unknown);
+                    _checked.remove(name);
                   }
-                }),
-            subtitle: _current[name].compareTo(SingleInviteBloc.createNew) == 0
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                },
+              );
+            },
+          ),
+          title: BlocBuilder(
+              cubit: BlocProvider.of<PlayerBloc>(context),
+              builder: (context, state) {
+                if (state is PlayerLoaded) {
+                  return _showPlayerDropdown(name, state);
+                } else {
+                  return Text(Messages.of(context).unknown);
+                }
+              }),
+          subtitle: _current[name].compareTo(SingleInviteBloc.createNew) == 0
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    _buildRelationshopDropDown(name, false),
+                    TextFormField(
+                      controller: _controllers[name],
+                      decoration: InputDecoration(
+                        labelText: messages.newplayername,
+                        hintText: messages.newplayernamehint,
+                      ),
+                      initialValue: name,
+                      onSaved: (newName) {
+                        _data[name] = newName;
+                      },
+                    ),
+                    ByUserNameComponent(userId: invite.sentByUid),
+                  ],
+                )
+              : FocusScope(
+                  node: FocusScopeNode(),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      _buildRelationshopDropDown(name, false),
+                      _buildRelationshopDropDown(name, true),
                       TextFormField(
                         controller: _controllers[name],
+                        style: theme.textTheme.subtitle1.copyWith(
+                          color: theme.disabledColor,
+                        ),
                         decoration: InputDecoration(
                           labelText: messages.newplayername,
                           hintText: messages.newplayernamehint,
                         ),
                         initialValue: name,
-                        onSaved: (String newName) {
+                        onSaved: (newName) {
                           _data[name] = newName;
                         },
                       ),
                       ByUserNameComponent(userId: invite.sentByUid),
                     ],
-                  )
-                : FocusScope(
-                    node: FocusScopeNode(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        _buildRelationshopDropDown(name, true),
-                        TextFormField(
-                          controller: _controllers[name],
-                          style: theme.textTheme.subhead.copyWith(
-                            color: theme.disabledColor,
-                          ),
-                          decoration: InputDecoration(
-                            labelText: messages.newplayername,
-                            hintText: messages.newplayernamehint,
-                          ),
-                          initialValue: name,
-                          onSaved: (String newName) {
-                            _data[name] = newName;
-                          },
-                        ),
-                        ByUserNameComponent(userId: invite.sentByUid),
-                      ],
-                    ),
                   ),
-          ),
-        );
-      },
-    );
+                ),
+        ),
+      );
+    }
 
     players.add(
       Row(
@@ -277,7 +272,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
 
     return BlocListener(
       cubit: _singleInviteBloc,
-      listener: (BuildContext context, SingleInviteState state) {
+      listener: (context, state) {
         if (state is SingleInviteDeleted) {
           Navigator.pop(context);
         }
@@ -297,7 +292,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                   Messages.of(context).savebuttontext,
                   style: Theme.of(context)
                       .textTheme
-                      .subhead
+                      .subtitle1
                       .copyWith(color: Colors.white),
                 ),
               ),
@@ -307,7 +302,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
             child: SingleChildScrollView(
               child: BlocListener(
                 cubit: _singleInviteBloc,
-                listener: (BuildContext context, SingleInviteState state) {
+                listener: (context, state) {
                   if (state is SingleInviteDeleted) {
                     // go back!
                     Navigator.pop(context);
@@ -315,7 +310,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                 },
                 child: BlocBuilder(
                   cubit: _singleInviteBloc,
-                  builder: (BuildContext context, SingleInviteState state) {
+                  builder: (context, state) {
                     if (state is SingleInviteDeleted) {
                       // Go back!
                       return Center(child: CircularProgressIndicator());
@@ -323,7 +318,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                       if (state is SingleInviteSaveFailed) {
                         _showInSnackBar(Messages.of(context).formerror);
                       }
-                      InviteToTeam invite = state.invite as InviteToTeam;
+                      var invite = state.invite as InviteToTeam;
                       return SavingOverlay(
                         saving: !(state is SingleInviteLoaded),
                         child: Form(

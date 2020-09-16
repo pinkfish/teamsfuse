@@ -3,13 +3,16 @@ import 'package:fusemodel/blocs.dart';
 
 import '../../../services/messages.dart';
 
+///
+/// Show a dialog to delete the invite.
+///
 void showDeleteInvite(BuildContext context, SingleInviteBloc bloc) async {
   var mess = Messages.of(context);
 
-  bool result = await showDialog<bool>(
+  var result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(mess.deleteinvite),
           content: Scrollbar(

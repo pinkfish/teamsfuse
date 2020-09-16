@@ -14,7 +14,11 @@ import '../../widgets/util/leagueimage.dart';
 import '../../widgets/util/savingoverlay.dart';
 import 'dialog/deleteinvite.dart';
 
+///
+/// Screen to display an accept invite to the league team.
+///
 class AcceptInviteToLeagueTeamScreen extends StatefulWidget {
+  /// Constructor
   AcceptInviteToLeagueTeamScreen(this._inviteUid);
 
   final String _inviteUid;
@@ -30,9 +34,9 @@ class _AcceptInviteToLeagueTeamScreenState
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _currentTeamUid;
   String _seasonSelected = SeasonFormField.none;
-  GlobalKey<FormState> _seasonForm = GlobalKey<FormState>();
-  FocusNode _focusNodeSeason = FocusNode();
-  Validations _validations = Validations();
+  final GlobalKey<FormState> _seasonForm = GlobalKey<FormState>();
+  final FocusNode _focusNodeSeason = FocusNode();
+  final Validations _validations = Validations();
   String _seasonName;
   bool _saving = false;
   SingleInviteBloc _singleInviteBloc;
@@ -68,10 +72,10 @@ class _AcceptInviteToLeagueTeamScreenState
     }
     _seasonForm.currentState.save();
 
-    bool res = await showDialog<bool>(
+    var res = await showDialog<bool>(
         context: context,
-        builder: (BuildContext context) {
-          InviteToLeagueTeam inviteToLeagueTeam =
+        builder: (context) {
+          var inviteToLeagueTeam =
               _singleInviteBloc.state.invite as InviteToLeagueTeam;
 
           return AlertDialog(
@@ -82,7 +86,7 @@ class _AcceptInviteToLeagueTeamScreenState
                     inviteToLeagueTeam.leagueTeamName,
                     _seasonName,
                     inviteToLeagueTeam.leagueName),
-                style: Theme.of(context).textTheme.body1,
+                style: Theme.of(context).textTheme.bodyText2,
               ),
             ),
             actions: <Widget>[
@@ -118,10 +122,10 @@ class _AcceptInviteToLeagueTeamScreenState
         initialValue: invite.leagueSeasonName,
         keyboardType: TextInputType.text,
         obscureText: false,
-        validator: (String value) {
+        validator: (value) {
           return _validations.validateSeason(context, value);
         },
-        onSaved: (String value) {
+        onSaved: (value) {
           _seasonName = value;
         },
       ),
@@ -147,8 +151,8 @@ class _AcceptInviteToLeagueTeamScreenState
         includeNew: true, teamBloc: bloc,
         // teamUid: _currentTeamUid,
         enabled: _currentTeamUid != null,
-        onFieldSubmitted: (String str) => setState(() => _seasonSelected = str),
-        onSaved: (String str) => _seasonSelected = str,
+        onFieldSubmitted: (str) => setState(() => _seasonSelected = str),
+        onSaved: (str) => _seasonSelected = str,
       );
       if (_seasonSelected == SeasonFormField.createNew) {
         formChildren = Column(
@@ -162,9 +166,9 @@ class _AcceptInviteToLeagueTeamScreenState
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
 
     return BlocProvider<SingleInviteBloc>.value(
       value: _singleInviteBloc,
@@ -181,19 +185,19 @@ class _AcceptInviteToLeagueTeamScreenState
               child: SingleChildScrollView(
                 child: BlocListener(
                   cubit: _singleInviteBloc,
-                  listener: (BuildContext context, SingleInviteState state) {
+                  listener: (context, state) {
                     if (state is SingleInviteDeleted) {
                       Navigator.pop(context);
                     }
                   },
                   child: BlocBuilder(
                     cubit: _singleInviteBloc,
-                    builder: (BuildContext context, SingleInviteState state) {
+                    builder: (context, state) {
                       if (state is SingleInviteDeleted) {
                         // Deleted.
                         return Center(child: CircularProgressIndicator());
                       } else {
-                        InviteToLeagueTeam inviteToLeagueTeam =
+                        var inviteToLeagueTeam =
                             state.invite as InviteToLeagueTeam;
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,13 +222,12 @@ class _AcceptInviteToLeagueTeamScreenState
                             TeamPicker(
                               includeCreateNew: true,
                               teamUid: _currentTeamUid,
-                              onChanged: (String str) =>
+                              onChanged: (str) =>
                                   setState(() => _currentTeamUid = str),
                             ),
                             SingleTeamProvider(
                               teamUid: _currentTeamUid,
-                              builder: (BuildContext context,
-                                      SingleTeamBloc bloc) =>
+                              builder: (context, bloc) =>
                                   _buildSeasonSection(inviteToLeagueTeam, bloc),
                             ),
                             ButtonBar(
@@ -236,10 +239,8 @@ class _AcceptInviteToLeagueTeamScreenState
                                   textColor: Colors.white,
                                 ),
                                 FlatButton(
-                                  onPressed: () => Navigator.pushNamed(
-                                      context,
-                                      "/League/Main/" +
-                                          inviteToLeagueTeam.leagueUid),
+                                  onPressed: () => Navigator.pushNamed(context,
+                                      "/League/Main/${inviteToLeagueTeam.leagueUid}"),
                                   child: Text(messages.openbutton),
                                 ),
                                 FlatButton(
@@ -260,7 +261,7 @@ class _AcceptInviteToLeagueTeamScreenState
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => _savePressed(),
+          onPressed: _savePressed,
           child: const Icon(Icons.check),
         ),
       ),

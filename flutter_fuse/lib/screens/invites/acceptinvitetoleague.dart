@@ -52,9 +52,9 @@ class _AcceptInviteToLeagueScreenState
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -64,13 +64,13 @@ class _AcceptInviteToLeagueScreenState
         child: SingleChildScrollView(
           child: BlocBuilder(
             cubit: _singleInviteBloc,
-            builder: (BuildContext context, SingleInviteState state) {
+            builder: (context, state) {
               if (state is SingleInviteDeleted) {
                 // Deleted.
                 Navigator.pop(context);
                 return Center(child: CircularProgressIndicator());
               } else {
-                InviteToLeagueAsAdmin inviteToLeagueAsAdmin =
+                var inviteToLeagueAsAdmin =
                     state.invite as InviteToLeagueAsAdmin;
 
                 return Column(
@@ -94,10 +94,8 @@ class _AcceptInviteToLeagueScreenState
                           textColor: Colors.white,
                         ),
                         FlatButton(
-                          onPressed: () => Navigator.pushNamed(
-                              context,
-                              "/League/Main/" +
-                                  inviteToLeagueAsAdmin.leagueUid),
+                          onPressed: () => Navigator.pushNamed(context,
+                              "/League/Main/${inviteToLeagueAsAdmin.leagueUid}"),
                           child: Text(messages.openbutton),
                         ),
                         FlatButton(
@@ -115,7 +113,7 @@ class _AcceptInviteToLeagueScreenState
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _savePressed(),
+        onPressed: _savePressed,
         child: const Icon(Icons.check),
       ),
     );

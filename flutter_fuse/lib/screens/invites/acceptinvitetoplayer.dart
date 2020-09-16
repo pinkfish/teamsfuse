@@ -13,6 +13,7 @@ import 'dialog/deleteinvite.dart';
 /// Accepts the invite to the player.
 ///
 class AcceptInviteToPlayerScreen extends StatefulWidget {
+  /// Constructor.
   AcceptInviteToPlayerScreen(this._inviteUid);
 
   final String _inviteUid;
@@ -59,7 +60,7 @@ class _AcceptInviteToPlayerScreenState
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
     return BlocProvider<SingleInviteBloc>.value(
       value: _singleInviteBloc,
@@ -68,7 +69,7 @@ class _AcceptInviteToPlayerScreenState
         appBar: AppBar(
           title: BlocBuilder(
             cubit: _singleInviteBloc,
-            builder: (BuildContext context, SingleInviteState state) {
+            builder: (context, state) {
               if (state is SingleInviteDeleted) {
                 return Text(messages.loading);
               } else {
@@ -86,7 +87,7 @@ class _AcceptInviteToPlayerScreenState
                 messages.savebuttontext,
                 style: Theme.of(context)
                     .textTheme
-                    .subhead
+                    .subtitle1
                     .copyWith(color: Colors.white),
               ),
             ),
@@ -96,14 +97,14 @@ class _AcceptInviteToPlayerScreenState
           child: SingleChildScrollView(
             child: BlocListener(
               cubit: _singleInviteBloc,
-              listener: (BuildContext context, SingleInviteState state) {
+              listener: (context, state) {
                 if (state is SingleInviteDeleted) {
                   Navigator.pop(context);
                 }
               },
               child: BlocBuilder(
                 cubit: _singleInviteBloc,
-                builder: (BuildContext context, SingleInviteState state) {
+                builder: (context, state) {
                   if (state is SingleInviteDeleted) {
                     // Deleted.
                     Navigator.pop(context);
@@ -130,7 +131,7 @@ class _AcceptInviteToPlayerScreenState
                                   labelText: messages.relationshipselect,
                                   icon: const Icon(Icons.person),
                                 ),
-                                onSaved: (Relationship rel) {
+                                onSaved: (rel) {
                                   _relationship = rel;
                                 },
                               ),

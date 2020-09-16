@@ -8,66 +8,17 @@ import '../../services/messages.dart';
 import '../../widgets/invites/deleteinvitedialog.dart';
 import '../../widgets/util/savingoverlay.dart';
 
-// Shows the current invites pending for this user.
+///
+/// Shows the current invites pending for this user.
+///
 class InviteListScreen extends StatefulWidget {
-  static void deletePressed(BuildContext context, Invite invite) async {
-    Messages mess = Messages.of(context);
-
-    bool result = await showDialog<bool>(
-        context: context,
-        barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(mess.deleteinvite),
-            content: Scrollbar(
-              child: SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    Text(mess.confirmdelete(invite)),
-                  ],
-                ),
-              ),
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text(MaterialLocalizations.of(context).okButtonLabel),
-                onPressed: () {
-                  // Do the delete.
-                  Navigator.of(context).pop(true);
-                },
-              ),
-              FlatButton(
-                child:
-                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              ),
-            ],
-          );
-        });
-    if (result) {
-      SingleInviteBloc singleInviteBloc = SingleInviteBloc(
-          analytisSubsystem: RepositoryProvider.of<AnalyticsSubsystem>(context),
-          inviteUid: invite.uid,
-          teamBloc: BlocProvider.of<TeamBloc>(context),
-          seasonBloc: BlocProvider.of<SeasonBloc>(context));
-      try {
-        singleInviteBloc
-            .add(SingleInviteEventDeleteInvite(inviteUid: invite.uid));
-      } finally {
-        singleInviteBloc.close();
-      }
-    }
-  }
-
   @override
-  InviteListScreenState createState() {
-    return InviteListScreenState();
+  _InviteListScreenState createState() {
+    return _InviteListScreenState();
   }
 }
 
-class InviteListScreenState extends State<InviteListScreen> {
+class _InviteListScreenState extends State<InviteListScreen> {
   @override
   void initState() {
     super.initState();
@@ -83,7 +34,7 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   void _deleteInvite(Invite invite) async {
-    bool result = await deleteInviteDialog(context, invite);
+    var result = await deleteInviteDialog(context, invite);
     if (result) {
       if (invite is InviteToTeam) {
         Navigator.pop(context);
@@ -92,32 +43,32 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   void _addInviteToTeam(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteToTeam/" + invite.uid);
+    Navigator.pushNamed(context, "AcceptInviteToTeam/${invite.uid}");
   }
 
   void _addInviteToPlayer(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteToPlayer/" + invite.uid);
+    Navigator.pushNamed(context, "AcceptInviteToPlayer/${invite.uid}");
   }
 
   void _addInviteAsAdmin(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteAsAdmin/" + invite.uid);
+    Navigator.pushNamed(context, "AcceptInviteAsAdmin/${invite.uid}");
   }
 
   void _addInviteToLeague(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteToLeague/" + invite.uid);
+    Navigator.pushNamed(context, "AcceptInviteToLeague/${invite.uid}");
   }
 
   void _addInviteToLeagueTeam(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteToLeagueTeam/" + invite.uid);
+    Navigator.pushNamed(context, "AcceptInviteToLeagueTeam/${invite.uid}");
   }
 
   void _addInviteToClub(Invite invite) {
-    Navigator.pushNamed(context, "AcceptInviteToClub/" + invite.uid);
+    Navigator.pushNamed(context, "AcceptInviteToClub/${invite.uid}");
   }
 
   Card _buildInviteToTeam(InviteToTeam invite) {
-    Messages messages = Messages.of(context);
-    ThemeData theme = Theme.of(context);
+    var messages = Messages.of(context);
+    var theme = Theme.of(context);
     return Card(
       child: ListTile(
         leading: IconButton(
@@ -137,7 +88,7 @@ class InviteListScreenState extends State<InviteListScreen> {
             Text(Messages.of(context).roleingame(invite.role)),
             const SizedBox(height: 5.0),
             Row(
-              children: invite.playerName.map((String name) {
+              children: invite.playerName.map((name) {
                 return Chip(
                     backgroundColor: Colors.lightBlueAccent, label: Text(name));
               }).toList(),
@@ -155,7 +106,7 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   Card _buildInviteAsAdmin(InviteAsAdmin invite) {
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
     return Card(
       child: ListTile(
         leading: IconButton(
@@ -178,7 +129,7 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   Card _buildInviteToClub(InviteToClub invite) {
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
     return Card(
       child: ListTile(
         leading: IconButton(
@@ -200,7 +151,7 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   Card _buildInviteToPlayer(InviteToPlayer invite) {
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
     return Card(
       child: ListTile(
         leading: IconButton(
@@ -219,7 +170,7 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   Card _buildInviteToLeague(InviteToLeagueAsAdmin invite) {
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
     return Card(
       child: ListTile(
         leading: IconButton(
@@ -242,7 +193,7 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   Card _buildInviteToLeagueTeam(InviteToLeagueTeam invite) {
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
     return Card(
       child: ListTile(
         leading: IconButton(
@@ -271,19 +222,19 @@ class InviteListScreenState extends State<InviteListScreen> {
   }
 
   List<Widget> _buildInviteList(BuiltMap<String, Invite> invites) {
-    List<Widget> inviteWidgets = <Widget>[];
+    var inviteWidgets = <Widget>[];
     if (invites.length == 0) {
       inviteWidgets.add(SizedBox(height: 50.0));
       inviteWidgets.add(
         Center(
           child: Text(
             Messages.of(context).noinvites,
-            style: Theme.of(context).textTheme.display1,
+            style: Theme.of(context).textTheme.headline4,
           ),
         ),
       );
     } else {
-      invites.forEach((String key, Invite invite) {
+      invites.forEach((key, invite) {
         if (invite is InviteToTeam) {
           inviteWidgets.add(_buildInviteToTeam(invite));
         }
@@ -309,7 +260,7 @@ class InviteListScreenState extends State<InviteListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
+    var inviteBloc = BlocProvider.of<InviteBloc>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -319,7 +270,7 @@ class InviteListScreenState extends State<InviteListScreen> {
         child: SingleChildScrollView(
           child: BlocListener(
             cubit: inviteBloc,
-            listener: (BuildContext context, InviteState state) {
+            listener: (context, state) {
               if (state is SingleInviteDeleted) {
                 Navigator.pop(context);
                 return;
@@ -331,7 +282,7 @@ class InviteListScreenState extends State<InviteListScreen> {
             },
             child: BlocBuilder(
                 cubit: inviteBloc,
-                builder: (BuildContext context, InviteState state) {
+                builder: (context, state) {
                   return SavingOverlay(
                     saving: state is SingleInviteSaving,
                     child: Column(
