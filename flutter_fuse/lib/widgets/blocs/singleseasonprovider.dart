@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'base/singleprovider.dart';
 
@@ -24,6 +25,7 @@ class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
 
   static SingleSeasonBloc _createBloc(BuildContext context, String uid) {
     return SingleSeasonBloc(
-        seasonBloc: BlocProvider.of<SeasonBloc>(context), seasonUid: uid);
+        db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+        seasonUid: uid);
   }
 }
