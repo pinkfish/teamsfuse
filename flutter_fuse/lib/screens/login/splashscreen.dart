@@ -8,9 +8,12 @@ import '../../services/analytics.dart';
 import '../../services/messages.dart';
 import '../../services/notifications.dart';
 
+///
+/// The splash screen to show when logging into the program.
+///
 class SplashScreen extends StatelessWidget {
   Widget _loadingScreen(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
+    var screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
@@ -55,12 +58,11 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AuthenticationBloc _authenticationBloc =
-        BlocProvider.of<AuthenticationBloc>(context);
+    var _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
 
     return BlocListener(
       cubit: _authenticationBloc,
-      listener: (BuildContext context, AuthenticationState state) {
+      listener: (context, state) {
         if (state is AuthenticationLoggedIn) {
           Notifications.instance.initForNotification();
           Navigator.pushNamedAndRemoveUntil(
@@ -82,7 +84,7 @@ class SplashScreen extends StatelessWidget {
       },
       child: BlocBuilder(
         cubit: _authenticationBloc,
-        builder: (BuildContext context, AuthenticationState state) {
+        builder: (context, state) {
           if (state is AuthenticationUninitialized ||
               state is AuthenticationLoading) {
             return _loadingScreen(context);

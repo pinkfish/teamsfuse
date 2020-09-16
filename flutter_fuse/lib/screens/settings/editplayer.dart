@@ -13,22 +13,25 @@ import '../../services/validations.dart';
 import '../../widgets/form/relationshipformfield.dart';
 import '../../widgets/util/username.dart';
 
+///
+/// Edit the details for the player.
+///
 class EditPlayerScreen extends StatefulWidget {
+  /// COnstructor.
   EditPlayerScreen({this.playerUid});
 
+  /// The playerUid to lookup.
   final String playerUid;
 
   @override
-  EditPlayerScreenState createState() {
-    return EditPlayerScreenState();
+  _EditPlayerScreenState createState() {
+    return _EditPlayerScreenState();
   }
 }
 
-class EditPlayerScreenState extends State<EditPlayerScreen> {
-  EditPlayerScreenState();
-
+class _EditPlayerScreenState extends State<EditPlayerScreen> {
   PlayerBuilder _player;
-  Validations _validations = Validations();
+  final Validations _validations = Validations();
   File _imageFile;
   bool _changedImage = false;
   bool _autoValidate = false;
@@ -44,7 +47,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
   }
 
   Future<void> _chooseImage() async {
-    File imgFile = await ImagePicker.pickImage(
+    var imgFile = await ImagePicker.pickImage(
         source: ImageSource.gallery, maxHeight: 200.0, maxWidth: 200.0);
 
     if (imgFile != null) {
@@ -56,13 +59,13 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
   }
 
   void _onAddPlayerInvite(BuildContext context) {
-    Navigator.pushNamed(context, "AddInviteToPlayer/" + widget.playerUid);
+    Navigator.pushNamed(context, "AddInviteToPlayer/${widget.playerUid}");
   }
 
   List<Widget> _buildPlayerData(SinglePlayerState singlePlayerState) {
-    final Size screenSize = MediaQuery.of(context).size;
-    List<Widget> ret = <Widget>[];
-    Messages messages = Messages.of(context);
+    var screenSize = MediaQuery.of(context).size;
+    var ret = <Widget>[];
+    var messages = Messages.of(context);
 
     ImageProvider provider;
     if (_imageFile != null) {
@@ -90,15 +93,15 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
           icon: const Icon(Icons.account_circle),
         ),
         initialValue: _player.name,
-        validator: (String value) => _validations.validateName(context, value),
-        onSaved: (String name) => _player.name = name,
+        validator: (value) => _validations.validateName(context, value),
+        onSaved: (name) => _player.name = name,
       ),
     );
 
     // Add in all the associated users and their relationships.
     print("building dfor ${_player.usersData}");
-    for (String uid in _player.usersData.build().keys) {
-      PlayerUserInternal user = _player.usersData[uid];
+    for (var uid in _player.usersData.build().keys) {
+      var user = _player.usersData[uid];
       //  ret.add(Item)
       ret.add(
         DropdownButtonHideUnderline(
@@ -110,16 +113,14 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
                 child: UserName(
                   userId: uid,
                   overflow: TextOverflow.clip,
-                  style: Theme.of(context).textTheme.subhead,
+                  style: Theme.of(context).textTheme.subtitle1,
                 ),
               ),
               Flexible(
                 child: RelationshipFormField(
                   initialValue: user.relationship,
-                  onSaved: (Relationship rel) => _player.usersData.updateValue(
-                      uid,
-                      (PlayerUserInternal u) =>
-                          u.rebuild((b) => b..relationship = rel)),
+                  onSaved: (rel) => _player.usersData.updateValue(
+                      uid, (u) => u.rebuild((b) => b..relationship = rel)),
                 ),
               ),
             ],
@@ -163,17 +164,17 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
               Messages.of(context).savebuttontext,
               style: Theme.of(context)
                   .textTheme
-                  .subhead
+                  .subtitle1
                   .copyWith(color: Colors.white),
             ),
           ),
         ],
       ),
       body: BlocProvider(
-        create: (BuildContext context) => singlePlayerBloc,
+        create: (context) => singlePlayerBloc,
         child: BlocListener(
           cubit: singlePlayerBloc,
-          listener: (BuildContext contex, SinglePlayerState playerState) {
+          listener: (contex, playerState) {
             if (playerState is SinglePlayerLoaded) {
               _player = playerState.player.toBuilder();
             }
@@ -183,8 +184,7 @@ class EditPlayerScreenState extends State<EditPlayerScreen> {
           },
           child: BlocBuilder(
             cubit: singlePlayerBloc,
-            builder: (BuildContext context, SinglePlayerState playerState) =>
-                Container(
+            builder: (context, playerState) => Container(
               padding: EdgeInsets.all(10.0),
               child: Scrollbar(
                 child: SingleChildScrollView(

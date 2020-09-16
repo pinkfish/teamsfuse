@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import '../../services/analytics.dart';
 import '../../services/messages.dart';
 
+///
+/// Show the about screen for the app.
+///
 class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
+    var screenSize = MediaQuery.of(context).size;
 
     return AboutDialog(
       applicationName: Messages.of(context).title,

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../../services/messages.dart';
 import '../../widgets/messages/messagelist.dart';
 
+///
+/// Shows all the current messages for the logged in user.
+///
 class MessagesScreen extends StatelessWidget {
   void _newMessage(BuildContext context) {
     Navigator.pushNamed(context, "AddMessage");
@@ -10,7 +13,7 @@ class MessagesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
     return Scaffold(
       appBar: AppBar(

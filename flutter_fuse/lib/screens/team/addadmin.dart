@@ -7,21 +7,23 @@ import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../../widgets/util/savingoverlay.dart';
 
+///
+/// Add an admin to the team.
+///
 class AddAdminScreen extends StatefulWidget {
+  /// Constructor
   AddAdminScreen(this._teamUid);
   final String _teamUid;
 
   @override
-  AddAdminScreenState createState() {
-    return AddAdminScreenState();
+  _AddAdminScreenState createState() {
+    return _AddAdminScreenState();
   }
 }
 
-class AddAdminScreenState extends State<AddAdminScreen> {
-  AddAdminScreenState();
-
+class _AddAdminScreenState extends State<AddAdminScreen> {
   final Validations _validations = Validations();
-  List<String> _emailNames = <String>[];
+  final List<String> _emailNames = <String>[];
   bool autovalidate = false;
 
   AddInviteBloc addInviteBloc;
@@ -49,8 +51,8 @@ class AddAdminScreenState extends State<AddAdminScreen> {
       _formKey.currentState.save();
       // Send the invite, cloud functions will handle the email
       // part of this.
-      TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
-      for (String en in _emailNames) {
+      var teamBloc = BlocProvider.of<TeamBloc>(context);
+      for (var en in _emailNames) {
         print("Sending to $en");
         Analytics.analytics.logShare(
             contentType: 'inviteAsAdmin',
@@ -72,15 +74,15 @@ class AddAdminScreenState extends State<AddAdminScreen> {
   }
 
   Widget _buildForm() {
-    List<Widget> rows = <Widget>[];
-    Messages messages = Messages.of(context);
+    var rows = <Widget>[];
+    var messages = Messages.of(context);
 
     if (_emailNames.length == 0) {
       // Add in the start elements.
       _emailNames.add("");
     }
-    for (int i = 0; i < _emailNames.length; i++) {
-      String en = _emailNames[i];
+    for (var i = 0; i < _emailNames.length; i++) {
+      var en = _emailNames[i];
       rows.add(
         TextFormField(
           initialValue: '',
@@ -88,18 +90,18 @@ class AddAdminScreenState extends State<AddAdminScreen> {
               icon: const Icon(Icons.email),
               labelText: messages.email,
               hintText: messages.playeremailHint),
-          validator: (String value) {
+          validator: (value) {
             return _validations.validateEmail(context, value);
           },
           keyboardType: TextInputType.emailAddress,
-          onFieldSubmitted: (String value) {
+          onFieldSubmitted: (value) {
             if (value.isNotEmpty && en.isEmpty && en == _emailNames.last) {
               setState(() {
                 _emailNames.add("");
               });
             }
           },
-          onSaved: (String value) {
+          onSaved: (value) {
             _emailNames[i] = value;
           },
         ),
@@ -128,7 +130,7 @@ class AddAdminScreenState extends State<AddAdminScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => addInviteBloc,
+      create: (context) => addInviteBloc,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -136,7 +138,7 @@ class AddAdminScreenState extends State<AddAdminScreen> {
         ),
         body: BlocListener(
           cubit: addInviteBloc,
-          listener: (BuildContext context, AddItemState state) {
+          listener: (context, state) {
             if (state is AddItemDone) {
               Navigator.pop(context);
             }
@@ -146,15 +148,14 @@ class AddAdminScreenState extends State<AddAdminScreen> {
           },
           child: BlocBuilder(
             cubit: addInviteBloc,
-            builder: (BuildContext context, AddItemState state) =>
-                SavingOverlay(
+            builder: (context, state) => SavingOverlay(
               saving: state is AddItemSaving,
               child: _buildForm(),
             ),
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => save(),
+          onPressed: save,
           child: const Icon(Icons.check),
         ),
       ),

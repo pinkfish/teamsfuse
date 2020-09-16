@@ -5,12 +5,21 @@ import '../../widgets/leagueortournament/leagueortournamentdivisongames.dart';
 import '../../widgets/leagueortournament/leagueortournamentdivisonteams.dart';
 import '../../widgets/leagueortournament/leagueortournamentname.dart';
 
+///
+/// Shows the league divison on the screen.
+///
 class LeagueDivisonScreen extends StatefulWidget {
+  /// Constructor.
   LeagueDivisonScreen(
       this.leagueUid, this.leagueSeasonUid, this.leagueDivisonUid);
 
+  /// The league to lookup the division for and display.
   final String leagueUid;
+
+  /// The divison in the league to lookup.
   final String leagueDivisonUid;
+
+  /// The season in the league to lookup.
   final String leagueSeasonUid;
 
   @override
@@ -47,7 +56,7 @@ class _LeagueDivisonScreenState extends State<LeagueDivisonScreen> {
   @override
   Widget build(BuildContext context) {
     FloatingActionButton fab;
-    List<Widget> actions = <Widget>[];
+    var actions = <Widget>[];
 
     return Scaffold(
       appBar: AppBar(
@@ -60,7 +69,7 @@ class _LeagueDivisonScreenState extends State<LeagueDivisonScreen> {
       floatingActionButton: fab,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: BottomNavigationBar(
-          onTap: (int index) {
+          onTap: (index) {
             setState(() {
               _tabIndex = index;
             });

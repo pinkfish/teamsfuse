@@ -13,7 +13,8 @@ import '../../widgets/util/savingoverlay.dart';
 /// connection to a google signin.
 ///
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key key}) : super(key: key);
+  /// Constructor.
+  LoginScreen({Key key}) : super(key: key);
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -41,13 +42,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(SnackBar(content: Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _handleSubmitted() async {
     print('Submit');
-    final FormState form = formKey.currentState;
+    var form = formKey.currentState;
     if (!form.validate()) {
       print('Validate?');
       autovalidate = true; // Start validating on every change.
@@ -85,24 +85,24 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text(errorText),
                         TextFormField(
                           decoration: const InputDecoration(
-                            icon: const Icon(Icons.email),
+                            icon: Icon(Icons.email),
                             hintText: 'Your email address',
                             labelText: 'E-mail',
                           ),
                           keyboardType: TextInputType.emailAddress,
                           obscureText: false,
-                          onSaved: (String value) {
+                          onSaved: (value) {
                             email = value;
                           },
                         ),
                         TextFormField(
-                          decoration: const InputDecoration(
-                            icon: const Icon(Icons.lock_open),
+                          decoration: InputDecoration(
+                            icon: Icon(Icons.lock_open),
                             hintText: 'Password',
                             labelText: 'Password',
                           ),
                           obscureText: true,
-                          onSaved: (String pass) {
+                          onSaved: (pass) {
                             password = pass;
                           },
                         ),
@@ -114,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(Messages.of(context).login),
                       color: Theme.of(context).primaryColor,
                       textColor: Colors.white,
-                      onPressed: () => _handleSubmitted(),
+                      onPressed: _handleSubmitted,
                     ),
                     margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                   ),
@@ -148,20 +148,20 @@ class _LoginScreenState extends State<LoginScreen> {
       key: _scaffoldKey,
       body: BlocListener(
         cubit: _loginBloc,
-        listener: (BuildContext context, LoginState state) {
+        listener: (context, state) {
           if (state is LoginFailed) {
             errorText = Messages.of(context).passwordnotcorrect;
             _showInSnackBar(errorText);
           } else if (state is LoginSucceeded) {
             Navigator.pushNamedAndRemoveUntil(
-                context, "/Login/Home", (Route<dynamic> d) => false);
+                context, "/Login/Home", (d) => false);
           } else if (state is LoginEmailNotValidated) {
             Navigator.popAndPushNamed(context, "/Login/Verify");
           }
         },
         child: BlocBuilder(
           cubit: _loginBloc,
-          builder: (BuildContext context, LoginState state) {
+          builder: (context, state) {
             return SavingOverlay(
                 saving: state is LoginValidating, child: _buildLoginForm());
           },

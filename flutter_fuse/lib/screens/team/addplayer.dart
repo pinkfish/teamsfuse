@@ -5,25 +5,30 @@ import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 import '../../services/validations.dart';
+import '../../widgets/blocs/singleseasonprovider.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/form/roleinteamformfield.dart';
 import '../../widgets/form/seasonformfield.dart';
 import '../../widgets/util/ensurevisiblewhenfocused.dart';
 import '../../widgets/util/savingoverlay.dart';
 
+///
+/// Add a player to the team and season.
+///
 class AddPlayerScreen extends StatefulWidget {
+  /// Constrctor.
   AddPlayerScreen(this._teamUid, this._seasonUid);
 
   final String _teamUid;
   final String _seasonUid;
 
   @override
-  AddPlayerScreenState createState() {
-    return AddPlayerScreenState();
+  _AddPlayerScreenState createState() {
+    return _AddPlayerScreenState();
   }
 }
 
-class EmailName {
+class _EmailName {
   final GlobalKey<FormFieldState<String>> nameKey =
       GlobalKey<FormFieldState<String>>();
   InviteTeamData data;
@@ -31,9 +36,9 @@ class EmailName {
   FocusNode focusNodeName = FocusNode();
 }
 
-class AddPlayerScreenState extends State<AddPlayerScreen> {
+class _AddPlayerScreenState extends State<AddPlayerScreen> {
   final Validations _validations = Validations();
-  List<EmailName> _emailNames = <EmailName>[];
+  final List<_EmailName> _emailNames = <_EmailName>[];
   bool autovalidate = false;
   String _curSeasonUid;
 
@@ -58,13 +63,14 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
     );
   }
 
-  void _handleSubmit(Team team) async {
+  void _handleSubmit(Team team, Season season) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       // Send the invite, cloud functions will handle the email
       // part of this.
       addInviteBloc.add(InvitePlayersToTeam(
         seasonUid: widget._seasonUid,
+        seasonName: season.name,
         invites: _emailNames.map((b) => b.data),
         teamUid: team.uid,
         teamName: team.name,
@@ -75,7 +81,8 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
     }
   }
 
-  Widget _buildForm(SingleTeamBloc singleTeamBloc) {
+  Widget _buildForm(
+      SingleTeamBloc singleTeamBloc, SingleSeasonBloc singleSeasonBloc) {
     List<Widget> rows = <Widget>[];
     Messages messages = Messages.of(context);
 
@@ -93,9 +100,9 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
 
     if (_emailNames.length == 0) {
       // Add in the start elements.
-      _emailNames.add(EmailName());
+      _emailNames.add(_EmailName());
     }
-    for (EmailName en in _emailNames) {
+    for (_EmailName en in _emailNames) {
       rows.add(
         EnsureVisibleWhenFocused(
           focusNode: en.focusNodeName,
@@ -137,7 +144,7 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
                   en.nameKey.currentState.value.isNotEmpty &&
                   en == _emailNames.last) {
                 setState(() {
-                  _emailNames.add(EmailName());
+                  _emailNames.add(_EmailName());
                 });
               }
             },
@@ -180,9 +187,24 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
                 child: Column(children: rows),
               ),
             ),
-            FlatButton(
-              onPressed: () => _handleSubmit(singleTeamBloc.state.team),
-              child: Text(Messages.of(context).addplayer),
+            BlocBuilder(
+              cubit: singleTeamBloc,
+              builder: (context, teamState) => BlocBuilder(
+                cubit: singleSeasonBloc,
+                builder: (context, seasonBloc) {
+                  if (teamState is SingleTeamUninitialized ||
+                      seasonBloc is SingleSeasonUninitialized) {
+                    return FlatButton(
+                      child: Text(Messages.of(context).loading),
+                    );
+                  }
+                  return FlatButton(
+                    onPressed: () => _handleSubmit(singleTeamBloc.state.team,
+                        singleSeasonBloc.state.season),
+                    child: Text(Messages.of(context).addplayer),
+                  );
+                },
+              ),
             )
           ],
         ),
@@ -216,9 +238,11 @@ class AddPlayerScreenState extends State<AddPlayerScreen> {
               saving: state is AddItemSaving,
               child: SingleTeamProvider(
                 teamUid: widget._teamUid,
-                builder:
-                    (BuildContext contextl, SingleTeamBloc singleTeamBloc) =>
-                        _buildForm(singleTeamBloc),
+                builder: (contextl, singleTeamBloc) => SingleSeasonProvider(
+                  seasonUid: widget._seasonUid,
+                  builder: (context, singleSeasonBloc) =>
+                      _buildForm(singleTeamBloc, singleSeasonBloc),
+                ),
               ),
             ),
           ),

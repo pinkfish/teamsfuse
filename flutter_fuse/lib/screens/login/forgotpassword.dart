@@ -8,14 +8,18 @@ import '../../services/validations.dart';
 import '../../widgets/login/loginheader.dart';
 import '../../widgets/util/savingoverlay.dart';
 
+///
+/// Shows the forgot password form.
+///
 class ForgotPasswordScreen extends StatefulWidget {
+  /// Constructor.
   const ForgotPasswordScreen({Key key}) : super(key: key);
 
   @override
-  ForgotPasswordScreenState createState() => ForgotPasswordScreenState();
+  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
 
-class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   ScrollController scrollController = ScrollController();
@@ -39,7 +43,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   void _handleSubmitted() {
-    final FormState form = formKey.currentState;
+    var form = formKey.currentState;
     if (!form.validate()) {
       autovalidate = true; // Start validating on every change.
       showInSnackBar('Please fix the errors in red before submitting.');
@@ -68,7 +72,7 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   keyboardType: TextInputType.emailAddress,
                   obscureText: false,
-                  onSaved: (String value) {
+                  onSaved: (value) {
                     email = value;
                   },
                 ),
@@ -154,8 +158,8 @@ class ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               LoginHeader(),
               BlocBuilder(
                   cubit: _loginBloc,
-                  builder: (BuildContext context, LoginState state) {
-                    bool loading = LoginState is LoginValidatingForgotPassword;
+                  builder: (context, state) {
+                    var loading = LoginState is LoginValidatingForgotPassword;
                     if (state is LoginForgotPasswordFailed) {
                       showInSnackBar(state.error.toString());
                       return SavingOverlay(

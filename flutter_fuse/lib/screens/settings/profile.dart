@@ -9,23 +9,28 @@ import '../../widgets/blocs/singleplayerprovider.dart';
 import '../../widgets/invites/deleteinvitedialog.dart';
 import '../../widgets/util/playerimage.dart';
 
+///
+/// Displays the profile for the user.
+///
 class ProfileScreen extends StatelessWidget {
+  /// Constructor.
   ProfileScreen({this.onlyPlayer = false});
 
+  /// Only show the player.
   final bool onlyPlayer;
 
   void _editPlayer(BuildContext context, String uid) {
-    Navigator.pushNamed(context, "EditPlayer/" + uid);
+    Navigator.pushNamed(context, "EditPlayer/$uid");
   }
 
   void _deletePlayer(
       BuildContext context, Player player, SinglePlayerBloc bloc) async {
-    Messages mess = Messages.of(context);
+    var mess = Messages.of(context);
     // Show an alert dialog and stuff.
-    bool result = await showDialog<bool>(
+    var result = await showDialog<bool>(
         context: context,
         barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
+        builder: (context) {
           return AlertDialog(
             title: Text(mess.deleteplayer),
             content: Scrollbar(
@@ -65,18 +70,18 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _onAddPlayerInvite(BuildContext context, Player player) {
-    Navigator.pushNamed(context, "AddInviteToPlayer/" + player.uid);
+    Navigator.pushNamed(context, "AddInviteToPlayer/${player.uid}");
   }
 
   List<Widget> _buildUserList(BuildContext context, SinglePlayerState player) {
-    List<Widget> ret = <Widget>[];
-    ThemeData theme = Theme.of(context);
+    var ret = <Widget>[];
+    var theme = Theme.of(context);
 
     var invites = player.invites;
     if (invites.length > 0) {
       ret.add(
         Column(
-          children: invites.map((InviteToPlayer invite) {
+          children: invites.map((invite) {
             return ListTile(
               leading: const Icon(Icons.person_add),
               title: Text(Messages.of(context).invitedemail(invite)),
@@ -89,7 +94,7 @@ class ProfileScreen extends StatelessWidget {
       );
     }
 
-    for (PlayerUser user in player.player.users.values) {
+    for (var user in player.player.users.values) {
       var bloc = SingleProfileBloc(
           coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
           profileUid: user.userUid,
@@ -97,10 +102,10 @@ class ProfileScreen extends StatelessWidget {
       ret.add(
         // Use a provider to cleanup the bloc.
         BlocProvider(
-          create: (BuildContext context) => bloc,
+          create: (context) => bloc,
           child: BlocBuilder(
             cubit: bloc,
-            builder: (BuildContext context, SingleProfileState userState) {
+            builder: (context, userState) {
               if (userState is SingleProfileUninitialized ||
                   userState is SingleProfileDeleted) {
                 return ListTile(
@@ -142,14 +147,14 @@ class ProfileScreen extends StatelessWidget {
   }
 
   List<Widget> _buildPlayerData(BuildContext context, PlayerState state) {
-    final Size screenSize = MediaQuery.of(context).size;
-    List<Widget> ret = <Widget>[];
-    ThemeData theme = Theme.of(context);
-    Messages messages = Messages.of(context);
+    var screenSize = MediaQuery.of(context).size;
+    var ret = <Widget>[];
+    var theme = Theme.of(context);
+    var messages = Messages.of(context);
 
-    double width =
+    var width =
         (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0;
-    double height = screenSize.height / 4 + 20;
+    var height = screenSize.height / 4 + 20;
     if (!onlyPlayer) {
       ret.add(Center(
         child: PlayerImage(
@@ -158,12 +163,11 @@ class ProfileScreen extends StatelessWidget {
         ),
       ));
     }
-    AuthenticationBloc authenticationBloc =
-        BlocProvider.of<AuthenticationBloc>(context);
+    var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
 
     if (!onlyPlayer) {
       ret.add(Text(authenticationBloc.currentUser.profile.displayName,
-          style: theme.textTheme.headline));
+          style: theme.textTheme.headline5));
       ret.add(
         ListTile(
           leading: const Icon(Icons.email),
@@ -178,22 +182,21 @@ class ProfileScreen extends StatelessWidget {
       );
       ret.add(Divider());
       ret.add(Text(messages.players,
-          style: theme.textTheme.subhead.copyWith(color: theme.accentColor)));
+          style: theme.textTheme.subtitle1.copyWith(color: theme.accentColor)));
     }
     if (state.players.length > 0) {
       // We have some extra players!
-      for (String key in state.players.keys) {
-        Player player = state.players[key];
+      for (var key in state.players.keys) {
+        var player = state.players[key];
 
         ret.add(
           SinglePlayerProvider(
             playerUid: player.uid,
-            builder: (BuildContext context, SinglePlayerBloc playerBloc) =>
-                BlocBuilder(
+            builder: (context, playerBloc) => BlocBuilder(
               cubit: playerBloc,
-              builder: (BuildContext context, SinglePlayerState playerState) {
+              builder: (context, playerState) {
                 // List the teams they are in.
-                List<Widget> teamNames = <Widget>[];
+                var teamNames = <Widget>[];
                 ImageProvider leading;
                 if (playerState.player.photoUrl != null &&
                     playerState.player.photoUrl.isNotEmpty) {
@@ -203,21 +206,21 @@ class ProfileScreen extends StatelessWidget {
                   leading =
                       const AssetImage("assets/images/defaultavatar2.png");
                 }
-                TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+                var teamBloc = BlocProvider.of<TeamBloc>(context);
                 if (teamBloc.state.playerTeams.containsKey(player.uid)) {
-                  Iterable<Team> teams = teamBloc.state.playerTeams.values;
-                  SeasonBloc seasonBloc = BlocProvider.of<SeasonBloc>(context);
+                  var teams = teamBloc.state.playerTeams.values;
+                  var seasonBloc = BlocProvider.of<SeasonBloc>(context);
 
-                  for (Team team in teams) {
-                    for (Season season in seasonBloc.state.seasons.values) {
-                      int index = season.players.indexWhere((SeasonPlayer sp) {
+                  for (var team in teams) {
+                    for (var season in seasonBloc.state.seasons.values) {
+                      var index = season.players.indexWhere((sp) {
                         return sp.playerUid == player.uid;
                       });
                       if (index != -1) {
                         teamNames.add(
                           GestureDetector(
                             onTap: () => Navigator.pushNamed(
-                                context, "EditPlayer/" + player.uid),
+                                context, "EditPlayer/${player.uid}"),
                             child: ListTile(
                               leading: const Icon(Icons.people),
                               title: Text(team.name),
@@ -279,7 +282,7 @@ class ProfileScreen extends StatelessWidget {
   void _editProfile(BuildContext context) {
     // Open up the edit profile dialog.
     Navigator.pushNamed(context,
-        "EditProfile/" + BlocProvider.of<PlayerBloc>(context).state.me.uid);
+        "EditProfile/${BlocProvider.of<PlayerBloc>(context).state.me.uid}");
   }
 
   @override
@@ -301,7 +304,7 @@ class ProfileScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: BlocBuilder(
             cubit: BlocProvider.of<PlayerBloc>(context),
-            builder: (BuildContext context, PlayerState state) {
+            builder: (context, state) {
               if (state is PlayerUninitialized) {
                 return Text(Messages.of(context).formerror);
               }

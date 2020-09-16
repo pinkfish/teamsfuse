@@ -1,18 +1,20 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleleagueortournamentprovider.dart';
 import '../../widgets/leagueortournament/leagueortournamenteditform.dart';
 import '../../widgets/util/savingoverlay.dart';
 
+///
+/// Edit the league and change the details.
+///
 class EditLeagueScreen extends StatefulWidget {
+  /// Constructor.
   EditLeagueScreen(this.leagueOrTournamentUid);
 
+  /// The league or tournament to edit.
   final String leagueOrTournamentUid;
 
   @override
@@ -51,11 +53,10 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
       return;
     }
     _formState.currentState.save();
-    LeagueOrTournamentBuilder league =
-        _formState.currentState.finalLeagueOrTournamentResult;
+    var league = _formState.currentState.finalLeagueOrTournamentResult;
 
     if (league != null) {
-      File imageFile = _formState.currentState.imageFile;
+      var imageFile = _formState.currentState.imageFile;
       _saving = true;
       bloc.add(SingleLeagueOrTournamentUpdate(
           leagueOrTournament: league.build(), includeMembers: false));
@@ -69,11 +70,11 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
     return SingleLeagueOrTournamentProvider(
       leagueUid: widget.leagueOrTournamentUid,
-      builder: (BuildContext context, SingleLeagueOrTournamentBloc bloc) =>
+      builder: ( context,  bloc) =>
           Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -82,7 +83,7 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
         body: BlocListener(
           cubit: bloc,
           listener:
-              (BuildContext context, SingleLeagueOrTournamentState state) {
+              ( context,  state) {
             if (state is SingleLeagueOrTournamentDeleted) {
               Navigator.pop(context);
             } else if (_saving && state is SingleLeagueOrTournamentLoaded) {
@@ -92,7 +93,7 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
           child: BlocBuilder(
             cubit: bloc,
             builder:
-                (BuildContext context, SingleLeagueOrTournamentState state) {
+                ( context,  state) {
               return SavingOverlay(
                 saving: state is SingleLeagueOrTournamentSaving,
                 child: Container(

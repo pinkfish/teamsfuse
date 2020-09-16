@@ -1,37 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 import '../../widgets/util/playername.dart';
 import '../../widgets/util/savingoverlay.dart';
 import '../../widgets/util/teamimage.dart';
 
+///
+/// Show a specific message.
+///
 class ShowMessageScreen extends StatelessWidget {
+  /// Constructor.
   ShowMessageScreen({this.messageUid});
 
+  /// The message to display.
   final String messageUid;
 
-  void _archiveMessage(BuildContext context) {
-    SingleMessageBloc bloc = BlocProvider.of<SingleMessageBloc>(context);
+  void _archiveMessage(context) {
+    var bloc = BlocProvider.of<SingleMessageBloc>(context);
     bloc.add(SingleMessageArchive());
   }
 
-  void _deleteMessage(BuildContext context) {
-    SingleMessageBloc bloc = BlocProvider.of<SingleMessageBloc>(context);
+  void _deleteMessage(context) {
+    var bloc = BlocProvider.of<SingleMessageBloc>(context);
     bloc.add(SingleMessageDelete());
   }
 
-  void _readMessage(BuildContext context) {
-    SingleMessageBloc bloc = BlocProvider.of<SingleMessageBloc>(context);
+  void _readMessage(context) {
+    var bloc = BlocProvider.of<SingleMessageBloc>(context);
     bloc.add(SingleMessageRead());
   }
 
   Widget _showMessage(BuildContext context, SingleMessageState state) {
-    Messages messages = Messages.of(context);
-    Message mess = state.message;
-    List<Widget> kids = <Widget>[];
+    var messages = Messages.of(context);
+    var mess = state.message;
+    var kids = <Widget>[];
     _readMessage(context);
     kids.add(
       ListTile(
@@ -40,7 +44,7 @@ class ShowMessageScreen extends StatelessWidget {
       ),
     );
 
-    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+    var teamBloc = BlocProvider.of<TeamBloc>(context);
 
     kids.add(
       ListTile(
@@ -54,15 +58,15 @@ class ShowMessageScreen extends StatelessWidget {
       ),
     );
 
-    List<Widget> players = <Widget>[];
-    mess.recipients.forEach((String id, MessageRecipient rec) {
+    var players = <Widget>[];
+    for (var entry in mess.recipients.entries) {
       players.add(
         ListTile(
           leading: const Icon(Icons.person),
-          title: PlayerName(playerUid: rec.playerId),
+          title: PlayerName(playerUid: entry.value.playerId),
         ),
       );
-    });
+    }
     kids.add(
       ExpansionTile(
         leading: const Icon(Icons.people),
@@ -71,15 +75,16 @@ class ShowMessageScreen extends StatelessWidget {
       ),
     );
 
+    var start =
+        MaterialLocalizations.of(context).formatMediumDate(mess.tzTimeSent);
+    var end = MaterialLocalizations.of(context).formatTimeOfDay(
+      TimeOfDay.fromDateTime(mess.tzTimeSent),
+    );
     kids.add(
       ListTile(
         leading: const Icon(Icons.calendar_today),
         title: Text(
-          MaterialLocalizations.of(context).formatMediumDate(mess.tzTimeSent) +
-              " " +
-              MaterialLocalizations.of(context).formatTimeOfDay(
-                TimeOfDay.fromDateTime(mess.tzTimeSent),
-              ),
+          "$start $end",
         ),
       ),
     );
@@ -126,7 +131,7 @@ class ShowMessageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
     var bloc = SingleMessageBloc(
         messageUid: messageUid,
         messageBloc: BlocProvider.of<MessagesBloc>(context));
@@ -135,10 +140,10 @@ class ShowMessageScreen extends StatelessWidget {
         title: Text(messages.message),
       ),
       body: BlocProvider(
-        create: (BuildContext context) => bloc,
+        create: (context) => bloc,
         child: BlocListener(
           cubit: bloc,
-          listener: (BuildContext context, SingleMessageState state) {
+          listener: (context, state) {
             if (state is SingleMessageDeleted) {
               Navigator.pop(context);
             }
@@ -147,8 +152,7 @@ class ShowMessageScreen extends StatelessWidget {
           },
           child: BlocBuilder(
             cubit: bloc,
-            builder: (BuildContext context, SingleMessageState state) =>
-                SavingOverlay(
+            builder: (context, state) => SavingOverlay(
               saving: state is SingleMessageSaving,
               child: _showMessage(context, state),
             ),

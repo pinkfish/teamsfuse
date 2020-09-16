@@ -4,14 +4,18 @@ import 'package:fusemodel/blocs.dart';
 
 import '../../services/messages.dart';
 
+///
+/// Shows the verify email form.
+///
 class VerifyEmailScreen extends StatefulWidget {
-  const VerifyEmailScreen({Key key}) : super(key: key);
+  /// COnstructor.
+  VerifyEmailScreen({Key key}) : super(key: key);
 
   @override
-  VerifyEmailScreenState createState() => VerifyEmailScreenState();
+  _VerifyEmailScreenState createState() => _VerifyEmailScreenState();
 }
 
-class VerifyEmailScreenState extends State<VerifyEmailScreen> {
+class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   ScrollController scrollController = ScrollController();
   bool autovalidate = false;
@@ -50,15 +54,15 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
     // Reload the user when the page loads.
     //UserDatabaseData.instance.userAuth.reloadUser();
 
-    final Size screenSize = MediaQuery.of(context).size;
-    double width =
+    var screenSize = MediaQuery.of(context).size;
+    var width =
         (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0;
-    double height = screenSize.height / 4 + 20;
+    var height = screenSize.height / 4 + 20;
     if (width > height) {
       width = height;
     }
@@ -71,11 +75,11 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
         controller: scrollController,
         child: BlocListener(
           cubit: _loginBloc,
-          listener: (BuildContext context, LoginState state) {
+          listener: (context, state) {
             if (state is LoginVerificationDone) {
               showDialog<bool>(
                 context: context,
-                builder: (BuildContext context) => AlertDialog(
+                builder: (context) => AlertDialog(
                   content: Text(Messages.of(context).verifyemailsent),
                   actions: <Widget>[
                     FlatButton(
@@ -86,7 +90,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                             MaterialLocalizations.of(context).okButtonLabel))
                   ],
                 ),
-              ).then((bool res) {
+              ).then((res) {
                 Navigator.pushNamed(context, "/");
               });
             } else if (state is LoginVerificationFailed) {
@@ -97,7 +101,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
           },
           child: BlocBuilder(
             cubit: _loginBloc,
-            builder: (BuildContext context, LoginState state) {
+            builder: (context, state) {
               if (state is LoginEmailNotValidated) {
                 return Container(
                   padding: EdgeInsets.all(16.0),

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../services/messages.dart';
@@ -15,24 +14,29 @@ import '../../widgets/util/ensurevisiblewhenfocused.dart';
 import '../../widgets/util/savingoverlay.dart';
 import '../../widgets/util/userimage.dart';
 
+///
+/// The scren to edit the profile for the user.
+///
 class EditProfileScreen extends StatefulWidget {
+  /// Constructor.
   EditProfileScreen(this.meUid);
 
+  /// The uid to display.
   final String meUid;
 
   @override
-  EditProfileScreenState createState() {
-    return EditProfileScreenState();
+  _EditProfileScreenState createState() {
+    return _EditProfileScreenState();
   }
 }
 
-class EditProfileScreenState extends State<EditProfileScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _autovalidate = false;
-  Validations _validations = Validations();
-  ScrollController _scrollController = ScrollController();
-  FocusNode _focusNode = FocusNode();
+  final bool _autovalidate = false;
+  final Validations _validations = Validations();
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
   File _imageFile;
   bool _changedImage = false;
   StreamSubscription<UserData> streamListen;
@@ -50,7 +54,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   void _selectImage() async {
-    File imgFile = await ImagePicker.pickImage(
+    var imgFile = await ImagePicker.pickImage(
         source: ImageSource.gallery, maxHeight: 150.0, maxWidth: 150.0);
 
     if (imgFile != null) {
@@ -76,7 +80,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
       SingleProfileBloc profileBloc) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      FusedUserProfile profile = profileState.profile.rebuild((b) => b
+      var profile = profileState.profile.rebuild((b) => b
         ..displayName = _displayName
         ..phoneNumber = _phoneNumber);
       profileBloc.add(SingleProfileUpdate(profile: profile, image: _imageFile));
@@ -87,14 +91,13 @@ class EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
+    var screenSize = MediaQuery.of(context).size;
     var authBloc = BlocProvider.of<AuthenticationBloc>(context);
     return SingleProfileProvider(
       userUid: authBloc.currentUser.uid,
-      builder: (BuildContext context, SingleProfileBloc profileBloc) =>
-          BlocListener(
+      builder: (context, profileBloc) => BlocListener(
         cubit: profileBloc,
-        listener: (BuildContext context, SingleProfileState profileState) {
+        listener: (context, profileState) {
           if (profileState is SingleProfileSaveDone ||
               profileState is SingleProfileDeleted) {
             Navigator.pop(context);
@@ -102,7 +105,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
         },
         child: BlocBuilder(
           cubit: profileBloc,
-          builder: (BuildContext context, SingleProfileState profileState) {
+          builder: (context, profileState) {
             return Scaffold(
               appBar: AppBar(
                 title: Text(Messages.of(context).title),
@@ -116,7 +119,7 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                       Messages.of(context).savebuttontext,
                       style: Theme.of(context)
                           .textTheme
-                          .subhead
+                          .subtitle1
                           .copyWith(color: Colors.white),
                     ),
                   ),
@@ -159,11 +162,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                                         profileState.profile.displayName,
                                     keyboardType: TextInputType.text,
                                     obscureText: false,
-                                    validator: (String name) {
+                                    validator: (name) {
                                       return _validations.validateName(
                                           context, name);
                                     },
-                                    onSaved: (String value) {
+                                    onSaved: (value) {
                                       _displayName = value;
                                     },
                                   ),
@@ -182,11 +185,11 @@ class EditProfileScreenState extends State<EditProfileScreen> {
                                         profileState.profile.phoneNumber,
                                     keyboardType: TextInputType.text,
                                     obscureText: false,
-                                    validator: (String phone) {
+                                    validator: (phone) {
                                       return _validations.validatePhone(
                                           context, phone);
                                     },
-                                    onSaved: (String value) {
+                                    onSaved: (value) {
                                       _phoneNumber = value;
                                     },
                                   ),

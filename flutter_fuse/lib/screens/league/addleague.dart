@@ -11,9 +11,14 @@ import '../../widgets/util/leagueimage.dart';
 import '../../widgets/util/savingoverlay.dart';
 import '../../widgets/util/stepperalwaysvisible.dart';
 
+///
+/// Adds a league to the system.
+///
 class AddLeagueScreen extends StatefulWidget {
+  /// Constructor.
   AddLeagueScreen(this.type);
 
+  /// The type of league.
   final LeagueOrTournamentType type;
 
   @override
@@ -36,8 +41,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
 
   @override
   void initState() {
-    AuthenticationBloc authenticationBloc =
-        BlocProvider.of<AuthenticationBloc>(context);
+    var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
     super.initState();
     _league = LeagueOrTournamentBuilder()
       ..type = widget.type
@@ -60,8 +64,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(SnackBar(content: Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   bool _leaveCurrentState(bool backwards) {
@@ -96,8 +99,8 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
       // Check to make sure a team is picked.
       case 1:
         if (backwards) {
-          ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
-          if (clubBloc.state.clubs.values.any((Club club) => club.isAdmin())) {
+          var clubBloc = BlocProvider.of<ClubBloc>(context);
+          if (clubBloc.state.clubs.values.any((club) => club.isAdmin())) {
             return true;
           }
           _showInSnackBar(Messages.of(context).formerror);
@@ -163,23 +166,23 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
     return BlocProvider(
-      create: (BuildContext context) => addBloc,
+      create: (context) => addBloc,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
           title: Text(messages.title),
         ),
         body: Builder(
-          builder: (BuildContext context) => BlocListener(
+          builder: (context) => BlocListener(
             cubit: BlocProvider.of<AddLeagueOrTournamentBloc>(context),
-            listener: (BuildContext context, AddItemState state) {
+            listener: (context, state) {
               if (state is AddItemSaveFailed) {
                 showDialog<bool>(
                     context: context,
-                    builder: (BuildContext context) {
+                    builder: (context) {
                       return AlertDialog(
                         title: Text("Error"),
                         content: Text("Error saving the league"),
@@ -192,7 +195,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
             },
             child: BlocBuilder(
               cubit: BlocProvider.of<AddLeagueOrTournamentBloc>(context),
-              builder: (BuildContext context, AddItemState state) {
+              builder: (context, state) {
                 return SavingOverlay(
                   saving: state is AddItemSaving,
                   child: Container(
@@ -207,7 +210,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
                         // Go back
                         Navigator.of(context).pop();
                       },
-                      onStepTapped: (int step) {
+                      onStepTapped: (step) {
                         _onStepTapped(step);
                       },
                       steps: <Step>[

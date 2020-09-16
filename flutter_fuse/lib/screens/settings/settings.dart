@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleprofileprovider.dart';
 import '../../widgets/form/switchformfield.dart';
 import '../../widgets/util/savingoverlay.dart';
 
+///
+/// Display the settings screen for the app.
+///
 class SettingsScreen extends StatefulWidget {
   @override
-  SettingsScreenState createState() {
-    return SettingsScreenState();
+  _SettingsScreenState createState() {
+    return _SettingsScreenState();
   }
 }
 
-class SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<FormState> formState = GlobalKey<FormState>();
 
@@ -23,8 +25,7 @@ class SettingsScreenState extends State<SettingsScreen> {
   bool emailOnUpcoming;
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        .showSnackBar(SnackBar(content: Text(value)));
+    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _onSave(
@@ -32,7 +33,7 @@ class SettingsScreenState extends State<SettingsScreen> {
     if (formState.currentState.validate()) {
       formState.currentState.save();
 
-      FusedUserProfile profile = singleProfileState.profile.rebuild((b) => b
+      var profile = singleProfileState.profile.rebuild((b) => b
         ..emailUpcomingGame = emailOnUpcoming
         ..emailOnUpdates = emailOnUpdate);
       bloc.add(SingleProfileUpdate(profile: profile));
@@ -43,8 +44,7 @@ class SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AuthenticationBloc authenticationBloc =
-        BlocProvider.of<AuthenticationBloc>(context);
+    var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -53,11 +53,9 @@ class SettingsScreenState extends State<SettingsScreen> {
       ),
       body: SingleProfileProvider(
         userUid: authenticationBloc.currentUser.uid,
-        builder: (BuildContext context, SingleProfileBloc singleProfileBloc) =>
-            BlocListener(
+        builder: (context, singleProfileBloc) => BlocListener(
           cubit: singleProfileBloc,
-          listener:
-              (BuildContext context, SingleProfileState singleProfileState) {
+          listener: (context, singleProfileState) {
             if (singleProfileState is SingleProfileSaveDone ||
                 singleProfileState is SingleProfileDeleted) {
               Navigator.pop(context);
@@ -65,8 +63,7 @@ class SettingsScreenState extends State<SettingsScreen> {
           },
           child: BlocBuilder(
             cubit: singleProfileBloc,
-            builder:
-                (BuildContext vontext, SingleProfileState singleProfileState) {
+            builder: (vontext, singleProfileState) {
               if (singleProfileState is SingleProfileUninitialized) {
                 return SavingOverlay(
                   saving: true,
@@ -87,37 +84,35 @@ class SettingsScreenState extends State<SettingsScreen> {
                         children: <Widget>[
                           Text(
                             Messages.of(context).emailheader,
-                            style: Theme.of(context).textTheme.title,
+                            style: Theme.of(context).textTheme.headline6,
                           ),
                           SwitchFormField(
                             label: Messages.of(context).emailonupdates,
                             icon: Icons.update,
                             initialValue:
                                 singleProfileState.profile.emailOnUpdates,
-                            onSaved: (bool val) => emailOnUpdate = val,
+                            onSaved: (val) => emailOnUpdate = val,
                           ),
                           SwitchFormField(
                             label: Messages.of(context).emailonupcoming,
                             icon: Icons.calendar_today,
                             initialValue:
                                 singleProfileState.profile.emailUpcomingGame,
-                            onSaved: (bool val) => emailOnUpcoming = val,
+                            onSaved: (val) => emailOnUpcoming = val,
                           ),
                           ButtonBar(
                             children: <Widget>[
                               FlatButton(
-                                child: Text(
-                                    MaterialLocalizations.of(context)
-                                        .okButtonLabel),
+                                child: Text(MaterialLocalizations.of(context)
+                                    .okButtonLabel),
                                 onPressed: () => _onSave(
                                     singleProfileBloc, singleProfileState),
                                 textColor: Colors.white,
                                 color: Theme.of(context).primaryColor,
                               ),
                               FlatButton(
-                                child: Text(
-                                    MaterialLocalizations.of(context)
-                                        .cancelButtonLabel),
+                                child: Text(MaterialLocalizations.of(context)
+                                    .cancelButtonLabel),
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },

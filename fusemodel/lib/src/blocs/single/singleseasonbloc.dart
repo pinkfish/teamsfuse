@@ -13,12 +13,6 @@ import '../seasonbloc.dart';
 /// The basic state for all the bits of the single team bloc.
 ///
 abstract class SingleSeasonState extends Equatable {
-  final Season season;
-  final BuiltList<InviteToTeam> invites;
-  final BuiltList<Game> games;
-  final bool loadedInvites;
-  final bool loadedGames;
-
   SingleSeasonState(
       {@required this.season,
       @required this.invites,

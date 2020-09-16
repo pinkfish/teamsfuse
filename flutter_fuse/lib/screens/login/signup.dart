@@ -8,19 +8,23 @@ import '../../services/validations.dart';
 import '../../widgets/util/ensurevisiblewhenfocused.dart';
 import '../../widgets/util/savingoverlay.dart';
 
+///
+/// Screen to handle signing up for the system.
+///
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({Key key}) : super(key: key);
+  /// Constructor.
+  SignupScreen({Key key}) : super(key: key);
 
   @override
-  SignupScreenState createState() => SignupScreenState();
+  _SignupScreenState createState() => _SignupScreenState();
 }
 
-class SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormFieldState<String>> _passwordFieldKey =
       GlobalKey<FormFieldState<String>>();
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   bool _autovalidate = false;
 
   // Profile details.
@@ -28,11 +32,11 @@ class SignupScreenState extends State<SignupScreen> {
   String _phoneNumber;
   String _email;
   String _password;
-  FocusNode _focusNodeDisplayName = FocusNode();
-  FocusNode _focusNodePhoneNumber = FocusNode();
-  FocusNode _focusNodeEmail = FocusNode();
-  FocusNode _focusNodePassword = FocusNode();
-  FocusNode _focusNodePasswordVerify = FocusNode();
+  final FocusNode _focusNodeDisplayName = FocusNode();
+  final FocusNode _focusNodePhoneNumber = FocusNode();
+  final FocusNode _focusNodeEmail = FocusNode();
+  final FocusNode _focusNodePassword = FocusNode();
+  final FocusNode _focusNodePasswordVerify = FocusNode();
   LoginBloc _loginBloc;
 
   @override
@@ -51,7 +55,7 @@ class SignupScreenState extends State<SignupScreen> {
   }
 
   void _handleSubmitted() async {
-    final FormState form = _formKey.currentState;
+    var form = _formKey.currentState;
     if (!form.validate()) {
       _autovalidate = true; // Start validating on every change.
       showInSnackBar(Messages.of(context).formerror);
@@ -68,7 +72,7 @@ class SignupScreenState extends State<SignupScreen> {
   }
 
   String _validatePassword(String value) {
-    String old = _passwordFieldKey.currentState.value;
+    var old = _passwordFieldKey.currentState.value;
     if (value != old) {
       return Messages.of(context).passwordsnotmatching;
     }
@@ -77,21 +81,21 @@ class SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
+    var screenSize = MediaQuery.of(context).size;
     //print(context.widget.toString());
-    Validations validations = Validations();
+    var validations = Validations();
 
     return Scaffold(
       key: _scaffoldKey,
       body: BlocListener(
         cubit: _loginBloc,
-        listener: (BuildContext context, LoginState state) {
+        listener: (context, state) {
           if (state is LoginSignupFailed) {
             showInSnackBar(Messages.of(context).errorcreatinguser);
           } else if (state is LoginSignupSucceeded) {
             showDialog<bool>(
               context: context,
-              builder: (BuildContext context) => AlertDialog(
+              builder: (context) => AlertDialog(
                 content: Text(Messages.of(context).createdaccount),
                 actions: <Widget>[
                   FlatButton(
@@ -102,14 +106,14 @@ class SignupScreenState extends State<SignupScreen> {
                           Text(MaterialLocalizations.of(context).okButtonLabel))
                 ],
               ),
-            ).then((bool ok) {
+            ).then((ok) {
               Navigator.pushNamed(context, "/Login/Verify");
             });
           }
         },
         child: BlocBuilder(
           cubit: _loginBloc,
-          builder: (BuildContext context, LoginState state) => SavingOverlay(
+          builder: (context, state) => SavingOverlay(
             saving: state is LoginValidatingSignup,
             child: SingleChildScrollView(
               controller: _scrollController,
@@ -157,11 +161,11 @@ class SignupScreenState extends State<SignupScreen> {
                                     keyboardType: TextInputType.text,
                                     obscureText: false,
                                     focusNode: _focusNodeDisplayName,
-                                    validator: (String str) {
+                                    validator: (str) {
                                       return validations.validateName(
                                           context, str);
                                     },
-                                    onSaved: (String value) {
+                                    onSaved: (value) {
                                       _displayName = value;
                                     },
                                   ),
@@ -178,11 +182,11 @@ class SignupScreenState extends State<SignupScreen> {
                                     keyboardType: TextInputType.emailAddress,
                                     obscureText: false,
                                     focusNode: _focusNodeEmail,
-                                    validator: (String str) {
+                                    validator: (str) {
                                       return validations.validateEmail(
                                           context, str);
                                     },
-                                    onSaved: (String value) {
+                                    onSaved: (value) {
                                       _email = value;
                                     },
                                   ),
@@ -200,11 +204,11 @@ class SignupScreenState extends State<SignupScreen> {
                                     keyboardType: TextInputType.phone,
                                     obscureText: false,
                                     focusNode: _focusNodePhoneNumber,
-                                    validator: (String str) {
+                                    validator: (str) {
                                       return validations.validatePhone(
                                           context, str);
                                     },
-                                    onSaved: (String value) {
+                                    onSaved: (value) {
                                       _phoneNumber = value;
                                     },
                                   ),
@@ -219,12 +223,12 @@ class SignupScreenState extends State<SignupScreen> {
                                     ),
                                     obscureText: true,
                                     focusNode: _focusNodePassword,
-                                    validator: (String str) {
+                                    validator: (str) {
                                       return validations.validatePassword(
                                           context, str);
                                     },
                                     key: _passwordFieldKey,
-                                    onSaved: (String password) {
+                                    onSaved: (password) {
                                       _password = password;
                                     },
                                   ),
@@ -242,7 +246,7 @@ class SignupScreenState extends State<SignupScreen> {
                                     focusNode: _focusNodePasswordVerify,
                                     obscureText: true,
                                     validator: _validatePassword,
-                                    onSaved: (String password) {},
+                                    onSaved: (password) {},
                                   ),
                                 ),
                                 Container(

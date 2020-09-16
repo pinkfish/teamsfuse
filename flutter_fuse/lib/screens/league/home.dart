@@ -16,7 +16,7 @@ class LeagueHomeScreen extends StatelessWidget {
   Widget _buildLeagueOrTournament(BuildContext context, LeagueOrTournament l) {
     return Card(
       child: ListTile(
-        onTap: () => Navigator.pushNamed(context, "/League/Main/" + l.uid),
+        onTap: () => Navigator.pushNamed(context, "/League/Main/${l.uid}"),
         leading: LeagueImage(
           leagueOrTournament: l,
           width: 50.0,
@@ -38,25 +38,23 @@ class LeagueHomeScreen extends StatelessWidget {
           Text(Messages.of(context).league,
               style: Theme.of(context)
                   .textTheme
-                  .subhead
+                  .subtitle1
                   .copyWith(fontWeight: FontWeight.bold)),
           SizedBox(
             height: 3.0,
           ),
           BlocBuilder(
             cubit: BlocProvider.of<LeagueOrTournamentBloc>(context),
-            builder: (BuildContext context, LeagueOrTournamentState state) {
+            builder: (context, state) {
               Iterable<LeagueOrTournament> league = state
                   .leagueOrTournaments.values
-                  .where((LeagueOrTournament l) =>
-                      l.type == LeagueOrTournamentType.League);
+                  .where((l) => l.type == LeagueOrTournamentType.League);
               if (league.length == 0) {
                 return Text(Messages.of(context).noleagues);
               }
               return Column(
                 children: league
-                    .map((LeagueOrTournament l) =>
-                        _buildLeagueOrTournament(context, l))
+                    .map((l) => _buildLeagueOrTournament(context, l))
                     .toList(),
               );
             },
@@ -71,25 +69,22 @@ class LeagueHomeScreen extends StatelessWidget {
           Text(Messages.of(context).tournament,
               style: Theme.of(context)
                   .textTheme
-                  .subhead
+                  .subtitle1
                   .copyWith(fontWeight: FontWeight.bold)),
           SizedBox(
             height: 3.0,
           ),
           BlocBuilder(
             cubit: BlocProvider.of<LeagueOrTournamentBloc>(context),
-            builder: (BuildContext context, LeagueOrTournamentState state) {
-              Iterable<LeagueOrTournament> tournament = state
-                  .leagueOrTournaments.values
-                  .where((LeagueOrTournament l) =>
-                      l.type == LeagueOrTournamentType.Tournament);
+            builder: (context, state) {
+              var tournament = state.leagueOrTournaments.values
+                  .where((l) => l.type == LeagueOrTournamentType.Tournament);
               if (tournament.length == 0) {
                 return Text(Messages.of(context).notournaments);
               }
               return Column(
                 children: tournament
-                    .map((LeagueOrTournament l) =>
-                        _buildLeagueOrTournament(context, l))
+                    .map((l) => _buildLeagueOrTournament(context, l))
                     .toList(),
               );
             },
@@ -115,8 +110,8 @@ class LeagueHomeScreen extends StatelessWidget {
         title: Text(Messages.of(context).leaguetournament),
         actions: <Widget>[
           PopupMenuButton<String>(
-            onSelected: (String str) => _doAction(context, str),
-            itemBuilder: (BuildContext context) {
+            onSelected: (str) => _doAction(context, str),
+            itemBuilder: (context) {
               return <PopupMenuItem<String>>[
                 PopupMenuItem<String>(
                   value: "league",
