@@ -57,8 +57,9 @@ abstract class SingleSeasonState {
       ..games = state.games.toBuilder();
   }
 
-  static void initializeStateBuilder(SingleSeasonStateBuilder b) =>
-      b..invitesLoaded = false;
+  static void initializeStateBuilder(SingleSeasonStateBuilder b) => b
+    ..loadedGames = false
+    ..loadedInvites = false;
 
   Map<String, dynamic> toMap();
 }

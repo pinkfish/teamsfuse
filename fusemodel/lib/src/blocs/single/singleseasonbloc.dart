@@ -1,109 +1,12 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/src/async_hydrated_bloc/asynchydratedbloc.dart';
 import 'package:meta/meta.dart';
 
-import '../data/seasonblocstate.dart';
-import '../seasonbloc.dart';
-
-///
-/// The basic state for all the bits of the single team bloc.
-///
-abstract class SingleSeasonState extends Equatable {
-  SingleSeasonState(
-      {@required this.season,
-      @required this.invites,
-      this.games,
-      this.loadedGames,
-      this.loadedInvites});
-
-  @override
-  List<Object> get props =>
-      [season, invites, games, loadedGames, loadedInvites];
-}
-
-///
-/// We have a team, default state.
-///
-class SingleSeasonLoaded extends SingleSeasonState {
-  SingleSeasonLoaded(
-      {@required SingleSeasonState state,
-      Season season,
-      BuiltList<InviteToTeam> invites,
-      BuiltList<Game> games,
-      bool loadedInvites,
-      bool loadedGames})
-      : super(
-            season: season ?? state.season,
-            invites: invites ?? state.invites,
-            games: games ?? state.games,
-            loadedInvites: loadedInvites ?? false,
-            loadedGames: loadedGames ?? false);
-
-  @override
-  String toString() {
-    return 'SingleSeasonLoaded{season: ${season.name}, team: ${season.teamUid}, games: ${games.length}, invites: ${invites.length}, loadedGames: $loadedGames, loadedInvites: $loadedInvites}';
-  }
-}
-
-///
-/// Saving operation in progress.
-///
-class SingleSeasonSaving extends SingleSeasonState {
-  SingleSeasonSaving({@required SingleSeasonState state})
-      : super(
-            season: state.season,
-            invites: state.invites,
-            loadedGames: state.loadedGames,
-            loadedInvites: state.loadedInvites,
-            games: state.games);
-
-  @override
-  String toString() {
-    return 'SingleSeasonSaving{season: $season}';
-  }
-}
-
-///
-/// Saving operation failed (goes back to loaded for success).
-///
-class SingleSeasonSaveFailed extends SingleSeasonState {
-  final Error error;
-
-  SingleSeasonSaveFailed({@required SingleSeasonState state, this.error})
-      : super(
-            season: state.season,
-            invites: state.invites,
-            loadedInvites: state.loadedInvites,
-            loadedGames: state.loadedGames,
-            games: state.games);
-
-  @override
-  String toString() {
-    return 'SingleSeasonSaveFailed{season: $season}';
-  }
-}
-
-///
-/// Team got deleted.
-///
-class SingleSeasonDeleted extends SingleSeasonState {
-  SingleSeasonDeleted()
-      : super(
-            season: null,
-            invites: BuiltList(),
-            games: BuiltList(),
-            loadedGames: false,
-            loadedInvites: false);
-
-  @override
-  String toString() {
-    return 'SingleSeasonDeleted{season: $season}';
-  }
-}
+import 'data/singleseasonbloc.dart';
 
 abstract class SingleSeasonEvent extends Equatable {}
 
@@ -152,7 +55,7 @@ class _SingleSeasonDeleted extends SingleSeasonEvent {
 }
 
 class _SingleSeasonLoadedInvites extends SingleSeasonEvent {
-  final Iterable<InviteToTeam> invites;
+  final BuiltList<InviteToTeam> invites;
 
   _SingleSeasonLoadedInvites({this.invites});
 
@@ -172,29 +75,20 @@ class _SingleSeasonLoadedGames extends SingleSeasonEvent {
 ///
 /// Bloc to handle updates and state of a specific team.
 ///
-class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
-  final SeasonBloc seasonBloc;
+class SingleSeasonBloc
+    extends AsyncHydratedBloc<SingleSeasonEvent, SingleSeasonState> {
+  final DatabaseUpdateModel db;
   final String seasonUid;
 
-  StreamSubscription<SeasonState> _seasonSub;
+  StreamSubscription<Season> _seasonSub;
   StreamSubscription<Iterable<InviteToTeam>> _inviteSub;
   StreamSubscription<GameSnapshotEvent> _gameSub;
 
   // Create the bloc and do exciting things with it.
-  SingleSeasonBloc({this.seasonBloc, this.seasonUid})
-      : super(seasonBloc.state.seasons.containsKey(seasonUid)
-            ? SingleSeasonLoaded(
-                season: seasonBloc.state.seasons[seasonUid],
-                loadedGames: false,
-                loadedInvites: false,
-                games: BuiltList(),
-                state: null,
-                invites: BuiltList())
-            : SingleSeasonDeleted()) {
-    _seasonSub = seasonBloc.listen((SeasonState seasonState) {
-      if (seasonState.seasons.containsKey(seasonUid)) {
-        Season season = seasonState.seasons[seasonUid];
-
+  SingleSeasonBloc({@required this.db, @required this.seasonUid})
+      : super(SingleSeasonUninitialized(), seasonUid) {
+    _seasonSub = db.getSingleSeason(seasonUid).listen((season) {
+      if (season != null) {
         // Only send this if the team is not the same.
         if (season != state.season) {
           add(_SingleNewTeamSeason(newSeason: season));
@@ -223,7 +117,9 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
   @override
   Stream<SingleSeasonState> mapEventToState(SingleSeasonEvent event) async* {
     if (event is _SingleNewTeamSeason) {
-      yield SingleSeasonLoaded(season: event.newSeason, state: state);
+      yield (SingleSeasonLoaded.fromState(state)
+            ..season = event.newSeason.toBuilder())
+          .build();
     }
 
     // The team is deleted.
@@ -233,19 +129,20 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
 
     // Save the team.
     if (event is SingleSeasonUpdate) {
-      yield SingleSeasonSaving(state: state);
+      yield SingleSeasonSaving.fromState(state).build();
       try {
-        await seasonBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreSeason(event.season.build(), false);
-        yield SingleSeasonLoaded(season: event.season.build(), state: state);
+        await db.updateFirestoreSeason(event.season.build(), false);
+        yield SingleSeasonSaveDone.fromState(state).build();
+        yield (SingleSeasonLoaded.fromState(state)..season = event.season)
+            .build();
       } catch (e) {
-        yield SingleSeasonSaveFailed(state: state, error: e);
+        yield (SingleSeasonSaveFailed.fromState(state)..error = e).build();
       }
     }
 
     if (event is SingleSeasonLoadInvites) {
       if (_inviteSub == null) {
-        _inviteSub = seasonBloc.coordinationBloc.databaseUpdateModel
+        _inviteSub = db
             .getInviteForSeasonStream(
                 seasonUid: seasonUid, teamUid: state.season.teamUid)
             .listen((Iterable<InviteToTeam> invites) {
@@ -257,9 +154,8 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
     if (event is SingleSeasonLoadGames) {
       print('Loading games');
       if (_gameSub == null) {
-        _gameSub = seasonBloc.coordinationBloc.databaseUpdateModel
-            .getSeasonGames(state.season)
-            .listen((GameSnapshotEvent games) {
+        _gameSub =
+            db.getSeasonGames(state.season).listen((GameSnapshotEvent games) {
           add(_SingleSeasonLoadedGames(games: BuiltList.of(games.newGames)));
         });
       }
@@ -267,15 +163,46 @@ class SingleSeasonBloc extends Bloc<SingleSeasonEvent, SingleSeasonState> {
 
     if (event is _SingleSeasonLoadedGames) {
       print('Loaded games');
-      yield SingleSeasonLoaded(
-          state: state, games: event.games, loadedGames: true);
+      yield (SingleSeasonLoaded.fromState(state)
+            ..games = event.games.toBuilder()
+            ..loadedGames = true)
+          .build();
     }
 
     if (event is _SingleSeasonLoadedInvites) {
-      yield SingleSeasonLoaded(
-          invites: BuiltList.from(event.invites),
-          state: state,
-          loadedInvites: true);
+      yield (SingleSeasonLoaded.fromState(state)
+            ..invites = event.invites.toBuilder()
+            ..loadedInvites = true)
+          .build();
     }
+  }
+
+  @override
+  SingleSeasonState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return SingleSeasonUninitialized();
+    }
+
+    SingleSeasonBlocStateType type =
+        SingleSeasonBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case SingleSeasonBlocStateType.Uninitialized:
+        return SingleSeasonUninitialized();
+      case SingleSeasonBlocStateType.Loaded:
+        return SingleSeasonLoaded.fromMap(json);
+      case SingleSeasonBlocStateType.Deleted:
+        return SingleSeasonDeleted.fromMap(json);
+      case SingleSeasonBlocStateType.SaveFailed:
+        return SingleSeasonSaveFailed.fromMap(json);
+      case SingleSeasonBlocStateType.Saving:
+        return SingleSeasonSaving.fromMap(json);
+      case SingleSeasonBlocStateType.SaveDone:
+        return SingleSeasonSaveDone.fromMap(json);
+    }
+  }
+
+  @override
+  Map<String, dynamic> toJson(SingleSeasonState state) {
+    return state.toMap();
   }
 }
