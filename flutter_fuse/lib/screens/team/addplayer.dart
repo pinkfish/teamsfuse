@@ -83,15 +83,15 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
 
   Widget _buildForm(
       SingleTeamBloc singleTeamBloc, SingleSeasonBloc singleSeasonBloc) {
-    List<Widget> rows = <Widget>[];
-    Messages messages = Messages.of(context);
+    var rows = <Widget>[];
+    var messages = Messages.of(context);
 
     rows.add(
       DropdownButtonHideUnderline(
         child: SeasonFormField(
           initialValue: _curSeasonUid,
           teamBloc: singleTeamBloc,
-          onSaved: (String value) {
+          onSaved: (value) {
             _curSeasonUid = value;
           },
         ),
@@ -102,7 +102,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
       // Add in the start elements.
       _emailNames.add(_EmailName());
     }
-    for (_EmailName en in _emailNames) {
+    for (var en in _emailNames) {
       rows.add(
         EnsureVisibleWhenFocused(
           focusNode: en.focusNodeName,
@@ -113,12 +113,12 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
                 icon: const Icon(Icons.person),
                 labelText: messages.displayname,
                 hintText: messages.displaynamehint),
-            validator: (String value) {
+            validator: (value) {
               return _validations.validateDisplayName(context, value);
             },
             focusNode: en.focusNodeName,
             keyboardType: TextInputType.text,
-            onSaved: (String value) {
+            onSaved: (value) {
               en.data = en.data.rebuild((b) => b..playerName = value);
             },
           ),
@@ -134,12 +134,12 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
                 icon: const Icon(Icons.email),
                 labelText: messages.email,
                 hintText: messages.playeremailHint),
-            validator: (String value) {
+            validator: (value) {
               return _validations.validateEmail(context, value);
             },
             focusNode: en.focusNodeEmail,
             keyboardType: TextInputType.emailAddress,
-            onFieldSubmitted: (String value) {
+            onFieldSubmitted: (value) {
               if (value.isNotEmpty &&
                   en.nameKey.currentState.value.isNotEmpty &&
                   en == _emailNames.last) {
@@ -148,7 +148,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
                 });
               }
             },
-            onSaved: (String value) {
+            onSaved: (value) {
               en.data = en.data.rebuild((b) => b..email = value);
             },
           ),
@@ -162,13 +162,13 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
             icon: const Icon(Icons.message),
             labelText: messages.roleselect,
           ),
-          validator: (String val) {
+          validator: (val) {
             return _validations.validateRoleInTeam(context, val);
           },
-          onSaved: (String val) {
+          onSaved: (val) {
             en.data = en.data.rebuild((b) => b
-              ..role = RoleInTeam.values
-                  .firstWhere((RoleInTeam e) => e.toString() == val));
+              ..role =
+                  RoleInTeam.values.firstWhere((e) => e.toString() == val));
           },
         ),
       );
@@ -195,6 +195,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
                   if (teamState is SingleTeamUninitialized ||
                       seasonBloc is SingleSeasonUninitialized) {
                     return FlatButton(
+                      onPressed: null,
                       child: Text(Messages.of(context).loading),
                     );
                   }
@@ -215,7 +216,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => addInviteBloc,
+      create: (context) => addInviteBloc,
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -223,7 +224,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
         ),
         body: BlocListener(
           cubit: addInviteBloc,
-          listener: (BuildContext context, AddItemState state) {
+          listener: (context, state) {
             if (state is AddItemDone) {
               Navigator.pop(context);
             }
@@ -233,8 +234,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
           },
           child: BlocBuilder(
             cubit: addInviteBloc,
-            builder: (BuildContext context, AddItemState state) =>
-                SavingOverlay(
+            builder: (context, state) => SavingOverlay(
               saving: state is AddItemSaving,
               child: SingleTeamProvider(
                 teamUid: widget._teamUid,

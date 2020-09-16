@@ -137,8 +137,6 @@ class SingleInviteBloc
     await super.close();
   }
 
-  @override
-  SingleInviteState get initialState {}
 
   Future<SingleInviteState> _acceptInviteToClub(
       SingleInviteEventAcceptInviteToClub event, Invite invite) async {

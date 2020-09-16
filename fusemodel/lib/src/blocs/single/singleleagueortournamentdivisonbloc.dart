@@ -79,7 +79,7 @@ class SingleLeagueOrTournamentDivisonAddTeam
 
 class _SingleLeagueOrTournamentEventDivisonGamesLoaded
     extends SingleLeagueOrTournamentDivisonEvent {
-  BuiltList<GameSharedData> games;
+  final BuiltList<GameSharedData> games;
 
   _SingleLeagueOrTournamentEventDivisonGamesLoaded({this.games});
 
@@ -89,7 +89,7 @@ class _SingleLeagueOrTournamentEventDivisonGamesLoaded
 
 class _SingleLeagueOrTournamentEventDivisonTeamsLoaded
     extends SingleLeagueOrTournamentDivisonEvent {
-  BuiltList<LeagueOrTournamentTeam> teams;
+  final BuiltList<LeagueOrTournamentTeam> teams;
 
   _SingleLeagueOrTournamentEventDivisonTeamsLoaded({this.teams});
 

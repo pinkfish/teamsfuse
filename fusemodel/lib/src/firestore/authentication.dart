@@ -163,7 +163,7 @@ class UserAuthImpl {
   Stream<FusedUserProfile> getProfileStream(String userId) async* {
     print("Looking for $userId");
     DocumentReferenceWrapper ref =
-        await wrapper.collection(USER_DATA_COLLECTION).document(userId);
+        wrapper.collection(USER_DATA_COLLECTION).document(userId);
     DocumentSnapshotWrapper snap = await ref.get();
     print("Found $userId ${snap.data}");
     if (snap.exists) {
@@ -214,6 +214,10 @@ class UserAuthImpl {
       if (forceProfile) {
         DocumentSnapshotWrapper doc = await ref;
         data = doc.data;
+        FusedUserProfileBuilder profile =
+            FusedUserProfile.fromMap(doc.data).toBuilder();
+        profile.uid = user.uid;
+        user = user.rebuild((b) => b..profile = profile);
       } else {
         // Update when ready.
         ref.then((DocumentSnapshotWrapper doc) {

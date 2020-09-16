@@ -190,11 +190,6 @@ class SingleClubBloc
   }
 
   @override
-  SingleClubState get initialState {
-    ;
-  }
-
-  @override
   Stream<SingleClubState> mapEventToState(SingleClubEvent event) async* {
     if (event is _SingleClubNewClub) {
       yield (SingleClubLoaded.fromState(state)
@@ -338,6 +333,7 @@ class SingleClubBloc
       case SingleClubBlocStateType.SaveDone:
         return SingleClubSaveDone.fromMap(json);
     }
+    return SingleClubUninitialized();
   }
 
   @override

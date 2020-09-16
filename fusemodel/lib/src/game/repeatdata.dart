@@ -45,7 +45,7 @@ abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
     TZDateTime startOfWeek = start.subtract(new Duration(days: start.weekday));
     if (period != RepeatPeriod.None) {
       if (repeatUntil || period == RepeatPeriod.Monthly) {
-        print("Interval ${repeatInterval}");
+        print("Interval $repeatInterval");
         for (int i = 0; i < repeatInterval; i++) {
           if (period == RepeatPeriod.Monthly) {
             newDates.add(new TZDateTime(start.location, start.year,

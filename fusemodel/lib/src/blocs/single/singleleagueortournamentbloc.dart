@@ -32,15 +32,9 @@ class _SingleLeagueOrTournamentEventDeleted
   List<Object> get props => [];
 }
 
-class _SingleLeagueOrTournamentEventLogout
-    extends SingleLeagueOrTournamentEvent {
-  @override
-  List<Object> get props => [];
-}
-
 class _SingleLeagueOrTournamentEventSeasons
     extends SingleLeagueOrTournamentEvent {
-  Iterable<LeagueOrTournamentSeason> seasons;
+  final Iterable<LeagueOrTournamentSeason> seasons;
 
   _SingleLeagueOrTournamentEventSeasons({this.seasons});
   @override
@@ -167,9 +161,6 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
     _leagueOrTournamentSnapshot?.cancel();
     _leagueOrTournamentSnapshot = null;
   }
-
-  @override
-  SingleLeagueOrTournamentState get initialState {}
 
   void _updateSeasons(Iterable<LeagueOrTournamentSeason> seasons) {
     add(_SingleLeagueOrTournamentEventSeasons(seasons: seasons));
@@ -321,11 +312,6 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
     }
 
     // Unload everything.
-    if (event is _SingleLeagueOrTournamentEventLogout) {
-      yield SingleLeagueOrTournamentDeleted();
-      _cleanupStuff();
-    }
-
     if (event is SingleLeagueOrTournamentUpdate) {
       yield* _updateLeague(event.leagueOrTournament, event.includeMembers);
     }
@@ -375,6 +361,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       case SingleLeagueOrTournamentBlocStateType.SaveDone:
         return SingleLeagueOrTournamentSaveDone.fromMap(json);
     }
+    return SingleLeagueOrTournamentUninitialized();
   }
 
   @override

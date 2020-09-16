@@ -113,11 +113,6 @@ abstract class GameSharedData
       new TZDateTime.fromMillisecondsSinceEpoch(location, endTime);
 
   static const String OFFICIALRESULT = 'officialResult';
-  static const String _TIME = 'time';
-  static const String _ENDTIME = 'endTime';
   static const String TYPE = 'type';
-  static const String _PLACE = 'place';
-  static const String _TIMEZONE = 'timezone';
-  static const String _LEAGUEUID = 'leagueUid';
   static const String LEAGUEDIVISIONUID = 'leagueDivisonUid';
 }
