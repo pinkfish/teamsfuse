@@ -68,7 +68,7 @@ class FilterGameLoading extends FilteredGameState {
 abstract class FilteredGameEvent extends Equatable {}
 
 class _FilteredGameEventGamesLoaded extends FilteredGameEvent {
-  GameLoaded loaded;
+  final GameLoaded loaded;
 
   _FilteredGameEventGamesLoaded({@required this.loaded});
 
@@ -153,7 +153,6 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
   void _loadMoreGames() {
     if (state.start.isBefore(gameBloc.state.start)) {
       // Load all of this from the world of firestore.
-      Map<String, Game> newGames = new Map<String, Game>();
       for (String teamUid in teamBloc.state.allTeamUids) {
         if (!_newerGameSubscriptions.containsKey(teamUid)) {
           String myUid = teamUid;

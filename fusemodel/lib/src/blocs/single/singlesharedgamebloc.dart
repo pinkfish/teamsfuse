@@ -5,8 +5,8 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import '../gamesbloc.dart';
 import '../data/gameblocstate.dart';
+import '../gamesbloc.dart';
 
 abstract class SingleSharedGameState extends Equatable {
   final GameSharedData sharedData;
@@ -153,9 +153,6 @@ class SingleSharedGameBloc
     await super.close();
     _gameSub?.cancel();
   }
-
-  @override
-  SingleSharedGameState get initialState {}
 
   @override
   Stream<SingleSharedGameState> mapEventToState(

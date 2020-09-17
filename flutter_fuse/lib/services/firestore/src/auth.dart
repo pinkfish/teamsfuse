@@ -1,10 +1,14 @@
 part of firestore_mobile;
 
+///
+/// Auth wrapper to make auth easier to use for the app.
+///
 class Auth extends wfs.AuthWrapper {
   @override
   Stream<wfs.FirebaseUserWrapper> get onAuthStateChanged {
-    return fa.FirebaseAuth.instance.onAuthStateChanged
-        .transform(UserTransformer());
+    return fa.FirebaseAuth.instance
+        .authStateChanges()
+        .transform(_UserTransformer());
   }
 
   @override
@@ -20,14 +24,14 @@ class Auth extends wfs.AuthWrapper {
   @override
   Future<wfs.FirebaseUserWrapper> currentUser() async {
     var u = fa.FirebaseAuth.instance.currentUser;
-    fa.User user = u;
+    var user = u;
     return FirebaseUser(user);
   }
 
   @override
   Future<wfs.FirebaseUserWrapper> signInWithEmailAndPassword(
       {String email, String password}) async {
-    fa.UserCredential user = await fa.FirebaseAuth.instance
+    var user = await fa.FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
     return FirebaseUser(user.user);
   }
@@ -35,13 +39,17 @@ class Auth extends wfs.AuthWrapper {
   @override
   Future<wfs.FirebaseUserWrapper> createUserWithEmailAndPassword(
       {String email, String password}) async {
-    fa.UserCredential user = await fa.FirebaseAuth.instance
+    var user = await fa.FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
     return FirebaseUser(user.user);
   }
 }
 
+///
+/// Firebase user wrapper for use in the app.
+///
 class FirebaseUser extends wfs.FirebaseUserWrapper {
+  /// Constrctor for the wrapper, takes a firebase user as input.
   FirebaseUser(this._user)
       : super(
             email: _user?.email,
@@ -49,7 +57,7 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
             uid: _user?.uid,
             loggedIn: _user != null);
 
-  fa.User _user;
+  final fa.User _user;
 
   @override
   Future<void> reload() {
@@ -62,9 +70,9 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
   }
 }
 
-class UserTransformer
+class _UserTransformer
     extends StreamTransformerBase<fa.User, wfs.FirebaseUserWrapper> {
-  UserTransformer() {
+  _UserTransformer() {
     _controller = StreamController<wfs.FirebaseUserWrapper>(
         onListen: _onListen,
         onCancel: _onCancel,

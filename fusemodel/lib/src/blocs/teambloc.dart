@@ -132,9 +132,6 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
   }
 
   @override
-  void onClubUpdated(FirestoreWrappedData data) {}
-
-  @override
   Stream<TeamState> mapEventToState(TeamEvent event) async* {
     // Start the firestore loading.
     if (event is _TeamFirestoreStart) {
@@ -198,7 +195,6 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
 
     // Update just the admins.
     if (event is _TeamAdminUpdated) {
-      BuiltMap<String, Team> oldAdminTeams = state.adminTeams;
       yield (TeamLoaded.fromState(state)
             ..adminTeams = event.adminTeams.toBuilder())
           .build();

@@ -5,14 +5,18 @@ import 'package:fusemodel/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/teams/clubsettings.dart';
 
+///
+/// Show the settings for the club.
 class ClubSettingsScreen extends StatelessWidget {
+  /// Constructor.
   ClubSettingsScreen(this.teamUid);
 
+  /// The teamUid to show the club settings for.
   final String teamUid;
 
   @override
   Widget build(BuildContext context) {
-    TeamBloc teams = BlocProvider.of<TeamBloc>(context);
+    var teams = BlocProvider.of<TeamBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(

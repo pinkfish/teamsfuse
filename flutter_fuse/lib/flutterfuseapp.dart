@@ -8,19 +8,23 @@ import 'package:fusemodel/fusemodel.dart';
 
 import 'fusematerialapp.dart';
 import 'services/analytics.dart';
+import 'services/appconfiguration.dart';
 import 'services/approuter.dart';
 import 'services/firestore/firestore.dart';
+import 'services/loggingdata.dart';
 
 ///
 /// The main app for the system.
 ///
 class FlutterFuseApp extends StatefulWidget {
   final FirestoreWrapper _firestore;
+  final AppConfiguration _config;
+  final LoggingData _loggingData;
 
   ///
   /// Create the app.
   ///
-  FlutterFuseApp(this._firestore);
+  FlutterFuseApp(this._firestore, this._config, this._loggingData);
 
   @override
   State<StatefulWidget> createState() {
@@ -100,7 +104,11 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         RepositoryProvider<DatabaseUpdateModel>(
             create: (context) => _databaseUpdateModel),
         RepositoryProvider<BaseCacheManager>(
-            create: (context) => DefaultCacheManager())
+            create: (context) => DefaultCacheManager()),
+        RepositoryProvider<AppConfiguration>(
+            create: (context) => widget._config),
+        RepositoryProvider<LoggingData>(
+            create: (context) => widget._loggingData),
       ],
       child: MultiBlocProvider(
         providers: <BlocProvider>[

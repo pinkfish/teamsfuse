@@ -25,21 +25,39 @@ class LeagueTeamImage extends StatelessWidget {
       this.color,
       this.fit,
       this.overlay = HomeAwayOverlay.none,
-      this.alignment: Alignment.center,
-      this.repeat: ImageRepeat.noRepeat,
-      this.matchTextDirection: false})
-      : super(
+      this.alignment = Alignment.center,
+      this.repeat = ImageRepeat.noRepeat,
+      this.matchTextDirection = false})
+      : assert(leagueOrTeamUid != null),
+        super(
           key: key,
         );
 
+  /// The league or team to display, must not be null.
   final String leagueOrTeamUid;
+
+  /// Width of the box
   final double width;
+
+  /// Height of the box.
   final double height;
+
+  /// How to fit the image in the box.
   final BoxFit fit;
+
+  /// Background color of the box.
   final Color color;
+
+  /// How to align the image in the box.
   final AlignmentGeometry alignment;
+
+  /// Repeat the image in the background.
   final ImageRepeat repeat;
+
+  /// Match the text direction.
   final bool matchTextDirection;
+
+  /// The overlay text to say home/away.
   final HomeAwayOverlay overlay;
 
   Widget _getDefaultForSport(Team team) {
@@ -80,7 +98,7 @@ class LeagueTeamImage extends StatelessWidget {
 
               inner = CachedNetworkImage(
                 imageUrl: leagueState.publicTeam.photoUrl,
-                imageBuilder: (context, imageProvider) => FadeInImage(
+                imageBuilder: (context, imageProvider) => Image(
                   image: imageProvider,
                   height: height,
                   width: width,

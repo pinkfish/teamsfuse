@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'appconfiguration.dart';
 import 'firebasemessaging.dart';
@@ -42,75 +43,8 @@ class Notifications {
     _notificationRoutes.close();
     _notificationRoutes = null;
   }
-/*
-  int _generateNotificationId() {
-    int val;
-    do {
-      val = random.nextInt(4294967296);
-    } while (_notificationMapping.values.contains(val));
-    return val;
-  }
 
-  void _createGameNotification(Game game, int id) {
-    GameNotification not = GameNotification(
-        game, UserDatabaseData.instance.teams[game.teamUid]);
-
-    not.showNotification(id, flutterLocalNotificationsPlugin,
-        Messages.of(_state.context), MaterialLocalizations.of(_state.context));
-    _notificationMapping[game.uid] = id;
-    _updateSharedPrefs();
-  }
-
-
-  void _updateSharedPrefs() {
-    String data = json.encode(_notificationMapping);
-    AppConfiguration.instance.sharedPreferences
-        .setString(_keyNotificationData, data);
-  }
-
-
-  void _onGamesUpdated() {
-    Map<String, Game> data = UserDatabaseData.instance.gamesCache;
-    Set<String> stillHere = _notificationMapping.keys.toSet();
-    DateTime now = DateTime.now();
-    for (Game game in data.values) {
-      stillHere.remove(game.uid);
-      DateTime gameDate = DateTime.fromMillisecondsSinceEpoch(game.sharedData.time.toInt());
-      DateTime oldest = DateTime.now().subtract(timeoutNotifiation);
-      DateTime newest = DateTime.now().add(notifyStart);
-      // If it is older then 2 days, then delete it.
-      if (gameDate.isAfter(oldest)) {
-        DateTime frog =
-            DateTime.fromMillisecondsSinceEpoch(game.sharedData.time.toInt()).add(notifyStart);
-        print('Checking ${game.uid} $frog $now');
-        if (!_notificationMapping.containsKey(game.uid) &&
-            gameDate.isBefore(newest)) {
-          print('creating or updating!');
-          int id;
-          if (_notificationMapping.containsKey(game.uid)) {
-            id = _notificationMapping[game.uid];
-          }
-          if (id == null) {
-            id = _generateNotificationId();
-          }
-          // Create a notification...
-          _createGameNotification(game, id);
-        }
-      } else if (_notificationMapping.containsKey(game.uid)) {
-        flutterLocalNotificationsPlugin.cancel(_notificationMapping[game.uid]);
-        _notificationMapping.remove(game.uid);
-        _updateSharedPrefs();
-      }
-    }
-    for (String gameId in stillHere) {
-      flutterLocalNotificationsPlugin.cancel(_notificationMapping[gameId]);
-      _notificationMapping.remove(gameId);
-      _updateSharedPrefs();
-    }
-  }
-  */
-
-  void init(AuthenticationBloc auth) {
+  void init(AuthenticationBloc auth, AppConfiguration configuration) {
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.getToken().then((String token) {
       print('We have token! $token');
@@ -133,16 +67,16 @@ class Notifications {
         return;
       },
     );
-    //get saved cache data from shared prefs
-    String jsonCacheString = AppConfiguration.instance.sharedPreferences
-        .getString(_keyNotificationData);
-    if (jsonCacheString != null) {
-      Map<String, dynamic> tmp =
-          json.decode(jsonCacheString) as Map<String, dynamic>;
-      _notificationMapping.clear();
-      tmp.forEach((String str, dynamic val) =>
-          val is int ? _notificationMapping[str] = val : null);
-    }
+    SharedPreferences.getInstance().then((pref) {
+      var jsonCacheString = pref.getString(_keyNotificationData);
+      if (jsonCacheString != null) {
+        Map<String, dynamic> tmp =
+            json.decode(jsonCacheString) as Map<String, dynamic>;
+        _notificationMapping.clear();
+        tmp.forEach((String str, dynamic val) =>
+            val is int ? _notificationMapping[str] = val : null);
+      }
+    });
   }
 
   void initForNotification() async {

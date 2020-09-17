@@ -4,9 +4,10 @@ part of firestore_mobile;
 /// document references, and querying for documents (using the methods
 /// inherited from [Query]).
 class CollectionReference extends wfs.CollectionReferenceWrapper {
+  /// Wrapper constrcutor.
   CollectionReference(this._doc);
 
-  fs.CollectionReference _doc;
+  final fs.CollectionReference _doc;
 
   /// ID of the referenced collection.
   @override
@@ -25,7 +26,7 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   /// so that the resulting list will be chronologically-sorted.
   @override
   wfs.DocumentReferenceWrapper document([String path]) {
-    return DocumentReference(_doc.document(path));
+    return DocumentReference(_doc.doc(path));
   }
 
   /// Returns a `DocumentReference` with an auto-generated ID, after
@@ -39,7 +40,7 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   }
 
   @override
-  wfs.QueryWrapper orderBy(String field, {bool descending: false}) {
+  wfs.QueryWrapper orderBy(String field, {bool descending = false}) {
     return Query(_doc.orderBy(field, descending: descending));
   }
 
@@ -66,15 +67,13 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
 
   @override
   Future<wfs.QuerySnapshotWrapper> getDocuments() async {
-    fs.QuerySnapshot snap = await _doc.getDocuments();
+    var snap = await _doc.get();
     return wfs.QuerySnapshotWrapper(
-      documents: snap.documents
-          .map((fs.DocumentSnapshot snap) => DocumentSnapshot(doc: snap))
-          .toList(),
-      documentChanges: snap.documentChanges
+      documents: snap.docs.map((snap) => DocumentSnapshot(snap)).toList(),
+      documentChanges: snap.docChanges
           .map(
-            (fs.DocumentChange change) => wfs.DocumentChangeWrapper(
-              document: DocumentSnapshot(doc: change.document),
+            (change) => wfs.DocumentChangeWrapper(
+              document: DocumentSnapshot(change.doc),
               oldIndex: change.oldIndex,
               newIndex: change.newIndex,
               type: Query.getType(change.type),
@@ -86,16 +85,15 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
 
   @override
   Stream<wfs.QuerySnapshotWrapper> snapshots() {
-    Stream<wfs.QuerySnapshotWrapper> str =
-        _doc.snapshots().transform(QuerySnapshotStreamTransformer());
+    var str = _doc.snapshots().transform(_QuerySnapshotStreamTransformer());
     print("$str $_doc");
     return str;
   }
 }
 
-class QuerySnapshotStreamTransformer
+class _QuerySnapshotStreamTransformer
     extends StreamTransformerBase<fs.QuerySnapshot, wfs.QuerySnapshotWrapper> {
-  QuerySnapshotStreamTransformer() {
+  _QuerySnapshotStreamTransformer() {
     _controller = StreamController<wfs.QuerySnapshotWrapper>(
         onListen: _onListen,
         onCancel: _onCancel,
@@ -130,13 +128,11 @@ class QuerySnapshotStreamTransformer
 
   void onData(fs.QuerySnapshot data) {
     _controller.add(wfs.QuerySnapshotWrapper(
-      documents: data.documents
-          .map((fs.DocumentSnapshot snap) => DocumentSnapshot(doc: snap))
-          .toList(),
-      documentChanges: data.documentChanges
+      documents: data.docs.map((snap) => DocumentSnapshot(snap)).toList(),
+      documentChanges: data.docChanges
           .map(
-            (fs.DocumentChange change) => wfs.DocumentChangeWrapper(
-              document: DocumentSnapshot(doc: change.document),
+            (change) => wfs.DocumentChangeWrapper(
+              document: DocumentSnapshot(change.doc),
               oldIndex: change.oldIndex,
               newIndex: change.newIndex,
               type: Query.getType(change.type),

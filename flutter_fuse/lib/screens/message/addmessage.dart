@@ -48,7 +48,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
   String _messageBody;
   AddMessageBloc addMessageBloc;
   String _teamUid;
-  final Set<String> _recipients = Set();
+  final Set<String> _recipients = <String>{};
   String _subject;
 
   @override

@@ -156,7 +156,6 @@ class SingleTeamSeasonPlayerBloc
     _seasonSub = null;
   }
 
-  @override
   static SingleTeamSeasonPlayerState _getInitialState(SeasonBloc seasonBloc,
       String seasonUid, PlayerBloc playerBloc, String playerUid) {
     if (seasonBloc.state.seasons.containsKey(seasonUid)) {

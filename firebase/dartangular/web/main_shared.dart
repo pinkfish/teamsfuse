@@ -21,7 +21,6 @@ void mainShared(InjectorFactory injector) async {
       storageBucket: "teamsfuse.appspot.com",
       messagingSenderId: "400199897683");
   var firestore = fs.Firestore();
-  var logging = WebLogging();
   var analytics = WebAnalytics();
   var persistentData = SqlData.instance;
   await findSystemLocale();

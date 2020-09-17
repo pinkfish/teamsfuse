@@ -3,7 +3,6 @@ import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
 import '../../../game.dart';
-import '../../../invite.dart';
 import '../../../serializer.dart';
 
 part 'singlegamebloc.g.dart';

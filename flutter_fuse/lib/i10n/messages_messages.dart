@@ -15,7 +15,7 @@ final _keepAnalysisHappy = Intl.defaultLocale;
 typedef MessageIfAbsent(String message_str, List args);
 
 class MessageLookup extends MessageLookupByLibrary {
-  get localeName => 'messages';
+  String get localeName => 'messages';
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) =>

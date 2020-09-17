@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-const TextStyle _kStepStyle = const TextStyle(
+const TextStyle _kStepStyle = TextStyle(
   fontSize: 12.0,
   color: Colors.white,
 );
@@ -44,8 +44,8 @@ class StepperAlwaysVisible extends StatefulWidget {
   StepperAlwaysVisible({
     @required this.steps,
     Key key,
-    this.type: StepperType.vertical,
-    this.currentStep: 0,
+    this.type = StepperType.vertical,
+    this.currentStep = 0,
     this.onStepTapped,
     this.onStepContinue,
     this.onStepCancel,
@@ -97,10 +97,10 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
     super.initState();
     _keys = List<GlobalKey>.generate(
       widget.steps.length,
-      (int i) => GlobalKey(),
+      (i) => GlobalKey(),
     );
 
-    for (int i = 0; i < widget.steps.length; i += 1) {
+    for (var i = 0; i < widget.steps.length; i += 1) {
       _oldStates[i] = widget.steps[i].state;
     }
   }
@@ -110,7 +110,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
     super.didUpdateWidget(oldWidget);
     assert(widget.steps.length == oldWidget.steps.length);
 
-    for (int i = 0; i < oldWidget.steps.length; i += 1) {
+    for (var i = 0; i < oldWidget.steps.length; i += 1) {
       _oldStates[i] = oldWidget.steps[i].state;
     }
 
@@ -146,9 +146,8 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
   }
 
   Widget _buildCircleChild(int index, bool oldState) {
-    final StepState state =
-        oldState ? _oldStates[index] : widget.steps[index].state;
-    final bool isDarkActive = _isDark() && widget.steps[index].isActive;
+    var state = oldState ? _oldStates[index] : widget.steps[index].state;
+    var isDarkActive = _isDark() && widget.steps[index].isActive;
     assert(state != null);
     switch (state) {
       case StepState.indexed:
@@ -176,7 +175,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
   }
 
   Color _circleColor(int index) {
-    final ThemeData themeData = Theme.of(context);
+    var themeData = Theme.of(context);
     if (!_isDark()) {
       return widget.steps[index].isActive
           ? themeData.primaryColor
@@ -248,10 +247,11 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
         duration: kThemeAnimationDuration,
       );
     } else {
-      if (widget.steps[index].state != StepState.error)
+      if (widget.steps[index].state != StepState.error) {
         return _buildCircle(index, false);
-      else
+      } else {
         return _buildTriangle(index, false);
+      }
     }
   }
 
@@ -269,9 +269,8 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
 
     assert(cancelColor != null);
 
-    final ThemeData themeData = Theme.of(context);
-    final MaterialLocalizations localizations =
-        MaterialLocalizations.of(context);
+    var themeData = Theme.of(context);
+    var localizations = MaterialLocalizations.of(context);
 
     return Container(
       margin: const EdgeInsets.only(top: 16.0),
@@ -304,28 +303,28 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
   }
 
   TextStyle _titleStyle(int index) {
-    final ThemeData themeData = Theme.of(context);
-    final TextTheme textTheme = themeData.textTheme;
+    var themeData = Theme.of(context);
+    var textTheme = themeData.textTheme;
 
     assert(widget.steps[index].state != null);
     switch (widget.steps[index].state) {
       case StepState.indexed:
       case StepState.editing:
       case StepState.complete:
-        return textTheme.body2;
+        return textTheme.bodyText1;
       case StepState.disabled:
-        return textTheme.body2
+        return textTheme.bodyText1
             .copyWith(color: _isDark() ? _kDisabledDark : _kDisabledLight);
       case StepState.error:
-        return textTheme.body2
+        return textTheme.bodyText1
             .copyWith(color: _isDark() ? _kErrorDark : _kErrorLight);
     }
     return null;
   }
 
   TextStyle _subtitleStyle(int index) {
-    final ThemeData themeData = Theme.of(context);
-    final TextTheme textTheme = themeData.textTheme;
+    var themeData = Theme.of(context);
+    var textTheme = themeData.textTheme;
 
     assert(widget.steps[index].state != null);
     switch (widget.steps[index].state) {
@@ -344,7 +343,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
   }
 
   Widget _buildHeaderText(int index) {
-    final List<Widget> children = <Widget>[
+    var children = <Widget>[
       AnimatedDefaultTextStyle(
         style: _titleStyle(index),
         duration: kThemeAnimationDuration,
@@ -353,7 +352,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
       ),
     ];
 
-    if (widget.steps[index].subtitle != null)
+    if (widget.steps[index].subtitle != null) {
       children.add(
         Container(
           margin: const EdgeInsets.only(top: 2.0),
@@ -365,6 +364,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
           ),
         ),
       );
+    }
 
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -438,9 +438,9 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
   }
 
   Widget _buildVertical() {
-    final List<Widget> children = <Widget>[];
+    var children = <Widget>[];
 
-    for (int i = 0; i < widget.steps.length; i += 1) {
+    for (var i = 0; i < widget.steps.length; i += 1) {
       children.add(Column(key: _keys[i], children: <Widget>[
         InkWell(
             onTap: widget.steps[i].state != StepState.disabled
@@ -470,9 +470,9 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
   }
 
   Widget _buildHorizontal() {
-    final List<Widget> children = <Widget>[];
+    var children = <Widget>[];
 
-    for (int i = 0; i < widget.steps.length; i += 1) {
+    for (var i = 0; i < widget.steps.length; i += 1) {
       children.add(
         InkResponse(
           onTap: widget.steps[i].state != StepState.disabled
@@ -550,11 +550,12 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
   Widget build(BuildContext context) {
     assert(debugCheckHasMaterial(context));
     assert(() {
-      if (context.findAncestorWidgetOfExactType<Stepper>() != null)
+      if (context.findAncestorWidgetOfExactType<Stepper>() != null) {
         throw FlutterError(
             'Steppers must not be nested. The material specification advises '
             'that one should avoid embedding steppers within steppers. '
             'https://material.google.com/components/steppers.html#steppers-usage\n');
+      }
       return true;
     }());
     assert(widget.type != null);
@@ -585,10 +586,10 @@ class _TrianglePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final double base = size.width;
-    final double halfBase = size.width / 2.0;
-    final double height = size.height;
-    final List<Offset> points = <Offset>[
+    var base = size.width;
+    var halfBase = size.width / 2.0;
+    var height = size.height;
+    var points = <Offset>[
       Offset(0.0, height),
       Offset(base, height),
       Offset(halfBase, 0.0),

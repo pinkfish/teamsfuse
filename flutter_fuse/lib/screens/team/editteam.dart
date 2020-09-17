@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
@@ -9,18 +7,23 @@ import '../../services/messages.dart';
 import '../../widgets/teams/teameditform.dart';
 import '../../widgets/util/savingoverlay.dart';
 
+///
+/// Editing the team, showing the pieces to edit and updates.
+///
 class EditTeamScreen extends StatefulWidget {
+  /// Constructor.
   EditTeamScreen(this.teamUid);
 
+  /// The teamUid to edit for the team.
   final String teamUid;
 
   @override
-  EditTeamScreenState createState() {
-    return EditTeamScreenState();
+  _EditTeamScreenState createState() {
+    return _EditTeamScreenState();
   }
 }
 
-class EditTeamScreenState extends State<EditTeamScreen> {
+class _EditTeamScreenState extends State<EditTeamScreen> {
   Team _team;
   final GlobalKey<TeamEditFormState> _formKey = GlobalKey<TeamEditFormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -44,9 +47,9 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   }
 
   void _savePressed(BuildContext context) async {
-    TeamBuilder team = _formKey.currentState.validateAndCreate();
+    var team = _formKey.currentState.validateAndCreate();
     if (team != null) {
-      File imageFile = _formKey.currentState.getImageFile();
+      var imageFile = _formKey.currentState.getImageFile();
       singleTeamBloc.add(SingleTeamUpdate(team: team, image: imageFile));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
@@ -57,7 +60,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   Widget build(BuildContext context) {
     return BlocListener(
       cubit: singleTeamBloc,
-      listener: (BuildContext context, SingleTeamState state) {
+      listener: (context, state) {
         if (state is SingleTeamDeleted) {
           Navigator.pop(context, widget.teamUid);
         }
@@ -70,7 +73,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
       },
       child: BlocBuilder(
         cubit: singleTeamBloc,
-        builder: (BuildContext context, SingleTeamState teamState) => Scaffold(
+        builder: (context, teamState) => Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
             title: Text(

@@ -20,7 +20,7 @@ class SavingOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    QuoteAndAuthor quote = Messages.of(context).quoteforsaving(quoteId);
+    var quote = Messages.of(context).quoteforsaving(quoteId);
     return Stack(
       children: <Widget>[
         child,
@@ -41,7 +41,7 @@ class SavingOverlay extends StatelessWidget {
                 RichText(
                   text: TextSpan(
                     text: quote.quote,
-                    style: Theme.of(context).textTheme.title,
+                    style: Theme.of(context).textTheme.headline6,
                   ),
                   textAlign: TextAlign.center,
                   softWrap: true,
@@ -50,7 +50,7 @@ class SavingOverlay extends StatelessWidget {
                 Text(quote.author,
                     style: Theme.of(context)
                         .textTheme
-                        .subhead
+                        .subtitle1
                         .copyWith(fontStyle: FontStyle.italic)),
                 SizedBox(height: 20.0),
                 CircularProgressIndicator(),

@@ -16,18 +16,23 @@ import '../../widgets/util/savingoverlay.dart';
 import '../../widgets/util/stepperalwaysvisible.dart';
 import '../../widgets/util/teamimage.dart';
 
+///
+/// Adds a team to the specific club.
+///
 class AddTeamScreen extends StatefulWidget {
+  /// Constructor.
   AddTeamScreen({this.clubUid});
 
+  /// The club to add the team too.
   final String clubUid;
 
   @override
-  AddTeamScreenState createState() {
-    return AddTeamScreenState();
+  _AddTeamScreenState createState() {
+    return _AddTeamScreenState();
   }
 }
 
-class AddTeamScreenState extends State<AddTeamScreen> {
+class _AddTeamScreenState extends State<AddTeamScreen> {
   final GlobalKey<TeamEditFormState> _formKeyTeam =
       GlobalKey<TeamEditFormState>();
   final GlobalKey<FormState> _formKeyPlayer = GlobalKey<FormState>();
@@ -71,8 +76,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState
-        ?.showSnackBar(SnackBar(content: Text(value)));
+    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed() async {
@@ -215,7 +219,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
     var clubBloc = BlocProvider.of<ClubBloc>(context);
 
     // Only true if they are member of a club of some sort.
-    return clubBloc.state.clubs.values.any((Club c) => c.isAdmin());
+    return clubBloc.state.clubs.values.any((c) => c.isAdmin());
   }
 
   Widget _buildSummary() {
@@ -278,12 +282,12 @@ class AddTeamScreenState extends State<AddTeamScreen> {
   }
 
   Widget _buildBody() {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
     return BlocProvider(
-      create: (BuildContext contex) => _addTeamBloc,
+      create: (contex) => _addTeamBloc,
       child: BlocListener(
         cubit: _addTeamBloc,
-        listener: (BuildContext context, AddItemState addState) {
+        listener: (context, addState) {
           if (addState is AddItemDone) {
             Navigator.pop(context);
           }
@@ -293,8 +297,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
         },
         child: BlocBuilder(
           cubit: _addTeamBloc,
-          builder: (BuildContext context, AddItemState addState) =>
-              SavingOverlay(
+          builder: (context, addState) => SavingOverlay(
             saving: addState is AddItemSaving,
             child: StepperAlwaysVisible(
               type: StepperType.horizontal,
@@ -306,7 +309,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
                 // Go back
                 Navigator.of(context).pop();
               },
-              onStepTapped: (int step) {
+              onStepTapped: (step) {
                 _onStepTapped(step);
               },
               steps: <Step>[
@@ -316,7 +319,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
                   isActive: isActiveClub(),
                   content: ClubPicker(
                     clubUid: _clubUid,
-                    onChanged: (String val) => setState(() => _clubUid = val),
+                    onChanged: (val) => setState(() => _clubUid = val),
                   ),
                 ),
                 Step(
@@ -327,7 +330,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
                     key: _formKeyPlayer,
                     child: PlayerFormField(
                       initialValue: PlayerFormField.nonePlayer,
-                      onSaved: (String player) => _playerUid = player,
+                      onSaved: (player) => _playerUid = player,
                     ),
                   ),
                 ),
@@ -377,7 +380,7 @@ class AddTeamScreenState extends State<AddTeamScreen> {
       ),
       floatingActionButton: _currentStep == 4
           ? FloatingActionButton(
-              onPressed: () => _savePressed(),
+              onPressed: _savePressed,
               child: const Icon(Icons.check),
             )
           : null,

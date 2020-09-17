@@ -6,7 +6,9 @@ part of firestore_mobile;
 /// The document at the referenced location may or may not exist.
 /// A [DocumentReference] can also be used to create a [CollectionReference]
 /// to a subcollection.
+@immutable
 class DocumentReference extends wfs.DocumentReferenceWrapper {
+  /// Constructor.
   DocumentReference(this._doc);
 
   final fs.DocumentReference _doc;
@@ -32,7 +34,7 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   /// If [merge] is true, the provided data will be merged into an
   /// existing document instead of overwriting.
   @override
-  Future<void> setData(Map<String, dynamic> data, {bool merge: false}) {
+  Future<void> setData(Map<String, dynamic> data, {bool merge = false}) {
     return _doc.set(data, fs.SetOptions(merge: merge));
   }
 
@@ -49,9 +51,9 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   /// If no document exists, the read will return null.
   @override
   Future<wfs.DocumentSnapshotWrapper> get() async {
-    fs.DocumentSnapshot snap = await _doc.get();
+    var snap = await _doc.get();
     if (snap != null) {
-      return DocumentSnapshot(doc: snap);
+      return DocumentSnapshot(snap);
     }
     return null;
   }
@@ -72,13 +74,13 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   /// Notifies of documents at this location
   @override
   Stream<wfs.DocumentSnapshotWrapper> snapshots() {
-    return _doc.snapshots().transform(DocumentSnapshotStreamTransformer(this));
+    return _doc.snapshots().transform(_DocumentSnapshotStreamTransformer(this));
   }
 }
 
-class DocumentSnapshotStreamTransformer extends StreamTransformerBase<
+class _DocumentSnapshotStreamTransformer extends StreamTransformerBase<
     fs.DocumentSnapshot, wfs.DocumentSnapshotWrapper> {
-  DocumentSnapshotStreamTransformer(this.ref) {
+  _DocumentSnapshotStreamTransformer(this.ref) {
     _controller = StreamController<wfs.DocumentSnapshotWrapper>(
         onListen: _onListen,
         onCancel: _onCancel,
@@ -113,7 +115,7 @@ class DocumentSnapshotStreamTransformer extends StreamTransformerBase<
   //
 
   void onData(fs.DocumentSnapshot data) {
-    _controller.add(DocumentSnapshot(doc: data));
+    _controller.add(DocumentSnapshot(data));
   }
 
   ///

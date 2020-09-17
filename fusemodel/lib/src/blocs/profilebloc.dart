@@ -5,7 +5,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
-import 'coordinationbloc.dart';
+import 'authenticationbloc.dart';
 import 'data/profileblocstate.dart';
 
 abstract class ProfileEvent extends Equatable {}
@@ -27,7 +27,7 @@ class _ProfileUserLoaded extends ProfileEvent {
 }
 
 class _ProfileNewProfile extends ProfileEvent {
-  FusedUserProfile profile;
+  final FusedUserProfile profile;
 
   _ProfileNewProfile({this.profile});
 
@@ -45,24 +45,27 @@ class _ProfileLoggedOut extends ProfileEvent {
 /// firestore.
 ///
 class ProfileBloc extends HydratedBloc<ProfileEvent, ProfileBlocState> {
-  final CoordinationBloc coordinationBloc;
+  final AuthenticationBloc authenticationBloc;
 
-  StreamSubscription<CoordinationState> _authSub;
+  StreamSubscription<AuthenticationState> _authSub;
   StreamSubscription<FusedUserProfile> _profileSub;
 
   ProfileBloc({
-    @required this.coordinationBloc,
+    @required this.authenticationBloc,
   }) : super(ProfileBlocUninitialized()) {
-    _authSub = coordinationBloc.listen((CoordinationState coordState) {
-      if (coordState is CoordinationStateLoggedOut) {
+    _authSub = authenticationBloc.listen((state) {
+      if (state is AuthenticationLoggedOut) {
         add(_ProfileLoggedOut());
+      } else if (state is AuthenticationLoggedIn) {
+        add(_ProfileUserLoaded(uid: state.user.uid));
       }
     });
   }
 
   @override
-  void dispose() {
+  Future<void> close() {
     _authSub?.cancel();
+    return super.close();
   }
 
   @override
@@ -70,7 +73,7 @@ class ProfileBloc extends HydratedBloc<ProfileEvent, ProfileBlocState> {
     if (event is _ProfileUserLoaded) {
       yield (ProfileBlocLoaded.fromState(state)..profile = null).build();
       // Load the current uswers profile.
-      _profileSub = coordinationBloc.authenticationBloc.userAuth
+      _profileSub = authenticationBloc.userAuth
           .getProfileStream(event.uid)
           .listen((FusedUserProfile profile) {
         add(_ProfileNewProfile(profile: profile));

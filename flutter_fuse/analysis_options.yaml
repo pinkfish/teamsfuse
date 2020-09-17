@@ -1,1 +1,4 @@
 include: package:effective_dart/analysis_options.yaml
+
+analyzer:
+  exclude: [lib/widgets/util/communityicons.dart, lib/generated/**, lib/i10n/**, lib/services/messages.dart]

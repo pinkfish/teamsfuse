@@ -31,9 +31,7 @@ abstract class GameState with GameMixin {
   DateTime get end;
   GameBlocStateType get type;
 
-  @override
   BuiltMap<String, Game> get gamesByTeamToSerialize;
-  @override
   BuiltMap<String, GameSharedData> get sharedGameDataToSerialize;
 
   // Don't save this stuff

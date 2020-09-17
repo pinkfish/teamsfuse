@@ -5,7 +5,7 @@ author: David Bennett <pinkfishfrog@gmail.com>
 homepage: http://www.whelksoft.com
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   timezone:  any
@@ -24,5 +24,7 @@ dev_dependencies:
   mockito: any
   build_runner: ^1.10.0
   built_value_generator: ^7.1.0
+  effective_dart: ^1.2.4
+
   flutter_test:
     sdk: flutter

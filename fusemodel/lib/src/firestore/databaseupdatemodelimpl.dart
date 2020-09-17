@@ -87,7 +87,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentReferenceWrapper mainShared =
         wrapper.collection(GAMES_SHARED_COLLECTION).document();
 
-    return wrapper.runTransaction((TransactionWrapper tx) async {
+    return wrapper.runTransaction((tx) async {
       GameBuilder gameBuilder = game.toBuilder();
       gameBuilder.uid = mainRef.documentID;
       // Add the shared stuff, then the game.
@@ -108,6 +108,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           tx.set(ref[i], gameBuilder.build().toMap());
         }
       }
+      return s.toMap();
     });
   }
 
@@ -364,13 +365,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     QuerySnapshotWrapper query = await snap.getDocuments();
     List<Game> g = [];
     for (DocumentSnapshotWrapper doc in query.documents) {
-      g.add(await _getWholeGame(doc, opponent.teamUid));
+      g.add(_getWholeGame(doc, opponent.teamUid));
     }
     yield g;
     await for (QuerySnapshotWrapper query in snap.snapshots()) {
       List<Game> g = [];
       for (DocumentSnapshotWrapper doc in query.documents) {
-        g.add(await _getWholeGame(doc, opponent.teamUid));
+        g.add(_getWholeGame(doc, opponent.teamUid));
       }
       yield g;
     }
@@ -411,12 +412,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
     DocumentReferenceWrapper pregenSeason =
         wrapper.collection(SEASONS_COLLECTION).document();
-    wrapper.runTransaction((TransactionWrapper tx) async {
+    wrapper.runTransaction((tx) async {
       await tx.set(
           pregen, team.rebuild((b) => b..uid = pregen.documentID).toMap());
       await tx.set(pregenSeason,
           season.rebuild((b) => b..uid = pregenSeason.documentID).toMap());
-      if (imageFile != null) {}
+      return {};
     });
     if (imageFile != null) {
       updateTeamImage(pregen.documentID, imageFile);
@@ -542,67 +543,70 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       {DateTime start, DateTime end, String teamUid, String seasonUid}) async* {
     Stream<GameSnapshotEvent> mainGameStream;
     StreamGroup<GameSnapshotEvent> str = StreamGroup<GameSnapshotEvent>();
-
-    QueryWrapper gameQuery = wrapper
-        .collection(GAMES_COLLECTION)
-        .where(Game.TEAMUID, isEqualTo: teamUid);
-    if (start != null) {
-      gameQuery = gameQuery
-          .where(ARRIVALTIME, isGreaterThan: start.millisecondsSinceEpoch)
-          .where(ARRIVALTIME, isLessThan: end.millisecondsSinceEpoch);
-    }
-    if (seasonUid != null) {
-      gameQuery = gameQuery.where(Game.SEASONUID, isEqualTo: seasonUid);
-    }
-    QuerySnapshotWrapper queryGameSnap = await gameQuery.getDocuments();
-
-    Set<Game> data = new Set<Game>();
-    for (DocumentSnapshotWrapper snap in queryGameSnap.documents) {
-      String sharedGameUid = snap.data[Game.SHAREDDATAUID];
-      GameSharedData sharedData;
-      if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-        print(snap.data[Game.GAMESHAREDDATA]);
-        sharedData = GameSharedData.fromMap(
-            snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>);
-      } else {
-        // Missing shared data uid.
-        sharedData = GameSharedData.fromMap(snap.data);
+    try {
+      QueryWrapper gameQuery = wrapper
+          .collection(GAMES_COLLECTION)
+          .where(Game.TEAMUID, isEqualTo: teamUid);
+      if (start != null) {
+        gameQuery = gameQuery
+            .where(ARRIVALTIME, isGreaterThan: start.millisecondsSinceEpoch)
+            .where(ARRIVALTIME, isLessThan: end.millisecondsSinceEpoch);
       }
-      Game g = Game.fromMap(snap.data, sharedData);
-      data.add(g);
-    }
-    yield GameSnapshotEvent(teamUid: teamUid, newGames: data, deletedGames: []);
+      if (seasonUid != null) {
+        gameQuery = gameQuery.where(Game.SEASONUID, isEqualTo: seasonUid);
+      }
+      QuerySnapshotWrapper queryGameSnap = await gameQuery.getDocuments();
 
-    // Merge the streams.
-    mainGameStream = gameQuery
-        .snapshots()
-        .asyncMap((QuerySnapshotWrapper queryGameSnap) async {
       Set<Game> data = new Set<Game>();
       for (DocumentSnapshotWrapper snap in queryGameSnap.documents) {
-        String sharedGameUid;
+        String sharedGameUid = snap.data[Game.SHAREDDATAUID];
         GameSharedData sharedData;
-        sharedGameUid = snap.data[Game.SHAREDDATAUID] as String;
         if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-          sharedData = GameSharedData.fromMap(snap.data[Game.GAMESHAREDDATA]);
+          print(snap.data[Game.GAMESHAREDDATA]);
+          sharedData = GameSharedData.fromMap(
+              snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>);
         } else {
+          // Missing shared data uid.
           sharedData = GameSharedData.fromMap(snap.data);
         }
-
-        Game newGame = Game.fromMap(snap.data, sharedData);
-        data.add(newGame);
+        Game g = Game.fromMap(snap.data, sharedData);
+        data.add(g);
       }
-      Iterable<String> toDelete = queryGameSnap.documentChanges
-          .where((DocumentChangeWrapper wrap) =>
-              wrap.type == DocumentChangeTypeWrapper.removed)
-          .map((DocumentChangeWrapper wrap) => wrap.document.documentID);
-      return GameSnapshotEvent(
-          teamUid: teamUid, newGames: data, deletedGames: toDelete);
-    });
+      yield GameSnapshotEvent(
+          teamUid: teamUid, newGames: data, deletedGames: []);
 
-    str.add(mainGameStream);
+      // Merge the streams.
+      mainGameStream = gameQuery
+          .snapshots()
+          .asyncMap((QuerySnapshotWrapper queryGameSnap) async {
+        Set<Game> data = new Set<Game>();
+        for (DocumentSnapshotWrapper snap in queryGameSnap.documents) {
+          String sharedGameUid;
+          GameSharedData sharedData;
+          sharedGameUid = snap.data[Game.SHAREDDATAUID] as String;
+          if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
+            sharedData = GameSharedData.fromMap(snap.data[Game.GAMESHAREDDATA]);
+          } else {
+            sharedData = GameSharedData.fromMap(snap.data);
+          }
 
-    await for (GameSnapshotEvent queryGameSnap in str.stream) {
-      yield queryGameSnap;
+          Game newGame = Game.fromMap(snap.data, sharedData);
+          data.add(newGame);
+        }
+        Iterable<String> toDelete = queryGameSnap.documentChanges
+            .where((DocumentChangeWrapper wrap) =>
+                wrap.type == DocumentChangeTypeWrapper.removed)
+            .map((DocumentChangeWrapper wrap) => wrap.document.documentID);
+        return GameSnapshotEvent(
+            teamUid: teamUid, newGames: data, deletedGames: toDelete);
+      });
+
+      str.add(mainGameStream);
+      await for (GameSnapshotEvent queryGameSnap in str.stream) {
+        yield queryGameSnap;
+      }
+    } finally {
+      str.close();
     }
   }
 
@@ -669,7 +673,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var docRef = ref.document();
     // Add the game.
     var p = player.rebuild((b) => b..uid = docRef.documentID);
-    await docRef.setData(player.toMap(includeUsers: true));
+    await docRef.setData(p.toMap(includeUsers: true));
     return docRef.documentID;
   }
 
@@ -1004,7 +1008,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<void> addPlayerToSeason(
       String seasonUid, SeasonPlayer seasonPlayer) async {
     DocumentReferenceWrapper doc =
-        await wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
+        wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
     Map<String, dynamic> data = <String, dynamic>{};
     data[Season.PLAYERS + "." + seasonPlayer.playerUid] = seasonPlayer.toMap();
     doc.updateData(data);
@@ -1215,6 +1219,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
       yield games.values;
     }
+    str.close();
   }
 
   @override
@@ -1351,7 +1356,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<LeagueOrTournament> getLeagueData({String leagueUid}) async* {
-    var ref = await wrapper.collection(LEAGUE_COLLECTON).document(leagueUid);
+    var ref = wrapper.collection(LEAGUE_COLLECTON).document(leagueUid);
     var data = await ref.get();
     if (data.exists) {
       yield LeagueOrTournament.fromMap(userData.uid, data.data);
@@ -1415,7 +1420,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Stream<LeagueOrTournamentDivison> getLeagueDivisionData(
       {String leagueDivisionUid, String memberUid}) async* {
-    DocumentReferenceWrapper doc = await wrapper
+    DocumentReferenceWrapper doc = wrapper
         .collection(LEAGUE_DIVISION_COLLECTION)
         .document(leagueDivisionUid);
     DocumentSnapshotWrapper wrap = await doc.get();
@@ -1432,9 +1437,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Stream<LeagueOrTournamentSeason> getLeagueSeasonData(
       String leagueSeasonUid) async* {
-    var ref = await wrapper
-        .collection(LEAGUE_SEASON_COLLECTION)
-        .document(leagueSeasonUid);
+    var ref =
+        wrapper.collection(LEAGUE_SEASON_COLLECTION).document(leagueSeasonUid);
 
     var doc = await ref.get();
     if (doc.exists) {
@@ -1442,7 +1446,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     } else {
       yield null;
     }
-    await for (var doc in ref.snapshots()) {}
+    await for (var doc in ref.snapshots()) {
+      yield LeagueOrTournamentSeason.fromMap(doc.data);
+    }
   }
 
   @override
@@ -1493,7 +1499,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<void> updateLeagueTeamRecord(
       LeagueOrTournamentTeam team, String divison, WinRecord record) async {
     DocumentReferenceWrapper doc =
-        await wrapper.collection(LEAGUE_TEAM_COLLECTION).document(team.uid);
+        wrapper.collection(LEAGUE_TEAM_COLLECTION).document(team.uid);
     Map<String, dynamic> data = <String, dynamic>{};
     data[LeagueOrTournamentTeam.WINRECORD + "." + divison] = record.toMap();
     doc.updateData(data);
@@ -1620,7 +1626,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<Invite> getSingleInvite(String inviteUid) async* {
-    var ref = await wrapper.collection(INVITE_COLLECTION).document(inviteUid);
+    var ref = wrapper.collection(INVITE_COLLECTION).document(inviteUid);
 
     var doc = await ref.get();
     if (doc.exists) {
@@ -1671,7 +1677,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<Iterable<InviteToClub>> getInviteToClubStream(String clubUid) async* {
     CollectionReferenceWrapper ref = wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
-    QueryWrapper snapshot = await ref
+    QueryWrapper snapshot = ref
         .where(InviteToClub.CLUBUID, isEqualTo: clubUid)
         .where(Invite.TYPE, isEqualTo: InviteType.Club.toString());
 

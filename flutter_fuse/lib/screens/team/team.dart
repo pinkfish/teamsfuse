@@ -13,8 +13,10 @@ import '../../widgets/teams/teamsettings.dart';
 /// Shows all the details about a single team.
 ///
 class TeamScreen extends StatefulWidget {
+  /// Constructor.
   TeamScreen(this.teamUid);
 
+  /// The teamUid for the team.
   final String teamUid;
 
   @override
@@ -43,7 +45,7 @@ class _TeamScreenState extends State<TeamScreen> {
   }
 
   void _onEditTeam(BuildContext context) {
-    Navigator.pushNamed(context, "EditTeam/" + widget.teamUid);
+    Navigator.pushNamed(context, "EditTeam/${widget.teamUid}");
   }
 
   void _select(String choice, SingleTeamBloc singleTeamBloc) async {
@@ -51,10 +53,10 @@ class _TeamScreenState extends State<TeamScreen> {
     setState(() {});
     if (choice == 'settings') {
       // Show a dialog and then delete it!
-      Navigator.pushNamed(context, "TeamSettings/" + widget.teamUid);
+      Navigator.pushNamed(context, "TeamSettings/${widget.teamUid}");
     }
     if (choice == "club") {
-      Navigator.pushNamed(context, "TeamClub/" + widget.teamUid);
+      Navigator.pushNamed(context, "TeamClub/${widget.teamUid}");
     }
     if (choice == 'archive') {
       singleTeamBloc
@@ -64,14 +66,13 @@ class _TeamScreenState extends State<TeamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> actions = <Widget>[];
+    var actions = <Widget>[];
     FloatingActionButton fab;
     return SingleTeamProvider(
       teamUid: widget.teamUid,
-      builder: (BuildContext contextl, SingleTeamBloc singleTeamBloc) =>
-          BlocBuilder(
+      builder: (contextl, singleTeamBloc) => BlocBuilder(
         cubit: singleTeamBloc,
-        builder: (BuildContext context, SingleTeamState state) {
+        builder: (context, state) {
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
             return Text(Messages.of(context).teamdeleted);
@@ -79,8 +80,8 @@ class _TeamScreenState extends State<TeamScreen> {
           if (state.isAdmin() && _tabIndex == 0) {
             actions.add(
               PopupMenuButton<String>(
-                onSelected: (String str) => _select(str, singleTeamBloc),
-                itemBuilder: (BuildContext context) {
+                onSelected: (str) => _select(str, singleTeamBloc),
+                itemBuilder: (context) {
                   return <PopupMenuItem<String>>[
                     PopupMenuItem<String>(
                       value: "settings",
@@ -107,7 +108,7 @@ class _TeamScreenState extends State<TeamScreen> {
               actions: actions,
             ),
             bottomNavigationBar: BottomNavigationBar(
-                onTap: (int index) {
+                onTap: (index) {
                   setState(() {
                     _tabIndex = index;
                   });
@@ -129,7 +130,7 @@ class _TeamScreenState extends State<TeamScreen> {
                 ]),
             floatingActionButton: BlocBuilder(
               cubit: singleTeamBloc,
-              builder: (BuildContext context, SingleTeamState state) {
+              builder: (context, state) {
                 if (state.isAdmin() && _tabIndex == 0) {
                   fab = FloatingActionButton(
                     onPressed: () => _onEditTeam(context),

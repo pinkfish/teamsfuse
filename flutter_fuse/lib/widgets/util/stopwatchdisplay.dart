@@ -8,9 +8,13 @@ import 'package:flutter/material.dart';
 /// every second.
 ///
 class StopwatchDisplay extends StatefulWidget {
+  /// Constrctor to display the stopwatch
   StopwatchDisplay({@required this.stopwatch, @required this.style});
 
+  /// The stopwatch to display
   final MyStopwatch stopwatch;
+
+  /// The text tyle to use for the text
   final TextStyle style;
 
   @override
@@ -26,7 +30,7 @@ class _StopwatchDisplayState extends State<StopwatchDisplay> {
   void initState() {
     super.initState();
     timer = Timer.periodic(Duration(seconds: 1),
-        (Timer t) => widget.stopwatch.isRunning ? setState(() {}) : null);
+        (t) => widget.stopwatch.isRunning ? setState(() {}) : null);
   }
 
   @override
@@ -37,21 +41,21 @@ class _StopwatchDisplayState extends State<StopwatchDisplay> {
   }
 
   static String format(int milliseconds) {
-    int hundreds = (milliseconds / 10).truncate();
-    int seconds = (hundreds / 100).truncate();
-    int minutes = (seconds / 60).truncate();
-    int hours = (minutes / 60).truncate();
+    var hundreds = (milliseconds / 10).truncate();
+    var seconds = (hundreds / 100).truncate();
+    var minutes = (seconds / 60).truncate();
+    var hours = (minutes / 60).truncate();
     if (hours < 0) {
       hours = -hours;
     }
 
-    String secondsStr = (seconds % 60).toString().padLeft(2, '0');
+    var secondsStr = (seconds % 60).toString().padLeft(2, '0');
     if (hours > 0) {
-      String minutesStr = (minutes % 60).toString().padLeft(2, '0');
+      var minutesStr = (minutes % 60).toString().padLeft(2, '0');
 
       return "$hours:$minutesStr:$secondsStr";
     }
-    String minutesStr = (minutes % 60).toString().padLeft(2);
+    var minutesStr = (minutes % 60).toString().padLeft(2);
     return "$minutesStr:$secondsStr";
   }
 
@@ -79,6 +83,7 @@ class MyStopwatch {
   ///    ```
   MyStopwatch({this.initialValue});
 
+  /// The underlying stopwatch to use
   Stopwatch watch = Stopwatch();
 
   // The _start and _stop fields capture the time when [start] and [stop]
@@ -86,6 +91,8 @@ class MyStopwatch {
   // If _stop is null, the stopwatch is running.
   int _start = 0;
   int _stop = 0;
+
+  /// The value to start the stopwatch at.
   final int initialValue;
 
   ///   Starts the [Stopwatch].

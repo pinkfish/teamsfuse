@@ -1,9 +1,13 @@
 part of firestore_mobile;
 
+///
+/// The storage reference wrapper to use.
+///
 class StorageReference extends wfs.StorageReferenceWrapper {
+  /// The wrapper to the stroage system.
   StorageReference(this._ref);
 
-  st.StorageReference _ref;
+  final st.StorageReference _ref;
 
   @override
   String get path {
@@ -12,7 +16,7 @@ class StorageReference extends wfs.StorageReferenceWrapper {
 
   @override
   Future<wfs.StorageMetadata> updateMetadata(wfs.StorageMetadata metadata) {
-    st.StorageMetadata newMetadata = st.StorageMetadata(
+    var newMetadata = st.StorageMetadata(
       cacheControl: metadata?.cacheControl,
       contentDisposition: metadata?.contentDisposition,
       contentEncoding: metadata?.contentEncoding,
@@ -20,9 +24,7 @@ class StorageReference extends wfs.StorageReferenceWrapper {
       contentType: metadata?.contentType,
       customMetadata: metadata?.customMetadata,
     );
-    return _ref
-        .updateMetadata(newMetadata)
-        .then((st.StorageMetadata updatedMetadata) {
+    return _ref.updateMetadata(newMetadata).then((updatedMetadata) {
       return wfs.StorageMetadata(
           customMetadata: updatedMetadata.customMetadata,
           contentType: updatedMetadata.contentType,
@@ -35,7 +37,7 @@ class StorageReference extends wfs.StorageReferenceWrapper {
 
   @override
   Future<wfs.StorageMetadata> getMetadata() async {
-    st.StorageMetadata meta = await _ref.getMetadata();
+    var meta = await _ref.getMetadata();
     return wfs.StorageMetadata(
         name: meta?.name,
         path: meta?.path,
@@ -124,14 +126,18 @@ class StorageReference extends wfs.StorageReferenceWrapper {
   }
 }
 
+///
+/// Upload to storage wrapper.
+///
 class StorageUploadTask extends wfs.StorageUploadTaskWrapper {
+  /// The constructor for the wrapper.
   StorageUploadTask(this._task);
 
-  st.StorageUploadTask _task;
+  final st.StorageUploadTask _task;
 
   @override
   Future<wfs.UploadTaskSnapshotWrapper> get future {
-    return _task.onComplete.then((st.StorageTaskSnapshot f) {
+    return _task.onComplete.then((f) {
       return wfs.UploadTaskSnapshotWrapper(downloadUrl: f.uploadSessionUri);
     });
   }

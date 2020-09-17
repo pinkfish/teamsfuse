@@ -1,24 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 
+import '../../services/messages.dart';
 import '../blocs/singleprofileprovider.dart';
 
+///
+/// The user name to display in the UX
+///
 class UserName extends StatelessWidget {
-  UserName({@required this.userId, this.overflow, this.style});
+  /// Constructor,
+  UserName({@required this.userId, this.overflow, this.style})
+      : assert(userId != null);
 
+  /// The userId to display the name for.
   final String userId;
+
+  /// TextOverflow behaviour
   final TextOverflow overflow;
+
+  /// Style to use for the text.
   final TextStyle style;
 
   @override
   Widget build(BuildContext context) {
     return SingleProfileProvider(
       userUid: userId,
-      builder: (BuildContext context, SingleProfileBloc bloc) => BlocBuilder(
+      builder: (context, bloc) => BlocBuilder(
         cubit: bloc,
-        builder: (BuildContext context, SingleProfileState state) {
+        builder: (context, state) {
           Widget inner;
           if (state is SingleProfileLoaded) {
             inner = Text(

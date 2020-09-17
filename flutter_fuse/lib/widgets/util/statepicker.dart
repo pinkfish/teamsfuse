@@ -1,11 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+
+///
+/// Picker to show the inprogess game and select the current state
+///
 class InProgressGamePicker extends StatelessWidget {
-  ///constructor for integer number picker
+  /// constructor for in progress game picker
   InProgressGamePicker({
     @required this.initialValue,
     @required this.onChanged,
@@ -21,37 +25,40 @@ class InProgressGamePicker extends StatelessWidget {
         _listViewHeight = 3 * itemExtent,
         super(key: key);
 
-  ///height of every list element
+  /// height of every list element
   static const double defaultItemExtent = 50.0;
 
-  ///width of list view
+  /// width of list view
   static const double defaultListViewWidth = 100.0;
 
-  ///called when selected value changes
+  /// called when selected value changes
   final ValueChanged<GameInProgress> onChanged;
 
   /// If the widget is disabled.
   final bool disabled;
 
-  ///height of every list element in pixels
+  /// height of every list element in pixels
   final double itemExtent;
 
-  ///view will always contain only 3 elements of list in pixels
+  /// view will always contain only 3 elements of list in pixels
   final double _listViewHeight;
 
-  ///width of list view in pixels
+  /// width of list view in pixels
   final double listViewWidth;
 
-  ///ScrollController used for integer list
+  /// ScrollController used for integer list
   final ScrollController scrollController;
 
-  ///Currently selected integer value
+  /// Currently selected integer value
   final GameInProgress initialValue;
 
   //
   //----------------------------- PUBLIC ------------------------------
   //
 
+  ///
+  /// Animates a move to the specific inprogess value
+  ///
   void animateMove(GameInProgress valueToSelect) {
     _animate(
         scrollController, GameInProgress.getIndex(valueToSelect) * itemExtent);
@@ -64,21 +71,21 @@ class InProgressGamePicker extends StatelessWidget {
   ///main widget
   @override
   Widget build(BuildContext context) {
-    final ThemeData themeData = Theme.of(context);
+    var themeData = Theme.of(context);
 
     return _inProgressListView(themeData);
   }
 
   Widget _inProgressListView(ThemeData themeData) {
-    TextStyle defaultStyle = themeData.textTheme.body1;
-    TextStyle selectedStyle =
-        themeData.textTheme.body1.copyWith(color: themeData.accentColor);
+    var defaultStyle = themeData.textTheme.bodyText2;
+    var selectedStyle =
+        themeData.textTheme.bodyText2.copyWith(color: themeData.accentColor);
     if (disabled) {
       defaultStyle = defaultStyle.copyWith(color: themeData.disabledColor);
       selectedStyle = defaultStyle.copyWith(color: themeData.accentColor);
     }
 
-    int itemCount = GameInProgress.values.length + 2;
+    var itemCount = GameInProgress.values.length + 2;
 
     return NotificationListener<Notification>(
       child: Container(
@@ -91,14 +98,14 @@ class InProgressGamePicker extends StatelessWidget {
           physics: disabled
               ? NeverScrollableScrollPhysics()
               : AlwaysScrollableScrollPhysics(),
-          itemBuilder: (BuildContext context, int index) {
-            bool isExtra = index == 0 || index == itemCount - 1;
+          itemBuilder: (context, index) {
+            var isExtra = index == 0 || index == itemCount - 1;
             if (isExtra) {
               return Container();
             }
             //define special style for selected (middle) element
-            GameInProgress value = GameInProgress.valuesByIndex[index];
-            final TextStyle itemStyle =
+            var value = GameInProgress.valuesByIndex[index];
+            var itemStyle =
                 value == initialValue ? selectedStyle : defaultStyle;
 
             return Center(
@@ -122,9 +129,9 @@ class InProgressGamePicker extends StatelessWidget {
     }
     if (notification is ScrollNotification && !disabled) {
       //calculate
-      int intIndexOfMiddleElement =
+      var intIndexOfMiddleElement =
           (notification.metrics.pixels + _listViewHeight / 2) ~/ itemExtent;
-      int intValueInTheMiddle = intIndexOfMiddleElement - 1;
+      var intValueInTheMiddle = intIndexOfMiddleElement - 1;
 
       if (_userStoppedScrolling(notification, scrollController)) {
         //center selected value
@@ -147,7 +154,7 @@ class InProgressGamePicker extends StatelessWidget {
     return true;
   }
 
-  ///indicates if user has stopped scrolling so we can center value in the middle
+  /// indicates if user has stopped scrolling so we can center value in the middle
   bool _userStoppedScrolling(
       Notification notification, ScrollController scrollController) {
     return notification is UserScrollNotification &&
@@ -156,7 +163,7 @@ class InProgressGamePicker extends StatelessWidget {
         scrollController.position.activity is! HoldScrollActivity;
   }
 
-  ///scroll to selected value
+  /// scroll to selected value
   void _animate(ScrollController scrollController, double value) {
     scrollController.animateTo(value,
         duration: Duration(seconds: 1), curve: ElasticOutCurve());

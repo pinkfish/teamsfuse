@@ -34,7 +34,7 @@ class _SingleLeagueOrTournamentEventTeamDeleted
 
 class _SingleLeagueOrTournamentEventTeamGames
     extends SingleLeagueOrTournamentTeamEvent {
-  Iterable<GameSharedData> games;
+  final Iterable<GameSharedData> games;
 
   _SingleLeagueOrTournamentEventTeamGames({this.games});
 
@@ -44,7 +44,7 @@ class _SingleLeagueOrTournamentEventTeamGames
 
 class _SingleLeagueOrTournamentEventTeamInvites
     extends SingleLeagueOrTournamentTeamEvent {
-  Iterable<InviteToLeagueTeam> invites;
+  final Iterable<InviteToLeagueTeam> invites;
 
   _SingleLeagueOrTournamentEventTeamInvites({this.invites});
 
@@ -135,7 +135,7 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
   SingleLeagueOrTournamentTeamBloc(
       {@required this.leagueTeamUid, @required this.db})
       : super(SingleLeagueOrTournamentTeamUninitialized(),
-            "LeagueTeam.${leagueTeamUid}") {
+            "LeagueTeam.$leagueTeamUid") {
     _teamSub = db
         .getLeagueTeamData(leagueTeamUid)
         .listen((LeagueOrTournamentTeam team) {
@@ -307,6 +307,7 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
       case SingleLeagueOrTournamentTeamBlocStateType.SaveDone:
         return SingleLeagueOrTournamentTeamSaveDone.fromMap(json);
     }
+    return SingleLeagueOrTournamentTeamUninitialized();
   }
 
   @override

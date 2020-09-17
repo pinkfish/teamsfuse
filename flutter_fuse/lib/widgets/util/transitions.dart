@@ -1,13 +1,16 @@
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 
+///
+/// Creates a slide transition for use in the app.
+///
 SlideTransition makeSlideTransition(
     bool fromLeft, Animation<double> animation) {
-  const Offset topLeft = const Offset(0.0, 0.0);
-  const Offset topRight = const Offset(1.0, 0.0);
-  const Offset bottomLeft = const Offset(0.0, 1.0);
-  Offset startOffset = bottomLeft;
-  Offset endOffset = topLeft;
+  var topLeft = Offset(0.0, 0.0);
+  var topRight = Offset(1.0, 0.0);
+  var bottomLeft = Offset(0.0, 1.0);
+  var startOffset = bottomLeft;
+  var endOffset = topLeft;
   if (fromLeft) {
     startOffset = const Offset(-1.0, 0.0);
     endOffset = topLeft;

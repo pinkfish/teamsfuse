@@ -192,7 +192,6 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
         TraceProxy clubTrace =
             coordinationBloc.analyticsSubsystem.newTrace("clubData");
         clubTrace.start();
-        DateTime start = new DateTime.now();
         // If recovered this way it is only local data.
         var loaded = ClubLoaded.fromMap(json);
         print('End clubs  ${loaded.clubs.length}');

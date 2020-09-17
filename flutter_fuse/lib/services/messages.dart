@@ -1,16 +1,21 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/i10n/messages_all.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart';
 
+import '../i10n/messages_all.dart';
+
+///
+/// The main messages class for the system, all the strings that need
+/// to be translated.
+///
 class Messages {
+  /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {
-    final String name =
+    var name =
         locale.countryCode.isEmpty ? locale.languageCode : locale.toString();
-    final String localeName = Intl.canonicalizedLocale(name);
+    var localeName = Intl.canonicalizedLocale(name);
 
     return initializeMessages(localeName).then((dynamic _) {
       Intl.defaultLocale = localeName;
@@ -19,11 +24,10 @@ class Messages {
     });
   }
 
+  /// The messages in the system from the context.
   static Messages of(BuildContext context) {
     return Localizations.of<Messages>(context, Messages);
   }
-
-  Random randomNum = Random.secure();
 
   String get deleteadmin {
     return Intl.message("Delete Admin");

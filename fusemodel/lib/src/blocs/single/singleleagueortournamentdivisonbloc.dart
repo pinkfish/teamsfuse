@@ -136,6 +136,10 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
     _cleanupStuff();
     _divSub?.cancel();
     _divSub = null;
+    _leagueOrTournamentSnapshot?.cancel();
+    _leagueOrTournamentSnapshot = null;
+    _leagueOrTournamentTeamSnapshot?.cancel();
+    _leagueOrTournamentTeamSnapshot = null;
   }
 
   void _cleanupStuff() {}

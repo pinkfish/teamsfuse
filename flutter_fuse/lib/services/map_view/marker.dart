@@ -1,16 +1,32 @@
 import 'dart:ui';
 
-class Marker {
-  Marker(this.id, this.title, this.latitude, this.longitude,
-      {this.color: _defaultColor});
+import 'package:flutter/cupertino.dart';
 
+///
+/// Marker to trace things to display on the map.
+///
+@immutable
+class Marker {
+  /// Marker to display on the map.
+  Marker(this.id, this.title, this.latitude, this.longitude,
+      {this.color = _defaultColor});
+
+  /// Id for the marker.
   final String id;
+
+  /// Title of the marker.
   final String title;
+
+  /// Latitude of the marker.
   final double latitude;
+
+  /// Longitude of the marker.
   final double longitude;
+
+  /// Color to display for the marker.
   final Color color;
 
-  static const Color _defaultColor = const Color.fromARGB(1, 255, 0, 0);
+  static const Color _defaultColor = Color.fromARGB(1, 255, 0, 0);
 
   @override
   bool operator ==(Object other) =>
@@ -20,6 +36,7 @@ class Marker {
   @override
   int get hashCode => id.hashCode;
 
+  /// Serialize the marker to use in the api.
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       "id": id,

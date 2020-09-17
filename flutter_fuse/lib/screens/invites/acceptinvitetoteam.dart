@@ -40,7 +40,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   void initState() {
     super.initState();
     // Default to empty.
-    _checked = Set<String>();
+    _checked = <String>{};
     _data = <String, String>{};
     _singleInviteBloc = SingleInviteBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),

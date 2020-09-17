@@ -275,9 +275,6 @@ class SingleTeamBloc
   }
 
   @override
-  SingleTeamState get initialState {}
-
-  @override
   Stream<SingleTeamState> mapEventToState(SingleTeamEvent event) async* {
     if (event is _SingleTeamNewTeam) {
       yield (SingleTeamLoaded.fromState(state)
@@ -489,6 +486,7 @@ class SingleTeamBloc
       case SingleTeamBlocStateType.SaveDone:
         return SingleTeamSaveDone.fromMap(json);
     }
+    return SingleTeamUninitialized();
   }
 
   @override

@@ -2,28 +2,27 @@ part of firestore_mobile;
 
 /// Represents a query over the data at a particular location.
 class Query extends wfs.QueryWrapper {
+  /// The constructor for the wrapper.
   Query(this._doc);
 
-  fs.Query _doc;
+  final fs.Query _doc;
 
   /// Notifies of query results at this location
   @override
   Stream<wfs.QuerySnapshotWrapper> snapshots() {
-    return _doc.snapshots().transform(QuerySnapshotStreamTransformer());
+    return _doc.snapshots().transform(_QuerySnapshotStreamTransformer());
   }
 
   /// Fetch the documents for this query
   @override
   Future<wfs.QuerySnapshotWrapper> getDocuments() async {
-    fs.QuerySnapshot query = await _doc.getDocuments();
+    var query = await _doc.get();
     return wfs.QuerySnapshotWrapper(
-      documents: query.documents
-          .map((fs.DocumentSnapshot snap) => DocumentSnapshot(doc: snap))
-          .toList(),
-      documentChanges: query.documentChanges
+      documents: query.docs.map((snap) => DocumentSnapshot(snap)).toList(),
+      documentChanges: query.docChanges
           .map(
-            (fs.DocumentChange change) => wfs.DocumentChangeWrapper(
-              document: DocumentSnapshot(doc: change.document),
+            (change) => wfs.DocumentChangeWrapper(
+              document: DocumentSnapshot(change.doc),
               oldIndex: change.oldIndex,
               newIndex: change.newIndex,
               type: getType(change.type),
@@ -33,6 +32,7 @@ class Query extends wfs.QueryWrapper {
     );
   }
 
+  /// Gets the type of the change.
   static wfs.DocumentChangeTypeWrapper getType(fs.DocumentChangeType str) {
     switch (str) {
       case fs.DocumentChangeType.added:
@@ -71,7 +71,7 @@ class Query extends wfs.QueryWrapper {
   /// Creates and returns a [Query] that's additionally sorted by the specified
   /// [field].
   @override
-  wfs.QueryWrapper orderBy(String field, {bool descending: false}) {
+  wfs.QueryWrapper orderBy(String field, {bool descending = false}) {
     return Query(_doc.orderBy(field, descending: descending));
   }
 

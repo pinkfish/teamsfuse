@@ -12,24 +12,29 @@ import '../../widgets/form/switchformfield.dart';
 import '../../widgets/util/communityicons.dart';
 import '../../widgets/util/savingoverlay.dart';
 
+///
+/// Add a season to the team, screen setting this up.
+///
 class AddSeasonScreen extends StatefulWidget {
+  /// Constructor.
   AddSeasonScreen(this.teamUid);
 
+  /// The teamUid to add the season for.
   final String teamUid;
 
   @override
-  AddSeasonScreenState createState() {
-    return AddSeasonScreenState();
+  _AddSeasonScreenState createState() {
+    return _AddSeasonScreenState();
   }
 }
 
-class AddSeasonScreenState extends State<AddSeasonScreen> {
+class _AddSeasonScreenState extends State<AddSeasonScreen> {
   Season _seasonSelect;
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _seasonName;
   bool _importPlayers;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  Validations _validations = Validations();
+  final Validations _validations = Validations();
   AddSeasonBloc addSeasonBloc;
 
   @override
@@ -51,11 +56,11 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       // Make a season.
-      ListBuilder<SeasonPlayer> players = ListBuilder<SeasonPlayer>();
+      var players = ListBuilder<SeasonPlayer>();
       if (_importPlayers) {
         players.addAll(_seasonSelect.players);
       } else {
-        PlayerBloc bloc = BlocProvider.of<PlayerBloc>(context);
+        var bloc = BlocProvider.of<PlayerBloc>(context);
         var meUid = bloc.state.me.uid;
         players.add(SeasonPlayer((b) => b
           ..playerUid = meUid
@@ -82,12 +87,11 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
               hintText: Messages.of(context).season,
               labelText: Messages.of(context).newseasonhint,
             ),
-            validator: (String s) =>
-                _validations.validateDisplayName(context, s),
+            validator: (s) => _validations.validateDisplayName(context, s),
             initialValue: '',
             keyboardType: TextInputType.text,
             obscureText: false,
-            onSaved: (String value) {
+            onSaved: (value) {
               _seasonName = value;
             },
           ),
@@ -95,7 +99,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
           SwitchFormField(
             initialValue: false,
             icon: Icons.import_contacts,
-            onSaved: (bool b) => _importPlayers = b,
+            onSaved: (b) => _importPlayers = b,
             label: Messages.of(context).importplayers,
           ),
           SeasonFormField(
@@ -105,7 +109,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
             ),
             teamBloc: singleTeamBloc,
             initialValue: singleTeamBloc.state.team.currentSeason,
-            onSaved: (String seasonUid) {
+            onSaved: (seasonUid) {
               _seasonSelect = singleTeamBloc.state.getSeason(seasonUid);
             },
           ),
@@ -121,13 +125,12 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => addSeasonBloc,
+      create: (context) => addSeasonBloc,
       child: SingleTeamProvider(
         teamUid: widget.teamUid,
-        builder: (BuildContext contrext, SingleTeamBloc singleTeamBloc) =>
-            BlocListener(
+        builder: (contrext, singleTeamBloc) => BlocListener(
           cubit: singleTeamBloc,
-          listener: (BuildContext context, SingleTeamState state) {
+          listener: (context, state) {
             if (state is SingleTeamLoaded) {
               if (_seasonSelect == null) {
                 _seasonSelect = state.getSeason(state.team.currentSeason);
@@ -146,7 +149,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
             resizeToAvoidBottomPadding: true,
             body: BlocListener(
               cubit: addSeasonBloc,
-              listener: (BuildContext context, AddItemState addState) {
+              listener: (context, addState) {
                 if (addState is AddItemDone) {
                   Navigator.pop(context);
                 }
@@ -156,8 +159,7 @@ class AddSeasonScreenState extends State<AddSeasonScreen> {
               },
               child: BlocBuilder(
                 cubit: addSeasonBloc,
-                builder: (BuildContext context, AddItemState addState) =>
-                    SavingOverlay(
+                builder: (context, addState) => SavingOverlay(
                   saving: addState is AddItemSaving,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

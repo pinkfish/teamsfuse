@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:indexed_db';
 
-import 'package:fusemodel/fusemodel.dart';
-
 class SqlData implements PersistenData {
   static SqlData _instance;
 
@@ -64,7 +62,6 @@ class SqlData implements PersistenData {
   }
 
   // Gets all the data out of the json table.
-  @override
   Future<Map<String, Map<String, dynamic>>> getAllElements(String table) async {
     if (!IdbFactory.supported) {
       return {};
@@ -91,7 +88,6 @@ class SqlData implements PersistenData {
         (dynamic k, dynamic v) => MapEntry<String, dynamic>(k as String, v));
   }
 
-  @override
   Future<Map<String, dynamic>> getElement(String tableId, String key) async {
     if (!IdbFactory.supported) {
       return null;
@@ -106,7 +102,6 @@ class SqlData implements PersistenData {
     return _toMap(ret);
   }
 
-  @override
   Future<void> updateElement(
       String tableId, String key, Map<String, dynamic> data) async {
     if (!IdbFactory.supported) {
@@ -120,7 +115,6 @@ class SqlData implements PersistenData {
     return t.completed;
   }
 
-  @override
   Future<void> deleteElement(String tableId, String key) async {
     if (!IdbFactory.supported) {
       return null;
@@ -133,7 +127,6 @@ class SqlData implements PersistenData {
   }
 
   // Gets all the data out of the json table.
-  @override
   Future<Map<String, Map<String, dynamic>>> getAllTeamElements(
       String table, String teamUid) async {
     if (!IdbFactory.supported) {
@@ -154,7 +147,6 @@ class SqlData implements PersistenData {
     return ret;
   }
 
-  @override
   Future<void> updateTeamElement(String tableId, String key, String teamUid,
       Map<String, dynamic> data) async {
     if (!IdbFactory.supported) {
@@ -169,7 +161,6 @@ class SqlData implements PersistenData {
     return t.completed;
   }
 
-  @override
   Future<void> clearTable(String tableId) async {
     if (!IdbFactory.supported) {
       return null;
@@ -180,7 +171,6 @@ class SqlData implements PersistenData {
     return t.completed;
   }
 
-  @override
   Future<void> recreateDatabase() {
     if (!IdbFactory.supported) {
       return null;

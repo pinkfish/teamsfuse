@@ -127,9 +127,9 @@ class SinglePlayerBloc
             : SinglePlayerDeletedBuilder().build())) {
     _playerSub = playerBloc.listen((PlayerState playerState) {
       if (playerState.players.containsKey(playerUid)) {
-        Player player = playerState.players[playerUid];
+        var player = playerState.players[playerUid];
         // Only send this if the Player is not the same.
-        if (Player != state.player) {
+        if (player != state.player) {
           add(_SinglePlayerNewPlayer(newPlayer: player));
         }
       } else {
@@ -242,6 +242,7 @@ class SinglePlayerBloc
       case SinglePlayerBlocStateType.SaveDone:
         return SinglePlayerSaveDone.fromMap(json);
     }
+    return SinglePlayerUninitialized();
   }
 
   @override

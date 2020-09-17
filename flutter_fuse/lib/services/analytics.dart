@@ -6,49 +6,55 @@ import 'package:firebase_performance/firebase_performance.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:package_info/package_info.dart';
 
+///
+/// Analytics class to handle communication with the analytics subsystems
+/// adding in all the various pieces.
+///
 class Analytics extends AnalyticsSubsystem {
-  static FirebaseAnalytics _analytics = FirebaseAnalytics();
+  static final FirebaseAnalytics _analytics = FirebaseAnalytics();
   static Analytics _instance;
 
-  PackageInfo packageInfo;
-  DeviceInfoPlugin deviceInfo;
-  IosDeviceInfo iosDeviceInfo;
-  AndroidDeviceInfo androidDeviceInfo;
+  PackageInfo _packageInfo;
+  DeviceInfoPlugin _deviceInfo;
+  IosDeviceInfo _iosDeviceInfo;
+  AndroidDeviceInfo _androidDeviceInfo;
   bool _debugMode = false;
 
+  /// The instance of the analytics system to use.
   static Analytics get instance {
     if (_instance == null) {
       _instance = Analytics();
-      _instance.load();
+      _instance._load();
       FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
     }
 
     return _instance;
   }
 
-  void load() {
+  void _load() {
     assert(_debugMode = true);
 
     // Load the device and package info.
-    packageInfo = PackageInfo(
+    _packageInfo = PackageInfo(
         version: "unknown", packageName: "unknown", buildNumber: "unknown");
-    PackageInfo.fromPlatform().then((PackageInfo info) {
-      packageInfo = info;
+    PackageInfo.fromPlatform().then((info) {
+      _packageInfo = info;
     });
 
-    deviceInfo = DeviceInfoPlugin();
+    _deviceInfo = DeviceInfoPlugin();
     if (Platform.isIOS) {
-      deviceInfo.iosInfo.then((IosDeviceInfo info) {
-        iosDeviceInfo = info;
+      _deviceInfo.iosInfo.then((info) {
+        _iosDeviceInfo = info;
       });
     }
     if (Platform.isAndroid) {
-      deviceInfo.androidInfo.then((AndroidDeviceInfo info) {
-        androidDeviceInfo = info;
+      _deviceInfo.androidInfo.then((info) {
+        _androidDeviceInfo = info;
       });
     }
   }
 
+  /// Returns the firebase analytics part to use in the system.
   static FirebaseAnalytics get analytics {
     return _analytics;
   }
@@ -80,51 +86,60 @@ class Analytics extends AnalyticsSubsystem {
 
   @override
   TraceProxy newTrace(String name) {
-    Trace trace = FirebasePerformance.instance.newTrace(name);
+    var trace = FirebasePerformance.instance.newTrace(name);
 
     trace.putAttribute("os", Platform.operatingSystem);
     trace.putAttribute("osVersion", Platform.operatingSystemVersion);
 
-    trace.putAttribute("version", packageInfo.version);
-    trace.putAttribute("build", packageInfo.buildNumber);
-    if (Platform.isIOS && iosDeviceInfo != null) {
-      trace.putAttribute("emulator", iosDeviceInfo.isPhysicalDevice.toString());
-    }
-    if (Platform.isAndroid && androidDeviceInfo != null) {
+    trace.putAttribute("version", _packageInfo.version);
+    trace.putAttribute("build", _packageInfo.buildNumber);
+    if (Platform.isIOS && _iosDeviceInfo != null) {
       trace.putAttribute(
-          "emulator", androidDeviceInfo.isPhysicalDevice.toString());
+          "emulator", _iosDeviceInfo.isPhysicalDevice.toString());
+    }
+    if (Platform.isAndroid && _androidDeviceInfo != null) {
+      trace.putAttribute(
+          "emulator", _androidDeviceInfo.isPhysicalDevice.toString());
     }
     return FirebaseTrace(trace);
   }
 
+  ///
+  /// Gets a version string to use for the app.
+  ///
   String getVersion() {
     if (Platform.isAndroid) {
-      return androidDeviceInfo.version.release;
+      return _androidDeviceInfo.version.release;
     }
     if (Platform.isIOS) {
-      return iosDeviceInfo.utsname.version;
+      return _iosDeviceInfo.utsname.version;
     }
-    return packageInfo.version;
+    return _packageInfo.version;
   }
 }
 
+///
+/// Wrapped for the tracing in firebase to add in local stats and info
+/// on top.
+///
 class FirebaseTrace implements TraceProxy {
-  FirebaseTrace(this.trace);
+  /// Creates the firebase trace with the internal tracing piece.
+  FirebaseTrace(this._trace);
 
-  Trace trace;
+  final Trace _trace;
 
   @override
   void start() {
-    trace.start();
+    _trace.start();
   }
 
   @override
   void incrementCounter(String str) {
-    trace.incrementMetric(str, 1);
+    _trace.incrementMetric(str, 1);
   }
 
   @override
   void stop() {
-    trace.stop();
+    _trace.stop();
   }
 }

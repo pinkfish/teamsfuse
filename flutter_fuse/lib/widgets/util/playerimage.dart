@@ -5,33 +5,37 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 ///
 /// Image of the specific player.  Will make an oval clip rect of the specific
 /// radius and fill the image to fit that circle.
 ///
 class PlayerImage extends StatelessWidget {
+  /// Constructor.
   PlayerImage(
       {@required this.playerUid,
       Key key,
       this.backgroundColor,
       this.radius = 20.0})
-      : super(key: key);
+      : assert(playerUid != null),
+        super(key: key);
 
+  /// Radius of the circle to put the player image inside.
   final double radius;
+
+  /// Background color of the circle.
   final Color backgroundColor;
+
+  /// The playerUid to lookup.
   final String playerUid;
 
-  static Future<String> getImageUrl(
+  static Future<String> _getImageUrl(
       String playerUid, BuildContext context) async {
-    PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
-    print('Loading for player $playerUid');
+    var playerBloc = BlocProvider.of<PlayerBloc>(context);
     if (playerBloc.state.players.containsKey(playerUid)) {
-      Player player = playerBloc.state.players[playerUid];
+      var player = playerBloc.state.players[playerUid];
 
       if (player.photoUrl != null && player.photoUrl.isNotEmpty) {
-        print('Cached ${player.photoUrl}');
         return Future<String>(() => player.photoUrl);
       } else {
         return null;
@@ -39,7 +43,7 @@ class PlayerImage extends StatelessWidget {
     } else {
       playerBloc.add(PlayerLoadPlayer(playerUid: playerUid));
       await for (PlayerState state in playerBloc) {
-        Player player = state.getPlayer(playerUid);
+        var player = state.getPlayer(playerUid);
         if (player != null) {
           if (player.photoUrl != null && player.photoUrl.isNotEmpty) {
             return player.photoUrl;
@@ -62,14 +66,14 @@ class PlayerImage extends StatelessWidget {
         child: FittedBox(
           fit: BoxFit.cover,
           child: FutureBuilder(
-              future: getImageUrl(playerUid, context),
-              builder: (BuildContext context, AsyncSnapshot<String> snap) {
+              future: _getImageUrl(playerUid, context),
+              builder: (context, snap) {
                 return CachedNetworkImage(
                   useOldImageOnUrlChange: true,
                   imageUrl: snap.data ?? "",
-                  placeholder: (BuildContext context, String url) =>
+                  placeholder: (context, url) =>
                       Image.asset("assets/images/defaultavatar2.png"),
-                  errorWidget: (BuildContext context, String url, e) => Image(
+                  errorWidget: (context, url, e) => Image(
                       image:
                           const AssetImage("assets/images/defaultavatar2.png")),
                 );

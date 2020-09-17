@@ -33,7 +33,7 @@ class _SingleLeagueOrTournamentEventSeasonDeleted
 
 class _SingleLeagueOrTournamentEventSeasonDivisons
     extends SingleLeagueOrTournamentSeasonEvent {
-  Iterable<LeagueOrTournamentDivison> divisons;
+  final Iterable<LeagueOrTournamentDivison> divisons;
 
   _SingleLeagueOrTournamentEventSeasonDivisons({this.divisons});
   @override
@@ -223,6 +223,7 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
       case SingleLeagueOrTournamentSeasonBlocStateType.SaveDone:
         return SingleLeagueOrTournamentSeasonSaveDone.fromMap(json);
     }
+    return SingleLeagueOrTournamentSeasonUninitialized();
   }
 
   @override

@@ -134,7 +134,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
         }
       }
     }
-    for (String change in toRemove) {
+    for (String _ in toRemove) {
       coordinationBloc.loadingTrace?.incrementCounter("deletemessage");
     }
     print('Loaded unread');
@@ -169,7 +169,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
         }
       }
     }
-    for (String remove in toRemove) {
+    for (String _ in toRemove) {
       coordinationBloc.loadingTrace?.incrementCounter("deletemessage");
     }
     print('Loaded read');

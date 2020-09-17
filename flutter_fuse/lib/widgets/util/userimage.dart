@@ -8,15 +8,22 @@ import 'package:fusemodel/fusemodel.dart';
 /// Displays the user image.
 ///
 class UserImage extends StatelessWidget {
+  /// Constructor.
   UserImage(
     this.profile, {
     Key key,
     this.radius = 20.0,
     this.backgroundColor,
-  }) : super(key: key);
+  })  : assert(profile != null),
+        super(key: key);
 
+  /// The profile to display the user for.
   final FusedUserProfile profile;
+
+  /// The radius of the circle.
   final double radius;
+
+  /// The background color of the circle.
   final Color backgroundColor;
 
   @override
@@ -29,10 +36,10 @@ class UserImage extends StatelessWidget {
       backgroundColor: backgroundColor,
       radius: radius,
       child: BlocProvider(
-        create: (BuildContext context) => bloc,
+        create: (context) => bloc,
         child: BlocBuilder(
           cubit: bloc,
-          builder: (BuildContext context, SingleUserState state) {
+          builder: (context, state) {
             return AnimatedCrossFade(
               duration: Duration(seconds: 3),
               crossFadeState: state.players.length > 0 &&

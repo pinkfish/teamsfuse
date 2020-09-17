@@ -112,9 +112,6 @@ class SingleSeasonBloc
   }
 
   @override
-  SingleSeasonState get initialState {}
-
-  @override
   Stream<SingleSeasonState> mapEventToState(SingleSeasonEvent event) async* {
     if (event is _SingleNewTeamSeason) {
       yield (SingleSeasonLoaded.fromState(state)
@@ -199,6 +196,7 @@ class SingleSeasonBloc
       case SingleSeasonBlocStateType.SaveDone:
         return SingleSeasonSaveDone.fromMap(json);
     }
+    return SingleSeasonUninitialized();
   }
 
   @override

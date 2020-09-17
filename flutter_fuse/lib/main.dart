@@ -66,22 +66,16 @@ void main() async {
 
   // Start the loading, but don't block on it,
   // Load notifications after the app config has loaded.
-  AppConfiguration.instance.load().then((a) {
-    /*
-    CacheManager.getInstance().then((CacheManager man) {
-      print('got manager');
-    }).catchError((dynamic error) {
-      print('Got error $error');
-    });
+  var config = AppConfiguration();
+  config.load();
 
-     */
-  });
+  var loggingData = LoggingData();
 
   Analytics.analytics.logAppOpen();
 
   // Send error logs up to sentry.
   FlutterError.onError = (details) {
-    LoggingData.instance.logFlutterError(details);
+    loggingData.logFlutterError(details);
   };
 
   // License for the freepik picture.
@@ -91,7 +85,7 @@ void main() async {
   });
   trace.stop();
 
-  runApp(FlutterFuseApp(firestoreWrapper));
+  runApp(FlutterFuseApp(firestoreWrapper, config, loggingData));
 }
 
 ///

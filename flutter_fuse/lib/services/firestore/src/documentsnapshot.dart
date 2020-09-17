@@ -5,16 +5,18 @@ part of firestore_mobile;
 ///
 /// The data can be extracted with the data property or by using subscript
 /// syntax to access a specific field.
+@immutable
 class DocumentSnapshot extends wfs.DocumentSnapshotWrapper {
-  DocumentSnapshot({this.doc})
+  /// Constructor for the snapshot.
+  DocumentSnapshot(this._doc)
       : super(
-            documentID: doc.exists ? doc.documentID : null,
-            data: doc.exists ? doc.data() : null,
-            exists: doc.exists);
+            documentID: _doc.exists ? _doc.id : null,
+            data: _doc.exists ? _doc.data() : null,
+            exists: _doc.exists);
 
-  fs.DocumentSnapshot doc;
+  final fs.DocumentSnapshot _doc;
 
   /// The reference that produced this snapshot
   @override
-  DocumentReference get reference => DocumentReference(doc.reference);
+  DocumentReference get reference => DocumentReference(_doc.reference);
 }

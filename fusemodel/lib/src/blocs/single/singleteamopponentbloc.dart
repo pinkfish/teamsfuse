@@ -184,8 +184,6 @@ class SingleOpponentBloc
     _gameSub = null;
   }
 
-  @override
-  SingleOpponentState get initialState {}
 
   @override
   Stream<SingleOpponentState> mapEventToState(

@@ -15,12 +15,12 @@ class ClubSettings extends StatefulWidget {
   final String _teamUid;
 
   @override
-  ClubSettingsState createState() {
-    return ClubSettingsState();
+  _ClubSettingsState createState() {
+    return _ClubSettingsState();
   }
 }
 
-class ClubSettingsState extends State<ClubSettings> {
+class _ClubSettingsState extends State<ClubSettings> {
   void _addClub() {
     Navigator.pushNamed(context, "AddClub");
   }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
+
+import '../../services/messages.dart';
 
 ///
 /// Puts the name of the player in a nixe widget.
@@ -15,16 +15,16 @@ class PlayerName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+    var playerBloc = BlocProvider.of<PlayerBloc>(context);
 
     return BlocBuilder(
       cubit: playerBloc,
-      builder: (BuildContext context, PlayerState playerState) {
-        Player play = playerState.getPlayer(playerUid);
+      builder: (context, playerState) {
+        var play = playerState.getPlayer(playerUid);
 
         Widget widgetOne;
         Widget widgetTwo;
-        CrossFadeState state = CrossFadeState.showFirst;
+        var state = CrossFadeState.showFirst;
 
         if (play != null) {
           widgetTwo = Text(Messages.of(context).unknown, style: style);

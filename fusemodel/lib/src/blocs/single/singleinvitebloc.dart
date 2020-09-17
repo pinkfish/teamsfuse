@@ -137,7 +137,6 @@ class SingleInviteBloc
     await super.close();
   }
 
-
   Future<SingleInviteState> _acceptInviteToClub(
       SingleInviteEventAcceptInviteToClub event, Invite invite) async {
     if (invite is InviteToClub) {
@@ -483,6 +482,7 @@ class SingleInviteBloc
       case SingleInviteBlocStateType.SaveDone:
         return SingleInviteSaveDone.fromMap(json);
     }
+    return SingleInviteUninitialized();
   }
 
   @override

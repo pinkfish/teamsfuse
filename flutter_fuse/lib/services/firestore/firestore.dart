@@ -6,8 +6,8 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as fs;
 import 'package:firebase_auth/firebase_auth.dart' as fa;
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart' as st;
+import 'package:flutter/cupertino.dart';
 import 'package:fusemodel/firestore.dart' as wfs;
 
 part 'src/auth.dart';

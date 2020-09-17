@@ -8,6 +8,10 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
 
+///
+/// Handler for the message, this is the handler to deal with the
+/// incoming firebase messaing messages.
+///
 typedef Future<dynamic> MessageHandler(Map<String, dynamic> message);
 
 /// Implementation of the Firebase Cloud Messaging API for Flutter.
@@ -15,8 +19,10 @@ typedef Future<dynamic> MessageHandler(Map<String, dynamic> message);
 /// Your app should call [requestNotificationPermissions] first and then
 /// register handlers for incoming messages with [configure].
 class FirebaseMessaging {
+  /// The firstbase messaging entry point.
   factory FirebaseMessaging() => _instance;
 
+  /// Testing method.  DO NOT USE
   @visibleForTesting
   FirebaseMessaging.private(MethodChannel channel, Platform platform)
       : _channel = channel,
@@ -99,7 +105,7 @@ class FirebaseMessaging {
   Future<dynamic> _handleMethod(MethodCall call) async {
     switch (call.method) {
       case "onToken":
-        final String token = call.arguments as String;
+        var token = call.arguments as String;
         if (_token != token) {
           _token = token;
           _tokenStreamController.add(_token);
@@ -124,27 +130,39 @@ class FirebaseMessaging {
   }
 }
 
+///
+/// The notifications settings for iOS.
+///
 class IosNotificationSettings {
   IosNotificationSettings._fromMap(Map<String, bool> settings)
       : sound = settings['sound'],
         alert = settings['alert'],
         badge = settings['badge'];
 
+  /// The constructor.
   const IosNotificationSettings({
-    this.sound: true,
-    this.alert: true,
-    this.badge: true,
+    this.sound = true,
+    this.alert = true,
+    this.badge = true,
   });
 
+  /// Sound involved.
   final bool sound;
+
+  /// Alert involved
   final bool alert;
+
+  /// Badge involved.
   final bool badge;
 
-  @visibleForTesting
+  ///
+  /// Serialize the settings.
+  ///
   Map<String, dynamic> toMap() {
     return <String, bool>{'sound': sound, 'alert': alert, 'badge': badge};
   }
 
+  /// Pretty string to display.
   @override
   String toString() => 'PushNotificationSettings ${toMap()}';
 }

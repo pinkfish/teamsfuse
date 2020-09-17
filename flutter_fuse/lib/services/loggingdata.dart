@@ -6,14 +6,17 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:package_info/package_info.dart';
 import 'package:sentry/sentry.dart';
 
+///
+/// Logging data for the database.
+///
 class LoggingData extends LoggingDataBase {
+  /// Constrctor for the logging data.
   LoggingData() {
-    assert(debugMode = true);
-    DeviceInfoPlugin plugin = DeviceInfoPlugin();
+    var plugin = DeviceInfoPlugin();
     if (Platform.isIOS) {
-      tags["ios"] = Platform.operatingSystemVersion;
-      plugin.iosInfo.then((IosDeviceInfo info) {
-        extra["deviceInfo"] = <String, dynamic>{
+      _tags["ios"] = Platform.operatingSystemVersion;
+      plugin.iosInfo.then((info) {
+        _extra["deviceInfo"] = <String, dynamic>{
           "model": info.model,
           "name": info.name,
           "systemName": info.systemName,
@@ -28,15 +31,15 @@ class LoggingData extends LoggingDataBase {
             "machine": info.utsname.machine,
           }
         };
-        tags["model"] = info.model;
-        tags["realDevice"] = info.isPhysicalDevice.toString();
-        realDevice = info.isPhysicalDevice;
+        _tags["model"] = info.model;
+        _tags["realDevice"] = info.isPhysicalDevice.toString();
+        _realDevice = info.isPhysicalDevice;
       });
     }
     if (Platform.isAndroid) {
-      tags["android"] = Platform.operatingSystemVersion;
-      plugin.androidInfo.then((AndroidDeviceInfo info) {
-        extra["deviceInfo"] = <String, dynamic>{
+      _tags["android"] = Platform.operatingSystemVersion;
+      plugin.androidInfo.then((info) {
+        _extra["deviceInfo"] = <String, dynamic>{
           "version": <String, dynamic>{
             "baseOS": info.version.baseOS,
             "codename": info.version.codename,
@@ -61,61 +64,63 @@ class LoggingData extends LoggingDataBase {
           "tags": info.tags,
           "type": info.type,
         };
-        tags["model"] = info.model;
-        tags["realDevice"] = info.isPhysicalDevice.toString();
-        realDevice = info.isPhysicalDevice;
+        _tags["model"] = info.model;
+        _tags["realDevice"] = info.isPhysicalDevice.toString();
+        _realDevice = info.isPhysicalDevice;
       });
     }
-    tags["locale"] = Platform.localeName;
-    packageInfo = PackageInfo(
+    _tags["locale"] = Platform.localeName;
+    _packageInfo = PackageInfo(
         version: "unknown", packageName: "unknown", buildNumber: "unknown");
-    PackageInfo.fromPlatform().then((PackageInfo info) {
-      tags["buildNumber"] = info.buildNumber;
-      tags["packageName"] = info.packageName;
-      packageInfo = info;
+    PackageInfo.fromPlatform().then((info) {
+      _tags["buildNumber"] = info.buildNumber;
+      _tags["packageName"] = info.packageName;
+      _packageInfo = info;
     });
   }
 
-  static LoggingData instance = LoggingData();
+  final Map<String, dynamic> _extra = <String, dynamic>{};
+  final Map<String, String> _tags = <String, String>{};
+  PackageInfo _packageInfo;
+  bool _realDevice = true;
+  final bool _debugMode = false;
 
-  Map<String, dynamic> extra = <String, dynamic>{};
-  Map<String, String> tags = <String, String>{};
-  PackageInfo packageInfo;
-  bool realDevice = true;
-  bool debugMode = false;
-
-  final SentryClient sentry = SentryClient(
+  final SentryClient _sentry = SentryClient(
       dsn:
           'https://5691b440eb64430d9ba2917166fa17a1:7978cf6a0a5a4f7ab7702a51f524620a@sentry.io/1200691');
 
-  set lastPath(String path) => extra["lastPath"] = path;
-  String get lastPath => extra["lastPath"].toString();
+  /// Sets the last path used.
+  set lastPath(String path) => _extra["lastPath"] = path;
 
+  /// Gets the last path used.
+  String get lastPath => _extra["lastPath"].toString();
+
+  /// Logs a flutter error up to the logging service.
   void logFlutterError(FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details, forceReport: true);
     // Don't capture on emulators.
-    if (realDevice && !debugMode) {
-      final Event event = Event(
-          release: LoggingData.instance.packageInfo.version,
+    if (_realDevice && !_debugMode) {
+      var event = Event(
+          release: _packageInfo.version,
           exception: details.exception,
           stackTrace: details.stack,
-          extra: LoggingData.instance.extra,
-          tags: LoggingData.instance.tags);
-      sentry.capture(event: event);
+          extra: _extra,
+          tags: _tags);
+      _sentry.capture(event: event);
     }
   }
 
   @override
   void logError(FusedErrorDetails details) {
     // Don't capture on emulators.
-    if (realDevice && !debugMode) {
-      final Event event = Event(
-          release: LoggingData.instance.packageInfo.version,
+    if (_realDevice && !_debugMode) {
+      var event = Event(
+          release: _packageInfo.version,
           exception: details.exception,
           stackTrace: details.stack,
-          extra: LoggingData.instance.extra,
-          tags: LoggingData.instance.tags);
-      sentry.capture(event: event);
+          extra: _extra,
+          tags: _tags);
+      _sentry.capture(event: event);
     }
   }
 }

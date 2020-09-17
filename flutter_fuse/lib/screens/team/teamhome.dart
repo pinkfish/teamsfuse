@@ -36,7 +36,7 @@ class TeamHomeScreen extends StatelessWidget {
                 textAlign: TextAlign.start,
                 style: Theme.of(context)
                     .textTheme
-                    .subhead
+                    .subtitle1
                     .copyWith(fontWeight: FontWeight.bold),
               ),
             ),

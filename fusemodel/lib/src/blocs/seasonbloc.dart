@@ -29,15 +29,6 @@ class _SeasonLoggedOut extends SeasonEvent {
   List<Object> get props => [];
 }
 
-class _SeasonAdminUpdated extends SeasonEvent {
-  final Map<String, Season> adminSeasons;
-
-  _SeasonAdminUpdated({@required this.adminSeasons});
-
-  @override
-  List<Object> get props => [adminSeasons];
-}
-
 class _SeasonUpdate extends SeasonEvent {
   final BuiltMap<String, Season> newSeasons;
 
@@ -94,9 +85,6 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
   }
 
   @override
-  void onClubUpdated(FirestoreWrappedData data) {}
-
-  @override
   Stream<SeasonState> mapEventToState(SeasonEvent event) async* {
     // Start the firestore loading.
     if (event is _SeasonFirestoreStart) {
@@ -149,12 +137,12 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
         return SeasonUninitialized();
       case SeasonBlocStateType.Loaded:
         // Starting, nothing loaded yet.
-        TraceProxy SeasonsTrace =
+        TraceProxy seasonsTrace =
             coordinationBloc.analyticsSubsystem.newTrace("SeasonData");
-        SeasonsTrace.start();
+        seasonsTrace.start();
         var loaded = SeasonLoaded.fromMap(json);
         print('End Seasons ');
-        SeasonsTrace.stop();
+        seasonsTrace.stop();
         return loaded;
       default:
         return SeasonUninitialized();

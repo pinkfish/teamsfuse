@@ -37,11 +37,10 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
-    List<DropdownMenuItem<RoleInTeam>> widgets =
-        <DropdownMenuItem<RoleInTeam>>[];
-    RoleInTeam.values.forEach((RoleInTeam role) {
+    var widgets = <DropdownMenuItem<RoleInTeam>>[];
+    for (var role in RoleInTeam.values) {
       widgets.add(
         DropdownMenuItem<RoleInTeam>(
           child: Text(
@@ -50,14 +49,14 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
           value: role,
         ),
       );
-    });
+    }
 
     return AlertDialog(
       title: Text(messages.roleselect),
       content: DropdownButton<RoleInTeam>(
         items: widgets,
         value: _myRole,
-        onChanged: (RoleInTeam role) {
+        onChanged: (role) {
           print('changed $role');
           setState(() {
             _myRole = role;
@@ -84,20 +83,30 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
   }
 }
 
+///
+/// Shows the details of the player.
+///
 class PlayerDetailsScreen extends StatelessWidget {
+  /// Constrcutor.
   PlayerDetailsScreen(this.teamUid, this.seasonUid, this.playerUid);
 
+  /// The teamUid to get the player details for.
   final String teamUid;
+
+  /// The seasonUid for the player to show details.
   final String seasonUid;
+
+  /// The player itself to open up and view.
   final String playerUid;
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void _changeRole(BuildContext context, SingleTeamSeasonPlayerBloc bloc,
       SingleTeamSeasonPlayerState state) async {
-    SeasonPlayer player = state.seasonPlayer;
-    RoleInTeam role = await showDialog(
+    var player = state.seasonPlayer;
+    var role = await showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return _RoleInTeamAlertDialog(player.role);
       },
     );
@@ -119,21 +128,21 @@ class PlayerDetailsScreen extends StatelessWidget {
       BuildContext context,
       SingleTeamSeasonPlayerState playerState,
       SingleTeamSeasonPlayerBloc playerBloc) async {
-    Messages mess = Messages.of(context);
+    var mess = Messages.of(context);
 
     var bloc = SinglePlayerBloc(
         playerBloc: playerBloc.playerBloc, playerUid: playerBloc.playerUid);
-    bool result = await showDialog<bool>(
+    var result = await showDialog<bool>(
         context: context,
         barrierDismissible: false, // user must tap button!
-        builder: (BuildContext context) {
+        builder: (context) {
           return AlertDialog(
             title: Text(mess.deleteplayer),
             content: Scrollbar(
               child: SingleChildScrollView(
                 child: BlocBuilder(
                     cubit: bloc,
-                    builder: (BuildContext context, SinglePlayerState state) {
+                    builder: (context, state) {
                       var arr = <Widget>[];
 
                       if (state is SinglePlayerLoaded) {
@@ -150,16 +159,15 @@ class PlayerDetailsScreen extends StatelessWidget {
             ),
             actions: <Widget>[
               FlatButton(
-                child:
-                    Text(MaterialLocalizations.of(context).okButtonLabel),
+                child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   // Do the delete.
                   Navigator.of(context).pop(true);
                 },
               ),
               FlatButton(
-                child: Text(
-                    MaterialLocalizations.of(context).cancelButtonLabel),
+                child:
+                    Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
                   Navigator.of(context).pop(false);
                 },
@@ -182,14 +190,14 @@ class PlayerDetailsScreen extends StatelessWidget {
       SingleTeamState teamState,
       SingleTeamSeasonPlayerBloc playerBloc,
       SinglePlayerState singlePlayerState) {
-    List<Widget> ret = <Widget>[];
-    final Size screenSize = MediaQuery.of(context).size;
-    Messages messages = Messages.of(context);
-    ThemeData theme = Theme.of(context);
+    var ret = <Widget>[];
+    var screenSize = MediaQuery.of(context).size;
+    var messages = Messages.of(context);
+    var theme = Theme.of(context);
 
-    double width =
+    var width =
         (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0;
-    double height = screenSize.height / 4 + 20;
+    var height = screenSize.height / 4 + 20;
 
     ret.add(
       PlayerImage(
@@ -209,20 +217,19 @@ class PlayerDetailsScreen extends StatelessWidget {
 
     if (singlePlayerState.player != null &&
         singlePlayerState.player.users != null) {
-      for (String userUid in singlePlayerState.player.users.keys) {
-        PlayerUser player = singlePlayerState.player.users[userUid];
+      for (var userUid in singlePlayerState.player.users.keys) {
+        var player = singlePlayerState.player.users[userUid];
         ret.add(
           SingleProfileProvider(
             userUid: userUid,
-            builder: (BuildContext context, SingleProfileBloc singleUserBloc) =>
-                BlocBuilder(
+            builder: (context, singleUserBloc) => BlocBuilder(
               cubit: singleUserBloc,
-              builder: (BuildContext context, SingleProfileState userState) {
+              builder: (context, userState) {
                 if (userState is SingleProfileUninitialized) {
                   return Text(messages.loading);
                 }
                 if (userState is SingleProfileLoaded) {
-                  FusedUserProfile profile = userState.profile;
+                  var profile = userState.profile;
 
                   if (profile.phoneNumber != null &&
                       profile.phoneNumber.isNotEmpty) {
@@ -242,25 +249,19 @@ class PlayerDetailsScreen extends StatelessWidget {
                                 icon: const Icon(Icons.sms),
                                 color: Theme.of(context).primaryColorDark,
                                 onPressed: () =>
-                                    launch("sms:" + profile.phoneNumber),
+                                    launch("sms:${profile.phoneNumber}"),
                               ),
                               IconButton(
                                 icon: const Icon(Icons.email),
                                 color: Theme.of(context).primaryColorDark,
                                 onPressed: () =>
-                                    launch("mailto:" + profile.email),
+                                    launch("mailto:${profile.email}"),
                               ),
                               IconButton(
                                 icon: const Icon(Icons.message),
                                 color: Theme.of(context).primaryColorDark,
-                                onPressed: () => Navigator.pushNamed(
-                                    context,
-                                    "/AddMessagePlayer/" +
-                                        teamUid +
-                                        "/" +
-                                        seasonUid +
-                                        "/" +
-                                        playerUid),
+                                onPressed: () => Navigator.pushNamed(context,
+                                    "/AddMessagePlayer/$teamUid/$seasonUid/$playerUid"),
                               )
                             ],
                           )
@@ -284,7 +285,7 @@ class PlayerDetailsScreen extends StatelessWidget {
       if (!singlePlayerState.invitesLoaded &&
           singlePlayerState.invites.length != 0) {
         ret.add(Column(
-          children: singlePlayerState.invites.map((InviteToPlayer invite) {
+          children: singlePlayerState.invites.map((invite) {
             return ListTile(
               leading: const Icon(Icons.person_add),
               title: Text(Messages.of(context).invitedemail(invite)),
@@ -299,9 +300,9 @@ class PlayerDetailsScreen extends StatelessWidget {
     }
 
     // Find which seasons they are in.
-    for (Season season in teamState.fullSeason) {
-      if (season.players.any((SeasonPlayer player) =>
-          player.playerUid == playerState.seasonPlayer.playerUid)) {
+    for (var season in teamState.fullSeason) {
+      if (season.players.any(
+          (player) => player.playerUid == playerState.seasonPlayer.playerUid)) {
         ret.add(
           ListTile(
             leading: const Icon(CommunityIcons.tshirtCrew),
@@ -338,36 +339,29 @@ class PlayerDetailsScreen extends StatelessWidget {
 
   void _onInvite(BuildContext context, SingleTeamSeasonPlayerState state) {
     Navigator.pushNamed(
-        context, "AddInviteToPlayer/" + state.seasonPlayer.playerUid);
+        context, "AddInviteToPlayer/${state.seasonPlayer.playerUid}");
   }
 
   void _editPlayer(BuildContext context, String playrrUid) {
-    Navigator.pushNamed(context, "EditPlayer/" + playerUid);
+    Navigator.pushNamed(context, "EditPlayer/$playerUid");
   }
 
   @override
   Widget build(BuildContext context) {
-    String userUid =
-        BlocProvider.of<AuthenticationBloc>(context).currentUser.uid;
+    var userUid = BlocProvider.of<AuthenticationBloc>(context).currentUser.uid;
 
     return SingleTeamProvider(
       teamUid: teamUid,
-      builder: (BuildContext context, SingleTeamBloc teamBloc) =>
-          SinglePlayerProvider(
+      builder: (context, teamBloc) => SinglePlayerProvider(
         playerUid: playerUid,
-        builder: (BuildContext context, SinglePlayerBloc singlePlayerBloc) =>
-            SingleTeamSeasonPlayerProvider(
+        builder: (context, singlePlayerBloc) => SingleTeamSeasonPlayerProvider(
           seasonUid: seasonUid,
           playerUid: playerUid,
-          builder: (BuildContext context,
-                  SingleTeamSeasonPlayerBloc seasonPlayerBloc) =>
-              BlocBuilder(
+          builder: (context, seasonPlayerBloc) => BlocBuilder(
             cubit: teamBloc,
-            builder: (BuildContext context, SingleTeamState teamState) =>
-                BlocListener(
+            builder: (context, teamState) => BlocListener(
               cubit: seasonPlayerBloc,
-              listener: (BuildContext context,
-                  SingleTeamSeasonPlayerState playerState) {
+              listener: (context, playerState) {
                 if (playerState is SingleTeamSeasonPlayerDeleted) {
                   Navigator.pop(context);
                 }
@@ -377,8 +371,7 @@ class PlayerDetailsScreen extends StatelessWidget {
               },
               child: BlocListener(
                 cubit: singlePlayerBloc,
-                listener: (BuildContext context,
-                    SinglePlayerState singlePlayerState) {
+                listener: (context, singlePlayerState) {
                   if (singlePlayerState is SinglePlayerLoaded) {
                     singlePlayerBloc.add(SinglePlayerLoadInvites());
                   }
@@ -388,15 +381,12 @@ class PlayerDetailsScreen extends StatelessWidget {
                 },
                 child: BlocBuilder(
                   cubit: seasonPlayerBloc,
-                  builder: (BuildContext context,
-                          SingleTeamSeasonPlayerState seasonPlayerState) =>
-                      BlocBuilder(
+                  builder: (context, seasonPlayerState) => BlocBuilder(
                     cubit: singlePlayerBloc,
-                    builder: (BuildContext context,
-                        SinglePlayerState singlePlayerState) {
-                      Messages messages = Messages.of(context);
+                    builder: (context, singlePlayerState) {
+                      var messages = Messages.of(context);
                       if (teamState is SingleTeamLoaded) {
-                        List<Widget> actions = <Widget>[];
+                        var actions = <Widget>[];
                         if (teamState.isAdmin()) {
                           actions.add(
                             FlatButton(
@@ -407,7 +397,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                                 messages.addinvite,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .subhead
+                                    .subtitle1
                                     .copyWith(color: Colors.white),
                               ),
                             ),

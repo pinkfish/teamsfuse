@@ -93,7 +93,7 @@ class SingleProfileBloc
       try {
         FusedUserProfile profile = event.profile;
         if (event.image != null) {
-          var url = coordinationBloc.databaseUpdateModel
+          coordinationBloc.databaseUpdateModel
               .updatePlayerImage(playerBloc.state.me.uid, event.image);
           //profile = profile.rebuild((b) b..)
         }
@@ -133,6 +133,7 @@ class SingleProfileBloc
       case SingleProfileBlocStateType.SaveDone:
         return SingleProfileSaveDone.fromMap(json);
     }
+    return SingleProfileUninitialized();
   }
 
   @override

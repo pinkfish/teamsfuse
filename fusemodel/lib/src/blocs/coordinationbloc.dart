@@ -62,7 +62,7 @@ class CoordinationStateLoaded extends CoordinationState {
 /// Logged out amd not doing any loading.
 ///
 class CoordinationStateLoggedOut extends CoordinationState {
-  CoordinationStateLoggedOut(@required BuiltSet<BlocsToLoad> newToLoad)
+  CoordinationStateLoggedOut(BuiltSet<BlocsToLoad> newToLoad)
       : super(loaded: BuiltSet(), uid: '', toLoad: newToLoad);
 
   CoordinationState update(BuiltSet<BlocsToLoad> newToLoad) {
@@ -74,7 +74,7 @@ class CoordinationStateLoggedOut extends CoordinationState {
 /// Before we have worked out if we are logged in or logged out.
 ///
 class CoordinationStateUninitialized extends CoordinationState {
-  CoordinationStateUninitialized(@required BuiltSet<BlocsToLoad> newToLoad)
+  CoordinationStateUninitialized(BuiltSet<BlocsToLoad> newToLoad)
       : super(loaded: BuiltSet(), uid: '', toLoad: newToLoad);
 
   CoordinationState update(BuiltSet<BlocsToLoad> newToLoad) {
@@ -185,7 +185,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
               state.loaded.rebuild((b) => b..add(event.loaded));
           var loadedLeft = Set.from(state.toLoad);
           loadedLeft.removeAll(loaded);
-          print("Update loaded ${event.loaded} ${loadedLeft}");
+          print("Update loaded ${event.loaded} $loadedLeft");
           if (loaded.containsAll(state.toLoad)) {
             loadingTrace.stop();
             loadingTrace = null;

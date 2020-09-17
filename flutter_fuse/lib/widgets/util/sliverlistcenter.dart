@@ -19,23 +19,22 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
 
   @override
   SliverListCenter get widget {
-    SliverListCenter bing = super.widget as SliverListCenter;
+    var bing = super.widget as SliverListCenter;
     return bing;
   }
 
   @override
   RenderSliverMultiBoxAdaptor get renderObject {
-    RenderSliverMultiBoxAdaptor frog =
-        super.renderObject as RenderSliverMultiBoxAdaptor;
+    var frog = super.renderObject as RenderSliverMultiBoxAdaptor;
     return frog;
   }
 
   @override
   void update(covariant SliverListCenter newWidget) {
-    final SliverListCenter oldWidget = widget;
+    var oldWidget = widget;
     super.update(newWidget);
-    final SliverChildDelegate newDelegate = newWidget.delegate;
-    final SliverChildDelegate oldDelegate = oldWidget.delegate;
+    var newDelegate = newWidget.delegate;
+    var oldDelegate = oldWidget.delegate;
     if (newDelegate != oldDelegate &&
         (newDelegate.runtimeType != oldDelegate.runtimeType ||
             newDelegate.shouldRebuild(oldDelegate))) {
@@ -62,21 +61,21 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
     _currentBeforeChildMe = null;
     assert(_currentlyUpdatingChildIndex == null);
     try {
-      int firstIndex = _childElementsMe.firstKey();
-      int lastIndex = _childElementsMe.lastKey();
+      var firstIndex = _childElementsMe.firstKey();
+      var lastIndex = _childElementsMe.lastKey();
       if (_childElementsMe.isEmpty) {
         firstIndex = 2;
         lastIndex = 2;
       } else if (_didUnderflow) {
         lastIndex += 1;
       }
-      for (int index = firstIndex; index <= lastIndex; ++index) {
+      for (var index = firstIndex; index <= lastIndex; ++index) {
         _currentlyUpdatingChildIndex = index;
-        final Element newChild =
+        var newChild =
             updateChild(_childElementsMe[index], _build(index), index);
         if (newChild != null) {
           _childElementsMe[index] = newChild;
-          RenderBox box = newChild.renderObject as RenderBox;
+          var box = newChild.renderObject as RenderBox;
           _currentBeforeChildMe = box;
         } else {
           _childElementsMe.remove(index);
@@ -96,9 +95,9 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
   void createChild(int index, {@required RenderBox after}) {
     assert(_currentlyUpdatingChildIndex == null);
     owner.buildScope(this, () {
-      final bool insertFirst = after == null;
+      var insertFirst = after == null;
       assert(insertFirst || _childElementsMe[index - 1] != null);
-      RenderBox box = insertFirst
+      var box = insertFirst
           ? null
           : _childElementsMe[index - 1].renderObject as RenderBox;
       _currentBeforeChildMe = box;
@@ -123,19 +122,19 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
     assert(child.slot != null);
     assert(_childElementsMe.containsKey(child.slot));
     _childElementsMe.remove(child.slot);
+    super.forgetChild(child);
   }
 
   @override
   void removeChild(RenderBox child) {
-    final int index = renderObject.indexOf(child);
+    var index = renderObject.indexOf(child);
     assert(_currentlyUpdatingChildIndex == null);
     assert(index >= 0);
     owner.buildScope(this, () {
       assert(_childElementsMe.containsKey(index));
       try {
         _currentlyUpdatingChildIndex = index;
-        final Element result =
-            updateChild(_childElementsMe[index], null, index);
+        var result = updateChild(_childElementsMe[index], null, index);
         assert(result == null);
       } finally {
         _currentlyUpdatingChildIndex = null;
@@ -151,17 +150,17 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
     double leadingScrollOffset,
     double trailingScrollOffset,
   ) {
-    final int childCount = this.childCount;
+    var childCount = this.childCount;
     if (childCount == null) {
       return double.infinity;
     }
     if (lastIndex == childCount - 1) {
       return trailingScrollOffset;
     }
-    final int reifiedCount = lastIndex - firstIndex + 1;
-    final double averageExtent =
+    var reifiedCount = lastIndex - firstIndex + 1;
+    var averageExtent =
         (trailingScrollOffset - leadingScrollOffset) / reifiedCount;
-    final int remainingCount = childCount - lastIndex - 1;
+    var remainingCount = childCount - lastIndex - 1;
     return trailingScrollOffset + averageExtent * remainingCount;
   }
 
@@ -199,8 +198,8 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
   @override
   void didFinishLayout() {
     assert(debugAssertChildListLocked());
-    final int firstIndex = _childElementsMe.firstKey() ?? 0;
-    final int lastIndex = _childElementsMe.lastKey() ?? 0;
+    var firstIndex = _childElementsMe.firstKey() ?? 0;
+    var lastIndex = _childElementsMe.lastKey() ?? 0;
     widget.delegate.didFinishLayout(firstIndex, lastIndex);
   }
 
@@ -215,8 +214,7 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
   @override
   void didAdoptChild(RenderBox child) {
     assert(_currentlyUpdatingChildIndex != null);
-    final SliverMultiBoxAdaptorParentData childParentData =
-        child.parentData as SliverMultiBoxAdaptorParentData;
+    var childParentData = child.parentData as SliverMultiBoxAdaptorParentData;
     childParentData.index = _currentlyUpdatingChildIndex;
   }
 
@@ -233,11 +231,10 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
     print('$_currentlyUpdatingChildIndex $slot');
     assert(_currentlyUpdatingChildIndex == slot);
     assert(renderObject.debugValidateChild(child));
-    RenderBox box = child as RenderBox;
+    var box = child as RenderBox;
     renderObject.insert(box, after: _currentBeforeChildMe);
     assert(() {
-      final SliverMultiBoxAdaptorParentData childParentData =
-          child.parentData as SliverMultiBoxAdaptorParentData;
+      var childParentData = child.parentData as SliverMultiBoxAdaptorParentData;
       assert(slot == childParentData.index);
       return true;
     }());
@@ -253,7 +250,7 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
   @override
   void removeChildRenderObject(covariant RenderObject child) {
     assert(_currentlyUpdatingChildIndex != null);
-    RenderBox box = child as RenderBox;
+    var box = child as RenderBox;
     renderObject.remove(box);
   }
 
@@ -261,7 +258,7 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
   void visitChildren(ElementVisitor visitor) {
     // The toList() is to make a copy so that the underlying list can be modified by
     // the visitor:
-    assert(!_childElementsMe.values.any((Element child) => child == null));
+    assert(!_childElementsMe.values.any((child) => child == null));
     _childElementsMe.values.toList().forEach(visitor);
   }
 }
@@ -307,15 +304,15 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
     childManager.didStartLayout();
     childManager.setDidUnderflow(false);
 
-    final double scrollOffset = constraints.scrollOffset;
+    var scrollOffset = constraints.scrollOffset;
     assert(scrollOffset >= 0.0);
-    final double remainingPaintExtent = constraints.remainingPaintExtent;
+    var remainingPaintExtent = constraints.remainingPaintExtent;
     assert(remainingPaintExtent >= 0.0);
-    final double targetEndScrollOffset = scrollOffset + remainingPaintExtent;
-    final BoxConstraints childConstraints = constraints.asBoxConstraints();
-    int leadingGarbage = 0;
-    int trailingGarbage = 0;
-    bool reachedEnd = false;
+    var targetEndScrollOffset = scrollOffset + remainingPaintExtent;
+    var childConstraints = constraints.asBoxConstraints();
+    var leadingGarbage = 0;
+    var trailingGarbage = 0;
+    var reachedEnd = false;
 
     // This algorithm in principle is straight-forward: find the first child
     // that overlaps the given scrollOffset, creating more children at the top
@@ -354,8 +351,8 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
     RenderBox leadingChildWithLayout, trailingChildWithLayout;
 
     // Find the last child that is at or before the scrollOffset.
-    RenderBox earliestUsefulChild = firstChild;
-    for (double earliestScrollOffset = childScrollOffset(earliestUsefulChild);
+    var earliestUsefulChild = firstChild;
+    for (var earliestScrollOffset = childScrollOffset(earliestUsefulChild);
         earliestScrollOffset > scrollOffset;
         earliestScrollOffset = childScrollOffset(earliestUsefulChild)) {
       // We have to add children before the earliestUsefulChild.
@@ -363,7 +360,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
           insertAndLayoutLeadingChild(childConstraints, parentUsesSize: true);
 
       if (earliestUsefulChild == null) {
-        final SliverMultiBoxAdaptorParentData childParentData =
+        var childParentData =
             firstChild.parentData as SliverMultiBoxAdaptorParentData;
         childParentData.layoutOffset = 0.0;
         //print("earlierusefulchild ${childParentData.layoutOffset}");
@@ -385,7 +382,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
         }
       }
 
-      final double firstChildScrollOffset =
+      var firstChildScrollOffset =
           earliestScrollOffset - paintExtentOf(firstChild);
       if (firstChildScrollOffset < 0.0) {
         // The first child doesn't fit within the viewport (underflow) and
@@ -396,7 +393,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
         // TODO(hansmuller): do this work incrementally, instead of all at once,
         // i.e. find a way to avoid visiting ALL of the children whose offset
         // is < 0 before returning for the scroll correction.
-        double correction = 0.0;
+        var correction = 0.0;
         while (earliestUsefulChild != null) {
           assert(firstChild == earliestUsefulChild);
           correction += paintExtentOf(firstChild);
@@ -406,7 +403,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
         geometry = SliverGeometry(
           scrollOffsetCorrection: correction - earliestScrollOffset,
         );
-        final SliverMultiBoxAdaptorParentData childParentData =
+        var childParentData =
             firstChild.parentData as SliverMultiBoxAdaptorParentData;
         childParentData.layoutOffset = 0.0;
         //print("correctring here ${childParentData.layoutOffset} == 0.0");
@@ -414,7 +411,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
         return;
       }
 
-      final SliverMultiBoxAdaptorParentData childParentData =
+      var childParentData =
           earliestUsefulChild.parentData as SliverMultiBoxAdaptorParentData;
       childParentData.layoutOffset = firstChildScrollOffset;
       //print("layout offset update ${childParentData.layoutOffset} == 0.0");
@@ -446,10 +443,10 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
     // been laid out, and is in fact our leadingChildWithLayout. It's possible
     // that some children beyond that one have also been laid out.
 
-    bool inLayoutRange = true;
-    RenderBox child = earliestUsefulChild;
-    int index = indexOf(child);
-    double endScrollOffset = childScrollOffset(child) + paintExtentOf(child);
+    var inLayoutRange = true;
+    var child = earliestUsefulChild;
+    var index = indexOf(child);
+    var endScrollOffset = childScrollOffset(child) + paintExtentOf(child);
     bool advance() {
       // returns true if we advanced, false if we have no more children
       // This function is used in two different places below, to avoid code duplication.
@@ -482,8 +479,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
         trailingChildWithLayout = child;
       }
       assert(child != null);
-      final SliverMultiBoxAdaptorParentData childParentData =
-          child.parentData as SliverMultiBoxAdaptorParentData;
+      var childParentData = child.parentData as SliverMultiBoxAdaptorParentData;
       childParentData.layoutOffset = endScrollOffset;
       assert(childParentData.index == index);
       endScrollOffset = childScrollOffset(child) + paintExtentOf(child);
@@ -500,8 +496,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
         // we want to make sure we keep the last child around so we know the end scroll offset
         collectGarbage(leadingGarbage - 1, 0);
         assert(firstChild == lastChild);
-        final double extent =
-            childScrollOffset(lastChild) + paintExtentOf(lastChild);
+        var extent = childScrollOffset(lastChild) + paintExtentOf(lastChild);
         geometry = SliverGeometry(
           scrollExtent: extent,
           paintExtent: 0.0,
@@ -549,7 +544,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
       assert(estimatedMaxScrollOffset >=
           endScrollOffset - childScrollOffset(firstChild));
     }
-    final double paintExtent = calculatePaintOffset(
+    var paintExtent = calculatePaintOffset(
       constraints,
       from: childScrollOffset(firstChild),
       to: endScrollOffset,
@@ -566,8 +561,9 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
 
     // We may have started the layout while scrolled to the end, which would not
     // expose a child.
-    if (estimatedMaxScrollOffset == endScrollOffset)
+    if (estimatedMaxScrollOffset == endScrollOffset) {
       childManager.setDidUnderflow(true);
+    }
     childManager.didFinishLayout();
   }
 
@@ -592,8 +588,7 @@ class SliverListCenter extends RenderObjectWidget {
 
   @override
   RenderSliverCenterList createRenderObject(BuildContext context) {
-    final CenterSliverMultiBoxAdaptorElement element =
-        context as CenterSliverMultiBoxAdaptorElement;
+    var element = context as CenterSliverMultiBoxAdaptorElement;
     return RenderSliverCenterList(
         childManager: element, startIndex: startIndex);
   }

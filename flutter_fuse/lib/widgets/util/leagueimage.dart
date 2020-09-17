@@ -19,8 +19,8 @@ class LeagueImage extends StatelessWidget {
       this.color,
       this.colorBlendMode,
       this.fit,
-      this.alignment: Alignment.center,
-      this.repeat: ImageRepeat.noRepeat,
+      this.alignment = Alignment.center,
+      this.repeat = ImageRepeat.noRepeat,
       this.matchTextDirection: false})
       : super(
           key: key,
@@ -41,7 +41,7 @@ class LeagueImage extends StatelessWidget {
   Widget build(BuildContext context) {
     var blocBuilder = BlocBuilder(
         cubit: BlocProvider.of<LeagueOrTournamentBloc>(context),
-        builder: (BuildContext context, LeagueOrTournamentState leagueState) {
+        builder: (context, leagueState) {
           Widget inner;
           if (leagueState is LeagueOrTournamentLoaded) {
             if (leagueState.leagueOrTournaments

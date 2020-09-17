@@ -267,6 +267,7 @@ class SingleGameBloc
       case SingleGameBlocStateType.SaveDone:
         return SingleGameSaveDone.fromMap(json);
     }
+    return SingleGameUninitialized();
   }
 
   @override

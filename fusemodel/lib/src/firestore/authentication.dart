@@ -210,10 +210,8 @@ class UserAuthImpl {
     if (forceProfile) {
       Future<DocumentSnapshotWrapper> ref =
           wrapper.collection(USER_DATA_COLLECTION).document(input.uid).get();
-      Map<String, dynamic> data;
       if (forceProfile) {
         DocumentSnapshotWrapper doc = await ref;
-        data = doc.data;
         FusedUserProfileBuilder profile =
             FusedUserProfile.fromMap(doc.data).toBuilder();
         profile.uid = user.uid;
