@@ -1,12 +1,12 @@
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:fusemodel/blocs.dart';
 
+import '../../services/messages.dart';
 import '../blocs/singleseasonprovider.dart';
+import '../blocs/singleteamprovider.dart';
+import '../util/teamimage.dart';
 
 ///
 /// The tile associated with the team, shows bonus details about the

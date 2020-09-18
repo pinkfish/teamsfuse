@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/playerimage.dart';
-import 'package:flutter_fuse/widgets/util/playername.dart';
+import '../../services/messages.dart';
+import '../util/playerimage.dart';
+import '../util/playername.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 

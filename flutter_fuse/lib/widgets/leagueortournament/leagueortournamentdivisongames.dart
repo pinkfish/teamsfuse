@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/leagueteampicker.dart';
-import 'package:flutter_fuse/widgets/games/gamesharedcard.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:intl/intl.dart';
 
+import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentdivisonprovider.dart';
 import '../blocs/singleleagueortournamentprovider.dart';
 import '../blocs/singleleagueortournamentseasonprovider.dart';
+import '../form/leagueteampicker.dart';
+import '../games/gamesharedcard.dart';
+import '../util/leagueimage.dart';
 
 ///
 /// The details section to display on a page in the app about the

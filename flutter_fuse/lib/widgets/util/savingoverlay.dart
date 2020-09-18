@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
+
+import '../../services/messages.dart';
 
 ///
 /// Shows an overlay over the main class when it is saving with some useful

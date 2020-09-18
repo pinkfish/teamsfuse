@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
 import 'package:fusemodel/blocs.dart';
+
+import '../../services/messages.dart';
+import '../../services/validations.dart';
 
 class AddInviteToTeamDialog extends Dialog {
   final TextEditingController _controller = TextEditingController();

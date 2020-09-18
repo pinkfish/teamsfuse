@@ -542,7 +542,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
                     children: <Widget>[
                       Text(
                         Messages.of(context).forpts,
-                        style: Theme.of(context).textTheme.sutitle1.copyWith(
+                        style: Theme.of(context).textTheme.subtitle1.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).accentColor,
                             ),

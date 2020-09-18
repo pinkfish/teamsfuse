@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/map.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
+import '../../services/map.dart';
+import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
+import '../form/datetimeformfield.dart';
+import '../form/seasonformfield.dart';
+import '../util/communityicons.dart';
+import '../util/ensurevisiblewhenfocused.dart';
 import 'editformbase.dart';
 
 class TrainingEditForm extends StatefulWidget {

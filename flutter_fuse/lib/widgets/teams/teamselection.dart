@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/clubteampicker.dart';
-import 'package:flutter_fuse/widgets/form/teampicker.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
 import '../blocs/singleclubprovider.dart';
+import '../form/clubteampicker.dart';
+import '../form/teampicker.dart';
 import 'teamtile.dart';
 
 ///

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 
+import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentteamprovider.dart';
 
 class LeagueOrTournamentTeamName extends StatelessWidget {

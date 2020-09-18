@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/games/gamecard.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
+import '../../services/messages.dart';
 import '../blocs/singlegameprovider.dart';
 import '../blocs/singleopponentprovider.dart';
 import '../blocs/singleseasonprovider.dart';
+import '../games/gamecard.dart';
 
 ///
 /// Creates a nice team results section that shows all the games

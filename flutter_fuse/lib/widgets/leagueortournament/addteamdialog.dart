@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
+
+import '../../services/messages.dart';
 
 class AddTeamDialog extends Dialog {
   final TextEditingController _controller = TextEditingController();

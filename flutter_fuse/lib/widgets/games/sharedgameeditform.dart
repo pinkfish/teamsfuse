@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/map.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
-import 'package:flutter_fuse/widgets/form/placesformfield.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
+
+import '../../services/map.dart';
+import '../../services/messages.dart';
+import '../form/datetimeformfield.dart';
+import '../form/placesformfield.dart';
+import '../util/communityicons.dart';
+import '../util/ensurevisiblewhenfocused.dart';
 
 // This form has all the stuff needed to edit the main parts
 // of the game.  Does not have the add game step flow.

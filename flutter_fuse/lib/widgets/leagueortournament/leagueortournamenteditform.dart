@@ -3,18 +3,18 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/form/genderformfield.dart';
-import 'package:flutter_fuse/widgets/form/sportformfield.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../services/messages.dart';
+import '../../services/validations.dart';
 import '../blocs/singleleagueortournamentprovider.dart';
+import '../form/genderformfield.dart';
+import '../form/sportformfield.dart';
+import '../util/communityicons.dart';
+import '../util/ensurevisiblewhenfocused.dart';
+import '../util/leagueimage.dart';
 
 // of the game.  Does not have the add game step flow.
 class LeagueOrTournamentEditForm extends StatefulWidget {

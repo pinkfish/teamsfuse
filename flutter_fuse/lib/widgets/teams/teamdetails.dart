@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/games/teamresults.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/gendericon.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
+import '../../services/messages.dart';
+import '../games/teamresults.dart';
+import '../util/communityicons.dart';
+import '../util/gendericon.dart';
+import '../util/teamimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 

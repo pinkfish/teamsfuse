@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../util/communityicons.dart';
+import '../util/teamimage.dart';
 import 'leagueortournamentteamname.dart';
 
 ///
