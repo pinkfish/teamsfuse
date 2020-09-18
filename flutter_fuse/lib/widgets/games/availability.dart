@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/util/playername.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../blocs/singleteamprovider.dart';
+import '../util/playername.dart';
 import 'attendancedialog.dart';
 import 'attendanceicon.dart';
 
+///
+/// The availability widget shows all the current availability for this team.
+///
 class Availaility extends StatelessWidget {
+  /// Constructor.
   Availaility(this._game);
 
   final SingleGameBloc _game;
 
   void _updateAttendance(
       BuildContext context, SeasonPlayer player, Attendance current) async {
-    Attendance attend = await showDialog(
+    var attend = await showDialog(
         context: context,
-        builder: (BuildContext context) {
+        builder: (context) {
           return AttendanceDialog(current: current);
         });
     if (attend != null) {
@@ -28,7 +32,7 @@ class Availaility extends StatelessWidget {
 
   Widget _buildAvailability(
       BuildContext context, Game game, SeasonPlayer player) {
-    PlayerBloc players = BlocProvider.of<PlayerBloc>(context);
+    var players = BlocProvider.of<PlayerBloc>(context);
     if (players.state.players.containsKey(player.playerUid)) {
       return GestureDetector(
         onTap: () => _updateAttendance(
@@ -46,23 +50,17 @@ class Availaility extends StatelessWidget {
 
   void _showPlayer(BuildContext context, Game game, String playerUid) {
     Navigator.pushNamed(
-        context,
-        "PlayerDetails/" +
-            game.teamUid +
-            "/" +
-            game.seasonUid +
-            "/" +
-            playerUid);
+        context, "PlayerDetails/${game.teamUid}/${game.seasonUid}/$playerUid");
   }
 
   Iterable<Widget> _buildChildren(
       BuildContext context, SingleTeamState teamState, Game game) {
-    Season season = teamState.getSeason(game.seasonUid);
-    ThemeData theme = Theme.of(context);
+    var season = teamState.getSeason(game.seasonUid);
+    var theme = Theme.of(context);
 
-    return season.players.map((SeasonPlayer player) {
-      PlayerBloc players = BlocProvider.of<PlayerBloc>(context);
-      bool canEdit = players.state.players.containsKey(player.playerUid);
+    return season.players.map((player) {
+      var players = BlocProvider.of<PlayerBloc>(context);
+      var canEdit = players.state.players.containsKey(player.playerUid);
       return ListTile(
         onTap: () => _showPlayer(context, game, player.playerUid),
         leading: canEdit
@@ -78,12 +76,11 @@ class Availaility extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder(
       cubit: _game,
-      builder: (BuildContext context, SingleGameState gameState) =>
-          SingleTeamProvider(
+      builder: (context, gameState) => SingleTeamProvider(
         teamUid: gameState.game.teamUid,
-        builder: (BuildContext context, SingleTeamBloc teamBloc) => BlocBuilder(
+        builder: (context, teamBloc) => BlocBuilder(
           cubit: teamBloc,
-          builder: (BuildContext context, SingleTeamState teamState) {
+          builder: (context, teamState) {
             return ListBody(
               children:
                   _buildChildren(context, teamState, gameState.game).toList(),

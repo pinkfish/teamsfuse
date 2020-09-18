@@ -1,31 +1,35 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/screens/game/addopponent.dart';
-import 'package:flutter_fuse/services/map.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
-import 'package:flutter_fuse/widgets/form/opponentformfield.dart';
-import 'package:flutter_fuse/widgets/form/placesformfield.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/form/switchformfield.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
+import '../../screens/game/addopponent.dart';
+import '../../services/map.dart';
+import '../../services/messages.dart';
+import '../../services/validations.dart';
 import '../blocs/singleteamprovider.dart';
+import '../form/datetimeformfield.dart';
+import '../form/opponentformfield.dart';
+import '../form/placesformfield.dart';
+import '../form/seasonformfield.dart';
+import '../form/switchformfield.dart';
+import '../util/communityicons.dart';
+import '../util/ensurevisiblewhenfocused.dart';
 import 'editformbase.dart';
 
-// This form has all the stuff needed to edit the main parts
-// of the game.  Does not have the add game step flow.
+///
+/// This form has all the stuff needed to edit the main parts
+/// of the game.  Does not have the add game step flow.
+///
 class GameEditForm extends StatefulWidget {
+  /// Constructor.
   GameEditForm(
       {@required this.game, @required GlobalKey<GameEditFormState> key})
       : super(key: key);
 
+  /// The game to edit.
   final Game game;
 
   @override
@@ -34,9 +38,11 @@ class GameEditForm extends StatefulWidget {
   }
 }
 
+///
+/// The edit form for the game.  Lets us access the internal of the game
+/// while being edited.
+///
 class GameEditFormState extends State<GameEditForm> with EditFormBase {
-  GameEditFormState();
-
   final GlobalKey<DateTimeFormFieldState> _arriveByKey =
       GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<DateTimeFormFieldState> _atEndKEy =
@@ -44,16 +50,20 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   final GlobalKey<OpponentFormFieldState> _opponentState =
       GlobalKey<OpponentFormFieldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  /// If we should autovalidate the fiels in the form, or only on save.
   bool autovalidate = false;
-  Validations _validations = Validations();
-  ScrollController _scrollController = ScrollController();
-  FocusNode _focusNodeNotes = FocusNode();
-  FocusNode _focusNodePlaceNotes = FocusNode();
-  FocusNode _focusNodeUniform = FocusNode();
+  final Validations _validations = Validations();
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNodeNotes = FocusNode();
+  final FocusNode _focusNodePlaceNotes = FocusNode();
+  final FocusNode _focusNodeUniform = FocusNode();
   DateTime _atDate;
   DateTime _atArrival;
   DateTime _atEnd;
-  GameBuilder builder;
+
+  /// The builder for the game to be used externally.
+  GameBuilder _builder;
 
   @override
   void save() {
@@ -63,7 +73,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   @override
   void initState() {
     super.initState();
-    builder = widget.game.toBuilder();
+    _builder = widget.game.toBuilder();
     _atArrival = widget.game.tzArriveTime;
     _atDate = widget.game.sharedData.tzTime;
     _atEnd = widget.game.sharedData.tzEndTime;
@@ -85,7 +95,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
     } else {
       _formKey.currentState.save();
       // Add the date time and the time together.
-      builder.sharedData.time = TZDateTime(
+      _builder.sharedData.time = TZDateTime(
               getLocation(widget.game.sharedData.timezone),
               _atDate.year,
               _atDate.month,
@@ -94,11 +104,11 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
               _atDate.minute)
           .millisecondsSinceEpoch;
       // Move forward a day so it is in the next day.
-      DateTime arrival = _atArrival;
+      var arrival = _atArrival;
       if (_atArrival.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
         arrival.add(Duration(days: 1));
       }
-      builder.arriveTime = TZDateTime(
+      _builder.arriveTime = TZDateTime(
               getLocation(widget.game.sharedData.timezone),
               arrival.year,
               arrival.month,
@@ -106,11 +116,11 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
               arrival.hour,
               arrival.minute)
           .millisecondsSinceEpoch;
-      DateTime end = _atEnd;
+      var end = _atEnd;
       if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
         end.add(Duration(days: 1));
       }
-      builder.sharedData.endTime = TZDateTime(
+      _builder.sharedData.endTime = TZDateTime(
               getLocation(widget.game.sharedData.timezone),
               end.year,
               end.month,
@@ -119,7 +129,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
               end.minute)
           .millisecondsSinceEpoch;
     }
-    return builder;
+    return _builder;
   }
 
   void _changeAtTime(Duration diff) {
@@ -130,8 +140,8 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   }
 
   void _openAddOpponentDialog() async {
-    String save = await Navigator.of(context).push(MaterialPageRoute<String>(
-      builder: (BuildContext context) {
+    var save = await Navigator.of(context).push(MaterialPageRoute<String>(
+      builder: (context) {
         return AddOpponent(widget.game.teamUid);
       },
       fullscreenDialog: true,
@@ -144,23 +154,22 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
 
   @override
   Widget build(BuildContext context) {
-    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+    var teamBloc = BlocProvider.of<TeamBloc>(context);
     if (widget.game.teamUid == null ||
         teamBloc.state.getTeam(widget.game.teamUid) == null) {
       return Text('Invalid state');
     }
-    List<Widget> firstRow = <Widget>[];
+    var firstRow = <Widget>[];
     firstRow.add(
       Expanded(
         flex: 1,
         child: SingleTeamProvider(
-          teamUid: builder.teamUid,
-          builder: (BuildContext context, SingleTeamBloc teambloc) =>
-              SeasonFormField(
+          teamUid: _builder.teamUid,
+          builder: (context, teambloc) => SeasonFormField(
             initialValue: widget.game.seasonUid,
             teamBloc: teambloc,
-            onSaved: (String value) {
-              builder.seasonUid = value;
+            onSaved: (value) {
+              _builder.seasonUid = value;
             },
           ),
         ),
@@ -174,25 +183,24 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
         Expanded(
           flex: 1,
           child: SingleTeamProvider(
-            teamUid: builder.teamUid,
-            builder: (BuildContext context, SingleTeamBloc teambloc) =>
-                OpponentFormField(
+            teamUid: _builder.teamUid,
+            builder: (context, teambloc) => OpponentFormField(
               teamBloc: teambloc,
               key: _opponentState,
-              initialValue: builder.opponentUids.length == 0
-                  ? 'none'
-                  : builder.opponentUids[0],
-              validator: (String str) {
+              initialValue: _builder.opponentUids.length == 0
+                  ? OpponentFormField.none
+                  : _builder.opponentUids[0],
+              validator: (str) {
                 return _validations.validateOpponent(context, str);
               },
-              onFieldSubmitted: (String value) {
+              onFieldSubmitted: (value) {
                 if (value == 'add') {
                   // Open up a picker to create an opponent.
                   _openAddOpponentDialog();
                 }
               },
-              onSaved: (String value) {
-                builder.opponentUids.addAll(<String>[value]);
+              onSaved: (value) {
+                _builder.opponentUids.addAll(<String>[value]);
               },
             ),
           ),
@@ -223,7 +231,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   labelText: Messages.of(context).gametime,
                   initialValue: _atDate,
                   hideDate: false,
-                  onSaved: (DateTime value) {
+                  onSaved: (value) {
                     _atDate = value;
                   },
                   onFieldChanged: _changeAtTime,
@@ -240,7 +248,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                         labelText: Messages.of(context).arriveat,
                         initialValue: _atArrival,
                         hideDate: true,
-                        onSaved: (DateTime val) {
+                        onSaved: (val) {
                           _atArrival = val;
                         },
                       ),
@@ -253,7 +261,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                         labelText: Messages.of(context).gameend,
                         initialValue: _atEnd,
                         hideDate: true,
-                        onSaved: (DateTime val) {
+                        onSaved: (val) {
                           _atEnd = val;
                         },
                       ),
@@ -262,22 +270,21 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                 ),
                 PlacesFormField(
                   initialValue: LocationAndPlace.fromGame(
-                      builder.sharedData.place.build(),
-                      builder.sharedData.timezone),
+                      _builder.sharedData.place.build(),
+                      _builder.sharedData.timezone),
                   labelText: Messages.of(context).selectplace,
-                  decoration:
-                      const InputDecoration(icon: const Icon(Icons.place)),
-                  onSaved: (LocationAndPlace loc) {
+                  decoration: const InputDecoration(icon: Icon(Icons.place)),
+                  onSaved: (loc) {
                     print('Saved location $loc');
-                    builder.sharedData.place.name = loc.details.name;
-                    builder.sharedData.place.address = loc.details.address;
-                    builder.sharedData.place.placeId = loc.details.placeid;
-                    builder.sharedData.place.latitude =
+                    _builder.sharedData.place.name = loc.details.name;
+                    _builder.sharedData.place.address = loc.details.address;
+                    _builder.sharedData.place.placeId = loc.details.placeid;
+                    _builder.sharedData.place.latitude =
                         loc.details.location.latitude;
-                    builder.sharedData.place.longitude =
+                    _builder.sharedData.place.longitude =
                         loc.details.location.longitude;
-                    loc.loc.then((Location location) {
-                      builder.sharedData.timezone = location.name;
+                    loc.loc.then((location) {
+                      _builder.sharedData.timezone = location.name;
                     });
                   },
                 ),
@@ -292,9 +299,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                     keyboardType: TextInputType.text,
                     focusNode: _focusNodePlaceNotes,
                     obscureText: false,
-                    initialValue: builder.sharedData.place.notes,
-                    onSaved: (String value) {
-                      builder.sharedData.place.notes = value;
+                    initialValue: _builder.sharedData.place.notes,
+                    onSaved: (value) {
+                      _builder.sharedData.place.notes = value;
                     },
                   ),
                 ),
@@ -310,8 +317,8 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                     keyboardType: TextInputType.text,
                     obscureText: false,
                     initialValue: widget.game.uniform,
-                    onSaved: (String value) {
-                      builder.uniform = value;
+                    onSaved: (value) {
+                      _builder.uniform = value;
                     },
                   ),
                 ),
@@ -319,15 +326,15 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   focusNode: _focusNodeNotes,
                   child: TextFormField(
                     decoration: const InputDecoration(
-                        icon: const Icon(Icons.note),
+                        icon: Icon(Icons.note),
                         hintText: 'Game notes',
                         labelText: 'Game notes'),
                     keyboardType: TextInputType.text,
                     focusNode: _focusNodeNotes,
                     obscureText: false,
                     initialValue: widget.game.notes,
-                    onSaved: (String value) {
-                      builder.notes = value;
+                    onSaved: (value) {
+                      _builder.notes = value;
                     },
                   ),
                 ),
@@ -339,17 +346,17 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                         icon: CommunityIcons.home,
                         label: Messages.of(context).homeaway,
                         initialValue: widget.game.homegame,
-                        onSaved: (bool value) {
+                        onSaved: (value) {
                           if (value) {
-                            builder.sharedData.officialResult
-                                .homeTeamLeagueUid = builder.teamUid;
-                            builder.sharedData.officialResult
-                                .awayTeamLeagueUid = builder.opponentUids[0];
+                            _builder.sharedData.officialResult
+                                .homeTeamLeagueUid = _builder.teamUid;
+                            _builder.sharedData.officialResult
+                                .awayTeamLeagueUid = _builder.opponentUids[0];
                           } else {
-                            builder.sharedData.officialResult
-                                .homeTeamLeagueUid = builder.opponentUids[0];
-                            builder.sharedData.officialResult
-                                .awayTeamLeagueUid = builder.teamUid;
+                            _builder.sharedData.officialResult
+                                .homeTeamLeagueUid = _builder.opponentUids[0];
+                            _builder.sharedData.officialResult
+                                .awayTeamLeagueUid = _builder.teamUid;
                           }
                         },
                       ),

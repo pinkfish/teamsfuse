@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/map.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
-import 'package:flutter_fuse/widgets/form/seasonformfield.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
+import '../../services/map.dart';
+import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
+import '../form/datetimeformfield.dart';
+import '../form/seasonformfield.dart';
+import '../util/communityicons.dart';
+import '../util/ensurevisiblewhenfocused.dart';
 import 'editformbase.dart';
 
+///
+/// The edit form to let you edit the event.
+///
 class EventEditForm extends StatefulWidget {
+  /// Constrcutor.
   EventEditForm(
       {@required this.game, @required GlobalKey<EventEditFormState> key})
       : super(key: key);
 
+  /// The game to edit.
   final Game game;
 
   @override
@@ -25,17 +29,24 @@ class EventEditForm extends StatefulWidget {
   }
 }
 
+///
+/// The state for the form allowing editing.
+///
 class EventEditFormState extends State<EventEditForm> with EditFormBase {
-  ScrollController _scrollController = ScrollController();
-  GlobalKey<DateTimeFormFieldState> _endTimeKey =
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey<DateTimeFormFieldState> _endTimeKey =
       GlobalKey<DateTimeFormFieldState>();
+
+  /// If we should automatically validate the form fields, or only when saved.
   bool autoValidate = false;
-  GlobalKey<FormState> _formState = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formState = GlobalKey<FormState>();
   DateTime _atDate;
   DateTime _atEnd;
   GamePlaceBuilder _place;
   String _timezone;
-  FocusNode _focusNodeNotes = FocusNode();
+  final FocusNode _focusNodeNotes = FocusNode();
+
+  /// The builder for the game created as part of the save process.
   GameBuilder builder;
 
   @override
@@ -64,7 +75,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
             _atDate.month, _atDate.day, _atDate.hour, _atDate.minute)
         .millisecondsSinceEpoch;
     builder.arriveTime = widget.game.sharedData.time;
-    DateTime end = _atEnd;
+    var end = _atEnd;
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
       end.add(Duration(days: 1));
     }
@@ -83,7 +94,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
   }
 
   void _showPlacesPicker() async {
-    LocationAndPlace place = await MapData.instance.getPlaceAndLocation();
+    var place = await MapData.instance.getPlaceAndLocation();
     if (place != null) {
       // Yay!
       setState(() {
@@ -91,7 +102,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
         _place.address = place.details.address;
         _place.longitude = place.details.location.longitude;
         _place.latitude = place.details.location.latitude;
-        place.loc.then((Location location) {
+        place.loc.then((location) {
           _timezone = location.name;
         });
       });
@@ -100,7 +111,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
     return Scrollbar(
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -116,15 +127,14 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
               children: <Widget>[
                 SingleTeamProvider(
                   teamUid: builder.teamUid,
-                  builder: (BuildContext context, SingleTeamBloc teamBloc) =>
-                      SeasonFormField(
+                  builder: (context, teamBloc) => SeasonFormField(
                     decoration: InputDecoration(
                       icon: const Icon(CommunityIcons.calendarQuestion),
                       labelText: messages.season,
                     ),
                     initialValue: widget.game.seasonUid,
                     teamBloc: teamBloc,
-                    onSaved: (String value) {
+                    onSaved: (value) {
                       builder.seasonUid = value;
                     },
                   ),
@@ -137,7 +147,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                   initialValue: _atDate,
                   hideDate: false,
                   onFieldChanged: _updateTimes,
-                  onSaved: (DateTime value) {
+                  onSaved: (value) {
                     _atDate = value;
                   },
                 ),
@@ -149,7 +159,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                   ),
                   initialValue: _atEnd,
                   hideDate: false,
-                  onSaved: (DateTime value) {
+                  onSaved: (value) {
                     _atEnd = value;
                   },
                 ),
@@ -168,7 +178,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                       labelText: messages.trainingnotes,
                       icon: const Icon(Icons.note),
                     ),
-                    onSaved: (String value) {
+                    onSaved: (value) {
                       builder.notes = value;
                     },
                   ),

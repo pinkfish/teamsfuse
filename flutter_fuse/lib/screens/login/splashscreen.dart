@@ -64,7 +64,7 @@ class SplashScreen extends StatelessWidget {
       cubit: _authenticationBloc,
       listener: (context, state) {
         if (state is AuthenticationLoggedIn) {
-          Notifications.instance.initForNotification();
+          RepositoryProvider.of<Notifications>(context).initForNotification();
           Navigator.pushNamedAndRemoveUntil(
               context, '/Home', ModalRoute.withName('/Home'));
           Analytics.analytics.setUserId(state.user.uid);

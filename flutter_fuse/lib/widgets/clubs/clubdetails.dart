@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/clubimage.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../util/clubimage.dart';
+
+///
+/// Shows the details fo the club.
+///
 class ClubDetails extends StatelessWidget {
+  /// Constructor.
   ClubDetails(this.club);
 
+  /// The club to show the details for.
   final Club club;
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
+    var screenSize = MediaQuery.of(context).size;
 
     return SingleChildScrollView(
       child: Column(

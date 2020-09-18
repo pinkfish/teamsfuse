@@ -15,16 +15,11 @@ typedef SingleLeagueOrTournamentSeasonProviderBuilder = Widget Function(
 ///
 class SingleLeagueOrTournamentSeasonProvider
     extends SingleBlocProvider<SingleLeagueOrTournamentSeasonBloc> {
+  /// Constructor.
   SingleLeagueOrTournamentSeasonProvider({
     String leagueSeasonUid,
     SingleLeagueOrTournamentSeasonProviderBuilder builder,
-  }) : super(
-            keyUid: leagueSeasonUid,
-            creator: (BuildContext context, String uid) => _createBloc(
-                  context,
-                  uid,
-                ),
-            builder: builder);
+  }) : super(keyUid: leagueSeasonUid, creator: _createBloc, builder: builder);
 
   static SingleLeagueOrTournamentSeasonBloc _createBloc(
       BuildContext context, String uid) {

@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/datetimeformfield.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
+import '../../services/messages.dart';
+import '../form/datetimeformfield.dart';
+
+///
+/// Widget to show the repating details for a summary.
+///
 class RepeatDetailsWidget extends StatefulWidget {
+  /// Constructor.
   RepeatDetailsWidget(this.startTime, this.repeat,
       {GlobalKey<RepeatDetailsState> key})
       : super(key: key);
 
+  /// Start time.
   final TZDateTime startTime;
+
+  /// Repeat reasons.
   final RepeatData repeat;
 
   @override
@@ -18,10 +26,15 @@ class RepeatDetailsWidget extends StatefulWidget {
   }
 }
 
+///
+/// The state exposed to use with forms.
+///
 class RepeatDetailsState extends State<RepeatDetailsWidget> {
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
+
+  /// If the values should be always validated or only if the data is saved.
   bool autoValidate = false;
-  GlobalKey<FormState> _formState = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formState = GlobalKey<FormState>();
   RepeatData _updatedRepeat;
 
   @override
@@ -33,10 +46,12 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
     print('initState $_updatedRepeat.endRepeat');
   }
 
+  /// Validates the values in the form.
   bool validate() {
     return _formState.currentState.validate();
   }
 
+  /// Saves the values in the form out.
   RepeatData save() {
     _formState.currentState.save();
     return _updatedRepeat;
@@ -44,8 +59,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
 
   List<DropdownMenuItem<RepeatPeriod>> _buildRepeatIntervalItems(
       BuildContext context) {
-    List<DropdownMenuItem<RepeatPeriod>> ret =
-        <DropdownMenuItem<RepeatPeriod>>[];
+    var ret = <DropdownMenuItem<RepeatPeriod>>[];
     ret.add(DropdownMenuItem<RepeatPeriod>(
       child: Text(Messages.of(context).noneperiod),
       value: RepeatPeriod.None,
@@ -65,14 +79,14 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
   }
 
   List<Widget> _buildItems() {
-    Messages messages = Messages.of(context);
-    List<Widget> ret = <Widget>[];
+    var messages = Messages.of(context);
+    var ret = <Widget>[];
     ret.add(
       DropdownButton<RepeatPeriod>(
         hint: Text(messages.repeat),
         items: _buildRepeatIntervalItems(context),
         value: _updatedRepeat.period,
-        onChanged: (RepeatPeriod val) {
+        onChanged: (val) {
           setState(() {
             _updatedRepeat = _updatedRepeat.rebuild((b) => b..period = val);
           });
@@ -103,7 +117,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                   value: false,
                 ),
               ],
-              onChanged: (bool val) => _updatedRepeat =
+              onChanged: (val) => _updatedRepeat =
                   _updatedRepeat.rebuild((b) => b.repeatUntil = val),
             ),
             _updatedRepeat.repeatUntil
@@ -115,7 +129,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                     child: TextFormField(
                       initialValue: "1",
                       keyboardType: TextInputType.number,
-                      onSaved: (String val) {
+                      onSaved: (val) {
                         _updatedRepeat = _updatedRepeat
                             .rebuild((b) => b.repeatInterval = int.parse(val));
                       },
@@ -126,7 +140,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                     child: DateTimeFormField(
                       initialValue: _updatedRepeat.endRepeat,
                       hideTime: true,
-                      onSaved: (DateTime tim) {
+                      onSaved: (tim) {
                         _updatedRepeat =
                             _updatedRepeat.rebuild((b) => b.endRepeat = tim);
                       },
@@ -134,13 +148,13 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
                   ),
           ],
         ));
-        List<String> days = MaterialLocalizations.of(context).narrowWeekdays;
-        int first = MaterialLocalizations.of(context).firstDayOfWeekIndex;
-        List<Widget> daysWidgets = <Widget>[];
+        var days = MaterialLocalizations.of(context).narrowWeekdays;
+        var first = MaterialLocalizations.of(context).firstDayOfWeekIndex;
+        var daysWidgets = <Widget>[];
         print("$days");
         daysWidgets.add(const Icon(Icons.calendar_today));
-        for (int i = first; i < first + days.length; i++) {
-          int pos = i % days.length;
+        for (var i = first; i < first + days.length; i++) {
+          var pos = i % days.length;
           daysWidgets.add(
             Container(
               margin: EdgeInsets.only(left: 10.0),
@@ -182,7 +196,7 @@ class RepeatDetailsState extends State<RepeatDetailsWidget> {
               labelText: messages.repeat,
               icon: const Icon(Icons.repeat),
             ),
-            onSaved: (String val) {
+            onSaved: (val) {
               _updatedRepeat = _updatedRepeat
                   .rebuild((b) => b..repeatInterval = int.parse(val));
             },

@@ -50,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void didChangeDependencies() {
-    _calendarEvents.state = _calendarState;
     super.didChangeDependencies();
   }
 
@@ -212,7 +211,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     _calendarEvents = GameListCalendarState(
-        _details, _calendarState, BlocProvider.of<GameBloc>(context));
+        _details,
+        BlocProvider.of<GameBloc>(context),
+        () => _calendarState?.currentState?.updateEvents());
     _calendarEvents.loadGames(_details).then((d) {
       setState(() {});
     });

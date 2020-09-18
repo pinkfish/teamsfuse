@@ -1,21 +1,23 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
 import 'gamecard.dart';
 
+///
+/// Shows a dialog to delete the game.
+///
 Future<bool> deleteGameDialog(
     BuildContext context, SingleGameBloc gameBloc) async {
-  Messages mess = Messages.of(context);
-  Game game = gameBloc.state.game;
+  var mess = Messages.of(context);
+  var game = gameBloc.state.game;
 
-  bool result = await showDialog<bool>(
+  var result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(mess.deletegame(game.sharedData)),
           content: Scrollbar(

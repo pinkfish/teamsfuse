@@ -12,6 +12,7 @@ import 'services/appconfiguration.dart';
 import 'services/approuter.dart';
 import 'services/firestore/firestore.dart';
 import 'services/loggingdata.dart';
+import 'services/notifications.dart';
 
 ///
 /// The main app for the system.
@@ -109,6 +110,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
             create: (context) => widget._config),
         RepositoryProvider<LoggingData>(
             create: (context) => widget._loggingData),
+        RepositoryProvider<Notifications>(create: (context) => Notifications()),
       ],
       child: MultiBlocProvider(
         providers: <BlocProvider>[

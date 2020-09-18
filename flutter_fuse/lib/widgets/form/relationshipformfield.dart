@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+
+///
+/// The relationship form field to track the current relationship.
+///
 class RelationshipFormField extends FormField<Relationship> {
+  /// Constructor.
   RelationshipFormField({
     @required Relationship initialValue,
     Key key,
-    InputDecoration decoration: const InputDecoration(),
+    InputDecoration decoration = const InputDecoration(),
     ValueChanged<Relationship> onFieldSubmitted,
     FormFieldSetter<Relationship> onSaved,
     FormFieldValidator<Relationship> validator,
@@ -16,12 +21,10 @@ class RelationshipFormField extends FormField<Relationship> {
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,
-          builder: (FormFieldState<Relationship> field) {
-            final RelationshipFormFieldState state =
-                field as RelationshipFormFieldState;
+          builder: (field) {
+            var state = field as RelationshipFormFieldState;
 
-            final InputDecoration effectiveDecoration = (decoration ??
-                    const InputDecoration())
+            var effectiveDecoration = (decoration ?? const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             return InputDecorator(
               decoration:
@@ -30,7 +33,7 @@ class RelationshipFormField extends FormField<Relationship> {
                 hint: Text(Messages.of(state.context).relationshipselect),
                 items: state._buildItems(state.context),
                 value: state.value,
-                onChanged: (Relationship val) {
+                onChanged: (val) {
                   state.updateValue(val);
                   field.didChange(val);
                   if (onFieldSubmitted != null) {
@@ -46,14 +49,17 @@ class RelationshipFormField extends FormField<Relationship> {
   RelationshipFormFieldState createState() => RelationshipFormFieldState();
 }
 
+///
+/// The state to deal with the relationship for the form field.
+///
 class RelationshipFormFieldState extends FormFieldState<Relationship> {
+  /// Update the value for the relationship.
   void updateValue(Relationship val) {
     setValue(val);
   }
 
   List<DropdownMenuItem<Relationship>> _buildItems(BuildContext context) {
-    List<DropdownMenuItem<Relationship>> ret =
-        <DropdownMenuItem<Relationship>>[];
+    var ret = <DropdownMenuItem<Relationship>>[];
     ret.add(DropdownMenuItem<Relationship>(
       child: Text(Messages.of(context).relationships(Relationship.Friend)),
       value: Relationship.Friend,

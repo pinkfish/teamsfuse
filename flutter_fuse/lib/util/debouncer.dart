@@ -10,16 +10,25 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+///
+/// Debounces the request, so if lots of things happen at once it only
+/// lets through one.
+///
 class Debouncer<Val> {
+  /// Create the debouncer with the minimum delay and the callback.
   Debouncer(this._delay, this._callback,
       {this.atBegin = false, this.resetOnAdd});
 
   final Duration _delay;
   final ValueChanged<List<Val>> _callback;
-  bool atBegin;
-  bool resetOnAdd;
 
-  List<Val> _data = <Val>[];
+  /// If the debouncer is at the begining.
+  final bool atBegin;
+
+  /// Reset the state when added.
+  final bool resetOnAdd;
+
+  final List<Val> _data = <Val>[];
 
   Timer _timeoutId;
 
@@ -32,6 +41,7 @@ class Debouncer<Val> {
     _timeoutId = null;
   }
 
+  /// The value to try and becounce.
   void debounce(Val val) {
     _data.add(val);
     // cancel the previous timer if debounce is still being called before the delay period is over
@@ -44,7 +54,7 @@ class Debouncer<Val> {
     }
     if (_timeoutId == null) {
       // schedule a new call after delay time
-      _timeoutId = new Timer(_delay, atBegin ? _clear : _exec);
+      _timeoutId = Timer(_delay, atBegin ? _clear : _exec);
     }
   }
 }

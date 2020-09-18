@@ -2,13 +2,17 @@ import 'package:fusemodel/fusemodel.dart';
 //import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 //art';
 
-// Creates the text for the game.  THis is used by the game card and other
-// places to display details about the game without being dependent on
-// flutter.
+/// Creates the text for the game.  THis is used by the game card and other
+/// places to display details about the game without being dependent on
+/// flutter.
 class GameNotification {
+  /// Constructor.
   GameNotification(this.game, this.team);
 
+  /// The game to notify about.
   final Game game;
+
+  /// The team to nofify about.
   final Team team;
 
   /*

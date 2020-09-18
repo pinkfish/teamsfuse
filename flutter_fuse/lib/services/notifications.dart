@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -9,59 +8,57 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'appconfiguration.dart';
 import 'firebasemessaging.dart';
 
-//import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
+///
+/// Handles interacting with the notifztions for the app.  Displaying
+/// notifications and incoming notications.
+///
 class Notifications {
-  Notifications() {
-    routeStream = _notificationRoutes.stream.asBroadcastStream();
-  }
-
   static const String _keyNotificationData = "lib_notification_data";
-
-  static final Notifications instance = Notifications();
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   //final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   //   FlutterLocalNotificationsPlugin();
 
-  StreamController<String> _notificationRoutes = StreamController<String>();
-  Stream<String> routeStream;
+  final StreamController<String> _notificationRoutes =
+      StreamController<String>();
+  //Stream<String> _routeStream;
   StreamSubscription<UpdateReason> _gameStream;
-  Map<String, int> _notificationMapping = <String, int>{};
-  Random random = Random.secure();
+  final Map<String, int> _notificationMapping = <String, int>{};
+  //final Random _random = Random.secure();
   //State<SplashScreen> _state;
 
-  static const String actionStr = 'action';
-  static const String gameUidStr = 'gameUids';
+  //static const String _actionStr = 'action';
+  //static const String _gameUidStr = 'gameUids';
 
-  static const Duration notifyStart = const Duration(days: 31);
-  static const Duration timeoutNotifiation = const Duration(days: 2);
+  // static const Duration _notifyStart = Duration(days: 31);
+  //static const Duration _timeoutNotifiation = Duration(days: 2);
 
+  /// Disposes the class, closing everything.
   void dispose() {
     _gameStream?.cancel();
     _gameStream = null;
     _notificationRoutes.close();
-    _notificationRoutes = null;
   }
 
+  /// Initalize the system from the setup.
   void init(AuthenticationBloc auth, AppConfiguration configuration) {
     _firebaseMessaging.requestNotificationPermissions();
-    _firebaseMessaging.getToken().then((String token) {
+    _firebaseMessaging.getToken().then((token) {
       print('We have token! $token');
       auth.add(AuthenticationNotificationToken(token));
     });
     _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) {
+      onMessage: (message) {
         print("onMessage: $message");
         //this._handleMessage(message);
         return;
       },
-      onLaunch: (Map<String, dynamic> message) {
+      onLaunch: (message) {
         print("onLaunch: $message");
         //this._handleLaunch(message);
         return;
       },
-      onResume: (Map<String, dynamic> message) {
+      onResume: (message) {
         print("onResume: $message");
         //this._handleResume(message);
         return;
@@ -70,15 +67,17 @@ class Notifications {
     SharedPreferences.getInstance().then((pref) {
       var jsonCacheString = pref.getString(_keyNotificationData);
       if (jsonCacheString != null) {
-        Map<String, dynamic> tmp =
-            json.decode(jsonCacheString) as Map<String, dynamic>;
+        var tmp = json.decode(jsonCacheString) as Map<String, dynamic>;
         _notificationMapping.clear();
-        tmp.forEach((String str, dynamic val) =>
-            val is int ? _notificationMapping[str] = val : null);
+        tmp.forEach(
+            (str, val) => val is int ? _notificationMapping[str] = val : null);
       }
     });
   }
 
+  ///
+  /// Init the system for local notifications.
+  ///
   void initForNotification() async {
     /*
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =

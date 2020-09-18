@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+///
+/// Selector to select the current game period.
+///
 class PeriodTypeSelector extends StatelessWidget {
+  /// Constructor.
   PeriodTypeSelector(this.team, this.currentPeriod, this.onChanged);
 
+  /// The team to show the period for.
   final Team team;
+
+  /// Callback when things change.
   final ValueChanged<GamePeriod> onChanged;
+
+  /// The current period selected.
   final GamePeriod currentPeriod;
 
   void _setPeriodType(GamePeriodType type) {
-    int periodNumber = currentPeriod.periodNumber.toInt();
+    var periodNumber = currentPeriod.periodNumber.toInt();
     switch (type) {
       case GamePeriodType.Regulation:
         break;
@@ -23,7 +32,7 @@ class PeriodTypeSelector extends StatelessWidget {
         periodNumber = 1;
         break;
     }
-    GamePeriod period = GamePeriod((b) => b
+    var period = GamePeriod((b) => b
       ..type = type
       ..periodNumber = periodNumber);
     onChanged(period);
@@ -34,7 +43,7 @@ class PeriodTypeSelector extends StatelessWidget {
     if (currentPeriod == null) {
       return <Widget>[Text("")];
     }
-    List<Widget> ret = <Widget>[];
+    var ret = <Widget>[];
     ret.add(
       Container(
         padding: EdgeInsets.only(left: 3.0, right: 3.0),
@@ -93,16 +102,27 @@ class PeriodTypeSelector extends StatelessWidget {
   }
 }
 
+///
+/// The period number to select, after the type is selected.
+///
 class PeriodNumberSelector extends StatelessWidget {
+  /// Constructor.
   PeriodNumberSelector(
       this.currentPeriod, this.divisionsType, this.onChanged, this.controller);
 
+  /// Called when the value changes.
   final ValueChanged<GamePeriod> onChanged;
+
+  /// The current period for the game.
   final GamePeriod currentPeriod;
+
+  /// The scroll controller to use to show where the selector is.
   final ScrollController controller;
+
+  /// The type of game divisons.
   final GameDivisionsType divisionsType;
 
-  static double itemExtent = 150.0;
+  final double _itemExtent = 150.0;
 
   void _setPeriodNumber(int periodNumber) {
     GamePeriod period;
@@ -166,7 +186,7 @@ class PeriodNumberSelector extends StatelessWidget {
   }
 
   List<Widget> _buildPeriods() {
-    List<Widget> ret = <Widget>[];
+    var ret = <Widget>[];
 
     switch (divisionsType) {
       case GameDivisionsType.Quarters:
@@ -198,7 +218,7 @@ class PeriodNumberSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: BoxConstraints.tightFor(height: itemExtent),
+      constraints: BoxConstraints.tightFor(height: _itemExtent),
       padding: EdgeInsets.all(5.0),
       child: ListView(
         scrollDirection: Axis.horizontal,
@@ -210,22 +230,32 @@ class PeriodNumberSelector extends StatelessWidget {
   }
 }
 
+///
+/// Selector for the period, selects both the type and the period number.
+///
 class PeriodSelector extends StatelessWidget {
+  /// Constructor.
   PeriodSelector(
       {@required this.currentPeriod,
       @required this.divisionsType,
       @required this.team,
       @required this.onChanged});
 
+  /// The currently selected game period.
   final GamePeriod currentPeriod;
+
+  /// The types of devisions on the game (halves, quarters).
   final GameDivisionsType divisionsType;
+
+  /// The team to show the periods for.
   final Team team;
+
+  /// Called when the value changes.
   final ValueChanged<GamePeriod> onChanged;
 
   List<DropdownMenuItem<GamePeriodType>> _buildPeriodTypes(
       BuildContext context) {
-    List<DropdownMenuItem<GamePeriodType>> ret =
-        <DropdownMenuItem<GamePeriodType>>[
+    var ret = <DropdownMenuItem<GamePeriodType>>[
       DropdownMenuItem<GamePeriodType>(
         child: Text("Regulation"),
         value: GamePeriodType.Regulation,
@@ -264,7 +294,7 @@ class PeriodSelector extends StatelessWidget {
   }
 
   List<DropdownMenuItem<int>> _buildDurationTypes(BuildContext context) {
-    List<DropdownMenuItem<int>> ret = <DropdownMenuItem<int>>[];
+    var ret = <DropdownMenuItem<int>>[];
 
     if (currentPeriod.type == GamePeriodType.Penalty) {
       ret.add(_makePeriodButton("None", 1));
@@ -301,7 +331,7 @@ class PeriodSelector extends StatelessWidget {
     if (type == currentPeriod.type) {
       return;
     }
-    int periodNumber = currentPeriod.periodNumber.toInt();
+    var periodNumber = currentPeriod.periodNumber.toInt();
     switch (type) {
       case GamePeriodType.Regulation:
         break;
@@ -315,7 +345,7 @@ class PeriodSelector extends StatelessWidget {
         periodNumber = 1;
         break;
     }
-    GamePeriod period = GamePeriod((b) => b
+    var period = GamePeriod((b) => b
       ..type = type
       ..periodNumber = periodNumber);
     onChanged(period);
@@ -364,8 +394,8 @@ class PeriodSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    GamePeriodType selected = currentPeriod.type;
-    int selectedPeriod = currentPeriod.periodNumber.toInt();
+    var selected = currentPeriod.type;
+    var selectedPeriod = currentPeriod.periodNumber.toInt();
     if (selected == GamePeriodType.Break) {
       selected = GamePeriodType.Regulation;
       selectedPeriod += 1000;
@@ -387,7 +417,7 @@ class PeriodSelector extends StatelessWidget {
               child: DropdownButton<int>(
                 items: _buildDurationTypes(context),
                 value: selectedPeriod,
-                onChanged: (int val) => _setPeriodVal(val),
+                onChanged: _setPeriodVal,
               ),
             ),
             SizedBox(
@@ -396,7 +426,7 @@ class PeriodSelector extends StatelessWidget {
             DropdownButton<GamePeriodType>(
               value: selected,
               items: _buildPeriodTypes(context),
-              onChanged: (GamePeriodType ty) => _setPeriodType(ty),
+              onChanged: _setPeriodType,
             ),
           ],
         ),

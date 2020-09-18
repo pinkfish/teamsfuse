@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_fuse/widgets/util/numberpicker.dart';
 
+import '../util/numberpicker.dart';
+
+///
+/// Shows a number picker in a form.
+///
 class NumberPickerFormField extends FormField<num> {
+  /// Constructor.
   NumberPickerFormField({
     Key key,
-    num initialValue: 0,
-    num minValue: 0,
-    num maxValue: 1000,
-    InputDecoration decoration: const InputDecoration(),
+    num initialValue = 0,
+    num minValue = 0,
+    num maxValue = 1000,
+    InputDecoration decoration = const InputDecoration(),
     ValueChanged<num> onFieldSubmitted,
     FormFieldSetter<num> onSaved,
     FormFieldValidator<num> validator,
@@ -18,11 +23,9 @@ class NumberPickerFormField extends FormField<num> {
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,
-            builder: (FormFieldState<num> field) {
-              final NumberPickerFormFieldState state =
-                  field as NumberPickerFormFieldState;
-              final InputDecoration effectiveDecoration = (decoration ??
-                      const InputDecoration())
+            builder: (field) {
+              var state = field as _NumberPickerFormFieldState;
+              var effectiveDecoration = (decoration ?? const InputDecoration())
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme);
               return InputDecorator(
                   decoration:
@@ -31,14 +34,14 @@ class NumberPickerFormField extends FormField<num> {
                       initialValue: state.value.toInt(),
                       minValue: minValue.toInt(),
                       maxValue: maxValue.toInt(),
-                      onChanged: (num value) {
+                      onChanged: (value) {
                         field.didChange(value);
                         onFieldSubmitted(value);
                       }));
             });
 
   @override
-  NumberPickerFormFieldState createState() => NumberPickerFormFieldState();
+  _NumberPickerFormFieldState createState() => _NumberPickerFormFieldState();
 }
 
-class NumberPickerFormFieldState extends FormFieldState<num> {}
+class _NumberPickerFormFieldState extends FormFieldState<num> {}

@@ -1,36 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/games/attendancedialog.dart';
-import 'package:flutter_fuse/widgets/games/editresultdialog.dart';
-import 'package:flutter_fuse/widgets/games/multipleattendencedialog.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../services/messages.dart';
+import '../games/attendancedialog.dart';
+import '../games/editresultdialog.dart';
+import '../games/multipleattendencedialog.dart';
 import '../util/savingoverlay.dart';
 import 'gamedetailsbase.dart';
 import 'officalresultdialog.dart';
 
+///
+/// Show the details of the game in the main screen page.
+/// Lots of details.
+///
 class GameDetails extends StatefulWidget {
+  /// Constrcutor.
   GameDetails(this.gameBloc, {this.adding = false});
 
+  /// The game bloc to show the details for.
   final SingleGameBloc gameBloc;
+
+  /// If we are adding this game or not.
   final bool adding;
 
   @override
-  GameDetailsState createState() {
-    return GameDetailsState();
+  _GameDetailsState createState() {
+    return _GameDetailsState();
   }
 }
 
-class GameDetailsState extends State<GameDetails> {
+class _GameDetailsState extends State<GameDetails> {
   void openNavigation(Game game) {
-    String url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=" + Uri.encodeComponent(game.sharedData.place.address);
+    var url = "https://www.google.com/maps/dir/?api=1";
+    url += "&destination=${Uri.encodeComponent(game.sharedData.place.address)}";
     if (game.sharedData.place.placeId != null) {
-      url += "&destination_place_id=" +
-          Uri.encodeComponent(game.sharedData.place.placeId);
+      url +=
+          "&destination_place_id=${Uri.encodeComponent(game.sharedData.place.placeId)}";
     }
     launch(url);
   }
@@ -39,7 +47,7 @@ class GameDetailsState extends State<GameDetails> {
     // Call up a dialog to edit the result.
     await showDialog<bool>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         print("$widget");
         return EditResultDialog(widget.gameBloc);
       },
@@ -49,12 +57,12 @@ class GameDetailsState extends State<GameDetails> {
   void _openAttendance(Game game, Map<Player, Attendance> attendence) async {
     if (attendence.length == 1) {
       // Do a simple picker popup.
-      Player player = attendence.keys.first;
-      Attendance current = attendence[player];
+      var player = attendence.keys.first;
+      var current = attendence[player];
 
-      Attendance attend = await showDialog<Attendance>(
+      var attend = await showDialog<Attendance>(
           context: context,
-          builder: (BuildContext context) {
+          builder: (context) {
             return AttendanceDialog(current: current);
           });
       if (attend != null) {
@@ -62,14 +70,14 @@ class GameDetailsState extends State<GameDetails> {
             playerUid: player.uid, attendance: attend));
       }
     } else {
-      Map<Player, Attendance> attend = await showDialog(
+      var attend = await showDialog(
         context: context,
-        builder: (BuildContext context) {
+        builder: (context) {
           return MultipleAttendanceDialog(attendence);
         },
       );
       if (attend != null) {
-        attend.forEach((Player player, Attendance attend) {
+        attend.forEach((player, attend) {
           widget.gameBloc.add(SingleGameUpdateAttendance(
               playerUid: player.uid, attendance: attend));
         });
@@ -84,7 +92,7 @@ class GameDetailsState extends State<GameDetails> {
   ///
   void _editOfficialResult(
       GameSharedData sharedData, GameResultSharedDetails offical) {
-    LeagueOrTournamentBloc leagueOrTournamentBloc =
+    var leagueOrTournamentBloc =
         BlocProvider.of<LeagueOrTournamentBloc>(context);
 
     if (leagueOrTournamentBloc.state.leagueOrTournaments
@@ -94,8 +102,7 @@ class GameDetailsState extends State<GameDetails> {
         // Show it and forget it.
         showDialog<bool>(
             context: context,
-            builder: (BuildContext context) =>
-                OfficialResultDialog(sharedData));
+            builder: (context) => OfficialResultDialog(sharedData));
         return;
       }
     }
@@ -107,9 +114,9 @@ class GameDetailsState extends State<GameDetails> {
   ///
   void _copyOfficialResult(
       GameSharedData sharedData, GameResultSharedDetails details) async {
-    bool ret = await showDialog(
+    var ret = await showDialog(
         context: context,
-        builder: (BuildContext context) {
+        builder: (context) {
           return AlertDialog(
             title: Text(Messages.of(context).useofficialresultbutton),
             content: RichText(
@@ -133,7 +140,7 @@ class GameDetailsState extends State<GameDetails> {
         });
     if (ret != null && ret) {
       // Copy the result over and save.
-      GameResultDetailsBuilder newResult = GameResultDetailsBuilder();
+      var newResult = GameResultDetailsBuilder();
       newResult.scores[GamePeriod.regulation] = details.regulationResult;
       if (details.overtimeResult != null) {
         newResult.scores[GamePeriod.overtime] = details.overtimeResult;
@@ -150,7 +157,7 @@ class GameDetailsState extends State<GameDetails> {
   Widget build(BuildContext context) {
     return BlocListener(
       cubit: widget.gameBloc,
-      listener: (BuildContext context, SingleGameState state) {
+      listener: (context, state) {
         if (state is SingleGameDeleted) {
           Navigator.pop(context);
         }
@@ -159,7 +166,7 @@ class GameDetailsState extends State<GameDetails> {
       },
       child: BlocBuilder(
         cubit: widget.gameBloc,
-        builder: (BuildContext context, SingleGameState state) {
+        builder: (context, state) {
           if (state is SingleGameDeleted) {
             return CircularProgressIndicator();
           }

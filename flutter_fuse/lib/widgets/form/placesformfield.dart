@@ -1,15 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/map.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/inputdropdown.dart';
 
+import '../../services/map.dart';
+import '../../services/messages.dart';
+import '../util/inputdropdown.dart';
+
+///
+/// The places form field to use to select a specific place
+///
 class PlacesFormField extends FormField<LocationAndPlace> {
+  /// Constructor.
   PlacesFormField(
       {@required LocationAndPlace initialValue,
       Key key,
-      InputDecoration decoration: const InputDecoration(),
+      InputDecoration decoration = const InputDecoration(),
       ValueChanged<LocationAndPlace> onFieldSubmitted,
       FormFieldSetter<LocationAndPlace> onSaved,
       FormFieldValidator<LocationAndPlace> validator,
@@ -20,18 +25,17 @@ class PlacesFormField extends FormField<LocationAndPlace> {
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,
-            builder: (FormFieldState<LocationAndPlace> state) {
-              PlacesFormFieldState field = state as PlacesFormFieldState;
+            builder: (var state) {
+              var field = state as _PlacesFormFieldState;
 
-              final TextStyle valueStyle =
-                  Theme.of(field.context).textTheme.title;
-              final InputDecoration effectiveDecoration = (decoration ??
+              var valueStyle = Theme.of(field.context).textTheme.headline6;
+              var effectiveDecoration = (decoration ??
                       InputDecoration(labelText: labelText))
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme)
                   .copyWith(labelText: labelText);
 
-              List<Widget> children = <Widget>[];
-              children.add(const SizedBox(width: 12.0));
+              var children = <Widget>[];
+              children.add(SizedBox(width: 12.0));
               children.add(Expanded(
                 flex: 1,
                 child: InputDropdown(
@@ -60,17 +64,17 @@ class PlacesFormField extends FormField<LocationAndPlace> {
     return loc.details.name;
   }
 
+  /// The label text for the form field.
   final String labelText;
 
   @override
-  PlacesFormFieldState createState() => PlacesFormFieldState();
+  _PlacesFormFieldState createState() => _PlacesFormFieldState();
 }
 
-class PlacesFormFieldState extends FormFieldState<LocationAndPlace> {
+class _PlacesFormFieldState extends FormFieldState<LocationAndPlace> {
   Future<Null> _selectPlace(
       ValueChanged<LocationAndPlace> onFieldSubmitted) async {
-    final LocationAndPlace picked =
-        await MapData.instance.getPlaceAndLocation();
+    var picked = await MapData.instance.getPlaceAndLocation();
     if (picked != null) {
       didChange(picked);
       if (onFieldSubmitted != null) {

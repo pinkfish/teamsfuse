@@ -1,15 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../services/messages.dart';
 
 ///
 /// Picks a leagur or tournament team from the specified divison to
 /// set for a game.
 ///
 class TournamentOrLeagueTeamPicker extends StatefulWidget {
+  /// Constructor.
   TournamentOrLeagueTeamPicker(
       {@required this.onChanged,
       @required this.leagueOrTournamentDivisonBloc,
@@ -21,13 +23,25 @@ class TournamentOrLeagueTeamPicker extends StatefulWidget {
         .add(SingleLeagueOrTournamentDivisonLoadTeams());
   }
 
+  /// Called when the value changes.
   final ValueChanged<String> onChanged;
+
+  /// The bloc associated with the division to get the teams from.
   final SingleLeagueOrTournamentDivisonBloc leagueOrTournamentDivisonBloc;
+
+  /// If it is disabled.
   final bool disabled;
+
+  /// If the title is selected.
   final bool selectedTitle;
+
+  /// The initial team selected.
   final String initialTeamUid;
+
+  /// If we should include all the teams. (extra drop down item)
   final bool includeAll;
 
+  /// Constant used to identify 'all' teams.
   static const String all = 'all';
 
   @override
@@ -42,14 +56,14 @@ class _TournamentOrLeagueTeamPickerState
 
   List<DropdownMenuItem<String>> _buildItems(
       Iterable<LeagueOrTournamentTeam> teams) {
-    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    var ret = <DropdownMenuItem<String>>[];
     if (widget.includeAll) {
       ret.add(DropdownMenuItem<String>(
         child: Text(Messages.of(context).allteams),
         value: TournamentOrLeagueTeamPicker.all,
       ));
     }
-    for (LeagueOrTournamentTeam team in teams) {
+    for (var team in teams) {
       ret.add(DropdownMenuItem<String>(
         child: Text(team.name),
         value: team.uid,
@@ -66,58 +80,54 @@ class _TournamentOrLeagueTeamPickerState
         labelStyle: widget.selectedTitle
             ? Theme.of(context)
                 .textTheme
-                .subhead
+                .subtitle1
                 .copyWith(fontWeight: FontWeight.bold)
             : null,
       ),
-      child: BlocProvider(
-        create: (BuildContext context) => SingleLeagueOrTournamentDivisonBloc(
-            db: RepositoryProvider.of<DatabaseUpdateModel>(context)),
-        child: BlocBuilder(
-          cubit: BlocProvider.of<SingleLeagueOrTournamentDivisonBloc>(context),
-          builder: (BuildContext context,
-              SingleLeagueOrTournamentDivisonState state) {
-            BlocProvider.of<SingleLeagueOrTournamentDivisonBloc>(context)
-                .add(SingleLeagueOrTournamentDivisonLoadTeams());
-            if (state.teams.length == 0) {
-              if (widget.disabled) {
-                return Text(
-                  Messages.of(context).teamselect,
-                  style: Theme.of(context).textTheme.body1.copyWith(
-                      color: Theme.of(context).disabledColor, height: 3.0),
-                );
-              }
+      child: BlocBuilder(
+        cubit: widget.leagueOrTournamentDivisonBloc,
+        builder: (context, state) {
+          widget.leagueOrTournamentDivisonBloc
+              .add(SingleLeagueOrTournamentDivisonLoadTeams());
+          if (state.teams.length == 0) {
+            if (widget.disabled) {
               return Text(
-                Messages.of(context).loading,
-                style: Theme.of(context).textTheme.body1.copyWith(height: 3.0),
+                Messages.of(context).teamselect,
+                style: Theme.of(context).textTheme.bodyText2.copyWith(
+                    color: Theme.of(context).disabledColor, height: 3.0),
               );
             }
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Expanded(
-                  flex: 1,
-                  child: widget.disabled
-                      ? Text(
-                          Messages.of(context).teamselect,
-                          style: Theme.of(context).textTheme.body1.copyWith(
-                              color: Theme.of(context).disabledColor,
-                              height: 3.0),
-                        )
-                      : DropdownButton<String>(
-                          hint: Text(Messages.of(context).teamselect),
-                          items: _buildItems(state.teams.values),
-                          value: widget.initialTeamUid,
-                          onChanged: (String val) {
-                            widget.onChanged(val);
-                          },
-                        ),
-                ),
-              ],
+            return Text(
+              Messages.of(context).loading,
+              style:
+                  Theme.of(context).textTheme.bodyText2.copyWith(height: 3.0),
             );
-          },
-        ),
+          }
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Expanded(
+                flex: 1,
+                child: widget.disabled
+                    ? Text(
+                        Messages.of(context).teamselect,
+                        style: Theme.of(context).textTheme.bodyText2.copyWith(
+                            color: Theme.of(context).disabledColor,
+                            height: 3.0),
+                      )
+                    : DropdownButton<String>(
+                        hint: Text(Messages.of(context).teamselect),
+                        items: _buildItems(state.teams.values),
+                        value: widget.initialTeamUid,
+                        onChanged: (val) {
+                          widget.onChanged(val);
+                        },
+                      ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

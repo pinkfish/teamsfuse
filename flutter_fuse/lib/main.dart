@@ -15,7 +15,6 @@ import 'services/analytics.dart';
 import 'services/appconfiguration.dart';
 import 'services/firestore/firestore.dart' as fs;
 import 'services/loggingdata.dart';
-import 'services/sqldata.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +31,6 @@ void main() async {
   String currentTimeZone;
   ByteData loadedData;
   await Future.wait<dynamic>(<Future<dynamic>>[
-    SqlData.instance.initDatabase(),
     rootBundle.load('assets/timezone/2018c.tzf').then<ByteData>((data) {
       loadedData = data;
       print('loaded data');

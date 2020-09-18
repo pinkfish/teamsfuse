@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+
+///
+/// Show a dialog to set the attendance for this game/item.
+///
 class AttendanceDialog extends StatefulWidget {
+  /// Constructor.
   AttendanceDialog({this.current});
 
+  /// The current attendence setup.
   final Attendance current;
 
   @override
-  AttendanceDialogState createState() {
-    return AttendanceDialogState();
+  _AttendanceDialogState createState() {
+    return _AttendanceDialogState();
   }
 }
 
-class AttendanceDialogState extends State<AttendanceDialog> {
-  AttendanceDialogState();
-
+///
+/// The state to track for the attendance.
+///
+class _AttendanceDialogState extends State<AttendanceDialog> {
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
 
     return SimpleDialog(
       title: Text(Messages.of(context).attendanceselect),

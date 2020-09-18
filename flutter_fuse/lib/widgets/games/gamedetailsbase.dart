@@ -1,27 +1,39 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/map.dart';
-import 'package:flutter_fuse/services/map_view/marker.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/games/attendanceicon.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/teamimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
+import '../../services/map.dart';
+import '../../services/map_view/marker.dart';
+import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
+import '../games/attendanceicon.dart';
+import '../util/communityicons.dart';
+import '../util/teamimage.dart';
 import 'teamresults.dart';
 
-typedef void GameCallback(Game game);
-typedef void GameOfficialResult(
-    GameSharedData sharedData, GameResultSharedDetails details);
-typedef void GameCopyResult(
-    GameSharedData sharedData, GameFromOfficial details);
-typedef void GameOpenAttendence(Game game, Map<Player, Attendance> attendence);
+/// Callback for the game.
+typedef GameCallback = void Function(Game game);
 
+/// Callback for the offical result.
+typedef GameOfficialResult = void Function(
+    GameSharedData sharedData, GameResultSharedDetails details);
+
+/// Callback for the result of copying a game.
+typedef GameCopyResult = void Function(
+    GameSharedData sharedData, GameFromOfficial details);
+
+/// Callback when the attendance thing is being opened.
+typedef GameOpenAttendence = void Function(
+    Game game, Map<Player, Attendance> attendence);
+
+///
+/// The base for the game details.
+///
 class GameDetailsBase extends StatelessWidget {
+  /// Constructor.
   GameDetailsBase(
       {this.game,
       this.adding,
@@ -31,24 +43,37 @@ class GameDetailsBase extends StatelessWidget {
       this.editOfficialResult,
       this.copyOfficalResult});
 
+  /// The game to show the details of
   final Game game;
+
+  /// If we are currently adding this game
   final bool adding;
+
+  /// The edit callback for when it is edited.
   final GameCallback editResult;
+
+  /// Callback to open the attendence pieces
   final GameOpenAttendence openAttendence;
+
+  /// Navigate to the specific game.
   final GameCallback openNavigation;
+
+  /// The callback to edit the offical results.
   final GameOfficialResult editOfficialResult;
+
+  /// The callback when the offical result is copied to the local result.
   final GameCopyResult copyOfficalResult;
 
   Widget _buildAttendence(Game game, Season season, PlayerState playerState) {
-    List<Widget> availability = <Widget>[];
-    Map<Player, Attendance> availavilityResult = <Player, Attendance>{};
+    var availability = <Widget>[];
+    var availavilityResult = <Player, Attendance>{};
 
     if (season != null) {
-      playerState.players.forEach((String key, Player player) {
-        if (season.players.any((SeasonPlayer play) {
+      playerState.players.forEach((key, player) {
+        if (season.players.any((play) {
           return play.playerUid == key;
         })) {
-          Attendance attend = Attendance.Maybe;
+          var attend = Attendance.Maybe;
           if (game.attendance.containsKey(key)) {
             attend = game.attendance[key];
           }
@@ -101,40 +126,42 @@ class GameDetailsBase extends StatelessWidget {
       bool dontMatch) {
     // Started.
     TextSpan title;
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
     switch (details.result) {
       case GameResult.Unknown:
         if (inProgress) {
           title = TextSpan(
               text: Messages.of(context).resultinprogress(details),
-              style: theme.textTheme.subhead);
+              style: theme.textTheme.subtitle1);
         } else {
           title = TextSpan(
               text: Messages.of(context).resultunknown,
-              style: theme.textTheme.subhead);
+              style: theme.textTheme.subtitle1);
         }
         break;
       case GameResult.Loss:
         title = TextSpan(
             text: Messages.of(context).resultloss(details),
-            style: theme.textTheme.subhead.copyWith(color: theme.errorColor));
+            style: theme.textTheme.subtitle1.copyWith(color: theme.errorColor));
         break;
       case GameResult.Win:
         title = TextSpan(
             text: Messages.of(context).resultwin(details),
-            style: theme.textTheme.subhead.copyWith(color: theme.accentColor));
+            style:
+                theme.textTheme.subtitle1.copyWith(color: theme.accentColor));
         break;
       case GameResult.Tie:
         title = TextSpan(
             text: Messages.of(context).resulttie(details),
-            style: theme.textTheme.subhead);
+            style: theme.textTheme.subtitle1);
         break;
     }
 
     if (official) {
       title = TextSpan(
-          text: Messages.of(context).offical + "\n",
-          style: theme.textTheme.subhead.copyWith(fontWeight: FontWeight.w600),
+          text: "${Messages.of(context).offical}\n",
+          style:
+              theme.textTheme.subtitle1.copyWith(fontWeight: FontWeight.w600),
           children: <TextSpan>[title]);
     }
 
@@ -151,7 +178,7 @@ class GameDetailsBase extends StatelessWidget {
               Messages.of(context).officialdontmatch,
               style: Theme.of(context)
                   .textTheme
-                  .body1
+                  .bodyText2
                   .copyWith(color: theme.errorColor),
             )
           : null,
@@ -161,28 +188,27 @@ class GameDetailsBase extends StatelessWidget {
   Widget _buildGame(BuildContext context, SingleTeamState teamState) {
     print(
         'lat: ${game.sharedData.place.latitude} long: ${game.sharedData.place.longitude} ${game.uid}');
-    Marker marker = Marker(
+    var marker = Marker(
         game.sharedData.place.placeId,
         game.sharedData.place.address,
         game.sharedData.place.latitude.toDouble(),
         game.sharedData.place.longitude.toDouble());
-    Uri uri = MapData.instance.provider
+    var uri = MapData.instance.provider
         .getStaticUriWithMarkers(<Marker>[marker], width: 900, height: 400);
-    TimeOfDay day = TimeOfDay.fromDateTime(game.sharedData.tzTime);
-    TimeOfDay dayArrive = TimeOfDay.fromDateTime(game.tzArriveTime);
-    TimeOfDay dayEnd = TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
-    String dateStr = MaterialLocalizations.of(context)
+    var day = TimeOfDay.fromDateTime(game.sharedData.tzTime);
+    var dayArrive = TimeOfDay.fromDateTime(game.tzArriveTime);
+    var dayEnd = TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
+    var dateStr = MaterialLocalizations.of(context)
         .formatFullDate(game.sharedData.tzTime);
-    String timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
-    String endTimeStr =
-        MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
+    var timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
+    var endTimeStr = MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
     String tzShortName;
     if (game.sharedData.timezone != local.name) {
-      tzShortName = " (" +
-          getLocation(game.sharedData.timezone)
-              .timeZone(game.sharedData.time.toInt())
-              .abbr +
-          ")";
+      var abbr = getLocation(game.sharedData.timezone)
+          .timeZone(game.sharedData.time.toInt())
+          .abbr;
+
+      tzShortName = " ($abbr)";
     }
     print('${game.sharedData.timezone} $game.sharedData.tzTime}');
     String arriveAttimeStr;
@@ -194,10 +220,10 @@ class GameDetailsBase extends StatelessWidget {
       arriveAttimeStr = MaterialLocalizations.of(context).formatTimeOfDay(day) +
           (tzShortName ?? "");
     }
-    Opponent opponent = teamState.opponents[game.opponentUids[0]];
-    Season season = teamState.getSeason(game.seasonUid);
+    var opponent = teamState.opponents[game.opponentUids[0]];
+    var season = teamState.getSeason(game.seasonUid);
 
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
 
     Widget loadingWidget = Column(
       children: <Widget>[
@@ -206,7 +232,7 @@ class GameDetailsBase extends StatelessWidget {
       ],
     );
 
-    List<Widget> body = <Widget>[];
+    var body = <Widget>[];
     // Map view.
     body.add(
       Container(
@@ -248,28 +274,26 @@ class GameDetailsBase extends StatelessWidget {
           width: 50.0,
           height: 50.0,
         ),
-        title: Text(teamState.team.name, style: theme.textTheme.title),
+        title: Text(teamState.team.name, style: theme.textTheme.headline6),
         subtitle:
             arriveAttimeStr != null && game.sharedData.type == EventType.Game
-                ? Text('arrive at ' + arriveAttimeStr,
-                    style: theme.textTheme.subhead)
+                ? Text('arrive at $arriveAttimeStr',
+                    style: theme.textTheme.subtitle1)
                 : null,
         trailing: game.homegame ? const Icon(Icons.home) : null,
       ),
     );
 
     // Map details
+    var timeEnd = (game.sharedData.endTime == game.sharedData.time
+        ? ''
+        : " - $endTimeStr ${tzShortName ?? ''}");
     body.add(
       ListTile(
         leading: Icon(Icons.directions),
         title: Text(
-          dateStr +
-              " " +
-              timeStr +
-              (game.sharedData.endTime == game.sharedData.time
-                  ? ''
-                  : " - " + endTimeStr + (tzShortName ?? "")),
-          style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
+          "$dateStr $timeStr$timeEnd",
+          style: theme.textTheme.subtitle1.copyWith(color: theme.accentColor),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,7 +320,7 @@ class GameDetailsBase extends StatelessWidget {
             body.add(
               BlocBuilder(
                   cubit: BlocProvider.of<PlayerBloc>(context),
-                  builder: (BuildContext context, PlayerState playerState) =>
+                  builder: (context, playerState) =>
                       _buildAttendence(game, season, playerState)),
             );
           }
@@ -322,7 +346,7 @@ class GameDetailsBase extends StatelessWidget {
         }
 
         // Official results.
-        GameFromOfficial officalData =
+        var officalData =
             GameFromOfficial(game.sharedData, game.leagueOpponentUid);
         body.add(_buildGameResult(
             context,
@@ -372,7 +396,7 @@ class GameDetailsBase extends StatelessWidget {
         body.add(
           BlocBuilder(
             cubit: BlocProvider.of<PlayerBloc>(context),
-            builder: (BuildContext context, PlayerState playerState) =>
+            builder: (context, playerState) =>
                 _buildAttendence(game, season, playerState),
           ),
         );
@@ -433,8 +457,8 @@ class GameDetailsBase extends StatelessWidget {
         ),
       );
       if (teamState.fullSeason.length > 1) {
-        List<Widget> cols = <Widget>[];
-        for (Season otherSeason in teamState.fullSeason) {
+        var cols = <Widget>[];
+        for (var otherSeason in teamState.fullSeason) {
           if (otherSeason.uid != season.uid) {
             String seasonName;
             seasonName = otherSeason.name;
@@ -480,17 +504,16 @@ class GameDetailsBase extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleTeamProvider(
       teamUid: game.teamUid,
-      builder: (BuildContext context, SingleTeamBloc bloc) => BlocListener(
+      builder: (context, bloc) => BlocListener(
         cubit: bloc,
-        listener: (BuildContext context, SingleTeamState state) {
+        listener: (context, state) {
           if (state is SingleTeamLoaded) {
             bloc.add(SingleTeamLoadOpponents());
           }
         },
         child: BlocBuilder(
           cubit: bloc,
-          builder: (BuildContext context, SingleTeamState teamState) =>
-              _buildGame(context, teamState),
+          builder: (context, teamState) => _buildGame(context, teamState),
         ),
       ),
     );

@@ -1,22 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
+
+import '../../../services/messages.dart';
 
 ///
 /// Shows a dialog to change the score.
 ///
 Future<GameResultDetailsBuilder> changeScoreDialog(
     BuildContext context, GameResultDetails details) async {
-  Messages mess = Messages.of(context);
-  GlobalKey<_ChangeScoreState> detailsState =
-      GlobalKey<_ChangeScoreState>();
+  var mess = Messages.of(context);
+  var detailsState = GlobalKey<_ChangeScoreState>();
 
-  GameResultDetailsBuilder result = await showDialog<GameResultDetailsBuilder>(
+  var result = await showDialog<GameResultDetailsBuilder>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(mess.changescore),
           content: _ChangeScore(details.toBuilder(), detailsState),
@@ -29,8 +29,7 @@ Future<GameResultDetailsBuilder> changeScoreDialog(
               },
             ),
             FlatButton(
-              child:
-                  Text(MaterialLocalizations.of(context).cancelButtonLabel),
+              child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(null);
               },
@@ -61,14 +60,14 @@ class _ChangeScoreState extends State<_ChangeScore> {
   }
 
   List<Widget> _buildScores() {
-    List<Widget> ret = <Widget>[];
-    for (GamePeriod period in widget._details.scores.build().keys) {
-      GameResultPerPeriod result = widget._details.scores[period];
+    var ret = <Widget>[];
+    for (var period in widget._details.scores.build().keys) {
+      var result = widget._details.scores[period];
       ret.add(Text(
         Messages.of(context).periodname(result.period),
         style: Theme.of(context)
             .textTheme
-            .subhead
+            .subtitle1
             .copyWith(fontWeight: FontWeight.bold),
       ));
       ret.add(Row(
@@ -83,8 +82,8 @@ class _ChangeScoreState extends State<_ChangeScore> {
             child: TextFormField(
               keyboardType: TextInputType.number,
               initialValue: result.score.ptsFor.toString(),
-              onSaved: (String str) {
-                GameScoreBuilder builder = result.score.toBuilder();
+              onSaved: (str) {
+                var builder = result.score.toBuilder();
                 builder.ptsFor = int.parse(str);
                 widget._details.scores[period] =
                     result.rebuild((b) => b..score = builder);
@@ -100,8 +99,8 @@ class _ChangeScoreState extends State<_ChangeScore> {
             child: TextFormField(
               keyboardType: TextInputType.number,
               initialValue: result.score.ptsAgainst.toString(),
-              onSaved: (String str) {
-                GameScoreBuilder builder = result.score.toBuilder();
+              onSaved: (str) {
+                var builder = result.score.toBuilder();
                 builder.ptsAgainst = int.parse(str);
                 widget._details.scores[period] =
                     result.rebuild((b) => b..score = builder);

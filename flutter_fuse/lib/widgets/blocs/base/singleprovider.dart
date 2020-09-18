@@ -8,10 +8,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 ///
 class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
     extends StatefulWidget {
+  /// Constructor for the single bloc provider.
   SingleBlocProvider({this.builder, this.keyUid, this.creator});
 
+  /// the function to create the provider.
   final T Function(BuildContext context, String uid) creator;
+
+  /// The builder for the inside with the type associated with the data.
   final Widget Function(BuildContext context, T bloc) builder;
+
+  /// The keyUid to use to find it in the tree.
   final String keyUid;
 
   @override
@@ -37,7 +43,9 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
     if (!blocs.containsKey(widget.keyUid)) {
       try {
         _singleBloc = BlocProvider.of<T>(context);
-      } catch (_) {}
+      } catch (_) {
+        _singleBloc = null;
+      }
 
       if (_singleBloc == null) {
         _singleBloc = widget.creator(context, widget.keyUid);

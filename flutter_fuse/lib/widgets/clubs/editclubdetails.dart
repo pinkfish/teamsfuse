@@ -2,18 +2,24 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/services/validations.dart';
-import 'package:flutter_fuse/widgets/util/clubimage.dart';
-import 'package:flutter_fuse/widgets/util/ensurevisiblewhenfocused.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../services/messages.dart';
+import '../../services/validations.dart';
+import '../util/clubimage.dart';
+import '../util/ensurevisiblewhenfocused.dart';
+
+///
+/// A form to edit the details of the club.
+///
 class EditClubDetailsForm extends StatefulWidget {
+  /// Constructor.
   EditClubDetailsForm(this.club, GlobalKey<EditClubDetailsFormState> key)
       : super(key: key);
 
+  /// The club to edit the details of.
   final Club club;
 
   @override
@@ -22,13 +28,16 @@ class EditClubDetailsForm extends StatefulWidget {
   }
 }
 
+///
+/// State for editing the details of the club and doing stuff.
+///
 class EditClubDetailsFormState extends State<EditClubDetailsForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _autovalidate = false;
-  Validations _validations = Validations();
-  ScrollController _scrollController = ScrollController();
-  FocusNode _focusNodeName = FocusNode();
-  FocusNode _focusNodeArriveBefore = FocusNode();
+  final bool _autovalidate = false;
+  final Validations _validations = Validations();
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNodeName = FocusNode();
+  final FocusNode _focusNodeArriveBefore = FocusNode();
   File _imageFile;
   bool _changedImage = false;
   String _clubName;
@@ -43,20 +52,23 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
     _clubArriveBefore = widget.club.arriveBeforeGame;
   }
 
+  /// Save the club details.
   void save() {
     _formKey.currentState.save();
   }
 
+  /// validate the club details.
   bool validate() {
     return _formKey.currentState.validate();
   }
 
+  /// Validate the details and create the club for saving.
   ClubBuilder validateAndCreate() {
     if (!_formKey.currentState.validate()) {
       return null;
     } else {
       _formKey.currentState.save();
-      ClubBuilder club = ClubBuilder()
+      var club = ClubBuilder()
         ..uid = widget.club.uid
         ..name = _clubName
         ..arriveBeforeGame = _clubArriveBefore
@@ -64,7 +76,7 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
 
       // club, add in the default admin.
       if (club.uid == null) {
-        AuthenticationBloc bloc = BlocProvider.of<AuthenticationBloc>(context);
+        var bloc = BlocProvider.of<AuthenticationBloc>(context);
         club.membersData[bloc.currentUser.uid] =
             AddedOrAdmin((b) => b..admin = true);
       }
@@ -72,12 +84,13 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
     }
   }
 
+  /// Get the image file associated with this club.
   File getImageFile() {
     return _imageFile;
   }
 
   void _selectImage() async {
-    File imgFile = await ImagePicker.pickImage(
+    var imgFile = await ImagePicker.pickImage(
         source: ImageSource.gallery, maxHeight: 150.0, maxWidth: 150.0);
 
     if (imgFile != null) {
@@ -101,9 +114,9 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
       return Text('Invalid state');
     }
 
-    final Size screenSize = MediaQuery.of(context).size;
+    var screenSize = MediaQuery.of(context).size;
 
-    List<Widget> fields = <Widget>[
+    var fields = <Widget>[
       IconButton(
         onPressed: _selectImage,
         iconSize:
@@ -122,10 +135,10 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
           initialValue: widget.club.name,
           keyboardType: TextInputType.text,
           obscureText: false,
-          validator: (String value) {
+          validator: (value) {
             return _validations.validateDisplayName(context, value);
           },
-          onSaved: (String value) {
+          onSaved: (value) {
             _clubName = value;
           },
         ),
@@ -142,7 +155,7 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
           initialValue: widget.club.arriveBeforeGame.toString(),
           keyboardType: TextInputType.number,
           obscureText: false,
-          onSaved: (String value) {
+          onSaved: (value) {
             _clubArriveBefore = int.parse(value);
           },
         ),

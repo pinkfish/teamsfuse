@@ -15,6 +15,7 @@ typedef SingleLeagueOrTournamentProviderBuilder = Widget Function(
 ///
 class SingleLeagueOrTournamentProvider
     extends SingleBlocProvider<SingleLeagueOrTournamentBloc> {
+  /// Constructor
   SingleLeagueOrTournamentProvider(
       {String leagueUid, SingleLeagueOrTournamentProviderBuilder builder})
       : super(keyUid: leagueUid, creator: _createBloc, builder: builder);

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+///
+///
 class SwitchFormField extends FormField<bool> {
+  /// Constructor.
   SwitchFormField({
     Key key,
-    bool initialValue: false,
-    bool enabled: true,
+    bool initialValue = false,
+    bool enabled = true,
     IconData icon,
     String label,
     Widget child,
@@ -18,12 +21,11 @@ class SwitchFormField extends FormField<bool> {
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,
-          builder: (FormFieldState<bool> field) {
-            final _SwitchFormFieldState state = field as _SwitchFormFieldState;
-            InputDecorationTheme theme =
-                Theme.of(field.context).inputDecorationTheme;
+          builder: (field) {
+            var state = field as _SwitchFormFieldState;
+            var theme = Theme.of(field.context).inputDecorationTheme;
             ValueChanged<bool> onChanged = enabled
-                ? (bool value) {
+                ? (value) {
                     field.didChange(value);
                     if (onFieldSubmitted != null) {
                       onFieldSubmitted(value);
@@ -31,7 +33,7 @@ class SwitchFormField extends FormField<bool> {
                   }
                 : null;
 
-            TextStyle textStyle = (theme.labelStyle ?? theme.hintStyle);
+            var textStyle = (theme.labelStyle ?? theme.hintStyle);
             if (!enabled) {
               textStyle = textStyle.copyWith(
                   color: Theme.of(field.context).disabledColor);

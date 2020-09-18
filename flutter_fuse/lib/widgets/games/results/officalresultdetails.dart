@@ -1,20 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../../services/messages.dart';
 import '../../blocs/singlesharedgameprovider.dart';
 
-enum DetailsState { notStarted, inProgress, finalState }
+///
+/// The state of the detail for the offical results.
+///
+enum DetailsState {
+  /// The game has not started.
+  notStarted,
+
+  /// Game is in progress.
+  inProgress,
+
+  /// Final score has been entered.
+  finalState,
+}
 
 ///
 /// No logs in an offical result display.  Just set the
 /// values on a per period basis.
 ///
 class OfficalScoreDetails extends StatefulWidget {
+  /// Constructor.
   OfficalScoreDetails(this.game);
 
+  /// The game to show the offical results for.
   final GameSharedData game;
 
   @override
@@ -92,7 +106,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
   void _setupWinLossTie() {
     // Writes out the data too.
     if (!_results.scores.build().containsKey(GamePeriod.regulation)) {
-      GameScoreBuilder scoreBuilder = GameScoreBuilder()
+      var scoreBuilder = GameScoreBuilder()
         ..ptsFor = int.parse(_regulationHomePts.value.toString())
         ..ptsAgainst = int.parse(_regulationAwayPts.text.toString());
       _results.scores[GamePeriod.regulation] = (GameResultPerPeriodBuilder()
@@ -100,8 +114,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
             ..score = scoreBuilder)
           .build();
     } else {
-      print('froggy ${_regulationAwayPts.text}');
-      GameScoreBuilder scoreBuilder = GameScoreBuilder()
+      var scoreBuilder = GameScoreBuilder()
         ..ptsFor = int.parse(_regulationHomePts.text.toString())
         ..ptsAgainst = int.parse(_regulationAwayPts.text.toString());
       _results.scores[GamePeriod.regulation] = _results
@@ -114,7 +127,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
         // Remove it.
         _results.scores.remove(GamePeriod.overtime);
       } else {
-        GameScoreBuilder scoreBuilder = GameScoreBuilder()
+        var scoreBuilder = GameScoreBuilder()
           ..ptsFor = int.parse(_overtimeHomePts.text.toString())
           ..ptsAgainst = int.parse(_overtimeAwayPts.text.toString());
         _results.scores[GamePeriod.overtime] = _results
@@ -123,7 +136,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
       }
     } else {
       if (_overtimePeriod) {
-        GameScoreBuilder scoreBuilder = GameScoreBuilder()
+        var scoreBuilder = GameScoreBuilder()
           ..ptsFor = int.parse(_overtimeHomePts.text.toString())
           ..ptsAgainst = int.parse(_overtimeAwayPts.text.toString());
 
@@ -139,7 +152,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
         // Remove it.
         _results.scores.remove(GamePeriod.penalty);
       } else {
-        GameScoreBuilder scoreBuilder = GameScoreBuilder()
+        var scoreBuilder = GameScoreBuilder()
           ..ptsFor = int.parse(_penaltyHomePts.text.toString())
           ..ptsAgainst = int.parse(_penaltyAwayPts.text.toString());
         _results.scores[GamePeriod.overtime] = _results
@@ -148,7 +161,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
       }
     } else {
       if (_penaltyPeriod) {
-        GameScoreBuilder scoreBuilder = GameScoreBuilder()
+        var scoreBuilder = GameScoreBuilder()
           ..ptsFor = int.parse(_penaltyHomePts.text.toString())
           ..ptsAgainst = int.parse(_penaltyAwayPts.text.toString());
         _results.scores[GamePeriod.penalty] = (GameResultPerPeriodBuilder()
@@ -163,8 +176,8 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
     } else if (_currentState == DetailsState.inProgress) {
       _results.result = OfficialResult.InProgress;
     } else {
-      OfficialResult gameResult = OfficialResult.Tie;
-      for (GameResultPerPeriod p in _results.scores.build().values) {
+      var gameResult = OfficialResult.Tie;
+      for (var p in _results.scores.build().values) {
         // Lets see if we can get the right result out of here.
         if (p.score.ptsFor > p.score.ptsAgainst) {
           gameResult = OfficialResult.HomeTeamWon;
@@ -185,7 +198,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
     if (!_startedAsFinal) {
       ret = await showDialog(
           context: context,
-          builder: (BuildContext context) {
+          builder: (context) {
             return AlertDialog(
               title: Text(Messages.of(context).finalscore),
               content: Text(
@@ -245,7 +258,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
           margin: EdgeInsets.only(top: 5.0, left: 25.0, right: 5.0),
           child: Text(
             Messages.of(context).finalofficalscorebody(_results.build()),
-            style: Theme.of(context).textTheme.subhead,
+            style: Theme.of(context).textTheme.subtitle1,
           ),
         ),
       ],
@@ -259,25 +272,23 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
 
-    print("Stuff in here ${_results.result}");
-    TextStyle header = theme.textTheme.subhead.copyWith(
+    var header = theme.textTheme.subtitle1.copyWith(
         color: Theme.of(context).primaryColorDark, fontWeight: FontWeight.w500);
 
     return SingleSharedGameProvider(
       sharedGameUid: widget.game.uid,
-      builder: (BuildContext context, SingleSharedGameBloc bloc) =>
-          BlocListener(
+      builder: (context, bloc) => BlocListener(
         cubit: bloc,
-        listener: (BuildContext contect, SingleSharedGameState state) {
+        listener: (contect, state) {
           if (state is SingleSharedGameDeleted) {
             Navigator.pop(context);
           }
         },
         child: BlocBuilder(
           cubit: bloc,
-          builder: (BuildContext context, SingleSharedGameState state) {
+          builder: (context, state) {
             if (state is SingleSharedGameDeleted) {
               return Center(child: Text(Messages.of(context).nogames));
             }
@@ -354,8 +365,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                                     ),
                                     keyboardType: TextInputType.number,
                                     controller: _regulationHomePts,
-                                    onChanged: (String str) =>
-                                        _doStuff(() => false),
+                                    onChanged: (str) => _doStuff(() => false),
                                   ),
                                 ),
                                 SizedBox(width: 10.0),
@@ -367,8 +377,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                                     ),
                                     keyboardType: TextInputType.number,
                                     controller: _regulationAwayPts,
-                                    onChanged: (String str) =>
-                                        _doStuff(() => false),
+                                    onChanged: (str) => _doStuff(() => false),
                                   ),
                                 ),
                               ],
@@ -377,7 +386,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                           Divider(),
                           CheckboxListTile(
                             value: _overtimePeriod,
-                            onChanged: (bool val) =>
+                            onChanged: (val) =>
                                 setState(() => _overtimePeriod = val),
                             title: Text(
                               Messages.of(context).overtimeperiod,
@@ -399,8 +408,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                                     keyboardType: TextInputType.number,
                                     enabled: _overtimePeriod,
                                     controller: _overtimeAwayPts,
-                                    onChanged: (String str) =>
-                                        _doStuff(() => false),
+                                    onChanged: (str) => _doStuff(() => false),
                                   ),
                                 ),
                                 SizedBox(width: 10.0),
@@ -413,8 +421,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                                     enabled: _overtimePeriod,
                                     controller: _overtimeAwayPts,
                                     keyboardType: TextInputType.number,
-                                    onChanged: (String str) =>
-                                        _doStuff(() => false),
+                                    onChanged: (str) => _doStuff(() => false),
                                   ),
                                 ),
                               ],
@@ -423,7 +430,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                           Divider(),
                           CheckboxListTile(
                             value: _penaltyPeriod,
-                            onChanged: (bool val) =>
+                            onChanged: (val) =>
                                 setState(() => _penaltyPeriod = val),
                             title: Text(Messages.of(context).penaltyperiod),
                           ),
@@ -443,8 +450,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                                     keyboardType: TextInputType.number,
                                     enabled: _penaltyPeriod,
                                     controller: _penaltyHomePts,
-                                    onChanged: (String str) =>
-                                        _doStuff(() => false),
+                                    onChanged: (str) => _doStuff(() => false),
                                   ),
                                 ),
                                 SizedBox(width: 10.0),
@@ -457,8 +463,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                                     enabled: _penaltyPeriod,
                                     keyboardType: TextInputType.number,
                                     controller: _penaltyAwayPts,
-                                    onChanged: (String str) =>
-                                        _doStuff(() => false),
+                                    onChanged: (str) => _doStuff(() => false),
                                   ),
                                 ),
                               ],

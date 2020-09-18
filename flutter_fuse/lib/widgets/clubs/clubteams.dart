@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/teams/teamtile.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../teams/teamtile.dart';
+
+///
+/// Shows the teams inside the club.
+///
 class ClubTeams extends StatelessWidget {
+  /// Constructor.
   ClubTeams(this.clubBloc) {
     clubBloc.add(SingleClubLoadTeams());
   }
 
+  /// The club to show the teams for.
   final SingleClubBloc clubBloc;
 
   List<Widget> _teamTiles(BuildContext context, Iterable<Team> teams) {
-    List<Widget> teamWidgets = <Widget>[];
-    List<Team> myTeam = teams.toList();
-    myTeam.sort((Team a, Team b) => a.name.compareTo(b.name));
+    var teamWidgets = <Widget>[];
+    var myTeam = teams.toList();
+    myTeam.sort((a, b) => a.name.compareTo(b.name));
 
     if (myTeam.length == 0) {
       // Put in a no teams marker...
@@ -27,12 +33,12 @@ class ClubTeams extends StatelessWidget {
       teamWidgets.add(
         Center(
           child: Text(Messages.of(context).noteams,
-              style: Theme.of(context).textTheme.title),
+              style: Theme.of(context).textTheme.headline6),
         ),
       );
     }
 
-    for (Team team in myTeam) {
+    for (var team in myTeam) {
       teamWidgets.add(
         TeamTile(team.uid),
       );
@@ -41,7 +47,7 @@ class ClubTeams extends StatelessWidget {
   }
 
   Widget _buildTeams(BuildContext context, SingleClubState singleClubState) {
-    List<Widget> teamWidgets = <Widget>[];
+    var teamWidgets = <Widget>[];
     if (singleClubState is SingleClubLoaded) {
       if (singleClubState.teams.length != 0) {
         teamWidgets = _teamTiles(context, singleClubState.teams);
@@ -62,7 +68,7 @@ class ClubTeams extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder(
       cubit: clubBloc,
-      builder: (BuildContext context, SingleClubState state) {
+      builder: (context, state) {
         return _buildTeams(context, state);
       },
     );

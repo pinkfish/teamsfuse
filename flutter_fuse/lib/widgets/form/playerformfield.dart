@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+
+///
+/// A field in a form to allow for a player to be selected.
+///
 class PlayerFormField extends FormField<String> {
+  /// Constructor.
   PlayerFormField({
     Key key,
-    String initialValue: '',
-    InputDecoration decoration: const InputDecoration(),
+    String initialValue = '',
+    InputDecoration decoration = const InputDecoration(),
     this.addNew = true,
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
@@ -19,11 +23,10 @@ class PlayerFormField extends FormField<String> {
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,
-          builder: (FormFieldState<String> field) {
-            final PlayerFormFieldState state = field as PlayerFormFieldState;
+          builder: (field) {
+            var state = field as PlayerFormFieldState;
 
-            final InputDecoration effectiveDecoration = (decoration ??
-                    const InputDecoration())
+            var effectiveDecoration = (decoration ?? InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             return InputDecorator(
                 decoration: effectiveDecoration.copyWith(
@@ -31,12 +34,12 @@ class PlayerFormField extends FormField<String> {
                 ),
                 child: BlocBuilder(
                     cubit: BlocProvider.of<PlayerBloc>(state.context),
-                    builder: (BuildContext context, PlayerState playerState) {
+                    builder: (context, playerState) {
                       return DropdownButton<String>(
                         hint: Text(Messages.of(state.context).playerselecthint),
                         items: state._buildItems(state.context, playerState),
                         value: state.value,
-                        onChanged: (String val) {
+                        onChanged: (val) {
                           state.updateValue(val);
                           field.didChange(val);
                           if (onFieldSubmitted != null) {
@@ -48,29 +51,38 @@ class PlayerFormField extends FormField<String> {
           },
         );
 
+  /// Constant to mark as an add case.
   static const String addPlayer = 'add';
+
+  /// If the none of the players are selected.
   static const String nonePlayer = 'none';
 
+  /// If wer can add a new player or not.
   final bool addNew;
 
   @override
   PlayerFormFieldState createState() => PlayerFormFieldState();
 }
 
+///
+/// The state for the form field.
+///
 class PlayerFormFieldState extends FormFieldState<String> {
-  @override
-  PlayerFormField get widget {
-    PlayerFormField field = super.widget as PlayerFormField;
+  PlayerFormField get _widget {
+    var field = super.widget as PlayerFormField;
     return field;
   }
 
+  ///
+  /// Updates the value for this form field to select the specific player.
+  ///
   void updateValue(String val) {
     setValue(val);
   }
 
   List<DropdownMenuItem<String>> _buildItems(
       BuildContext context, PlayerState state) {
-    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    var ret = <DropdownMenuItem<String>>[];
     ret.add(
       DropdownMenuItem<String>(
         child: Text(Messages.of(context).playerselect),
@@ -78,13 +90,13 @@ class PlayerFormFieldState extends FormFieldState<String> {
       ),
     );
 
-    if (widget.addNew) {
+    if (_widget.addNew) {
       ret.add(DropdownMenuItem<String>(
           child: Text(Messages.of(context).addplayer),
           value: PlayerFormField.addPlayer));
     }
 
-    for (Player player in state.players.values) {
+    for (var player in state.players.values) {
       if (player.name != null) {
         ret.add(
           DropdownMenuItem<String>(

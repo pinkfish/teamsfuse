@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 
+import '../../services/messages.dart';
+
+///
+/// What to show when there are no games.  Empty!
+///
 class EmptyGameList extends StatelessWidget {
   void _addTeam(BuildContext context) {
     Navigator.pushNamed(context, "AddTeam");
@@ -14,9 +18,9 @@ class EmptyGameList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
+    var screenSize = MediaQuery.of(context).size;
     RaisedButton button;
-    TeamBloc teams = BlocProvider.of<TeamBloc>(context);
+    var teams = BlocProvider.of<TeamBloc>(context);
     if (teams.state.allTeamUids.length == 0) {
       button = RaisedButton(
         onPressed: () => _addTeam(context),

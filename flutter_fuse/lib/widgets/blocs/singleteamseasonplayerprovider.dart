@@ -16,13 +16,14 @@ typedef SingleTeamSeasonPlayerProviderBuilder = Widget Function(
 ///
 class SingleTeamSeasonPlayerProvider
     extends SingleBlocProvider<SingleTeamSeasonPlayerBloc> {
+  /// Constructor
   SingleTeamSeasonPlayerProvider(
       {String seasonUid,
       String playerUid,
       SingleTeamSeasonPlayerProviderBuilder builder})
       : super(
             keyUid: playerUid + playerUid,
-            creator: (BuildContext context, String uid) =>
+            creator: (context, uid) =>
                 _createBloc(context, playerUid, seasonUid),
             builder: builder);
 

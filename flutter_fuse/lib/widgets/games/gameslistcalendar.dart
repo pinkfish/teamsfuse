@@ -1,28 +1,47 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/widgets/games/gamecard.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 
+import '../games/gamecard.dart';
+
+typedef UpdateEvents = void Function();
+
+///
+/// The state to handle displaying the game list in the calendar.
+///
 class GameListCalendarState {
-  GameListCalendarState(this.details, this.state, this.gameBloc);
+  /// Constructor.
+  GameListCalendarState(this.details, this._gameBloc, this._updateEvents);
 
   StreamSubscription<GameState> _listening;
   List<Game> _listToShow = [];
+
+  /// Start point in the calendar for displaying thing on the screen.
   DateTime startPoint;
+
+  /// End point in the calendar for displaying thing on the screen.
   DateTime endPoint;
+
+  /// The current filter in terms of games being displayed.
   FilterDetails details;
   StreamController<UpdateReason> _controller = StreamController<UpdateReason>();
   Stream<UpdateReason> _myStream;
-  GlobalKey<CalendarWidgetState> state;
-  GameBloc gameBloc;
+  final UpdateEvents _updateEvents;
+  final GameBloc _gameBloc;
 
+  ///
+  /// Buildrs the widget for the specific calendar event.
+  ///
   Widget buildWidget(BuildContext context, CalendarEvent event) {
     return GameCard(gameUid: _listToShow[event.index].uid);
   }
 
+  ///
+  /// Gets the calendar events between the specified time periods.
+  ///
   List<CalendarEvent> getEvents(DateTime start, DateTime end) {
     print('Get events $start $end');
     if (startPoint == null ||
@@ -34,9 +53,9 @@ class GameListCalendarState {
       _resubscribe();
     }
 
-    List<CalendarEvent> events = <CalendarEvent>[];
-    int pos = 0;
-    for (Game g in _listToShow) {
+    var events = <CalendarEvent>[];
+    var pos = 0;
+    for (var g in _listToShow) {
       events.add(CalendarEvent(
           instant: g.sharedData.tzTime,
           instantEnd: g.sharedData.tzEndTime,
@@ -46,6 +65,7 @@ class GameListCalendarState {
     return events;
   }
 
+  /// Gets the stream of updates for this system.
   Stream<UpdateReason> get stream {
     if (_myStream == null) {
       _myStream = _controller.stream.asBroadcastStream();
@@ -53,10 +73,12 @@ class GameListCalendarState {
     return _myStream;
   }
 
+  /// Initializes the state and waits for game data.
   void initState() {
-    _listening = gameBloc.listen((GameState newState) => _setGames(newState));
+    _listening = _gameBloc.listen(_setGames);
   }
 
+  /// Cleans up the instances, closing all the various open streams.
   void dispose() {
     _listening?.cancel();
     _listening = null;
@@ -64,33 +86,32 @@ class GameListCalendarState {
     _controller = null;
   }
 
+  /// Loads the games.
   Future<void> loadGames(FilterDetails details) async {
     this.details = details;
     _resubscribe();
   }
 
   void _resubscribe() {
-    gameBloc.add(GameEventSetBoundaries(start: startPoint, end: endPoint));
+    _gameBloc.add(GameEventSetBoundaries(start: startPoint, end: endPoint));
   }
 
   void _setGames(GameState res) {
     Map<String, Game> gamesMap;
-    for (String t in res.gamesByTeam.keys) {
-      for (Game g in res.gamesByTeam[t].values) {
+    for (var t in res.gamesByTeam.keys) {
+      for (var g in res.gamesByTeam[t].values) {
         gamesMap[g.uid] = g;
       }
     }
-    print('_setGames');
-    List<Game> games = gamesMap.values.toList();
+    var games = gamesMap.values.toList();
 
     if (games.length > 0 || _listToShow == null) {
-      games.sort(
-          (Game a, Game b) => a.sharedData.time.compareTo(b.sharedData.time));
+      games.sort((a, b) => a.sharedData.time.compareTo(b.sharedData.time));
 
       _listToShow = games;
 
       _controller?.add(UpdateReason.Update);
-      state.currentState?.updateEvents();
+      _updateEvents();
     }
   }
 }

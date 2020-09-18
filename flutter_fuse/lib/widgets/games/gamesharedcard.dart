@@ -2,53 +2,60 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/games/officalresultdialog.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
-import 'package:flutter_fuse/widgets/util/leagueteamimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../services/messages.dart';
+import '../games/officalresultdialog.dart';
+import '../leagueortournament/leagueortournamentteamname.dart';
+import '../util/leagueteamimage.dart';
+
+///
+/// The shared details of the game.
+///
 class GameSharedCard extends StatelessWidget {
+  /// Constructor
   GameSharedCard(this.game);
 
+  /// The game shared details to look at.
   final GameSharedData game;
 
   void _editResult(BuildContext context) async {
     // Call up a dialog to edit the result.
-    await fullScreenDialog(
+    await _fullScreenDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return OfficialResultDialog(game);
       },
     );
   }
 
-  Future<bool> fullScreenDialog({BuildContext context, WidgetBuilder builder}) {
+  Future<bool> _fullScreenDialog(
+      {BuildContext context, WidgetBuilder builder}) {
     return Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute<bool>(builder: builder, fullscreenDialog: true));
   }
 
   void _showDirections(BuildContext context) {
-    String url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=" + Uri.encodeComponent(game.place.address);
+    var url = "https://www.google.com/maps/dir/?api=1";
+    url += "&destination=${Uri.encodeComponent(game.place.address)}";
     if (game.place.placeId != null) {
       url +=
-          "&destionation_place_id=" + Uri.encodeComponent(game.place.placeId);
+          "&destionation_place_id=${Uri.encodeComponent(game.place.placeId)}";
     }
     launch(url);
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> buttons = <Widget>[];
+    var buttons = <Widget>[];
 
-    TZDateTime timeNow = TZDateTime.now(local);
-    Duration dur = timeNow.difference(game.tzTime).abs();
-    TimeOfDay day = TimeOfDay.fromDateTime(game.tzTime);
-    String format = MaterialLocalizations.of(context).formatTimeOfDay(day);
+    var timeNow = TZDateTime.now(local);
+    var dur = timeNow.difference(game.tzTime).abs();
+    var day = TimeOfDay.fromDateTime(game.tzTime);
+    var format = MaterialLocalizations.of(context).formatTimeOfDay(day);
     String endTimeFormat;
     String tzShortName;
     if (game.timezone != local.name) {
@@ -58,7 +65,7 @@ class GameSharedCard extends StatelessWidget {
     print(
         "Times: ${game.time} ${game.endTime} ${game.tzTime} ${game.tzEndTime}");
     if (game.time != game.endTime) {
-      TimeOfDay endDay = TimeOfDay.fromDateTime(game.tzEndTime);
+      var endDay = TimeOfDay.fromDateTime(game.tzEndTime);
       endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
     }
 
@@ -79,7 +86,7 @@ class GameSharedCard extends StatelessWidget {
     }
 
     LeagueOrTournament leagueOrTournament;
-    LeagueOrTournamentBloc leagueOrTournamentBloc =
+    var leagueOrTournamentBloc =
         BlocProvider.of<LeagueOrTournamentBloc>(context);
     if (leagueOrTournamentBloc.state.leagueOrTournaments
         .containsValue(game.leagueUid)) {
@@ -99,32 +106,32 @@ class GameSharedCard extends StatelessWidget {
       );
     }
 
-    List<TextSpan> subtitle = <TextSpan>[];
+    var subtitle = <TextSpan>[];
     if (game.place.name.isNotEmpty) {
       subtitle.add(
         TextSpan(
-          style: Theme.of(context).textTheme.subhead,
-          text: game.place.name + "\n",
+          style: Theme.of(context).textTheme.subtitle1,
+          text: "${game.place.name}\n",
         ),
       );
     } else {
       subtitle.add(
         TextSpan(
-          style: Theme.of(context).textTheme.subhead,
-          text: game.place.address + "\n",
+          style: Theme.of(context).textTheme.subtitle1,
+          text: "${game.place.address}\n",
         ),
       );
     }
 
-    Color color = Colors.white;
+    var color = Colors.white;
     String title;
 
     if (game.time < timeNow.millisecondsSinceEpoch && dur.inMinutes < 60) {
       color = Colors.lightBlueAccent;
     }
 
-    TextStyle homeStyle = Theme.of(context).textTheme.body1;
-    TextStyle awayStyle = Theme.of(context).textTheme.body1;
+    var homeStyle = Theme.of(context).textTheme.bodyText2;
+    var awayStyle = Theme.of(context).textTheme.bodyText2;
 
     if (game.officialResult.result == OfficialResult.AwayTeamWon) {
       awayStyle =
@@ -135,7 +142,7 @@ class GameSharedCard extends StatelessWidget {
           homeStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w700);
     }
 
-    List<Widget> homeTeamDetails = <Widget>[
+    var homeTeamDetails = <Widget>[
       LeagueOrTournamentTeamName(
         game.officialResult.homeTeamLeagueUid,
         textAlign: TextAlign.start,
@@ -143,7 +150,7 @@ class GameSharedCard extends StatelessWidget {
         style: homeStyle,
       ),
     ];
-    List<Widget> awayTeamDetails = <Widget>[
+    var awayTeamDetails = <Widget>[
       LeagueOrTournamentTeamName(
         game.officialResult.awayTeamLeagueUid,
         textAlign: TextAlign.start,
@@ -159,10 +166,10 @@ class GameSharedCard extends StatelessWidget {
 
         // Add in the offical results.
         if (game.officialResult.result != OfficialResult.NotStarted) {
-          TextStyle homeStyle =
-              Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
-          TextStyle awayStyle =
-              Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
+          var homeStyle =
+              Theme.of(context).textTheme.headline4.copyWith(fontSize: 25.0);
+          var awayStyle =
+              Theme.of(context).textTheme.headline4.copyWith(fontSize: 25.0);
           if (game.officialResult.result == OfficialResult.AwayTeamWon) {
             awayStyle = awayStyle.copyWith(color: Colors.green);
           }
@@ -170,8 +177,8 @@ class GameSharedCard extends StatelessWidget {
             homeStyle = homeStyle.copyWith(color: Colors.green);
           }
           if (game.officialResult.scores.containsKey(GamePeriod.regulation)) {
-            TextStyle tmpHomeStyle = homeStyle;
-            TextStyle tmpAwayStyle = awayStyle;
+            var tmpHomeStyle = homeStyle;
+            var tmpAwayStyle = awayStyle;
             if (game.officialResult.scores.length > 1) {
               tmpHomeStyle = homeStyle.copyWith(fontSize: 20.0);
               tmpAwayStyle = awayStyle.copyWith(fontSize: 20.0);
@@ -223,7 +230,7 @@ class GameSharedCard extends StatelessWidget {
           ListTile(
             contentPadding: EdgeInsets.zero,
             onTap: () {
-              Navigator.pushNamed(context, "/SharedGame/" + game.uid);
+              Navigator.pushNamed(context, "/SharedGame/${game.uid}");
             },
             leading: LeagueTeamImage(
               leagueOrTeamUid: game.officialResult.homeTeamLeagueUid,
@@ -283,7 +290,7 @@ class GameSharedCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             tile,
-            ButtonTheme.bar(
+            ButtonBarTheme(
               // make buttons use the appropriate styles for cards
               child: ButtonBar(
                 children: buttons,

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+
+///
+/// The form field to select the sport.
+///
 class SportFormField extends FormField<Sport> {
+  /// COnstructor.
   SportFormField({
     Key key,
-    Sport initialValue: Sport.Other,
-    InputDecoration decoration: const InputDecoration(),
+    Sport initialValue = Sport.Other,
+    InputDecoration decoration = const InputDecoration(),
     ValueChanged<Sport> onFieldSubmitted,
     FormFieldSetter<Sport> onSaved,
     FormFieldValidator<Sport> validator,
@@ -16,11 +21,10 @@ class SportFormField extends FormField<Sport> {
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,
-            builder: (FormFieldState<Sport> field) {
-              final SportFormFieldState state = field as SportFormFieldState;
+            builder: (field) {
+              var state = field as SportFormFieldState;
 
-              final InputDecoration effectiveDecoration = (decoration ??
-                      const InputDecoration())
+              var effectiveDecoration = (decoration ?? const InputDecoration())
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme);
               return InputDecorator(
                   decoration:
@@ -29,7 +33,7 @@ class SportFormField extends FormField<Sport> {
                       hint: Text(Messages.of(state.context).opponentselect),
                       items: state._buildItems(state.context),
                       value: state.value,
-                      onChanged: (Sport val) {
+                      onChanged: (val) {
                         state.updateValue(val);
                         field.didChange(val);
                         if (onFieldSubmitted != null) {
@@ -42,20 +46,24 @@ class SportFormField extends FormField<Sport> {
   SportFormFieldState createState() => SportFormFieldState();
 }
 
+///
+/// The internal field state for the sport form.
+///
 class SportFormFieldState extends FormFieldState<Sport> {
+  /// The updated value to set the specific sport value.
   void updateValue(Sport val) {
     setValue(val);
   }
 
   List<DropdownMenuItem<Sport>> _buildItems(BuildContext context) {
-    List<DropdownMenuItem<Sport>> ret = <DropdownMenuItem<Sport>>[];
+    var ret = <DropdownMenuItem<Sport>>[];
 
-    Sport.values.forEach((Sport sport) {
+    for (var sport in Sport.values) {
       ret.add(DropdownMenuItem<Sport>(
         child: Text(Messages.of(context).sportname(sport)),
         value: sport,
       ));
-    });
+    }
 
     return ret;
   }

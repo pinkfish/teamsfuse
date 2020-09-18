@@ -1,19 +1,23 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/form/switchformfield.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../../services/messages.dart';
+import '../../form/switchformfield.dart';
+
+///
+/// Setup the time, using an exciting dialog.
+///
 Future<GamePeriodTime> timerSetupDialog(
     BuildContext context, GameResultDetails details) async {
-  Messages mess = Messages.of(context);
-  GlobalKey<_TimerDetailsState> detailsState = GlobalKey<_TimerDetailsState>();
+  var mess = Messages.of(context);
+  var detailsState = GlobalKey<_TimerDetailsState>();
 
-  GamePeriodTime result = await showDialog<GamePeriodTime>(
+  var result = await showDialog<GamePeriodTime>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(mess.deleteinvite),
           content: _TimerDetails(details.time, detailsState),
@@ -72,7 +76,7 @@ class _TimerDetailsState extends State<_TimerDetails> {
               SwitchFormField(
                 label: Messages.of(context).timercountup,
                 initialValue: widget._periodTime.timeCountUp,
-                onSaved: (bool value) => widget._periodTime.timeCountUp = value,
+                onSaved: (value) => widget._periodTime.timeCountUp = value,
               ),
             ],
           ),

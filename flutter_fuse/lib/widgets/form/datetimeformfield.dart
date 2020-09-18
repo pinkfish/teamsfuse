@@ -1,13 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/widgets/util/inputdropdown.dart';
 
+import '../util/inputdropdown.dart';
+
+///
+/// Form field to allow for the date/time to be selected and updated.
+///
 class DateTimeFormField extends FormField<DateTime> {
+  /// Constructor.
   DateTimeFormField(
       {@required DateTime initialValue,
       Key key,
-      InputDecoration decoration: const InputDecoration(),
+      InputDecoration decoration = const InputDecoration(),
       ValueChanged<DateTime> onFieldSubmitted,
       ValueChanged<Duration> onFieldChanged,
       FormFieldSetter<DateTime> onSaved,
@@ -21,18 +26,17 @@ class DateTimeFormField extends FormField<DateTime> {
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,
-            builder: (FormFieldState<DateTime> state) {
-              DateTimeFormFieldState field = state as DateTimeFormFieldState;
+            builder: (state) {
+              var field = state as DateTimeFormFieldState;
 
-              final TextStyle valueStyle =
-                  Theme.of(field.context).textTheme.title;
-              final InputDecoration effectiveDecoration = (decoration ??
+              var valueStyle = Theme.of(field.context).textTheme.headline6;
+              var effectiveDecoration = (decoration ??
                       InputDecoration(labelText: labelText))
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme)
                   .copyWith(labelText: labelText);
               print('label ${effectiveDecoration.labelText} $labelText');
 
-              List<Widget> children = <Widget>[];
+              var children = <Widget>[];
               if (!hideDate && !hideTime) {
                 children.add(Expanded(
                   flex: 4,
@@ -97,28 +101,39 @@ class DateTimeFormField extends FormField<DateTime> {
                   children: children);
             });
 
+  /// The label to show on the field.
   final String labelText;
+
+  /// If we should hide the date.
   final bool hideDate;
+
+  /// If we shuold hide the time.
   final bool hideTime;
 
   @override
   DateTimeFormFieldState createState() => DateTimeFormFieldState();
 }
 
+///
+/// The state to handle the datetime form field.
+///
 class DateTimeFormFieldState extends FormFieldState<DateTime> {
   @override
   DateTimeFormField get widget {
-    DateTimeFormField val = super.widget as DateTimeFormField;
+    var val = super.widget as DateTimeFormField;
     return val;
   }
 
+  ///
+  /// Update the value of the date/time to be this.
+  ///
   void updateValue(DateTime val) {
     setValue(val);
   }
 
   Future<Null> _selectDate(ValueChanged<DateTime> onFieldSubmitted,
       ValueChanged<Duration> onFieldChanged) async {
-    final DateTime picked = await showDatePicker(
+    var picked = await showDatePicker(
         context: context,
         initialDate: DateTime(value.year, value.month, value.day),
         firstDate: DateTime(2015, 8),
@@ -127,9 +142,9 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
         (picked.day != value.day ||
             picked.month != value.month ||
             picked.year != value.year)) {
-      DateTime newTime = DateTime(
+      var newTime = DateTime(
           picked.year, picked.month, picked.day, value.hour, value.minute);
-      Duration diff = value.difference(newTime);
+      var diff = value.difference(newTime);
 
       didChange(newTime);
       if (onFieldSubmitted != null) {
@@ -143,15 +158,15 @@ class DateTimeFormFieldState extends FormFieldState<DateTime> {
 
   Future<Null> _selectTime(ValueChanged<DateTime> onFieldSubmitted,
       ValueChanged<Duration> onFieldChanged) async {
-    final TimeOfDay picked = await showTimePicker(
+    var picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(value),
     );
     if (picked != null &&
         (picked.minute != value.minute || picked.hour != value.hour)) {
-      DateTime newTime = DateTime(
+      var newTime = DateTime(
           value.year, value.month, value.day, picked.hour, picked.minute);
-      Duration diff = value.difference(newTime);
+      var diff = value.difference(newTime);
       didChange(newTime);
       if (onFieldSubmitted != null) {
         onFieldSubmitted(newTime);

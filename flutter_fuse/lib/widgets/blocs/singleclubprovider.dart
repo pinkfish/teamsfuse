@@ -15,6 +15,7 @@ typedef SingleClubProviderBuilder = Widget Function(
 /// bloc is not current provided or is different than the clubuid.
 ///
 class SingleClubProvider extends SingleBlocProvider<SingleClubBloc> {
+  /// Constructor.
   SingleClubProvider({String clubUid, SingleClubProviderBuilder builder})
       : super(keyUid: clubUid, creator: _createBloc, builder: builder);
 

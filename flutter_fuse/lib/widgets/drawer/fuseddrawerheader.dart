@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 
+import '../../services/messages.dart';
+
+///
+/// The header for the fused drawer.
+///
 class FusedDrawerHeader extends StatelessWidget {
   void _showProfile(BuildContext context) {
     Navigator.pushNamed(context, "Profile");
@@ -12,7 +16,7 @@ class FusedDrawerHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder(
       cubit: BlocProvider.of<AuthenticationBloc>(context),
-      builder: (BuildContext context, AuthenticationState state) {
+      builder: (context, state) {
         if (state is AuthenticationLoggedIn) {
           return UserAccountsDrawerHeader(
             decoration: BoxDecoration(
@@ -21,7 +25,7 @@ class FusedDrawerHeader extends StatelessWidget {
                   fit: BoxFit.cover),
             ),
             currentAccountPicture: const CircleAvatar(
-              backgroundImage: const AssetImage(
+              backgroundImage: AssetImage(
                 "assets/images/defaultavatar2.png",
               ),
             ),

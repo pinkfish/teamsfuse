@@ -1,19 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:fusemodel/fusemodel.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+///
+/// Wrapper to handle all the sql data.
+///
 class SqlData {
+  /// The SqlData constrcutor.
   SqlData() {
     _initialized = _completer.future;
   }
 
   Database _database;
-  static SqlData _instance;
   String _path;
   Completer<bool> _completer = Completer<bool>();
   Future<bool> _initialized;
@@ -21,11 +23,11 @@ class SqlData {
 
   static const String _dbName = "teamfuse.db";
 
-  static const String indexColumn = "fluff";
-  static const String dataColumn = "data";
-  static const String teamUidColumn = "teamuid";
+  static const String _indexColumn = "fluff";
+  static const String _dataColumn = "data";
+  static const String _teamUidColumn = "teamuid";
 
-  static const List<String> _tables = const <String>[
+  static const List<String> _tables = <String>[
     PersistenDataFrog.teamsTable,
     PersistenDataFrog.seasonTable,
     PersistenDataFrog.playersTable,
@@ -35,46 +37,33 @@ class SqlData {
     PersistenDataFrog.clubsTable,
     PersistenDataFrog.leagueOrTournamentTable,
   ];
-  static const List<String> _teamSpecificTables = const <String>[
+  static const List<String> _teamSpecificTables = <String>[
     PersistenDataFrog.opponentsTable,
     PersistenDataFrog.gameTable
   ];
 
-  static SqlData get instance {
-    if (_instance == null) {
-      _instance = SqlData();
-    }
-    return _instance;
-  }
-
+  /// Initialize the sql database.
   Future<void> initDatabase() async {
     print('_initDatabase()');
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    var documentsDirectory = await getApplicationDocumentsDirectory();
     _path = join(documentsDirectory.path, _dbName);
     _database = await openDatabase(_path, version: 6,
-        onUpgrade: (Database db, int oldVersion, int newVersion) async {
+        onUpgrade: (db, oldVersion, newVersion) async {
       print('Upgrading db $oldVersion $newVersion');
       print('Finish upgrade');
-    }, onCreate: (Database db, int version) async {
-      await Future.forEach(_tables, (String table) async {
+    }, onCreate: (db, version) async {
+      await Future.forEach(_tables, (table) async {
         print('Made db $table');
-        return await db.execute("CREATE TABLE IF NOT EXISTS " +
-            table +
-            " (" +
-            indexColumn +
-            " text PRIMARY KEY, " +
-            dataColumn +
+        return await db.execute("CREATE TABLE IF NOT EXISTS $table"
+            " ($_indexColumn)"
+            " text PRIMARY KEY, $_dataColumn "
             " text NOT NULL);");
       });
-      await Future.forEach(_teamSpecificTables, (String table) async {
-        return db.execute("CREATE TABLE IF NOT EXISTS " +
-            table +
-            "(" +
-            indexColumn +
-            " text PRIMARY KEY, " +
-            teamUidColumn +
-            " text NOT NULL, " +
-            dataColumn +
+      await Future.forEach(_teamSpecificTables, (table) async {
+        return db.execute("CREATE TABLE IF NOT EXISTS $table"
+            "($_indexColumn)"
+            " text PRIMARY KEY, $_teamUidColumn "
+            " text NOT NULL, $_dataColumn"
             " text NOT NULL);");
       });
     });
@@ -82,8 +71,7 @@ class SqlData {
     print('out of here');
   }
 
-  // Close the database, delete everything and then reopen it.
-  @override
+  /// Close the database, delete everything and then reopen it.
   Future<void> recreateDatabase() async {
     if (_recreating) {
       return;
@@ -100,99 +88,87 @@ class SqlData {
     }
   }
 
-  // Gets all the data out of the json table.
-  @override
+  /// Gets all the data out of the json table.
   Future<Map<String, Map<String, dynamic>>> getAllElements(String table) async {
-    Map<String, Map<String, dynamic>> ret = <String, Map<String, dynamic>>{};
+    var ret = <String, Map<String, dynamic>>{};
     await _initialized;
 
-    List<Map<String, dynamic>> data = await _database.query(table);
+    var data = await _database.query(table);
 
-    for (Map<String, dynamic> innerData in data) {
-      ret[innerData[indexColumn].toString()] =
-          json.decode(innerData[dataColumn].toString()) as Map<String, dynamic>;
+    for (var innerData in data) {
+      ret[innerData[_indexColumn].toString()] = json
+          .decode(innerData[_dataColumn].toString()) as Map<String, dynamic>;
     }
 
     return ret;
   }
 
-  @override
+  /// Gets a specific element from the database.
   Future<Map<String, dynamic>> getElement(String tableId, String key) async {
     await _initialized;
-    Map<String, String> updateData = <String, String>{};
-    updateData[indexColumn] = key;
+    var updateData = <String, String>{};
+    updateData[_indexColumn] = key;
 
-    List<Map<String, dynamic>> data = await _database
-        .query(tableId, where: indexColumn + " = ?", whereArgs: <String>[key]);
+    var data = await _database
+        .query(tableId, where: "$_indexColumn = ?", whereArgs: <String>[key]);
     if (data == null || data.length == 0) {
       return null;
     }
 
-    return json.decode(data[0][dataColumn].toString()) as Map<String, dynamic>;
+    return json.decode(data[0][_dataColumn].toString()) as Map<String, dynamic>;
   }
 
-  @override
+  /// Update a specific element in the database.
   Future<void> updateElement(
       String tableId, String key, Map<String, dynamic> data) async {
     await _initialized;
-    String myJson = json.encode(data);
+    var myJson = json.encode(data);
 
     await _database.execute(
-        "insert or replace into " +
-            tableId +
-            " (" +
-            indexColumn +
-            ", " +
-            dataColumn +
-            ") values (?, ?)",
+        "insert or replace into $tableId "
+        " ($_indexColumn, $_dataColumn"
+        ") values (?, ?)",
         <String>[key, myJson]);
   }
 
-  @override
+  /// Delete a specific method from the database.
   Future<int> deleteElement(String tableId, String key) async {
     await _initialized;
     return _database
-        .delete(tableId, where: indexColumn + " = ?", whereArgs: <String>[key]);
+        .delete(tableId, where: "$_indexColumn = ?", whereArgs: <String>[key]);
   }
 
-  // Gets all the data out of the json table.
-  @override
+  /// Gets all the data out of the json table.
   Future<Map<String, Map<String, dynamic>>> getAllTeamElements(
       String table, String teamUid) async {
     await _initialized;
-    Map<String, Map<String, dynamic>> ret = <String, Map<String, dynamic>>{};
+    var ret = <String, Map<String, dynamic>>{};
 
-    List<Map<String, dynamic>> data = await _database.query(table,
-        where: teamUidColumn + " = ?", whereArgs: <String>[teamUid]);
+    var data = await _database.query(table,
+        where: "$_teamUidColumn = ?", whereArgs: <String>[teamUid]);
 
-    for (Map<String, dynamic> innerData in data) {
-      ret[innerData[indexColumn].toString()] =
-          json.decode(innerData[dataColumn].toString()) as Map<String, dynamic>;
+    for (var innerData in data) {
+      ret[innerData[_indexColumn].toString()] = json
+          .decode(innerData[_dataColumn].toString()) as Map<String, dynamic>;
     }
 
     return ret;
   }
 
-  @override
+  /// Update a team specific element.
   Future<void> updateTeamElement(String tableId, String key, String teamUid,
       Map<String, dynamic> data) async {
     await _initialized;
-    String myJson = json.encode(data);
+    var myJson = json.encode(data);
 
     await _database.execute(
-        "insert or replace into " +
-            tableId +
-            " (" +
-            indexColumn +
-            ", " +
-            teamUidColumn +
-            ", " +
-            dataColumn +
-            ") values (?, ?, ?)",
+        "insert or replace into $tableId "
+        " ($_indexColumn, $_teamUidColumn, $_dataColumn) "
+        ") values (?, ?, ?)",
         <String>[key, teamUid, myJson]);
   }
 
-  @override
+  /// Clears the specific table.
   Future<void> clearTable(String tableId) {
     return _database.delete(tableId);
   }

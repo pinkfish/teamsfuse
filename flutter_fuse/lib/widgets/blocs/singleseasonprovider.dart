@@ -16,12 +16,9 @@ typedef SingleSeasonProviderBuilder = Widget Function(
 /// bloc is not current provided or is different than the teamSeasonuid.
 ///
 class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
+  /// Constructor.
   SingleSeasonProvider({String seasonUid, SingleSeasonProviderBuilder builder})
-      : super(
-            keyUid: seasonUid,
-            creator: (BuildContext context, String uid) =>
-                _createBloc(context, uid),
-            builder: builder);
+      : super(keyUid: seasonUid, creator: _createBloc, builder: builder);
 
   static SingleSeasonBloc _createBloc(BuildContext context, String uid) {
     return SingleSeasonBloc(

@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import 'results/gamelogview.dart';
 import 'results/messagesend.dart';
 import 'results/scoredetails.dart';
 
+///
+/// Dialog to edit the result of the game.
+///
 class EditResultDialog extends StatelessWidget {
+  /// Constructor.
   EditResultDialog(this._game) {
     _game.add(SingleGameLoadGameLog());
   }
 
   final SingleGameBloc _game;
 
-  Widget buildGame(
+  Widget _buildGame(
       BuildContext context, Game game, Team team, Opponent opponent) {
-    ThemeData theme = Theme.of(context);
-    String resultStr = "";
+    var theme = Theme.of(context);
+    var resultStr = "";
 
     if (game.result.inProgress == GameInProgress.Final) {
       switch (game.result.result) {
@@ -41,9 +45,7 @@ class EditResultDialog extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          Messages.of(context).gametitlevs(game.sharedData, opponent.name) +
-              "  " +
-              resultStr,
+          "${Messages.of(context).gametitlevs(game.sharedData, opponent.name)}  $resultStr",
           overflow: TextOverflow.clip,
         ),
       ),
@@ -76,25 +78,26 @@ class EditResultDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener(
       cubit: _game,
-      listener: (BuildContext context, SingleGameState state) {
+      listener: (context, state) {
         if (state is SingleGameDeleted) {
           Navigator.pop(context);
         }
       },
       child: BlocBuilder(
         cubit: _game,
-        builder: (BuildContext context, SingleGameState state) {
+        builder: (context, state) {
           if (state is SingleGameDeleted) {
             return CircularProgressIndicator();
           }
           return SingleTeamProvider(
             teamUid: state.game.teamUid,
-            builder: (BuildContext context, SingleTeamBloc teamBloc) =>
-                BlocBuilder(
+            builder: (context, teamBloc) => BlocBuilder(
               cubit: teamBloc,
-              builder: (BuildContext context, SingleTeamState teamState) =>
-                  buildGame(context, state.game, teamState.team,
-                      teamState.opponents[state.game.opponentUids[0]]),
+              builder: (context, teamState) => _buildGame(
+                  context,
+                  state.game,
+                  teamState.team,
+                  teamState.opponents[state.game.opponentUids[0]]),
             ),
           );
         },

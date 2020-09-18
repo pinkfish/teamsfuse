@@ -1,34 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+
+///
+/// Shows multiple attendance players and sets the attendance for all of them.
+///
 class MultipleAttendanceDialog extends StatefulWidget {
+  /// Constructor.
   MultipleAttendanceDialog(this.attendance);
 
+  /// The attendence map to update.
   final Map<Player, Attendance> attendance;
 
   @override
-  MultipleAttendanceDialogState createState() {
-    return MultipleAttendanceDialogState(
-        Map<Player, Attendance>.from(attendance));
+  _MultipleAttendanceDialogState createState() {
+    return _MultipleAttendanceDialogState();
   }
 }
 
-class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
-  MultipleAttendanceDialogState(this._attendance);
-
-  Map<Player, Attendance> _attendance;
-  Set<Player> _changed = Set<Player>();
+class _MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
+  final Map<Player, Attendance> _updatedAttendance = <Player, Attendance>{};
 
   List<Widget> _buildAttendenceSet(BuildContext context) {
-    List<Widget> ret = <Widget>[];
+    var ret = <Widget>[];
 
-    ThemeData theme = Theme.of(context);
-    BoxDecoration selected = BoxDecoration(
+    var theme = Theme.of(context);
+    var selected = BoxDecoration(
       color: theme.highlightColor,
     );
 
-    _attendance.forEach((Player player, Attendance attend) {
+    for (var data in widget.attendance.entries) {
+      var player = data.key;
+      var attend = data.value;
+      if (_updatedAttendance.containsKey(player)) {
+        attend = _updatedAttendance[player];
+      }
       ret.add(
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,8 +53,7 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
                       iconSize: 24.0,
                       onPressed: () {
                         setState(() {
-                          _attendance[player] = Attendance.Yes;
-                          _changed.add(player);
+                          _updatedAttendance[player] = Attendance.Yes;
                         });
                       },
                       padding: EdgeInsets.zero,
@@ -60,8 +66,7 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
                       iconSize: 24.0,
                       onPressed: () {
                         setState(() {
-                          _attendance[player] = Attendance.No;
-                          _changed.add(player);
+                          _updatedAttendance[player] = Attendance.No;
                         });
                       },
                       padding: EdgeInsets.zero,
@@ -74,8 +79,7 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
                       iconSize: 24.0,
                       onPressed: () {
                         setState(() {
-                          _attendance[player] = Attendance.Maybe;
-                          _changed.add(player);
+                          _updatedAttendance[player] = Attendance.Maybe;
                         });
                       },
                       padding: EdgeInsets.zero,
@@ -88,22 +92,18 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
           ],
         ),
       );
-    });
+    }
 
     return ret;
   }
 
   void _saveDialog() {
-    if (_changed.length == 0) {
+    if (_updatedAttendance.length == 0) {
       // nothing.
       Navigator.pop(context);
       return;
     }
-    Map<Player, Attendance> ret = <Player, Attendance>{};
-    _changed.forEach((Player player) {
-      ret[player] = _attendance[player];
-    });
-    Navigator.pop(context, ret);
+    Navigator.pop(context, _updatedAttendance);
   }
 
   @override
@@ -121,7 +121,7 @@ class MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
                 padding:
                     const EdgeInsetsDirectional.fromSTEB(24.0, 24.0, 24.0, 0.0),
                 child: DefaultTextStyle(
-                    style: Theme.of(context).textTheme.title,
+                    style: Theme.of(context).textTheme.headline6,
                     child: Text(Messages.of(context).attendanceselect)),
               ),
               Flexible(

@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../../widgets/blocs/singleteamprovider.dart';
+import '../../services/messages.dart';
+import '../blocs/singleteamprovider.dart';
 
+///
+/// Shows a form field to select the season for the team.
+///
 class SeasonFormField extends FormField<String> {
+  /// Constructor.
   SeasonFormField({
     SingleTeamBloc teamBloc,
     Team team,
     Key key,
-    String initialValue: none,
-    bool enabled: true,
-    this.includeNone: false,
-    this.includeNew: false,
-    InputDecoration decoration: const InputDecoration(),
+    String initialValue = none,
+    bool enabled = true,
+    this.includeNone = false,
+    this.includeNew = false,
+    InputDecoration decoration = const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
@@ -26,17 +30,15 @@ class SeasonFormField extends FormField<String> {
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,
-          builder: (FormFieldState<String> field) {
-            final SeasonFormFieldState state = field as SeasonFormFieldState;
+          builder: (field) {
+            var state = field as SeasonFormFieldState;
             state._teamUid = teamBloc;
-            final InputDecoration effectiveDecoration = (decoration ??
-                    const InputDecoration())
+            var effectiveDecoration = (decoration ?? const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             if (teamBloc != null) {
               return BlocBuilder(
                 cubit: teamBloc,
-                builder:
-                    (BuildContext context, SingleTeamState singleTeamState) {
+                builder: (context, singleTeamState) {
                   return InputDecorator(
                     decoration: effectiveDecoration,
                     child: DropdownButton<String>(
@@ -45,7 +47,7 @@ class SeasonFormField extends FormField<String> {
                         items:
                             state._buildItems(state.context, singleTeamState),
                         onChanged: enabled
-                            ? (String val) {
+                            ? (val) {
                                 state.updateValue(val);
                                 field.didChange(val);
                                 if (onFieldSubmitted != null) {
@@ -59,13 +61,9 @@ class SeasonFormField extends FormField<String> {
             } else {
               return SingleTeamProvider(
                 teamUid: team.uid,
-                builder:
-                    (BuildContext context, SingleTeamBloc singleTeamBloc) =>
-                        BlocBuilder(
+                builder: (context, singleTeamBloc) => BlocBuilder(
                   cubit: singleTeamBloc,
-                  builder:
-                      (BuildContext context, SingleTeamState singleTeamState) =>
-                          InputDecorator(
+                  builder: (context, singleTeamState) => InputDecorator(
                     decoration: effectiveDecoration,
                     child: DropdownButton<String>(
                         hint: Text(Messages.of(state.context).seasonselect),
@@ -73,7 +71,7 @@ class SeasonFormField extends FormField<String> {
                         items:
                             state._buildItems(state.context, singleTeamState),
                         onChanged: enabled
-                            ? (String val) {
+                            ? (val) {
                                 state.updateValue(val);
                                 field.didChange(val);
                                 if (onFieldSubmitted != null) {
@@ -88,48 +86,58 @@ class SeasonFormField extends FormField<String> {
           },
         );
 
+  /// If we should include the none item.
   final bool includeNone;
+
+  /// If we should include the new item.
   final bool includeNew;
 
+  /// None constant if none of the seasons are selected.
   static const String none = 'none';
+
+  /// None constant if a new season is asked to be created.
   static const String createNew = 'new';
 
   @override
-  SeasonFormFieldState createState() =>
-      SeasonFormFieldState(includeNone, includeNew);
+  SeasonFormFieldState createState() => SeasonFormFieldState();
 }
 
+///
+/// The season form field state for the season.
+///
 class SeasonFormFieldState extends FormFieldState<String> {
-  SeasonFormFieldState(this._includeNone, this._includeNew);
+  SeasonFormField get _widget {
+    var field = super.widget as SeasonFormField;
+    return field;
+  }
 
   SingleTeamBloc _teamUid;
-  bool _includeNone;
-  bool _includeNew;
 
+  /// Update the value for the season, setting the current season.
   void updateValue(String val) {
     setValue(val);
   }
 
   List<DropdownMenuItem<String>> _buildItems(
       BuildContext context, SingleTeamState state) {
-    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    var ret = <DropdownMenuItem<String>>[];
     if (_teamUid != null) {
-      if (_includeNone) {
+      if (_widget.includeNone) {
         ret.add(DropdownMenuItem<String>(
           child: Text(Messages.of(context).noseasons),
           value: SeasonFormField.none,
         ));
       }
-      if (_includeNew) {
+      if (_widget.includeNew) {
         ret.add(DropdownMenuItem<String>(
           child: Text(Messages.of(context).addseason),
           value: SeasonFormField.createNew,
         ));
       }
-      state.fullSeason.forEach((Season season) {
+      for (var season in state.fullSeason) {
         ret.add(DropdownMenuItem<String>(
             child: Text(season.name), value: season.uid));
-      });
+      }
     }
 
     return ret;

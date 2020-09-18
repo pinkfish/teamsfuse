@@ -16,6 +16,7 @@ typedef SingleTeamProviderBuilder = Widget Function(
 /// bloc is not current provided or is different than the teamuid.
 ///
 class SingleTeamProvider extends SingleBlocProvider<SingleTeamBloc> {
+  /// Constructor.
   SingleTeamProvider({String teamUid, SingleTeamProviderBuilder builder})
       : super(keyUid: teamUid, creator: _createBloc, builder: builder);
 

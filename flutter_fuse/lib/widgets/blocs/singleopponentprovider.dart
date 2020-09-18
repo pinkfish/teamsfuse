@@ -14,13 +14,14 @@ typedef SingleOpponentProviderBuilder = Widget Function(
 /// bloc is not current provided or is different than the teamOpponentuid.
 ///
 class SingleOpponentProvider extends SingleBlocProvider<SingleOpponentBloc> {
+  /// Constructor.
   SingleOpponentProvider(
       {String opponentUid,
       SingleTeamBloc singleTeamBloc,
       SingleOpponentProviderBuilder builder})
       : super(
             keyUid: opponentUid,
-            creator: (BuildContext context, String uid) =>
+            creator: (context, uid) =>
                 _createBloc(context, singleTeamBloc, uid),
             builder: builder);
 

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+
+///
+/// Selector to select the gender in a form.
+///
 class GenderFormField extends FormField<Gender> {
+  /// Constructor.
   GenderFormField({
     @required Gender initialValue,
     Key key,
-    InputDecoration decoration: const InputDecoration(),
+    InputDecoration decoration = const InputDecoration(),
     ValueChanged<Gender> onFieldSubmitted,
     FormFieldSetter<Gender> onSaved,
     FormFieldValidator<Gender> validator,
@@ -16,11 +21,10 @@ class GenderFormField extends FormField<Gender> {
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,
-          builder: (FormFieldState<Gender> field) {
-            final GenderFormFieldState state = field as GenderFormFieldState;
+          builder: (var field) {
+            var state = field as _GenderFormFieldState;
 
-            final InputDecoration effectiveDecoration = (decoration ??
-                    const InputDecoration())
+            var effectiveDecoration = (decoration ?? const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             return InputDecorator(
               decoration:
@@ -29,7 +33,7 @@ class GenderFormField extends FormField<Gender> {
                 hint: Text(Messages.of(state.context).genderselect),
                 items: state._buildItems(state.context),
                 value: state.value,
-                onChanged: (Gender val) {
+                onChanged: (val) {
                   state.updateValue(val);
                   field.didChange(val);
                   if (onFieldSubmitted != null) {
@@ -42,13 +46,13 @@ class GenderFormField extends FormField<Gender> {
         );
 
   @override
-  GenderFormFieldState createState() => GenderFormFieldState();
+  _GenderFormFieldState createState() => _GenderFormFieldState();
 }
 
-class GenderFormFieldState extends FormFieldState<Gender> {
+class _GenderFormFieldState extends FormFieldState<Gender> {
   @override
   GenderFormField get widget {
-    GenderFormField field = super.widget as GenderFormField;
+    var field = super.widget as GenderFormField;
     return field;
   }
 
@@ -57,7 +61,7 @@ class GenderFormFieldState extends FormFieldState<Gender> {
   }
 
   List<DropdownMenuItem<Gender>> _buildItems(BuildContext context) {
-    List<DropdownMenuItem<Gender>> ret = <DropdownMenuItem<Gender>>[];
+    var ret = <DropdownMenuItem<Gender>>[];
     ret.add(DropdownMenuItem<Gender>(
       child: Text(Messages.of(context).genderfemale),
       value: Gender.Female,

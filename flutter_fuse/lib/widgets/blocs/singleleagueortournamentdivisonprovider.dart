@@ -15,13 +15,14 @@ typedef SingleLeagueOrTournamentDivisonProviderBuilder = Widget Function(
 ///
 class SingleLeagueOrTournamentDivisonProvider
     extends SingleBlocProvider<SingleLeagueOrTournamentDivisonBloc> {
+  /// constructor.
   SingleLeagueOrTournamentDivisonProvider(
       {String leagueDivisonUid,
       SingleLeagueOrTournamentDivisonProviderBuilder builder,
       SingleLeagueOrTournamentSeasonBloc singleLeagueOrTournamentSeasonBloc})
       : super(
             keyUid: leagueDivisonUid,
-            creator: (BuildContext context, String uid) =>
+            creator: (context, uid) =>
                 _createBloc(context, uid, singleLeagueOrTournamentSeasonBloc),
             builder: builder);
 

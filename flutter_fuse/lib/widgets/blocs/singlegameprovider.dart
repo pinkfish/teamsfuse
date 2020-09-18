@@ -17,6 +17,7 @@ typedef SingleGameProviderBuilder = Widget Function(
 ///
 
 class SingleGameProvider extends SingleBlocProvider<SingleGameBloc> {
+  /// Constructor.
   SingleGameProvider({String gameUid, SingleGameProviderBuilder builder})
       : super(keyUid: gameUid, creator: _createBloc, builder: builder);
 

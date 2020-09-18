@@ -12,6 +12,7 @@ typedef SingleUserProviderBuilder = Widget Function(
 /// bloc is not current provided or is different than the useruid.
 ///
 class SingleProfileProvider extends SingleBlocProvider<SingleProfileBloc> {
+  /// Constructor.
   SingleProfileProvider({String userUid, SingleUserProviderBuilder builder})
       : super(keyUid: userUid, creator: _createBloc, builder: builder);
 

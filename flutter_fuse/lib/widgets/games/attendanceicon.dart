@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+///
+/// The icon to display for the attendence.
+///
 class AttendanceIcon extends StatelessWidget {
+  /// Constructor.
   AttendanceIcon(this.attend);
 
+  /// The current attendence to display.
   final Attendance attend;
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
     if (attend != null) {
       switch (attend) {
         case Attendance.Yes:

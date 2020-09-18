@@ -3,25 +3,32 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/map.dart';
-import 'package:flutter_fuse/services/map_view/marker.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentname.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentteamname.dart';
-import 'package:flutter_fuse/widgets/util/communityicons.dart';
-import 'package:flutter_fuse/widgets/util/leagueimage.dart';
-import 'package:flutter_fuse/widgets/util/leagueteamimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../services/map.dart';
+import '../../services/map_view/marker.dart';
+import '../../services/messages.dart';
+import '../leagueortournament/leagueortournamentname.dart';
+import '../leagueortournament/leagueortournamentteamname.dart';
+import '../util/communityicons.dart';
+import '../util/leagueimage.dart';
+import '../util/leagueteamimage.dart';
 import 'officalresultdialog.dart';
 
+///
+/// Display the shared details for the game.
+///
 class GameSharedDetails extends StatefulWidget {
+  /// Constructor.
   GameSharedDetails(this.game, {this.adding = false});
 
+  /// The game to show the details of.
   final GameSharedData game;
+
+  /// If we are adding this game.
   final bool adding;
 
   @override
@@ -43,27 +50,28 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     teamUpdate = null;
   }
 
-  void openNavigation() {
-    String url = "https://www.google.com/maps/dir/?api=1";
-    url += "&destination=" + Uri.encodeComponent(widget.game.place.address);
+  void _openNavigation() {
+    var url = "https://www.google.com/maps/dir/?api=1";
+    url += "&destination=${Uri.encodeComponent(widget.game.place.address)}";
     if (widget.game.place.placeId != null) {
-      url += "&destination_place_id=" +
-          Uri.encodeComponent(widget.game.place.placeId);
+      url +=
+          "&destination_place_id=${Uri.encodeComponent(widget.game.place.placeId)}";
     }
     launch(url);
   }
 
   void _editResult() async {
     // Call up a dialog to edit the result.
-    await fullScreenDialog(
+    await _fullScreenDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return OfficialResultDialog(widget.game);
       },
     );
   }
 
-  Future<bool> fullScreenDialog({BuildContext context, WidgetBuilder builder}) {
+  Future<bool> _fullScreenDialog(
+      {BuildContext context, WidgetBuilder builder}) {
     return Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute<bool>(builder: builder, fullscreenDialog: true));
   }
@@ -72,40 +80,38 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
   Widget build(BuildContext context) {
     print(
         'lat: ${widget.game.place.latitude} long: ${widget.game.place.longitude} ${widget.game.uid}');
-    Marker marker = Marker(
+    var marker = Marker(
         widget.game.place.placeId,
         widget.game.place.address,
         widget.game.place.latitude.toDouble(),
         widget.game.place.longitude.toDouble());
-    Uri uri = MapData.instance.provider
+    var uri = MapData.instance.provider
         .getStaticUriWithMarkers(<Marker>[marker], width: 900, height: 400);
-    TimeOfDay day = TimeOfDay.fromDateTime(widget.game.tzTime);
-    TimeOfDay dayEnd = TimeOfDay.fromDateTime(widget.game.tzEndTime);
-    String dateStr =
+    var day = TimeOfDay.fromDateTime(widget.game.tzTime);
+    var dayEnd = TimeOfDay.fromDateTime(widget.game.tzEndTime);
+    var dateStr =
         MaterialLocalizations.of(context).formatFullDate(widget.game.tzTime);
-    String timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
-    String endTimeStr =
-        MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
+    var timeStr = MaterialLocalizations.of(context).formatTimeOfDay(day);
+    var endTimeStr = MaterialLocalizations.of(context).formatTimeOfDay(dayEnd);
     String tzShortName;
     if (widget.game.timezone != local.name) {
-      tzShortName = " (" +
-          getLocation(widget.game.timezone)
-              .timeZone(widget.game.time.toInt())
-              .abbr +
-          ")";
+      var abbr = getLocation(widget.game.timezone)
+          .timeZone(widget.game.time.toInt())
+          .abbr;
+      tzShortName = " ($abbr)";
     }
     print('${widget.game.timezone} ${widget.game.tzTime}');
 
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
 
-    Widget loadingWidget = Column(
+    var loadingWidget = Column(
       children: <Widget>[
         Text(Messages.of(context).loading),
         CircularProgressIndicator()
       ],
     );
 
-    List<Widget> body = <Widget>[];
+    var body = <Widget>[];
     // Map view.
     body.add(
       Container(
@@ -127,7 +133,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
               right: 20.0,
               bottom: 0.0,
               child: FloatingActionButton(
-                onPressed: openNavigation,
+                onPressed: _openNavigation,
                 child: const Icon(Icons.directions),
                 backgroundColor: Colors.orange,
                 heroTag: widget.game.uid,
@@ -139,8 +145,8 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     );
 
     // League details
-    TextStyle homeStyle = Theme.of(context).textTheme.subhead;
-    TextStyle awayStyle = Theme.of(context).textTheme.subhead;
+    var homeStyle = Theme.of(context).textTheme.subtitle1;
+    var awayStyle = Theme.of(context).textTheme.subtitle1;
 
     if (widget.game.officialResult.result == OfficialResult.AwayTeamWon) {
       awayStyle =
@@ -150,7 +156,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
       homeStyle =
           homeStyle.copyWith(color: Colors.green, fontWeight: FontWeight.w700);
     }
-    List<Widget> homeTeamDetails = <Widget>[
+    var homeTeamDetails = <Widget>[
       Align(
         alignment: Alignment.topRight,
         child: LeagueTeamImage(
@@ -167,7 +173,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
       )
     ];
 
-    List<Widget> awayTeamDetails = <Widget>[
+    var awayTeamDetails = <Widget>[
       Align(
         alignment: Alignment.topLeft,
         child: LeagueTeamImage(
@@ -185,10 +191,10 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
 
     if (widget.game.type == EventType.Game &&
         widget.game.officialResult.result != OfficialResult.NotStarted) {
-      TextStyle homeStyle =
-          Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
-      TextStyle awayStyle =
-          Theme.of(context).textTheme.display1.copyWith(fontSize: 25.0);
+      var homeStyle =
+          Theme.of(context).textTheme.headline4.copyWith(fontSize: 25.0);
+      var awayStyle =
+          Theme.of(context).textTheme.headline4.copyWith(fontSize: 25.0);
       if (widget.game.officialResult.result == OfficialResult.AwayTeamWon) {
         awayStyle = awayStyle.copyWith(color: Colors.green);
       }
@@ -197,8 +203,8 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
       }
       if (widget.game.officialResult.scores
           .containsKey(GamePeriod.regulation)) {
-        TextStyle tmpHomeStyle = homeStyle;
-        TextStyle tmpAwayStyle = awayStyle;
+        var tmpHomeStyle = homeStyle;
+        var tmpAwayStyle = awayStyle;
         if (widget.game.officialResult.scores.length > 1) {
           tmpHomeStyle = homeStyle.copyWith(fontSize: 20.0);
           tmpAwayStyle = awayStyle.copyWith(fontSize: 20.0);
@@ -266,7 +272,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
               child: Text(
                 'vs',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.title,
+                style: Theme.of(context).textTheme.headline6,
               ),
             ),
             Expanded(
@@ -286,17 +292,15 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     body.add(SizedBox(height: 10.0));
 
     // Map details
+    var lastBit = (widget.game.endTime == widget.game.time
+        ? ''
+        : " - ${endTimeStr + (tzShortName ?? '')}");
     body.add(
       ListTile(
         leading: Icon(Icons.directions),
         title: Text(
-          dateStr +
-              " " +
-              timeStr +
-              (widget.game.endTime == widget.game.time
-                  ? ''
-                  : " - " + endTimeStr + (tzShortName ?? "")),
-          style: theme.textTheme.subhead.copyWith(color: theme.accentColor),
+          "$dateStr $timeStr$lastBit",
+          style: theme.textTheme.subtitle1.copyWith(color: theme.accentColor),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -370,7 +374,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
           ),
         );
         LeagueOrTournament leagueOrTournament;
-        LeagueOrTournamentBloc leagueOrTournamentBloc =
+        var leagueOrTournamentBloc =
             BlocProvider.of<LeagueOrTournamentBloc>(context);
         if (leagueOrTournamentBloc.state.leagueOrTournaments
             .containsValue(widget.game.leagueUid)) {

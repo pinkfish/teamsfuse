@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+
+///
+/// The opponent form field to display the opponent and setup for
+/// selection.
+///
 class OpponentFormField extends FormField<String> {
+  /// Constructor.
   OpponentFormField({
     @required SingleTeamBloc teamBloc,
     Key key,
-    String initialValue: '',
-    InputDecoration decoration: const InputDecoration(),
+    String initialValue = '',
+    InputDecoration decoration = const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
@@ -20,19 +25,14 @@ class OpponentFormField extends FormField<String> {
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,
-          builder: (FormFieldState<String> field) {
-            final OpponentFormFieldState state =
-                field as OpponentFormFieldState;
-            state.teamBloc = teamBloc;
+          builder: (field) {
+            var state = field as OpponentFormFieldState;
 
-            final InputDecoration effectiveDecoration = (decoration ??
-                    const InputDecoration())
+            var effectiveDecoration = (decoration ?? const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             return BlocBuilder(
               cubit: teamBloc,
-              builder:
-                  (BuildContext context, SingleTeamState singleTeamState) =>
-                      InputDecorator(
+              builder: (context, singleTeamState) => InputDecorator(
                 decoration: effectiveDecoration.copyWith(
                   errorText: field.errorText,
                 ),
@@ -41,7 +41,7 @@ class OpponentFormField extends FormField<String> {
                       overflow: TextOverflow.clip),
                   items: state._buildItems(context, singleTeamState),
                   value: state.value,
-                  onChanged: (String val) {
+                  onChanged: (val) {
                     state.updateValue(val);
                     field.didChange(val);
                     if (onFieldSubmitted != null) {
@@ -54,40 +54,48 @@ class OpponentFormField extends FormField<String> {
           },
         );
 
+  /// None of the opponents are selected.
+  static const String none = 'none';
+
+  /// Add a new opponent is selected.
+  static const String add = 'add';
+
   @override
   OpponentFormFieldState createState() => OpponentFormFieldState();
 }
 
+///
+/// The state for the opponents form field.
+///
 class OpponentFormFieldState extends FormFieldState<String> {
-  SingleTeamBloc teamBloc;
-
+  /// Update the current value of the selected opponent.
   void updateValue(String val) {
     setValue(val);
   }
 
   List<DropdownMenuItem<String>> _buildItems(
       BuildContext context, SingleTeamState state) {
-    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    var ret = <DropdownMenuItem<String>>[];
     ret.add(DropdownMenuItem<String>(
       child: Text(
         Messages.of(context).opponentselect,
         overflow: TextOverflow.clip,
       ),
-      value: 'none',
+      value: OpponentFormField.none,
     ));
 
     ret.add(
       DropdownMenuItem<String>(
           child: Text(Messages.of(context).addopponent,
               overflow: TextOverflow.clip),
-          value: 'add'),
+          value: OpponentFormField.add),
     );
 
-    List<String> uids = state.opponents.keys.toList();
-    uids.sort((String v1, String v2) =>
+    var uids = state.opponents.keys.toList();
+    uids.sort((v1, v2) =>
         state.opponents[v1].name.compareTo(state.opponents[v2].name));
-    for (String opponentUid in uids) {
-      Opponent opponent = state.opponents[opponentUid];
+    for (var opponentUid in uids) {
+      var opponent = state.opponents[opponentUid];
       if (opponent.name != null) {
         ret.add(DropdownMenuItem<String>(
             child: Text(opponent.name, overflow: TextOverflow.clip),

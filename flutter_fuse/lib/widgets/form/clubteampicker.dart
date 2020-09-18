@@ -1,11 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+
+///
+/// The picker for the team in the club.
+///
 class ClubTeamPicker extends StatefulWidget {
+  /// Constructor.
   ClubTeamPicker({
     @required this.onChanged,
     @required this.clubBloc,
@@ -13,19 +18,26 @@ class ClubTeamPicker extends StatefulWidget {
     this.selectedTitle = false,
   });
 
+  /// The callback is onChanged.
   final ValueChanged<Team> onChanged;
+
+  /// The club bloc to get the details from.
   final SingleClubBloc clubBloc;
+
+  /// The team currently selected.
   final Team team;
+
+  /// If the title is selected.
   final bool selectedTitle;
 
   @override
-  ClubTeamPickerState createState() {
-    return ClubTeamPickerState();
+  _ClubTeamPickerState createState() {
+    return _ClubTeamPickerState();
   }
 }
 
-class ClubTeamPickerState extends State<ClubTeamPicker> {
-  ClubTeamPickerState() {
+class _ClubTeamPickerState extends State<ClubTeamPicker> {
+  _ClubTeamPickerState() {
     widget.clubBloc.add(SingleClubLoadTeams());
   }
 
@@ -49,12 +61,12 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
   }
 
   List<DropdownMenuItem<Team>> _buildItems(SingleClubState state) {
-    List<DropdownMenuItem<Team>> ret = <DropdownMenuItem<Team>>[];
+    var ret = <DropdownMenuItem<Team>>[];
     if (state.teams.length != 0) {
       print('Teams..');
-      List<Team> sorted = state.teams.toList();
+      var sorted = state.teams.toList();
       sorted.sort();
-      for (Team teamDrop in sorted) {
+      for (var teamDrop in sorted) {
         ret.add(DropdownMenuItem<Team>(
           child: Text(teamDrop.name),
           value: teamDrop,
@@ -72,7 +84,7 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
         labelStyle: widget.selectedTitle
             ? Theme.of(context)
                 .textTheme
-                .subhead
+                .subtitle1
                 .copyWith(fontWeight: FontWeight.bold)
             : null,
       ),
@@ -95,7 +107,7 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
           Messages.of(context).selectclub,
           style: Theme.of(context)
               .textTheme
-              .body1
+              .bodyText2
               .copyWith(color: Theme.of(context).disabledColor),
         ),
       );
@@ -103,7 +115,7 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
     } else {
       return BlocBuilder(
         cubit: widget.clubBloc,
-        builder: (BuildContext context, SingleClubState state) {
+        builder: (context, state) {
           Widget inner;
 
           if (state.teams.length == 0) {
@@ -111,7 +123,7 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
               leading: CircularProgressIndicator(),
               title: Text(
                 Messages.of(context).loading,
-                style: Theme.of(context).textTheme.body1,
+                style: Theme.of(context).textTheme.bodyText2,
               ),
             );
           } else {
@@ -119,7 +131,7 @@ class ClubTeamPickerState extends State<ClubTeamPicker> {
               hint: Text(Messages.of(context).teamselect),
               items: _buildItems(state),
               value: widget.team,
-              onChanged: (Team val) {
+              onChanged: (val) {
                 widget.onChanged(val);
               },
             );

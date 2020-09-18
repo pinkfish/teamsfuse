@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+
+///
+/// Role in the team form field.
+///
 class RoleInTeamFormField extends FormField<String> {
+  /// Constructor.
   RoleInTeamFormField({
     Key key,
-    String initialValue: 'none',
-    InputDecoration decoration: const InputDecoration(),
+    String initialValue = 'none',
+    InputDecoration decoration = const InputDecoration(),
     ValueChanged<String> onFieldSubmitted,
     FormFieldSetter<String> onSaved,
     FormFieldValidator<String> validator,
@@ -16,12 +21,10 @@ class RoleInTeamFormField extends FormField<String> {
             initialValue: initialValue,
             onSaved: onSaved,
             validator: validator,
-            builder: (FormFieldState<String> field) {
-              final RoleInTeamFormFieldState state =
-                  field as RoleInTeamFormFieldState;
+            builder: (field) {
+              var state = field as RoleInTeamFormFieldState;
 
-              final InputDecoration effectiveDecoration = (decoration ??
-                      const InputDecoration())
+              var effectiveDecoration = (decoration ?? const InputDecoration())
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme);
               return InputDecorator(
                 decoration:
@@ -30,7 +33,7 @@ class RoleInTeamFormField extends FormField<String> {
                   hint: Text(Messages.of(state.context).opponentselect),
                   items: state._buildItems(state.context),
                   value: state.value,
-                  onChanged: (String val) {
+                  onChanged: (val) {
                     state.updateValue(val);
                     field.didChange(val);
                     if (onFieldSubmitted != null) {
@@ -45,24 +48,28 @@ class RoleInTeamFormField extends FormField<String> {
   RoleInTeamFormFieldState createState() => RoleInTeamFormFieldState();
 }
 
+///
+/// The internal state for the role in team form field.
+///
 class RoleInTeamFormFieldState extends FormFieldState<String> {
+  /// Updates the role to be the new value.
   void updateValue(String val) {
     setValue(val);
   }
 
   List<DropdownMenuItem<String>> _buildItems(BuildContext context) {
-    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
+    var ret = <DropdownMenuItem<String>>[];
     ret.add(DropdownMenuItem<String>(
       child: Text(Messages.of(context).roleselect),
       value: 'none',
     ));
 
-    RoleInTeam.values.forEach((RoleInTeam role) {
+    for (var role in RoleInTeam.values) {
       ret.add(DropdownMenuItem<String>(
         child: Text(Messages.of(context).roleingame(role)),
         value: role.toString(),
       ));
-    });
+    }
 
     return ret;
   }

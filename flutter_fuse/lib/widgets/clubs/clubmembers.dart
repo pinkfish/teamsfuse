@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
-import 'package:flutter_fuse/widgets/util/userimage.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
+import '../util/userimage.dart';
+
+///
+/// Display the members of the club.
+///
 class ClubMembers extends StatelessWidget {
+  /// Constructor.
   ClubMembers(this.club);
 
+  /// The club to show members for.
   final Club club;
 
   void _deleteMember(BuildContext context, FusedUserProfile profile) async {
-    ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
+    var clubBloc = BlocProvider.of<ClubBloc>(context);
 
-    Messages mess = Messages.of(context);
+    var mess = Messages.of(context);
     // Show an alert dialog first.
-    bool result = await showDialog<bool>(
+    var result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(mess.deletemember),
           content: SingleChildScrollView(
@@ -54,10 +60,9 @@ class ClubMembers extends StatelessWidget {
   Widget _buildFromFuture(
       BuildContext context, SingleProfileState state, bool admin, String uid) {
     if ((state is SingleProfileLoaded)) {
-      FusedUserProfile profile = state.profile;
+      var profile = state.profile;
       if (profile != null) {
-        AuthenticationBloc authenticationBloc =
-            BlocProvider.of<AuthenticationBloc>(context);
+        var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
         return ListTile(
           leading: UserImage(profile),
           title: Text(profile.displayName),
@@ -79,35 +84,35 @@ class ClubMembers extends StatelessWidget {
   }
 
   List<Widget> _buildMembers(BuildContext context) {
-    List<Widget> members = <Widget>[];
+    var members = <Widget>[];
 
-    for (String adminUid in club.adminsUids) {
+    for (var adminUid in club.adminsUids) {
       var bloc = SingleProfileBloc(
           coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
           profileUid: adminUid,
           playerBloc: BlocProvider.of<PlayerBloc>(context));
       members.add(
         BlocProvider(
-          create: (BuildContext context) => bloc,
+          create: (context) => bloc,
           child: BlocBuilder(
             cubit: bloc,
-            builder: (BuildContext context, SingleProfileState state) =>
+            builder: (context, state) =>
                 _buildFromFuture(context, state, true, adminUid),
           ),
         ),
       );
     }
-    for (String memberUid in club.members) {
+    for (var memberUid in club.members) {
       var bloc = SingleProfileBloc(
           coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
           profileUid: memberUid,
           playerBloc: BlocProvider.of<PlayerBloc>(context));
       members.add(
         BlocProvider(
-          create: (BuildContext context) => bloc,
+          create: (context) => bloc,
           child: BlocBuilder(
             cubit: bloc,
-            builder: (BuildContext context, SingleProfileState state) =>
+            builder: (context, state) =>
                 _buildFromFuture(context, state, false, memberUid),
           ),
         ),

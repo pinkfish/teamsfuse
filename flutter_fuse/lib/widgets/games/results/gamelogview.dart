@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../../services/messages.dart';
+
+///
+/// Shows the game log on the screen.
+///
 class GameLogView extends StatelessWidget {
+  /// Constructor.
   GameLogView(this.game) {
     game.add(SingleGameLoadGameLog());
   }
 
+  /// The game the bloc is in.
   final SingleGameBloc game;
 
   Widget _buildGameItem(
@@ -50,7 +56,7 @@ class GameLogView extends StatelessWidget {
           MaterialLocalizations.of(context).formatFullDate(log.eventTime),
           style: Theme.of(context)
               .textTheme
-              .subhead
+              .subtitle1
               .copyWith(color: Colors.grey, fontSize: 15.0)),
       subtitle: subtitle,
     );
@@ -61,16 +67,16 @@ class GameLogView extends StatelessWidget {
     // Force the logs to load if they are not already.
     return BlocBuilder(
       cubit: game,
-      builder: (BuildContext context, SingleGameState state) {
-        TextStyle subheadStyle = Theme.of(context)
+      builder: (context, state) {
+        var subheadStyle = Theme.of(context)
             .textTheme
-            .subhead
+            .subtitle1
             .copyWith(color: Colors.black, fontSize: 20.0);
-        List<GameLog> logs = state.gameLog.toList();
+        var logs = state.gameLog.toList();
 
         return ListView.builder(
           scrollDirection: Axis.vertical,
-          itemBuilder: (BuildContext context, int index) {
+          itemBuilder: (context, index) {
             return _buildGameItem(context, logs[index], subheadStyle);
           },
           itemCount: logs.length,
