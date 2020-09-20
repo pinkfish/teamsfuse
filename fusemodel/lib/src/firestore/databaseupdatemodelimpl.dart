@@ -181,7 +181,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   // Message Recipients
   @override
   Future<void> updateMessageRecipientState(
-      MessageRecipient rec, MessageState state) {
+      MessageRecipient rec, MessageReadState state) {
     DocumentReferenceWrapper doc =
         wrapper.collection(MESSAGE_RECIPIENTS_COLLECTION).document(rec.uid);
     return doc
@@ -563,6 +563,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         GameSharedData sharedData;
         if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
           print(snap.data[Game.GAMESHAREDDATA]);
+          snap.data[Game.GAMESHAREDDATA]['uid'] = sharedGameUid;
           sharedData = GameSharedData.fromMap(
               snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>);
         } else {
@@ -1019,25 +1020,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   // Loads the seasons for the team.  This is only used for
   // admin teams and club teams.
-  Stream<Iterable<Season>> getSeasonsForTeam(String teamUid) async* {
+  Stream<BuiltList<Season>> getSeasonsForTeam(String teamUid) async* {
     // Find the seasons for the team.
     QueryWrapper query = wrapper
         .collection(SEASONS_COLLECTION)
         .where(Season.TEAMUID, isEqualTo: teamUid);
-    List<Season> seasons = [];
     var snap = await query.getDocuments();
-    for (DocumentSnapshotWrapper doc in snap.documents) {
-      Season season = Season.fromMap(doc.data);
-      seasons.add(season);
-    }
-    yield seasons;
+    yield BuiltList(snap.documents.map((d) => Season.fromMap(d.data)));
     await for (QuerySnapshotWrapper snap in query.snapshots()) {
-      List<Season> seasons = [];
-      for (DocumentSnapshotWrapper doc in snap.documents) {
-        Season season = Season.fromMap(doc.data);
-        seasons.add(season);
-      }
-      yield seasons;
+      yield BuiltList(snap.documents.map((d) => Season.fromMap(d.data)));
     }
   }
 
@@ -1590,7 +1581,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .collection(MESSAGE_RECIPIENTS_COLLECTION)
           .where(MessageRecipient.USERID, isEqualTo: userData.uid)
           .where(MessageRecipient.STATE,
-              isEqualTo: MessageState.Unread.toString());
+              isEqualTo: MessageReadState.Unread.toString());
     } else {
       query = wrapper
           .collection(MESSAGE_RECIPIENTS_COLLECTION)

@@ -10,18 +10,20 @@ part 'message.g.dart';
 ///
 /// Current read/unread state of the message
 ///
-class MessageState extends EnumClass {
-  static Serializer<MessageState> get serializer => _$messageStateSerializer;
+class MessageReadState extends EnumClass {
+  static Serializer<MessageReadState> get serializer =>
+      _$messageReadStateSerializer;
 
-  static const MessageState Read = _$Read;
-  static const MessageState Unread = _$Unread;
-  static const MessageState Archived = _$Archived;
+  static const MessageReadState Read = _$Read;
+  static const MessageReadState Unread = _$Unread;
+  static const MessageReadState Archived = _$Archived;
 
-  const MessageState._(String name) : super(name);
+  const MessageReadState._(String name) : super(name);
 
-  static BuiltSet<MessageState> get values => _$MessageStateValues;
+  static BuiltSet<MessageReadState> get values => _$MessageReadStateValues;
 
-  static MessageState valueOf(String name) => _$MessageStateValueOf(name);
+  static MessageReadState valueOf(String name) =>
+      _$MessageReadStateValueOf(name);
 }
 
 ///
@@ -37,7 +39,7 @@ abstract class MessageRecipient
   String get messageId;
   @nullable
   num get sentAt;
-  MessageState get state;
+  MessageReadState get state;
 
   MessageRecipient._();
   factory MessageRecipient([updates(MessageRecipientBuilder b)]) =

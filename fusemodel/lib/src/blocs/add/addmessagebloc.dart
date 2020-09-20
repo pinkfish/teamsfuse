@@ -59,7 +59,7 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
             ..fromUid = coordinationBloc.authenticationBloc.currentUser.uid;
           for (String str in event.recipients) {
             builder.recipients[str] = MessageRecipient((b) => b
-              ..state = MessageState.Unread
+              ..state = MessageReadState.Unread
               ..playerId = str);
           }
 

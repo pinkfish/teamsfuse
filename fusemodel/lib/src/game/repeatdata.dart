@@ -7,11 +7,19 @@ import '../serializer.dart';
 
 part 'repeatdata.g.dart';
 
+///
+/// The repeat period to use for the event.
+///
 class RepeatPeriod extends EnumClass {
   static Serializer<RepeatPeriod> get serializer => _$repeatPeriodSerializer;
 
+  /// No repeat,
   static const RepeatPeriod None = _$None;
+
+  /// Weekly repeat.
   static const RepeatPeriod Weekly = _$Weekly;
+
+  /// Monthly repeat.
   static const RepeatPeriod Monthly = _$Monthly;
 
   const RepeatPeriod._(String name) : super(name);
@@ -21,6 +29,9 @@ class RepeatPeriod extends EnumClass {
   static RepeatPeriod valueOf(String name) => _$RepeatPeriodValueOf(name);
 }
 
+///
+/// Data associated with the repeat information.
+///
 abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
   RepeatData._();
 

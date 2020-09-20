@@ -79,6 +79,8 @@ class SingleSeasonBloc
     extends AsyncHydratedBloc<SingleSeasonEvent, SingleSeasonState> {
   final DatabaseUpdateModel db;
   final String seasonUid;
+  bool _willLoadGames = false;
+  bool _willLoadInvites = false;
 
   StreamSubscription<Season> _seasonSub;
   StreamSubscription<Iterable<InviteToTeam>> _inviteSub;
@@ -117,6 +119,14 @@ class SingleSeasonBloc
       yield (SingleSeasonLoaded.fromState(state)
             ..season = event.newSeason.toBuilder())
           .build();
+      if (_willLoadGames) {
+        _willLoadGames = false;
+        add(SingleSeasonLoadGames());
+      }
+      if (_willLoadInvites) {
+        _willLoadGames = false;
+        add(SingleSeasonLoadInvites());
+      }
     }
 
     // The team is deleted.
@@ -138,23 +148,31 @@ class SingleSeasonBloc
     }
 
     if (event is SingleSeasonLoadInvites) {
-      if (_inviteSub == null) {
-        _inviteSub = db
-            .getInviteForSeasonStream(
-                seasonUid: seasonUid, teamUid: state.season.teamUid)
-            .listen((Iterable<InviteToTeam> invites) {
-          add(_SingleSeasonLoadedInvites(invites: invites));
-        });
+      if (state is SingleSeasonUninitialized) {
+        _willLoadInvites = true;
+      } else {
+        if (_inviteSub == null) {
+          _inviteSub = db
+              .getInviteForSeasonStream(
+                  seasonUid: seasonUid, teamUid: state.season.teamUid)
+              .listen((Iterable<InviteToTeam> invites) {
+            add(_SingleSeasonLoadedInvites(invites: invites));
+          });
+        }
       }
     }
 
     if (event is SingleSeasonLoadGames) {
-      print('Loading games');
-      if (_gameSub == null) {
-        _gameSub =
-            db.getSeasonGames(state.season).listen((GameSnapshotEvent games) {
-          add(_SingleSeasonLoadedGames(games: BuiltList.of(games.newGames)));
-        });
+      if (state is SingleSeasonUninitialized) {
+        _willLoadGames = true;
+      } else {
+        print('Loading games');
+        if (_gameSub == null) {
+          _gameSub =
+              db.getSeasonGames(state.season).listen((GameSnapshotEvent games) {
+            add(_SingleSeasonLoadedGames(games: BuiltList.of(games.newGames)));
+          });
+        }
       }
     }
 

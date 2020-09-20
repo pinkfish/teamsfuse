@@ -26,7 +26,7 @@ class MessagesBlocStateType extends EnumClass {
 /// exciting messages stuff.
 ///
 @BuiltValue(instantiable: false)
-abstract class MessagesState with MessageMixin {
+abstract class MessagesBlocState with MessageMixin {
   @override
   BuiltMap<String, Message> get unreadMessages;
   @override
@@ -37,15 +37,15 @@ abstract class MessagesState with MessageMixin {
   @BuiltValueField(serialize: false)
   bool get loadedFirestore;
 
-  static MessagesStateBuilder fromState(
-      MessagesState state, MessagesStateBuilder builder) {
+  static MessagesBlocStateBuilder fromState(
+      MessagesBlocState state, MessagesBlocStateBuilder builder) {
     return builder
       ..unreadMessages = state.unreadMessages.toBuilder()
       ..recentMessages = state.recentMessages.toBuilder()
       ..loadedFirestore = state.loadedFirestore;
   }
 
-  static void initializeStateBuilder(MessagesStateBuilder b) =>
+  static void initializeStateBuilder(MessagesBlocStateBuilder b) =>
       b..loadedFirestore = false;
 
   Map<String, dynamic> toMap();
@@ -71,18 +71,18 @@ abstract class MessageMixin {
 ///
 abstract class MessagesLoaded
     with MessageMixin
-    implements MessagesState, Built<MessagesLoaded, MessagesLoadedBuilder> {
+    implements MessagesBlocState, Built<MessagesLoaded, MessagesLoadedBuilder> {
   MessagesLoaded._();
   factory MessagesLoaded([void Function(MessagesLoadedBuilder) updates]) =
       _$MessagesLoaded;
 
-  static MessagesLoadedBuilder fromState(MessagesState state) {
-    return MessagesState.fromState(state, MessagesLoadedBuilder());
+  static MessagesLoadedBuilder fromState(MessagesBlocState state) {
+    return MessagesBlocState.fromState(state, MessagesLoadedBuilder());
   }
 
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(MessagesLoadedBuilder b) {
-    MessagesState.initializeStateBuilder(b);
+    MessagesBlocState.initializeStateBuilder(b);
 
     b..type = MessagesBlocStateType.Loaded;
   }
@@ -105,20 +105,20 @@ abstract class MessagesLoaded
 abstract class MessagesUninitialized
     with MessageMixin
     implements
-        MessagesState,
+        MessagesBlocState,
         Built<MessagesUninitialized, MessagesUninitializedBuilder> {
   MessagesUninitialized._();
   factory MessagesUninitialized(
           [void Function(MessagesUninitializedBuilder) updates]) =
       _$MessagesUninitialized;
 
-  static MessagesUninitializedBuilder fromState(MessagesState state) {
-    return MessagesState.fromState(state, MessagesUninitializedBuilder());
+  static MessagesUninitializedBuilder fromState(MessagesBlocState state) {
+    return MessagesBlocState.fromState(state, MessagesUninitializedBuilder());
   }
 
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(MessagesUninitializedBuilder b) {
-    MessagesState.initializeStateBuilder(b);
+    MessagesBlocState.initializeStateBuilder(b);
 
     b..type = MessagesBlocStateType.Uninitialized;
   }

@@ -1,3 +1,4 @@
+import '../serializer.dart';
 import 'invite.dart';
 import 'inviteasadmin.dart';
 import 'invitetoclub.dart';
@@ -12,8 +13,7 @@ import 'invitetoteam.dart';
 class InviteFactory {
   static Invite makeInviteFromJSON(String uid, Map<String, dynamic> data) {
     assert(uid != null);
-    InviteType type = InviteType.values
-        .firstWhere((InviteType ty) => ty.toString() == data[Invite.TYPE]);
+    InviteType type = serializers.deserialize(data[Invite.TYPE]);
     switch (type) {
       case InviteType.Player:
         InviteToPlayer ret = InviteToPlayer.fromMap(data);

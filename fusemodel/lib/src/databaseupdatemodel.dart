@@ -130,7 +130,7 @@ abstract class DatabaseUpdateModel {
 
   // Message Recipients
   Future<void> updateMessageRecipientState(
-      MessageRecipient rec, MessageState state);
+      MessageRecipient rec, MessageReadState state);
   Future<void> deleteRecipient(MessageRecipient rec);
 
   // Message for firestore.
@@ -164,7 +164,7 @@ abstract class DatabaseUpdateModel {
   Stream<Iterable<InviteAsAdmin>> getInvitesForTeam(String teamUid);
   Stream<Iterable<Opponent>> getTeamOpponents(String teamUid);
   Stream<Team> getTeamDetails({@required String teamUid});
-  Stream<Iterable<Season>> getSeasonsForTeam(String teamUid);
+  Stream<BuiltList<Season>> getSeasonsForTeam(String teamUid);
   Stream<Iterable<Team>> getTeams();
   Stream<Iterable<Team>> getTeamAdmins();
 

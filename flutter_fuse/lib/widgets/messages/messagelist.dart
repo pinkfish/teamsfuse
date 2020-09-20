@@ -45,7 +45,7 @@ class MessageList extends StatelessWidget {
                 playerUid: mess.fromUid,
                 style:
                     mess.recipients[authenticationBloc.currentUser.uid].state ==
-                            MessageState.Unread
+                            MessageReadState.Unread
                         ? theme.textTheme.subtitle1
                             .copyWith(fontWeight: FontWeight.bold)
                         : theme.textTheme.subtitle1,
@@ -65,7 +65,7 @@ class MessageList extends StatelessWidget {
         mess.subject,
         overflow: TextOverflow.clip,
         style: mess.recipients[authenticationBloc.currentUser.uid].state ==
-                MessageState.Unread
+                MessageReadState.Unread
             ? theme.textTheme.subtitle1.copyWith(
                 fontWeight: FontWeight.bold,
                 fontSize: theme.textTheme.subtitle1.fontSize * 1.25)

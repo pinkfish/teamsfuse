@@ -54,7 +54,7 @@ class _MessagesEventFirestore extends MessagesEvent {
 /// Handles the work around the Messagess and Messages system inside of
 /// the app.
 ///
-class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
+class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
   final CoordinationBloc coordinationBloc;
   final TeamBloc teamBloc;
 
@@ -177,7 +177,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesState> {
   }
 
   @override
-  Stream<MessagesState> mapEventToState(MessagesEvent event) async* {
+  Stream<MessagesBlocState> mapEventToState(MessagesEvent event) async* {
     // The fireatore atart up.
     if (event is _MessagesEventFirestore) {
       _messageSnapshot = coordinationBloc.databaseUpdateModel

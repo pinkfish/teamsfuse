@@ -46,6 +46,7 @@ abstract class GameOfficialResults
   @nullable
   String get awayTeamLeagueUid;
 
+  @BuiltValueField(wireName: 'officalResult')
   OfficialResult get result;
 
   static const String HOMETEAMUID = 'homeTeamUid';
@@ -54,6 +55,10 @@ abstract class GameOfficialResults
   GameOfficialResults._();
   factory GameOfficialResults([updates(GameOfficialResultsBuilder b)]) =
       _$GameOfficialResults;
+
+  /// Defaults for the state.  Always default to no games loaded.
+  static void _initializeBuilder(GameOfficialResultsBuilder b) =>
+      b..result = OfficialResult.NotStarted;
 
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(GameOfficialResults.serializer, this);

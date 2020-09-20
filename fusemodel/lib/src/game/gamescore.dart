@@ -5,6 +5,9 @@ import '../serializer.dart';
 
 part 'gamescore.g.dart';
 
+///
+/// The score for the game.
+/// 
 abstract class GameScore implements Built<GameScore, GameScoreBuilder> {
   GameScore._();
   factory GameScore([updates(GameScoreBuilder b)]) = _$GameScore;

@@ -8,6 +8,7 @@ class GamePeriodSerializer implements PrimitiveSerializer<GamePeriod> {
   @override
   GamePeriod deserialize(Serializers serializers, Object serialized,
       {FullType specifiedType = FullType.unspecified}) {
+    print("Deserialize $serialized");
     if (serialized is String) {
       return GamePeriod.fromIndex(serialized);
     }

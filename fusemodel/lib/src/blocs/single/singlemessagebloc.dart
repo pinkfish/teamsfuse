@@ -5,8 +5,8 @@ import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import '../messagesbloc.dart';
 import '../data/messagesblocstate.dart';
+import '../messagesbloc.dart';
 
 abstract class SingleMessageState extends Equatable {
   final Message message;
@@ -166,7 +166,7 @@ class SingleMessageBloc extends Bloc<SingleMessageEvent, SingleMessageState> {
   final MessagesBloc messageBloc;
   final String messageUid;
 
-  StreamSubscription<MessagesState> _messageSub;
+  StreamSubscription<MessagesBlocState> _messageSub;
   StreamSubscription<String> _bodyState;
 
   SingleMessageBloc({@required this.messageBloc, @required this.messageUid})
@@ -176,7 +176,7 @@ class SingleMessageBloc extends Bloc<SingleMessageEvent, SingleMessageState> {
                 state: null,
                 body: null)
             : SingleMessageDeleted()) {
-    _messageSub = messageBloc.listen((MessagesState messageState) {
+    _messageSub = messageBloc.listen((MessagesBlocState messageState) {
       Message message = messageState.getMessage(messageUid);
       if (message != null) {
         // Only send this if the Message is not the same.
@@ -239,11 +239,12 @@ class SingleMessageBloc extends Bloc<SingleMessageEvent, SingleMessageState> {
       String userUid =
           messageBloc.coordinationBloc.authenticationBloc.currentUser.uid;
       if (state.message.recipients.containsKey(userUid)) {
-        if (state.message.recipients[userUid].state == MessageState.Unread) {
+        if (state.message.recipients[userUid].state ==
+            MessageReadState.Unread) {
           yield SingleMessageSaving(state: state);
           messageBloc.coordinationBloc.databaseUpdateModel
               .updateMessageRecipientState(
-                  state.message.recipients[userUid], MessageState.Read)
+                  state.message.recipients[userUid], MessageReadState.Read)
               .then((void c) {}, onError: (Error e) {
             add(_SingleMessageSaveFailed(error: e));
           });
@@ -255,11 +256,12 @@ class SingleMessageBloc extends Bloc<SingleMessageEvent, SingleMessageState> {
       String userUid =
           messageBloc.coordinationBloc.authenticationBloc.currentUser.uid;
       if (state.message.recipients.containsKey(userUid)) {
-        if (state.message.recipients[userUid].state != MessageState.Archived) {
+        if (state.message.recipients[userUid].state !=
+            MessageReadState.Archived) {
           yield SingleMessageSaving(state: state);
           messageBloc.coordinationBloc.databaseUpdateModel
               .updateMessageRecipientState(
-                  state.message.recipients[userUid], MessageState.Archived)
+                  state.message.recipients[userUid], MessageReadState.Archived)
               .then((void c) {}, onError: (Error e) {
             add(_SingleMessageSaveFailed(error: e));
           });

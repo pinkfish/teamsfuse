@@ -2,7 +2,6 @@ library serializers;
 
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
-import 'package:built_value/standard_json_plugin.dart';
 
 import 'blocs/data/clubblocstate.dart';
 import 'blocs/data/gameblocstate.dart';
@@ -29,6 +28,7 @@ import 'invite.dart';
 import 'leagueortournament.dart';
 import 'message.dart';
 import 'player.dart';
+import 'serializer/customjsonserializerplugin.dart';
 import 'serializer/gameperiodserializer.dart';
 import 'serializer/inviteserializer.dart';
 import 'serializer/timestampserializer.dart';
@@ -52,6 +52,7 @@ part 'serializer.g.dart';
   ClubState,
   ClubUninitialized,
   EventType,
+  FusedUserProfile,
   Game,
   GameBlocStateType,
   GameDivisionsType,
@@ -65,21 +66,9 @@ part 'serializer.g.dart';
   GameState,
   GamePeriodType,
   GameUninitialized,
-  Invite,
-  InviteType,
-  InviteAsAdmin,
-  InviteToClub,
-  InviteToLeagueAsAdmin,
   Game,
-  Message,
-  MessagesBlocStateType,
-  MessagesLoaded,
-  MessagesState,
-  MessagesUninitialized,
-  FusedUserProfile,
   GameDivisionsType,
   GameInProgress,
-  GamePeriod,
   GamePeriodType,
   GamePlace,
   GameResult,
@@ -87,6 +76,11 @@ part 'serializer.g.dart';
   GameScore,
   GameSharedData,
   Gender,
+  Invite,
+  InviteType,
+  InviteAsAdmin,
+  InviteToClub,
+  InviteToLeagueAsAdmin,
   InviteToTeam,
   InviteType,
   InviteLoaded,
@@ -101,7 +95,12 @@ part 'serializer.g.dart';
   LeagueOrTournamentBlocStateType,
   LeagueOrTournamentUninitialized,
   LeagueOrTournamentTeam,
-  MessageState,
+  Message,
+  MessagesBlocStateType,
+  MessagesLoaded,
+  MessagesBlocState,
+  MessageReadState,
+  MessagesUninitialized,
   OfficialResult,
   Opponent,
   Player,
@@ -209,5 +208,7 @@ final Serializers serializers = (_$serializers.toBuilder()
       ..add(TimestampSerializer())
       ..add(InviteSerializer())
       ..add(GamePeriodSerializer())
-      ..addPlugin(StandardJsonPlugin()))
+      ..addPlugin(CustomEnumJsonPlugin({
+        GamePeriod,
+      })))
     .build();
