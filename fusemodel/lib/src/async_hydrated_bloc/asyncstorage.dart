@@ -66,7 +66,6 @@ class AsyncHydratedStorage implements AsyncStorage {
           encryptionCipher: encryptionCipher,
         );
       }
-      _boxCompleter.complete(box);
       _box = box;
     });
   }
@@ -90,23 +89,23 @@ class AsyncHydratedStorage implements AsyncStorage {
 
   static final _lock = Lock();
 
-  final Completer<Box> _boxCompleter = Completer<Box>();
   Box _box;
 
   @override
   Future<dynamic> read(String key) async {
-    if (_box == null) {
-      await _boxCompleter.future;
-    }
-    return _box.isOpen ? _box.get(key) : null;
+    return _lock.synchronized(() async {
+      return _box.isOpen ? _box.get(key) : null;
+    });
   }
 
   @override
   Future<void> write(String key, dynamic value) {
-    if (_box.isOpen) {
-      return _lock.synchronized(() => _box.put(key, value));
-    }
-    return null;
+    return _lock.synchronized(() async {
+      if (_box.isOpen) {
+        return _lock.synchronized(() => _box.put(key, value));
+      }
+      return null;
+    });
   }
 
   @override

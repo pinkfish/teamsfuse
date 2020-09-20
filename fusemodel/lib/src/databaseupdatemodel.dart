@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:built_collection/built_collection.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:meta/meta.dart';
 
@@ -206,7 +207,7 @@ abstract class DatabaseUpdateModel {
       @required String email,
       @required RoleInTeam role});
   Stream<Season> getSingleSeason(String seasonUid);
-  Stream<Iterable<Season>> getSeasons();
+  Stream<BuiltList<Season>> getSeasons();
   Future<void> addPlayerToSeason(String seasonUid, SeasonPlayer player);
   DocumentReferenceWrapper precreateUidSeason();
 
@@ -218,7 +219,7 @@ abstract class DatabaseUpdateModel {
       {DateTime start, DateTime end, String teamUid, String seasonUid});
 
   // Clubs and stuff.
-  Stream<Iterable<Team>> getClubTeams(Club club);
+  Stream<BuiltList<Team>> getClubTeams(Club club);
   Future<String> updateClub(Club club, {bool includeMembers});
   Future<String> addClub(DocumentReferenceWrapper ref, Club club);
   Future<Uri> updateClubImage(Club club, File imageFile);
@@ -227,18 +228,18 @@ abstract class DatabaseUpdateModel {
       {String clubName, String clubUid, bool admin, String email});
   Future<void> deleteClubMember(Club club, String memberUid);
   DocumentReferenceWrapper precreateTeamUid();
-  Stream<Iterable<InviteToClub>> getInviteToClubStream(String clubUid);
+  Stream<BuiltList<InviteToClub>> getInviteToClubStream(String clubUid);
   Stream<Club> getClubData({@required String clubUid});
 
   // League and stuff.
-  Stream<Iterable<GameSharedData>> getLeagueGamesForDivison(
+  Stream<BuiltList<GameSharedData>> getLeagueGamesForDivison(
       String leagueDivisonUid);
-  Stream<Iterable<GameSharedData>> getLeagueGamesForTeam(String leagueTeamUid);
-  Stream<Iterable<LeagueOrTournamentSeason>> getLeagueSeasons(
+  Stream<BuiltList<GameSharedData>> getLeagueGamesForTeam(String leagueTeamUid);
+  Stream<BuiltList<LeagueOrTournamentSeason>> getLeagueSeasons(
       {String leagueUid});
-  Stream<Iterable<LeagueOrTournamentDivison>> getLeagueDivisonsForSeason(
+  Stream<BuiltList<LeagueOrTournamentDivison>> getLeagueDivisonsForSeason(
       {String leagueSeasonUid, String memberUid});
-  Stream<Iterable<LeagueOrTournamentTeam>> getLeagueTeamsForTeamSeason(
+  Stream<BuiltList<LeagueOrTournamentTeam>> getLeagueTeamsForTeamSeason(
       String teamSeasonUid);
   Future<String> updateLeague(LeagueOrTournament league, {bool includeMembers});
   Future<Uri> updateLeagueImage(LeagueOrTournament league, File imageFile);
@@ -256,7 +257,7 @@ abstract class DatabaseUpdateModel {
       {String leagueSeasonUid,
       LeagueOrTournamentTeam leagueTeam,
       String email});
-  Stream<Iterable<InviteToLeagueTeam>> getLeagueOrTournmentTeamInvitesStream(
+  Stream<BuiltList<InviteToLeagueTeam>> getLeagueOrTournmentTeamInvitesStream(
       String leagueTeamUid);
 
   // League Season/Division.
@@ -265,16 +266,16 @@ abstract class DatabaseUpdateModel {
   Stream<LeagueOrTournamentSeason> getLeagueSeasonData(String leagueSeasonUid);
   Future<void> updateLeagueSeason(LeagueOrTournamentSeason season);
   Future<void> updateLeagueDivison(LeagueOrTournamentDivison division);
-  Stream<Iterable<LeagueOrTournamentTeam>> getLeagueDivisionTeams(
+  Stream<BuiltList<LeagueOrTournamentTeam>> getLeagueDivisionTeams(
       String leagueDivisionUid);
 
   /// Returns true if this connected correctly, false if there was an error.
   Future<bool> connectLeagueTeamToSeason(String leagueTeamUid, Season season);
 
   // Initialized subscfriptions.
-  Stream<Iterable<LeagueOrTournament>> getMainLeagueOrTournaments();
-  Stream<Iterable<Club>> getMainClubs();
-  Stream<Iterable<Player>> getPlayers();
-  Stream<Iterable<Invite>> getInvites();
-  Stream<Iterable<MessageRecipient>> getMessages(bool unread);
+  Stream<BuiltList<LeagueOrTournament>> getMainLeagueOrTournaments();
+  Stream<BuiltList<Club>> getMainClubs();
+  Stream<BuiltList<Player>> getPlayers();
+  Stream<BuiltList<Invite>> getInvites();
+  Stream<BuiltList<MessageRecipient>> getMessages(bool unread);
 }

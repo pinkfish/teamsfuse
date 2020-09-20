@@ -399,8 +399,7 @@ class SingleTeamBloc
 
     if (event is SingleTeamLoadSeasons) {
       if (_seasonSub == null) {
-        _seasonSub =
-            db.getSeasonsForTeam(teamUid).listen((Iterable<Season> seasons) {
+        _seasonSub = db.getSeasonsForTeam(teamUid).listen((var seasons) {
           add(_SingleTeamSeasonDataLoaded(seasons: seasons, fullUpdate: true));
         });
       }
