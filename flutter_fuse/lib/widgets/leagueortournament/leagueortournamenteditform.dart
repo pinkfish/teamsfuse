@@ -68,6 +68,7 @@ class LeagueOrTournamentEditFormState
     if (_formKey.currentState == null) {
       return false;
     }
+    _autovalidate = true;
     return _formKey.currentState.validate();
   }
 

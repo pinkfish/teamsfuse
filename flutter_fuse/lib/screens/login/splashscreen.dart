@@ -1,9 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 
-import '../../screens/home/home.dart';
-import '../../screens/login/verifyemail.dart';
 import '../../services/analytics.dart';
 import '../../services/messages.dart';
 import '../../services/notifications.dart';
@@ -56,51 +56,48 @@ class SplashScreen extends StatelessWidget {
     );
   }
 
+  // Check the state and navigate after a timeout.
+  void _checkState(BuildContext context, AuthenticationState state) {
+    if (state is AuthenticationLoggedIn) {
+      Timer(Duration(milliseconds: 1), () {
+        RepositoryProvider.of<Notifications>(context).initForNotification();
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/Main/Home', ModalRoute.withName('/Main/Home'));
+        Analytics.analytics.setUserId(state.user.uid);
+        if (Analytics.instance.debugMode) {
+          Analytics.analytics.setUserProperty(name: "developer", value: "true");
+        } else {
+          Analytics.analytics
+              .setUserProperty(name: "developer", value: "false");
+        }
+      });
+    }
+    if (state is AuthenticationLoggedInUnverified) {
+      Timer(Duration(milliseconds: 1), () {
+        // Navigate to the login screen at this point.
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/Login/Verify', ModalRoute.withName('/Login/Home'));
+      });
+    }
+    if (state is AuthenticationLoggedOut) {
+      Timer(Duration(milliseconds: 1), () {
+        // Navigate to the login screen at this point.
+        Navigator.pushNamedAndRemoveUntil(
+            context, '/Login/Home', ModalRoute.withName('/Login/Home'));
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
 
-    return BlocListener(
+    return BlocBuilder(
       cubit: _authenticationBloc,
-      listener: (context, state) {
-        if (state is AuthenticationLoggedIn) {
-          RepositoryProvider.of<Notifications>(context).initForNotification();
-          Navigator.pushNamedAndRemoveUntil(
-              context, '/Home', ModalRoute.withName('/Home'));
-          Analytics.analytics.setUserId(state.user.uid);
-          if (Analytics.instance.debugMode) {
-            Analytics.analytics
-                .setUserProperty(name: "developer", value: "true");
-          } else {
-            Analytics.analytics
-                .setUserProperty(name: "developer", value: "false");
-          }
-        }
-        if (state is AuthenticationLoggedOut) {
-          // Navigate to the login screen at this point.
-          Navigator.pushNamedAndRemoveUntil(
-              context, '/Login/Home', ModalRoute.withName('/Login/Home'));
-        }
+      builder: (context, state) {
+        _checkState(context, state);
+        return _loadingScreen(context);
       },
-      child: BlocBuilder(
-        cubit: _authenticationBloc,
-        builder: (context, state) {
-          if (state is AuthenticationUninitialized ||
-              state is AuthenticationLoading) {
-            return _loadingScreen(context);
-          }
-          if (state is AuthenticationLoggedIn) {
-            return HomeScreen();
-          }
-          if (state is AuthenticationLoggedInUnverified) {
-            return VerifyEmailScreen();
-          }
-          if (state is AuthenticationLoggedOut) {
-            return _loadingScreen(context);
-          }
-          return Text(Messages.of(context).unknown);
-        },
-      ),
     );
   }
 }

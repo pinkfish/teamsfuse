@@ -20,15 +20,10 @@ import 'leagueortournamentseasonname.dart';
 ///
 class LeagueOrTournamentTeamDetails extends StatefulWidget {
   /// Constructor.
-  LeagueOrTournamentTeamDetails(
-      {@required this.leagueOrTournamentTeamUid,
-      @required this.leagueOrTournamentUid});
+  LeagueOrTournamentTeamDetails({@required this.leagueOrTournamentTeamUid});
 
   /// The team uid to display.
   final String leagueOrTournamentTeamUid;
-
-  /// The league or tournment to display.
-  final String leagueOrTournamentUid;
 
   @override
   State createState() {
@@ -66,7 +61,7 @@ class _LeagueOrTournamentTeamDetailsState
                 }
 
                 return SingleLeagueOrTournamentProvider(
-                  leagueUid: widget.leagueOrTournamentUid,
+                  leagueUid: teamState.leagueOrTournamentUid,
                   builder: (context, leagueBloc) =>
                       SingleLeagueOrTournamentSeasonProvider(
                     leagueSeasonUid: teamState.leagueOrTournamentTeam.seasonUid,
@@ -86,19 +81,18 @@ class _LeagueOrTournamentTeamDetailsState
                                   children: <Widget>[
                                     LeagueImage(
                                       leagueOrTournamentUid:
-                                          widget.leagueOrTournamentUid,
+                                          teamState.leagueOrTournamentUid,
                                       width: (screenSize.width < 500)
                                           ? 120.0
                                           : (screenSize.width / 4) + 12.0,
                                       height: screenSize.height / 4 + 20,
                                     ),
                                     LeagueOrTournamentName(
-                                      widget.leagueOrTournamentUid,
+                                      teamState.leagueOrTournamentUid,
                                       style:
                                           Theme.of(context).textTheme.headline5,
                                     ),
                                     LeagueOrTournamentSeasonName(
-                                        leagueBloc: leagueBloc,
                                         leagueOrTournmentSeasonUid: teamState
                                             .leagueOrTournamentTeam.seasonUid,
                                         style: Theme.of(context)
@@ -110,7 +104,6 @@ class _LeagueOrTournamentTeamDetailsState
                                         leagueOrTournmentDivisonUid: teamState
                                             .leagueOrTournamentTeam
                                             .leagueOrTournamentDivisonUid,
-                                        leagueSeasonBloc: seasonBloc,
                                         style: Theme.of(context)
                                             .textTheme
                                             .subtitle1),

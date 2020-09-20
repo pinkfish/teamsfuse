@@ -47,7 +47,6 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
   void _savePressed(
       BuildContext context, SingleLeagueOrTournamentBloc bloc) async {
     if (!_formState.currentState.validate()) {
-      _formState.currentState.autovalidate = true;
       setState(() {});
       _showInSnackBar(Messages.of(context).formerror);
       return;
@@ -74,16 +73,14 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
 
     return SingleLeagueOrTournamentProvider(
       leagueUid: widget.leagueOrTournamentUid,
-      builder: ( context,  bloc) =>
-          Scaffold(
+      builder: (context, bloc) => Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
           title: Text(messages.title),
         ),
         body: BlocListener(
           cubit: bloc,
-          listener:
-              ( context,  state) {
+          listener: (context, state) {
             if (state is SingleLeagueOrTournamentDeleted) {
               Navigator.pop(context);
             } else if (_saving && state is SingleLeagueOrTournamentLoaded) {
@@ -92,8 +89,7 @@ class _EditLeagueScreenState extends State<EditLeagueScreen> {
           },
           child: BlocBuilder(
             cubit: bloc,
-            builder:
-                ( context,  state) {
+            builder: (context, state) {
               return SavingOverlay(
                 saving: state is SingleLeagueOrTournamentSaving,
                 child: Container(

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_fuse/widgets/blocs/singleleagueortournamentprovider.dart';
 import 'package:fusemodel/blocs.dart';
 
 import '../../services/messages.dart';
@@ -12,6 +13,9 @@ import '../../services/validations.dart';
 class AddInviteToTeamDialog extends Dialog {
   final TextEditingController _controller = TextEditingController();
   final Validations _validations = Validations();
+  final leagueTeamUid;
+
+  AddInviteToTeamDialog._(this.leagueTeamUid);
 
   ///
   /// Shows the invite to the team dialog box.
@@ -19,7 +23,9 @@ class AddInviteToTeamDialog extends Dialog {
   static Future<bool> showAddTeamInviteDialog(
       BuildContext context, SingleLeagueOrTournamentTeamBloc leagueTeam) async {
     var email = await showDialog<String>(
-        context: context, builder: (context) => AddInviteToTeamDialog());
+        context: context,
+        builder: (context) =>
+            AddInviteToTeamDialog._(leagueTeam.leagueTeamUid));
     if (email == null) {
       return false;
     }
@@ -31,19 +37,13 @@ class AddInviteToTeamDialog extends Dialog {
   /// Show a dialog to add an invite to the specific team.
   ///
   static Future<bool> showAddTeamInviteDialogByUid(
-      BuildContext context,
-      SingleLeagueOrTournamentBloc league,
-      String leagueSeasonUid,
-      String leagueTeamUid) async {
+      BuildContext context, String leagueTeamUid) async {
     var email = await showDialog<String>(
-        context: context, builder: (context) => AddInviteToTeamDialog());
+        context: context,
+        builder: (context) => AddInviteToTeamDialog._(leagueTeamUid));
     if (email == null) {
       return false;
     }
-    league.add(SingleLeagueOrTournamentInviteToTeam(
-        email: email,
-        leagueTeamUid: leagueTeamUid,
-        leagueSeasonUid: leagueSeasonUid));
     return true;
   }
 
@@ -83,10 +83,14 @@ class AddInviteToTeamDialog extends Dialog {
     children.add(ButtonBarTheme(
       child: ButtonBar(
         children: <Widget>[
-          FlatButton(
+          SingleLeagueOrTournamentProvider(
+            builder: (context, leagueBloc) => FlatButton(
               onPressed: () {
                 var str = _validations.validateEmail(context, _controller.text);
                 if (str == null) {
+                  leagueBloc.add(SingleLeagueOrTournamentInviteToTeam(
+                      email: _controller.text, leagueTeamUid: leagueTeamUid));
+
                   Navigator.pop(context, _controller.text);
                 } else {
                   showDialog<bool>(
@@ -96,16 +100,19 @@ class AddInviteToTeamDialog extends Dialog {
                       content: Text(Messages.of(context).invalidemail),
                       actions: <Widget>[
                         FlatButton(
-                          child: Text(
-                              MaterialLocalizations.of(context).okButtonLabel),
-                          onPressed: () => Navigator.pop(context, true),
-                        )
+                            child: Text(MaterialLocalizations.of(context)
+                                .okButtonLabel),
+                            onPressed: () {
+                              Navigator.pop(context, true);
+                            })
                       ],
                     ),
                   );
                 }
               },
-              child: Text(MaterialLocalizations.of(context).okButtonLabel)),
+              child: Text(MaterialLocalizations.of(context).okButtonLabel),
+            ),
+          ),
           FlatButton(
               onPressed: () => Navigator.pop(context, null),
               child: Text(MaterialLocalizations.of(context).cancelButtonLabel)),

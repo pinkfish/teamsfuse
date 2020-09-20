@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdivisonname.dart';
 
 import '../../services/messages.dart';
 import '../../widgets/leagueortournament/leagueortournamentdivisongames.dart';
 import '../../widgets/leagueortournament/leagueortournamentdivisonteams.dart';
-import '../../widgets/leagueortournament/leagueortournamentname.dart';
 
 ///
 /// Shows the league divison on the screen.
 ///
 class LeagueDivisonScreen extends StatefulWidget {
   /// Constructor.
-  LeagueDivisonScreen(
-      this.leagueUid, this.leagueSeasonUid, this.leagueDivisonUid);
-
-  /// The league to lookup the division for and display.
-  final String leagueUid;
+  LeagueDivisonScreen(this.leagueDivisonUid);
 
   /// The divison in the league to lookup.
   final String leagueDivisonUid;
-
-  /// The season in the league to lookup.
-  final String leagueSeasonUid;
 
   @override
   State createState() {
@@ -35,14 +28,10 @@ class _LeagueDivisonScreenState extends State<LeagueDivisonScreen> {
     switch (_tabIndex) {
       case 0:
         return LeagueOrTournamentDivisonDetails(
-          leagueOrTournamentUid: widget.leagueUid,
-          leagueOrTournamentSeasonUid: widget.leagueSeasonUid,
           leagueOrTournamentDivisonUid: widget.leagueDivisonUid,
         );
       case 1:
         return LeagueOrTournamentDivisonTeamDetails(
-          leagueOrTournamentUid: widget.leagueUid,
-          leagueOrTournamentSeasonUid: widget.leagueSeasonUid,
           leagueOrTournamentDivisonUid: widget.leagueDivisonUid,
         );
       case 2:
@@ -60,9 +49,8 @@ class _LeagueDivisonScreenState extends State<LeagueDivisonScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: LeagueOrTournamentName(
-          widget.leagueUid,
-          leagueOrTournamentDivisonUid: widget.leagueDivisonUid,
+        title: LeagueOrTournamentDivisonName(
+          leagueOrTournmentDivisonUid: widget.leagueDivisonUid,
         ),
         actions: actions,
       ),

@@ -173,6 +173,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
     try {
       LeagueOrTournamentTeam teamData = new LeagueOrTournamentTeam((b) => b
         ..leagueOrTournamentDivisonUid = state.divison.uid
+        ..leagueOrTournamentUid = state.divison.leagueOrTournamentUid
         ..name = teamName);
       await db.updateLeagueTeam(teamData);
       yield SingleLeagueOrTournamentDivisonSaveDone.fromState(state).build();

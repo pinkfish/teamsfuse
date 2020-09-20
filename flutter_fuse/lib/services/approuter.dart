@@ -11,6 +11,7 @@ import '../screens/game/addtraining.dart';
 import '../screens/game/editgame.dart';
 import '../screens/game/gamedetails.dart';
 import '../screens/game/sharedgamedetails.dart';
+import '../screens/home/home.dart';
 import '../screens/invites/acceptinviteasadmin.dart';
 import '../screens/invites/acceptinvitetoclub.dart';
 import '../screens/invites/acceptinvitetoleague.dart';
@@ -63,6 +64,8 @@ class AppRouter {
     var router = fluro.Router();
     router.define("/Home",
         handler: fluro.Handler(handlerFunc: (context, vals) => SplashScreen()));
+    router.define("/Main/Home",
+        handler: fluro.Handler(handlerFunc: (context, vals) => HomeScreen()));
     router.define("/Profile",
         handler: fluro.Handler(
             handlerFunc: (context, vals) => ProfileScreen(
@@ -261,15 +264,11 @@ class AppRouter {
     router.define("/League/Divison/:id/:season/:divison",
         handler: fluro.Handler(
             handlerFunc: (context, vals) => LeagueDivisonScreen(
-                  vals["id"][0].toString(),
-                  vals["season"][0].toString(),
                   vals["divison"][0].toString(),
                 )));
-    router.define("/League/Team/:league/:season/:id",
+    router.define("/League/Team/:id",
         handler: fluro.Handler(
             handlerFunc: (context, vals) => LeagueTeamScreen(
-                  vals["league"][0].toString(),
-                  vals["season"][0].toString(),
                   vals["id"][0].toString(),
                 )));
 

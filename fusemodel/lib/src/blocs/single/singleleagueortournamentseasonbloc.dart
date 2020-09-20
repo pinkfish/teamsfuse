@@ -193,7 +193,8 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
     if (event is SingleLeagueOrTournamentSeasonAddDivision) {
       LeagueOrTournamentDivison divison = LeagueOrTournamentDivison((b) => b
         ..name = event.name
-        ..leagueOrTournmentSeasonUid = leagueSeasonUid);
+        ..leagueOrTournmentSeasonUid = leagueSeasonUid
+        ..leagueOrTournamentUid = state.season.leagueOrTournmentUid);
       db.updateLeagueDivison(divison).then((void a) => null,
           onError: (Error error) => add(
               _SingleLeagueOrTournamentEventSeasonSaveFailed(error: error)));

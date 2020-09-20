@@ -74,7 +74,6 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
         createStepStage = StepState.disabled;
 
         if (!_formState.currentState.validate()) {
-          _formState.currentState.autovalidate = true;
           setState(() {
             leagueStepState = StepState.error;
             createStepStage = StepState.disabled;

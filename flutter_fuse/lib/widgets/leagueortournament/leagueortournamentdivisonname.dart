@@ -12,16 +12,12 @@ class LeagueOrTournamentDivisonName extends StatelessWidget {
   /// Constructor.
   LeagueOrTournamentDivisonName(
       {@required this.leagueOrTournmentDivisonUid,
-      @required this.leagueSeasonBloc,
       this.style,
       this.textAlign,
       this.overflow});
 
   /// The league or tournament divison to get the name of.
   final String leagueOrTournmentDivisonUid;
-
-  /// The season bloc to use.
-  final SingleLeagueOrTournamentSeasonBloc leagueSeasonBloc;
 
   /// The text style for the name
   final TextStyle style;
@@ -36,7 +32,6 @@ class LeagueOrTournamentDivisonName extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleLeagueOrTournamentDivisonProvider(
       leagueDivisonUid: leagueOrTournmentDivisonUid,
-      singleLeagueOrTournamentSeasonBloc: leagueSeasonBloc,
       builder: (context, bloc) => BlocBuilder(
         cubit: bloc,
         builder: (context, state) {

@@ -18,18 +18,14 @@ class SingleLeagueOrTournamentDivisonProvider
   /// constructor.
   SingleLeagueOrTournamentDivisonProvider(
       {String leagueDivisonUid,
-      SingleLeagueOrTournamentDivisonProviderBuilder builder,
-      SingleLeagueOrTournamentSeasonBloc singleLeagueOrTournamentSeasonBloc})
+      SingleLeagueOrTournamentDivisonProviderBuilder builder})
       : super(
             keyUid: leagueDivisonUid,
-            creator: (context, uid) =>
-                _createBloc(context, uid, singleLeagueOrTournamentSeasonBloc),
+            creator: (context, uid) => _createBloc(context, uid),
             builder: builder);
 
   static SingleLeagueOrTournamentDivisonBloc _createBloc(
-      BuildContext context,
-      String uid,
-      SingleLeagueOrTournamentSeasonBloc singleLeagueOrTournamentSeasonBloc) {
+      BuildContext context, String uid) {
     return SingleLeagueOrTournamentDivisonBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
         leagueDivisonUid: uid);

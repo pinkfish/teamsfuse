@@ -12,16 +12,12 @@ class LeagueOrTournamentSeasonName extends StatelessWidget {
   /// Constructor.
   LeagueOrTournamentSeasonName(
       {@required this.leagueOrTournmentSeasonUid,
-      @required this.leagueBloc,
       this.style,
       this.textAlign,
       this.overflow});
 
   /// The season uid to lookup.
   final String leagueOrTournmentSeasonUid;
-
-  /// The league bloc to use.
-  final SingleLeagueOrTournamentBloc leagueBloc;
 
   /// The style to use.
   final TextStyle style;

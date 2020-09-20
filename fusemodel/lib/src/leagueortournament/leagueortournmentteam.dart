@@ -13,6 +13,7 @@ part 'leagueortournmentteam.g.dart';
 ///
 abstract class LeagueOrTournamentTeam
     implements Built<LeagueOrTournamentTeam, LeagueOrTournamentTeamBuilder> {
+  /// Uid in the league or tournament.
   String get uid;
 
   /// The uid of the season of the team associated with this league.
@@ -25,6 +26,9 @@ abstract class LeagueOrTournamentTeam
 
   /// The uid of the league/tourment divison the team is in.
   String get leagueOrTournamentDivisonUid;
+
+  /// The uid for the league or tournament.
+  String get leagueOrTournamentUid;
 
   /// Name of the team in respect to this tournament/league.
   String get name;
@@ -46,10 +50,12 @@ abstract class LeagueOrTournamentTeam
   }
 
   static LeagueOrTournamentTeam fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(LeagueOrTournamentTeam.serializer, jsonData);
+    return serializers.deserializeWith(
+        LeagueOrTournamentTeam.serializer, jsonData);
   }
 
-  static Serializer<LeagueOrTournamentTeam> get serializer => _$leagueOrTournamentTeamSerializer;
+  static Serializer<LeagueOrTournamentTeam> get serializer =>
+      _$leagueOrTournamentTeamSerializer;
 
   @override
   String toString() {

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/blocs/singleleagueortournamentprovider.dart';
+import 'package:flutter_fuse/widgets/blocs/singleleagueortournamentseasonprovider.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentdivisonprovider.dart';
-import '../blocs/singleleagueortournamentprovider.dart';
-import '../blocs/singleleagueortournamentseasonprovider.dart';
 import '../util/leagueimage.dart';
 import 'addteamdialog.dart';
 import 'leagueortournamentteamcard.dart';
@@ -18,15 +18,7 @@ import 'leagueortournamentteamcard.dart';
 class LeagueOrTournamentDivisonTeamDetails extends StatefulWidget {
   /// Constructor.
   LeagueOrTournamentDivisonTeamDetails(
-      {@required this.leagueOrTournamentUid,
-      @required this.leagueOrTournamentSeasonUid,
-      @required this.leagueOrTournamentDivisonUid});
-
-  /// The league or tournament to show the details of.
-  final String leagueOrTournamentUid;
-
-  /// The season to show the details of.
-  final String leagueOrTournamentSeasonUid;
+      {@required this.leagueOrTournamentDivisonUid});
 
   /// The division to show the details of.
   final String leagueOrTournamentDivisonUid;
@@ -79,10 +71,8 @@ class _LeagueOrTournamentDivisonDetailsState
       axis: Axis.vertical,
       sizeFactor: animation,
       child: LeagueOrTournamentTeamCard(
-        widget.leagueOrTournamentUid,
         _sortedTeams[index],
         admin: leagueDivison.isAdmin(),
-        divison: leagueDivison,
       ),
     );
   }
@@ -119,10 +109,8 @@ class _LeagueOrTournamentDivisonDetailsState
               axis: Axis.vertical,
               sizeFactor: animation,
               child: LeagueOrTournamentTeamCard(
-                widget.leagueOrTournamentUid,
                 myTeam,
                 admin: leagueOrTournament.isAdmin(),
-                divison: leagueOrTournamentDivison,
               ),
             );
           });
@@ -140,19 +128,19 @@ class _LeagueOrTournamentDivisonDetailsState
   Widget build(BuildContext context) {
     // We must have the league/season loaded to have got in here.  If not
     // this is an error.
-    assert(widget.leagueOrTournamentSeasonUid != null);
     assert(widget.leagueOrTournamentDivisonUid != null);
-    assert(widget.leagueOrTournamentUid != null);
-    return SingleLeagueOrTournamentProvider(
-      leagueUid: widget.leagueOrTournamentUid,
-      builder: (context, leagueBloc) => SingleLeagueOrTournamentSeasonProvider(
-        leagueSeasonUid: widget.leagueOrTournamentSeasonUid,
-        builder: (context, seasonBloc) =>
-            SingleLeagueOrTournamentDivisonProvider(
-          leagueDivisonUid: widget.leagueOrTournamentDivisonUid,
-          singleLeagueOrTournamentSeasonBloc: seasonBloc,
-          builder: (context, divisonBloc) =>
-              _buildTeams(context, leagueBloc, seasonBloc, divisonBloc),
+    return SingleLeagueOrTournamentDivisonProvider(
+      leagueDivisonUid: widget.leagueOrTournamentDivisonUid,
+      builder: (context, divisonBloc) => BlocBuilder(
+        cubit: divisonBloc,
+        builder: (context, divisonState) => SingleLeagueOrTournamentProvider(
+          leagueUid: divisonState.leagueOrTournamentUid,
+          builder: (context, leagueBloc) =>
+              SingleLeagueOrTournamentSeasonProvider(
+            leagueSeasonUid: divisonState.leagueOrTournamentSeasonUid,
+            builder: (context, seasonBloc) =>
+                _buildTeams(context, leagueBloc, seasonBloc, divisonBloc),
+          ),
         ),
       ),
     );

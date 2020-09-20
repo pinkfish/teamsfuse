@@ -107,12 +107,10 @@ class SingleLeagueOrTournamentInviteToTeam
     extends SingleLeagueOrTournamentEvent {
   final String email;
   final String leagueTeamUid;
-  final String leagueSeasonUid;
 
-  SingleLeagueOrTournamentInviteToTeam(
-      {this.email, this.leagueTeamUid, this.leagueSeasonUid});
+  SingleLeagueOrTournamentInviteToTeam({this.email, this.leagueTeamUid});
   @override
-  List<Object> get props => [email, leagueTeamUid, leagueSeasonUid];
+  List<Object> get props => [email, leagueTeamUid];
 }
 
 ///
@@ -221,12 +219,12 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
   /// Invites a member to this league or tournment.
   ///
   Stream<SingleLeagueOrTournamentState> _inviteToTeam(
-      String teamUid, String seasonUid, String email) async* {
+      String teamUid, String email) async* {
     yield SingleLeagueOrTournamentSaving.fromState(state).build();
     try {
       LeagueOrTournamentTeam team = await db.getLeagueTeamData(teamUid).first;
       LeagueOrTournamentSeason season =
-          await db.getLeagueSeasonData(seasonUid).single;
+          await db.getLeagueSeasonData(team.seasonUid).single;
 
       await db.inviteUserToLeagueTeam(
         leagueTeam: team,
@@ -325,8 +323,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
     }
 
     if (event is SingleLeagueOrTournamentInviteToTeam) {
-      yield* _inviteToTeam(
-          event.leagueTeamUid, event.leagueSeasonUid, event.email);
+      yield* _inviteToTeam(event.leagueTeamUid, event.email);
     }
 
     if (event is SingleLeagueOrTournamentUpdateImage) {

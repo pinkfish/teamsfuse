@@ -93,9 +93,12 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
                           padding: EdgeInsets.all(10.0),
                           child: Text(
                             Messages.of(context).acceptinviteasadmin,
-                            style: Theme.of(context).textTheme.subtitle1.copyWith(
-                                color: Theme.of(context).accentColor,
-                                fontWeight: FontWeight.bold),
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle1
+                                .copyWith(
+                                    color: Theme.of(context).accentColor,
+                                    fontWeight: FontWeight.bold),
                           ),
                         ),
                         ListTile(

@@ -20,6 +20,7 @@ abstract class LeagueOrTournamentDivison
   String get uid;
   @BuiltValueField(wireName: LEAGUEORTOURNMENTSEASONUID)
   String get leagueOrTournmentSeasonUid;
+  String get leagueOrTournamentUid;
   String get userUid;
 
   @BuiltValueField(wireName: MEMBERS)
