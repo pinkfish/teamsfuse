@@ -6,15 +6,20 @@ import 'package:fusemodel/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 
+///
+/// Add an invite to the specific team with a nice dialog box.
+///
 class AddInviteToTeamDialog extends Dialog {
   final TextEditingController _controller = TextEditingController();
-  final Validations validations = Validations();
+  final Validations _validations = Validations();
 
+  ///
+  /// Shows the invite to the team dialog box.
+  ///
   static Future<bool> showAddTeamInviteDialog(
       BuildContext context, SingleLeagueOrTournamentTeamBloc leagueTeam) async {
-    String email = await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AddInviteToTeamDialog());
+    var email = await showDialog<String>(
+        context: context, builder: (context) => AddInviteToTeamDialog());
     if (email == null) {
       return false;
     }
@@ -22,14 +27,16 @@ class AddInviteToTeamDialog extends Dialog {
     return true;
   }
 
+  ///
+  /// Show a dialog to add an invite to the specific team.
+  ///
   static Future<bool> showAddTeamInviteDialogByUid(
       BuildContext context,
       SingleLeagueOrTournamentBloc league,
       String leagueSeasonUid,
       String leagueTeamUid) async {
-    String email = await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AddInviteToTeamDialog());
+    var email = await showDialog<String>(
+        context: context, builder: (context) => AddInviteToTeamDialog());
     if (email == null) {
       return false;
     }
@@ -42,13 +49,13 @@ class AddInviteToTeamDialog extends Dialog {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> children = <Widget>[];
+    var children = <Widget>[];
 
     children.add(
       Padding(
         padding: EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
         child: DefaultTextStyle(
-          style: Theme.of(context).textTheme.title,
+          style: Theme.of(context).textTheme.headline6,
           child: Semantics(
             child: Text(Messages.of(context).addseason),
             namesRoute: true,
@@ -73,19 +80,18 @@ class AddInviteToTeamDialog extends Dialog {
       ),
     );
 
-    children.add(ButtonTheme.bar(
+    children.add(ButtonBarTheme(
       child: ButtonBar(
         children: <Widget>[
           FlatButton(
               onPressed: () {
-                String str =
-                    validations.validateEmail(context, _controller.text);
+                var str = _validations.validateEmail(context, _controller.text);
                 if (str == null) {
                   Navigator.pop(context, _controller.text);
                 } else {
                   showDialog<bool>(
                     context: context,
-                    builder: (BuildContext context) => AlertDialog(
+                    builder: (context) => AlertDialog(
                       title: Text(Messages.of(context).invalidemail),
                       content: Text(Messages.of(context).invalidemail),
                       actions: <Widget>[

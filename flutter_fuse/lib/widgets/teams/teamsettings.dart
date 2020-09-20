@@ -8,25 +8,29 @@ import '../blocs/singleplayerprovider.dart';
 import '../blocs/singleteamprovider.dart';
 import '../util/byusername.dart';
 
+///
+/// Shows the settings for the team.
+///
 class TeamSettings extends StatefulWidget {
+  /// Constructor with the team to update.
   TeamSettings(this._teamUid);
 
   final String _teamUid;
 
   @override
-  TeamSettingsState createState() {
-    return TeamSettingsState();
+  _TeamSettingsState createState() {
+    return _TeamSettingsState();
   }
 }
 
-class TeamSettingsState extends State<TeamSettings> {
+class _TeamSettingsState extends State<TeamSettings> {
   void _deleteAdmin(String adminUid, String name) async {
-    Messages mess = Messages.of(context);
+    var mess = Messages.of(context);
     // Show an alert dialog first.
-    bool result = await showDialog<bool>(
+    var result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(mess.deleteadmin),
           content: SingleChildScrollView(
@@ -55,18 +59,18 @@ class TeamSettingsState extends State<TeamSettings> {
       },
     );
     if (result) {
-      InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
+      var inviteBloc = BlocProvider.of<InviteBloc>(context);
       inviteBloc.add(InviteEventDeleteInvite(inviteUid: adminUid));
     }
   }
 
   void _deleteInvite(InviteAsAdmin adm) async {
-    Messages mess = Messages.of(context);
+    var mess = Messages.of(context);
     // Show an alert dialog first.
-    bool result = await showDialog<bool>(
+    var result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(mess.deleteadmininvite),
           content: SingleChildScrollView(
@@ -95,28 +99,28 @@ class TeamSettingsState extends State<TeamSettings> {
       },
     );
     if (result) {
-      InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
+      var inviteBloc = BlocProvider.of<InviteBloc>(context);
       inviteBloc.add(InviteEventDeleteInvite(inviteUid: adm.uid));
     }
   }
 
   void _addAdmin() {
-    Navigator.pushNamed(context, "TeamAddAdmin/" + widget._teamUid);
+    Navigator.pushNamed(context, "TeamAddAdmin/${widget._teamUid}");
   }
 
   List<Widget> _buildAdmins(List<Widget> ret, SingleTeamState state) {
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
 
-    ret.add(Text("Admins", style: theme.textTheme.title));
+    ret.add(Text("Admins", style: theme.textTheme.headline6));
 
-    for (String uid in state.team.admins) {
+    for (var uid in state.team.admins) {
       print('$uid');
       ret.add(
         SinglePlayerProvider(
           playerUid: uid,
-          builder: (BuildContext contxt, SinglePlayerBloc bloc) => BlocBuilder(
+          builder: (contxt, bloc) => BlocBuilder(
             cubit: bloc,
-            builder: (BuildContext context, SinglePlayerState state) {
+            builder: (context, state) {
               if (state is SinglePlayerDeleted) {
                 return ListTile(
                   leading: const Icon(Icons.person),
@@ -168,7 +172,7 @@ class TeamSettingsState extends State<TeamSettings> {
           title: Text(Messages.of(context).pendinginvites(invites.length)),
           children: invites
               .map(
-                (InviteAsAdmin adm) => ListTile(
+                (adm) => ListTile(
                   leading: const Icon(Icons.person_add),
                   title: Text(adm.email),
                   subtitle: ByUserNameComponent(userId: adm.sentByUid),
@@ -189,14 +193,14 @@ class TeamSettingsState extends State<TeamSettings> {
   }
 
   List<Widget> _buildBody(SingleTeamState state) {
-    List<Widget> ret = <Widget>[];
+    var ret = <Widget>[];
 
     _buildAdmins(ret, state);
     ret.add(
       SwitchListTile(
         value: state.team.trackAttendence(state.club),
         title: Text("Track Attendence"),
-        onChanged: (bool attend) => null,
+        onChanged: (attend) => null,
       ),
     );
     return ret;
@@ -204,7 +208,7 @@ class TeamSettingsState extends State<TeamSettings> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
 
     return Column(
       children: <Widget>[
@@ -216,10 +220,9 @@ class TeamSettingsState extends State<TeamSettings> {
             child: SingleChildScrollView(
               child: SingleTeamProvider(
                 teamUid: widget._teamUid,
-                builder: (BuildContext contex, SingleTeamBloc bloc) =>
-                    BlocBuilder(
+                builder: (contex, bloc) => BlocBuilder(
                   cubit: bloc,
-                  builder: (BuildContext context, SingleTeamState state) {
+                  builder: (context, state) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: _buildBody(state),

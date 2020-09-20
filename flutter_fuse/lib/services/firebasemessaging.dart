@@ -12,7 +12,7 @@ import 'package:platform/platform.dart';
 /// Handler for the message, this is the handler to deal with the
 /// incoming firebase messaing messages.
 ///
-typedef Future<dynamic> MessageHandler(Map<String, dynamic> message);
+typedef MessageHandler = Future<dynamic> Function(Map<String, dynamic> message);
 
 /// Implementation of the Firebase Cloud Messaging API for Flutter.
 ///

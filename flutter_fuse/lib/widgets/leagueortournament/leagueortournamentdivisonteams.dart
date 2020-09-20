@@ -16,13 +16,19 @@ import 'leagueortournamentteamcard.dart';
 /// divison of the league.
 ///
 class LeagueOrTournamentDivisonTeamDetails extends StatefulWidget {
+  /// Constructor.
   LeagueOrTournamentDivisonTeamDetails(
       {@required this.leagueOrTournamentUid,
       @required this.leagueOrTournamentSeasonUid,
       @required this.leagueOrTournamentDivisonUid});
 
+  /// The league or tournament to show the details of.
   final String leagueOrTournamentUid;
+
+  /// The season to show the details of.
   final String leagueOrTournamentSeasonUid;
+
+  /// The division to show the details of.
   final String leagueOrTournamentDivisonUid;
 
   @override
@@ -34,7 +40,8 @@ class LeagueOrTournamentDivisonTeamDetails extends StatefulWidget {
 class _LeagueOrTournamentDivisonDetailsState
     extends State<LeagueOrTournamentDivisonTeamDetails> {
   List<LeagueOrTournamentTeam> _sortedTeams;
-  GlobalKey<AnimatedListState> _listState = GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> _listState =
+      GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
@@ -46,7 +53,7 @@ class _LeagueOrTournamentDivisonDetailsState
   }
 
   int _sortTeams(LeagueOrTournamentTeam t1, LeagueOrTournamentTeam t2) {
-    String divisonUid = widget.leagueOrTournamentDivisonUid;
+    var divisonUid = widget.leagueOrTournamentDivisonUid;
     if (!t1.record.containsKey(divisonUid)) {
       if (!t2.record.containsKey(divisonUid)) {
         return t1.name.compareTo(t2.name);
@@ -84,7 +91,7 @@ class _LeagueOrTournamentDivisonDetailsState
       LeagueOrTournament leagueOrTournament,
       List<LeagueOrTournamentTeam> newTeams,
       LeagueOrTournamentDivison leagueOrTournamentDivison) {
-    List<LeagueOrTournamentTeam> oldList = _sortedTeams;
+    var oldList = _sortedTeams;
     _sortedTeams = newTeams;
     if (oldList == null || _listState.currentState == null) {
       //  Build the layout.
@@ -92,22 +99,21 @@ class _LeagueOrTournamentDivisonDetailsState
     }
 
     // Re-read the list and see what changed.
-    int i = 0;
-    int j = 0;
+    var i = 0;
+    var j = 0;
     while (i < _sortedTeams.length && j < oldList.length) {
       if (_sortedTeams[i].uid == oldList[j].uid) {
         i++;
         j++;
       } else {
-        int diff = _sortTeams(_sortedTeams[i], oldList[j]);
+        var diff = _sortTeams(_sortedTeams[i], oldList[j]);
         if (diff < 0) {
           i++;
           _listState.currentState.insertItem(i);
         } else {
           print("${_listState.currentState}");
-          LeagueOrTournamentTeam myTeam = oldList[j];
-          _listState.currentState.removeItem(j,
-              (BuildContext context, Animation<double> animation) {
+          var myTeam = oldList[j];
+          _listState.currentState.removeItem(j, (context, animation) {
             // Nailed it.
             return SizeTransition(
               axis: Axis.vertical,
@@ -139,17 +145,13 @@ class _LeagueOrTournamentDivisonDetailsState
     assert(widget.leagueOrTournamentUid != null);
     return SingleLeagueOrTournamentProvider(
       leagueUid: widget.leagueOrTournamentUid,
-      builder:
-          (BuildContext context, SingleLeagueOrTournamentBloc leagueBloc) =>
-              SingleLeagueOrTournamentSeasonProvider(
+      builder: (context, leagueBloc) => SingleLeagueOrTournamentSeasonProvider(
         leagueSeasonUid: widget.leagueOrTournamentSeasonUid,
-        builder: (BuildContext context,
-                SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
+        builder: (context, seasonBloc) =>
             SingleLeagueOrTournamentDivisonProvider(
           leagueDivisonUid: widget.leagueOrTournamentDivisonUid,
           singleLeagueOrTournamentSeasonBloc: seasonBloc,
-          builder: (BuildContext context,
-                  SingleLeagueOrTournamentDivisonBloc divisonBloc) =>
+          builder: (context, divisonBloc) =>
               _buildTeams(context, leagueBloc, seasonBloc, divisonBloc),
         ),
       ),
@@ -164,15 +166,11 @@ class _LeagueOrTournamentDivisonDetailsState
     divisonBloc.add(SingleLeagueOrTournamentDivisonLoadTeams());
     return BlocBuilder(
       cubit: leagueBloc,
-      builder: (BuildContext congtext, SingleLeagueOrTournamentState state) =>
-          BlocBuilder(
+      builder: (congtext, state) => BlocBuilder(
         cubit: seasonBloc,
-        builder: (BuildContext context,
-                SingleLeagueOrTournamentSeasonState seasonState) =>
-            BlocBuilder(
+        builder: (context, seasonState) => BlocBuilder(
           cubit: divisonBloc,
-          builder: (BuildContext context,
-              SingleLeagueOrTournamentDivisonState divisonState) {
+          builder: (context, divisonState) {
             return Container(
               alignment: Alignment.topLeft,
               margin: EdgeInsets.all(5.0),
@@ -188,17 +186,16 @@ class _LeagueOrTournamentDivisonDetailsState
                     ),
                     title: Text(
                       state.league.name,
-                      style: Theme.of(context).textTheme.headline,
+                      style: Theme.of(context).textTheme.headline5,
                     ),
                     subtitle: Text(
                       "${seasonState.season.name} ${divisonState.divison.name}",
-                      style: Theme.of(context).textTheme.subhead,
+                      style: Theme.of(context).textTheme.subtitle1,
                     ),
                   ),
                   BlocBuilder(
                     cubit: divisonBloc,
-                    builder: (BuildContext context,
-                        SingleLeagueOrTournamentDivisonState state) {
+                    builder: (context, state) {
                       if (state
                           is SingleLeagueOrTournamentDivisonUninitialized) {
                         return Container(
@@ -239,8 +236,7 @@ class _LeagueOrTournamentDivisonDetailsState
                             );
                           }
                         }
-                        List<LeagueOrTournamentTeam> sortedTeams =
-                            teams.toList();
+                        var sortedTeams = teams.toList();
                         sortedTeams.sort(_sortTeams);
                         _updateTeams(leagueBloc.state.league, sortedTeams,
                             divisonState.divison);
@@ -251,8 +247,7 @@ class _LeagueOrTournamentDivisonDetailsState
                               child: AnimatedList(
                                 key: _listState,
                                 shrinkWrap: true,
-                                itemBuilder: (BuildContext context, int item,
-                                        Animation<double> an) =>
+                                itemBuilder: (context, item, an) =>
                                     _buildTeamItem(context, item, an,
                                         divisonState.divison),
                                 initialItemCount: sortedTeams.length,

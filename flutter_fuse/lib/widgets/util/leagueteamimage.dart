@@ -9,7 +9,16 @@ import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentteamprovider.dart';
 
 /// Some overlay text onto the team to say home/away.
-enum HomeAwayOverlay { home, away, none }
+enum HomeAwayOverlay {
+  /// The team is ahome team.
+  home,
+
+  /// The team is an away team.
+  away,
+
+  /// The team is not home or away/unknown.
+  none,
+}
 
 ///
 /// Looks up the league team from the database and then uses that to display
@@ -17,6 +26,7 @@ enum HomeAwayOverlay { home, away, none }
 /// while loading.
 ///
 class LeagueTeamImage extends StatelessWidget {
+  /// Constructor.
   LeagueTeamImage(
       {this.leagueOrTeamUid,
       Key key,
@@ -76,19 +86,16 @@ class LeagueTeamImage extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget blocBuilder = SingleLeagueOrTournamentTeamProvider(
       leagueTeamUid: leagueOrTeamUid,
-      builder: (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
-          BlocListener(
+      builder: (context, bloc) => BlocListener(
         cubit: bloc,
-        listener:
-            (BuildContext context, SingleLeagueOrTournamentTeamState state) {
+        listener: (context, state) {
           if (state is SingleLeagueOrTournamentTeamLoaded) {
             bloc.add(SingleLeagueOrTournamentTeamLoadPublicTeam());
           }
         },
         child: BlocBuilder(
           cubit: bloc,
-          builder: (BuildContext context,
-              SingleLeagueOrTournamentTeamState leagueState) {
+          builder: (context, leagueState) {
             Widget inner;
             if (leagueState is SingleLeagueOrTournamentTeamDeleted ||
                 leagueState.publicTeam == null) {

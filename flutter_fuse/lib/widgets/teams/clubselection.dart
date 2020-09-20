@@ -7,12 +7,13 @@ import 'package:fusemodel/fusemodel.dart';
 import '../form/clubpicker.dart';
 
 ///
-/// Selects the team to use for adding a game/event/whatever.  Will select
-/// between clubs/teams/leagues.
+/// Selects the club to use for adding a game/event/whatever.
 ///
 class ClubSelection extends StatefulWidget {
+  /// Constructor.
   ClubSelection({@required this.onChanged, @required this.initialClub});
 
+  /// Called when the value changes.
   final ValueChanged<Club> onChanged;
 
   /// The initialTeam
@@ -34,7 +35,7 @@ class _ClubSelectionState extends State<ClubSelection> {
         widget.onChanged(null);
       } else {
         _clubUid = clubUid;
-        ClubBloc bloc = BlocProvider.of<ClubBloc>(context);
+        var bloc = BlocProvider.of<ClubBloc>(context);
         widget.onChanged(bloc.state.clubs[_clubUid]);
       }
     });
@@ -42,7 +43,7 @@ class _ClubSelectionState extends State<ClubSelection> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> widgets = <Widget>[];
+    var widgets = <Widget>[];
     print('$_clubUid');
     widgets.add(
       ClubPicker(

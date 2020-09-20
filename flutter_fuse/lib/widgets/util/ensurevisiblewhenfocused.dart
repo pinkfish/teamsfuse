@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 
+///
 /// A widget that ensures it is always visible when focused.
+///
 class EnsureVisibleWhenFocused extends StatefulWidget {
+  /// Constructor.
   const EnsureVisibleWhenFocused({
     @required this.child,
     @required this.focusNode,
     Key key,
-    this.curve: Curves.ease,
-    this.duration: const Duration(milliseconds: 100),
+    this.curve = Curves.ease,
+    this.duration = const Duration(milliseconds: 100),
   }) : super(key: key);
 
   /// The node we will monitor to determine if the child is focused
@@ -31,11 +34,11 @@ class EnsureVisibleWhenFocused extends StatefulWidget {
   final Duration duration;
 
   @override
-  EnsureVisibleWhenFocusedState createState() =>
-      EnsureVisibleWhenFocusedState();
+  _EnsureVisibleWhenFocusedState createState() =>
+      _EnsureVisibleWhenFocusedState();
 }
 
-class EnsureVisibleWhenFocusedState extends State<EnsureVisibleWhenFocused> {
+class _EnsureVisibleWhenFocusedState extends State<EnsureVisibleWhenFocused> {
   @override
   void initState() {
     super.initState();
@@ -59,14 +62,14 @@ class EnsureVisibleWhenFocusedState extends State<EnsureVisibleWhenFocused> {
       return;
     }
 
-    final RenderObject object = context.findRenderObject();
-    final RenderAbstractViewport viewport = RenderAbstractViewport.of(object);
+    var object = context.findRenderObject();
+    var viewport = RenderAbstractViewport.of(object);
     assert(viewport != null);
 
-    ScrollableState scrollableState = Scrollable.of(context);
+    var scrollableState = Scrollable.of(context);
     assert(scrollableState != null);
 
-    ScrollPosition position = scrollableState.position;
+    var position = scrollableState.position;
     double alignment;
     if (position.pixels > viewport.getOffsetToReveal(object, 0.0).offset) {
       // Move down to the top of the viewport

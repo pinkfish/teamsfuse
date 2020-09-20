@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
@@ -12,11 +11,16 @@ import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 import 'editformbase.dart';
 
+///
+/// Edit form to edit all the training stuff.
+///
 class TrainingEditForm extends StatefulWidget {
+  /// Constructor.
   TrainingEditForm(
       {@required this.game, @required GlobalKey<TrainingEditFormState> key})
       : super(key: key);
 
+  /// Game the training is for.
   final Game game;
 
   @override
@@ -25,18 +29,23 @@ class TrainingEditForm extends StatefulWidget {
   }
 }
 
+///
+/// State of the traning data for the edit form.
+///
 class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
-  ScrollController _scrollController = ScrollController();
-  GlobalKey<DateTimeFormFieldState> _endTimeKey =
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey<DateTimeFormFieldState> _endTimeKey =
       GlobalKey<DateTimeFormFieldState>();
+
+  /// If the form should validate on every change or only a save.
   bool autoValidate = false;
-  GlobalKey<FormState> _formState = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formState = GlobalKey<FormState>();
   DateTime _atDate;
   DateTime _atEnd;
-  FocusNode _focusNodePlaceNotes = FocusNode();
-  FocusNode _focusNodeNotes = FocusNode();
-  FocusNode _focusNodeUniform = FocusNode();
-  GameBuilder builder;
+  final FocusNode _focusNodePlaceNotes = FocusNode();
+  final FocusNode _focusNodeNotes = FocusNode();
+  final FocusNode _focusNodeUniform = FocusNode();
+  GameBuilder _builder;
 
   @override
   void save() {
@@ -48,7 +57,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
     super.initState();
     _atDate = widget.game.sharedData.tzTime;
     _atEnd = widget.game.sharedData.tzEndTime;
-    builder = widget.game.toBuilder();
+    _builder = widget.game.toBuilder();
   }
 
   void _updateTimes(Duration diff) {
@@ -57,16 +66,16 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   }
 
   void _showPlacesPicker() async {
-    LocationAndPlace place = await MapData.instance.getPlaceAndLocation();
+    var place = await MapData.instance.getPlaceAndLocation();
     if (place != null) {
       // Yay!
       setState(() {
-        builder.sharedData.place.name = place.details.name;
-        builder.sharedData.place.address = place.details.address;
-        builder.sharedData.place.longitude = place.details.location.longitude;
-        builder.sharedData.place.latitude = place.details.location.latitude;
-        place.loc.then((Location location) {
-          builder.sharedData.timezone = location.name;
+        _builder.sharedData.place.name = place.details.name;
+        _builder.sharedData.place.address = place.details.address;
+        _builder.sharedData.place.longitude = place.details.location.longitude;
+        _builder.sharedData.place.latitude = place.details.location.latitude;
+        place.loc.then((location) {
+          _builder.sharedData.timezone = location.name;
         });
       });
     }
@@ -81,7 +90,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   GameBuilder get finalGameResult {
     _formState.currentState.save();
     // Add the date time and the time together.
-    builder.sharedData.time = TZDateTime(
+    _builder.sharedData.time = TZDateTime(
             getLocation(widget.game.sharedData.timezone),
             _atDate.year,
             _atDate.month,
@@ -89,12 +98,12 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
             _atDate.hour,
             _atDate.minute)
         .millisecondsSinceEpoch;
-    builder.arriveTime = widget.game.sharedData.time;
-    DateTime end = _atEnd;
+    _builder.arriveTime = widget.game.sharedData.time;
+    var end = _atEnd;
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
       end.add(Duration(days: 1));
     }
-    builder.sharedData.endTime = TZDateTime(
+    _builder.sharedData.endTime = TZDateTime(
             getLocation(widget.game.sharedData.timezone),
             end.year,
             end.month,
@@ -102,14 +111,13 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
             end.hour,
             end.minute)
         .millisecondsSinceEpoch;
-    builder.sharedData.endTime = _atEnd.millisecondsSinceEpoch;
-    return builder;
+    _builder.sharedData.endTime = _atEnd.millisecondsSinceEpoch;
+    return _builder;
   }
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
-    print("${widget.game.toMap()}");
+    var messages = Messages.of(context);
     return Scrollbar(
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -124,17 +132,16 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 SingleTeamProvider(
-                  teamUid: builder.teamUid,
-                  builder: (BuildContext context, SingleTeamBloc teamBloc) =>
-                      SeasonFormField(
+                  teamUid: _builder.teamUid,
+                  builder: (context, teamBloc) => SeasonFormField(
                     decoration: InputDecoration(
                       icon: const Icon(CommunityIcons.calendarQuestion),
                       labelText: messages.season,
                     ),
                     initialValue: widget.game.seasonUid,
                     teamBloc: teamBloc,
-                    onSaved: (String value) {
-                      builder.seasonUid = value;
+                    onSaved: (value) {
+                      _builder.seasonUid = value;
                     },
                   ),
                 ),
@@ -146,7 +153,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                   initialValue: _atDate,
                   hideDate: false,
                   onFieldChanged: _updateTimes,
-                  onSaved: (DateTime value) {
+                  onSaved: (value) {
                     _atDate = value;
                   },
                 ),
@@ -158,7 +165,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                   ),
                   initialValue: _atEnd,
                   hideDate: false,
-                  onSaved: (DateTime value) {
+                  onSaved: (value) {
                     _atEnd = value;
                   },
                 ),
@@ -184,8 +191,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     focusNode: _focusNodePlaceNotes,
                     obscureText: false,
                     initialValue: widget.game.sharedData.place.notes,
-                    onSaved: (String value) {
-                      builder.sharedData.place.notes = value;
+                    onSaved: (value) {
+                      _builder.sharedData.place.notes = value;
                     },
                   ),
                 ),
@@ -197,8 +204,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                         hintText: messages.uniformhint,
                         labelText: messages.uniform,
                         icon: const Icon(CommunityIcons.tshirtCrew)),
-                    onSaved: (String value) {
-                      builder.uniform = value;
+                    onSaved: (value) {
+                      _builder.uniform = value;
                     },
                     focusNode: _focusNodeUniform,
                   ),
@@ -213,8 +220,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                       icon: const Icon(Icons.note),
                     ),
                     focusNode: _focusNodeNotes,
-                    onSaved: (String value) {
-                      builder.notes = value;
+                    onSaved: (value) {
+                      _builder.notes = value;
                     },
                   ),
                 ),

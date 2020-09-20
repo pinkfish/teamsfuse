@@ -238,8 +238,8 @@ class HomeCsvComponent implements OnInit, OnDestroy, OnChanges {
           ..zoom = 15);
     PlacesService placesService = new PlacesService(map);
     List<GameToGenerate> games = [];
-    Set<String> newTeams = Set<String>();
-    Set<String> newDivisons = Set<String>();
+    Set<String> newTeams = <String>{};
+    Set<String> newDivisons = <String>{};
     // Start from 1.  First row is a header.
     for (int i = 1; i < rowsAsListOfValues.length; i++) {
       currentlyProcessing = i;

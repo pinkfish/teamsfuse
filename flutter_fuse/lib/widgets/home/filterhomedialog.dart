@@ -6,9 +6,14 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../services/messages.dart';
 import '../util/communityicons.dart';
 
+///
+/// Show the filter options for the home of the app.
+///
 class FilterHomeDialog extends StatefulWidget {
+  /// Constructor.
   FilterHomeDialog(this.details);
 
+  /// The current filter details.
   final FilterDetails details;
 
   @override
@@ -19,17 +24,17 @@ class FilterHomeDialog extends StatefulWidget {
 
 class _FilterHomeDialogState extends State<FilterHomeDialog> {
   void _openTeamListWithCheckbox() {
-    Messages messages = Messages.of(context);
-    List<Widget> teams = <Widget>[];
-    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+    var messages = Messages.of(context);
+    var teams = <Widget>[];
+    var teamBloc = BlocProvider.of<TeamBloc>(context);
 
-    for (String uid in teamBloc.state.allTeamUids) {
-      Team team = teamBloc.state.getTeam(uid);
-      bool isOn = widget.details.teamUids.contains(uid);
+    for (var uid in teamBloc.state.allTeamUids) {
+      var team = teamBloc.state.getTeam(uid);
+      var isOn = widget.details.teamUids.contains(uid);
       teams.add(_CheckboxDialogItem(
           initialValue: isOn,
           title: team.name,
-          onChanged: (bool val) => val
+          onChanged: (val) => val
               ? widget.details.teamUids.add(uid)
               : widget.details.teamUids.remove(uid)));
     }
@@ -43,26 +48,26 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     ));
     showDialog<bool>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return SimpleDialog(
           title: Text(messages.teamselect),
           children: teams,
         );
       },
-    ).then((bool closed) {
+    ).then((closed) {
       setState(() {});
     });
   }
 
   Widget _showTeamPicker() {
-    Messages messages = Messages.of(context);
-    String pickerText = "";
+    var messages = Messages.of(context);
+    var pickerText = "";
     if (widget.details.teamUids.length == 0) {
       pickerText = messages.allteams;
     } else {
-      TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+      var teamBloc = BlocProvider.of<TeamBloc>(context);
       pickerText = widget.details.teamUids
-          .map((String uid) => teamBloc.state.getTeam(uid).name)
+          .map((uid) => teamBloc.state.getTeam(uid).name)
           .join((", "));
     }
     return InkWell(
@@ -77,17 +82,17 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
   }
 
   void _openPlayerListWithCheckbox() {
-    Messages messages = Messages.of(context);
-    List<Widget> players = <Widget>[];
-    PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+    var messages = Messages.of(context);
+    var players = <Widget>[];
+    var playerBloc = BlocProvider.of<PlayerBloc>(context);
 
-    for (String uid in playerBloc.state.players.keys) {
-      Player player = playerBloc.state.getPlayer(uid);
-      bool isOn = widget.details.playerUids.contains(uid);
+    for (var uid in playerBloc.state.players.keys) {
+      var player = playerBloc.state.getPlayer(uid);
+      var isOn = widget.details.playerUids.contains(uid);
       players.add(_CheckboxDialogItem(
           initialValue: isOn,
           title: player.name,
-          onChanged: (bool val) => val
+          onChanged: (val) => val
               ? widget.details.playerUids.add(uid)
               : widget.details.playerUids.remove(uid)));
     }
@@ -101,28 +106,28 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
     ));
     showDialog<bool>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return SimpleDialog(
           title: Text(messages.playerselect),
           children: players,
         );
       },
-    ).then((bool closed) {
+    ).then((closed) {
       setState(() {});
     });
     ;
   }
 
   Widget _showPlayerPicker() {
-    Messages messages = Messages.of(context);
-    String pickerText = "";
+    var messages = Messages.of(context);
+    var pickerText = "";
     if (widget.details.playerUids.length == 0) {
       pickerText = messages.everyone;
     } else {
-      PlayerBloc playerBloc = BlocProvider.of<PlayerBloc>(context);
+      var playerBloc = BlocProvider.of<PlayerBloc>(context);
 
       pickerText = widget.details.playerUids
-          .map((String uid) => playerBloc.state.getPlayer(uid).name)
+          .map((uid) => playerBloc.state.getPlayer(uid).name)
           .join((", "));
     }
     return InkWell(
@@ -138,7 +143,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
 
   @override
   Widget build(BuildContext context) {
-    Messages messages = Messages.of(context);
+    var messages = Messages.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -188,7 +193,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
                     value: GameResult.Unknown,
                   ),
                 ],
-                onChanged: (GameResult res) {
+                onChanged: (res) {
                   setState(() {
                     widget.details.result = res;
                   });
@@ -217,7 +222,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
                     value: EventType.Event,
                   ),
                 ],
-                onChanged: (EventType ev) {
+                onChanged: (ev) {
                   setState(() {
                     widget.details.eventType = ev;
                   });
@@ -258,7 +263,7 @@ class _CheckboxDialogItemState extends State<_CheckboxDialogItem> {
     return ListTile(
       leading: Checkbox(
         value: _isOn,
-        onChanged: (bool val) => setState(() {
+        onChanged: (val) => setState(() {
           _isOn = val;
           widget.onChanged(val);
         }),

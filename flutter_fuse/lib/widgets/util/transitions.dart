@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 ///
 /// Creates a slide transition for use in the app.
 ///
-SlideTransition makeSlideTransition(
-    bool fromLeft, Animation<double> animation) {
+SlideTransition makeSlideTransition(Animation<double> animation,
+    {bool fromLeft = false}) {
   var topLeft = Offset(0.0, 0.0);
   var topRight = Offset(1.0, 0.0);
   var bottomLeft = Offset(0.0, 1.0);

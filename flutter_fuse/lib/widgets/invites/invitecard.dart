@@ -5,14 +5,16 @@ import 'package:fusemodel/blocs.dart';
 import '../../services/messages.dart';
 import '../util/communityicons.dart';
 
-// Shows the current invites pending for this user.
+///
+/// Shows the current invites pending for this user.
+///
 class InviteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    InviteBloc bloc = BlocProvider.of<InviteBloc>(context);
+    var bloc = BlocProvider.of<InviteBloc>(context);
     return BlocBuilder(
       cubit: bloc,
-      builder: (BuildContext context, InviteState state) {
+      builder: (context, state) {
         if (bloc.state.invites.length > 0) {
           Widget card = Card(
             color: Colors.limeAccent,

@@ -2,6 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:image_picker/image_picker.dart';
+
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../form/genderformfield.dart';
@@ -11,11 +15,18 @@ import '../form/switchformfield.dart';
 import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 import '../util/teamimage.dart';
-import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:image_picker/image_picker.dart';
 
-enum StartSection { start, end, all }
+/// The start section to display.
+enum StartSection {
+  /// Just the start bits
+  start,
+
+  /// Just the end bits.
+  end,
+
+  /// all the bits.
+  all,
+}
 
 ///
 /// Shows the edit form for the team.  Splits up the team into two
@@ -23,11 +34,15 @@ enum StartSection { start, end, all }
 /// other bits.
 ///
 class TeamEditForm extends StatefulWidget {
+  /// Constrcutor.
   TeamEditForm(this.team, GlobalKey<TeamEditFormState> key,
       {this.startSection = StartSection.all})
       : super(key: key);
 
+  /// The team to use.
   final Team team;
+
+  /// The start section to use.
   final StartSection startSection;
 
   @override
@@ -36,24 +51,28 @@ class TeamEditForm extends StatefulWidget {
   }
 }
 
+///
+/// The form state for the team to edit.
+///
 class TeamEditFormState extends State<TeamEditForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _autovalidate = false;
-  Validations _validations = Validations();
-  ScrollController _scrollController = ScrollController();
-  FocusNode _focusNodeName = FocusNode();
-  FocusNode _focusNodeNotes = FocusNode();
-  FocusNode _focusNodeSeason = FocusNode();
-  FocusNode _focusNodeArriveBefore = FocusNode();
+  final Validations _validations = Validations();
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNodeName = FocusNode();
+  final FocusNode _focusNodeNotes = FocusNode();
+  final FocusNode _focusNodeSeason = FocusNode();
+  final FocusNode _focusNodeArriveBefore = FocusNode();
   File _imageFile;
   bool _changedImage = false;
   String _seasonName = "";
-  TeamBuilder builder;
+  TeamBuilder _builder;
 
+  /// Saves all the details to the builder.
   void save() {
     _formKey.currentState.save();
   }
 
+  /// Validates the form.
   bool validate() {
     return _formKey.currentState.validate();
   }
@@ -61,33 +80,35 @@ class TeamEditFormState extends State<TeamEditForm> {
   @override
   void initState() {
     super.initState();
-    builder = widget.team.toBuilder();
+    _builder = widget.team.toBuilder();
   }
 
+  /// Validates the form and also returns the builder.
   TeamBuilder validateAndCreate() {
     if (!_formKey.currentState.validate()) {
       return null;
     } else {
       _formKey.currentState.save();
 
-      if (builder.uid == null) {
-        AuthenticationBloc authenticationBloc =
-            BlocProvider.of<AuthenticationBloc>(context);
+      if (_builder.uid == null) {
+        var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
         // Add the current user as the admin.
-        builder.adminsData[authenticationBloc.currentUser.uid] = true;
+        _builder.adminsData[authenticationBloc.currentUser.uid] = true;
       }
     }
-    return builder;
+    return _builder;
   }
 
+  /// The name of selected season.
   String get seasonName => _seasonName;
 
+  /// The image file to use, so we can save the image out.
   File getImageFile() {
     return _imageFile;
   }
 
   void _selectImage() async {
-    File imgFile = await ImagePicker.pickImage(
+    var imgFile = await ImagePicker.pickImage(
         source: ImageSource.gallery, maxHeight: 400.0, maxWidth: 400.0);
 
     if (imgFile != null) {
@@ -101,7 +122,7 @@ class TeamEditFormState extends State<TeamEditForm> {
   Widget _buildImage() {
     if (!_changedImage) {
       return TeamImage(
-        teamUid: builder.uid,
+        teamUid: _builder.uid,
       );
     }
     return Image.file(_imageFile);
@@ -109,7 +130,7 @@ class TeamEditFormState extends State<TeamEditForm> {
 
   @override
   Widget build(BuildContext context) {
-    ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
+    var clubBloc = BlocProvider.of<ClubBloc>(context);
     if (widget.team == null) {
       return Text('Invalid state');
     }
@@ -120,12 +141,12 @@ class TeamEditFormState extends State<TeamEditForm> {
         club = clubBloc.state.clubs[widget.team.clubUid];
       }
     }
-    final Size screenSize = MediaQuery.of(context).size;
+    var screenSize = MediaQuery.of(context).size;
     Widget seasonWidget;
     Widget adminWidget;
     Widget adminRelationshipWidget;
     Widget adminNameWidget;
-    if (builder.uid == null) {
+    if (_builder.uid == null) {
       // Adding a team
       seasonWidget = EnsureVisibleWhenFocused(
         focusNode: _focusNodeSeason,
@@ -139,10 +160,10 @@ class TeamEditFormState extends State<TeamEditForm> {
           initialValue: _seasonName,
           keyboardType: TextInputType.text,
           obscureText: false,
-          validator: (String value) {
+          validator: (value) {
             return _validations.validateSeason(context, value);
           },
-          onSaved: (String value) {
+          onSaved: (value) {
             _seasonName = value;
           },
         ),
@@ -154,15 +175,15 @@ class TeamEditFormState extends State<TeamEditForm> {
           hintText: Messages.of(context).seasonselect,
           labelText: Messages.of(context).seasonselect,
         ),
-        team: builder.build(),
-        initialValue: builder.currentSeason,
-        onSaved: (String value) {
-          builder.currentSeason = value;
+        team: _builder.build(),
+        initialValue: _builder.currentSeason,
+        onSaved: (value) {
+          _builder.currentSeason = value;
         },
       );
     }
 
-    List<Widget> fields = <Widget>[];
+    var fields = <Widget>[];
     if (widget.startSection != StartSection.end) {
       fields.addAll(<Widget>[
         IconButton(
@@ -180,14 +201,14 @@ class TeamEditFormState extends State<TeamEditForm> {
               labelText: Messages.of(context).teamnamehint,
             ),
             focusNode: _focusNodeName,
-            initialValue: builder.name,
+            initialValue: _builder.name,
             keyboardType: TextInputType.text,
             obscureText: false,
-            validator: (String value) {
+            validator: (value) {
               return _validations.validateDisplayName(context, value);
             },
-            onSaved: (String value) {
-              builder.name = value;
+            onSaved: (value) {
+              _builder.name = value;
             },
           ),
         ),
@@ -197,12 +218,12 @@ class TeamEditFormState extends State<TeamEditForm> {
             hintText: Messages.of(context).sportselect,
             labelText: Messages.of(context).sportselect,
           ),
-          initialValue: builder.sport,
-          validator: (Sport value) {
+          initialValue: _builder.sport,
+          validator: (value) {
             return _validations.validateSport(context, value);
           },
-          onSaved: (Sport value) {
-            builder.sport = value;
+          onSaved: (value) {
+            _builder.sport = value;
           },
         ),
         GenderFormField(
@@ -211,9 +232,9 @@ class TeamEditFormState extends State<TeamEditForm> {
             hintText: Messages.of(context).genderselect,
             labelText: Messages.of(context).genderselect,
           ),
-          initialValue: builder.gender,
-          onSaved: (Gender value) {
-            builder.gender = value;
+          initialValue: _builder.gender,
+          onSaved: (value) {
+            _builder.gender = value;
           },
         ),
         seasonWidget,
@@ -230,11 +251,11 @@ class TeamEditFormState extends State<TeamEditForm> {
               labelText: Messages.of(context).leaguehint,
             ),
             focusNode: _focusNodeNotes,
-            initialValue: builder.league == null ? '' : builder.league,
+            initialValue: _builder.league == null ? '' : _builder.league,
             keyboardType: TextInputType.text,
             obscureText: false,
-            onSaved: (String value) {
-              builder.league = value;
+            onSaved: (value) {
+              _builder.league = value;
             },
           ),
         ),
@@ -247,20 +268,20 @@ class TeamEditFormState extends State<TeamEditForm> {
               labelText: Messages.of(context).arrivebeforelabel,
             ),
             focusNode: _focusNodeArriveBefore,
-            initialValue: builder.arriveEarlyInternal.toString(),
+            initialValue: _builder.arriveEarlyInternal.toString(),
             keyboardType: TextInputType.number,
             obscureText: false,
-            onSaved: (String value) {
-              builder.arriveEarlyInternal = int.parse(value);
+            onSaved: (value) {
+              _builder.arriveEarlyInternal = int.parse(value);
             },
           ),
         ),
         SwitchFormField(
-          initialValue: builder.trackAttendenceInternal,
+          initialValue: _builder.trackAttendenceInternal,
           icon: CommunityIcons.trafficLight,
           enabled: club != null ? club.trackAttendence != null : true,
           label: Messages.of(context).trackattendence(Tristate.Yes),
-          onSaved: (bool value) => builder.trackAttendenceInternal = value,
+          onSaved: (value) => _builder.trackAttendenceInternal = value,
         ),
       ]);
     }
@@ -281,7 +302,7 @@ class TeamEditFormState extends State<TeamEditForm> {
         children: <Widget>[
           Form(
             key: _formKey,
-            autovalidate: _autovalidate,
+            autovalidate: false,
             child: DropdownButtonHideUnderline(
               child: Column(children: fields),
             ),

@@ -10,6 +10,7 @@ import 'package:fusemodel/fusemodel.dart';
 /// image itself in the local cache.
 ///
 class LeagueImage extends StatelessWidget {
+  /// Constructor.
   LeagueImage(
       {this.leagueOrTournamentUid,
       this.leagueOrTournament,
@@ -21,20 +22,40 @@ class LeagueImage extends StatelessWidget {
       this.fit,
       this.alignment = Alignment.center,
       this.repeat = ImageRepeat.noRepeat,
-      this.matchTextDirection: false})
-      : super(
+      this.matchTextDirection = false})
+      : assert(leagueOrTournament != null || leagueOrTournamentUid != null),
+        super(
           key: key,
         );
 
+  /// The league or tournament to display.
   final String leagueOrTournamentUid;
+
+  /// The league or tournament to display.
   final LeagueOrTournament leagueOrTournament;
+
+  /// How wide the image is,
   final double width;
+
+  /// Height of the image,
   final double height;
+
+  /// Color of the background.
   final Color color;
+
+  /// How to fit the image in the box.
   final BoxFit fit;
+
+  /// Alignment to use for the image.
   final AlignmentGeometry alignment;
+
+  /// Background repating for the image.
   final ImageRepeat repeat;
+
+  /// matching the text direction.
   final bool matchTextDirection;
+
+  /// The blend mode to use for the color.
   final BlendMode colorBlendMode;
 
   @override

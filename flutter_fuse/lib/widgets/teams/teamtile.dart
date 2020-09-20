@@ -13,20 +13,26 @@ import '../util/teamimage.dart';
 /// team.
 ///
 class TeamTile extends StatelessWidget {
+  /// Constructor for the team tile.
   TeamTile(this.teamUid,
       {this.popBeforeNavigate = false, this.showIconForTeam = false});
 
+  /// The teamUid to display.
   final String teamUid;
+
+  /// If we should show an icon for the team.
   final bool showIconForTeam;
+
+  /// If we should pop bevbore we navigate away,
   final bool popBeforeNavigate;
 
   @override
   Widget build(BuildContext context) {
     return SingleTeamProvider(
       teamUid: teamUid,
-      builder: (BuildContext c, SingleTeamBloc singleTeamBloc) => BlocBuilder(
+      builder: (c, singleTeamBloc) => BlocBuilder(
         cubit: singleTeamBloc,
-        builder: (BuildContext context, SingleTeamState teamState) {
+        builder: (context, teamState) {
           if (teamState is SingleTeamDeleted) {
             return ListTile(
                 leading: Icon(Icons.delete),
@@ -41,7 +47,7 @@ class TeamTile extends StatelessWidget {
 
           return SingleSeasonProvider(
               seasonUid: teamState.team.currentSeason,
-              builder: (BuildContext c, SingleSeasonBloc seasonBloc) {
+              builder: (c, seasonBloc) {
                 return ListTile(
                   leading: TeamImage(
                     width: 40.0,
@@ -52,9 +58,8 @@ class TeamTile extends StatelessWidget {
                   ),
                   title: BlocBuilder(
                     cubit: seasonBloc,
-                    builder:
-                        (BuildContext context, SingleSeasonState seasonState) {
-                      String seasonName = "";
+                    builder: (context, seasonState) {
+                      var seasonName = "";
                       if (seasonState is SingleSeasonLoaded) {
                         seasonName = seasonState.season.name;
                       }
@@ -62,7 +67,7 @@ class TeamTile extends StatelessWidget {
                       return RichText(
                         text: TextSpan(
                           text: teamState.team.name,
-                          style: Theme.of(context).textTheme.subhead.copyWith(
+                          style: Theme.of(context).textTheme.subtitle1.copyWith(
                               fontWeight: FontWeight.bold, fontSize: 17.0),
                           children: <TextSpan>[
                             TextSpan(text: "  "),
@@ -70,18 +75,18 @@ class TeamTile extends StatelessWidget {
                               text: seasonName,
                               style: Theme.of(context)
                                   .textTheme
-                                  .subhead
+                                  .subtitle1
                                   .copyWith(
                                       fontStyle: FontStyle.italic,
                                       fontSize: 15.0),
                             ),
                             TextSpan(
                               text: teamState.isAdmin()
-                                  ? "\n" + Messages.of(context).administrator
+                                  ? "\n${Messages.of(context).administrator}"
                                   : "",
                               style: Theme.of(context)
                                   .textTheme
-                                  .subhead
+                                  .subtitle1
                                   .copyWith(
                                     fontStyle: FontStyle.italic,
                                     fontSize: 10.0,
@@ -97,8 +102,7 @@ class TeamTile extends StatelessWidget {
                   dense: true,
                   subtitle: BlocBuilder(
                     cubit: seasonBloc,
-                    builder:
-                        (BuildContext context, SingleSeasonState seasonState) {
+                    builder: (context, seasonState) {
                       if (seasonState is SingleSeasonLoaded) {
                         return Text(seasonState.season.record != null
                             ? Messages.of(context)
@@ -113,7 +117,7 @@ class TeamTile extends StatelessWidget {
                       Navigator.pop(context);
                     }
                     RepositoryProvider.of<fluro.Router>(context).navigateTo(
-                        context, "Team/" + teamState.team.uid,
+                        context, "Team/${teamState.team.uid}",
                         transition: fluro.TransitionType.inFromRight);
                   },
                 );

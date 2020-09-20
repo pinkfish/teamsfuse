@@ -5,17 +5,20 @@ import 'package:fusemodel/blocs.dart';
 
 import '../../services/messages.dart';
 
+///
+/// Show a dialog to add a team ot th e league or tournament divison.
+///
 class AddTeamDialog extends Dialog {
   final TextEditingController _controller = TextEditingController();
 
+  /// Show a dialog to add a team.
   static Future<bool> showTeamDialog(BuildContext context,
       SingleLeagueOrTournamentDivisonBloc leagueOrTournmantDivison) async {
-    String teamName = await showDialog<String>(
-        context: context, builder: (BuildContext context) => AddTeamDialog());
+    var teamName = await showDialog<String>(
+        context: context, builder: (context) => AddTeamDialog());
     if (teamName == null) {
       return false;
     }
-    print('team name $teamName');
     // Write it out to firestore.  Yay.
     leagueOrTournmantDivison
         .add(SingleLeagueOrTournamentDivisonAddTeam(teamName: teamName));
@@ -24,13 +27,13 @@ class AddTeamDialog extends Dialog {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> children = <Widget>[];
+    var children = <Widget>[];
 
     children.add(
       Padding(
         padding: EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
         child: DefaultTextStyle(
-          style: Theme.of(context).textTheme.title,
+          style: Theme.of(context).textTheme.headline6,
           child: Semantics(
             child: Text(Messages.of(context).addteam),
             namesRoute: true,
@@ -56,7 +59,7 @@ class AddTeamDialog extends Dialog {
       ),
     );
 
-    children.add(ButtonTheme.bar(
+    children.add(ButtonBarTheme(
       child: ButtonBar(
         children: <Widget>[
           FlatButton(

@@ -10,6 +10,7 @@ import '../blocs/singleteamprovider.dart';
 /// The settings for the club for this team.
 ///
 class ClubSettings extends StatefulWidget {
+  /// Constructor taking in the team uid to get the club from.
   ClubSettings(this._teamUid);
 
   final String _teamUid;
@@ -26,11 +27,11 @@ class _ClubSettingsState extends State<ClubSettings> {
   }
 
   void _setClub(SingleTeamBloc singleTeamBloc) async {
-    ClubBloc clubBloc = BlocProvider.of<ClubBloc>(context);
+    var clubBloc = BlocProvider.of<ClubBloc>(context);
     if (clubBloc.state.clubs.length == 0) {
       showDialog<bool>(
           context: context,
-          builder: (BuildContext context) {
+          builder: (context) {
             return AlertDialog(
               title: Text(Messages.of(context).selectclub),
               content: Text(Messages.of(context).noclub),
@@ -46,14 +47,14 @@ class _ClubSettingsState extends State<ClubSettings> {
           });
     } else {
       // Show a dialog to let people select one of their clubs.
-      String str = await showDialog<String>(
+      var str = await showDialog<String>(
           context: context,
-          builder: (BuildContext context) {
+          builder: (context) {
             return SimpleDialog(
               title: Text(Messages.of(context).selectclub),
               children: clubBloc.state.clubs.values
-                  .where((Club c) => c.isAdmin())
-                  .map((Club c) {
+                  .where((c) => c.isAdmin())
+                  .map((c) {
                 return SimpleDialogOption(
                     onPressed: () => Navigator.pop(context, c.uid),
                     child: Text(c.name));
@@ -68,12 +69,12 @@ class _ClubSettingsState extends State<ClubSettings> {
   }
 
   List<Widget> _buildBody(Team team, SingleTeamBloc singleTeamBloc) {
-    List<Widget> ret = <Widget>[];
+    var ret = <Widget>[];
     if (team.clubUid == null) {
       ret.add(Text(
         Messages.of(context).clubsettingdescription,
         softWrap: true,
-        style: Theme.of(context).textTheme.body1.copyWith(fontSize: 20.0),
+        style: Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 20.0),
       ));
       ret.add(
         SizedBox(
@@ -112,7 +113,7 @@ class _ClubSettingsState extends State<ClubSettings> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
 
     return Column(
       children: <Widget>[
@@ -124,10 +125,9 @@ class _ClubSettingsState extends State<ClubSettings> {
             child: SingleChildScrollView(
               child: SingleTeamProvider(
                 teamUid: widget._teamUid,
-                builder: (BuildContext context, SingleTeamBloc bloc) =>
-                    BlocBuilder(
+                builder: (context, bloc) => BlocBuilder(
                   cubit: bloc,
-                  builder: (BuildContext context, SingleTeamState state) {
+                  builder: (context, state) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: _buildBody(state.team, bloc),

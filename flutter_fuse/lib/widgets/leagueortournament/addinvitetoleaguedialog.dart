@@ -6,20 +6,28 @@ import 'package:fusemodel/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 
+///
+/// Adds an invite to the league with a nice dialog box.
+///
 class AddInviteToLeagueDialog extends Dialog {
+  /// Constructor.
   AddInviteToLeagueDialog({@required this.leagueOrTournament});
 
   final TextEditingController _controller = TextEditingController();
-  final Validations validations = Validations();
+  final Validations _validations = Validations();
 
+  /// The league or tournament to do an invite for.
   final SingleLeagueOrTournamentBloc leagueOrTournament;
 
+  ///
+  /// Shows a dialog box to do the invite to the league or tournament.
+  ///
   static Future<bool> showAddLeagueOrTournamentInviteDialog(
       BuildContext context,
       SingleLeagueOrTournamentBloc leagueOrTournament) async {
-    String email = await showDialog<String>(
+    var email = await showDialog<String>(
         context: context,
-        builder: (BuildContext context) =>
+        builder: (context) =>
             AddInviteToLeagueDialog(leagueOrTournament: leagueOrTournament));
     if (email == null) {
       return false;
@@ -31,13 +39,13 @@ class AddInviteToLeagueDialog extends Dialog {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> children = <Widget>[];
+    var children = <Widget>[];
 
     children.add(
       Padding(
         padding: EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
         child: DefaultTextStyle(
-          style: Theme.of(context).textTheme.title,
+          style: Theme.of(context).textTheme.headline6,
           child: Semantics(
             child: Text(Messages.of(context).addadmin),
             namesRoute: true,
@@ -62,19 +70,18 @@ class AddInviteToLeagueDialog extends Dialog {
       ),
     );
 
-    children.add(ButtonTheme.bar(
+    children.add(ButtonBarTheme(
       child: ButtonBar(
         children: <Widget>[
           FlatButton(
               onPressed: () {
-                String str =
-                    validations.validateEmail(context, _controller.text);
+                var str = _validations.validateEmail(context, _controller.text);
                 if (str == null) {
                   Navigator.pop(context, _controller.text);
                 } else {
                   showDialog<bool>(
                     context: context,
-                    builder: (BuildContext context) => AlertDialog(
+                    builder: (context) => AlertDialog(
                       title: Text(Messages.of(context).invalidemail),
                       content: Text(Messages.of(context).invalidemail),
                       actions: <Widget>[

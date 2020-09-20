@@ -8,9 +8,13 @@ import '../../services/messages.dart';
 /// Puts the name of the player in a nixe widget.
 ///
 class PlayerName extends StatelessWidget {
+  /// Constructor.
   PlayerName({@required this.playerUid, this.style});
 
+  /// The player uid to show the name for,
   final String playerUid;
+
+  /// Style to use for the player name on the screen.
   final TextStyle style;
 
   @override

@@ -33,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final FilterDetails _details = FilterDetails();
   final GlobalKey<CalendarWidgetState> _calendarState =
       GlobalKey<CalendarWidgetState>();
-  int quoteId = SavingOverlay.randomNum.nextInt(20000);
   GameListCalendarState _calendarEvents;
 
   void _showFilterDialog() async {
@@ -142,7 +141,6 @@ class _HomeScreenState extends State<HomeScreen> {
               break;
           }
           return SavingOverlay(
-            quoteId: quoteId,
             saving: loading,
             child: Column(
               children: <Widget>[

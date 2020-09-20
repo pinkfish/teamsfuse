@@ -10,8 +10,10 @@ import 'teamtile.dart';
 /// The list of teams that animated teams in and out.  Nifty.
 ///
 class TeamAnimatedList extends StatefulWidget {
+  /// Construcot.
   TeamAnimatedList({this.archived});
 
+  /// SHow archived teams or not.
   final bool archived;
 
   @override
@@ -22,7 +24,8 @@ class TeamAnimatedList extends StatefulWidget {
 
 class _TeamAnimatedListState extends State<TeamAnimatedList> {
   List<Team> _currentData = [];
-  GlobalKey<AnimatedListState> _listState = GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> _listState =
+      GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
@@ -42,7 +45,7 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
   }
 
   void _updateTeams(List<Team> newTeams) {
-    List<Team> oldList = _currentData;
+    var oldList = _currentData;
     _currentData = newTeams;
     if (oldList == null || _listState.currentState == null) {
       //  Build the layout.
@@ -50,22 +53,20 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
     }
 
     // Re-read the list and see what changed.
-    int i = 0;
-    int j = 0;
+    var i = 0;
+    var j = 0;
     while (i < _currentData.length && j < oldList.length) {
       if (_currentData[i].uid == oldList[j].uid) {
         i++;
         j++;
       } else {
-        bool same = _currentData[i] == oldList[j];
+        var same = _currentData[i] == oldList[j];
         if (!same) {
           i++;
           _listState.currentState.insertItem(i);
         } else {
-          print("${_listState.currentState}");
-          Team myTeam = oldList[j];
-          _listState.currentState.removeItem(j,
-              (BuildContext context, Animation<double> animation) {
+          var myTeam = oldList[j];
+          _listState.currentState.removeItem(j, (context, animation) {
             // Nailed it.
             return SizeTransition(
               axis: Axis.vertical,
@@ -80,7 +81,7 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
         }
       }
     }
-    int pos = i;
+    var pos = i;
     while (i < _currentData.length) {
       i++;
       _listState.currentState.insertItem(pos);
@@ -91,13 +92,13 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
   Widget build(BuildContext context) {
     return BlocBuilder(
       cubit: BlocProvider.of<TeamBloc>(context),
-      builder: (BuildContext context, TeamState state) {
+      builder: (context, state) {
         if (state is TeamUninitialized) {
           return CircularProgressIndicator();
         } else {
-          List<Team> teamSorted = state.allTeamUids
-              .map((String uid) => state.getTeam(uid))
-              .where((Team t) => t.archived == widget.archived)
+          var teamSorted = state.allTeamUids
+              .map((uid) => state.getTeam(uid))
+              .where((t) => t.archived == widget.archived)
               .toList();
           if (teamSorted.length == 0) {
             return Container(
@@ -105,7 +106,7 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
               child: Text(Messages.of(context).noteams),
             );
           }
-          teamSorted.sort((Team a, Team b) => a.name.compareTo(b.name));
+          teamSorted.sort((a, b) => a.name.compareTo(b.name));
           _updateTeams(teamSorted);
           return AnimatedList(
             key: _listState,

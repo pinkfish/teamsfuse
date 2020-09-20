@@ -1,7 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+///
+/// A drop down button with an input section.
+///
 class InputDropdown extends StatelessWidget {
+  /// COnstructor.
   const InputDropdown(
       {@required this.decoration,
       @required this.valueText,
@@ -10,10 +14,20 @@ class InputDropdown extends StatelessWidget {
       this.valueStyle,
       this.onPressed})
       : super(key: key);
+
+  /// The current value of the button.
   final String valueText;
+
+  /// Error to display if there is an error.
   final String errorText;
+
+  /// The style to use for the value.
   final TextStyle valueStyle;
+
+  /// What to do when the button is pressed.
   final VoidCallback onPressed;
+
+  /// The decoration to use on the input.
   final InputDecoration decoration;
 
   @override

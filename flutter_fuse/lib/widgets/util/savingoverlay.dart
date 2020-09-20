@@ -9,15 +9,20 @@ import '../../services/messages.dart';
 /// information, does it as a semi-transparent overlay.
 ///
 class SavingOverlay extends StatelessWidget {
+  /// Constructor for the saving overlay.
   SavingOverlay({@required bool saving, @required this.child, int quoteId})
       : _saving = saving ?? false,
-        quoteId = quoteId ?? randomNum.nextInt(20000);
+        quoteId = quoteId ?? _randomNum.nextInt(20000);
 
   final bool _saving;
+
+  /// The child to use for the internal pieces.
   final Widget child;
+
+  /// The quote to show, or a random one if not set.
   final int quoteId;
 
-  static Random randomNum = Random.secure();
+  static final Random _randomNum = Random.secure();
 
   @override
   Widget build(BuildContext context) {

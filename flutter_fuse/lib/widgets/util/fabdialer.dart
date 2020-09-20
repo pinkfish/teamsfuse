@@ -3,28 +3,41 @@ import 'package:flutter/material.dart';
 
 import 'fabminimenuitem.dart';
 
+///
+/// A dialer for the floating action bar, pulls up a menu when clicked.
+///
 class FabDialer extends StatefulWidget {
+  /// constructor.
   const FabDialer(
       {@required this.menu,
       @required this.color,
       @required this.icon,
       this.disabled = false});
 
+  /// The menu items to display.
   final List<FabMiniMenuItemWidget> menu;
+
+  /// color of the button.
   final Color color;
+
+  /// Icon for the button.
   final Icon icon;
+
+  /// If the dialer is disabled.
   final bool disabled;
 
   @override
   FabDialerState createState() => FabDialerState();
 }
 
+///
+/// The state for the dialer, dealing with openness and closedness.
+///
 class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
-  FabDialerState();
-
   int _angle = 90;
   bool _isRotated = true;
 
+  /// The controller for the animation.
   AnimationController controller;
 
   @override
@@ -39,8 +52,8 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
     super.initState();
   }
 
+  /// Closes the dialer.
   void closeDialer() {
-    print("closing $_isRotated");
     if (!_isRotated) {
       setState(() {
         _isRotated = true;
@@ -73,18 +86,12 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
     _rotateTo(!_isRotated);
   }
 
-  int getIndex(FabMiniMenuItemWidget fabwidget) {
-    return widget.menu.indexOf(fabwidget);
-  }
-
   @override
   Widget build(BuildContext context) {
-    int index = 0;
-    widget.menu.forEach((FabMiniMenuItemWidget widget) {
-      widget.details.controller = controller;
-      widget.details.index = index++;
-      widget.details.dialer = this;
-    });
+    var index = 0;
+    for (var widget in widget.menu) {
+      widget.setDetails(index++, controller, this);
+    }
 
     // Update all the menu items.
     return Container(

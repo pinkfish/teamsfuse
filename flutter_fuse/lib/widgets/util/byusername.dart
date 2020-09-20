@@ -5,18 +5,22 @@ import 'package:fusemodel/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleprofileprovider.dart';
 
+///
+/// Shows the user name for a specific user.
 class ByUserNameComponent extends StatelessWidget {
+  /// Constructor.
   ByUserNameComponent({@required this.userId});
 
+  /// The userId to display the name of.
   final String userId;
 
   @override
   Widget build(BuildContext context) {
     return SingleProfileProvider(
       userUid: userId,
-      builder: (BuildContext context, SingleProfileBloc bloc) => BlocBuilder(
+      builder: (context, bloc) => BlocBuilder(
         cubit: bloc,
-        builder: (BuildContext context, SingleProfileState state) {
+        builder: (context, state) {
           Widget inner;
           if (state is SingleProfileLoaded) {
             inner =

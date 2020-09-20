@@ -149,7 +149,7 @@ class NumberPickerState extends State<NumberPicker> {
   ///main widget
   @override
   Widget build(BuildContext context) {
-    final ThemeData themeData = Theme.of(context);
+    var themeData = Theme.of(context);
 
     if (widget.decimalPlaces == 0) {
       return _integerListView(themeData);
@@ -165,8 +165,8 @@ class NumberPickerState extends State<NumberPicker> {
   }
 
   Widget _integerListView(ThemeData themeData) {
-    TextStyle defaultStyle = themeData.textTheme.body1;
-    TextStyle selectedStyle =
+    var defaultStyle = themeData.textTheme.bodyText2;
+    var selectedStyle =
         themeData.textTheme.headline5.copyWith(color: themeData.accentColor);
     if (widget.disabled) {
       defaultStyle = defaultStyle.copyWith(color: themeData.disabledColor);

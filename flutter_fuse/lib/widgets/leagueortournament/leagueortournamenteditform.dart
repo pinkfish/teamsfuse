@@ -16,13 +16,18 @@ import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 import '../util/leagueimage.dart';
 
-// of the game.  Does not have the add game step flow.
+///
+/// Edit the league or tournament,
+///
 class LeagueOrTournamentEditForm extends StatefulWidget {
+  /// Constructor.
   LeagueOrTournamentEditForm(
       {@required this.leagueOrTournament,
       @required GlobalKey<LeagueOrTournamentEditFormState> key})
-      : super(key: key);
+      : assert(leagueOrTournament != null),
+        super(key: key);
 
+  /// The league or tournment to edit,
   final LeagueOrTournament leagueOrTournament;
 
   @override
@@ -31,29 +36,34 @@ class LeagueOrTournamentEditForm extends StatefulWidget {
   }
 }
 
+///
+/// The league or tournament edit state.
+///
 class LeagueOrTournamentEditFormState
     extends State<LeagueOrTournamentEditForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool autovalidate = false;
-  Validations _validations = Validations();
-  ScrollController _scrollController = ScrollController();
-  FocusNode _focusNodeName = FocusNode();
-  FocusNode _focusNodeShortDescription = FocusNode();
-  FocusNode _focusNodeLongDescription = FocusNode();
+  bool _autovalidate = false;
+  final Validations _validations = Validations();
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNodeName = FocusNode();
+  final FocusNode _focusNodeShortDescription = FocusNode();
+  final FocusNode _focusNodeLongDescription = FocusNode();
   bool _changedImage = false;
   File _imageFile;
-  LeagueOrTournamentBuilder builder;
+  LeagueOrTournamentBuilder _builder;
 
   @override
   void initState() {
     super.initState();
-    builder = widget.leagueOrTournament.toBuilder();
+    _builder = widget.leagueOrTournament.toBuilder();
   }
 
+  /// Save the form.
   void save() {
     _formKey.currentState.save();
   }
 
+  /// Validate the formn.
   bool validate() {
     if (_formKey.currentState == null) {
       return false;
@@ -62,7 +72,7 @@ class LeagueOrTournamentEditFormState
   }
 
   void _selectImage() async {
-    File imgFile = await ImagePicker.pickImage(
+    var imgFile = await ImagePicker.pickImage(
         source: ImageSource.gallery, maxHeight: 150.0, maxWidth: 150.0);
 
     if (imgFile != null) {
@@ -80,6 +90,7 @@ class LeagueOrTournamentEditFormState
     return Image.file(_imageFile);
   }
 
+  /// The final file to save, null if not changed.
   File get imageFile {
     if (_changedImage) {
       return _imageFile;
@@ -87,20 +98,23 @@ class LeagueOrTournamentEditFormState
     return null;
   }
 
+  ///
+  /// The final result to save out.
+  ///
   LeagueOrTournamentBuilder get finalLeagueOrTournamentResult {
     if (!_formKey.currentState.validate()) {
-      autovalidate = true;
+      _autovalidate = true;
       return null;
     } else {
       _formKey.currentState.save();
       // Add the date time and the time together.
-      return builder;
+      return _builder;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
+    var screenSize = MediaQuery.of(context).size;
 
     return // Show the divisons in the current season.
         Scrollbar(
@@ -109,12 +123,9 @@ class LeagueOrTournamentEditFormState
         controller: _scrollController,
         child: SingleLeagueOrTournamentProvider(
           leagueUid: widget.leagueOrTournament.uid,
-          builder:
-              (BuildContext context, SingleLeagueOrTournamentBloc leagueBloc) =>
-                  BlocListener(
+          builder: (context, leagueBloc) => BlocListener(
             cubit: leagueBloc,
-            listener:
-                (BuildContext context, SingleLeagueOrTournamentState state) {
+            listener: (context, state) {
               if (state is SingleLeagueOrTournamentDeleted) {
                 Navigator.pop(context);
                 return;
@@ -126,11 +137,10 @@ class LeagueOrTournamentEditFormState
             },
             child: BlocBuilder(
               cubit: leagueBloc,
-              builder:
-                  (BuildContext context, SingleLeagueOrTournamentState state) {
+              builder: (context, state) {
                 return Form(
                   key: _formKey,
-                  autovalidate: autovalidate,
+                  autovalidate: _autovalidate,
                   child: DropdownButtonHideUnderline(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -154,11 +164,11 @@ class LeagueOrTournamentEditFormState
                             keyboardType: TextInputType.text,
                             focusNode: _focusNodeName,
                             obscureText: false,
-                            validator: (String str) =>
+                            validator: (str) =>
                                 _validations.validateName(context, str),
                             initialValue: widget.leagueOrTournament.name,
-                            onSaved: (String value) {
-                              builder.name = value;
+                            onSaved: (value) {
+                              _builder.name = value;
                             },
                           ),
                         ),
@@ -168,8 +178,8 @@ class LeagueOrTournamentEditFormState
                             hintText: Messages.of(context).needtoselectgender,
                           ),
                           initialValue: widget.leagueOrTournament.gender,
-                          onSaved: (Gender g) {
-                            builder.gender = g;
+                          onSaved: (g) {
+                            _builder.gender = g;
                           },
                         ),
                         SportFormField(
@@ -177,8 +187,8 @@ class LeagueOrTournamentEditFormState
                             icon: const Icon(CommunityIcons.basketball),
                           ),
                           initialValue: widget.leagueOrTournament.sport,
-                          onSaved: (Sport s) {
-                            builder.sport = s;
+                          onSaved: (s) {
+                            _builder.sport = s;
                           },
                         ),
                         EnsureVisibleWhenFocused(
@@ -195,8 +205,8 @@ class LeagueOrTournamentEditFormState
                             obscureText: false,
                             initialValue:
                                 widget.leagueOrTournament.shortDescription,
-                            onSaved: (String value) {
-                              builder.shortDescription = value;
+                            onSaved: (value) {
+                              _builder.shortDescription = value;
                             },
                           ),
                         ),
@@ -215,8 +225,8 @@ class LeagueOrTournamentEditFormState
                             maxLines: 5,
                             initialValue:
                                 widget.leagueOrTournament.longDescription,
-                            onSaved: (String value) {
-                              builder.longDescription = value;
+                            onSaved: (value) {
+                              _builder.longDescription = value;
                             },
                           ),
                         ),

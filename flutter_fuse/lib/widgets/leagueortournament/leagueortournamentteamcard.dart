@@ -10,12 +10,20 @@ import 'leagueortournamentteamname.dart';
 /// Card showing details of a team inside a league/tournament.
 ///
 class LeagueOrTournamentTeamCard extends StatelessWidget {
+  /// Constructor.
   LeagueOrTournamentTeamCard(this.leagueUid, this.team,
       {this.admin = false, this.divison});
 
+  /// The team in the league to display
   final LeagueOrTournamentTeam team;
+
+  /// The divison in the league to display.
   final LeagueOrTournamentDivison divison;
+
+  /// The leagueUid to display
   final String leagueUid;
+
+  /// If we are an admin in this team
   final bool admin;
 
   @override
@@ -26,21 +34,15 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
         subtitle =
             Text(Messages.of(context).winrecord(team.record[divison.uid]));
       } else {
-        WinRecord record = WinRecord();
+        var record = WinRecord();
         subtitle = Text(Messages.of(context).winrecord(record));
       }
     }
 
     return Card(
       child: ListTile(
-        onTap: () => Navigator.pushNamed(
-            context,
-            "/League/Team/" +
-                leagueUid +
-                "/" +
-                divison.leagueOrTournmentSeasonUid +
-                "/" +
-                team.uid),
+        onTap: () => Navigator.pushNamed(context,
+            "/League/Team/$leagueUid/${divison.leagueOrTournmentSeasonUid}/${team.uid}"),
         leading: team.teamUid != null
             ? TeamImage(
                 width: 50.0,

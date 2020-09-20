@@ -5,24 +5,33 @@ import 'package:fusemodel/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentteamprovider.dart';
 
+///
+/// Show the name of the team in this league or tournament.
+///
 class LeagueOrTournamentTeamName extends StatelessWidget {
+  /// Constructor.
   LeagueOrTournamentTeamName(this.leagueOrTournmentTeamUid,
       {this.style, this.textAlign, this.overflow});
 
+  /// The teamUid to display.
   final String leagueOrTournmentTeamUid;
+
+  /// The text style to use.
   final TextStyle style;
+
+  /// How to align the text.
   final TextAlign textAlign;
+
+  /// What to do with overflow.
   final TextOverflow overflow;
 
   @override
   Widget build(BuildContext context) {
     return SingleLeagueOrTournamentTeamProvider(
       leagueTeamUid: leagueOrTournmentTeamUid,
-      builder: (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
-          BlocBuilder(
+      builder: (context, bloc) => BlocBuilder(
         cubit: bloc,
-        builder:
-            (BuildContext context, SingleLeagueOrTournamentTeamState state) {
+        builder: (context, state) {
           Widget inner;
           if (state is SingleLeagueOrTournamentTeamUninitialized) {
             inner = Text(

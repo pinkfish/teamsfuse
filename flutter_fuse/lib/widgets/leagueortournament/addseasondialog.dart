@@ -5,13 +5,20 @@ import 'package:fusemodel/blocs.dart';
 
 import '../../services/messages.dart';
 
+///
+/// Dialog box to add a season to the team.
+///
 class AddSeasonDialog extends Dialog {
   final TextEditingController _controller = TextEditingController();
 
+  ///
+  /// Shows a add season dialog box to add a seaon to the specific league
+  /// or tournament.
+  ///
   static Future<bool> showSeasonDialog(BuildContext context,
       SingleLeagueOrTournamentBloc leagueOrTournamentBloc) async {
-    String seasonName = await showDialog<String>(
-        context: context, builder: (BuildContext context) => AddSeasonDialog());
+    var seasonName = await showDialog<String>(
+        context: context, builder: (context) => AddSeasonDialog());
     if (seasonName == null) {
       return false;
     }
@@ -23,13 +30,13 @@ class AddSeasonDialog extends Dialog {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> children = <Widget>[];
+    var children = <Widget>[];
 
     children.add(
       Padding(
         padding: EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
         child: DefaultTextStyle(
-          style: Theme.of(context).textTheme.title,
+          style: Theme.of(context).textTheme.headline6,
           child: Semantics(
             child: Text(Messages.of(context).addseason),
             namesRoute: true,
@@ -55,7 +62,7 @@ class AddSeasonDialog extends Dialog {
       ),
     );
 
-    children.add(ButtonTheme.bar(
+    children.add(ButtonBarTheme(
       child: ButtonBar(
         children: <Widget>[
           FlatButton(

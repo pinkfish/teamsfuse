@@ -5,7 +5,11 @@ import 'package:fusemodel/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentseasonprovider.dart';
 
+///
+/// Display the season name for the league or tournament.
+///
 class LeagueOrTournamentSeasonName extends StatelessWidget {
+  /// Constructor.
   LeagueOrTournamentSeasonName(
       {@required this.leagueOrTournmentSeasonUid,
       @required this.leagueBloc,
@@ -13,22 +17,28 @@ class LeagueOrTournamentSeasonName extends StatelessWidget {
       this.textAlign,
       this.overflow});
 
+  /// The season uid to lookup.
   final String leagueOrTournmentSeasonUid;
+
+  /// The league bloc to use.
   final SingleLeagueOrTournamentBloc leagueBloc;
+
+  /// The style to use.
   final TextStyle style;
+
+  /// The text alignmenet to use.
   final TextAlign textAlign;
+
+  /// The text overflow to use.
   final TextOverflow overflow;
 
   @override
   Widget build(BuildContext context) {
     return SingleLeagueOrTournamentSeasonProvider(
       leagueSeasonUid: leagueOrTournmentSeasonUid,
-      builder:
-          (BuildContext context, SingleLeagueOrTournamentSeasonBloc bloc) =>
-              BlocBuilder(
+      builder: (context, bloc) => BlocBuilder(
         cubit: bloc,
-        builder:
-            (BuildContext context, SingleLeagueOrTournamentSeasonState state) {
+        builder: (context, state) {
           Widget inner;
           if (state is SingleLeagueOrTournamentSeasonDeleted) {
             inner = Text(

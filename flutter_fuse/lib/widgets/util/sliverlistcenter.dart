@@ -15,11 +15,11 @@ import 'package:flutter/rendering.dart';
 class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
     implements RenderSliverBoxChildManager {
   /// Creates an element that lazily builds children for the given widget.
-  CenterSliverMultiBoxAdaptorElement(SliverListCenter widget) : super(widget);
+  CenterSliverMultiBoxAdaptorElement(_SliverListCenter widget) : super(widget);
 
   @override
-  SliverListCenter get widget {
-    var bing = super.widget as SliverListCenter;
+  _SliverListCenter get widget {
+    var bing = super.widget as _SliverListCenter;
     return bing;
   }
 
@@ -30,7 +30,7 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
   }
 
   @override
-  void update(covariant SliverListCenter newWidget) {
+  void update(covariant _SliverListCenter newWidget) {
     var oldWidget = widget;
     super.update(newWidget);
     var newDelegate = newWidget.delegate;
@@ -297,6 +297,7 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
       {@required RenderSliverBoxChildManager childManager, this.startIndex = 0})
       : super(childManager: childManager);
 
+  /// The start index to use for the list.
   final num startIndex;
 
   @override
@@ -574,12 +575,13 @@ class RenderSliverCenterList extends RenderSliverMultiBoxAdaptor {
   }
 }
 
-class SliverListCenter extends RenderObjectWidget {
+class _SliverListCenter extends RenderObjectWidget {
   /// Creates a sliver that places box children in a linear array.
-  const SliverListCenter(
+  const _SliverListCenter(
       {@required this.delegate, Key key, this.startIndex = 0})
       : super(key: key);
 
+  /// The start index to use in the list.
   final num startIndex;
 
   @override

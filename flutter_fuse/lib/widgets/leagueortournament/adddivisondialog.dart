@@ -5,14 +5,19 @@ import 'package:fusemodel/blocs.dart';
 
 import '../../services/messages.dart';
 
+///
+/// Add a divison to the league, dialog.
+///
 class AddDivisonDialog extends Dialog {
   final TextEditingController _controller = TextEditingController();
 
+  ///
+  /// Shows the season dialog to add a division.
+  ///
   static Future<bool> showSeasonDialog(BuildContext context,
       SingleLeagueOrTournamentSeasonBloc seasonBloc) async {
-    String divisonName = await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AddDivisonDialog());
+    var divisonName = await showDialog<String>(
+        context: context, builder: (context) => AddDivisonDialog());
     if (divisonName == null) {
       return false;
     }
@@ -24,13 +29,13 @@ class AddDivisonDialog extends Dialog {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> children = <Widget>[];
+    var children = <Widget>[];
 
     children.add(
       Padding(
         padding: EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 0.0),
         child: DefaultTextStyle(
-          style: Theme.of(context).textTheme.title,
+          style: Theme.of(context).textTheme.headline6,
           child: Semantics(
             child: Text(Messages.of(context).adddivison),
             namesRoute: true,
@@ -56,7 +61,7 @@ class AddDivisonDialog extends Dialog {
       ),
     );
 
-    children.add(ButtonTheme.bar(
+    children.add(ButtonBarTheme(
       child: ButtonBar(
         children: <Widget>[
           FlatButton(

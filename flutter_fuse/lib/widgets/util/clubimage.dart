@@ -1,50 +1,54 @@
-import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 import '../blocs/singleclubprovider.dart';
 
+///
+/// Show the image for the club.
+///
 class ClubImage extends StatelessWidget {
+  /// Constructor.
   ClubImage(
       {@required this.clubUid,
       Key key,
       this.width,
       this.height,
       this.fit,
-      this.alignment: Alignment.center,
-      this.repeat: ImageRepeat.noRepeat,
-      this.matchTextDirection: false})
+      this.alignment = Alignment.center,
+      this.repeat = ImageRepeat.noRepeat,
+      this.matchTextDirection = false})
       : super(key: key);
 
+  /// The club to lookup.
   final String clubUid;
-  final double width;
-  final double height;
-  final BoxFit fit;
-  final AlignmentGeometry alignment;
-  final ImageRepeat repeat;
-  final bool matchTextDirection;
 
-  static Future<String> getImageURL(Club club) async {
-    if (club != null) {
-      String photoUrl = club.photoUrl;
-      if (photoUrl != null && photoUrl.isNotEmpty) {
-        return photoUrl;
-      }
-    }
-    return null;
-  }
+  /// The width of the image.
+  final double width;
+
+  /// The height of the image.
+  final double height;
+
+  /// The fit to use for the image.
+  final BoxFit fit;
+
+  /// The alignment to use for the image.
+  final AlignmentGeometry alignment;
+
+  /// How we repeat the image.
+  final ImageRepeat repeat;
+
+  /// Natching the text direction.
+  final bool matchTextDirection;
 
   @override
   Widget build(BuildContext context) {
     return SingleClubProvider(
       clubUid: clubUid,
-      builder: (BuildContext context, SingleClubBloc bloc) => BlocBuilder(
+      builder: (context, bloc) => BlocBuilder(
         cubit: bloc,
-        builder: (BuildContext context, SingleClubState state) {
+        builder: (context, state) {
           if (state is SingleClubDeleted) {
             return CachedNetworkImage(
                 key: key,

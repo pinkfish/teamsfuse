@@ -10,13 +10,17 @@ import '../form/placesformfield.dart';
 import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 
-// This form has all the stuff needed to edit the main parts
-// of the game.  Does not have the add game step flow.
+///
+/// This form has all the stuff needed to edit the main parts
+/// of the game.  Does not have the add game step flow.
+///
 class SharedGameEditForm extends StatefulWidget {
+  /// Constructor.
   SharedGameEditForm(
       {@required this.game, @required GlobalKey<SharedGameEditFormState> key})
       : super(key: key);
 
+  /// The game data to edit.
   final GameSharedData game;
 
   @override
@@ -25,19 +29,25 @@ class SharedGameEditForm extends StatefulWidget {
   }
 }
 
+///
+/// The state associated with the shared game editing form.
+///
 class SharedGameEditFormState extends State<SharedGameEditForm> {
   final GlobalKey<DateTimeFormFieldState> _arriveByKey =
       GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<DateTimeFormFieldState> _atEndKEy =
       GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  /// If the form should validate on every change, or only on a save.
   bool autovalidate = false;
-  ScrollController _scrollController = ScrollController();
-  FocusNode _focusNodePlaceNotes = FocusNode();
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNodePlaceNotes = FocusNode();
   DateTime _atDate;
   DateTime _atEnd;
-  GameSharedDataBuilder builder;
+  GameSharedDataBuilder _builder;
 
+  /// Save the form, updating the builder.
   void save() {
     _formKey.currentState.save();
   }
@@ -45,11 +55,12 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
   @override
   void initState() {
     super.initState();
-    builder = widget.game.toBuilder();
+    _builder = widget.game.toBuilder();
     _atDate = widget.game.tzTime;
     _atEnd = widget.game.tzEndTime;
   }
 
+  /// Validates the form is all co0rrect.
   bool validate() {
     if (_formKey.currentState == null) {
       return false;
@@ -57,6 +68,7 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
     return _formKey.currentState.validate();
   }
 
+  /// Gets the final game result based on the edits.
   GameSharedDataBuilder get finalGameResult {
     if (!_formKey.currentState.validate()) {
       autovalidate = true;
@@ -64,19 +76,19 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
     } else {
       _formKey.currentState.save();
       // Add the date time and the time together.
-      builder.time = TZDateTime(getLocation(builder.timezone), _atDate.year,
+      _builder.time = TZDateTime(getLocation(_builder.timezone), _atDate.year,
               _atDate.month, _atDate.day, _atDate.hour, _atDate.minute)
           .millisecondsSinceEpoch;
       // Move forward a day so it is in the next day.
-      DateTime end = _atEnd;
+      var end = _atEnd;
       if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
         end.add(Duration(days: 1));
       }
-      builder.endTime = TZDateTime(getLocation(builder.timezone), end.year,
+      _builder.endTime = TZDateTime(getLocation(_builder.timezone), end.year,
               end.month, end.day, end.hour, end.minute)
           .millisecondsSinceEpoch;
     }
-    return builder;
+    return _builder;
   }
 
   void _changeAtTime(Duration diff) {
@@ -88,7 +100,7 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> firstRow = <Widget>[];
+    var firstRow = <Widget>[];
 
     return Scrollbar(
       child: SingleChildScrollView(
@@ -113,7 +125,7 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                   labelText: Messages.of(context).gametime,
                   initialValue: _atDate,
                   hideDate: false,
-                  onSaved: (DateTime value) {
+                  onSaved: (value) {
                     _atDate = value;
                   },
                   onFieldChanged: _changeAtTime,
@@ -130,7 +142,7 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                         labelText: Messages.of(context).gameend,
                         initialValue: _atEnd,
                         hideDate: true,
-                        onSaved: (DateTime val) {
+                        onSaved: (val) {
                           _atEnd = val;
                         },
                       ),
@@ -139,19 +151,18 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                 ),
                 PlacesFormField(
                   initialValue: LocationAndPlace.fromGame(
-                      builder.place.build(), builder.timezone),
+                      _builder.place.build(), _builder.timezone),
                   labelText: Messages.of(context).selectplace,
-                  decoration:
-                      const InputDecoration(icon: const Icon(Icons.place)),
-                  onSaved: (LocationAndPlace loc) {
+                  decoration: const InputDecoration(icon: Icon(Icons.place)),
+                  onSaved: (loc) {
                     print('Saved location $loc');
-                    builder.place.name = loc.details.name;
-                    builder.place.address = loc.details.address;
-                    builder.place.placeId = loc.details.placeid;
-                    builder.place.latitude = loc.details.location.latitude;
-                    builder.place.longitude = loc.details.location.longitude;
-                    loc.loc.then((Location location) {
-                      builder.timezone = location.name;
+                    _builder.place.name = loc.details.name;
+                    _builder.place.address = loc.details.address;
+                    _builder.place.placeId = loc.details.placeid;
+                    _builder.place.latitude = loc.details.location.latitude;
+                    _builder.place.longitude = loc.details.location.longitude;
+                    loc.loc.then((location) {
+                      _builder.timezone = location.name;
                     });
                   },
                 ),
@@ -166,9 +177,9 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                     keyboardType: TextInputType.text,
                     focusNode: _focusNodePlaceNotes,
                     obscureText: false,
-                    initialValue: builder.place.notes,
-                    onSaved: (String value) {
-                      builder.place.notes = value;
+                    initialValue: _builder.place.notes,
+                    onSaved: (value) {
+                      _builder.place.notes = value;
                     },
                   ),
                 ),

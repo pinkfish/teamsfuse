@@ -7,11 +7,14 @@ import '../../services/messages.dart';
 import '../util/playername.dart';
 import '../util/teamimage.dart';
 
+///
+/// Shows the list of the mssages for the user.
+///
 class MessageList extends StatelessWidget {
   Widget _buildMessage(BuildContext context, Message mess, DateTime dayCutoff,
       AuthenticationBloc authenticationBloc) {
     String timeMess;
-    ThemeData theme = Theme.of(context);
+    var theme = Theme.of(context);
 
     if (mess.timeSent < dayCutoff.millisecondsSinceEpoch) {
       timeMess = MaterialLocalizations.of(context)
@@ -20,12 +23,11 @@ class MessageList extends StatelessWidget {
       timeMess =
           MaterialLocalizations.of(context).formatMediumDate(mess.tzTimeSent);
     }
-    print('rec ${mess.recipients} ${mess.uid}');
 
-    TeamBloc teamBloc = BlocProvider.of<TeamBloc>(context);
+    var teamBloc = BlocProvider.of<TeamBloc>(context);
 
     return ListTile(
-      onTap: () => Navigator.pushNamed(context, "/ShowMessage/" + mess.uid),
+      onTap: () => Navigator.pushNamed(context, "/ShowMessage/${mess.uid}"),
       leading: TeamImage(
         team: teamBloc.state.getTeam(mess.teamUid),
         width: 30.0,
@@ -44,9 +46,9 @@ class MessageList extends StatelessWidget {
                 style:
                     mess.recipients[authenticationBloc.currentUser.uid].state ==
                             MessageState.Unread
-                        ? theme.textTheme.subhead
+                        ? theme.textTheme.subtitle1
                             .copyWith(fontWeight: FontWeight.bold)
-                        : theme.textTheme.subhead,
+                        : theme.textTheme.subtitle1,
               ),
             ),
           ),
@@ -64,10 +66,10 @@ class MessageList extends StatelessWidget {
         overflow: TextOverflow.clip,
         style: mess.recipients[authenticationBloc.currentUser.uid].state ==
                 MessageState.Unread
-            ? theme.textTheme.subhead.copyWith(
+            ? theme.textTheme.subtitle1.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: theme.textTheme.subhead.fontSize * 1.25)
-            : theme.textTheme.subhead,
+                fontSize: theme.textTheme.subtitle1.fontSize * 1.25)
+            : theme.textTheme.subtitle1,
       ),
     );
   }
@@ -76,7 +78,7 @@ class MessageList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder(
       cubit: BlocProvider.of<MessagesBloc>(context),
-      builder: (BuildContext context, MessagesState state) {
+      builder: (context, state) {
         if (state.unreadMessages.length == 0 &&
             state.recentMessages.length == 0) {
           return Center(
@@ -84,16 +86,14 @@ class MessageList extends StatelessWidget {
           );
         }
         // Make a sorted list of the messages.
-        Map<String, Message> stuff = Map.from(state.unreadMessages.asMap());
+        var stuff = Map<String, Message>.from(state.unreadMessages.asMap());
         stuff.addEntries(state.recentMessages.entries);
-        List<Message> sortedList = stuff.values.toList();
-        sortedList.sort((Message m1, Message m2) =>
-            m1.timeSent.toInt() - m2.timeSent.toInt());
-        List<Widget> messages = [];
-        DateTime dayCutoff = DateTime.now().subtract(Duration(days: 1));
-        AuthenticationBloc authenticationBloc =
-            BlocProvider.of<AuthenticationBloc>(context);
-        for (Message mess in sortedList) {
+        var sortedList = stuff.values.toList();
+        sortedList.sort((m1, m2) => m1.timeSent.toInt() - m2.timeSent.toInt());
+        var messages = [];
+        var dayCutoff = DateTime.now().subtract(Duration(days: 1));
+        var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+        for (var mess in sortedList) {
           messages
               .add(_buildMessage(context, mess, dayCutoff, authenticationBloc));
         }

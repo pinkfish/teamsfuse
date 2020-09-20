@@ -245,7 +245,7 @@ class GameSharedCard extends StatelessWidget {
             ),
             subtitle: RichText(
               text: TextSpan(
-                //style: Theme.of(context).textTheme.subhead,
+                //style: Theme.of(context).textThemesubtitle1,
                 children: subtitle,
               ),
             ),

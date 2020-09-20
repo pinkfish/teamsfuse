@@ -11,6 +11,7 @@ import '../games/gamecard.dart';
 /// Widget to show the opponents for this team.
 ///
 class TeamOpponents extends StatefulWidget {
+  /// Constructor.
   TeamOpponents(this._teamBloc);
 
   final SingleTeamBloc _teamBloc;
@@ -34,8 +35,8 @@ class _TeamOpponentsState extends State<TeamOpponents> {
 
   List<DropdownMenuItem<String>> _buildItems(
       BuildContext context, SingleTeamState teamState) {
-    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
-    for (Season s in teamState.fullSeason) {
+    var ret = <DropdownMenuItem<String>>[];
+    for (var s in teamState.fullSeason) {
       ret.add(DropdownMenuItem<String>(child: Text(s.name), value: s.uid));
     }
 
@@ -43,12 +44,12 @@ class _TeamOpponentsState extends State<TeamOpponents> {
   }
 
   void _deleteOpponent(SingleOpponentBloc op) async {
-    Messages mess = Messages.of(context);
+    var mess = Messages.of(context);
     // Show an alert dialog first.
-    bool result = await showDialog<bool>(
+    var result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(mess.deleteopponent),
           content: SingleChildScrollView(
@@ -82,24 +83,23 @@ class _TeamOpponentsState extends State<TeamOpponents> {
   }
 
   List<Widget> _buildOpponents(Team team, SingleTeamState singleTeamState) {
-    List<Widget> ret = <Widget>[];
-    ThemeData theme = Theme.of(context);
+    var ret = <Widget>[];
+    var theme = Theme.of(context);
 
     ret.add(
       RichText(
         text: TextSpan(
           text: Messages.of(context).opponentwithresult,
-          style: theme.textTheme.title,
+          style: theme.textTheme.headline6,
         ),
       ),
     );
-    List<String> opponentKeys = singleTeamState.opponents.keys.toList();
-    opponentKeys.sort((String uid1, String uid2) => singleTeamState
-        .opponents[uid1].name
+    var opponentKeys = singleTeamState.opponents.keys.toList();
+    opponentKeys.sort((uid1, uid2) => singleTeamState.opponents[uid1].name
         .compareTo(singleTeamState.opponents[uid2].name));
 
-    for (String uid in opponentKeys) {
-      Opponent op = singleTeamState.opponents[uid];
+    for (var uid in opponentKeys) {
+      var op = singleTeamState.opponents[uid];
       WinRecord record;
       if (!op.record.containsKey(_seasonUid)) {
         continue;
@@ -110,30 +110,25 @@ class _TeamOpponentsState extends State<TeamOpponents> {
         SingleOpponentProvider(
           opponentUid: op.uid,
           singleTeamBloc: widget._teamBloc,
-          builder: (BuildContext context, SingleOpponentBloc opBloc) {
+          builder: (context, opBloc) {
             return ExpansionTile(
               title: RichText(
                 text: TextSpan(
-                  style: theme.textTheme.subhead.copyWith(
+                  style: theme.textTheme.subtitle1.copyWith(
                       color: record.win > record.loss
                           ? Colors.green
                           : record.win < record.loss
                               ? Colors.redAccent
                               : Colors.black),
-                  text: op.name +
-                      " W:" +
-                      record.win.toString() +
-                      " L:" +
-                      record.loss.toString() +
-                      " T:" +
-                      record.tie.toString(),
+                  text:
+                      "${op.name} W:${record.win} L:${record.loss} T:${record.tie}",
                 ),
               ),
               initiallyExpanded: false,
               children: <Widget>[
                 BlocBuilder(
                     cubit: opBloc,
-                    builder: (BuildContext context, SingleOpponentState state) {
+                    builder: (context, state) {
                       if (state is SingleOpponentDeleted) {
                         return Center(
                           child: Text(Messages.of(context).teamdeleted),
@@ -152,7 +147,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                             ],
                           );
                         } else {
-                          List<Widget> newData = <Widget>[];
+                          var newData = <Widget>[];
                           for (Game game in state.games) {
                             if (game.sharedData.type == EventType.Game &&
                                 game.seasonUid == _seasonUid &&
@@ -186,12 +181,12 @@ class _TeamOpponentsState extends State<TeamOpponents> {
       RichText(
         text: TextSpan(
           text: Messages.of(context).opponentwithnoresult,
-          style: theme.textTheme.title,
+          style: theme.textTheme.headline6,
         ),
       ),
     );
-    for (String uid in opponentKeys) {
-      Opponent op = singleTeamState.opponents[uid];
+    for (var uid in opponentKeys) {
+      var op = singleTeamState.opponents[uid];
       if (op.record.containsKey(_seasonUid)) {
         continue;
       }
@@ -200,14 +195,13 @@ class _TeamOpponentsState extends State<TeamOpponents> {
         SingleOpponentProvider(
           opponentUid: op.uid,
           singleTeamBloc: widget._teamBloc,
-          builder: (BuildContext context, SingleOpponentBloc opBloc) =>
-              ExpansionTile(
+          builder: (context, opBloc) => ExpansionTile(
             title: Text(op.name),
             initiallyExpanded: false,
             children: <Widget>[
               BlocBuilder(
                 cubit: opBloc,
-                builder: (BuildContext context, SingleOpponentState state) {
+                builder: (context, state) {
                   if (state is SingleOpponentDeleted) {
                     return Center(
                       child: Text(Messages.of(context).loading),
@@ -230,7 +224,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                       ],
                     );
                   } else {
-                    List<Widget> newData = <Widget>[];
+                    var newData = <Widget>[];
                     for (Game game in state.games) {
                       if (game.sharedData.type == EventType.Game &&
                           game.opponentUids.contains(uid)) {
@@ -263,12 +257,12 @@ class _TeamOpponentsState extends State<TeamOpponents> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-    Messages messsages = Messages.of(context);
+    var theme = Theme.of(context);
+    var messsages = Messages.of(context);
 
     return BlocListener(
       cubit: widget._teamBloc,
-      listener: (BuildContext context, SingleTeamState state) {
+      listener: (context, state) {
         print("State is $state");
         if (state is SingleTeamLoaded) {
           _seasonUid = state.team.currentSeason;
@@ -280,12 +274,11 @@ class _TeamOpponentsState extends State<TeamOpponents> {
             children: <Widget>[
               BlocBuilder(
                 cubit: widget._teamBloc,
-                builder: (BuildContext context, SingleTeamState teamState) =>
-                    DropdownButton<String>(
+                builder: (context, teamState) => DropdownButton<String>(
                   hint: Text(messsages.seasonselect),
                   value: _seasonUid,
                   items: _buildItems(context, teamState),
-                  onChanged: (String val) {
+                  onChanged: (val) {
                     print('changed $val');
                     setState(() {
                       _seasonUid = val;
@@ -303,8 +296,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
               child: SingleChildScrollView(
                 child: BlocBuilder(
                   cubit: widget._teamBloc,
-                  builder: (BuildContext context, SingleTeamState teamState) =>
-                      Column(
+                  builder: (context, teamState) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: _buildOpponents(teamState.team, teamState),
                   ),

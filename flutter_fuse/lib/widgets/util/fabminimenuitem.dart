@@ -4,15 +4,21 @@ import 'package:meta/meta.dart';
 
 import 'fabdialer.dart';
 
-typedef void OnFabMiniMenuItemPressed();
+/// Function callback for when an item is pressed.
+typedef OnFabMiniMenuItemPressed = void Function();
 
-class MenuDetails {
+/// The details of the menu.
+class _MenuDetails {
   int index;
   AnimationController controller;
   FabDialerState dialer;
 }
 
+///
+/// A menu item to display the fab mini popup.
+///
 class FabMiniMenuItemWidget extends StatelessWidget {
+  /// Constructor.
   FabMiniMenuItemWidget(
       {@required this.icon,
       @required this.fabColor,
@@ -24,32 +30,55 @@ class FabMiniMenuItemWidget extends StatelessWidget {
       this.text,
       this.chipColor})
       : super(key: key);
-  final double elevation;
-  final String text;
-  final Icon icon;
-  final Color fabColor;
-  final OnFabMiniMenuItemPressed onPressed;
-  final MenuDetails details = MenuDetails();
 
+  /// Elevation to show a shadow for.
+  final double elevation;
+
+  /// The text to display.
+  final String text;
+
+  /// The icon to display.
+  final Icon icon;
+
+  /// The color of the button.
+  final Color fabColor;
+
+  /// What to do when the button is pressed.
+  final OnFabMiniMenuItemPressed onPressed;
+  final _MenuDetails _details = _MenuDetails();
+
+  /// Color of the chip to use.
   final Color chipColor;
+
+  /// The tooltip to display.
   final String tooltip;
+
+  /// The color of the text.
   final Color textColor;
 
   void _doPress() {
-    details.controller.animateTo(0.0);
-    details.dialer.closeDialer();
+    _details.controller.animateTo(0.0);
+    _details.dialer.closeDialer();
     onPressed();
+  }
+
+  /// Sets the details for the fab menu item so it can render properly.
+  void setDetails(
+      int index, AnimationController controller, FabDialerState dialer) {
+    _details.index = index;
+    _details.controller = controller;
+    _details.dialer = dialer;
   }
 
   @override
   Widget build(BuildContext context) {
-    Color chipColor = this.chipColor;
+    var chipColor = this.chipColor;
     if (chipColor == null) {
       chipColor = Theme.of(context).cardColor;
     }
-    Color textColor = this.textColor;
+    var textColor = this.textColor;
     if (textColor == null) {
-      textColor = Theme.of(context).textTheme.body1.color;
+      textColor = Theme.of(context).textTheme.bodyText2.color;
     }
 
     return Container(
@@ -61,9 +90,9 @@ class FabMiniMenuItemWidget extends StatelessWidget {
             margin: EdgeInsets.symmetric(horizontal: 8.0),
             child: ScaleTransition(
               scale: CurvedAnimation(
-                parent: details.controller,
+                parent: _details.controller,
                 curve: Interval(
-                  ((details.index + 1) / 10),
+                  ((_details.index + 1) / 10),
                   1.0,
                   curve: Curves.linear,
                 ),
@@ -84,15 +113,15 @@ class FabMiniMenuItemWidget extends StatelessWidget {
           ),
           ScaleTransition(
             scale: CurvedAnimation(
-              parent: details.controller,
-              curve: Interval(((details.index + 1) / 10), 1.0,
+              parent: _details.controller,
+              curve: Interval(((_details.index + 1) / 10), 1.0,
                   curve: Curves.linear),
             ),
             child: FloatingActionButton(
               elevation: elevation,
               mini: true,
               backgroundColor: fabColor,
-              heroTag: "Inner fab " + details.index.toString(),
+              heroTag: "Inner fab ${_details.index}",
               tooltip: tooltip,
               child: icon,
               onPressed: _doPress,

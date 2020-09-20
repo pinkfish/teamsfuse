@@ -15,19 +15,22 @@ import '../games/gamecard.dart';
 /// and filters it down by opponent
 ///
 class TeamResultsByOpponent extends StatelessWidget {
+  /// Constructor.
   TeamResultsByOpponent({@required this.teamUid, this.opponentUid});
 
+  /// The teamUid to find the results for.
   final String teamUid;
+
+  /// The opponent uid to see results for (null means all opponents).
   final String opponentUid;
 
   @override
   Widget build(BuildContext context) {
     return SingleOpponentProvider(
       opponentUid: opponentUid,
-      builder: (BuildContext context, SingleOpponentBloc teamBloc) =>
-          BlocListener(
+      builder: (context, teamBloc) => BlocListener(
         cubit: teamBloc,
-        listener: (BuildContext context, SingleOpponentState state) {
+        listener: (context, state) {
           teamBloc.add(SingleOpponentLoadGames());
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
@@ -35,7 +38,7 @@ class TeamResultsByOpponent extends StatelessWidget {
         },
         child: BlocBuilder(
           cubit: teamBloc,
-          builder: (BuildContext context, SingleOpponentState state) {
+          builder: (context, state) {
             if (state is SingleOpponentDeleted) {
               return Center(
                 child: Text(Messages.of(context).loading),
@@ -46,9 +49,9 @@ class TeamResultsByOpponent extends StatelessWidget {
                 child: Text(Messages.of(context).nogames),
               );
             } else {
-              List<Widget> newData = <Widget>[];
-              List<Game> gameSort = state.games.toList();
-              gameSort.sort((Game g1, Game g2) =>
+              var newData = <Widget>[];
+              var gameSort = state.games.toList();
+              gameSort.sort((g1, g2) =>
                   g1.sharedData.time.toInt() - g2.sharedData.time.toInt());
               TZDateTime lastTime;
               for (Game game in gameSort) {
@@ -59,29 +62,28 @@ class TeamResultsByOpponent extends StatelessWidget {
                       lastTime.year != game.sharedData.tzTime.year ||
                       lastTime.month != game.sharedData.tzTime.month ||
                       lastTime.day != game.sharedData.tzTime.day) {
-                    bool showYear = false;
+                    var showYear = false;
                     if (lastTime == null ||
                         lastTime.year != game.sharedData.tzTime.year) {
                       showYear = true;
                     }
 
                     String textToShow;
+                    var monthDay = MaterialLocalizations.of(context)
+                        .formatMediumDate(game.sharedData.tzTime);
                     if (showYear) {
-                      textToShow = MaterialLocalizations.of(context)
-                              .formatMediumDate(game.sharedData.tzTime) +
-                          " " +
-                          MaterialLocalizations.of(context)
-                              .formatYear(game.sharedData.tzTime);
+                      var year = MaterialLocalizations.of(context)
+                          .formatYear(game.sharedData.tzTime);
+                      textToShow = "$monthDay $year ";
                     } else {
-                      textToShow = MaterialLocalizations.of(context)
-                          .formatMediumDate(game.sharedData.tzTime);
+                      textToShow = monthDay;
                     }
                     newData.add(
                       Container(
                         margin: const EdgeInsets.only(top: 10.0, left: 10.0),
                         child: Text(
                           textToShow,
-                          style: Theme.of(context).textTheme.subhead.copyWith(
+                          style: Theme.of(context).textTheme.subtitle1.copyWith(
                                 color: Theme.of(context).accentColor,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -92,11 +94,9 @@ class TeamResultsByOpponent extends StatelessWidget {
                   newData.add(
                     SingleGameProvider(
                       gameUid: game.uid,
-                      builder:
-                          (BuildContext context, SingleGameBloc gameBloc) =>
-                              BlocBuilder(
+                      builder: (context, gameBloc) => BlocBuilder(
                         cubit: gameBloc,
-                        builder: (BuildContext context, SingleGameState state) {
+                        builder: (context, state) {
                           return GameCard(gameUid: state.game.uid);
                         },
                       ),
@@ -119,22 +119,30 @@ class TeamResultsByOpponent extends StatelessWidget {
   }
 }
 
+///
+/// Show the team results by season.
+///
 class TeamResultsBySeason extends StatelessWidget {
+  /// Constrcutor.
   TeamResultsBySeason(
       {@required this.seasonUid, @required this.teamUid, this.opponentUid});
 
+  /// Season to show the results for.
   final String seasonUid;
+
+  /// Team to show the results for.
   final String teamUid;
+
+  /// Opponent to show the results for (null for all).
   final String opponentUid;
 
   @override
   Widget build(BuildContext context) {
     return SingleSeasonProvider(
       seasonUid: seasonUid,
-      builder: (BuildContext context, SingleSeasonBloc seasonBloc) =>
-          BlocListener(
+      builder: (context, seasonBloc) => BlocListener(
         cubit: seasonBloc,
-        listener: (BuildContext context, SingleSeasonState state) {
+        listener: (context, state) {
           seasonBloc.add(SingleSeasonLoadGames());
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
@@ -142,7 +150,7 @@ class TeamResultsBySeason extends StatelessWidget {
         },
         child: BlocBuilder(
           cubit: seasonBloc,
-          builder: (BuildContext context, SingleSeasonState state) {
+          builder: (context, state) {
             seasonBloc.add(SingleSeasonLoadGames());
             if (state is SingleOpponentDeleted) {
               return Center(
@@ -154,12 +162,12 @@ class TeamResultsBySeason extends StatelessWidget {
                 child: Text(Messages.of(context).loading),
               );
             } else {
-              List<Widget> newData = <Widget>[];
-              List<Game> gameSort = state.games.toList();
-              gameSort.sort((Game g1, Game g2) =>
+              var newData = <Widget>[];
+              var gameSort = state.games.toList();
+              gameSort.sort((g1, g2) =>
                   g1.sharedData.time.toInt() - g2.sharedData.time.toInt());
               TZDateTime lastTime;
-              for (Game game in gameSort) {
+              for (var game in gameSort) {
                 if (game.sharedData.type == EventType.Game &&
                     (opponentUid == null ||
                         game.opponentUids.contains(opponentUid))) {
@@ -167,29 +175,28 @@ class TeamResultsBySeason extends StatelessWidget {
                       lastTime.year != game.sharedData.tzTime.year ||
                       lastTime.month != game.sharedData.tzTime.month ||
                       lastTime.day != game.sharedData.tzTime.day) {
-                    bool showYear = false;
+                    var showYear = false;
                     if (lastTime == null ||
                         lastTime.year != game.sharedData.tzTime.year) {
                       showYear = true;
                     }
 
                     String textToShow;
+                    var monthDay = MaterialLocalizations.of(context)
+                        .formatMediumDate(game.sharedData.tzTime);
                     if (showYear) {
-                      textToShow = MaterialLocalizations.of(context)
-                              .formatMediumDate(game.sharedData.tzTime) +
-                          " " +
-                          MaterialLocalizations.of(context)
-                              .formatYear(game.sharedData.tzTime);
+                      var year = MaterialLocalizations.of(context)
+                          .formatYear(game.sharedData.tzTime);
+                      textToShow = "$monthDay $year";
                     } else {
-                      textToShow = MaterialLocalizations.of(context)
-                          .formatMediumDate(game.sharedData.tzTime);
+                      textToShow = monthDay;
                     }
                     newData.add(
                       Container(
                         margin: const EdgeInsets.only(top: 10.0, left: 10.0),
                         child: Text(
                           textToShow,
-                          style: Theme.of(context).textTheme.subhead.copyWith(
+                          style: Theme.of(context).textTheme.subtitle1.copyWith(
                                 color: Theme.of(context).accentColor,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -200,11 +207,9 @@ class TeamResultsBySeason extends StatelessWidget {
                   newData.add(
                     SingleGameProvider(
                       gameUid: game.uid,
-                      builder:
-                          (BuildContext context, SingleGameBloc gameBloc) =>
-                              BlocBuilder(
+                      builder: (context, gameBloc) => BlocBuilder(
                         cubit: gameBloc,
-                        builder: (BuildContext context, SingleGameState state) {
+                        builder: (context, state) {
                           if (state is SingleGameLoaded) {
                             print("Display ${state.game.uid}");
                             return GameCard(gameUid: state.game.uid);

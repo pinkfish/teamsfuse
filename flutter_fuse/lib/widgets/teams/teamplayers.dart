@@ -1,36 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/messages.dart';
-import '../util/playerimage.dart';
-import '../util/playername.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/messages.dart';
 import '../blocs/singleseasonprovider.dart';
 import '../blocs/singleteamprovider.dart';
+import '../util/playerimage.dart';
+import '../util/playername.dart';
 
+///
+/// Show the players of the team.
+///
 class TeamPlayers extends StatefulWidget {
+  /// Constructor taking the team to find the players of
   TeamPlayers(this._teamUid);
 
   final String _teamUid;
 
   @override
-  TeamPlayersState createState() {
-    return TeamPlayersState();
+  _TeamPlayersState createState() {
+    return _TeamPlayersState();
   }
 }
 
-class TeamPlayersState extends State<TeamPlayers> {
-  TeamPlayersState();
-
+class _TeamPlayersState extends State<TeamPlayers> {
   String _seasonUid;
 
   List<DropdownMenuItem<String>> _buildItems(
       BuildContext context, SingleTeamState teamState) {
-    List<DropdownMenuItem<String>> ret = <DropdownMenuItem<String>>[];
-    List<Season> seasons = teamState.fullSeason.toList();
-    seasons.sort((Season s1, Season s2) => s1.name.compareTo(s2.name));
-    for (Season s in seasons) {
+    var ret = <DropdownMenuItem<String>>[];
+    var seasons = teamState.fullSeason.toList();
+    seasons.sort((s1, s2) => s1.name.compareTo(s2.name));
+    for (var s in seasons) {
       ret.add(DropdownMenuItem<String>(child: Text(s.name), value: s.uid));
     }
 
@@ -38,12 +40,12 @@ class TeamPlayersState extends State<TeamPlayers> {
   }
 
   void _deleteInvite(InviteToTeam invite) async {
-    Messages mess = Messages.of(context);
+    var mess = Messages.of(context);
     // Show an alert dialog first.
-    bool result = await showDialog<bool>(
+    var result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(mess.deleteinvite),
           content: SingleChildScrollView(
@@ -72,28 +74,22 @@ class TeamPlayersState extends State<TeamPlayers> {
       },
     );
     if (result) {
-      InviteBloc bloc = BlocProvider.of<InviteBloc>(context);
+      var bloc = BlocProvider.of<InviteBloc>(context);
       bloc.add(InviteEventDeleteInvite(inviteUid: invite.uid));
     }
   }
 
   List<Widget> _buildPlayers(
       SingleSeasonState state, SingleTeamState teamState) {
-    List<Widget> ret = <Widget>[];
-    ThemeData theme = Theme.of(context);
+    var ret = <Widget>[];
+    var theme = Theme.of(context);
 
-    for (SeasonPlayer player in state.season.players) {
+    for (var player in state.season.players) {
       ret.add(
         GestureDetector(
           onTap: () {
-            Navigator.pushNamed(
-                context,
-                "PlayerDetails/" +
-                    widget._teamUid +
-                    "/" +
-                    _seasonUid +
-                    "/" +
-                    player.playerUid);
+            Navigator.pushNamed(context,
+                "PlayerDetails/${widget._teamUid}/$_seasonUid/${player.playerUid}");
           },
           child: ListTile(
             leading: PlayerImage(playerUid: player.playerUid),
@@ -111,7 +107,7 @@ class TeamPlayersState extends State<TeamPlayers> {
           textColor: Theme.of(context).accentColor,
           onPressed: () {
             Navigator.pushNamed(
-                context, "AddPlayer/" + widget._teamUid + "/" + _seasonUid);
+                context, "AddPlayer/${widget._teamUid}/$_seasonUid");
           },
           child: Text(Messages.of(context).addplayer),
         ),
@@ -122,12 +118,12 @@ class TeamPlayersState extends State<TeamPlayers> {
     if (state.invites != null &&
         state.invites.length > 0 &&
         teamState.isAdmin()) {
-      List<Widget> kids = <Widget>[];
-      for (InviteToTeam inv in state.invites) {
+      var kids = <Widget>[];
+      for (var inv in state.invites) {
         kids.add(
           ListTile(
             title: Row(
-              children: inv.playerName.map((String name) {
+              children: inv.playerName.map((name) {
                 return Chip(
                     backgroundColor: Colors.lightBlueAccent, label: Text(name));
               }).toList(),
@@ -139,7 +135,7 @@ class TeamPlayersState extends State<TeamPlayers> {
                 const SizedBox(height: 5.0),
                 Text(
                   inv.email,
-                  style: theme.textTheme.body1
+                  style: theme.textTheme.bodyText2
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 5.0),
@@ -165,10 +161,9 @@ class TeamPlayersState extends State<TeamPlayers> {
   Widget _buildSeason(BuildContext context, SingleTeamState teamState) {
     return SingleSeasonProvider(
       seasonUid: _seasonUid,
-      builder: (BuildContext context, SingleSeasonBloc seasonBloc) =>
-          BlocBuilder(
+      builder: (context, seasonBloc) => BlocBuilder(
         cubit: seasonBloc,
-        builder: (BuildContext context, SingleSeasonState seasonState) {
+        builder: (context, seasonState) {
           return Column(children: _buildPlayers(seasonState, teamState));
         },
       ),
@@ -177,14 +172,14 @@ class TeamPlayersState extends State<TeamPlayers> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
-    Messages messsages = Messages.of(context);
+    var theme = Theme.of(context);
+    var messsages = Messages.of(context);
 
     return SingleTeamProvider(
       teamUid: widget._teamUid,
-      builder: (BuildContext context, SingleTeamBloc bloc) => BlocBuilder(
+      builder: (context, bloc) => BlocBuilder(
         cubit: bloc,
-        builder: (BuildContext context, SingleTeamState teamState) {
+        builder: (context, teamState) {
           if (teamState is SingleTeamDeleted) {
             return CircularProgressIndicator();
           } else {
@@ -199,7 +194,7 @@ class TeamPlayersState extends State<TeamPlayers> {
                       hint: Text(messsages.seasonselect),
                       value: _seasonUid,
                       items: _buildItems(context, teamState),
-                      onChanged: (String val) {
+                      onChanged: (val) {
                         print('changed $val');
                         setState(() {
                           _seasonUid = val;

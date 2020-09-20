@@ -10,23 +10,28 @@ import '../blocs/singleleagueortournamentprovider.dart';
 /// Puts the name of the league or tournament in the UX
 ///
 class LeagueOrTournamentName extends StatelessWidget {
+  /// Constructor.
   LeagueOrTournamentName(this.leagueOrTournamentUid,
       {this.leagueOrTournamentDivisonUid, this.style, this.textAlign});
 
+  /// The league or tournament to lookup.
   final String leagueOrTournamentUid;
+
+  /// The style to display.
   final TextStyle style;
+
+  /// The alignment to use.
   final TextAlign textAlign;
+
+  /// The divison id to use.
   final String leagueOrTournamentDivisonUid;
 
   Widget _divison() {
     return SingleLeagueOrTournamentDivisonProvider(
       leagueDivisonUid: leagueOrTournamentDivisonUid,
-      builder:
-          (BuildContext context, SingleLeagueOrTournamentDivisonBloc data) =>
-              BlocBuilder(
+      builder: (context, data) => BlocBuilder(
         cubit: data,
-        builder:
-            (BuildContext context, SingleLeagueOrTournamentDivisonState state) {
+        builder: (context, state) {
           Widget inner;
           if (state is SingleLeagueOrTournamentDivisonDeleted) {
             inner = Text(
@@ -55,11 +60,9 @@ class LeagueOrTournamentName extends StatelessWidget {
   Widget _name() {
     return SingleLeagueOrTournamentProvider(
       leagueUid: leagueOrTournamentUid,
-      builder: (BuildContext context,
-              SingleLeagueOrTournamentBloc singleLeagueOrTournmanetBloc) =>
-          BlocBuilder(
+      builder: (context, singleLeagueOrTournmanetBloc) => BlocBuilder(
         cubit: singleLeagueOrTournmanetBloc,
-        builder: (BuildContext context, SingleLeagueOrTournamentState state) {
+        builder: (context, state) {
           Widget inner;
 
           if (SingleLeagueOrTournamentState

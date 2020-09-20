@@ -12,9 +12,14 @@ import '../util/leagueimage.dart';
 import 'adddivisondialog.dart';
 import 'addseasondialog.dart';
 
+///
+/// Show the details for the league or tournament.
+///
 class LeagueOrTournamentDetails extends StatefulWidget {
+  /// Constructor.
   LeagueOrTournamentDetails(this.leagueOrTournamentUid);
 
+  /// League or tournament to show the details of.
   final String leagueOrTournamentUid;
 
   @override
@@ -32,12 +37,9 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
       // Show all the divisions and details.
       return SingleLeagueOrTournamentSeasonProvider(
         leagueSeasonUid: season.uid,
-        builder: (BuildContext context,
-                SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
-            BlocBuilder(
+        builder: (context, seasonBloc) => BlocBuilder(
           cubit: seasonBloc,
-          builder: (BuildContext context,
-              SingleLeagueOrTournamentSeasonState seasonState) {
+          builder: (context, seasonState) {
             if (!seasonState.loadedDivisons) {
               return Text(Messages.of(context).loading);
             }
@@ -74,23 +76,14 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
               }
             }
 
-            List<LeagueOrTournamentDivison> sortedDivisons =
-                seasonState.divisons.values.toList();
-            sortedDivisons.sort(
-                (LeagueOrTournamentDivison d1, LeagueOrTournamentDivison d2) =>
-                    d1.name.compareTo(d2.name));
-            List<Widget> children = sortedDivisons.map<Widget>(
-              (LeagueOrTournamentDivison divison) {
+            var sortedDivisons = seasonState.divisons.values.toList();
+            sortedDivisons.sort((d1, d2) => d1.name.compareTo(d2.name));
+            var children = sortedDivisons.map<Widget>(
+              (divison) {
                 return ListTile(
-                  onTap: () => Navigator.pushNamed(
-                      context,
-                      "/League/Divison/" +
-                          widget.leagueOrTournamentUid +
-                          "/" +
-                          season.uid +
-                          "/" +
-                          divison.uid),
-                  leading: const Icon(CommunityIcons.accountGroup),
+                  onTap: () => Navigator.pushNamed(context,
+                      "/League/Divison/${widget.leagueOrTournamentUid}/${season.uid}/${divison.uid}"),
+                  leading: Icon(CommunityIcons.accountGroup),
                   title: Text(divison.name),
                 );
               },
@@ -153,17 +146,16 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
         );
       }
     }
-    List<LeagueOrTournamentSeason> seasonSorted = state.seasons.values.toList();
-    seasonSorted
-        .sort((LeagueOrTournamentSeason c1, LeagueOrTournamentSeason c2) {
+    var seasonSorted = state.seasons.values.toList();
+    seasonSorted.sort((c1, c2) {
       if (c1.uid == state.league.currentSeason) {
         return -200000;
       }
       return c1.name.compareTo(c2.name);
     });
-    Widget expansionList = ExpansionPanelList.radio(
+    var expansionList = ExpansionPanelList.radio(
       initialOpenPanelValue: state.league.currentSeason ?? seasonSorted[0],
-      expansionCallback: (int pos, bool opened) {
+      expansionCallback: (pos, opened) {
         print('Opening $pos $opened');
         if (!opened) {
           _openedPanel = seasonSorted[pos].uid;
@@ -171,18 +163,18 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
         }
       },
       children: seasonSorted.map(
-        (LeagueOrTournamentSeason season) {
+        (season) {
           return ExpansionPanelRadio(
             body: _buildSeason(
                 season, state.league.isAdmin(), leagueOrTournamentBloc),
             value: season.uid,
-            headerBuilder: (BuildContext context, bool expanded) {
+            headerBuilder: (context, expanded) {
               return Container(
                 alignment: Alignment.centerLeft,
                 margin: EdgeInsets.only(left: 10.0, right: 10.0),
                 child: Text(
                   season.name,
-                  style: Theme.of(context).textTheme.subhead,
+                  style: Theme.of(context).textTheme.subtitle1,
                   overflow: TextOverflow.ellipsis,
                 ),
               );
@@ -226,12 +218,9 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
           // Show the divisons in the current season.
           SingleLeagueOrTournamentProvider(
             leagueUid: widget.leagueOrTournamentUid,
-            builder: (BuildContext context,
-                    SingleLeagueOrTournamentBloc leagueBloc) =>
-                BlocListener(
+            builder: (context, leagueBloc) => BlocListener(
               cubit: leagueBloc,
-              listener:
-                  (BuildContext context, SingleLeagueOrTournamentState state) {
+              listener: (context, state) {
                 if (state is SingleLeagueOrTournamentDeleted) {
                   Navigator.pop(context);
                   return;
@@ -239,8 +228,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
               },
               child: BlocBuilder(
                 cubit: leagueBloc,
-                builder: (BuildContext context,
-                    SingleLeagueOrTournamentState state) {
+                builder: (context, state) {
                   if (state is SingleLeagueOrTournamentLoaded) {
                     // Tell it to load the seasons.
                     leagueBloc.add(SingleLeagueOrTournamentLoadSeasons());
@@ -279,7 +267,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                                     child: Text(state.league.name,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .headline
+                                            .headline5
                                             .copyWith(
                                                 color: Theme.of(context)
                                                     .primaryColorDark)),
@@ -293,7 +281,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                                               state.league.shortDescription,
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .subhead
+                                                  .subtitle1
                                                   .copyWith(
                                                       fontWeight:
                                                           FontWeight.w500)),
@@ -309,7 +297,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                                               .sportname(state.league.sport),
                                           style: Theme.of(context)
                                               .textTheme
-                                              .body1
+                                              .bodyText2
                                               .copyWith(
                                                   color: Colors.black54,
                                                   fontStyle: FontStyle.italic)),
@@ -338,7 +326,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                                       text: state.league.longDescription,
                                       style: Theme.of(context)
                                           .textTheme
-                                          .subhead))),
+                                          .subtitle1))),
                       _buildSeasonData(leagueBloc, state)
                     ],
                   );

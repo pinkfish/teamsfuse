@@ -1,34 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 import '../../services/messages.dart';
+import '../blocs/singleteamprovider.dart';
 import '../games/teamresults.dart';
 import '../util/communityicons.dart';
 import '../util/gendericon.dart';
 import '../util/teamimage.dart';
-import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
-
-import '../blocs/singleteamprovider.dart';
 
 ///
 /// Shows the details of the team.
 ///
 class TeamDetails extends StatelessWidget {
+  /// Constructor.
   TeamDetails(this.teamuid);
 
+  /// The teamUid to show the details for.
   final String teamuid;
 
   Widget _buildSeasonExpansionTitle(Team team, Season season) {
     return ExpansionTile(
       key: PageStorageKey<Season>(season),
       title: Text(
-        season.name +
-            " W:" +
-            season.record.win.toString() +
-            " L:" +
-            season.record.loss.toString() +
-            " T:" +
-            season.record.tie.toString(),
+        "${season.name} W:${season.record.win} L:${season.record.loss} T:${season.record.tie}",
       ),
       children: <Widget>[
         TeamResultsBySeason(
@@ -42,29 +38,28 @@ class TeamDetails extends StatelessWidget {
 
   Widget _buildSeasons(BuildContext context, SingleTeamState team, Club club,
       Iterable<Season> seasons) {
-    List<Widget> ret = <Widget>[];
+    var ret = <Widget>[];
 
     if (team.isAdmin()) {
       ret.add(
         FlatButton(
           onPressed: () =>
-              Navigator.pushNamed(context, "AddSeason/" + team.team.uid),
+              Navigator.pushNamed(context, "AddSeason/${team.team.uid}"),
           child: Text(Messages.of(context).addseason),
         ),
       );
     }
     // Show all the seasons here, not just the ones we know.
-    List<Widget> happyData = <Widget>[];
+    var happyData = <Widget>[];
 
     if (!team.loadedSeasons) {
       ret.add(Text(Messages.of(context).loading));
     } else {
-      Iterable<Season> seasons =
-          team.fullSeason.where((Season s) => s.teamUid == team.team.uid);
+      var seasons = team.fullSeason.where((s) => s.teamUid == team.team.uid);
       if (seasons.length == 0) {
         ret.add(Text(Messages.of(context).noseasons));
       } else {
-        for (Season season in seasons) {
+        for (var season in seasons) {
           happyData.add(_buildSeasonExpansionTitle(team.team, season));
         }
       }
@@ -84,26 +79,26 @@ class TeamDetails extends StatelessWidget {
 
   void _openClub(BuildContext context, Team team) {
     if (team.clubUid != null) {
-      Navigator.pushNamed(context, "Club/" + team.clubUid);
+      Navigator.pushNamed(context, "Club/${team.clubUid}");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
+    var screenSize = MediaQuery.of(context).size;
 
     return SingleTeamProvider(
       teamUid: teamuid,
-      builder: (BuildContext context, SingleTeamBloc bloc) => BlocListener(
+      builder: (context, bloc) => BlocListener(
         cubit: bloc,
-        listener: (BuildContext context, SingleTeamState state) {
+        listener: (context, state) {
           if (state is SingleTeamLoaded) {
             bloc.add(SingleTeamLoadSeasons());
           }
         },
         child: BlocBuilder(
           cubit: bloc,
-          builder: (BuildContext context, SingleTeamState teamState) {
+          builder: (context, teamState) {
             if (teamState is SingleTeamDeleted) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +121,7 @@ class TeamDetails extends StatelessWidget {
             }
 
             Widget club;
-            Team team = teamState.team;
+            var team = teamState.team;
             if (team.clubUid != null) {
               if (teamState.club == null) {
                 club = Text(Messages.of(context).loading);
@@ -153,8 +148,7 @@ class TeamDetails extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.people),
                   title: Text(team.name),
-                  subtitle:
-                      Text(team.sport.toString() + "(" + team.league + ") "),
+                  subtitle: Text("${team.sport}(${team.league}) "),
                   trailing: GenderIcon(team.gender),
                 ),
                 ListTile(

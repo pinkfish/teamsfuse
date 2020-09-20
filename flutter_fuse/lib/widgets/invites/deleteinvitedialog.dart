@@ -7,13 +7,16 @@ import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 
+///
+/// Dialog asking if it is ok to delete the invite.
+///
 Future<bool> deleteInviteDialog(BuildContext context, Invite invite) async {
-  Messages mess = Messages.of(context);
+  var mess = Messages.of(context);
 
-  bool result = await showDialog<bool>(
+  var result = await showDialog<bool>(
       context: context,
       barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
           title: Text(mess.deleteinvite),
           content: Scrollbar(
@@ -43,7 +46,7 @@ Future<bool> deleteInviteDialog(BuildContext context, Invite invite) async {
         );
       });
   if (result) {
-    InviteBloc inviteBloc = BlocProvider.of<InviteBloc>(context);
+    var inviteBloc = BlocProvider.of<InviteBloc>(context);
     inviteBloc.add(InviteEventDeleteInvite(inviteUid: invite.uid));
   }
   return result;

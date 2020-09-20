@@ -15,16 +15,19 @@ import 'teamtile.dart';
 /// between clubs/teams/leagues.
 ///
 class TeamSelection extends StatefulWidget {
+  /// The constrctor.
   TeamSelection(
       {@required this.onChanged,
       @required this.initialTeam,
       @required this.club});
 
+  /// Called when the team selection is changed.
   final ValueChanged<Team> onChanged;
 
   /// The initialTeam
   final Team initialTeam;
 
+  /// The club to use to find teams in.
   final Club club;
 
   @override
@@ -75,13 +78,12 @@ class _TeamSelectionState extends State<TeamSelection> {
 
   @override
   Widget build(BuildContext context) {
-    TeamBloc bloc = BlocProvider.of<TeamBloc>(context);
-    List<Widget> widgets = <Widget>[];
-    print('$_clubUid');
+    var bloc = BlocProvider.of<TeamBloc>(context);
+    var widgets = <Widget>[];
     if (widget.club == null) {
       widgets.add(
         TeamPicker(
-          onChanged: (String str) => _teamChanged(bloc.state.getTeam(str)),
+          onChanged: (str) => _teamChanged(bloc.state.getTeam(str)),
           teamUid: _team?.uid,
           disabled: _clubUid != null,
           selectedTitle: _team != null,
@@ -91,8 +93,7 @@ class _TeamSelectionState extends State<TeamSelection> {
       widgets.add(
         SingleClubProvider(
           clubUid: widget.club.uid,
-          builder: (BuildContext context, SingleClubBloc bloc) =>
-              ClubTeamPicker(
+          builder: (context, bloc) => ClubTeamPicker(
             onChanged: _teamChanged,
             team: _team,
             clubBloc: bloc,
@@ -105,7 +106,7 @@ class _TeamSelectionState extends State<TeamSelection> {
         SizedBox(height: 20.0),
         Text(
           Messages.of(context).teamselected,
-          style: Theme.of(context).textTheme.subhead.copyWith(
+          style: Theme.of(context).textTheme.subtitle1.copyWith(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).accentColor),
         ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
-import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentdivisonprovider.dart';
@@ -20,11 +19,15 @@ import 'leagueortournamentseasonname.dart';
 /// tournament.
 ///
 class LeagueOrTournamentTeamDetails extends StatefulWidget {
+  /// Constructor.
   LeagueOrTournamentTeamDetails(
       {@required this.leagueOrTournamentTeamUid,
       @required this.leagueOrTournamentUid});
 
+  /// The team uid to display.
   final String leagueOrTournamentTeamUid;
+
+  /// The league or tournment to display.
   final String leagueOrTournamentUid;
 
   @override
@@ -39,7 +42,7 @@ class _LeagueOrTournamentTeamDetailsState
 
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
+    var screenSize = MediaQuery.of(context).size;
     // We must have the league/season loaded to have got in here.  If not
     // this is an error.
 
@@ -47,20 +50,16 @@ class _LeagueOrTournamentTeamDetailsState
       margin: EdgeInsets.all(5.0),
       child: SingleLeagueOrTournamentTeamProvider(
         leagueTeamUid: widget.leagueOrTournamentTeamUid,
-        builder:
-            (BuildContext context, SingleLeagueOrTournamentTeamBloc bloc) =>
-                BlocListener(
+        builder: (context, bloc) => BlocListener(
           cubit: bloc,
-          listener: (BuildContext context,
-              SingleLeagueOrTournamentTeamState teamState) {
+          listener: (context, teamState) {
             if (teamState is SingleLeagueOrTournamentTeamLoaded) {
               bloc.add(SingleLeagueOrTournamentTeamLoadInvites());
             }
           },
           child: BlocBuilder(
               cubit: bloc,
-              builder: (BuildContext context,
-                  SingleLeagueOrTournamentTeamState teamState) {
+              builder: (context, teamState) {
                 if (teamState is SingleLeagueOrTournamentTeamUninitialized ||
                     teamState is SingleLeagueOrTournamentTeamDeleted) {
                   return Center(child: Text(Messages.of(context).loading));
@@ -68,26 +67,19 @@ class _LeagueOrTournamentTeamDetailsState
 
                 return SingleLeagueOrTournamentProvider(
                   leagueUid: widget.leagueOrTournamentUid,
-                  builder: (BuildContext context,
-                          SingleLeagueOrTournamentBloc leagueBloc) =>
+                  builder: (context, leagueBloc) =>
                       SingleLeagueOrTournamentSeasonProvider(
                     leagueSeasonUid: teamState.leagueOrTournamentTeam.seasonUid,
-                    builder: (BuildContext context,
-                            SingleLeagueOrTournamentSeasonBloc seasonBloc) =>
+                    builder: (context, seasonBloc) =>
                         SingleLeagueOrTournamentDivisonProvider(
                             leagueDivisonUid: teamState.leagueOrTournamentTeam
                                 .leagueOrTournamentDivisonUid,
-                            builder: (BuildContext context,
-                                SingleLeagueOrTournamentDivisonBloc
-                                    divisonBloc) {
+                            builder: (context, divisonBloc) {
                               divisonBloc.add(
                                   SingleLeagueOrTournamentDivisonLoadGames());
                               return BlocBuilder(
                                 cubit: leagueBloc,
-                                builder: (BuildContext context,
-                                        SingleLeagueOrTournamentState
-                                            leagueState) =>
-                                    Column(
+                                builder: (context, leagueState) => Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.stretch,
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -103,7 +95,7 @@ class _LeagueOrTournamentTeamDetailsState
                                     LeagueOrTournamentName(
                                       widget.leagueOrTournamentUid,
                                       style:
-                                          Theme.of(context).textTheme.headline,
+                                          Theme.of(context).textTheme.headline5,
                                     ),
                                     LeagueOrTournamentSeasonName(
                                         leagueBloc: leagueBloc,
@@ -111,7 +103,7 @@ class _LeagueOrTournamentTeamDetailsState
                                             .leagueOrTournamentTeam.seasonUid,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .subhead
+                                            .subtitle1
                                             .copyWith(
                                                 fontWeight: FontWeight.bold)),
                                     LeagueOrTournamentDivisonName(
@@ -121,21 +113,19 @@ class _LeagueOrTournamentTeamDetailsState
                                         leagueSeasonBloc: seasonBloc,
                                         style: Theme.of(context)
                                             .textTheme
-                                            .subhead),
+                                            .subtitle1),
                                     BlocBuilder(
                                       cubit: divisonBloc,
-                                      builder: (BuildContext context,
-                                          SingleLeagueOrTournamentDivisonState
-                                              gamesState) {
+                                      builder: (context, gamesState) {
                                         if (gamesState
                                             is SingleLeagueOrTournamentDivisonUninitialized) {
                                           return Text(
                                               Messages.of(context).loading);
                                         }
 
-                                        List<GameSharedData> sortedGames = gamesState
+                                        var sortedGames = gamesState
                                             .games.values
-                                            .where((GameSharedData g) =>
+                                            .where((g) =>
                                                 g.officialResult
                                                         .homeTeamLeagueUid ==
                                                     widget
@@ -150,12 +140,11 @@ class _LeagueOrTournamentTeamDetailsState
                                               Messages.of(context).nogames);
                                         }
 
-                                        sortedGames.sort((GameSharedData g1,
-                                                GameSharedData g2) =>
+                                        sortedGames.sort((g1, g2) =>
                                             (g1.time - g2.time).toInt());
-                                        List<Widget> children = sortedGames
-                                            .map<Widget>((GameSharedData g) =>
-                                                GameSharedCard(g))
+                                        var children = sortedGames
+                                            .map<Widget>(
+                                                (g) => GameSharedCard(g))
                                             .toList();
 
                                         if (teamState.leagueOrTournamentTeam
@@ -169,8 +158,8 @@ class _LeagueOrTournamentTeamDetailsState
                                                       teamState.invites.length),
                                             ),
                                             initiallyExpanded: false,
-                                            children: teamState.invites.map(
-                                                (InviteToLeagueTeam invite) {
+                                            children:
+                                                teamState.invites.map((invite) {
                                               return ListTile(
                                                 trailing: IconButton(
                                                   icon: Icon(Icons.delete),
