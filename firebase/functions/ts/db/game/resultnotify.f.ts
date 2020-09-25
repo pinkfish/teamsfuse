@@ -1,13 +1,8 @@
-'use strict';
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
+import { notifyForGame, PayloadData } from '../../util/notifyforgame';
 
-const admin = require('firebase-admin');
-const functions = require('firebase-functions');
-const notifyforgame = require('../util/notifyforgame');
-const moment = require('moment-timezone');
-
-const db = admin.firestore();
-
-exports = module.exports = functions.firestore.document('/Games/{gameid}').onUpdate((inputData, context) => {
+export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate(async (inputData, context) => {
     const data = inputData.after.data();
     let previousData = inputData.before.data();
 
@@ -73,7 +68,7 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onUpd
             diff ||
             data.result.result !== previousData.result.result)
     ) {
-        let userId;
+        let userId: string = '';
         // If we are authenticated then don't tell the person doing the
         // update about this change.
         if (context.auth) {
@@ -108,24 +103,22 @@ exports = module.exports = functions.firestore.document('/Games/{gameid}').onUpd
             }
         }
 
-        const payload = {
-            notification: {
-                title: '{{opponent.name}} ' + curScores.ptsFor + ' - ' + curScores.ptsAgainst,
-                body: mess,
-                clickAction: 'GAMERESULT',
-                tag: inputData.after.id + 'result',
-            },
+        const payload: PayloadData = {
+            title: '{{opponent.name}} ' + curScores.ptsFor + ' - ' + curScores.ptsAgainst,
+            body: mess,
+            click_action: 'GAMERESULT',
+            tag: inputData.after.id + 'result',
         };
 
-        payload['options'] = {
-            collapse_key: inputData.after.id + 'result',
-            timeToLive: 259200, // Keep for three days.
+        const options: admin.messaging.MessagingOptions = {
+            timeToLive: 259200,
+            collapseKey: inputData.after.id + 'result',
         };
 
         console.log('Notifying about');
         console.log(payload);
 
-        return notifyforgame.notifyForGame(inputData.after, payload, userId, true);
+        await notifyForGame(inputData.after, payload, options, userId, true);
     }
-    return data;
+    return;
 });

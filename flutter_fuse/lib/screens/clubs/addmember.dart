@@ -32,7 +32,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   static final Validations validations = Validations();
-  final bool _autoValidate = false;
+  final AutovalidateMode _autoValidate = AutovalidateMode.disabled;
   String _emailToInvite;
   bool _inviteAsAdmin;
   bool _doingSave = false;
@@ -96,7 +96,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
             child: SingleChildScrollView(
               child: Form(
                 key: _formKey,
-                autovalidate: _autoValidate,
+                autovalidateMode: _autoValidate,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,

@@ -382,18 +382,18 @@ class GameCard extends StatelessWidget {
 
     String arriveFormat;
     // Only arrival time for games and only if it is before the game.
-    if (game.arriveTime != game.sharedData.time &&
+    if (game.arrivalTime != game.sharedData.time &&
         game.sharedData.type == EventType.Game &&
         timeNow.millisecondsSinceEpoch <
-            game.arriveTime + Duration.millisecondsPerHour) {
+            game.arrivalTime + Duration.millisecondsPerHour) {
       var arriveDay = TimeOfDay.fromDateTime(game.tzArriveTime);
       arriveFormat =
           MaterialLocalizations.of(context).formatTimeOfDay(arriveDay);
     }
 
-    if (game.arriveTime <
+    if (game.arrivalTime <
             timeNow.millisecondsSinceEpoch + Duration.millisecondsPerHour &&
-        game.arriveTime >
+        game.arrivalTime >
             timeNow.millisecondsSinceEpoch - Duration.millisecondsPerHour * 3) {
       // Put in directions buttons.
       buttons.add(

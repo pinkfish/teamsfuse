@@ -72,7 +72,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         ..period = periodZero.toBuilder()
         ..score = gameScoreBuilder;
 
-      _details.scores[periodZero] = _currentPeriodResults.build();
+      _details.scoresInternal[periodZero.toIndex()] =
+          _currentPeriodResults.build();
     }
     if (_details.currentPeriod == null) {
       _details.currentPeriod = _currentPeriodResults.period;
@@ -129,20 +130,27 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     var scoreUpdate = GamePeriodBuilder()
       ..type = _currentPeriodResults.period.type
       ..periodNumber = 0;
-    _details.scores[scoreUpdate.build()] = _currentPeriodResults.build();
+    _details.scoresInternal[scoreUpdate.build().toIndex()] =
+        _currentPeriodResults.build();
     // Create a score type.
-    var newScoreUpdate = newPeriod.toBuilder()..periodNumber = 0;
-    if (!_details.scores.build().containsKey(newScoreUpdate)) {
+    var newScoreUpdate = GamePeriod((b) => b
+      ..periodNumber = 0
+      ..type = scoreUpdate.type);
+    if (!_details.scoresInternal
+        .build()
+        .containsKey(newScoreUpdate.toIndex())) {
       var builder = GameScoreBuilder()
         ..ptsFor = 0
         ..ptsAgainst = 0;
-      _details.scores[newScoreUpdate.build()] = (GameResultPerPeriodBuilder()
-            ..period = newScoreUpdate
-            ..score = builder)
-          .build();
+      _details.scoresInternal[newScoreUpdate.toIndex()] =
+          (GameResultPerPeriodBuilder()
+                ..period = newScoreUpdate.toBuilder()
+                ..score = builder)
+              .build();
     }
     setState(() {
-      _currentPeriodResults = _details.scores[newScoreUpdate].toBuilder();
+      _currentPeriodResults =
+          _details.scoresInternal[newScoreUpdate.toIndex()].toBuilder();
       _currentPeriodResults.period = newPeriod.toBuilder();
     });
   }
@@ -159,7 +167,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       if (_ptsFor != null) {
         _currentPeriodResults.score.ptsFor = _ptsFor;
       }
-      _details.scores[_currentPeriodResults.period.build()] =
+      _details.scoresInternal[_currentPeriodResults.period.build().toIndex()] =
           _currentPeriodResults.build();
       print("Update score $_currentPeriodResults $_details");
       //widget.game.updateFirestoreResult(_details);
@@ -217,8 +225,9 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         }
         _currentPeriodResults.period = GamePeriodBuilder()
           ..type = GamePeriodType.Regulation;
-        _details.scores[_currentPeriodResults.period.build()] =
-            _currentPeriodResults.build();
+        _details.scoresInternal[_currentPeriodResults.period
+            .build()
+            .toIndex()] = _currentPeriodResults.build();
         _details.inProgress = GameInProgress.Final;
         _details.result = gameResult;
         _writeLog(GameLogType.PeriodStop);

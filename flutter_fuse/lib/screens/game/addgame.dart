@@ -148,7 +148,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
       ..teamUid = team.uid
       ..sharedData = sharedGameData
       ..sharedData.time = start.millisecondsSinceEpoch
-      ..arriveTime = start
+      ..arrivalTime = start
           .subtract(Duration(minutes: team.arriveEarlyInternal.toInt()))
           .millisecondsSinceEpoch
       ..sharedData.endTime = start.millisecondsSinceEpoch

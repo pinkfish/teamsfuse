@@ -7,6 +7,9 @@ import '../serializer.dart';
 
 part 'gameperiod.g.dart';
 
+///
+/// The type of the game period.
+///
 class GamePeriodType extends EnumClass {
   static Serializer<GamePeriodType> get serializer =>
       _$gamePeriodTypeSerializer;
@@ -16,6 +19,7 @@ class GamePeriodType extends EnumClass {
   static const GamePeriodType Penalty = _$penalty;
   static const GamePeriodType Regulation = _$regulation;
   static const GamePeriodType OvertimeBreak = _$overtimeBreak;
+  static const GamePeriodType Final = _$final;
 
   const GamePeriodType._(String name) : super(name);
 
@@ -35,9 +39,9 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
 
   String toIndex() {
     if (periodNumber > 0) {
-      return "${type.toString().substring(15)}--$periodNumber";
+      return "$type--$periodNumber";
     }
-    return "${type.toString().substring(15)}";
+    return "$type";
   }
 
   static GamePeriod fromIndex(String str) {
@@ -50,13 +54,13 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
     List<String> bits = str.split(_BREAK);
     if (bits.length == 2) {
       if (bits[0] == "FinalRegulation") {
-        bits[0] = "Regulation";
+        bits[0] = "Final";
       }
       if (bits[0] == "Numbered") {
         bits[0] = "Regulation";
       }
-      type = GamePeriodType.values.firstWhere(
-          (GamePeriodType val) => val.toString().substring(15) == bits[0]);
+      type = GamePeriodType.values
+          .firstWhere((GamePeriodType val) => val.toString() == bits[0]);
       periodNumber = getNum(bits[1]);
       return new GamePeriod((b) => b
         ..type = type
@@ -65,7 +69,7 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
       // Old style.
       switch (str) {
         case "Final":
-          type = GamePeriodType.Regulation;
+          type = GamePeriodType.Final;
           periodNumber = 0;
           break;
         case "Overtime":
@@ -97,6 +101,9 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
     ..periodNumber = 0);
   static GamePeriod penalty = GamePeriod((b) => b
     ..type = GamePeriodType.Penalty
+    ..periodNumber = 0);
+  static GamePeriod finalPeriod = GamePeriod((b) => b
+    ..type = GamePeriodType.Final
     ..periodNumber = 0);
 }
 
@@ -146,6 +153,10 @@ abstract class GamePeriodTime
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(GamePeriodTime.serializer, this);
   }
+
+  static void _initializeBuilder(GamePeriodTimeBuilder b) =>
+      b..timeCountUp = true;
+
 
   static GamePeriodTime fromMap(Map<String, dynamic> jsonData) {
     return serializers.deserializeWith(GamePeriodTime.serializer, jsonData);

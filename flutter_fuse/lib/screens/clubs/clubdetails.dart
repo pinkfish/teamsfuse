@@ -130,15 +130,15 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                 items: <BottomNavigationBarItem>[
                   BottomNavigationBarItem(
                     icon: Icon(Icons.gamepad),
-                    title: Text(Messages.of(context).clubdetails),
+                    label: Messages.of(context).clubdetails,
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.people),
-                    title: Text(Messages.of(context).teams),
+                    label: Messages.of(context).teams,
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.flag),
-                    title: Text(Messages.of(context).members),
+                    label: Messages.of(context).members,
                   ),
                 ],
               ),

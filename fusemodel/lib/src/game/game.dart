@@ -33,13 +33,14 @@ class Attendance extends EnumClass {
 abstract class Game implements Built<Game, GameBuilder> {
   String get uid;
   String get sharedDataUid;
-  num get arriveTime;
+  num get arrivalTime;
   String get notes;
   BuiltList<String> get opponentUids;
   String get seasonUid;
   String get teamUid;
   BuiltList<String> get allTeamUids;
   String get uniform;
+  @nullable
   String get seriesId;
   GameResultDetails get result;
   BuiltMap<String, Attendance> get attendance;
@@ -54,7 +55,7 @@ abstract class Game implements Built<Game, GameBuilder> {
   bool get homegame => sharedData.officialResult.homeTeamLeagueUid == teamUid;
 
   TZDateTime get tzArriveTime => new TZDateTime.fromMillisecondsSinceEpoch(
-      sharedData.location, arriveTime);
+      sharedData.location, arrivalTime);
 
   static const String SEASONUID = 'seasonUid';
   static const String RESULT = 'result';

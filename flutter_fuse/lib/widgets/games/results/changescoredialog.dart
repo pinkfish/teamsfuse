@@ -19,7 +19,7 @@ Future<GameResultDetailsBuilder> changeScoreDialog(
       builder: (context) {
         return AlertDialog(
           title: Text(mess.changescore),
-          content: _ChangeScore(details.toBuilder(), detailsState),
+          content: _ChangeScore(details, detailsState),
           actions: <Widget>[
             FlatButton(
               child: Text(MaterialLocalizations.of(context).okButtonLabel),
@@ -44,7 +44,7 @@ class _ChangeScore extends StatefulWidget {
   _ChangeScore(this._details, GlobalKey<_ChangeScoreState> key)
       : super(key: key);
 
-  final GameResultDetailsBuilder _details;
+  final GameResultDetails _details;
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
 
   @override
@@ -54,15 +54,17 @@ class _ChangeScore extends StatefulWidget {
 }
 
 class _ChangeScoreState extends State<_ChangeScore> {
+  GameResultDetailsBuilder _builder;
+
   GameResultDetailsBuilder save() {
     widget._formState.currentState.save();
-    return widget._details;
+    return _builder;
   }
 
   List<Widget> _buildScores() {
     var ret = <Widget>[];
-    for (var period in widget._details.scores.build().keys) {
-      var result = widget._details.scores[period];
+    for (var period in _builder.scoresInternal.build().keys) {
+      var result = widget._details.scoresInternal[period];
       ret.add(Text(
         Messages.of(context).periodname(result.period),
         style: Theme.of(context)
@@ -85,7 +87,7 @@ class _ChangeScoreState extends State<_ChangeScore> {
               onSaved: (str) {
                 var builder = result.score.toBuilder();
                 builder.ptsFor = int.parse(str);
-                widget._details.scores[period] =
+                _builder.scoresInternal[period] =
                     result.rebuild((b) => b..score = builder);
               },
             ),
@@ -102,7 +104,7 @@ class _ChangeScoreState extends State<_ChangeScore> {
               onSaved: (str) {
                 var builder = result.score.toBuilder();
                 builder.ptsAgainst = int.parse(str);
-                widget._details.scores[period] =
+                _builder.scoresInternal[period] =
                     result.rebuild((b) => b..score = builder);
               },
             ),
@@ -118,7 +120,7 @@ class _ChangeScoreState extends State<_ChangeScore> {
     return Scrollbar(
       child: Form(
         key: widget._formState,
-        autovalidate: false,
+        autovalidateMode: AutovalidateMode.disabled,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

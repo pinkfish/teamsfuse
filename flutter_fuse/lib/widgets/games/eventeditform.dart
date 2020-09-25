@@ -74,7 +74,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
     builder.sharedData.time = TZDateTime(getLocation(_timezone), _atDate.year,
             _atDate.month, _atDate.day, _atDate.hour, _atDate.minute)
         .millisecondsSinceEpoch;
-    builder.arriveTime = widget.game.sharedData.time;
+    builder.arrivalTime = widget.game.sharedData.time;
     var end = _atEnd;
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
       end.add(Duration(days: 1));

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/blocs/singleleagueortournamentprovider.dart';
-import 'package:flutter_fuse/widgets/blocs/singleleagueortournamentteamprovider.dart';
 import 'package:fusemodel/blocs.dart';
 
 import '../../services/messages.dart';
+import '../../widgets/blocs/singleleagueortournamentprovider.dart';
+import '../../widgets/blocs/singleleagueortournamentteamprovider.dart';
 import '../../widgets/leagueortournament/addinvitetoteamdialog.dart';
 import '../../widgets/leagueortournament/leagueortournamentteam.dart';
 import '../../widgets/leagueortournament/leagueortournamentteamname.dart';

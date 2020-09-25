@@ -1,6 +1,4 @@
-'use strict';
-
-exports.TEXT_BODY = `
+export const TEXT_BODY: string = `
 Reminder for upcoming game with {{team.name}}, details below:
 
 Arrive At   : {{arrivalTime}}
@@ -24,7 +22,7 @@ http://www.teamsfuses.com/event/{{team.uid}}/{{game.uid}}
 Sent by TeamsFuse http://www.teamsfuse.com
 `;
 
-exports.HTML_BODY = `
+export const HTML_BODY = `
 Reminder for upcoming game with <b>{{team.name}}</b>, details below:
 
 <img src="{{teamPhotoUrl}}" width=100 height=100>

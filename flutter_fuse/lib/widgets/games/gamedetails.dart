@@ -141,12 +141,15 @@ class _GameDetailsState extends State<GameDetails> {
     if (ret != null && ret) {
       // Copy the result over and save.
       var newResult = GameResultDetailsBuilder();
-      newResult.scores[GamePeriod.regulation] = details.regulationResult;
+      newResult.scoresInternal[GamePeriod.regulation.toIndex()] =
+          details.regulationResult;
       if (details.overtimeResult != null) {
-        newResult.scores[GamePeriod.overtime] = details.overtimeResult;
+        newResult.scoresInternal[GamePeriod.overtime.toIndex()] =
+            details.overtimeResult;
       }
       if (details.penaltyResult != null) {
-        newResult.scores[GamePeriod.penalty] = details.penaltyResult;
+        newResult.scoresInternal[GamePeriod.penalty.toIndex()] =
+            details.penaltyResult;
       }
       newResult.result = details.result;
       widget.gameBloc.add(SingleGameUpdateResult(result: newResult.build()));

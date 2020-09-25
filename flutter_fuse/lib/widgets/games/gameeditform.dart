@@ -108,7 +108,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
       if (_atArrival.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
         arrival.add(Duration(days: 1));
       }
-      _builder.arriveTime = TZDateTime(
+      _builder.arrivalTime = TZDateTime(
               getLocation(widget.game.sharedData.timezone),
               arrival.year,
               arrival.month,

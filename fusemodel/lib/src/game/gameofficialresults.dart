@@ -36,7 +36,8 @@ abstract class GameOfficialResults
     implements Built<GameOfficialResults, GameOfficialResultsBuilder> {
   //final CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> scores =
   //    new CanonicalizedMap((GamePeriod p) => p.toIndex());
-  BuiltMap<GamePeriod, GameResultPerPeriod> get scores;
+  @BuiltValueField(wireName: 'scores')
+  BuiltMap<String, GameResultPerPeriod> get scoresInternal;
 
   /// The team uid, this pointed to a leagueortourneamentteam data.
   @nullable
@@ -46,8 +47,12 @@ abstract class GameOfficialResults
   @nullable
   String get awayTeamLeagueUid;
 
-  @BuiltValueField(wireName: 'officalResult')
+  /// The official result for the game.
   OfficialResult get result;
+
+  @memoized
+  BuiltMap<GamePeriod, GameResultPerPeriod> get scores => BuiltMap(
+      scoresInternal.map((k, v) => MapEntry(GamePeriod.fromIndex(k), v)));
 
   static const String HOMETEAMUID = 'homeTeamUid';
   static const String AWAYTEAMUID = 'awayTeamUid';

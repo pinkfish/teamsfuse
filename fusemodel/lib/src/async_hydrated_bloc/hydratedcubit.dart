@@ -77,7 +77,6 @@ mixin AsyncHydratedMixin<State> on Cubit<State> {
       if (stateJson == null) {
         return;
       }
-      print("$loadedData $stateJson");
       // Cause a state change.
       if (!loadedData) {
         loadedData = true;
@@ -106,7 +105,6 @@ mixin AsyncHydratedMixin<State> on Cubit<State> {
       loadedData = true;
       final stateJson = _toJson(state);
       if (stateJson != null) {
-        print("write $storageToken $stateJson ");
         storage.write(storageToken, stateJson).then((_) {}, onError: onError);
       }
     } on dynamic catch (error, stackTrace) {

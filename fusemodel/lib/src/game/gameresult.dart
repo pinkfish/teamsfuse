@@ -93,10 +93,9 @@ abstract class GameResultPerPeriod
 abstract class GameResultDetails
     with GameResultSharedDetails
     implements Built<GameResultDetails, GameResultDetailsBuilder> {
-  BuiltMap<GamePeriod, GameResultPerPeriod> get scores;
+  @BuiltValueField(wireName: "scores")
+  BuiltMap<String, GameResultPerPeriod> get scoresInternal;
 
-  //CanonicalizedMap<String, GamePeriod, GameResultPerPeriod> get scores =
-  //    new CanonicalizedMap((GamePeriod p) => p.toIndex());
   GameResult get result;
 
   GameInProgress get inProgress;
@@ -104,6 +103,10 @@ abstract class GameResultDetails
   GamePeriod get currentPeriod; // Null until the game started.
   GameDivisionsType get divisions; // = GameDivisionsType.Halves;
   GamePeriodTime get time;
+
+  @memoized
+  BuiltMap<GamePeriod, GameResultPerPeriod> get scores => BuiltMap(
+      scoresInternal.map((k, v) => MapEntry(GamePeriod.fromIndex(k), v)));
 
   GameResultDetails._();
 

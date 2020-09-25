@@ -23,7 +23,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   ScrollController scrollController = ScrollController();
-  bool autovalidate = false;
+  AutovalidateMode autovalidate = AutovalidateMode.disabled;
   Validations validations = Validations();
   String email = '';
   LoginBloc _loginBloc;
@@ -45,7 +45,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   void _handleSubmitted() {
     var form = formKey.currentState;
     if (!form.validate()) {
-      autovalidate = true; // Start validating on every change.
+      autovalidate =
+          AutovalidateMode.always; // Start validating on every change.
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
@@ -61,7 +62,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         children: <Widget>[
           Form(
             key: formKey,
-            autovalidate: autovalidate,
+            autovalidateMode: autovalidate,
             child: Column(
               children: <Widget>[
                 TextFormField(

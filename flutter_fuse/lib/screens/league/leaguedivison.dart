@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/widgets/leagueortournament/leagueortournamentdivisonname.dart';
 
 import '../../services/messages.dart';
 import '../../widgets/leagueortournament/leagueortournamentdivisongames.dart';
+import '../../widgets/leagueortournament/leagueortournamentdivisonname.dart';
 import '../../widgets/leagueortournament/leagueortournamentdivisonteams.dart';
 
 ///
@@ -66,11 +66,11 @@ class _LeagueDivisonScreenState extends State<LeagueDivisonScreen> {
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.games),
-              title: Text(Messages.of(context).games),
+              label: Messages.of(context).games,
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.people),
-              title: Text(Messages.of(context).teams),
+              label: Messages.of(context).teams,
             )
           ]),
       body: _buildBody(),

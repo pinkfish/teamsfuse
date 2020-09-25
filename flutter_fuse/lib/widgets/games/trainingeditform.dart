@@ -98,7 +98,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
             _atDate.hour,
             _atDate.minute)
         .millisecondsSinceEpoch;
-    _builder.arriveTime = widget.game.sharedData.time;
+    _builder.arrivalTime = widget.game.sharedData.time;
     var end = _atEnd;
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
       end.add(Duration(days: 1));

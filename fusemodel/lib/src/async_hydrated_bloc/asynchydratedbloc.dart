@@ -15,7 +15,6 @@ abstract class AsyncHydratedBloc<Event, State> extends Bloc<Event, State>
   /// {@macro hydrated_bloc}
   AsyncHydratedBloc(State state, String boxName, {AsyncStorage asyncStorage})
       : super(state) {
-    print("async $boxName");
     storage = asyncStorage ??
         AsyncHydratedStorage("${runtimeType.toString()}.$boxName");
     hydrate();
