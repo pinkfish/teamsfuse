@@ -18,13 +18,25 @@ export const onPublish = functions.pubsub.topic('daily-tick').onPublish(async (d
 
     // Do something useful every day.
     try {
+        console.log(process.env.FUNCTION_IDENTITY);
+        for (const idx in admin.apps) {
+            const app = admin.apps[idx];
+            if (app === null || app === undefined) {
+                console.log('Null app');
+                continue;
+            }
+            console.log(app.name);
+            console.log(app.options);
+            console.log(app.options.serviceAccountId);
+        }
+
         const projectId = process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT;
         console.log(projectId);
         const databaseName = client.databasePath(projectId, '(default)');
         console.log(databaseName);
         const responses = await client.exportDocuments({
             name: databaseName,
-            outputUriPrefix: 'fusefirestorebackup',
+            outputUriPrefix: 'gs://fusefirestorebucket/teamsfuse',
             // Backup the whole database.
             collectionIds: [],
         });
