@@ -14,7 +14,7 @@ import 'package:timezone/browser.dart';
 
 void mainShared(InjectorFactory injector) async {
   fb.initializeApp(
-      apiKey: "AIzaSyBN6v7M6jy39smjF9Lt819FcsWRm2cu9K0",
+      apiKey: "need to fill this in",
       authDomain: "teamsfuse.firebaseapp.com",
       databaseURL: "https://teamsfuse.firebaseio.com",
       projectId: "teamsfuse",

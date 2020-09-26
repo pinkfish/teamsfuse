@@ -85,9 +85,8 @@ class LoggingData extends LoggingDataBase {
   bool _realDevice = true;
   final bool _debugMode = false;
 
-  final SentryClient _sentry = SentryClient(
-      dsn:
-          'https://5691b440eb64430d9ba2917166fa17a1:7978cf6a0a5a4f7ab7702a51f524620a@sentry.io/1200691');
+  final SentryClient _sentry =
+      SentryClient(dsn: String.fromEnvironment("SENTRY_URL"));
 
   /// Sets the last path used.
   set lastPath(String path) => _extra["lastPath"] = path;
