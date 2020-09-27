@@ -40,6 +40,7 @@ class SingleLeagueOrTournamentSeasonBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class SingleLeagueOrTournamentSeasonState {
+  @nullable
   LeagueOrTournamentSeason get season;
   BuiltMap<String, LeagueOrTournamentDivison> get divisons;
   bool get loadedDivisons;
@@ -52,7 +53,7 @@ abstract class SingleLeagueOrTournamentSeasonState {
       SingleLeagueOrTournamentSeasonState state,
       SingleLeagueOrTournamentSeasonStateBuilder builder) {
     return builder
-      ..season = state.season.toBuilder()
+      ..season = state.season?.toBuilder()
       ..divisons = state.divisons.toBuilder()
       ..loadedDivisons = state.loadedDivisons;
   }

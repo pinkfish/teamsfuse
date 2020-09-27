@@ -35,6 +35,7 @@ class SinglePlayerBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class SinglePlayerState {
+  @nullable
   Player get player;
   bool get mePlayer;
   SinglePlayerBlocStateType get type;
@@ -48,7 +49,7 @@ abstract class SinglePlayerState {
   static SinglePlayerStateBuilder fromState(
       SinglePlayerState state, SinglePlayerStateBuilder builder) {
     return builder
-      ..player = state.player.toBuilder()
+      ..player = state.player?.toBuilder()
       ..mePlayer = state.mePlayer
       ..invites = state.invites.toBuilder()
       ..invitesLoaded = state.invitesLoaded;

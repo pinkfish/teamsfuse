@@ -34,6 +34,7 @@ class SingleInviteBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class SingleInviteState {
+  @nullable
   Invite get invite;
 
   SingleInviteBlocStateType get type;

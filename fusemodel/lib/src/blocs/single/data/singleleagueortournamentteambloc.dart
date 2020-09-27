@@ -41,6 +41,7 @@ class SingleLeagueOrTournamentTeamBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class SingleLeagueOrTournamentTeamState {
+  @nullable
   LeagueOrTournamentTeam get leagueOrTournamentTeam;
   BuiltMap<String, GameSharedData> get games;
   BuiltList<InviteToLeagueTeam> get invites;
@@ -54,7 +55,7 @@ abstract class SingleLeagueOrTournamentTeamState {
       SingleLeagueOrTournamentTeamState state,
       SingleLeagueOrTournamentTeamStateBuilder builder) {
     return builder
-      ..leagueOrTournamentTeam = state.leagueOrTournamentTeam.toBuilder()
+      ..leagueOrTournamentTeam = state.leagueOrTournamentTeam?.toBuilder()
       ..invites = state.invites.toBuilder()
       ..games = state.games.toBuilder()
       ..publicTeam = state.publicTeam.toBuilder()
@@ -287,8 +288,8 @@ abstract class SingleLeagueOrTournamentTeamSaveDone
             SingleLeagueOrTournamentTeamSaveDoneBuilder> {
   SingleLeagueOrTournamentTeamSaveDone._();
   factory SingleLeagueOrTournamentTeamSaveDone(
-          [void Function(SingleLeagueOrTournamentTeamSaveDoneBuilder) updates]) =
-      _$SingleLeagueOrTournamentTeamSaveDone;
+      [void Function(SingleLeagueOrTournamentTeamSaveDoneBuilder)
+          updates]) = _$SingleLeagueOrTournamentTeamSaveDone;
 
   static SingleLeagueOrTournamentTeamSaveDoneBuilder fromState(
       SingleLeagueOrTournamentTeamState state) {
@@ -297,7 +298,8 @@ abstract class SingleLeagueOrTournamentTeamSaveDone
   }
 
   /// Defaults for the state.  Always default to no leagueOrTournmentTeams loaded.
-  static void _initializeBuilder(SingleLeagueOrTournamentTeamSaveDoneBuilder b) {
+  static void _initializeBuilder(
+      SingleLeagueOrTournamentTeamSaveDoneBuilder b) {
     SingleLeagueOrTournamentTeamState.initializeStateBuilder(b);
 
     b..type = SingleLeagueOrTournamentTeamBlocStateType.SaveDone;

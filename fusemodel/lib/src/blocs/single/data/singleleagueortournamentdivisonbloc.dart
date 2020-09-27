@@ -42,6 +42,7 @@ class SingleLeagueOrTournamentDivisonBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class SingleLeagueOrTournamentDivisonState {
+  @nullable
   LeagueOrTournamentDivison get divison;
   BuiltMap<String, GameSharedData> get games;
   bool get loadedGames;
@@ -56,7 +57,7 @@ abstract class SingleLeagueOrTournamentDivisonState {
       SingleLeagueOrTournamentDivisonState state,
       SingleLeagueOrTournamentDivisonStateBuilder builder) {
     return builder
-      ..divison = state.divison.toBuilder()
+      ..divison = state.divison?.toBuilder()
       ..games = state.games.toBuilder()
       ..teams = state.teams.toBuilder()
       ..loadedGames = state.loadedGames

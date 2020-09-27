@@ -85,8 +85,9 @@ class LoggingData extends LoggingDataBase {
   bool _realDevice = true;
   final bool _debugMode = false;
 
-  final SentryClient _sentry =
-      SentryClient(dsn: String.fromEnvironment("SENTRY_URL"));
+  final SentryClient _sentry = String.fromEnvironment("SENTRY_URL") != ""
+      ? SentryClient(dsn: String.fromEnvironment("SENTRY_URL"))
+      : null;
 
   /// Sets the last path used.
   set lastPath(String path) => _extra["lastPath"] = path;
@@ -105,7 +106,7 @@ class LoggingData extends LoggingDataBase {
           stackTrace: details.stack,
           extra: _extra,
           tags: _tags);
-      _sentry.capture(event: event);
+      _sentry?.capture(event: event);
     }
   }
 
@@ -119,7 +120,7 @@ class LoggingData extends LoggingDataBase {
           stackTrace: details.stack,
           extra: _extra,
           tags: _tags);
-      _sentry.capture(event: event);
+      _sentry?.capture(event: event);
     }
   }
 }

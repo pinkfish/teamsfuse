@@ -34,13 +34,14 @@ class SingleProfileBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class SingleProfileState {
+  @nullable
   FusedUserProfile get profile;
 
   SingleProfileBlocStateType get type;
 
   static SingleProfileStateBuilder fromState(
       SingleProfileState state, SingleProfileStateBuilder builder) {
-    return builder..profile = state.profile.toBuilder();
+    return builder..profile = state.profile?.toBuilder();
   }
 
   static void initializeStateBuilder(SingleProfileStateBuilder b) {}

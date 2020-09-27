@@ -19,6 +19,8 @@ import 'services/loggingdata.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  print(String.fromEnvironment("SENTRY_URL"));
+
   // Trace as the first thing in the system.
   var trace = Analytics.instance.newTrace("startup");
   trace.start();

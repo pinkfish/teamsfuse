@@ -34,6 +34,7 @@ class SingleGameBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class SingleGameState {
+  @nullable
   Game get game;
   BuiltList<GameLog> get gameLog;
   bool get loadedLogs;
@@ -46,7 +47,7 @@ abstract class SingleGameState {
   static SingleGameStateBuilder fromState(
       SingleGameState state, SingleGameStateBuilder builder) {
     return builder
-      ..game = state.game.toBuilder()
+      ..game = state.game?.toBuilder()
       ..gameLog = state.gameLog.toBuilder()
       ..loadedLogs = state.loadedLogs;
   }
