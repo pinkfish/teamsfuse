@@ -530,12 +530,12 @@ class GameCard extends StatelessWidget {
         child: Column(
           children: <Widget>[
             tile,
-            ButtonBarTheme(
+
               // make buttons use the appropriate styles for cards
-              child: ButtonBar(
+               ButtonBar(
                 children: buttons,
               ),
-            ),
+
           ],
         ),
       );

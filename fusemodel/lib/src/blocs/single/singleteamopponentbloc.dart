@@ -1,92 +1,12 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:fusemodel/src/async_hydrated_bloc/asynchydratedbloc.dart';
 import 'package:meta/meta.dart';
 
-import 'data/singleteambloc.dart';
-import 'singleteambloc.dart';
-
-abstract class SingleOpponentState extends Equatable {
-  final Opponent opponent;
-  final BuiltList<Game> games;
-  final bool gamesLoaded;
-
-  SingleOpponentState(
-      {this.opponent, @required this.games, @required this.gamesLoaded});
-
-  @override
-  List<Object> get props => [opponent, games, gamesLoaded];
-}
-
-///
-/// We have a team, default state.
-///
-class SingleOpponentLoaded extends SingleOpponentState {
-  SingleOpponentLoaded(
-      {@required SingleOpponentState state,
-      Opponent opponent,
-      BuiltList<Game> games,
-      bool gamesLoaded})
-      : super(
-            opponent: opponent ?? state.opponent,
-            games: games ?? state.games,
-            gamesLoaded: gamesLoaded ?? state.gamesLoaded);
-
-  @override
-  String toString() {
-    return 'SingleOpponentLoaded{opponent: $opponent}';
-  }
-}
-
-///
-/// Saving operation in progress.
-///
-class SingleOpponentSaving extends SingleOpponentState {
-  SingleOpponentSaving({@required SingleOpponentState state})
-      : super(
-            opponent: state.opponent,
-            games: state.games,
-            gamesLoaded: state.gamesLoaded);
-
-  @override
-  String toString() {
-    return 'SingleOpponentSaving{opponent: $opponent}';
-  }
-}
-
-///
-/// Saving operation failed (goes back to loaded for success).
-///
-class SingleOpponentSaveFailed extends SingleOpponentState {
-  final Error error;
-
-  SingleOpponentSaveFailed({@required SingleOpponentState state, this.error})
-      : super(
-            opponent: state.opponent,
-            games: state.games,
-            gamesLoaded: state.gamesLoaded);
-
-  @override
-  String toString() {
-    return 'SingleOpponentSaveFailed{opponent: $opponent}';
-  }
-}
-
-///
-/// Team got deleted.
-///
-class SingleOpponentDeleted extends SingleOpponentState {
-  SingleOpponentDeleted()
-      : super(opponent: null, games: BuiltList(), gamesLoaded: false);
-
-  @override
-  String toString() {
-    return 'SingleOpponentDeleted{}';
-  }
-}
+import 'data/singleopponentbloc.dart';
 
 abstract class SingleOpponentEvent extends Equatable {}
 
@@ -125,7 +45,7 @@ class _SingleOpponentDeleted extends SingleOpponentEvent {
 }
 
 class _SingleTeamOpponentGamesLoaded extends SingleOpponentEvent {
-  final Iterable<Game> games;
+  final BuiltList<Game> games;
   _SingleTeamOpponentGamesLoaded({@required this.games});
 
   @override
@@ -144,31 +64,24 @@ class SingleOpponentLoadGames extends SingleOpponentEvent {
 /// Bloc to handle updates and state of a specific team.
 ///
 class SingleOpponentBloc
-    extends Bloc<SingleOpponentEvent, SingleOpponentState> {
-  final SingleTeamBloc singleTeamBloc;
+    extends AsyncHydratedBloc<SingleOpponentEvent, SingleOpponentState> {
   final String opponentUid;
+  final String teamUid;
+  final DatabaseUpdateModel db;
 
   static String createNew = "new";
 
-  StreamSubscription<SingleTeamState> _teamSub;
+  StreamSubscription<Opponent> _opponentSub;
   StreamSubscription<Iterable<Game>> _gameSub;
 
-  SingleOpponentBloc({this.singleTeamBloc, this.opponentUid})
-      : super(singleTeamBloc.state.opponents.containsKey(opponentUid)
-            ? SingleOpponentLoaded(
-                state: null,
-                opponent: singleTeamBloc.state.opponents[opponentUid],
-                gamesLoaded: false,
-                games: BuiltList())
-            : SingleOpponentDeleted()) {
-    _teamSub = singleTeamBloc.listen((SingleTeamState teamState) {
-      if (teamState.opponents.containsKey(opponentUid)) {
-        Opponent op = teamState.opponents[opponentUid];
-
-        // Only send this if the team is not the same.
-        if (op != state.opponent) {
-          add(_SingleNewTeamOpponent(newOpponent: op));
-        }
+  SingleOpponentBloc(
+      {@required this.db, @required this.teamUid, @required this.opponentUid})
+      : super(SingleOpponentUninitialized(), "opponent.$teamUid.$opponentUid") {
+    _opponentSub = db
+        .getFirestoreOpponent(teamUid: teamUid, opponentUid: opponentUid)
+        .listen((op) {
+      if (op != null) {
+        add(_SingleNewTeamOpponent(newOpponent: op));
       } else {
         add(_SingleOpponentDeleted());
       }
@@ -178,18 +91,19 @@ class SingleOpponentBloc
   @override
   Future<void> close() async {
     await super.close();
-    _teamSub?.cancel();
-    _teamSub = null;
+    _opponentSub?.cancel();
+    _opponentSub = null;
     _gameSub?.cancel();
     _gameSub = null;
   }
-
 
   @override
   Stream<SingleOpponentState> mapEventToState(
       SingleOpponentEvent event) async* {
     if (event is _SingleNewTeamOpponent) {
-      yield SingleOpponentLoaded(opponent: event.newOpponent, state: state);
+      yield (SingleOpponentLoaded.fromState(state)
+            ..opponent = event.newOpponent.toBuilder())
+          .build();
     }
 
     // The team is deleted.
@@ -199,47 +113,78 @@ class SingleOpponentBloc
 
     // Save the team.
     if (event is SingleOpponentUpdate) {
-      yield SingleOpponentSaving(state: state);
+      yield SingleOpponentSaving.fromState(state).build();
       try {
-        await singleTeamBloc.db.updateFirestoreOpponent(event.opponent.build());
-        yield SingleOpponentLoaded(
-            opponent: event.opponent.build(), state: state);
+        await db.updateFirestoreOpponent(event.opponent.build());
+        yield (SingleOpponentSaveDone.fromState(state)
+              ..opponent = event.opponent)
+            .build();
+        yield (SingleOpponentLoaded.fromState(state)..opponent = event.opponent)
+            .build();
       } catch (e) {
-        yield SingleOpponentSaveFailed(state: state, error: e);
+        yield (SingleOpponentSaveFailed.fromState(state)..error = e).build();
+        yield SingleOpponentLoaded.fromState(state).build();
       }
     }
 
     // Delete the opponent.
     if (event is SingleOpponentDeleteOpponent) {
+      yield SingleOpponentSaving.fromState(state).build();
       try {
-        await singleTeamBloc.db.deleteFirestoreOpponent(state.opponent);
+        await db.deleteFirestoreOpponent(state.opponent);
+        yield SingleOpponentSaveDone.fromState(state).build();
         yield SingleOpponentDeleted();
       } catch (e) {
-        yield SingleOpponentSaveFailed(state: state, error: e);
-      }
-    }
-
-    if (event is SingleOpponentUpdate) {
-      try {
-        await singleTeamBloc.db.updateFirestoreOpponent(event.opponent.build());
-        yield SingleOpponentLoaded(
-            opponent: event.opponent.build(), state: state);
-      } catch (e) {
-        yield SingleOpponentSaveFailed(state: state, error: e);
+        yield (SingleOpponentSaveFailed.fromState(state)..error = e).build();
+        yield SingleOpponentLoaded.fromState(state).build();
       }
     }
 
     if (event is SingleOpponentLoadGames) {
-      _gameSub = singleTeamBloc.db
-          .getOpponentGames(state.opponent)
-          .listen((Iterable<Game> g) {
-        add(_SingleTeamOpponentGamesLoaded(games: g));
-      });
+      if (_gameSub == null) {
+        _gameSub =
+            db.getOpponentGames(state.opponent).listen((Iterable<Game> g) {
+          add(_SingleTeamOpponentGamesLoaded(games: g));
+        });
+      }
     }
 
     if (event is _SingleTeamOpponentGamesLoaded) {
-      yield SingleOpponentLoaded(
-          state: state, games: BuiltList.from(event.games), gamesLoaded: true);
+      yield (SingleOpponentLoaded.fromState(state)
+            ..games = event.games.toBuilder()
+            ..loadedGames = true)
+          .build();
     }
+  }
+
+  @override
+  SingleOpponentState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return SingleOpponentUninitialized();
+    }
+
+    SingleOpponentBlocStateType type =
+        SingleOpponentBlocStateType.valueOf(json["type"]);
+    switch (type) {
+      case SingleOpponentBlocStateType.Uninitialized:
+        return SingleOpponentUninitialized();
+      case SingleOpponentBlocStateType.Loaded:
+        var ret = SingleOpponentLoaded.fromMap(json);
+        return ret;
+      case SingleOpponentBlocStateType.Deleted:
+        return SingleOpponentDeleted.fromMap(json);
+      case SingleOpponentBlocStateType.SaveFailed:
+        return SingleOpponentSaveFailed.fromMap(json);
+      case SingleOpponentBlocStateType.Saving:
+        return SingleOpponentSaving.fromMap(json);
+      case SingleOpponentBlocStateType.SaveDone:
+        return SingleOpponentSaveDone.fromMap(json);
+    }
+    return SingleOpponentUninitialized();
+  }
+
+  @override
+  Map<String, dynamic> toJson(SingleOpponentState state) {
+    return state.toMap();
   }
 }

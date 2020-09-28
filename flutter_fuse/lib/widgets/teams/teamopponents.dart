@@ -109,7 +109,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
       ret.add(
         SingleOpponentProvider(
           opponentUid: op.uid,
-          singleTeamBloc: widget._teamBloc,
+          teamUid: widget._teamBloc.teamUid,
           builder: (context, opBloc) {
             return ExpansionTile(
               title: RichText(
@@ -129,6 +129,14 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                 BlocBuilder(
                     cubit: opBloc,
                     builder: (context, state) {
+                      if (!state.loadedGames) {
+                        opBloc.add(SingleOpponentLoadGames());
+                      }
+                      if (state is SingleOpponentUninitialized) {
+                        return Center(
+                          child: Text(Messages.of(context).loading),
+                        );
+                      }
                       if (state is SingleOpponentDeleted) {
                         return Center(
                           child: Text(Messages.of(context).teamdeleted),
@@ -194,7 +202,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
       ret.add(
         SingleOpponentProvider(
           opponentUid: op.uid,
-          singleTeamBloc: widget._teamBloc,
+          teamUid: widget._teamBloc.teamUid,
           builder: (context, opBloc) => ExpansionTile(
             title: Text(op.name),
             initiallyExpanded: false,
@@ -203,6 +211,11 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                 cubit: opBloc,
                 builder: (context, state) {
                   if (state is SingleOpponentDeleted) {
+                    return Center(
+                      child: Text(Messages.of(context).teamdeleted),
+                    );
+                  }
+                  if (state is SingleOpponentUninitialized) {
                     return Center(
                       child: Text(Messages.of(context).loading),
                     );

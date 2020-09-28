@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'base/singleprovider.dart';
 
@@ -17,16 +19,17 @@ class SingleOpponentProvider extends SingleBlocProvider<SingleOpponentBloc> {
   /// Constructor.
   SingleOpponentProvider(
       {String opponentUid,
-      SingleTeamBloc singleTeamBloc,
+      String teamUid,
       SingleOpponentProviderBuilder builder})
       : super(
             keyUid: opponentUid,
-            creator: (context, uid) =>
-                _createBloc(context, singleTeamBloc, uid),
+            creator: (context, uid) => _createBloc(context, teamUid, uid),
             builder: builder);
 
   static SingleOpponentBloc _createBloc(
-      BuildContext context, SingleTeamBloc singleTeamBloc, String uid) {
-    return SingleOpponentBloc(singleTeamBloc: singleTeamBloc, opponentUid: uid);
+      BuildContext context, String teamUid, String uid) {
+    return SingleOpponentBloc(
+        db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+        opponentUid: uid);
   }
 }

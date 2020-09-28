@@ -144,6 +144,7 @@ abstract class DatabaseUpdateModel {
   Future<Opponent> addFirestoreOpponent(Opponent opponent);
   Future<void> deleteFirestoreOpponent(Opponent opponent);
   Stream<Iterable<Game>> getOpponentGames(Opponent opponent);
+  Stream<Opponent> getFirestoreOpponent({@required String teamUid, @required String opponentUid});
 
   // Team stuff
   Future<void> updateFirestoreTeam(Team team);

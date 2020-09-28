@@ -394,6 +394,30 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
+  Stream<Opponent> getFirestoreOpponent(
+      {String teamUid, String opponentUid}) async* {
+    var opCollection = wrapper
+        .collection(TEAMS_COLLECTION)
+        .document(teamUid)
+        .collection(OPPONENT_COLLECTION)
+        .document(opponentUid);
+    var queryOpponentSnap = await opCollection.get();
+
+    if (queryOpponentSnap.exists) {
+      yield Opponent.fromMap(queryOpponentSnap.data);
+    } else {
+      yield null;
+    }
+    await for (var snap in opCollection.snapshots()) {
+      if (snap.exists) {
+        yield Opponent.fromMap(snap.data);
+      } else {
+        yield null;
+      }
+    }
+  }
+
+  @override
   Future<void> updateFirestoreTeam(Team team) async {
     // Add or update this record into the database.
     CollectionReferenceWrapper ref = wrapper.collection(TEAMS_COLLECTION);

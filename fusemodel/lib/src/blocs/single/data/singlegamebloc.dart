@@ -52,8 +52,9 @@ abstract class SingleGameState {
       ..loadedLogs = state.loadedLogs;
   }
 
-  static void initializeStateBuilder(SingleGameStateBuilder b) =>
-      b..firestoreLogSetup = false;
+  static void initializeStateBuilder(SingleGameStateBuilder b) => b
+    ..firestoreLogSetup = false
+    ..loadedLogs = false;
 
   Map<String, dynamic> toMap();
 }
