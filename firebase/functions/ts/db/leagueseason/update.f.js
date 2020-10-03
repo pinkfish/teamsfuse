@@ -1,15 +1,10 @@
-'use strict';
-
-const admin = require('firebase-admin');
-const functions = require('firebase-functions');
-const algolia = require('../util/algolia');
-
-const db = admin.firestore();
+import * as functions from 'firebase-functions';
+import * as algolia from '../../util/algolia';
 
 // Handle the creation case as well, so if we create a game
 // with a specific result we update the team values.
-exports = module.exports = functions.firestore.document('/LeagueSeason/{leagueId}').onUpdate((inputData, context) => {
-    const finalRet = [];
+export const onUpdate =  functions.firestore.document('/LeagueSeason/{leagueId}').onUpdate(async (inputData, context) => {
+   const previousData = inputData.before.data();
     const data = inputData.after.data();
 
     // See if the name changed.
@@ -20,6 +15,6 @@ exports = module.exports = functions.firestore.document('/LeagueSeason/{leagueId
 
 // Handle the creation case as well, so if we create a game
 // with a specific result we update the team values.
-exports = module.exports = functions.firestore.document('/LeagueSeason/{leagueId}').onCreate((snap, context) => {
+export const onCreate = functions.firestore.document('/LeagueSeason/{leagueId}').onCreate(async (snap, context) => {
     algolia.updateLeagueSeason(snap);
 });
