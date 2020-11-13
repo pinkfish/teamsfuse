@@ -105,8 +105,16 @@ abstract class GameResultDetails
   GamePeriodTime get time;
 
   @memoized
-  BuiltMap<GamePeriod, GameResultPerPeriod> get scores => BuiltMap(
-      scoresInternal.map((k, v) => MapEntry(GamePeriod.fromIndex(k), v)));
+  BuiltMap<GamePeriod, GameResultPerPeriod> get scores =>
+      BuiltMap(scoresInternal
+          .map((k, v) => MapEntry(GamePeriod.fromIndex(k), v))
+          .rebuild((b) {
+        // Turn a 'final' into a 'regulation'.
+        if (scoresInternal.containsKey("Final")) {
+          b[GamePeriod.regulation] = b[GamePeriod.finalPeriod];
+        }
+        return b;
+      }));
 
   GameResultDetails._();
 

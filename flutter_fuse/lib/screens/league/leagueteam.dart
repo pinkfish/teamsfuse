@@ -78,26 +78,25 @@ class LeagueTeamScreen extends StatelessWidget {
                 );
               }
             }
-            return Scaffold(
-              appBar: AppBar(
-                title: LeagueOrTournamentTeamName(leagueTeamUid),
-                actions: actions,
-              ),
-              floatingActionButton: fab,
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.endFloat,
-              body: SavingOverlay(
-                saving: state is SingleLeagueOrTournamentSaving,
-                child: Scrollbar(
-                  child: SingleChildScrollView(
-                    child: LeagueOrTournamentTeamDetails(
-                      leagueOrTournamentTeamUid: leagueTeamUid,
-                    ),
+          }
+          return Scaffold(
+            appBar: AppBar(
+              title: LeagueOrTournamentTeamName(leagueTeamUid),
+              actions: actions,
+            ),
+            floatingActionButton: fab,
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+            body: SavingOverlay(
+              saving: state is SingleLeagueOrTournamentSaving,
+              child: Scrollbar(
+                child: SingleChildScrollView(
+                  child: LeagueOrTournamentTeamDetails(
+                    leagueOrTournamentTeamUid: leagueTeamUid,
                   ),
                 ),
               ),
-            );
-          }
+            ),
+          );
         },
       ),
     );

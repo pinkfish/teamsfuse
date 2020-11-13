@@ -152,10 +152,10 @@ class _LoginScreenState extends State<LoginScreen> {
           if (state is LoginFailed) {
             errorText = Messages.of(context).passwordnotcorrect;
             _showInSnackBar(errorText);
-          } else if (state is LoginSucceeded) {
+          }  if (state is LoginSucceeded) {
             Navigator.pushNamedAndRemoveUntil(
-                context, "/Login/Home", (d) => false);
-          } else if (state is LoginEmailNotValidated) {
+                context, "/Home", (d) => false);
+          }  if (state is LoginEmailNotValidated) {
             Navigator.popAndPushNamed(context, "/Login/Verify");
           }
         },

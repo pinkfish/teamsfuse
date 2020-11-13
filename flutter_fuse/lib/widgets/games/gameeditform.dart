@@ -187,9 +187,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
             builder: (context, teambloc) => OpponentFormField(
               teamBloc: teambloc,
               key: _opponentState,
-              initialValue: _builder.opponentUids.length == 0
+              initialValue: _builder.opponentUid.isNotEmpty
                   ? OpponentFormField.none
-                  : _builder.opponentUids[0],
+                  : _builder.opponentUid,
               validator: (str) {
                 return _validations.validateOpponent(context, str);
               },
@@ -200,7 +200,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                 }
               },
               onSaved: (value) {
-                _builder.opponentUids.addAll(<String>[value]);
+                _builder.opponentUid = value;
               },
             ),
           ),
@@ -351,10 +351,10 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                             _builder.sharedData.officialResult
                                 .homeTeamLeagueUid = _builder.teamUid;
                             _builder.sharedData.officialResult
-                                .awayTeamLeagueUid = _builder.opponentUids[0];
+                                .awayTeamLeagueUid = _builder.opponentUid;
                           } else {
                             _builder.sharedData.officialResult
-                                .homeTeamLeagueUid = _builder.opponentUids[0];
+                                .homeTeamLeagueUid = _builder.opponentUid;
                             _builder.sharedData.officialResult
                                 .awayTeamLeagueUid = _builder.teamUid;
                           }

@@ -704,6 +704,10 @@ class Messages {
         desc: 'Hint for the button to edit the team');
   }
 
+  String get savefailed {
+    return Intl.message('Save Failed', name: 'Save failed, server error');
+  }
+
   String get addseason {
     return Intl.message('ADD SEASON', name: 'Add a season to the team');
   }
@@ -718,7 +722,7 @@ class Messages {
   }
 
   String get importplayers {
-    return Intl.message('Import players',
+    return Intl.message('Import\nplayers',
         name: 'Import players from previous season');
   }
 
@@ -922,7 +926,10 @@ class Messages {
       Opponent opponent, String seasonUid, String seasonName) {
     WinRecord rec = opponent.record[seasonUid];
     if (rec == null) {
-      rec = WinRecord();
+      rec = WinRecord((b) => b
+        ..loss = 0
+        ..win = 0
+        ..tie = 0);
     }
     return Intl.message('Win: ${rec.win} Loss: ${rec.loss} Tie: ${rec.tie}',
         name: 'Win record for an opponent for this season',

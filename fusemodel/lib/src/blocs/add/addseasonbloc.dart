@@ -48,7 +48,11 @@ class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
         Season season = Season((b) => b
           ..teamUid = event.teamUid
           ..name = event.name
-          ..playersData = MapBuilder(map));
+          ..playersData = MapBuilder(map)
+          ..record.win = 0
+          ..record.loss = 0
+          ..record.tie = 0
+          ..uid = "");
         Season ret = await coordinationBloc.databaseUpdateModel
             .addFirestoreSeason(season, null);
         yield AddItemDone(uid: ret.uid);

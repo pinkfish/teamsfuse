@@ -108,6 +108,7 @@ class SingleGameBloc
 
   SingleGameBloc({@required this.gameUid, @required this.db})
       : super(SingleGameUninitialized(), 'SingleGamw' + gameUid) {
+    print("Single game $gameUid");
     _gameSub = db.getGame(gameUid).listen((g) {
       if (g != null) {
         add(_SingleGameNewGame(newGame: g));
@@ -243,9 +244,9 @@ class SingleGameBloc
 
   @override
   SingleGameState fromJson(Map<String, dynamic> json) {
-    if (json == null || !json.containsKey("type")) {
-      return SingleGameUninitialized();
-    }
+    //if (json == null || !json.containsKey("type")) {
+    return SingleGameUninitialized();
+    // }
 
     SingleGameBlocStateType type =
         SingleGameBlocStateType.valueOf(json["type"]);

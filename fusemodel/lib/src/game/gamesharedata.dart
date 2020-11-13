@@ -75,6 +75,9 @@ abstract class GameSharedData
     return serializers.serializeWith(GameSharedData.serializer, this);
   }
 
+  /// Defaults for the state.  Always default to no games loaded.
+  static void _initializeBuilder(GameSharedDataBuilder b) => b..name = "";
+
   static GameSharedData fromMap(Map<String, dynamic> jsonData) {
     return serializers.deserializeWith(GameSharedData.serializer, jsonData);
   }

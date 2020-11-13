@@ -32,22 +32,35 @@ class Attendance extends EnumClass {
 ///
 abstract class Game implements Built<Game, GameBuilder> {
   String get uid;
+  @BuiltValueField(wireName: SHAREDDATAUID)
   String get sharedDataUid;
   num get arrivalTime;
   String get notes;
-  BuiltList<String> get opponentUids;
+  @BuiltValueField(wireName: OPPONENTUID)
+  String get opponentUid;
   String get seasonUid;
+  @BuiltValueField(wireName: TEAMUID)
   String get teamUid;
-  BuiltList<String> get allTeamUids;
   String get uniform;
   @nullable
   String get seriesId;
+  @BuiltValueField(wireName: RESULT)
   GameResultDetails get result;
   BuiltMap<String, Attendance> get attendance;
   bool get trackAttendance;
   GameSharedData get sharedData;
   @nullable
   String get leagueOpponentUid;
+
+  @memoized
+  BuiltList<String> get allTeamUids {
+    if (opponentUid.isNotEmpty) {
+      return BuiltList.of([teamUid, opponentUid]);
+    }
+    return BuiltList.of([
+      teamUid,
+    ]);
+  }
 
   Game._();
   factory Game([updates(GameBuilder b)]) = _$Game;
@@ -68,17 +81,16 @@ abstract class Game implements Built<Game, GameBuilder> {
   static const String GAMESHAREDDATA = 'sharedData';
 
   /// Defaults for the state.  Always default to no games loaded.
-  static void _initializeBuilder(GameBuilder b) => b..trackAttendance = true;
+  static void _initializeBuilder(GameBuilder b) => b
+    ..trackAttendance = true
+    ..opponentUid = "";
 
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(Game.serializer, this);
   }
 
-  static Game fromMap(
-      Map<String, dynamic> jsonData, GameSharedData sharedData) {
-    return serializers
-        .deserializeWith(Game.serializer, jsonData)
-        .rebuild((b) => b..sharedData = sharedData.toBuilder());
+  static Game fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(Game.serializer, jsonData);
   }
 
   static Serializer<Game> get serializer => _$gameSerializer;
@@ -87,7 +99,7 @@ abstract class Game implements Built<Game, GameBuilder> {
   String toString() {
     return 'Game{uid: $uid, '
         'arriveTime: $tzArriveTime, '
-        'notes: $notes, opponentUids: $opponentUids, seasonUid: $seasonUid, '
+        'notes: $notes, opponentUid: $opponentUid, seasonUid: $seasonUid, '
         'teamUid: $teamUid, uniform: $uniform, seriesId: $seriesId, '
         'result: $result, attendance: $attendance, sharedData: $sharedData}';
   }

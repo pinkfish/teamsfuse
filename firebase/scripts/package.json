@@ -11,7 +11,8 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "test": "cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:9090' mocha --reporter spec",
-    "fixsharedgame": "npm run build && node lib/fixsharedgame.js"
+    "fixsharedgame": "npm run build && node lib/fixsharedgame.js",
+    "addgames": "npm run build && node lib/addgames.js"
   },
   "husky": {
     "hooks": {
@@ -22,6 +23,7 @@
     "*.{js,css,md,ts}": "prettier --write"
   },
   "dependencies": {
+    "@googlemaps/google-maps-services-js": "^3.1.13",
     "camelcase": "^5.3.1",
     "cors": "^2.8.5",
     "detect-mocha": "^0.1.0",
@@ -30,13 +32,18 @@
     "firebase-admin": "^9.1.1",
     "firebase-functions": "^3.11.0",
     "glob": "^7.1.4",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.31",
     "nodemailer": "^6.3.0",
     "nodemailer-mailgun-transport": "^1.4.0",
     "request": "^2.88.0",
     "request-debug": "^0.2.0",
-    "request-promise-native": "^1.0.7"
+    "request-promise-native": "^1.0.7",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
+    "@types/googlemaps": "^3.40.0",
+    "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "^4.1.0",
     "@typescript-eslint/parser": "^4.1.0",
     "chai": "^4.2.0",

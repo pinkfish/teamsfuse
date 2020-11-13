@@ -8,6 +8,8 @@ part 'invite.g.dart';
 class InviteType extends EnumClass {
   static Serializer<InviteType> get serializer => _$inviteTypeSerializer;
 
+  static PrimitiveSerializer<InviteType> get primitiveSerializer => serializer;
+
   static const InviteType Player = _$player;
   static const InviteType Team = _$team;
   static const InviteType Admin = _$admin;

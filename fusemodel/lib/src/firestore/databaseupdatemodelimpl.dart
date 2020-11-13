@@ -350,9 +350,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>);
     } else {
       // Missing shared data uid.
-      sharedData = GameSharedData.fromMap(snap.data);
+      // sharedData = GameSharedData.fromMap(snap.data);
+      snap.data[Game.GAMESHAREDDATA] = snap.data;
     }
-    return Game.fromMap(snap.data, sharedData);
+    return Game.fromMap(snap.data);
   }
 
   @override
@@ -586,15 +587,32 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         String sharedGameUid = snap.data[Game.SHAREDDATAUID];
         GameSharedData sharedData;
         if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-          print(snap.data[Game.GAMESHAREDDATA]);
-          snap.data[Game.GAMESHAREDDATA]['uid'] = sharedGameUid;
-          sharedData = GameSharedData.fromMap(
-              snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>);
+          //print(snap.data[Game.GAMESHAREDDATA]);
+          //snap.data[Game.GAMESHAREDDATA]['uid'] = sharedGameUid;
+          // Not setup, load from the shared collection.
+          if (snap.data[Game.GAMESHAREDDATA] == null) {
+            // Need to read it ourselves right now.
+            var tempData = await wrapper
+                .collection(GAMES_SHARED_COLLECTION)
+                .document(sharedGameUid)
+                .get();
+            snap.data[Game.GAMESHAREDDATA] = tempData.data;
+            // sharedData = GameSharedData.fromMap(tempData.data);
+            // Fix the doc too.
+            await wrapper
+                .collection(GAMES_COLLECTION)
+                .document(snap.documentID)
+                .updateData({
+              Game.GAMESHAREDDATA: tempData.data,
+            });
+          }
         } else {
           // Missing shared data uid.
-          sharedData = GameSharedData.fromMap(snap.data);
+          print("Womble ${snap.documentID} ${sharedGameUid}");
+          snap.data[Game.GAMESHAREDDATA] = snap.data;
         }
-        Game g = Game.fromMap(snap.data, sharedData);
+        print("${snap.documentID} $sharedGameUid");
+        Game g = Game.fromMap(snap.data);
         data.add(g);
       }
       yield GameSnapshotEvent(
@@ -610,12 +628,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           GameSharedData sharedData;
           sharedGameUid = snap.data[Game.SHAREDDATAUID] as String;
           if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-            sharedData = GameSharedData.fromMap(snap.data[Game.GAMESHAREDDATA]);
+            // sharedData = GameSharedData.fromMap(snap.data[Game.GAMESHAREDDATA]);
           } else {
-            sharedData = GameSharedData.fromMap(snap.data);
+            snap.data[Game.GAMESHAREDDATA] = snap.data;
+            //    sharedData = GameSharedData.fromMap(snap.data);
           }
 
-          Game newGame = Game.fromMap(snap.data, sharedData);
+          Game newGame = Game.fromMap(snap.data);
           data.add(newGame);
         }
         Iterable<String> toDelete = queryGameSnap.documentChanges
@@ -649,32 +668,24 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<Game> getGame(String gameUid) async* {
+    print("Getting $gameUid");
     DocumentReferenceWrapper ref =
         wrapper.collection(GAMES_COLLECTION).document(gameUid);
     DocumentSnapshotWrapper snap = await ref.get();
     if (!snap.exists) {
       yield null;
     } else {
-      String sharedGameUid = snap.data[Game.SHAREDDATAUID];
-      GameSharedData shared;
-      if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-        shared = GameSharedData.fromMap(snap.data[Game.GAMESHAREDDATA]);
-      } else {
-        shared = GameSharedData.fromMap(snap.data);
-      }
-      Game game = Game.fromMap(snap.data, shared);
+      Game game = Game.fromMap(snap.data);
+      print("Getting $gameUid ${game.opponentUid}");
       yield game;
+    }
 
-      await for (DocumentSnapshotWrapper snap in ref.snapshots()) {
-        String sharedGameUid = snap.data[Game.SHAREDDATAUID];
-        GameSharedData shared;
-        if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-          shared = GameSharedData.fromMap(snap.data[Game.GAMESHAREDDATA]);
-        } else {
-          shared = GameSharedData.fromMap(snap.data);
-        }
-        Game game = Game.fromMap(snap.data, shared);
+    await for (DocumentSnapshotWrapper snap in ref.snapshots()) {
+      if (snap.exists) {
+        Game game = Game.fromMap(snap.data);
         yield game;
+      } else {
+        yield null;
       }
     }
   }

@@ -53,6 +53,8 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     super.initState();
     _details = widget.game.state.game.result.toBuilder();
     if (widget.game.state.game.result.currentPeriod != null) {
+      print(
+          "${widget.game.gameUid} ${widget.game.state.game.result.currentPeriod} ${widget.game.state.game.result.scores}");
       _currentPeriodResults = widget.game.state.game.result
           .scores[widget.game.state.game.result.currentPeriod]
           .toBuilder();

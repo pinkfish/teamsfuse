@@ -8,8 +8,6 @@ import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/form/seasonformfield.dart';
-import '../../widgets/form/switchformfield.dart';
-import '../../widgets/util/communityicons.dart';
 import '../../widgets/util/savingoverlay.dart';
 
 ///
@@ -32,7 +30,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
   Season _seasonSelect;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String _seasonName;
-  bool _importPlayers;
+  bool _importPlayers = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final Validations _validations = Validations();
   AddSeasonBloc addSeasonBloc;
@@ -53,7 +51,9 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
   }
 
   void _handleSubmit() async {
+    print("Validating ${_formKey.currentState.validate()}");
     if (_formKey.currentState.validate()) {
+      print("Validated");
       _formKey.currentState.save();
       // Make a season.
       var players = ListBuilder<SeasonPlayer>();
@@ -70,6 +70,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
           teamUid: widget.teamUid,
           name: _seasonName,
           players: players.build()));
+      print("Doing the add");
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
@@ -80,6 +81,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
       key: _formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           TextFormField(
             decoration: InputDecoration(
@@ -87,7 +89,10 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
               hintText: Messages.of(context).season,
               labelText: Messages.of(context).newseasonhint,
             ),
-            validator: (s) => _validations.validateDisplayName(context, s),
+            validator: (s) {
+              String ret = _validations.validateDisplayName(context, s);
+              print(ret);
+            },
             initialValue: '',
             keyboardType: TextInputType.text,
             obscureText: false,
@@ -95,28 +100,54 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
               _seasonName = value;
             },
           ),
-          SizedBox(height: 40.0),
-          SwitchFormField(
-            initialValue: false,
-            icon: Icons.import_contacts,
-            onSaved: (b) => _importPlayers = b,
-            label: Messages.of(context).importplayers,
+          SizedBox(height: 10.0),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Switch.adaptive(
+                value: _importPlayers ?? false,
+                onChanged: (v) => setState(() => _importPlayers = v),
+              ),
+              InkWell(
+                onTap: () => setState(() => _importPlayers = !_importPlayers),
+                child: Text(
+                  Messages.of(context).importplayers,
+                  style: Theme.of(context).textTheme.button,
+                ),
+              ),
+              SizedBox(width: 20.0),
+              Expanded(
+                child: Container(
+                  alignment: Alignment.centerRight,
+                  child: SeasonFormField(
+                    teamBloc: singleTeamBloc,
+                    initialValue: singleTeamBloc.state.team.currentSeason,
+                    onSaved: (seasonUid) {
+                      _seasonSelect = singleTeamBloc.state.getSeason(seasonUid);
+                    },
+                    validator: (s) {
+                      String ret = _importPlayers && s == SeasonFormField.none
+                          ? Messages.of(context).seasonrequired
+                          : null;
+                      print(ret);
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
-          SeasonFormField(
-            decoration: InputDecoration(
-              icon: const Icon(CommunityIcons.tshirtCrew),
-              labelText: Messages.of(context).copyseasonfrom,
-            ),
-            teamBloc: singleTeamBloc,
-            initialValue: singleTeamBloc.state.team.currentSeason,
-            onSaved: (seasonUid) {
-              _seasonSelect = singleTeamBloc.state.getSeason(seasonUid);
-            },
+          ButtonBar(
+            children: [
+              FlatButton(
+                onPressed: _handleSubmit,
+                //color: Theme.of(context).buttonTheme.colorScheme.primary,
+                child: Text(
+                  Messages.of(context).addseason,
+                ),
+              ),
+            ],
           ),
-          FlatButton(
-            onPressed: _handleSubmit,
-            child: Text(Messages.of(context).addseason),
-          )
         ],
       ),
     );
@@ -154,23 +185,26 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
                   Navigator.pop(context);
                 }
                 if (addState is AddItemSaveFailed) {
-                  _showInSnackBar(Messages.of(context).formerror);
+print(addState.error);
+                  _showInSnackBar(Messages.of(context).savefailed);
                 }
               },
               child: BlocBuilder(
                 cubit: addSeasonBloc,
                 builder: (context, addState) => SavingOverlay(
                   saving: addState is AddItemSaving,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      Flexible(
-                        fit: FlexFit.tight,
-                        flex: 0,
-                        child: _buildResults(context, singleTeamBloc),
-                      )
-                    ],
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Flexible(
+                          fit: FlexFit.tight,
+                          flex: 0,
+                          child: _buildResults(context, singleTeamBloc),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),

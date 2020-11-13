@@ -56,8 +56,7 @@ class TeamResultsByOpponent extends StatelessWidget {
               TZDateTime lastTime;
               for (Game game in gameSort) {
                 if (game.sharedData.type == EventType.Game &&
-                    (opponentUid == null ||
-                        game.opponentUids.contains(opponentUid))) {
+                    (opponentUid == null || game.opponentUid == opponentUid)) {
                   if (lastTime == null ||
                       lastTime.year != game.sharedData.tzTime.year ||
                       lastTime.month != game.sharedData.tzTime.month ||
@@ -169,8 +168,7 @@ class TeamResultsBySeason extends StatelessWidget {
               TZDateTime lastTime;
               for (var game in gameSort) {
                 if (game.sharedData.type == EventType.Game &&
-                    (opponentUid == null ||
-                        game.opponentUids.contains(opponentUid))) {
+                    (opponentUid == null || game.opponentUid == opponentUid)) {
                   if (lastTime == null ||
                       lastTime.year != game.sharedData.tzTime.year ||
                       lastTime.month != game.sharedData.tzTime.month ||

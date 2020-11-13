@@ -22,6 +22,8 @@ abstract class GamePlace implements Built<GamePlace, GamePlaceBuilder> {
   GamePlace._();
   factory GamePlace([updates(GamePlaceBuilder b)]) = _$GamePlace;
 
+  static void _initializeBuilder(GamePlaceBuilder b) => b..name = "";
+
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(GamePlace.serializer, this);
   }

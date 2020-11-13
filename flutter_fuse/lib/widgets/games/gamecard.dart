@@ -191,14 +191,25 @@ class GameCard extends StatelessWidget {
           case GamePeriodType.Penalty:
             penaltyResult = result;
             break;
+          case GamePeriodType.Final:
+            finalResult = result;
+            break;
           default:
             break;
         }
       }
 
       if (game.result.result != GameResult.Unknown) {
-        var children = _buildResultColumn(context, finalResult, overtimeResult,
-            penaltyResult, game.result.result);
+        GameResultPerPeriod emptyPeriodResult = GameResultPerPeriod((q) => q
+          ..period = GamePeriod.finalPeriod.toBuilder()
+          ..score.ptsFor = 0
+          ..score.ptsAgainst = 0);
+        var children = _buildResultColumn(
+            context,
+            finalResult ?? emptyPeriodResult,
+            overtimeResult,
+            penaltyResult,
+            game.result.result);
         // If there is an offical result and it is different, mark this.
         if (officalData.isGameFinished) {
           if (!officalData.isSameAs(game.result)) {
@@ -315,17 +326,16 @@ class GameCard extends StatelessWidget {
   }
 
   String _opponentUid(Game game) {
-    if (game.sharedData.type == EventType.Game &&
-        game.opponentUids.length > 0) {
-      return game.opponentUids[0];
+    print("${game.uid} ${game.opponentUid} ${game.uniform}");
+    if (game.sharedData.type == EventType.Game && game.opponentUid.isNotEmpty) {
+      return game.opponentUid;
     }
     return "123";
   }
 
   Opponent _opponentData(BuildContext context, Game game,
       LeagueOrTournamentTeam leagueTeam, SingleOpponentState opState) {
-    if (game.sharedData.type == EventType.Game &&
-        game.opponentUids.length > 0) {
+    if (game.sharedData.type == EventType.Game && game.opponentUid.isNotEmpty) {
       return opState.opponent;
     } else if (game.sharedData.type == EventType.Game && leagueTeam != null) {
       return (OpponentBuilder()..name = leagueTeam.name).build();
@@ -531,11 +541,10 @@ class GameCard extends StatelessWidget {
           children: <Widget>[
             tile,
 
-              // make buttons use the appropriate styles for cards
-               ButtonBar(
-                children: buttons,
-              ),
-
+            // make buttons use the appropriate styles for cards
+            ButtonBar(
+              children: buttons,
+            ),
           ],
         ),
       );
@@ -553,6 +562,12 @@ class GameCard extends StatelessWidget {
       builder: (context, state) {
         if (state is SingleGameDeleted) {
           return SizedBox();
+        }
+        if (state is SingleGameUninitialized) {
+          return Card(
+            color: Colors.lightGreenAccent,
+            child: Text(Messages.of(context).loading),
+          );
         }
         print("Building game ${state.game.uid}");
         Game game = state.game;
@@ -593,6 +608,7 @@ class GameCard extends StatelessWidget {
     if (singleGameBloc != null) {
       return _buildFromnState(context, singleGameBloc);
     }
+    print("Provider $gameUid");
     return SingleGameProvider(
       gameUid: gameUid,
       builder: _buildFromnState,

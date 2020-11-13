@@ -235,6 +235,10 @@ class SingleTeamBloc
 
   void _loadOpponents() async {
     print("Loading opponents");
+    if (_opponentSub != null) {
+      _opponentSub.cancel();
+      _opponentSub = null;
+    }
     if (_opponentSub == null) {
       _opponentSub =
           db.getTeamOpponents(teamUid).listen((Iterable<Opponent> ops) {
@@ -244,6 +248,12 @@ class SingleTeamBloc
         }
         add(_SingleTeamLoadedOpponents(opponents: opponents.build()));
         print("Loading opponents firestore $opponents");
+      });
+      _opponentSub.onError((e) {
+        print("Error $e");
+        _opponentSub.cancel();
+        _opponentSub = null;
+        throw e;
       });
     }
   }

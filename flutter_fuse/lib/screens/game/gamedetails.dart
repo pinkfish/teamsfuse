@@ -66,39 +66,47 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
               builder: (context, singleTeamState) {
                 Game game = gameState.game;
                 Widget body;
-
-                // This will return null if the opponent does not exist.
-                var opponent = singleTeamState.opponents[game.opponentUids[0]];
-
                 var actions = <Widget>[];
+                var opponentName = Messages.of(context).unknown;
 
-                if (_tabIndex == 0) {
-                  body = GameDetails(gameBloc);
-                } else {
-                  body = Availaility(gameBloc);
+                if (!singleTeamState.loadedOpponents) {
+                  teamBloc.add(SingleTeamLoadOpponents());
                 }
 
-                if (singleTeamState.isAdmin()) {
-                  actions.add(
-                    PopupMenuButton<String>(
-                      onSelected: (str) => _select(str, gameBloc),
-                      itemBuilder: (context) {
-                        return <PopupMenuItem<String>>[
-                          PopupMenuItem<String>(
-                            value: "delete",
-                            child: Text(Messages.of(context)
-                                .deletegame(game.sharedData)),
-                          ),
-                        ];
-                      },
-                    ),
-                  );
-                }
-                String opponentName;
-                if (opponent != null) {
-                  opponentName = opponent.name;
+                if (singleTeamState is SingleTeamUninitialized ||
+                    !singleTeamState.loadedOpponents) {
+                  body = Text(Messages.of(context).loading);
                 } else {
-                  opponentName = Messages.of(context).unknown;
+                  // This will return null if the opponent does not exist.
+                  print(singleTeamState.opponents);
+                  print(game.opponentUid);
+                  var opponent = singleTeamState.opponents[game.opponentUid];
+
+                  if (_tabIndex == 0) {
+                    body = GameDetails(gameBloc);
+                  } else {
+                    body = Availaility(gameBloc);
+                  }
+
+                  if (singleTeamState.isAdmin()) {
+                    actions.add(
+                      PopupMenuButton<String>(
+                        onSelected: (str) => _select(str, gameBloc),
+                        itemBuilder: (context) {
+                          return <PopupMenuItem<String>>[
+                            PopupMenuItem<String>(
+                              value: "delete",
+                              child: Text(Messages.of(context)
+                                  .deletegame(game.sharedData)),
+                            ),
+                          ];
+                        },
+                      ),
+                    );
+                  }
+                  if (opponent != null) {
+                    opponentName = opponent.name;
+                  }
                 }
 
                 return Scaffold(

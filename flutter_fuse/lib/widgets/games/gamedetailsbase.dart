@@ -220,7 +220,7 @@ class GameDetailsBase extends StatelessWidget {
       arriveAttimeStr = MaterialLocalizations.of(context).formatTimeOfDay(day) +
           (tzShortName ?? "");
     }
-    var opponent = teamState.opponents[game.opponentUids[0]];
+    var opponent = teamState.opponents[game.opponentUid];
     var season = teamState.getSeason(game.seasonUid);
 
     var theme = Theme.of(context);
@@ -437,11 +437,15 @@ class GameDetailsBase extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                Messages.of(context).opponentseason(opponent, seasonName),
+                opponent != null
+                    ? Messages.of(context).opponentseason(opponent, seasonName)
+                    : Messages.of(context).loading,
               ),
               Text(
-                Messages.of(context)
-                    .opponentwinrecord(opponent, game.seasonUid, seasonName),
+                opponent != null
+                    ? Messages.of(context)
+                        .opponentwinrecord(opponent, game.seasonUid, seasonName)
+                    : Messages.of(context).loading,
               ),
             ],
           ),
@@ -451,7 +455,7 @@ class GameDetailsBase extends StatelessWidget {
             TeamResultsBySeason(
               teamUid: teamState.team.uid,
               seasonUid: season.uid,
-              opponentUid: game.opponentUids[0],
+              opponentUid: game.opponentUid,
             ),
           ],
         ),
@@ -465,20 +469,25 @@ class GameDetailsBase extends StatelessWidget {
 
             cols.add(
               Text(
-                Messages.of(context).opponentseason(opponent, seasonName),
+                opponent != null ?
+
+                Messages.of(context).opponentseason(opponent, seasonName) :
+                Messages.of(context).loading,
               ),
             );
             cols.add(
               Text(
+                opponent != null ?
+
                 Messages.of(context)
-                    .opponentwinrecord(opponent, otherSeason.uid, seasonName),
+                    .opponentwinrecord(opponent, otherSeason.uid, seasonName) : Messages.of(context).loading,
               ),
             );
             cols.add(
               TeamResultsBySeason(
                 teamUid: teamState.team.uid,
                 seasonUid: otherSeason.uid,
-                opponentUid: game.opponentUids[0],
+                opponentUid: game.opponentUid,
               ),
             );
           }
@@ -512,9 +521,16 @@ class GameDetailsBase extends StatelessWidget {
           }
         },
         child: BlocBuilder(
-          cubit: bloc,
-          builder: (context, teamState) => _buildGame(context, teamState),
-        ),
+            cubit: bloc,
+            builder: (context, teamState) {
+              if (!teamState.loadedOpponents) {
+                bloc.add(SingleTeamLoadOpponents());
+              }
+              if (!teamState.loadedSeasons) {
+                bloc.add(SingleTeamLoadSeasons());
+              }
+              return _buildGame(context, teamState);
+            }),
       ),
     );
   }

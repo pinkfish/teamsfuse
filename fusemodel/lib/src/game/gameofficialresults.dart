@@ -52,7 +52,12 @@ abstract class GameOfficialResults
 
   @memoized
   BuiltMap<GamePeriod, GameResultPerPeriod> get scores => BuiltMap(
-      scoresInternal.map((k, v) => MapEntry(GamePeriod.fromIndex(k), v)));
+      scoresInternal.map((k, v) => MapEntry(GamePeriod.fromIndex(k), v)).rebuild((b) {
+        if (scoresInternal.containsKey("Final")) {
+          b[GamePeriod.regulation] = b[GamePeriod.finalPeriod];
+        }
+        return b;
+      }));
 
   static const String HOMETEAMUID = 'homeTeamUid';
   static const String AWAYTEAMUID = 'awayTeamUid';

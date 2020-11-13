@@ -45,7 +45,7 @@ class EditResultDialog extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "${Messages.of(context).gametitlevs(game.sharedData, opponent.name)}  $resultStr",
+          "${Messages.of(context).gametitlevs(game.sharedData, opponent?.name ?? Messages.of(context).unknown)}  $resultStr",
           overflow: TextOverflow.clip,
         ),
       ),
@@ -93,11 +93,8 @@ class EditResultDialog extends StatelessWidget {
             teamUid: state.game.teamUid,
             builder: (context, teamBloc) => BlocBuilder(
               cubit: teamBloc,
-              builder: (context, teamState) => _buildGame(
-                  context,
-                  state.game,
-                  teamState.team,
-                  teamState.opponents[state.game.opponentUids[0]]),
+              builder: (context, teamState) => _buildGame(context, state.game,
+                  teamState.team, teamState.opponents[state.game.opponentUid]),
             ),
           );
         },

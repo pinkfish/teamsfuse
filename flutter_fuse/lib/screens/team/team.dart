@@ -66,7 +66,6 @@ class _TeamScreenState extends State<TeamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var actions = <Widget>[];
     FloatingActionButton fab;
     return SingleTeamProvider(
       teamUid: widget.teamUid,
@@ -77,6 +76,7 @@ class _TeamScreenState extends State<TeamScreen> {
             Navigator.pop(context);
             return Text(Messages.of(context).teamdeleted);
           }
+          var actions = <Widget>[];
           if (state.isAdmin() && _tabIndex == 0) {
             actions.add(
               PopupMenuButton<String>(

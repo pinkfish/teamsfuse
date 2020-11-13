@@ -159,7 +159,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                           for (Game game in state.games) {
                             if (game.sharedData.type == EventType.Game &&
                                 game.seasonUid == _seasonUid &&
-                                game.opponentUids.contains(uid)) {
+                                game.opponentUid == uid) {
                               newData.add(
                                 GameCard(gameUid: game.uid),
                               );
@@ -240,7 +240,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                     var newData = <Widget>[];
                     for (Game game in state.games) {
                       if (game.sharedData.type == EventType.Game &&
-                          game.opponentUids.contains(uid)) {
+                          game.opponentUid == uid) {
                         if (game.seasonUid == _seasonUid) {
                           newData.add(
                             GameCard(

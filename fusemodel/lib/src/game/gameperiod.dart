@@ -105,6 +105,16 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
   static GamePeriod finalPeriod = GamePeriod((b) => b
     ..type = GamePeriodType.Final
     ..periodNumber = 0);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GamePeriod &&
+          other.periodNumber == periodNumber &&
+          other.type == type;
+
+  @override
+  int get hashCode => type.hashCode + periodNumber.hashCode;
 }
 
 abstract class GamePeriodTime
@@ -154,9 +164,10 @@ abstract class GamePeriodTime
     return serializers.serializeWith(GamePeriodTime.serializer, this);
   }
 
-  static void _initializeBuilder(GamePeriodTimeBuilder b) =>
-      b..timeCountUp = true;
-
+  static void _initializeBuilder(GamePeriodTimeBuilder b) => b
+    ..timeCountUp = true
+    .._currentOffsetInternal = 0
+    .._currentPeriodStartInternal = 0;
 
   static GamePeriodTime fromMap(Map<String, dynamic> jsonData) {
     return serializers.deserializeWith(GamePeriodTime.serializer, jsonData);
@@ -165,9 +176,10 @@ abstract class GamePeriodTime
   static Serializer<GamePeriodTime> get serializer =>
       _$gamePeriodTimeSerializer;
 
-  Duration get currentOffset => Duration(milliseconds: currentOffsetInternal);
+  Duration get currentOffset =>
+      Duration(milliseconds: currentOffsetInternal ?? 0);
   Duration get defaultPeriodDuration =>
-      Duration(milliseconds: currentPeriodStartInternal);
+      Duration(milliseconds: currentPeriodStartInternal ?? 0);
 
   String toString() {
     return "GamePeriodTime {start: $currentPeriodStart offset: $currentOffset  countUp: $timeCountUp defaultDuration: $defaultPeriodDuration}";
