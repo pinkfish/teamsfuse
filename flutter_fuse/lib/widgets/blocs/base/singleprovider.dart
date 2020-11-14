@@ -55,7 +55,6 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
     }
     _singleBloc = blocs[widget.keyUid].bloc as T;
     blocs[widget.keyUid].ref++;
-    print("Got singleBloc $_singleBloc");
   }
 
   @override
@@ -63,7 +62,6 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
     super.dispose();
     blocs[widget.keyUid].ref--;
     if (blocs[widget.keyUid].ref <= 0) {
-      print("Closing ${widget.keyUid}");
       var state = blocs.remove(widget.keyUid);
       state.bloc.close();
     }
@@ -71,7 +69,6 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
 
   @override
   Widget build(BuildContext context) {
-    print("Making bloc $_newBloc $_singleBloc");
     if (_newBloc) {
       return BlocProvider.value(
         value: _singleBloc,

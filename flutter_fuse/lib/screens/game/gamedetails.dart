@@ -78,8 +78,6 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                   body = Text(Messages.of(context).loading);
                 } else {
                   // This will return null if the opponent does not exist.
-                  print(singleTeamState.opponents);
-                  print(game.opponentUid);
                   var opponent = singleTeamState.opponents[game.opponentUid];
 
                   if (_tabIndex == 0) {
@@ -144,7 +142,10 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       controller: _scrollController,
-                      child: body,
+                      child: AnimatedSwitcher(
+                        child: body,
+                        duration: Duration(milliseconds: 500),
+                      ),
                     ),
                   ),
                 );

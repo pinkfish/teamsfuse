@@ -300,7 +300,7 @@ class GameCard extends StatelessWidget {
       case EventType.Game:
         String opName;
         if (op == null) {
-          opName = Messages.of(context).unknown;
+          opName = Messages.of(context).loading;
         } else {
           opName = op.name;
         }
@@ -326,7 +326,6 @@ class GameCard extends StatelessWidget {
   }
 
   String _opponentUid(Game game) {
-    print("${game.uid} ${game.opponentUid} ${game.uniform}");
     if (game.sharedData.type == EventType.Game && game.opponentUid.isNotEmpty) {
       return game.opponentUid;
     }
@@ -501,12 +500,16 @@ class GameCard extends StatelessWidget {
       ),
       title: SingleOpponentProvider(
         opponentUid: _opponentUid(game),
+        teamUid: game.teamUid,
         builder: (context, opBloc) => BlocBuilder(
           cubit: opBloc,
-          builder: (context, opState) => Text(
-            _titleWidget(context, game, leagueTeam, opState),
-            overflow: TextOverflow.clip,
-            style: TextStyle(fontWeight: FontWeight.bold),
+          builder: (context, opState) => AnimatedSwitcher(
+            duration: const Duration(milliseconds: 500),
+            child: Text(
+              _titleWidget(context, game, leagueTeam, opState),
+              overflow: TextOverflow.clip,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       ),
@@ -569,7 +572,6 @@ class GameCard extends StatelessWidget {
             child: Text(Messages.of(context).loading),
           );
         }
-        print("Building game ${state.game.uid}");
         Game game = state.game;
         if (game.leagueOpponentUid != null &&
             game.leagueOpponentUid.isNotEmpty) {
@@ -608,7 +610,6 @@ class GameCard extends StatelessWidget {
     if (singleGameBloc != null) {
       return _buildFromnState(context, singleGameBloc);
     }
-    print("Provider $gameUid");
     return SingleGameProvider(
       gameUid: gameUid,
       builder: _buildFromnState,

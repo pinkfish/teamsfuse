@@ -18,9 +18,9 @@ typedef SingleOpponentProviderBuilder = Widget Function(
 class SingleOpponentProvider extends SingleBlocProvider<SingleOpponentBloc> {
   /// Constructor.
   SingleOpponentProvider(
-      {String opponentUid,
-      String teamUid,
-      SingleOpponentProviderBuilder builder})
+      {@required String opponentUid,
+      @required String teamUid,
+      @required SingleOpponentProviderBuilder builder})
       : super(
             keyUid: opponentUid,
             creator: (context, uid) => _createBloc(context, teamUid, uid),
@@ -30,6 +30,7 @@ class SingleOpponentProvider extends SingleBlocProvider<SingleOpponentBloc> {
       BuildContext context, String teamUid, String uid) {
     return SingleOpponentBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+        teamUid: teamUid,
         opponentUid: uid);
   }
 }

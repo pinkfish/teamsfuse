@@ -345,7 +345,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     String sharedGameUid = snap.data[Game.SHAREDDATAUID];
     GameSharedData sharedData;
     if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-      print(snap.data[Game.GAMESHAREDDATA]);
       sharedData = GameSharedData.fromMap(
           snap.data[Game.GAMESHAREDDATA] as Map<dynamic, dynamic>);
     } else {
@@ -608,10 +607,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           }
         } else {
           // Missing shared data uid.
-          print("Womble ${snap.documentID} ${sharedGameUid}");
           snap.data[Game.GAMESHAREDDATA] = snap.data;
         }
-        print("${snap.documentID} $sharedGameUid");
         Game g = Game.fromMap(snap.data);
         data.add(g);
       }
@@ -668,7 +665,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<Game> getGame(String gameUid) async* {
-    print("Getting $gameUid");
     DocumentReferenceWrapper ref =
         wrapper.collection(GAMES_COLLECTION).document(gameUid);
     DocumentSnapshotWrapper snap = await ref.get();
@@ -676,7 +672,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       yield null;
     } else {
       Game game = Game.fromMap(snap.data);
-      print("Getting $gameUid ${game.opponentUid}");
       yield game;
     }
 
@@ -720,7 +715,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     final StorageUploadTaskWrapper task = ref.putFile(imgFile);
     final UploadTaskSnapshotWrapper snapshot = (await task.future);
     String photoUrl = snapshot.downloadUrl.toString();
-    print('photurl $playerUid');
     Map<String, String> data = <String, String>{};
     data[PHOTOURL] = photoUrl;
     await wrapper
@@ -1151,7 +1145,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(club.uid)
         .updateData({PHOTOURL: photoUrl});
 
-    print('photurl ${club.photoUrl}');
     return snapshot.downloadUrl;
   }
 
@@ -1364,7 +1357,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(LEAGUE_COLLECTON)
         .document(league.uid)
         .updateData({PHOTOURL: photoUrl});
-    print('photurl ${league.photoUrl}');
     return snapshot.downloadUrl;
   }
 

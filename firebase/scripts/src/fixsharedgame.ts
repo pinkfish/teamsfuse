@@ -366,6 +366,27 @@ export async function fixupSharedGames(): Promise<void> {
   }
 }
 
+export async function fixupGameScores(): Promise<void> {
+  try {
+    const snap = await db.collection("Games").get();
+    for (const index in snap.docs) {
+      const myDoc = snap.docs[index];
+      const op = myDoc.data();
+
+      if ( op.result.scores["Final"] !== undefined) {
+        console.log("Updating " + myDoc.id);
+        await db
+          .collection("Games")
+          .doc(myDoc.id)
+          .update({ "result.scores.Regulation": op.result.scores["Final"], });
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+
 export async function deleteOrphanedSharedGames(): Promise<void> {
   try {
     const snap = await db.collection("GamesShared").get();
@@ -411,11 +432,10 @@ export async function deleteOrphanedSharedGames(): Promise<void> {
 //convertSharedGametoSharedData();
 
 export async function doStuff() {
-await deleteAllGamesFor();
-await deleteOrphanedSharedGames();
+await fixupGameScores();
 }
 
-//doStuff();
+doStuff();
 
-fixupSharedGames();
+//fixupSharedGames();
 

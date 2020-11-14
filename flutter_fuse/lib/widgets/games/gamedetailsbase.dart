@@ -348,24 +348,29 @@ class GameDetailsBase extends StatelessWidget {
         // Official results.
         var officalData =
             GameFromOfficial(game.sharedData, game.leagueOpponentUid);
-        body.add(_buildGameResult(
-            context,
-            true,
-            game.sharedData,
-            officalData,
-            game.sharedData.officialResult.result == OfficialResult.InProgress,
-            officalData.isSameAs(game.result)));
-        if (!officalData.isSameAs(game.result)) {
-          if (copyOfficalResult != null) {
-            body.add(ButtonBar(
-              children: <Widget>[
-                FlatButton(
-                  child: Text(Messages.of(context).useofficialresultbutton),
-                  onPressed: () =>
-                      copyOfficalResult(game.sharedData, officalData),
-                ),
-              ],
-            ));
+        // Only show official links for games in a league/tournament.
+        if (game.sharedData.leagueUid != null &&
+            game.sharedData.leagueUid.isNotEmpty) {
+          body.add(_buildGameResult(
+              context,
+              true,
+              game.sharedData,
+              officalData,
+              game.sharedData.officialResult.result ==
+                  OfficialResult.InProgress,
+              officalData.isSameAs(game.result)));
+          if (!officalData.isSameAs(game.result)) {
+            if (copyOfficalResult != null) {
+              body.add(ButtonBar(
+                children: <Widget>[
+                  FlatButton(
+                    child: Text(Messages.of(context).useofficialresultbutton),
+                    onPressed: () =>
+                        copyOfficalResult(game.sharedData, officalData),
+                  ),
+                ],
+              ));
+            }
           }
         }
       }
@@ -469,18 +474,17 @@ class GameDetailsBase extends StatelessWidget {
 
             cols.add(
               Text(
-                opponent != null ?
-
-                Messages.of(context).opponentseason(opponent, seasonName) :
-                Messages.of(context).loading,
+                opponent != null
+                    ? Messages.of(context).opponentseason(opponent, seasonName)
+                    : Messages.of(context).loading,
               ),
             );
             cols.add(
               Text(
-                opponent != null ?
-
-                Messages.of(context)
-                    .opponentwinrecord(opponent, otherSeason.uid, seasonName) : Messages.of(context).loading,
+                opponent != null
+                    ? Messages.of(context).opponentwinrecord(
+                        opponent, otherSeason.uid, seasonName)
+                    : Messages.of(context).loading,
               ),
             );
             cols.add(
