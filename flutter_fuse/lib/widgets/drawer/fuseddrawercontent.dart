@@ -65,7 +65,7 @@ class FusedDrawerContent extends StatelessWidget {
                 }),
             onTap: () {
               Navigator.pop(context);
-              RepositoryProvider.of<fluro.Router>(context).navigateTo(
+              RepositoryProvider.of<fluro.FluroRouter>(context).navigateTo(
                   context, "Club/${club.uid}",
                   transition: fluro.TransitionType.inFromRight);
             },

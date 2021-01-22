@@ -99,7 +99,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<fluro.Router>(
+        RepositoryProvider<fluro.FluroRouter>(
           create: (context) => AppRouter.createAppRouter(),
         ),
         RepositoryProvider<DatabaseUpdateModel>(

@@ -78,7 +78,7 @@ class ProfileScreen extends StatelessWidget {
     var theme = Theme.of(context);
 
     var invites = player.invites;
-    if (invites.length > 0) {
+    if (invites.isNotEmpty) {
       ret.add(
         Column(
           children: invites.map((invite) {

@@ -49,7 +49,7 @@ class LeagueHomeScreen extends StatelessWidget {
               Iterable<LeagueOrTournament> league = state
                   .leagueOrTournaments.values
                   .where((l) => l.type == LeagueOrTournamentType.League);
-              if (league.length == 0) {
+              if (league.isEmpty) {
                 return Text(Messages.of(context).noleagues);
               }
               return Column(

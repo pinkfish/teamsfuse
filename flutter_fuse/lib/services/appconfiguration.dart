@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
+//import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 ///
 /// Expeciments that can be turned on by the config stuff.
@@ -16,7 +16,7 @@ enum Experiments {
 /// is a wrapper around the firebase app config to make it easier to use.
 ///
 class AppConfiguration {
-  RemoteConfig _config;
+  //RemoteConfig _config;
   final Completer<bool> _completer = Completer<bool>();
   bool _loaded;
 
@@ -27,9 +27,9 @@ class AppConfiguration {
     var opt = Firebase.app().options;
     print("Firstbase client id${opt.androidClientId}");
     _completer.future.then((done) => _loaded = done);
-    _config = await RemoteConfig.instance;
-    await _config.fetch();
-    await _config.activateFetched();
+    //_config = await RemoteConfig.instance;
+    //await _config.fetch();
+    //await _config.activateFetched();
     _completer.complete(true);
   }
 
@@ -38,7 +38,7 @@ class AppConfiguration {
   ///
   bool isInExperiment(Experiments experiment, {bool defaultValue = false}) {
     if (_loaded) {
-      return _config.getBool(experiment.toString());
+      //return _config.getBool(experiment.toString());
     }
     return defaultValue;
   }

@@ -7,16 +7,16 @@ class StorageReference extends wfs.StorageReferenceWrapper {
   /// The wrapper to the stroage system.
   StorageReference(this._ref);
 
-  final st.StorageReference _ref;
+  final st.Reference _ref;
 
   @override
   String get path {
-    return _ref.path;
+    return _ref.fullPath;
   }
 
   @override
   Future<wfs.StorageMetadata> updateMetadata(wfs.StorageMetadata metadata) {
-    var newMetadata = st.StorageMetadata(
+    var newMetadata = st.SettableMetadata(
       cacheControl: metadata?.cacheControl,
       contentDisposition: metadata?.contentDisposition,
       contentEncoding: metadata?.contentEncoding,
@@ -40,13 +40,13 @@ class StorageReference extends wfs.StorageReferenceWrapper {
     var meta = await _ref.getMetadata();
     return wfs.StorageMetadata(
         name: meta?.name,
-        path: meta?.path,
+        path: meta?.fullPath,
         bucket: meta?.bucket,
         generation: meta?.generation,
         metadataGeneration: meta?.metadataGeneration,
-        sizeBytes: meta?.sizeBytes,
-        creationTimeMillis: meta?.creationTimeMillis,
-        updatedTimeMillis: meta?.updatedTimeMillis,
+        sizeBytes: meta?.size,
+        creationTimeMillis: meta?.timeCreated.millisecondsSinceEpoch,
+        updatedTimeMillis: meta?.updated.millisecondsSinceEpoch,
         md5Hash: meta?.md5Hash,
         customMetadata: meta?.customMetadata,
         cacheControl: meta?.cacheControl,
@@ -68,17 +68,17 @@ class StorageReference extends wfs.StorageReferenceWrapper {
 
   @override
   Future<String> getName() async {
-    return _ref.getName();
+    return _ref.name;
   }
 
   @override
   Future<String> getPath() async {
-    return _ref.getPath();
+    return _ref.name;
   }
 
   @override
   Future<String> getBucket() async {
-    return _ref.getBucket();
+    return _ref.bucket;
   }
 
   @override
@@ -93,7 +93,7 @@ class StorageReference extends wfs.StorageReferenceWrapper {
     return StorageUploadTask(_ref.putFile(
         file,
         metadata != null
-            ? st.StorageMetadata(
+            ? st.SettableMetadata(
                 cacheControl: metadata?.cacheControl,
                 contentType: metadata?.contentType,
                 contentLanguage: metadata?.contentLanguage,
@@ -109,7 +109,7 @@ class StorageReference extends wfs.StorageReferenceWrapper {
     return StorageUploadTask(_ref.putFile(
         file,
         metadata != null
-            ? st.StorageMetadata(
+            ? st.SettableMetadata(
                 cacheControl: metadata?.cacheControl,
                 contentType: metadata?.contentType,
                 contentLanguage: metadata?.contentLanguage,
@@ -133,12 +133,13 @@ class StorageUploadTask extends wfs.StorageUploadTaskWrapper {
   /// The constructor for the wrapper.
   StorageUploadTask(this._task);
 
-  final st.StorageUploadTask _task;
+  final st.UploadTask _task;
 
   @override
   Future<wfs.UploadTaskSnapshotWrapper> get future {
-    return _task.onComplete.then((f) {
-      return wfs.UploadTaskSnapshotWrapper(downloadUrl: f.uploadSessionUri);
+    return _task.then((f) async {
+      var downloadUrl = await f.ref.getDownloadURL();
+      return wfs.UploadTaskSnapshotWrapper(downloadUrl: Uri.parse(downloadUrl));
     });
   }
 }

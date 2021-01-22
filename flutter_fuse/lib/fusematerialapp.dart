@@ -50,7 +50,7 @@ class FuseMaterialApp extends StatelessWidget {
       BuildContext context, RouteSettings routeSettings) {
     print("Route ${routeSettings.name}");
     // States on routes.
-    var router = RepositoryProvider.of<fluro.Router>(context);
+    var router = RepositoryProvider.of<fluro.FluroRouter>(context);
     return router.generator(routeSettings);
   }
 }

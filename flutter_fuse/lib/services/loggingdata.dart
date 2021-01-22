@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:package_info/package_info.dart';
 import 'package:sentry/sentry.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 ///
 /// Logging data for the database.
@@ -12,6 +13,12 @@ import 'package:sentry/sentry.dart';
 class LoggingData extends LoggingDataBase {
   /// Constrctor for the logging data.
   LoggingData() {
+    if (String.fromEnvironment("SENTRY_URL") != null) {
+      SentryFlutter.init((options) {
+        options.dsn = String.fromEnvironment("SENTRY_URL");
+      });
+    }
+
     var plugin = DeviceInfoPlugin();
     if (Platform.isIOS) {
       _tags["ios"] = Platform.operatingSystemVersion;
@@ -77,6 +84,17 @@ class LoggingData extends LoggingDataBase {
       _tags["packageName"] = info.packageName;
       _packageInfo = info;
     });
+
+    // Fill in the scope for sentry.
+    Sentry.configureScope((scope) {
+      for (var item in _extra.entries) {
+        scope.setExtra(item.key, item.value);
+      }
+      for (var tag in _tags.entries) {
+        scope.setTag(tag.key, tag.value);
+      }
+      scope.setContexts("release", _packageInfo.version);
+    });
   }
 
   final Map<String, dynamic> _extra = <String, dynamic>{};
@@ -84,10 +102,6 @@ class LoggingData extends LoggingDataBase {
   PackageInfo _packageInfo;
   bool _realDevice = true;
   final bool _debugMode = false;
-
-  final SentryClient _sentry = String.fromEnvironment("SENTRY_URL") != ""
-      ? SentryClient(dsn: String.fromEnvironment("SENTRY_URL"))
-      : null;
 
   /// Sets the last path used.
   set lastPath(String path) => _extra["lastPath"] = path;
@@ -100,27 +114,21 @@ class LoggingData extends LoggingDataBase {
     FlutterError.dumpErrorToConsole(details, forceReport: true);
     // Don't capture on emulators.
     if (_realDevice && !_debugMode) {
-      var event = Event(
+      var event = SentryEvent(
           release: _packageInfo.version,
           exception: details.exception,
-          stackTrace: details.stack,
           extra: _extra,
           tags: _tags);
-      _sentry?.capture(event: event);
+      Sentry.captureEvent(event, stackTrace: details.stack);
     }
   }
 
   @override
-  void logError(FusedErrorDetails details) {
+  void logError(FusedErrorDetails details) async {
     // Don't capture on emulators.
     if (_realDevice && !_debugMode) {
-      var event = Event(
-          release: _packageInfo.version,
-          exception: details.exception,
-          stackTrace: details.stack,
-          extra: _extra,
-          tags: _tags);
-      _sentry?.capture(event: event);
+      await Sentry.captureException(details.exception,
+          stackTrace: details.stack);
     }
   }
 }

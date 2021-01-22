@@ -113,7 +113,8 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            // Show a circle avatar just to make it clear that this is signed in page.
+                            // Show a circle avatar just to make it clear that
+                            // this is signed in page.
                             Center(
                               child: CircleAvatar(
                                 radius: width / 2,

@@ -60,8 +60,8 @@ class AppRouter {
   /// Creates the app router to use for the app.  Sets up all the routes
   /// and does stuff.
   ///
-  static fluro.Router createAppRouter() {
-    var router = fluro.Router();
+  static fluro.FluroRouter createAppRouter() {
+    var router = fluro.FluroRouter();
     router.define("/Home",
         handler: fluro.Handler(handlerFunc: (context, vals) => SplashScreen()));
     router.define("/Main/Home",
