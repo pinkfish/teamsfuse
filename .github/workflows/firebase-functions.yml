@@ -39,9 +39,9 @@ jobs:
         run: |
           npm install
         working-directory: firebase/functions
-      - name: Copy templates
-        working-directory: firebase/functions
-        run: npm run copytemplate
+      #- name: Copy templates
+      #  working-directory: firebase/functions
+      #  run: npm run copytemplate
       #- name: Copy assets
       #  run: |
       #    mkdir -p firebase/functions/src/db/templates/invites/img

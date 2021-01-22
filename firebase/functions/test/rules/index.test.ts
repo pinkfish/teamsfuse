@@ -1,4 +1,4 @@
-import * as firebase from '@firebase/testing';
+import * as firebase from '@firebase/rules-unit-testing';
 import * as fs from 'fs';
 
 /*

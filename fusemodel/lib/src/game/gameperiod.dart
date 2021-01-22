@@ -105,16 +105,6 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
   static GamePeriod finalPeriod = GamePeriod((b) => b
     ..type = GamePeriodType.Final
     ..periodNumber = 0);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is GamePeriod &&
-          other.periodNumber == periodNumber &&
-          other.type == type;
-
-  @override
-  int get hashCode => type.hashCode + periodNumber.hashCode;
 }
 
 abstract class GamePeriodTime
