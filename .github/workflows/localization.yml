@@ -19,7 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.head_ref }}
       - name: Branch name
         id: branch_name

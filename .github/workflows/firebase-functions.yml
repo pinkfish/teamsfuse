@@ -6,12 +6,12 @@ on:
     branches: [ main ]
     paths: 
       - "firebase/functions/**"
-      - ".github/workflows/firebase_functions.yml"
+      - ".github/workflows/firebase-functions.yml"
   pull_request:
     branches: [ main ]
     paths:
       - "firebase/functions/**"
-      - ".github/workflows/firebase_functions.yml"
+      - ".github/workflows/firebase-functions.yml"
 
 jobs:
   build:
