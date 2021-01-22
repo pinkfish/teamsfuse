@@ -3,22 +3,36 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function isSignedIn() {
+
+    // [READ] Data that exists on the Firestore document
+    function existingData() {
+      return resource.data;
+    }
+    // [WRITE] Data that is sent to a Firestore document
+    function incomingData() {
+      return request.resource.data;
+    }
+
+    function isSignedInOnly() {
       return request.auth != null;
+    }
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified;
     }
 
     match /Clubs/{club} {
       allow read: if isSignedIn();
       // Only allow writes when the member is setup correctly.
       allow update, delete: if isSignedIn() &&
-          resource.data.members[request.auth.uid].admin;
+          existingData().members[request.auth.uid].admin;
       allow create: if isSignedIn() &&
-          request.resource.data.members[request.auth.uid].admin;
+          incomingData().members[request.auth.uid].admin;
     }
 
     match /Games/{club} {
       allow read: if isSignedIn() &&
-         get(/databases/$(database)/documents/Seasons/$(request.resource.seasonUid)).users[request.auth.uid].added;
+         get(/databases/$(database)/documents/Seasons/$(resource.seasonUid)).users[request.auth.uid].added;
       allow update, delete: if isSignedIn();
       // Only allow a create if the shared data exists and the team exists.
       allow create: if isSignedIn() &&
@@ -39,7 +53,7 @@ service cloud.firestore {
     match /League/{league} {
       allow read: if true;
       allow update, delete: if isSignedIn() &&
-          request.resource.data.members[request.auth.uid].admin == true;
+          resource.data.members[request.auth.uid].admin == true;
       // Only allow a create if they are set as an admin.
       allow create: if isSignedIn() &&
           request.resource.data.members[request.auth.uid].admin == true;
@@ -49,7 +63,7 @@ service cloud.firestore {
       allow read: if true;
       allow update, delete: if isSignedIn();
       allow create: if isSignedIn() &&
-          exists(/databases/$(database)/documents/LeagueSeason/$(request.resource.data.seasonUid).added);
+          exists(/databases/$(database)/documents/LeagueSeason/$(request.resource.data.seasonUid));
     }
 
     match /LeagueSeason/{leagueSeason} {
@@ -76,38 +90,45 @@ service cloud.firestore {
       }
       allow read: if isSignedIn();
       allow write: if isSignedIn();
+      allow create: if isSignedIn() &&
+         request.resource.fromUid == request.auth.uid;
     }
 
     match /Seasons/{season} {
       allow read: if isSignedIn() &&
-        (request.data.users[request.auth.uid].added);
+        (resource.data.users[request.auth.uid].added);
       allow write: if isSignedIn();
+      allow create: if isSignedIn() &&
+         get(/databases/$(database)/documents/Team/$(incomingData().teamUid)).data.admin[request.auth.uid];
     }
 
     match /Teams/{team} {
-      match /{ALLSUBCOLLECTIONS=**} {
+      match /Opponents {
         allow read: if isSignedIn();
         allow write: if isSignedIn();
       }
       allow read: if isSignedIn() &&
-        (request.data.users[request.auth.uid].added ||
-        request.data.admins[request.auth.uid]);
+        (existingData().users[request.auth.uid].added ||
+        request.auth.uid in existingData().admins);
       allow write: if isSignedIn();
+      allow create: if isSignedIn() &&
+        request.auth.uid in incomingData().admins;
     }
 
     // Main users table
     match /users/{userId} {
-      allow read, update, delete: if isSignedIn() &&
+      allow read, update, delete: if isSignedInOnly() &&
           request.auth.uid == userId;
-      allow create: if isSignedIn() && request.auth.uid != null;
+      allow create: if isSignedInOnly() && userId == request.auth.uid;
     }
 
     // UserData table (profile details).
     match /UserData/{userId} {
-      allow read, update, delete: if isSignedIn() &&
+      allow read, update, delete: if isSignedInOnly() &&
           request.auth.uid == resource.id;
-      allow create: if isSignedIn() && request.auth.uid != null &&
-          request.resource.id == request.auth.uid && request.resource.data.createdAt == request.time;
+      allow create: if isSignedInOnly() &&
+          userId == request.auth.uid &&
+          incomingData().createdAt == request.time;
     }
 
     match /Players/{player} {

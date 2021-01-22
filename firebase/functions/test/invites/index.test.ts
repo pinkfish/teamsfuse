@@ -14,8 +14,6 @@ const test = firebaseFunctionsTest({
     projectId: projectName,
 });
 
-console.log('Test functions!');
-
 test.mockConfig({
     mailgun: {
         apikey: 'frog',
@@ -25,8 +23,6 @@ test.mockConfig({
         key: 'rabbit',
     },
 });
-
-console.log('mocky wocky');
 
 import * as dl from '../../ts/util/dynamiclinks';
 

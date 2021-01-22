@@ -11,8 +11,9 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test-mocha": "cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:8080' mocha lib/ts_test/**/*.js --no-opts --config './.mocharc.yml'",
-    "build": "npm run copytemplate && ./node_modules/.bin/tslint -p tslint.json && ./node_modules/.bin/tsc",
+    "test-mocha": "npm run buildnotemplate && cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:8080' mocha lib/test/**/*.js --no-opts --config './.mocharc.yml'",
+    "build": "npm run copytemplate && npm run buildnotemplate",
+    "buildnotemplate": "./node_modules/.bin/tslint -p tslint.json && ./node_modules/.bin/tsc",
     "eslintcheck": "eslint --print-config lib/ts/index.js | eslint-config-prettier-check",
     "test": "npm run build && cross-env FIREBASE_FIRESTORE_EMULATOR_ADDRESS='127.0.0.1:8080' && firebase emulators:exec --only firestore \"mocha lib/test/**/*.js --no-opts --config './.mocharc.yml'\""
   },

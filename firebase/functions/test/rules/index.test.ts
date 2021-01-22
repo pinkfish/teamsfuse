@@ -35,11 +35,11 @@ beforeEach(async function () {
     await firebase.clearFirestoreData({
         projectId: projectName,
     });
-    console.log('end beforeEach');
 });
 
 before(async function () {
     console.log('start before');
+    console.log(fs.readFileSync('../firestore.rules', 'utf8'));
     await firebase.loadFirestoreRules({
         projectId: projectName,
         rules: fs.readFileSync('../firestore.rules', 'utf8'),
@@ -47,13 +47,13 @@ before(async function () {
     console.log('end before');
 });
 
-after(async function ()  {
+after(async function () {
     await Promise.all(firebase.apps().map((app) => app.delete()));
     console.log(`View rule coverage information at ${coverageUrl}\n`);
 });
 
 describe('TeamsFuse rules', function () {
-    it('require users to log in before listing teams', async function ()  {
+    it('require users to log in before listing teams', async function () {
         const db = authedApp();
         const doc = db.collection('Teams').doc('frog');
         await firebase.assertFails(doc.get());
@@ -134,22 +134,36 @@ describe('TeamsFuse rules', function () {
             .collection('Teams')
             .doc('frog')
             .set({ users: { alice: { added: true } } });
-        //const doc = db.collection("Teams").doc("frog");
         await firebase.assertSucceeds(db.collection('Teams').doc('frog').get());
+        const dbRobert = authedApp({ uid: 'robert' });
+        await firebase.assertFails(dbRobert.collection('Teams').doc('frog').get());
+    });
+    it('require admins to be in the teams to get team', async () => {
+        const db = authedApp({ uid: 'alice' });
+        await db
+            .collection('Teams')
+            .doc('frog')
+            .set({ admins: { alice: { added: true } } });
+        await firebase.assertSucceeds(db.collection('Teams').doc('frog').get());
+        const dbRobert = authedApp({ uid: 'robert' });
+        await firebase.assertFails(dbRobert.collection('Teams').doc('frog').get());
     });
     it('require users to be in the season to get the season', async () => {
-        const db = authedApp({ uid: 'alice' });
+        const db = authedApp({ uid: 'robert' });
         await db
             .collection('Seasons')
             .doc('frog')
-            .set({ user: { alice: { added: true } } });
-        //const doc = db.collection("Teams").doc("frog");
+            .set({ users: { robert: { added: true } } });
         await firebase.assertSucceeds(db.collection('Seasons').doc('frog').get());
+        const aliceDb = authedApp({ uid: 'alice' });
+        await firebase.assertFails(aliceDb.collection('Seasons').doc('frog').get());
     });
     it('should enforce the createdAt date in user profiles', async () => {
         const db = authedApp({ uid: 'alice' });
         const profile = db.collection('UserData').doc('alice');
+        console.log("Failing");
         await firebase.assertFails(profile.set({ birthday: 'January 1' }));
+        console.log("Succeeding");
         await firebase.assertSucceeds(
             profile.set({
                 birthday: 'January 1',
