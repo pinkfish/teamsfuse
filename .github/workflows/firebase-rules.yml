@@ -50,7 +50,7 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.firebaseToken }}
           PROJECT_PATH: firebase
-          PROJECT_ID: basketballstats-8ed93
+          PROJECT_ID: teamsfuse
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
@@ -58,4 +58,4 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.firebaseToken }}
           PROJECT_PATH: firebase
-          PROJECT_ID: basketballstats-8ed93
+          PROJECT_ID: teamsfuse

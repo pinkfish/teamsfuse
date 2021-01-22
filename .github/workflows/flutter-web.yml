@@ -27,9 +27,9 @@ jobs:
     - run: flutter config --enable-web
       working-directory: flutter_fuse
     - run: flutter pub get
-      working-directory: basketballdata
+      working-directory: fusemodel 
     - run: flutter pub run build_runner build
-      working-directory: basketballdata
+      working-directory: fusemodel
     - run: flutter packages get
       working-directory: flutter_fuse
     - run: sudo apt-get install -y graphicsmagick
@@ -45,8 +45,8 @@ jobs:
       with:
         args: deploy --only hosting
       env:
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        FIREBASE_PROJECT: basketballstats-8ed93
+        FIREBASE_TOKEN: ${{ secrets.firebaseToken }}
+        FIREBASE_PROJECT: teamsfuse
         PROJECT_PATH: ./firebase
     - name: Commit files
       run: |
