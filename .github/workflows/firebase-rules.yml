@@ -1,0 +1,61 @@
+name: Firebase rules
+
+# Update when the functions change or this changes.
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "firebase/*.rules"
+      - "firebase/*.indexes.json"
+      - ".github/workflows/firebase-rules.yml"
+  pull_request:
+    branches: [ main ]
+    paths:
+      - "firebase/*.rules"
+      - "firebase/*.indexes.json"
+      - ".github/workflows/firebase-rules.yml"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ${{ steps.npm-cache.outputs.dir }}
+            ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install Dependencies
+        run: |
+          npm install
+        working-directory: firebase/functions
+      - name: Setup and test emulator
+        run: |
+          export PATH=$PATH:/usr/local/bin
+          sudo npm install -g firebase-tools
+          firebase emulators:exec --only firestore "npm run test"
+        working-directory: firebase/functions
+        env:
+          FIREBASE_TOKEN: ${{ secrets.firebaseToken }}
+          PROJECT_PATH: firebase
+          PROJECT_ID: basketballstats-8ed93
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: --non-interactive deploy --only storage,firestore
+        env:
+          FIREBASE_TOKEN: ${{ secrets.firebaseToken }}
+          PROJECT_PATH: firebase
+          PROJECT_ID: basketballstats-8ed93
