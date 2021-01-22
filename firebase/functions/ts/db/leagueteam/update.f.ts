@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as algolia from '../../util/algolia';
 import * as admin from 'firebase-admin';
-import { createGameFromShared } from '../../util/createGame';
+import { createGameFromShared } from '../../util/creategame';
 
 const db = admin.firestore();
 
