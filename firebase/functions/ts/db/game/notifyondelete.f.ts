@@ -1,14 +1,14 @@
 import * as functions from 'firebase-functions';
 import { notifyPayload } from './gamenotifypayload';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { PayloadData } from '../../util/notifyforgame';
 
 export const onDelete = functions.firestore.document('/Games/{gameid}').onDelete(async (snap, context) => {
     const data = snap.data();
 
     // Only notify if less then 7 days before the event.
-    const arrivalTime = moment(data.arrivalTime);
-    const nowTime = moment();
+    const arrivalTime = moment.utc(data.arrivalTime);
+    const nowTime = moment.utc();
     const diff = arrivalTime.diff(nowTime, 'days');
     let payload: PayloadData | null = null;
     console.log('on change ' + snap.id + ' diff ' + diff);

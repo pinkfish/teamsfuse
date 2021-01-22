@@ -1,4 +1,16 @@
-import * as request from 'request';
+import { AxiosInstance, AxiosResponse } from 'axios';
+
+interface AccessTokenResponse {
+    access_token: string;
+}
+
+interface SignatureResponse {
+    signature: string;
+}
+
+interface IdResponse {
+    id_token: string;
+}
 
 /**
  * Make request from CF to a GAE app behind IAP:
@@ -8,7 +20,7 @@ import * as request from 'request';
  * 4) make request with ID token.
  *
  */
-export async function sendEmail(from: string, to: string, subject: string, body: string) {
+export async function sendEmail(from: string, to: string, subject: string, body: string, api: AxiosInstance) {
     // imports and constants
     const user_agent = 'TeamFuseWorld';
     const token_URL = 'https://www.googleapis.com/oauth2/v4/token';
@@ -18,108 +30,92 @@ export async function sendEmail(from: string, to: string, subject: string, body:
     const IAP_GAE_app = 'http://teamfuse.appspot.com/sendMail';
 
     // prepare request options and make metadata server access token request
-    const meta_req_opts = {
-        url: [
-            'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/',
-            service_account,
-            '/token',
-        ].join(''),
+    const url = [
+        'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/',
+        service_account,
+        '/token',
+    ].join('');
+    const accessResponse = (await api({
+        method: 'POST',
+        url: url,
+        responseType: 'json',
+    })) as AxiosResponse<AccessTokenResponse>;
+    if (accessResponse.status !== 200) {
+        //here put what you want to do with the request
+        console.log('error:', accessResponse.statusText);
+        return;
+    }
+    // get access token from response
+    const access_token = accessResponse.data.access_token;
+
+    // prepare JWT that is {Base64url encoded header}.{Base64url encoded claim set}.{Base64url encoded signature}
+    // https://developers.google.com/identity/protocols/OAuth2ServiceAccount for more info
+    const JWT_header = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64');
+    const iat = Math.floor(new Date().getTime() / 1000);
+    // prepare claims set and base64 encode it
+    const claims = {
+        iss: service_account,
+        aud: token_URL,
+        iat: iat,
+        exp: iat + 60, // no need for a long lived token since it's not cached
+        target_audience: target_audience,
+    };
+    const JWT_claimset = Buffer.from(JSON.stringify(claims)).toString('base64');
+
+    // concatenate JWT header and claims set and get signature usign IAM APIs projects.serviceAccounts.signBlob method
+    const to_sign = [JWT_header, JWT_claimset].join('.');
+    // sign JWT using IAM APIs projects.serviceAccounts.signBlob method
+    const signatureUrl = [
+        'https://iam.googleapis.com/v1/projects/',
+        project_id,
+        '/serviceAccounts/',
+        service_account,
+        ':signBlob',
+    ].join('');
+
+    const signatureResponse = (await api({
+        url: signatureUrl,
+        method: 'POST',
+        data: {
+            bytesToSign: Buffer.from(to_sign).toString('base64'),
+        },
         headers: {
             'User-Agent': user_agent,
-            'Metadata-Flavor': 'Google',
+            Authorization: ['Bearer', access_token].join(' '),
         },
-    };
-    await request(meta_req_opts, (err, res, requestBody: string) => {
-        if (err || res.statusCode === 200) {
-            //here put what you want to do with the request
-            console.log('error:', err);
-            return;
-        }
-        // get access token from response
-        const meta_resp_data = JSON.parse(requestBody);
-        const access_token = meta_resp_data.access_token;
+    })) as AxiosResponse<SignatureResponse>;
+    if (signatureResponse.status !== 200) {
+        //here put what you want to do with the request
+        console.log('error:', signatureResponse.statusText);
+        return;
+    }
+    // get signature from response and form JWT
+    const JWT_signature = signatureResponse.data.signature;
+    const JWT = [JWT_header, JWT_claimset, JWT_signature].join('.');
 
-        // prepare JWT that is {Base64url encoded header}.{Base64url encoded claim set}.{Base64url encoded signature}
-        // https://developers.google.com/identity/protocols/OAuth2ServiceAccount for more info
-        const JWT_header = Buffer.from(JSON.stringify({ alg: 'RS256', typ: 'JWT' })).toString('base64');
-        const iat = Math.floor(new Date().getTime() / 1000);
-        // prepare claims set and base64 encode it
-        const claims = {
-            iss: service_account,
-            aud: token_URL,
-            iat: iat,
-            exp: iat + 60, // no need for a long lived token since it's not cached
-            target_audience: target_audience,
-        };
-        const JWT_claimset = Buffer.from(JSON.stringify(claims)).toString('base64');
-
-        // concatenate JWT header and claims set and get signature usign IAM APIs projects.serviceAccounts.signBlob method
-        const to_sign = [JWT_header, JWT_claimset].join('.');
-        // sign JWT using IAM APIs projects.serviceAccounts.signBlob method
-        const signature_req_opts = {
-            url: [
-                'https://iam.googleapis.com/v1/projects/',
-                project_id,
-                '/serviceAccounts/',
-                service_account,
-                ':signBlob',
-            ].join(''),
-            method: 'POST',
-            json: {
-                bytesToSign: Buffer.from(to_sign).toString('base64'),
-            },
-            headers: {
-                'User-Agent': user_agent,
-                Authorization: ['Bearer', access_token].join(' '),
-            },
-        };
-        request(signature_req_opts, (signatureErr, signatureRes, innerRequest) => {
-            if (signatureErr || signatureRes.statusCode === 200) {
-                //here put what you want to do with the request
-                console.log('error:', signatureErr);
-                return;
-            }
-
-            // get signature from response and form JWT
-            const JWT_signature = innerRequest.signature;
-            const JWT = [JWT_header, JWT_claimset, JWT_signature].join('.');
-
-            // obtain ID token
-            request.post(
-                {
-                    url: token_URL,
-                    form: {
-                        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-                        assertion: JWT,
-                    },
-                },
-                (tokenErr, tokenRes, idRequest) => {
-                    if (tokenErr || tokenRes.statusCode === 200) {
-                        //here put what you want to do with the request
-                        console.log('error:', tokenErr);
-                        return;
-                    }
-                    // use ID token to make a request to the IAP protected GAE app
-                    const ID_token_resp_data = JSON.parse(idRequest);
-                    const ID_token = ID_token_resp_data.id_token;
-                    const IAP_req_opts = {
-                        url: IAP_GAE_app,
-                        headers: {
-                            'User-Agent': user_agent,
-                            Authorization: ['Bearer', ID_token].join(' '),
-                        },
-                    };
-                    request(IAP_req_opts, (iapErr, iapRes, iapRequest) => {
-                        if (iapErr || iapRes.statusCode === 200) {
-                            //here put what you want to do with the request
-                            console.log('error:', iapErr);
-                            return;
-                        }
-                        console.log('error:', iapErr);
-                    });
-                },
-            );
-        });
+    // obtain ID token
+    const formResponse = (await api({
+        url: token_URL,
+        method: 'POST',
+        data: {
+            grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            assertion: JWT,
+        },
+    })) as AxiosResponse<IdResponse>;
+    // use ID token to make a request to the IAP protected GAE app
+    const ID_token = formResponse.data.id_token;
+    const res = await api({
+        url: IAP_GAE_app,
+        headers: {
+            'User-Agent': user_agent,
+            Authorization: ['Bearer', ID_token].join(' '),
+        },
     });
+    if (res.status !== 200) {
+        //here put what you want to do with the request
+        console.log('error:', res.statusText);
+        return;
+    }
+
     //res.send('done');
 }

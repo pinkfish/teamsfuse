@@ -6,16 +6,13 @@
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2018"
+    "target": "es2017",
+    "esModuleInterop": true
   },
   "compileOnSave": true,
   "include": [
     "ts",
-    "lib/**/*.js",
-    "index.js"
-  ],
-  "exclude": [
-    "out/**"
-  ],
-  "allowJs": "true"
+    "test",
+    "lib"
+  ]
 }

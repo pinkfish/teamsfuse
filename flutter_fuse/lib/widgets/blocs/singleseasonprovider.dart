@@ -21,6 +21,7 @@ class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
       : super(keyUid: seasonUid, creator: _createBloc, builder: builder);
 
   static SingleSeasonBloc _createBloc(BuildContext context, String uid) {
+    assert(uid != null && uid.isNotEmpty);
     return SingleSeasonBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
         seasonUid: uid);

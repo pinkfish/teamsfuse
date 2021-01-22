@@ -21,19 +21,26 @@ interface Attachment {
 
 // Sends an email confirmation when a user changes his mailing list subscription.
 export const onWrite = functions.firestore.document('/Invites/{id}').onWrite(async (inputData, context) => {
+    if (inputData.after === null || inputData.after === undefined) {
+        // Delete...
+        console.log('Deleted');
+        return null;
+    }
+
     const data = inputData.after.data();
 
     if (data === null || data === undefined) {
         // Delete...
+        console.log('empty data');
         return null;
     }
-
-    require('request').debug = true;
 
     // Already emailed about this invite.
     if (data.emailedInvite) {
+        console.log('already emailed');
         return null;
     }
+
     // lookup the person that sent the invite to get
     // their profile details.
     const sentByDoc = await db.collection('UserData').doc(data.sentbyUid).get();
@@ -53,17 +60,17 @@ async function mailToSender(
     sentByDoc: functions.firestore.DocumentSnapshot,
 ) {
     const data = inviteDoc.data();
-    const footerTxt = handlebars.compile(fs.readFileSync('db/templates/invites/footer.txt', 'utf8'));
-    const footerHtml = handlebars.compile(fs.readFileSync('db/templates/invites/footer.html', 'utf8'));
+    const footerTxt = handlebars.compile(fs.readFileSync('lib/ts/templates/invites/footer.txt', 'utf8'));
+    const footerHtml = handlebars.compile(fs.readFileSync('lib/ts/templates/invites/footer.html', 'utf8'));
     const attachments: Attachment[] = [
         {
             filename: 'apple-store-badge.png',
-            path: 'db/templates/invites/img/apple-store-badge.png',
+            path: 'lib/ts/templates/invites/img/apple-store-badge.png',
             cid: 'apple-store',
         },
         {
             filename: 'google-store-badge.png',
-            path: 'db/templates/invites/img/google-play-badge.png',
+            path: 'lib/ts/templates/invites/img/google-play-badge.png',
             cid: 'google-store',
         },
     ];
@@ -73,8 +80,27 @@ async function mailToSender(
         return;
     }
 
-    const payloadTxt = handlebars.compile(fs.readFileSync('db/templates/invites/' + data.type + '.txt', 'utf8'));
-    const payloadHtml = handlebars.compile(fs.readFileSync('db/templates/invites/' + data.type + '.html', 'utf8'));
+    if (data.type === null || data.type === undefined) {
+        console.log('Invalid invite type');
+        return;
+    }
+
+    if (!fs.existsSync('lib/ts/templates/invites/InviteType.' + data.type + '.txt')) {
+        console.log('File ' + 'lib/ts/templates/invites/InviteType.' + data.type + '.txt' + ' does not exist');
+        return;
+    }
+
+    if (!fs.existsSync('lib/ts/templates/invites/InviteType.' + data.type + '.html')) {
+        console.log('File ' + 'lib/ts/templates/invites/InviteType.' + data.type + '.html' + ' does not exist');
+        return;
+    }
+
+    const payloadTxt = handlebars.compile(
+        fs.readFileSync('lib/ts/templates/invites/InviteType.' + data.type + '.txt', 'utf8'),
+    );
+    const payloadHtml = handlebars.compile(
+        fs.readFileSync('lib/ts/templates/invites/InviteType.' + data.type + '.html', 'utf8'),
+    );
 
     const sentByData = sentByDoc.data() ?? {};
 
@@ -101,14 +127,14 @@ async function mailToSender(
             if (teamData.photourl) {
                 url = teamData.photourl;
             } else {
-                url = 'db/templates/invites/img/defaultteam.jpg';
+                url = 'file:lib/ts/templates/invites/img/defaultteam.jpg';
             }
 
             // Building Email message.
             const context = {
                 sentBy: sentByData,
                 invite: data,
-                teamimg: 'cid:teamurl',
+                teamimg: 'cid:teamimg',
                 team: teamData,
             };
             if (data.type === 'Team') {
@@ -122,7 +148,7 @@ async function mailToSender(
             const image = await getImageFromUrl(url);
             mailOptions.attachments.push({
                 filename: 'team.jpg',
-                path: Buffer.from(image.data).toString('base64'),
+                content: Buffer.from(image.data).toString('base64'),
                 cid: 'teamimg',
                 contentType: getContentType(image),
                 encoding: 'base64',
@@ -144,7 +170,7 @@ async function mailToSender(
             if (playerData.photourl) {
                 url = playerData.photourl;
             } else {
-                url = 'db/templates/invites/img/defaultplayer.jpg';
+                url = 'file:lib/ts/templates/invites/img/defaultplayer.jpg';
             }
 
             const context = {
@@ -162,7 +188,7 @@ async function mailToSender(
             const imageUrl = await getImageFromUrl(url);
             mailOptions.attachments.push({
                 filename: 'player.jpg',
-                path: Buffer.from(imageUrl.data).toString('base64'),
+                content: Buffer.from(imageUrl.data).toString('base64'),
                 cid: 'playerimg',
                 contentType: getContentType(imageUrl),
                 encoding: 'base64',
@@ -179,7 +205,7 @@ async function mailToSender(
             if (snapData.photourl) {
                 url = snapData.photourl;
             } else {
-                url = 'db/templates/invites/img/defaultleague.jpg';
+                url = 'file:lib/ts/templates/invites/img/defaultleague.jpg';
             }
 
             const context = {
@@ -212,7 +238,7 @@ async function mailToSender(
             return null;
         }
     } else if (data.type === 'Club') {
-        const snapshot = await db.collection('Club').doc(data.clubUid).get();
+        const snapshot = await db.collection('Clubs').doc(data.clubUid).get();
         const snappyData = snapshot.data();
         if (snappyData === null || snappyData === undefined) {
             console.error('Snappy data is null');
@@ -222,7 +248,7 @@ async function mailToSender(
         if (snappyData.photourl) {
             url = snappyData.photourl;
         } else {
-            url = 'db/templates/invites/img/defaultclub.jpg';
+            url = 'file:lib/ts/templates/invites/img/defaultclub.jpg';
         }
 
         const context = {
@@ -252,6 +278,26 @@ async function mailToSender(
 }
 
 function getImageFromUrl(url: string): Promise<AxiosResponse> {
+    if (url.startsWith('file:')) {
+        return new Promise(function (resolve, reject) {
+            fs.readFile(url.substring(5), (err, data) => {
+                if (err !== null && err !== undefined) {
+                    reject(err);
+                } else {
+                    // Only need the data since the headers not being there will default
+                    // to jpg.
+                    const response: AxiosResponse = {
+                        data: data,
+                        status: 200,
+                        statusText: 'OK',
+                        headers: { 'content-type': url.endsWith('.png') ? 'image/png' : 'image/jpeg' },
+                        config: {},
+                    };
+                    resolve(response);
+                }
+            });
+        });
+    }
     const getImageOptions: AxiosRequestConfig = {
         responseType: 'arraybuffer',
     };

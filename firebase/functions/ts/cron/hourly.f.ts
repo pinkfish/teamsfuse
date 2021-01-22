@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import { notifyForGame, PayloadData } from '../util/notifyforgame';
 
 const db = admin.firestore();
@@ -13,8 +13,8 @@ export const onPublish = functions.pubsub.topic('hourly-tick').onPublish(async (
     console.log('Doing the hours work.');
 
     // Do something useful every hour.
-    const now = moment().add(LOOK_AHEAD_DURATION);
-    const cutoff = moment().subtract(CUT_OFF_DURATION);
+    const now = moment.utc().add(LOOK_AHEAD_DURATION);
+    const cutoff = moment.utc().subtract(CUT_OFF_DURATION);
     const snapshot = await db
         .collection('Games')
         .where('arrivalTime', '>', cutoff.valueOf())

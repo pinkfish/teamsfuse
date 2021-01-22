@@ -1,0 +1,12 @@
+package: './package.json'
+reporter: 'spec'
+parallel: false
+trace-warnings: true
+unhandled-rejections: 'strict'
+ui: bdd
+check-leaks: true
+color: true
+diff: true
+full-trace: true
+watch-files:
+  - './lib/ts_test/**/*.js'

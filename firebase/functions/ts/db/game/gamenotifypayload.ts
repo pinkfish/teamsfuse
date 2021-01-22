@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import * as moment from 'moment-timezone';
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
@@ -7,7 +7,7 @@ import { notifyForGame, PayloadData } from '../../util/notifyforgame';
 export async function notifyPayload(payload: PayloadData, snap: functions.firestore.DocumentSnapshot): Promise<void> {
     if (payload) {
         const data = snap.data();
-        const nowTime = moment();
+        const nowTime = moment.utc();
 
         if (data === null || data === undefined) {
             console.log('Invalid data');
@@ -20,7 +20,7 @@ export async function notifyPayload(payload: PayloadData, snap: functions.firest
             payload.body += ' wear {{game.uniform}}';
         }
 
-        const gameTime = moment(data.time).add(moment.duration({ hours: 3 }));
+        const gameTime = moment.utc(data.time).add(moment.duration({ hours: 3 }));
         const diffGameTime = gameTime.diff(nowTime, 'seconds');
 
         const options: admin.messaging.MessagingOptions = {

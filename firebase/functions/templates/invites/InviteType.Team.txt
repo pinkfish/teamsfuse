@@ -1,5 +1,5 @@
 You are invited to join {{invite.teamName}}
-for season {{invite.seasonName}} by {{sentBy.name}}.
+for season {{invite.seasonName}} by {{sentBy.displayName}}.
 You are invited to join as a player in the
 team or as a non-player to help track details.  The system will
 let you track who is on the team, along with contact information

@@ -89,6 +89,7 @@ class SingleSeasonBloc
   // Create the bloc and do exciting things with it.
   SingleSeasonBloc({@required this.db, @required this.seasonUid})
       : super(SingleSeasonUninitialized(), seasonUid) {
+    assert(seasonUid != null && seasonUid.isNotEmpty);
     _seasonSub = db.getSingleSeason(seasonUid).listen((season) {
       if (season != null) {
         // Only send this if the team is not the same.

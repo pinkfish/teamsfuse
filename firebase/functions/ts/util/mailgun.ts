@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as nodemailer from 'nodemailer';
-import * as mailgunTransport from 'nodemailer-mailgun-transport';
+import mailgunTransport from 'nodemailer-mailgun-transport';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 // Configure options for mailgun.
 export const mailgunOptions = {
@@ -10,10 +11,20 @@ export const mailgunOptions = {
     },
 };
 
-export const mailTransport = mailgunTransport(mailgunOptions);
+const innerTransport = mailgunTransport(mailgunOptions);
+const transport = nodemailer.createTransport(innerTransport);
 
-export function sendMail(mailOptions: nodemailer.SendMailOptions) {
-    const emailClient = nodemailer.createTransport(mailTransport);
-    console.log(mailOptions);
-    return emailClient.sendMail(mailOptions);
+// This is a bit hacky, but it does allow this to be injected via a test.
+export const mailTransport = { transport: (): nodemailer.Transporter => transport };
+
+export async function sendMail(mailOptions: nodemailer.SendMailOptions): Promise<SMTPTransport.SentMessageInfo> {
+    const emailClient = mailTransport.transport();
+    const info = await emailClient.sendMail(mailOptions);
+    console.log('Message sent: %s', info.messageId);
+    // Preview only available when sending through an Ethereal account
+    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+
+    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@blurdybloop.com>
+    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+    return info;
 }

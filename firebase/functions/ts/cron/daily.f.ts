@@ -1,13 +1,13 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import * as email from '../util/email';
-import * as firestore from '@google-cloud/firestore';
+import { v1 } from '@google-cloud/firestore';
 
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
 import * as notifyforgame from '../util/notifyforgame';
 
 const db = admin.firestore();
-const client = new firestore.v1.FirestoreAdminClient();
+const client = new v1.FirestoreAdminClient();
 
 // 4 days.
 const CUT_OFF_DURATION = moment.duration({ days: 5 });
@@ -47,8 +47,8 @@ export const onPublish = functions.pubsub.topic('daily-tick').onPublish(async (d
     }
     console.log('Publishing...');
 
-    const now = moment().add(CUT_OFF_DURATION);
-    const cutoff = moment().subtract(LOOK_AHEAD_DURATION);
+    const now = moment.utc().add(CUT_OFF_DURATION);
+    const cutoff = moment.utc().subtract(LOOK_AHEAD_DURATION);
     const snapshot = await db
         .collection('Games')
         .where('arrivalTime', '>', cutoff.valueOf())
