@@ -40,13 +40,9 @@ beforeEach(async function () {
 
 before(async function () {
     console.log('start before');
-    console.log(fs.readFileSync('../firestore.rules', 'utf8'));
     await firebase.loadFirestoreRules({
         projectId: projectName,
         rules: fs.readFileSync('../firestore.rules', 'utf8'),
-    }).then((d) => {
-      console.log("Done with loading");
-      return d;
     });
     console.log('end before');
 });
