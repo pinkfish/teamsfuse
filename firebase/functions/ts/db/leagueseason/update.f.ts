@@ -11,12 +11,8 @@ export const onUpdate = functions.firestore
 
         // See if the name changed.
         if (previousData.name === null || previousData.name !== data.name) {
-            algolia.updateLeagueSeason(inputData.after);
+            return algolia.updateLeagueSeason(inputData.after);
         }
     });
 
-// Handle the creation case as well, so if we create a game
-// with a specific result we update the team values.
-export const onCreate = functions.firestore.document('/LeagueSeason/{leagueId}').onCreate(async (snap, context) => {
-    algolia.updateLeagueSeason(snap);
-});
+export default onUpdate;

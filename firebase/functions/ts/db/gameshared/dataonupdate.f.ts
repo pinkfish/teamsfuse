@@ -233,3 +233,5 @@ export const onWrite = functions.firestore.document('/GamesShared/{gameid}').onW
 
     return;
 });
+
+export default onWrite;

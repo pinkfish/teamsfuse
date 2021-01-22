@@ -44,3 +44,5 @@ export const notifyOnCreate = functions.firestore.document('/Games/{gameid}').on
     }
     return data;
 });
+
+export default notifyOnCreate;

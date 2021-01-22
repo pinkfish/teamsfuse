@@ -122,3 +122,5 @@ export const onUpdate = functions.firestore.document('/Games/{gameid}').onUpdate
     }
     return;
 });
+
+export default onUpdate;

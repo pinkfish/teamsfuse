@@ -80,3 +80,5 @@ export const onPublish = functions.pubsub.topic('daily-tick').onPublish(async (d
     console.log('End publishing.');
     return;
 });
+
+export default onPublish;

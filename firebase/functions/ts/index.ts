@@ -16,6 +16,7 @@ const funcNameFromRelPath = (relPath: string): string => {
     return camelcase(relPath.slice(0, -5).split('/').join('_'));
 };
 
+console.log('Right here files');
 console.log(files);
 
 const funcDir = './';

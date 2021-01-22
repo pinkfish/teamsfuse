@@ -20,3 +20,5 @@ export const onUpdate = functions.firestore
 export const onCreate = functions.firestore.document('/LeagueDivision/{leagueId}').onCreate(async (snap, context) => {
     await algolia.updateLeagueDivison(snap);
 });
+
+export default onUpdate;

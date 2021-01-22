@@ -311,3 +311,5 @@ function getContentType(fullBody: AxiosResponse) {
     }
     return contentType;
 }
+
+export default onWrite;

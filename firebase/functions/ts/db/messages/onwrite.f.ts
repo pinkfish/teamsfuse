@@ -32,3 +32,5 @@ export const onWrite = functions.firestore
 
         return data;
     });
+
+export default onWrite;

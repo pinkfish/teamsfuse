@@ -30,3 +30,5 @@ export const onWrite = functions.firestore.document('/Games/{gameid}').onWrite(a
     }
     return;
 });
+
+export default onWrite;

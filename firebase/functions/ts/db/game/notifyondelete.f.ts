@@ -44,3 +44,5 @@ export const onDelete = functions.firestore.document('/Games/{gameid}').onDelete
     }
     return;
 });
+
+export default onDelete;

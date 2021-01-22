@@ -82,7 +82,6 @@ describe('Invite Tests', () => {
         });
     }).timeout(10000);
 
-
     async function sendTheMail(inviteData: any) {
         const inviteId: string = uuid();
         inviteData['uid'] = inviteId;
@@ -149,11 +148,11 @@ describe('Invite Tests', () => {
                         expect(myData.emailedInvite).to.be.true;
                     }
                 }
-                await admin.firestore().collection("Invites").doc(inviteId).delete();
+                await admin.firestore().collection('Invites').doc(inviteId).delete();
             } catch (e) {
                 console.log(e);
                 console.log(e.stack);
-                await admin.firestore().collection("Invites").doc(inviteId).delete();
+                await admin.firestore().collection('Invites').doc(inviteId).delete();
                 throw e;
             }
             return;

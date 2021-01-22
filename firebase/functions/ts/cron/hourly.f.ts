@@ -92,3 +92,5 @@ export const onPublish = functions.pubsub.topic('hourly-tick').onPublish(async (
         }
     }
 });
+
+export default onPublish;

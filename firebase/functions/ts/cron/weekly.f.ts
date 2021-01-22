@@ -107,3 +107,5 @@ export const onPublish = functions.pubsub.topic('weekly-tick').onPublish(async (
         }
     }
 });
+
+export default onPublish;
