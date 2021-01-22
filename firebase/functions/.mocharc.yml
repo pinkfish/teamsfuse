@@ -8,5 +8,6 @@ check-leaks: true
 color: true
 diff: true
 full-trace: true
+timeout: 10000
 watch-files:
   - './lib/ts_test/**/*.js'
