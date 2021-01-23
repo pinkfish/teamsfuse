@@ -13,6 +13,7 @@ export type AppOptions = {
     databaseName?: string;
     projectId?: string;
     uid?: string;
+    email_verified?: boolean;
 };
 
 /**
@@ -129,7 +130,7 @@ describe('TeamsFuse rules', function () {
         await firebase.assertFails(doc.get());
     });
     it('require users to be in the teams to get team', async () => {
-        const db = authedApp({ uid: 'alice' });
+        const db = authedApp({ uid: 'alice', email_verified: true  });
         await db
             .collection('Teams')
             .doc('frog')
@@ -139,7 +140,7 @@ describe('TeamsFuse rules', function () {
         await firebase.assertFails(dbRobert.collection('Teams').doc('frog').get());
     });
     it('require admins to be in the teams to get team', async () => {
-        const db = authedApp({ uid: 'alice' });
+        const db = authedApp({ uid: 'alice', email_verified: true });
         await db
             .collection('Teams')
             .doc('frog')
@@ -149,7 +150,7 @@ describe('TeamsFuse rules', function () {
         await firebase.assertFails(dbRobert.collection('Teams').doc('frog').get());
     });
     it('require users to be in the season to get the season', async () => {
-        const db = authedApp({ uid: 'robert' });
+        const db = authedApp({ uid: 'robert', email_verified: true  });
         await db
             .collection('Seasons')
             .doc('frog')
