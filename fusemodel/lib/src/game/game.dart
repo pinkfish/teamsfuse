@@ -6,6 +6,8 @@ import 'package:timezone/timezone.dart';
 import '../serializer.dart';
 import 'gameresult.dart';
 import 'gamesharedata.dart';
+import 'gamesummary.dart';
+import 'playergamesummary.dart';
 
 part 'game.g.dart';
 
@@ -51,6 +53,26 @@ abstract class Game implements Built<Game, GameBuilder> {
   GameSharedData get sharedData;
   @nullable
   String get leagueOpponentUid;
+
+  /// Summary for this specific player.
+  BuiltMap<String, PlayerGameSummary> get players;
+
+  /// Summary for this specific opponent.
+  BuiltMap<String, PlayerGameSummary> get opponents;
+
+  /// Summary for the overall game (this is only pts for vs against).
+  GameSummary get summary;
+
+  /// Total summary for the game for this players.
+  PlayerGameSummary get playerSummaery;
+
+  /// Total summary for the game for the opponents.
+  PlayerGameSummary get opponentSummary;
+
+  /// Tracks when this game is running from.  This is used when the
+  /// game starts to track the current position in the game.
+  @nullable
+  DateTime get runningFrom;
 
   @memoized
   BuiltList<String> get allTeamUids {
