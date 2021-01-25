@@ -361,7 +361,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         ..isEmailVerified = false
         ..email = attempt.email
         ..password = attempt.password);
-      print(data);
       UserData signedIn;
       try {
         signedIn = await userAuth.signIn(data);

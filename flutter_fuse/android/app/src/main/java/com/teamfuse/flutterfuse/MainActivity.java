@@ -2,7 +2,6 @@ package com.teamfuse.flutterfuse;
 
 import android.os.Bundle;
 
-import io.flutter.embedding.android.FlutterActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,30 +17,45 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.embedding.android.FlutterActivity;
+import io.flutter.embedding.engine.FlutterEngine;
 import java.util.HashMap;
 import java.util.Map;
+import androidx.annotation.NonNull;
+import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 
-public class MainActivity extends FlutterActivity implements MethodCallHandler {
+public class MainActivity extends FlutterActivity /*implements MethodCallHandler */{
+    private static final String TAG = "MainActivity";
+    public static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
+
+    /*
     private MethodChannel channel;
     private Registrar registrar;
     private FirebaseBroadcastReceiver receiver;
 
-    private static final String TAG = "MainActivity";
-    public static final String CLICK_ACTION_VALUE = "FLUTTER_NOTIFICATION_CLICK";
+
+
 
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
-        GeneratedPluginRegistrant.registerWith(this);
+        GeneratedPluginRegistrant.registerWith(flutterEngine);
 
         Log.i(TAG, "MainActivity");
 
         channel =
-                new MethodChannel(getFlutterView(), "plugins.flutter.io/firebase_messaging");
+                new MethodChannel(flutterEngine.getDartExecutor(), "plugins.flutter.io/firebase_messaging");
         channel.setMethodCallHandler(this);
-        registrar = registrarFor("com.teamfuse.flutterfuse.MyPretendPlugin");
-        FirebaseApp.initializeApp(registrar.context());
-        receiver = new FirebaseBroadcastReceiver(channel, registrar);
-        registrar.addNewIntentListener(receiver);
+
+
+        //ShimPluginRegistry shimPluginRegistry = new ShimPluginRegistry(
+        //        flutterEngine
+        //);
+
+        //registrar = shimPluginRegistry.registrarFor("com.teamfuse.flutterfuse.MyPretendPlugin");
+        //FirebaseApp.initializeApp(registrar.context());
+        //receiver = new FirebaseBroadcastReceiver(channel, registrar);
+        //registrar.addNewIntentListener(receiver);
     }
 
 
@@ -63,4 +77,6 @@ public class MainActivity extends FlutterActivity implements MethodCallHandler {
             result.notImplemented();
         }
     }
+
+     */
 }

@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:device_info/device_info.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:package_info/package_info.dart';
+import 'package:universal_io/io.dart';
 
 ///
 /// Analytics class to handle communication with the analytics subsystems
@@ -25,7 +24,9 @@ class Analytics extends AnalyticsSubsystem {
     if (_instance == null) {
       _instance = Analytics();
       _instance._load();
-      FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
+      if (Platform.isIOS || Platform.isAndroid) {
+        FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
+      }
     }
 
     return _instance;
@@ -37,21 +38,24 @@ class Analytics extends AnalyticsSubsystem {
     // Load the device and package info.
     _packageInfo = PackageInfo(
         version: "unknown", packageName: "unknown", buildNumber: "unknown");
-    PackageInfo.fromPlatform().then((info) {
-      _packageInfo = info;
-    });
 
     _deviceInfo = DeviceInfoPlugin();
+
     if (Platform.isIOS) {
+      PackageInfo.fromPlatform().then((info) {
+        _packageInfo = info;
+      });
       _deviceInfo.iosInfo.then((info) {
         _iosDeviceInfo = info;
       });
-    }
-    if (Platform.isAndroid) {
+    } else if (Platform.isAndroid) {
+      PackageInfo.fromPlatform().then((info) {
+        _packageInfo = info;
+      });
       _deviceInfo.androidInfo.then((info) {
         _androidDeviceInfo = info;
       });
-    }
+    } else {}
   }
 
   /// Returns the firebase analytics part to use in the system.
@@ -61,22 +65,30 @@ class Analytics extends AnalyticsSubsystem {
 
   @override
   void logSignUp({String signUpMethod}) {
-    _analytics.logSignUp(signUpMethod: signUpMethod);
+    if (Platform.isAndroid || Platform.isIOS) {
+      _analytics.logSignUp(signUpMethod: signUpMethod);
+    }
   }
 
   @override
   void logLogin() {
-    _analytics.logLogin();
+    if (Platform.isAndroid || Platform.isIOS) {
+      _analytics.logLogin();
+    }
   }
 
   @override
   void setUserId(String uid) {
-    _analytics.setUserId(uid);
+    if (Platform.isAndroid || Platform.isIOS) {
+      _analytics.setUserId(uid);
+    }
   }
 
   @override
   void setUserProperty({String name, String value}) {
-    _analytics.setUserProperty(name: name, value: value);
+    if (Platform.isAndroid || Platform.isIOS) {
+      _analytics.setUserProperty(name: name, value: value);
+    }
   }
 
   @override
@@ -86,22 +98,26 @@ class Analytics extends AnalyticsSubsystem {
 
   @override
   TraceProxy newTrace(String name) {
-    var trace = FirebasePerformance.instance.newTrace(name);
+    if (Platform.isAndroid || Platform.isIOS) {
+      var trace = FirebasePerformance.instance.newTrace(name);
 
-    trace.putAttribute("os", Platform.operatingSystem);
-    trace.putAttribute("osVersion", Platform.operatingSystemVersion);
+      trace.putAttribute("os", Platform.operatingSystem);
+      trace.putAttribute("osVersion", Platform.operatingSystemVersion);
 
-    trace.putAttribute("version", _packageInfo.version);
-    trace.putAttribute("build", _packageInfo.buildNumber);
-    if (Platform.isIOS && _iosDeviceInfo != null) {
-      trace.putAttribute(
-          "emulator", _iosDeviceInfo.isPhysicalDevice.toString());
+      trace.putAttribute("version", _packageInfo.version);
+      trace.putAttribute("build", _packageInfo.buildNumber);
+      if (Platform.isIOS && _iosDeviceInfo != null) {
+        trace.putAttribute(
+            "emulator", _iosDeviceInfo.isPhysicalDevice.toString());
+      }
+      if (Platform.isAndroid && _androidDeviceInfo != null) {
+        trace.putAttribute(
+            "emulator", _androidDeviceInfo.isPhysicalDevice.toString());
+      }
+      return FirebaseTrace(trace);
+    } else {
+      return EmptyFirebaseTrace();
     }
-    if (Platform.isAndroid && _androidDeviceInfo != null) {
-      trace.putAttribute(
-          "emulator", _androidDeviceInfo.isPhysicalDevice.toString());
-    }
-    return FirebaseTrace(trace);
   }
 
   ///
@@ -119,6 +135,20 @@ class Analytics extends AnalyticsSubsystem {
 }
 
 ///
+/// The empty firebase trace for web stuff.
+///
+class EmptyFirebaseTrace implements TraceProxy {
+  @override
+  void incrementCounter(String str) {}
+
+  @override
+  void start() {}
+
+  @override
+  void stop() {}
+}
+
+///
 /// Wrapped for the tracing in firebase to add in local stats and info
 /// on top.
 ///
@@ -130,16 +160,22 @@ class FirebaseTrace implements TraceProxy {
 
   @override
   void start() {
-    _trace.start();
+    if (Platform.isAndroid || Platform.isIOS) {
+      _trace.start();
+    }
   }
 
   @override
   void incrementCounter(String str) {
-    _trace.incrementMetric(str, 1);
+    if (Platform.isAndroid || Platform.isIOS) {
+      _trace.incrementMetric(str, 1);
+    }
   }
 
   @override
   void stop() {
-    _trace.stop();
+    if (Platform.isAndroid || Platform.isIOS) {
+      _trace.stop();
+    }
   }
 }

@@ -3,11 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>400199897683-pehkbd10ebgqs5uon30o165amd9816dk.apps.googleusercontent.com</string>
+	<string>400199897683-97h3ll2bi5j2q41bln4hu17ahmt2c427.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.400199897683-pehkbd10ebgqs5uon30o165amd9816dk</string>
+	<string>com.googleusercontent.apps.400199897683-97h3ll2bi5j2q41bln4hu17ahmt2c427</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>400199897683-8jncjcv2etmgeak4fkel8noee7609csq.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAjSg3TvI7RbB5O6bPkSiS0tV4hL7_np3I</string>
+	<string>AIzaSyBE63XYVBy56LVKy5l6M2pbpYBLNEwhG2s</string>
 	<key>GCM_SENDER_ID</key>
 	<string>400199897683</string>
 	<key>PLIST_VERSION</key>
@@ -29,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:400199897683:ios:5433fb56c222e6e8</string>
+	<string>1:400199897683:ios:ce8c89497900217008aca6</string>
 	<key>DATABASE_URL</key>
 	<string>https://teamsfuse.firebaseio.com</string>
 </dict>

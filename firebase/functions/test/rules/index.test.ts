@@ -56,90 +56,60 @@ after(async function () {
 describe('TeamsFuse rules', function () {
     it('require users to log in before listing teams', async function () {
         const db = authedApp();
-        const doc = db.collection('Teams').doc('frog');
-        await firebase.assertFails(doc.get());
+        await firebase.assertFails(db.collection('Teams').where("uid", "==", true).get());
     });
     it('require users to log in before listing clubs', async function () {
         const db = authedApp();
-        const doc = db.collection('Clubs').doc('frog');
-        await firebase.assertFails(doc.get());
+        await firebase.assertFails(db.collection('Clubs').where("uid", "==", true).get());
     });
     it('require users to log in before listing games', async () => {
         const db = authedApp();
-        const doc = db.collection('Games').doc('frog');
-        await firebase.assertFails(doc.get());
+        await firebase.assertFails(db.collection('Games').where("uid", "==", true).get());
     });
     it('require users to log in before listing games shared', async () => {
         const db = authedApp();
-        const doc = db.collection('GamesShared').doc('frog');
-        await firebase.assertFails(doc.get());
+        await firebase.assertFails(db.collection('GamesShared').where("uid", "==", true).get());
     });
     it('require users to log in before listing invites', async () => {
         const db = authedApp();
-        const doc = db.collection('Invites').doc('frog');
-        await firebase.assertFails(doc.get());
+        await firebase.assertFails(db.collection('Invites').where("uid", "==", true).get());
     });
     it('everyone can list league', async () => {
         const db = authedApp();
-        const doc = db.collection('League').doc('frog');
-        await firebase.assertSucceeds(doc.get());
+        await firebase.assertSucceeds(db.collection('League').where("uid", "==", true).get());
     });
     it('everyone can list league divison', async () => {
         const db = authedApp();
-        const doc = db.collection('LeagueDivision').doc('frog');
-        await firebase.assertSucceeds(doc.get());
+        await firebase.assertSucceeds(db.collection('LeagueDivision').where("uid", "==", true).get());
     });
     it('everyone can list league season', async () => {
         const db = authedApp();
-        const doc = db.collection('LeagueSeason').doc('frog');
-        await firebase.assertSucceeds(doc.get());
+        await firebase.assertSucceeds(db.collection('LeagueSeason').where("uid", "==", true).get());
     });
     it('everyone can list league team', async () => {
         const db = authedApp();
-        const doc = db.collection('LeagueTeam').doc('frog');
-        await firebase.assertSucceeds(doc.get());
+        await firebase.assertSucceeds(db.collection('LeagueTeam').where("uid", "==", true).get());
     });
     it('require users to log in before listing message recipients', async () => {
         const db = authedApp();
-        const doc = db.collection('MessageRecipients').doc('frog');
-        await firebase.assertFails(doc.get());
+        await firebase.assertFails(db.collection('MessageRecipients').where("uid", "==", true).get());
     });
     it('require users to log in before listing messages', async () => {
         const db = authedApp();
-        const doc = db.collection('Messages').doc('frog');
-        await firebase.assertFails(doc.get());
+        await firebase.assertFails(db.collection('Messages').where("uid", "==", true).get());
     });
     it('require users to log in before listing players', async () => {
         const db = authedApp();
-        const doc = db.collection('Players').doc('frog');
-        await firebase.assertFails(doc.get());
+        await firebase.assertFails(db.collection('Players').where("uid", "==", true).get());
     });
     it('require users to log in before listing seasons', async () => {
         const db = authedApp();
-        const doc = db.collection('Seasons').doc('frog');
-        await firebase.assertFails(doc.get());
+        await firebase.assertFails(db.collection('Seasons').where("uid", "==", true).get());
     });
-    it('require users to be in the team to get team', async () => {
-        const db = authedApp();
-        const doc = db.collection('Teams').doc('frog');
-        await firebase.assertFails(doc.get());
-    });
-    it('require users to be logged in to get team', async () => {
-        const db = authedApp();
-        const doc = db.collection('Seaons').doc('frog');
-        await firebase.assertFails(doc.get());
-    });
-    it('require users to be in the teams to get team', async () => {
-        const db = authedApp({ uid: 'alice', email_verified: true  });
-        await db
-            .collection('Teams')
-            .doc('frog')
-            .set({ users: { alice: { added: true } } });
-        await firebase.assertSucceeds(db.collection('Teams').doc('frog').get());
-        const dbRobert = authedApp({ uid: 'robert' });
-        await firebase.assertFails(dbRobert.collection('Teams').doc('frog').get());
-    });
-    it('require admins to be in the teams to get team', async () => {
+
+
+
+    it('get team', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
         await db
             .collection('Teams')
@@ -149,8 +119,8 @@ describe('TeamsFuse rules', function () {
         const dbRobert = authedApp({ uid: 'robert' });
         await firebase.assertFails(dbRobert.collection('Teams').doc('frog').get());
     });
-    it('require users to be in the season to get the season', async () => {
-        const db = authedApp({ uid: 'robert', email_verified: true  });
+    it('get season', async () => {
+        const db = authedApp({ uid: 'robert', email_verified: true });
         await db
             .collection('Seasons')
             .doc('frog')
@@ -159,17 +129,80 @@ describe('TeamsFuse rules', function () {
         const aliceDb = authedApp({ uid: 'alice' });
         await firebase.assertFails(aliceDb.collection('Seasons').doc('frog').get());
     });
-    it('should enforce the createdAt date in user profiles', async () => {
+    it('create user profiles', async () => {
         const db = authedApp({ uid: 'alice' });
         const profile = db.collection('UserData').doc('alice');
-        console.log("Failing");
+        console.log('Failing');
         await firebase.assertFails(profile.set({ birthday: 'January 1' }));
-        console.log("Succeeding");
+        console.log('Succeeding');
         await firebase.assertSucceeds(
             profile.set({
                 birthday: 'January 1',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             }),
         );
+    });
+
+    it('get game requires season user', async () => {
+        const db = authedApp({ uid: 'alice', email_verified: true });
+        console.log('Succeeding');
+        await firebase.assertSucceeds(
+            db
+                .collection('Seasons')
+                .doc('season')
+                .set({
+                    users: {
+                        alice: { added: true },
+                    },
+                }),
+        );
+        await firebase.assertSucceeds(
+            db.collection('GamesShared').doc('sharedGame').set({
+                seasonUid: 'season',
+                uid: 'sharedGame',
+            }),
+        );
+        await firebase.assertSucceeds(
+            db
+                .collection('Teams')
+                .doc('team')
+                .set({
+                    seasonUid: 'season',
+                    uid: 'sharedGame',
+                    admins: ['alice'],
+                }),
+        );
+        await firebase.assertSucceeds(
+            db.collection('Games').doc('game').set({
+                seasonUid: 'season',
+                sharedGameUid: 'sharedGame',
+                teamUid: 'team',
+            }),
+        );
+        await firebase.assertSucceeds(db.collection('Games').doc('game').get());
+        const dbRobert = authedApp({ uid: 'robert', email_verified: true });
+        await firebase.assertFails(dbRobert.collection('Games').doc('game').get());
+    });
+
+    it('get opponents', async () => {
+        const db = authedApp({ uid: 'alice', email_verified: true });
+        console.log('Succeeding');
+        await firebase.assertSucceeds(
+            db
+                .collection('Teams')
+                .doc('team')
+                .set({
+                    seasonUid: 'season',
+                    uid: 'team',
+                    admins: ['alice'],
+                }),
+        );
+
+        await firebase.assertSucceeds(
+            db.collection('Teams').doc('team').collection('Opponents').doc('op').set({
+                name: 'season',
+            }),
+        );
+        await firebase.assertSucceeds(db.collection('Teams').doc('team').collection('Opponents').doc('op').get());
     });
 });

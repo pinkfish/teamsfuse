@@ -193,10 +193,12 @@ class AuthenticationBloc
     }
 
     if (event is AuthenticationLogOut) {
-      yield AuthenticationLoading();
-      await userAuth.signOut();
-      // Finished logging out.
-      yield AuthenticationLoggedOut();
+      if (!(state is AuthenticationLoggedOut)) {
+        yield AuthenticationLoading();
+        await userAuth.signOut();
+        // Finished logging out.
+        yield AuthenticationLoggedOut();
+      }
     }
 
     if (event is AuthenticationNotificationToken) {

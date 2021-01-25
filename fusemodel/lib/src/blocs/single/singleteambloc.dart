@@ -120,6 +120,14 @@ class SingleTeamLoadOpponents extends SingleTeamEvent {
 }
 
 ///
+/// Loads the club for this team.
+///
+class SingleTeamLoadClub extends SingleTeamEvent {
+  @override
+  List<Object> get props => [];
+}
+
+///
 /// Change the archive bit for this team
 ///
 class SingleTeamArchive extends SingleTeamEvent {
@@ -216,6 +224,7 @@ class SingleTeamBloc
   StreamSubscription<Iterable<Season>> _seasonSub;
   StreamSubscription<Iterable<Opponent>> _opponentSub;
   StreamSubscription<SeasonState> _seasonStateSub;
+  String _listeningClubUid;
 
   SingleTeamBloc({@required this.db, @required this.teamUid})
       : super(SingleTeamUninitialized(), "TeamState.$teamUid") {
@@ -226,9 +235,13 @@ class SingleTeamBloc
             newTeam: team,
           ),
         );
-        _setupClubSub(team);
       } else {
         add(_SingleTeamDeleted());
+      }
+    });
+    loadedData.then((value) {
+      if (state.team != null) {
+        _setupClubSub(state.team);
       }
     });
   }
@@ -273,8 +286,17 @@ class SingleTeamBloc
   }
 
   void _setupClubSub(Team t) {
-    if (t.clubUid != null && _clubSub != null) {
+    print("Setup club sub ${t.clubUid}");
+    if (t.clubUid != null &&
+        _clubSub == null &&
+        _listeningClubUid != t.clubUid) {
+      if (_clubSub != null) {
+        _clubSub.cancel();
+        _clubSub = null;
+      }
+      _listeningClubUid = t.clubUid;
       _clubSub = db.getClubData(clubUid: t.clubUid).listen((c) {
+        print("new club data");
         if (c != null) {
           add(_SingleTeamNewClub(club: c));
         } else {
@@ -290,6 +312,7 @@ class SingleTeamBloc
       yield (SingleTeamLoaded.fromState(state)
             ..team = event.newTeam.toBuilder())
           .build();
+      _setupClubSub(state.team);
     }
 
     // The team is deleted.

@@ -185,7 +185,6 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
               state.loaded.rebuild((b) => b..add(event.loaded));
           var loadedLeft = Set.from(state.toLoad);
           loadedLeft.removeAll(loaded);
-          print("Update loaded ${event.loaded} $loadedLeft");
           if (loaded.containsAll(state.toLoad)) {
             loadingTrace.stop();
             loadingTrace = null;

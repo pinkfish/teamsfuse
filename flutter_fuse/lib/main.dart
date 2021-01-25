@@ -9,6 +9,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:timezone/timezone.dart';
+import 'package:universal_io/io.dart';
 
 import 'flutterfuseapp.dart';
 import 'services/analytics.dart';
@@ -19,7 +20,7 @@ import 'services/loggingdata.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  print(String.fromEnvironment("SENTRY_URL"));
+  await Firebase.initializeApp();
 
   // Trace as the first thing in the system.
   var trace = Analytics.instance.newTrace("startup");
@@ -38,14 +39,26 @@ void main() async {
       print('loaded data');
       return data;
     }),
-    FlutterNativeTimezone.getLocalTimezone()
-        .then<String>((str) => currentTimeZone = str)
+    Platform.isAndroid || Platform.isIOS
+        ? FlutterNativeTimezone.getLocalTimezone()
+            .then<String>((str) => currentTimeZone = str)
+        : Future.value(true)
   ]);
+  if (!Platform.isAndroid && !Platform.isIOS) {
+    var dt = DateTime.now();
+    currentTimeZone = dt.timeZoneName;
+  }
 
   // Timezone
   initializeDatabase(loadedData.buffer.asUint8List());
   if (currentTimeZone == "GMT") {
     currentTimeZone = "Europe/London";
+    setLocalLocation(getLocation(currentTimeZone));
+  } else if (currentTimeZone == "Pacific Standard Time") {
+    currentTimeZone = "America/Los_Angeles";
+    setLocalLocation(getLocation(currentTimeZone));
+  } else if (currentTimeZone == "Mountain Standard Time") {
+    currentTimeZone = "America/Detroit";
     setLocalLocation(getLocation(currentTimeZone));
   } else {
     setLocalLocation(getLocation(currentTimeZone));
@@ -57,8 +70,6 @@ void main() async {
   // Setup the timestamps correctly.
 
   //await Firestore.instance.settings();
-
-  await Firebase.initializeApp();
 
   var firestoreWrapper = fs.Firestore();
   //UserDatabaseData.instance = new UserDatabaseData(Analytics.instance,

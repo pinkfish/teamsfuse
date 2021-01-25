@@ -117,7 +117,6 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
     toDeletePlayers.addAll(state.players.keys);
     for (Player player in data) {
       String uid = coordinationBloc.state.uid;
-      print("Data $player $uid");
       if (player.users[uid].relationship == Relationship.Me) {
         if (foundMe) {
           if (player.users.length <= 1) {
@@ -136,7 +135,6 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
     });
     if (data.length == 0) {
       if (!foundMe && !_createdMePlayer) {
-        print('Docs are empty');
         PlayerUserInternal playerUser = new PlayerUserInternal((b) => b
           ..added = true
           ..relationship = Relationship.Me);
@@ -146,15 +144,12 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
         player.name = coordinationBloc
                 .authenticationBloc.currentUser.profile?.displayName ??
             "Frog";
-        print('Updating firestore');
         _createdMePlayer = true;
         me = player.build();
         coordinationBloc.databaseUpdateModel
             .updateFirestorePlayer(player.build(), true)
-            .then((void val) {
-          print('Done!');
-        }).catchError((dynamic e, StackTrace trace) {
-          print('Setting up snap with players $trace');
+            .then((void val) {})
+            .catchError((dynamic e, StackTrace trace) {
           return e;
         });
       } else {
@@ -226,7 +221,6 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
             coordinationBloc.analyticsSubsystem.newTrace("playerData");
         playerTrace.start();
         var loaded = PlayerLoaded.fromMap(json);
-        print('End players ');
         playerTrace.stop();
         return loaded;
       default:

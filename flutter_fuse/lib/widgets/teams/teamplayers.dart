@@ -164,6 +164,11 @@ class _TeamPlayersState extends State<TeamPlayers> {
       builder: (context, seasonBloc) => BlocBuilder(
         cubit: seasonBloc,
         builder: (context, seasonState) {
+          if (seasonState is SingleSeasonUninitialized || seasonState is SingleSeasonDeleted) {
+            return Column(children: [
+              Text(Messages.of(context).loading),
+            ]);
+          }
           return Column(children: _buildPlayers(seasonState, teamState));
         },
       ),

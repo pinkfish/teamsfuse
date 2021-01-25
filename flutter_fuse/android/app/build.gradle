@@ -27,6 +27,8 @@ keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdkVersion 28
@@ -36,7 +38,6 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.teamfuse.flutterfuse"
         minSdkVersion 16
         targetSdkVersion 28
@@ -67,11 +68,12 @@ flutter {
 }
 
 dependencies {
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test:runner:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'com.google.firebase:firebase-messaging:20.1.0'
-    api 'com.google.gms:google-services:4.3.3'
+    implementation 'com.google.firebase:firebase-messaging:21.0.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    api 'com.google.gms:google-services:4.3.4'
 }
 

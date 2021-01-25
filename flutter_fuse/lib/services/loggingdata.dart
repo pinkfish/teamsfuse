@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:device_info/device_info.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:package_info/package_info.dart';
-import 'package:sentry/sentry.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:universal_io/io.dart';
 
 ///
 /// Logging data for the database.
@@ -13,12 +12,6 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 class LoggingData extends LoggingDataBase {
   /// Constrctor for the logging data.
   LoggingData() {
-    if (String.fromEnvironment("SENTRY_URL") != null) {
-      SentryFlutter.init((options) {
-        options.dsn = String.fromEnvironment("SENTRY_URL");
-      });
-    }
-
     var plugin = DeviceInfoPlugin();
     if (Platform.isIOS) {
       _tags["ios"] = Platform.operatingSystemVersion;
@@ -86,15 +79,21 @@ class LoggingData extends LoggingDataBase {
     });
 
     // Fill in the scope for sentry.
-    Sentry.configureScope((scope) {
+  }
+
+  void start() async {
+    if (kDebugMode) {
+      FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(false);
+    } else {
       for (var item in _extra.entries) {
-        scope.setExtra(item.key, item.value);
+        FirebaseCrashlytics.instance.setCustomKey(item.key, item.value);
       }
       for (var tag in _tags.entries) {
-        scope.setTag(tag.key, tag.value);
+        FirebaseCrashlytics.instance.setCustomKey(tag.key, tag.value);
       }
-      scope.setContexts("release", _packageInfo.version);
-    });
+      FirebaseCrashlytics.instance
+          .setCustomKey("release", _packageInfo.version);
+    }
   }
 
   final Map<String, dynamic> _extra = <String, dynamic>{};
@@ -114,12 +113,8 @@ class LoggingData extends LoggingDataBase {
     FlutterError.dumpErrorToConsole(details, forceReport: true);
     // Don't capture on emulators.
     if (_realDevice && !_debugMode) {
-      var event = SentryEvent(
-          release: _packageInfo.version,
-          exception: details.exception,
-          extra: _extra,
-          tags: _tags);
-      Sentry.captureEvent(event, stackTrace: details.stack);
+      FirebaseCrashlytics.instance.setCustomKey("lastpath", lastPath);
+      FirebaseCrashlytics.instance.recordFlutterError(details);
     }
   }
 
@@ -127,8 +122,10 @@ class LoggingData extends LoggingDataBase {
   void logError(FusedErrorDetails details) async {
     // Don't capture on emulators.
     if (_realDevice && !_debugMode) {
-      await Sentry.captureException(details.exception,
-          stackTrace: details.stack);
+      FirebaseCrashlytics.instance.setCustomKey("lastpath", lastPath);
+
+      FirebaseCrashlytics.instance
+          .recordError(details.exception, details.stack);
     }
   }
 }

@@ -145,8 +145,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         wrapper.collection(GAMES_COLLECTION).document(game.uid);
 
     Map<String, dynamic> data = <String, dynamic>{};
-    data[Game.ATTENDANCE + "." + playerUid + "." + Game.ATTENDANCEVALUE] =
-        attend.toString();
+    data[Game.ATTENDANCE + "." + playerUid] = attend.toString();
 
     return ref.updateData(data).then((void a) => print('Done stuff'));
   }
@@ -1160,6 +1159,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentSnapshotWrapper snap = await ref.get();
     if (snap.exists) {
       yield Club.fromMap(userData.uid, snap.data);
+    } else {
+      yield null;
     }
     await for (var wrap in ref.snapshots()) {
       yield Club.fromMap(userData.uid, wrap.data);

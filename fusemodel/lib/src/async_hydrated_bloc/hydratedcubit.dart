@@ -67,7 +67,11 @@ mixin AsyncHydratedMixin<State> on Cubit<State> {
   /// Instance of [Storage] which will be used to
   /// manage persisting/restoring the [Cubit] state.
   AsyncStorage storage;
-  bool loadedData = false;
+  bool _loadedData = false;
+  final Completer<bool> _loadedDataCompletor = Completer();
+  Future<bool> get loadedData {
+    return _loadedDataCompletor.future;
+  }
 
   Future<void> hydrate() async {
     if (storage == null) throw const StorageNotFound();
@@ -78,9 +82,12 @@ mixin AsyncHydratedMixin<State> on Cubit<State> {
         return;
       }
       // Cause a state change.
-      if (!loadedData) {
-        loadedData = true;
+      if (!_loadedData) {
+        _loadedData = true;
         emit(_fromJson(stateJson));
+        if (!_loadedDataCompletor.isCompleted) {
+          _loadedDataCompletor.complete(true);
+        }
       }
     } on dynamic catch (error, stackTrace) {
       onError(error, stackTrace);
@@ -102,7 +109,7 @@ mixin AsyncHydratedMixin<State> on Cubit<State> {
     final state = change.nextState;
     try {
       // Any state change we mark ourselves as loaded.
-      loadedData = true;
+      _loadedData = true;
       final stateJson = _toJson(state);
       if (stateJson != null) {
         storage.write(storageToken, stateJson).then((_) {}, onError: onError);
@@ -112,6 +119,9 @@ mixin AsyncHydratedMixin<State> on Cubit<State> {
     }
     _state = state;
     super.onChange(change);
+    if (!_loadedDataCompletor.isCompleted) {
+      _loadedDataCompletor.complete(true);
+    }
   }
 
   State _fromJson(dynamic json) {

@@ -77,7 +77,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
     var rows = <Widget>[];
     var messages = Messages.of(context);
 
-    if (_emailNames.isEmpty {
+    if (_emailNames.isEmpty) {
       // Add in the start elements.
       _emailNames.add("");
     }

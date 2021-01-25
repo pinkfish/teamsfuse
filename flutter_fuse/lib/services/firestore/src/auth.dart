@@ -31,6 +31,7 @@ class Auth extends wfs.AuthWrapper {
   @override
   Future<wfs.FirebaseUserWrapper> signInWithEmailAndPassword(
       {String email, String password}) async {
+    print(fa.FirebaseAuth.instance.app.options.androidClientId);
     var user = await fa.FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
     return FirebaseUser(user.user);
