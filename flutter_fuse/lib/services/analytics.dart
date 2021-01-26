@@ -132,6 +132,11 @@ class Analytics extends AnalyticsSubsystem {
     }
     return _packageInfo.version;
   }
+
+  @override
+  void logEvent({String name, Map<String, String> parameters}) {
+    _analytics.logEvent(name: name, parameters: parameters);
+  }
 }
 
 ///

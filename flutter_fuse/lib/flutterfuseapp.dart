@@ -66,8 +66,8 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
     _loginBloc = LoginBloc(
         userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
-    _databaseUpdateModel =
-        DatabaseUpdateModelImpl(Firestore(), _authenticationBloc);
+    _databaseUpdateModel = DatabaseUpdateModelImpl(
+        Firestore(), _authenticationBloc, Analytics.instance);
     _coordinationBloc = CoordinationBloc(
         authenticationBloc: _authenticationBloc,
         analytics: Analytics.instance,

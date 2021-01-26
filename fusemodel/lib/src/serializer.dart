@@ -30,6 +30,7 @@ import 'invite.dart';
 import 'leagueortournament.dart';
 import 'message.dart';
 import 'player.dart';
+import 'media.dart';
 import 'serializer/customjsonserializerplugin.dart';
 import 'serializer/gameperiodserializer.dart';
 import 'serializer/inviteserializer.dart';
@@ -58,25 +59,23 @@ part 'serializer.g.dart';
   Game,
   GameBlocStateType,
   GameDivisionsType,
+  GameEvent,
+  GameEventType,
+  GameFoulType,
   GameInProgress,
   GameLoaded,
   GameLog,
   GameLogType,
-  GameResult,
-  GameResultPerPeriod,
-  GameSharedData,
-  GameState,
-  GamePeriodType,
-  GameUninitialized,
-  Game,
-  GameDivisionsType,
-  GameInProgress,
   GamePeriodType,
   GamePlace,
+  GamePlayerSummary,
   GameResult,
   GameResultPerPeriod,
   GameScore,
   GameSharedData,
+  GameState,
+  GameSummary,
+  GameUninitialized,
   Gender,
   Invite,
   InviteType,
@@ -97,6 +96,8 @@ part 'serializer.g.dart';
   LeagueOrTournamentBlocStateType,
   LeagueOrTournamentUninitialized,
   LeagueOrTournamentTeam,
+  MediaInfo,
+  MediaType,
   Message,
   MessagesBlocStateType,
   MessagesLoaded,
@@ -107,6 +108,7 @@ part 'serializer.g.dart';
   Opponent,
   Player,
   PlayerBlocStateType,
+  PlayerSummaryData,
   PlayerLoaded,
   PlayerState,
   PlayerUninitialized,

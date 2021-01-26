@@ -9,6 +9,7 @@ import 'club.dart';
 import 'game.dart';
 import 'invite.dart';
 import 'leagueortournament.dart';
+import 'media.dart';
 import 'message.dart';
 import 'player.dart';
 import 'team.dart';
@@ -124,6 +125,34 @@ abstract class DatabaseUpdateModel {
   Stream<GameSharedData> getSharedGame(String sharedGameUid);
   Stream<Game> getGame(String gameUid);
 
+  // Game events
+  /// Loads all the game events for this game.
+  Stream<BuiltList<GameEvent>> getGameEvents({@required String gameUid});
+
+  /// Gets the UID for the game event to write out.
+  Future<String> getGameEventId({@required GameEvent event});
+
+  /// Adds the game event into the database
+  Future<void> setGameEvent({@required GameEvent event});
+
+  /// Delete the game event from the database.
+  Future<void> deleteGameEvent({@required String gameEventUid});
+
+  // Media
+  /// Loads all the media for this game.
+  Stream<BuiltList<MediaInfo>> getMediaForGame({@required String gameUid});
+
+  /// Gets all the updates for this speific media info blob.
+  Stream<MediaInfo> getMediaInfo({@required String mediaInfoUid});
+
+  /// Adds the game event into the database
+  Future<String> addMedia({@required MediaInfo media});
+
+  /// Updates the season in the database.
+  Future<void> updateMediaInfoThumbnail(
+      {@required MediaInfo mediaInfo, @required String thumbnailUrl});
+  Future<void> deleteMedia({@required String mediaInfoUid});
+
   // Invite firestore updates
   Future<void> firestoreInviteDelete(String inviteUid);
   Stream<Invite> getSingleInvite(String inviteUid);
@@ -144,7 +173,8 @@ abstract class DatabaseUpdateModel {
   Future<Opponent> addFirestoreOpponent(Opponent opponent);
   Future<void> deleteFirestoreOpponent(Opponent opponent);
   Stream<Iterable<Game>> getOpponentGames(Opponent opponent);
-  Stream<Opponent> getFirestoreOpponent({@required String teamUid, @required String opponentUid});
+  Stream<Opponent> getFirestoreOpponent(
+      {@required String teamUid, @required String opponentUid});
 
   // Team stuff
   Future<void> updateFirestoreTeam(Team team);

@@ -3,6 +3,7 @@ import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
 import '../../../game.dart';
+import '../../../media.dart';
 import '../../../serializer.dart';
 
 part 'singlegamebloc.g.dart';
@@ -20,6 +21,7 @@ class SingleGameBlocStateType extends EnumClass {
   static const SingleGameBlocStateType SaveFailed = _$saveFailed;
   static const SingleGameBlocStateType Saving = _$saving;
   static const SingleGameBlocStateType SaveDone = _$saveDone;
+  static const SingleGameBlocStateType SingleGameChange = _$singleGameChange;
 
   const SingleGameBlocStateType._(String name) : super(name);
 
@@ -36,8 +38,18 @@ class SingleGameBlocStateType extends EnumClass {
 abstract class SingleGameState {
   @nullable
   Game get game;
+  @BuiltValueField(serialize: false)
   BuiltList<GameLog> get gameLog;
+  @BuiltValueField(serialize: false)
   bool get loadedLogs;
+  @BuiltValueField(serialize: false)
+  BuiltList<GameEvent> get gameEvents;
+  @BuiltValueField(serialize: false)
+  bool get loadedEvents;
+  @BuiltValueField(serialize: false)
+  BuiltList<MediaInfo> get media;
+  @BuiltValueField(serialize: false)
+  bool get loadedMedia;
 
   SingleGameBlocStateType get type;
 
@@ -49,12 +61,18 @@ abstract class SingleGameState {
     return builder
       ..game = state.game?.toBuilder()
       ..gameLog = state.gameLog.toBuilder()
-      ..loadedLogs = state.loadedLogs;
+      ..loadedLogs = state.loadedLogs
+      ..gameEvents = state.gameEvents.toBuilder()
+      ..loadedEvents = state.loadedEvents
+      ..loadedMedia = state.loadedMedia
+      ..media = state.media.toBuilder();
   }
 
   static void initializeStateBuilder(SingleGameStateBuilder b) => b
     ..firestoreLogSetup = false
-    ..loadedLogs = false;
+    ..loadedLogs = false
+    ..loadedEvents = false
+    ..loadedMedia = false;
 
   Map<String, dynamic> toMap();
 }
@@ -91,6 +109,46 @@ abstract class SingleGameLoaded
 
   static Serializer<SingleGameLoaded> get serializer =>
       _$singleGameLoadedSerializer;
+}
+
+///
+/// We have a game, events gone wild.
+///
+abstract class SingleGameChangeEvents
+    implements
+        SingleGameState,
+        Built<SingleGameChangeEvents, SingleGameChangeEventsBuilder> {
+  BuiltList<GameEvent> get removedEvents;
+  BuiltList<GameEvent> get newEvents;
+
+  SingleGameChangeEvents._();
+  factory SingleGameChangeEvents(
+          [void Function(SingleGameChangeEventsBuilder) updates]) =
+      _$SingleGameChangeEvents;
+
+  static SingleGameChangeEventsBuilder fromState(SingleGameState state) {
+    return SingleGameState.fromState(state, SingleGameChangeEventsBuilder());
+  }
+
+  /// Defaults for the state.  Always default to no games loaded.
+
+  static void _initializeBuilder(SingleGameChangeEventsBuilder b) {
+    SingleGameState.initializeStateBuilder(b);
+
+    b..type = SingleGameBlocStateType.SingleGameChange;
+  }
+
+  Map<String, dynamic> toMap() {
+    return serializers.serializeWith(SingleGameChangeEvents.serializer, this);
+  }
+
+  static SingleGameChangeEvents fromMap(Map<String, dynamic> jsonData) {
+    return serializers.deserializeWith(
+        SingleGameChangeEvents.serializer, jsonData);
+  }
+
+  static Serializer<SingleGameChangeEvents> get serializer =>
+      _$singleGameChangeEventsSerializer;
 }
 
 ///

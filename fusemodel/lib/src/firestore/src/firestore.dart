@@ -22,4 +22,7 @@ abstract class FirestoreWrapper {
 
   /// Returns the auth wrapper to deal with the auth system.
   AuthWrapper get auth;
+
+  /// Gets the value to put on a field to set it up with the server timestamp
+  dynamic get fieldValueServerTimestamp;
 }

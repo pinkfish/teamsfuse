@@ -8,6 +8,7 @@ export 'src/hasuidcomparable.dart';
 export 'src/invite.dart';
 export 'src/leagueortournament.dart';
 export 'src/loggingdata.dart';
+export 'src/media.dart';
 export 'src/message.dart';
 export 'src/persistendata.dart';
 export 'src/player.dart';

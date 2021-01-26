@@ -14,6 +14,7 @@ class GamePeriodType extends EnumClass {
   static Serializer<GamePeriodType> get serializer =>
       _$gamePeriodTypeSerializer;
 
+  static const GamePeriodType NotStarted = _$notStarted;
   static const GamePeriodType Break = _$break;
   static const GamePeriodType Overtime = _$overtime;
   static const GamePeriodType Penalty = _$penalty;
@@ -93,6 +94,9 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
 
   String toString() => "GamePeriod [$type $periodNumber]";
 
+  static GamePeriod notStarted = GamePeriod((b) => b
+    ..type = GamePeriodType.NotStarted
+    ..periodNumber = 0);
   static GamePeriod regulation = GamePeriod((b) => b
     ..type = GamePeriodType.Regulation
     ..periodNumber = 0);

@@ -16,4 +16,6 @@ abstract class AnalyticsSubsystem {
   bool get debugMode;
 
   TraceProxy newTrace(String traceName);
+
+  void logEvent({String name, Map<String, String> parameters});
 }

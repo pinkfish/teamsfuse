@@ -38,4 +38,8 @@ class Firestore extends wfs.FirestoreWrapper {
       return transactionHandler(t);
     });
   }
+
+  dynamic get fieldValueServerTimestamp {
+    return fs.FieldValue.serverTimestamp();
+  }
 }

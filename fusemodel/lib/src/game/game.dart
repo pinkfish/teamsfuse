@@ -4,10 +4,11 @@ import 'package:built_value/serializer.dart';
 import 'package:timezone/timezone.dart';
 
 import '../serializer.dart';
+import 'gameperiod.dart';
+import 'gameplayersummary.dart';
 import 'gameresult.dart';
 import 'gamesharedata.dart';
 import 'gamesummary.dart';
-import 'playergamesummary.dart';
 
 part 'game.g.dart';
 
@@ -33,6 +34,7 @@ class Attendance extends EnumClass {
 /// the view of the same game for different teams will look different.
 ///
 abstract class Game implements Built<Game, GameBuilder> {
+  GamePeriod get currentPeriod;
   String get uid;
   @BuiltValueField(wireName: SHAREDDATAUID)
   String get sharedDataUid;
@@ -55,19 +57,19 @@ abstract class Game implements Built<Game, GameBuilder> {
   String get leagueOpponentUid;
 
   /// Summary for this specific player.
-  BuiltMap<String, PlayerGameSummary> get players;
+  BuiltMap<String, GamePlayerSummary> get players;
 
   /// Summary for this specific opponent.
-  BuiltMap<String, PlayerGameSummary> get opponents;
+  BuiltMap<String, GamePlayerSummary> get opponents;
 
   /// Summary for the overall game (this is only pts for vs against).
   GameSummary get summary;
 
   /// Total summary for the game for this players.
-  PlayerGameSummary get playerSummaery;
+  GamePlayerSummary get playerSummaery;
 
   /// Total summary for the game for the opponents.
-  PlayerGameSummary get opponentSummary;
+  GamePlayerSummary get opponentSummary;
 
   /// Tracks when this game is running from.  This is used when the
   /// game starts to track the current position in the game.
@@ -105,7 +107,8 @@ abstract class Game implements Built<Game, GameBuilder> {
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(GameBuilder b) => b
     ..trackAttendance = true
-    ..opponentUid = "";
+    ..opponentUid = ""
+    ..currentPeriod = GamePeriod.notStarted.toBuilder();
 
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(Game.serializer, this);

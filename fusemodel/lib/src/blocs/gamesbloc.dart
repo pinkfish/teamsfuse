@@ -12,14 +12,14 @@ import 'data/teamblocstate.dart';
 import 'internal/blocstoload.dart';
 import 'teambloc.dart';
 
-abstract class GameEvent extends Equatable {}
+abstract class GameBlocEvent extends Equatable {}
 
-class _GameEventLogout extends GameEvent {
+class _GameEventLogout extends GameBlocEvent {
   @override
   List<Object> get props => [];
 }
 
-class _GameEventNewDataLoaded extends GameEvent {
+class _GameEventNewDataLoaded extends GameBlocEvent {
   final Iterable<Game> games;
   final String teamUid;
 
@@ -29,7 +29,7 @@ class _GameEventNewDataLoaded extends GameEvent {
   List<Object> get props => [teamUid, games];
 }
 
-class GameEventSetBoundaries extends GameEvent {
+class GameEventSetBoundaries extends GameBlocEvent {
   final DateTime start;
   final DateTime end;
 
@@ -43,7 +43,7 @@ class GameEventSetBoundaries extends GameEvent {
 /// Handles the work around the games and game system inside of
 /// the app.
 ///
-class GameBloc extends HydratedBloc<GameEvent, GameState> {
+class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
   final CoordinationBloc coordinationBloc;
   final TeamBloc teamBloc;
 
@@ -106,7 +106,7 @@ class GameBloc extends HydratedBloc<GameEvent, GameState> {
   }
 
   @override
-  Stream<GameState> mapEventToState(GameEvent event) async* {
+  Stream<GameState> mapEventToState(GameBlocEvent event) async* {
     // New data from above.  Mark ourselves as done.
     if (event is _GameEventNewDataLoaded) {
       MapBuilder<String, BuiltMap<String, Game>> newGames =

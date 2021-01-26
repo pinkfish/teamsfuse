@@ -14,9 +14,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   static const int maxMessages = 20;
   final FirestoreWrapper wrapper;
   final AuthenticationBloc authenticationBloc;
+  final AnalyticsSubsystem analytics;
   UserData userData;
 
-  DatabaseUpdateModelImpl(this.wrapper, this.authenticationBloc) {
+  DatabaseUpdateModelImpl(
+      this.wrapper, this.authenticationBloc, this.analytics) {
     authenticationBloc.listen((state) {
       if (state is AuthenticationLoggedIn) {
         userData = state.user;
@@ -37,6 +39,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     CollectionReferenceWrapper ref = wrapper.collection(GAMES_COLLECTION);
     CollectionReferenceWrapper refShared =
         wrapper.collection(GAMES_SHARED_COLLECTION);
+    analytics.logEvent(name: "updateGame");
     if (game.uid == null || game.uid == '') {
       DocumentReferenceWrapper ref =
           wrapper.collection(GAMES_COLLECTION).document();
@@ -106,6 +109,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           gameBuilder.sharedDataUid = refShared[i].documentID;
           // Add the game.
           tx.set(ref[i], gameBuilder.build().toMap());
+          analytics.logEvent(name: "addTrainingEvent");
         }
       }
       return s.toMap();
@@ -117,6 +121,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Add or update this record into the database.
     CollectionReferenceWrapper refShared =
         wrapper.collection(GAMES_SHARED_COLLECTION);
+    analytics.logEvent(name: "updateSharedGame");
     if (game.uid == null || game.uid == '') {
       // Add the shared stuff, then the game.
       DocumentReferenceWrapper sharedDoc = await refShared.add(game.toMap());
@@ -135,6 +140,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // delete from the database.
     DocumentReferenceWrapper ref =
         wrapper.collection(GAMES_COLLECTION).document(game.uid);
+    analytics.logEvent(name: "deleteGame");
     return ref.delete();
   }
 
@@ -146,6 +152,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     Map<String, dynamic> data = <String, dynamic>{};
     data[Game.ATTENDANCE + "." + playerUid] = attend.toString();
+    analytics.logEvent(name: "updateGameAttendance");
 
     return ref.updateData(data).then((void a) => print('Done stuff'));
   }
@@ -158,6 +165,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     Map<String, dynamic> data = <String, dynamic>{};
     data[Game.RESULT] = result.toMap();
+    analytics.logEvent(name: "updateGameResult");
     return ref.updateData(data);
   }
 
@@ -168,12 +176,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     Map<String, dynamic> data = <String, dynamic>{};
     data[GameSharedData.OFFICIALRESULT] = result.toMap();
+    analytics.logEvent(name: "updateOfficalGameResult");
+
     return ref.updateData(data);
   }
 
   // Invite firestore updates
   @override
   Future<void> firestoreInviteDelete(String inviteUid) {
+    analytics.logEvent(name: "inviteDelete");
     return wrapper.collection(INVITE_COLLECTION).document(inviteUid).delete();
   }
 
@@ -183,6 +194,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       MessageRecipient rec, MessageReadState state) {
     DocumentReferenceWrapper doc =
         wrapper.collection(MESSAGE_RECIPIENTS_COLLECTION).document(rec.uid);
+    analytics.logEvent(name: "updateMessageRecipientState");
+
     return doc
         .updateData(<String, String>{MessageRecipient.STATE: state.toString()});
   }
@@ -234,6 +247,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<Message> updateFirestoreMessage(MessageBuilder mess) async {
     // Add or update this record into the database.
     CollectionReferenceWrapper ref = wrapper.collection("Messages");
+    analytics.logEvent(name: "updateMessage");
     if (mess.uid == '' || mess.uid == null) {
       // Add the message.
       mess.timeSent = new DateTime.now().millisecondsSinceEpoch;
@@ -273,6 +287,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     Map<String, dynamic> messageData = <String, dynamic>{};
     messageData[Message.BODY] = body;
     await messageRef.updateData(messageData);
+    analytics.logEvent(name: "updateMessageBody");
   }
 
   @override
@@ -312,6 +327,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(OPPONENT_COLLECTION);
     // Update the game.
     await ref.document(opponent.uid).updateData(opponent.toMap());
+    analytics.logEvent(name: "updateOpponent");
     return opponent.uid;
   }
 
@@ -326,12 +342,15 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     opponent = opponent.rebuild((b) => b..uid = docRef.documentID);
     // Add the game.
     await docRef.setData(opponent.toMap());
+    analytics.logEvent(name: "addOpponent");
+
     return opponent;
   }
 
   @override
   Future<void> deleteFirestoreOpponent(Opponent opponent) async {
     // Add or update this record into the database.
+    analytics.logEvent(name: "deleteOpponent");
     return wrapper
         .collection(TEAMS_COLLECTION)
         .document(opponent.teamUid)
@@ -423,6 +442,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
     // Update the game.
     await ref.document(team.uid).updateData(team.toMap());
+    analytics.logEvent(name: "updateTeam");
     return team.uid;
   }
 
@@ -445,6 +465,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (imageFile != null) {
       updateTeamImage(pregen.documentID, imageFile);
     }
+    analytics.logEvent(name: "addTeam");
 
     return pregen.documentID;
   }
@@ -472,6 +493,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(TEAMS_COLLECTION)
         .document(teamUid)
         .updateData({PHOTOURL: photoUrl.toString()});
+    analytics.logEvent(name: "updateTeamImage");
     return photoUrl;
   }
 
@@ -479,6 +501,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<void> deleteAdmin(Team team, String uid) {
     final DocumentReferenceWrapper ref =
         wrapper.collection(TEAMS_COLLECTION).document(team.uid);
+    analytics.logEvent(name: "deleteAdmin");
     return ref.updateData(<String, dynamic>{Team.ADMINS + "." + uid: false});
   }
 
@@ -487,6 +510,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     final DocumentReferenceWrapper ref =
         wrapper.collection(TEAMS_COLLECTION).document(teamUid);
     await ref.updateData(<String, dynamic>{Team.ADMINS + "." + uid: true});
+    analytics.logEvent(name: "addAdmin");
     return ref.documentID;
   }
 
@@ -693,6 +717,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     await ref
         .document(player.uid)
         .updateData(player.toMap(includeUsers: includeUsers));
+    analytics.logEvent(name: "updatePlayer");
   }
 
   // Player stuff
@@ -704,6 +729,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Add the game.
     var p = player.rebuild((b) => b..uid = docRef.documentID);
     await docRef.setData(p.toMap(includeUsers: true));
+    analytics.logEvent(name: "addPlayer");
     return docRef.documentID;
   }
 
@@ -720,6 +746,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(PLAYERS_COLLECTION)
         .document(playerUid)
         .updateData(data);
+    analytics.logEvent(name: "updatePlayerImage");
     return snapshot.downloadUrl;
   }
 
@@ -749,6 +776,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       Map<String, dynamic> data = <String, dynamic>{};
       data[Player.USERS + "." + player.userUid] = playerInternal.toMap();
       doc.reference.updateData(data);
+      analytics.logEvent(name: "addUserToPlayer");
       return true;
     }
     return false;
@@ -759,11 +787,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     CollectionReferenceWrapper ref = wrapper.collection(PLAYERS_COLLECTION);
     DocumentReferenceWrapper doc =
         await ref.add(player.toMap(includeUsers: true));
+    analytics.logEvent(name: "createPlayer");
     return doc.documentID;
   }
 
   @override
   Future<void> deletePlayer(String playerUid) {
+    analytics.logEvent(name: "deletePlayer");
     return wrapper
         .collection(PLAYERS_COLLECTION)
         .document(playerUid)
@@ -795,6 +825,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       var doc = await ref.add(invite.toMap());
       return doc.documentID;
     }
+    analytics.logEvent(name: "inviteUserToPlayer");
     return snapshot.documents[0].documentID;
   }
 
@@ -821,6 +852,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       var doc = await ref.add(invite.toMap());
       return doc.documentID;
     }
+    analytics.logEvent(name: "inviteAdminToTeam");
     return snapshot.documents[0].documentID;
   }
 
@@ -845,6 +877,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<void> removeUserFromPlayer(Player player, String userId) {
     DocumentReferenceWrapper doc =
         wrapper.collection(PLAYERS_COLLECTION).document(player.uid);
+    analytics.logEvent(name: "removeUserFromPlayer");
     return doc.updateData(<String, dynamic>{Player.USERS + userId: null});
   }
 
@@ -858,6 +891,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     await ref
         .document(season.uid)
         .updateData(season.toMap(includePlayers: includePlayers));
+    analytics.logEvent(name: "updateFirestoreSeason");
   }
 
   Future<Season> addFirestoreSeason(
@@ -870,6 +904,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     } else {
       doc = await ref.add(season.toMap(includePlayers: true));
     }
+    analytics.logEvent(name: "addFirestoreSeason");
     return season.rebuild((b) => b..uid = doc.documentID);
   }
 
@@ -887,6 +922,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     Map<String, dynamic> data = <String, dynamic>{};
     data[Season.PLAYERS + "." + playerUid] = null;
     await doc.updateData(data);
+    analytics.logEvent(name: "removePlayerFromSeason");
   }
 
   @override
@@ -900,6 +936,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(SEASONS_COLLECTION)
         .document(season.uid)
         .updateData(data);
+    analytics.logEvent(name: "updateRoleInTeamForSeason");
   }
 
   @override
@@ -940,6 +977,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(InviteToTeam.SEASONUID, isEqualTo: seasonUid)
         .where(InviteToTeam.TEAMUID, isEqualTo: teamUid)
         .getDocuments();
+    analytics.logEvent(name: "inviteUserToSeason");
     if (snapshot.documents.length > 0) {
       InviteToTeam invite = InviteFactory.makeInviteFromJSON(
           snapshot.documents[0].documentID, snapshot.documents[0].data);
@@ -1038,6 +1076,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     Map<String, dynamic> data = <String, dynamic>{};
     data[Season.PLAYERS + "." + seasonPlayer.playerUid] = seasonPlayer.toMap();
     doc.updateData(data);
+    analytics.logEvent(name: "addPlayerToSeason");
     return;
   }
 
@@ -1086,6 +1125,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> addUserToClub(String clubUid, String newUserUid, bool admin) {
+    analytics.logEvent(name: "addUserToClub");
     return wrapper
         .collection(CLUB_COLLECTION)
         .document(clubUid)
@@ -1107,6 +1147,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       ..email = email);
     DocumentReferenceWrapper ref =
         await wrapper.collection(INVITE_COLLECTION).add(invite.toMap());
+    analytics.logEvent(name: "inviteUserToClub");
     return ref.documentID;
   }
 
@@ -1118,6 +1159,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     } else {
       await ref.updateData(data);
     }
+    analytics.logEvent(name: "addClub");
     return ref.documentID;
   }
 
@@ -1129,6 +1171,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(club.uid)
         .updateData(data);
 
+    analytics.logEvent(name: "updateClub");
     return club.uid;
   }
 
@@ -1144,11 +1187,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .document(club.uid)
         .updateData({PHOTOURL: photoUrl});
 
+    analytics.logEvent(name: "updateClubImage");
     return snapshot.downloadUrl;
   }
 
   @override
   Future<void> deleteClubMember(Club club, String memberUid) {
+    analytics.logEvent(name: "deleteClubMember");
     return wrapper.collection(CLUB_COLLECTION).document(club.uid).updateData(
         <String, dynamic>{Club.MEMBERS + "." + memberUid + "." + ADDED: false});
   }
@@ -1242,6 +1287,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> addUserToLeague(String leagueUid, bool admin) {
+    analytics.logEvent(name: "addUserToLeague");
     return wrapper
         .collection(LEAGUE_COLLECTON)
         .document(leagueUid)
@@ -1255,6 +1301,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> addUserToLeagueSeason(String leagueUid, bool admin) {
+    analytics.logEvent(name: "addUserToLeagueSeason");
     return wrapper
         .collection(LEAGUE_SEASON_COLLECTION)
         .document(leagueUid)
@@ -1268,6 +1315,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> addUserToLeagueDivison(String leagueUid, bool admin) {
+    analytics.logEvent(name: "addUserToLeagueDivison");
     return wrapper
         .collection(LEAGUE_COLLECTON)
         .document(leagueUid)
@@ -1283,6 +1331,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<String> inviteUserToLeague(InviteToLeagueAsAdmin invite) async {
     DocumentReferenceWrapper ref =
         await wrapper.collection(INVITE_COLLECTION).add(invite.toMap());
+    analytics.logEvent(name: "inviteUserToLeague");
     return ref.documentID;
   }
 
@@ -1307,6 +1356,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Write it out to firestore.  Yay.
     var doc =
         await wrapper.collection(INVITE_COLLECTION).add(teamInvite.toMap());
+    analytics.logEvent(name: "inviteUserToLeagueTeam");
     return doc.documentID;
   }
 
@@ -1342,6 +1392,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           .document(league.uid)
           .updateData(data);
     }
+    analytics.logEvent(name: "updateLeague");
 
     return league.uid;
   }
@@ -1358,11 +1409,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(LEAGUE_COLLECTON)
         .document(league.uid)
         .updateData({PHOTOURL: photoUrl});
+    analytics.logEvent(name: "updateLeagueImage");
     return snapshot.downloadUrl;
   }
 
   @override
   Future<void> deleteLeagueMember(LeagueOrTournament league, String memberUid) {
+    analytics.logEvent(name: "deleteLeagueMember");
     return wrapper
         .collection(LEAGUE_COLLECTON)
         .document(league.uid)
@@ -1480,6 +1533,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(LEAGUE_DIVISION_COLLECTION)
         .document(division.uid)
         .updateData(division.toMap());
+    analytics.logEvent(name: "updateLeagueDivison");
     return division.uid;
   }
 
@@ -1495,6 +1549,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .collection(LEAGUE_SEASON_COLLECTION)
         .document(season.uid)
         .updateData(season.toMap());
+    analytics.logEvent(name: "updateLeagueSeason");
     return season.uid;
   }
 
@@ -1520,6 +1575,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     Map<String, dynamic> data = <String, dynamic>{};
     data[LeagueOrTournamentTeam.WINRECORD + "." + divison] = record.toMap();
     doc.updateData(data);
+    analytics.logEvent(name: "updateLeagueTeam");
   }
 
   @override
@@ -1705,5 +1761,118 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       yield BuiltList(wrap.documents.map(
           (DocumentSnapshotWrapper doc) => InviteToClub.fromMap(doc.data)));
     }
+  }
+
+  // Game Events
+  @override
+  Future<String> getGameEventId({GameEvent event}) async {
+    var ref = wrapper.collection(GAME_EVENT_COLLECTION).document();
+    analytics.logEvent(name: "AddGameEvent", parameters: {
+      "type": event.type.toString(),
+      "points": event.points.toString()
+    });
+    return ref.documentID;
+  }
+
+  @override
+  Future<void> setGameEvent({GameEvent event}) async {
+    if (event.uid == null || event.uid.isEmpty) {
+      throw ArgumentError("uid must not be empty");
+    }
+    print("Saving game event $event");
+    analytics.logEvent(name: "UpdateGameEvent");
+    return wrapper
+        .collection(GAME_EVENT_COLLECTION)
+        .document(event.uid)
+        .setData(event.toMap());
+  }
+
+  @override
+  Future<void> deleteGameEvent({String gameEventUid}) {
+    print("Deleting event $gameEventUid");
+    analytics.logEvent(name: "DeleteGameEvent");
+    return wrapper
+        .collection(GAME_EVENT_COLLECTION)
+        .document(gameEventUid)
+        .delete();
+  }
+
+  @override
+  Stream<BuiltList<GameEvent>> getGameEvents({String gameUid}) async* {
+    var q = wrapper
+        .collection(GAME_EVENT_COLLECTION)
+        .where("gameUid", isEqualTo: gameUid)
+        .orderBy("timestamp");
+    var snap = await q.getDocuments();
+    yield BuiltList.of(snap.documents.map((snap) =>
+        GameEvent.fromMap(_addUid(snap.documentID, snap.data))
+            .rebuild((b) => b..uid = snap.documentID)));
+    await for (snap in q.snapshots()) {
+      yield BuiltList.of(snap.documents.map((snap) =>
+          GameEvent.fromMap(_addUid(snap.documentID, snap.data))
+              .rebuild((b) => b..uid = snap.documentID)));
+    }
+  }
+
+  Map<String, dynamic> _addUid(String uid, Map<String, dynamic> data) {
+    data.putIfAbsent("uid", () => uid);
+    return data;
+  }
+
+  @override
+  Future<String> addMedia({MediaInfo media}) async {
+    var ref = wrapper.collection(MEDIA_COLLECTION).document();
+    var p = media.rebuild((b) => b..uid = ref.documentID);
+    var data = p.toMap();
+    data["uploadTime"] = wrapper.fieldValueServerTimestamp;
+    await ref.setData(data);
+    analytics.logEvent(name: "AddMedia");
+    return ref.documentID;
+  }
+
+  Future<void> deleteMedia({String mediaInfoUid}) {
+    analytics.logEvent(name: "DeleteMedia");
+    return wrapper.collection(MEDIA_COLLECTION).document(mediaInfoUid).delete();
+  }
+
+  @override
+  Stream<BuiltList<MediaInfo>> getMediaForGame({String gameUid}) async* {
+    var q = wrapper
+        .collection(MEDIA_COLLECTION)
+        .where("gameUid", isEqualTo: gameUid);
+    var snap = await q.getDocuments();
+    snap.documents.forEach((e) {
+      print(e.data);
+    });
+    yield BuiltList.of(snap.documents
+        .map((snap) => MediaInfo.fromMap(_addUid(snap.documentID, snap.data))));
+    await for (var snap in q.snapshots()) {
+      yield BuiltList.of(snap.documents.map(
+          (snap) => MediaInfo.fromMap(_addUid(snap.documentID, snap.data))));
+    }
+  }
+
+  @override
+  Stream<MediaInfo> getMediaInfo({String mediaInfoUid}) async* {
+    var ref = wrapper.collection(MEDIA_COLLECTION).document(mediaInfoUid);
+    var doc = await ref.get();
+    if (doc.exists) {
+      yield MediaInfo.fromMap(doc.data);
+    } else {
+      yield null;
+    }
+    await for (var snap in ref.snapshots()) {
+      if (snap.exists) {
+        yield MediaInfo.fromMap(snap.data);
+      } else {
+        yield null;
+      }
+    }
+  }
+
+  Future<void> updateMediaInfoThumbnail(
+      {MediaInfo mediaInfo, String thumbnailUrl}) async {
+    var ref = wrapper.collection(MEDIA_COLLECTION).document(mediaInfo.uid);
+    await ref.updateData({thumbnailUrl: thumbnailUrl});
   }
 }
