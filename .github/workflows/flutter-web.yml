@@ -44,7 +44,7 @@ jobs:
       with:
         args: deploy --only hosting
       env:
-        FIREBASE_TOKEN: ${{ secrets.firebaseToken }}
+        FIREBASE_TOKEN: ${{ secrets.FIREBASETOKEN }}
         FIREBASE_PROJECT: teamsfuse
         PROJECT_PATH: ./firebase
     - name: Commit files
