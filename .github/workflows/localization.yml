@@ -41,10 +41,10 @@ jobs:
           java-version: '12.x'
       - uses: subosito/flutter-action@v1
         with:
-          channel: 'stable' # or: 'dev' or 'beta'
+          channel: 'beta' # or: 'dev' or 'beta'
       - run: flutter packages get
         working-directory: flutter_fuse 
-      - run: flutter pub run intl_translation:extract_to_arb --output-dir=lib/l10n lib/messages.dart
+      - run: flutter pub run intl_translation:extract_to_arb --output-dir=lib/l10n lib/services/messages.dart
         working-directory: flutter_fuse
       - run: |
           cat lib/l10n/intl_messages.arb | awk '{ if (NR == 2) { print "  \"@@locale\": \"en\"," } print $0 }' > lib/l10n/intl_en.arb
