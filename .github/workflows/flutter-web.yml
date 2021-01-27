@@ -30,6 +30,8 @@ jobs:
       working-directory: fusemodel
     - run: flutter packages get
       working-directory: flutter_fuse
+    - run: flutter config --enable-web
+      working-directory: flutter_fuse
     - run: sudo apt-get install -y graphicsmagick
       working-directory: flutter_fuse
     #- run: |
