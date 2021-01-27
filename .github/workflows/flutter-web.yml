@@ -52,9 +52,3 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git commit -m "Release notes for the ios ${{ steps.branch_name.outputs.SOURCE_TAG}} version" -a
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUBPUSHTOKEN }}
-        branch: main
-        force: true
