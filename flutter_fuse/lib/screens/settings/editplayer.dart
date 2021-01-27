@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
@@ -42,7 +43,9 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    singlePlayerBloc = SinglePlayerBloc(playerUid: widget.playerUid);
+    singlePlayerBloc = SinglePlayerBloc(
+        playerUid: widget.playerUid,
+        db: RepositoryProvider.of<DatabaseUpdateModel>(context));
   }
 
   Future<void> _chooseImage() async {
@@ -169,37 +172,36 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
           ),
         ],
       ),
-      body: BlocProvider(
-        create: (context) => singlePlayerBloc,
-        child: BlocListener(
-          cubit: singlePlayerBloc,
-          listener: (contex, playerState) {
-            if (playerState is SinglePlayerLoaded) {
-              _player = playerState.player.toBuilder();
-            }
-            if (playerState is SinglePlayerSaveDone) {
-              Navigator.pop(context);
-            }
-          },
-          child: BlocBuilder(
-            cubit: singlePlayerBloc,
-            builder: (context, playerState) => Container(
-              padding: EdgeInsets.all(10.0),
-              child: Scrollbar(
-                child: SingleChildScrollView(
-                  child: Form(
-                    autovalidate: _autoValidate,
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: _buildPlayerData(playerState),
-                    ),
+      body: BlocConsumer(
+        cubit: singlePlayerBloc,
+        listener: (contex, playerState) {
+          if (playerState is SinglePlayerLoaded) {
+            _player = playerState.player.toBuilder();
+          }
+          if (playerState is SinglePlayerSaveDone) {
+            Navigator.pop(context);
+          }
+        },
+        builder: (context, playerState) {
+          if (playerState is SinglePlayerUninitialized) {
+            return LoadingWidget();
+          }
+          return Container(
+            padding: EdgeInsets.all(10.0),
+            child: Scrollbar(
+              child: SingleChildScrollView(
+                child: Form(
+                  autovalidate: _autoValidate,
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: _buildPlayerData(playerState),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _saveData,

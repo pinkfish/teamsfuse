@@ -140,7 +140,8 @@ service cloud.firestore {
 
     // UserData table (profile details).
     match /UserData/{userId} {
-      allow read, update, delete: if isSignedInOnly() &&
+      allow read: if isSignedInOnly();
+      allow update, delete: if isSignedInOnly() &&
           request.auth.uid == resource.id;
       allow list: if isSignedIn();
       allow create: if isSignedInOnly() &&

@@ -214,6 +214,15 @@ class PlayerDetailsScreen extends StatelessWidget {
       ),
     );
 
+    ret.add(
+      ListTile(
+        leading: const Icon(MdiIcons.tshirtCrew),
+        title: Text(playerState.seasonPlayer.jerseyNumber.isEmpty
+            ? Messages.of(context).unknown
+            : playerState.seasonPlayer.jerseyNumber),
+      ),
+    );
+
     if (singlePlayerState.player != null &&
         singlePlayerState.player.users != null) {
       for (var userUid in singlePlayerState.player.users.keys) {
@@ -311,7 +320,7 @@ class PlayerDetailsScreen extends StatelessWidget {
       }
     }
 
-    if (teamState.isAdmin()) {
+    if (!(teamState is SingleTeamUninitialized) && teamState.isAdmin()) {
       ret.add(
         Row(
           children: <Widget>[

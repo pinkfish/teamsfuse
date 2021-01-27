@@ -14,7 +14,10 @@ abstract class GameSummary implements Built<GameSummary, GameSummaryBuilder> {
   GameSummary._();
   factory GameSummary([updates(GameSummaryBuilder b)]) = _$GameSummary;
 
-  static void _initializeBuilder(GameSummaryBuilder b) => b..finished = false;
+  static void _initializeBuilder(GameSummaryBuilder b) => b
+    ..finished = false
+    ..pointsFor = 0
+    ..pointsAgainst = 0;
 
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(GameSummary.serializer, this);
