@@ -89,7 +89,7 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
                     child: Column(
                       children: <Widget>[
                         ListTile(
-                          leading: const Icon(MdiIcons.shoeCleat),
+                          leading: const Icon(MdiIcons.cardsClub),
                           title: Text(inviteToClub.clubName),
                           subtitle: ByUserNameComponent(
                               userId: inviteToClub.sentByUid),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../../services/localutilities.dart';
-import '../../player/playertile.dart';
+import '../../player/playertilebasketball.dart';
 
 typedef void PlayerSelectFunction(String uid, bool selected);
 typedef bool PlayerIsSelected(String uid);
@@ -66,7 +66,7 @@ class PlayerMultiselect extends StatelessWidget {
         .map(
           (String playerUid) => Padding(
             padding: EdgeInsets.all(2.0),
-            child: PlayerTile(
+            child: PlayerTileBasketball(
               playerUid: playerUid,
               editButton: false,
               color: isSelected(playerUid) ? mainColorSelected : mainColor,

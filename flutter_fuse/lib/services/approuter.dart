@@ -44,8 +44,10 @@ import '../screens/team/addplayer.dart';
 import '../screens/team/addseason.dart';
 import '../screens/team/addteam.dart';
 import '../screens/team/clubsettings.dart';
+import '../screens/team/editseason.dart';
 import '../screens/team/editteam.dart';
 import '../screens/team/playerdetails.dart';
+import '../screens/team/seasondetails.dart';
 import '../screens/team/team.dart';
 import '../screens/team/teamhome.dart';
 import '../screens/team/teamsettings.dart';
@@ -154,6 +156,14 @@ class AppRouter {
         handler: fluro.Handler(
             handlerFunc: (context, vals) =>
                 AddSeasonScreen(vals["id"][0].toString())));
+    router.define("/Season/Edit/:id",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) =>
+                EditSeasonScreen(vals["id"][0].toString())));
+    router.define("/Season/View/:id",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) =>
+                SeasonDetailsScreen(seasonUid: vals["id"][0].toString())));
     router.define("/AddPlayer/:team/:season",
         handler: fluro.Handler(
             handlerFunc: (context, vals) => AddPlayerScreen(

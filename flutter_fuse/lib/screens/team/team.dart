@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
@@ -53,7 +54,6 @@ class _TeamScreenState extends State<TeamScreen> {
     // Causes the app to rebuild with the _selectedChoice.
     setState(() {});
     if (choice == 'settings') {
-      // Show a dialog and then delete it!
       Navigator.pushNamed(context, "TeamSettings/${widget.teamUid}");
     }
     if (choice == "club") {
@@ -67,7 +67,6 @@ class _TeamScreenState extends State<TeamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    FloatingActionButton fab;
     return SingleTeamProvider(
       teamUid: widget.teamUid,
       builder: (contextl, singleTeamBloc) => BlocBuilder(
@@ -88,16 +87,32 @@ class _TeamScreenState extends State<TeamScreen> {
                 itemBuilder: (context) {
                   return <PopupMenuItem<String>>[
                     PopupMenuItem<String>(
+                      value: "edit",
+                      child: ListTile(
+                        leading: Icon(Icons.edit),
+                        title: Text(Messages.of(context).editbuttontext),
+                      ),
+                    ),
+                    PopupMenuItem<String>(
                       value: "settings",
-                      child: Text(Messages.of(context).settings),
+                      child: ListTile(
+                        leading: Icon(Icons.settings),
+                        title: Text(Messages.of(context).settings),
+                      ),
                     ),
                     PopupMenuItem<String>(
                       value: "club",
-                      child: Text(Messages.of(context).club),
+                      child: ListTile(
+                        leading: Icon(MdiIcons.cardsClub),
+                        title: Text(Messages.of(context).club),
+                      ),
                     ),
                     PopupMenuItem<String>(
                       value: 'archive',
-                      child: Text(Messages.of(context).archiveteam),
+                      child: ListTile(
+                        leading: Icon(Icons.archive),
+                        title: Text(Messages.of(context).archiveteam),
+                      ),
                     )
                   ];
                 },
@@ -121,31 +136,17 @@ class _TeamScreenState extends State<TeamScreen> {
                 items: <BottomNavigationBarItem>[
                   BottomNavigationBarItem(
                     icon: const Icon(Icons.gamepad),
-                    title: Text(Messages.of(context).details),
+                    label: Messages.of(context).details,
                   ),
                   BottomNavigationBarItem(
                     icon: const Icon(Icons.people),
-                    title: Text(Messages.of(context).players),
+                    label: Messages.of(context).players,
                   ),
                   BottomNavigationBarItem(
                     icon: const Icon(Icons.flag),
-                    title: Text(Messages.of(context).opponent),
+                    label: Messages.of(context).opponent,
                   ),
                 ]),
-            floatingActionButton: BlocBuilder(
-              cubit: singleTeamBloc,
-              builder: (context, state) {
-                if (state.isAdmin() && _tabIndex == 0) {
-                  fab = FloatingActionButton(
-                    onPressed: () => _onEditTeam(context),
-                    child: Icon(Icons.edit),
-                  );
-                  return fab;
-                }
-                return Text("");
-              },
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
             body: _buildBody(singleTeamBloc),
           );
         },

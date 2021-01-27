@@ -15,7 +15,7 @@ typedef Widget PlayerExtraFunc(String playerUid);
 ///
 /// Shows the details on the player by giving the name and jersey number.
 ///
-class PlayerTile extends StatelessWidget {
+class PlayerTileBasketball extends StatelessWidget {
   final String playerUid;
   final Player player;
   final PlayerCallbackFunc onTap;
@@ -28,7 +28,7 @@ class PlayerTile extends StatelessWidget {
   final SeasonPlayerSummary summary;
   final double scale;
 
-  PlayerTile(
+  PlayerTileBasketball(
       {this.playerUid,
       this.player,
       this.onTap,

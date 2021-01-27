@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_fuse/widgets/player/playertilebasketball.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../../services/localutilities.dart';
-import '../../player/playertile.dart';
 
 typedef void SelectPlayerCallback(BuildContext context, String playerUid);
 typedef bool FilterPlayerCallback(String playerUid);
@@ -44,7 +44,7 @@ class DialogPlayerList extends StatelessWidget {
         .map(
           (String playerUid) => Padding(
             padding: EdgeInsets.all(2.0),
-            child: PlayerTile(
+            child: PlayerTileBasketball(
               playerUid: playerUid,
               editButton: false,
               scale: scale,

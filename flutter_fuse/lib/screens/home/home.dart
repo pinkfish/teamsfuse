@@ -191,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 FabMiniMenuItemWidget(
                   icon: const Icon(Icons.gamepad),
                   fabColor: theme.accentColor,
-                  text: messages.addgame,
+                  text: messages.addgamebutton,
                   onPressed: () => Navigator.pushNamed(context, "AddGame"),
                 ),
               ],

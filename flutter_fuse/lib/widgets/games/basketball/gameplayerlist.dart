@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../../services/localutilities.dart';
-import '../../player/playertile.dart';
+import '../../player/playertilebasketball.dart';
 
 typedef void SelectPlayerCallback(BuildContext context, String playerUid);
 typedef bool FilterPlayerCallback(String playerUid);
@@ -31,7 +31,7 @@ class GamePlayerList extends StatelessWidget {
         .map(
           (String playerUid) => Padding(
             padding: EdgeInsets.all(2.0),
-            child: PlayerTile(
+            child: PlayerTileBasketball(
               extra: extra,
               compactDisplay: this.compactDisplay,
               playerUid: playerUid,

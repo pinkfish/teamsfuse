@@ -29,7 +29,7 @@ class EmptyGameList extends StatelessWidget {
     } else {
       button = RaisedButton(
         onPressed: () => _addGame(context),
-        child: Text(Messages.of(context).addgame),
+        child: Text(Messages.of(context).addgamebutton),
       );
     }
 

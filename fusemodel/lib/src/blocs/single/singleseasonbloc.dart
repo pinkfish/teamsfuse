@@ -14,7 +14,7 @@ abstract class SingleSeasonEvent extends Equatable {}
 /// Updates the team (writes it out to firebase.
 ///
 class SingleSeasonUpdate extends SingleSeasonEvent {
-  final SeasonBuilder season;
+  final Season season;
 
   SingleSeasonUpdate({@required this.season});
 
@@ -79,6 +79,7 @@ class SingleSeasonBloc
     extends AsyncHydratedBloc<SingleSeasonEvent, SingleSeasonState> {
   final DatabaseUpdateModel db;
   final String seasonUid;
+  final AnalyticsSubsystem crashes;
   bool _willLoadGames = false;
   bool _willLoadInvites = false;
 
@@ -87,7 +88,8 @@ class SingleSeasonBloc
   StreamSubscription<GameSnapshotEvent> _gameSub;
 
   // Create the bloc and do exciting things with it.
-  SingleSeasonBloc({@required this.db, @required this.seasonUid})
+  SingleSeasonBloc(
+      {@required this.db, @required this.seasonUid, @required this.crashes})
       : super(SingleSeasonUninitialized(), seasonUid) {
     assert(seasonUid != null && seasonUid.isNotEmpty);
     _seasonSub = db.getSingleSeason(seasonUid).listen((season) {
@@ -139,12 +141,14 @@ class SingleSeasonBloc
     if (event is SingleSeasonUpdate) {
       yield SingleSeasonSaving.fromState(state).build();
       try {
-        await db.updateFirestoreSeason(event.season.build(), false);
+        await db.updateFirestoreSeason(event.season, false);
         yield SingleSeasonSaveDone.fromState(state).build();
-        yield (SingleSeasonLoaded.fromState(state)..season = event.season)
+        yield (SingleSeasonLoaded.fromState(state)
+              ..season = event.season.toBuilder())
             .build();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleSeasonSaveFailed.fromState(state)..error = e).build();
+        crashes.recordError(e, stack);
       }
     }
 

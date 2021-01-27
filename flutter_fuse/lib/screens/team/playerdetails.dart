@@ -413,14 +413,25 @@ class PlayerDetailsScreen extends StatelessWidget {
                         }
                       }
 
-                      FloatingActionButton fab;
+                      var actions = <Widget>[];
                       if (singlePlayerState is SinglePlayerLoaded &&
                           singlePlayerState.player.users.containsKey(userUid)) {
                         // I am a member of this player, can edit them!
-                        fab = FloatingActionButton(
-                          onPressed: () => _editPlayer(context,
-                              seasonPlayerState.seasonPlayer.playerUid),
-                          child: const Icon(Icons.edit),
+                        actions.add(
+                          PopupMenuButton<String>(
+                            onSelected: (str) => _editPlayer(context,
+                                seasonPlayerState.seasonPlayer.playerUid),
+                            itemBuilder: (context) => <PopupMenuItem<String>>[
+                              PopupMenuItem<String>(
+                                value: "edit",
+                                child: ListTile(
+                                  title:
+                                      Text(Messages.of(context).editbuttontext),
+                                  leading: Icon(Icons.edit),
+                                ),
+                              ),
+                            ],
+                          ),
                         );
                       }
 
@@ -429,6 +440,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                           title: PlayerName(
                               playerUid:
                                   seasonPlayerState.seasonPlayer.playerUid),
+                          actions: actions,
                         ),
                         key: _scaffoldKey,
                         body: SavingOverlay(
@@ -446,7 +458,6 @@ class PlayerDetailsScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        floatingActionButton: fab,
                       );
                     },
                   ),
