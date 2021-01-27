@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/form/seasonformfield.dart';
 import '../../widgets/form/teampicker.dart';
 import '../../widgets/player/playername.dart';
-import '../../widgets/util/communityicons.dart';
 import '../../widgets/util/ensurevisiblewhenfocused.dart';
 import '../../widgets/util/savingoverlay.dart';
 
@@ -271,7 +271,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
                       child: Column(
                         children: <Widget>[
                               ListTile(
-                                leading: const Icon(CommunityIcons.tshirtCrew),
+                                leading: const Icon(MdiIcons.tshirtCrew),
                                 title: TeamPicker(
                                   onChanged: _changeTeam,
                                 ),

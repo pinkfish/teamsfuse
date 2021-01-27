@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 
 import '../../screens/game/addopponent.dart';
@@ -15,7 +16,6 @@ import '../form/opponentformfield.dart';
 import '../form/placesformfield.dart';
 import '../form/seasonformfield.dart';
 import '../form/switchformfield.dart';
-import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 import 'editformbase.dart';
 
@@ -102,7 +102,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
               _atDate.day,
               _atDate.hour,
               _atDate.minute)
-          .millisecondsSinceEpoch;
+          .toUtc();
       // Move forward a day so it is in the next day.
       var arrival = _atArrival;
       if (_atArrival.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
@@ -288,7 +288,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   focusNode: _focusNodePlaceNotes,
                   child: TextFormField(
                     decoration: InputDecoration(
-                      icon: const Icon(CommunityIcons.tshirtCrew),
+                      icon: const Icon(MdiIcons.tshirtCrew),
                       hintText: Messages.of(context).placesnoteshint,
                       labelText: Messages.of(context).placesnotes,
                     ),
@@ -305,7 +305,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   focusNode: _focusNodeUniform,
                   child: TextFormField(
                     decoration: InputDecoration(
-                      icon: const Icon(CommunityIcons.tshirtCrew),
+                      icon: const Icon(MdiIcons.tshirtCrew),
                       hintText: Messages.of(context).uniformhint,
                       labelText: Messages.of(context).uniform,
                     ),
@@ -339,7 +339,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                     Expanded(
                       flex: 1,
                       child: SwitchFormField(
-                        icon: CommunityIcons.home,
+                        icon: MdiIcons.home,
                         label: Messages.of(context).homeaway,
                         initialValue: widget.game.homegame,
                         onSaved: (value) {

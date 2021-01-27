@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
 import '../../widgets/games/eventeditform.dart';
 import '../../widgets/teams/teamselection.dart';
-import '../../widgets/util/communityicons.dart';
 import '../../widgets/util/savingoverlay.dart';
 
 ///
@@ -101,7 +101,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
     if (myGame.uniform.isNotEmpty) {
       cols.add(
         ListTile(
-          leading: Icon(CommunityIcons.tshirtCrew),
+          leading: Icon(MdiIcons.tshirtCrew),
           title: Text(myGame.uniform),
         ),
       );
@@ -192,8 +192,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
       ..teamUid = _team.uid
       ..seasonUid = _team.currentSeason
       ..trackAttendance = _team.trackAttendenceInternal
-      ..sharedData.time = start.millisecondsSinceEpoch
-      ..sharedData.endTime = start.millisecondsSinceEpoch);
+      ..sharedData.time = start.toUtc()
+      ..sharedData.endTime = start.toUtc());
     print('team changed ${_initGame.toMap()}');
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 
 import '../../services/map.dart';
@@ -11,7 +12,6 @@ import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import '../games/attendanceicon.dart';
 import '../teams/teamimage.dart';
-import '../util/communityicons.dart';
 import 'teamresults.dart';
 
 /// Callback for the game.
@@ -92,7 +92,7 @@ class GameDetailsBase extends StatelessWidget {
 
     // Not started, show availability.
     return ListTile(
-      leading: const Icon(CommunityIcons.bookOpenVariant),
+      leading: const Icon(MdiIcons.bookOpenVariant),
       title: GestureDetector(
         onTap: () => openAttendence != null
             ? openAttendence(game, availavilityResult)
@@ -170,8 +170,8 @@ class GameDetailsBase extends StatelessWidget {
       leading: official
           ? (dontMatch
               ? Icon(Icons.error, color: theme.errorColor)
-              : Icon(CommunityIcons.bookOpen))
-          : Icon(CommunityIcons.bookOpenVariant),
+              : Icon(MdiIcons.bookOpen))
+          : Icon(MdiIcons.bookOpenVariant),
       title: RichText(text: title),
       subtitle: dontMatch
           ? Text(
@@ -310,7 +310,7 @@ class GameDetailsBase extends StatelessWidget {
       if (adding) {
         body.add(
           ListTile(
-            leading: Icon(CommunityIcons.bookOpenVariant),
+            leading: Icon(MdiIcons.bookOpenVariant),
             title: Text(Messages.of(context).gametype),
           ),
         );
@@ -408,7 +408,7 @@ class GameDetailsBase extends StatelessWidget {
     if (game.uniform != null && game.uniform.isNotEmpty) {
       body.add(
         ListTile(
-          leading: const Icon(CommunityIcons.tshirtCrew),
+          leading: const Icon(MdiIcons.tshirtCrew),
           title: Text(game.uniform == null ? 'fluff' : game.uniform),
         ),
       );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 
 import '../../services/map.dart';
@@ -7,7 +8,6 @@ import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import '../form/datetimeformfield.dart';
 import '../form/seasonformfield.dart';
-import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 import 'editformbase.dart';
 
@@ -73,16 +73,16 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
     // Add the date time and the time together.
     builder.sharedData.time = TZDateTime(getLocation(_timezone), _atDate.year,
             _atDate.month, _atDate.day, _atDate.hour, _atDate.minute)
-        .millisecondsSinceEpoch;
+        .toUtc();
     builder.arrivalTime = widget.game.sharedData.time;
-    var end = _atEnd;
+    var end = _atEnd.toUtc();
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
       end.add(Duration(days: 1));
     }
     builder.sharedData.endTime = TZDateTime(getLocation(_timezone), end.year,
             end.month, end.day, end.hour, end.minute)
-        .millisecondsSinceEpoch;
-    builder.sharedData.endTime = _atEnd.millisecondsSinceEpoch;
+        .toUtc();
+    builder.sharedData.endTime = _atEnd.toUtc();
     builder.sharedData.place = _place;
     builder.sharedData.timezone = _timezone;
     return builder;
@@ -129,7 +129,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                   teamUid: builder.teamUid,
                   builder: (context, teamBloc) => SeasonFormField(
                     decoration: InputDecoration(
-                      icon: const Icon(CommunityIcons.calendarQuestion),
+                      icon: const Icon(MdiIcons.calendarQuestion),
                       labelText: messages.season,
                     ),
                     initialValue: widget.game.seasonUid,
@@ -155,7 +155,7 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                   labelText: Messages.of(context).trainingend,
                   key: _endTimeKey,
                   decoration: InputDecoration(
-                    icon: const Icon(CommunityIcons.calendarRange),
+                    icon: const Icon(MdiIcons.calendarRange),
                   ),
                   initialValue: _atEnd,
                   hideDate: false,

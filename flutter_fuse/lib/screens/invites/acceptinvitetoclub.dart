@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
 import '../../widgets/util/byusername.dart';
-import '../../widgets/util/communityicons.dart';
 import '../../widgets/util/savingoverlay.dart';
 import 'dialog/deleteinvite.dart';
 
@@ -89,7 +89,7 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
                     child: Column(
                       children: <Widget>[
                         ListTile(
-                          leading: const Icon(CommunityIcons.houzz),
+                          leading: const Icon(MdiIcons.shoeCleat),
                           title: Text(inviteToClub.clubName),
                           subtitle: ByUserNameComponent(
                               userId: inviteToClub.sentByUid),

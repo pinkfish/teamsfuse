@@ -11,6 +11,8 @@ import '../i10n/messages_all.dart';
 /// to be translated.
 ///
 class Messages {
+  final String locale;
+
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {
     var name =
@@ -19,10 +21,11 @@ class Messages {
 
     return initializeMessages(localeName).then((dynamic _) {
       Intl.defaultLocale = localeName;
-      print(localeName);
-      return Messages();
+      return Messages(localeName);
     });
   }
+
+  Messages(this.locale);
 
   /// The messages in the system from the context.
   static Messages of(BuildContext context) {
@@ -1182,7 +1185,7 @@ class Messages {
           case 4:
             return periodNameOverTime4;
         }
-        return periodNameOverTime;
+        return periodNameOverTime4;
       case GamePeriodType.Regulation:
         switch (p.periodNumber) {
           case 1:
@@ -1824,7 +1827,7 @@ class Messages {
         desc: 'Name for the edit box to edit the user name');
   }
 
-  String seasonSummary(PlayerSeasonSummary summary) {
+  String seasonSummary(SeasonPlayerSummary summary) {
     return seasonSummaryExpanded(
         summary.summary.points, summary.summary.blocks, summary.summary.steals);
   }
@@ -2029,9 +2032,6 @@ class Messages {
         locale: locale,
         name: "periodEnd");
   }
-
-  String get players => Intl.message("Players",
-      desc: "Used when the data is unknown", locale: locale);
 
   String get video =>
       Intl.message("Video", desc: "Shows video for the game", locale: locale);

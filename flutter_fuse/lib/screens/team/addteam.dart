@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
+import '../../widgets/clubs/clubimage.dart';
 import '../../widgets/form/clubpicker.dart';
 import '../../widgets/form/playerformfield.dart';
-import '../../widgets/teams/teameditform.dart';
-import '../../widgets/clubs/clubimage.dart';
-import '../../widgets/util/communityicons.dart';
 import '../../widgets/player/gendericon.dart';
+import '../../widgets/teams/teameditform.dart';
+import '../../widgets/teams/teamimage.dart';
 import '../../widgets/util/savingoverlay.dart';
 import '../../widgets/util/stepperalwaysvisible.dart';
-import '../../widgets/teams/teamimage.dart';
 
 ///
 /// Adds a team to the specific club.
@@ -248,7 +248,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
             title: Text(_seasonName()),
           ),
           ListTile(
-            leading: const Icon(CommunityIcons.group),
+            leading: const Icon(MdiIcons.group),
             title: _clubUid != null && _clubUid != ClubPicker.noClub
                 ? Text(clubBloc.state.clubs[_clubUid].name)
                 : Text(Messages.of(context).noclub),
@@ -261,7 +261,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                 : null,
           ),
           ListTile(
-            leading: const Icon(CommunityIcons.tshirtCrew),
+            leading: const Icon(MdiIcons.tshirtCrew),
             title: Text(_teamToAdd.league),
           ),
           ListTile(
@@ -270,7 +270,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                 .arrivebefore(_teamToAdd.arriveEarlyInternal.toInt())),
           ),
           ListTile(
-            leading: const Icon(CommunityIcons.trafficLight),
+            leading: const Icon(MdiIcons.trafficLight),
             title: Text(Messages.of(context).trackattendence(
                 _teamToAdd.trackAttendenceInternal
                     ? Tristate.Yes

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../services/messages.dart';
@@ -12,7 +13,6 @@ import '../../widgets/blocs/singleteamseasonplayerprovider.dart';
 import '../../widgets/invites/deleteinvitedialog.dart';
 import '../../widgets/player/playerimage.dart';
 import '../../widgets/player/playername.dart';
-import '../../widgets/util/communityicons.dart';
 import '../../widgets/util/savingoverlay.dart';
 
 class _RoleInTeamAlertDialog extends StatefulWidget {
@@ -207,7 +207,7 @@ class PlayerDetailsScreen extends StatelessWidget {
 
     ret.add(
       ListTile(
-        leading: const Icon(CommunityIcons.bookOpenVariant),
+        leading: const Icon(MdiIcons.bookOpenVariant),
         title: Text(
           messages.roleingame(playerState.seasonPlayer.role),
         ),
@@ -304,7 +304,7 @@ class PlayerDetailsScreen extends StatelessWidget {
           (player) => player.playerUid == playerState.seasonPlayer.playerUid)) {
         ret.add(
           ListTile(
-            leading: const Icon(CommunityIcons.tshirtCrew),
+            leading: const Icon(MdiIcons.tshirtCrew),
             title: Text(season.name),
           ),
         );

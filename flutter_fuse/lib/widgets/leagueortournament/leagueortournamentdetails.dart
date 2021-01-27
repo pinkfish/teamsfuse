@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentprovider.dart';
 import '../blocs/singleleagueortournamentseasonprovider.dart';
 import '../player/gendericon.dart';
-import '../util/communityicons.dart';
 import 'adddivisondialog.dart';
 import 'addseasondialog.dart';
 import 'leagueimage.dart';
@@ -83,7 +83,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                 return ListTile(
                   onTap: () => Navigator.pushNamed(context,
                       "/League/Divison/${widget.leagueOrTournamentUid}/${season.uid}/${divison.uid}"),
-                  leading: Icon(CommunityIcons.accountGroup),
+                  leading: Icon(MdiIcons.accountGroup),
                   title: Text(divison.name),
                 );
               },

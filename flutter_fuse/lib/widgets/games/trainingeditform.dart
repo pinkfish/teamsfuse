@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 
 import '../../services/map.dart';
@@ -7,7 +8,6 @@ import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import '../form/datetimeformfield.dart';
 import '../form/seasonformfield.dart';
-import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 import 'editformbase.dart';
 
@@ -97,8 +97,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
             _atDate.day,
             _atDate.hour,
             _atDate.minute)
-        .millisecondsSinceEpoch;
-    _builder.arrivalTime = widget.game.sharedData.time;
+        .toUtc();
+    _builder.arrivalTime = widget.game.sharedData.time.toUtc();
     var end = _atEnd;
     if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
       end.add(Duration(days: 1));
@@ -110,8 +110,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
             end.day,
             end.hour,
             end.minute)
-        .millisecondsSinceEpoch;
-    _builder.sharedData.endTime = _atEnd.millisecondsSinceEpoch;
+        .toUtc();
+    _builder.sharedData.endTime = _atEnd.toUtc();
     return _builder;
   }
 
@@ -135,7 +135,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                   teamUid: _builder.teamUid,
                   builder: (context, teamBloc) => SeasonFormField(
                     decoration: InputDecoration(
-                      icon: const Icon(CommunityIcons.calendarQuestion),
+                      icon: const Icon(MdiIcons.calendarQuestion),
                       labelText: messages.season,
                     ),
                     initialValue: widget.game.seasonUid,
@@ -161,7 +161,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                   labelText: Messages.of(context).trainingend,
                   key: _endTimeKey,
                   decoration: InputDecoration(
-                    icon: const Icon(CommunityIcons.calendarRange),
+                    icon: const Icon(MdiIcons.calendarRange),
                   ),
                   initialValue: _atEnd,
                   hideDate: false,
@@ -183,7 +183,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                   focusNode: _focusNodePlaceNotes,
                   child: TextFormField(
                     decoration: InputDecoration(
-                      icon: const Icon(CommunityIcons.tshirtCrew),
+                      icon: const Icon(MdiIcons.tshirtCrew),
                       hintText: Messages.of(context).placesnoteshint,
                       labelText: Messages.of(context).placesnotes,
                     ),
@@ -203,7 +203,7 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     decoration: InputDecoration(
                         hintText: messages.uniformhint,
                         labelText: messages.uniform,
-                        icon: const Icon(CommunityIcons.tshirtCrew)),
+                        icon: const Icon(MdiIcons.tshirtCrew)),
                     onSaved: (value) {
                       _builder.uniform = value;
                     },

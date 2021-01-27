@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import '../games/teamresults.dart';
 import '../player/gendericon.dart';
-import '../util/communityicons.dart';
 import 'teamimage.dart';
 
 ///
@@ -146,7 +146,7 @@ class TeamDetails extends StatelessWidget {
                 trailing: GenderIcon(team.gender),
               ),
               ListTile(
-                leading: const Icon(CommunityIcons.cardsClub),
+                leading: const Icon(MdiIcons.cardsClub),
                 title: club,
                 onTap: () => _openClub(context, team),
               ),
@@ -167,7 +167,7 @@ class TeamDetails extends StatelessWidget {
                       ),
               ),
               ListTile(
-                leading: const Icon(CommunityIcons.trafficLight),
+                leading: const Icon(MdiIcons.trafficLight),
                 title: teamState.club == null && teamState.team.clubUid != null
                     ? Text(Messages.of(context).loading)
                     : Text(

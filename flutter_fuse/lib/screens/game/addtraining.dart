@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,7 +12,6 @@ import '../../services/messages.dart';
 import '../../widgets/games/repeatdetails.dart';
 import '../../widgets/games/trainingeditform.dart';
 import '../../widgets/teams/teamselection.dart';
-import '../../widgets/util/communityicons.dart';
 import '../../widgets/util/savingoverlay.dart';
 import '../../widgets/util/stepperalwaysvisible.dart';
 
@@ -132,7 +132,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
     if (myGame.uniform.isNotEmpty) {
       cols.add(
         ListTile(
-          leading: Icon(CommunityIcons.tshirtCrew),
+          leading: Icon(MdiIcons.tshirtCrew),
           title: Text(myGame.uniform),
         ),
       );
@@ -147,7 +147,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
     for (var t in _repeatDates) {
       cols.add(
         ListTile(
-          leading: Icon(CommunityIcons.calendarPlus),
+          leading: Icon(MdiIcons.calendarPlus),
           title: Text(
             MaterialLocalizations.of(context).formatFullDate(t),
           ),
@@ -262,7 +262,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
     var start = DateTime.now().add(const Duration(days: 0));
     _initGame = _initGame.rebuild((b) => b
       ..teamUid = team.uid
-      ..sharedData.time = start.millisecondsSinceEpoch
+      ..sharedData.time = start.toUtc()
       ..sharedData.endTime = _initGame.sharedData.time
       ..seasonUid = team.currentSeason
       ..trackAttendance = team.trackAttendenceInternal);

@@ -2,10 +2,10 @@ import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
 import '../teams/teamtile.dart';
-import '../util/communityicons.dart';
 import 'fuseddrawer.dart';
 import 'fuseddrawerheader.dart';
 
@@ -26,7 +26,7 @@ class FusedDrawerContent extends StatelessWidget {
       if (club.isMember()) {
         data.add(
           ListTile(
-            leading: const Icon(CommunityIcons.cardsClub),
+            leading: const Icon(MdiIcons.cardsClub),
             title: RichText(
               text: TextSpan(
                 text: club.name,
@@ -97,7 +97,7 @@ class FusedDrawerContent extends StatelessWidget {
     }
     data.add(
       ListTile(
-        leading: const Icon(CommunityIcons.teamviewer),
+        leading: const Icon(MdiIcons.teamviewer),
         title: Text(
           Messages.of(context).allteamsbbutton,
           style: Theme.of(context).textTheme.button,

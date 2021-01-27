@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 
 import '../../services/map.dart';
 import '../../services/messages.dart';
 import '../form/datetimeformfield.dart';
 import '../form/placesformfield.dart';
-import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 
 ///
@@ -78,7 +78,7 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
       // Add the date time and the time together.
       _builder.time = TZDateTime(getLocation(_builder.timezone), _atDate.year,
               _atDate.month, _atDate.day, _atDate.hour, _atDate.minute)
-          .millisecondsSinceEpoch;
+          .toUtc();
       // Move forward a day so it is in the next day.
       var end = _atEnd;
       if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
@@ -86,7 +86,7 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
       }
       _builder.endTime = TZDateTime(getLocation(_builder.timezone), end.year,
               end.month, end.day, end.hour, end.minute)
-          .millisecondsSinceEpoch;
+          .toUtc();
     }
     return _builder;
   }
@@ -170,7 +170,7 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                   focusNode: _focusNodePlaceNotes,
                   child: TextFormField(
                     decoration: InputDecoration(
-                      icon: const Icon(CommunityIcons.tshirtCrew),
+                      icon: const Icon(MdiIcons.tshirtCrew),
                       hintText: Messages.of(context).placesnoteshint,
                       labelText: Messages.of(context).placesnotes,
                     ),

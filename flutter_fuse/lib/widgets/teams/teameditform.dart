@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
 import '../../services/validations.dart';
@@ -12,7 +13,6 @@ import '../form/genderformfield.dart';
 import '../form/seasonformfield.dart';
 import '../form/sportformfield.dart';
 import '../form/switchformfield.dart';
-import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 import 'teamimage.dart';
 
@@ -228,7 +228,7 @@ class TeamEditFormState extends State<TeamEditForm> {
         ),
         GenderFormField(
           decoration: InputDecoration(
-            icon: const Icon(CommunityIcons.genderMaleFemale),
+            icon: const Icon(MdiIcons.genderMaleFemale),
             hintText: Messages.of(context).genderselect,
             labelText: Messages.of(context).genderselect,
           ),
@@ -278,7 +278,7 @@ class TeamEditFormState extends State<TeamEditForm> {
         ),
         SwitchFormField(
           initialValue: _builder.trackAttendenceInternal,
-          icon: CommunityIcons.trafficLight,
+          icon: MdiIcons.trafficLight,
           enabled: club != null ? club.trackAttendence != null : true,
           label: Messages.of(context).trackattendence(Tristate.Yes),
           onSaved: (value) => _builder.trackAttendenceInternal = value,

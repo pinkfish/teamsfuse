@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
-
-import '../util/communityicons.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 ///
 /// Shwows an icon based on the gender passed in
@@ -14,14 +13,14 @@ class GenderIcon extends Icon {
   static IconData _getIcon(Gender gender) {
     switch (gender) {
       case Gender.Female:
-        return CommunityIcons.genderFemale;
+        return MdiIcons.genderFemale;
       case Gender.Male:
-        return CommunityIcons.genderMale;
+        return MdiIcons.genderMale;
       case Gender.Coed:
-        return CommunityIcons.genderMaleFemale;
+        return MdiIcons.genderMaleFemale;
       case Gender.NA:
         return Icons.person;
     }
-    return CommunityIcons.nullIcon;
+    return MdiIcons.nullIcon;
   }
 }

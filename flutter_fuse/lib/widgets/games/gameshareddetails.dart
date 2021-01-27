@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,7 +16,6 @@ import '../leagueortournament/leagueimage.dart';
 import '../leagueortournament/leagueortournamentname.dart';
 import '../leagueortournament/leagueortournamentteamname.dart';
 import '../leagueortournament/leagueteamimage.dart';
-import '../util/communityicons.dart';
 import 'officalresultdialog.dart';
 
 ///
@@ -317,7 +317,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
       if (widget.adding) {
         body.add(
           ListTile(
-            leading: Icon(CommunityIcons.bookOpenVariant),
+            leading: Icon(MdiIcons.bookOpenVariant),
             title: Text(Messages.of(context).gametype),
           ),
         );

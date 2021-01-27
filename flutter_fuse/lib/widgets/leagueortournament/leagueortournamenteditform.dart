@@ -6,13 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../blocs/singleleagueortournamentprovider.dart';
 import '../form/genderformfield.dart';
 import '../form/sportformfield.dart';
-import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 import 'leagueimage.dart';
 
@@ -159,7 +159,7 @@ class LeagueOrTournamentEditFormState
                           focusNode: _focusNodeName,
                           child: TextFormField(
                             decoration: InputDecoration(
-                              icon: const Icon(CommunityIcons.textbox),
+                              icon: const Icon(MdiIcons.textBox),
                               hintText: Messages.of(context).league,
                             ),
                             keyboardType: TextInputType.text,
@@ -175,7 +175,7 @@ class LeagueOrTournamentEditFormState
                         ),
                         GenderFormField(
                           decoration: InputDecoration(
-                            icon: const Icon(CommunityIcons.genderTransgender),
+                            icon: const Icon(MdiIcons.genderTransgender),
                             hintText: Messages.of(context).needtoselectgender,
                           ),
                           initialValue: widget.leagueOrTournament.gender,
@@ -185,7 +185,7 @@ class LeagueOrTournamentEditFormState
                         ),
                         SportFormField(
                           decoration: InputDecoration(
-                            icon: const Icon(CommunityIcons.basketball),
+                            icon: const Icon(MdiIcons.basketball),
                           ),
                           initialValue: widget.leagueOrTournament.sport,
                           onSaved: (s) {
@@ -196,7 +196,7 @@ class LeagueOrTournamentEditFormState
                           focusNode: _focusNodeShortDescription,
                           child: TextFormField(
                             decoration: InputDecoration(
-                              icon: const Icon(CommunityIcons.textShort),
+                              icon: const Icon(MdiIcons.textShort),
                               hintText:
                                   Messages.of(context).shortDescriptionHint,
                               labelText: Messages.of(context).shortDescription,
@@ -215,7 +215,7 @@ class LeagueOrTournamentEditFormState
                           focusNode: _focusNodeLongDescription,
                           child: TextFormField(
                             decoration: InputDecoration(
-                              icon: const Icon(CommunityIcons.text),
+                              icon: const Icon(MdiIcons.text),
                               hintText:
                                   Messages.of(context).longDescriptionHint,
                               labelText: Messages.of(context).longDescription,
