@@ -3,7 +3,7 @@ import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../../leagueOrTournament.dart';
+import '../../leagueortournament.dart';
 import '../../serializer.dart';
 
 part 'leagueortournamentblocstate.g.dart';
