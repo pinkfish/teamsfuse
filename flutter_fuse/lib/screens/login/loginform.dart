@@ -23,9 +23,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  ScrollController scrollController = ScrollController();
+  final ScrollController scrollController = ScrollController();
   bool autovalidate = false;
-  Validations validations = Validations();
+  final Validations validations = Validations();
   String email;
   String password;
   String errorText = '';
@@ -147,24 +147,33 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       key: _scaffoldKey,
       body: BlocListener(
-        cubit: _loginBloc,
+        cubit: BlocProvider.of<AuthenticationBloc>(context),
         listener: (context, state) {
-          if (state is LoginFailed) {
-            errorText = Messages.of(context).passwordnotcorrect;
-            _showInSnackBar(errorText);
-          }  if (state is LoginSucceeded) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, "/Home", (d) => false);
-          }  if (state is LoginEmailNotValidated) {
-            Navigator.popAndPushNamed(context, "/Login/Verify");
+          if (state is AuthenticationLoggedIn) {
+            Navigator.pushNamedAndRemoveUntil(context, "/Home", (d) => false);
           }
         },
-        child: BlocBuilder(
+        child: BlocListener(
           cubit: _loginBloc,
-          builder: (context, state) {
-            return SavingOverlay(
-                saving: state is LoginValidating, child: _buildLoginForm());
+          listener: (context, state) {
+            if (state is LoginFailed) {
+              errorText = Messages.of(context).passwordnotcorrect;
+              _showInSnackBar(errorText);
+            }
+            if (state is LoginSucceeded) {
+              Navigator.pushNamedAndRemoveUntil(context, "/Home", (d) => false);
+            }
+            if (state is LoginEmailNotValidated) {
+              Navigator.popAndPushNamed(context, "/Login/Verify");
+            }
           },
+          child: BlocBuilder(
+            cubit: _loginBloc,
+            builder: (context, state) {
+              return SavingOverlay(
+                  saving: state is LoginValidating, child: _buildLoginForm());
+            },
+          ),
         ),
       ),
     );

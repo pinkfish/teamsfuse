@@ -58,6 +58,7 @@ class SplashScreen extends StatelessWidget {
 
   // Check the state and navigate after a timeout.
   void _checkState(BuildContext context, AuthenticationState state) {
+    print("_checkState $state");
     if (state is AuthenticationLoggedIn) {
       Timer(Duration(milliseconds: 1), () {
         RepositoryProvider.of<Notifications>(context).initForNotification();
@@ -79,6 +80,7 @@ class SplashScreen extends StatelessWidget {
             context, '/Login/Verify', ModalRoute.withName('/Login/Home'));
       });
     }
+
     if (state is AuthenticationLoggedOut) {
       Timer(Duration(milliseconds: 1), () {
         // Navigate to the login screen at this point.

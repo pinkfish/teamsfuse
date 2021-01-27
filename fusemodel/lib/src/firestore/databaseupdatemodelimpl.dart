@@ -573,13 +573,17 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentReferenceWrapper referenceWrapper =
         wrapper.collection(TEAMS_COLLECTION).document(teamUid);
     DocumentSnapshotWrapper snap = await referenceWrapper.get();
-    if (snap.exists) {
+    if (snap != null && snap.exists) {
       yield Team.fromMap(userData.uid, snap.data);
     } else {
       yield Team((b) => b..uid = teamUid);
     }
     await for (DocumentSnapshotWrapper doc in referenceWrapper.snapshots()) {
-      yield Team.fromMap(userData.uid, doc.data);
+      if (doc != null && doc.exists) {
+        yield Team.fromMap(userData.uid, doc.data);
+      } else {
+        yield Team((b) => b..uid = teamUid);
+      }
     }
   }
 

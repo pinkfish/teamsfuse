@@ -133,6 +133,7 @@ class TeamDetails extends StatelessWidget {
               Center(
                 child: TeamImage(
                   team: team,
+                  showIcon: false,
                   width: (screenSize.width < 500)
                       ? 120.0
                       : (screenSize.width / 4) + 12.0,

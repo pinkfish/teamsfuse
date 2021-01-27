@@ -85,7 +85,7 @@ class TeamImage extends StatelessWidget {
         child: FittedBox(
           fit: fit,
           child: CachedNetworkImage(
-            imageUrl: t.photoUrl,
+            imageUrl: t.photoUrl ?? "",
             fadeInDuration: Duration(milliseconds: 200),
             fadeOutDuration: Duration(milliseconds: 200),
             alignment: alignment,
@@ -102,7 +102,7 @@ class TeamImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (teamImage != null) {
-      return _buildImageBit(null);
+      return _buildImageBit(team);
     }
     return BlocBuilder(
       cubit: BlocProvider.of<TeamBloc>(context),
@@ -123,7 +123,11 @@ class TeamImage extends StatelessWidget {
             BlocProvider.of<TeamBloc>(context)
                 .add(TeamLoadPublicTeam(teamUid: teamUid));
           }
-          inner = const Icon(Icons.group);
+          if (showIcon) {
+            inner = const Icon(Icons.group);
+          } else {
+            inner = _buildImageBit(t);
+          }
         }
         return Container(
           color: color,

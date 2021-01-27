@@ -29,8 +29,6 @@ class SinglePlayerBlocStateType extends EnumClass {
   static SinglePlayerBlocStateType valueOf(String name) => _$valueOf(name);
 }
 
-
-
 ///
 /// The base state for the singlePlayer bloc.  It tracks all the
 /// exciting singlePlayer stuff.
@@ -57,8 +55,9 @@ abstract class SinglePlayerState {
       ..invitesLoaded = state.invitesLoaded;
   }
 
-  static void initializeStateBuilder(SinglePlayerStateBuilder b) =>
-      b..invitesLoaded = false;
+  static void initializeStateBuilder(SinglePlayerStateBuilder b) => b
+    ..invitesLoaded = false
+    ..mePlayer = false;
 
   Map<String, dynamic> toMap();
 }

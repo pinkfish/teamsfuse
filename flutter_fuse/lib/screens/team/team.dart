@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/blocs.dart';
 
 import '../../services/messages.dart';
@@ -75,6 +76,9 @@ class _TeamScreenState extends State<TeamScreen> {
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
             return Text(Messages.of(context).teamdeleted);
+          }
+          if (state is SingleTeamUninitialized) {
+            return LoadingWidget();
           }
           var actions = <Widget>[];
           if (state.isAdmin() && _tabIndex == 0) {

@@ -374,7 +374,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (signedIn != null) {
         analyticsSubsystem.logLogin();
         // Reload the user.
-        userAuth.reloadUser();
+        //userAuth.reloadUser();
         yield LoginSucceeded(userData: signedIn);
       }
     }
