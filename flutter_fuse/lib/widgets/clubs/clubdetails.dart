@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
-import '../util/clubimage.dart';
+import 'clubimage.dart';
 
 ///
 /// Shows the details fo the club.

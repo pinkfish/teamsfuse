@@ -948,14 +948,22 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Player> getPlayerDetails(String uid) async {
-    DocumentSnapshotWrapper doc =
-        await wrapper.collection(PLAYERS_COLLECTION).document(uid).get();
-    if (doc.exists) {
-      Player player = Player.fromMap(doc.data);
-      return player;
+  Stream<Player> getPlayerDetails(String uid) async* {
+    final doc = await wrapper.collection(PLAYERS_COLLECTION).document(uid);
+    final initial = await doc.get();
+    if (initial.exists) {
+      Player player = Player.fromMap(initial.data);
+      yield player;
     }
-    return null;
+    yield null;
+    await for (var data in doc.snapshots()) {
+      if (data.exists) {
+        Player player = Player.fromMap(data.data);
+        yield player;
+      } else {
+        yield null;
+      }
+    }
   }
 
   // Send an invite to a user for this season and team.
@@ -1874,5 +1882,36 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       {MediaInfo mediaInfo, String thumbnailUrl}) async {
     var ref = wrapper.collection(MEDIA_COLLECTION).document(mediaInfo.uid);
     await ref.updateData({thumbnailUrl: thumbnailUrl});
+  }
+
+  @override
+  Future<void> addGamePlayer(
+      {String gameUid, String playerUid, bool opponent}) {
+    var ref = wrapper.collection(GAMES_COLLECTION).document(gameUid);
+    analytics.logEvent(name: "AddGamePlayer");
+    return ref.updateData(
+        {(opponent ? "opponents." : "players.") + playerUid + ".player": true});
+  }
+
+  @override
+  Future<void> deleteGamePlayer(
+      {String gameUid, String playerUid, bool opponent}) {
+    var ref = wrapper.collection(GAMES_COLLECTION).document(gameUid);
+    analytics.logEvent(name: "DeleteGamePlayer");
+    return ref.updateData({
+      (opponent ? "opponents." : "players.") + playerUid:
+          wrapper.fieldValueDelete
+    });
+  }
+
+  @override
+  Future<void> updateGamePlayerData(
+      {String gameUid,
+      String playerUid,
+      GamePlayerSummary summary,
+      bool opponent}) {
+    var ref = wrapper.collection(GAMES_COLLECTION).document(gameUid);
+    analytics.logEvent(name: "UpdateGamePlayer");
+    return ref.updateData({"players." + playerUid: summary.toMap()});
   }
 }

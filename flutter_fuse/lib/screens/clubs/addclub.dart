@@ -6,8 +6,8 @@ import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
+import '../../widgets/clubs/clubimage.dart';
 import '../../widgets/clubs/editclubdetails.dart';
-import '../../widgets/util/clubimage.dart';
 import '../../widgets/util/savingoverlay.dart';
 
 ///

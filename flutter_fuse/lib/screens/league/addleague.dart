@@ -6,8 +6,8 @@ import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
+import '../../widgets/leagueortournament/leagueimage.dart';
 import '../../widgets/leagueortournament/leagueortournamenteditform.dart';
-import '../../widgets/util/leagueimage.dart';
 import '../../widgets/util/savingoverlay.dart';
 import '../../widgets/util/stepperalwaysvisible.dart';
 

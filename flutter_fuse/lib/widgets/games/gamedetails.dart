@@ -141,10 +141,10 @@ class _GameDetailsState extends State<GameDetails> {
     if (ret != null && ret) {
       // Copy the result over and save.
       var newResult = GameResultDetailsBuilder();
-      newResult.scoresInternal[GamePeriod.regulation.toIndex()] =
+      newResult.scoresInternal[GamePeriod.regulation1.toIndex()] =
           details.regulationResult;
       if (details.overtimeResult != null) {
-        newResult.scoresInternal[GamePeriod.overtime.toIndex()] =
+        newResult.scoresInternal[GamePeriod.overtime1.toIndex()] =
             details.overtimeResult;
       }
       if (details.penaltyResult != null) {

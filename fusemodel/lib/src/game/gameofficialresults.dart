@@ -51,10 +51,12 @@ abstract class GameOfficialResults
   OfficialResult get result;
 
   @memoized
-  BuiltMap<GamePeriod, GameResultPerPeriod> get scores => BuiltMap(
-      scoresInternal.map((k, v) => MapEntry(GamePeriod.fromIndex(k), v)).rebuild((b) {
+  BuiltMap<GamePeriod, GameResultPerPeriod> get scores =>
+      BuiltMap(scoresInternal
+          .map((k, v) => MapEntry(GamePeriod.fromIndex(k), v))
+          .rebuild((b) {
         if (scoresInternal.containsKey("Final")) {
-          b[GamePeriod.regulation] = b[GamePeriod.finalPeriod];
+          b[GamePeriod.regulation1] = b[GamePeriod.finalPeriod];
         }
         return b;
       }));

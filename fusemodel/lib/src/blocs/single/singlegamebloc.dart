@@ -100,6 +100,53 @@ class SingleGameLoadMedia extends SingleGameEvent {
   List<Object> get props => [];
 }
 
+///
+/// Updates the game player into the opponent or player category.
+///
+class SingleGameUpdatePlayer extends SingleGameEvent {
+  final BuiltMap<String, PlayerSummaryWithOpponent> summary;
+
+  SingleGameUpdatePlayer({
+    @required this.summary,
+  });
+
+  @override
+  List<Object> get props => [summary];
+}
+
+///
+/// Adds an admin to the game.
+///
+class SingleGameAddPlayer extends SingleGameEvent {
+  final String playerUid;
+  final bool opponent;
+
+  SingleGameAddPlayer({@required this.playerUid, @required this.opponent});
+
+  @override
+  List<Object> get props => [playerUid, opponent];
+}
+
+///
+/// Deletes an player from the game.
+///
+class SingleGameRemovePlayer extends SingleGameEvent {
+  final String playerUid;
+  final bool opponent;
+
+  SingleGameRemovePlayer({@required this.playerUid, @required this.opponent});
+
+  @override
+  List<Object> get props => [playerUid, opponent];
+}
+
+///
+/// Loads the players for the game.
+///
+class SingleGameLoadPlayers extends SingleGameEvent {
+  List<Object> get props => [];
+}
+
 class _SingleGameNewGame extends SingleGameEvent {
   final Game newGame;
 
@@ -134,6 +181,15 @@ class _SingleGameNewMedia extends SingleGameEvent {
   List<Object> get props => [newMedia];
 }
 
+class _SingleGameUpdatePlayers extends SingleGameEvent {
+  final BuiltMap<String, Player> players;
+
+  _SingleGameUpdatePlayers({@required this.players});
+
+  @override
+  List<Object> get props => [players];
+}
+
 ///
 /// Bloc to handle updates and state of a specific game.
 ///
@@ -142,6 +198,7 @@ class SingleGameBloc
   final String gameUid;
   final DatabaseUpdateModel db;
   final Lock _lock = Lock();
+  final AnalyticsSubsystem crashes;
 
   static String createNew = "new";
 
@@ -150,7 +207,11 @@ class SingleGameBloc
   StreamSubscription<BuiltList<GameEvent>> _gameEventSub;
   StreamSubscription<BuiltList<MediaInfo>> _mediaInfoSub;
 
-  SingleGameBloc({@required this.gameUid, @required this.db})
+  Map<String, StreamSubscription<Player>> _players;
+  Map<String, Player> _loadedPlayers;
+
+  SingleGameBloc(
+      {@required this.gameUid, @required this.db, @required this.crashes})
       : super(SingleGameUninitialized(), 'SingleGamw' + gameUid) {
     print("Single game $gameUid");
     _gameSub = db.getGame(gameUid).listen((g) {
@@ -236,9 +297,23 @@ class SingleGameBloc
         yield SingleGameSaveDone.fromState(state).build();
         yield (SingleGameLoaded.fromState(state)..game = event.game.toBuilder())
             .build();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleGameSaveFailed.fromState(state)..error = e).build();
+        crashes.recordError(e, stack);
       }
+    }
+
+    // Load a single game.
+    if (event is SingleGameLoadPlayers) {
+      // Load all the player details for this season.
+      _lock.synchronized(() {
+        for (String playerUid in state.game.players.keys) {
+          if (!_players.containsKey(playerUid)) {
+            _players[playerUid] =
+                db.getPlayerDetails(playerUid).listen(_onPlayerUpdated);
+          }
+        }
+      });
     }
 
     // Update the shared data of the game.
@@ -251,8 +326,9 @@ class SingleGameBloc
               ..game = (state.game.toBuilder()
                 ..sharedData = event.sharedData.toBuilder()))
             .build();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleGameSaveFailed.fromState(state)..error = e).build();
+        crashes.recordError(e, stack);
       }
     }
 
@@ -265,8 +341,9 @@ class SingleGameBloc
         logs.add(event.log);
         yield SingleGameSaveDone.fromState(state).build();
         yield (SingleGameLoaded.fromState(state)..gameLog = logs).build();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleGameSaveFailed.fromState(state)..error = e).build();
+        crashes.recordError(e, stack);
       }
     }
 
@@ -280,8 +357,9 @@ class SingleGameBloc
         builder.attendance[event.playerUid] = event.attendance;
         yield SingleGameSaveDone.fromState(state).build();
         yield (SingleGameLoaded.fromState(state)..game = builder).build();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleGameSaveFailed.fromState(state)..error = e).build();
+        crashes.recordError(e, stack);
       }
     }
 
@@ -295,8 +373,9 @@ class SingleGameBloc
               ..game =
                   (state.game.toBuilder()..result = event.result.toBuilder()))
             .build();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleGameSaveFailed.fromState(state)..error = e).build();
+        crashes.recordError(e, stack);
       }
     }
 
@@ -308,8 +387,9 @@ class SingleGameBloc
             state.game.sharedData.uid, event.result);
         yield SingleGameSaveDone.fromState(state).build();
         yield (SingleGameLoaded.fromState(state)).build();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleGameSaveFailed.fromState(state)..error = e).build();
+        crashes.recordError(e, stack);
       }
     }
 
@@ -327,6 +407,83 @@ class SingleGameBloc
           db.readGameLogs(state.game).listen((Iterable<GameLog> logs) {
         add(_SingleGameNewLogs(logs: logs));
       });
+    }
+
+    // Adds a player to the game
+    if (event is SingleGameAddPlayer) {
+      yield SingleGameSaving.fromState(state).build();
+      try {
+        await db.addGamePlayer(
+            gameUid: gameUid,
+            playerUid: event.playerUid,
+            opponent: event.opponent);
+        yield SingleGameSaveDone.fromState(state).build();
+        yield SingleGameLoaded.fromState(state).build();
+      } catch (error, stack) {
+        crashes.recordError(error, stack);
+        yield (SingleGameSaveFailed.fromState(state)..error = error).build();
+        yield SingleGameLoaded.fromState(state).build();
+      }
+    }
+
+    // Updates a player in the game
+    if (event is SingleGameUpdatePlayer) {
+      yield SingleGameSaving.fromState(state).build();
+      try {
+        for (MapEntry<String, PlayerSummaryWithOpponent> entry
+            in event.summary.entries) {
+          await db.updateGamePlayerData(
+              gameUid: gameUid,
+              opponent: entry.value.opponent,
+              summary: entry.value.summary,
+              playerUid: entry.key);
+        }
+        yield SingleGameSaveDone.fromState(state).build();
+        yield SingleGameLoaded.fromState(state).build();
+      } catch (error, stack) {
+        crashes.recordError(error, stack);
+        yield (SingleGameSaveFailed.fromState(state)..error = error).build();
+        yield SingleGameLoaded.fromState(state).build();
+      }
+    }
+    // Removes a player from the game.
+    if (event is SingleGameRemovePlayer) {
+      yield SingleGameSaving.fromState(state).build();
+      try {
+        await db.deleteGamePlayer(
+            gameUid: gameUid,
+            playerUid: event.playerUid,
+            opponent: event.opponent);
+        yield SingleGameSaveDone.fromState(state).build();
+        yield SingleGameLoaded.fromState(state).build();
+      } catch (error, stack) {
+        crashes.recordError(error, stack);
+        yield (SingleGameSaveFailed.fromState(state)..error = error).build();
+        yield SingleGameLoaded.fromState(state).build();
+      }
+    }
+
+    if (event is _SingleGameUpdatePlayers) {
+      yield (SingleGameLoaded.fromState(state)
+            ..players = event.players.toBuilder()
+            ..loadedPlayers = true)
+          .build();
+    }
+
+    if (event is _SingleGameUpdatePlayers) {
+      yield (SingleGameLoaded.fromState(state)
+            ..players = event.players.toBuilder()
+            ..loadedPlayers = true)
+          .build();
+    }
+  }
+
+  void _onPlayerUpdated(Player event) {
+    _loadedPlayers[event.uid] = event;
+    // Do updates after we are loaded.
+    if (_loadedPlayers.length == _players.length || state.loadedPlayers) {
+      // Loaded them all.
+      add(_SingleGameUpdatePlayers(players: BuiltMap.of(_loadedPlayers)));
     }
   }
 

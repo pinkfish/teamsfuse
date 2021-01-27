@@ -6,7 +6,7 @@ import 'package:fusemodel/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleseasonprovider.dart';
 import '../blocs/singleteamprovider.dart';
-import '../util/teamimage.dart';
+import 'teamimage.dart';
 
 ///
 /// The tile associated with the team, shows bonus details about the

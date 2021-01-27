@@ -4,11 +4,9 @@ import 'dart:io';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:fusemodel/src/async_hydrated_bloc/asynchydratedbloc.dart';
 import 'package:meta/meta.dart';
 
-import '../data/playerblocstate.dart';
-import '../playerbloc.dart';
 import 'data/singleplayerbloc.dart';
 
 abstract class SinglePlayerEvent extends Equatable {}
@@ -110,30 +108,20 @@ class _SinglePlayerInvitesAdded extends SinglePlayerEvent {
 /// Bloc to handle updates and state of a specific Player.
 ///
 class SinglePlayerBloc
-    extends HydratedBloc<SinglePlayerEvent, SinglePlayerState> {
-  final PlayerBloc playerBloc;
+    extends AsyncHydratedBloc<SinglePlayerEvent, SinglePlayerState> {
   final String playerUid;
+  final DatabaseUpdateModel db;
 
-  StreamSubscription<PlayerState> _playerSub;
+  StreamSubscription<Player> _playerSub;
   StreamSubscription<Iterable<InviteToPlayer>> _inviteSub;
 
-  SinglePlayerBloc({@required this.playerBloc, @required this.playerUid})
-      : super((playerBloc.state.players.containsKey(playerUid)
-            ? (SinglePlayerLoadedBuilder()
-                  ..player = playerBloc.state.players[playerUid].toBuilder()
-                  ..mePlayer = playerBloc.state.me?.uid == playerUid
-                  ..invitesLoaded = false)
-                .build()
-            : SinglePlayerDeletedBuilder().build())) {
-    _playerSub = playerBloc.listen((PlayerState playerState) {
-      if (playerState.players.containsKey(playerUid)) {
-        var player = playerState.players[playerUid];
-        // Only send this if the Player is not the same.
-        if (player != state.player) {
-          add(_SinglePlayerNewPlayer(newPlayer: player));
-        }
-      } else {
+  SinglePlayerBloc({@required this.db, @required this.playerUid})
+      : super(SinglePlayerUninitialized(), playerUid) {
+    _playerSub = db.getPlayerDetails(playerUid).listen((data) {
+      if (data == null) {
         add(_SinglePlayerDeleted());
+      } else {
+        add(_SinglePlayerNewPlayer(newPlayer: data));
       }
     });
   }
@@ -154,7 +142,7 @@ class SinglePlayerBloc
     if (event is _SinglePlayerNewPlayer) {
       yield (SinglePlayerLoaded.fromState(state)
             ..player = event.newPlayer.toBuilder()
-            ..mePlayer = event.newPlayer.uid == playerBloc.state.me.uid)
+            ..mePlayer = event.newPlayer.uid == db.currentUser.uid)
           .build();
     }
 
@@ -169,16 +157,14 @@ class SinglePlayerBloc
 
       try {
         if (event.image != null) {
-          var url = await playerBloc.coordinationBloc.databaseUpdateModel
-              .updatePlayerImage(event.player.uid, event.image);
+          var url = await db.updatePlayerImage(event.player.uid, event.image);
           event.player.photoUrl = url.toString();
         }
-        await playerBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestorePlayer(event.player.build(), false);
+        await db.updateFirestorePlayer(event.player.build(), false);
         yield SinglePlayerSaveDone.fromState(state).build();
         yield (SinglePlayerLoaded.fromState(state)
               ..player = event.player
-              ..mePlayer = event.player.uid == playerBloc.state.me.uid)
+              ..mePlayer = event.player.uid == db.currentUser.uid)
             .build();
       } catch (e) {
         yield (SinglePlayerSaveFailed.fromState(state)..error = e).build();
@@ -188,12 +174,11 @@ class SinglePlayerBloc
     if (event is SinglePlayerInviteUser) {
       yield SinglePlayerSaving.fromState(state).build();
       try {
-        await playerBloc.coordinationBloc.databaseUpdateModel
-            .inviteUserToPlayer(
-                playerUid: playerUid,
-                email: event.email,
-                playerName: state.player.name,
-                myUid: playerBloc.coordinationBloc.state.uid);
+        await db.inviteUserToPlayer(
+            playerUid: playerUid,
+            email: event.email,
+            playerName: state.player.name,
+            myUid: db.currentUser.uid);
         yield SinglePlayerSaveDone.fromState(state).build();
         yield SinglePlayerLoaded.fromState(state).build();
       } catch (e) {
@@ -211,7 +196,7 @@ class SinglePlayerBloc
 
     if (event is SinglePlayerLoadInvites) {
       if (_inviteSub == null) {
-        _inviteSub = playerBloc.coordinationBloc.databaseUpdateModel
+        _inviteSub = db
             .getInviteForPlayerStream(playerUid: state.player.uid)
             .listen((Iterable<InviteToPlayer> invites) {
           add(_SinglePlayerInvitesAdded(invites: invites));

@@ -10,7 +10,7 @@ import '../blocs/singleleagueortournamentdivisonprovider.dart';
 import '../blocs/singleleagueortournamentprovider.dart';
 import '../form/leagueteampicker.dart';
 import '../games/gamesharedcard.dart';
-import '../util/leagueimage.dart';
+import 'leagueimage.dart';
 
 ///
 /// The details section to display on a page in the app about the

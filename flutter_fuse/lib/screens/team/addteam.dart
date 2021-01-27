@@ -9,12 +9,12 @@ import '../../services/messages.dart';
 import '../../widgets/form/clubpicker.dart';
 import '../../widgets/form/playerformfield.dart';
 import '../../widgets/teams/teameditform.dart';
-import '../../widgets/util/clubimage.dart';
+import '../../widgets/clubs/clubimage.dart';
 import '../../widgets/util/communityicons.dart';
-import '../../widgets/util/gendericon.dart';
+import '../../widgets/player/gendericon.dart';
 import '../../widgets/util/savingoverlay.dart';
 import '../../widgets/util/stepperalwaysvisible.dart';
-import '../../widgets/util/teamimage.dart';
+import '../../widgets/teams/teamimage.dart';
 
 ///
 /// Adds a team to the specific club.

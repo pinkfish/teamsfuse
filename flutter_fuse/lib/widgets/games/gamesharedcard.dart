@@ -10,7 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../services/messages.dart';
 import '../games/officalresultdialog.dart';
 import '../leagueortournament/leagueortournamentteamname.dart';
-import '../util/leagueteamimage.dart';
+import '../leagueortournament/leagueteamimage.dart';
 
 ///
 /// The shared details of the game.
@@ -59,7 +59,9 @@ class GameSharedCard extends StatelessWidget {
     String endTimeFormat;
     String tzShortName;
     if (game.timezone != local.name) {
-      tzShortName = getLocation(game.timezone).timeZone(game.time.toInt()).abbr;
+      tzShortName = getLocation(game.timezone)
+          .timeZone(game.time.millisecondsSinceEpoch)
+          .abbr;
     }
 
     print(
@@ -69,11 +71,10 @@ class GameSharedCard extends StatelessWidget {
       endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
     }
 
-    if (game.time <
-            timeNow.millisecondsSinceEpoch + Duration.millisecondsPerHour &&
-        game.time >
-            timeNow.millisecondsSinceEpoch -
-                Duration.millisecondsPerHour * 24) {
+    if (game.time.isBefore(timeNow
+            .add(Duration(milliseconds: Duration.millisecondsPerHour))) &&
+        game.time.isAfter(timeNow.subtract(
+            Duration(milliseconds: Duration.millisecondsPerHour * 24)))) {
       // Put in directions buttons.
       buttons.add(
         FlatButton(
@@ -93,7 +94,7 @@ class GameSharedCard extends StatelessWidget {
       leagueOrTournament =
           leagueOrTournamentBloc.state.leagueOrTournaments[game.leagueUid];
     }
-    if (game.time < DateTime.now().millisecondsSinceEpoch &&
+    if (game.time.isBefore(DateTime.now()) &&
         game.type == EventType.Game &&
         game.officialResult.result == OfficialResult.NotStarted &&
         (leagueOrTournament?.isAdmin() ?? false)) {
@@ -126,7 +127,7 @@ class GameSharedCard extends StatelessWidget {
     var color = Colors.white;
     String title;
 
-    if (game.time < timeNow.millisecondsSinceEpoch && dur.inMinutes < 60) {
+    if (game.time.isBefore(timeNow) && dur.inMinutes < 60) {
       color = Colors.lightBlueAccent;
     }
 
@@ -176,7 +177,7 @@ class GameSharedCard extends StatelessWidget {
           if (game.officialResult.result == OfficialResult.HomeTeamWon) {
             homeStyle = homeStyle.copyWith(color: Colors.green);
           }
-          if (game.officialResult.scores.containsKey(GamePeriod.regulation)) {
+          if (game.officialResult.scores.containsKey(GamePeriod.regulation1)) {
             var tmpHomeStyle = homeStyle;
             var tmpAwayStyle = awayStyle;
             if (game.officialResult.scores.length > 1) {
@@ -184,21 +185,21 @@ class GameSharedCard extends StatelessWidget {
               tmpAwayStyle = awayStyle.copyWith(fontSize: 20.0);
             }
             homeTeamDetails.add(Text(
-                game.officialResult.scores[GamePeriod.regulation].score.ptsFor
+                game.officialResult.scores[GamePeriod.regulation1].score.ptsFor
                     .toString(),
                 style: tmpHomeStyle));
             awayTeamDetails.add(Text(
-                game.officialResult.scores[GamePeriod.regulation].score
+                game.officialResult.scores[GamePeriod.regulation1].score
                     .ptsAgainst
                     .toString(),
                 style: tmpAwayStyle));
           }
-          if (game.officialResult.scores.containsKey(GamePeriod.overtime)) {
+          if (game.officialResult.scores.containsKey(GamePeriod.overtime1)) {
             homeTeamDetails.add(Text(
-                "OT ${game.officialResult.scores[GamePeriod.overtime].score.ptsFor}",
+                "OT ${game.officialResult.scores[GamePeriod.overtime1].score.ptsFor}",
                 style: homeStyle));
             awayTeamDetails.add(Text(
-                "OT ${game.officialResult.scores[GamePeriod.overtime].score.ptsAgainst}",
+                "OT ${game.officialResult.scores[GamePeriod.overtime1].score.ptsAgainst}",
                 style: awayStyle));
           }
           if (game.officialResult.scores.containsKey(GamePeriod.penalty)) {

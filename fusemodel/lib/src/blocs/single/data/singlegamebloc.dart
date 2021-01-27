@@ -4,6 +4,7 @@ import 'package:built_value/serializer.dart';
 
 import '../../../game.dart';
 import '../../../media.dart';
+import '../../../player.dart';
 import '../../../serializer.dart';
 
 part 'singlegamebloc.g.dart';
@@ -31,6 +32,17 @@ class SingleGameBlocStateType extends EnumClass {
 }
 
 ///
+/// The summary with the opponent flag.
+///
+class PlayerSummaryWithOpponent {
+  final GamePlayerSummary summary;
+  final bool opponent;
+
+  PlayerSummaryWithOpponent(this.opponent, this.summary);
+}
+
+
+///
 /// The base state for the singleGame bloc.  It tracks all the
 /// exciting singleGame stuff.
 ///
@@ -50,6 +62,10 @@ abstract class SingleGameState {
   BuiltList<MediaInfo> get media;
   @BuiltValueField(serialize: false)
   bool get loadedMedia;
+  @BuiltValueField(serialize: false)
+  BuiltMap<String, Player> get players;
+  @BuiltValueField(serialize: false)
+  bool get loadedPlayers;
 
   SingleGameBlocStateType get type;
 

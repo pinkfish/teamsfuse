@@ -6,11 +6,11 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentprovider.dart';
 import '../blocs/singleleagueortournamentseasonprovider.dart';
+import '../player/gendericon.dart';
 import '../util/communityicons.dart';
-import '../util/gendericon.dart';
-import '../util/leagueimage.dart';
 import 'adddivisondialog.dart';
 import 'addseasondialog.dart';
+import 'leagueimage.dart';
 
 ///
 /// Show the details for the league or tournament.

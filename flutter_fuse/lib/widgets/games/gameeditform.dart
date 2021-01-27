@@ -115,19 +115,15 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
               arrival.day,
               arrival.hour,
               arrival.minute)
-          .millisecondsSinceEpoch;
+          .toUtc();
       var end = _atEnd;
       if (_atEnd.millisecondsSinceEpoch < _atDate.millisecondsSinceEpoch) {
         end.add(Duration(days: 1));
       }
-      _builder.sharedData.endTime = TZDateTime(
-              getLocation(widget.game.sharedData.timezone),
-              end.year,
-              end.month,
-              end.day,
-              end.hour,
-              end.minute)
-          .millisecondsSinceEpoch;
+      var time = TZDateTime(getLocation(widget.game.sharedData.timezone),
+              end.year, end.month, end.day, end.hour, end.minute)
+          .toUtc();
+      _builder.sharedData.endTime = time;
     }
     return _builder;
   }

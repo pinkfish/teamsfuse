@@ -111,7 +111,7 @@ abstract class GameResultDetails
           .rebuild((b) {
         // Turn a 'final' into a 'regulation'.
         if (scoresInternal.containsKey("Final")) {
-          b[GamePeriod.regulation] = b[GamePeriod.finalPeriod];
+          b[GamePeriod.regulation1] = b[GamePeriod.finalPeriod];
         }
         return b;
       }));
@@ -123,7 +123,7 @@ abstract class GameResultDetails
 
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(GameResultDetailsBuilder b) =>
-      b..currentPeriod = GamePeriod.regulation.toBuilder();
+      b..currentPeriod = GamePeriod.regulation1.toBuilder();
 
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(GameResultDetails.serializer, this);
@@ -142,8 +142,8 @@ abstract class GameResultDetails
   ///
   @memoized
   GameResultPerPeriod get regulationResult =>
-      scores.containsKey(GamePeriod.regulation)
-          ? scores[GamePeriod.regulation]
+      scores.containsKey(GamePeriod.regulation1)
+          ? scores[GamePeriod.regulation1]
           : null;
 
   ///
@@ -152,8 +152,8 @@ abstract class GameResultDetails
   ///
   @memoized
   GameResultPerPeriod get overtimeResult =>
-      scores.containsKey(GamePeriod.overtime)
-          ? scores[GamePeriod.overtime]
+      scores.containsKey(GamePeriod.overtime1)
+          ? scores[GamePeriod.overtime1]
           : null;
 
   ///

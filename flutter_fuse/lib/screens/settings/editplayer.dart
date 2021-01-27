@@ -42,8 +42,7 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    singlePlayerBloc = SinglePlayerBloc(
-        playerBloc: BlocProvider.of(context), playerUid: widget.playerUid);
+    singlePlayerBloc = SinglePlayerBloc(playerUid: widget.playerUid);
   }
 
   Future<void> _chooseImage() async {

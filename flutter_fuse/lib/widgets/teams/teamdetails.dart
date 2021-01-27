@@ -6,9 +6,9 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import '../games/teamresults.dart';
+import '../player/gendericon.dart';
 import '../util/communityicons.dart';
-import '../util/gendericon.dart';
-import '../util/teamimage.dart';
+import 'teamimage.dart';
 
 ///
 /// Shows the details of the team.

@@ -1167,11 +1167,111 @@ class Messages {
         name: "Label to select the relatiobship from a drop down");
   }
 
+  String getPeriodName(GamePeriod p) {
+    switch (p.type) {
+      case GamePeriodType.NotStarted:
+        return periodNameNotStarted;
+      case GamePeriodType.Overtime:
+        switch (p.periodNumber) {
+          case 1:
+            return periodNameOverTime1;
+          case 2:
+            return periodNameOverTime2;
+          case 3:
+            return periodNameOverTime3;
+          case 4:
+            return periodNameOverTime4;
+        }
+        return periodNameOverTime;
+      case GamePeriodType.Regulation:
+        switch (p.periodNumber) {
+          case 1:
+            return periodNamePeriod1;
+          case 2:
+            return periodNamePeriod2;
+          case 3:
+            return periodNamePeriod3;
+          case 4:
+            return periodNamePeriod4;
+          case 5:
+            return periodNamePeriod5;
+          case 6:
+            return periodNamePeriod6;
+          default:
+            return periodNamePeriodUnknown;
+        }
+        return periodNamePeriod1;
+      case GamePeriodType.Final:
+        return periodNameFinished;
+      case GamePeriodType.Penalty:
+        return periodNamePenalty;
+      case GamePeriodType.Break:
+        return periodNameBreak;
+      case GamePeriodType.OvertimeBreak:
+        return periodNameOvertimeBreak;
+    }
+    return unknown;
+  }
+
+  String get periodNamePenalty => Intl.message("Penalty",
+      desc: "The game is in penalty time", locale: locale);
+
+  String get periodNameBreak =>
+      Intl.message("Break", desc: "The game is on a break", locale: locale);
+
+  String get periodNameOvertimeBreak => Intl.message("Overtime Break",
+      desc: "The game is on an overtime break", locale: locale);
+
+  String get periodNameNotStarted => Intl.message("Not started",
+      desc: "The game is not started", locale: locale);
+
+  String get periodNameOverTime1 => Intl.message("Overtime 1",
+      desc: "The game is in overtime", locale: locale);
+
+  String get periodNameOverTime2 => Intl.message("Overtime 1",
+      desc: "The game is in overtime", locale: locale);
+
+  String get periodNameOverTime3 => Intl.message("Overtime 1",
+      desc: "The game is in overtime", locale: locale);
+
+  String get periodNameOverTime4 => Intl.message("Overtime 1",
+      desc: "The game is in overtime", locale: locale);
+
+  String get periodNamePeriodUnknown => Intl.message("Period x",
+      desc: "The game is in an unknown", locale: locale);
+
+  String get periodNamePeriod1 =>
+      Intl.message("Period 1", desc: "The game is in period 1", locale: locale);
+
+  String get periodNamePeriod2 =>
+      Intl.message("Period 2", desc: "The game is in period 2", locale: locale);
+
+  String get periodNamePeriod3 =>
+      Intl.message("Period 3", desc: "The game is in period 3", locale: locale);
+
+  String get periodNamePeriod4 =>
+      Intl.message("Period 4", desc: "The game is in period 4", locale: locale);
+
+  String get periodNamePeriod5 =>
+      Intl.message("Period 5", desc: "The game is in period 4", locale: locale);
+
+  String get periodNamePeriod6 =>
+      Intl.message("Period 6", desc: "The game is in period 4", locale: locale);
+
+  String get periodNameFinished =>
+      Intl.message("Finished", desc: "The game has finished", locale: locale);
+
+  String get startButton => Intl.message("START",
+      desc: "Text on a button to start the period", locale: locale);
+
+  String get endButton =>
+      Intl.message("END", desc: "Text on a end button", locale: locale);
+
   String resultwin(GameResultSharedDetails result) {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = GameResultPerPeriod((b) => b
-        ..period = GamePeriod.regulation.toBuilder()
+        ..period = GamePeriod.regulation1.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
           ..ptsAgainst = 0
@@ -1212,7 +1312,7 @@ class Messages {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = GameResultPerPeriod((b) => b
-        ..period = GamePeriod.regulation.toBuilder()
+        ..period = GamePeriod.regulation1.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
           ..ptsAgainst = 0
@@ -1253,7 +1353,7 @@ class Messages {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = GameResultPerPeriod((b) => b
-        ..period = GamePeriod.regulation.toBuilder()
+        ..period = GamePeriod.regulation1.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
           ..ptsAgainst = 0
@@ -1296,7 +1396,7 @@ class Messages {
       finalScore = result.regulationResult;
     } else {
       finalScore = GameResultPerPeriod((b) => b
-        ..period = GamePeriod.regulation.toBuilder()
+        ..period = GamePeriod.regulation1.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
           ..ptsAgainst = 0
@@ -1401,7 +1501,7 @@ class Messages {
     GameResultPerPeriod finalScore = result.regulationResult;
     if (finalScore == null) {
       finalScore = GameResultPerPeriod((b) => b
-        ..period = GamePeriod.regulation.toBuilder()
+        ..period = GamePeriod.regulation1.toBuilder()
         ..score = (GameScoreBuilder()
           ..ptsFor = 0
           ..ptsAgainst = 0
@@ -1506,8 +1606,8 @@ class Messages {
   }
 
   String finalofficalscorebody(GameOfficialResults result) {
-    GamePeriod regulationPeriod = GamePeriod.regulation;
-    GamePeriod overtimePeriod = GamePeriod.overtime;
+    GamePeriod regulationPeriod = GamePeriod.regulation1;
+    GamePeriod overtimePeriod = GamePeriod.overtime1;
     GamePeriod penaltyPeriod = GamePeriod.penalty;
 
     GameResultPerPeriod regulationPeriodResult =
@@ -1723,6 +1823,259 @@ class Messages {
     return Intl.message('$name ($rel)',
         desc: 'Name for the edit box to edit the user name');
   }
+
+  String seasonSummary(PlayerSeasonSummary summary) {
+    return seasonSummaryExpanded(
+        summary.summary.points, summary.summary.blocks, summary.summary.steals);
+  }
+
+  String seasonSummaryExpanded(int points, int blocks, int steals) {
+    return Intl.message("Pts $points Blks $blocks Stls $steals",
+        desc: "Subtitle to markt he season as current",
+        args: [points, blocks, steals],
+        locale: locale,
+        name: "seasonSummaryExpanded");
+  }
+
+  String getGameEventType(GameEvent p) {
+    switch (p.type) {
+      case GameEventType.Made:
+        return madeEventType(p.points);
+      case GameEventType.Missed:
+        return missedEventType(p.points);
+      case GameEventType.Foul:
+        switch (p.foulType) {
+          case GameFoulType.Flagrant:
+            return foulFlagrantEventType;
+          case GameFoulType.Technical:
+            return foulTechnicalEventType;
+        }
+        return foulEventType;
+      case GameEventType.Sub:
+        return subsitutionEventType;
+      case GameEventType.OffsensiveRebound:
+        return offensiveReboundEventType;
+      case GameEventType.DefensiveRebound:
+        return defensiveReboundEventType;
+      case GameEventType.Block:
+        return blockEventType;
+      case GameEventType.Steal:
+        return stealEventType;
+      case GameEventType.Turnover:
+        return turnOverEventType;
+      case GameEventType.PeriodStart:
+        return periodStart(getPeriodName(p.period));
+      case GameEventType.PeriodEnd:
+        return periodEnd(getPeriodName(p.period));
+    }
+    return unknown;
+  }
+
+  String madeEventType(int points) {
+    return Intl.message("$points",
+        args: [points],
+        desc: "+num points",
+        locale: locale,
+        name: "madeEventType");
+  }
+
+  String missedEventType(int points) {
+    return Intl.message("Miss $points",
+        args: [points],
+        desc: "missed num points",
+        locale: locale,
+        name: "missedEventType");
+  }
+
+  String get foulEventType =>
+      Intl.message("Foul", desc: "Foul on player", locale: locale);
+  String get foulFlagrantEventType => Intl.message("Foul Flagrent",
+      desc: "Flagrant foul on player", locale: locale);
+  String get foulTechnicalEventType => Intl.message("Foul Technical",
+      desc: "Technical foul on player", locale: locale);
+
+  String get subsitutionEventType => Intl.message("Subsitution",
+      desc: "Subsitiution of player", locale: locale);
+
+  String get offensiveReboundEventType =>
+      Intl.message("Off Rebound", locale: locale);
+
+  String get defensiveReboundEventType =>
+      Intl.message("Def Rebound", locale: locale);
+
+  String get blockEventType =>
+      Intl.message("Block", desc: "Block of a shot", locale: locale);
+
+  String get stealEventType => Intl.message("Steal",
+      desc: "Steal a ball", locale: locale, name: "stealEventType");
+
+  String get turnOverEventType => Intl.message("Turnover",
+      desc: "Caused a turnover", locale: locale, name: "turnOverEventType");
+
+  String get assistTitle => Intl.message("Assists",
+      desc: "Title for the section on a player assist", locale: locale);
+
+  String get doneButton =>
+      Intl.message('DONE', desc: 'Done completely button', locale: locale);
+
+  String get skipButton =>
+      Intl.message('SKIP', desc: 'Skip button text', locale: locale);
+
+  String get location =>
+      Intl.message("Location", desc: "Location of the game", locale: locale);
+
+  String get jersyNumber => Intl.message("Jersey Number",
+      desc: "Jersey number for the playerr", locale: locale);
+
+  String get optional => Intl.message('Optional',
+      desc: 'Optional subtitle for a stepper', locale: locale);
+
+  String get shots => Intl.message("Shots",
+      desc: "Heading for the shots sectionn", locale: locale);
+
+  String get allEvents => Intl.message("All Events",
+      desc: "Drop down menu item for all events", locale: locale);
+
+  String get fouls => Intl.message("Fouls",
+      desc: "Drop down menu item for fouls", locale: locale);
+
+  String get steals => Intl.message("Steals",
+      desc: "Drop down menu item for steals", locale: locale);
+
+  String get turnovers => Intl.message("Turnovers",
+      desc: "Drop down menu item for turnovers", locale: locale);
+
+  String get blocks => Intl.message("Blocks",
+      desc: "Drop down menu item for fouls", locale: locale);
+
+  String get rebounds => Intl.message("Rebounds",
+      desc: "Drop down menu item for rebounds", locale: locale);
+
+  String get points => Intl.message("Points",
+      desc: "Drop down menu item for points", locale: locale);
+
+  String get seasons => Intl.message("Seasons",
+      desc: "Header for the seasons section", locale: locale);
+
+  String get currentSeason => Intl.message("Current",
+      desc: "Subtitle to markt he season as current", locale: locale);
+
+  String get pointsTitle =>
+      Intl.message("Pts", desc: "Points abbreviation", locale: locale);
+
+  String get stealsTitle =>
+      Intl.message("Stl", desc: "Steals abbreviation", locale: locale);
+
+  String get blocksTitle =>
+      Intl.message("Blk", desc: "Blocks abbreviation", locale: locale);
+
+  String get turnoversTitle =>
+      Intl.message("T/O", desc: "Turnover abbreviation", locale: locale);
+
+  String get urlTitle => Intl.message("URL",
+      desc: "Title for the form field to set the url for media",
+      locale: locale);
+
+  String get allPeriods => Intl.message("All Periods",
+      desc: "Drop down menu item for all periods", locale: locale);
+
+  String get descriptionTitle => Intl.message("Description",
+      desc: "Title for the description of the media", locale: locale);
+
+  String get invalidUrl => Intl.message('Invalid URL',
+      desc: 'Error in a form when the url is invalid', locale: locale);
+
+  String get saveButtonText => Intl.message('SAVE', locale: locale);
+
+  String get emptyText => Intl.message("Must not be empty",
+      desc: "Hint text to say the name must not be empty", locale: locale);
+
+  String get pointsGameSummary =>
+      Intl.message("Pts", desc: "Points summary in game", locale: locale);
+
+  String get percentageGameSummary => Intl.message("%age",
+      desc: "Percentage made in game summary title", locale: locale);
+
+  String get stealsGameSummary =>
+      Intl.message("Steals", desc: "Steals summary in game", locale: locale);
+
+  String get foulsGameSummary =>
+      Intl.message("Fouls", desc: "Fouls summary in game", locale: locale);
+
+  String get turnoversGameSummary =>
+      Intl.message("T/O", desc: "Turnover summary in game", locale: locale);
+
+  String get offensiveReboundTitle => Intl.message("O/RB",
+      desc: "Offensive rebound abbreviation", locale: locale);
+
+  String get defensiveReboundTitle => Intl.message("D/RB",
+      desc: "Defensive rebound abbreviation", locale: locale);
+
+  String get reboundsGameSummary =>
+      Intl.message("RBs", desc: "Rebounds in game summary", locale: locale);
+
+  String periodStart(String periodName) {
+    return Intl.message("Start of $periodName",
+        args: [periodName],
+        desc: "Start of period",
+        locale: locale,
+        name: "periodStart");
+  }
+
+  String periodEnd(String periodName) {
+    return Intl.message("End of $periodName",
+        args: [periodName],
+        desc: "End of period",
+        locale: locale,
+        name: "periodEnd");
+  }
+
+  String get players => Intl.message("Players",
+      desc: "Used when the data is unknown", locale: locale);
+
+  String get video =>
+      Intl.message("Video", desc: "Shows video for the game", locale: locale);
+
+  String get selectMediaType => Intl.message("Select Media",
+      desc: "Title for the dialog to select a video", locale: locale);
+
+  String get selectPlayer => Intl.message("Select Player",
+      desc: "Selects the player for the event", locale: locale);
+
+  String get videoMediaType =>
+      Intl.message("Upload Video", desc: "Upload a video", locale: locale);
+
+  String get imageMediaType =>
+      Intl.message("Photo", desc: "Upload a photo", locale: locale);
+
+  String get streamMediaType =>
+      Intl.message("Stream Live", desc: "Live video streaming", locale: locale);
+  String get takePhotoButton =>
+      Intl.message("CAMERA", desc: "Live video streaming", locale: locale);
+
+  String get selectImageButton =>
+      Intl.message("GALLERY", desc: "Live video streaming", locale: locale);
+
+  String get noMedia =>
+      Intl.message("No Media", desc: "No media to display", locale: locale);
+
+  String get streamButton => Intl.message("STREAM",
+      desc: "Button to display a stream", locale: locale);
+
+  String get uploadButton => Intl.message("UPLOAD",
+      desc: "Button to display upload a stream", locale: locale);
+
+  String get deletePlayer => Intl.message("Delete Player",
+      desc: "Dialog title for deleting a playern", locale: locale);
+
+  String get endTimeout => Intl.message("End timeout",
+      desc: "Text to end the timeout", locale: locale);
+
+  String get period => Intl.message("Period",
+      desc: "Dialog title for sertting the current period", locale: locale);
+
+  String get periodButton => Intl.message("PERIOD",
+      desc: "Button to set the current period", locale: locale);
 
   String get phonenumber {
     return Intl.message('Phone Number',

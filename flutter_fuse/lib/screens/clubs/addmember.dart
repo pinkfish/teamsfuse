@@ -5,7 +5,7 @@ import 'package:fusemodel/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../../widgets/form/switchformfield.dart';
-import '../../widgets/util/clubimage.dart';
+import '../../widgets/clubs/clubimage.dart';
 import '../../widgets/util/ensurevisiblewhenfocused.dart';
 import '../../widgets/util/savingoverlay.dart';
 

@@ -22,11 +22,11 @@ class GameFromOfficial extends GameResultSharedDetails {
   GameFromOfficial(this.game, this.awayTeamLeageUid)
       : _finalResult = _swapResult(
             game.officialResult.scores,
-            GamePeriod.regulation,
+            GamePeriod.regulation1,
             game.officialResult.homeTeamLeagueUid != awayTeamLeageUid),
         _overtimeResult = _swapResult(
             game.officialResult.scores,
-            GamePeriod.overtime,
+            GamePeriod.overtime1,
             game.officialResult.homeTeamLeagueUid != awayTeamLeageUid),
         _penaltyResult = _swapResult(
             game.officialResult.scores,

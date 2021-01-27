@@ -65,27 +65,27 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
       _startedAsFinal = true;
     }
 
-    if (widget.game.officialResult.scores.containsKey(GamePeriod.regulation)) {
+    if (widget.game.officialResult.scores.containsKey(GamePeriod.regulation1)) {
       _regulationHomePts = TextEditingController(
           text: _results
-              .scoresInternal[GamePeriod.regulation.toIndex()].score.ptsFor
+              .scoresInternal[GamePeriod.regulation1.toIndex()].score.ptsFor
               .toString());
       _regulationAwayPts = TextEditingController(
           text: _results
-              .scoresInternal[GamePeriod.regulation.toIndex()].score.ptsAgainst
+              .scoresInternal[GamePeriod.regulation1.toIndex()].score.ptsAgainst
               .toString());
     }
 
     _overtimePeriod =
-        widget.game.officialResult.scores.containsKey(GamePeriod.overtime);
+        widget.game.officialResult.scores.containsKey(GamePeriod.overtime1);
     if (_overtimePeriod) {
       _overtimeHomePts = TextEditingController(
           text: _results
-              .scoresInternal[GamePeriod.overtime.toIndex()].score.ptsFor
+              .scoresInternal[GamePeriod.overtime1.toIndex()].score.ptsFor
               .toString());
       _overtimeAwayPts = TextEditingController(
           text: _results
-              .scoresInternal[GamePeriod.overtime.toIndex()].score.ptsAgainst
+              .scoresInternal[GamePeriod.overtime1.toIndex()].score.ptsAgainst
               .toString());
     }
     _penaltyPeriod =
@@ -116,36 +116,36 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
     // Writes out the data too.
     if (!_results.scoresInternal
         .build()
-        .containsKey(GamePeriod.regulation.toIndex())) {
+        .containsKey(GamePeriod.regulation1.toIndex())) {
       var scoreBuilder = GameScoreBuilder()
         ..ptsFor = int.parse(_regulationHomePts.value.toString())
         ..ptsAgainst = int.parse(_regulationAwayPts.text.toString());
-      _results.scoresInternal[GamePeriod.regulation.toIndex()] =
+      _results.scoresInternal[GamePeriod.regulation1.toIndex()] =
           (GameResultPerPeriodBuilder()
-                ..period = GamePeriod.regulation.toBuilder()
+                ..period = GamePeriod.regulation1.toBuilder()
                 ..score = scoreBuilder)
               .build();
     } else {
       var scoreBuilder = GameScoreBuilder()
         ..ptsFor = int.parse(_regulationHomePts.text.toString())
         ..ptsAgainst = int.parse(_regulationAwayPts.text.toString());
-      _results.scoresInternal[GamePeriod.regulation.toIndex()] = _results
-          .scoresInternal[GamePeriod.regulation.toIndex()]
+      _results.scoresInternal[GamePeriod.regulation1.toIndex()] = _results
+          .scoresInternal[GamePeriod.regulation1.toIndex()]
           .rebuild((b) => b..score = scoreBuilder);
     }
 
     if (_results.scoresInternal
         .build()
-        .containsKey(GamePeriod.overtime.toIndex())) {
+        .containsKey(GamePeriod.overtime1.toIndex())) {
       if (!_overtimePeriod) {
         // Remove it.
-        _results.scoresInternal.remove(GamePeriod.overtime.toIndex());
+        _results.scoresInternal.remove(GamePeriod.overtime1.toIndex());
       } else {
         var scoreBuilder = GameScoreBuilder()
           ..ptsFor = int.parse(_overtimeHomePts.text.toString())
           ..ptsAgainst = int.parse(_overtimeAwayPts.text.toString());
-        _results.scoresInternal[GamePeriod.overtime.toIndex()] = _results
-            .scoresInternal[GamePeriod.overtime.toIndex()]
+        _results.scoresInternal[GamePeriod.overtime1.toIndex()] = _results
+            .scoresInternal[GamePeriod.overtime1.toIndex()]
             .rebuild((b) => b..score = scoreBuilder);
       }
     } else {
@@ -154,9 +154,9 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
           ..ptsFor = int.parse(_overtimeHomePts.text.toString())
           ..ptsAgainst = int.parse(_overtimeAwayPts.text.toString());
 
-        _results.scoresInternal[GamePeriod.overtime.toIndex()] =
+        _results.scoresInternal[GamePeriod.overtime1.toIndex()] =
             (GameResultPerPeriodBuilder()
-                  ..period = GamePeriod.overtime.toBuilder()
+                  ..period = GamePeriod.overtime1.toBuilder()
                   ..score = scoreBuilder)
                 .build();
       }
@@ -172,8 +172,8 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
         var scoreBuilder = GameScoreBuilder()
           ..ptsFor = int.parse(_penaltyHomePts.text.toString())
           ..ptsAgainst = int.parse(_penaltyAwayPts.text.toString());
-        _results.scoresInternal[GamePeriod.overtime.toIndex()] = _results
-            .scoresInternal[GamePeriod.overtime.toIndex()]
+        _results.scoresInternal[GamePeriod.overtime1.toIndex()] = _results
+            .scoresInternal[GamePeriod.overtime1.toIndex()]
             .rebuild((b) => b..score = scoreBuilder);
       }
     } else {

@@ -97,18 +97,62 @@ abstract class GamePeriod implements Built<GamePeriod, GamePeriodBuilder> {
   static GamePeriod notStarted = GamePeriod((b) => b
     ..type = GamePeriodType.NotStarted
     ..periodNumber = 0);
-  static GamePeriod regulation = GamePeriod((b) => b
+  static GamePeriod regulation1 = GamePeriod((b) => b
     ..type = GamePeriodType.Regulation
-    ..periodNumber = 0);
-  static GamePeriod overtime = GamePeriod((b) => b
+    ..periodNumber = 1);
+  static GamePeriod regulation2 = GamePeriod((b) => b
+    ..type = GamePeriodType.Regulation
+    ..periodNumber = 2);
+  static GamePeriod regulation3 = GamePeriod((b) => b
+    ..type = GamePeriodType.Regulation
+    ..periodNumber = 3);
+  static GamePeriod regulation4 = GamePeriod((b) => b
+    ..type = GamePeriodType.Regulation
+    ..periodNumber = 4);
+  static GamePeriod regulation5 = GamePeriod((b) => b
+    ..type = GamePeriodType.Regulation
+    ..periodNumber = 5);
+  static GamePeriod regulation6 = GamePeriod((b) => b
+    ..type = GamePeriodType.Regulation
+    ..periodNumber = 6);
+  static GamePeriod overtime1 = GamePeriod((b) => b
     ..type = GamePeriodType.Overtime
-    ..periodNumber = 0);
+    ..periodNumber = 1);
+  static GamePeriod overtime2 = GamePeriod((b) => b
+    ..type = GamePeriodType.Overtime
+    ..periodNumber = 2);
+  static GamePeriod overtime3 = GamePeriod((b) => b
+    ..type = GamePeriodType.Overtime
+    ..periodNumber = 3);
+  static GamePeriod overtime4 = GamePeriod((b) => b
+    ..type = GamePeriodType.Overtime
+    ..periodNumber = 4);
+  static GamePeriod overtime5 = GamePeriod((b) => b
+    ..type = GamePeriodType.Overtime
+    ..periodNumber = 5);
   static GamePeriod penalty = GamePeriod((b) => b
     ..type = GamePeriodType.Penalty
     ..periodNumber = 0);
   static GamePeriod finalPeriod = GamePeriod((b) => b
     ..type = GamePeriodType.Final
     ..periodNumber = 0);
+
+  static List<GamePeriod> values = [
+    notStarted,
+    regulation1,
+    regulation2,
+    regulation3,
+    regulation4,
+    regulation5,
+    regulation6,
+    overtime1,
+    overtime2,
+    overtime3,
+    overtime4,
+    overtime5,
+    penalty,
+    finalPeriod
+  ];
 }
 
 abstract class GamePeriodTime

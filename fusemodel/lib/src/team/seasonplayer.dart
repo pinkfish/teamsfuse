@@ -1,8 +1,10 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import '../serializer.dart';
+import 'seasonplayersummary.dart';
 
 part 'seasonplayer.g.dart';
 
@@ -34,6 +36,7 @@ abstract class SeasonPlayer
   RoleInTeam get role;
   String get jerseyNumber;
   String get position;
+  SeasonPlayerSummary get summary;
 
   SeasonPlayer._();
   factory SeasonPlayer([updates(SeasonPlayerBuilder b)]) = _$SeasonPlayer;

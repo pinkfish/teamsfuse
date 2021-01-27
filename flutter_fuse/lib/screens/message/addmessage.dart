@@ -6,9 +6,9 @@ import '../../services/messages.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/form/seasonformfield.dart';
 import '../../widgets/form/teampicker.dart';
+import '../../widgets/player/playername.dart';
 import '../../widgets/util/communityicons.dart';
 import '../../widgets/util/ensurevisiblewhenfocused.dart';
-import '../../widgets/util/playername.dart';
 import '../../widgets/util/savingoverlay.dart';
 
 ///

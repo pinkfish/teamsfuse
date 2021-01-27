@@ -5,7 +5,7 @@ import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 import '../../widgets/drawer/fuseddrawer.dart';
-import '../../widgets/util/leagueimage.dart';
+import '../../widgets/leagueortournament/leagueimage.dart';
 
 ///
 /// This shows all the basic stuff about the league/tournaments the person

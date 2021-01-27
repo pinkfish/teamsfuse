@@ -4,8 +4,8 @@ import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
-import '../util/playername.dart';
-import '../util/teamimage.dart';
+import '../player/playername.dart';
+import '../teams/teamimage.dart';
 
 ///
 /// Shows the list of the mssages for the user.

@@ -6,8 +6,8 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../services/messages.dart';
 import '../blocs/singleseasonprovider.dart';
 import '../blocs/singleteamprovider.dart';
-import '../util/playerimage.dart';
-import '../util/playername.dart';
+import '../player/playerimage.dart';
+import '../player/playername.dart';
 
 ///
 /// Show the players of the team.
@@ -164,7 +164,8 @@ class _TeamPlayersState extends State<TeamPlayers> {
       builder: (context, seasonBloc) => BlocBuilder(
         cubit: seasonBloc,
         builder: (context, seasonState) {
-          if (seasonState is SingleSeasonUninitialized || seasonState is SingleSeasonDeleted) {
+          if (seasonState is SingleSeasonUninitialized ||
+              seasonState is SingleSeasonDeleted) {
             return Column(children: [
               Text(Messages.of(context).loading),
             ]);

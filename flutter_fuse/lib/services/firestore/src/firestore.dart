@@ -42,4 +42,8 @@ class Firestore extends wfs.FirestoreWrapper {
   dynamic get fieldValueServerTimestamp {
     return fs.FieldValue.serverTimestamp();
   }
+
+  dynamic get fieldValueDelete {
+    return fs.FieldValue.delete();
+  }
 }

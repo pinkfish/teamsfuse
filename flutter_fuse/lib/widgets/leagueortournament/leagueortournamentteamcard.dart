@@ -5,8 +5,8 @@ import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
+import '../teams/teamimage.dart';
 import '../util/communityicons.dart';
-import '../util/teamimage.dart';
 import 'leagueortournamentteamname.dart';
 
 ///

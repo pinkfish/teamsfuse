@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'base/singleprovider.dart';
 
@@ -19,6 +20,7 @@ class SinglePlayerProvider extends SingleBlocProvider<SinglePlayerBloc> {
 
   static SinglePlayerBloc _createBloc(BuildContext context, String uid) {
     return SinglePlayerBloc(
-        playerBloc: BlocProvider.of<PlayerBloc>(context), playerUid: uid);
+        db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+        playerUid: uid);
   }
 }

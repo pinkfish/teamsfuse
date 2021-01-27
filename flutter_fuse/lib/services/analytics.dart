@@ -1,5 +1,6 @@
 import 'package:device_info/device_info.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_performance/firebase_performance.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:package_info/package_info.dart';
@@ -133,9 +134,19 @@ class Analytics extends AnalyticsSubsystem {
     return _packageInfo.version;
   }
 
+  ///
+  /// Log an event to analytics for details on what is going on.
+  ///
   @override
   void logEvent({String name, Map<String, String> parameters}) {
-    _analytics.logEvent(name: name, parameters: parameters);
+    if (Platform.isAndroid || Platform.isIOS) {
+      _analytics.logEvent(name: name, parameters: parameters);
+    }
+  }
+
+  @override
+  void recordError(Error error, StackTrace stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack);
   }
 }
 

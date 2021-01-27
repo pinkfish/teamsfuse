@@ -28,9 +28,9 @@ import 'common.dart';
 import 'game.dart';
 import 'invite.dart';
 import 'leagueortournament.dart';
+import 'media.dart';
 import 'message.dart';
 import 'player.dart';
-import 'media.dart';
 import 'serializer/customjsonserializerplugin.dart';
 import 'serializer/gameperiodserializer.dart';
 import 'serializer/inviteserializer.dart';
@@ -124,6 +124,7 @@ part 'serializer.g.dart';
   Season,
   SeasonBlocStateType,
   SeasonPlayer,
+  SeasonPlayerSummary,
   SeasonLoaded,
   SeasonState,
   SeasonUninitialized,

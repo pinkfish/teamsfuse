@@ -25,4 +25,7 @@ abstract class FirestoreWrapper {
 
   /// Gets the value to put on a field to set it up with the server timestamp
   dynamic get fieldValueServerTimestamp;
+
+  /// Gets the value to put on a field to set it to delete itself.
+  dynamic get fieldValueDelete;
 }

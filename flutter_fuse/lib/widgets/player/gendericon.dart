@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import 'communityicons.dart';
+import '../util/communityicons.dart';
 
 ///
 /// Shwows an icon based on the gender passed in

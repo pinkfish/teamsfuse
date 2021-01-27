@@ -8,14 +8,14 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../services/messages.dart';
 import '../blocs/singlegameprovider.dart';
 import '../blocs/singleleagueortournamentteamprovider.dart';
-import '../blocs/singleopponentprovider.dart';
 import '../blocs/singleseasonprovider.dart';
 import '../blocs/singleteamprovider.dart';
 import '../games/attendancedialog.dart';
 import '../games/editresultdialog.dart';
 import '../games/multipleattendencedialog.dart';
-import '../util/teamimage.dart';
+import '../teams/teamimage.dart';
 import 'attendanceicon.dart';
+import 'gametitle.dart';
 
 ///
 /// Shows the game as a card to display in various lists.
@@ -254,10 +254,8 @@ class GameCard extends StatelessWidget {
     // Only show attendence until the game/event is over.
     if (game.result.inProgress == GameInProgress.NotStarted) {
       if ((game.trackAttendance &&
-          game.sharedData.time >
-              DateTime.now()
-                  .subtract(Duration(hours: 2))
-                  .millisecondsSinceEpoch)) {
+          game.sharedData.time
+              .isAfter(DateTime.now().subtract(Duration(hours: 2))))) {
         return _buildAvailability(context, gameBloc, season, players);
       }
     } else if (game.result.inProgress != GameInProgress.NotStarted) {
@@ -274,77 +272,6 @@ class GameCard extends StatelessWidget {
           "&destionation_place_id=${Uri.encodeComponent(game.sharedData.place.placeId)}";
     }
     launch(url);
-  }
-
-  String _titleWidget(BuildContext context, Game game,
-      LeagueOrTournamentTeam leagueTeam, SingleOpponentState opState) {
-    String title;
-
-    var op = _opponentData(context, game, leagueTeam, opState);
-
-    var day = TimeOfDay.fromDateTime(game.sharedData.tzTime);
-    var format = MaterialLocalizations.of(context).formatTimeOfDay(day);
-    String endTimeFormat;
-    String tzShortName;
-    if (game.sharedData.timezone != local.name) {
-      tzShortName = getLocation(game.sharedData.timezone)
-          .timeZone(game.sharedData.time.toInt())
-          .abbr;
-    }
-
-    if (game.sharedData.time != game.sharedData.endTime) {
-      var endDay = TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
-      endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
-    }
-    switch (game.sharedData.type) {
-      case EventType.Game:
-        String opName;
-        if (op == null) {
-          opName = Messages.of(context).loading;
-        } else {
-          opName = op.name;
-        }
-        // Within an hour.
-        title = Messages.of(context)
-            .gametitle(format, endTimeFormat, tzShortName, opName);
-
-        break;
-
-      case EventType.Event:
-        title = Messages.of(context).eventtitle(
-            format, game.sharedData.name, endTimeFormat, tzShortName);
-
-        break;
-
-      case EventType.Practice:
-        title = Messages.of(context)
-            .trainingtitle(format, endTimeFormat, tzShortName);
-
-        break;
-    }
-    return title;
-  }
-
-  String _opponentUid(Game game) {
-    if (game.sharedData.type == EventType.Game && game.opponentUid.isNotEmpty) {
-      return game.opponentUid;
-    }
-    return "123";
-  }
-
-  Opponent _opponentData(BuildContext context, Game game,
-      LeagueOrTournamentTeam leagueTeam, SingleOpponentState opState) {
-    if (game.sharedData.type == EventType.Game && game.opponentUid.isNotEmpty) {
-      return opState.opponent;
-    } else if (game.sharedData.type == EventType.Game && leagueTeam != null) {
-      return (OpponentBuilder()..name = leagueTeam.name).build();
-    } else {
-      return (OpponentBuilder()
-            ..name = Messages.of(context).unknown
-            ..teamUid = game.teamUid
-            ..uid = "12")
-          .build();
-    }
   }
 
   Widget _buildMain(
@@ -393,17 +320,17 @@ class GameCard extends StatelessWidget {
     // Only arrival time for games and only if it is before the game.
     if (game.arrivalTime != game.sharedData.time &&
         game.sharedData.type == EventType.Game &&
-        timeNow.millisecondsSinceEpoch <
-            game.arrivalTime + Duration.millisecondsPerHour) {
+        timeNow.isBefore(game.arrivalTime
+            .add(Duration(milliseconds: Duration.millisecondsPerHour)))) {
       var arriveDay = TimeOfDay.fromDateTime(game.tzArriveTime);
       arriveFormat =
           MaterialLocalizations.of(context).formatTimeOfDay(arriveDay);
     }
 
-    if (game.arrivalTime <
-            timeNow.millisecondsSinceEpoch + Duration.millisecondsPerHour &&
-        game.arrivalTime >
-            timeNow.millisecondsSinceEpoch - Duration.millisecondsPerHour * 3) {
+    if (game.arrivalTime.isBefore(timeNow
+            .subtract(Duration(milliseconds: Duration.millisecondsPerHour))) &&
+        game.arrivalTime.isAfter(timeNow
+            .add(Duration(milliseconds: Duration.millisecondsPerHour * 3)))) {
       // Put in directions buttons.
       buttons.add(
         FlatButton(
@@ -415,7 +342,7 @@ class GameCard extends StatelessWidget {
       );
     }
 
-    if (game.sharedData.time < DateTime.now().millisecondsSinceEpoch &&
+    if (game.sharedData.time.isBefore(DateTime.now()) &&
         game.sharedData.type == EventType.Game &&
         game.result.result == GameResult.Unknown) {
       if (game.sharedData.officialResult != null &&
@@ -484,8 +411,7 @@ class GameCard extends StatelessWidget {
 
     var color = Colors.white;
 
-    if (game.sharedData.time < timeNow.millisecondsSinceEpoch &&
-        dur.inMinutes < 60) {
+    if (game.sharedData.time.isBefore(timeNow) && dur.inMinutes < 60) {
       color = Colors.lightBlueAccent;
     }
 
@@ -498,21 +424,7 @@ class GameCard extends StatelessWidget {
         width: 50.0,
         height: 50.0,
       ),
-      title: SingleOpponentProvider(
-        opponentUid: _opponentUid(game),
-        teamUid: game.teamUid,
-        builder: (context, opBloc) => BlocBuilder(
-          cubit: opBloc,
-          builder: (context, opState) => AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            child: Text(
-              _titleWidget(context, game, leagueTeam, opState),
-              overflow: TextOverflow.clip,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      ),
+      title: GameTitle(game, leagueTeam),
       subtitle: SingleTeamProvider(
         teamUid: game.teamUid,
         builder: (context, teamBloc) => BlocBuilder(

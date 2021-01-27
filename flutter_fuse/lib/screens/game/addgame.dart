@@ -148,9 +148,8 @@ class _AddGameScreenState extends State<AddGameScreen> {
       ..teamUid = team.uid
       ..sharedData = sharedGameData
       ..sharedData.time = start.millisecondsSinceEpoch
-      ..arrivalTime = start
-          .subtract(Duration(minutes: team.arriveEarlyInternal.toInt()))
-          .millisecondsSinceEpoch
+      ..arrivalTime =
+          start.subtract(Duration(minutes: team.arriveEarlyInternal.toInt()))
       ..sharedData.endTime = start.millisecondsSinceEpoch
       ..seasonUid = team.currentSeason
       ..uniform = ""

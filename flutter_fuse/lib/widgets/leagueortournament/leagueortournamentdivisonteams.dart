@@ -7,8 +7,8 @@ import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentdivisonprovider.dart';
-import '../util/leagueimage.dart';
 import 'addteamdialog.dart';
+import 'leagueimage.dart';
 import 'leagueortournamentteamcard.dart';
 
 ///

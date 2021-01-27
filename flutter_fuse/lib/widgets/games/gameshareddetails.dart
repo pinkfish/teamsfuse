@@ -11,11 +11,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../services/map.dart';
 import '../../services/map_view/marker.dart';
 import '../../services/messages.dart';
+import '../leagueortournament/leagueimage.dart';
 import '../leagueortournament/leagueortournamentname.dart';
 import '../leagueortournament/leagueortournamentteamname.dart';
+import '../leagueortournament/leagueteamimage.dart';
 import '../util/communityicons.dart';
-import '../util/leagueimage.dart';
-import '../util/leagueteamimage.dart';
 import 'officalresultdialog.dart';
 
 ///
@@ -96,7 +96,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
     String tzShortName;
     if (widget.game.timezone != local.name) {
       var abbr = getLocation(widget.game.timezone)
-          .timeZone(widget.game.time.toInt())
+          .timeZone(widget.game.time.millisecondsSinceEpoch)
           .abbr;
       tzShortName = " ($abbr)";
     }
@@ -202,7 +202,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
         homeStyle = homeStyle.copyWith(color: Colors.green);
       }
       if (widget.game.officialResult.scores
-          .containsKey(GamePeriod.regulation)) {
+          .containsKey(GamePeriod.regulation1)) {
         var tmpHomeStyle = homeStyle;
         var tmpAwayStyle = awayStyle;
         if (widget.game.officialResult.scores.length > 1) {
@@ -210,27 +210,27 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
           tmpAwayStyle = awayStyle.copyWith(fontSize: 20.0);
         }
         homeTeamDetails.add(Text(
-          widget.game.officialResult.scores[GamePeriod.regulation].score.ptsFor
+          widget.game.officialResult.scores[GamePeriod.regulation1].score.ptsFor
               .toString(),
           style: tmpHomeStyle,
           textAlign: TextAlign.end,
         ));
         awayTeamDetails.add(Text(
-          widget.game.officialResult.scores[GamePeriod.regulation].score
+          widget.game.officialResult.scores[GamePeriod.regulation1].score
               .ptsAgainst
               .toString(),
           style: tmpAwayStyle,
           textAlign: TextAlign.start,
         ));
       }
-      if (widget.game.officialResult.scores.containsKey(GamePeriod.overtime)) {
+      if (widget.game.officialResult.scores.containsKey(GamePeriod.overtime1)) {
         homeTeamDetails.add(Text(
-          "OT ${widget.game.officialResult.scores[GamePeriod.overtime].score.ptsFor}",
+          "OT ${widget.game.officialResult.scores[GamePeriod.overtime1].score.ptsFor}",
           style: homeStyle,
           textAlign: TextAlign.end,
         ));
         awayTeamDetails.add(Text(
-          "OT ${widget.game.officialResult.scores[GamePeriod.overtime].score.ptsAgainst}",
+          "OT ${widget.game.officialResult.scores[GamePeriod.overtime1].score.ptsAgainst}",
           style: awayStyle,
           textAlign: TextAlign.start,
         ));

@@ -4,8 +4,8 @@ import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
+import '../../widgets/leagueortournament/leagueimage.dart';
 import '../../widgets/util/byusername.dart';
-import '../../widgets/util/leagueimage.dart';
 import 'dialog/deleteinvite.dart';
 
 ///

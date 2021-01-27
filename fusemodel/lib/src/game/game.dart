@@ -34,25 +34,54 @@ class Attendance extends EnumClass {
 /// the view of the same game for different teams will look different.
 ///
 abstract class Game implements Built<Game, GameBuilder> {
+  /// The current period of the game.
   GamePeriod get currentPeriod;
+
+  /// Uid of the game
   String get uid;
+
+  /// The data uid for the shared parts of this.
   @BuiltValueField(wireName: SHAREDDATAUID)
   String get sharedDataUid;
-  num get arrivalTime;
+
+  /// When people should arrive.
+  DateTime get arrivalTime;
+
+  /// Notes about the game
   String get notes;
+
+  /// The opponent for the game
   @BuiltValueField(wireName: OPPONENTUID)
   String get opponentUid;
+
+  /// The season for the game
   String get seasonUid;
+
+  /// The team the game is associated with.
   @BuiltValueField(wireName: TEAMUID)
   String get teamUid;
+
+  /// The uniforms for the team
   String get uniform;
+
+  /// The series of games, if this is a series.
   @nullable
   String get seriesId;
+
+  /// The result of the game, broken down by period.
   @BuiltValueField(wireName: RESULT)
   GameResultDetails get result;
+
+  /// If people attended the game
   BuiltMap<String, Attendance> get attendance;
+
+  /// If we should track attendance
   bool get trackAttendance;
+
+  /// The shared information about the game
   GameSharedData get sharedData;
+
+  /// The opponent for the game if it is in a league.
   @nullable
   String get leagueOpponentUid;
 
@@ -76,6 +105,13 @@ abstract class Game implements Built<Game, GameBuilder> {
   @nullable
   DateTime get runningFrom;
 
+  /// How long into the game we are currently.
+  Duration get gameTime;
+
+  /// List of players to ignore from the season set.
+  BuiltList<String> get ignoreFromSeason;
+
+  /// All the uids for the team, including the opponent.
   @memoized
   BuiltList<String> get allTeamUids {
     if (opponentUid.isNotEmpty) {
@@ -86,13 +122,23 @@ abstract class Game implements Built<Game, GameBuilder> {
     ]);
   }
 
+  /// The current time of the game, used when making events.
+  Duration get currentGameTime {
+    int diff = 0;
+    if (runningFrom != null) {
+      diff += DateTime.now().difference(runningFrom).inSeconds;
+    }
+    diff += gameTime.inSeconds;
+    return Duration(seconds: diff);
+  }
+
   Game._();
   factory Game([updates(GameBuilder b)]) = _$Game;
 
   bool get homegame => sharedData.officialResult.homeTeamLeagueUid == teamUid;
 
-  TZDateTime get tzArriveTime => new TZDateTime.fromMillisecondsSinceEpoch(
-      sharedData.location, arrivalTime);
+  TZDateTime get tzArriveTime =>
+      new TZDateTime.from(arrivalTime, sharedData.location);
 
   static const String SEASONUID = 'seasonUid';
   static const String RESULT = 'result';
@@ -108,7 +154,8 @@ abstract class Game implements Built<Game, GameBuilder> {
   static void _initializeBuilder(GameBuilder b) => b
     ..trackAttendance = true
     ..opponentUid = ""
-    ..currentPeriod = GamePeriod.notStarted.toBuilder();
+    ..currentPeriod = GamePeriod.notStarted.toBuilder()
+    ..gameTime = Duration();
 
   Map<String, dynamic> toMap() {
     return serializers.serializeWith(Game.serializer, this);

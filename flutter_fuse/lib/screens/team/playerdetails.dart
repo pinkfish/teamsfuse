@@ -10,9 +10,9 @@ import '../../widgets/blocs/singleprofileprovider.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/blocs/singleteamseasonplayerprovider.dart';
 import '../../widgets/invites/deleteinvitedialog.dart';
+import '../../widgets/player/playerimage.dart';
+import '../../widgets/player/playername.dart';
 import '../../widgets/util/communityicons.dart';
-import '../../widgets/util/playerimage.dart';
-import '../../widgets/util/playername.dart';
 import '../../widgets/util/savingoverlay.dart';
 
 class _RoleInTeamAlertDialog extends StatefulWidget {
@@ -130,8 +130,7 @@ class PlayerDetailsScreen extends StatelessWidget {
       SingleTeamSeasonPlayerBloc playerBloc) async {
     var mess = Messages.of(context);
 
-    var bloc = SinglePlayerBloc(
-        playerBloc: playerBloc.playerBloc, playerUid: playerBloc.playerUid);
+    var bloc = SinglePlayerBloc(playerUid: playerBloc.playerUid);
     var result = await showDialog<bool>(
         context: context,
         barrierDismissible: false, // user must tap button!

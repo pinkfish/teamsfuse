@@ -11,7 +11,7 @@ import 'invite.dart';
 import 'leagueortournament.dart';
 import 'media.dart';
 import 'message.dart';
-import 'player.dart';
+import 'player/player.dart';
 import 'team.dart';
 import 'winrecord.dart';
 
@@ -148,6 +148,23 @@ abstract class DatabaseUpdateModel {
   /// Adds the game event into the database
   Future<String> addMedia({@required MediaInfo media});
 
+  /// Updates the game player in the database.
+  Future<void> updateGamePlayerData(
+      {@required String gameUid,
+      @required String playerUid,
+      @required bool opponent,
+      @required GamePlayerSummary summary});
+
+  Future<void> addGamePlayer(
+      {@required String gameUid,
+      @required String playerUid,
+      @required bool opponent});
+
+  Future<void> deleteGamePlayer(
+      {@required String gameUid,
+      @required String playerUid,
+      @required bool opponent});
+
   /// Updates the season in the database.
   Future<void> updateMediaInfoThumbnail(
       {@required MediaInfo mediaInfo, @required String thumbnailUrl});
@@ -212,7 +229,7 @@ abstract class DatabaseUpdateModel {
   Stream<Iterable<InviteToPlayer>> getInviteForPlayerStream({String playerUid});
   Future<void> removeUserFromPlayer(Player player, String userId);
   Future<bool> playerExists(String uid);
-  Future<Player> getPlayerDetails(String uid);
+  Stream<Player> getPlayerDetails(String uid);
   Future<bool> addUserToPlayer(String playerUid, PlayerUser player);
   Future<String> createPlayer(Player player);
   Future<void> deletePlayer(String playerUid);

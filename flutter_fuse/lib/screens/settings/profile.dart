@@ -7,7 +7,7 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleplayerprovider.dart';
 import '../../widgets/invites/deleteinvitedialog.dart';
-import '../../widgets/util/playerimage.dart';
+import '../../widgets/player/playerimage.dart';
 
 ///
 /// Displays the profile for the user.

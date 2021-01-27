@@ -44,13 +44,13 @@ abstract class GameSharedData
   String get uid;
 
   /// The time the event starts at.
-  num get time;
+  DateTime get time;
 
   /// The timezone the event is in.
   String get timezone;
 
   /// The end time for the event.
-  num get endTime;
+  DateTime get endTime;
 
   /// The type of the event.
   EventType get type;
@@ -89,10 +89,8 @@ abstract class GameSharedData
     return getLocation(this.timezone);
   }
 
-  TZDateTime get tzTime =>
-      new TZDateTime.fromMillisecondsSinceEpoch(location, time);
-  TZDateTime get tzEndTime =>
-      new TZDateTime.fromMillisecondsSinceEpoch(location, endTime);
+  TZDateTime get tzTime => new TZDateTime.from(time, location);
+  TZDateTime get tzEndTime => new TZDateTime.from(time, location);
 
   static const String OFFICIALRESULT = 'officialResult';
   static const String TYPE = 'type';

@@ -3,7 +3,7 @@ import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
 import '../../../invite.dart';
-import '../../../player.dart';
+import '../../../player/player.dart';
 import '../../../serializer.dart';
 
 part 'singleplayerbloc.g.dart';
@@ -28,6 +28,8 @@ class SinglePlayerBlocStateType extends EnumClass {
 
   static SinglePlayerBlocStateType valueOf(String name) => _$valueOf(name);
 }
+
+
 
 ///
 /// The base state for the singlePlayer bloc.  It tracks all the

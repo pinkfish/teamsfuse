@@ -10,8 +10,8 @@ import '../../services/map_view/marker.dart';
 import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import '../games/attendanceicon.dart';
+import '../teams/teamimage.dart';
 import '../util/communityicons.dart';
-import '../util/teamimage.dart';
 import 'teamresults.dart';
 
 /// Callback for the game.
@@ -205,7 +205,7 @@ class GameDetailsBase extends StatelessWidget {
     String tzShortName;
     if (game.sharedData.timezone != local.name) {
       var abbr = getLocation(game.sharedData.timezone)
-          .timeZone(game.sharedData.time.toInt())
+          .timeZone(game.sharedData.time.millisecondsSinceEpoch)
           .abbr;
 
       tzShortName = " ($abbr)";
@@ -328,10 +328,8 @@ class GameDetailsBase extends StatelessWidget {
         // Show the live stuff if the game is close to starting.
         body.add(_buildGameResult(context, false, game.sharedData, game.result,
             game.result.inProgress == GameInProgress.InProgress, false));
-        if (game.sharedData.time >
-                DateTime.now()
-                    .subtract(const Duration(hours: 1))
-                    .millisecondsSinceEpoch &&
+        if (game.sharedData.time
+                .isAfter(DateTime.now().subtract(const Duration(hours: 1))) &&
             !game.result.isGameFinished) {
           if (editResult != null) {
             body.add(ButtonBar(
@@ -394,10 +392,8 @@ class GameDetailsBase extends StatelessWidget {
       // Attendance, possibly.
       if (!adding &&
           game.trackAttendance &&
-          game.sharedData.time >
-              DateTime.now()
-                  .subtract(const Duration(hours: 1))
-                  .millisecondsSinceEpoch) {
+          game.sharedData.time
+              .isAfter(DateTime.now().subtract(const Duration(hours: 1)))) {
         body.add(
           BlocBuilder(
             cubit: BlocProvider.of<PlayerBloc>(context),

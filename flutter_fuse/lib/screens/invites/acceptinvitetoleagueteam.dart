@@ -10,7 +10,7 @@ import '../../widgets/form/seasonformfield.dart';
 import '../../widgets/form/teampicker.dart';
 import '../../widgets/util/byusername.dart';
 import '../../widgets/util/ensurevisiblewhenfocused.dart';
-import '../../widgets/util/leagueimage.dart';
+import '../../widgets/leagueortournament/leagueimage.dart';
 import '../../widgets/util/savingoverlay.dart';
 import 'dialog/deleteinvite.dart';
 

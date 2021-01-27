@@ -14,7 +14,7 @@ import '../form/genderformfield.dart';
 import '../form/sportformfield.dart';
 import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
-import '../util/leagueimage.dart';
+import 'leagueimage.dart';
 
 ///
 /// Edit the league or tournament,

@@ -8,8 +8,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../services/messages.dart';
 import '../../services/validations.dart';
-import '../util/clubimage.dart';
 import '../util/ensurevisiblewhenfocused.dart';
+import 'clubimage.dart';
 
 ///
 /// A form to edit the details of the club.

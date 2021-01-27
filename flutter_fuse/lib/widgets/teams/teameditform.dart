@@ -14,7 +14,7 @@ import '../form/sportformfield.dart';
 import '../form/switchformfield.dart';
 import '../util/communityicons.dart';
 import '../util/ensurevisiblewhenfocused.dart';
-import '../util/teamimage.dart';
+import 'teamimage.dart';
 
 /// The start section to display.
 enum StartSection {

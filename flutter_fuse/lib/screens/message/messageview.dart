@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
 
 import '../../services/messages.dart';
-import '../../widgets/util/playername.dart';
+import '../../widgets/player/playername.dart';
+import '../../widgets/teams/teamimage.dart';
 import '../../widgets/util/savingoverlay.dart';
-import '../../widgets/util/teamimage.dart';
 
 ///
 /// Show a specific message.

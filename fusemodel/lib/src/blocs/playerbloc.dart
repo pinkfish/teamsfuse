@@ -39,18 +39,6 @@ class _PlayerLoggedOut extends PlayerEvent {
   List<Object> get props => [];
 }
 
-///
-/// Loads the specific details of this player.
-///
-class PlayerLoadPlayer extends PlayerEvent {
-  final String playerUid;
-
-  PlayerLoadPlayer({@required this.playerUid});
-
-  @override
-  List<Object> get props => [playerUid];
-}
-
 class _PlayerNewPlayersLoaded extends PlayerEvent {
   final BuiltMap<String, Player> players;
   final Set<String> deleted;
@@ -189,14 +177,6 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
           .build();
       coordinationBloc
           .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Player));
-    }
-
-    if (event is PlayerLoadPlayer) {
-      coordinationBloc.databaseUpdateModel
-          .getPlayerDetails(event.playerUid)
-          .then((Player player) {
-        add(_PlayerLoadedExtra(playerUid: event.playerUid, player: player));
-      });
     }
 
     if (event is _PlayerLoadedExtra) {

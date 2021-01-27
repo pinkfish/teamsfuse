@@ -4,7 +4,7 @@ import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../blocs/singleteamprovider.dart';
-import '../util/playername.dart';
+import '../player/playername.dart';
 import 'attendancedialog.dart';
 import 'attendanceicon.dart';
 
