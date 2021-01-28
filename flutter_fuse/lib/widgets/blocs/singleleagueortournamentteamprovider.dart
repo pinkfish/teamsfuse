@@ -25,6 +25,7 @@ class SingleLeagueOrTournamentTeamProvider
       BuildContext context, String uid) {
     return SingleLeagueOrTournamentTeamBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
         leagueTeamUid: uid);
   }
 }

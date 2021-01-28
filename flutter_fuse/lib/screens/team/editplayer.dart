@@ -8,6 +8,7 @@ import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
 import '../../services/validations.dart';
@@ -72,8 +73,10 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
     ImageProvider provider;
     if (_imageFile != null) {
       provider = FileImage(_imageFile);
-    } else {
+    } else if (singlePlayerState.player.photoUrl != null) {
       provider = CachedNetworkImageProvider(singlePlayerState.player.photoUrl);
+    } else {
+      provider = AssetImage("assets/images/defaultavatar2.png");
     }
     ret.add(
       Center(
@@ -99,9 +102,21 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
         onSaved: (name) => _player.name = name,
       ),
     );
+    print("Adding in jersey...");
+    ret.add(
+      TextFormField(
+        decoration: InputDecoration(
+          labelText: messages.jersyNumber,
+          hintText: messages.jersyNumber,
+          icon: const Icon(MdiIcons.tshirtCrew),
+        ),
+        initialValue: _player.jerseyNumber,
+        validator: (value) => null,
+        onSaved: (number) => _player.jerseyNumber = number,
+      ),
+    );
 
     // Add in all the associated users and their relationships.
-    print("building dfor ${_player.usersData}");
     for (var uid in _player.usersData.build().keys) {
       var user = _player.usersData[uid];
       //  ret.add(Item)
@@ -181,9 +196,13 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
           if (playerState is SinglePlayerSaveDone) {
             Navigator.pop(context);
           }
+          if (playerState is SinglePlayerDeleted) {
+            Navigator.pop(context);
+          }
         },
         builder: (context, playerState) {
-          if (playerState is SinglePlayerUninitialized) {
+          if (playerState is SinglePlayerUninitialized ||
+              playerState is SinglePlayerDeleted) {
             return LoadingWidget();
           }
           return Container(

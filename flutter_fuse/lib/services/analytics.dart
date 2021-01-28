@@ -145,7 +145,19 @@ class Analytics extends AnalyticsSubsystem {
   }
 
   @override
+  void logInviteAccepted(String inviteType, String invitedTo) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      _analytics.logShare(contentType: inviteType, itemId: invitedTo);
+    }
+  }
+
+  @override
   void recordError(Error error, StackTrace stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack);
+  }
+
+  @override
+  void recordException(Exception error, StackTrace stack) {
     FirebaseCrashlytics.instance.recordError(error, stack);
   }
 }

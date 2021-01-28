@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
@@ -108,7 +109,7 @@ class SingleInviteBloc
   final SeasonBloc seasonBloc;
   final String inviteUid;
   final DatabaseUpdateModel db;
-  final AnalyticsSubsystem analytisSubsystem;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<Invite> _inviteListen;
 
@@ -117,7 +118,7 @@ class SingleInviteBloc
 
   SingleInviteBloc(
       {@required this.db,
-      @required this.analytisSubsystem,
+      @required this.crashes,
       @required this.teamBloc,
       @required this.seasonBloc,
       @required this.inviteUid})
@@ -146,6 +147,7 @@ class SingleInviteBloc
       await db.addUserToClub(invite.clubUid, db.currentUser.uid, invite.admin);
       // This should cause the data to update
       await db.firestoreInviteDelete(invite.uid);
+      crashes.logInviteAccepted("club", invite.clubUid);
       return SingleInviteDeleted();
     } else {
       //
@@ -175,6 +177,7 @@ class SingleInviteBloc
 
       // This should cause the data to update
       await db.firestoreInviteDelete(invite.uid);
+      crashes.logInviteAccepted("leagueAdmin", invite.leagueUid);
       return SingleInviteDeleted();
     } else {
       return (SingleInviteSaveFailed.fromState(state)
@@ -194,7 +197,7 @@ class SingleInviteBloc
               ..error = ArgumentError('Relationship incorrec'))
             .build();
       }
-      analytisSubsystem.logSignUp(signUpMethod: "inviteToPlayer");
+      crashes.logInviteAccepted("inviteToPlayer", invite.playerUid);
       // Add ourselves to the player.
       bool exists = await db.playerExists(invite.playerUid);
       if (!exists) {
@@ -252,6 +255,7 @@ class SingleInviteBloc
           await db.updateLeagueTeam(leagueTeam);
           await db.addFirestoreTeam(team.build(), pregen, season, null);
         }
+        crashes.logInviteAccepted("leagueTeam", leagueTeam.uid);
       } else if (event.seasonUid == SingleInviteBloc.createNew) {
         var pregenSeason = db.precreateUidSeason();
 
@@ -260,9 +264,11 @@ class SingleInviteBloc
           ..name = invite.leagueSeasonName
           ..teamUid = event.teamUid);
         await db.addFirestoreSeason(season, pregenSeason);
+        crashes.logInviteAccepted("leagueSeason", season.uid);
       } else {
         Season season = seasonBloc.state.seasons[event.seasonUid];
         await db.connectLeagueTeamToSeason(invite.leagueTeamUid, season);
+        crashes.logInviteAccepted("leagueSeasonTeam", invite.leagueTeamUid);
       }
       // This should cause the data to update
       await db.firestoreInviteDelete(invite.uid);
@@ -284,6 +290,7 @@ class SingleInviteBloc
 
       // This should cause the data to update
       await db.firestoreInviteDelete(invite.uid);
+      crashes.logInviteAccepted("admin", invite.teamUid);
       return SingleInviteDeleted();
     } else {
       return (SingleInviteSaveFailed.fromState(state)
@@ -306,7 +313,7 @@ class SingleInviteBloc
                   'Relationship or playerNameToUse or seasonUid incorrect'))
             .build();
       }
-      analytisSubsystem.logSignUp(signUpMethod: "inviteToTeam");
+      crashes.logInviteAccepted("teamSeason", invite.seasonUid);
       // We add ourselves to the season.
       Season doc = await db.getSingleSeason(invite.seasonUid).first;
       if (doc == null) {
@@ -329,8 +336,7 @@ class SingleInviteBloc
           playerUid = event.playerNameToUid[name];
         }
 
-        teamBloc.coordinationBloc.analyticsSubsystem
-            .logSignUp(signUpMethod: "inviteToTeam");
+        crashes.logInviteAccepted("teamPlayer", playerUid);
         // We add ourselves to the season.
         Season doc = await db.getSingleSeason(invite.seasonUid).first;
         if (doc != null) {
@@ -371,8 +377,12 @@ class SingleInviteBloc
         await db.firestoreInviteDelete(state.invite.uid);
         yield SingleInviteSaveDone.fromState(state).build();
         yield SingleInviteDeleted();
-      } catch (e) {
-        yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleInviteSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SingleInviteLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -383,8 +393,10 @@ class SingleInviteBloc
         yield await _acceptInviteToTeam(event, state.invite);
         yield SingleInviteSaveDone.fromState(state).build();
         yield SingleInviteDeleted();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
+        yield SingleInviteLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -395,8 +407,10 @@ class SingleInviteBloc
         yield await _acceptInviteToPlayer(event, state.invite);
         yield SingleInviteSaveDone.fromState(state).build();
         yield SingleInviteDeleted();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
+        yield SingleInviteLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -407,8 +421,10 @@ class SingleInviteBloc
         yield await _acceptInviteToLeagueAdmin(event, state.invite);
         yield SingleInviteSaveDone.fromState(state).build();
         yield SingleInviteDeleted();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
+        yield SingleInviteLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -419,8 +435,10 @@ class SingleInviteBloc
         yield await _acceptInviteToLeagueTeam(event, state.invite);
         yield SingleInviteSaveDone.fromState(state).build();
         yield SingleInviteDeleted();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
+        yield SingleInviteLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -431,8 +449,10 @@ class SingleInviteBloc
         yield await _acceptInviteAsAdmin(event, state.invite);
         yield SingleInviteSaveDone.fromState(state).build();
         yield SingleInviteDeleted();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
+        yield SingleInviteLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -443,8 +463,10 @@ class SingleInviteBloc
         yield await _acceptInviteToClub(event, state.invite);
         yield SingleInviteSaveDone.fromState(state).build();
         yield SingleInviteDeleted();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
+        yield SingleInviteLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 

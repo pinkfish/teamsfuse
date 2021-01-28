@@ -28,6 +28,7 @@ class SingleLeagueOrTournamentDivisonProvider
       BuildContext context, String uid) {
     return SingleLeagueOrTournamentDivisonBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
         leagueDivisonUid: uid);
   }
 }

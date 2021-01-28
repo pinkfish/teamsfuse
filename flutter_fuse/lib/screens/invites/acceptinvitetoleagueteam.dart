@@ -8,9 +8,9 @@ import '../../services/validations.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/form/seasonformfield.dart';
 import '../../widgets/form/teampicker.dart';
+import '../../widgets/leagueortournament/leagueimage.dart';
 import '../../widgets/util/byusername.dart';
 import '../../widgets/util/ensurevisiblewhenfocused.dart';
-import '../../widgets/leagueortournament/leagueimage.dart';
 import '../../widgets/util/savingoverlay.dart';
 import 'dialog/deleteinvite.dart';
 
@@ -46,7 +46,7 @@ class _AcceptInviteToLeagueTeamScreenState
     super.initState();
     _singleInviteBloc = SingleInviteBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
-        analytisSubsystem: RepositoryProvider.of<AnalyticsSubsystem>(context),
+        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
         inviteUid: widget._inviteUid,
         teamBloc: BlocProvider.of<TeamBloc>(context),
         seasonBloc: BlocProvider.of<SeasonBloc>(context));

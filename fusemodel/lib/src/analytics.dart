@@ -18,6 +18,8 @@ abstract class AnalyticsSubsystem {
   TraceProxy newTrace(String traceName);
 
   void logEvent({String name, Map<String, String> parameters});
+  void logInviteAccepted(String inviteType, String invitedTo);
 
   void recordError(Error error, StackTrace stack);
+  void recordException(Exception error, StackTrace stack);
 }

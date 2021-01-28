@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/blocs/singleprofileprovider.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -28,34 +29,37 @@ class UserImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var bloc = SingleUserBloc(
-        userUid: profile.uid,
-        databaseUpdateModel:
-            BlocProvider.of<CoordinationBloc>(context).databaseUpdateModel);
-    return CircleAvatar(
-      backgroundColor: backgroundColor,
-      radius: radius,
-      child: BlocProvider(
-        create: (context) => bloc,
-        child: BlocBuilder(
-          cubit: bloc,
-          builder: (context, state) {
-            return AnimatedCrossFade(
-              duration: Duration(seconds: 3),
-              crossFadeState: state.players.length > 0 &&
-                      state.players.first.photoUrl.isNotEmpty
-                  ? CrossFadeState.showSecond
-                  : CrossFadeState.showFirst,
-              firstChild: Text(
-                profile.initials(),
-              ),
-              secondChild: state.players.length > 0
-                  ? CachedNetworkImage(
-                      imageUrl: state.players.first.photoUrl,
-                    )
-                  : Text(""),
-            );
-          },
+    return SingleProfileProvider(
+      userUid: profile.uid,
+      builder: (context, bloc) => CircleAvatar(
+        backgroundColor: backgroundColor,
+        radius: radius,
+        child: BlocProvider(
+          create: (context) => bloc,
+          child: BlocConsumer(
+            cubit: bloc,
+            builder: (context, state) {
+              if (!(state is SingleProfileUninitialized) &&
+                  !state.loadedPlayers) {
+                bloc.add(SingleProfileLoadPlayers());
+              }
+              return AnimatedCrossFade(
+                duration: Duration(seconds: 3),
+                crossFadeState: state.players.length > 0 &&
+                        state.players.first.photoUrl.isNotEmpty
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                firstChild: Text(
+                  profile.initials(),
+                ),
+                secondChild: state.players.length > 0
+                    ? CachedNetworkImage(
+                        imageUrl: state.players.first.photoUrl,
+                      )
+                    : Text(""),
+              );
+            },
+          ),
         ),
       ),
     );

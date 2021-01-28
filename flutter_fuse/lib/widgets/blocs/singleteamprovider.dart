@@ -25,6 +25,7 @@ class SingleTeamProvider extends SingleBlocProvider<SingleTeamBloc> {
     return SingleTeamBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       teamUid: uid,
+      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
     );
   }
 }

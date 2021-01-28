@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'base/singleprovider.dart';
 
@@ -23,6 +24,9 @@ class SingleSharedGameProvider
 
   static SingleSharedGameBloc _createBloc(BuildContext context, String uid) {
     return SingleSharedGameBloc(
-        gameBloc: BlocProvider.of<GameBloc>(context), gameUid: uid);
+      gameBloc: BlocProvider.of<GameBloc>(context),
+      sharedGameUid: uid,
+      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+    );
   }
 }

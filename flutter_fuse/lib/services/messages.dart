@@ -945,7 +945,7 @@ class Messages {
       Intl.message("Break", desc: "The game is on a break", locale: locale);
 
   String get periodNameFinished =>
-      Intl.message("Finished", desc: "The game has finished", locale: locale);
+      Intl.message("Final", desc: "The game has finished", locale: locale);
 
   String get periodNameNotStarted => Intl.message("Not started",
       desc: "The game is not started", locale: locale);
@@ -1278,8 +1278,10 @@ class Messages {
 
   String get stealsGameSummary =>
       Intl.message("Steals", desc: "Steals summary in game", locale: locale);
+
   String get stealsTitle =>
       Intl.message("Stl", desc: "Steals abbreviation", locale: locale);
+
   String get streamButton => Intl.message("STREAM",
       desc: "Button to display a stream", locale: locale);
 
@@ -1500,7 +1502,10 @@ class Messages {
   }
 
   String arrivebefore(int mins) {
-    return Intl.message('Arrive ${mins} mins before game');
+    return Intl.message(
+      'Arrive ${mins} mins before game',
+      args: [mins],
+    );
   }
 
   String cardresultinprogress(GameResultSharedDetails result) {
@@ -1517,113 +1522,159 @@ class Messages {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
       if (result.penaltyResult != null) {
         GameResultPerPeriod penaltyScore = result.penaltyResult;
-        return Intl.message(
-            '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
-            '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})'
-            '(Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
-            name: 'In progress result details',
-            desc: 'Win result details with penalty shootout');
+        return cardresultinprogressovertimeandpenalty(
+            finalScore, overtimeScore, penaltyScore);
       }
-      return Intl.message(
-          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
-          '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})',
-          name: 'In progress result details',
-          desc: 'Win result details with penalty shootout');
+      return cardresultinprogressovertime(finalScore, overtimeScore);
     }
     if (result.penaltyResult != null) {
       GameResultPerPeriod penaltyScore = result.penaltyResult;
-      return Intl.message(
-          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
-          name: 'In progress result details in the card',
-          desc: 'In progress result details with penalty shootout');
+      return cardresultinprogresspenalty(finalScore, penaltyScore);
     }
-    return Intl.message(
-        '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
-        name: 'In progress result details in the card',
-        desc: 'In progress result details');
+    return cardresultinprogressfinal(finalScore);
   }
 
+  String cardresultinprogressovertimeandpenalty(
+          GameResultPerPeriod finalScore,
+          GameResultPerPeriod overtimeScore,
+          GameResultPerPeriod penaltyScore) =>
+      Intl.message(
+        '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+        '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})'
+        '(Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+        name: 'In progress result details',
+        desc: 'Win result details with penalty shootout',
+        args: [finalScore, overtimeScore, penaltyScore],
+      );
+
+  String cardresultinprogressfinal(GameResultPerPeriod finalScore) =>
+      Intl.message(
+          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
+          name: 'In progress result details in the card',
+          desc: 'In progress result details');
+
+  String cardresultinprogresspenalty(
+          GameResultPerPeriod finalScore, GameResultPerPeriod penaltyScore) =>
+      Intl.message(
+          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+          name: 'In progress result details in the card',
+          desc: 'In progress result details with penalty shootout',
+          args: [finalScore, penaltyScore]);
+
+  String cardresultinprogressovertime(
+          GameResultPerPeriod finalScore, GameResultPerPeriod overtimeScore) =>
+      Intl.message(
+          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
+          '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})',
+          name: 'In progress result details',
+          desc: 'Win result details with penalty shootout',
+          args: [finalScore, overtimeScore]);
+
   String confirmcreateteamforleague(
-      String teamName, String season, String league) {
-    return Intl.message(
-        'Are you sure you want to create a team $teamName with a season of $season '
-        'for the league $league.  This is not possible to undo?');
-  }
+          String teamName, String season, String league) =>
+      Intl.message(
+          'Are you sure you want to create a team $teamName with a season of $season '
+          'for the league $league.  This is not possible to undo?',
+          args: [teamName, league, season]);
 
   String confirmdelete(Invite invite) {
     if (invite is InviteToTeam) {
       InviteToTeam inviteTeam = invite;
-      return Intl.message(
-          'Do you want to delete the invite to ${inviteTeam.teamName} for ${inviteTeam.playerName}?',
-          name: 'Text to delete the invite to the team in the alert dialog.');
+      return confirmdeleteinviteteam(inviteTeam);
     }
     if (invite is InviteToPlayer) {
       InviteToPlayer invitePlayer = invite;
-      return Intl.message(
-          'Do you want to delete the invite to follow ${invitePlayer.playerName}?',
-          name: 'Text to delete the invite to the team in the alert dialog.');
+      return confirmdeleteinviteplayer(invitePlayer);
     }
     if (invite is InviteAsAdmin) {
       InviteAsAdmin inviteAdmin = invite;
-      return Intl.message(
-          'Do you want to delete the invite to be admin for the team ${inviteAdmin.teamName}?',
-          name:
-              'Text to delete the invite to be an admin in the alert dialog.');
+      return confirmdeleteasadmin(inviteAdmin);
     }
     if (invite is InviteToClub) {
       InviteToClub inviteClub = invite;
-      return Intl.message(
-          'Do you want to delete the invite to be in the club ${inviteClub.clubName}?',
-          name: 'Text to delete the invite to the club in the alert dialog.');
+      return confirmdeleteclub(inviteClub);
     }
     if (invite is InviteToLeagueAsAdmin) {
       InviteToLeagueAsAdmin inviteLeague = invite;
-      return Intl.message(
-          'Do you want to delete the invite to be in the league ${inviteLeague.leagueName}?',
-          name: 'Text to delete the invite to the league in the alert dialog.');
+      return confirmdeleteleagueasadmin(inviteLeague);
     }
     if (invite is InviteToLeagueTeam) {
       InviteToLeagueTeam inviteLeagueTeam = invite;
-      return Intl.message(
-          'Do you want to delete the invite to be in the league ${inviteLeagueTeam.leagueName} with team '
-          '${inviteLeagueTeam.leagueTeamName}?',
-          name:
-              'Text to delete the invite to the league in the team in the alert dialog.');
+      return confirmdeleteleagueteam(inviteLeagueTeam);
     }
     return unknown;
   }
 
-  String confirmdeletemember(FusedUserProfile profile) {
-    return Intl.message('Delete club member ${profile.displayName}?');
-  }
+  String confirmdeleteinviteteam(InviteToTeam inviteTeam) => Intl.message(
+      'Do you want to delete the invite to ${inviteTeam.teamName} for ${inviteTeam.playerName}?',
+      name: 'Text to delete the invite to the team in the alert dialog.',
+      args: [inviteTeam]);
 
-  String confirmdeleteplayer(Player player) {
-    return Intl.message(
-        "Do you want to delete your connection to ${player.name}?",
-        desc: 'Text to confirm asking if the players wants to be delete');
-  }
+  String confirmdeleteinviteplayer(InviteToPlayer invitePlayer) => Intl.message(
+      'Do you want to delete the invite to follow ${invitePlayer.playerName}?',
+      name: 'Text to delete the invite to the team in the alert dialog.',
+      args: [invitePlayer]);
+
+  String confirmdeleteasadmin(InviteAsAdmin inviteAdmin) => Intl.message(
+      'Do you want to delete the invite to be admin for the team ${inviteAdmin.teamName}?',
+      name: 'Text to delete the invite to be an admin in the alert dialog.',
+      args: [inviteAdmin]);
+
+  String confirmdeleteclub(InviteToClub inviteClub) => Intl.message(
+      'Do you want to delete the invite to be in the club ${inviteClub.clubName}?',
+      name: 'Text to delete the invite to the club in the alert dialog.',
+      args: [inviteClub]);
+
+  String confirmdeleteleagueasadmin(InviteToLeagueAsAdmin invite) => Intl.message(
+      'Do you want to delete the invite to be in the league ${invite.leagueName}?',
+      name: 'Text to delete the invite to the league in the alert dialog.',
+      args: [invite]);
+
+  String confirmdeleteleagueteam(InviteToLeagueTeam inviteLeagueTeam) =>
+      Intl.message(
+        'Do you want to delete the invite to be in the league ${inviteLeagueTeam.leagueName} with team '
+        '${inviteLeagueTeam.leagueTeamName}?',
+        args: [inviteLeagueTeam],
+      );
+
+  String confirmdeletemember(FusedUserProfile profile) =>
+      Intl.message('Delete club member ${profile.displayName}?',
+          args: [profile]);
+
+  String confirmdeleteplayer(Player player) =>
+      Intl.message("Do you want to delete your connection to ${player.name}?",
+          desc: 'Text to confirm asking if the players wants to be delete',
+          args: [player]);
 
   String confirmremovefromteam(String name) {
     return Intl.message('Are you sure you want to remove $name from the team?',
-        desc: 'Dialog text to confirm removing a user from the team');
+        desc: 'Dialog text to confirm removing a user from the team',
+        args: [name]);
   }
 
   String deletegame(GameSharedData game) {
     switch (game.type) {
       case EventType.Game:
-        return Intl.message("Delete game");
+        return deleteGameGame;
       case EventType.Practice:
-        return Intl.message("Delete training");
+        return deleteGamePractice;
       case EventType.Event:
-        return Intl.message("Delete special event");
+        return deleteGameSpecialEvent;
     }
     return unknown;
   }
 
+  String get deleteGameGame => Intl.message("Delete game");
+
+  String get deleteGamePractice => Intl.message("Delete training");
+
+  String get deleteGameSpecialEvent => Intl.message("Delete special event");
+
   String displaynamerelationship(String name, Relationship relationship) {
     String rel = relationships(relationship);
     return Intl.message('$name ($rel)',
-        desc: 'Name for the edit box to edit the user name');
+        desc: 'Name for the edit box to edit the user name',
+        args: [name, relationship]);
   }
 
   String eventtitle(
@@ -1631,68 +1682,137 @@ class Messages {
     if (name != null && name.isNotEmpty) {
       if (endTime != null) {
         if (tzShortName != null) {
-          return Intl.message('$name $time - $endTime ($tzShortName)',
-              desc: 'Special event title in game list');
+          return eventTitleSpecialEventNameEndTimeTimeZone(
+              name, time, endTime, tzShortName);
         }
-        return Intl.message('$name $time - $endTime',
-            desc: 'Special event title in game list');
+        return eventTitleSpecialEventNameEndTime(name, time, endTime);
       }
       if (tzShortName != null) {
-        return Intl.message('$name $time ($tzShortName)',
-            desc: 'Special event title in game list');
+        return eventTitleSpecialEventNameTimeZone(name, time, tzShortName);
       }
-      return Intl.message('$name $time',
-          desc: 'Special event title in game list');
+      return eventTitleSpecialEventName(name, time);
     }
     if (endTime != null) {
       if (tzShortName != null) {
-        return Intl.message('Event $time - $endTime ($tzShortName)',
-            desc: 'Special event title in game list');
+        return eventTitleSpecialEventStartAndEndTimezone(
+            time, endTime, tzShortName);
       }
-      return Intl.message('Event $time - $endTime',
-          desc: 'Special event title in game list');
+      return eventTitleSpecialEventStartAndEnd(time, endTime);
     }
     if (tzShortName != null) {
-      return Intl.message('Event $time ($tzShortName)',
-          desc: 'Special event title in game list');
+      return eventTitleSpecialWithTimezone(time, tzShortName);
     }
-    return Intl.message('Event $time',
-        desc: 'Special event title in game list');
+    return eventTitleSpecialEvent(time);
   }
+
+  String eventTitleSpecialEventNameEndTimeTimeZone(
+          String name, String time, String endTime, String tzShortName) =>
+      Intl.message('$name $time - $endTime  ($tzShortName)',
+          desc: 'Special event title in game list',
+          args: [name, time, endTime, tzShortName]);
+
+  String eventTitleSpecialEventNameEndTime(
+          String name, String time, String endTime) =>
+      Intl.message('$name $time - $endTime',
+          desc: 'Special event title in game list',
+          args: [name, time, endTime]);
+
+  String eventTitleSpecialEventNameTimeZone(
+          String name, String time, String tzShortName) =>
+      Intl.message('$name $time ($tzShortName)',
+          desc: 'Special event title in game list',
+          args: [name, time, tzShortName]);
+
+  String eventTitleSpecialEventName(String name, String time) =>
+      Intl.message("$name $time",
+          desc: 'Special event title in game list', args: [name, time]);
+
+  String eventTitleSpecialEventStartAndEndTimezone(
+          String time, String endTime, String tzShortName) =>
+      Intl.message('Event $time - $endTime ($tzShortName)',
+          desc: 'Special event title in game list',
+          args: [time, endTime, tzShortName]);
+
+  String eventTitleSpecialEventStartAndEnd(String time, String endTime) =>
+      Intl.message('Event $time - $endTime',
+          desc: 'Special event title in game list');
+
+  String eventTitleSpecialWithTimezone(String time, String tzShortName) =>
+      Intl.message('Event $time ($tzShortName)',
+          desc: 'Special event title in game list with timezone',
+          args: [time, tzShortName]);
+
+  String eventTitleSpecialEvent(String time) => Intl.message('Event $time',
+      desc: 'Special event title in game list', args: [time]);
 
   String eventtitlenow(
       String time, String name, String endTime, String tzShortName) {
     if (name != null && name.isNotEmpty) {
       if (endTime != null) {
         if (tzShortName != null) {
-          return Intl.message('NOW! $name $time - $endTime ($tzShortName)',
-              desc: 'Special event title in game list');
+          return eventTitleNowSpecialEventNameEndTimeTimeZone(
+              name, time, endTime, tzShortName);
         }
-        return Intl.message('NOW! $name $time - $endTime',
-            desc: 'Special event title in game list');
+        return eventTitleNowSpecialEventNameEndTime(name, time, endTime);
       }
       if (tzShortName != null) {
-        return Intl.message('NOW! $name $time ($tzShortName)',
-            desc: 'Special event title in game list');
+        return eventTitleNowSpecialEventNameTimeZone(name, time, tzShortName);
       }
-      return Intl.message('NOW! $name $time',
-          desc: 'Special event title in game list');
+      return eventTitleNowSpecialEventName(name, time);
     }
     if (endTime != null) {
       if (tzShortName != null) {
-        return Intl.message('NOW! Event $time - $endTime ($tzShortName)',
-            desc: 'Special event title in game list');
+        return eventTitleNowSpecialEventStartAndEndTimezone(
+            time, endTime, tzShortName);
       }
-      return Intl.message('NOW! Event $time - $endTime',
-          desc: 'Special event title in game list');
+      return eventTitleNowSpecialEventStartAndEnd(time, endTime);
     }
     if (tzShortName != null) {
-      return Intl.message('NOW! Event $time ($tzShortName)',
-          desc: 'Special event title in game list');
+      return eventTitleNowSpecialWithTimezone(time, tzShortName);
     }
-    return Intl.message('NOW! Event $time',
-        desc: 'Special event title in game list');
+    return eventTitleNowSpecialEvent(time);
   }
+
+  String eventTitleNowSpecialEventNameEndTimeTimeZone(
+          String name, String time, String endTime, String tzShortName) =>
+      Intl.message('NOW! $name $time - $endTime  ($tzShortName)',
+          desc: 'Special event title in game list',
+          args: [name, time, endTime, tzShortName]);
+
+  String eventTitleNowSpecialEventNameEndTime(
+          String name, String time, String endTime) =>
+      Intl.message('NOW! $name $time - $endTime',
+          desc: 'Special event title in game list',
+          args: [name, time, endTime]);
+
+  String eventTitleNowSpecialEventNameTimeZone(
+          String name, String time, String tzShortName) =>
+      Intl.message('NOW! $name $time ($tzShortName)',
+          desc: 'Special event title in game list',
+          args: [name, time, tzShortName]);
+
+  String eventTitleNowSpecialEventName(String name, String time) =>
+      Intl.message("NOW! $name $time",
+          desc: 'Special event title in game list', args: [name, time]);
+
+  String eventTitleNowSpecialEventStartAndEndTimezone(
+          String time, String endTime, String tzShortName) =>
+      Intl.message('NOW! Event $time - $endTime ($tzShortName)',
+          desc: 'Special event title in game list',
+          args: [time, endTime, tzShortName]);
+
+  String eventTitleNowSpecialEventStartAndEnd(String time, String endTime) =>
+      Intl.message('NOW! Event $time - $endTime',
+          desc: 'Special event title in game list');
+
+  String eventTitleNowSpecialWithTimezone(String time, String tzShortName) =>
+      Intl.message('NOW! Event $time ($tzShortName)',
+          desc: 'Special event title in game list with timezone',
+          args: [time, tzShortName]);
+
+  String eventTitleNowSpecialEvent(String time) =>
+      Intl.message('NOW! Event $time',
+          desc: 'Special event title in game list', args: [time]);
 
   String finalofficalscorebody(GameOfficialResults result) {
     GamePeriod regulationPeriod = GamePeriod.regulation1;
@@ -1704,19 +1824,19 @@ class Messages {
     String resultString;
     switch (result.result) {
       case OfficialResult.NotStarted:
-        resultString = Intl.message("Not started");
+        resultString = periodNameNotStarted;
         break;
       case OfficialResult.Tie:
         resultString = tie;
         break;
       case OfficialResult.HomeTeamWon:
-        resultString = Intl.message("Home team won");
+        resultString = gameResultHomeTeamWon;
         break;
       case OfficialResult.AwayTeamWon:
-        resultString = Intl.message("Away team won");
+        resultString = gameResultAwayTeamWon;
         break;
       case OfficialResult.InProgress:
-        resultString = Intl.message("In progress");
+        resultString = gameResultInProgress;
         break;
     }
     if (result.scores.containsKey(overtimePeriod)) {
@@ -1724,52 +1844,64 @@ class Messages {
       if (result.scores.containsKey(penaltyPeriod)) {
         GameResultPerPeriod penaltyPeriodResult = result.scores[penaltyPeriod];
         return Intl.message(
-            "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} Away: ${regulationPeriodResult.score.ptsAgainst}\n"
-            "Overtime Home:  ${overtimePeriodResult.score.ptsFor} Away: ${overtimePeriodResult.score.ptsAgainst}\n"
-            "Penalty Home: ${penaltyPeriodResult.score.ptsFor} Away: ${penaltyPeriodResult.score.ptsAgainst}");
+            "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} "
+            "Away: ${regulationPeriodResult.score.ptsAgainst}\n"
+            "Overtime Home:  ${overtimePeriodResult.score.ptsFor} "
+            "Away: ${overtimePeriodResult.score.ptsAgainst}\n"
+            "Penalty Home: ${penaltyPeriodResult.score.ptsFor} "
+            "Away: ${penaltyPeriodResult.score.ptsAgainst}");
       }
       return Intl.message(
-          "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} Away: ${regulationPeriodResult.score.ptsAgainst}\n"
-          "Overtime Home:  ${overtimePeriodResult.score.ptsFor} Away: ${overtimePeriodResult.score.ptsAgainst}\n");
+          "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} "
+          "Away: ${regulationPeriodResult.score.ptsAgainst}\n"
+          "Overtime Home:  ${overtimePeriodResult.score.ptsFor} "
+          "Away: ${overtimePeriodResult.score.ptsAgainst}\n");
     }
     if (result.scores.containsKey(penaltyPeriod)) {
       GameResultPerPeriod penaltyPeriodResult = result.scores[penaltyPeriod];
       return Intl.message(
-          "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} Away: ${regulationPeriodResult.score.ptsAgainst}\n"
-          "Penalty Home: ${penaltyPeriodResult.score.ptsFor} Away: ${penaltyPeriodResult.score.ptsAgainst}");
+          "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} "
+          "Away: ${regulationPeriodResult.score.ptsAgainst}\n"
+          "Penalty Home: ${penaltyPeriodResult.score.ptsFor} "
+          "Away: ${penaltyPeriodResult.score.ptsAgainst}");
     }
-    return Intl.message(
-        "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} Away: ${regulationPeriodResult.score.ptsAgainst}");
+    return gameResultOffical(resultString, regulationPeriodResult);
   }
+
+  String gameResultOffical(
+          String resultString, GameResultPerPeriod regulationPeriodResult) =>
+      Intl.message(
+          "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} "
+          "Away: ${regulationPeriodResult.score.ptsAgainst}",
+          args: [resultString, regulationPeriodResult]);
 
   String finalscorebody(num ptsFor, num ptsAgainst, String result) {
     return Intl.message(
         'Do you want to set $ptsFor $ptsAgainst $result as the final score?',
-        desc: 'Start game dialofg body text');
+        desc: 'Start game dialofg body text',
+        args: [ptsFor, ptsAgainst, result]);
   }
 
-  String fixscore(GameLog log) {
-    return Intl.message(
-        "Fix score: ${log.score.ptsFor} - ${log.score.ptsAgainst}");
-  }
+  String fixscore(GameLog log) =>
+      Intl.message("Fix score: ${log.score.ptsFor} - ${log.score.ptsAgainst}",
+          args: [log]);
 
-  String followplayer(String player) {
-    return Intl.message("Follow $player");
-  }
+  String followplayer(String player) =>
+      Intl.message("Follow $player", args: [player]);
 
-  String gameaddressarriveat(String arriveAt, String address) {
-    return Intl.message('Arrive by $arriveAt\n$address',
-        desc: 'Game address in game list with arrive by');
-  }
+  String gameaddressarriveat(String arriveAt, String address) =>
+      Intl.message('Arrive by $arriveAt\n$address',
+          desc: 'Game address in game list with arrive by',
+          args: [arriveAt, address]);
 
   String gameinprogress(GameInProgress val) {
     switch (val) {
       case GameInProgress.InProgress:
-        return Intl.message("Playing", desc: "Game is in progress");
+        return gameResultInProgress;
       case GameInProgress.Final:
-        return Intl.message("Final", desc: "Game in finalized");
+        return periodNameFinished;
       case GameInProgress.NotStarted:
-        return Intl.message("Not started", desc: "Game in progress 1st period");
+        return periodNameNotStarted;
     }
     return unknown;
   }
@@ -1777,32 +1909,42 @@ class Messages {
   String gameofficalinprogress(OfficialResult offical) {
     switch (offical) {
       case OfficialResult.NotStarted:
-        return Intl.message('Not started',
-            name: 'Offical result - not started');
+        return periodNameNotStarted;
       case OfficialResult.InProgress:
-        return Intl.message('In progress',
-            name: 'Offical result - in progress');
+        return gameResultInProgress;
       case OfficialResult.AwayTeamWon:
-        return Intl.message('Away team won');
+        return gameResultAwayTeamWon;
       case OfficialResult.HomeTeamWon:
-        return Intl.message('Home team won');
+        return gameResultHomeTeamWon;
       case OfficialResult.Tie:
-        return Intl.message('Tie');
+        return gameResultTie;
     }
     return unknown;
   }
+
+  String get gameResultHomeTeamWon =>
+      Intl.message("Home team won", locale: locale);
+
+  String get gameResultAwayTeamWon =>
+      Intl.message("Away team won", locale: locale);
+
+  String get gameResultInProgress =>
+      Intl.message("In progress", locale: locale);
+
+  String get gameResultTie => Intl.message("Tie", locale: locale);
+  String get gameResultWin => Intl.message("Win", locale: locale);
+  String get gameResultLoss => Intl.message("Loss", locale: locale);
 
   String gameresult(GameResult result) {
     switch (result) {
       case GameResult.Unknown:
         return unknown;
       case GameResult.Win:
-        return Intl.message('Win', name: 'Win', desc: 'Short message for win');
+        return gameResultWin;
       case GameResult.Tie:
-        return Intl.message('Tie', name: 'Tie', desc: 'Short message for tie');
+        return gameResultTie;
       case GameResult.Loss:
-        return Intl.message('Loss',
-            name: 'Loss', desc: 'Short message for loss');
+        return gameResultLoss;
     }
     return unknown;
   }
@@ -1951,35 +2093,26 @@ class Messages {
     return unknown;
   }
 
-  String invitedby(String by) {
-    return Intl.message('By $by',
-        desc: 'Who did the invite to this team/player');
-  }
+  String invitedby(String by) => Intl.message('By $by',
+      desc: 'Who did the invite to this team/player', args: [by]);
 
-  String invitedemail(InviteToPlayer invite) {
-    return Intl.message("${invite.email}",
-        desc: "Message for invited to follow the specific player");
-  }
+  String invitedemail(InviteToPlayer invite) => Intl.message("${invite.email}",
+      desc: "Message for invited to follow the specific player",
+      args: [invite]);
 
-  String invitedpeople(int num) {
-    return Intl.message("Invited: $num");
-  }
+  String invitedpeople(int num) => Intl.message("Invited: $num", args: [num]);
 
-  String madeEventType(int points) {
-    return Intl.message("$points",
-        args: [points],
-        desc: "+num points",
-        locale: locale,
-        name: "madeEventType");
-  }
+  String madeEventType(int points) => Intl.message("$points",
+      args: [points],
+      desc: "+num points",
+      locale: locale,
+      name: "madeEventType");
 
-  String missedEventType(int points) {
-    return Intl.message("Miss $points",
-        args: [points],
-        desc: "missed num points",
-        locale: locale,
-        name: "missedEventType");
-  }
+  String missedEventType(int points) => Intl.message("Miss $points",
+      args: [points],
+      desc: "missed num points",
+      locale: locale,
+      name: "missedEventType");
 
   String nameandteam(Team team, Player player) {
     return Intl.message("${team.name} ${player.name}",
@@ -2500,5 +2633,6 @@ class QuoteAndAuthor {
   String quote;
 
   String author;
+
   QuoteAndAuthor({this.quote, this.author});
 }

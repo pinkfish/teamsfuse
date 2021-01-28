@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
@@ -68,6 +69,7 @@ class SingleOpponentBloc
   final String opponentUid;
   final String teamUid;
   final DatabaseUpdateModel db;
+  final AnalyticsSubsystem crashes;
 
   static String createNew = "new";
 
@@ -75,7 +77,10 @@ class SingleOpponentBloc
   StreamSubscription<Iterable<Game>> _gameSub;
 
   SingleOpponentBloc(
-      {@required this.db, @required this.teamUid, @required this.opponentUid})
+      {@required this.db,
+      @required this.teamUid,
+      @required this.opponentUid,
+      @required this.crashes})
       : super(SingleOpponentUninitialized(), "opponent.$teamUid.$opponentUid") {
     _opponentSub = db
         .getFirestoreOpponent(teamUid: teamUid, opponentUid: opponentUid)
@@ -122,9 +127,12 @@ class SingleOpponentBloc
             .build();
         yield (SingleOpponentLoaded.fromState(state)..opponent = event.opponent)
             .build();
-      } catch (e) {
-        yield (SingleOpponentSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleOpponentSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleOpponentLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -135,9 +143,12 @@ class SingleOpponentBloc
         await db.deleteFirestoreOpponent(state.opponent);
         yield SingleOpponentSaveDone.fromState(state).build();
         yield SingleOpponentDeleted();
-      } catch (e) {
-        yield (SingleOpponentSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleOpponentSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleOpponentLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
@@ -215,6 +216,7 @@ class SingleTeamBloc
     extends AsyncHydratedBloc<SingleTeamEvent, SingleTeamState> {
   final String teamUid;
   final DatabaseUpdateModel db;
+  final AnalyticsSubsystem crashes;
 
   static String createNew = "new";
 
@@ -226,7 +228,8 @@ class SingleTeamBloc
   StreamSubscription<SeasonState> _seasonStateSub;
   String _listeningClubUid;
 
-  SingleTeamBloc({@required this.db, @required this.teamUid})
+  SingleTeamBloc(
+      {@required this.db, @required this.teamUid, @required this.crashes})
       : super(SingleTeamUninitialized(), "TeamState.$teamUid") {
     _teamSub = db.getTeamDetails(teamUid: teamUid).listen((team) {
       if (team != null) {
@@ -335,9 +338,12 @@ class SingleTeamBloc
           await db.updateFirestoreTeam(event.team.build());
           yield SingleTeamSaveDone.fromState(state).build();
           yield (SingleTeamLoaded.fromState(state)..team = event.team).build();
-        } catch (e) {
-          yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+        } catch (e, stack) {
+          yield (SingleTeamSaveFailed.fromState(state)
+                ..error = RemoteError(e.message, stack.toString()))
+              .build();
           yield SingleTeamLoaded.fromState(state).build();
+          crashes.recordException(e, stack);
         }
       }
     }
@@ -354,9 +360,12 @@ class SingleTeamBloc
           await db.updateTeamImage(teamUid, event.image);
           yield SingleTeamSaveDone.fromState(state).build();
           yield SingleTeamLoaded.fromState(state).build();
-        } catch (e) {
-          yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+        } catch (e, stack) {
+          yield (SingleTeamSaveFailed.fromState(state)
+                ..error = RemoteError(e.message, stack.toString()))
+              .build();
           yield SingleTeamLoaded.fromState(state).build();
+          crashes.recordException(e, stack);
         }
       }
     }
@@ -367,9 +376,12 @@ class SingleTeamBloc
         await db.addAdmin(teamUid, event.adminUid);
         yield SingleTeamSaveDone.fromState(state).build();
         yield SingleTeamLoaded.fromState(state).build();
-      } catch (e) {
-        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleTeamSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleTeamLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -379,9 +391,12 @@ class SingleTeamBloc
         await db.deleteAdmin(state.team, event.adminUid);
         yield SingleTeamSaveDone.fromState(state).build();
         yield SingleTeamLoaded.fromState(state).build();
-      } catch (e) {
-        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleTeamSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleTeamLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -395,9 +410,12 @@ class SingleTeamBloc
             myUid: db.currentUser.uid);
         yield SingleTeamSaveDone.fromState(state).build();
         yield SingleTeamLoaded.fromState(state).build();
-      } catch (e) {
-        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleTeamSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleTeamLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -407,9 +425,12 @@ class SingleTeamBloc
             event.opponent.rebuild((b) => b..teamUid = teamUid));
         yield SingleTeamSaveDone.fromState(state).build();
         yield SingleTeamLoaded.fromState(state).build();
-      } catch (e) {
-        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleTeamSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleTeamLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -473,9 +494,12 @@ class SingleTeamBloc
         yield SingleTeamSaveDone.fromState(state).build();
         yield (SingleTeamLoaded.fromState(state)..team = myTeam.toBuilder())
             .build();
-      } catch (e) {
-        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleTeamSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleTeamLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -488,9 +512,12 @@ class SingleTeamBloc
         yield SingleTeamSaveDone.fromState(state).build();
         yield (SingleTeamLoaded.fromState(state)..team = myTeam.toBuilder())
             .build();
-      } catch (e) {
-        yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleTeamSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleTeamLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
   }

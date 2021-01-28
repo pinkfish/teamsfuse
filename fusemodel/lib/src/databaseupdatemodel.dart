@@ -241,7 +241,7 @@ abstract class DatabaseUpdateModel {
       Season season, DocumentReferenceWrapper pregen);
   Future<void> removePlayerFromSeason(String seasonUid, String playerUid);
   Future<void> updateRoleInTeamForSeason(
-      Season season, SeasonPlayer player, RoleInTeam role);
+      String seasonUid, SeasonPlayer player, RoleInTeam role);
   Stream<Iterable<InviteToTeam>> getInviteForSeasonStream(
       {@required String seasonUid, @required String teamUid});
   Stream<GameSnapshotEvent> getSeasonGames(Season season);

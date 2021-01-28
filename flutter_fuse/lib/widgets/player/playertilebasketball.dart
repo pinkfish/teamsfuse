@@ -205,7 +205,7 @@ class PlayerTileBasketball extends StatelessWidget {
             child: Container(
               child: Center(
                 child: Text(
-                  player.jerseyNumber,
+                  player.jerseyNumber ?? "U",
                   style: Theme.of(context).textTheme.caption.copyWith(
                         color: contentColor ?? Theme.of(context).accentColor,
                         fontWeight: FontWeight.bold,

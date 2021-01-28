@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'base/singleprovider.dart';
 
@@ -20,6 +21,7 @@ class SingleProfileProvider extends SingleBlocProvider<SingleProfileBloc> {
     return SingleProfileBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
         profileUid: uid,
+        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
         playerBloc: BlocProvider.of<PlayerBloc>(context));
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
@@ -147,8 +148,11 @@ class SingleSeasonBloc
               ..season = event.season.toBuilder())
             .build();
       } catch (e, stack) {
-        yield (SingleSeasonSaveFailed.fromState(state)..error = e).build();
-        crashes.recordError(e, stack);
+        yield (SingleSeasonSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SingleSeasonLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 

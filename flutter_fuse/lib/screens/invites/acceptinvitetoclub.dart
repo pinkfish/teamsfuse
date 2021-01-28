@@ -34,7 +34,7 @@ class _AcceptInviteToClubScreenState extends State<AcceptInviteToClubScreen> {
     // Default to empty.
     _singleInviteBloc = SingleInviteBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
-        analytisSubsystem: RepositoryProvider.of<AnalyticsSubsystem>(context),
+        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
         inviteUid: widget._inviteUid,
         teamBloc: BlocProvider.of<TeamBloc>(context),
         seasonBloc: BlocProvider.of<SeasonBloc>(context));

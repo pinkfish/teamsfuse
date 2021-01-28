@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
@@ -132,12 +133,14 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
     SingleLeagueOrTournamentEvent, SingleLeagueOrTournamentState> {
   final DatabaseUpdateModel db;
   final String leagueUid;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<LeagueOrTournament> _coordSub;
   StreamSubscription<Iterable<LeagueOrTournamentSeason>>
       _leagueOrTournamentSnapshot;
 
-  SingleLeagueOrTournamentBloc({@required this.db, @required this.leagueUid})
+  SingleLeagueOrTournamentBloc(
+      {@required this.db, @required this.leagueUid, @required this.crashes})
       : super(SingleLeagueOrTournamentUninitialized(), leagueUid) {
     _coordSub = db.getLeagueData(leagueUid: leagueUid).listen((league) {
       if (league != null) {
@@ -173,9 +176,12 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       await db.updateLeagueImage(state.league, imageFile);
       yield SingleLeagueOrTournamentSaveDone.fromState(state).build();
       yield SingleLeagueOrTournamentLoaded.fromState(state).build();
-    } catch (e) {
-      yield (SingleLeagueOrTournamentSaveFailed.fromState(state)..error = e)
+    } catch (e, stack) {
+      yield (SingleLeagueOrTournamentSaveFailed.fromState(state)
+            ..error = RemoteError(e.messages, stack.toString()))
           .build();
+      yield SingleLeagueOrTournamentLoaded.fromState(state).build();
+      crashes.recordException(e, stack);
     }
   }
 
@@ -188,9 +194,12 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       await db.deleteLeagueMember(state.league, memberUid);
       yield SingleLeagueOrTournamentSaveDone.fromState(state).build();
       yield SingleLeagueOrTournamentLoaded.fromState(state).build();
-    } catch (e) {
-      yield (SingleLeagueOrTournamentSaveFailed.fromState(state)..error = e)
+    } catch (e, stack) {
+      yield (SingleLeagueOrTournamentSaveFailed.fromState(state)
+            ..error = RemoteError(e.messages, stack.toString()))
           .build();
+      yield SingleLeagueOrTournamentLoaded.fromState(state).build();
+      crashes.recordException(e, stack);
     }
   }
 
@@ -209,9 +218,12 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       await db.inviteUserToLeague(inviteToClub);
       yield SingleLeagueOrTournamentSaveDone.fromState(state).build();
       yield SingleLeagueOrTournamentLoaded.fromState(state).build();
-    } catch (e) {
-      yield (SingleLeagueOrTournamentSaveFailed.fromState(state)..error = e)
+    } catch (e, stack) {
+      yield (SingleLeagueOrTournamentSaveFailed.fromState(state)
+            ..error = RemoteError(e.messages, stack.toString()))
           .build();
+      yield SingleLeagueOrTournamentLoaded.fromState(state).build();
+      crashes.recordException(e, stack);
     }
   }
 
@@ -232,9 +244,12 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       );
       yield SingleLeagueOrTournamentSaveDone.fromState(state).build();
       yield SingleLeagueOrTournamentLoaded.fromState(state).build();
-    } catch (e) {
-      yield (SingleLeagueOrTournamentSaveFailed.fromState(state)..error = e)
+    } catch (e, stack) {
+      yield (SingleLeagueOrTournamentSaveFailed.fromState(state)
+            ..error = RemoteError(e.messages, stack.toString()))
           .build();
+      yield SingleLeagueOrTournamentLoaded.fromState(state).build();
+      crashes.recordException(e, stack);
     }
   }
 
@@ -246,14 +261,18 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
         await db.updateLeague(league, includeMembers: includeMembers);
         yield SingleLeagueOrTournamentSaveDone.fromState(state).build();
         yield SingleLeagueOrTournamentLoaded.fromState(state).build();
-      } catch (e) {
-        yield (SingleLeagueOrTournamentSaveFailed.fromState(state)..error = e)
+      } catch (e, stack) {
+        yield (SingleLeagueOrTournamentSaveFailed.fromState(state)
+              ..error = RemoteError(e.messages, stack.toString()))
             .build();
+        yield SingleLeagueOrTournamentLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     } else {
       yield (SingleLeagueOrTournamentSaveFailed.fromState(state)
             ..error = ArgumentError("league uids don't match"))
           .build();
+      yield SingleLeagueOrTournamentLoaded.fromState(state).build();
     }
   }
 
@@ -268,9 +287,12 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       await db.updateLeagueSeason(season);
       yield SingleLeagueOrTournamentSaveDone.fromState(state).build();
       yield SingleLeagueOrTournamentLoaded.fromState(state).build();
-    } catch (e) {
-      yield (SingleLeagueOrTournamentSaveFailed.fromState(state)..error = e)
+    } catch (e, stack) {
+      yield (SingleLeagueOrTournamentSaveFailed.fromState(state)
+            ..error = RemoteError(e.messages, stack.toString()))
           .build();
+      yield SingleLeagueOrTournamentLoaded.fromState(state).build();
+      crashes.recordException(e, stack);
     }
   }
 

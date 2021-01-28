@@ -20,7 +20,6 @@ class AddItemUninitialized extends AddItemState {
   }
 
   @override
-  // TODO: implement props
   List<Object> get props => null;
 }
 
@@ -36,7 +35,6 @@ class AddItemSaving extends AddItemState {
   }
 
   @override
-  // TODO: implement props
   List<Object> get props => null;
 }
 
@@ -53,7 +51,6 @@ class AddItemInvalidArguments extends AddItemState {
   }
 
   @override
-  // TODO: implement props
   List<Object> get props => [error];
 }
 
@@ -71,7 +68,6 @@ class AddItemDone extends AddItemState {
   }
 
   @override
-  // TODO: implement props
   List<Object> get props => [uid];
 }
 
@@ -79,7 +75,7 @@ class AddItemDone extends AddItemState {
 /// Failed to save the player (this could be an accept or an add).
 ///
 class AddItemSaveFailed extends AddItemState {
-  final Error error;
+  final Exception error;
 
   AddItemSaveFailed({@required this.error}) : super();
 
@@ -89,6 +85,5 @@ class AddItemSaveFailed extends AddItemState {
   }
 
   @override
-  // TODO: implement props
   List<Object> get props => [error];
 }

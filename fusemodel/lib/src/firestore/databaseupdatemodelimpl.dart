@@ -931,15 +931,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<void> updateRoleInTeamForSeason(
-      Season season, SeasonPlayer player, RoleInTeam role) async {
+      String seasonUid, SeasonPlayer player, RoleInTeam role) async {
     Map<String, dynamic> data = <String, dynamic>{};
 
     data[Season.PLAYERS + "." + player.playerUid + "." + SeasonPlayer.ROLE] =
         role.toString();
-    wrapper
-        .collection(SEASONS_COLLECTION)
-        .document(season.uid)
-        .updateData(data);
+    wrapper.collection(SEASONS_COLLECTION).document(seasonUid).updateData(data);
     analytics.logEvent(name: "updateRoleInTeamForSeason");
   }
 
@@ -958,8 +955,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (initial.exists) {
       Player player = Player.fromMap(initial.data);
       yield player;
+    } else {
+      yield null;
     }
-    yield null;
     await for (var data in doc.snapshots()) {
       if (data.exists) {
         Player player = Player.fromMap(data.data);

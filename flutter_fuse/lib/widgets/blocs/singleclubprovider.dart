@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'base/singleprovider.dart';
 
@@ -21,6 +22,9 @@ class SingleClubProvider extends SingleBlocProvider<SingleClubBloc> {
 
   static SingleClubBloc _createBloc(BuildContext context, String uid) {
     return SingleClubBloc(
-        clubBloc: BlocProvider.of<ClubBloc>(context), clubUid: uid);
+      clubBloc: BlocProvider.of<ClubBloc>(context),
+      clubUid: uid,
+      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
@@ -152,6 +153,7 @@ class _SingleClubInvitesAdded extends SingleClubEvent {
 class SingleClubBloc
     extends AsyncHydratedBloc<SingleClubEvent, SingleClubState> {
   final ClubBloc clubBloc;
+  final AnalyticsSubsystem crashes;
   String _clubUid;
 
   static String createNew = "new";
@@ -161,7 +163,10 @@ class SingleClubBloc
   StreamSubscription<ClubState> _clubSub;
   StreamSubscription<Iterable<InviteToClub>> _inviteSub;
 
-  SingleClubBloc({@required this.clubBloc, @required String clubUid})
+  SingleClubBloc(
+      {@required this.clubBloc,
+      @required String clubUid,
+      @required this.crashes})
       : super(
             clubBloc.state.clubs.containsKey(clubUid)
                 ? SingleClubLoaded(
@@ -217,9 +222,12 @@ class SingleClubBloc
         yield SingleClubSaveDone.fromState(state).build();
         yield (SingleClubLoaded.fromState(state)..club = event.club.toBuilder())
             .build();
-      } catch (e) {
-        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleClubSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleClubLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -233,9 +241,12 @@ class SingleClubBloc
         yield (SingleClubLoaded.fromState(state)
               ..club = (state.club.toBuilder()..photoUrl = clubUri.toString()))
             .build();
-      } catch (e) {
-        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleClubSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleClubLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -249,8 +260,12 @@ class SingleClubBloc
         yield (SingleClubLoaded.fromState(state)
               ..club = event.newClub.toBuilder())
             .build();
-      } catch (e) {
-        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleClubSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SingleClubLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -261,9 +276,12 @@ class SingleClubBloc
             .addUserToClub(clubUid, event.adminUid, event.admin);
         yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
-      } catch (e) {
-        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleClubSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleClubLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -274,9 +292,12 @@ class SingleClubBloc
             .deleteClubMember(state.club, event.adminUid);
         yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
-      } catch (e) {
-        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleClubSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleClubLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -290,9 +311,12 @@ class SingleClubBloc
             clubUid: clubUid);
         yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
-      } catch (e) {
-        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleClubSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
         yield SingleClubLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 

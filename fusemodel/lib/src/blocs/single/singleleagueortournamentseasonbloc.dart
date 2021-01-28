@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
@@ -91,13 +92,16 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
     SingleLeagueOrTournamentSeasonEvent, SingleLeagueOrTournamentSeasonState> {
   final DatabaseUpdateModel db;
   final String leagueSeasonUid;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<LeagueOrTournamentSeason> _coordSub;
   StreamSubscription<Iterable<LeagueOrTournamentDivison>>
       _leagueOrTournamentSnapshot;
 
   SingleLeagueOrTournamentSeasonBloc(
-      {@required this.db, @required this.leagueSeasonUid})
+      {@required this.db,
+      @required this.leagueSeasonUid,
+      @required this.crashes})
       : super(SingleLeagueOrTournamentSeasonUninitialized(), leagueSeasonUid) {
     _coordSub = db.getLeagueSeasonData(leagueSeasonUid).listen((season) {
       if (season != null) {
@@ -134,15 +138,20 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
       try {
         await db.updateLeagueSeason(season);
         yield SingleLeagueOrTournamentSeasonLoaded.fromState(state).build();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleLeagueOrTournamentSeasonSaveFailed.fromState(state)
-              ..error = e)
+              ..error = RemoteError(e.messages, stack.toString()))
             .build();
+        yield SingleLeagueOrTournamentSeasonLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     } else {
+      var e = ArgumentError("season uids don't match");
       yield (SingleLeagueOrTournamentSeasonSaveFailed.fromState(state)
-            ..error = ArgumentError("season uids don't match"))
+            ..error = e)
           .build();
+      yield SingleLeagueOrTournamentSeasonLoaded.fromState(state).build();
+      crashes.recordError(e, StackTrace.current);
     }
   }
 

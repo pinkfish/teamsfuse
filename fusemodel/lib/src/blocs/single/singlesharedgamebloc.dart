@@ -121,22 +121,24 @@ class _SingleSharedGameDeleted extends SingleSharedGameEvent {
 class SingleSharedGameBloc
     extends Bloc<SingleSharedGameEvent, SingleSharedGameState> {
   final GameBloc gameBloc;
-  String _sharedGameUid;
+  final String sharedGameUid;
+  final AnalyticsSubsystem crashes;
 
   static String createNew = "new";
 
-  String get sharedGameUid => _sharedGameUid;
-
   StreamSubscription<GameState> _gameSub;
 
-  SingleSharedGameBloc({@required this.gameBloc, @required String gameUid})
-      : super(gameBloc.state.getSharedData(gameUid) != null
+  SingleSharedGameBloc(
+      {@required this.gameBloc,
+      @required this.sharedGameUid,
+      @required this.crashes})
+      : super(gameBloc.state.getSharedData(sharedGameUid) != null
             ? SingleSharedGameLoaded(
-                sharedData: gameBloc.state.getSharedData(gameUid), state: null)
+                sharedData: gameBloc.state.getSharedData(sharedGameUid),
+                state: null)
             : SingleSharedGameDeleted.empty()) {
-    _sharedGameUid = gameUid;
     _gameSub = gameBloc.listen((GameState gameState) {
-      GameSharedData data = gameState.getSharedData(gameUid);
+      GameSharedData data = gameState.getSharedData(sharedGameUid);
       if (data != null) {
         // Only send this if the game is not the same.
         if (data != state.sharedData) {
@@ -174,9 +176,10 @@ class SingleSharedGameBloc
             .updateFirestoreSharedGame(event.sharedData);
         yield SingleSharedGameLoaded(
             state: state, sharedData: event.sharedData);
-      } catch (e) {
+      } catch (e, stack) {
         yield SingleSharedGameSaveFailed(
             singleSharedGameState: state, error: e);
+        crashes.recordException(e, stack);
       }
     }
 
@@ -188,9 +191,10 @@ class SingleSharedGameBloc
             .updateFirestoreOfficalGameResult(
                 state.sharedData.uid, event.result);
         yield SingleSharedGameLoaded(state: state);
-      } catch (e) {
+      } catch (e, stack) {
         yield SingleSharedGameSaveFailed(
             singleSharedGameState: state, error: e);
+        crashes.recordException(e, stack);
       }
     }
   }

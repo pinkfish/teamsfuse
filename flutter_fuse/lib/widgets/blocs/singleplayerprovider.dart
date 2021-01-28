@@ -21,6 +21,7 @@ class SinglePlayerProvider extends SingleBlocProvider<SinglePlayerBloc> {
   static SinglePlayerBloc _createBloc(BuildContext context, String uid) {
     return SinglePlayerBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
         playerUid: uid);
   }
 }

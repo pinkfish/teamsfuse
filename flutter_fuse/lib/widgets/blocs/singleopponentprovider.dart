@@ -31,6 +31,7 @@ class SingleOpponentProvider extends SingleBlocProvider<SingleOpponentBloc> {
     return SingleOpponentBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),
         teamUid: teamUid,
+        crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
         opponentUid: uid);
   }
 }

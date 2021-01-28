@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
@@ -106,6 +107,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
     SingleLeagueOrTournamentDivisonState> {
   final DatabaseUpdateModel db;
   final String leagueDivisonUid;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<LeagueOrTournamentDivison> _divSub;
   StreamSubscription<Iterable<GameSharedData>> _leagueOrTournamentSnapshot;
@@ -113,7 +115,9 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
       _leagueOrTournamentTeamSnapshot;
 
   SingleLeagueOrTournamentDivisonBloc(
-      {@required this.db, @required this.leagueDivisonUid})
+      {@required this.db,
+      @required this.leagueDivisonUid,
+      @required this.crashes})
       : super(SingleLeagueOrTournamentDivisonUninitialized(),
             "LeagueDivison.$leagueDivisonUid}") {
     assert(this.db != null);
@@ -155,15 +159,20 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
         await db.updateLeagueDivison(divison);
         yield SingleLeagueOrTournamentDivisonSaveDone.fromState(state).build();
         yield SingleLeagueOrTournamentDivisonLoaded.fromState(state).build();
-      } catch (e) {
+      } catch (e, stack) {
         yield (SingleLeagueOrTournamentDivisonSaveFailed.fromState(state)
-              ..error = e)
+              ..error = RemoteError(e.messages, stack.toString()))
             .build();
+        yield SingleLeagueOrTournamentDivisonLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     } else {
+      var e = ArgumentError("league uids don't match");
       yield (SingleLeagueOrTournamentDivisonSaveFailed.fromState(state)
-            ..error = ArgumentError("league uids don't match"))
+            ..error = e)
           .build();
+      yield SingleLeagueOrTournamentDivisonLoaded.fromState(state).build();
+      crashes.recordError(e, StackTrace.current);
     }
   }
 
@@ -178,10 +187,12 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
       await db.updateLeagueTeam(teamData);
       yield SingleLeagueOrTournamentDivisonSaveDone.fromState(state).build();
       yield SingleLeagueOrTournamentDivisonLoaded.fromState(state).build();
-    } catch (e) {
+    } catch (e, stack) {
       yield (SingleLeagueOrTournamentDivisonSaveFailed.fromState(state)
-            ..error = e)
+            ..error = RemoteError(e.messages, stack.toString()))
           .build();
+      yield SingleLeagueOrTournamentDivisonLoaded.fromState(state).build();
+      crashes.recordException(e, stack);
     }
   }
 

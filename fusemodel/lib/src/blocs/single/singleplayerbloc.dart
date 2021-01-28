@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
@@ -111,14 +112,17 @@ class SinglePlayerBloc
     extends AsyncHydratedBloc<SinglePlayerEvent, SinglePlayerState> {
   final String playerUid;
   final DatabaseUpdateModel db;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<Player> _playerSub;
   StreamSubscription<Iterable<InviteToPlayer>> _inviteSub;
 
-  SinglePlayerBloc({@required this.db, @required this.playerUid})
+  SinglePlayerBloc(
+      {@required this.db, @required this.playerUid, @required this.crashes})
       : super(SinglePlayerUninitialized(), playerUid) {
     _playerSub = db.getPlayerDetails(playerUid).listen((data) {
       if (data == null) {
+        print("Couldnt find $playerUid");
         add(_SinglePlayerDeleted());
       } else {
         add(_SinglePlayerNewPlayer(newPlayer: data));
@@ -166,8 +170,12 @@ class SinglePlayerBloc
               ..player = event.player
               ..mePlayer = event.player.uid == db.currentUser.uid)
             .build();
-      } catch (e) {
-        yield (SinglePlayerSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SinglePlayerSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SinglePlayerLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -181,8 +189,12 @@ class SinglePlayerBloc
             myUid: db.currentUser.uid);
         yield SinglePlayerSaveDone.fromState(state).build();
         yield SinglePlayerLoaded.fromState(state).build();
-      } catch (e) {
-        yield (SinglePlayerSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SinglePlayerSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SinglePlayerLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -219,6 +231,7 @@ class SinglePlayerBloc
       case SinglePlayerBlocStateType.Loaded:
         return SinglePlayerLoaded.fromMap(json);
       case SinglePlayerBlocStateType.Deleted:
+        print("Loading as deleted? $playerUid");
         return SinglePlayerDeleted.fromMap(json);
       case SinglePlayerBlocStateType.SaveFailed:
         return SinglePlayerSaveFailed.fromMap(json);

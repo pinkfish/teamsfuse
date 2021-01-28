@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
+import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/src/async_hydrated_bloc/asynchydratedbloc.dart';
@@ -25,6 +27,14 @@ class SingleProfileUpdate extends SingleProfileEvent {
   List<Object> get props => [profile, image];
 }
 
+///
+/// Loads the players for this user.
+///
+class SingleProfileLoadPlayers extends SingleProfileEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class _SingleProfileNewProfile extends SingleProfileEvent {
   final FusedUserProfile profile;
 
@@ -32,6 +42,15 @@ class _SingleProfileNewProfile extends SingleProfileEvent {
 
   @override
   List<Object> get props => [profile];
+}
+
+class _SingleProfileNewPlayers extends SingleProfileEvent {
+  final BuiltList<Player> players;
+
+  _SingleProfileNewPlayers({@required this.players});
+
+  @override
+  List<Object> get props => [players];
 }
 
 class _SingleProfileDeleted extends SingleProfileEvent {
@@ -49,13 +68,16 @@ class SingleProfileBloc
   final CoordinationBloc coordinationBloc;
   final PlayerBloc playerBloc;
   final String profileUid;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<FusedUserProfile> _profileSub;
+  StreamSubscription<Iterable<Player>> _playerSub;
 
   SingleProfileBloc(
       {@required this.coordinationBloc,
       @required this.profileUid,
-      @required this.playerBloc})
+      @required this.playerBloc,
+      @required this.crashes})
       : super(SingleProfileUninitialized(), profileUid) {
     _profileSub = coordinationBloc.authenticationBloc.userAuth
         .getProfileStream(profileUid)
@@ -84,6 +106,24 @@ class SingleProfileBloc
       }
     }
 
+    if (event is SingleProfileLoadPlayers) {
+      _playerSub = coordinationBloc.databaseUpdateModel
+          .getPlayers()
+          .listen((Iterable<Player> players) {
+        if (players.length > 0) {
+          add(_SingleProfileNewPlayers(players: players));
+        }
+      });
+    }
+
+    // Setup the new players
+    if (event is _SingleProfileNewPlayers) {
+      yield (SingleProfileLoaded.fromState(state)
+            ..players = event.players.toBuilder()
+            ..loadedPlayers = true)
+          .build();
+    }
+
     // The Profile is deleted.
     if (event is _SingleProfileDeleted) {
       yield SingleProfileDeleted();
@@ -105,8 +145,12 @@ class SingleProfileBloc
         yield (SingleProfileLoaded.fromState(state)
               ..profile = profile.toBuilder())
             .build();
-      } catch (e) {
-        yield (SingleProfileSaveFailed.fromState(state)..error = e).build();
+      } catch (e, stack) {
+        yield (SingleProfileSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SingleProfileLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
   }

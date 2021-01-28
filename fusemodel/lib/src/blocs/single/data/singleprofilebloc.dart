@@ -2,6 +2,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
+import '../../../player.dart';
 import '../../../serializer.dart';
 import '../../../userprofile.dart';
 
@@ -36,6 +37,8 @@ class SingleProfileBlocStateType extends EnumClass {
 abstract class SingleProfileState {
   @nullable
   FusedUserProfile get profile;
+  BuiltList<Player> get players;
+  bool get loadedPlayers;
 
   SingleProfileBlocStateType get type;
 
@@ -145,6 +148,8 @@ abstract class SingleProfileDeleted
     SingleProfileState.initializeStateBuilder(b);
 
     b..type = SingleProfileBlocStateType.Deleted;
+    b..loadedPlayers = false;
+    b..players = ListBuilder();
   }
 
   Map<String, dynamic> toMap() {

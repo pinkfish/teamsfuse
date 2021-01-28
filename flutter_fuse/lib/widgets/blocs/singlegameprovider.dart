@@ -23,6 +23,9 @@ class SingleGameProvider extends SingleBlocProvider<SingleGameBloc> {
 
   static SingleGameBloc _createBloc(BuildContext context, String uid) {
     return SingleGameBloc(
-        db: RepositoryProvider.of<DatabaseUpdateModel>(context), gameUid: uid);
+      db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+      gameUid: uid,
+      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+    );
   }
 }

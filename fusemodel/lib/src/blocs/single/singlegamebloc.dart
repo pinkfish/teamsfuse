@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -298,8 +299,11 @@ class SingleGameBloc
         yield (SingleGameLoaded.fromState(state)..game = event.game.toBuilder())
             .build();
       } catch (e, stack) {
-        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
-        crashes.recordError(e, stack);
+        yield (SingleGameSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SingleGameLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -327,8 +331,11 @@ class SingleGameBloc
                 ..sharedData = event.sharedData.toBuilder()))
             .build();
       } catch (e, stack) {
-        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
-        crashes.recordError(e, stack);
+        yield (SingleGameSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SingleGameLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -342,8 +349,11 @@ class SingleGameBloc
         yield SingleGameSaveDone.fromState(state).build();
         yield (SingleGameLoaded.fromState(state)..gameLog = logs).build();
       } catch (e, stack) {
-        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
-        crashes.recordError(e, stack);
+        yield (SingleGameSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SingleGameLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -358,8 +368,11 @@ class SingleGameBloc
         yield SingleGameSaveDone.fromState(state).build();
         yield (SingleGameLoaded.fromState(state)..game = builder).build();
       } catch (e, stack) {
-        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
-        crashes.recordError(e, stack);
+        yield (SingleGameSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SingleGameLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -374,8 +387,11 @@ class SingleGameBloc
                   (state.game.toBuilder()..result = event.result.toBuilder()))
             .build();
       } catch (e, stack) {
-        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
-        crashes.recordError(e, stack);
+        yield (SingleGameSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SingleGameLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -388,8 +404,11 @@ class SingleGameBloc
         yield SingleGameSaveDone.fromState(state).build();
         yield (SingleGameLoaded.fromState(state)).build();
       } catch (e, stack) {
-        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
-        crashes.recordError(e, stack);
+        yield (SingleGameSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SingleGameLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
@@ -420,9 +439,11 @@ class SingleGameBloc
         yield SingleGameSaveDone.fromState(state).build();
         yield SingleGameLoaded.fromState(state).build();
       } catch (error, stack) {
-        crashes.recordError(error, stack);
-        yield (SingleGameSaveFailed.fromState(state)..error = error).build();
+        yield (SingleGameSaveFailed.fromState(state)
+              ..error = RemoteError(error.message, stack.toString()))
+            .build();
         yield SingleGameLoaded.fromState(state).build();
+        crashes.recordException(error, stack);
       }
     }
 
@@ -441,9 +462,11 @@ class SingleGameBloc
         yield SingleGameSaveDone.fromState(state).build();
         yield SingleGameLoaded.fromState(state).build();
       } catch (error, stack) {
-        crashes.recordError(error, stack);
-        yield (SingleGameSaveFailed.fromState(state)..error = error).build();
+        yield (SingleGameSaveFailed.fromState(state)
+              ..error = RemoteError(error.message, stack.toString()))
+            .build();
         yield SingleGameLoaded.fromState(state).build();
+        crashes.recordException(error, stack);
       }
     }
     // Removes a player from the game.
@@ -457,9 +480,11 @@ class SingleGameBloc
         yield SingleGameSaveDone.fromState(state).build();
         yield SingleGameLoaded.fromState(state).build();
       } catch (error, stack) {
-        crashes.recordError(error, stack);
-        yield (SingleGameSaveFailed.fromState(state)..error = error).build();
+        yield (SingleGameSaveFailed.fromState(state)
+              ..error = RemoteError(error.message, stack.toString()))
+            .build();
         yield SingleGameLoaded.fromState(state).build();
+        crashes.recordException(error, stack);
       }
     }
 

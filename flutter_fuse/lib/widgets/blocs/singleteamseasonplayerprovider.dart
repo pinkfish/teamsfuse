@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import 'base/singleprovider.dart';
 
@@ -30,9 +31,10 @@ class SingleTeamSeasonPlayerProvider
   static SingleTeamSeasonPlayerBloc _createBloc(
       BuildContext context, String playerUid, String seasonUid) {
     return SingleTeamSeasonPlayerBloc(
-        seasonBloc: BlocProvider.of<SeasonBloc>(context),
-        playerBloc: BlocProvider.of<PlayerBloc>(context),
-        seasonUid: seasonUid,
-        playerUid: playerUid);
+      db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+      seasonUid: seasonUid,
+      playerUid: playerUid,
+      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+    );
   }
 }

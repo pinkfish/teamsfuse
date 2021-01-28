@@ -35,7 +35,7 @@ import '../screens/message/addmessage.dart';
 import '../screens/message/messages.dart';
 import '../screens/message/messageview.dart';
 import '../screens/settings/about.dart';
-import '../screens/settings/editplayer.dart';
+import '../screens/team/editplayer.dart';
 import '../screens/settings/editprofile.dart';
 import '../screens/settings/profile.dart';
 import '../screens/settings/settings.dart';
