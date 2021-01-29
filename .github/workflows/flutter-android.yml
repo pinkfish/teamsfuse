@@ -59,7 +59,7 @@ jobs:
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       with:
-        lane: firebase
+        lane: beta
         subdirectory: flutter_fuse/android
         options: '{"version": "${{ steps.branch_name.outputs.SOURCE_TAG }}"}'
       env:
