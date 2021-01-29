@@ -76,7 +76,9 @@ platform :ios do
     get_certificates           # invokes cert
     get_provisioning_profile   # invokes sigh
 
-    release=get_github_release(url: "pinkfish/flutter_basketball", version: options[:version], api_token: github_api_token)
+    release=get_github_release(url: "pinkfish/teamsfuse", version: options[:version], api_token: github_api_token)
+
+    puts release["name"]
 
     body = release["body"]
 

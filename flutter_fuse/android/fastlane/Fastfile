@@ -94,7 +94,8 @@ platform :android do
 
 
       @build_name=options[:version].delete("v")
-      release=get_github_release(url: "pinkfish/flutter_basketball", version: options[:version], api_token: github_api_token)
+      release=get_github_release(url: "pinkfish/teamsfuse", version: options[:version], api_token: github_api_token)
+      puts release["name"]
       body = release["body"]
       File.write("#{Dir.pwd}/metadata/android/en-US/changelogs/#{@build_number}.txt", "#{body[0,500]}")
       puts body
