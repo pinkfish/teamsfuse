@@ -47,10 +47,10 @@ jobs:
       #working-directory: flutter_fuse
       #env: 	
         #GOOGLESERVICES: ${{ secrets.googleservicesIos }}
-    - run: echo ${FASTLANE_ANDROID_API_KEY} > ~/api-dash.json	
-      working-directory: ux	
+    - run: echo ${APPLE_APP_API_P8} > ~/apple-app-api.p8
+      working-directory: flutter_fuse/ios
       env: 	
-        FASTLANE_ANDROID_API_KEY: ${{ secrets.FASTLANE_ANDROID_API_KEY }}
+        APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
     - run: pod install	
       working-directory: flutter_fuse/ios
     - run: brew install graphicsmagick
