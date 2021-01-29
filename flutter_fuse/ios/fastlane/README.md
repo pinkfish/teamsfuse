@@ -12,10 +12,15 @@ Install _fastlane_ using
 ```
 [sudo] gem install fastlane -NV
 ```
-or alternatively using `brew cask install fastlane`
+or alternatively using `brew install fastlane`
 
 # Available Actions
 ## iOS
+### ios firebase
+```
+fastlane ios firebase
+```
+Push a new beta build to firebase
 ### ios beta
 ```
 fastlane ios beta

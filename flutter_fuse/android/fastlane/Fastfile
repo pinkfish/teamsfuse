@@ -37,19 +37,9 @@ platform :android do
               release_notes: "Lots of amazing new features to test out!",
               firebase_cli_path: "/Users/david/.nvm/versions/node/v12.9.1/bin/firebase"
    )
-    #upload_to_play_store(
-    #   track: 'beta',
-    #)
-    #crashlytics(
-   # #    api_token: '8e49e324965658b5d6497544fb73022fbf38e28f',
-  #      build_secret: '400dd35eaffac89c5c40c740eb0c58950ac5bacec99c34ad13df30b8a0f26051',
-  #      apk_path: '../build/app/outputs/apk/release/app-release.apk'
-  #  )
-  
-    # sh "your_script.sh"
-    # You can also use other beta testing services here
   end
 
+  desc "Create the icons"
   private_lane :create_icons do |options|
       # Icons
       android_appicon(
@@ -92,12 +82,10 @@ platform :android do
       tag_branch(OS: "android")
     end
 
-  desc "Build and push to play store track"
+  desc "Build and push to play store track with github"
     private_lane :build_and_push_to_play_store_track_github do |options|
       # Use the github run number + 300 to be past the existing build numbers.
       @build_number = ENV["GITHUB_RUN_NUMBER"].to_i + 380
-      #puts DateTime.now.to_time.to_i/600
-      #@build_number = DateTime.now.to_time.to_i/600
       puts @build_number
 
       github_api_token = ENV["FL_GITHUB_RELEASE_API_TOKEN"]
