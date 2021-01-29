@@ -52,7 +52,7 @@ jobs:
  #     working-directory: flutter_fuse
  #     env: 	
  #       GOOGLESERVICES: ${{ secrets.googleservicesAndroid }}
-    - run: echo ${FASTLANE_ANDROID_API_KEY} > ~/app-fastlane.json	
+    - run: echo ${FASTLANE_ANDROID_API_KEY} > ~/api-dash.json	
       working-directory: flutter_fuse
       env: 	
         FASTLANE_ANDROID_API_KEY: ${{ secrets.FASTLANE_ANDROID_API_KEY }}

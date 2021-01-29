@@ -36,29 +36,29 @@ jobs:
       with:
         channel: 'beta' # or: 'dev' or 'beta'
     - run: flutter pub get
-      working-directory: basketballdata
+      working-directory: fusemodel
     - run: flutter pub run build_runner build
-      working-directory: basketballdata
+      working-directory: fusemodel
     - run: flutter packages get
-      working-directory: ux
+      working-directory: flutter_fuse
     - run: brew install graphicsmagick
-      working-directory: ux
+      working-directory: flutter_fuse
     #- run: echo ${GOOGLESERVICES} > ios/Runner/GoogleService-Info.plist
-      #working-directory: ux	
+      #working-directory: flutter_fuse
       #env: 	
         #GOOGLESERVICES: ${{ secrets.googleservicesIos }}
-    #- run: echo ${FASTLANE} > ~/app-fastlane.json	
-      #working-directory: ux	
-      #env: 	
-        #FASTLANE: ${{ secrets.fastlaneApp }}
+    - run: echo ${FASTLANE_ANDROID_API_KEY} > ~/api-dash.json	
+      working-directory: ux	
+      env: 	
+        FASTLANE_ANDROID_API_KEY: ${{ secrets.FASTLANE_ANDROID_API_KEY }}
     - run: pod install	
-      working-directory: ux/ios
+      working-directory: flutter_fuse/ios
     - run: brew install graphicsmagick
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       with:
-        lane: firebase
-        subdirectory: ux/ios
+        lane: beta
+        subdirectory: flutter_fuse/ios
         bundle-install-path: ux/ios/packages
         options: '{"version": "${{ steps.branch_name.outputs.SOURCE_TAG }}"}'
       env:
