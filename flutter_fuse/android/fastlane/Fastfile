@@ -30,7 +30,7 @@ platform :android do
 
     firebase_app_distribution(
               apk_path: '../build/app/outputs/apk/release/app-release.apk',
-              app: "1:400199897683:android:5433fb56c222e6e8",
+              app: "1:400199897683:android:68d34f1dd483cffe08aca6",
               testers: "pinkfishfrog@gmail.com",
               release_notes: "Lots of amazing new features to test out!",
               firebase_cli_path: "/Users/david/.nvm/versions/node/v12.9.1/bin/firebase"
