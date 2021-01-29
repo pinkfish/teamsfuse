@@ -7,30 +7,27 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
+import 'package:flutter_driver/flutter_driver.dart';
+
 
 import 'package:flutter_fuse/main.dart' as app;
 
-void main() => run(_testMain);
-
-void _testMain() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+void main() {
+  group('Flutter fuse app', () async {
     // Build our app and trigger a frame.
     app.main();
 
-    // Trigger a frame.
-    await tester.pumpAndSettle();
+    FlutterDriver driver;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    setupApp(() async {
+      driver = await FlutterDriver.connect();
+    }
+    );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    tearDownAll(() async {
+      if (driver != null) {
+      driver.close();
+      }
+    })
   });
 }

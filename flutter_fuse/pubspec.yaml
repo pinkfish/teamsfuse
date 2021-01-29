@@ -69,6 +69,8 @@ dev_dependencies:
     sdk: flutter
   effective_dart: ^1.3.0
   intl_translation: ^0.17.10+1
+  flutter_driver:
+    sdk: flutter
 
 flutter:
   uses-material-design: true
