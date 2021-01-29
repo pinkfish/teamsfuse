@@ -1,0 +1,12 @@
+Fix up the app id for the android app.
+Fix up fastlane.
+Merge branch 'main' of github.com:pinkfish/teamsfuse into main
+Fix up the compilation for fastlane
+Update flutter-android.yml
+Add the firebase token to the fastlane action.
+Update flutter-android.yml
+Rerun android setup on a change to the workflow file.
+Add in the crash reporting to all the single blocs.
+Add in season stats and different view for basketball sports.
+Update flutter-web.yml
+Remove the push changes, since there are no changes i

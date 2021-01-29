@@ -43,21 +43,21 @@ jobs:
       working-directory: ux
     - run: brew install graphicsmagick
       working-directory: ux
-    - run: echo ${GOOGLESERVICES} > ios/Runner/GoogleService-Info.plist
-      working-directory: ux	
-      env: 	
-        GOOGLESERVICES: ${{ secrets.googleservicesIos }}
-    - run: echo ${FASTLANE} > ~/app-fastlane.json	
-      working-directory: ux	
-      env: 	
-        FASTLANE: ${{ secrets.fastlaneApp }}
+    #- run: echo ${GOOGLESERVICES} > ios/Runner/GoogleService-Info.plist
+      #working-directory: ux	
+      #env: 	
+        #GOOGLESERVICES: ${{ secrets.googleservicesIos }}
+    #- run: echo ${FASTLANE} > ~/app-fastlane.json	
+      #working-directory: ux	
+      #env: 	
+        #FASTLANE: ${{ secrets.fastlaneApp }}
     - run: pod install	
       working-directory: ux/ios
     - run: brew install graphicsmagick
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       with:
-        lane: beta
+        lane: firebase
         subdirectory: ux/ios
         bundle-install-path: ux/ios/packages
         options: '{"version": "${{ steps.branch_name.outputs.SOURCE_TAG }}"}'

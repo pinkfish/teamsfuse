@@ -15,22 +15,35 @@ Install _fastlane_ using
 or alternatively using `brew install fastlane`
 
 # Available Actions
+### release_notes
+```
+fastlane release_notes
+```
+Generate release notes
+
+----
+
 ## Android
 ### android test
 ```
 fastlane android test
 ```
 Runs all the tests
-### android beta
+### android firebase
 ```
-fastlane android beta
+fastlane android firebase
 ```
 Submit a new Beta Build to Crashlytics Beta
-### android deploy
+### android beta_local
 ```
-fastlane android deploy
+fastlane android beta_local
 ```
-Deploy a new version to the Google Play
+Submit a new Beta Build to App store
+### android alpha
+```
+fastlane android alpha
+```
+Submit a new Alpha Build to App store
 
 ----
 
