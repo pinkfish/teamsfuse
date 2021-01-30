@@ -19,6 +19,7 @@ GeneratedPluginRegistrant.m
 *.p8
 *.p12
 *.cer
+Gemfile.lock
 
 !default.pbxuser
 !default.mode1v3
