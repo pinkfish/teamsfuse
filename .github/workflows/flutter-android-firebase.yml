@@ -68,7 +68,7 @@ jobs:
       working-directory: flutter_fuse/android
       env: 	
         ANDROID_KEY_JKS: ${{ secrets.ANDROID_KEY_JKS }}
-    - run: base64 --decode -i ./key.jks.asc -o key.jks 
+    - run: base64 --decode < ./key.jks.asc > key.jks 
       working-directory: flutter_fuse/android
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
