@@ -1,4 +1,4 @@
-name: Flutter - android
+name: Flutter - android - firebase
 
 on: 
   push:
