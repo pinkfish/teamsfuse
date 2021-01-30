@@ -68,7 +68,6 @@ jobs:
       with:
         lane: firebase
         subdirectory: flutter_fuse/ios
-        bundle-install-path: ux/ios/packages
         options: '{"version": "${{ steps.branch_name.outputs.SOURCE_TAG }}"}'
       env:
         FASTLANE_SESSION: ${{ secrets.FASTLANE_APPLE_SESSION }}
