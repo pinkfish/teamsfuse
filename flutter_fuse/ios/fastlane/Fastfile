@@ -29,7 +29,8 @@ platform :ios do
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
     firebase_app_distribution(
             app: "1:400199897683:ios:ce8c89497900217008aca6",
-            release_notes: "Lots of amazing new features to test out!"
+            release_notes: "Lots of amazing new features to test out!",
+            groups: "teamsfuse",
     )
   end
 

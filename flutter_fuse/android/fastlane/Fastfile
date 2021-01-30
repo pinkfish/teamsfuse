@@ -35,7 +35,6 @@ platform :android do
               app: "1:400199897683:android:68d34f1dd483cffe08aca6",
               testers: "pinkfishfrog@gmail.com",
               release_notes: "Lots of amazing new features to test out!",
-              firebase_cli_path: "/Users/david/.nvm/versions/node/v12.9.1/bin/firebase"
    )
   end
 
