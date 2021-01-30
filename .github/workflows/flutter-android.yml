@@ -52,10 +52,16 @@ jobs:
  #     working-directory: flutter_fuse
  #     env: 	
  #       GOOGLESERVICES: ${{ secrets.googleservicesAndroid }}
-    - run: echo ${FASTLANE_ANDROID_API_KEY} > ~/api-dash.json	
-      working-directory: flutter_fuse
+    - run: echo ${FASTLANE_ANDROID_API_KEY} > ./api-dash.json	
+      working-directory: flutter_fuse/android
       env: 	
         FASTLANE_ANDROID_API_KEY: ${{ secrets.FASTLANE_ANDROID_API_KEY }}
+    - run: echo ${ANDROID_KEY_JKS} > ./key.jks.asc
+      working-directory: flutter_fuse/andriod
+      env: 	
+        FASTLANE_ANDROID_API_KEY: ${{ secrets.FASTLANE_ANDROID_API_KEY }}
+    - run: base64 --decode -i ./key.jks.asc -o key.jks 
+      working-directory: flutter_fuse/andriod
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       with:
