@@ -62,7 +62,7 @@ jobs:
       working-directory: flutter_fuse/ios
       env: 	
         APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
-    - run: brew install graphicsmagick
+    - run: sudo apt-get install -y graphicsmagick
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       with:
