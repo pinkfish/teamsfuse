@@ -63,9 +63,7 @@ jobs:
       env: 	
         APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
     - run: |
-        brew install jpeg
-        brew install libpng
-        brew install graphicsmagick --with-libpng --with-jpeg
+        brew install graphicsmagick --with-libpng
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       with:
