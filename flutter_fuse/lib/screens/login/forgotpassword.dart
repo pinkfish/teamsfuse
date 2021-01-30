@@ -81,6 +81,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: RaisedButton(
                       child: Text(Messages.of(context).forgotPassword),
                       color: Theme.of(context).primaryColor,
+                      key: Key("SUBMIT"),
                       onPressed: _handleSubmitted),
                   margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                 ),
@@ -93,6 +94,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               FlatButton(
                 child: Text(Messages.of(context).createaccount),
                 textColor: Theme.of(context).accentColor,
+                key: Key("CREATEACCOUNT"),
                 onPressed: () {
                   _loginBloc.add(LoginEventReset());
                   onPressed("/Login/SignUp");
@@ -101,6 +103,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               FlatButton(
                 child: Text(Messages.of(context).login),
                 textColor: Theme.of(context).accentColor,
+                key: Key("LOGIN"),
                 onPressed: () {
                   _loginBloc.add(LoginEventReset());
                   onPressed("/Login/Home");
@@ -126,6 +129,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               FlatButton(
                 child: Text(Messages.of(context).createaccount),
                 textColor: Theme.of(context).accentColor,
+                key: Key("CREATEACCOUNT"),
                 onPressed: () {
                   _loginBloc.add(LoginEventReset());
                   onPressed("/Login/SignUp");
@@ -134,6 +138,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               FlatButton(
                   child: Text(Messages.of(context).login),
                   textColor: Theme.of(context).accentColor,
+                  key: Key("LOGIN"),
                   onPressed: () {
                     _loginBloc.add(LoginEventReset());
                     // Go back to the initial state.

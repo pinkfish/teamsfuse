@@ -138,6 +138,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                                   child: Text(messages.resendverify),
                                   color: Theme.of(context).primaryColor,
                                   textColor: Colors.white,
+                                  key: Key("SUBMIT"),
                                   onPressed: _handleSubmitted),
                               margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                             ),
@@ -150,11 +151,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                           FlatButton(
                             child: Text(messages.createaccount),
                             textColor: Theme.of(context).accentColor,
+                            key: Key("CREATEACCOUNT"),
                             onPressed: () => _onSignup(context),
                           ),
                           FlatButton(
                             child: Text(messages.logout),
                             textColor: Theme.of(context).accentColor,
+                            key: Key("LOGOUT"),
                             onPressed: () => _onLogout(context),
                           ),
                         ],

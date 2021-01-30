@@ -115,6 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Theme.of(context).primaryColor,
                       textColor: Colors.white,
                       onPressed: _handleSubmitted,
+                      key: Key("SUBMIT"),
                     ),
                     margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                   ),
@@ -124,11 +125,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       FlatButton(
                         child: Text(Messages.of(context).createaccount),
                         textColor: Theme.of(context).accentColor,
+                        key: Key("CREATEACCOUNT"),
                         onPressed: () => _onPressed("/Login/SignUp"),
                       ),
                       FlatButton(
                         child: Text(Messages.of(context).forgotPassword),
                         textColor: Theme.of(context).accentColor,
+                        key: Key("FORGOTPASSWORD"),
                         onPressed: () => _onPressed("/Login/ForgotPassword"),
                       ),
                     ],

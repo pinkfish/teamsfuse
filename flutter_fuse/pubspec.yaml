@@ -71,6 +71,7 @@ dev_dependencies:
   intl_translation: ^0.17.10+1
   flutter_driver:
     sdk: flutter
+  test: any
 
 flutter:
   uses-material-design: true
