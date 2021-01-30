@@ -64,6 +64,7 @@ jobs:
         APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
     - run: |
         brew install ghostscript imagemagick
+        magick --version
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       with:
