@@ -4,11 +4,6 @@ on:
   release:
     types: [created,edited]
     
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/flutter-android.yml
-
 jobs:
   build:
    runs-on: ubuntu-latest
@@ -57,9 +52,9 @@ jobs:
       env: 	
         FASTLANE_ANDROID_API_KEY: ${{ secrets.FASTLANE_ANDROID_API_KEY }}
     - run: echo ${ANDROID_KEY_JKS} > ./key.jks.asc
-      working-directory: flutter_fuse/andriod
+      working-directory: flutter_fuse/android
       env: 	
-        FASTLANE_ANDROID_API_KEY: ${{ secrets.FASTLANE_ANDROID_API_KEY }}
+        ANDROID_KEY_JKS: ${{ secrets.ANDROID_KEY_JKS }}
     - run: base64 --decode -i ./key.jks.asc -o key.jks 
       working-directory: flutter_fuse/andriod
     - name: Fastlane Action
