@@ -1,6 +1,8 @@
 *.iml
 *.class
 .gradle
+key.jks
+key.pem
 api-dash.json
 /local.properties
 /.idea/workspace.xml

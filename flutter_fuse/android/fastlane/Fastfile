@@ -75,7 +75,7 @@ platform :android do
       upload_to_play_store(
         track: options[:track],
         aab: '../build/app/outputs/bundle/release/app-release.aab',
-        json_key_data: ENV['GOOGLE_DEVELOPER_SERVICE_ACCOUNT_ACTOR_FASTLANE'],
+        json_key: './api-dash.json',
         #skip_upload_screenshots: false,
         #skip_upload_images: false
       )
@@ -107,7 +107,7 @@ platform :android do
       upload_to_play_store(
         track: options[:track],
         aab: '../build/app/outputs/bundle/release/app-release.aab',
-        json_key_data: ENV['GOOGLE_DEVELOPER_SERVICE_ACCOUNT_ACTOR_FASTLANE'],
+        json_key: './api-dash.json',
         #skip_upload_screenshots: false,
         #skip_upload_images: false
       )
