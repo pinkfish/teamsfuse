@@ -3,13 +3,13 @@ name: Flutter - android - firebase
 on: 
   push:
     paths:
-    - 'flutter_fuse/*'
-    - 'fusemodel/*'
+    - 'flutter_fuse/**'
+    - 'fusemodel/**'
     - '.github/workflows/flutter-android-firebase.yml'
   pull_request:
     paths:
-    - 'flutter_fuse/*'
-    - 'fusemodel/*'
+    - 'flutter_fuse/**'
+    - 'fusemodel/**'
     - '.github/workflows/flutter-android-firebase.yml'
     
 jobs:
