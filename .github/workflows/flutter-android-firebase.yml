@@ -70,6 +70,8 @@ jobs:
         ANDROID_KEY_JKS: ${{ secrets.ANDROID_KEY_JKS }}
     - run: base64 --decode < ./key.jks.asc > key.jks 
       working-directory: flutter_fuse/android
+    - run: flutter build --release apk
+      working-directory: flutter_fuse/android
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       with:
@@ -78,5 +80,4 @@ jobs:
         options: '{"version": "${{ steps.branch_name.outputs.SOURCE_TAG }}"}'
       env:
         FL_GITHUB_RELEASE_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
         FIREBASE_TOKEN: ${{ secrets.FIREBASETOKEN }}
