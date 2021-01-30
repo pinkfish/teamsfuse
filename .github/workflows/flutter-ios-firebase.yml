@@ -56,18 +56,10 @@ jobs:
       working-directory: fusemodel
     - run: flutter packages get
       working-directory: flutter_fuse
-    - run: brew install graphicsmagick
-      working-directory: flutter_fuse
-    #- run: echo ${GOOGLESERVICES} > ios/Runner/GoogleService-Info.plist
-      #working-directory: flutter_fuse
-      #env: 	
-        #GOOGLESERVICES: ${{ secrets.googleservicesIos }}
     - run: echo ${APPLE_APP_API_P8} > ~/apple-app-api.p8
       working-directory: flutter_fuse/ios
       env: 	
         APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
-    - run: pod install	
-      working-directory: flutter_fuse/ios
     - run: brew install graphicsmagick
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
