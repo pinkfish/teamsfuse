@@ -5,12 +5,12 @@ on:
     paths:
     - 'flutter_fuse/**'
     - 'fusemodel/**'
-    - '.github/workflows/flutter-android-firebase.yml'
+    - '.github/workflows/flutter-ios-firebase.yml'
  pull_request:
     paths:
     - 'flutter_fuse/**'
     - 'fusemodel/**'
-    - '.github/workflows/flutter-android-firebase.yml'
+    - '.github/workflows/flutter-ios-firebase.yml'
 
 jobs:
   build:
