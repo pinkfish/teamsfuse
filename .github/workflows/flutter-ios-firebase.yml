@@ -70,25 +70,6 @@ jobs:
         subdirectory: flutter_fuse/ios
         options: '{"version": "${{ steps.branch_name.outputs.SOURCE_TAG }}"}'
       env:
-        FASTLANE_SESSION: ${{ secrets.FASTLANE_APPLE_SESSION }}
         FL_GITHUB_RELEASE_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLEAPPSPECIFICPASSWORD }}
         SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 10 # Longer timeout for the build settings.
-    - uses: ncipollo/release-action@v1
-      with:
-        artifacts: "build/ios/iphoneos/*.app"
-        token: ${{ secrets.GITHUB_TOKEN }}
-      continue-on-error: true
-    - name: Commit files
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m "Release notes for the ios ${{ steps.branch_name.outputs.SOURCE_TAG}} version" -a
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUBPUSHTOKEN }}
-        branch: main
-        force: true
-
