@@ -3,6 +3,7 @@
 .gradle
 key.jks
 key.pem
+Gemfile.lock
 api-dash.json
 /local.properties
 /.idea/workspace.xml
