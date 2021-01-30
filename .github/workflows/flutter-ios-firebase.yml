@@ -5,7 +5,7 @@ on:
     paths:
     - 'flutter_fuse/*'
     - 'fusemodel/*'
-  pull_request:
+ pull_request:
     paths:
     - 'flutter_fuse/*'
     - 'fusemodel/*'
