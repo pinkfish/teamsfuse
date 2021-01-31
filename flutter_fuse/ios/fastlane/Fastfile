@@ -15,6 +15,26 @@
 
 default_platform(:ios)
 
+def delete_temp_keychain(name)
+  delete_keychain(
+    name: name
+  ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+end
+
+def create_temp_keychain(name, password)
+  create_keychain(
+    name: name,
+    password: password,
+    unlock: false,
+    timeout: false
+  )
+end
+
+def ensure_temp_keychain(name, password)
+  delete_temp_keychain(name)
+  create_temp_keychain(name, password)
+end
+
 platform :ios do
   desc "Push a new beta build to firebase"
   lane :firebase do
@@ -26,6 +46,26 @@ platform :ios do
        appicon_image_file: '../assets/images/app_iconx1024.png'
     )
 
+    DEVELOPER_APP_ID = ENV["DEVELOPER_APP_ID"]
+    DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
+    PROVISIONING_PROFILE_SPECIFIER = ENV["PROVISIONING_PROFILE_SPECIFIER"]
+    TEMP_KEYCHAIN_USER = ENV["TEMP_KEYCHAIN_USER"]
+    TEMP_KEYCHAIN_PASSWORD = ENV["TEMP_KEYCHAIN_PASSWORD"]
+
+    # setup certs.
+    keychain_name = TEMP_KEYCHAIN_USER
+    keychain_password = TEMP_KEYCHAIN_PASSWORD
+    ensure_temp_keychain(keychain_name, keychain_password)
+
+    match(
+        type: 'appstore',
+        app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
+        git_basic_authorization: Base64.strict_encode64(ENV["GIT_AUTHORIZATION"]),
+        readonly: true,
+        keychain_name: keychain_name,
+        keychain_password: keychain_password
+    )
+    
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
     firebase_app_distribution(
             app: "1:400199897683:ios:ce8c89497900217008aca6",
@@ -42,6 +82,12 @@ platform :ios do
     UI.user_error!("Please provide a version using `version`") if options[:version].to_s.length == 0
     version = options[:version]
     @build_name=options[:version].delete("v")
+
+    DEVELOPER_APP_ID = ENV["DEVELOPER_APP_ID"]
+    DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
+    PROVISIONING_PROFILE_SPECIFIER = ENV["PROVISIONING_PROFILE_SPECIFIER"]
+    TEMP_KEYCHAIN_USER = ENV["TEMP_KEYCHAIN_USER"]
+    TEMP_KEYCHAIN_PASSWORD = ENV["TEMP_KEYCHAIN_PASSWORD"]
 
     project = 'Runner.xcodeproj'
 
@@ -73,8 +119,6 @@ platform :ios do
     version = get_version_number(xcodeproj: project,)
     desc "Version $version"
 
-    #get_certificates           # invokes cert
-    #get_provisioning_profile   # invokes sigh
     api_key = app_store_connect_api_key(
        key_id: "D39Z87Q2S3",
        issuer_id: "fc631508-7672-4236-a15a-21063621560e",
@@ -95,7 +139,24 @@ platform :ios do
        appicon_image_file: '../assets/images/appiconx1024.png'
     )
 
+    # setup certs.
+    keychain_name = TEMP_KEYCHAIN_USER
+    keychain_password = TEMP_KEYCHAIN_PASSWORD
+    ensure_temp_keychain(keychain_name, keychain_password)
+
+    match(
+        type: 'appstore',
+        app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
+        git_basic_authorization: Base64.strict_encode64(ENV["GIT_AUTHORIZATION"]),
+        readonly: true,
+        keychain_name: keychain_name,
+        keychain_password: keychain_password
+    )
+
+    # Build the app
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
+
+    # Upload the app.
     upload_to_testflight(changelog: body)
   end
 end

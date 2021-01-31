@@ -61,9 +61,16 @@ jobs:
       env:
         FASTLANE_SESSION: ${{ secrets.FASTLANE_APPLE_SESSION }}
         FL_GITHUB_RELEASE_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLEAPPSPECIFICPASSWORD }}
         SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 10 # Longer timeout for the build settings.
+        APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
+        DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
+        DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
+        FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
+        MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+        GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
+        TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+        TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
     - uses: ncipollo/release-action@v1
       with:
         artifacts: "build/ios/iphoneos/*.app"
