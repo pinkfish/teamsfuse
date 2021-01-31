@@ -65,7 +65,7 @@ platform :ios do
         keychain_name: keychain_name,
         keychain_password: keychain_password
     )
-    
+
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
     firebase_app_distribution(
             app: "1:400199897683:ios:ce8c89497900217008aca6",
