@@ -58,7 +58,7 @@ jobs:
       working-directory: fusemodel
     - run: |
         flutter packages get
-        flutter build ios
+        flutter build ios --debug
       working-directory: flutter_fuse
     - run: echo ${APPLE_APP_API_P8} > ~/apple-app-api.p8
       working-directory: flutter_fuse/ios

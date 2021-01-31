@@ -1,23 +1,37 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_fuse/widgets/player/gendericon.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter/material.dart';
 
 void main() {
-  testWidgets('Gender icon', (tester) async {
+  testWidgets('Gender icon male', (tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(GenderIcon(Gender.));
+    await tester.pumpWidget(GenderIcon(Gender.Male));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that our icon is male.
+    expect(find.byIcon(MdiIcons.genderMale), findsOneWidget);
+  });
+  testWidgets('Gender icon female', (tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(GenderIcon(Gender.Female));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Verify that our icon is male.
+    expect(find.byIcon(MdiIcons.genderFemale), findsOneWidget);
+  });
+  testWidgets('Gender icon coed', (tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(GenderIcon(Gender.Coed));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that our icon is male.
+    expect(find.byIcon(MdiIcons.genderMaleFemale), findsOneWidget);
+  });
+
+  testWidgets('Gender icon na', (tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(GenderIcon(Gender.NA));
+
+    // Verify that our icon is male.
+    expect(find.byIcon(Icons.person), findsOneWidget);
   });
 }
