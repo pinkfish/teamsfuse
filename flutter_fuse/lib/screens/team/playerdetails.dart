@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -433,6 +434,11 @@ class PlayerDetailsScreen extends StatelessWidget {
                             ],
                           ),
                         );
+                      }
+
+                      if (seasonPlayerState
+                          is SingleTeamSeasonPlayerUninitialized) {
+                        return LoadingWidget();
                       }
 
                       return Scaffold(

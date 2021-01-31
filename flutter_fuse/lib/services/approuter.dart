@@ -35,7 +35,6 @@ import '../screens/message/addmessage.dart';
 import '../screens/message/messages.dart';
 import '../screens/message/messageview.dart';
 import '../screens/settings/about.dart';
-import '../screens/team/editplayer.dart';
 import '../screens/settings/editprofile.dart';
 import '../screens/settings/profile.dart';
 import '../screens/settings/settings.dart';
@@ -44,6 +43,7 @@ import '../screens/team/addplayer.dart';
 import '../screens/team/addseason.dart';
 import '../screens/team/addteam.dart';
 import '../screens/team/clubsettings.dart';
+import '../screens/team/editplayer.dart';
 import '../screens/team/editseason.dart';
 import '../screens/team/editteam.dart';
 import '../screens/team/playerdetails.dart';
@@ -180,7 +180,7 @@ class AppRouter {
                 EditGameScreen(vals["id"][0].toString())));
     router.define("/Game/:id",
         handler: fluro.Handler(handlerFunc: (context, vals) {
-      Analytics.analytics.logViewItem(
+      AnalyticsSubsystemImpl.analytics.logViewItem(
           itemId: vals["id"][0].toString(),
           itemName: "Game",
           itemCategory: "Game");
@@ -188,7 +188,7 @@ class AppRouter {
     }));
     router.define("/SharedGame/:id",
         handler: fluro.Handler(handlerFunc: (context, vals) {
-      Analytics.analytics.logViewItem(
+      AnalyticsSubsystemImpl.analytics.logViewItem(
           itemId: vals["id"][0].toString(),
           itemName: "Game",
           itemCategory: "Game");
@@ -212,7 +212,7 @@ class AppRouter {
             fluro.Handler(handlerFunc: (context, vals) => AddMessageScreen()));
     router.define("/ShowMessage/:id",
         handler: fluro.Handler(handlerFunc: (context, vals) {
-      Analytics.analytics.logViewItem(
+      AnalyticsSubsystemImpl.analytics.logViewItem(
           itemId: vals["id"][0].toString(),
           itemName: "Message",
           itemCategory: "Message");

@@ -36,7 +36,7 @@ class FuseMaterialApp extends StatelessWidget {
         Locale('en', 'AU'),
       ],
       navigatorObservers: <NavigatorObserver>[
-        FirebaseAnalyticsObserver(analytics: Analytics.analytics),
+        FirebaseAnalyticsObserver(analytics: AnalyticsSubsystemImpl.analytics),
       ],
       title: "Team Fuse",
       theme: _theme,

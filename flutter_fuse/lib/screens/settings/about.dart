@@ -13,7 +13,7 @@ class AboutScreen extends StatelessWidget {
 
     return AboutDialog(
       applicationName: Messages.of(context).title,
-      applicationVersion: Analytics.instance.getVersion(),
+      applicationVersion: AnalyticsSubsystemImpl.instance.getVersion(),
       applicationIcon: Image(
         image: ExactAssetImage("assets/images/abstractsport.png"),
         width: (screenSize.width < 500) ? 120.0 : (screenSize.width / 4) + 12.0,

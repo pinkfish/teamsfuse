@@ -10,9 +10,9 @@ import 'package:universal_io/io.dart';
 /// Analytics class to handle communication with the analytics subsystems
 /// adding in all the various pieces.
 ///
-class Analytics extends AnalyticsSubsystem {
+class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
   static final FirebaseAnalytics _analytics = FirebaseAnalytics();
-  static Analytics _instance;
+  static AnalyticsSubsystemImpl _instance;
 
   PackageInfo _packageInfo;
   DeviceInfoPlugin _deviceInfo;
@@ -21,9 +21,9 @@ class Analytics extends AnalyticsSubsystem {
   bool _debugMode = false;
 
   /// The instance of the analytics system to use.
-  static Analytics get instance {
+  static AnalyticsSubsystemImpl get instance {
     if (_instance == null) {
-      _instance = Analytics();
+      _instance = AnalyticsSubsystemImpl();
       _instance._load();
       if (Platform.isIOS || Platform.isAndroid) {
         FirebasePerformance.instance.setPerformanceCollectionEnabled(true);

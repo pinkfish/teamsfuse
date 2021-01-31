@@ -54,7 +54,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
       var teamBloc = BlocProvider.of<TeamBloc>(context);
       for (var en in _emailNames) {
         print("Sending to $en");
-        Analytics.analytics.logShare(
+        AnalyticsSubsystemImpl.analytics.logShare(
             contentType: 'inviteAsAdmin',
             itemId: widget._teamUid,
             method: 'handleSubmit');

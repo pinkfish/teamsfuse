@@ -61,15 +61,18 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
       @required this.crashes})
       : super(SingleTeamSeasonPlayerUninitialized(), seasonUid) {
     db.getSingleSeason(seasonUid).listen((Season season) {
+      print("Loaded season $season");
       if (season != null) {
         // Only send this if the season is not the same.
         if (season.players.any((SeasonPlayer p) => p.playerUid == playerUid)) {
           SeasonPlayer player = season.players
               .firstWhere((SeasonPlayer p) => p.playerUid == playerUid);
+          print("HAve player");
           if (player != state.seasonPlayer) {
             add(_SingleTeamNewTeamSeasonPlayer(newPlayer: player));
           }
         } else {
+          print("No player");
           add(_SingleTeamSeasonPlayerDeleted());
         }
       } else {

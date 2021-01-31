@@ -20,8 +20,8 @@ void main() {
           ..leagueUid = "none"
           ..uid = "myUid"
           ..name = "WOmble world"
-          ..time = 12354
-          ..endTime = 12345
+          ..time = DateTime.fromMillisecondsSinceEpoch(12354)
+          ..endTime = DateTime.fromMillisecondsSinceEpoch(12345)
           ..timezone = "PDT"
           ..type = EventType.Event
           ..place.name = "frog"

@@ -364,8 +364,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       UserData signedIn;
       try {
         signedIn = await userAuth.signIn(data);
-      } catch (error) {
-        print('Error: $error');
+      } catch (error, stack) {
+        print('Error: $error $stack');
         // Failed to login, probably bad password.
         yield LoginFailed(
             userData: signedIn, reason: LoginFailedReason.BadPassword);

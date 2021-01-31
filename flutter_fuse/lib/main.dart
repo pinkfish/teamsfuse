@@ -23,7 +23,7 @@ void main() async {
   await Firebase.initializeApp();
 
   // Trace as the first thing in the system.
-  var trace = Analytics.instance.newTrace("startup");
+  var trace = AnalyticsSubsystemImpl.instance.newTrace("startup");
   trace.start();
 
   Bloc.observer = _SimpleBlocDelegate();
@@ -82,7 +82,7 @@ void main() async {
 
   var loggingData = LoggingData();
 
-  Analytics.analytics.logAppOpen();
+  AnalyticsSubsystemImpl.analytics.logAppOpen();
 
   // Send error logs up to sentry.
   FlutterError.onError = (details) {

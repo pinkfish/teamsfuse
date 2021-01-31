@@ -64,11 +64,12 @@ class SplashScreen extends StatelessWidget {
         RepositoryProvider.of<Notifications>(context).initForNotification();
         Navigator.pushNamedAndRemoveUntil(
             context, '/Main/Home', ModalRoute.withName('/Main/Home'));
-        Analytics.analytics.setUserId(state.user.uid);
-        if (Analytics.instance.debugMode) {
-          Analytics.analytics.setUserProperty(name: "developer", value: "true");
+        AnalyticsSubsystemImpl.analytics.setUserId(state.user.uid);
+        if (AnalyticsSubsystemImpl.instance.debugMode) {
+          AnalyticsSubsystemImpl.analytics
+              .setUserProperty(name: "developer", value: "true");
         } else {
-          Analytics.analytics
+          AnalyticsSubsystemImpl.analytics
               .setUserProperty(name: "developer", value: "false");
         }
       });

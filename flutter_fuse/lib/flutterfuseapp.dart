@@ -63,20 +63,22 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     super.initState();
     var userAuthImpl = UserAuthImpl(widget._firestore);
     _authenticationBloc = AuthenticationBloc(
-        userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
+        userAuth: userAuthImpl,
+        analyticsSubsystem: AnalyticsSubsystemImpl.instance);
     _loginBloc = LoginBloc(
-        userAuth: userAuthImpl, analyticsSubsystem: Analytics.instance);
+        userAuth: userAuthImpl,
+        analyticsSubsystem: AnalyticsSubsystemImpl.instance);
     _databaseUpdateModel = DatabaseUpdateModelImpl(
-        Firestore(), _authenticationBloc, Analytics.instance);
+        Firestore(), _authenticationBloc, AnalyticsSubsystemImpl.instance);
     _coordinationBloc = CoordinationBloc(
         authenticationBloc: _authenticationBloc,
-        analytics: Analytics.instance,
+        analytics: AnalyticsSubsystemImpl.instance,
         databaseUpdateModel: _databaseUpdateModel,
-        analyticsSubsystem: Analytics.instance);
+        analyticsSubsystem: AnalyticsSubsystemImpl.instance);
     _playerBloc = PlayerBloc(coordinationBloc: _coordinationBloc);
     _inviteBloc = InviteBloc(
         coordinationBloc: _coordinationBloc,
-        analyticsSubsystem: Analytics.instance,
+        analyticsSubsystem: AnalyticsSubsystemImpl.instance,
         databaseUpdateModel: _databaseUpdateModel);
     _messagesBloc =
         MessagesBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
@@ -101,6 +103,9 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
       providers: [
         RepositoryProvider<fluro.FluroRouter>(
           create: (context) => AppRouter.createAppRouter(),
+        ),
+        RepositoryProvider<AnalyticsSubsystem>(
+          create: (c) => AnalyticsSubsystemImpl.instance,
         ),
         RepositoryProvider<DatabaseUpdateModel>(
             create: (context) => _databaseUpdateModel),

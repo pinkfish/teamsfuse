@@ -2,6 +2,7 @@ library serializers;
 
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
+import 'package:fusemodel/blocs.dart';
 
 import 'blocs/data/clubblocstate.dart';
 import 'blocs/data/gameblocstate.dart';
@@ -23,6 +24,8 @@ import 'blocs/single/data/singleplayerbloc.dart';
 import 'blocs/single/data/singleprofilebloc.dart';
 import 'blocs/single/data/singleseasonbloc.dart';
 import 'blocs/single/data/singleteambloc.dart';
+import 'blocs/single/data/singleteamseasonplayerbloc.dart';
+import 'blocs/single/data/singleinvitebloc.dart';
 import 'club.dart';
 import 'common.dart';
 import 'game.dart';
@@ -144,6 +147,15 @@ part 'serializer.g.dart';
   SingleGameSaving,
   SingleGameSaveFailed,
   SingleGameSaveDone,
+  SingleInviteLoaded,
+  SingleInviteBlocStateType,
+  SingleInviteUninitialized,
+  SingleInviteSaving,
+  SingleInviteDeleted,
+  SingleInviteState,
+  SingleInviteSaving,
+  SingleInviteSaveFailed,
+  SingleInviteSaveDone,
   SingleLeagueOrTournamentLoaded,
   SingleLeagueOrTournamentState,
   SingleLeagueOrTournamentBlocStateType,
@@ -216,6 +228,15 @@ part 'serializer.g.dart';
   SingleTeamSaving,
   SingleTeamSaveFailed,
   SingleTeamSaveDone,
+  SingleTeamSeasonPlayerLoaded,
+  SingleTeamSeasonPlayerBlocStateType,
+  SingleTeamSeasonPlayerUninitialized,
+  SingleTeamSeasonPlayerSaving,
+  SingleTeamSeasonPlayerDeleted,
+  SingleTeamSeasonPlayerState,
+  SingleTeamSeasonPlayerSaving,
+  SingleTeamSeasonPlayerSaveFailed,
+  SingleTeamSeasonPlayerSaveDone,
   Sport,
   Team,
   TeamLoaded,
