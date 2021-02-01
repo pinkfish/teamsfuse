@@ -47,7 +47,8 @@ abstract class SingleProfileState {
     return builder..profile = state.profile?.toBuilder();
   }
 
-  static void initializeStateBuilder(SingleProfileStateBuilder b) {}
+  static void initializeStateBuilder(SingleProfileStateBuilder b) =>
+      b..loadedPlayers = false;
 
   Map<String, dynamic> toMap();
 }

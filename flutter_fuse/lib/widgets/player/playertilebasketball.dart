@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/blocs/singleteamseasonplayerprovider.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -17,7 +18,7 @@ typedef Widget PlayerExtraFunc(String playerUid);
 ///
 class PlayerTileBasketball extends StatelessWidget {
   final String playerUid;
-  final Player player;
+  final String seasonUid;
   final PlayerCallbackFunc onTap;
   final bool editButton;
   final Color color;
@@ -30,7 +31,7 @@ class PlayerTileBasketball extends StatelessWidget {
 
   PlayerTileBasketball(
       {this.playerUid,
-      this.player,
+      this.seasonUid,
       this.onTap,
       this.editButton = true,
       this.color,
@@ -40,7 +41,7 @@ class PlayerTileBasketball extends StatelessWidget {
       this.extra,
       this.compactDisplay = false,
       this.scale = 1.0})
-      : assert(player != null || playerUid != null);
+      : assert((playerUid != null && seasonUid != null));
 
   @override
   Widget build(BuildContext context) {
@@ -48,100 +49,106 @@ class PlayerTileBasketball extends StatelessWidget {
   }
 
   Widget _innerBuild(BuildContext context) {
-    if (player != null) {
-      return _loadedData(context, player);
-    }
-    return BlocProvider(
-      create: (BuildContext context) => SinglePlayerBloc(
-          playerUid: this.playerUid,
-          db: RepositoryProvider.of<DatabaseUpdateModel>(context)),
-      child: Builder(
-        builder: (BuildContext context) {
-          return AnimatedSwitcher(
-            duration: Duration(milliseconds: 500),
-            child: BlocBuilder(
-              cubit: BlocProvider.of<SinglePlayerBloc>(context),
-              builder: (BuildContext context, SinglePlayerState state) {
-                if (state is SinglePlayerDeleted) {
-                  if (compactDisplay) {
-                    return Text(Messages.of(context).unknown);
-                  }
-                  return Card(
-                    color: color,
-                    shape: shape,
-                    child: ListTile(
-                      title: Text(Messages.of(context).unknown),
-                      subtitle: summary != null
-                          ? Text(
-                              Messages.of(context).seasonSummary(summary),
-                            )
-                          : null,
-                      leading: Stack(
-                        children: <Widget>[
-                          Icon(MdiIcons.tshirtCrewOutline),
-                          Text(""),
-                        ],
+    return SingleTeamSeasonPlayerProvider(
+      seasonUid: seasonUid,
+      playerUid: playerUid,
+      builder: (context, seasonPlayerBloc) => BlocBuilder(
+        cubit: seasonPlayerBloc,
+        builder: (context, seasonPlayerState) => BlocProvider(
+          create: (BuildContext context) => SinglePlayerBloc(
+              playerUid: this.playerUid,
+              db: RepositoryProvider.of<DatabaseUpdateModel>(context)),
+          child: Builder(
+            builder: (BuildContext context) {
+              return AnimatedSwitcher(
+                duration: Duration(milliseconds: 500),
+                child: BlocBuilder(
+                  cubit: BlocProvider.of<SinglePlayerBloc>(context),
+                  builder: (BuildContext context, SinglePlayerState state) {
+                    if (state is SinglePlayerDeleted) {
+                      if (compactDisplay) {
+                        return Text(Messages.of(context).unknown);
+                      }
+                      return Card(
+                        color: color,
+                        shape: shape,
+                        child: ListTile(
+                          title: Text(Messages.of(context).unknown),
+                          subtitle: summary != null
+                              ? Text(
+                                  Messages.of(context).seasonSummary(summary),
+                                )
+                              : null,
+                          leading: Stack(
+                            children: <Widget>[
+                              Icon(MdiIcons.tshirtCrewOutline),
+                              Text(""),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    if (state is SinglePlayerUninitialized) {
+                      if (compactDisplay) {
+                        return Text(Messages.of(context).loading);
+                      }
+                      return Card(
+                        color: color,
+                        shape: shape,
+                        child: ListTile(
+                          title: Text(Messages.of(context).loading,
+                              style: Theme.of(context).textTheme.caption),
+                          subtitle: summary != null
+                              ? Text(
+                                  Messages.of(context).seasonSummary(summary),
+                                )
+                              : null,
+                          leading: Stack(
+                            children: <Widget>[
+                              Icon(MdiIcons.tshirtCrewOutline),
+                              Text(""),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    if (state is SinglePlayerLoaded) {
+                      return _loadedData(context,
+                          seasonPlayerState.seasonPlayer, state.player);
+                    }
+                    return Card(
+                      color: color,
+                      shape: shape,
+                      child: ListTile(
+                        title: Text(Messages.of(context).unknown),
+                        subtitle: summary != null
+                            ? Text(
+                                Messages.of(context).seasonSummary(summary),
+                              )
+                            : null,
+                        leading: Stack(
+                          children: <Widget>[
+                            Icon(MdiIcons.tshirtCrewOutline),
+                            Text(""),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }
-                if (state is SinglePlayerUninitialized) {
-                  if (compactDisplay) {
-                    return Text(Messages.of(context).loading);
-                  }
-                  return Card(
-                    color: color,
-                    shape: shape,
-                    child: ListTile(
-                      title: Text(Messages.of(context).loading,
-                          style: Theme.of(context).textTheme.caption),
-                      subtitle: summary != null
-                          ? Text(
-                              Messages.of(context).seasonSummary(summary),
-                            )
-                          : null,
-                      leading: Stack(
-                        children: <Widget>[
-                          Icon(MdiIcons.tshirtCrewOutline),
-                          Text(""),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-                if (state is SinglePlayerLoaded) {
-                  return _loadedData(context, state.player);
-                }
-                return Card(
-                  color: color,
-                  shape: shape,
-                  child: ListTile(
-                    title: Text(Messages.of(context).unknown),
-                    subtitle: summary != null
-                        ? Text(
-                            Messages.of(context).seasonSummary(summary),
-                          )
-                        : null,
-                    leading: Stack(
-                      children: <Widget>[
-                        Icon(MdiIcons.tshirtCrewOutline),
-                        Text(""),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          );
-        },
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
 
-  Widget _loadedData(BuildContext context, Player player) {
+  Widget _loadedData(
+      BuildContext context, SeasonPlayer player, Player loadedPlayer) {
     if (compactDisplay) {
       return GestureDetector(
-        onTap: () => onTap != null ? onTap(player.uid) : null,
+        onTap: () => onTap != null ? onTap(player.playerUid) : null,
         child: Container(
           decoration: BoxDecoration(
             color: color,
@@ -169,11 +176,13 @@ class PlayerTileBasketball extends StatelessWidget {
                 ),
               ),
               Text(
-                player.name,
+                loadedPlayer.name,
                 style: Theme.of(context).textTheme.headline6,
                 overflow: TextOverflow.ellipsis,
               ),
-              (this.extra != null ? extra(player.uid) : SizedBox(width: 0)),
+              (this.extra != null
+                  ? extra(player.playerUid)
+                  : SizedBox(width: 0)),
             ],
           ),
         ),
@@ -189,9 +198,9 @@ class PlayerTileBasketball extends StatelessWidget {
               ? VisualDensity.compact
               : VisualDensity.standard,
           contentPadding: box.maxHeight < 40.0 ? EdgeInsets.all(1.0) : null,
-          onTap: onTap != null ? () => onTap(player.uid) : null,
+          onTap: onTap != null ? () => onTap(player.playerUid) : null,
           title: Text(
-            player.name,
+            loadedPlayer.name,
             style: Theme.of(context).textTheme.headline6.copyWith(
                 fontSize: min(box.maxHeight - 5,
                     Theme.of(context).textTheme.headline6.fontSize)),
@@ -229,7 +238,7 @@ class PlayerTileBasketball extends StatelessWidget {
               ? IconButton(
                   icon: Icon(Icons.edit),
                   onPressed: () => Navigator.pushNamed(
-                      context, "/Player/Edit/" + player.uid),
+                      context, "/Player/Edit/" + player.playerUid),
                 )
               : null,
         );

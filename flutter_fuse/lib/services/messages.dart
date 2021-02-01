@@ -226,23 +226,25 @@ class Messages {
     return Intl.message('Details');
   }
 
-  String get clubsettingdescription {
-    return Intl.message('To setup a club for a team you need to be an '
-        'administrator for both the club and for the team.  This will let you '
-        'connect the both together.  Once connected all administators of the '
-        'club will also be adminstragtors for the team.');
-  }
+  String get clubsettingdescription => Intl.message(
+      'To setup a club for a team you need to be an '
+      'administrator for both the club and for the team.  This will let you '
+      'connect the both together.  Once connected all administators of the '
+      'club will also be adminstragtors for the team.',
+      locale: locale);
 
-  String get copyseasonfrom {
-    return Intl.message('Copy details from');
-  }
+  String get copyseasonfrom =>
+      Intl.message('Copy details from', locale: locale);
 
-  String get create {
-    return Intl.message(
-      'Create new',
-      name: 'Create new account button text',
-    );
-  }
+  String get allPlayers => Intl.message('All Players', locale: locale);
+  String get allSeasons => Intl.message('All Seasons', locale: locale);
+
+  String get playerName => Intl.message('Player Name', locale: locale);
+
+  String get create => Intl.message(
+        'Create new',
+        name: 'Create new account button text',
+      );
 
   String get createaccount {
     return Intl.message('CREATE', desc: 'Create account button text');
@@ -1503,7 +1505,7 @@ class Messages {
 
   String arrivebefore(int mins) {
     return Intl.message(
-      'Arrive ${mins} mins before game',
+      'Arrive ${mins} mins before games',
       args: [mins],
     );
   }

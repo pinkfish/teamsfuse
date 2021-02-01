@@ -250,7 +250,6 @@ class SingleTeamBloc
   }
 
   void _loadOpponents() async {
-    print("Loading opponents");
     if (_opponentSub != null) {
       _opponentSub.cancel();
       _opponentSub = null;
@@ -263,7 +262,6 @@ class SingleTeamBloc
           opponents[op.uid] = op;
         }
         add(_SingleTeamLoadedOpponents(opponents: opponents.build()));
-        print("Loading opponents firestore $opponents");
       });
       _opponentSub.onError((e) {
         print("Error $e");
@@ -442,7 +440,7 @@ class SingleTeamBloc
     }
 
     if (event is SingleTeamLoadInvites) {
-      if (_inviteAdminSub == null) {
+      if (_inviteAdminSub == null && !(state is SingleTeamUninitialized)) {
         _inviteAdminSub = db
             .getInvitesForTeam(teamUid)
             .listen((Iterable<InviteAsAdmin> invites) {
@@ -452,7 +450,7 @@ class SingleTeamBloc
     }
 
     if (event is SingleTeamLoadSeasons) {
-      if (_seasonSub == null) {
+      if (_seasonSub == null && !(state is SingleTeamUninitialized)) {
         _seasonSub = db.getSeasonsForTeam(teamUid).listen((var seasons) {
           add(_SingleTeamSeasonDataLoaded(seasons: seasons, fullUpdate: true));
         });

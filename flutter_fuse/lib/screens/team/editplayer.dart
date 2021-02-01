@@ -8,7 +8,6 @@ import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
 import '../../services/validations.dart';
@@ -100,19 +99,6 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
         initialValue: _player.name,
         validator: (value) => _validations.validateName(context, value),
         onSaved: (name) => _player.name = name,
-      ),
-    );
-    print("Adding in jersey...");
-    ret.add(
-      TextFormField(
-        decoration: InputDecoration(
-          labelText: messages.jersyNumber,
-          hintText: messages.jersyNumber,
-          icon: const Icon(MdiIcons.tshirtCrew),
-        ),
-        initialValue: _player.jerseyNumber,
-        validator: (value) => null,
-        onSaved: (number) => _player.jerseyNumber = number,
       ),
     );
 

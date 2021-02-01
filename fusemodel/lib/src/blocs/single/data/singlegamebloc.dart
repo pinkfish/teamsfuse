@@ -41,7 +41,6 @@ class PlayerSummaryWithOpponent {
   PlayerSummaryWithOpponent(this.opponent, this.summary);
 }
 
-
 ///
 /// The base state for the singleGame bloc.  It tracks all the
 /// exciting singleGame stuff.
@@ -88,7 +87,8 @@ abstract class SingleGameState {
     ..firestoreLogSetup = false
     ..loadedLogs = false
     ..loadedEvents = false
-    ..loadedMedia = false;
+    ..loadedMedia = false
+    ..loadedPlayers = false;
 
   Map<String, dynamic> toMap();
 }

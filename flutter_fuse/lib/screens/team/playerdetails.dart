@@ -361,113 +361,101 @@ class PlayerDetailsScreen extends StatelessWidget {
 
     return SingleTeamProvider(
       teamUid: teamUid,
-      builder: (context, teamBloc) => SinglePlayerProvider(
+      builder: (context, singleTeamBloc) => SinglePlayerProvider(
         playerUid: playerUid,
         builder: (context, singlePlayerBloc) => SingleTeamSeasonPlayerProvider(
           seasonUid: seasonUid,
           playerUid: playerUid,
           builder: (context, seasonPlayerBloc) => BlocBuilder(
-            cubit: teamBloc,
-            builder: (context, teamState) => BlocListener(
-              cubit: seasonPlayerBloc,
-              listener: (context, playerState) {
-                if (playerState is SingleTeamSeasonPlayerDeleted) {
-                  Navigator.pop(context);
+            cubit: singleTeamBloc,
+            builder: (context, teamState) => BlocConsumer(
+              cubit: singlePlayerBloc,
+              listener: (context, singlePlayerState) {
+                if (singlePlayerState is SinglePlayerLoaded) {
+                  singlePlayerBloc.add(SinglePlayerLoadInvites());
                 }
-                if (playerState is SingleTeamSeasonPlayerSaveFailed) {
+                if (singlePlayerState is SingleTeamSeasonPlayerSaveFailed) {
                   _showInSnackBar(Messages.of(context).formerror);
                 }
               },
-              child: BlocListener(
-                cubit: singlePlayerBloc,
-                listener: (context, singlePlayerState) {
-                  if (singlePlayerState is SinglePlayerLoaded) {
-                    singlePlayerBloc.add(SinglePlayerLoadInvites());
+              builder: (context, singlePlayerState) => BlocConsumer(
+                cubit: seasonPlayerBloc,
+                listener: (context, playerState) {
+                  if (playerState is SingleTeamSeasonPlayerDeleted) {
+                    Navigator.pop(context);
                   }
-                  if (singlePlayerState is SingleTeamSeasonPlayerSaveFailed) {
+                  if (playerState is SingleTeamSeasonPlayerSaveFailed) {
                     _showInSnackBar(Messages.of(context).formerror);
                   }
                 },
-                child: BlocBuilder(
-                  cubit: seasonPlayerBloc,
-                  builder: (context, seasonPlayerState) => BlocBuilder(
-                    cubit: singlePlayerBloc,
-                    builder: (context, singlePlayerState) {
-                      var messages = Messages.of(context);
-                      if (teamState is SingleTeamLoaded) {
-                        var actions = <Widget>[];
-                        if (teamState.isAdmin()) {
-                          actions.add(
-                            FlatButton(
-                              onPressed: () {
-                                _onInvite(context, seasonPlayerState);
-                              },
-                              child: Text(
-                                messages.addinvite,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .subtitle1
-                                    .copyWith(color: Colors.white),
-                              ),
-                            ),
-                          );
-                        }
-                      }
-
-                      var actions = <Widget>[];
-                      if (singlePlayerState is SinglePlayerLoaded &&
-                          singlePlayerState.player.users.containsKey(userUid)) {
-                        // I am a member of this player, can edit them!
-                        actions.add(
-                          PopupMenuButton<String>(
-                            onSelected: (str) => _editPlayer(context,
-                                seasonPlayerState.seasonPlayer.playerUid),
-                            itemBuilder: (context) => <PopupMenuItem<String>>[
-                              PopupMenuItem<String>(
-                                value: "edit",
-                                child: ListTile(
-                                  title:
-                                      Text(Messages.of(context).editbuttontext),
-                                  leading: Icon(Icons.edit),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
-                      if (seasonPlayerState
-                          is SingleTeamSeasonPlayerUninitialized) {
-                        return LoadingWidget();
-                      }
-
-                      return Scaffold(
-                        appBar: AppBar(
-                          title: PlayerName(
-                              playerUid:
-                                  seasonPlayerState.seasonPlayer.playerUid),
-                          actions: actions,
-                        ),
-                        key: _scaffoldKey,
-                        body: SavingOverlay(
-                          saving: seasonPlayerState
-                                  is SingleTeamSeasonPlayerSaving ||
-                              singlePlayerState is SinglePlayerSaving,
-                          child: Scrollbar(
-                            child: SingleChildScrollView(
-                              child: _buildPlayerDetails(
-                                  context,
-                                  seasonPlayerState,
-                                  teamState,
-                                  seasonPlayerBloc,
-                                  singlePlayerState),
-                            ),
+                builder: (context, seasonPlayerState) {
+                  var messages = Messages.of(context);
+                  if (teamState is SingleTeamLoaded) {
+                    var actions = <Widget>[];
+                    if (teamState.isAdmin()) {
+                      actions.add(
+                        FlatButton(
+                          onPressed: () {
+                            _onInvite(context, seasonPlayerState);
+                          },
+                          child: Text(
+                            messages.addinvite,
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle1
+                                .copyWith(color: Colors.white),
                           ),
                         ),
                       );
-                    },
-                  ),
-                ),
+                    }
+                  }
+
+                  var actions = <Widget>[];
+                  if (singlePlayerState is SinglePlayerLoaded &&
+                      singlePlayerState.player.users.containsKey(userUid)) {
+                    // I am a member of this player, can edit them!
+                    actions.add(
+                      PopupMenuButton<String>(
+                        onSelected: (str) => _editPlayer(
+                            context, seasonPlayerState.seasonPlayer.playerUid),
+                        itemBuilder: (context) => <PopupMenuItem<String>>[
+                          PopupMenuItem<String>(
+                            value: "edit",
+                            child: ListTile(
+                              title: Text(Messages.of(context).editbuttontext),
+                              leading: Icon(Icons.edit),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  if (seasonPlayerState
+                      is SingleTeamSeasonPlayerUninitialized) {
+                    return LoadingWidget();
+                  }
+
+                  return Scaffold(
+                    appBar: AppBar(
+                      title: PlayerName(
+                          playerUid: seasonPlayerState.seasonPlayer.playerUid),
+                      actions: actions,
+                    ),
+                    key: _scaffoldKey,
+                    body: SavingOverlay(
+                      saving:
+                          seasonPlayerState is SingleTeamSeasonPlayerSaving ||
+                              singlePlayerState is SinglePlayerSaving,
+                      child: Scrollbar(
+                        child: SingleChildScrollView(
+                          child: _buildPlayerDetails(context, seasonPlayerState,
+                              teamState, seasonPlayerBloc, singlePlayerState),
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),

@@ -51,8 +51,6 @@ abstract class Player implements Built<Player, PlayerBuilder> {
   String get uid;
   @nullable
   String get photoUrl;
-  @nullable
-  String get jerseyNumber;
   @BuiltValueField(wireName: USERS)
   BuiltMap<String, PlayerUserInternal> get usersData;
   // The summary of the details.

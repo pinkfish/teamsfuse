@@ -11,7 +11,7 @@ part 'seasonplayersummary.g.dart';
 ///
 abstract class SeasonPlayerSummary
     implements Built<SeasonPlayerSummary, SeasonPlayerSummaryBuilder> {
-  PlayerSummaryData get summary;
+  PlayerSummaryData get basketballSummary;
 
   SeasonPlayerSummary._();
 

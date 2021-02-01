@@ -114,17 +114,53 @@ class TeamDetails extends StatelessWidget {
             );
           }
 
-          Widget club;
+          var tags = <Widget>[];
           var team = teamState.team;
           if (team.clubUid != null) {
+            Widget middle;
             if (teamState.club == null) {
-              club = Text(Messages.of(context).loading);
+              middle = Text(Messages.of(context).loading);
             } else {
-              club = Text(teamState.club.name);
+              middle = Text(teamState.club.name);
             }
-          } else {
-            club = Text(Messages.of(context).noclub);
+            tags.add(ActionChip(
+              avatar: CircleAvatar(
+                backgroundColor: Colors.white70,
+                child: const Icon(MdiIcons.cardsClub),
+              ),
+              label: middle,
+              onPressed: () => Navigator.pushNamed(
+                  context, "/Club/" + teamState.team.clubUid),
+            ));
           }
+          if (team.archived) {
+            tags.add(
+              Chip(
+                avatar: CircleAvatar(
+                  backgroundColor: Colors.white70,
+                  child: const Icon(Icons.archive),
+                ),
+                label: Text(Messages.of(context).archived),
+              ),
+            );
+          }
+
+          tags.add(
+            Chip(
+              avatar: CircleAvatar(
+                backgroundColor: Colors.white70,
+                child: const Icon(MdiIcons.trafficLight),
+              ),
+              label: teamState.club == null && teamState.team.clubUid != null
+                  ? Text(Messages.of(context).loading)
+                  : Text(
+                      Messages.of(context).trackattendence(
+                          team.trackAttendence(teamState.club)
+                              ? Tristate.Yes
+                              : Tristate.No),
+                    ),
+            ),
+          );
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,17 +182,14 @@ class TeamDetails extends StatelessWidget {
                 subtitle: Text("${team.sport}(${team.league}) "),
                 trailing: GenderIcon(team.gender),
               ),
-              ListTile(
-                leading: const Icon(MdiIcons.cardsClub),
-                title: club,
-                onTap: () => _openClub(context, team),
+              Padding(
+                padding: EdgeInsets.only(left: 10.0, right: 5.0),
+                child: Wrap(
+                  spacing: 5.0,
+                  children: tags,
+                ),
               ),
-              ListTile(
-                leading: const Icon(Icons.archive),
-                title: team.archived
-                    ? Text(Messages.of(context).archived)
-                    : Text(Messages.of(context).notarchived),
-              ),
+              /*
               ListTile(
                 leading: const Icon(Icons.timer),
                 title: teamState.club == null && teamState.team.clubUid != null
@@ -167,17 +200,8 @@ class TeamDetails extends StatelessWidget {
                         ),
                       ),
               ),
-              ListTile(
-                leading: const Icon(MdiIcons.trafficLight),
-                title: teamState.club == null && teamState.team.clubUid != null
-                    ? Text(Messages.of(context).loading)
-                    : Text(
-                        Messages.of(context).trackattendence(
-                            team.trackAttendence(teamState.club)
-                                ? Tristate.Yes
-                                : Tristate.No),
-                      ),
-              ),
+              */
+
               _buildSeasons(
                   context, teamState, teamState.club, teamState.fullSeason)
             ],

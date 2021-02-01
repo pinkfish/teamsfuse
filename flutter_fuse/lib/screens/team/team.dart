@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/teams/stats/teamstats.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
@@ -9,7 +11,6 @@ import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/teams/teamdetails.dart';
 import '../../widgets/teams/teamopponents.dart';
 import '../../widgets/teams/teamplayers.dart';
-import '../../widgets/teams/teamsettings.dart';
 
 ///
 /// Shows all the details about a single team.
@@ -30,7 +31,7 @@ class TeamScreen extends StatefulWidget {
 class _TeamScreenState extends State<TeamScreen> {
   int _tabIndex = 0;
 
-  Widget _buildBody(SingleTeamBloc singleTeamBloc) {
+  Widget _buildBody(SingleTeamState singleTeamState) {
     if (_tabIndex == 0) {
       return Scrollbar(
         child: SingleChildScrollView(
@@ -38,9 +39,15 @@ class _TeamScreenState extends State<TeamScreen> {
         ),
       );
     } else if (_tabIndex == 2) {
-      return TeamOpponents(singleTeamBloc);
+      if (singleTeamState.team.sport == Sport.Basketball) {
+        return TeamStatsWidget(
+          teamUid: widget.teamUid,
+        );
+      }
+      return TeamOpponents(widget.teamUid);
     } else if (_tabIndex == 3) {
-      return TeamSettings(widget.teamUid);
+      print("Opponentts");
+      return TeamOpponents(widget.teamUid);
     }
     print("$_tabIndex");
     return TeamPlayers(widget.teamUid);
@@ -119,6 +126,26 @@ class _TeamScreenState extends State<TeamScreen> {
               ),
             );
           }
+          var bottomNavItems = <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.gamepad),
+              label: Messages.of(context).details,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.people),
+              label: Messages.of(context).players,
+            ),
+          ];
+          if (state.team.sport == Sport.Basketball) {
+            bottomNavItems.add(BottomNavigationBarItem(
+              icon: const Icon(MdiIcons.graph),
+              label: Messages.of(context).stats,
+            ));
+          }
+          bottomNavItems.add(BottomNavigationBarItem(
+            icon: const Icon(Icons.flag),
+            label: Messages.of(context).opponent,
+          ));
           return Scaffold(
             appBar: AppBar(
               title: Text(
@@ -127,27 +154,17 @@ class _TeamScreenState extends State<TeamScreen> {
               actions: actions,
             ),
             bottomNavigationBar: BottomNavigationBar(
-                onTap: (index) {
-                  setState(() {
-                    _tabIndex = index;
-                  });
-                },
-                currentIndex: _tabIndex,
-                items: <BottomNavigationBarItem>[
-                  BottomNavigationBarItem(
-                    icon: const Icon(Icons.gamepad),
-                    label: Messages.of(context).details,
-                  ),
-                  BottomNavigationBarItem(
-                    icon: const Icon(Icons.people),
-                    label: Messages.of(context).players,
-                  ),
-                  BottomNavigationBarItem(
-                    icon: const Icon(Icons.flag),
-                    label: Messages.of(context).opponent,
-                  ),
-                ]),
-            body: _buildBody(singleTeamBloc),
+              selectedItemColor: Theme.of(context).accentColor,
+              unselectedItemColor: Colors.black,
+              onTap: (index) {
+                setState(() {
+                  _tabIndex = index;
+                });
+              },
+              currentIndex: _tabIndex,
+              items: bottomNavItems,
+            ),
+            body: _buildBody(state),
           );
         },
       ),

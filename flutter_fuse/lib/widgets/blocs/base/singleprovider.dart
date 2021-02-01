@@ -60,10 +60,12 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
   @override
   void dispose() {
     super.dispose();
-    blocs[widget.keyUid].ref--;
-    if (blocs[widget.keyUid].ref <= 0) {
-      var state = blocs.remove(widget.keyUid);
-      state.bloc.close();
+    if (blocs.containsKey(widget.keyUid)) {
+      blocs[widget.keyUid].ref--;
+      if (blocs[widget.keyUid].ref <= 0) {
+        var state = blocs.remove(widget.keyUid);
+        state.bloc.close();
+      }
     }
   }
 
