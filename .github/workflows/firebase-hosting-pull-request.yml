@@ -37,9 +37,11 @@ jobs:
         working-directory: flutter_fuse
       - run: sudo apt-get install -y graphicsmagick
         working-directory: flutter_fuse
+      - run: flutter test
+        working-directory: flutter_fuse
       - run: flutter build web
         working-directory: flutter_fuse
-      - run: cp -fR flutter_fuse/build/web/* firebase/public
+      
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'

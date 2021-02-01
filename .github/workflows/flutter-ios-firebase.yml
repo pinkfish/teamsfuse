@@ -61,6 +61,8 @@ jobs:
         flutter build ios --debug
       working-directory: flutter_fuse
       continue-on-error: true
+    - run: flutter test
+      working-directory: flutter_fuse
     - run: echo ${APPLE_APP_API_P8} > ~/apple-app-api.p8
       working-directory: flutter_fuse/ios
       env: 	

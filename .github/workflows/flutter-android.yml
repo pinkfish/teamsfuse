@@ -41,6 +41,8 @@ jobs:
       working-directory: fusemodel
     - run: flutter packages get
       working-directory: flutter_fuse
+    - run: flutter test
+      working-directory: flutter_fuse
     - run: sudo apt-get install -y graphicsmagick
       working-directory: flutter_fuse
  #   - run: echo ${GOOGLESERVICES} > android/app/google-services.json	

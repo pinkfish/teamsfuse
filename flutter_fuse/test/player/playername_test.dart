@@ -29,7 +29,7 @@ Widget makeTestableWidget(Widget child) {
 }
 
 void main() {
-  testWidgets('name changed', (tester) async {
+  testWidgets('uninitialized', (tester) async {
     var singlePlayerBloc = MockSinglePlayerBloc();
 
     // Stub the state stream
@@ -51,13 +51,32 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text("Loading..."), findsOneWidget);
+  });
 
-    singlePlayerBloc.emit((SinglePlayerLoadedBuilder()
-          ..type = SinglePlayerBlocStateType.Loaded
-          ..player = (PlayerBuilder()
-            ..name = "Frog"
-            ..uid = "123"))
-        .build());
+  testWidgets('name set', (tester) async {
+    var singlePlayerBloc = MockSinglePlayerBloc();
+
+    // Stub the state stream
+    //singlePlayerBloc.emit(SinglePlayerUninitialized());
+    when(singlePlayerBloc.state).thenReturn(
+      (SinglePlayerLoadedBuilder()
+            ..type = SinglePlayerBlocStateType.Loaded
+            ..player = (PlayerBuilder()
+              ..name = "Frog"
+              ..uid = "123"))
+          .build(),
+    );
+
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(
+      makeTestableWidget(
+        BlocProvider<SinglePlayerBloc>(
+          create: (c) => singlePlayerBloc,
+          child: PlayerName(playerUid: "123"),
+        ),
+      ),
+    );
+
     await tester.pumpAndSettle();
 
     await expectLater(find.text("Frog"), findsOneWidget);
