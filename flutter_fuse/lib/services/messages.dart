@@ -2480,8 +2480,8 @@ class Messages {
   }
 
   String seasonSummary(SeasonPlayerSummary summary) {
-    return seasonSummaryExpanded(
-        summary.summary.points, summary.summary.blocks, summary.summary.steals);
+    return seasonSummaryExpanded(summary.basketballSummary.points,
+        summary.basketballSummary.blocks, summary.basketballSummary.steals);
   }
 
   String seasonSummaryExpanded(int points, int blocks, int steals) {
