@@ -8,7 +8,9 @@ class MockSinglePlayerBloc extends MockBloc<int> implements SinglePlayerBloc {}
 
 void main() {
   testWidgets('Gender icon male', (tester) async {
+    var c = StreamController<SinglePlayerState>();
     var mock = MockSinglePlayerBloc();
+    listen
     // Build our app and trigger a frame.
     await tester.pumpWidget(
       BlocProvider<SinglePlayerBloc>(
