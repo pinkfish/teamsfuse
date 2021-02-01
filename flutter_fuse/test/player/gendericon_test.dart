@@ -1,27 +1,42 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_fuse/widgets/player/gendericon.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:flutter/material.dart';
 
 void main() {
   testWidgets('Gender icon male', (tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(GenderIcon(Gender.Male));
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.rtl,
+        child: GenderIcon(Gender.Male),
+      ),
+    );
 
     // Verify that our icon is male.
     expect(find.byIcon(MdiIcons.genderMale), findsOneWidget);
   });
   testWidgets('Gender icon female', (tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(GenderIcon(Gender.Female));
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.rtl,
+        child: GenderIcon(Gender.Female),
+      ),
+    );
 
     // Verify that our icon is male.
     expect(find.byIcon(MdiIcons.genderFemale), findsOneWidget);
   });
   testWidgets('Gender icon coed', (tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(GenderIcon(Gender.Coed));
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.rtl,
+        child: GenderIcon(Gender.Coed),
+      ),
+    );
 
     // Verify that our icon is male.
     expect(find.byIcon(MdiIcons.genderMaleFemale), findsOneWidget);
@@ -29,7 +44,12 @@ void main() {
 
   testWidgets('Gender icon na', (tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(GenderIcon(Gender.NA));
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.rtl,
+        child: GenderIcon(Gender.NA),
+      ),
+    );
 
     // Verify that our icon is male.
     expect(find.byIcon(Icons.person), findsOneWidget);

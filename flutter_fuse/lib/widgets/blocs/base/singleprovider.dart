@@ -40,21 +40,26 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
   @override
   void initState() {
     super.initState();
-    if (!blocs.containsKey(widget.keyUid)) {
+    if (!blocs.containsKey(widget.keyUid) || blocs[widget.keyUid] == null) {
       try {
         _singleBloc = BlocProvider.of<T>(context);
       } catch (_) {
         _singleBloc = null;
       }
 
+      print("Stuff $_singleBloc");
+
       if (_singleBloc == null) {
         _singleBloc = widget.creator(context, widget.keyUid);
         blocs[widget.keyUid] = _BlocProviderState<T>(_singleBloc);
         _newBloc = true;
+      } else {
+        blocs[widget.keyUid] = _BlocProviderState<T>(_singleBloc);
       }
+    } else {
+      _singleBloc = blocs[widget.keyUid].bloc as T;
+      blocs[widget.keyUid].ref++;
     }
-    _singleBloc = blocs[widget.keyUid].bloc as T;
-    blocs[widget.keyUid].ref++;
   }
 
   @override

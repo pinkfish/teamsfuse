@@ -2611,12 +2611,20 @@ class Messages {
     });
   }
 
+  /// The test version.
+  static Future<Messages> loadTest(Locale locale) async {
+    return Messages(locale.toString());
+  }
+
   /// The messages in the system from the context.
   static Messages of(BuildContext context) {
     return Localizations.of<Messages>(context, Messages);
   }
 }
 
+///
+/// The delegate for the messages to load it with fluff.
+///
 class MessagesDelegate extends LocalizationsDelegate<Messages> {
   const MessagesDelegate();
 
@@ -2626,6 +2634,23 @@ class MessagesDelegate extends LocalizationsDelegate<Messages> {
 
   @override
   Future<Messages> load(Locale locale) => Messages.load(locale);
+
+  @override
+  bool shouldReload(MessagesDelegate old) => false;
+}
+
+///
+/// The delegate for the messages to load it with fluff.
+///
+class MessagesTestDelegate extends LocalizationsDelegate<Messages> {
+  const MessagesTestDelegate();
+
+  @override
+  bool isSupported(Locale locale) =>
+      <String>['en'].contains(locale.languageCode);
+
+  @override
+  Future<Messages> load(Locale locale) => Messages.loadTest(locale);
 
   @override
   bool shouldReload(MessagesDelegate old) => false;

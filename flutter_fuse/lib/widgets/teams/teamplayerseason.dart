@@ -75,6 +75,7 @@ class TeamPlayersSeason extends StatelessWidget {
           child: teamState.team.sport == Sport.Basketball
               ? PlayerTileBasketball(
                   playerUid: player.playerUid,
+                  seasonUid: _seasonUid,
                 )
               : ListTile(
                   leading: PlayerImage(playerUid: player.playerUid),

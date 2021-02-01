@@ -28,6 +28,8 @@ class PlayerName extends StatelessWidget {
         builder: (context, playerState) {
           var play = playerState.player;
 
+          print(playerState);
+
           Widget widgetOne;
           Widget widgetTwo;
           var state = CrossFadeState.showFirst;
@@ -50,6 +52,7 @@ class PlayerName extends StatelessWidget {
             widgetTwo = Text("");
           }
 
+          print(Messages.of(context).loading);
           widgetOne = Text(
             Messages.of(context).loading,
             style: style,
