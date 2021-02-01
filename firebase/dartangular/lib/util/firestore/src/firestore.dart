@@ -41,9 +41,47 @@ class Firestore extends wfs.FirestoreWrapper {
 
   @override
   Future<Map<String, dynamic>> runTransaction(transactionHandler,
-      {Duration timeout = const Duration(seconds: 5)}) {
-    fb.firestore().runTransaction(transactionHandler);
-    // TODO: implement runTransaction
-    throw UnimplementedError();
+      {Duration timeout = const Duration(seconds: 5)}) async {
+    var v = await fb.firestore().runTransaction((t) {
+      transactionHandler(_MyTransactionWrapper(t));
+    });
+    return v as Map<String, dynamic>;
+  }
+}
+
+class _MyTransactionWrapper extends wfs.TransactionWrapper {
+  fs.Transaction _t;
+
+  _MyTransactionWrapper(this._t);
+
+  @override
+  Future<void> delete(wfs.DocumentReferenceWrapper ref) async {
+    var r = ref as DocumentReference;
+    await _t.delete(r._doc);
+    return;
+  }
+
+  @override
+  Future<wfs.DocumentSnapshotWrapper> get(
+      wfs.DocumentReferenceWrapper ref) async {
+    var r = ref as DocumentReference;
+    var newData = await _t.get(r._doc);
+    return DocumentSnapshot(doc: newData);
+  }
+
+  @override
+  Future<void> set(
+      wfs.DocumentReferenceWrapper ref, Map<String, dynamic> data) async {
+    var r = ref as DocumentReference;
+    await _t.set(r._doc, data);
+    return;
+  }
+
+  @override
+  Future<void> update(
+      wfs.DocumentReferenceWrapper ref, Map<String, dynamic> data) async {
+    var r = ref as DocumentReference;
+    await _t.update(r._doc, data: data);
+    return;
   }
 }

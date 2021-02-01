@@ -8,6 +8,7 @@ import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
 import 'package:angular_router/angular_router.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 
 import 'route_paths.dart';
@@ -30,7 +31,9 @@ import 'routes.dart';
   providers: [
     const ClassProvider(Routes),
     materialProviders,
-    ClassProvider(DatabaseUpdateModelImpl)
+    ClassProvider(UserAuthImpl),
+    ClassProvider(DatabaseUpdateModelImpl),
+    ClassProvider(AuthenticationBloc),
   ],
   styleUrls: const [
     'package:angular_components/app_layout/layout.scss.css',
@@ -39,14 +42,14 @@ import 'routes.dart';
 class AppComponent implements OnInit, OnDestroy {
   final Routes routes;
   final Router _router;
-  StreamSubscription<RouterState> _sub;
+  StreamSubscription<RouterState>? _sub;
+  final AuthenticationBloc _auth;
 
-  AppComponent(this.routes, this._router);
+  AppComponent(this.routes, this._router, this._auth);
 
   @override
   void ngOnInit() async {
-    UserData data =
-        await UserDatabaseData.instance.userAuth.currentUserNoWait();
+    UserData data = await _auth.currentUser;
 
     _sub = _router.onRouteActivated.listen(_routerStateUpdate);
     if (data == null) {
@@ -56,27 +59,18 @@ class AppComponent implements OnInit, OnDestroy {
     } else {
       print('Current user frog == null ${_router?.current?.path}');
       // Authenticated, stay at the old url.
-      UserDatabaseData.load(data.uid, data.email,
-          UserDatabaseData.instance.userAuth.getProfile(data.uid));
+      //UserDatabaseData.load(data.uid, data.email,
+      //    UserDatabaseData.instance.userAuth.getProfile(data.uid));
     }
-    UserDatabaseData.instance.userAuth.onAuthChanged().listen((UserData u) {
-      print('onAuthStateChanged $u');
-      if (u != null) {
-        UserDatabaseData.load(u.uid, u.email,
-            UserDatabaseData.instance.userAuth.getProfile(u.uid));
-      } else {
-        UserDatabaseData.clear();
-      }
-    });
   }
 
   @override
   void ngOnDestroy() {
-    _sub.cancel();
+    _sub?.cancel();
   }
 
   void _routerStateUpdate(RouterState state) {
-    if (UserDatabaseData.instance.userAuth.currentUserNoWait() == null) {
+    if (_auth.currentUser == null) {
       print('ROuter state ${state.path}');
       // Logged out.
       if (state.path.startsWith(authed.path)) {
@@ -88,9 +82,7 @@ class AppComponent implements OnInit, OnDestroy {
     } else {
       // If we are not verified yet, then go there and keep track of the
       // current path.
-      if (!UserDatabaseData.instance.userAuth
-          .currentUserNoWait()
-          .isEmailVerified) {
+      if (!_auth.currentUser.isEmailVerified) {
         _router.navigate("/verify",
             NavigationParams(queryParameters: {'current': state.path}));
       }

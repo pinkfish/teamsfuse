@@ -7,10 +7,6 @@ part of firestore_wrapper;
 /// A [DocumentReference] can also be used to create a [CollectionReference]
 /// to a subcollection.
 abstract class DocumentReferenceWrapper {
-
-  @override
-  bool operator ==(dynamic o);
-
   @override
   int get hashCode;
 

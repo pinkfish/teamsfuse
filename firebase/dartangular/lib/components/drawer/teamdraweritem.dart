@@ -2,8 +2,8 @@ import 'package:angular/angular.dart';
 import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:angular_router/angular_router.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 @Component(
   selector: 'drawer-team',
@@ -18,7 +18,7 @@ import 'package:angular_router/angular_router.dart';
 )
 class TeamDrawerItem {
   @Input()
-  Team team;
+  Team? team;
 
   final Router _router;
 
@@ -27,6 +27,6 @@ class TeamDrawerItem {
   void openTeam() {
     print('openTeam()');
 
-    _router.navigate("a/team/" + team.uid);
+    _router.navigate("a/team/" + team!.uid);
   }
 }

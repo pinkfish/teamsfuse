@@ -1,11 +1,11 @@
 import 'package:angular/angular.dart';
-
 import 'package:angular_components/app_layout/material_persistent_drawer.dart';
+import 'package:angular_components/content/deferred_content.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_components/material_icon/material_icon.dart';
-import 'package:angular_components/content/deferred_content.dart';
-import 'package:fusemodel/fusemodel.dart';
 import 'package:angular_router/angular_router.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
 import 'package:teamfuse/components/common/constants.dart';
 import 'package:teamfuse/util/algolia/algolia.dart';
 
@@ -22,22 +22,22 @@ import 'package:teamfuse/util/algolia/algolia.dart';
   styleUrls: const [],
 )
 class TeamDetailsComponent implements OnActivate {
-  String _curTeamId;
-  Algolia _algolia;
+  String? _curTeamId;
+  late Algolia _algolia;
 
-  bool needLogin;
-  String teamName;
-  String photoUrl;
-  Gender gender;
-  Sport sport;
+  bool needLogin = false;
+  String teamName = "";
+  String photoUrl = "";
+  Gender gender = Gender.NA;
+  Sport sport = Sport.None;
 
   Location _location;
   Router _router;
 
-  TeamDetailsComponent(this._location, this._router)
-      : needLogin = false,
-        _algolia =
-            new Algolia(Constants.kAlgoliaAppId, Constants.kAlgoliaKey);
+  DatabaseUpdateModelImpl _db;
+
+  TeamDetailsComponent(this._location, this._router, this._db)
+      : _algolia = new Algolia(Constants.kAlgoliaAppId, Constants.kAlgoliaKey);
 
   @override
   void onActivate(RouterState previous, RouterState current) async {
@@ -45,8 +45,7 @@ class TeamDetailsComponent implements OnActivate {
     if (_curTeamId == null) {
       _curTeamId = current.queryParameters['id'];
     }
-    print('$_curTeamId -- ${UserDatabaseData.instance.teams[_curTeamId]}');
-    String objectId = current.queryParameters[Constants.kObjectId];
+    String? objectId = current.queryParameters[Constants.kObjectId];
     if (objectId == null) {
       needLogin = true;
     } else {

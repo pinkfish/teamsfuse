@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:angular/angular.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_components/material_icon/material_icon.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 @Component(
@@ -18,20 +21,21 @@ import 'package:fusemodel/fusemodel.dart';
 )
 class AttendenceComponent {
   @Input()
-  SeasonPlayer player;
+  SeasonPlayer? seasonPlayer;
   @Input()
-  Game game;
+  Game? game;
+  DatabaseUpdateModelImpl _db;
+  late Stream<Player> player;
+  StreamController<Player> _playerController = StreamController<Player>();
 
-  AttendenceComponent();
-
-  String playerName() {
-    return UserDatabaseData.instance.players[player.playerUid].name;
+  AttendenceComponent(this._db) {
+    player = _playerController.stream;
   }
 
   String iconFromAttendance() {
     Attendance attendance = Attendance.Maybe;
-    if (game.attendance.containsKey(player.playerUid)) {
-      attendance = game.attendance[player.playerUid];
+    if (game!.attendance.containsKey(seasonPlayer!.playerUid)) {
+      attendance = game!.attendance[seasonPlayer!.playerUid];
     }
     switch (attendance) {
       case Attendance.Maybe:
@@ -46,8 +50,8 @@ class AttendenceComponent {
 
   String iconFromAttendanceColor() {
     Attendance attendance = Attendance.Maybe;
-    if (game.attendance.containsKey(player.playerUid)) {
-      attendance = game.attendance[player.playerUid];
+    if (game!.attendance.containsKey(seasonPlayer!.playerUid)) {
+      attendance = game!.attendance[seasonPlayer!.playerUid];
     }
     switch (attendance) {
       case Attendance.Maybe:
@@ -62,8 +66,8 @@ class AttendenceComponent {
 
   String get attendclass {
     Attendance attendance = Attendance.Maybe;
-    if (game.attendance.containsKey(player.playerUid)) {
-      attendance = game.attendance[player.playerUid];
+    if (game!.attendance.containsKey(seasonPlayer!.playerUid)) {
+      attendance = game!.attendance[seasonPlayer!.playerUid];
     }
     switch (attendance) {
       case Attendance.Maybe:

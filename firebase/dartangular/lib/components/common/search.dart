@@ -1,11 +1,12 @@
 import 'package:angular/angular.dart';
-import 'package:angular_forms/angular_forms.dart';
-import 'package:teamfuse/util/algolia/algolia.dart';
+import 'package:angular_components/content/deferred_content.dart';
 import 'package:angular_components/laminate/components/modal/modal.dart';
 import 'package:angular_components/material_button/material_button.dart';
-import 'package:angular_components/content/deferred_content.dart';
-import 'searchitem.dart';
+import 'package:angular_forms/angular_forms.dart';
+import 'package:teamfuse/util/algolia/algolia.dart';
+
 import 'constants.dart';
+import 'searchitem.dart';
 
 @Component(
   selector: 'search-form',
@@ -20,11 +21,10 @@ import 'constants.dart';
   ],
 )
 class SearchComponent {
-  Algolia algolia =
-      new Algolia(Constants.kAlgoliaAppId, Constants.kAlgoliaKey);
-  String search;
-  SearchResult result;
-  Iterable<SearchItem> items = [];
+  Algolia algolia = new Algolia(Constants.kAlgoliaAppId, Constants.kAlgoliaKey);
+  String search = "";
+  SearchResult? result;
+  Iterable<SearchItem>? items = [];
 
   bool showSearchResults = false;
 

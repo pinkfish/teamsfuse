@@ -1,6 +1,7 @@
 import 'package:angular/angular.dart';
 import 'package:angular_forms/angular_forms.dart';
 import 'package:angular_router/angular_router.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:teamfuse/util/algolia/algolia.dart';
 
@@ -16,25 +17,27 @@ import 'constants.dart';
 )
 class SearchItemComponent implements OnInit {
   @Input()
-  SearchItem item;
+  SearchItem? item;
 
-  bool hasPhotoUrl;
+  bool hasPhotoUrl = false;
 
   final Router _router;
   final Location _location;
 
-  String genderIcon;
+  String genderIcon = "help";
 
-  SearchItemComponent(this._router, this._location);
+  DatabaseUpdateModelImpl _db;
+
+  SearchItemComponent(this._router, this._location, this._db);
 
   @override
   void ngOnInit() {
-    hasPhotoUrl = item.data.containsKey('photourl');
+    hasPhotoUrl = item!.data.containsKey('photourl');
     if (!hasPhotoUrl) {
-      String id = item.data['objectID'] as String;
+      String id = item!.data['objectID'] as String;
       hasPhotoUrl = (id[0] == 'T' || id[0] == 'L');
     }
-    String gender = item.data['gender'] as String;
+    String gender = item!.data['gender'] as String;
     if (gender != null) {
       Gender ge = Gender.values.firstWhere((Gender g) => g.toString() == gender,
           orElse: () => Gender.NA);
@@ -59,14 +62,14 @@ class SearchItemComponent implements OnInit {
     if (item == null) {
       return "";
     }
-    String sport = item.data['sport'] as String;
+    String sport = item!.data['sport'] as String;
 
-    switch ((item.data['objectID'] as String)[0]) {
+    switch ((item!.data['objectID'] as String)[0]) {
       case 'T':
         return "${sport.substring(6)} Team ";
         break;
       case 't':
-        return 'Team in league ${item.data["leagueName"]}';
+        return 'Team in league ${item!.data["leagueName"]}';
         break;
       case 'L':
         return "${sport.substring(6)} League ";
@@ -76,18 +79,18 @@ class SearchItemComponent implements OnInit {
   }
 
   String getTitle() {
-    if (item.highlightResult.result.containsKey('name')) {
-      return item.highlightResult.result['name'].value;
+    if (item!.highlightResult.result.containsKey('name')) {
+      return item!.highlightResult.result['name']!.value;
     }
-    return item.data['name'] as String;
+    return item!.data['name'] as String;
   }
 
   String getPhotoUrl() {
-    String photoUrl = item.data['photourl'] as String;
+    String photoUrl = item!.data['photourl'] as String;
     if (photoUrl != null && photoUrl.isNotEmpty) {
-      return item.data['photourl'] as String;
+      return item!.data['photourl'] as String;
     }
-    String sport = item.data['sport'] as String;
+    String sport = item!.data['sport'] as String;
     if (sport != null) {
       return _location.normalizePath('/assets/' + sport + ".png");
     }
@@ -95,20 +98,20 @@ class SearchItemComponent implements OnInit {
   }
 
   String getBody() {
-    String leagueSeasonName = item.data['leagueSeasonName'] as String;
-    String leagueDivisonName = item.data['leagueDivisonName'] as String;
+    String leagueSeasonName = item!.data['leagueSeasonName'] as String;
+    String leagueDivisonName = item!.data['leagueDivisonName'] as String;
     if (leagueSeasonName != null && leagueDivisonName != null) {
       return "${leagueSeasonName} - ${leagueDivisonName}";
     }
-    if (item.highlightResult.result.containsKey('description')) {
-      return item.highlightResult.result['description'].value;
+    if (item!.highlightResult.result.containsKey('description')) {
+      return item!.highlightResult.result['description']!.value;
     }
-    return item.data['description'] as String;
+    return item!.data['description'] as String;
   }
 
   void openDetails() {
     String path;
-    String objectId = item.data['objectID'] as String;
+    String objectId = item!.data['objectID'] as String;
     String uid = objectId.substring(1);
 
     switch (objectId[0]) {
@@ -127,7 +130,7 @@ class SearchItemComponent implements OnInit {
     }
     NavigationParams params =
         new NavigationParams(queryParameters: {Constants.kObjectId: objectId});
-    if (UserDatabaseData.instance.userAuth.currentUserNoWait() != null) {
+    if (_db.currentUser != null) {
       // Authed.
       _router.navigate('/a/' + path, params);
     } else {

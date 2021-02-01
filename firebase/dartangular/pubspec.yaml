@@ -22,6 +22,9 @@ dependencies:
   fusemodel:
     path: ../../fusemodel
 
+dependency_overrides:
+  built_collection: ^5.0.0-nullsafety
+
 
 dev_dependencies:
   sass_builder: ^2.1.3

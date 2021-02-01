@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:angular/angular.dart';
 import 'package:angular_components/content/deferred_content.dart';
 import 'package:angular_router/angular_router.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'game-display-component.dart';
@@ -19,11 +20,12 @@ import 'game-display-component.dart';
   styleUrls: const [],
 )
 class SingleGameComponent implements OnInit, OnActivate, OnDestroy {
-  Game game;
-  String _curGameId;
-  StreamSubscription<UpdateReason> _sub;
+  Game? game;
+  String? _curGameId;
+  StreamSubscription<Iterable<Game>>? _sub;
+  DatabaseUpdateModelImpl _db;
 
-  SingleGameComponent();
+  SingleGameComponent(this._db);
   @override
   Future<Null> ngOnInit() async {}
 
@@ -39,14 +41,9 @@ class SingleGameComponent implements OnInit, OnActivate, OnDestroy {
       _curGameId = current.queryParameters['id'];
     }
     if (_curGameId != null) {
-      game = UserDatabaseData.instance.gamesCache[_curGameId];
-      if (game == null) {
-        UserDatabaseData.instance.updateModel
-            .getGame(_curGameId)
-            .then((Game g) {
-          game = g;
-        });
-      }
+      _sub = _db.getGame(_curGameId).listen((event) {
+        game = g;
+      });
     }
   }
 }

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'dart:async';
+
 import 'teamdetails.dart';
 
 @Component(
@@ -16,29 +19,29 @@ import 'teamdetails.dart';
   styleUrls: const [],
 )
 class TeamComponent implements OnInit, OnActivate, OnDestroy, OnChanges {
-  Stream<Team> team;
-  String _curTeamId;
+  late Stream<Team> team;
+  String? _curTeamId;
   final StreamController<Team> _controller = new StreamController<Team>();
-  StreamSubscription<UpdateReason> _sub;
+  StreamSubscription<Team>? _sub;
+  DatabaseUpdateModelImpl _db;
 
-  TeamComponent() {
+  TeamComponent(this._db) {
     team = _controller.stream.asBroadcastStream();
   }
 
   @override
   Future<Null> ngOnInit() async {
-    _sub = UserDatabaseData.instance.teamStream.listen((UpdateReason reason) {
-      if (UserDatabaseData.instance.teams.containsKey(_curTeamId)) {
-        _controller.add(UserDatabaseData.instance.teams[_curTeamId]);
-      }
-    });
+    if (_curTeamId != null) {
+      _sub = _db.getTeamDetails(teamUid: _curTeamId!).listen((event) {
+        _controller.add(event);
+      });
+    }
   }
 
   @override
   void ngOnDestroy() {
     _sub?.cancel();
   }
-
 
   @override
   void ngOnChanges(Map<String, SimpleChange> changes) {
@@ -51,9 +54,13 @@ class TeamComponent implements OnInit, OnActivate, OnDestroy, OnChanges {
     if (_curTeamId == null) {
       _curTeamId = current.queryParameters['id'];
     }
-    print('$_curTeamId -- ${UserDatabaseData.instance.teams[_curTeamId]}');
     if (_curTeamId != null) {
-      _controller.add(UserDatabaseData.instance.teams[_curTeamId]);
+      if (_curTeamId != null) {
+        _sub?.cancel();
+        _sub = _db.getTeamDetails(teamUid: _curTeamId!).listen((event) {
+          _controller.add(event);
+        });
+      }
     }
   }
 }

@@ -1,19 +1,23 @@
 import 'dart:async';
-import 'package:http/http.dart' as http;
-import 'searchresult.dart';
 import 'dart:convert';
+
 import 'package:http/browser_client.dart';
-export 'searchresult.dart';
+import 'package:http/http.dart' as http;
+
 import 'request.dart';
+import 'searchresult.dart';
+
 export 'request.dart';
 export 'searchitem.dart';
+export 'searchresult.dart';
 
 class Algolia {
   final String _applicationId;
   final String _applicationKey;
   final http.Client _client;
 
-  Algolia(this._applicationId, this._applicationKey, {http.Client client})
+  Algolia(this._applicationId, this._applicationKey,
+      {required http.Client client})
       : _client = client ?? BrowserClient();
 
   Future<SearchResult> search(SearchRequest search) async {

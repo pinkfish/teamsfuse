@@ -3,9 +3,10 @@ import 'package:angular_components/content/deferred_content.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_components/material_input/material_input.dart';
 import 'package:angular_forms/angular_forms.dart';
+import 'package:angular_router/angular_router.dart';
+import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:angular_router/angular_router.dart';
 import 'package:teamfuse/components/guest/pieces/header.dart';
 
 @Component(
@@ -16,6 +17,9 @@ import 'package:teamfuse/components/guest/pieces/header.dart';
     materialInputDirectives,
     formDirectives,
     GuestHeaderComponent,
+  ],
+  providers: [
+    ClassProvider(LoginBloc),
   ],
   templateUrl: 'login-component.html',
   styleUrls: const [
@@ -56,7 +60,6 @@ class LoginComponent {
   void forgotPassword() {
     _router.navigate('/forgot');
   }
-
 
   String emailValidator(String inputText) {
     if (inputText.isEmpty) {

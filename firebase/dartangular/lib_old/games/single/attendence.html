@@ -1,6 +1,6 @@
 <div class="row {{attendclass}} align-items-center">
     <div class="col-md">
-        <em>{{playerName()}}</em>
+        <em>{{player.name | async}}</em>
     </div>
     <div class="col-sm-2">
         <material-button (trigger)="openAttendence()" class="{{iconFromAttendanceColor()}}">

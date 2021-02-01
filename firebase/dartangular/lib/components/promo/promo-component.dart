@@ -1,12 +1,11 @@
 import 'package:angular/angular.dart';
-
-import 'package:angular_router/angular_router.dart';
-import 'package:teamfuse/components/promo/routes.dart';
 import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_components/material_tab/fixed_material_tab_strip.dart';
 import 'package:angular_components/material_tab/tab_change_event.dart';
-import 'package:teamfuse/components/guest/pieces/header.dart';
+import 'package:angular_router/angular_router.dart';
 import 'package:teamfuse/components/guest/pieces/footer.dart';
+import 'package:teamfuse/components/guest/pieces/header.dart';
+import 'package:teamfuse/components/promo/routes.dart';
 
 @Component(
   selector: 'promo',
@@ -76,5 +75,5 @@ class _LabelStuff {
   final String label;
   final String route;
 
-  const _LabelStuff({this.label, this.route});
+  const _LabelStuff({required this.label, required this.route});
 }

@@ -1,9 +1,6 @@
-import 'dart:async';
-import 'dart:html';
-import 'dart:indexed_db';
-
+/*
 class SqlData implements PersistenData {
-  static SqlData _instance;
+  static SqlData? _instance;
 
   static const List<String> kTables = [
     PersistenData.gameTable,
@@ -22,21 +19,21 @@ class SqlData implements PersistenData {
   static const String kData = "data";
   static const String kTeamUid = "teamuid";
 
-  static Database _database;
+  static Database? _database;
   Completer<bool> _loaded = Completer();
-  Future<bool> _initialized;
+  Future<bool>? _initialized;
 
   static SqlData get instance {
     if (_instance == null) {
       _instance = new SqlData();
     }
-    return _instance;
+    return _instance!;
   }
 
   SqlData() {
     if (IdbFactory.supported && _database == null) {
       print('indexDBSupported');
-      window.indexedDB
+      window!.indexedDB!
           .open('fluffyIndexDb',
               version: 1, onUpgradeNeeded: _initializeDatabase)
           .then(_loadFromDB);
@@ -185,3 +182,5 @@ class SqlData implements PersistenData {
     return null;
   }
 }
+
+ */
