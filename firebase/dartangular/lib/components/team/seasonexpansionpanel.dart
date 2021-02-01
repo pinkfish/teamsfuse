@@ -1,9 +1,10 @@
-import 'package:angular/angular.dart';
-import 'package:fusemodel/fusemodel.dart';
-import 'package:angular_components/material_expansionpanel/material_expansionpanel.dart';
-import 'package:teamfuse/components/games/gamecard-component.dart';
-import 'package:angular_components/content/deferred_content.dart';
 import 'dart:async';
+
+import 'package:angular/angular.dart';
+import 'package:angular_components/content/deferred_content.dart';
+import 'package:angular_components/material_expansionpanel/material_expansionpanel.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:teamfuse/components/games/gamecard-component.dart';
 
 @Component(
   selector: 'season-expansionpanel',
@@ -22,12 +23,12 @@ import 'dart:async';
 )
 class SeasonExpansionPanelComponent implements OnDestroy, OnInit {
   @Input()
-  Team team;
+  late Team team;
   @Input()
-  Season season;
-  GameSubscription _subscription;
-  Iterable<Game> games;
-  StreamSubscription<Iterable<Game>> _transformedStream;
+  late Season season;
+  GameSubscription? _subscription;
+  Iterable<Game>? games;
+  StreamSubscription<Iterable<Game>>? _transformedStream;
 
   @override
   void ngOnInit() {

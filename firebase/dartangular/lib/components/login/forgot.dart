@@ -3,6 +3,8 @@ import 'package:angular_components/material_button/material_button.dart';
 import 'package:angular_components/material_input/material_input.dart';
 import 'package:angular_forms/angular_forms.dart';
 import 'package:angular_router/angular_router.dart';
+import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/firestore.dart';
 import 'package:teamfuse/components/guest/pieces/header.dart';
 
 @Component(
@@ -25,13 +27,14 @@ class ForgotComponent {
   bool resetSent = false;
   bool error = true;
   final Router _router;
+  final LoginBloc _loginBloc;
 
-  ForgotComponent(this._router);
+  ForgotComponent(this._router, this._loginBloc);
 
   void onSubmit() {
     resetSent = true;
     print('Forgot password in $email');
-    UserDatabaseData.instance.userAuth.sendPasswordResetEmail(email);
+    _loginBloc.dispatch(LoginEventForgotPasswordSend(email: email));
   }
 
   void login() {

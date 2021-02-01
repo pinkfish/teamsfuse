@@ -1,4 +1,5 @@
 import 'package:angular/angular.dart';
+import 'package:fusemodel/blocs.dart';
 
 /// Conditionally shows content based on authentication status with Firebase.
 ///
@@ -26,22 +27,24 @@ import 'package:angular/angular.dart';
 class IfFirebaseAuthDirective implements OnDestroy, OnInit {
   final TemplateRef _templateRef;
   final ViewContainerRef _viewContainerRef;
+  final AuthenticationBloc _authenticationBloc;
 
-  bool _checkCondition;
-  bool _lastCondition;
+  bool _checkCondition = false;
+  bool _lastCondition = false;
 
   IfFirebaseAuthDirective(
     this._templateRef,
     this._viewContainerRef,
+    this._authenticationBloc,
   );
 
   @Input()
   set ifFirebaseAuth(bool newCondition) {
-    print('Here ${UserDatabaseData.instance.userAuth.currentUserNoWait()}');
+    print('Here ${_authenticationBloc.currentUser}');
     _checkCondition = newCondition;
     _toggle(_checkCondition
-        ? UserDatabaseData.instance.userAuth.currentUserNoWait() != null
-        : UserDatabaseData.instance.userAuth.currentUserNoWait() == null);
+        ? _authenticationBloc.currentUser != null
+        : _authenticationBloc.currentUser == null);
   }
 
   @override
@@ -62,8 +65,9 @@ class IfFirebaseAuthDirective implements OnDestroy, OnInit {
     if (_lastCondition == true) {
       return;
     }
-    _viewContainerRef.createEmbeddedView(_templateRef).setLocal(
-        'currentUser', UserDatabaseData.instance.userAuth.currentUserNoWait());
+    _viewContainerRef
+        .createEmbeddedView(_templateRef)
+        .setLocal('currentUser', _authenticationBloc.currentUser);
     _lastCondition = true;
   }
 

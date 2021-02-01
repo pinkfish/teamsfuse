@@ -4,6 +4,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:meta/meta.dart';
+
 export 'userdata.dart';
 
 part 'src/auth.dart';

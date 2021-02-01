@@ -4,11 +4,11 @@ abstract class AuthWrapper {
   Stream<FirebaseUserWrapper> get onAuthStateChanged;
 
   Future<FirebaseUserWrapper> createUserWithEmailAndPassword(
-      {String email, String password});
+      { String email,  String password});
   Future<FirebaseUserWrapper> signInWithEmailAndPassword(
-      {String email, String password});
+      { String email,  String password});
   Future<FirebaseUserWrapper> currentUser();
-  Future<void> sendPasswordResetEmail({String email});
+  Future<void> sendPasswordResetEmail({@required String email});
   Future<void> signOut();
 }
 

@@ -19,14 +19,15 @@ class Query extends wfs.QueryWrapper {
       documents: query.docs
           .map((fs.DocumentSnapshot snap) => new DocumentSnapshot(doc: snap))
           .toList(),
-      documentChanges: query.docChanges()
+      documentChanges: query
+          .docChanges()
           .map(
             (fs.DocumentChange change) => new wfs.DocumentChangeWrapper(
-                  document: new DocumentSnapshot(doc: change.doc),
-                  oldIndex: change.oldIndex.toInt(),
-                  newIndex: change.newIndex.toInt(),
-                  type: getType(change.type),
-                ),
+              document: new DocumentSnapshot(doc: change.doc),
+              oldIndex: change.oldIndex.toInt(),
+              newIndex: change.newIndex.toInt(),
+              type: getType(change.type),
+            ),
           )
           .toList(),
     );
@@ -58,7 +59,7 @@ class Query extends wfs.QueryWrapper {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
-    bool isNull,
+    bool? isNull,
   }) {
     Query ret = this;
     if (isEqualTo != null) {

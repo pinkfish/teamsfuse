@@ -12,9 +12,6 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
   DocumentReference(this._doc);
 
   @override
-  bool operator ==(dynamic o);
-
-  @override
   int get hashCode;
 
   /// Slash-delimited path representing the database location of this query.
@@ -75,32 +72,32 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
 
 class DocumentSnapshotStreamTransformer extends StreamTransformerBase<
     fs.DocumentSnapshot, wfs.DocumentSnapshotWrapper> {
-  StreamController<wfs.DocumentSnapshotWrapper> _controller;
+  late StreamController<wfs.DocumentSnapshotWrapper> _controller;
 
-  StreamSubscription _subscription;
+  StreamSubscription? _subscription;
 
   // Original Stream
-  Stream<fs.DocumentSnapshot> _stream;
+  Stream<fs.DocumentSnapshot>? _stream;
 
   DocumentSnapshotStreamTransformer() {
     _controller = new StreamController<wfs.DocumentSnapshotWrapper>(
         onListen: _onListen,
         onCancel: _onCancel,
         onPause: () {
-          _subscription.pause();
+          _subscription?.pause();
         },
         onResume: () {
-          _subscription.resume();
+          _subscription?.resume();
         });
   }
 
   void _onListen() {
-    _subscription = _stream.listen(onData,
+    _subscription = _stream?.listen(onData,
         onError: _controller.addError, onDone: _controller.close);
   }
 
   void _onCancel() {
-    _subscription.cancel();
+    _subscription?.cancel();
     _subscription = null;
   }
 

@@ -27,7 +27,11 @@ import 'routes.dart';
     MaterialListComponent,
     MaterialListItemComponent
   ],
-  providers: [const ClassProvider(Routes), materialProviders],
+  providers: [
+    const ClassProvider(Routes),
+    materialProviders,
+    ClassProvider(DatabaseUpdateModelImpl)
+  ],
   styleUrls: const [
     'package:angular_components/app_layout/layout.scss.css',
   ],

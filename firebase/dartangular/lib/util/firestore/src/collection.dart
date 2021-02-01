@@ -24,8 +24,11 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   /// The unique key generated is prefixed with a client-generated timestamp
   /// so that the resulting list will be chronologically-sorted.
   @override
-  wfs.DocumentReferenceWrapper document([String path]) {
-    return new DocumentReference(_doc.doc(path));
+  wfs.DocumentReferenceWrapper document([String? path]) {
+    if (path != null) {
+      return new DocumentReference(_doc.doc(path));
+    }
+    throw FormatException("null path");
   }
 
   /// Returns a `DocumentReference` with an auto-generated ID, after
@@ -55,8 +58,8 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
       dynamic isLessThanOrEqualTo,
       dynamic isGreaterThan,
       dynamic isGreaterThanOrEqualTo,
-      bool isNull}) {
-    Query ret = null;
+      bool? isNull}) {
+    Query? ret = null;
     if (isEqualTo != null) {
       ret = new Query(_doc.where(field, "==", isEqualTo));
     }
@@ -81,8 +84,10 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
         ret = new Query(_doc.where(field, "==", null));
       }
     }
-
-    return ret;
+    if (ret != null) {
+      return ret;
+    }
+    throw FormatException("no path stuff in where");
   }
 
   @override
@@ -92,14 +97,15 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
       documents: snap.docs
           .map((fs.DocumentSnapshot snap) => new DocumentSnapshot(doc: snap))
           .toList(),
-      documentChanges: snap.docChanges()
+      documentChanges: snap
+          .docChanges()
           .map(
             (fs.DocumentChange change) => new wfs.DocumentChangeWrapper(
-                  document: new DocumentSnapshot(doc: change.doc),
-                  oldIndex: change.oldIndex.toInt(),
-                  newIndex: change.newIndex.toInt(),
-                  type: Query.getType(change.type),
-                ),
+              document: new DocumentSnapshot(doc: change.doc),
+              oldIndex: change.oldIndex.toInt(),
+              newIndex: change.newIndex.toInt(),
+              type: Query.getType(change.type),
+            ),
           )
           .toList(),
     );
@@ -113,32 +119,32 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
 
 class QuerySnapshotStreamTransformer
     extends StreamTransformerBase<fs.QuerySnapshot, wfs.QuerySnapshotWrapper> {
-  StreamController<wfs.QuerySnapshotWrapper> _controller;
+  late StreamController<wfs.QuerySnapshotWrapper> _controller;
 
-  StreamSubscription _subscription;
+  StreamSubscription? _subscription;
 
   // Original Stream
-  Stream<fs.QuerySnapshot> _stream;
+  Stream<fs.QuerySnapshot>? _stream;
 
   QuerySnapshotStreamTransformer() {
     _controller = new StreamController<wfs.QuerySnapshotWrapper>(
         onListen: _onListen,
         onCancel: _onCancel,
         onPause: () {
-          _subscription.pause();
+          _subscription?.pause();
         },
         onResume: () {
-          _subscription.resume();
+          _subscription?.resume();
         });
   }
 
   void _onListen() {
-    _subscription = _stream.listen(onData,
+    _subscription = _stream?.listen(onData,
         onError: _controller.addError, onDone: _controller.close);
   }
 
   void _onCancel() {
-    _subscription.cancel();
+    _subscription?.cancel();
     _subscription = null;
   }
 
@@ -147,14 +153,15 @@ class QuerySnapshotStreamTransformer
       documents: data.docs
           .map((fs.DocumentSnapshot snap) => new DocumentSnapshot(doc: snap))
           .toList(),
-      documentChanges: data.docChanges()
+      documentChanges: data
+          .docChanges()
           .map(
             (fs.DocumentChange change) => new wfs.DocumentChangeWrapper(
-                  document: new DocumentSnapshot(doc: change.doc),
-                  oldIndex: change.oldIndex.toInt(),
-                  newIndex: change.newIndex.toInt(),
-                  type: Query.getType(change.type),
-                ),
+              document: new DocumentSnapshot(doc: change.doc),
+              oldIndex: change.oldIndex.toInt(),
+              newIndex: change.newIndex.toInt(),
+              type: Query.getType(change.type),
+            ),
           )
           .toList(),
     ));

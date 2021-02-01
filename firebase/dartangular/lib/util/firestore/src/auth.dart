@@ -12,8 +12,11 @@ class Auth extends wfs.AuthWrapper {
   }
 
   @override
-  Future<void> sendPasswordResetEmail({String email}) {
-    return fb.auth().sendPasswordResetEmail(email);
+  Future<void> sendPasswordResetEmail({String? email}) async {
+    if (email != null) {
+      return fb.auth().sendPasswordResetEmail(email);
+    }
+    return;
   }
 
   @override
@@ -24,18 +27,24 @@ class Auth extends wfs.AuthWrapper {
 
   @override
   Future<wfs.FirebaseUserWrapper> signInWithEmailAndPassword(
-      {String email, String password}) async {
-    fb.UserCredential user =
-        await fb.auth().signInWithEmailAndPassword(email, password);
-    return new FirebaseUser(user.user);
+      {String? email, String? password}) async {
+    if (email != null && password != null) {
+      fb.UserCredential user =
+          await fb.auth().signInWithEmailAndPassword(email, password);
+      return new FirebaseUser(user.user);
+    }
+    throw FormatException("Invalid email and password");
   }
 
   @override
   Future<wfs.FirebaseUserWrapper> createUserWithEmailAndPassword(
-      {String email, String password}) async {
-    fb.UserCredential user =
-        await fb.auth().createUserWithEmailAndPassword(email, password);
-    return new FirebaseUser(user.user);
+      {String? email, String? password}) async {
+    if (email != null && password != null) {
+      fb.UserCredential user =
+          await fb.auth().createUserWithEmailAndPassword(email, password);
+      return new FirebaseUser(user.user);
+    }
+    throw FormatException("Invalid email and password");
   }
 }
 
@@ -44,9 +53,9 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
 
   FirebaseUser(this._user)
       : super(
-            email: _user?.email,
-            isEmailVerified: _user?.emailVerified,
-            uid: _user?.uid,
+            email: _user.email,
+            isEmailVerified: _user.emailVerified,
+            uid: _user.uid,
             loggedIn: _user != null);
 
   @override
@@ -62,33 +71,41 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
 
 class UserTransformer
     extends StreamTransformerBase<fb.User, wfs.FirebaseUserWrapper> {
-  StreamController<wfs.FirebaseUserWrapper> _controller;
+  late StreamController<wfs.FirebaseUserWrapper> _controller;
 
-  StreamSubscription _subscription;
+  StreamSubscription? _subscription;
 
   // Original Stream
-  Stream<fb.User> _stream;
+  Stream<fb.User>? _stream;
 
   UserTransformer() {
     _controller = new StreamController<wfs.FirebaseUserWrapper>(
         onListen: _onListen,
         onCancel: _onCancel,
         onPause: () {
-          _subscription.pause();
+          if (_subscription != null) {
+            _subscription?.pause();
+          }
         },
         onResume: () {
-          _subscription.resume();
+          if (_subscription != null) {
+            _subscription?.resume();
+          }
         });
   }
 
   void _onListen() {
-    _subscription = _stream.listen(onData,
-        onError: _controller.addError, onDone: _controller.close);
+    if (_stream != null) {
+      _subscription = _stream?.listen(onData,
+          onError: _controller.addError, onDone: _controller.close);
+    }
   }
 
   void _onCancel() {
-    _subscription.cancel();
-    _subscription = null;
+    if (_subscription != null) {
+      _subscription?.cancel();
+      _subscription = null;
+    }
   }
 
   void onData(fb.User data) {
