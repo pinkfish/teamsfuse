@@ -49,7 +49,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
   @BuiltValueField(serialize: false)
   bool get publicOnly;
 
-  /// If this team is publically visible.
+  /// If this team is publicaly visible.
   bool get isPublicVisibleTeam;
 
   /// If we should track attendecne for games in this team.  This is

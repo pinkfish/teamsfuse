@@ -139,6 +139,18 @@ describe('TeamsFuse rules', function () {
         const aliceDb = authedApp({ uid: 'alice' });
         await firebase.assertFails(aliceDb.collection('Seasons').doc('frog').get());
     });
+    it('get public season', async () => {
+        const db = authedApp({ uid: 'robert', email_verified: true });
+        await db
+            .collection('Seasons')
+            .doc('frogpublic')
+            .set({ users: { robert: { added: true } }, isPublicVisibleSeason: true });
+        await firebase.assertSucceeds(db.collection('Seasons').doc('frogpublic').get());
+        const aliceDb = authedApp({ uid: 'alice' });
+        await firebase.assertSucceeds(aliceDb.collection('Seasons').doc('frogpublic').get());
+        const dbAnon = authedApp();
+        await firebase.assertSucceeds(dbAnon.collection('Seasons').doc('frogpublic').get());
+    });
     it('create user profiles', async () => {
         const db = authedApp({ uid: 'alice' });
         const profile = db.collection('UserData').doc('alice');

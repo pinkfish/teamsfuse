@@ -111,8 +111,10 @@ service cloud.firestore {
     }
 
     match /Seasons/{season} {
-      allow read: if isSignedIn() &&
-        (resource.data.users[request.auth.uid].added);
+      allow read: if (isSignedIn() &&
+        (resource.data.users[request.auth.uid].added)) ||
+        ("isPublicVisibleSeason" in existingData() &&
+         existingData().isPublicVisibleSeason == true);
       allow write: if isSignedIn();
       allow list: if isSignedIn();
       allow create: if isSignedIn() &&
