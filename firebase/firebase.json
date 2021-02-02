@@ -14,7 +14,7 @@
     "source": "functions"
   },
   "hosting": {
-    "public": "public/web",
+    "public": "public/flutter",
     "ignore": [
       "firebase.json",
       "**/.*",

@@ -39,7 +39,10 @@ jobs:
         working-directory: flutter_fuse
       - run: flutter test
         working-directory: flutter_fuse
-      - run: flutter build web
+      - run: |
+          flutter build web
+          mkdir -p ../firebase/public/flutter
+          cp build/web ../firebase/public/flutter
         working-directory: flutter_fuse
       
       - uses: FirebaseExtended/action-hosting-deploy@v0
