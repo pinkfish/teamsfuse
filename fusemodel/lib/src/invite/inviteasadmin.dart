@@ -22,11 +22,11 @@ abstract class InviteAsAdmin
   static const String TEAMNAME = 'teamName';
 
   Map<String, dynamic> toMap({bool includeMembers}) {
-    return serializers.serializeWith(InviteAsAdmin.serializer, this);
+    return dataSerializers.serializeWith(InviteAsAdmin.serializer, this);
   }
 
   static InviteAsAdmin fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(InviteAsAdmin.serializer, jsonData);
+    return dataSerializers.deserializeWith(InviteAsAdmin.serializer, jsonData);
   }
 
   static Serializer<InviteAsAdmin> get serializer => _$inviteAsAdminSerializer;

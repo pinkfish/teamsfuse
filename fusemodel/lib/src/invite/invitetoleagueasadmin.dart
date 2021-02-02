@@ -35,11 +35,12 @@ abstract class InviteToLeagueAsAdmin
   static const String LEAGUENAME = 'leagueName';
 
   Map<String, dynamic> toMap({bool includeMembers}) {
-    return serializers.serializeWith(InviteToLeagueAsAdmin.serializer, this);
+    return dataSerializers.serializeWith(
+        InviteToLeagueAsAdmin.serializer, this);
   }
 
   static InviteToLeagueAsAdmin fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(
+    return dataSerializers.deserializeWith(
         InviteToLeagueAsAdmin.serializer, jsonData);
   }
 

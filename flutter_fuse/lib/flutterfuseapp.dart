@@ -2,7 +2,6 @@ import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -10,6 +9,7 @@ import 'fusematerialapp.dart';
 import 'services/analytics.dart';
 import 'services/appconfiguration.dart';
 import 'services/approuter.dart';
+import 'services/blocs.dart';
 import 'services/firestore/firestore.dart';
 import 'services/loggingdata.dart';
 import 'services/notifications.dart';
@@ -62,9 +62,8 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
   void initState() {
     super.initState();
     var userAuthImpl = UserAuthImpl(widget._firestore);
-    _authenticationBloc = AuthenticationBloc(
-        userAuth: userAuthImpl,
-        analyticsSubsystem: AnalyticsSubsystemImpl.instance);
+    _authenticationBloc =
+        AuthenticationBloc(userAuthImpl, AnalyticsSubsystemImpl.instance);
     _loginBloc = LoginBloc(
         userAuth: userAuthImpl,
         analyticsSubsystem: AnalyticsSubsystemImpl.instance);

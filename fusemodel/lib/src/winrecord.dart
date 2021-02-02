@@ -14,11 +14,11 @@ abstract class WinRecord implements Built<WinRecord, WinRecordBuilder> {
   factory WinRecord([updates(WinRecordBuilder b)]) = _$WinRecord;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(WinRecord.serializer, this);
+    return dataSerializers.serializeWith(WinRecord.serializer, this);
   }
 
   static WinRecord fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(WinRecord.serializer, jsonData);
+    return dataSerializers.deserializeWith(WinRecord.serializer, jsonData);
   }
 
   static Serializer<WinRecord> get serializer => _$winRecordSerializer;

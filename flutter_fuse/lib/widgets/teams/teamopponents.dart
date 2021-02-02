@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
 import 'package:flutter_fuse/widgets/teams/seasondropdown.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
-import 'package:fusemodel/blocs.dart';
+import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';

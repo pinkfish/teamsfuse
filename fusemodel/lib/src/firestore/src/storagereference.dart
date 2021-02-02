@@ -11,11 +11,11 @@ abstract class StorageReferenceWrapper {
   /// Asynchronously uploads a file to the currently specified
   /// [StorageReference], with an optional [metadata].
   @deprecated
-  StorageUploadTaskWrapper put(File file, [StorageMetadata metadata]);
+  StorageUploadTaskWrapper put(Uint8List file, [StorageMetadata metadata]);
 
   /// Asynchronously uploads a file to the currently specified
   /// [StorageReference], with an optional [metadata].
-  StorageUploadTaskWrapper putFile(File file, [StorageMetadata metadata]) ;
+  StorageUploadTaskWrapper putFile(Uint8List file, [StorageMetadata metadata]) ;
 
   /// Asynchronously uploads byte data to the currently specified
   /// [StorageReference], with an optional [metadata].

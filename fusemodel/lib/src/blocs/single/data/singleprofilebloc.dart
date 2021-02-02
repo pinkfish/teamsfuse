@@ -1,10 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:fusemodel/fusemodel.dart';
 
-import '../../../player.dart';
-import '../../../serializer.dart';
-import '../../../userprofile.dart';
+import '../../serializer.dart';
 
 part 'singleprofilebloc.g.dart';
 

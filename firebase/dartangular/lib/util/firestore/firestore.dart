@@ -4,7 +4,6 @@ import 'package:firebase/firebase.dart' as fb;
 import 'package:firebase/firestore.dart' as fs;
 import 'dart:async';
 import 'package:fusemodel/firestore.dart' as wfs;
-import 'dart:io';
 import 'dart:typed_data';
 
 part 'src/documentreference.dart';

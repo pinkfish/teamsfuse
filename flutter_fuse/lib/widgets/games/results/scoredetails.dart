@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
@@ -10,6 +9,7 @@ import '../../../services/messages.dart';
 import '../../../util/debouncer.dart';
 import '../..//util/numberpicker.dart';
 import '../../util/stopwatchdisplay.dart';
+import '../../../services/blocs.dart';
 import 'changescoredialog.dart';
 import 'periodselector.dart';
 import 'timersetupdialog.dart';

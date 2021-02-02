@@ -20,11 +20,11 @@ abstract class GameSummary implements Built<GameSummary, GameSummaryBuilder> {
     ..pointsAgainst = 0;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(GameSummary.serializer, this);
+    return dataSerializers.serializeWith(GameSummary.serializer, this);
   }
 
   static GameSummary fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(GameSummary.serializer, jsonData);
+    return dataSerializers.deserializeWith(GameSummary.serializer, jsonData);
   }
 
   static Serializer<GameSummary> get serializer => _$gameSummarySerializer;

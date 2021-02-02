@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import 'gameeventwidget.dart';
+import '../../../services/blocs.dart';
 import '../../util/loading.dart';
+import 'gameeventwidget.dart';
 
 ///
 /// The list of game eevents associated with the single game bloc.

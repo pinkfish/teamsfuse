@@ -59,7 +59,7 @@ class Query extends wfs.QueryWrapper {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
-    bool? isNull,
+    bool isNull,
   }) {
     Query ret = this;
     if (isEqualTo != null) {

@@ -1,7 +1,7 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fusemodel/blocs.dart';
+import '../../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../../services/localutilities.dart';

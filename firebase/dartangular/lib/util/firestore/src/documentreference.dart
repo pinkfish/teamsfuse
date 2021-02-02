@@ -72,12 +72,12 @@ class DocumentReference extends wfs.DocumentReferenceWrapper {
 
 class DocumentSnapshotStreamTransformer extends StreamTransformerBase<
     fs.DocumentSnapshot, wfs.DocumentSnapshotWrapper> {
-  late StreamController<wfs.DocumentSnapshotWrapper> _controller;
+  StreamController<wfs.DocumentSnapshotWrapper> _controller;
 
-  StreamSubscription? _subscription;
+  StreamSubscription _subscription;
 
   // Original Stream
-  Stream<fs.DocumentSnapshot>? _stream;
+  Stream<fs.DocumentSnapshot> _stream;
 
   DocumentSnapshotStreamTransformer() {
     _controller = new StreamController<wfs.DocumentSnapshotWrapper>(

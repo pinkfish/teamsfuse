@@ -61,7 +61,8 @@ abstract class Club implements Built<Club, ClubBuilder> {
     ..userUid = "";
 
   Map<String, dynamic> toMap({bool includeMembers}) {
-    Map<String, dynamic> ret = serializers.serializeWith(Club.serializer, this);
+    Map<String, dynamic> ret =
+        dataSerializers.serializeWith(Club.serializer, this);
     if (includeMembers) {
       return ret;
     }
@@ -70,7 +71,7 @@ abstract class Club implements Built<Club, ClubBuilder> {
   }
 
   static Club fromMap(String userUid, Map<String, dynamic> jsonData) {
-    return serializers
+    return dataSerializers
         .deserializeWith(Club.serializer, jsonData)
         .rebuild((b) => b..userUid = userUid);
   }

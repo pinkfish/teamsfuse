@@ -17,7 +17,7 @@ abstract class LeagueOrTournamentSeason
         Built<LeagueOrTournamentSeason, LeagueOrTournamentSeasonBuilder> {
   String get name;
   String get uid;
-  @BuiltValueField(wireName: LEAGUEORTOURNMENTUID )
+  @BuiltValueField(wireName: LEAGUEORTOURNMENTUID)
   String get leagueOrTournmentUid;
 
   @BuiltValueField(wireName: MEMBERS)
@@ -39,11 +39,12 @@ abstract class LeagueOrTournamentSeason
       _$LeagueOrTournamentSeason;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(LeagueOrTournamentSeason.serializer, this);
+    return dataSerializers.serializeWith(
+        LeagueOrTournamentSeason.serializer, this);
   }
 
   static LeagueOrTournamentSeason fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(
+    return dataSerializers.deserializeWith(
         LeagueOrTournamentSeason.serializer, jsonData);
   }
 

@@ -158,11 +158,11 @@ abstract class Game implements Built<Game, GameBuilder> {
     ..gameTime = Duration();
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(Game.serializer, this);
+    return dataSerializers.serializeWith(Game.serializer, this);
   }
 
   static Game fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(Game.serializer, jsonData);
+    return dataSerializers.deserializeWith(Game.serializer, jsonData);
   }
 
   static Serializer<Game> get serializer => _$gameSerializer;

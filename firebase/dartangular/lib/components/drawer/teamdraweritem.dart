@@ -18,7 +18,7 @@ import 'package:fusemodel/fusemodel.dart';
 )
 class TeamDrawerItem {
   @Input()
-  Team? team;
+  Team team;
 
   final Router _router;
 
@@ -27,6 +27,6 @@ class TeamDrawerItem {
   void openTeam() {
     print('openTeam()');
 
-    _router.navigate("a/team/" + team!.uid);
+    _router.navigate("a/team/" + team.uid);
   }
 }

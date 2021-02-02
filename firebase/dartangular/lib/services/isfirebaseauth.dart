@@ -1,5 +1,5 @@
 import 'package:angular/angular.dart';
-import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 /// Conditionally shows content based on authentication status with Firebase.
 ///

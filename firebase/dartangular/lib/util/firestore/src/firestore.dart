@@ -5,7 +5,7 @@ part of firestore_web;
 /// mobile.
 ///
 class Firestore extends wfs.FirestoreWrapper {
-  wfs.AuthWrapper? authWrapper;
+  wfs.AuthWrapper authWrapper;
 
   /// Gets a [CollectionReference] for the specified Firestore path.
   @override
@@ -29,7 +29,7 @@ class Firestore extends wfs.FirestoreWrapper {
     if (authWrapper == null) {
       authWrapper = new Auth();
     }
-    return authWrapper!;
+    return authWrapper;
   }
 
   @override

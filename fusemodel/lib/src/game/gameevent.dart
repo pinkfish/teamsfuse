@@ -52,11 +52,11 @@ abstract class GameEvent implements Built<GameEvent, GameEventBuilder> {
   factory GameEvent([updates(GameEventBuilder b)]) = _$GameEvent;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(GameEvent.serializer, this);
+    return dataSerializers.serializeWith(GameEvent.serializer, this);
   }
 
   static GameEvent fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(GameEvent.serializer, jsonData);
+    return dataSerializers.deserializeWith(GameEvent.serializer, jsonData);
   }
 
   static Serializer<GameEvent> get serializer => _$gameEventSerializer;
@@ -77,11 +77,12 @@ abstract class GameEventLocation
       _$GameEventLocation;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(GameEventLocation.serializer, this);
+    return dataSerializers.serializeWith(GameEventLocation.serializer, this);
   }
 
   static GameEventLocation fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(GameEventLocation.serializer, jsonData);
+    return dataSerializers.deserializeWith(
+        GameEventLocation.serializer, jsonData);
   }
 
   static Serializer<GameEventLocation> get serializer =>

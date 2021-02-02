@@ -2,8 +2,8 @@ import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-import '../serializer.dart';
 import '../player.dart';
+import '../serializer.dart';
 import 'gameperiod.dart';
 
 part 'gameplayersummary.g.dart';
@@ -30,11 +30,12 @@ abstract class GamePlayerSummary
       _$GamePlayerSummary;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(GamePlayerSummary.serializer, this);
+    return dataSerializers.serializeWith(GamePlayerSummary.serializer, this);
   }
 
   static GamePlayerSummary fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(GamePlayerSummary.serializer, jsonData);
+    return dataSerializers.deserializeWith(
+        GamePlayerSummary.serializer, jsonData);
   }
 
   static Serializer<GamePlayerSummary> get serializer =>

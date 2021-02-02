@@ -46,11 +46,11 @@ abstract class InviteToTeam
   static const String ROLE = 'role';
 
   Map<String, dynamic> toMap({bool includeMembers}) {
-    return serializers.serializeWith(InviteToTeam.serializer, this);
+    return dataSerializers.serializeWith(InviteToTeam.serializer, this);
   }
 
   static InviteToTeam fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(InviteToTeam.serializer, jsonData);
+    return dataSerializers.deserializeWith(InviteToTeam.serializer, jsonData);
   }
 
   static Serializer<InviteToTeam> get serializer => _$inviteToTeamSerializer;

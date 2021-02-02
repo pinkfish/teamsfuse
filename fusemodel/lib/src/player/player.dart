@@ -22,11 +22,12 @@ abstract class PlayerUserInternal
       _$PlayerUserInternal;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(PlayerUserInternal.serializer, this);
+    return dataSerializers.serializeWith(PlayerUserInternal.serializer, this);
   }
 
   static PlayerUserInternal fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(PlayerUserInternal.serializer, jsonData);
+    return dataSerializers.deserializeWith(
+        PlayerUserInternal.serializer, jsonData);
   }
 
   static Serializer<PlayerUserInternal> get serializer =>
@@ -69,7 +70,7 @@ abstract class Player implements Built<Player, PlayerBuilder> {
 
   Map<String, dynamic> toMap({bool includeUsers: false}) {
     Map<String, dynamic> ret =
-        serializers.serializeWith(Player.serializer, this);
+        dataSerializers.serializeWith(Player.serializer, this);
     if (includeUsers) {
       return ret;
     }
@@ -78,7 +79,7 @@ abstract class Player implements Built<Player, PlayerBuilder> {
   }
 
   static Player fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(Player.serializer, jsonData);
+    return dataSerializers.deserializeWith(Player.serializer, jsonData);
   }
 
   static Serializer<Player> get serializer => _$playerSerializer;

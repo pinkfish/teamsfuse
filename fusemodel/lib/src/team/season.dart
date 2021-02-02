@@ -27,7 +27,7 @@ abstract class Season implements Built<Season, SeasonBuilder> {
 
   Map<String, dynamic> toMap({bool includePlayers = false}) {
     Map<String, dynamic> ret =
-        serializers.serializeWith(Season.serializer, this);
+        dataSerializers.serializeWith(Season.serializer, this);
     if (includePlayers) {
       return ret;
     }
@@ -37,7 +37,7 @@ abstract class Season implements Built<Season, SeasonBuilder> {
   }
 
   static Season fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(Season.serializer, jsonData);
+    return dataSerializers.deserializeWith(Season.serializer, jsonData);
   }
 
   static Serializer<Season> get serializer => _$seasonSerializer;

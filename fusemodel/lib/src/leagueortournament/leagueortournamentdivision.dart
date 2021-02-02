@@ -42,12 +42,12 @@ abstract class LeagueOrTournamentDivison
       _$LeagueOrTournamentDivison;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(
+    return dataSerializers.serializeWith(
         LeagueOrTournamentDivison.serializer, this);
   }
 
   static LeagueOrTournamentDivison fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(
+    return dataSerializers.deserializeWith(
         LeagueOrTournamentDivison.serializer, jsonData);
   }
 

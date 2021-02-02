@@ -23,8 +23,8 @@ import 'searchitem.dart';
 class SearchComponent {
   Algolia algolia = new Algolia(Constants.kAlgoliaAppId, Constants.kAlgoliaKey);
   String search = "";
-  SearchResult? result;
-  Iterable<SearchItem>? items = [];
+  SearchResult result;
+  Iterable<SearchItem> items = [];
 
   bool showSearchResults = false;
 

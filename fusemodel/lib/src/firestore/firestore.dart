@@ -1,7 +1,6 @@
 library firestore_wrapper;
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:meta/meta.dart';

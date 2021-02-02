@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/widgets/blocs/singleleagueortournamentprovider.dart';
-import 'package:fusemodel/blocs.dart';
+import '../../services/blocs.dart';
 
 import '../../services/messages.dart';
 import '../../services/validations.dart';

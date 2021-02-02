@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
+
 
 import '../../services/messages.dart';
 import '../blocs/singleprofileprovider.dart';
 
 ///
 /// Shows the user name for a specific user.
+///
 class ByUserNameComponent extends StatelessWidget {
   /// Constructor.
   ByUserNameComponent({@required this.userId});

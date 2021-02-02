@@ -78,11 +78,11 @@ abstract class GameResultPerPeriod
       _$GameResultPerPeriod;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(GameResultPerPeriod.serializer, this);
+    return dataSerializers.serializeWith(GameResultPerPeriod.serializer, this);
   }
 
   static GameResultPerPeriod fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(
+    return dataSerializers.deserializeWith(
         GameResultPerPeriod.serializer, jsonData);
   }
 
@@ -126,11 +126,12 @@ abstract class GameResultDetails
       b..currentPeriod = GamePeriod.regulation1.toBuilder();
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(GameResultDetails.serializer, this);
+    return dataSerializers.serializeWith(GameResultDetails.serializer, this);
   }
 
   static GameResultDetails fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(GameResultDetails.serializer, jsonData);
+    return dataSerializers.deserializeWith(
+        GameResultDetails.serializer, jsonData);
   }
 
   static Serializer<GameResultDetails> get serializer =>

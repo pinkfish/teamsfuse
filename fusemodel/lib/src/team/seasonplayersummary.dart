@@ -19,11 +19,11 @@ abstract class SeasonPlayerSummary
       _$SeasonPlayerSummary;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(SeasonPlayerSummary.serializer, this);
+    return dataSerializers.serializeWith(SeasonPlayerSummary.serializer, this);
   }
 
   static SeasonPlayerSummary fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(
+    return dataSerializers.deserializeWith(
         SeasonPlayerSummary.serializer, jsonData);
   }
 

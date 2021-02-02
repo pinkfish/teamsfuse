@@ -2,30 +2,7 @@ library serializers;
 
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
-import 'package:fusemodel/blocs.dart';
 
-import 'blocs/data/clubblocstate.dart';
-import 'blocs/data/gameblocstate.dart';
-import 'blocs/data/inviteblocstate.dart';
-import 'blocs/data/leagueortournamentblocstate.dart';
-import 'blocs/data/messagesblocstate.dart';
-import 'blocs/data/playerblocstate.dart';
-import 'blocs/data/profileblocstate.dart';
-import 'blocs/data/seasonblocstate.dart';
-import 'blocs/data/teamblocstate.dart';
-import 'blocs/single/data/singleclubbloc.dart';
-import 'blocs/single/data/singlegamebloc.dart';
-import 'blocs/single/data/singleinvitebloc.dart';
-import 'blocs/single/data/singleleagueortournamentbloc.dart';
-import 'blocs/single/data/singleleagueortournamentdivisonbloc.dart';
-import 'blocs/single/data/singleleagueortournamentseasonbloc.dart';
-import 'blocs/single/data/singleleagueortournamentteambloc.dart';
-import 'blocs/single/data/singleopponentbloc.dart';
-import 'blocs/single/data/singleplayerbloc.dart';
-import 'blocs/single/data/singleprofilebloc.dart';
-import 'blocs/single/data/singleseasonbloc.dart';
-import 'blocs/single/data/singleteambloc.dart';
-import 'blocs/single/data/singleteamseasonplayerbloc.dart';
 import 'club.dart';
 import 'common.dart';
 import 'game.dart';
@@ -41,6 +18,9 @@ import 'serializer/timestampserializer.dart';
 import 'team.dart';
 import 'userprofile.dart';
 import 'winrecord.dart';
+import 'ant/broadcaststatus.dart';
+import 'ant/broadcasttype.dart';
+import 'ant/broadcast.dart';
 
 part 'serializer.g.dart';
 
@@ -50,23 +30,19 @@ part 'serializer.g.dart';
 @SerializersFor([
   AddedUid,
   AddedOrAdmin,
-  AddingState,
   Attendance,
+  Broadcast,
+  BroadcastStatus,
+  BroadcastType,
   Club,
-  ClubBlocStateType,
-  ClubLoaded,
-  ClubState,
-  ClubUninitialized,
   EventType,
   FusedUserProfile,
   Game,
-  GameBlocStateType,
   GameDivisionsType,
   GameEvent,
   GameEventType,
   GameFoulType,
   GameInProgress,
-  GameLoaded,
   GameLog,
   GameLogType,
   GamePeriodType,
@@ -76,9 +52,7 @@ part 'serializer.g.dart';
   GameResultPerPeriod,
   GameScore,
   GameSharedData,
-  GameState,
   GameSummary,
-  GameUninitialized,
   Gender,
   Invite,
   InviteType,
@@ -87,166 +61,32 @@ part 'serializer.g.dart';
   InviteToLeagueAsAdmin,
   InviteToTeam,
   InviteType,
-  InviteLoaded,
-  InviteState,
-  InviteBlocStateType,
-  InviteUninitialized,
   LeagueOrTournament,
   LeagueOrTournamentDivison,
   LeagueOrTournamentSeason,
-  LeagueOrTournamentLoaded,
-  LeagueOrTournamentState,
-  LeagueOrTournamentBlocStateType,
-  LeagueOrTournamentUninitialized,
   LeagueOrTournamentTeam,
   MediaInfo,
   MediaType,
   Message,
-  MessagesBlocStateType,
-  MessagesLoaded,
-  MessagesBlocState,
   MessageReadState,
-  MessagesUninitialized,
   OfficialResult,
   Opponent,
   Player,
-  PlayerBlocStateType,
   PlayerSummaryData,
-  PlayerLoaded,
-  PlayerState,
-  PlayerUninitialized,
   PlayerUserInternal,
-  ProfileBlocLoaded,
-  ProfileBlocState,
-  ProfileBlocStateType,
-  ProfileBlocUninitialized,
   Relationship,
   RepeatData,
   RepeatPeriod,
   RoleInTeam,
   Season,
-  SeasonBlocStateType,
   SeasonPlayer,
   SeasonPlayerSummary,
-  SeasonLoaded,
-  SeasonState,
-  SeasonUninitialized,
-  SingleClubLoaded,
-  SingleClubState,
-  SingleClubBlocStateType,
-  SingleClubUninitialized,
-  SingleClubDeleted,
-  SingleClubSaving,
-  SingleClubSaveFailed,
-  SingleClubSaveDone,
-  SingleGameLoaded,
-  SingleGameState,
-  SingleGameBlocStateType,
-  SingleGameUninitialized,
-  SingleGameDeleted,
-  SingleGameSaving,
-  SingleGameSaveFailed,
-  SingleGameSaveDone,
-  SingleInviteLoaded,
-  SingleInviteBlocStateType,
-  SingleInviteUninitialized,
-  SingleInviteSaving,
-  SingleInviteDeleted,
-  SingleInviteState,
-  SingleInviteSaving,
-  SingleInviteSaveFailed,
-  SingleInviteSaveDone,
-  SingleLeagueOrTournamentLoaded,
-  SingleLeagueOrTournamentState,
-  SingleLeagueOrTournamentBlocStateType,
-  SingleLeagueOrTournamentUninitialized,
-  SingleLeagueOrTournamentDeleted,
-  SingleLeagueOrTournamentSaving,
-  SingleLeagueOrTournamentSaveFailed,
-  SingleLeagueOrTournamentSaveDone,
-  SingleLeagueOrTournamentTeamLoaded,
-  SingleLeagueOrTournamentTeamState,
-  SingleLeagueOrTournamentTeamBlocStateType,
-  SingleLeagueOrTournamentTeamUninitialized,
-  SingleLeagueOrTournamentTeamDeleted,
-  SingleLeagueOrTournamentTeamSaving,
-  SingleLeagueOrTournamentTeamSaveFailed,
-  SingleLeagueOrTournamentTeamSaveDone,
-  SingleLeagueOrTournamentSeasonLoaded,
-  SingleLeagueOrTournamentSeasonState,
-  SingleLeagueOrTournamentSeasonBlocStateType,
-  SingleLeagueOrTournamentSeasonUninitialized,
-  SingleLeagueOrTournamentSeasonDeleted,
-  SingleLeagueOrTournamentSeasonSaving,
-  SingleLeagueOrTournamentSeasonSaveFailed,
-  SingleLeagueOrTournamentSeasonSaveDone,
-  SingleLeagueOrTournamentDivisonLoaded,
-  SingleLeagueOrTournamentDivisonState,
-  SingleLeagueOrTournamentDivisonBlocStateType,
-  SingleLeagueOrTournamentDivisonUninitialized,
-  SingleLeagueOrTournamentDivisonDeleted,
-  SingleLeagueOrTournamentDivisonSaving,
-  SingleLeagueOrTournamentDivisonSaveFailed,
-  SingleLeagueOrTournamentDivisonSaveDone,
-  SingleOpponentLoaded,
-  SingleOpponentState,
-  SingleOpponentBlocStateType,
-  SingleOpponentUninitialized,
-  SingleOpponentDeleted,
-  SingleOpponentSaving,
-  SingleOpponentSaveFailed,
-  SingleOpponentSaveDone,
-  SinglePlayerLoaded,
-  SinglePlayerState,
-  SinglePlayerBlocStateType,
-  SinglePlayerUninitialized,
-  SinglePlayerDeleted,
-  SinglePlayerSaving,
-  SinglePlayerSaveFailed,
-  SinglePlayerSaveDone,
-  SingleProfileLoaded,
-  SingleProfileState,
-  SingleProfileBlocStateType,
-  SingleProfileUninitialized,
-  SingleProfileDeleted,
-  SingleProfileSaving,
-  SingleProfileSaveFailed,
-  SingleProfileSaveDone,
-  SingleSeasonLoaded,
-  SingleSeasonState,
-  SingleSeasonBlocStateType,
-  SingleSeasonUninitialized,
-  SingleSeasonDeleted,
-  SingleSeasonSaving,
-  SingleSeasonSaveFailed,
-  SingleSeasonSaveDone,
-  SingleTeamLoaded,
-  SingleTeamState,
-  SingleTeamBlocStateType,
-  SingleTeamUninitialized,
-  SingleTeamDeleted,
-  SingleTeamSaving,
-  SingleTeamSaveFailed,
-  SingleTeamSaveDone,
-  SingleTeamSeasonPlayerLoaded,
-  SingleTeamSeasonPlayerBlocStateType,
-  SingleTeamSeasonPlayerUninitialized,
-  SingleTeamSeasonPlayerSaving,
-  SingleTeamSeasonPlayerDeleted,
-  SingleTeamSeasonPlayerState,
-  SingleTeamSeasonPlayerSaving,
-  SingleTeamSeasonPlayerSaveFailed,
-  SingleTeamSeasonPlayerSaveDone,
   Sport,
   Team,
-  TeamLoaded,
-  TeamState,
-  TeamBlocStateType,
-  TeamUninitialized,
   Tristate,
   WinRecord
 ])
-final Serializers serializers = (_$serializers.toBuilder()
+final Serializers dataSerializers = (_$dataSerializers.toBuilder()
       ..add(TimestampSerializer())
       ..add(InviteSerializer())
       ..add(GamePeriodSerializer())

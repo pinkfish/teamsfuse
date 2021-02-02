@@ -19,7 +19,7 @@ void main() {
     var serializer = InviteSerializer();
 
     Invite invite =
-        serializers.deserializeWith(serializer, inviteAsAdmin.toMap());
+        dataSerializers.deserializeWith(serializer, inviteAsAdmin.toMap());
 
     expect(invite.type, equals(InviteType.Admin));
   });

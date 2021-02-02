@@ -7,7 +7,7 @@ part 'gamescore.g.dart';
 
 ///
 /// The score for the game.
-/// 
+///
 abstract class GameScore implements Built<GameScore, GameScoreBuilder> {
   GameScore._();
   factory GameScore([updates(GameScoreBuilder b)]) = _$GameScore;
@@ -25,11 +25,11 @@ abstract class GameScore implements Built<GameScore, GameScoreBuilder> {
     ..intermediate = false;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(GameScore.serializer, this);
+    return dataSerializers.serializeWith(GameScore.serializer, this);
   }
 
   static GameScore fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(GameScore.serializer, jsonData);
+    return dataSerializers.deserializeWith(GameScore.serializer, jsonData);
   }
 
   static Serializer<GameScore> get serializer => _$gameScoreSerializer;

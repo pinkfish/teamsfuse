@@ -1,9 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:fusemodel/fusemodel.dart';
 
-import '../../game.dart';
-import '../../serializer.dart';
+import '../serializer.dart';
 
 part 'gameblocstate.g.dart';
 

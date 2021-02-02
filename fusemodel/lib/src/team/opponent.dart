@@ -32,11 +32,11 @@ abstract class Opponent implements Built<Opponent, OpponentBuilder> {
   static void _initializeBuilder(OpponentBuilder b) => b..name = "none";
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(Opponent.serializer, this);
+    return dataSerializers.serializeWith(Opponent.serializer, this);
   }
 
   static Opponent fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(Opponent.serializer, jsonData);
+    return dataSerializers.deserializeWith(Opponent.serializer, jsonData);
   }
 
   static Serializer<Opponent> get serializer => _$opponentSerializer;

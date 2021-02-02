@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:angular/angular.dart';
 import 'package:angular_router/angular_router.dart';
-import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import 'teamdetails.dart';
@@ -18,12 +17,12 @@ import 'teamdetails.dart';
   templateUrl: 'team.html',
   styleUrls: const [],
 )
-class TeamComponent implements OnInit, OnActivate, OnDestroy, OnChanges {
-  late Stream<Team> team;
-  String? _curTeamId;
+class TeamComponent implements OnInit, OnActivate, OnDestroy, AfterChanges {
+  Stream<Team> team;
+  String _curTeamId;
   final StreamController<Team> _controller = new StreamController<Team>();
-  StreamSubscription<Team>? _sub;
-  DatabaseUpdateModelImpl _db;
+  StreamSubscription<Team> _sub;
+  DatabaseUpdateModel _db;
 
   TeamComponent(this._db) {
     team = _controller.stream.asBroadcastStream();
@@ -32,7 +31,7 @@ class TeamComponent implements OnInit, OnActivate, OnDestroy, OnChanges {
   @override
   Future<Null> ngOnInit() async {
     if (_curTeamId != null) {
-      _sub = _db.getTeamDetails(teamUid: _curTeamId!).listen((event) {
+      _sub = _db.getTeamDetails(teamUid: _curTeamId).listen((event) {
         _controller.add(event);
       });
     }
@@ -44,11 +43,6 @@ class TeamComponent implements OnInit, OnActivate, OnDestroy, OnChanges {
   }
 
   @override
-  void ngOnChanges(Map<String, SimpleChange> changes) {
-    print('on team changed $changes');
-  }
-
-  @override
   void onActivate(RouterState previous, RouterState current) {
     _curTeamId = current.parameters['id'];
     if (_curTeamId == null) {
@@ -57,10 +51,15 @@ class TeamComponent implements OnInit, OnActivate, OnDestroy, OnChanges {
     if (_curTeamId != null) {
       if (_curTeamId != null) {
         _sub?.cancel();
-        _sub = _db.getTeamDetails(teamUid: _curTeamId!).listen((event) {
+        _sub = _db.getTeamDetails(teamUid: _curTeamId).listen((event) {
           _controller.add(event);
         });
       }
     }
+  }
+
+  @override
+  void ngAfterChanges() {
+    print('on team changed ');
   }
 }

@@ -1,6 +1,5 @@
 import 'injector_dev.dart' as dev;
 import 'injector_prod.dart' as prod;
-
 import 'main_shared.dart';
 
 void main() async {

@@ -98,11 +98,11 @@ abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
   }
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(RepeatData.serializer, this);
+    return dataSerializers.serializeWith(RepeatData.serializer, this);
   }
 
   static RepeatData fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(RepeatData.serializer, jsonData);
+    return dataSerializers.deserializeWith(RepeatData.serializer, jsonData);
   }
 
   static Serializer<RepeatData> get serializer => _$repeatDataSerializer;

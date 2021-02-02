@@ -8,11 +8,27 @@ import 'package:angular_components/material_icon/material_icon.dart';
 import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
 import 'package:angular_router/angular_router.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:teamfuse/services/webanalytics.dart';
+import 'package:teamfuse/util/firestore/firestore.dart' as fs;
 
 import 'route_paths.dart';
 import 'routes.dart';
+
+AnalyticsSubsystem analyticsSubsystemFactory() => WebAnalytics();
+const analyticsSubsystemProvider =
+    FactoryProvider(AnalyticsSubsystem, analyticsSubsystemFactory);
+
+DatabaseUpdateModel databaseUpdateModelFactory(fs.Firestore wrapper,
+        AuthenticationBloc authenticationBloc, AnalyticsSubsystem analytics) =>
+    DatabaseUpdateModelImpl(wrapper, authenticationBloc, analytics);
+const databaseUpdateModelProvider =
+    FactoryProvider(DatabaseUpdateModel, databaseUpdateModelFactory);
+
+FirestoreWrapper firestoreWrapperFactory() => fs.Firestore();
+const firestoreWrapperProvider =
+    FactoryProvider(FirestoreWrapper, firestoreWrapperFactory);
 
 @Component(
   selector: 'my-app',
@@ -31,8 +47,10 @@ import 'routes.dart';
   providers: [
     const ClassProvider(Routes),
     materialProviders,
+    firestoreWrapperProvider,
     ClassProvider(UserAuthImpl),
-    ClassProvider(DatabaseUpdateModelImpl),
+    analyticsSubsystemProvider,
+    databaseUpdateModelProvider,
     ClassProvider(AuthenticationBloc),
   ],
   styleUrls: const [
@@ -42,7 +60,7 @@ import 'routes.dart';
 class AppComponent implements OnInit, OnDestroy {
   final Routes routes;
   final Router _router;
-  StreamSubscription<RouterState>? _sub;
+  StreamSubscription<RouterState> _sub;
   final AuthenticationBloc _auth;
 
   AppComponent(this.routes, this._router, this._auth);
@@ -53,15 +71,17 @@ class AppComponent implements OnInit, OnDestroy {
 
     _sub = _router.onRouteActivated.listen(_routerStateUpdate);
     if (data == null) {
-      print('Current user frog == null ${_router?.current?.path}');
+//      print('Current user frog == null ${_router.current.path}');
 
       print("Navigated... ${guest.path}/home");
     } else {
-      print('Current user frog == null ${_router?.current?.path}');
+      print('Current user frog == null ${_router.current.path}');
       // Authenticated, stay at the old url.
       //UserDatabaseData.load(data.uid, data.email,
       //    UserDatabaseData.instance.userAuth.getProfile(data.uid));
     }
+
+    _auth.add(AuthenticationAppStarted());
   }
 
   @override

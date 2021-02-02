@@ -1,14 +1,14 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:async/async.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 import 'package:timezone/timezone.dart';
 
 import 'firestore.dart';
+import 'authenticationbloc.dart';
 
 class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   static const int maxMessages = 20;
@@ -448,7 +448,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen,
-      Season season, File imageFile) async {
+      Season season, Uint8List imageFile) async {
     // Add or update this record into the database.
     if (pregen == null) {
       pregen = wrapper.collection(TEAMS_COLLECTION).document();
@@ -483,7 +483,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Uri> updateTeamImage(String teamUid, File imgFile) async {
+  Future<Uri> updateTeamImage(String teamUid, Uint8List imgFile) async {
     final StorageReferenceWrapper ref =
         wrapper.storageRef().child("team_" + teamUid + ".img");
     final StorageUploadTaskWrapper task = ref.putFile(imgFile);
@@ -738,7 +738,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Uri> updatePlayerImage(String playerUid, File imgFile) async {
+  Future<Uri> updatePlayerImage(String playerUid, Uint8List imgFile) async {
     final StorageReferenceWrapper ref =
         wrapper.storageRef().child("player_" + playerUid + ".img");
     final StorageUploadTaskWrapper task = ref.putFile(imgFile);
@@ -1186,7 +1186,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Uri> updateClubImage(Club club, File imgFile) async {
+  Future<Uri> updateClubImage(Club club, Uint8List imgFile) async {
     final StorageReferenceWrapper ref =
         wrapper.storageRef().child("club_" + club.uid + ".img");
     final StorageUploadTaskWrapper task = ref.putFile(imgFile);
@@ -1408,7 +1408,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Uri> updateLeagueImage(LeagueOrTournament league, File imgFile) async {
+  Future<Uri> updateLeagueImage(LeagueOrTournament league, Uint8List imgFile) async {
     final StorageReferenceWrapper ref =
         wrapper.storageRef().child("league_" + league.uid + ".jpg");
     final StorageUploadTaskWrapper task = ref.putFile(imgFile);

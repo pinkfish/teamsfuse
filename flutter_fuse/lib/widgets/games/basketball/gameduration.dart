@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 ///
 /// Shows the game duration and keeps it updated while the clock is running

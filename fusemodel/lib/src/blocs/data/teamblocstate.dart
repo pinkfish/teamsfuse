@@ -1,9 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:fusemodel/fusemodel.dart';
 
-import '../../serializer.dart';
-import '../../team.dart';
+import '../serializer.dart';
 
 part 'teamblocstate.g.dart';
 
@@ -110,7 +110,7 @@ abstract class TeamStateUpdates {
   Set<String> get allTeamUids {
     Set<String> set = Set.from(adminTeams.keys);
     clubTeams.forEach(
-            (String clubUid, BuiltMap<String, Team> data) => set.addAll(data.keys));
+        (String clubUid, BuiltMap<String, Team> data) => set.addAll(data.keys));
     set.addAll(clubTeams.keys);
     set.addAll(playerTeams.keys);
     return set;

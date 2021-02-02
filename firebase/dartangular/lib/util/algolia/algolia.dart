@@ -16,8 +16,7 @@ class Algolia {
   final String _applicationKey;
   final http.Client _client;
 
-  Algolia(this._applicationId, this._applicationKey,
-      {required http.Client client})
+  Algolia(this._applicationId, this._applicationKey, {http.Client client})
       : _client = client ?? BrowserClient();
 
   Future<SearchResult> search(SearchRequest search) async {

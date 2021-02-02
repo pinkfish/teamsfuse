@@ -46,13 +46,13 @@ abstract class SeasonPlayer
     ..position = "";
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(SeasonPlayer.serializer, this);
+    return dataSerializers.serializeWith(SeasonPlayer.serializer, this);
   }
 
   static const String ROLE = "role";
 
   static SeasonPlayer fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(SeasonPlayer.serializer, jsonData);
+    return dataSerializers.deserializeWith(SeasonPlayer.serializer, jsonData);
   }
 
   static Serializer<SeasonPlayer> get serializer => _$seasonPlayerSerializer;

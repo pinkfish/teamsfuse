@@ -6,10 +6,10 @@ import 'firestore.dart';
 import 'userdata.dart';
 
 class UserAuthImpl {
-  FirestoreWrapper wrapper;
+  final FirestoreWrapper wrapper;
   UserData _currentUser;
   FirebaseUserWrapper _currentFirebaseUser;
-  StreamController<UserData> _controller = new StreamController<UserData>();
+  final StreamController<UserData> _controller = StreamController<UserData>();
   Stream<UserData> _stream;
   StreamSubscription<DocumentSnapshotWrapper> _profileUpdates;
   String _token;

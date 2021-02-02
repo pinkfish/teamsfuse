@@ -23,11 +23,11 @@ abstract class InviteToClub
   InviteToClub._();
 
   Map<String, dynamic> toMap({bool includeMembers}) {
-    return serializers.serializeWith(InviteToClub.serializer, this);
+    return dataSerializers.serializeWith(InviteToClub.serializer, this);
   }
 
   static InviteToClub fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(InviteToClub.serializer, jsonData);
+    return dataSerializers.deserializeWith(InviteToClub.serializer, jsonData);
   }
 
   static Serializer<InviteToClub> get serializer => _$inviteToClubSerializer;

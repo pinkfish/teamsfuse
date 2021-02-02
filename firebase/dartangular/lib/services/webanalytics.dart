@@ -13,7 +13,7 @@ class WebTrace implements TraceProxy {
 
 class WebAnalytics implements AnalyticsSubsystem {
   @override
-  void logSignUp({String? signUpMethod}) {}
+  void logSignUp({String signUpMethod}) {}
 
   @override
   TraceProxy newTrace(String traceName) {
@@ -25,7 +25,7 @@ class WebAnalytics implements AnalyticsSubsystem {
   bool get debugMode => throw UnimplementedError();
 
   @override
-  void logEvent({String? name, Map<String, String>? parameters}) {
+  void logEvent({String name, Map<String, String> parameters}) {
     // TODO: implement logEvent
   }
 
@@ -55,7 +55,7 @@ class WebAnalytics implements AnalyticsSubsystem {
   }
 
   @override
-  void setUserProperty({String? name, String? value}) {
+  void setUserProperty({String name, String value}) {
     // TODO: implement setUserProperty
   }
 }

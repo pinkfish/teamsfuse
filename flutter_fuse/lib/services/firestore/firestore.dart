@@ -1,7 +1,6 @@
 library firestore_mobile;
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as fs;

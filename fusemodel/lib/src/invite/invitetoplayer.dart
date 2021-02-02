@@ -21,11 +21,11 @@ abstract class InviteToPlayer
   static const String PLAYERUID = 'playerUid';
 
   Map<String, dynamic> toMap({bool includeMembers}) {
-    return serializers.serializeWith(InviteToPlayer.serializer, this);
+    return dataSerializers.serializeWith(InviteToPlayer.serializer, this);
   }
 
   static InviteToPlayer fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(InviteToPlayer.serializer, jsonData);
+    return dataSerializers.deserializeWith(InviteToPlayer.serializer, jsonData);
   }
 
   static Serializer<InviteToPlayer> get serializer =>

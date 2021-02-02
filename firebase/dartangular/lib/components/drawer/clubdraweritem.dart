@@ -21,20 +21,20 @@ import 'package:fusemodel/fusemodel.dart';
 )
 class ClubDrawerItem implements OnInit, OnDestroy {
   @Input()
-  Club? club;
+  Club club;
   final Router _router;
 
   int numTeams = 0;
   bool loadedTeams = false;
 
-  StreamSubscription<Iterable<Team>>? _teamSub;
+  StreamSubscription<Iterable<Team>> _teamSub;
   DatabaseUpdateModelImpl _db;
 
   ClubDrawerItem(this._router, this._db);
 
   @override
   void ngOnInit() {
-    _teamSub = _db.getClubTeams(club!).listen((e) {
+    _teamSub = _db.getClubTeams(club).listen((e) {
       numTeams = e.length;
       loadedTeams = true;
     });
@@ -56,6 +56,6 @@ class ClubDrawerItem implements OnInit, OnDestroy {
   void openTeam() {
     print('openTeam()');
 
-    _router.navigate("a/club/" + club!.uid);
+    _router.navigate("a/club/" + club.uid);
   }
 }

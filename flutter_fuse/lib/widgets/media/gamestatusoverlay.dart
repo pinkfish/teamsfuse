@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fusemodel/blocs.dart';
+import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:video_player/video_player.dart';
 

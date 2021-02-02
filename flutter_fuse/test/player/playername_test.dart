@@ -2,12 +2,13 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/widgets/player/playername.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:mockito/mockito.dart';
+
 
 class MockSinglePlayerBloc extends MockBloc<int> implements SinglePlayerBloc {}
 

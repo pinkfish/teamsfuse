@@ -88,9 +88,10 @@ class StorageReference extends wfs.StorageReferenceWrapper {
   }
 
   @override
-  wfs.StorageUploadTaskWrapper putFile(File file,
+  wfs.StorageUploadTaskWrapper putFile(Uint8List file,
       [wfs.StorageMetadata metadata]) {
-    return StorageUploadTask(_ref.putFile(
+
+    return StorageUploadTask(_ref.putData(
         file,
         metadata != null
             ? st.SettableMetadata(
@@ -105,8 +106,8 @@ class StorageReference extends wfs.StorageReferenceWrapper {
   }
 
   @override
-  wfs.StorageUploadTaskWrapper put(File file, [wfs.StorageMetadata metadata]) {
-    return StorageUploadTask(_ref.putFile(
+  wfs.StorageUploadTaskWrapper put(Uint8List file, [wfs.StorageMetadata metadata]) {
+    return StorageUploadTask(_ref.putData(
         file,
         metadata != null
             ? st.SettableMetadata(

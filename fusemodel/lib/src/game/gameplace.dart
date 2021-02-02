@@ -25,11 +25,11 @@ abstract class GamePlace implements Built<GamePlace, GamePlaceBuilder> {
   static void _initializeBuilder(GamePlaceBuilder b) => b..name = "";
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(GamePlace.serializer, this);
+    return dataSerializers.serializeWith(GamePlace.serializer, this);
   }
 
   static GamePlace fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(GamePlace.serializer, jsonData);
+    return dataSerializers.deserializeWith(GamePlace.serializer, jsonData);
   }
 
   static Serializer<GamePlace> get serializer => _$gamePlaceSerializer;

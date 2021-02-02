@@ -81,11 +81,11 @@ abstract class Team implements Built<Team, TeamBuilder> {
 
   /// Deserialize the team.
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(Team.serializer, this);
+    return dataSerializers.serializeWith(Team.serializer, this);
   }
 
   static Team fromMap(String userUid, Map<String, dynamic> jsonData) {
-    return serializers
+    return dataSerializers
         .deserializeWith(Team.serializer, jsonData)
         .rebuild((b) => b..userUid = userUid);
   }

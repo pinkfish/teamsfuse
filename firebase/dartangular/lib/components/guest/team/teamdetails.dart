@@ -22,8 +22,8 @@ import 'package:teamfuse/util/algolia/algolia.dart';
   styleUrls: const [],
 )
 class TeamDetailsComponent implements OnActivate {
-  String? _curTeamId;
-  late Algolia _algolia;
+  String _curTeamId;
+  Algolia _algolia;
 
   bool needLogin = false;
   String teamName = "";
@@ -45,7 +45,7 @@ class TeamDetailsComponent implements OnActivate {
     if (_curTeamId == null) {
       _curTeamId = current.queryParameters['id'];
     }
-    String? objectId = current.queryParameters[Constants.kObjectId];
+    String objectId = current.queryParameters[Constants.kObjectId];
     if (objectId == null) {
       needLogin = true;
     } else {

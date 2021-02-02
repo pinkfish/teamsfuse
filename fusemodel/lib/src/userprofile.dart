@@ -42,11 +42,12 @@ abstract class FusedUserProfile
 
   /// Load from the json
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(FusedUserProfile.serializer, this);
+    return dataSerializers.serializeWith(FusedUserProfile.serializer, this);
   }
 
   static FusedUserProfile fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(FusedUserProfile.serializer, jsonData);
+    return dataSerializers.deserializeWith(
+        FusedUserProfile.serializer, jsonData);
   }
 
   static Serializer<FusedUserProfile> get serializer =>

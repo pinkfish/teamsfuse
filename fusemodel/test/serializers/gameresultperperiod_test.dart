@@ -17,7 +17,7 @@ void main() {
     var serializer = GameResultPerPeriod.serializer;
 
     GameResultPerPeriod newResult =
-        serializers.deserializeWith(serializer, resultPerPeriod.toMap());
+        dataSerializers.deserializeWith(serializer, resultPerPeriod.toMap());
 
     expect(newResult.period, equals(GamePeriod.finalPeriod));
   });

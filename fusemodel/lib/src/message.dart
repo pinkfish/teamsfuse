@@ -52,11 +52,12 @@ abstract class MessageRecipient
   static const String USERID = 'userId';
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(MessageRecipient.serializer, this);
+    return dataSerializers.serializeWith(MessageRecipient.serializer, this);
   }
 
   static MessageRecipient fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(MessageRecipient.serializer, jsonData);
+    return dataSerializers.deserializeWith(
+        MessageRecipient.serializer, jsonData);
   }
 
   static Serializer<MessageRecipient> get serializer =>
@@ -93,11 +94,11 @@ abstract class Message implements Built<Message, MessageBuilder> {
   static const String RECIPIENTS = 'recipients';
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(Message.serializer, this);
+    return dataSerializers.serializeWith(Message.serializer, this);
   }
 
   static Message fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(Message.serializer, jsonData);
+    return dataSerializers.deserializeWith(Message.serializer, jsonData);
   }
 
   static Serializer<Message> get serializer => _$messageSerializer;

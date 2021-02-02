@@ -70,7 +70,7 @@ abstract class LeagueOrTournament
 
   Map<String, dynamic> toMap({bool includeMembers = false}) {
     Map<String, dynamic> ret =
-        serializers.serializeWith(LeagueOrTournament.serializer, this);
+        dataSerializers.serializeWith(LeagueOrTournament.serializer, this);
     if (!includeMembers) {
       ret.remove(MEMBERS);
     }
@@ -79,7 +79,7 @@ abstract class LeagueOrTournament
 
   static LeagueOrTournament fromMap(
       String userUid, Map<String, dynamic> jsonData) {
-    return serializers
+    return dataSerializers
         .deserializeWith(LeagueOrTournament.serializer, jsonData)
         .rebuild((b) => b..userUid = userUid);
   }

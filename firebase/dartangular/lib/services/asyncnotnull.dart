@@ -28,7 +28,7 @@ class AsyncNotNullDirective {
     if (obToCheck != null && !_hasView) {
       _viewContainer.createEmbeddedView(_templateRef);
       for (var i = 0, len = _viewContainer.length; i < len; i++) {
-        _viewContainer.get(i).setLocal('notNullVal', obToCheck);
+        //   _viewContainer.get(i).setLocal('notNullVal', obToCheck);
       }
       _hasView = true;
     } else if (obToCheck == null && _hasView) {

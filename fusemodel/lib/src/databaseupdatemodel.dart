@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:fusemodel/firestore.dart';
@@ -197,8 +197,8 @@ abstract class DatabaseUpdateModel {
   Future<void> updateFirestoreTeam(Team team);
   Future<void> addTrainingEvents(Game game, Iterable<DateTime> dates);
   Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen,
-      Season season, File imageFile);
-  Future<Uri> updateTeamImage(String teamUid, File imgFile);
+      Season season, Uint8List imageFile);
+  Future<Uri> updateTeamImage(String teamUid, Uint8List imgFile);
   DocumentReferenceWrapper precreateClubUid();
   Future<String> inviteAdminToTeam(
       {@required String myUid,
@@ -219,7 +219,7 @@ abstract class DatabaseUpdateModel {
   // Player stuff.
   Future<void> updateFirestorePlayer(Player player, bool includeUsers);
   Future<String> addFirestorePlayer(Player player);
-  Future<Uri> updatePlayerImage(String playerUid, File imgFile);
+  Future<Uri> updatePlayerImage(String playerUid, Uint8List imgFile);
   // Send an invite to a user for this season and team.
   Future<String> inviteUserToPlayer(
       {@required String playerUid,
@@ -270,7 +270,7 @@ abstract class DatabaseUpdateModel {
   Stream<BuiltList<Team>> getClubTeams(Club club);
   Future<String> updateClub(Club club, {bool includeMembers});
   Future<String> addClub(DocumentReferenceWrapper ref, Club club);
-  Future<Uri> updateClubImage(Club club, File imageFile);
+  Future<Uri> updateClubImage(Club club, Uint8List imageFile);
   Future<void> addUserToClub(String clubUid, String newUserUid, bool admin);
   Future<String> inviteUserToClub(
       {String clubName, String clubUid, bool admin, String email});
@@ -290,7 +290,7 @@ abstract class DatabaseUpdateModel {
   Stream<BuiltList<LeagueOrTournamentTeam>> getLeagueTeamsForTeamSeason(
       String teamSeasonUid);
   Future<String> updateLeague(LeagueOrTournament league, {bool includeMembers});
-  Future<Uri> updateLeagueImage(LeagueOrTournament league, File imageFile);
+  Future<Uri> updateLeagueImage(LeagueOrTournament league, Uint8List imageFile);
   Future<void> addUserToLeague(String leagueUid, bool admin);
   Future<void> addUserToLeagueSeason(String leagueUid, bool admin);
   Future<void> addUserToLeagueDivison(String leagueUid, bool admin);

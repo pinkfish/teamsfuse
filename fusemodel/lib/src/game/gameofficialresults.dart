@@ -73,11 +73,11 @@ abstract class GameOfficialResults
       b..result = OfficialResult.NotStarted;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(GameOfficialResults.serializer, this);
+    return dataSerializers.serializeWith(GameOfficialResults.serializer, this);
   }
 
   static GameOfficialResults fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(
+    return dataSerializers.deserializeWith(
         GameOfficialResults.serializer, jsonData);
   }
 

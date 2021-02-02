@@ -24,7 +24,7 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   /// The unique key generated is prefixed with a client-generated timestamp
   /// so that the resulting list will be chronologically-sorted.
   @override
-  wfs.DocumentReferenceWrapper document([String? path]) {
+  wfs.DocumentReferenceWrapper document([String path]) {
     if (path != null) {
       return new DocumentReference(_doc.doc(path));
     }
@@ -58,8 +58,8 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
       dynamic isLessThanOrEqualTo,
       dynamic isGreaterThan,
       dynamic isGreaterThanOrEqualTo,
-      bool? isNull}) {
-    Query? ret = null;
+      bool isNull}) {
+    Query ret = null;
     if (isEqualTo != null) {
       ret = new Query(_doc.where(field, "==", isEqualTo));
     }
@@ -119,12 +119,12 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
 
 class QuerySnapshotStreamTransformer
     extends StreamTransformerBase<fs.QuerySnapshot, wfs.QuerySnapshotWrapper> {
-  late StreamController<wfs.QuerySnapshotWrapper> _controller;
+  StreamController<wfs.QuerySnapshotWrapper> _controller;
 
-  StreamSubscription? _subscription;
+  StreamSubscription _subscription;
 
   // Original Stream
-  Stream<fs.QuerySnapshot>? _stream;
+  Stream<fs.QuerySnapshot> _stream;
 
   QuerySnapshotStreamTransformer() {
     _controller = new StreamController<wfs.QuerySnapshotWrapper>(

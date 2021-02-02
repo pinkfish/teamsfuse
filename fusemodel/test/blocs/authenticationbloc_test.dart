@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:mockito/mockito.dart';
@@ -23,7 +22,7 @@ void main() {
     when(userAuth.onAuthChanged()).thenAnswer((_) => _streamController.stream);
     when(analyticsSubsystem.debugMode).thenReturn(true);
     authenticationBloc = AuthenticationBloc(
-        userAuth: userAuth, analyticsSubsystem: analyticsSubsystem);
+         userAuth, analyticsSubsystem);
   });
 
   tearDown(() {

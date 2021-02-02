@@ -3,7 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singleplayerprovider.dart';
-import 'package:fusemodel/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+
+import '../../services/blocs.dart';
 
 ///
 /// Image of the specific player.  Will make an oval clip rect of the specific

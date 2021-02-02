@@ -193,11 +193,11 @@ abstract class AddedUid implements Built<AddedUid, AddedUidBuilder> {
   static void _initializeBuilder(AddedUidBuilder b) => b..added = true;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(AddedUid.serializer, this);
+    return dataSerializers.serializeWith(AddedUid.serializer, this);
   }
 
   static AddedUid fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(AddedUid.serializer, jsonData);
+    return dataSerializers.deserializeWith(AddedUid.serializer, jsonData);
   }
 
   static Serializer<AddedUid> get serializer => _$addedUidSerializer;
@@ -222,11 +222,11 @@ abstract class AddedOrAdmin
     ..admin = false;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(AddedOrAdmin.serializer, this);
+    return dataSerializers.serializeWith(AddedOrAdmin.serializer, this);
   }
 
   static AddedOrAdmin fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(AddedOrAdmin.serializer, jsonData);
+    return dataSerializers.deserializeWith(AddedOrAdmin.serializer, jsonData);
   }
 
   static Serializer<AddedOrAdmin> get serializer => _$addedOrAdminSerializer;

@@ -199,7 +199,7 @@ abstract class GamePeriodTime
   }
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(GamePeriodTime.serializer, this);
+    return dataSerializers.serializeWith(GamePeriodTime.serializer, this);
   }
 
   static void _initializeBuilder(GamePeriodTimeBuilder b) => b
@@ -208,7 +208,7 @@ abstract class GamePeriodTime
     .._currentPeriodStartInternal = 0;
 
   static GamePeriodTime fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(GamePeriodTime.serializer, jsonData);
+    return dataSerializers.deserializeWith(GamePeriodTime.serializer, jsonData);
   }
 
   static Serializer<GamePeriodTime> get serializer =>

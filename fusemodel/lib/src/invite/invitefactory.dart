@@ -14,7 +14,7 @@ class InviteFactory {
   static Invite makeInviteFromJSON(String uid, Map<String, dynamic> data) {
     assert(uid != null);
     InviteType type = InviteType.primitiveSerializer
-        .deserialize(serializers, data[Invite.TYPE]);
+        .deserialize(dataSerializers, data[Invite.TYPE]);
 
     switch (type) {
       case InviteType.Player:

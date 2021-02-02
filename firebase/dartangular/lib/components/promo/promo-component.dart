@@ -75,5 +75,5 @@ class _LabelStuff {
   final String label;
   final String route;
 
-  const _LabelStuff({required this.label, required this.route});
+  const _LabelStuff({this.label, this.route});
 }

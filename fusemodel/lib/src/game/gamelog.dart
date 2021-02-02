@@ -44,11 +44,11 @@ abstract class GameLog implements Built<GameLog, GameLogBuilder> {
   factory GameLog([updates(GameLogBuilder b)]) = _$GameLog;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(GameLog.serializer, this);
+    return dataSerializers.serializeWith(GameLog.serializer, this);
   }
 
   static GameLog fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(GameLog.serializer, jsonData);
+    return dataSerializers.deserializeWith(GameLog.serializer, jsonData);
   }
 
   static Serializer<GameLog> get serializer => _$gameLogSerializer;

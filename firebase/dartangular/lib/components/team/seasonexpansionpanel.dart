@@ -23,29 +23,30 @@ import 'package:teamfuse/components/games/gamecard-component.dart';
 )
 class SeasonExpansionPanelComponent implements OnDestroy, OnInit {
   @Input()
-  late Team team;
+  Team team;
   @Input()
-  late Season season;
-  GameSubscription? _subscription;
-  Iterable<Game>? games;
-  StreamSubscription<Iterable<Game>>? _transformedStream;
+  Season season;
+  StreamSubscription<GameSnapshotEvent> _subscription;
+  Iterable<Game> games;
+  StreamSubscription<Iterable<Game>> _transformedStream;
+  DatabaseUpdateModel _db;
+
+  SeasonExpansionPanelComponent(this._db);
 
   @override
   void ngOnInit() {
     print('Making panel');
-    _subscription = season.getGames();
-    games = _subscription.initialData;
-    _transformedStream = _subscription.stream.map((Iterable<Game> games) {
-      Iterable<Game> ret =
-          games.where((Game g) => g.sharedData.type == EventType.Game);
-      return ret;
-    }).listen((Iterable<Game> allGames) => games = allGames);
+
+    _subscription = _db.getSeasonGames(season).listen((event) {
+      games = event.newGames;
+    });
+
+    games = [];
   }
 
   @override
   void ngOnDestroy() {
-    _subscription.dispose();
-    _transformedStream.cancel();
+    _subscription?.cancel();
   }
 
   Object trackByGame(int index, dynamic game) => game is Game ? game.uid : "";

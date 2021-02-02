@@ -20,8 +20,8 @@ void main() {
           ..leagueUid = "none"
           ..uid = "myUid"
           ..name = "WOmble world"
-          ..time = DateTime.fromMillisecondsSinceEpoch(12354)
-          ..endTime = DateTime.fromMillisecondsSinceEpoch(12345)
+          ..time = DateTime.fromMillisecondsSinceEpoch(12354).toUtc()
+          ..endTime = DateTime.fromMillisecondsSinceEpoch(12345).toUtc()
           ..timezone = "PDT"
           ..type = EventType.Event
           ..place.name = "frog"
@@ -38,7 +38,7 @@ void main() {
     var serializer = GameSharedData.serializer;
 
     GameSharedData newResult =
-        serializers.deserializeWith(serializer, gameSharedData.toMap());
+        dataSerializers.deserializeWith(serializer, gameSharedData.toMap());
 
     expect(newResult, equals(gameSharedData));
   });

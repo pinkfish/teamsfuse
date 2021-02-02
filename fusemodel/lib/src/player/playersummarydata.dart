@@ -78,11 +78,11 @@ abstract class MadeAttempt implements Built<MadeAttempt, MadeAttemptBuilder> {
   factory MadeAttempt([updates(MadeAttemptBuilder b)]) = _$MadeAttempt;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(MadeAttempt.serializer, this);
+    return dataSerializers.serializeWith(MadeAttempt.serializer, this);
   }
 
   static MadeAttempt fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(MadeAttempt.serializer, jsonData);
+    return dataSerializers.deserializeWith(MadeAttempt.serializer, jsonData);
   }
 
   static Serializer<MadeAttempt> get serializer => _$madeAttemptSerializer;

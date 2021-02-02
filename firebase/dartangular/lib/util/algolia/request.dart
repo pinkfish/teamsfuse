@@ -2,13 +2,13 @@ class SearchRequest {
   final String index;
   final String query;
   final int hitsPerPage;
-  final int? page;
-  final int? offset;
-  final int? length;
+  final int page;
+  final int offset;
+  final int length;
   final bool getRankingInfo;
-  final Iterable<String>? attributesToRetrieve;
-  final Iterable<String>? restrictSearchableAttributes;
-  final String? filters;
+  final Iterable<String> attributesToRetrieve;
+  final Iterable<String> restrictSearchableAttributes;
+  final String filters;
 
   SearchRequest(this.index, this.query,
       {this.hitsPerPage = 10,
@@ -37,11 +37,11 @@ class SearchRequest {
     }
     if (attributesToRetrieve != null) {
       str +=
-          ', "attributesToRetrieve": [${attributesToRetrieve!.map((String s) => '"$s"').join(', ')}]';
+          ', "attributesToRetrieve": [${attributesToRetrieve.map((String s) => '"$s"').join(', ')}]';
     }
     if (restrictSearchableAttributes != null) {
       str +=
-          ', "restrictSearchableAttributes": [${restrictSearchableAttributes!.map((String s) => '"$s"').join(', ')}]';
+          ', "restrictSearchableAttributes": [${restrictSearchableAttributes.map((String s) => '"$s"').join(', ')}]';
     }
     return str + '}';
   }

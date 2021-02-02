@@ -47,11 +47,11 @@ abstract class MediaInfo implements Built<MediaInfo, MediaInfoBuilder> {
   factory MediaInfo([updates(MediaInfoBuilder b)]) = _$MediaInfo;
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(MediaInfo.serializer, this);
+    return dataSerializers.serializeWith(MediaInfo.serializer, this);
   }
 
   static MediaInfo fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(MediaInfo.serializer, jsonData);
+    return dataSerializers.deserializeWith(MediaInfo.serializer, jsonData);
   }
 
   static Serializer<MediaInfo> get serializer => _$mediaInfoSerializer;

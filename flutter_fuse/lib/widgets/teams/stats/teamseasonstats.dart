@@ -1,10 +1,10 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../../../services/localutilities.dart';
+import '../../../services/blocs.dart';
 import '../../../services/messages.dart';
+import '../../../services/localutilities.dart';
 import '../../player/playerdropdown.dart';
 
 enum ShowGameData {

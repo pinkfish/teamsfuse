@@ -9,7 +9,6 @@ import 'package:angular_components/material_list/material_list.dart';
 import 'package:angular_components/material_list/material_list_item.dart';
 import 'package:angular_router/angular_router.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:teamfuse/components/drawer/clubdraweritem.dart';
@@ -40,12 +39,12 @@ import 'package:teamfuse/services/isfirebaseauth.dart';
 class Drawer implements OnInit, OnDestroy {
   bool customWidth = false;
   bool end = false;
-  Stream<Iterable<Team>>? teams;
-  Stream<Iterable<Club>>? clubs;
+  Stream<Iterable<Team>> teams;
+  Stream<Iterable<Club>> clubs;
   StreamController<Iterable<Team>> _teamController = new StreamController();
-  StreamSubscription<Iterable<Team>>? _sub;
+  StreamSubscription<Iterable<Team>> _sub;
   StreamController<Iterable<Club>> _clubController = new StreamController();
-  StreamSubscription<BuiltList<Club>>? _clubSub;
+  StreamSubscription<BuiltList<Club>> _clubSub;
   final Router _router;
   final AuthenticationBloc _auth;
   final DatabaseUpdateModelImpl _db;
@@ -90,7 +89,7 @@ class Drawer implements OnInit, OnDestroy {
 
   void signOut() async {
     print('Starting signout');
-    _auth.dispatch(AuthenticationLogOut());
+    _auth.add(AuthenticationLogOut());
     _router.navigate("/g/guesthome");
     print('Ended signout');
   }

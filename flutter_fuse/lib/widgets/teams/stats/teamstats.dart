@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
-import 'package:fusemodel/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../player/playerdropdown.dart';
+import '../../../services/blocs.dart';
 import '../../util/deleted.dart';
 import '../../util/loading.dart';
 import '../seasondropdown.dart';

@@ -31,11 +31,12 @@ abstract class InviteToLeagueTeam
   static const String LEAGUEUID = 'leagueUid';
 
   Map<String, dynamic> toMap({bool includeMembers}) {
-    return serializers.serializeWith(InviteToLeagueTeam.serializer, this);
+    return dataSerializers.serializeWith(InviteToLeagueTeam.serializer, this);
   }
 
   static InviteToLeagueTeam fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(InviteToLeagueTeam.serializer, jsonData);
+    return dataSerializers.deserializeWith(
+        InviteToLeagueTeam.serializer, jsonData);
   }
 
   static Serializer<InviteToLeagueTeam> get serializer =>

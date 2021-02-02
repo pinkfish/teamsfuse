@@ -12,7 +12,7 @@ class Auth extends wfs.AuthWrapper {
   }
 
   @override
-  Future<void> sendPasswordResetEmail({String? email}) async {
+  Future<void> sendPasswordResetEmail({String email}) async {
     if (email != null) {
       return fb.auth().sendPasswordResetEmail(email);
     }
@@ -27,7 +27,7 @@ class Auth extends wfs.AuthWrapper {
 
   @override
   Future<wfs.FirebaseUserWrapper> signInWithEmailAndPassword(
-      {String? email, String? password}) async {
+      {String email, String password}) async {
     if (email != null && password != null) {
       fb.UserCredential user =
           await fb.auth().signInWithEmailAndPassword(email, password);
@@ -38,7 +38,7 @@ class Auth extends wfs.AuthWrapper {
 
   @override
   Future<wfs.FirebaseUserWrapper> createUserWithEmailAndPassword(
-      {String? email, String? password}) async {
+      {String email, String password}) async {
     if (email != null && password != null) {
       fb.UserCredential user =
           await fb.auth().createUserWithEmailAndPassword(email, password);
@@ -53,9 +53,9 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
 
   FirebaseUser(this._user)
       : super(
-            email: _user.email,
-            isEmailVerified: _user.emailVerified,
-            uid: _user.uid,
+            email: _user?.email,
+            isEmailVerified: _user?.emailVerified,
+            uid: _user?.uid,
             loggedIn: _user != null);
 
   @override
@@ -71,12 +71,12 @@ class FirebaseUser extends wfs.FirebaseUserWrapper {
 
 class UserTransformer
     extends StreamTransformerBase<fb.User, wfs.FirebaseUserWrapper> {
-  late StreamController<wfs.FirebaseUserWrapper> _controller;
+  StreamController<wfs.FirebaseUserWrapper> _controller;
 
-  StreamSubscription? _subscription;
+  StreamSubscription _subscription;
 
   // Original Stream
-  Stream<fb.User>? _stream;
+  Stream<fb.User> _stream;
 
   UserTransformer() {
     _controller = new StreamController<wfs.FirebaseUserWrapper>(
