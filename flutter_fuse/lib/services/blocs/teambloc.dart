@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'clubbloc.dart';
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 abstract class TeamEvent extends Equatable {}
 
@@ -222,7 +222,8 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
     if (event is TeamLoadPublicTeam) {
       if (state.getPublicTeam(event.teamUid) == null) {
         Team t = await coordinationBloc.databaseUpdateModel
-            .getPublicTeamDetails(teamUid: event.teamUid);
+            .getPublicTeamDetails(teamUid: event.teamUid)
+            .first;
         MapBuilder<String, Team> publicStuff = state.publicTeams.toBuilder();
         publicStuff[event.teamUid] = t;
         yield (TeamLoaded.fromState(state)..publicTeams = publicStuff).build();

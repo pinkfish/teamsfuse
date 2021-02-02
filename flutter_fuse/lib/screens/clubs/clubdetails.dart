@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/clubs/clubdetails.dart';
 import '../../widgets/clubs/clubmembers.dart';
@@ -30,6 +30,11 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
 
   @override
   void initState() {
+    // If not logged in default to the tabIndex of 0.
+    var bloc = BlocProvider.of<AuthenticationBloc>(context);
+    if (bloc.currentUser == null) {
+      _tabIndex = 0;
+    }
     super.initState();
     _singleClubBloc = SingleClubBloc(
         clubBloc: BlocProvider.of<ClubBloc>(context), clubUid: widget.clubUid);
@@ -115,6 +120,26 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
               theBody = _buildBody(state.club);
             }
 
+            // Setup the navigation items.
+            var navItems = <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.gamepad),
+                label: Messages.of(context).clubdetails,
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.people),
+                label: Messages.of(context).teams,
+              ),
+            ];
+
+            var bloc = BlocProvider.of<AuthenticationBloc>(context);
+            if (bloc.currentUser != null) {
+              navItems.add(BottomNavigationBarItem(
+                icon: Icon(Icons.flag),
+                label: Messages.of(context).members,
+              ));
+            }
+
             return Scaffold(
               appBar: AppBar(
                 title: Text(title),
@@ -127,20 +152,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                   });
                 },
                 currentIndex: _tabIndex,
-                items: <BottomNavigationBarItem>[
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.gamepad),
-                    label: Messages.of(context).clubdetails,
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.people),
-                    label: Messages.of(context).teams,
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.flag),
-                    label: Messages.of(context).members,
-                  ),
-                ],
+                items: navItems,
               ),
               body: theBody,
             );

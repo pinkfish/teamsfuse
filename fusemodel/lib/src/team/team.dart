@@ -49,6 +49,9 @@ abstract class Team implements Built<Team, TeamBuilder> {
   @BuiltValueField(serialize: false)
   bool get publicOnly;
 
+  /// If this team is publically visible.
+  bool get isPublicVisibleTeam;
+
   /// If we should track attendecne for games in this team.  This is
   /// overridden by the club potentially.
   @BuiltValueField(wireName: ATTENDANCE)
@@ -77,6 +80,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
 
   static void _initializeBuilder(TeamBuilder b) => b
     ..userUid = ""
+    ..isPublicVisibleTeam = false
     ..publicOnly = false;
 
   /// Deserialize the team.

@@ -208,7 +208,7 @@ abstract class DatabaseUpdateModel {
   Future<void> deleteAdmin(Team team, String uid);
   Future<String> addAdmin(String teamUid, String uid);
   Stream<Iterable<InviteAsAdmin>> getInviteForTeamStream(Team team);
-  Future<Team> getPublicTeamDetails({@required String teamUid});
+  Stream<Team> getPublicTeamDetails({@required String teamUid});
   Stream<Iterable<InviteAsAdmin>> getInvitesForTeam(String teamUid);
   Stream<Iterable<Opponent>> getTeamOpponents(String teamUid);
   Stream<Team> getTeamDetails({@required String teamUid});

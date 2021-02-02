@@ -119,6 +119,16 @@ class SingleLeagueOrTournamentTeamInviteMember
   List<Object> get props => [email];
 }
 
+class _SingleLeagueOrTournamentEventNewPublicTeam
+    extends SingleLeagueOrTournamentTeamEvent {
+  final Team publicTeam;
+
+  _SingleLeagueOrTournamentEventNewPublicTeam(this.publicTeam);
+
+  @override
+  List<Object> get props => [publicTeam];
+}
+
 ///
 /// Handles the work around the clubs and club system inside of
 /// the app.
@@ -132,6 +142,7 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
   StreamSubscription<Iterable<GameSharedData>> _gamesSnapshot;
   StreamSubscription<Iterable<InviteToLeagueTeam>> _inviteSnapshot;
   StreamSubscription<LeagueOrTournamentTeam> _teamSub;
+  StreamSubscription<Team> _sub;
 
   SingleLeagueOrTournamentTeamBloc(
       {@required this.leagueTeamUid, @required this.db, @required this.crashes})
@@ -162,6 +173,8 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     _inviteSnapshot = null;
     _teamSub?.cancel();
     _teamSub = null;
+    _sub?.cancel();
+    _sub = null;
   }
 
   void _updateGames(Iterable<GameSharedData> games) {
@@ -284,10 +297,16 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     }
 
     if (event is SingleLeagueOrTournamentTeamLoadPublicTeam) {
-      Team publicTeam = await db.getPublicTeamDetails(
-          teamUid: state.leagueOrTournamentTeam.teamUid);
+      _sub = db
+          .getPublicTeamDetails(teamUid: state.leagueOrTournamentTeam.teamUid)
+          .listen((event) {
+        add(_SingleLeagueOrTournamentEventNewPublicTeam(event));
+      });
+    }
+
+    if (event is _SingleLeagueOrTournamentEventNewPublicTeam) {
       yield (SingleLeagueOrTournamentTeamLoaded.fromState(state)
-            ..publicTeam = publicTeam.toBuilder())
+            ..publicTeam = event.publicTeam.toBuilder())
           .build();
     }
   }

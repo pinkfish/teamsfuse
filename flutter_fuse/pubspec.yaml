@@ -49,7 +49,7 @@ dependencies:
   universal_io: ^1.0.2
 
   fluro: any
-  image_picker: ^0.6.7+21
+  image_picker: ^0.6.7+22
   timezone: ^0.6.1
   tuple: any
   sliver_calendar: ^0.2.2

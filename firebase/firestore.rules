@@ -18,7 +18,10 @@ service cloud.firestore {
     }
 
     function isSignedIn() {
-      return request.auth != null && request.auth.token.email_verified;
+      return request.auth != null &&
+          request.auth.token != null &&
+          "email_verified" in request.auth.token &&
+          request.auth.token.email_verified == true;
     }
 
     function isUserOrAdmin(data) {
@@ -31,7 +34,7 @@ service cloud.firestore {
     }
 
     match /Clubs/{club} {
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() || existingData().publicClub == true;
       // Only allow writes when the member is setup correctly.
       allow update, delete: if isSignedIn() &&
           existingData().members[request.auth.uid].admin;
@@ -122,9 +125,11 @@ service cloud.firestore {
         allow write: if isSignedIn();
       }
       allow list: if isSignedIn();
-      allow read: if isSignedIn() &&
+      allow read: if (isSignedIn() &&
         (existingData().users[request.auth.uid].added ||
-        request.auth.uid in existingData().admins);
+        request.auth.uid in existingData().admins)) ||
+        ("isPublicVisibleTeam" in existingData() &&
+         existingData().isPublicVisibleTeam == true);
       allow write: if isSignedIn();
       allow create: if isSignedIn() &&
         request.auth.uid in request.auth.uid in incomingData().admins;

@@ -23,6 +23,11 @@ class FuseMaterialApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var club = String.fromEnvironment("DART_STARTUP_CLUB");
+    var route = "Home";
+    if (club != null) {
+      route = "/Club/" + club;
+    }
     return MaterialApp(
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         MessagesDelegate(),
@@ -38,9 +43,9 @@ class FuseMaterialApp extends StatelessWidget {
       navigatorObservers: <NavigatorObserver>[
         FirebaseAnalyticsObserver(analytics: AnalyticsSubsystemImpl.analytics),
       ],
-      title: "Team Fuse",
+      title: "Teams Fuse",
       theme: _theme,
-      initialRoute: "Home",
+      initialRoute: route,
       home: SplashScreen(),
       onGenerateRoute: (settings) => _buildRoute(context, settings),
     );

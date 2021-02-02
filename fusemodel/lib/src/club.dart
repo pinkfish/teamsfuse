@@ -21,6 +21,9 @@ abstract class Club implements Built<Club, ClubBuilder> {
   @nullable
   String get photoUrl;
 
+  /// If this club is publicaly visible.
+  bool get publicClub;
+
   /// Some text describing what the club is about.
   String get about;
 
@@ -58,6 +61,7 @@ abstract class Club implements Built<Club, ClubBuilder> {
     ..about = ""
     ..arriveBeforeGame = 0
     ..trackAttendence = Tristate.Yes
+    ..publicClub = false
     ..userUid = "";
 
   Map<String, dynamic> toMap({bool includeMembers}) {

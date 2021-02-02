@@ -7,9 +7,12 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 import 'package:timezone/timezone.dart';
 
-import 'firestore.dart';
 import 'authenticationbloc.dart';
+import 'firestore.dart';
 
+///
+/// Implementation of the database model for getting data from firestone.
+///
 class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   static const int maxMessages = 20;
   final FirestoreWrapper wrapper;
@@ -558,14 +561,25 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Team> getPublicTeamDetails({@required String teamUid}) async {
-    DocumentSnapshotWrapper snap =
-        await wrapper.collection(TEAMS_COLLECTION).document(teamUid).get();
+  Stream<Team> getPublicTeamDetails({@required String teamUid}) async* {
+    var ref = wrapper.collection(TEAMS_COLLECTION).document(teamUid);
+    var snap = await ref.get();
     if (snap.exists) {
-      Team team = Team.fromMap(userData.uid, snap.data);
-      return team;
+      Team team = Team.fromMap(userData.uid, snap.data)
+        ..rebuild((b) => b..publicOnly = true);
+      yield team;
+    } else {
+      yield null;
     }
-    return null;
+    await for (DocumentSnapshotWrapper doc in ref.snapshots()) {
+      if (doc != null && doc.exists) {
+        yield Team.fromMap(userData.uid, snap.data)
+          ..rebuild((b) => b..publicOnly = true);
+        ;
+      } else {
+        yield Team((b) => b..uid = teamUid);
+      }
+    }
   }
 
   @override
@@ -1408,7 +1422,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Uri> updateLeagueImage(LeagueOrTournament league, Uint8List imgFile) async {
+  Future<Uri> updateLeagueImage(
+      LeagueOrTournament league, Uint8List imgFile) async {
     final StorageReferenceWrapper ref =
         wrapper.storageRef().child("league_" + league.uid + ".jpg");
     final StorageUploadTaskWrapper task = ref.putFile(imgFile);

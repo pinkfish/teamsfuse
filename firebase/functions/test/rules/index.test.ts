@@ -56,58 +56,56 @@ after(async function () {
 describe('TeamsFuse rules', function () {
     it('require users to log in before listing teams', async function () {
         const db = authedApp();
-        await firebase.assertFails(db.collection('Teams').where("uid", "==", true).get());
+        await firebase.assertFails(db.collection('Teams').where('uid', '==', true).get());
     });
     it('require users to log in before listing clubs', async function () {
         const db = authedApp();
-        await firebase.assertFails(db.collection('Clubs').where("uid", "==", true).get());
+        await firebase.assertFails(db.collection('Clubs').where('uid', '==', true).get());
     });
     it('require users to log in before listing games', async () => {
         const db = authedApp();
-        await firebase.assertFails(db.collection('Games').where("uid", "==", true).get());
+        await firebase.assertFails(db.collection('Games').where('uid', '==', true).get());
     });
     it('require users to log in before listing games shared', async () => {
         const db = authedApp();
-        await firebase.assertFails(db.collection('GamesShared').where("uid", "==", true).get());
+        await firebase.assertFails(db.collection('GamesShared').where('uid', '==', true).get());
     });
     it('require users to log in before listing invites', async () => {
         const db = authedApp();
-        await firebase.assertFails(db.collection('Invites').where("uid", "==", true).get());
+        await firebase.assertFails(db.collection('Invites').where('uid', '==', true).get());
     });
     it('everyone can list league', async () => {
         const db = authedApp();
-        await firebase.assertSucceeds(db.collection('League').where("uid", "==", true).get());
+        await firebase.assertSucceeds(db.collection('League').where('uid', '==', true).get());
     });
     it('everyone can list league divison', async () => {
         const db = authedApp();
-        await firebase.assertSucceeds(db.collection('LeagueDivision').where("uid", "==", true).get());
+        await firebase.assertSucceeds(db.collection('LeagueDivision').where('uid', '==', true).get());
     });
     it('everyone can list league season', async () => {
         const db = authedApp();
-        await firebase.assertSucceeds(db.collection('LeagueSeason').where("uid", "==", true).get());
+        await firebase.assertSucceeds(db.collection('LeagueSeason').where('uid', '==', true).get());
     });
     it('everyone can list league team', async () => {
         const db = authedApp();
-        await firebase.assertSucceeds(db.collection('LeagueTeam').where("uid", "==", true).get());
+        await firebase.assertSucceeds(db.collection('LeagueTeam').where('uid', '==', true).get());
     });
     it('require users to log in before listing message recipients', async () => {
         const db = authedApp();
-        await firebase.assertFails(db.collection('MessageRecipients').where("uid", "==", true).get());
+        await firebase.assertFails(db.collection('MessageRecipients').where('uid', '==', true).get());
     });
     it('require users to log in before listing messages', async () => {
         const db = authedApp();
-        await firebase.assertFails(db.collection('Messages').where("uid", "==", true).get());
+        await firebase.assertFails(db.collection('Messages').where('uid', '==', true).get());
     });
     it('require users to log in before listing players', async () => {
         const db = authedApp();
-        await firebase.assertFails(db.collection('Players').where("uid", "==", true).get());
+        await firebase.assertFails(db.collection('Players').where('uid', '==', true).get());
     });
     it('require users to log in before listing seasons', async () => {
         const db = authedApp();
-        await firebase.assertFails(db.collection('Seasons').where("uid", "==", true).get());
+        await firebase.assertFails(db.collection('Seasons').where('uid', '==', true).get());
     });
-
-
 
     it('get team', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
@@ -118,6 +116,18 @@ describe('TeamsFuse rules', function () {
         await firebase.assertSucceeds(db.collection('Teams').doc('frog').get());
         const dbRobert = authedApp({ uid: 'robert' });
         await firebase.assertFails(dbRobert.collection('Teams').doc('frog').get());
+    });
+    it('get public team', async () => {
+        const db = authedApp({ uid: 'alice', email_verified: true });
+        await db
+            .collection('Teams')
+            .doc('frogpublic')
+            .set({ admins: { alice: { added: true }  }, isPublicVisibleTeam: true });
+        await firebase.assertSucceeds(db.collection('Teams').doc('frogpublic').get());
+        const dbRobert = authedApp({ uid: 'robert',  });
+        await firebase.assertSucceeds(dbRobert.collection('Teams').doc('frogpublic').get());
+        const dbAnon = authedApp();
+        await firebase.assertSucceeds(dbAnon.collection('Teams').doc('frogpublic').get());
     });
     it('get season', async () => {
         const db = authedApp({ uid: 'robert', email_verified: true });
