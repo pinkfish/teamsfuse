@@ -23,13 +23,12 @@ abstract class Season implements Built<Season, SeasonBuilder> {
   BuiltMap<String, SeasonPlayer> get playersData;
 
   /// If this season is publicaly visible.
-  bool get isPublicVisibleSeason;
+  bool get isPublic;
 
   Season._();
   factory Season([updates(SeasonBuilder b)]) = _$Season;
 
-  static void _initializeBuilder(SeasonBuilder b) =>
-      b..isPublicVisibleSeason = false;
+  static void _initializeBuilder(SeasonBuilder b) => b..isPublic = false;
 
   Map<String, dynamic> toMap({bool includePlayers = false}) {
     Map<String, dynamic> ret =

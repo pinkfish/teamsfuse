@@ -317,23 +317,32 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
       return SingleLeagueOrTournamentTeamUninitialized();
     }
 
-    SingleLeagueOrTournamentTeamBlocStateType type =
-        SingleLeagueOrTournamentTeamBlocStateType.valueOf(json["type"]);
-    switch (type) {
-      case SingleLeagueOrTournamentTeamBlocStateType.Uninitialized:
-        return SingleLeagueOrTournamentTeamUninitialized();
-      case SingleLeagueOrTournamentTeamBlocStateType.Loaded:
-        var ret = SingleLeagueOrTournamentTeamLoaded.fromMap(json);
-        return ret;
-      case SingleLeagueOrTournamentTeamBlocStateType.Deleted:
-        return SingleLeagueOrTournamentTeamDeleted.fromMap(json);
-      case SingleLeagueOrTournamentTeamBlocStateType.SaveFailed:
-        return SingleLeagueOrTournamentTeamSaveFailed.fromMap(json);
-      case SingleLeagueOrTournamentTeamBlocStateType.Saving:
-        return SingleLeagueOrTournamentTeamSaving.fromMap(json);
-      case SingleLeagueOrTournamentTeamBlocStateType.SaveDone:
-        return SingleLeagueOrTournamentTeamSaveDone.fromMap(json);
+    try {
+      SingleLeagueOrTournamentTeamBlocStateType type =
+          SingleLeagueOrTournamentTeamBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleLeagueOrTournamentTeamBlocStateType.Uninitialized:
+          return SingleLeagueOrTournamentTeamUninitialized();
+        case SingleLeagueOrTournamentTeamBlocStateType.Loaded:
+          var ret = SingleLeagueOrTournamentTeamLoaded.fromMap(json);
+          return ret;
+        case SingleLeagueOrTournamentTeamBlocStateType.Deleted:
+          return SingleLeagueOrTournamentTeamDeleted.fromMap(json);
+        case SingleLeagueOrTournamentTeamBlocStateType.SaveFailed:
+          return SingleLeagueOrTournamentTeamSaveFailed.fromMap(json);
+        case SingleLeagueOrTournamentTeamBlocStateType.Saving:
+          return SingleLeagueOrTournamentTeamSaving.fromMap(json);
+        case SingleLeagueOrTournamentTeamBlocStateType.SaveDone:
+          return SingleLeagueOrTournamentTeamSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
     }
+
     return SingleLeagueOrTournamentTeamUninitialized();
   }
 

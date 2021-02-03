@@ -524,23 +524,32 @@ class SingleTeamBloc
       return SingleTeamUninitialized();
     }
 
-    SingleTeamBlocStateType type =
-        SingleTeamBlocStateType.valueOf(json["type"]);
-    switch (type) {
-      case SingleTeamBlocStateType.Uninitialized:
-        return SingleTeamUninitialized();
-      case SingleTeamBlocStateType.Loaded:
-        var ret = SingleTeamLoaded.fromMap(json);
-        return ret;
-      case SingleTeamBlocStateType.Deleted:
-        return SingleTeamDeleted.fromMap(json);
-      case SingleTeamBlocStateType.SaveFailed:
-        return SingleTeamSaveFailed.fromMap(json);
-      case SingleTeamBlocStateType.Saving:
-        return SingleTeamSaving.fromMap(json);
-      case SingleTeamBlocStateType.SaveDone:
-        return SingleTeamSaveDone.fromMap(json);
+    try {
+      SingleTeamBlocStateType type =
+          SingleTeamBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleTeamBlocStateType.Uninitialized:
+          return SingleTeamUninitialized();
+        case SingleTeamBlocStateType.Loaded:
+          var ret = SingleTeamLoaded.fromMap(json);
+          return ret;
+        case SingleTeamBlocStateType.Deleted:
+          return SingleTeamDeleted.fromMap(json);
+        case SingleTeamBlocStateType.SaveFailed:
+          return SingleTeamSaveFailed.fromMap(json);
+        case SingleTeamBlocStateType.Saving:
+          return SingleTeamSaving.fromMap(json);
+        case SingleTeamBlocStateType.SaveDone:
+          return SingleTeamSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
     }
+
     return SingleTeamUninitialized();
   }
 

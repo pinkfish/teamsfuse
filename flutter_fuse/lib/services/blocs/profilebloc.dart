@@ -2,10 +2,8 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:meta/meta.dart';
-
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-
+import 'package:meta/meta.dart';
 
 abstract class ProfileEvent extends Equatable {}
 
@@ -45,12 +43,14 @@ class _ProfileLoggedOut extends ProfileEvent {
 ///
 class ProfileBloc extends HydratedBloc<ProfileEvent, ProfileBlocState> {
   final AuthenticationBloc authenticationBloc;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<AuthenticationState> _authSub;
   StreamSubscription<FusedUserProfile> _profileSub;
 
   ProfileBloc({
     @required this.authenticationBloc,
+    @required this.crashes,
   }) : super(ProfileBlocUninitialized()) {
     _authSub = authenticationBloc.listen((state) {
       if (state is AuthenticationLoggedOut) {
@@ -103,7 +103,16 @@ class ProfileBloc extends HydratedBloc<ProfileEvent, ProfileBlocState> {
       case ProfileBlocStateType.Uninitialized:
         return ProfileBlocUninitialized();
       case ProfileBlocStateType.Loaded:
-        return ProfileBlocLoaded.fromMap(json);
+        try {
+          return ProfileBlocLoaded.fromMap(json);
+        } catch (e, stacktrace) {
+          if (e is Error) {
+            crashes.recordError(e, stacktrace);
+          } else {
+            crashes.recordException(e, stacktrace);
+          }
+        }
+        return ProfileBlocUninitialized();
       default:
         return ProfileBlocUninitialized();
     }

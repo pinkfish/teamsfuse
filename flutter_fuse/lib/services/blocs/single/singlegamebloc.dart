@@ -710,30 +710,38 @@ class SingleGameBloc
 
   @override
   SingleGameState fromJson(Map<String, dynamic> json) {
-    //if (json == null || !json.containsKey("type")) {
-    return SingleGameUninitialized();
-    // }
-
-    SingleGameBlocStateType type =
-        SingleGameBlocStateType.valueOf(json["type"]);
-    switch (type) {
-      case SingleGameBlocStateType.Uninitialized:
-        return SingleGameUninitialized();
-      case SingleGameBlocStateType.Loaded:
-        var ret = SingleGameLoaded.fromMap(json);
-        if (ret.loadedLogs) {
-          add(SingleGameLoadGameLog());
-        }
-        return ret;
-      case SingleGameBlocStateType.Deleted:
-        return SingleGameDeleted.fromMap(json);
-      case SingleGameBlocStateType.SaveFailed:
-        return SingleGameSaveFailed.fromMap(json);
-      case SingleGameBlocStateType.Saving:
-        return SingleGameSaving.fromMap(json);
-      case SingleGameBlocStateType.SaveDone:
-        return SingleGameSaveDone.fromMap(json);
+    if (json == null || !json.containsKey("type")) {
+      return SingleGameUninitialized();
     }
+    try {
+      SingleGameBlocStateType type =
+          SingleGameBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleGameBlocStateType.Uninitialized:
+          return SingleGameUninitialized();
+        case SingleGameBlocStateType.Loaded:
+          var ret = SingleGameLoaded.fromMap(json);
+          if (ret.loadedLogs) {
+            add(SingleGameLoadGameLog());
+          }
+          return ret;
+        case SingleGameBlocStateType.Deleted:
+          return SingleGameDeleted.fromMap(json);
+        case SingleGameBlocStateType.SaveFailed:
+          return SingleGameSaveFailed.fromMap(json);
+        case SingleGameBlocStateType.Saving:
+          return SingleGameSaving.fromMap(json);
+        case SingleGameBlocStateType.SaveDone:
+          return SingleGameSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
+    }
+
     return SingleGameUninitialized();
   }
 

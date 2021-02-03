@@ -484,24 +484,33 @@ class SingleInviteBloc
       return SingleInviteUninitialized();
     }
 
-    SingleInviteBlocStateType type =
-        SingleInviteBlocStateType.valueOf(json["type"]);
-    switch (type) {
-      case SingleInviteBlocStateType.Uninitialized:
-        return SingleInviteUninitialized();
-      case SingleInviteBlocStateType.Loaded:
-        var ret = SingleInviteLoaded.fromMap(json);
+    try {
+      SingleInviteBlocStateType type =
+          SingleInviteBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleInviteBlocStateType.Uninitialized:
+          return SingleInviteUninitialized();
+        case SingleInviteBlocStateType.Loaded:
+          var ret = SingleInviteLoaded.fromMap(json);
 
-        return ret;
-      case SingleInviteBlocStateType.Deleted:
-        return SingleInviteDeleted.fromMap(json);
-      case SingleInviteBlocStateType.SaveFailed:
-        return SingleInviteSaveFailed.fromMap(json);
-      case SingleInviteBlocStateType.Saving:
-        return SingleInviteSaving.fromMap(json);
-      case SingleInviteBlocStateType.SaveDone:
-        return SingleInviteSaveDone.fromMap(json);
+          return ret;
+        case SingleInviteBlocStateType.Deleted:
+          return SingleInviteDeleted.fromMap(json);
+        case SingleInviteBlocStateType.SaveFailed:
+          return SingleInviteSaveFailed.fromMap(json);
+        case SingleInviteBlocStateType.Saving:
+          return SingleInviteSaving.fromMap(json);
+        case SingleInviteBlocStateType.SaveDone:
+          return SingleInviteSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
     }
+
     return SingleInviteUninitialized();
   }
 

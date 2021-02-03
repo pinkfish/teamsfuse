@@ -13,7 +13,7 @@ export const onSeasonCreate = functions.firestore.document('/Seasons/{seasonId}'
     // If it doesn't exist...?  Hmmm.
     if (team.exists && data !== null && data !== undefined) {
         const teamData = team.data();
-        if (teamData !== null && teamData !== undefined && teamData.isPublicVisibleTeam) {
+        if (teamData !== null && teamData !== undefined && teamData.isPublic) {
             // Yay us.
             if (teamData.currentSeason === snap.id) {
                 // Set all the others as not visible.
@@ -22,24 +22,24 @@ export const onSeasonCreate = functions.firestore.document('/Seasons/{seasonId}'
                     const docData = doc.data();
                     if (docData !== null && docData !== undefined) {
                         if (doc.id === teamData.currentSeason) {
-                            if (!docData.isPublicVisibleSeason) {
+                            if (!docData.isPublic) {
                                 await doc.ref.update({
-                                    isPublicVisibleSeason: true,
+                                    isPublic: true,
                                 });
                             }
                         } else {
-                            if (docData.isPublicVisibleSeason) {
-                                await doc.ref.update({ isPublicVisibleSeason: false });
+                            if (docData.isPublic) {
+                                await doc.ref.update({ isPublic: false });
                             }
                         }
                     }
                 }
             }
-        } else if (data.isPublicVisibleSeason) {
-            await snap.ref.update({ isPublicVisibleSeason: false });
+        } else if (data.isPublic) {
+            await snap.ref.update({ isPublic: false });
         }
-    } else if (data.isPublicVisibleSeason) {
-        await snap.ref.update({ isPublicVisibleSeason: false });
+    } else if (data.isPublic) {
+        await snap.ref.update({ isPublic: false });
     }
     return data;
 });

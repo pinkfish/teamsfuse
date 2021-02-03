@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
-
 
 abstract class SeasonEvent extends Equatable {}
 
@@ -44,13 +43,17 @@ class _SeasonUpdate extends SeasonEvent {
 ///
 class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
   final CoordinationBloc coordinationBloc;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<Season>> _seasonSub;
 
   bool _loadingFirestore = false;
 
-  SeasonBloc({@required this.coordinationBloc}) : super(SeasonUninitialized()) {
+  SeasonBloc({
+    @required this.coordinationBloc,
+    @required this.crashes,
+  }) : super(SeasonUninitialized()) {
     coordinationBloc
         .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Season));
     _coordSub = coordinationBloc.listen((CoordinationState coordState) {
@@ -140,10 +143,19 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
         TraceProxy seasonsTrace =
             coordinationBloc.analyticsSubsystem.newTrace("SeasonData");
         seasonsTrace.start();
-        var loaded = SeasonLoaded.fromMap(json);
-        print('End Seasons ');
-        seasonsTrace.stop();
-        return loaded;
+        try {
+          print('End Seasons ');
+          var state = SeasonLoaded.fromMap(json);
+          seasonsTrace.stop();
+          return state;
+        } catch (e, stacktrace) {
+          if (e is Error) {
+            crashes.recordError(e, stacktrace);
+          } else {
+            crashes.recordException(e, stacktrace);
+          }
+        }
+        return SeasonUninitialized();
       default:
         return SeasonUninitialized();
     }

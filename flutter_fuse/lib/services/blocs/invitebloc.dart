@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'internal/blocstoload.dart';
-
 
 abstract class InviteEvent extends Equatable {}
 
@@ -61,7 +60,7 @@ class InviteEventDeleteInvite extends InviteEvent {
 class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
   final CoordinationBloc coordinationBloc;
   final DatabaseUpdateModel databaseUpdateModel;
-  final AnalyticsSubsystem analyticsSubsystem;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<Invite>> _inviteChangeSub;
@@ -70,7 +69,7 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
 
   InviteBloc(
       {@required this.coordinationBloc,
-      @required this.analyticsSubsystem,
+      @required this.crashes,
       @required this.databaseUpdateModel})
       : super(InviteUninitialized()) {
     _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
@@ -154,11 +153,20 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
       case InviteBlocStateType.Uninitialized:
         return InviteUninitialized();
       case InviteBlocStateType.Loaded:
-        TraceProxy invitesTrace = analyticsSubsystem.newTrace("invitesData");
-        invitesTrace.start();
-        var loaded = InviteLoaded.fromMap(json);
-        invitesTrace.stop();
-        return loaded;
+        try {
+          TraceProxy invitesTrace = crashes.newTrace("invitesData");
+          invitesTrace.start();
+          var loaded = InviteLoaded.fromMap(json);
+          invitesTrace.stop();
+          return loaded;
+        } catch (e, stack) {
+          if (e is Error) {
+            crashes.recordError(e, stack);
+          } else {
+            crashes.recordException(e, stack);
+          }
+        }
+        return InviteUninitialized();
       default:
         return InviteUninitialized();
     }

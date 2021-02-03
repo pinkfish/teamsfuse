@@ -21,9 +21,6 @@ abstract class Club implements Built<Club, ClubBuilder> {
   @nullable
   String get photoUrl;
 
-  /// If this club is publicaly visible.
-  bool get publicClub;
-
   /// Some text describing what the club is about.
   String get about;
 
@@ -37,6 +34,9 @@ abstract class Club implements Built<Club, ClubBuilder> {
   /// This is the default to arrive before a game,  It overrides the defaults
   /// on the team if this is not null.
   int get arriveBeforeGame;
+
+  /// If the club is a public club.
+  bool get isPublic;
 
   /// List of admin user ids. This is all user ids (not players)
   @BuiltValueField(wireName: MEMBERS)
@@ -61,7 +61,7 @@ abstract class Club implements Built<Club, ClubBuilder> {
     ..about = ""
     ..arriveBeforeGame = 0
     ..trackAttendence = Tristate.Yes
-    ..publicClub = false
+    ..isPublic = false
     ..userUid = "";
 
   Map<String, dynamic> toMap({bool includeMembers}) {

@@ -206,22 +206,31 @@ class SingleSeasonBloc
       return SingleSeasonUninitialized();
     }
 
-    SingleSeasonBlocStateType type =
-        SingleSeasonBlocStateType.valueOf(json["type"]);
-    switch (type) {
-      case SingleSeasonBlocStateType.Uninitialized:
-        return SingleSeasonUninitialized();
-      case SingleSeasonBlocStateType.Loaded:
-        return SingleSeasonLoaded.fromMap(json);
-      case SingleSeasonBlocStateType.Deleted:
-        return SingleSeasonDeleted.fromMap(json);
-      case SingleSeasonBlocStateType.SaveFailed:
-        return SingleSeasonSaveFailed.fromMap(json);
-      case SingleSeasonBlocStateType.Saving:
-        return SingleSeasonSaving.fromMap(json);
-      case SingleSeasonBlocStateType.SaveDone:
-        return SingleSeasonSaveDone.fromMap(json);
+    try {
+      SingleSeasonBlocStateType type =
+          SingleSeasonBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleSeasonBlocStateType.Uninitialized:
+          return SingleSeasonUninitialized();
+        case SingleSeasonBlocStateType.Loaded:
+          return SingleSeasonLoaded.fromMap(json);
+        case SingleSeasonBlocStateType.Deleted:
+          return SingleSeasonDeleted.fromMap(json);
+        case SingleSeasonBlocStateType.SaveFailed:
+          return SingleSeasonSaveFailed.fromMap(json);
+        case SingleSeasonBlocStateType.Saving:
+          return SingleSeasonSaving.fromMap(json);
+        case SingleSeasonBlocStateType.SaveDone:
+          return SingleSeasonSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
     }
+
     return SingleSeasonUninitialized();
   }
 

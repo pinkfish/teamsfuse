@@ -50,7 +50,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
   bool get publicOnly;
 
   /// If this team is publicaly visible.
-  bool get isPublicVisibleTeam;
+  bool get isPublic;
 
   /// If we should track attendecne for games in this team.  This is
   /// overridden by the club potentially.
@@ -80,7 +80,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
 
   static void _initializeBuilder(TeamBuilder b) => b
     ..userUid = ""
-    ..isPublicVisibleTeam = false
+    ..isPublic = false
     ..publicOnly = false;
 
   /// Deserialize the team.

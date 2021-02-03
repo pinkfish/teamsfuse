@@ -4,13 +4,12 @@ import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:fusemodel/src/blocs/data/messagesblocstate.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
 import 'teambloc.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
-
 
 abstract class MessagesEvent extends Equatable {}
 
@@ -58,6 +57,7 @@ class _MessagesEventFirestore extends MessagesEvent {
 class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
   final CoordinationBloc coordinationBloc;
   final TeamBloc teamBloc;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<CoordinationState> _coordState;
   StreamSubscription<Iterable<MessageRecipient>> _messageSnapshot;
@@ -65,7 +65,10 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
 
   bool _loadingFirestore = false;
 
-  MessagesBloc({@required this.coordinationBloc, @required this.teamBloc})
+  MessagesBloc(
+      {@required this.coordinationBloc,
+      @required this.teamBloc,
+      @required this.crashes})
       : super(MessagesUninitialized()) {
     coordinationBloc
         .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Messages));
@@ -231,13 +234,22 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
       case MessagesBlocStateType.Uninitialized:
         return MessagesUninitialized();
       case MessagesBlocStateType.Loaded:
-        TraceProxy messagesTrace =
-            coordinationBloc.analyticsSubsystem.newTrace("messagesTrace");
-        messagesTrace.start();
-        var loaded = MessagesLoaded.fromMap(json);
-        print('End messages ');
-        messagesTrace.stop();
-        return loaded;
+        try {
+          TraceProxy messagesTrace =
+              coordinationBloc.analyticsSubsystem.newTrace("messagesTrace");
+          messagesTrace.start();
+          var loaded = MessagesLoaded.fromMap(json);
+          print('End messages ');
+          messagesTrace.stop();
+          return loaded;
+        } catch (e, stack) {
+          if (e is Error) {
+            crashes.recordError(e, stack);
+          } else {
+            crashes.recordException(e, stack);
+          }
+        }
+        return MessagesUninitialized();
       default:
         return MessagesUninitialized();
     }

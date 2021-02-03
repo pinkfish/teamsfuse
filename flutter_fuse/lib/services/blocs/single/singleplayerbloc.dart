@@ -223,23 +223,32 @@ class SinglePlayerBloc
       return SinglePlayerUninitialized();
     }
 
-    SinglePlayerBlocStateType type =
-        SinglePlayerBlocStateType.valueOf(json["type"]);
-    switch (type) {
-      case SinglePlayerBlocStateType.Uninitialized:
-        return SinglePlayerUninitialized();
-      case SinglePlayerBlocStateType.Loaded:
-        return SinglePlayerLoaded.fromMap(json);
-      case SinglePlayerBlocStateType.Deleted:
-        print("Loading as deleted? $playerUid");
-        return SinglePlayerDeleted.fromMap(json);
-      case SinglePlayerBlocStateType.SaveFailed:
-        return SinglePlayerSaveFailed.fromMap(json);
-      case SinglePlayerBlocStateType.Saving:
-        return SinglePlayerSaving.fromMap(json);
-      case SinglePlayerBlocStateType.SaveDone:
-        return SinglePlayerSaveDone.fromMap(json);
+    try {
+      SinglePlayerBlocStateType type =
+          SinglePlayerBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SinglePlayerBlocStateType.Uninitialized:
+          return SinglePlayerUninitialized();
+        case SinglePlayerBlocStateType.Loaded:
+          return SinglePlayerLoaded.fromMap(json);
+        case SinglePlayerBlocStateType.Deleted:
+          print("Loading as deleted? $playerUid");
+          return SinglePlayerDeleted.fromMap(json);
+        case SinglePlayerBlocStateType.SaveFailed:
+          return SinglePlayerSaveFailed.fromMap(json);
+        case SinglePlayerBlocStateType.Saving:
+          return SinglePlayerSaving.fromMap(json);
+        case SinglePlayerBlocStateType.SaveDone:
+          return SinglePlayerSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
     }
+
     return SinglePlayerUninitialized();
   }
 

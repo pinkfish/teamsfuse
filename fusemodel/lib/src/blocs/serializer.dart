@@ -1,5 +1,6 @@
-import 'package:built_value/serializer.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:built_value/serializer.dart';
+import 'package:built_value/standard_json_plugin.dart';
 
 import '../../fusemodel.dart';
 import '../serializer.dart';
@@ -176,5 +177,13 @@ part 'serializer.g.dart';
   TeamBlocStateType,
   TeamUninitialized,
 ])
-final Serializers serializers =
-    (_$serializers.toBuilder()..merge(dataSerializers)).build();
+final Serializers serializers = (_$serializers.toBuilder()
+      ..merge(dataSerializers)
+      ..add(TimestampSerializer())
+      ..add(InviteSerializer())
+      ..add(GamePeriodSerializer())
+      ..addPlugin(CustomEnumJsonPlugin({
+        GamePeriod,
+      }))
+      ..addPlugin(StandardJsonPlugin()))
+    .build();

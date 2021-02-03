@@ -51,32 +51,15 @@ describe('Teams Tests', () => {
         return;
     }).timeout(10000);
 
-    it('public team private to public', async () => {
+    it('public team public to private', async () => {
         await publicTeamTest(false, false, true, false);
         return;
     }).timeout(10000);
 
-    it('public team public to private', async () => {
+    it('public team private to public', async () => {
         await publicTeamTest(false, true, false, false);
         return;
     }).timeout(10000);
-
-    /*
-    it('public season create public, team public', async () => {
-        await publicTeamTest(true, true, true);
-        return;
-    }).timeout(10000);
-
-    it('public season create private, team public', async () => {
-        await publicTeamTest(false, true, true);
-        return;
-    }).timeout(10000);
-
-    it('public season create private, team public extra', async () => {
-        await publicTeamTest(false, true, true, [true, true, false, true]);
-        return;
-    }).timeout(10000);
-    */
 
     async function publicTeamTest(
         isPublicVisibleSeason: boolean,
@@ -99,7 +82,7 @@ describe('Teams Tests', () => {
                     photourl: null,
                     currentSeason: seasonDocId,
                     uid: teamDocId,
-                    isPublicVisibleTeam: isPublicVisibleTeamOld,
+                    isPublic: isPublicVisibleTeamOld,
                     admins: {
                         me: true,
                     },
@@ -121,7 +104,7 @@ describe('Teams Tests', () => {
                 if (myData !== undefined && myData !== null) {
                     expect(myData.uid).to.equal(teamDocId);
                     expect(myData.currentSeason).to.equal(seasonDocId);
-                    expect(myData.isPublicVisibleTeam).to.equal(isPublicVisibleTeam);
+                    expect(myData.isPublic).to.equal(isPublicVisibleTeam);
                 }
             }
 
@@ -134,7 +117,7 @@ describe('Teams Tests', () => {
                 if (myData !== undefined && myData !== null) {
                     expect(myData.uid).to.equal(seasonDocId);
                     expect(myData.teamUid).to.equal(teamDocId);
-                    expect(myData.isPublicVisibleSeason).to.equal(
+                    expect(myData.isPublic).to.equal(
                         isPublicVisibleTeam === isPublicVisibleTeamOld ? isPublicVisibleSeason : isPublicVisibleTeam,
                     );
                 }
@@ -147,7 +130,7 @@ describe('Teams Tests', () => {
                 expect(extraData).to.not.be.null;
                 if (extraData !== undefined && extraData !== null) {
                     expect(extraData.teamUid).to.equal(teamDocId);
-                    expect(extraData.isPublicVisibleSeason).to.equal(false);
+                    expect(extraData.isPublic).to.equal(false);
                 }
             }
             await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
@@ -207,7 +190,7 @@ describe('Teams Tests', () => {
             name: 'Current Season',
             uid: seasonDocId,
             teamUid: teamDocId,
-            isPublicVisibleSeason: isPublicVisibleSeason,
+            isPublic: isPublicVisibleSeason,
         });
 
         return {
@@ -215,4 +198,13 @@ describe('Teams Tests', () => {
             season: await admin.firestore().collection('Seasons').doc(seasonDocId).get(),
         };
     }
+
+    it('keeps players correct', async () => {
+        return;
+    }).timeout(10000);
+
+        it('keeps admins correct', async () => {
+            return;
+        }).timeout(10000);
+
 });

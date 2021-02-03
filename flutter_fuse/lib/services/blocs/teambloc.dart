@@ -77,6 +77,7 @@ class TeamLoadPublicTeam extends TeamEvent {
 class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
   final CoordinationBloc coordinationBloc;
   final ClubBloc clubBloc;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<ClubState> _clubSub;
@@ -85,7 +86,10 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
 
   bool _loadingFirestore = false;
 
-  TeamBloc({@required this.coordinationBloc, @required this.clubBloc})
+  TeamBloc(
+      {@required this.coordinationBloc,
+      @required this.clubBloc,
+      @required this.crashes})
       : super(TeamUninitialized()) {
     coordinationBloc
         .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Team));
@@ -242,14 +246,23 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
       case TeamBlocStateType.Uninitialized:
         return TeamUninitialized();
       case TeamBlocStateType.Loaded:
-        // Starting, nothing loaded yet.
-        TraceProxy teamsTrace =
-            coordinationBloc.analyticsSubsystem.newTrace("teamData");
-        teamsTrace.start();
-        print('End teams ');
-        var loaded = TeamLoaded.fromMap(json);
-        teamsTrace.stop();
-        return loaded;
+        try {
+          // Starting, nothing loaded yet.
+          TraceProxy teamsTrace =
+              coordinationBloc.analyticsSubsystem.newTrace("teamData");
+          teamsTrace.start();
+          print('End teams ');
+          var loaded = TeamLoaded.fromMap(json);
+          teamsTrace.stop();
+          return loaded;
+        } catch (e, stack) {
+          if (e is Error) {
+            crashes.recordError(e, stack);
+          } else {
+            crashes.recordException(e, stack);
+          }
+        }
+        return TeamUninitialized();
       default:
         return TeamUninitialized();
     }

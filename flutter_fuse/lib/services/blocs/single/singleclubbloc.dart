@@ -338,22 +338,31 @@ class SingleClubBloc
       return SingleClubUninitialized();
     }
 
-    SingleClubBlocStateType type =
-        SingleClubBlocStateType.valueOf(json["type"]);
-    switch (type) {
-      case SingleClubBlocStateType.Uninitialized:
-        return SingleClubUninitialized();
-      case SingleClubBlocStateType.Loaded:
-        return SingleClubLoaded.fromMap(json);
-      case SingleClubBlocStateType.Deleted:
-        return SingleClubDeleted.fromMap(json);
-      case SingleClubBlocStateType.SaveFailed:
-        return SingleClubSaveFailed.fromMap(json);
-      case SingleClubBlocStateType.Saving:
-        return SingleClubSaving.fromMap(json);
-      case SingleClubBlocStateType.SaveDone:
-        return SingleClubSaveDone.fromMap(json);
+    try {
+      SingleClubBlocStateType type =
+          SingleClubBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleClubBlocStateType.Uninitialized:
+          return SingleClubUninitialized();
+        case SingleClubBlocStateType.Loaded:
+          return SingleClubLoaded.fromMap(json);
+        case SingleClubBlocStateType.Deleted:
+          return SingleClubDeleted.fromMap(json);
+        case SingleClubBlocStateType.SaveFailed:
+          return SingleClubSaveFailed.fromMap(json);
+        case SingleClubBlocStateType.Saving:
+          return SingleClubSaving.fromMap(json);
+        case SingleClubBlocStateType.SaveDone:
+          return SingleClubSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
     }
+
     return SingleClubUninitialized();
   }
 

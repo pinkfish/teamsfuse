@@ -362,6 +362,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       return SingleLeagueOrTournamentUninitialized();
     }
 
+    try {
     SingleLeagueOrTournamentBlocStateType type =
         SingleLeagueOrTournamentBlocStateType.valueOf(json["type"]);
     switch (type) {
@@ -379,6 +380,14 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
       case SingleLeagueOrTournamentBlocStateType.SaveDone:
         return SingleLeagueOrTournamentSaveDone.fromMap(json);
     }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
+    }
+
     return SingleLeagueOrTournamentUninitialized();
   }
 

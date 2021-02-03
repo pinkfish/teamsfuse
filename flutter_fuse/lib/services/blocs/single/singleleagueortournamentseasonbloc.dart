@@ -215,23 +215,32 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
       return SingleLeagueOrTournamentSeasonUninitialized();
     }
 
-    SingleLeagueOrTournamentSeasonBlocStateType type =
-        SingleLeagueOrTournamentSeasonBlocStateType.valueOf(json["type"]);
-    switch (type) {
-      case SingleLeagueOrTournamentSeasonBlocStateType.Uninitialized:
-        return SingleLeagueOrTournamentSeasonUninitialized();
-      case SingleLeagueOrTournamentSeasonBlocStateType.Loaded:
-        var ret = SingleLeagueOrTournamentSeasonLoaded.fromMap(json);
-        return ret;
-      case SingleLeagueOrTournamentSeasonBlocStateType.Deleted:
-        return SingleLeagueOrTournamentSeasonDeleted.fromMap(json);
-      case SingleLeagueOrTournamentSeasonBlocStateType.SaveFailed:
-        return SingleLeagueOrTournamentSeasonSaveFailed.fromMap(json);
-      case SingleLeagueOrTournamentSeasonBlocStateType.Saving:
-        return SingleLeagueOrTournamentSeasonSaving.fromMap(json);
-      case SingleLeagueOrTournamentSeasonBlocStateType.SaveDone:
-        return SingleLeagueOrTournamentSeasonSaveDone.fromMap(json);
+    try {
+      SingleLeagueOrTournamentSeasonBlocStateType type =
+          SingleLeagueOrTournamentSeasonBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleLeagueOrTournamentSeasonBlocStateType.Uninitialized:
+          return SingleLeagueOrTournamentSeasonUninitialized();
+        case SingleLeagueOrTournamentSeasonBlocStateType.Loaded:
+          var ret = SingleLeagueOrTournamentSeasonLoaded.fromMap(json);
+          return ret;
+        case SingleLeagueOrTournamentSeasonBlocStateType.Deleted:
+          return SingleLeagueOrTournamentSeasonDeleted.fromMap(json);
+        case SingleLeagueOrTournamentSeasonBlocStateType.SaveFailed:
+          return SingleLeagueOrTournamentSeasonSaveFailed.fromMap(json);
+        case SingleLeagueOrTournamentSeasonBlocStateType.Saving:
+          return SingleLeagueOrTournamentSeasonSaving.fromMap(json);
+        case SingleLeagueOrTournamentSeasonBlocStateType.SaveDone:
+          return SingleLeagueOrTournamentSeasonSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
     }
+
     return SingleLeagueOrTournamentSeasonUninitialized();
   }
 

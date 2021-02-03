@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
 
@@ -68,13 +68,15 @@ class ClubDeleteMember extends ClubEvent {
 ///
 class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
   final CoordinationBloc coordinationBloc;
+  final AnalyticsSubsystem crashes;
   bool _loadingFirestore = false;
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<Club>> _clubChangeSub;
   Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions = {};
 
-  ClubBloc({@required this.coordinationBloc}) : super(ClubUninitialized()) {
+  ClubBloc({@required this.coordinationBloc, @required this.crashes})
+      : super(ClubUninitialized()) {
     _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
       if (state is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
@@ -188,14 +190,23 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
       case ClubBlocStateType.Uninitialized:
         return ClubUninitialized();
       case ClubBlocStateType.Loaded:
-        TraceProxy clubTrace =
-            coordinationBloc.analyticsSubsystem.newTrace("clubData");
-        clubTrace.start();
-        // If recovered this way it is only local data.
-        var loaded = ClubLoaded.fromMap(json);
-        print('End clubs  ${loaded.clubs.length}');
-        clubTrace.stop();
-        return loaded;
+        try {
+          TraceProxy clubTrace =
+              coordinationBloc.analyticsSubsystem.newTrace("clubData");
+          clubTrace.start();
+          // If recovered this way it is only local data.
+          var loaded = ClubLoaded.fromMap(json);
+          print('End clubs  ${loaded.clubs.length}');
+          clubTrace.stop();
+          return loaded;
+        } catch (e, stack) {
+          if (e is Error) {
+            crashes.recordError(e, stack);
+          } else {
+            crashes.recordException(e, stack);
+          }
+        }
+        return ClubUninitialized();
       default:
         return ClubUninitialized();
     }

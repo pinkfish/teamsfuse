@@ -132,8 +132,8 @@ class SingleProfileBloc
       try {
         FusedUserProfile profile = event.profile;
         if (event.image != null) {
-          coordinationBloc.databaseUpdateModel
-              .updatePlayerImage(playerBloc.state.me.uid, await event.image.readAsBytes());
+          coordinationBloc.databaseUpdateModel.updatePlayerImage(
+              playerBloc.state.me.uid, await event.image.readAsBytes());
           //profile = profile.rebuild((b) b..)
         }
         await coordinationBloc.authenticationBloc.userAuth
@@ -159,23 +159,31 @@ class SingleProfileBloc
     if (json == null || !json.containsKey("type")) {
       return SingleProfileUninitialized();
     }
-
-    SingleProfileBlocStateType type =
-        SingleProfileBlocStateType.valueOf(json["type"]);
-    switch (type) {
-      case SingleProfileBlocStateType.Uninitialized:
-        return SingleProfileUninitialized();
-      case SingleProfileBlocStateType.Loaded:
-        return SingleProfileLoaded.fromMap(json);
-      case SingleProfileBlocStateType.Deleted:
-        return SingleProfileDeleted.fromMap(json);
-      case SingleProfileBlocStateType.SaveFailed:
-        return SingleProfileSaveFailed.fromMap(json);
-      case SingleProfileBlocStateType.Saving:
-        return SingleProfileSaving.fromMap(json);
-      case SingleProfileBlocStateType.SaveDone:
-        return SingleProfileSaveDone.fromMap(json);
+    try {
+      SingleProfileBlocStateType type =
+          SingleProfileBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleProfileBlocStateType.Uninitialized:
+          return SingleProfileUninitialized();
+        case SingleProfileBlocStateType.Loaded:
+          return SingleProfileLoaded.fromMap(json);
+        case SingleProfileBlocStateType.Deleted:
+          return SingleProfileDeleted.fromMap(json);
+        case SingleProfileBlocStateType.SaveFailed:
+          return SingleProfileSaveFailed.fromMap(json);
+        case SingleProfileBlocStateType.Saving:
+          return SingleProfileSaving.fromMap(json);
+        case SingleProfileBlocStateType.SaveDone:
+          return SingleProfileSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
     }
+
     return SingleProfileUninitialized();
   }
 

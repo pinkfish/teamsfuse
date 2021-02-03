@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
-
 
 abstract class LeagueOrTournamentEvent extends Equatable {}
 
@@ -47,13 +46,15 @@ class _LeagueOrTournamentEventFirestore extends LeagueOrTournamentEvent {
 class LeagueOrTournamentBloc
     extends HydratedBloc<LeagueOrTournamentEvent, LeagueOrTournamentState> {
   final CoordinationBloc coordinationBloc;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<LeagueOrTournament>> _leagueOrTournamentSnapshot;
 
   bool _loadingFirestore = false;
 
-  LeagueOrTournamentBloc({@required this.coordinationBloc})
+  LeagueOrTournamentBloc(
+      {@required this.coordinationBloc, @required this.crashes})
       : super(LeagueOrTournamentUninitialized()) {
     coordinationBloc.add(
         CoordinationEventTrackLoading(toLoad: BlocsToLoad.LeagueOrTournament));
@@ -140,14 +141,21 @@ class LeagueOrTournamentBloc
       case LeagueOrTournamentBlocStateType.Uninitialized:
         return LeagueOrTournamentUninitialized();
       case LeagueOrTournamentBlocStateType.Loaded:
-        print("LeagueOrTournament start");
-        TraceProxy leagueTrace = coordinationBloc.analyticsSubsystem
-            .newTrace("leagueOrTournamentData");
-        leagueTrace.start();
-        var loaded = LeagueOrTournamentLoaded.fromMap(json);
-        print('End LeagueOrTournament ${loaded.leagueOrTournaments.length}');
-        leagueTrace.stop();
-        return loaded;
+        try {
+          TraceProxy leagueTrace = coordinationBloc.analyticsSubsystem
+              .newTrace("leagueOrTournamentData");
+          leagueTrace.start();
+          var loaded = LeagueOrTournamentLoaded.fromMap(json);
+          leagueTrace.stop();
+          return loaded;
+        } catch (e, stack) {
+          if (e is Error) {
+            crashes.recordError(e, stack);
+          } else {
+            crashes.recordException(e, stack);
+          }
+        }
+        return LeagueOrTournamentUninitialized();
       default:
         return LeagueOrTournamentUninitialized();
     }

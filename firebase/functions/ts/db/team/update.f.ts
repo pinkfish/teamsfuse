@@ -17,29 +17,29 @@ export const onTeamUpdate = functions.firestore.document('/Teams/{teamId}').onUp
         data !== undefined &&
         previousData !== null &&
         previousData !== undefined &&
-        data.isPublicVisibleTeam !== previousData.isPublicVisibleTeam
+        data.isPublic !== previousData.isPublic
     ) {
-        if (data.isPublicVisibleTeam) {
+        if (data.isPublic) {
             // Became publicaly visible
             await db.collection('Seasons').doc(data.currentSeason).update({
-                isPublicVisibleSeason: true,
+                isPublic: true,
             });
             const snaps = await db.collection('Seasons').where('teamUid', '==', inputData.after.id).get();
             for (const doc of snaps.docs) {
                 if (doc.id === data.currentSeason) {
-                    if (!doc.data().isPublicVisibleSeason) {
-                        await doc.ref.update({ isPublicVisibleSeason: false });
+                    if (!doc.data().isPublic) {
+                        await doc.ref.update({ isPublic: false });
                     }
-                } else if (doc.data().isPublicVisibleSeason) {
-                    await doc.ref.update({ isPublicVisibleSeason: false });
+                } else if (doc.data().isPublic) {
+                    await doc.ref.update({ isPublic: false });
                 }
             }
         } else {
             // Not visible any more.
             const snaps = await db.collection('Seasons').where('teamUid', '==', inputData.after.id).get();
             for (const doc of snaps.docs) {
-                if (doc.data().isPublicVisibleSeason) {
-                    await doc.ref.update({ isPublicVisibleSeason: false });
+                if (doc.data().isPublic) {
+                    await doc.ref.update({ isPublic: false });
                 }
             }
         }

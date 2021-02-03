@@ -3,13 +3,12 @@ import 'dart:async';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'internal/blocstoload.dart';
 import 'teambloc.dart';
-
 
 abstract class GameBlocEvent extends Equatable {}
 
@@ -45,6 +44,7 @@ class GameEventSetBoundaries extends GameBlocEvent {
 class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
   final CoordinationBloc coordinationBloc;
   final TeamBloc teamBloc;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<TeamState> _teamSub;
   StreamSubscription<FirestoreChangedData> _gameChangeSub;
@@ -52,7 +52,10 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
   DateTime _start;
   DateTime _end;
 
-  GameBloc({@required this.coordinationBloc, @required this.teamBloc})
+  GameBloc(
+      {@required this.coordinationBloc,
+      @required this.teamBloc,
+      @required this.crashes})
       : _start = new DateTime.now().subtract(new Duration(days: 60)).toUtc(),
         _end = new DateTime.now().add(new Duration(days: 240)).toUtc(),
         super(GameUninitialized()) {
@@ -167,27 +170,37 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
       case GameBlocStateType.Uninitialized:
         return GameUninitialized();
       case GameBlocStateType.Loaded:
-        TraceProxy gamesTrace =
-            coordinationBloc.analyticsSubsystem.newTrace("gamaData");
-        gamesTrace.start();
-        var loaded = GameLoaded.fromMap(json);
-        MapBuilder<String, MapBuilder<String, Game>> gamesByTeam =
-            MapBuilder<String, MapBuilder<String, Game>>();
-        for (Game g in loaded.gamesByTeamToSerialize.values) {
-          gamesByTeam.putIfAbsent(g.teamUid, () => MapBuilder<String, Game>());
-          gamesByTeam[g.teamUid][g.uid] = g;
+        try {
+          TraceProxy gamesTrace =
+              coordinationBloc.analyticsSubsystem.newTrace("gamaData");
+          gamesTrace.start();
+          var loaded = GameLoaded.fromMap(json);
+          MapBuilder<String, MapBuilder<String, Game>> gamesByTeam =
+              MapBuilder<String, MapBuilder<String, Game>>();
+          for (Game g in loaded.gamesByTeamToSerialize.values) {
+            gamesByTeam.putIfAbsent(
+                g.teamUid, () => MapBuilder<String, Game>());
+            gamesByTeam[g.teamUid][g.uid] = g;
+          }
+
+          var rebuilt = MapBuilder<String, BuiltMap<String, Game>>();
+          gamesByTeam.updateAllValues((k, v) {
+            rebuilt[k] = v.build();
+            return v;
+          });
+
+          loaded = loaded.rebuild((b) => b..gamesByTeam = rebuilt);
+          print('End games  ${loaded.gamesByTeam.length}');
+          gamesTrace.stop();
+          return loaded;
+        } catch (e, stack) {
+          if (e is Error) {
+            crashes.recordError(e, stack);
+          } else {
+            crashes.recordException(e, stack);
+          }
         }
-
-        var rebuilt = MapBuilder<String, BuiltMap<String, Game>>();
-        gamesByTeam.updateAllValues((k, v) {
-          rebuilt[k] = v.build();
-          return v;
-        });
-
-        loaded = loaded.rebuild((b) => b..gamesByTeam = rebuilt);
-        print('End games  ${loaded.gamesByTeam.length}');
-        gamesTrace.stop();
-        return loaded;
+        return GameUninitialized();
       default:
         return GameUninitialized();
     }

@@ -2,7 +2,11 @@ library serializers;
 
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
+import 'package:built_value/standard_json_plugin.dart';
 
+import 'ant/broadcast.dart';
+import 'ant/broadcaststatus.dart';
+import 'ant/broadcasttype.dart';
 import 'club.dart';
 import 'common.dart';
 import 'game.dart';
@@ -18,9 +22,6 @@ import 'serializer/timestampserializer.dart';
 import 'team.dart';
 import 'userprofile.dart';
 import 'winrecord.dart';
-import 'ant/broadcaststatus.dart';
-import 'ant/broadcasttype.dart';
-import 'ant/broadcast.dart';
 
 part 'serializer.g.dart';
 
@@ -92,5 +93,6 @@ final Serializers dataSerializers = (_$dataSerializers.toBuilder()
       ..add(GamePeriodSerializer())
       ..addPlugin(CustomEnumJsonPlugin({
         GamePeriod,
-      })))
+      }))
+      ..addPlugin(StandardJsonPlugin()))
     .build();

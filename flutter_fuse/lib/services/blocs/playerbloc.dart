@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:built_collection/built_collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
-import 'package:hydrated_bloc/hydrated_bloc.dart';
-
 
 abstract class PlayerEvent extends Equatable {}
 
@@ -57,6 +56,7 @@ class _PlayerNewPlayersLoaded extends PlayerEvent {
 ///
 class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
   final CoordinationBloc coordinationBloc;
+  final AnalyticsSubsystem crashes;
 
   StreamSubscription<Iterable<Player>> _playerSnapshot;
   bool _createdMePlayer = false;
@@ -64,9 +64,8 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
 
   bool _loadingFirestore = false;
 
-  PlayerBloc({
-    @required this.coordinationBloc,
-  }) : super(PlayerUninitialized()) {
+  PlayerBloc({@required this.coordinationBloc, @required this.crashes})
+      : super(PlayerUninitialized()) {
     coordinationBloc
         .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Player));
     _authSub = coordinationBloc.listen((CoordinationState coordState) {
@@ -197,12 +196,21 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
       case PlayerBlocStateType.Uninitialized:
         return PlayerUninitialized();
       case PlayerBlocStateType.Loaded:
-        TraceProxy playerTrace =
-            coordinationBloc.analyticsSubsystem.newTrace("playerData");
-        playerTrace.start();
-        var loaded = PlayerLoaded.fromMap(json);
-        playerTrace.stop();
-        return loaded;
+        try {
+          TraceProxy playerTrace =
+              coordinationBloc.analyticsSubsystem.newTrace("playerData");
+          playerTrace.start();
+          var loaded = PlayerLoaded.fromMap(json);
+          playerTrace.stop();
+          return loaded;
+        } catch (e, stacktrace) {
+          if (e is Error) {
+            crashes.recordError(e, stacktrace);
+          } else {
+            crashes.recordException(e, stacktrace);
+          }
+        }
+        return PlayerUninitialized();
       default:
         return PlayerUninitialized();
     }

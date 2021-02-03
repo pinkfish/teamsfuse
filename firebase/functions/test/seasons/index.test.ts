@@ -94,7 +94,7 @@ describe('Seasons Tests', () => {
                 if (myData !== undefined && myData !== null) {
                     expect(myData.teamUid).to.equal(teamDocId);
                     expect(myData.uid).to.equal(seasonDocId);
-                    expect(myData.isPublicVisibleSeason).to.equal(seasonResult);
+                    expect(myData.isPublic).to.equal(seasonResult);
                 }
             }
             for (const doc in newSeasons) {
@@ -104,7 +104,7 @@ describe('Seasons Tests', () => {
                 expect(extraData).to.not.be.null;
                 if (extraData !== undefined && extraData !== null) {
                     expect(extraData.teamUid).to.equal(teamDocId);
-                    expect(extraData.isPublicVisibleSeason).to.equal(false);
+                    expect(extraData.isPublic).to.equal(false);
                 }
             }
             await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
@@ -132,7 +132,7 @@ describe('Seasons Tests', () => {
             name: 'Current Season',
             uid: seasonDocId,
             teamUid: teamUid,
-            isPublicVisibleSeason: isPublicVisibleSeason,
+            isPublic: isPublicVisibleSeason,
         });
 
         return admin.firestore().collection('Seasons').doc(seasonDocId).get();
@@ -155,7 +155,7 @@ describe('Seasons Tests', () => {
                 photourl: null,
                 currentSeason: seasonDocId,
                 uid: teamDocId,
-                isPublicVisibleTeam: isPublicVisibleTeam,
+                isPublic: isPublicVisibleTeam,
                 admins: {
                     me: true,
                 },
@@ -164,7 +164,7 @@ describe('Seasons Tests', () => {
             name: 'Current Season',
             uid: seasonDocId,
             teamUid: teamDocId,
-            isPublicVisibleSeason: isPublicVisibleSeason,
+            isPublic: isPublicVisibleSeason,
         });
 
         return {

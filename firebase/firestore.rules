@@ -33,8 +33,14 @@ service cloud.firestore {
       return request.auth.uid in data.admins;
     }
 
+    function isPublicVisible() {
+      return "isPublic" in existingData() &&
+        existingData().isPublic;
+    }
+
     match /Clubs/{club} {
-      allow read: if isSignedIn() || existingData().publicClub == true;
+      allow read: if isSignedIn() || 
+         isPublicVisible();
       // Only allow writes when the member is setup correctly.
       allow update, delete: if isSignedIn() &&
           existingData().members[request.auth.uid].admin;
@@ -113,8 +119,7 @@ service cloud.firestore {
     match /Seasons/{season} {
       allow read: if (isSignedIn() &&
         (resource.data.users[request.auth.uid].added)) ||
-        ("isPublicVisibleSeason" in existingData() &&
-         existingData().isPublicVisibleSeason == true);
+        isPublicVisible();
       allow write: if isSignedIn();
       allow list: if isSignedIn();
       allow create: if isSignedIn() &&
@@ -126,12 +131,10 @@ service cloud.firestore {
         allow read: if isSignedIn();
         allow write: if isSignedIn();
       }
-      allow list: if isSignedIn();
       allow read: if (isSignedIn() &&
         (existingData().users[request.auth.uid].added ||
         request.auth.uid in existingData().admins)) ||
-        ("isPublicVisibleTeam" in existingData() &&
-         existingData().isPublicVisibleTeam == true);
+        isPublicVisible();
       allow write: if isSignedIn();
       allow create: if isSignedIn() &&
         request.auth.uid in request.auth.uid in incomingData().admins;

@@ -74,21 +74,41 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         analytics: AnalyticsSubsystemImpl.instance,
         databaseUpdateModel: _databaseUpdateModel,
         analyticsSubsystem: AnalyticsSubsystemImpl.instance);
-    _playerBloc = PlayerBloc(coordinationBloc: _coordinationBloc);
+    _playerBloc = PlayerBloc(
+      coordinationBloc: _coordinationBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
     _inviteBloc = InviteBloc(
         coordinationBloc: _coordinationBloc,
-        analyticsSubsystem: AnalyticsSubsystemImpl.instance,
+        crashes: AnalyticsSubsystemImpl.instance,
         databaseUpdateModel: _databaseUpdateModel);
-    _messagesBloc =
-        MessagesBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
-    _clubBloc = ClubBloc(coordinationBloc: _coordinationBloc);
-    _teamBloc =
-        TeamBloc(coordinationBloc: _coordinationBloc, clubBloc: _clubBloc);
-    _seasonBloc = SeasonBloc(coordinationBloc: _coordinationBloc);
-    _leagueOrTournamentBloc =
-        LeagueOrTournamentBloc(coordinationBloc: _coordinationBloc);
-    _gameBloc =
-        GameBloc(coordinationBloc: _coordinationBloc, teamBloc: _teamBloc);
+    _messagesBloc = MessagesBloc(
+      coordinationBloc: _coordinationBloc,
+      teamBloc: _teamBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _clubBloc = ClubBloc(
+      coordinationBloc: _coordinationBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _teamBloc = TeamBloc(
+      coordinationBloc: _coordinationBloc,
+      clubBloc: _clubBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _seasonBloc = SeasonBloc(
+      coordinationBloc: _coordinationBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _leagueOrTournamentBloc = LeagueOrTournamentBloc(
+      coordinationBloc: _coordinationBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _gameBloc = GameBloc(
+      coordinationBloc: _coordinationBloc,
+      teamBloc: _teamBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
     _filteredGameBloc = FilteredGameBloc(
         gameBloc: _gameBloc, teamBloc: _teamBloc, seasonBloc: _seasonBloc);
     _loadedStateBloc = LoadedStateBloc(coordinationBloc: _coordinationBloc);

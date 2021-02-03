@@ -135,20 +135,28 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
 
     SingleTeamSeasonPlayerBlocStateType type =
         SingleTeamSeasonPlayerBlocStateType.valueOf(json["type"]);
-    switch (type) {
-      case SingleTeamSeasonPlayerBlocStateType.Uninitialized:
-        return SingleTeamSeasonPlayerUninitialized();
-      case SingleTeamSeasonPlayerBlocStateType.Loaded:
-        var ret = SingleTeamSeasonPlayerLoaded.fromMap(json);
-        return ret;
-      case SingleTeamSeasonPlayerBlocStateType.Deleted:
-        return SingleTeamSeasonPlayerDeleted.fromMap(json);
-      case SingleTeamSeasonPlayerBlocStateType.SaveFailed:
-        return SingleTeamSeasonPlayerSaveFailed.fromMap(json);
-      case SingleTeamSeasonPlayerBlocStateType.Saving:
-        return SingleTeamSeasonPlayerSaving.fromMap(json);
-      case SingleTeamSeasonPlayerBlocStateType.SaveDone:
-        return SingleTeamSeasonPlayerSaveDone.fromMap(json);
+    try {
+      switch (type) {
+        case SingleTeamSeasonPlayerBlocStateType.Uninitialized:
+          return SingleTeamSeasonPlayerUninitialized();
+        case SingleTeamSeasonPlayerBlocStateType.Loaded:
+          var ret = SingleTeamSeasonPlayerLoaded.fromMap(json);
+          return ret;
+        case SingleTeamSeasonPlayerBlocStateType.Deleted:
+          return SingleTeamSeasonPlayerDeleted.fromMap(json);
+        case SingleTeamSeasonPlayerBlocStateType.SaveFailed:
+          return SingleTeamSeasonPlayerSaveFailed.fromMap(json);
+        case SingleTeamSeasonPlayerBlocStateType.Saving:
+          return SingleTeamSeasonPlayerSaving.fromMap(json);
+        case SingleTeamSeasonPlayerBlocStateType.SaveDone:
+          return SingleTeamSeasonPlayerSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
     }
     return SingleTeamSeasonPlayerUninitialized();
   }

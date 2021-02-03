@@ -88,7 +88,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
             } else {
               title = state.club.name;
             }
-            var actions = [];
+            var actions = <Widget>[];
             bool admin = state?.club?.isAdmin() ?? false;
             if (admin) {
               actions.add(

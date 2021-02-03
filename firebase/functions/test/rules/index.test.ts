@@ -122,7 +122,7 @@ describe('TeamsFuse rules', function () {
         await db
             .collection('Teams')
             .doc('frogpublic')
-            .set({ admins: { alice: { added: true } }, isPublicVisibleTeam: true });
+            .set({ admins: { alice: { added: true } }, isPublic: true });
         await firebase.assertSucceeds(db.collection('Teams').doc('frogpublic').get());
         const dbRobert = authedApp({ uid: 'robert' });
         await firebase.assertSucceeds(dbRobert.collection('Teams').doc('frogpublic').get());
@@ -144,7 +144,7 @@ describe('TeamsFuse rules', function () {
         await db
             .collection('Seasons')
             .doc('frogpublic')
-            .set({ users: { robert: { added: true } }, isPublicVisibleSeason: true });
+            .set({ users: { robert: { added: true } }, isPublic: true });
         await firebase.assertSucceeds(db.collection('Seasons').doc('frogpublic').get());
         const aliceDb = authedApp({ uid: 'alice' });
         await firebase.assertSucceeds(aliceDb.collection('Seasons').doc('frogpublic').get());
