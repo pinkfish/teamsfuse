@@ -2538,13 +2538,35 @@ class Messages {
 
   String trackattendence(Tristate attend) {
     if (attend == Tristate.Unset) {
-      return Intl.message('Attendence is from team');
+      return trackAttendenceUnset;
     }
     if (attend == Tristate.Yes) {
-      return Intl.message('Track attendence');
+      return trackAttendenceYes;
     }
-    return Intl.message('Don\'t track attendence');
+    return trackAttendenceNo;
   }
+
+  String get trackAttendenceUnset =>
+      Intl.message('Attendence is from team', locale: locale);
+  String get trackAttendenceYes =>
+      Intl.message('Track attendence', locale: locale);
+  String get trackAttendenceNo =>
+      Intl.message('Don\'t track attendence', locale: locale);
+
+  String publicalyVisible(Tristate private) {
+    if (private == Tristate.Unset) {
+      return unknown;
+    }
+    if (private == Tristate.Yes) {
+      return publicalyVisibleYes;
+    }
+    return publicalyVisibleNo;
+  }
+
+  String get publicalyVisibleYes =>
+      Intl.message('Track attendence', locale: locale);
+  String get publicalyVisibleNo =>
+      Intl.message('Don\'t track attendence', locale: locale);
 
   String trainingtitle(String time, String endTime, String tzShortName) {
     if (endTime != null) {

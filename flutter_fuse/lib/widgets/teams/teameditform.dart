@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../form/genderformfield.dart';
@@ -284,6 +284,18 @@ class TeamEditFormState extends State<TeamEditForm> {
           onSaved: (value) => _builder.trackAttendenceInternal = value,
         ),
       ]);
+      if (club != null) {
+        fields.add(
+          // Only club teams can be public.
+          SwitchFormField(
+            initialValue: _builder.isPublicVisibleTeam,
+            icon: MdiIcons.earth,
+            enabled: club != null,
+            label: Messages.of(context).publicalyVisible(Tristate.Yes),
+            onSaved: (value) => _builder.isPublicVisibleTeam = value,
+          ),
+        );
+      }
     }
     if (adminWidget != null) {
       fields.add(adminWidget);

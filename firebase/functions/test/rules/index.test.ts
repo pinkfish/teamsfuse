@@ -122,9 +122,9 @@ describe('TeamsFuse rules', function () {
         await db
             .collection('Teams')
             .doc('frogpublic')
-            .set({ admins: { alice: { added: true }  }, isPublicVisibleTeam: true });
+            .set({ admins: { alice: { added: true } }, isPublicVisibleTeam: true });
         await firebase.assertSucceeds(db.collection('Teams').doc('frogpublic').get());
-        const dbRobert = authedApp({ uid: 'robert',  });
+        const dbRobert = authedApp({ uid: 'robert' });
         await firebase.assertSucceeds(dbRobert.collection('Teams').doc('frogpublic').get());
         const dbAnon = authedApp();
         await firebase.assertSucceeds(dbAnon.collection('Teams').doc('frogpublic').get());
@@ -154,9 +154,7 @@ describe('TeamsFuse rules', function () {
     it('create user profiles', async () => {
         const db = authedApp({ uid: 'alice' });
         const profile = db.collection('UserData').doc('alice');
-        console.log('Failing');
         await firebase.assertFails(profile.set({ birthday: 'January 1' }));
-        console.log('Succeeding');
         await firebase.assertSucceeds(
             profile.set({
                 birthday: 'January 1',
@@ -167,7 +165,6 @@ describe('TeamsFuse rules', function () {
 
     it('get game requires season user', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        console.log('Succeeding');
         await firebase.assertSucceeds(
             db
                 .collection('Seasons')
@@ -208,7 +205,6 @@ describe('TeamsFuse rules', function () {
 
     it('get opponents', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        console.log('Succeeding');
         await firebase.assertSucceeds(
             db
                 .collection('Teams')

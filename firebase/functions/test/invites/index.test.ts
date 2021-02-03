@@ -1,18 +1,14 @@
 import * as sinon from 'sinon';
-import firebaseFunctionsTest from 'firebase-functions-test';
 import { expect } from 'chai';
 import * as nodemailer from 'nodemailer';
 import { AxiosInstance } from 'axios';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
+import { firebaseTest } from '../util/firebase';
 
 const projectName = 'teamsfuse';
 
-admin.initializeApp();
-
-const test = firebaseFunctionsTest({
-    projectId: projectName,
-});
+const test = firebaseTest(projectName);
 
 test.mockConfig({
     mailgun: {
@@ -35,7 +31,7 @@ describe('Invite Tests', () => {
     });
 
     after(async () => {
-        test.cleanup();
+        // test.cleanup();
         sinon.restore();
         return;
     });
