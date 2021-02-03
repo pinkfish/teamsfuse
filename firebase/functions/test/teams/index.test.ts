@@ -158,7 +158,7 @@ describe('Teams Tests', () => {
             name: 'Current Season',
             uid: seasonDocId,
             teamUid: teamUid,
-            isPublicVisibleSeason: isPublicVisibleSeason,
+            isPublic: isPublicVisibleSeason,
         });
 
         return admin.firestore().collection('Seasons').doc(seasonDocId).get();
@@ -181,7 +181,7 @@ describe('Teams Tests', () => {
                 photourl: null,
                 currentSeason: seasonDocId,
                 uid: teamDocId,
-                isPublicVisibleTeam: isPublicVisibleTeam,
+                isPublic: isPublicVisibleTeam,
                 admins: {
                     me: true,
                 },
