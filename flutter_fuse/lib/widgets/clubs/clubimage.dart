@@ -49,23 +49,17 @@ class ClubImage extends StatelessWidget {
       builder: (context, bloc) => BlocBuilder(
         cubit: bloc,
         builder: (context, state) {
-          if (state is SingleClubDeleted) {
-            return CachedNetworkImage(
+          Widget img;
+          if (state is SingleClubDeleted || state.club.photoUrl == null) {
+            img = Image.asset("assets/images/defaultavatar.png",
                 key: key,
                 width: width,
                 height: height,
-                placeholder: (context, url) => Image.asset(
-                      "assets/images/defaultavatar.png",
-                      width: width,
-                      height: height,
-                      fit: fit,
-                    ),
                 alignment: alignment,
                 repeat: repeat,
-                matchTextDirection: matchTextDirection,
-                imageUrl: state.club.photoUrl);
+                matchTextDirection: matchTextDirection);
           } else {
-            return CachedNetworkImage(
+            img = CachedNetworkImage(
               key: key,
               width: width,
               height: height,
@@ -78,9 +72,11 @@ class ClubImage extends StatelessWidget {
               alignment: alignment,
               repeat: repeat,
               matchTextDirection: matchTextDirection,
-              imageUrl: null,
+              imageUrl: state.club.photoUrl,
             );
           }
+          return AnimatedSwitcher(
+              duration: Duration(milliseconds: 500), child: img);
         },
       ),
     );

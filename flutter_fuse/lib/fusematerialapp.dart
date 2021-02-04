@@ -23,11 +23,13 @@ class FuseMaterialApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var club = String.fromEnvironment("DART_STARTUP_CLUB");
+    var club = String.fromEnvironment("DART_STARTUP_CLUB", defaultValue: "");
     var route = "Home";
-    if (club != null) {
+    print("From env $club");
+    if (club != null && club.isNotEmpty) {
       route = "/Club/" + club;
     }
+    route = "/Club/-LFYVrTV145zE21C4O24";
     return MaterialApp(
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         MessagesDelegate(),

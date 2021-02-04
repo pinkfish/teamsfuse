@@ -52,7 +52,7 @@ class LeagueNameAndResult implements OnInit, OnDestroy {
         .listen((LeagueOrTournamentTeam team) {
       _team = team;
       _teamController?.add(team);
-      _db.getPublicTeamDetails(teamUid: team.teamUid).then((Team t) {
+      _db.getPublicTeamDetails(teamUid: team.teamUid).listen((Team t) {
         mainTeam = t;
         _teamController?.add(team);
       });

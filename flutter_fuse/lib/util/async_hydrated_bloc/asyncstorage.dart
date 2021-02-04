@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:hive/src/hive_impl.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
-
-import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 /// Interface which is used to persist and retrieve state changes.
 abstract class AsyncStorage {
@@ -79,7 +79,7 @@ class AsyncHydratedStorage implements AsyncStorage {
 
   /// Internal flag which determines if running on the web platform.
   /// Defaults to [kIsWeb] and is only visible for testing purposes.
-  static bool isWeb;
+  static bool isWeb = kIsWeb;
 
   /// Internal instance of [HiveImpl].
   /// It should only be used for testing.

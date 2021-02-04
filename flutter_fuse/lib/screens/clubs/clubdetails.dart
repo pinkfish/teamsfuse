@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/blocs/singleclubprovider.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
@@ -26,7 +28,6 @@ class ClubDetailsScreen extends StatefulWidget {
 
 class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
   int _tabIndex = 1;
-  SingleClubBloc _singleClubBloc;
 
   @override
   void initState() {
@@ -36,17 +37,14 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
       _tabIndex = 0;
     }
     super.initState();
-    _singleClubBloc = SingleClubBloc(
-        clubBloc: BlocProvider.of<ClubBloc>(context), clubUid: widget.clubUid);
   }
 
   @override
   void dispose() {
     super.dispose();
-    _singleClubBloc.close();
   }
 
-  Widget _buildBody(Club club) {
+  Widget _buildBody(Club club, SingleClubBloc singleClubBloc) {
     if (_tabIndex == 0) {
       return Scrollbar(
         child: SingleChildScrollView(
@@ -54,7 +52,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
         ),
       );
     } else if (_tabIndex == 1) {
-      return ClubTeams(_singleClubBloc);
+      return ClubTeams(singleClubBloc);
     }
     print("$_tabIndex");
     return ClubMembers(club);
@@ -72,18 +70,20 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener(
-      cubit: _singleClubBloc,
-      listener: (context, state) {
-        if (state is SingleClubDeleted) {
-          Navigator.pop(context);
-        }
-      },
-      child: BlocBuilder(
-          cubit: _singleClubBloc,
+    print("Froggy: ${widget.clubUid}");
+    return SingleClubProvider(
+      clubUid: widget.clubUid,
+      builder: (context, singleClubBloc) => BlocConsumer(
+          cubit: singleClubBloc,
+          listener: (context, state) {
+            if (state is SingleClubDeleted) {
+              Navigator.pop(context);
+            }
+          },
           builder: (context, state) {
             String title;
-            if (state is SingleClubDeleted) {
+            if (state is SingleClubDeleted ||
+                state is SingleClubUninitialized) {
               title = Messages.of(context).loading;
             } else {
               title = state.club.name;
@@ -115,9 +115,16 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
             }
             Widget theBody;
             if (state is SingleClubDeleted) {
-              theBody = Center(child: CircularProgressIndicator());
+              theBody = Center(
+                child: Text(Messages.of(context).clubDeleted,
+                    style: Theme.of(context).textTheme.headline3),
+              );
+            } else if (state is SingleClubUninitialized) {
+              theBody = Center(
+                child: LoadingWidget(),
+              );
             } else {
-              theBody = _buildBody(state.club);
+              theBody = _buildBody(state.club, singleClubBloc);
             }
 
             // Setup the navigation items.

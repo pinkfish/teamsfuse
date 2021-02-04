@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import 'base/singleprovider.dart';
 import '../../services/blocs.dart';
+import 'base/singleprovider.dart';
 
 ///
 /// Single builder for the club system and happiness.
@@ -21,8 +21,10 @@ class SingleClubProvider extends SingleBlocProvider<SingleClubBloc> {
       : super(keyUid: clubUid, creator: _createBloc, builder: builder);
 
   static SingleClubBloc _createBloc(BuildContext context, String uid) {
+    print("Loading (c) Club $uid");
+
     return SingleClubBloc(
-      clubBloc: BlocProvider.of<ClubBloc>(context),
+      db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       clubUid: uid,
       crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
     );

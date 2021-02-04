@@ -1309,9 +1309,9 @@ class Messages {
     );
   }
 
-  String get teamdeleted {
-    return Intl.message('Team deleted');
-  }
+  String get teamdeleted => Intl.message('Team deleted', locale: locale);
+
+  String get clubDeleted => Intl.message('Club deleted', locale: locale);
 
   String get teamedithint {
     return Intl.message('Change team',

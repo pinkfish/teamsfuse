@@ -288,11 +288,11 @@ class TeamEditFormState extends State<TeamEditForm> {
         fields.add(
           // Only club teams can be public.
           SwitchFormField(
-            initialValue: _builder.isPublicVisibleTeam,
+            initialValue: _builder.isPublic,
             icon: MdiIcons.earth,
             enabled: club != null,
             label: Messages.of(context).publicalyVisible(Tristate.Yes),
-            onSaved: (value) => _builder.isPublicVisibleTeam = value,
+            onSaved: (value) => _builder.isPublic = value,
           ),
         );
       }

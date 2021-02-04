@@ -77,7 +77,7 @@ abstract class Club implements Built<Club, ClubBuilder> {
   static Club fromMap(String userUid, Map<String, dynamic> jsonData) {
     return dataSerializers
         .deserializeWith(Club.serializer, jsonData)
-        .rebuild((b) => b..userUid = userUid);
+        .rebuild((b) => b..userUid = userUid ?? "");
   }
 
   static Serializer<Club> get serializer => _$clubSerializer;

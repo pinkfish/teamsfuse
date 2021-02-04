@@ -45,7 +45,7 @@ abstract class SingleClubState {
   static SingleClubStateBuilder fromState(
       SingleClubState state, SingleClubStateBuilder builder) {
     return builder
-      ..club = state.club.toBuilder()
+      ..club = state.club?.toBuilder()
       ..teams = state.teams.toBuilder()
       ..loadedTeams = state.loadedTeams
       ..invites = state.invites.toBuilder()

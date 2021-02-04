@@ -1224,6 +1224,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<Club> getClubData({String clubUid}) async* {
+    print("Loading Club $clubUid");
     var ref = wrapper.collection(CLUB_COLLECTION).document(clubUid);
     DocumentSnapshotWrapper snap = await ref.get();
     if (snap.exists) {
@@ -1232,7 +1233,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       yield null;
     }
     await for (var wrap in ref.snapshots()) {
-      yield Club.fromMap(userData.uid, wrap.data);
+      if (wrap.exists) {
+        yield Club.fromMap(userData.uid, wrap.data);
+      } else {
+        yield null;
+      }
     }
   }
 

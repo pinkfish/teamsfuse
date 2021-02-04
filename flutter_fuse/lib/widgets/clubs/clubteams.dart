@@ -69,6 +69,9 @@ class ClubTeams extends StatelessWidget {
     return BlocBuilder(
       cubit: clubBloc,
       builder: (context, state) {
+        if (state is SingleClubLoaded && !state.loadedTeams) {
+          clubBloc.add(SingleClubLoadTeams());
+        }
         return _buildTeams(context, state);
       },
     );

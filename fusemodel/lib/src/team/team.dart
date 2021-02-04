@@ -51,7 +51,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
 
   /// If this team is publicaly visible.
   bool get isPublic;
-
+  
   /// If we should track attendecne for games in this team.  This is
   /// overridden by the club potentially.
   @BuiltValueField(wireName: ATTENDANCE)

@@ -65,7 +65,7 @@ class SharedGameDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
         .getLeagueTeamData(game.officialResult.awayTeamLeagueUid)
         .listen((LeagueOrTournamentTeam team) {
       awayLeagueTeam = team;
-      _db.getPublicTeamDetails(teamUid: team.teamUid).then((Team t) {
+      _db.getPublicTeamDetails(teamUid: team.teamUid).listen((Team t) {
         awayTeam = t;
       });
     });
@@ -73,7 +73,7 @@ class SharedGameDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
         .getLeagueTeamData(game.officialResult.homeTeamLeagueUid)
         .listen((LeagueOrTournamentTeam team) {
       homeLeagueTeam = team;
-      _db.getPublicTeamDetails(teamUid: team.teamUid).then((Team t) {
+      _db.getPublicTeamDetails(teamUid: team.teamUid).listen((Team t) {
         homeTeam = t;
       });
     });
