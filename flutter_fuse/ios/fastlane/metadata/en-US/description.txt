@@ -1,0 +1,8 @@
+TeamsFuse is a cross platform app that makes dealing with your sports teams easy and simple. It handles things in a simple consistent manner, allowing for multiple players and teams to interact simply and easily with the main calendar view.
+
+***Features***
+- Works offline with no internet
+- Handles multiple teams and players in one view
+- League control allowing shared offical results
+- Notifications via mobile and email
+- Mobile first! Designed for the phone

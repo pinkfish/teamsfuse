@@ -583,6 +583,7 @@
 					"$(PROJECT_DIR)/Pods/FirebaseAnalytics/Frameworks",
 					"$(PROJECT_DIR)/Pods/GooglePlaces/Frameworks",
 					"$(PROJECT_DIR)/Pods/GoogleSignIn/Frameworks",
+					"$(PROJECT_DIR)/fastlane",
 				);
 				GROUP = "";
 				INFOPLIST_FILE = Runner/Info.plist;

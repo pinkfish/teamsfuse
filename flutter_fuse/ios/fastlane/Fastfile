@@ -156,8 +156,15 @@ platform :ios do
     # Build the app
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
 
+    screenshots
+
     # Upload the app.
     upload_to_testflight(changelog: body)
+  end
+
+  desc "Generate new localized screenshots"
+  lane :screenshots do
+    capture_screenshots(workspace: "Runner.xcworkspace", scheme: "Runner")
   end
 end
 

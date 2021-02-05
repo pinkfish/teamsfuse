@@ -1,33 +1,15 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/widgets/player/playername.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:mockito/mockito.dart';
 
+import '../util/testable.dart';
 
 class MockSinglePlayerBloc extends MockBloc<int> implements SinglePlayerBloc {}
-
-///
-/// Makes a happy little testable widget with a wrapper.
-///
-Widget makeTestableWidget(Widget child) {
-  return MediaQuery(
-    data: MediaQueryData(),
-    child: MaterialApp(
-      localizationsDelegates: [
-        MessagesTestDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      home: child,
-    ),
-  );
-}
 
 void main() {
   testWidgets('uninitialized', (tester) async {
@@ -73,7 +55,9 @@ void main() {
       makeTestableWidget(
         BlocProvider<SinglePlayerBloc>(
           create: (c) => singlePlayerBloc,
-          child: PlayerName(playerUid: "123"),
+          child: RepaintBoundary(
+            child: PlayerName(playerUid: "123"),
+          ),
         ),
       ),
     );
@@ -81,5 +65,8 @@ void main() {
     await tester.pumpAndSettle();
 
     await expectLater(find.text("Frog"), findsOneWidget);
+
+    await expectLater(find.byType(PlayerName),
+        matchesGoldenFile('golden/player_name_set.png'));
   });
 }

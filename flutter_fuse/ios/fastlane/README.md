@@ -26,6 +26,11 @@ Push a new beta build to firebase
 fastlane ios beta
 ```
 Push a new beta build to TestFlight
+### ios screenshots
+```
+fastlane ios screenshots
+```
+Generate new localized screenshots
 
 ----
 
