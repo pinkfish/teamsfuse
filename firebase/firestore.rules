@@ -26,7 +26,8 @@ service cloud.firestore {
 
     function isUserOrAdmin(data) {
       return data.data.users[request.auth.uid].added ||
-        request.auth.uid in data.data.admins;
+        request.auth.uid in data.data.admins ||
+        data.data.isPublic;
     }
 
     function isAdmin(data) {
