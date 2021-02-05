@@ -117,7 +117,7 @@ class _EditSeasonScreenState extends State<EditSeasonScreen> {
             title: Text(Messages.of(context).addseason),
           ),
           backgroundColor: Colors.grey.shade100,
-          resizeToAvoidBottomPadding: true,
+          resizeToAvoidBottomInset: true,
           body: BlocBuilder(
             cubit: singleSeasonBloc,
             builder: (context, seasonState) =>

@@ -178,7 +178,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
               title: Text(Messages.of(context).addseason),
             ),
             backgroundColor: Colors.grey.shade100,
-            resizeToAvoidBottomPadding: true,
+            resizeToAvoidBottomInset: true,
             body: BlocListener(
               cubit: addSeasonBloc,
               listener: (context, addState) {

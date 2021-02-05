@@ -45,6 +45,27 @@ void main() {
       await driver.waitFor(createAccountButton);
     });
 
-    test('Forgot password page', () async {});
+    test('Login', () async {});
+
+    test('Forgot password page', () async {
+      await doLogin(driver);
+      // FInd the fused drawer.
+      await driver.waitFor(find.byType("FusedDrawer"));
+    });
   });
+}
+
+Future<void> doLogin(FlutterDriver driver) async {
+  final submitButton = find.byValueKey("SUBMIT");
+  final userNameBox = find.byTooltip("Your email address");
+  final passwordBox = find.byTooltip("Password");
+  final testEmail = String.fromEnvironment("TEST_USER");
+  final testPassword = String.fromEnvironment("TEST_PASSWORD");
+
+  // Do the login.  Assumes we are on the login page.
+  await driver.tap(userNameBox);
+  await driver.enterText(testEmail);
+  await driver.tap(passwordBox);
+  await driver.enterText(testPassword);
+  await driver.tap(submitButton);
 }
