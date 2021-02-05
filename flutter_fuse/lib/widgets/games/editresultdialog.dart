@@ -50,7 +50,7 @@ class EditResultDialog extends StatelessWidget {
         ),
       ),
       backgroundColor: Colors.grey.shade100,
-      resizeToAvoidBottomPadding: true,
+      resizeToAvoidBottomInset: true,
       body: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
