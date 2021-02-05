@@ -121,8 +121,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
             "LeagueDivison.$leagueDivisonUid}") {
     assert(this.db != null);
     _divSub = db
-        .getLeagueDivisionData(
-            leagueDivisionUid: leagueDivisonUid, memberUid: db.currentUser.uid)
+        .getLeagueDivisionData(leagueDivisionUid: leagueDivisonUid)
         .listen((LeagueOrTournamentDivison div) {
       if (div == null) {
         add(_SingleLeagueOrTournamentEventDivisonDeleted());
@@ -131,6 +130,7 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
             leagueDivision: div));
       }
     });
+    _divSub.onError((e, stack) => crashes.recordException(e, stack));
   }
 
   @override
@@ -229,7 +229,8 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
         builder[t.uid] = t;
       }
       yield (SingleLeagueOrTournamentDivisonLoaded.fromState(state)
-            ..games = builder)
+            ..games = builder
+            ..loadedGames = true)
           .build();
     }
 
@@ -239,32 +240,71 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
         builder[t.uid] = t;
       }
       yield (SingleLeagueOrTournamentDivisonLoaded.fromState(state)
-            ..teams = builder)
+            ..teams = builder
+            ..loadedTeams = true)
           .build();
     }
 
-    if (event is SingleLeagueOrTournamentDivisonLoadGames) {
-      if (_leagueOrTournamentTeamSnapshot != null) {
+    if (event is SingleLeagueOrTournamentDivisonLoadGames &&
+        state is SingleLeagueOrTournamentDivisonLoaded) {
+      print("Divison load $_leagueOrTournamentSnapshot ");
+      if (_leagueOrTournamentSnapshot == null &&
+          state is SingleLeagueOrTournamentDivisonLoaded) {
+        print("Divison load fluff");
         _leagueOrTournamentSnapshot = db
             .getLeagueGamesForDivison(leagueDivisonUid)
             .listen((Iterable<GameSharedData> games) => _updateGames(games));
+        _leagueOrTournamentSnapshot
+            .onError((e, stack) => crashes.recordException(e, stack));
       }
     }
 
     if (event is SingleLeagueOrTournamentDivisonLoadTeams) {
-      if (_leagueOrTournamentTeamSnapshot != null) {
+      if (state is SingleLeagueOrTournamentDivisonLoaded &&
+          _leagueOrTournamentTeamSnapshot == null) {
         _leagueOrTournamentTeamSnapshot =
             db.getLeagueDivisionTeams(leagueDivisonUid).listen((event) {
           add(_SingleLeagueOrTournamentEventDivisonTeamsLoaded(teams: event));
         });
+        _leagueOrTournamentTeamSnapshot
+            .onError((e, stack) => crashes.recordException(e, stack));
       }
     }
   }
 
   @override
   SingleLeagueOrTournamentDivisonState fromJson(Map<String, dynamic> json) {
-    // TODO: implement fromJson
-    throw UnimplementedError();
+    if (json == null || !json.containsKey("type")) {
+      return SingleLeagueOrTournamentDivisonUninitialized();
+    }
+
+    try {
+      SingleLeagueOrTournamentDivisonBlocStateType type =
+          SingleLeagueOrTournamentDivisonBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleLeagueOrTournamentDivisonBlocStateType.Uninitialized:
+          return SingleLeagueOrTournamentDivisonUninitialized();
+        case SingleLeagueOrTournamentDivisonBlocStateType.Loaded:
+          var ret = SingleLeagueOrTournamentDivisonLoaded.fromMap(json);
+          return ret;
+        case SingleLeagueOrTournamentDivisonBlocStateType.Deleted:
+          return SingleLeagueOrTournamentDivisonDeleted.fromMap(json);
+        case SingleLeagueOrTournamentDivisonBlocStateType.SaveFailed:
+          return SingleLeagueOrTournamentDivisonSaveFailed.fromMap(json);
+        case SingleLeagueOrTournamentDivisonBlocStateType.Saving:
+          return SingleLeagueOrTournamentDivisonSaving.fromMap(json);
+        case SingleLeagueOrTournamentDivisonBlocStateType.SaveDone:
+          return SingleLeagueOrTournamentDivisonSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
+    }
+
+    return SingleLeagueOrTournamentDivisonUninitialized();
   }
 
   @override

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singleleagueortournamentprovider.dart';
 import 'package:flutter_fuse/widgets/blocs/singleleagueortournamentseasonprovider.dart';
-import '../../services/blocs.dart';
+import 'package:flutter_fuse/widgets/util/deleted.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentdivisonprovider.dart';
 import 'addteamdialog.dart';
@@ -72,7 +74,10 @@ class _LeagueOrTournamentDivisonDetailsState
       sizeFactor: animation,
       child: LeagueOrTournamentTeamCard(
         _sortedTeams[index],
-        admin: leagueDivison.isAdmin(),
+        admin: leagueDivison.isAdmin(
+            RepositoryProvider.of<DatabaseUpdateModel>(context)
+                .currentUser
+                .uid),
       ),
     );
   }
@@ -132,17 +137,26 @@ class _LeagueOrTournamentDivisonDetailsState
     return SingleLeagueOrTournamentDivisonProvider(
       leagueDivisonUid: widget.leagueOrTournamentDivisonUid,
       builder: (context, divisonBloc) => BlocBuilder(
-        cubit: divisonBloc,
-        builder: (context, divisonState) => SingleLeagueOrTournamentProvider(
-          leagueUid: divisonState.leagueOrTournamentUid,
-          builder: (context, leagueBloc) =>
-              SingleLeagueOrTournamentSeasonProvider(
-            leagueSeasonUid: divisonState.leagueOrTournamentSeasonUid,
-            builder: (context, seasonBloc) =>
-                _buildTeams(context, leagueBloc, seasonBloc, divisonBloc),
-          ),
-        ),
-      ),
+          cubit: divisonBloc,
+          builder:
+              (context, SingleLeagueOrTournamentDivisonState divisonState) {
+            if (divisonState is SingleLeagueOrTournamentDivisonDeleted) {
+              return DeletedWidget();
+            }
+            if (divisonState is SingleLeagueOrTournamentDivisonUninitialized) {
+              return LoadingWidget();
+            }
+            return SingleLeagueOrTournamentProvider(
+              leagueUid: divisonState.divison.leagueOrTournamentUid,
+              builder: (context, leagueBloc) =>
+                  SingleLeagueOrTournamentSeasonProvider(
+                leagueSeasonUid:
+                    divisonState.divison.leagueOrTournmentSeasonUid,
+                builder: (context, seasonBloc) =>
+                    _buildTeams(context, leagueBloc, seasonBloc, divisonBloc),
+              ),
+            );
+          }),
     );
   }
 
@@ -156,30 +170,47 @@ class _LeagueOrTournamentDivisonDetailsState
       cubit: leagueBloc,
       builder: (congtext, state) => BlocBuilder(
         cubit: seasonBloc,
-        builder: (context, seasonState) => BlocBuilder(
-          cubit: divisonBloc,
-          builder: (context, divisonState) {
-            return Container(
-              alignment: Alignment.topLeft,
-              margin: EdgeInsets.all(5.0),
-              child: Column(
+        builder: (context, seasonState) => Container(
+          alignment: Alignment.topLeft,
+          margin: EdgeInsets.all(5.0),
+          child: BlocBuilder(
+            cubit: divisonBloc,
+            builder: (context, divisonState) {
+              Widget inner;
+              if (seasonState is SingleLeagueOrTournamentSeasonUninitialized ||
+                  divisonState
+                      is SingleLeagueOrTournamentDivisonUninitialized) {
+                inner = ListTile(
+                  leading: CircularProgressIndicator(),
+                  title: Text(
+                    Messages.of(context).loading,
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                );
+              } else {
+                inner = ListTile(
+                  leading: LeagueImage(
+                    leagueOrTournament: state.league,
+                    width: 50.0,
+                    height: 50.0,
+                  ),
+                  title: Text(
+                    state.league.name,
+                    style: Theme.of(context).textTheme.headline5,
+                  ),
+                  subtitle: Text(
+                    "${seasonState.season.name} ${divisonState.divison.name}",
+                    style: Theme.of(context).textTheme.subtitle1,
+                  ),
+                );
+              }
+              return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  ListTile(
-                    leading: LeagueImage(
-                      leagueOrTournament: state.league,
-                      width: 50.0,
-                      height: 50.0,
-                    ),
-                    title: Text(
-                      state.league.name,
-                      style: Theme.of(context).textTheme.headline5,
-                    ),
-                    subtitle: Text(
-                      "${seasonState.season.name} ${divisonState.divison.name}",
-                      style: Theme.of(context).textTheme.subtitle1,
-                    ),
+                  AnimatedSwitcher(
+                    duration: Duration(milliseconds: 500),
+                    child: inner,
                   ),
                   BlocBuilder(
                     cubit: divisonBloc,
@@ -247,9 +278,9 @@ class _LeagueOrTournamentDivisonDetailsState
                     },
                   )
                 ],
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

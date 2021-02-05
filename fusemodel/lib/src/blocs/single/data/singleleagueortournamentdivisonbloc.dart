@@ -49,9 +49,6 @@ abstract class SingleLeagueOrTournamentDivisonState {
   bool get loadedTeams;
   SingleLeagueOrTournamentDivisonBlocStateType get type;
 
-  @BuiltValueField(serialize: false)
-  bool get firestoreLogSetup;
-
   static SingleLeagueOrTournamentDivisonStateBuilder fromState(
       SingleLeagueOrTournamentDivisonState state,
       SingleLeagueOrTournamentDivisonStateBuilder builder) {

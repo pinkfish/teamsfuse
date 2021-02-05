@@ -176,7 +176,6 @@ class _StartPeriodState extends State<StartPeriod> {
 
   /// Updates the current set of selected players.
   void _selectPlayer(String uid, bool remove) {
-    print("$uid $remove");
     if (remove) {
       setState(() => selectedPlayers.remove(uid));
     } else {

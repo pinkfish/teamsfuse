@@ -310,7 +310,7 @@ abstract class DatabaseUpdateModel {
 
   // League Season/Division.
   Stream<LeagueOrTournamentDivison> getLeagueDivisionData(
-      {String leagueDivisionUid, String memberUid});
+      {String leagueDivisionUid});
   Stream<LeagueOrTournamentSeason> getLeagueSeasonData(String leagueSeasonUid);
   Future<void> updateLeagueSeason(LeagueOrTournamentSeason season);
   Future<void> updateLeagueDivison(LeagueOrTournamentDivison division);

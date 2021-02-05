@@ -22,10 +22,7 @@ class AppConfiguration {
 
   /// Loads the configuration.
   Future<void> load() async {
-    print('Loading app config');
-
     var opt = Firebase.app().options;
-    print("Firstbase client id${opt.androidClientId}");
     _completer.future.then((done) => _loaded = done);
     //_config = await RemoteConfig.instance;
     //await _config.fetch();

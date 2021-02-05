@@ -25,7 +25,6 @@ class SingleTeamProvider extends SingleBlocProvider<SingleTeamBloc> {
             prefix: "team");
 
   static SingleTeamBloc _createBloc(BuildContext context, String uid) {
-    print("Making bloc $uid");
     return SingleTeamBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       teamUid: uid,

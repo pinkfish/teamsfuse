@@ -66,9 +66,6 @@ abstract class SingleGameState {
 
   SingleGameBlocStateType get type;
 
-  @BuiltValueField(serialize: false)
-  bool get firestoreLogSetup;
-
   static SingleGameStateBuilder fromState(
       SingleGameState state, SingleGameStateBuilder builder) {
     return builder
@@ -82,7 +79,6 @@ abstract class SingleGameState {
   }
 
   static void initializeStateBuilder(SingleGameStateBuilder b) => b
-    ..firestoreLogSetup = false
     ..loadedLogs = false
     ..loadedEvents = false
     ..loadedMedia = false

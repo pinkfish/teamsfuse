@@ -145,7 +145,7 @@ class SinglePlayerBloc
     if (event is _SinglePlayerNewPlayer) {
       yield (SinglePlayerLoaded.fromState(state)
             ..player = event.newPlayer.toBuilder()
-            ..mePlayer = event.newPlayer.uid == db.currentUser.uid)
+            ..mePlayer = event.newPlayer.uid == db.currentUser?.uid)
           .build();
     }
 

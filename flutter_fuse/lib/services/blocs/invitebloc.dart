@@ -111,7 +111,6 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
   @override
   Stream<InviteState> mapEventToState(InviteEvent event) async* {
     if (event is _InviteEventLoadFirestore) {
-      print('getting invites');
       _inviteChangeSub =
           databaseUpdateModel.getInvites().listen((Iterable<Invite> invites) {
         coordinationBloc.loadingTrace?.incrementCounter("invite");

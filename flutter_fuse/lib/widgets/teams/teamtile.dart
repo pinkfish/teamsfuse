@@ -56,7 +56,6 @@ class TeamTile extends StatelessWidget {
                 leading: Icon(Icons.circle),
                 title: Text(Messages.of(context).loading));
           }
-          print("TeamState $teamState");
 
           return SingleSeasonProvider(
               seasonUid: teamState.team.currentSeason,

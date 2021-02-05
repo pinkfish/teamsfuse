@@ -42,6 +42,7 @@ class PublicTeamDetails extends StatelessWidget {
             children: [
               Text(
                 "${season.name} W:${season.record.win} L:${season.record.loss} T:${season.record.tie}",
+                  style: Theme.of(context).textTheme.headline5,
               ),
               // Show the list of players here.
             ],
@@ -53,6 +54,7 @@ class PublicTeamDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
 
+    var wideScreen = screenSize.width > 600;
     return DefaultTabController(
       // The number of tabs / content sections to display.
       length: 2,
@@ -117,8 +119,10 @@ class PublicTeamDetails extends StatelessWidget {
                   ),
                   ListTile(
                     leading: const Icon(Icons.people),
-                    title: Text(team.name),
-                    subtitle: Text("${team.sport}(${team.league}) "),
+                    title: Text(team.name,
+                        style: Theme.of(context).textTheme.headline4),
+                    subtitle: Text("${team.sport}(${team.league}, ) ",
+                        style: Theme.of(context).textTheme.headline5),
                     trailing: GenderIcon(team.gender),
                   ),
                   Padding(

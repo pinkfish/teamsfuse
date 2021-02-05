@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
-
 import 'package:image_picker/image_picker.dart';
 
 import '../../services/blocs.dart';
@@ -60,6 +60,8 @@ class LeagueScreen extends StatelessWidget {
             var actions = <Widget>[];
             if (state is SingleLeagueOrTournamentDeleted) {
               Navigator.pop(context);
+            } else if (state is SingleLeagueOrTournamentUninitialized) {
+              return LoadingWidget();
             } else {
               print('league stuff ${state.league}');
               if (state.league.isAdmin()) {

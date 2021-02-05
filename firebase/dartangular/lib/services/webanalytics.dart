@@ -45,7 +45,7 @@ class WebAnalytics implements AnalyticsSubsystem {
   }
 
   @override
-  void recordException(Exception error, StackTrace stack) {
+  void recordException(dynamic error, StackTrace stack) {
     // TODO: implement recordException
   }
 

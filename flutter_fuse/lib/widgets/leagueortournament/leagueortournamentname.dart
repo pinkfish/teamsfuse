@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../../services/blocs.dart';
-
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentdivisonprovider.dart';
 import '../blocs/singleleagueortournamentprovider.dart';
@@ -67,8 +65,8 @@ class LeagueOrTournamentName extends StatelessWidget {
         builder: (context, state) {
           Widget inner;
 
-          if (SingleLeagueOrTournamentState
-              is SingleLeagueOrTournamentDeleted) {
+          if (state is SingleLeagueOrTournamentDeleted ||
+              state is SingleLeagueOrTournamentUninitialized) {
             inner = Text(
               Messages.of(context).loading,
               style: style,

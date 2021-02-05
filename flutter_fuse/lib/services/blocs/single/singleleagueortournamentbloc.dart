@@ -134,36 +134,34 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
   final String leagueUid;
   final AnalyticsSubsystem crashes;
 
-  StreamSubscription<LeagueOrTournament> _coordSub;
+  StreamSubscription<LeagueOrTournament> _leagueSub;
   StreamSubscription<Iterable<LeagueOrTournamentSeason>>
       _leagueOrTournamentSnapshot;
 
   SingleLeagueOrTournamentBloc(
       {@required this.db, @required this.leagueUid, @required this.crashes})
       : super(SingleLeagueOrTournamentUninitialized(), leagueUid) {
-    _coordSub = db.getLeagueData(leagueUid: leagueUid).listen((league) {
+    _leagueSub = db.getLeagueData(leagueUid: leagueUid).listen((league) {
       if (league != null) {
         add(_SingleLeagueOrTournamentEventLeagueLoaded(league: league));
       } else {
         add(_SingleLeagueOrTournamentEventDeleted());
       }
     });
+    _leagueSub.onError((e, stack) => crashes.recordException(e, stack));
   }
 
   @override
   Future<void> close() async {
     await super.close();
     _cleanupStuff();
-    _coordSub?.cancel();
+    _leagueSub?.cancel();
+    _leagueSub = null;
   }
 
   void _cleanupStuff() {
     _leagueOrTournamentSnapshot?.cancel();
     _leagueOrTournamentSnapshot = null;
-  }
-
-  void _updateSeasons(Iterable<LeagueOrTournamentSeason> seasons) {
-    add(_SingleLeagueOrTournamentEventSeasons(seasons: seasons));
   }
 
   ///
@@ -235,7 +233,7 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
     try {
       LeagueOrTournamentTeam team = await db.getLeagueTeamData(teamUid).first;
       LeagueOrTournamentSeason season =
-          await db.getLeagueSeasonData(team.seasonUid).single;
+          await db.getLeagueSeasonData(team.leagueOrTournamentSeasonUid).single;
 
       await db.inviteUserToLeagueTeam(
         leagueTeam: team,
@@ -309,13 +307,15 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
     }
 
     if (event is SingleLeagueOrTournamentLoadSeasons) {
-      if (_leagueOrTournamentSnapshot != null) {
+      if (_leagueOrTournamentSnapshot == null) {
         _leagueOrTournamentSnapshot = db
             .getLeagueSeasons(
               leagueUid: leagueUid,
             )
             .listen((Iterable<LeagueOrTournamentSeason> seasons) =>
-                _updateSeasons(seasons));
+                add(_SingleLeagueOrTournamentEventSeasons(seasons: seasons)));
+        _leagueOrTournamentSnapshot
+            .onError((e, stack) => crashes.recordException(e, stack));
       }
     }
 
@@ -363,23 +363,23 @@ class SingleLeagueOrTournamentBloc extends AsyncHydratedBloc<
     }
 
     try {
-    SingleLeagueOrTournamentBlocStateType type =
-        SingleLeagueOrTournamentBlocStateType.valueOf(json["type"]);
-    switch (type) {
-      case SingleLeagueOrTournamentBlocStateType.Uninitialized:
-        return SingleLeagueOrTournamentUninitialized();
-      case SingleLeagueOrTournamentBlocStateType.Loaded:
-        var ret = SingleLeagueOrTournamentLoaded.fromMap(json);
-        return ret;
-      case SingleLeagueOrTournamentBlocStateType.Deleted:
-        return SingleLeagueOrTournamentDeleted.fromMap(json);
-      case SingleLeagueOrTournamentBlocStateType.SaveFailed:
-        return SingleLeagueOrTournamentSaveFailed.fromMap(json);
-      case SingleLeagueOrTournamentBlocStateType.Saving:
-        return SingleLeagueOrTournamentSaving.fromMap(json);
-      case SingleLeagueOrTournamentBlocStateType.SaveDone:
-        return SingleLeagueOrTournamentSaveDone.fromMap(json);
-    }
+      SingleLeagueOrTournamentBlocStateType type =
+          SingleLeagueOrTournamentBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleLeagueOrTournamentBlocStateType.Uninitialized:
+          return SingleLeagueOrTournamentUninitialized();
+        case SingleLeagueOrTournamentBlocStateType.Loaded:
+          var ret = SingleLeagueOrTournamentLoaded.fromMap(json);
+          return ret;
+        case SingleLeagueOrTournamentBlocStateType.Deleted:
+          return SingleLeagueOrTournamentDeleted.fromMap(json);
+        case SingleLeagueOrTournamentBlocStateType.SaveFailed:
+          return SingleLeagueOrTournamentSaveFailed.fromMap(json);
+        case SingleLeagueOrTournamentBlocStateType.Saving:
+          return SingleLeagueOrTournamentSaving.fromMap(json);
+        case SingleLeagueOrTournamentBlocStateType.SaveDone:
+          return SingleLeagueOrTournamentSaveDone.fromMap(json);
+      }
     } catch (e, stack) {
       if (e is Error) {
         crashes.recordError(e, stack);

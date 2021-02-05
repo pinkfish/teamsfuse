@@ -52,12 +52,12 @@ abstract class LeagueOrTournament
   /// List of admin user ids. This is all user ids (not players)
   @memoized
   BuiltSet<String> get adminsUids =>
-      membersData.keys.where((uid) => membersData[uid].admin);
+      BuiltSet.of(membersData.keys.where((uid) => membersData[uid].admin));
 
   /// List of member user ids.  This is all user ids (not players)
   @memoized
   BuiltSet<String> get members =>
-      membersData.keys.where((uid) => !membersData[uid].admin);
+      BuiltSet.of(membersData.keys.where((uid) => !membersData[uid].admin));
 
   LeagueOrTournament._();
   factory LeagueOrTournament([updates(LeagueOrTournamentBuilder b)]) =

@@ -271,7 +271,6 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   labelText: Messages.of(context).selectplace,
                   decoration: const InputDecoration(icon: Icon(Icons.place)),
                   onSaved: (loc) {
-                    print('Saved location $loc');
                     _builder.sharedData.place.name = loc.details.name;
                     _builder.sharedData.place.address = loc.details.address;
                     _builder.sharedData.place.placeId = loc.details.placeid;

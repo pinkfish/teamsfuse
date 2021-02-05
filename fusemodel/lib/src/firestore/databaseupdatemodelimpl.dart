@@ -1259,6 +1259,22 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         isEqualTo: leagueDivisonUid);
     // Snapshot and the main query.
     QuerySnapshotWrapper wrap = await query.getDocuments();
+    // Quick fix.
+    var divison = await wrapper
+        .collection(LEAGUE_DIVISION_COLLECTION)
+        .document(leagueDivisonUid)
+        .get();
+    for (var doc in wrap.documents) {
+      if (!doc.data.containsKey('divisonUid')) {
+        doc.reference.updateData({'divisonUid': leagueDivisonUid});
+      }
+      if (!doc.data.containsKey('seasonUid') || doc.data['seasonUid'] == null) {
+        doc.reference.updateData({'seasonUid': divison.data['seasonUid']});
+      }
+      if (!doc.data.containsKey('leagueUid')) {
+        doc.reference.updateData({'leagueUid': divison.data['leagueUid']});
+      }
+    }
     yield BuiltList(wrap.documents.map((DocumentSnapshotWrapper snap) =>
         LeagueOrTournamentTeam.fromMap(snap.data)));
     await for (QuerySnapshotWrapper wrap in query.snapshots()) {
@@ -1502,6 +1518,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     QueryWrapper query = wrapper.collection(LEAGUE_DIVISION_COLLECTION).where(
         LeagueOrTournamentDivison.LEAGUEORTOURNMENTSEASONUID,
         isEqualTo: leagueSeasonUid);
+    print("Divisons $leagueSeasonUid");
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield BuiltList(wrap.documents.map((DocumentSnapshotWrapper snap) =>
         LeagueOrTournamentDivison.fromMap(snap.data)));
@@ -1516,7 +1533,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String teamSeasonUid) async* {
     QueryWrapper query = wrapper
         .collection(LEAGUE_TEAM_COLLECTION)
-        .where(LeagueOrTournamentTeam.SEASONUID, isEqualTo: teamSeasonUid);
+        .where(LeagueOrTournamentTeam.TEAMSEASONUID, isEqualTo: teamSeasonUid);
     QuerySnapshotWrapper wrap = await query.getDocuments();
     yield BuiltList(wrap.documents.map((DocumentSnapshotWrapper snap) =>
         LeagueOrTournamentTeam.fromMap(snap.data)));
@@ -1528,7 +1545,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<LeagueOrTournamentDivison> getLeagueDivisionData(
-      {String leagueDivisionUid, String memberUid}) async* {
+      {String leagueDivisionUid}) async* {
     DocumentReferenceWrapper doc = wrapper
         .collection(LEAGUE_DIVISION_COLLECTION)
         .document(leagueDivisionUid);
@@ -1539,7 +1556,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       yield null;
     }
     await for (DocumentSnapshotWrapper wrap in doc.snapshots()) {
-      yield LeagueOrTournamentDivison.fromMap(wrap.data);
+      if (wrap.exists) {
+        yield LeagueOrTournamentDivison.fromMap(wrap.data);
+      } else {
+        yield null;
+      }
     }
   }
 
@@ -1639,12 +1660,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       return false;
     }
     LeagueOrTournamentTeam team = LeagueOrTournamentTeam.fromMap(doc.data);
-    if (team.seasonUid != null) {
+    if (team.teamSeasonUid != null) {
       return false;
     }
     // Connect it and save it.
     Map<String, String> data = <String, String>{};
-    data[LeagueOrTournamentTeam.SEASONUID] = season.uid;
+    data[LeagueOrTournamentTeam.TEAMSEASONUID] = season.uid;
     data[LeagueOrTournamentTeam.TEAMUID] = season.teamUid;
     await wrapper
         .collection(LEAGUE_TEAM_COLLECTION)

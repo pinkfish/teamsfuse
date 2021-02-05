@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
+import 'package:flutter_fuse/widgets/util/deleted.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentprovider.dart';
 import '../blocs/singleleagueortournamentseasonprovider.dart';
@@ -33,87 +35,84 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
 
   Widget _buildSeason(LeagueOrTournamentSeason season, bool admin,
       SingleLeagueOrTournamentBloc leagueBloc) {
-    if (season.uid == _openedPanel || season.uid == leagueBloc.state.league) {
-      // Show all the divisions and details.
-      return SingleLeagueOrTournamentSeasonProvider(
-        leagueSeasonUid: season.uid,
-        builder: (context, seasonBloc) => BlocBuilder(
-          cubit: seasonBloc,
-          builder: (context, seasonState) {
-            if (!seasonState.loadedDivisons) {
-              return Text(Messages.of(context).loading);
-            }
+    // Show all the divisions and details.
+    return SingleLeagueOrTournamentSeasonProvider(
+      leagueSeasonUid: season.uid,
+      builder: (context, seasonBloc) => BlocBuilder(
+        cubit: seasonBloc,
+        builder: (context, seasonState) {
+          if (!seasonState.loadedDivisons) {
+            seasonBloc.add(SingleLeagueOrTournamentSeasonLoadDivisions());
+            return Text(Messages.of(context).loading);
+          }
 
-            if (seasonState.divisons.length == 0) {
-              if (admin) {
-                return Container(
-                  margin: EdgeInsets.all(5.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Text(Messages.of(context).nodivisons),
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: FlatButton(
-                          onPressed: () => _addDivison(seasonBloc),
-                          child: Text(Messages.of(context).adddivison,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .button
-                                  .copyWith(
-                                      color: Theme.of(context).accentColor)),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              } else {
-                return Container(
-                  margin: EdgeInsets.all(5.0),
-                  child: Text(Messages.of(context).nodivisons),
-                );
-              }
-            }
-
-            var sortedDivisons = seasonState.divisons.values.toList();
-            sortedDivisons.sort((d1, d2) => d1.name.compareTo(d2.name));
-            var children = sortedDivisons.map<Widget>(
-              (divison) {
-                return ListTile(
-                  onTap: () => Navigator.pushNamed(context,
-                      "/League/Divison/${widget.leagueOrTournamentUid}/${season.uid}/${divison.uid}"),
-                  leading: Icon(MdiIcons.accountGroup),
-                  title: Text(divison.name),
-                );
-              },
-            ).toList();
-
+          if (seasonState.divisons.length == 0) {
             if (admin) {
-              children.add(SizedBox(height: 10.0));
-              children.add(
-                FlatButton(
-                  onPressed: () => _addDivison(seasonBloc),
-                  child: Text(
-                    Messages.of(context).adddivison,
-                    style: Theme.of(context)
-                        .textTheme
-                        .button
-                        .copyWith(color: Theme.of(context).accentColor),
-                  ),
+              return Container(
+                margin: EdgeInsets.all(5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Text(Messages.of(context).nodivisons),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: FlatButton(
+                        onPressed: () => _addDivison(seasonBloc),
+                        child: Text(Messages.of(context).adddivison,
+                            style: Theme.of(context).textTheme.button.copyWith(
+                                color: Theme.of(context).accentColor)),
+                      ),
+                    ),
+                  ],
                 ),
               );
+            } else {
+              return Container(
+                margin: EdgeInsets.all(5.0),
+                child: Text(Messages.of(context).nodivisons),
+              );
             }
+          }
 
-            return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: children);
-          },
-        ),
-      );
-    }
-    return Text("closed");
+          var sortedDivisons = seasonState.divisons.values.toList();
+          sortedDivisons.sort(
+              (LeagueOrTournamentDivison d1, LeagueOrTournamentDivison d2) =>
+                  d1.name.compareTo(d2.name));
+          var children = sortedDivisons.map<Widget>(
+            (divison) {
+              return ListTile(
+                onTap: () => Navigator.pushNamed(context,
+                    "/League/Divison/${widget.leagueOrTournamentUid}/${season.uid}/${divison.uid}"),
+                leading: Icon(MdiIcons.accountGroup),
+                title: Text(divison.name),
+              );
+            },
+          ).toList();
+
+          if (admin) {
+            children.add(SizedBox(height: 10.0));
+            children.add(
+              FlatButton(
+                onPressed: () => _addDivison(seasonBloc),
+                child: Text(
+                  Messages.of(context).adddivison,
+                  style: Theme.of(context)
+                      .textTheme
+                      .button
+                      .copyWith(color: Theme.of(context).accentColor),
+                ),
+              ),
+            );
+          }
+
+          return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: children);
+        },
+      ),
+    );
   }
 
   void _addSeason(SingleLeagueOrTournamentBloc tournmentBloc) {
@@ -218,7 +217,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
           // Show the divisons in the current season.
           SingleLeagueOrTournamentProvider(
             leagueUid: widget.leagueOrTournamentUid,
-            builder: (context, leagueBloc) => BlocListener(
+            builder: (context, leagueBloc) => BlocConsumer(
               cubit: leagueBloc,
               listener: (context, state) {
                 if (state is SingleLeagueOrTournamentDeleted) {
@@ -226,114 +225,114 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                   return;
                 }
               },
-              child: BlocBuilder(
-                cubit: leagueBloc,
-                builder: (context, state) {
-                  if (state is SingleLeagueOrTournamentLoaded) {
-                    // Tell it to load the seasons.
-                    leagueBloc.add(SingleLeagueOrTournamentLoadSeasons());
-                  }
-                  if (state is SingleLeagueOrTournamentDeleted) {
-                    return Text(Messages.of(context).loading);
-                  }
-                  // Show the seasons, making the current season open by default
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: 5.0, right: 5.0, top: 5.0, bottom: 10.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              margin: EdgeInsets.only(right: 10.0),
-                              child: LeagueImage(
-                                leagueOrTournament: state.league,
-                                width: 100.0,
-                                height: 100.0,
-                              ),
+              builder: (context, state) {
+                if (state is SingleLeagueOrTournamentLoaded &&
+                    !state.loadedSeasons) {
+                  // Tell it to load the seasons.
+                  leagueBloc.add(SingleLeagueOrTournamentLoadSeasons());
+                }
+                if (state is SingleLeagueOrTournamentDeleted) {
+                  return DeletedWidget();
+                }
+                if (state is SingleLeagueOrTournamentUninitialized) {
+                  return LoadingWidget();
+                }
+                // Show the seasons, making the current season open by default
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.only(
+                          left: 5.0, right: 5.0, top: 5.0, bottom: 10.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.only(right: 10.0),
+                            child: LeagueImage(
+                              leagueOrTournament: state.league,
+                              width: 100.0,
+                              height: 100.0,
                             ),
-                            Flexible(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Flexible(
-                                    child: Text(state.league.name,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline5
-                                            .copyWith(
-                                                color: Theme.of(context)
-                                                    .primaryColorDark)),
-                                  ),
-                                  state.league.shortDescription.isEmpty
-                                      ? SizedBox(
-                                          height: 0.0,
-                                        )
-                                      : Flexible(
-                                          child: Text(
-                                              state.league.shortDescription,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .subtitle1
-                                                  .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                        ),
-                                  SizedBox(height: 5.0),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                          Messages.of(context)
-                                              .sportname(state.league.sport),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText2
-                                              .copyWith(
-                                                  color: Colors.black54,
-                                                  fontStyle: FontStyle.italic)),
-                                      Expanded(
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: GenderIcon(state.league.gender,
-                                              size: 20.0),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      state.league.longDescription.isEmpty
-                          ? SizedBox(height: 0.0)
-                          : Container(
-                              padding: EdgeInsets.only(
-                                  left: 15.0, bottom: 5.0, right: 5.0),
-                              child: RichText(
-                                  text: TextSpan(
-                                      text: state.league.longDescription,
+                          ),
+                          Flexible(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Flexible(
+                                  child: Text(state.league.name,
                                       style: Theme.of(context)
                                           .textTheme
-                                          .subtitle1))),
-                      _buildSeasonData(leagueBloc, state)
-                    ],
-                  );
-                },
-              ),
+                                          .headline5
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .primaryColorDark)),
+                                ),
+                                state.league.shortDescription.isEmpty
+                                    ? SizedBox(
+                                        height: 0.0,
+                                      )
+                                    : Flexible(
+                                        child: Text(
+                                            state.league.shortDescription,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subtitle1
+                                                .copyWith(
+                                                    fontWeight:
+                                                        FontWeight.w500)),
+                                      ),
+                                SizedBox(height: 5.0),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                        Messages.of(context)
+                                            .sportname(state.league.sport),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2
+                                            .copyWith(
+                                                color: Colors.black54,
+                                                fontStyle: FontStyle.italic)),
+                                    Expanded(
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: GenderIcon(state.league.gender,
+                                            size: 20.0),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    state.league.longDescription.isEmpty
+                        ? SizedBox(height: 0.0)
+                        : Container(
+                            padding: EdgeInsets.only(
+                                left: 15.0, bottom: 5.0, right: 5.0),
+                            child: RichText(
+                                text: TextSpan(
+                                    text: state.league.longDescription,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .subtitle1))),
+                    _buildSeasonData(leagueBloc, state)
+                  ],
+                );
+              },
             ),
-          )
+          ),
         ],
       ),
     );

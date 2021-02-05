@@ -162,7 +162,7 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
   }
 
   @override
-  void recordException(Exception error, StackTrace stack) {
+  void recordException(dynamic error, StackTrace stack) {
     if (Platform.isAndroid || Platform.isIOS) {
       FirebaseCrashlytics.instance.recordError(error, stack);
     } else {

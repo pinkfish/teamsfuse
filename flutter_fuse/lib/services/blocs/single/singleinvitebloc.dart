@@ -244,12 +244,12 @@ class SingleInviteBloc
         team.currentSeason = pregenSeason.documentID;
         LeagueOrTournamentTeam leagueTeam =
             await db.getLeagueTeamData(invite.leagueTeamUid).first;
-        if (leagueTeam.seasonUid != null) {
+        if (leagueTeam.teamSeasonUid != null) {
           // Someone beat them to it!
           // TODO: Say someone beat them to it.
         } else {
-          leagueTeam =
-              leagueTeam.rebuild((b) => b..seasonUid = pregenSeason.documentID);
+          leagueTeam = leagueTeam
+              .rebuild((b) => b..teamSeasonUid = pregenSeason.documentID);
           await db.updateLeagueTeam(leagueTeam);
           await db.addFirestoreTeam(team.build(), pregen, season, null);
         }

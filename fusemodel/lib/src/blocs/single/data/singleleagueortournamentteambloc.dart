@@ -40,13 +40,13 @@ class SingleLeagueOrTournamentTeamBlocStateType extends EnumClass {
 abstract class SingleLeagueOrTournamentTeamState {
   @nullable
   LeagueOrTournamentTeam get leagueOrTournamentTeam;
+  bool get loadedGames;
+  bool get loadedInvites;
   BuiltMap<String, GameSharedData> get games;
   BuiltList<InviteToLeagueTeam> get invites;
+  @nullable
   Team get publicTeam;
   SingleLeagueOrTournamentTeamBlocStateType get type;
-
-  @BuiltValueField(serialize: false)
-  bool get firestoreLogSetup;
 
   static SingleLeagueOrTournamentTeamStateBuilder fromState(
       SingleLeagueOrTournamentTeamState state,
@@ -55,13 +55,14 @@ abstract class SingleLeagueOrTournamentTeamState {
       ..leagueOrTournamentTeam = state.leagueOrTournamentTeam?.toBuilder()
       ..invites = state.invites.toBuilder()
       ..games = state.games.toBuilder()
-      ..publicTeam = state.publicTeam.toBuilder()
-      ..firestoreLogSetup = state.firestoreLogSetup;
+      ..publicTeam = state.publicTeam?.toBuilder();
   }
 
   static void initializeStateBuilder(
           SingleLeagueOrTournamentTeamStateBuilder b) =>
-      b..firestoreLogSetup = false;
+      b
+        ..loadedGames = false
+        ..loadedInvites = false;
 
   Map<String, dynamic> toMap();
 }

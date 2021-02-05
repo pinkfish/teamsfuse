@@ -213,7 +213,6 @@ class SingleGameBloc
   SingleGameBloc(
       {@required this.gameUid, @required this.db, @required this.crashes})
       : super(SingleGameUninitialized(), 'SingleGamw' + gameUid) {
-    print("Single game $gameUid");
     _gameSub = db.getGame(gameUid).listen((g) {
       if (g != null) {
         add(_SingleGameNewGame(newGame: g));
@@ -235,7 +234,6 @@ class SingleGameBloc
   @override
   Stream<SingleGameState> mapEventToState(SingleGameEvent event) async* {
     if (event is _SingleGameNewGame) {
-      print("exist update $gameUid");
       yield (SingleGameLoaded.fromState(state)
             ..game = event.newGame.toBuilder())
           .build();
@@ -254,8 +252,6 @@ class SingleGameBloc
     }
 
     if (event is SingleGameLoadEvents) {
-      print(" events $event");
-
       _lock.synchronized(() {
         if (_gameEventSub == null) {
           _gameEventSub = db
@@ -266,8 +262,6 @@ class SingleGameBloc
     }
 
     if (event is SingleGameLoadMedia) {
-      print(" events $event");
-
       _lock.synchronized(() {
         if (_mediaInfoSub == null) {
           _mediaInfoSub = db.getMediaForGame(gameUid: gameUid).listen(
@@ -414,8 +408,7 @@ class SingleGameBloc
     if (event is _SingleGameNewLogs) {
       yield (SingleGameLoaded.fromState(state)
             ..gameLog = event.logs.toBuilder()
-            ..loadedLogs = true
-            ..firestoreLogSetup = true)
+            ..loadedLogs = true)
           .build();
     }
 
@@ -674,7 +667,6 @@ class SingleGameBloc
     }
 
     // See if this is different the current state and update if it is.
-    print(gameSummary.build());
     if (state.game.playerSummaery != playerSummary.build() ||
         state.game.opponentSummary != opponentSummary.build() ||
         state.game.summary != gameSummary.build() ||

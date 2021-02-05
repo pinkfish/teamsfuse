@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singleleagueortournamentdivisonprovider.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -37,7 +36,10 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
                   subtitle = Text(Messages.of(context)
                       .winrecord(team.record[divisonState.divison.uid]));
                 } else {
-                  var record = WinRecord();
+                  var record = WinRecord((b) => b
+                    ..win = 0
+                    ..loss = 0
+                    ..tie = 0);
                   subtitle = Text(Messages.of(context).winrecord(record));
                 }
               }
@@ -51,7 +53,7 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
                         teamUid: team.teamUid,
                       )
                     : const Icon(
-                  MdiIcons.basketball,
+                        MdiIcons.basketball,
                         size: 50.0,
                       ),
                 title: Container(

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
-
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleleagueortournamentprovider.dart';
 import '../../widgets/blocs/singleleagueortournamentteamprovider.dart';
@@ -41,45 +40,38 @@ class LeagueTeamScreen extends StatelessWidget {
             Navigator.pop(context);
           }
         },
-        builder: (context, state) {
+        builder: (context, SingleLeagueOrTournamentTeamState state) {
           FloatingActionButton fab;
           var actions = <Widget>[];
 
           if (!(state is SingleLeagueOrTournamentTeamUninitialized)) {
-            if (!(state is SingleLeagueOrTournamentTeamUninitialized)) {
-              // lets load the league.
-              if (state.league.isAdmin()) {
-                actions.add(
-                  SingleLeagueOrTournamentProvider(
-                    leagueUid: state.divison.leagueOrTournmentUid,
-                    builder: (context, leagueBloc) => BlocBuilder(
-                      cubit: leagueBloc,
-                      builder: (context, leagueState) {
-                        if (!(leagueState
-                            is SingleLeagueOrTournamentUninitialized)) {
-                          return PopupMenuButton<String>(
-                            onSelected: (str) =>
-                                _doAction(context, str, leagueBloc),
-                            itemBuilder: (context) {
-                              return <PopupMenuItem<String>>[
-                                PopupMenuItem<String>(
-                                  value: "invite",
-                                  child:
-                                      Text(Messages.of(context).addteamadmin),
-                                ),
-                              ];
-                            },
-                          );
-                        }
-                        return SizedBox(
-                          width: 0.0,
-                        );
-                      },
-                    ),
-                  ),
-                );
-              }
-            }
+            // lets load the league.
+            actions.add(
+              SingleLeagueOrTournamentProvider(
+                leagueUid: state.leagueOrTournamentTeam.leagueOrTournamentUid,
+                builder: (context, leagueBloc) => BlocBuilder(
+                  cubit: leagueBloc,
+                  builder: (context, leagueState) {
+                    if (leagueState is SingleLeagueOrTournamentLoaded &&
+                        leagueState.league.isAdmin()) {
+                      return PopupMenuButton<String>(
+                        onSelected: (str) =>
+                            _doAction(context, str, leagueBloc),
+                        itemBuilder: (context) {
+                          return <PopupMenuItem<String>>[
+                            PopupMenuItem<String>(
+                              value: "invite",
+                              child: Text(Messages.of(context).addteamadmin),
+                            ),
+                          ];
+                        },
+                      );
+                    }
+                    return SizedBox(width: 0, height: 0);
+                  },
+                ),
+              ),
+            );
           }
           return Scaffold(
             appBar: AppBar(
@@ -89,7 +81,7 @@ class LeagueTeamScreen extends StatelessWidget {
             floatingActionButton: fab,
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
             body: SavingOverlay(
-              saving: state is SingleLeagueOrTournamentSaving,
+              saving: state is SingleLeagueOrTournamentTeamSaving,
               child: Scrollbar(
                 child: SingleChildScrollView(
                   child: LeagueOrTournamentTeamDetails(

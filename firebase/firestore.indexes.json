@@ -1,29 +1,34 @@
 {
-  // Example:
-  //
-  // "indexes": [
-  //   {
-  //     "collectionId": "widgets",
-  //     "fields": [
-  //       { "fieldPath": "foo", "mode": "ASCENDING" },
-  //       { "fieldPath": "bar", "mode": "DESCENDING" }
-  //     ]
-  //   }
-  // ]
   "indexes": [
     {
-      "collectionId": "MessageRecipients",
+      "collectionGroup": "Games",
+      "queryScope": "COLLECTION",
       "fields": [
-          { "fieldPath": "userId", "mode": "ASCENDING" },
-          { "fieldPath": "sentAt", "mode": "ASCENDING" }
+        {
+          "fieldPath": "teamUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "arrivalTime",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
-      "collectionId": "Games",
+      "collectionGroup": "MessageRecipients",
+      "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "teamUid", "mode": "ASCENDING" },
-        { "fieldPath": "arrivalTime", "mode": "ASCENDING" }
+        {
+          "fieldPath": "userId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "sentAt",
+          "order": "ASCENDING"
+        }
       ]
     }
-  ]
+  ],
+  "fieldOverrides": []
 }
+

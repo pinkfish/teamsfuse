@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../games/officalresultdialog.dart';
 import '../leagueortournament/leagueortournamentteamname.dart';
@@ -144,7 +145,9 @@ class GameSharedCard extends StatelessWidget {
     }
 
     var homeTeamDetails = <Widget>[
-      LeagueOrTournamentTeamName(
+      game.officialResult.homeTeamLeagueUid == null
+          ? Text(Messages.of(context).unknown)
+          :LeagueOrTournamentTeamName(
         game.officialResult.homeTeamLeagueUid,
         textAlign: TextAlign.start,
         overflow: TextOverflow.ellipsis,
@@ -152,12 +155,14 @@ class GameSharedCard extends StatelessWidget {
       ),
     ];
     var awayTeamDetails = <Widget>[
-      LeagueOrTournamentTeamName(
-        game.officialResult.awayTeamLeagueUid,
-        textAlign: TextAlign.start,
-        overflow: TextOverflow.ellipsis,
-        style: awayStyle,
-      ),
+      game.officialResult.awayTeamLeagueUid == null
+          ? Text(Messages.of(context).unknown)
+          : LeagueOrTournamentTeamName(
+              game.officialResult.awayTeamLeagueUid,
+              textAlign: TextAlign.start,
+              overflow: TextOverflow.ellipsis,
+              style: awayStyle,
+            ),
     ];
 
     switch (game.type) {
@@ -225,6 +230,7 @@ class GameSharedCard extends StatelessWidget {
 
         break;
     }
+    print("Shared Game ${game.uid}");
     Widget tile = Container(
       child: Column(
         children: <Widget>[
@@ -233,12 +239,14 @@ class GameSharedCard extends StatelessWidget {
             onTap: () {
               Navigator.pushNamed(context, "/SharedGame/${game.uid}");
             },
-            leading: LeagueTeamImage(
-              leagueOrTeamUid: game.officialResult.homeTeamLeagueUid,
-              width: 50.0,
-              height: 50.0,
-              overlay: HomeAwayOverlay.none,
-            ),
+            leading: game.officialResult.homeTeamLeagueUid == null
+                ? Icon(MdiIcons.skullCrossbones)
+                : LeagueTeamImage(
+                    leagueOrTeamUid: game.officialResult.homeTeamLeagueUid,
+                    width: 50.0,
+                    height: 50.0,
+                    overlay: HomeAwayOverlay.none,
+                  ),
             title: Text(
               title,
               overflow: TextOverflow.clip,
@@ -250,12 +258,14 @@ class GameSharedCard extends StatelessWidget {
                 children: subtitle,
               ),
             ),
-            trailing: LeagueTeamImage(
-              leagueOrTeamUid: game.officialResult.awayTeamLeagueUid,
-              width: 50.0,
-              height: 50.0,
-              overlay: HomeAwayOverlay.none,
-            ),
+            trailing: game.officialResult.awayTeamLeagueUid == null
+                ? Icon(MdiIcons.skullCrossbones)
+                : LeagueTeamImage(
+                    leagueOrTeamUid: game.officialResult.awayTeamLeagueUid,
+                    width: 50.0,
+                    height: 50.0,
+                    overlay: HomeAwayOverlay.none,
+                  ),
           ),
           Row(
             children: <Widget>[

@@ -21,5 +21,5 @@ abstract class AnalyticsSubsystem {
   void logInviteAccepted(String inviteType, String invitedTo);
 
   void recordError(Error error, StackTrace stack);
-  void recordException(Exception error, StackTrace stack);
+  void recordException(dynamic error, StackTrace stack);
 }

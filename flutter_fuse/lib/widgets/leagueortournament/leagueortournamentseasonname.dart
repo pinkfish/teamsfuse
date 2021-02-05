@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-
 import '../../services/messages.dart';
 import '../blocs/singleleagueortournamentseasonprovider.dart';
 
@@ -40,6 +39,13 @@ class LeagueOrTournamentSeasonName extends StatelessWidget {
           if (state is SingleLeagueOrTournamentSeasonDeleted) {
             inner = Text(
               Messages.of(context).unknown,
+              style: style,
+              textAlign: textAlign,
+              overflow: overflow,
+            );
+          } else if (state is SingleLeagueOrTournamentSeasonUninitialized) {
+            inner = Text(
+              Messages.of(context).loading,
               style: style,
               textAlign: textAlign,
               overflow: overflow,

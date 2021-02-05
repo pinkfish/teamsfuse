@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 
+import '../../services/blocs.dart';
 import '../../services/map.dart';
 import '../../services/map_view/marker.dart';
 import '../../services/messages.dart';
@@ -210,7 +210,6 @@ class GameDetailsBase extends StatelessWidget {
 
       tzShortName = " ($abbr)";
     }
-    print('${game.sharedData.timezone} $game.sharedData.tzTime}');
     String arriveAttimeStr;
     if (dayArrive.minute == day.minute && dayArrive.hour == day.hour) {
       arriveAttimeStr =

@@ -109,6 +109,7 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
         add(_SingleLeagueOrTournamentEventSeasonDeleted());
       }
     });
+    _coordSub.onError((e, stack) => crashes.recordException(e, stack));
   }
 
   @override
@@ -168,12 +169,14 @@ class SingleLeagueOrTournamentSeasonBloc extends AsyncHydratedBloc<
     }
 
     if (event is SingleLeagueOrTournamentSeasonLoadDivisions) {
-      if (!state.loadedDivisons) {
+      if (_leagueOrTournamentSnapshot == null) {
         _leagueOrTournamentSnapshot = db
             .getLeagueDivisonsForSeason(
                 leagueSeasonUid: leagueSeasonUid, memberUid: db.currentUser.uid)
             .listen((Iterable<LeagueOrTournamentDivison> divisons) =>
                 _updateDivisons(divisons));
+        _leagueOrTournamentSnapshot
+            .onError((e, stack) => crashes.recordException(e, stack));
       }
     }
 

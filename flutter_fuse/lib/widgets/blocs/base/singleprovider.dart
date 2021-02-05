@@ -52,8 +52,6 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
         _singleBloc = null;
       }
 
-      print("Stuff $_singleBloc");
-
       if (_singleBloc == null) {
         _singleBloc = widget.creator(context, widget.keyUid);
         blocs[totalKey] = _BlocProviderState<T>(_singleBloc);

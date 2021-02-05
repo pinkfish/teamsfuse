@@ -112,9 +112,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
   }
 
   void _startLoadingFirestore(CoordinationState state) {
-    print("TeamBloc doing $_loadingFirestore $state");
     if (!_loadingFirestore) {
-      print("TeamBloc really firestore");
       _loadingFirestore = true;
       add(_TeamFirestoreStart(uid: state.uid));
     }

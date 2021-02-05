@@ -43,7 +43,6 @@ class Notifications {
   void init(AuthenticationBloc auth, AppConfiguration configuration) {
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.getToken().then((token) {
-      print('We have token! $token');
       auth.add(AuthenticationNotificationToken(token));
     });
     _firebaseMessaging.configure(

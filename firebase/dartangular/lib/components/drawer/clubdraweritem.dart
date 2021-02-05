@@ -34,7 +34,7 @@ class ClubDrawerItem implements OnInit, OnDestroy {
 
   @override
   void ngOnInit() {
-    _teamSub = _db.getClubTeams(club).listen((e) {
+    _teamSub = _db.getClubTeams(club, true).listen((e) {
       numTeams = e.length;
       loadedTeams = true;
     });

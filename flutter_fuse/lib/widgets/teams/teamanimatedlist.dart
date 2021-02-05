@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import 'teamtile.dart';
 
@@ -96,17 +96,20 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
         if (state is TeamUninitialized) {
           return CircularProgressIndicator();
         } else {
-          var teamSorted = state.allTeamUids
-              .map((uid) => state.getTeam(uid))
-              .where((t) => t.archived == widget.archived)
-              .toList();
+          List<Team> teamSorted = [];
+          for (String uid in state.allTeamUids) {
+            var t = state.getTeam(uid);
+            if (t.archived == widget.archived) {
+              teamSorted.add(t);
+            }
+          }
           if (teamSorted.length == 0) {
             return Container(
               margin: EdgeInsets.only(top: 5.0, left: 20.0, right: 20.0),
               child: Text(Messages.of(context).noteams),
             );
           }
-          teamSorted.sort((a, b) => a.name.compareTo(b.name));
+          teamSorted.sort((a, b) => a.name.compareTo(b.name) as int);
           _updateTeams(teamSorted);
           return AnimatedList(
             key: _listState,

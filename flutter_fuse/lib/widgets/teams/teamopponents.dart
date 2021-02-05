@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
 import 'package:flutter_fuse/widgets/teams/seasondropdown.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleopponentprovider.dart';
 import '../games/gamecard.dart';
@@ -274,7 +274,6 @@ class _TeamOpponentsState extends State<TeamOpponents> {
       builder: (context, teamBloc) => BlocConsumer(
         cubit: teamBloc,
         listener: (context, state) {
-          print("State is $state");
           if (state is SingleTeamLoaded) {
             _seasonUid = state.team.currentSeason;
           }

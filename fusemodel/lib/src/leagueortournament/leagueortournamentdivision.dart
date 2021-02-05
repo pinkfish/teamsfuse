@@ -20,8 +20,8 @@ abstract class LeagueOrTournamentDivison
   String get uid;
   @BuiltValueField(wireName: LEAGUEORTOURNMENTSEASONUID)
   String get leagueOrTournmentSeasonUid;
+  @BuiltValueField(wireName: LEAGUEORTOURNMENTUID)
   String get leagueOrTournamentUid;
-  String get userUid;
 
   @BuiltValueField(wireName: MEMBERS)
   BuiltMap<String, AddedOrAdmin> get membersData;
@@ -29,12 +29,12 @@ abstract class LeagueOrTournamentDivison
   /// List of admin user ids. This is all user ids (not players)
   @memoized
   BuiltSet<String> get adminsUids =>
-      membersData.keys.where((uid) => membersData[uid].admin);
+      BuiltSet.of(membersData.keys.where((uid) => membersData[uid].admin));
 
   /// List of member user ids.  This is all user ids (not players)
   @memoized
   BuiltSet<String> get members =>
-      membersData.keys.where((uid) => !membersData[uid].admin);
+      BuiltSet.of(membersData.keys.where((uid) => !membersData[uid].admin));
 
   LeagueOrTournamentDivison._();
   factory LeagueOrTournamentDivison(
@@ -56,13 +56,14 @@ abstract class LeagueOrTournamentDivison
 
   static const String MEMBERS = "members";
   static const String LEAGUEORTOURNMENTSEASONUID = "seasonUid";
+  static const String LEAGUEORTOURNMENTUID = "leagueUid";
 
   bool isUserAdmin(String myUid) {
     return adminsUids.contains(myUid);
   }
 
   /// Is the current user an admin?
-  bool isAdmin() {
+  bool isAdmin(String userUid) {
     return isUserAdmin(userUid);
   }
 }

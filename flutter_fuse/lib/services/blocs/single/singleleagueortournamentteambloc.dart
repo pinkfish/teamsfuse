@@ -158,6 +158,7 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
         add(_SingleLeagueOrTournamentEventTeamDeleted());
       }
     });
+    _teamSub.onError((e, stack) => crashes.recordException(e, stack));
   }
 
   @override
@@ -177,10 +178,6 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     _sub = null;
   }
 
-  void _updateGames(Iterable<GameSharedData> games) {
-    add(_SingleLeagueOrTournamentEventTeamGames(games: games));
-  }
-
   void _updateInvites(Iterable<InviteToLeagueTeam> invites) {
     add(_SingleLeagueOrTournamentEventTeamInvites(invites: invites));
   }
@@ -188,7 +185,7 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
   void _inviteMember(String email) {
     db.inviteUserToLeagueTeam(
       leagueTeam: state.leagueOrTournamentTeam,
-      leagueSeasonUid: state.leagueOrTournamentTeam.seasonUid,
+      leagueSeasonUid: state.leagueOrTournamentTeam.leagueOrTournamentSeasonUid,
       email: email,
     );
   }
@@ -255,9 +252,15 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     }
 
     if (event is SingleLeagueOrTournamentTeamLoadGames) {
-      _gamesSnapshot = db
-          .getLeagueGamesForTeam(leagueTeamUid)
-          .listen((Iterable<GameSharedData> games) => _updateGames(games));
+      print("Doing the load $state $_gamesSnapshot");
+      if (state is SingleLeagueOrTournamentTeamLoaded &&
+          _gamesSnapshot == null) {
+        print("Doing the load");
+        _gamesSnapshot = db.getLeagueGamesForTeam(leagueTeamUid).listen(
+            (Iterable<GameSharedData> games) =>
+                add(_SingleLeagueOrTournamentEventTeamGames(games: games)));
+        _gamesSnapshot.onError((e, stack) => crashes.recordException(e, stack));
+      }
     }
 
     if (event is SingleLeagueOrTournamentTeamLoadInvites) {
@@ -265,22 +268,26 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
           .getLeagueOrTournmentTeamInvitesStream(leagueTeamUid)
           .listen((Iterable<InviteToLeagueTeam> invites) =>
               _updateInvites(invites));
+      _inviteSnapshot.onError((e, stack) => crashes.recordException(e, stack));
     }
 
     if (event is _SingleLeagueOrTournamentEventTeamGames) {
+      print("New Games");
       MapBuilder<String, GameSharedData> newGames =
           MapBuilder<String, GameSharedData>();
       for (GameSharedData game in event.games) {
         newGames[game.uid] = game;
       }
       yield (SingleLeagueOrTournamentTeamLoaded.fromState(state)
-            ..games = newGames)
+            ..games = newGames
+            ..loadedGames = true)
           .build();
     }
 
     if (event is _SingleLeagueOrTournamentEventTeamInvites) {
       yield (SingleLeagueOrTournamentTeamLoaded.fromState(state)
-            ..invites = ListBuilder(event.invites))
+            ..invites = ListBuilder(event.invites)
+            ..loadedInvites = true)
           .build();
     }
 
@@ -297,11 +304,14 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     }
 
     if (event is SingleLeagueOrTournamentTeamLoadPublicTeam) {
-      _sub = db
-          .getPublicTeamDetails(teamUid: state.leagueOrTournamentTeam.teamUid)
-          .listen((event) {
-        add(_SingleLeagueOrTournamentEventNewPublicTeam(event));
-      });
+      if (state is SingleLeagueOrTournamentTeamLoaded && _sub == null) {
+        _sub = db
+            .getPublicTeamDetails(teamUid: state.leagueOrTournamentTeam.teamUid)
+            .listen((event) {
+          add(_SingleLeagueOrTournamentEventNewPublicTeam(event));
+        });
+        _sub.onError((e, stack) => crashes.recordException(e, stack));
+      }
     }
 
     if (event is _SingleLeagueOrTournamentEventNewPublicTeam) {

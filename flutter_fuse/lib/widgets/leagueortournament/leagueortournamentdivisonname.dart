@@ -36,9 +36,16 @@ class LeagueOrTournamentDivisonName extends StatelessWidget {
         cubit: bloc,
         builder: (context, state) {
           Widget inner;
-          if (state is SingleLeagueOrTournamentSeasonDeleted) {
+          if (state is SingleLeagueOrTournamentDivisonDeleted) {
             inner = Text(
               Messages.of(context).unknown,
+              style: style,
+              textAlign: textAlign,
+              overflow: overflow,
+            );
+          } else if (state is SingleLeagueOrTournamentDivisonUninitialized) {
+            inner = Text(
+              Messages.of(context).loading,
               style: style,
               textAlign: textAlign,
               overflow: overflow,

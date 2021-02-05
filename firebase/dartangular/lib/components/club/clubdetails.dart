@@ -34,7 +34,7 @@ class ClubDetailsComponent implements OnDestroy, OnInit {
   void ngOnInit() {
     print('New details $club');
 
-    _sub = _db.getClubTeams(club).listen((Iterable<Team> teams) {
+    _sub = _db.getClubTeams(club, true).listen((Iterable<Team> teams) {
       teamsCached = teams;
     });
   }

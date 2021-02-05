@@ -48,7 +48,6 @@ class _GameDetailsState extends State<GameDetails> {
     await showDialog<bool>(
       context: context,
       builder: (context) {
-        print("$widget");
         return EditResultDialog(widget.gameBloc);
       },
     );

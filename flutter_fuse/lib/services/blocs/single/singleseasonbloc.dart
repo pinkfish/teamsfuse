@@ -99,7 +99,6 @@ class SingleSeasonBloc
           add(_SingleNewTeamSeason(newSeason: season));
         }
       } else {
-        print('SingleSeasonBLoc: lost $seasonUid}');
         add(_SingleSeasonDeleted());
       }
     });
@@ -174,7 +173,6 @@ class SingleSeasonBloc
       if (state is SingleSeasonUninitialized) {
         _willLoadGames = true;
       } else {
-        print('Loading games');
         if (_gameSub == null) {
           _gameSub =
               db.getSeasonGames(state.season).listen((GameSnapshotEvent games) {
@@ -185,7 +183,6 @@ class SingleSeasonBloc
     }
 
     if (event is _SingleSeasonLoadedGames) {
-      print('Loaded games');
       yield (SingleSeasonLoaded.fromState(state)
             ..games = event.games.toBuilder()
             ..loadedGames = true)

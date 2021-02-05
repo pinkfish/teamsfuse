@@ -240,6 +240,10 @@ class SingleTeamBloc
         add(_SingleTeamDeleted());
       }
     });
+    _teamSub.onError((error, stack) {
+      add(_SingleTeamDeleted());
+      crashes.recordException(error, stack);
+    });
     loadedData.then((value) {
       if (state.team != null) {
         _setupClubSub(state.team);
@@ -285,7 +289,6 @@ class SingleTeamBloc
   }
 
   void _setupClubSub(Team t) {
-    print("Setup club sub ${t.clubUid}");
     if (t.clubUid != null &&
         _clubSub == null &&
         _listeningClubUid != t.clubUid) {
@@ -295,12 +298,14 @@ class SingleTeamBloc
       }
       _listeningClubUid = t.clubUid;
       _clubSub = db.getClubData(clubUid: t.clubUid).listen((c) {
-        print("new club data");
         if (c != null) {
           add(_SingleTeamNewClub(club: c));
         } else {
           add(_SingleTeamNoClub());
         }
+      });
+      _clubSub.onError((error, stack) {
+        crashes.recordException(error, stack);
       });
     }
   }

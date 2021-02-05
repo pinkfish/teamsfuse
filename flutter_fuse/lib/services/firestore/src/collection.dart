@@ -86,7 +86,6 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   @override
   Stream<wfs.QuerySnapshotWrapper> snapshots() {
     var str = _doc.snapshots().transform(_QuerySnapshotStreamTransformer());
-    print("$str $_doc");
     return str;
   }
 }

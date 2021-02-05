@@ -87,18 +87,6 @@ class PublicTeamDetailsScreen extends StatelessWidget {
             );
           }
 
-          // Setup the navigation items.
-          var navItems = <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.gamepad),
-              label: Messages.of(context).clubdetails,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people),
-              label: Messages.of(context).teams,
-            ),
-          ];
-
           return Scaffold(
             appBar: AppBar(
               title: Text(title),

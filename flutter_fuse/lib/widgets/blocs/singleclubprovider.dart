@@ -25,8 +25,6 @@ class SingleClubProvider extends SingleBlocProvider<SingleClubBloc> {
             prefix: "club");
 
   static SingleClubBloc _createBloc(BuildContext context, String uid) {
-    print("Loading (c) Club $uid");
-
     return SingleClubBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       clubUid: uid,

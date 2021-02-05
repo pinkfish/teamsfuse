@@ -41,10 +41,12 @@ abstract class GameOfficialResults
 
   /// The team uid, this pointed to a leagueortourneamentteam data.
   @nullable
+  @BuiltValueField(wireName: 'homeTeamUid')
   String get homeTeamLeagueUid;
 
   /// The team uid, this pointed to a leagueortourneamentteam data.
   @nullable
+  @BuiltValueField(wireName: 'awayTeamUid')
   String get awayTeamLeagueUid;
 
   /// The official result for the game.
