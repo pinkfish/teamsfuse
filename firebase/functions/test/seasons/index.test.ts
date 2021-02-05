@@ -235,11 +235,10 @@ describe('Seasons Tests', () => {
                 expect(myData).to.not.be.null;
                 if (myData !== undefined && myData !== null) {
                     expect(myData.teamUid).to.equal(teamDocId);
-                    console.log(myData);
                     const playerCheck:{[key: string]:boolean} = {};
-                    playerCheck[playerDocId] = true;
                     playerCheck['added'] = true;
-                    expect(myData.users).to.include({
+                    playerCheck[playerDocId] = true;
+                    expect(myData.users).to.be.an('object').that.deep.own.includes({
                       me: playerCheck
 
 

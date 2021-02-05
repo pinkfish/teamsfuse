@@ -25,7 +25,6 @@ export async function fixUsers(
                 const snap = await db.collection('Seasons').where('teamUid', '==', id).get();
                 for (const docIdx in snap.docs) {
                     const doc = snap.docs[docIdx];
-                    console.log(toUpdate);
                     await db.collection('Seasons').doc(doc.id).update({users: toUpdate});
                 }
             }
