@@ -160,6 +160,12 @@ platform :ios do
 
     # Upload the app.
     upload_to_testflight(changelog: body)
+
+    deliver(
+      submit_for_review: true,
+      force: true,
+      metadata_path: "./metadata"
+    )
   end
 
   desc "Generate new localized screenshots"
