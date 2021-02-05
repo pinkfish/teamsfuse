@@ -1,5 +1,6 @@
 import * as firebase from '@firebase/rules-unit-testing';
 import * as fs from 'fs';
+import { expect } from 'chai';
 
 /*
  * ============
@@ -150,6 +151,40 @@ describe('TeamsFuse rules', function () {
         await firebase.assertSucceeds(aliceDb.collection('Seasons').doc('frogpublic').get());
         const dbAnon = authedApp();
         await firebase.assertSucceeds(dbAnon.collection('Seasons').doc('frogpublic').get());
+    });
+    it('get public club', async () => {
+        const db = authedApp({ uid: 'robert', email_verified: true });
+        await db
+            .collection('Teams')
+            .doc('frogpublic')
+            .set({ users: { robert: { added: true } }, isPublic: true, clubUid: 'clubby' });
+        await db
+            .collection('Clubs')
+            .doc('clubby')
+            .set({
+                isPublic: true,
+                members: {
+                    robert: {
+                        admin: true,
+                    },
+                },
+            });
+        await firebase.assertSucceeds(db.collection('Teams').doc('frogpublic').get());
+        await firebase.assertSucceeds(db.collection('Clubs').doc('clubby').get());
+        const aliceDb = authedApp({ uid: 'alice' });
+        await firebase.assertSucceeds(aliceDb.collection('Teams').doc('frogpublic').get());
+        await firebase.assertSucceeds(aliceDb.collection('Clubs').doc('clubby').get());
+        const dbAnon = authedApp();
+        await firebase.assertSucceeds(dbAnon.collection('Teams').doc('frogpublic').get());
+        await firebase.assertSucceeds(dbAnon.collection('Clubs').doc('clubby').get());
+
+        await firebase.assertSucceeds(
+            db.collection('Teams').where('clubUid', '==', 'clubby').where('users.robert.added', '==', true).get(),
+        );
+        const stuff = await firebase.assertSucceeds(
+            dbAnon.collection('Teams').where('clubUid', '==', 'clubby').where('isPublic', '==', true).get(),
+        );
+        expect(stuff.docs.length).is.equal(1);
     });
     it('create user profiles', async () => {
         const db = authedApp({ uid: 'alice' });

@@ -162,10 +162,10 @@ service cloud.firestore {
     match /Players/{player} {
       allow update, delete: if isSignedIn() &&
           resource.data.user[request.auth.uid].added;
-      allow list: if isSignedIn();
       allow create: if isSignedIn() &&
           request.resource.data.user[request.auth.uid].added;
-      allow read: if isSignedIn();
+      allow read: if isSignedIn() ||
+          isPublicVisible();
     }
   }
 }

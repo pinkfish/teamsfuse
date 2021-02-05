@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import 'base/singleprovider.dart';
 
 ///
@@ -18,7 +18,11 @@ typedef SingleTeamProviderBuilder = Widget Function(
 class SingleTeamProvider extends SingleBlocProvider<SingleTeamBloc> {
   /// Constructor.
   SingleTeamProvider({String teamUid, SingleTeamProviderBuilder builder})
-      : super(keyUid: teamUid, creator: _createBloc, builder: builder);
+      : super(
+            keyUid: teamUid,
+            creator: _createBloc,
+            builder: builder,
+            prefix: "team");
 
   static SingleTeamBloc _createBloc(BuildContext context, String uid) {
     print("Making bloc $uid");

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import 'base/singleprovider.dart';
 
 ///
@@ -23,7 +23,7 @@ class SingleTeamSeasonPlayerProvider
       String playerUid,
       SingleTeamSeasonPlayerProviderBuilder builder})
       : super(
-            keyUid: playerUid + playerUid,
+            keyUid: playerUid + seasonUid,
             creator: (context, uid) =>
                 _createBloc(context, playerUid, seasonUid),
             builder: builder);

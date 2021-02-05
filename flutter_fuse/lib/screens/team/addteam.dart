@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
+import 'package:flutter_fuse/widgets/blocs/singleclubprovider.dart';
+import 'package:flutter_fuse/widgets/util/deleted.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/clubs/clubimage.dart';
 import '../../widgets/form/clubpicker.dart';
@@ -223,62 +226,99 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
   }
 
   Widget _buildSummary() {
-    var clubBloc = BlocProvider.of<ClubBloc>(context);
-    return SingleChildScrollView(
-      child: Column(
-        children: <Widget>[
-          _buildImage(),
-          ListTile(
-            leading: const Icon(Icons.title),
-            subtitle: RichText(
-              text: TextSpan(
-                text: _teamToAdd.currentSeason,
-                children: <TextSpan>[
-                  TextSpan(
-                    text: Messages.of(context).sportname(_teamToAdd.sport),
-                  ),
-                ],
+    return SingleClubProvider(
+      clubUid: _clubUid,
+      builder: (context, singleClubBloc) => SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            _buildImage(),
+            ListTile(
+              leading: const Icon(Icons.title),
+              subtitle: RichText(
+                text: TextSpan(
+                  text: _teamToAdd.currentSeason,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: Messages.of(context).sportname(_teamToAdd.sport),
+                    ),
+                  ],
+                ),
               ),
+              title: Text(_teamToAdd.name),
+              trailing: GenderIcon(_teamToAdd.gender),
             ),
-            title: Text(_teamToAdd.name),
-            trailing: GenderIcon(_teamToAdd.gender),
-          ),
-          ListTile(
-            leading: const Icon(Icons.calendar_today),
-            title: Text(_seasonName()),
-          ),
-          ListTile(
-            leading: const Icon(MdiIcons.group),
-            title: _clubUid != null && _clubUid != ClubPicker.noClub
-                ? Text(clubBloc.state.clubs[_clubUid].name)
-                : Text(Messages.of(context).noclub),
-            trailing: _clubUid != null && _clubUid != ClubPicker.noClub
-                ? ClubImage(
-                    clubUid: _clubUid,
-                    width: 20.0,
-                    height: 20.0,
-                  )
-                : null,
-          ),
-          ListTile(
-            leading: const Icon(MdiIcons.tshirtCrew),
-            title: Text(_teamToAdd.league),
-          ),
-          ListTile(
-            leading: const Icon(Icons.timer),
-            title: Text(Messages.of(context)
-                .arrivebefore(_teamToAdd.arriveEarlyInternal.toInt())),
-          ),
-          ListTile(
-            leading: const Icon(MdiIcons.trafficLight),
-            title: Text(Messages.of(context).trackattendence(
-                _teamToAdd.trackAttendenceInternal
-                    ? Tristate.Yes
-                    : Tristate.No)),
-          )
-        ],
+            ListTile(
+              leading: const Icon(Icons.calendar_today),
+              title: Text(_seasonName()),
+            ),
+            BlocBuilder(
+                cubit: singleClubBloc,
+                builder: (context, clubState) {
+                  ListTile(
+                    leading: const Icon(MdiIcons.group),
+                    title: _clubUid != null && _clubUid != ClubPicker.noClub
+                        ? Text(singleClubBloc.state.club.name)
+                        : Text(Messages.of(context).noclub),
+                    trailing: _clubUid != null && _clubUid != ClubPicker.noClub
+                        ? ClubImage(
+                            clubUid: _clubUid,
+                            width: 20.0,
+                            height: 20.0,
+                          )
+                        : null,
+                  );
+                }),
+            ListTile(
+              leading: const Icon(MdiIcons.tshirtCrew),
+              title: Text(_teamToAdd.league),
+            ),
+            ListTile(
+              leading: const Icon(Icons.timer),
+              title: Text(Messages.of(context)
+                  .arrivebefore(_teamToAdd.arriveEarlyInternal.toInt())),
+            ),
+            ListTile(
+              leading: const Icon(MdiIcons.trafficLight),
+              title: Text(Messages.of(context).trackattendence(
+                  _teamToAdd.trackAttendenceInternal
+                      ? Tristate.Yes
+                      : Tristate.No)),
+            )
+          ],
+        ),
       ),
     );
+  }
+
+  Widget _teamEditForm(StartSection section) {
+    if (_clubUid != null) {
+      return SingleClubProvider(
+        clubUid: _clubUid,
+        builder: (context, singleClubBloc) => BlocBuilder(
+            cubit: singleClubBloc,
+            builder: (context, singleClubState) {
+              if (singleClubState is SingleClubDeleted) {
+                return DeletedWidget();
+              }
+              if (singleClubState is SingleClubUninitialized) {
+                return LoadingWidget();
+              }
+              return TeamEditForm(
+                _teamToAdd.build(),
+                singleClubState.club,
+                _formKeyTeam,
+                startSection: section,
+              );
+            }),
+      );
+    } else {
+      return TeamEditForm(
+        _teamToAdd.build(),
+        null,
+        _formKeyTeam,
+        startSection: StartSection.start,
+      );
+    }
   }
 
   Widget _buildBody() {
@@ -339,11 +379,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                   state: _detailsStepState,
                   isActive: true,
                   content: SingleChildScrollView(
-                    child: TeamEditForm(
-                      _teamToAdd.build(),
-                      _formKeyTeam,
-                      startSection: StartSection.start,
-                    ),
+                    child: _teamEditForm(StartSection.start),
                   ),
                 ),
                 Step(
@@ -351,10 +387,8 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                   state: _detailsSecondStepState,
                   isActive: true,
                   content: SingleChildScrollView(
-                    child: TeamEditForm(
-                      _teamToAdd.build(),
-                      _formKeyTeam,
-                      startSection: StartSection.end,
+                    child: _teamEditForm(
+                      StartSection.end,
                     ),
                   ),
                 ),

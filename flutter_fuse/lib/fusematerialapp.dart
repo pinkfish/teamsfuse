@@ -15,21 +15,20 @@ import 'services/messages.dart';
 ///
 class FuseMaterialApp extends StatelessWidget {
   final ThemeData _theme;
+  final String publicClub;
 
   ///
   /// Create the material app pieces.
   ///
-  FuseMaterialApp(this._theme);
+  FuseMaterialApp(this._theme, this.publicClub);
 
   @override
   Widget build(BuildContext context) {
-    var club = String.fromEnvironment("DART_STARTUP_CLUB", defaultValue: "");
     var route = "Home";
-    print("From env $club");
-    if (club != null && club.isNotEmpty) {
-      route = "/Club/" + club;
+
+    if (publicClub != null && publicClub.isNotEmpty) {
+      route = "/Public/Club/" + publicClub;
     }
-    route = "/Club/-LFYVrTV145zE21C4O24";
     return MaterialApp(
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         MessagesDelegate(),
@@ -55,7 +54,6 @@ class FuseMaterialApp extends StatelessWidget {
 
   Route<dynamic> _buildRoute(
       BuildContext context, RouteSettings routeSettings) {
-    print("Route ${routeSettings.name}");
     // States on routes.
     var router = RepositoryProvider.of<fluro.FluroRouter>(context);
     return router.generator(routeSettings);

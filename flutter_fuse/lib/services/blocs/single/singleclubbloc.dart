@@ -98,10 +98,13 @@ class SingleClubDelete extends SingleClubEvent {
 }
 
 ///
-/// Loads the teams from firebase.
+/// Loads the teams from firebase.  If the public flag is set then only
+/// public teams are loaded.
 ///
 class SingleClubLoadTeams extends SingleClubEvent {
-  SingleClubLoadTeams();
+  bool publicLoad;
+
+  SingleClubLoadTeams(this.publicLoad);
 
   @override
   List<Object> get props => [];
@@ -165,6 +168,15 @@ class SingleClubBloc
         add(_SingleClubNewClub(newClub: club));
       } else {
         add(_SingleClubDeleted());
+      }
+    });
+    _clubSub.onError((e, stack) {
+      print("Error loading the club '$clubUid'");
+      add(_SingleClubDeleted());
+      if (e is Exception) {
+        crashes.recordException(e, stack);
+      } else if (e is Error) {
+        crashes.recordError(e, stack);
       }
     });
   }
@@ -299,13 +311,26 @@ class SingleClubBloc
     if (event is SingleClubLoadTeams) {
       try {
         if (_teamSub == null && state is SingleClubLoaded) {
-          _teamSub = db.getClubTeams(state.club).listen((Iterable<Team> teams) {
+          _teamSub = db
+              .getClubTeams(state.club, event.publicLoad)
+              .listen((Iterable<Team> teams) {
             add(_SingleClubTeamsAdded(teams: teams));
+          });
+          _teamSub.onError((e, stack) {
+            if (e is Exception) {
+              crashes.recordException(e, stack);
+              if (e is FirebaseException) {
+                if (e.code == 'permission-denied') {
+                  add(_SingleClubTeamsAdded(teams: BuiltList.of([])));
+                }
+              }
+            } else if (e is Error) {
+              crashes.recordError(e, stack);
+            }
           });
         }
       } catch (e, stack) {
         crashes.recordException(e, stack);
-        print("Error loading teams $e");
         if (e is FirebaseException) {
           if (e.code == 'permission-denied') {
             yield (SingleClubLoaded.fromState(state)

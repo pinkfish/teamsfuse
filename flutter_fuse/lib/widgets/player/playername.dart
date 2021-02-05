@@ -9,10 +9,17 @@ import '../../services/messages.dart';
 ///
 class PlayerName extends StatelessWidget {
   /// Constructor.
-  PlayerName({@required this.playerUid, this.style, this.textScaleFactor});
+  PlayerName(
+      {@required this.playerUid,
+      this.style,
+      this.textScaleFactor,
+      this.fallback});
 
   /// The player uid to show the name for,
   final String playerUid;
+
+  /// Fallback string to display if the player name doesn't load.
+  final String fallback;
 
   /// Style to use for the player name on the screen.
   final TextStyle style;
@@ -36,7 +43,7 @@ class PlayerName extends StatelessWidget {
 
           if (play != null) {
             widgetTwo = Text(
-              Messages.of(context).unknown,
+              fallback ?? Messages.of(context).unknown,
               style: style,
               textScaleFactor: textScaleFactor,
             );
@@ -54,7 +61,7 @@ class PlayerName extends StatelessWidget {
 
           print(Messages.of(context).loading);
           widgetOne = Text(
-            Messages.of(context).loading,
+            fallback ?? Messages.of(context).loading,
             style: style,
             textScaleFactor: textScaleFactor,
           );

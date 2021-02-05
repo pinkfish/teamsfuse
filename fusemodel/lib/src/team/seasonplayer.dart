@@ -37,13 +37,16 @@ abstract class SeasonPlayer
   String get jerseyNumber;
   String get position;
   SeasonPlayerSummary get summary;
+  bool get isPublic;
+  bool get added;
 
   SeasonPlayer._();
   factory SeasonPlayer([updates(SeasonPlayerBuilder b)]) = _$SeasonPlayer;
 
   static void _initializeBuilder(SeasonPlayerBuilder b) => b
     ..jerseyNumber = ""
-    ..position = "";
+    ..position = ""
+    ..isPublic = false..added = true;
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(SeasonPlayer.serializer, this);

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import 'base/singleprovider.dart';
 
 ///
@@ -18,7 +18,11 @@ typedef SingleSeasonProviderBuilder = Widget Function(
 class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
   /// Constructor.
   SingleSeasonProvider({String seasonUid, SingleSeasonProviderBuilder builder})
-      : super(keyUid: seasonUid, creator: _createBloc, builder: builder);
+      : super(
+            keyUid: seasonUid,
+            creator: _createBloc,
+            builder: builder,
+            prefix: "season");
 
   static SingleSeasonBloc _createBloc(BuildContext context, String uid) {
     assert(uid != null && uid.isNotEmpty);

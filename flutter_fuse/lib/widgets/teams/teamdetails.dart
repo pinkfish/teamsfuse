@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import '../games/teamresults.dart';
@@ -77,12 +77,6 @@ class TeamDetails extends StatelessWidget {
     );
   }
 
-  void _openClub(BuildContext context, Team team) {
-    if (team.clubUid != null) {
-      Navigator.pushNamed(context, "Club/${team.clubUid}");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
@@ -92,7 +86,9 @@ class TeamDetails extends StatelessWidget {
       builder: (context, bloc) => BlocBuilder(
         cubit: bloc,
         builder: (context, teamState) {
-          bloc.add(SingleTeamLoadSeasons());
+          if (teamState is SingleTeamLoaded && !teamState.loadedSeasons) {
+            bloc.add(SingleTeamLoadSeasons());
+          }
           if (teamState is SingleTeamDeleted) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,

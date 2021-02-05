@@ -32,13 +32,21 @@ class SeasonFormField extends FormField<String> {
           validator: validator,
           builder: (field) {
             var state = field as SeasonFormFieldState;
-            state._teamUid = teamBloc;
             var effectiveDecoration = (decoration ?? const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             if (teamBloc != null) {
               return BlocBuilder(
                 cubit: teamBloc,
                 builder: (context, singleTeamState) {
+                  if (singleTeamState is SingleTeamLoaded &&
+                      !singleTeamState.loadedSeasons) {
+                    teamBloc.add(SingleTeamLoadSeasons());
+                  }
+                  if (singleTeamState is SingleTeamUninitialized ||
+                      !singleTeamState.loadedSeasons) {
+                    return Text(Messages.of(context).loading);
+                  }
+
                   return InputDecorator(
                     decoration: effectiveDecoration,
                     child: DropdownButton<String>(
@@ -62,25 +70,36 @@ class SeasonFormField extends FormField<String> {
               return SingleTeamProvider(
                 teamUid: team.uid,
                 builder: (context, singleTeamBloc) => BlocBuilder(
-                  cubit: singleTeamBloc,
-                  builder: (context, singleTeamState) => InputDecorator(
-                    decoration: effectiveDecoration,
-                    child: DropdownButton<String>(
-                        hint: Text(Messages.of(state.context).seasonselect),
-                        value: state.value,
-                        items:
-                            state._buildItems(state.context, singleTeamState),
-                        onChanged: enabled
-                            ? (val) {
-                                state.updateValue(val);
-                                field.didChange(val);
-                                if (onFieldSubmitted != null) {
-                                  onFieldSubmitted(val);
-                                }
-                              }
-                            : null),
-                  ),
-                ),
+                    cubit: singleTeamBloc,
+                    builder: (context, singleTeamState) {
+                      if (singleTeamState is SingleTeamLoaded &&
+                          !singleTeamState.loadedSeasons) {
+                        teamBloc.add(SingleTeamLoadSeasons());
+                      }
+
+                      if (singleTeamState is SingleTeamUninitialized ||
+                          !singleTeamState.loadedSeasons) {
+                        return Text(Messages.of(context).loading);
+                      }
+
+                      return InputDecorator(
+                        decoration: effectiveDecoration,
+                        child: DropdownButton<String>(
+                            hint: Text(Messages.of(state.context).seasonselect),
+                            value: state.value,
+                            items: state._buildItems(
+                                state.context, singleTeamState),
+                            onChanged: enabled
+                                ? (val) {
+                                    state.updateValue(val);
+                                    field.didChange(val);
+                                    if (onFieldSubmitted != null) {
+                                      onFieldSubmitted(val);
+                                    }
+                                  }
+                                : null),
+                      );
+                    }),
               );
             }
           },
@@ -111,8 +130,6 @@ class SeasonFormFieldState extends FormFieldState<String> {
     return field;
   }
 
-  SingleTeamBloc _teamUid;
-
   /// Update the value for the season, setting the current season.
   void updateValue(String val) {
     setValue(val);
@@ -121,23 +138,21 @@ class SeasonFormFieldState extends FormFieldState<String> {
   List<DropdownMenuItem<String>> _buildItems(
       BuildContext context, SingleTeamState state) {
     var ret = <DropdownMenuItem<String>>[];
-    if (_teamUid != null) {
-      if (_widget.includeNone) {
-        ret.add(DropdownMenuItem<String>(
-          child: Text(Messages.of(context).noseasons),
-          value: SeasonFormField.none,
-        ));
-      }
-      if (_widget.includeNew) {
-        ret.add(DropdownMenuItem<String>(
-          child: Text(Messages.of(context).addseason),
-          value: SeasonFormField.createNew,
-        ));
-      }
-      for (var season in state.fullSeason) {
-        ret.add(DropdownMenuItem<String>(
-            child: Text(season.name), value: season.uid));
-      }
+    if (_widget.includeNone) {
+      ret.add(DropdownMenuItem<String>(
+        child: Text(Messages.of(context).noseasons),
+        value: SeasonFormField.none,
+      ));
+    }
+    if (_widget.includeNew) {
+      ret.add(DropdownMenuItem<String>(
+        child: Text(Messages.of(context).addseason),
+        value: SeasonFormField.createNew,
+      ));
+    }
+    for (var season in state.fullSeason) {
+      ret.add(DropdownMenuItem<String>(
+          child: Text(season.name), value: season.uid));
     }
 
     return ret;

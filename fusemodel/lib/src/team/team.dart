@@ -50,8 +50,9 @@ abstract class Team implements Built<Team, TeamBuilder> {
   bool get publicOnly;
 
   /// If this team is publicaly visible.
+  @BuiltValueField(wireName: ISPUBLIC)
   bool get isPublic;
-  
+
   /// If we should track attendecne for games in this team.  This is
   /// overridden by the club potentially.
   @BuiltValueField(wireName: ATTENDANCE)
@@ -63,6 +64,10 @@ abstract class Team implements Built<Team, TeamBuilder> {
 
   @memoized
   BuiltSet<String> get admins => BuiltSet.of(adminsData.keys);
+
+  /// The users setup for the team.
+  @BuiltValueField(wireName : USER)
+  BuiltMap<String, BuiltMap<String, bool>> get users;
 
   @memoized
   bool get archived =>
@@ -77,6 +82,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
   static const String LEAGUEUID = 'leagueuid';
   static const String ARCHIVED = 'archived';
   static const String USER = 'users';
+  static const String ISPUBLIC = 'isPublic';
 
   static void _initializeBuilder(TeamBuilder b) => b
     ..userUid = ""

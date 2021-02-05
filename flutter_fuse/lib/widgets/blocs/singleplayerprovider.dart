@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import 'base/singleprovider.dart';
 
 typedef SinglePlayerProviderBuilder = Widget Function(
@@ -16,7 +16,11 @@ typedef SinglePlayerProviderBuilder = Widget Function(
 class SinglePlayerProvider extends SingleBlocProvider<SinglePlayerBloc> {
   /// Constructor.
   SinglePlayerProvider({String playerUid, SinglePlayerProviderBuilder builder})
-      : super(keyUid: playerUid, creator: _createBloc, builder: builder);
+      : super(
+            keyUid: playerUid,
+            creator: _createBloc,
+            builder: builder,
+            prefix: "player");
 
   static SinglePlayerBloc _createBloc(BuildContext context, String uid) {
     return SinglePlayerBloc(

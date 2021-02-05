@@ -1,9 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
@@ -39,7 +39,8 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
   void initState() {
     super.initState();
     addSeasonBloc = AddSeasonBloc(
-        coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
+        coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
+        playersBloc: BlocProvider.of<PlayerBloc>(context));
   }
 
   void _showInSnackBar(String value) {
@@ -185,7 +186,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
                   Navigator.pop(context);
                 }
                 if (addState is AddItemSaveFailed) {
-print(addState.error);
+                  print(addState.error);
                   _showInSnackBar(Messages.of(context).savefailed);
                 }
               },

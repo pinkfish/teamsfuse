@@ -38,7 +38,7 @@ class ClubTeamPicker extends StatefulWidget {
 
 class _ClubTeamPickerState extends State<ClubTeamPicker> {
   _ClubTeamPickerState() {
-    widget.clubBloc.add(SingleClubLoadTeams());
+    widget.clubBloc.add(SingleClubLoadTeams(false));
   }
 
   @override

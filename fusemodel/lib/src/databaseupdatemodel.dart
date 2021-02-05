@@ -267,7 +267,7 @@ abstract class DatabaseUpdateModel {
       {DateTime start, DateTime end, String teamUid, String seasonUid});
 
   // Clubs and stuff.
-  Stream<BuiltList<Team>> getClubTeams(Club club);
+  Stream<BuiltList<Team>> getClubTeams(Club club, bool isPublic);
   Future<String> updateClub(Club club, {bool includeMembers});
   Future<String> addClub(DocumentReferenceWrapper ref, Club club);
   Future<Uri> updateClubImage(Club club, Uint8List imageFile);

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import 'base/singleprovider.dart';
 
 ///
@@ -20,7 +20,11 @@ class SingleSharedGameProvider
   /// Constructor
   SingleSharedGameProvider(
       {String sharedGameUid, SingleSharedGameProviderBuilder builder})
-      : super(keyUid: sharedGameUid, creator: _createBloc, builder: builder);
+      : super(
+            keyUid: sharedGameUid,
+            creator: _createBloc,
+            builder: builder,
+            prefix: "shared");
 
   static SingleSharedGameBloc _createBloc(BuildContext context, String uid) {
     return SingleSharedGameBloc(

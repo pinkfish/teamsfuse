@@ -308,8 +308,23 @@ class SingleTeamBloc
   @override
   Stream<SingleTeamState> mapEventToState(SingleTeamEvent event) async* {
     if (event is _SingleTeamNewTeam) {
+      Club theClub = null;
+
+      /// See if we need to load the club.
+      if (event.newTeam.clubUid != null) {
+        try {
+          theClub = await db.getClubData(clubUid: event.newTeam.clubUid).first;
+        } catch (e, stack) {
+          if (e is Exception) {
+            crashes.recordException(e, stack);
+          } else if (e is Error) {
+            crashes.recordError(e, stack);
+          }
+        }
+      }
       yield (SingleTeamLoaded.fromState(state)
-            ..team = event.newTeam.toBuilder())
+            ..team = event.newTeam.toBuilder()
+            ..club = theClub?.toBuilder())
           .build();
       _setupClubSub(state.team);
     }

@@ -32,7 +32,9 @@ void main() async {
 
   // Load up the data for the hydrated bloc stuff.
   HydratedBloc.storage = await HydratedStorage.build();
-  AsyncHydratedStorage.storageDirectory = await getTemporaryDirectory();
+  if (!kIsWeb) {
+    AsyncHydratedStorage.storageDirectory = await getTemporaryDirectory();
+  }
 
   String currentTimeZone;
   ByteData loadedData;
@@ -87,7 +89,7 @@ void main() async {
 
   AnalyticsSubsystemImpl.analytics.logAppOpen();
 
-  // Send error logs up to sentry.
+  // Send error logs up to crashalytics.
   FlutterError.onError = (details) {
     loggingData.logFlutterError(details);
   };
@@ -99,7 +101,10 @@ void main() async {
   });
   trace.stop();
 
-  runApp(FlutterFuseApp(firestoreWrapper, config, loggingData));
+  const club = String.fromEnvironment("DART_STARTUP_CLUB", defaultValue: "");
+  print("From env $club");
+
+  runApp(FlutterFuseApp(firestoreWrapper, config, loggingData, club));
 }
 
 ///

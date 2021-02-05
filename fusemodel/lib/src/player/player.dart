@@ -48,14 +48,25 @@ class PlayerUser {
 /// The player associated with users and in all the various teams.
 ///
 abstract class Player implements Built<Player, PlayerBuilder> {
+  /// Name of the player.
   String get name;
+
+  /// uid for the player.
   String get uid;
+
+  /// Url to get the photo from
   @nullable
   String get photoUrl;
+
+  /// The users that are associated with this player.
   @BuiltValueField(wireName: USERS)
   BuiltMap<String, PlayerUserInternal> get usersData;
-  // The summary of the details.
+
+  /// The summary of the games per season.
   BuiltMap<String, GamePlayerSummary> get perSeason;
+
+  /// If this player has their data visible to the public.
+  bool get isPublic;
 
   @memoized
   BuiltMap<String, PlayerUser> get users =>
@@ -65,6 +76,9 @@ abstract class Player implements Built<Player, PlayerBuilder> {
 
   Player._();
   factory Player([updates(PlayerBuilder b)]) = _$Player;
+
+  static void _initializeBuilder(PlayerBuilder b) => b..isPublic = false;
+
 
   static const String USERS = 'user';
 

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/teams/stats/teamstats.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/teams/teamdetails.dart';
@@ -69,6 +69,8 @@ class _TeamScreenState extends State<TeamScreen> {
     if (choice == 'archive') {
       singleTeamBloc
           .add(SingleTeamArchive(archive: !singleTeamBloc.state.team.archived));
+    } else if (choice == 'edit') {
+      Navigator.pushNamed(context, "EditTeam/${widget.teamUid}");
     }
   }
 

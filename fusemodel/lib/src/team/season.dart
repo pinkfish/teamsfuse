@@ -4,6 +4,7 @@ import 'package:built_value/serializer.dart';
 import 'package:fusemodel/src/team/team.dart';
 
 import '../club.dart';
+import '../common.dart';
 import '../serializer.dart';
 import '../winrecord.dart';
 import 'seasonplayer.dart';
@@ -21,6 +22,10 @@ abstract class Season implements Built<Season, SeasonBuilder> {
   WinRecord get record;
   @BuiltValueField(wireName: PLAYERS)
   BuiltMap<String, SeasonPlayer> get playersData;
+
+  /// The users setup for the season.
+  @BuiltValueField(wireName : USER)
+  BuiltMap<String, BuiltMap<String, bool>> get users;
 
   /// If this season is publicaly visible.
   bool get isPublic;

@@ -1,4 +1,7 @@
 import 'package:fluro/fluro.dart' as fluro;
+import 'package:flutter_fuse/screens/public/publicclub.dart';
+import 'package:flutter_fuse/screens/public/publicplayer.dart';
+import 'package:flutter_fuse/screens/public/publicteam.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../screens/clubs/addclub.dart';
@@ -293,6 +296,21 @@ class AppRouter {
     router.define("/Login/ForgotPassword",
         handler: fluro.Handler(
             handlerFunc: (context, vals) => ForgotPasswordScreen()));
+
+    // Public section
+    router.define("/Public/Club/:id",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) =>
+                PublicClubDetailsScreen(vals["id"][0].toString())));
+    router.define("/Public/Team/:id",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) =>
+                PublicTeamDetailsScreen(vals["id"][0].toString())));
+    router.define("/Public/Player/:teamid/:playerid",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) => PublicPlayerDetailsScreen(
+                vals["teamid"][0].toString(), vals["playerid"][0].toString())));
+
     return router;
   }
 }

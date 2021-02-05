@@ -172,4 +172,93 @@ describe('Seasons Tests', () => {
             season: await admin.firestore().collection('Seasons').doc(seasonDocId).get(),
         };
     }
+
+    // Validate it fills in the users correctly when the season is created.
+    it('season, fix users', async () => {
+        const seasonDocId = uuid();
+        const teamDocId = uuid();
+        const playerDocId = uuid();
+
+
+        await admin.firestore().collection('Players').doc(playerDocId).set({
+          user: {
+            me: {
+            added: true,
+            relationship: "Parent",
+            }
+          }
+
+        });
+
+
+        // Setup some data to be queried first.
+        await admin
+            .firestore()
+            .collection('Teams')
+            .doc(teamDocId)
+            .set({
+                name: 'Lookup TeamName',
+                photourl: null,
+                currentSeason: seasonDocId,
+                uid: teamDocId,
+                isPublic: true,
+                admins: {
+                    me: true,
+                },
+            });
+
+        const playerStuff: {[key: string]:any }= {};
+        playerStuff[playerDocId] = {
+          added: true,
+          name: "frog",
+        };
+        await admin.firestore().collection('Seasons').doc(seasonDocId).set({
+            name: 'Current Season',
+            uid: seasonDocId,
+            teamUid: teamDocId,
+            isPublic: true,
+            players: playerStuff
+        });
+
+        try {
+            await test.wrap(onSeasonCreate)(await admin.firestore().collection('Seasons').doc(seasonDocId).get(), {
+                auth: {
+                    uid: 'me',
+                },
+                authType: 'USER',
+            });
+            const data = await admin.firestore().collection('Seasons').doc(seasonDocId).get();
+            expect(data).to.not.be.null;
+            if (data !== null && data !== undefined) {
+                expect(data.exists).to.be.true;
+                const myData = data.data();
+                expect(myData).to.not.be.null;
+                if (myData !== undefined && myData !== null) {
+                    expect(myData.teamUid).to.equal(teamDocId);
+                    console.log(myData);
+                    const playerCheck:{[key: string]:boolean} = {};
+                    playerCheck[playerDocId] = true;
+                    playerCheck['added'] = true;
+                    expect(myData.users).to.include({
+                      me: playerCheck
+
+
+
+                    });
+
+                }
+            }
+            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
+            await admin.firestore().collection('Teams').doc(teamDocId).delete();
+            await admin.firestore().collection('Players').doc(playerDocId).delete();
+        } catch (e) {
+            console.log(e);
+            console.log(e.stack);
+            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
+            await admin.firestore().collection('Teams').doc(teamDocId).delete();
+            await admin.firestore().collection('Players').doc(playerDocId).delete();
+            throw e;
+        }
+return;
+    });
 });

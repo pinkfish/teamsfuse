@@ -7,6 +7,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../coordinationbloc.dart';
+import '../playerbloc.dart';
 import 'additemstate.dart';
 
 abstract class AddSeasonEvent extends Equatable {}
@@ -32,8 +33,9 @@ class AddSeasonEventCommit extends AddSeasonEvent {
 ///
 class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
   final CoordinationBloc coordinationBloc;
+  final PlayerBloc playersBloc;
 
-  AddSeasonBloc({@required this.coordinationBloc})
+  AddSeasonBloc({@required this.coordinationBloc, @required this.playersBloc})
       : super(AddItemUninitialized());
 
   @override
@@ -44,7 +46,22 @@ class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
 
       try {
         var map = Map<String, SeasonPlayer>.fromIterable(event.players,
-            key: (p) => p.playerUid, value: (p) => p);
+            key: (p) => p.playerUid,
+            value: (p) => p.rebuild((b) => b..added = true));
+        // Only setup ourselves, not the whole team.
+        var usersMap = Map<String, Map<String, bool>>();
+        usersMap[coordinationBloc.authenticationBloc.currentUser.uid] =
+            Map<String, bool>();
+        usersMap[coordinationBloc.authenticationBloc.currentUser.uid]["added"] =
+            true;
+        // Add in all my players.
+        for (final pl in event.players) {
+          if (playersBloc.state.players.containsKey(pl.playerUid)) {
+            usersMap[coordinationBloc.authenticationBloc.currentUser.uid]
+            [pl.playerUid] = true;
+          }
+        }
+
         Season season = Season((b) => b
           ..teamUid = event.teamUid
           ..name = event.name

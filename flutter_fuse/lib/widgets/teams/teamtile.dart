@@ -15,7 +15,20 @@ import 'teamimage.dart';
 class TeamTile extends StatelessWidget {
   /// Constructor for the team tile.
   TeamTile(this.teamUid,
-      {this.popBeforeNavigate = false, this.showIconForTeam = false});
+      {this.popBeforeNavigate = false,
+      this.showIconForTeam = false,
+      this.onTap = null,
+      this.selectedTileColor = null,
+      this.selected = false});
+
+  /// If we shuold do something exciting with the background.
+  final Color selectedTileColor;
+
+  /// If this tile is seltected.
+  final bool selected;
+
+  /// If the team tile has been tapped.
+  final GestureTapCallback onTap;
 
   /// The teamUid to display.
   final String teamUid;
@@ -49,6 +62,9 @@ class TeamTile extends StatelessWidget {
               seasonUid: teamState.team.currentSeason,
               builder: (c, seasonBloc) {
                 return ListTile(
+                  selected: selected,
+                  selectedTileColor:
+                      selectedTileColor ?? Theme.of(context).splashColor,
                   leading: TeamImage(
                     width: 40.0,
                     height: 40.0,
@@ -112,14 +128,15 @@ class TeamTile extends StatelessWidget {
                       return Text(Messages.of(context).loading);
                     },
                   ),
-                  onTap: () {
-                    if (popBeforeNavigate) {
-                      Navigator.pop(context);
-                    }
-                    RepositoryProvider.of<fluro.FluroRouter>(context)
-                        .navigateTo(context, "Team/${teamState.team.uid}",
-                            transition: fluro.TransitionType.inFromRight);
-                  },
+                  onTap: onTap ??
+                      () {
+                        if (popBeforeNavigate) {
+                          Navigator.pop(context);
+                        }
+                        RepositoryProvider.of<fluro.FluroRouter>(context)
+                            .navigateTo(context, "Team/${teamState.team.uid}",
+                                transition: fluro.TransitionType.inFromRight);
+                      },
                 );
               });
         },

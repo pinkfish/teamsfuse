@@ -67,8 +67,7 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
       return null;
     } else {
       _formKey.currentState.save();
-      var club = ClubBuilder()
-        ..uid = widget.club.uid
+      var club = widget.club.toBuilder()
         ..name = _clubName
         ..arriveBeforeGame = _clubArriveBefore
         ..trackAttendence = _clubTrackAttendence;

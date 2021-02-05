@@ -6,7 +6,6 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../form/genderformfield.dart';
@@ -35,12 +34,15 @@ enum StartSection {
 ///
 class TeamEditForm extends StatefulWidget {
   /// Constrcutor.
-  TeamEditForm(this.team, GlobalKey<TeamEditFormState> key,
+  TeamEditForm(this.team, this.club, GlobalKey<TeamEditFormState> key,
       {this.startSection = StartSection.all})
       : super(key: key);
 
   /// The team to use.
   final Team team;
+
+  /// The club to use.
+  final Club club;
 
   /// The start section to use.
   final StartSection startSection;
@@ -80,7 +82,7 @@ class TeamEditFormState extends State<TeamEditForm> {
   @override
   void initState() {
     super.initState();
-    _builder = widget.team.toBuilder();
+    _builder = widget.team?.toBuilder() ?? TeamBuilder();
   }
 
   /// Validates the form and also returns the builder.
@@ -130,17 +132,10 @@ class TeamEditFormState extends State<TeamEditForm> {
 
   @override
   Widget build(BuildContext context) {
-    var clubBloc = BlocProvider.of<ClubBloc>(context);
     if (widget.team == null) {
       return Text('Invalid state');
     }
 
-    Club club;
-    if (widget.team.clubUid != null) {
-      if (clubBloc.state.clubs.containsKey(widget.team.clubUid)) {
-        club = clubBloc.state.clubs[widget.team.clubUid];
-      }
-    }
     var screenSize = MediaQuery.of(context).size;
     Widget seasonWidget;
     Widget adminWidget;
@@ -279,18 +274,19 @@ class TeamEditFormState extends State<TeamEditForm> {
         SwitchFormField(
           initialValue: _builder.trackAttendenceInternal,
           icon: MdiIcons.trafficLight,
-          enabled: club != null ? club.trackAttendence != null : true,
+          enabled:
+              widget.club != null ? widget.club.trackAttendence != null : true,
           label: Messages.of(context).trackattendence(Tristate.Yes),
           onSaved: (value) => _builder.trackAttendenceInternal = value,
         ),
       ]);
-      if (club != null) {
+      if (widget.club != null) {
         fields.add(
           // Only club teams can be public.
           SwitchFormField(
             initialValue: _builder.isPublic,
             icon: MdiIcons.earth,
-            enabled: club != null,
+            enabled: widget.club != null,
             label: Messages.of(context).publicalyVisible(Tristate.Yes),
             onSaved: (value) => _builder.isPublic = value,
           ),

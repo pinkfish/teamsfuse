@@ -153,12 +153,22 @@ class AnalyticsSubsystemImpl extends AnalyticsSubsystem {
 
   @override
   void recordError(Error error, StackTrace stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack);
+    if (Platform.isAndroid || Platform.isIOS) {
+      FirebaseCrashlytics.instance.recordError(error, stack);
+    } else {
+      print(error);
+      print(stack);
+    }
   }
 
   @override
   void recordException(Exception error, StackTrace stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack);
+    if (Platform.isAndroid || Platform.isIOS) {
+      FirebaseCrashlytics.instance.recordError(error, stack);
+    } else {
+      print(error);
+      print(stack);
+    }
   }
 }
 

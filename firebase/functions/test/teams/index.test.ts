@@ -200,11 +200,47 @@ describe('Teams Tests', () => {
     }
 
     it('keeps players correct', async () => {
+        const stuff = await createSeasonAndTeam(false, false);
+        const teamDocId = stuff.team.id;
+        const seasonDocId = stuff.season.id;
+        // Make fake new data.
+        const newTeam = test.firestore.makeDocumentSnapshot(
+            {
+                name: 'Lookup TeamName',
+                photourl: null,
+                currentSeason: seasonDocId,
+                uid: teamDocId,
+                isPublic: false,
+                players: {
+                    woggle: {
+                        playerUid: 'waffle',
+                    },
+                },
+            },
+            'Teams/' + teamDocId,
+        );
+
+        try {
+            await test.wrap(onTeamUpdate)(test.makeChange(newTeam, stuff.team), {
+                auth: {
+                    uid: 'me',
+                },
+                authType: 'USER',
+            });
+            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
+            await admin.firestore().collection('Teams').doc(teamDocId).delete();
+        } catch (e) {
+            console.log(e);
+            console.log(e.stack);
+            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
+            await admin.firestore().collection('Teams').doc(teamDocId).delete();
+            throw e;
+        }
+
         return;
     }).timeout(10000);
 
-        it('keeps admins correct', async () => {
-            return;
-        }).timeout(10000);
-
+    it('keeps admins correct', async () => {
+        return;
+    }).timeout(10000);
 });

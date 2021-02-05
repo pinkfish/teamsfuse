@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import 'base/singleprovider.dart';
 
 typedef SingleLeagueOrTournamentDivisonProviderBuilder = Widget Function(
@@ -20,9 +20,9 @@ class SingleLeagueOrTournamentDivisonProvider
       {String leagueDivisonUid,
       SingleLeagueOrTournamentDivisonProviderBuilder builder})
       : super(
-            keyUid: leagueDivisonUid,
+            keyUid:  leagueDivisonUid,
             creator: (context, uid) => _createBloc(context, uid),
-            builder: builder);
+            builder: builder, prefix: "leagueD" );
 
   static SingleLeagueOrTournamentDivisonBloc _createBloc(
       BuildContext context, String uid) {

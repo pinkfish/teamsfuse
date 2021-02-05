@@ -122,7 +122,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
       String clubUid = club.uid;
       if (!_clubTeamsSubscriptions.containsKey(club.uid)) {
         _clubTeamsSubscriptions[club.uid] = coordinationBloc.databaseUpdateModel
-            .getClubTeams(club)
+            .getClubTeams(club, false)
             .listen((Iterable<Team> teams) {
           // Add in all the teams in the list to the teams list and
           // filter out any that have a club on them that now don't

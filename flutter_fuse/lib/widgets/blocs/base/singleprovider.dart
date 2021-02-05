@@ -9,7 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
     extends StatefulWidget {
   /// Constructor for the single bloc provider.
-  SingleBlocProvider({this.builder, this.keyUid, this.creator});
+  SingleBlocProvider(
+      {this.builder, this.keyUid, this.creator, this.prefix = ""});
 
   /// the function to create the provider.
   final T Function(BuildContext context, String uid) creator;
@@ -19,6 +20,9 @@ class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
 
   /// The keyUid to use to find it in the tree.
   final String keyUid;
+
+  /// Prefix to the uid so they don't get mixed up between namespaces;
+  final String prefix;
 
   @override
   State createState() => _SingleBlocProviderState<T>();
@@ -40,7 +44,8 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
   @override
   void initState() {
     super.initState();
-    if (!blocs.containsKey(widget.keyUid) || blocs[widget.keyUid] == null) {
+    var totalKey = (widget.prefix ?? "") + widget.keyUid;
+    if (!blocs.containsKey(totalKey) || blocs[totalKey] == null) {
       try {
         _singleBloc = BlocProvider.of<T>(context);
       } catch (_) {
@@ -51,24 +56,25 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
 
       if (_singleBloc == null) {
         _singleBloc = widget.creator(context, widget.keyUid);
-        blocs[widget.keyUid] = _BlocProviderState<T>(_singleBloc);
+        blocs[totalKey] = _BlocProviderState<T>(_singleBloc);
         _newBloc = true;
       } else {
-        blocs[widget.keyUid] = _BlocProviderState<T>(_singleBloc);
+        blocs[totalKey] = _BlocProviderState<T>(_singleBloc);
       }
     } else {
-      _singleBloc = blocs[widget.keyUid].bloc as T;
-      blocs[widget.keyUid].ref++;
+      _singleBloc = blocs[totalKey].bloc as T;
+      blocs[totalKey].ref++;
     }
   }
 
   @override
   void dispose() {
     super.dispose();
-    if (blocs.containsKey(widget.keyUid)) {
-      blocs[widget.keyUid].ref--;
-      if (blocs[widget.keyUid].ref <= 0) {
-        var state = blocs.remove(widget.keyUid);
+    var totalKey = (widget.prefix ?? "") + widget.keyUid;
+    if (blocs.containsKey(totalKey)) {
+      blocs[totalKey].ref--;
+      if (blocs[totalKey].ref <= 0) {
+        var state = blocs.remove(totalKey);
         state.bloc.close();
       }
     }

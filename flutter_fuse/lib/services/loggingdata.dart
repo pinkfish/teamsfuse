@@ -1,6 +1,6 @@
 import 'package:device_info/device_info.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:package_info/package_info.dart';
@@ -112,7 +112,7 @@ class LoggingData extends LoggingDataBase {
   void logFlutterError(FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details, forceReport: true);
     // Don't capture on emulators.
-    if (_realDevice && !_debugMode) {
+    if (_realDevice && !_debugMode && !kIsWeb) {
       FirebaseCrashlytics.instance.setCustomKey("lastpath", lastPath);
       FirebaseCrashlytics.instance.recordFlutterError(details);
     }

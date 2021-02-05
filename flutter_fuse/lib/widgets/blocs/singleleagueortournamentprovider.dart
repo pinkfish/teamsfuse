@@ -18,7 +18,11 @@ class SingleLeagueOrTournamentProvider
   /// Constructor
   SingleLeagueOrTournamentProvider(
       {String leagueUid, SingleLeagueOrTournamentProviderBuilder builder})
-      : super(keyUid: leagueUid, creator: _createBloc, builder: builder);
+      : super(
+            keyUid: leagueUid,
+            creator: _createBloc,
+            builder: builder,
+            prefix: "league");
 
   static SingleLeagueOrTournamentBloc _createBloc(
       BuildContext context, String uid) {

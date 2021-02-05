@@ -19,7 +19,11 @@ class SingleLeagueOrTournamentTeamProvider
   SingleLeagueOrTournamentTeamProvider(
       {String leagueTeamUid,
       SingleLeagueOrTournamentTeamProviderBuilder builder})
-      : super(keyUid: leagueTeamUid, creator: _createBloc, builder: builder);
+      : super(
+            keyUid: leagueTeamUid,
+            creator: _createBloc,
+            builder: builder,
+            prefix: "leagueT");
 
   static SingleLeagueOrTournamentTeamBloc _createBloc(
       BuildContext context, String uid) {

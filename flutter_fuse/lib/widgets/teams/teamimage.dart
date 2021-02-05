@@ -4,9 +4,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
-
-import '../../services/blocs.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 ///
 /// Displays an image for the team.
@@ -17,7 +17,7 @@ class TeamImage extends StatelessWidget {
   TeamImage(
       {this.team,
       this.teamImage,
-      this.teamUid,
+      String teamUid,
       Key key,
       this.width = 200.0,
       this.height = 200.0,
@@ -27,7 +27,8 @@ class TeamImage extends StatelessWidget {
       this.alignment = Alignment.center,
       this.repeat = ImageRepeat.noRepeat,
       this.matchTextDirection = false})
-      : super(
+      : this.teamUid = teamUid ?? team.uid,
+        super(
           key: key,
         ) {
     assert(team != null || teamUid != null || teamImage != null);
@@ -105,42 +106,42 @@ class TeamImage extends StatelessWidget {
     if (teamImage != null) {
       return _buildImageBit(team);
     }
-    return BlocBuilder(
-      cubit: BlocProvider.of<TeamBloc>(context),
-      builder: (context, teamState) {
-        Widget inner;
-        var t = team;
-        if (t == null) {
-          t = teamState.getTeam(teamUid);
-        }
-        if (t != null &&
-            t.photoUrl != null &&
-            (t.photoUrl.isNotEmpty || width > 50.0 || !showIcon)) {
-          // Yay!
-          inner = _buildImageBit(t);
-        } else {
-          // Try and load the public team.
-          if (t == null) {
-            BlocProvider.of<TeamBloc>(context)
-                .add(TeamLoadPublicTeam(teamUid: teamUid));
-          }
-          if (showIcon) {
-            inner = const Icon(Icons.group);
+    return SingleTeamProvider(
+      teamUid: teamUid,
+      builder: (context, singleTeamBloc) => BlocBuilder(
+        cubit: singleTeamBloc,
+        builder: (context, teamState) {
+          Widget inner;
+          if (teamState is SingleTeamUninitialized) {
+            inner = Icon(MdiIcons.loading);
+          } else if (teamState is SingleTeamDeleted) {
+            inner = Icon(MdiIcons.skullCrossbones);
           } else {
-            inner = _buildImageBit(t);
+            var t = teamState.team;
+            if (t.photoUrl != null &&
+                (t.photoUrl.isNotEmpty || width > 50.0 || !showIcon)) {
+              // Yay!
+              inner = _buildImageBit(t);
+            } else {
+              if (showIcon) {
+                inner = const Icon(Icons.group);
+              } else {
+                inner = _buildImageBit(t);
+              }
+            }
           }
-        }
-        return Container(
-          color: color,
-          height: height,
-          width: width,
-          alignment: alignment,
-          child: AnimatedSwitcher(
-            duration: Duration(milliseconds: 200),
-            child: inner,
-          ),
-        );
-      },
+          return Container(
+            color: color,
+            height: height,
+            width: width,
+            alignment: alignment,
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 200),
+              child: inner,
+            ),
+          );
+        },
+      ),
     );
   }
 }

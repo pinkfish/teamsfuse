@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singleclubprovider.dart';
-import 'package:flutter_fuse/widgets/clubs/clubmembers.dart';
-import 'package:flutter_fuse/widgets/teams/publicteamdetails.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -15,57 +13,45 @@ import '../../widgets/clubs/clubteams.dart';
 ///
 /// The screen showing all the details of the club.
 ///
-class ClubDetailsScreen extends StatefulWidget {
+class PublicClubDetailsScreen extends StatefulWidget {
   /// Constructor.
-  ClubDetailsScreen(this.clubUid);
+  PublicClubDetailsScreen(this.clubUid);
 
   /// Club id to show the details for.
   final String clubUid;
 
   @override
-  _ClubDetailsScreenState createState() {
-    return _ClubDetailsScreenState();
+  _PublicClubDetailsScreenState createState() {
+    return _PublicClubDetailsScreenState();
   }
 }
 
-class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
-  int _tabIndex = 1;
-  Team _displayTeam = null;
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+class _PublicClubDetailsScreenState extends State<PublicClubDetailsScreen> {
+  int _tabIndex = 0;
+  bool isWideScreen = true;
 
   Widget _buildBody(
       Club club, SingleClubBloc singleClubBloc, BoxConstraints layout) {
-    if (_tabIndex == 0) {
-      return Scrollbar(
-        child: SingleChildScrollView(
+    print(layout);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 200,
           child: ClubDetails(club),
         ),
-      );
-    } else if (_tabIndex == 1) {
-      return ClubTeams(club.uid, onlyPublic: false);
-    }
-    print("$_tabIndex");
-
-    return ClubMembers(club);
-  }
-
-  void _select(String value) {
-    if (value == "addadmin") {
-      Navigator.pushNamed(context, "AddClubMember/${widget.clubUid}");
-    } else if (value == "addteam") {
-      Navigator.pushNamed(context, "AddClubTeam/${widget.clubUid}");
-    } else if (value == "editclub") {
-      Navigator.pushNamed(context, "EditClub/${widget.clubUid}");
-    }
+        Expanded(
+          child: ClubTeams(club.uid,
+              onlyPublic: true,
+              onTap: (t) =>
+                  Navigator.pushNamed(context, "/Public/Team/" + t.uid)),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Froggy: ${widget.clubUid}");
     return SingleClubProvider(
       clubUid: widget.clubUid,
       builder: (context, singleClubBloc) => BlocConsumer(
@@ -81,31 +67,6 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
             title = Messages.of(context).loading;
           } else {
             title = state.club.name;
-          }
-          var actions = <Widget>[];
-          bool admin = state?.club?.isAdmin() ?? false;
-          if (admin) {
-            actions.add(
-              PopupMenuButton<String>(
-                onSelected: _select,
-                itemBuilder: (context) {
-                  return <PopupMenuItem<String>>[
-                    PopupMenuItem<String>(
-                      value: "editclub",
-                      child: Text(Messages.of(context).editbuttontext),
-                    ),
-                    PopupMenuItem<String>(
-                      value: "addteam",
-                      child: Text(Messages.of(context).addteam),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'addadmin',
-                      child: Text(Messages.of(context).addadmin),
-                    )
-                  ];
-                },
-              ),
-            );
           }
           Widget theBody;
           if (state is SingleClubDeleted) {
@@ -136,28 +97,10 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
             ),
           ];
 
-          var bloc = BlocProvider.of<AuthenticationBloc>(context);
-          if (bloc.currentUser != null) {
-            navItems.add(BottomNavigationBarItem(
-              icon: Icon(Icons.flag),
-              label: Messages.of(context).members,
-            ));
-          }
-
           return Scaffold(
             appBar: AppBar(
               title: Text(title),
-              actions: actions,
               leading: Icon(MdiIcons.cardsClub),
-            ),
-            bottomNavigationBar: BottomNavigationBar(
-              onTap: (index) {
-                setState(() {
-                  _tabIndex = index;
-                });
-              },
-              currentIndex: _tabIndex,
-              items: navItems,
             ),
             body: theBody,
           );
