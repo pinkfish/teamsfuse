@@ -56,9 +56,9 @@ jobs:
       working-directory: fusemodel
     - run: |
         find ./ -type f -name "*.g.dart" -delete
-	flutter clean
-	flutter pub get
-	flutter packages pub run build_runner build --delete-conflicting-outputs
+        flutter clean
+        flutter pub get
+        flutter packages pub run build_runner build --delete-conflicting-outputs
       working-directory: fusemodel
     - run: flutter packages get
       working-directory: flutter_fuse
