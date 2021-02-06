@@ -133,6 +133,11 @@ platform :ios do
 
     body = release["body"]
 
+    # Write the release notes out to the metadata.
+    File.open('metadata/en-US/releast_notes.text', 'w' do |file|
+      file.write(body)
+    end
+
     appicon(
        appicon_devices: [:ipad, :iphone, :ios_marketing],
        appicon_path: "Runner/Assets.xcassets",
@@ -156,15 +161,14 @@ platform :ios do
     # Build the app
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
 
-    screenshots
-
     # Upload the app.
-    upload_to_testflight(changelog: body)
+    #upload_to_testflight(changelog: body)
 
     deliver(
       submit_for_review: true,
       force: true,
-      metadata_path: "./metadata"
+      metadata_path: "./metadata",
+
     )
   end
 

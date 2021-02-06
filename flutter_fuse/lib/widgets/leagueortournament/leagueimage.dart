@@ -12,7 +12,7 @@ import 'package:fusemodel/fusemodel.dart';
 class LeagueImage extends StatelessWidget {
   /// Constructor.
   LeagueImage(
-      {this.leagueOrTournamentUid,
+      {String leagueOrTournamentUid,
       this.leagueOrTournament,
       Key key,
       this.width,
@@ -24,12 +24,14 @@ class LeagueImage extends StatelessWidget {
       this.repeat = ImageRepeat.noRepeat,
       this.matchTextDirection = false})
       : assert(leagueOrTournament != null || leagueOrTournamentUid != null),
+        this._leagueOrTournamentUid =
+            leagueOrTournamentUid ?? leagueOrTournament.uid,
         super(
           key: key,
         );
 
   /// The league or tournament to display.
-  final String leagueOrTournamentUid;
+  final String _leagueOrTournamentUid;
 
   /// The league or tournament to display.
   final LeagueOrTournament leagueOrTournament;
@@ -58,48 +60,70 @@ class LeagueImage extends StatelessWidget {
   /// The blend mode to use for the color.
   final BlendMode colorBlendMode;
 
+  Widget _buildInner(LeagueOrTournament league) {
+    return CachedNetworkImage(
+      imageUrl: league.photoUrl ?? "",
+      imageBuilder: (context, imageProvider) => FadeInImage(
+        image: imageProvider,
+        height: height,
+        width: width,
+        fit: fit,
+        alignment: alignment,
+        repeat: repeat,
+        matchTextDirection: matchTextDirection,
+        placeholder: AssetImage("assets/images/defaultavatar.png"),
+      ),
+      placeholder: (context, url) =>
+          Image.asset("assets/images/defaultavatar.png"),
+      errorWidget: (context, url, error) =>
+          Image.asset("assets/images/defaultavatar.png"),
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (leagueOrTournament!= null) {
+      return SizedBox(
+        width: width,
+        height: height,
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 500),
+          color: color,
+          height: height,
+          width: width,
+          alignment: alignment,
+          child:
+        _buildInner(leagueOrTournament),),
+      );
+    }
+    return SizedBox(
+      width: width,
+      height: height,
+      child: SingleLeagueOrTournamentProvider(
+        leagueUid: _leagueOrTournamentUid,
+        builder: (context, singleLeagueOrTournamentBloc) => BlocBuilder(
+          cubit: singleLeagueOrTournamentBloc,
+          builder: (context, SingleLeagueOrTournamentState leagueState) {
+            Widget inner;
+            if (leagueState is SingleLeagueOrTournamentUninitialized) {
+              inner = Center(child: CircularProgressIndicator());
+            } else {
+              // Yay!
+              inner = _buildInner(leagueState.league);
+            }
 
-    return SizedBox(width: width, height: height, child: SingleLeagueOrTournamentProvider(
-      leagueUid: leagueOrTournamentUid,
-      builder: (context, singleLeagueOrTournamentBloc) => BlocBuilder(
-        cubit: singleLeagueOrTournamentBloc,
-        builder: (context, SingleLeagueOrTournamentState leagueState) {
-          Widget inner;
-          if (leagueState is SingleLeagueOrTournamentUninitialized) {
-            inner = Center(child: CircularProgressIndicator());
-          } else {
-            // Yay!
-            inner = CachedNetworkImage(
-              imageUrl: leagueState.league.photoUrl ?? "",
-              imageBuilder: (context, imageProvider) => FadeInImage(
-                image: imageProvider,
-                height: height,
-                width: width,
-                fit: fit,
-                alignment: alignment,
-                repeat: repeat,
-                matchTextDirection: matchTextDirection,
-                placeholder: AssetImage("assets/images/defaultavatar.png"),
-              ),
-              placeholder: (context, url) =>
-                  Image.asset("assets/images/defaultavatar.png"),
-              errorWidget: (context, url, error) =>
-                  Image.asset("assets/images/defaultavatar.png"),
+            return AnimatedContainer(
+              duration: Duration(milliseconds: 500),
+              color: color,
+              height: height,
+              width: width,
+              alignment: alignment,
+              child: inner,
             );
-          }
-
-          return AnimatedContainer(
-            duration: Duration(milliseconds: 500),
-            color: color,
-            height: height,
-            width: width,
-            alignment: alignment,
-            child: inner,
-          );
-        },
+          },
+        ),
       ),
-    ),);
+    );
   }
 }
