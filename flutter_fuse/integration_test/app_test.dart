@@ -45,12 +45,18 @@ void main() {
       await driver.waitFor(createAccountButton);
     });
 
-    test('Login', () async {});
-
-    test('Forgot password page', () async {
+    test('Login', () async {
       await doLogin(driver);
       // FInd the fused drawer.
       await driver.waitFor(find.byType("FusedDrawer"));
+    });
+
+    test('All Teams Page', () async {
+      await doLogin(driver);
+      // FInd the fused drawer.
+      await driver.waitFor(find.byType("FusedDrawer"));
+      await driver.tap(find.byTooltip("ALL TEAMS"));
+      await driver.waitFor(find.byType("TeamAnimatedList"));
     });
   });
 }
