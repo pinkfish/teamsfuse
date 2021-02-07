@@ -36,6 +36,7 @@ export async function updateUsersAndPlayers(
 
     // go through the players and make sure we have a corresponding user.
     for (const idx in players) {
+        console.log(idx);
         if (!playerSet.has(idx) || force) {
             // Load the user details from the player and update.
             const playerData = await db.collection('Players').doc(idx).get();
