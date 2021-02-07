@@ -18,7 +18,7 @@ void main() {
       ),
     );
 
-    await tester.pump(Duration(milliseconds:600))
+    await tester.pump(Duration(milliseconds: 600));
 
     // Verify that our icon is male.
     expect(find.byIcon(MdiIcons.genderMale), findsOneWidget);
@@ -26,16 +26,16 @@ void main() {
   testWidgets('Gender icon female', (tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(
-        makeTestableWidget(
-      Directionality(
-        textDirection: TextDirection.rtl,
-        child: RepaintBoundary(
-          child: GenderIcon(Gender.Female),
+      makeTestableWidget(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: RepaintBoundary(
+            child: GenderIcon(Gender.Female),
+          ),
         ),
       ),
-        ),
     );
-    await tester.pump(Duration(milliseconds:600));
+    await tester.pump(Duration(milliseconds: 600));
 
     // Verify that our icon is male.
     expect(find.byIcon(MdiIcons.genderFemale), findsOneWidget);
@@ -51,8 +51,7 @@ void main() {
       ),
     );
 
-    await tester.pump(Duration(milliseconds:600));
-
+    await tester.pump(Duration(milliseconds: 600));
 
     // Verify that our icon is male.
     expect(find.byIcon(MdiIcons.genderMaleFemale), findsOneWidget);
@@ -67,8 +66,7 @@ void main() {
       ),
     );
 
-    await tester.pump(Duration(milliseconds:600));
-
+    await tester.pump(Duration(milliseconds: 600));
 
     // Verify that our icon is male.
     expect(find.byIcon(Icons.person), findsOneWidget);
