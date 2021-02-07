@@ -53,7 +53,7 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
         // Create the season too.
         List<SeasonPlayer> players = [];
         players.add(SeasonPlayer((b) => b
-          ..playerUid = event.playerUid
+          ..playerUid = event.playerUid.trim()
           ..role = RoleInTeam.Player));
         var entries = Map<String, BuiltMap<String, bool>>.fromEntries(
           [
@@ -63,7 +63,7 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
                 Map<String, bool>.fromEntries(
                   players.map(
                     (e) => MapEntry(
-                      e.playerUid,
+                      e.playerUid.trim(),
                       true,
                     ),
                   ),
@@ -82,7 +82,7 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
             ..win = 0)
           ..playersData = MapBuilder(Map<String, SeasonPlayer>.fromIterable(
               players,
-              key: (p) => p.playerUid,
+              key: (p) => p.playerUid.trim(),
               value: (p) => p))
           ..users = MapBuilder(entries));
         TeamBuilder team = event.team;
