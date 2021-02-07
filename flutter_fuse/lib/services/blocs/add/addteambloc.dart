@@ -55,15 +55,17 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
         players.add(SeasonPlayer((b) => b
           ..playerUid = event.playerUid
           ..role = RoleInTeam.Player));
-        var entries = Map<String, Map<String, bool>>.fromEntries(
+        var entries = Map<String, BuiltMap<String, bool>>.fromEntries(
           [
-            MapEntry<String, Map<String, bool>>(
+            MapEntry<String, BuiltMap<String, bool>>(
               coordinationBloc.authenticationBloc.currentUser.uid,
-              Map<String, bool>.fromEntries(
-                players.map(
-                  (e) => MapEntry(
-                    e.playerUid,
-                    true,
+              BuiltMap.of(
+                Map<String, bool>.fromEntries(
+                  players.map(
+                    (e) => MapEntry(
+                      e.playerUid,
+                      true,
+                    ),
                   ),
                 ),
               ),
@@ -83,11 +85,12 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
               key: (p) => p.playerUid,
               value: (p) => p))
           ..users = MapBuilder(entries));
+        TeamBuilder team = event.team;
+        team.uid = "";
 
-        event.team.uid = "";
         String uid = await coordinationBloc.databaseUpdateModel
             .addFirestoreTeam(
-                event.team.build(),
+                team.build(),
                 null,
                 season,
                 event.teamImage == null

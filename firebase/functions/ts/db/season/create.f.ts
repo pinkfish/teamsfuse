@@ -45,6 +45,8 @@ export const onSeasonCreate = functions.firestore.document('/Seasons/{seasonId}'
 
     if (data !== null && data !== undefined) {
         const newData = await updateUsersAndPlayers(data.players, data.users, true);
+        console.log(newData);
+
         if (Object.keys(newData).length > 0) {
             console.log(newData.users);
             // Do the update.

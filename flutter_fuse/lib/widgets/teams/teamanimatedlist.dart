@@ -37,10 +37,12 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
     return SizeTransition(
       axis: Axis.vertical,
       sizeFactor: animation,
-      child: TeamTile(
-        _currentData[index].uid,
-        popBeforeNavigate: true,
-      ),
+      child: index >= _currentData.length
+          ? SizedBox(height: 0)
+          : TeamTile(
+              _currentData[index].uid,
+              popBeforeNavigate: true,
+            ),
     );
   }
 

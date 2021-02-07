@@ -478,7 +478,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
               .rebuild((b) => b
                 ..uid = pregenSeason.documentID
                 ..teamUid = pregen.documentID)
-              .toMap());
+              .toMap(includePlayers: true));
       return {};
     });
     if (imageFile != null && imageFile.isNotEmpty) {
