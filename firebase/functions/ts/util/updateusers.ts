@@ -38,11 +38,12 @@ export async function updateUsersAndPlayers(
 
     // go through the players and make sure we have a corresponding user.
     for (const idx in players) {
-        console.log('player ' + idx);
+        console.log('player "' +  idx + '"');
         if (!playerSet.has(idx) || force) {
             // Load the user details from the player and update.
             const playerData = await db.collection('Players').doc(idx).get();
             const playerDataInner = playerData.data();
+            console.log(playerDataInner);
             if (playerDataInner !== null && playerDataInner !== undefined) {
                 for (const newIdx in playerDataInner.user) {
                     retUser[newIdx] = {
