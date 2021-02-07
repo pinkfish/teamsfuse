@@ -18,7 +18,7 @@ void main() {
       ),
     );
 
-
+    await tester.pump(Duration(milliseconds:600))
 
     // Verify that our icon is male.
     expect(find.byIcon(MdiIcons.genderMale), findsOneWidget);
@@ -35,7 +35,7 @@ void main() {
       ),
         ),
     );
-    await tester.pump(find.byType(GenderIcon));
+    await tester.pump(Duration(milliseconds:600));
 
     // Verify that our icon is male.
     expect(find.byIcon(MdiIcons.genderFemale), findsOneWidget);
@@ -51,7 +51,8 @@ void main() {
       ),
     );
 
-    await tester.pump(find.byType(GenderIcon));
+    await tester.pump(Duration(milliseconds:600));
+
 
     // Verify that our icon is male.
     expect(find.byIcon(MdiIcons.genderMaleFemale), findsOneWidget);
@@ -66,7 +67,8 @@ void main() {
       ),
     );
 
-    await tester.pump(find.byType(GenderIcon));
+    await tester.pump(Duration(milliseconds:600));
+
 
     // Verify that our icon is male.
     expect(find.byIcon(Icons.person), findsOneWidget);
