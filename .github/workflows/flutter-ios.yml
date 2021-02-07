@@ -53,7 +53,7 @@ jobs:
       working-directory: flutter_fuse/ios
       env: 	
         APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
-    - run:   echo $(PASSWORD) > fastlane/metadata/review_information/test_password.txt
+    - run:   echo $(PASSWORD) > fastlane/metadata/review_information/demo_password.txt
       working-directory: flutter_fuse/ios
       env:
         PASSEORD: ${{ secrets.TEST_USER_PASSWORD }}
