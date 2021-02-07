@@ -39,7 +39,7 @@ class TeamEditForm extends StatefulWidget {
       : super(key: key);
 
   /// The team to use.
-  final Team team;
+  final TeamBuilder team;
 
   /// The club to use.
   final Club club;
@@ -82,7 +82,7 @@ class TeamEditFormState extends State<TeamEditForm> {
   @override
   void initState() {
     super.initState();
-    _builder = widget.team?.toBuilder() ?? TeamBuilder();
+    _builder = widget.team ?? TeamBuilder();
   }
 
   /// Validates the form and also returns the builder.

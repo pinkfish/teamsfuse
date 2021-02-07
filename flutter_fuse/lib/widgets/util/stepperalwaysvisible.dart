@@ -286,6 +286,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
               textColor: Colors.white,
               textTheme: ButtonTextTheme.normal,
               child: Text(localizations.continueButtonLabel),
+              key: Key("BACK"),
             ),
             Container(
               margin: const EdgeInsetsDirectional.only(start: 8.0),
@@ -294,6 +295,7 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
                 textColor: cancelColor,
                 textTheme: ButtonTextTheme.normal,
                 child: Text(localizations.cancelButtonLabel),
+                key: Key("CONTINUE"),
               ),
             ),
           ],

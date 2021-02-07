@@ -13,8 +13,7 @@ void main() {
     final forgotButton = find.byValueKey("FORGOTPASSWORD");
     final createAccountButton = find.byValueKey("CREATEACCOUNT");
     final loginButton = find.byValueKey("LOGIN");
-    final logoutButton = find.byValueKey("LOGOUT");
-    final submitButton = find.byValueKey("SUBMIT");
+    final addTeamButton = find.byValueKey("ADD_TEAM");
     FlutterDriver driver;
 
     setUpAll(() async {
@@ -58,6 +57,21 @@ void main() {
       await driver.tap(find.byTooltip("ALL TEAMS"));
       await driver.waitFor(find.byType("TeamAnimatedList"));
     });
+
+    test('Add Team, delete team', () async {
+      await doLogin(driver);
+      // FInd the fused drawer.
+      await driver.waitFor(find.byType("FusedDrawer"));
+
+      await driver.tap(find.byTooltip("ALL TEAMS"));
+      await driver.waitFor(addTeamButton);
+      await driver.tap(addTeamButton);
+
+      // Now in the add team form.
+      await driver.tap(find.byValueKey("CONTINUE"));
+
+      await driver.waitFor(find.byType("TeamAnimatedList"));
+    });
   });
 }
 
@@ -67,6 +81,7 @@ Future<void> doLogin(FlutterDriver driver) async {
   final passwordBox = find.byTooltip("Password");
   final testEmail = String.fromEnvironment("TEST_USER");
   final testPassword = String.fromEnvironment("TEST_PASSWORD");
+  final addTeamButton = find.byValueKey("ADD_TEAM");
 
   // Do the login.  Assumes we are on the login page.
   await driver.tap(userNameBox);

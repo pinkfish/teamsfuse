@@ -41,7 +41,7 @@ class _EditTeamScreenState extends State<EditTeamScreen> {
     if (state is SingleTeamUninitialized) {
       return CircularProgressIndicator();
     }
-    return TeamEditForm(state.team, state.club, _formKey);
+    return TeamEditForm(state.team.toBuilder(), state.club, _formKey);
   }
 
   void _savePressed(BuildContext context, SingleTeamBloc singleTeamBloc) async {

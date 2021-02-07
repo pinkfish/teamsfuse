@@ -45,7 +45,8 @@ class TeamHomeScreen extends StatelessWidget {
             ),
             ButtonBar(
               children: <Widget>[
-                FlatButton(
+                TextButton(
+                  key: Key("ADD_TEAM"),
                   child: Text(Messages.of(context).addteam),
                   onPressed: () => _addTeam(context),
                 ),

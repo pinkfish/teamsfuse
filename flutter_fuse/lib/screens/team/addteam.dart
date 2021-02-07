@@ -91,7 +91,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
           seasonName: _seasonNameInternal,
           team: _teamToAdd,
           playerUid: _playerUid,
-          teamImage: _imageFileToAdd));
+          teamImage: _imageFileToAdd,));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
@@ -304,7 +304,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                 return LoadingWidget();
               }
               return TeamEditForm(
-                _teamToAdd.build(),
+                _teamToAdd,
                 singleClubState.club,
                 _formKeyTeam,
                 startSection: section,
@@ -313,7 +313,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
       );
     } else {
       return TeamEditForm(
-        _teamToAdd.build(),
+        _teamToAdd,
         null,
         _formKeyTeam,
         startSection: StartSection.start,
