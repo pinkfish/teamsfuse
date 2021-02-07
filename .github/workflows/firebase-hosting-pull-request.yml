@@ -42,7 +42,7 @@ jobs:
       - run: |
           flutter build web
           mkdir -p ../firebase/public/flutter
-          cp build/web ../firebase/public/flutter
+          cp -r build/web ../firebase/public/flutter
         working-directory: flutter_fuse
       
       - uses: FirebaseExtended/action-hosting-deploy@v0
