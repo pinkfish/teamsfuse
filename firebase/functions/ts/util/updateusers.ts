@@ -36,7 +36,7 @@ export async function updateUsersAndPlayers(
     }
 
     // go through the players and make sure we have a corresponding user.
-    for (const idx in players) {
+    for (let idx in players) {
         console.log('player "' +  idx + '"');
         idx = idx.trim();
         if (!playerSet.has(idx) || force) {
