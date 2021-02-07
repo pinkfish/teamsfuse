@@ -14,14 +14,11 @@ export const onSeasonUpdate = functions.firestore
         // Fix the users section.
         if (data) {
             const newData = await updateUsersAndPlayers(data.players, data.users, false);
-            console.log(data.players);
             if (Object.keys(newData.users).length > 0) {
-                console.log(newData.users);
                 // Do the update.
                 return db.collection('Seasons').doc(inputData.after.id).update({ users: newData.users });
             }
             if (Object.keys(newData.players).length > 0) {
-                console.log(newData.players);
                 // Do the update.
                 return db.collection('Seasons').doc(inputData.after.id).update({ players: newData.players });
             }

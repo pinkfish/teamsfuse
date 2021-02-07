@@ -18,13 +18,12 @@ export async function updateUsersAndPlayers(
     const retUser: Record<string, any> = {};
     const retPlayer: Record<string, any> = {};
     const playerSet: Set<string> = new Set<string>();
-    console.log(players);
     console.log('do it');
-    console.log(users);
 
     // Go through the users and make sure there is still a a player for each one.
     for (const idx in users) {
-        const user = users[idx];
+        console.log('user ' + idx);
+             const user = users[idx];
         let found = false;
         for (const player in user) {
             if (player !== 'added') {
@@ -39,7 +38,7 @@ export async function updateUsersAndPlayers(
 
     // go through the players and make sure we have a corresponding user.
     for (const idx in players) {
-        console.log(idx);
+        console.log('player ' + idx);
         if (!playerSet.has(idx) || force) {
             // Load the user details from the player and update.
             const playerData = await db.collection('Players').doc(idx).get();
