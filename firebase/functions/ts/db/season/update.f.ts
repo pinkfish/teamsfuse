@@ -14,7 +14,7 @@ export const onSeasonUpdate = functions.firestore
         // Fix the users section.
         if (data) {
             const newData = await updateUsersAndPlayers(data.players, data.users, false);
-            console.log(newData);
+            console.log(data.players);
             if (Object.keys(newData.users).length > 0) {
                 console.log(newData.users);
                 // Do the update.
