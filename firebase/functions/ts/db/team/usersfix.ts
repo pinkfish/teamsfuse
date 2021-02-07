@@ -12,7 +12,7 @@ export async function fixUsers(
         const newData = updateUsers(data.user);
         if (Object.keys(newData).length > 0) {
             // Do the update.
-            await db.collection('Teams').doc(id).update({users: newData});
+            await db.collection('Teams').doc(id).update({ users: newData });
         }
     }
     if (data && previousData) {
@@ -25,7 +25,7 @@ export async function fixUsers(
                 const snap = await db.collection('Seasons').where('teamUid', '==', id).get();
                 for (const docIdx in snap.docs) {
                     const doc = snap.docs[docIdx];
-                    await db.collection('Seasons').doc(doc.id).update({users: toUpdate});
+                    await db.collection('Seasons').doc(doc.id).update({ users: toUpdate });
                 }
             }
         }

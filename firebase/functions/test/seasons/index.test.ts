@@ -24,6 +24,7 @@ test.mockConfig({
 });
 
 import { onSeasonCreate } from '../../ts/db/season/create.f';
+import { onSeasonUpdate } from '../../ts/db/season/update.f';
 
 interface TeamAndSeason {
     team: DocumentSnapshot;
@@ -174,22 +175,23 @@ describe('Seasons Tests', () => {
     }
 
     // Validate it fills in the users correctly when the season is created.
-    it('season, fix users', async () => {
+    it('season, fix users - create', async () => {
         const seasonDocId = uuid();
         const teamDocId = uuid();
         const playerDocId = uuid();
 
-
-        await admin.firestore().collection('Players').doc(playerDocId).set({
-          user: {
-            me: {
-            added: true,
-            relationship: "Parent",
-            }
-          }
-
-        });
-
+        await admin
+            .firestore()
+            .collection('Players')
+            .doc(playerDocId)
+            .set({
+                user: {
+                    me: {
+                        added: true,
+                        relationship: 'Parent',
+                    },
+                },
+            });
 
         // Setup some data to be queried first.
         await admin
@@ -207,21 +209,21 @@ describe('Seasons Tests', () => {
                 },
             });
 
-        const playerStuff: {[key: string]:any }= {};
+        const playerStuff: { [key: string]: any } = {};
         playerStuff[playerDocId] = {
-          added: true,
-          name: "frog",
+            added: true,
+            name: 'frog',
         };
         await admin.firestore().collection('Seasons').doc(seasonDocId).set({
             name: 'Current Season',
             uid: seasonDocId,
             teamUid: teamDocId,
             isPublic: true,
-            players: playerStuff
+            players: playerStuff,
         });
 
         try {
-            await test.wrap(onSeasonCreate)(await admin.firestore().collection('Seasons').doc(seasonDocId).get(), {
+            await test.wrap(onSeasonUpdate)(await admin.firestore().collection('Seasons').doc(seasonDocId).get(), {
                 auth: {
                     uid: 'me',
                 },
@@ -235,16 +237,12 @@ describe('Seasons Tests', () => {
                 expect(myData).to.not.be.null;
                 if (myData !== undefined && myData !== null) {
                     expect(myData.teamUid).to.equal(teamDocId);
-                    const playerCheck:{[key: string]:boolean} = {};
+                    const playerCheck: { [key: string]: boolean } = {};
                     playerCheck['added'] = true;
                     playerCheck[playerDocId] = true;
                     expect(myData.users).to.be.an('object').that.deep.own.includes({
-                      me: playerCheck
-
-
-
+                        me: playerCheck,
                     });
-
                 }
             }
             await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
@@ -258,6 +256,101 @@ describe('Seasons Tests', () => {
             await admin.firestore().collection('Players').doc(playerDocId).delete();
             throw e;
         }
-return;
+        return;
+    });
+
+    // Validate it fills in the users correctly when the season is created.
+    it('season, fix users - update', async () => {
+        const seasonDocId = uuid();
+        const teamDocId = uuid();
+        const playerDocId = uuid();
+
+        await admin
+            .firestore()
+            .collection('Players')
+            .doc(playerDocId)
+            .set({
+                user: {
+                    me: {
+                        added: true,
+                        relationship: 'Parent',
+                    },
+                },
+            });
+
+        // Setup some data to be queried first.
+        await admin
+            .firestore()
+            .collection('Teams')
+            .doc(teamDocId)
+            .set({
+                name: 'Lookup TeamName',
+                photourl: null,
+                currentSeason: seasonDocId,
+                uid: teamDocId,
+                isPublic: true,
+                admins: {
+                    me: true,
+                },
+            });
+
+        const playerStuff: { [key: string]: any } = {};
+        playerStuff[playerDocId] = {
+            added: true,
+            name: 'frog',
+        };
+        await admin.firestore().collection('Seasons').doc(seasonDocId).set({
+            name: 'Current Season',
+            uid: seasonDocId,
+            teamUid: teamDocId,
+            isPublic: true,
+            players: playerStuff,
+        });
+        const oldSeason = {
+            name: 'Old Season',
+            uid: seasonDocId,
+            teamUid: teamDocId,
+            isPublic: true,
+            players: {},
+        };
+
+        try {
+            await test.wrap(onSeasonUpdate)(
+                test.makeChange(oldSeason, await admin.firestore().collection('Seasons').doc(seasonDocId).get()),
+                {
+                    auth: {
+                        uid: 'me',
+                    },
+                    authType: 'USER',
+                },
+            );
+            const data = await admin.firestore().collection('Seasons').doc(seasonDocId).get();
+            expect(data).to.not.be.null;
+            if (data !== null && data !== undefined) {
+                expect(data.exists).to.be.true;
+                const myData = data.data();
+                expect(myData).to.not.be.null;
+                if (myData !== undefined && myData !== null) {
+                    expect(myData.teamUid).to.equal(teamDocId);
+                    const playerCheck: { [key: string]: boolean } = {};
+                    playerCheck['added'] = true;
+                    playerCheck[playerDocId] = true;
+                    expect(myData.users).to.be.an('object').that.deep.own.includes({
+                        me: playerCheck,
+                    });
+                }
+            }
+            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
+            await admin.firestore().collection('Teams').doc(teamDocId).delete();
+            await admin.firestore().collection('Players').doc(playerDocId).delete();
+        } catch (e) {
+            console.log(e);
+            console.log(e.stack);
+            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
+            await admin.firestore().collection('Teams').doc(teamDocId).delete();
+            await admin.firestore().collection('Players').doc(playerDocId).delete();
+            throw e;
+        }
+        return;
     });
 });

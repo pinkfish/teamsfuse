@@ -4,7 +4,12 @@ const FieldValue = admin.firestore.FieldValue;
 
 const db = admin.firestore();
 
-export async function updateUsersAndPlayers(players: Record<string, any>, data: Record<string, any>): Promise<Record<string, any>> {
+// Updates the usersAndPlayers with exciting data when created or updated.
+export async function updateUsersAndPlayers(
+    players: Record<string, any>,
+    data: Record<string, any>,
+    force: boolean,
+): Promise<Record<string, any>> {
     const ret: Record<string, any> = {};
     const playerSet: Set<string> = new Set<string>();
 
@@ -25,7 +30,7 @@ export async function updateUsersAndPlayers(players: Record<string, any>, data: 
 
     // go through the players and make sure we have a corresponding user.
     for (const idx in players) {
-        if (!playerSet.has(idx)) {
+        if (!playerSet.has(idx) || force) {
             // Load the user details from the player and update.
             const playerData = await db.collection('Players').doc(idx).get();
             const playerDataInner = playerData.data();
