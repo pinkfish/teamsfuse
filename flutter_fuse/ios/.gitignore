@@ -45,3 +45,4 @@ Icon?
 /Runner/Assets.xcassets/AppIcon.appiconset/*
 
 Pods/
+fastlane/metadata/review_information/email_address.txt
