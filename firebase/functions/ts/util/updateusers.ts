@@ -22,7 +22,6 @@ export async function updateUsersAndPlayers(
 
     // Go through the users and make sure there is still a a player for each one.
     for (const idx in users) {
-        console.log('user ' + idx);
              const user = users[idx];
         let found = false;
         for (const player in user) {
