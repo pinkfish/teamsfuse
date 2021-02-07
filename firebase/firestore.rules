@@ -122,12 +122,14 @@ service cloud.firestore {
         (resource.data.users[request.auth.uid].added)) ||
         isPublicVisible();
       allow update: if isSignedIn() &&
-        'players' in incomingData() && incomingData().players.size9) > 1;
+        'players' in incomingData() &&
+        incomingData().players.size() > 1;
       allow delete: if isSignedIn();
       allow list: if isSignedIn();
       allow create: if isSignedIn() &&
          get(/databases/$(database)/documents/Team/$(incomingData().teamUid)).data.admin[request.auth.uid] &&
-         'players' in incomingData() && incomingData().players.size() > 1;
+         'players' in incomingData() &&
+         incomingData().players.size() > 1;
     }
 
     match /Teams/{team} {

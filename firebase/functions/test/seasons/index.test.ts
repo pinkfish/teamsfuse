@@ -134,6 +134,12 @@ describe('Seasons Tests', () => {
             uid: seasonDocId,
             teamUid: teamUid,
             isPublic: isPublicVisibleSeason,
+
+            players: {
+               fluff: {
+                  added: true,
+               },
+            },
         });
 
         return admin.firestore().collection('Seasons').doc(seasonDocId).get();

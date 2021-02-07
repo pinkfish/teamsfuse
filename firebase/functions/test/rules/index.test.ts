@@ -42,6 +42,7 @@ beforeEach(async function () {
 before(async function () {
     console.log('start before');
     console.log(fs.readFileSync('../firestore.rules', 'utf8'));
+    console.log(projectName);
     await firebase.loadFirestoreRules({
         projectId: projectName,
         rules: fs.readFileSync('../firestore.rules', 'utf8'),
@@ -135,7 +136,7 @@ describe('TeamsFuse rules', function () {
         await db
             .collection('Seasons')
             .doc('frog')
-            .set({ users: { robert: { added: true } } });
+            .set({ users: { robert: { added: true } }, players: { fluff: { added: true, }, },  });
         await firebase.assertSucceeds(db.collection('Seasons').doc('frog').get());
         const aliceDb = authedApp({ uid: 'alice' });
         await firebase.assertFails(aliceDb.collection('Seasons').doc('frog').get());
@@ -145,7 +146,7 @@ describe('TeamsFuse rules', function () {
         await db
             .collection('Seasons')
             .doc('frogpublic')
-            .set({ users: { robert: { added: true } }, isPublic: true });
+            .set({ users: { robert: { added: true } }, isPublic: true,players: { fluff: { added: true, }, },   });
         await firebase.assertSucceeds(db.collection('Seasons').doc('frogpublic').get());
         const aliceDb = authedApp({ uid: 'alice' });
         await firebase.assertSucceeds(aliceDb.collection('Seasons').doc('frogpublic').get());
