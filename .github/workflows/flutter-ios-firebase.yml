@@ -54,7 +54,10 @@ jobs:
       working-directory: firebase/functions
     - run: flutter pub get
       working-directory: fusemodel
-    - run: flutter pub run build_runner build
+    - run: |
+        flutter clean
+        flutter p0ub get
+        flutter pub run build_runner build
       working-directory: fusemodel
     - run: |
         flutter packages get
