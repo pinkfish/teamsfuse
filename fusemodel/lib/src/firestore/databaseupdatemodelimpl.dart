@@ -48,7 +48,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           wrapper.collection(GAMES_COLLECTION).document();
       DocumentReferenceWrapper refShared =
           wrapper.collection(GAMES_SHARED_COLLECTION).document();
-      wrapper.runTransaction((TransactionWrapper tx) async {
+      await wrapper.runTransaction((TransactionWrapper tx) async {
         GameBuilder gameBuilder = game.toBuilder();
         // Add the shared stuff, then the game.
         if (game.sharedData.officialResult.homeTeamLeagueUid == null) {
@@ -83,7 +83,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<void> addTrainingEvents(Game game, Iterable<DateTime> dates) {
+  Future<void> addTrainingEvents(Game game, Iterable<DateTime> dates) async {
     List<DocumentReferenceWrapper> ref = List.generate(dates.length,
         (int i) => wrapper.collection(GAMES_COLLECTION).document());
     List<DocumentReferenceWrapper> refShared = List.generate(dates.length,
@@ -93,7 +93,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentReferenceWrapper mainShared =
         wrapper.collection(GAMES_SHARED_COLLECTION).document();
 
-    return wrapper.runTransaction((tx) async {
+    await wrapper.runTransaction((tx) async {
       GameBuilder gameBuilder = game.toBuilder();
       gameBuilder.uid = mainRef.documentID;
       // Add the shared stuff, then the game.
@@ -117,6 +117,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       }
       return s.toMap();
     });
+    return;
   }
 
   @override
@@ -458,14 +459,29 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
     DocumentReferenceWrapper pregenSeason =
         wrapper.collection(SEASONS_COLLECTION).document();
-    wrapper.runTransaction((tx) async {
+    var admins = team.adminsData.toBuilder();
+
+    // Make sure we are admin in the team.
+    admins[currentUser.uid] = true;
+    await wrapper.runTransaction((tx) async {
       await tx.set(
-          pregen, team.rebuild((b) => b..uid = pregen.documentID).toMap());
-      await tx.set(pregenSeason,
-          season.rebuild((b) => b..uid = pregenSeason.documentID).toMap());
+          pregen,
+          team
+              .rebuild((b) => b
+                ..uid = pregen.documentID
+                ..adminsData = admins
+                ..currentSeason = pregenSeason.documentID)
+              .toMap());
+      await tx.set(
+          pregenSeason,
+          season
+              .rebuild((b) => b
+                ..uid = pregenSeason.documentID
+                ..teamUid = pregen.documentID)
+              .toMap());
       return {};
     });
-    if (imageFile != null) {
+    if (imageFile != null && imageFile.isNotEmpty) {
       updateTeamImage(pregen.documentID, imageFile);
     }
     analytics.logEvent(name: "addTeam");

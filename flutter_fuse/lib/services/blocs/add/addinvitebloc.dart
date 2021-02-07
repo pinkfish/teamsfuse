@@ -88,7 +88,9 @@ class AddInviteBloc extends Bloc<AddInviteEvent, AddItemState> {
                 playerName: event.playerName,
                 email: event.email);
         yield AddItemDone(uid: uid);
-      } catch (e) {
+      } catch (e, stack) {
+        coordinationBloc.analytics.recordException(e, stack);
+
         yield AddItemSaveFailed(error: e);
       }
     }
@@ -107,7 +109,9 @@ class AddInviteBloc extends Bloc<AddInviteEvent, AddItemState> {
               seasonName: event.seasonName);
         }
         yield AddItemDone(uid: 'done');
-      } catch (e) {
+      } catch (e, stack) {
+        coordinationBloc.analytics.recordException(e, stack);
+
         yield AddItemSaveFailed(error: e);
       }
     }
@@ -123,7 +127,9 @@ class AddInviteBloc extends Bloc<AddInviteEvent, AddItemState> {
                 teamName: event.teamName,
                 email: event.email);
         yield AddItemDone(uid: uid);
-      } catch (e) {
+      } catch (e, stack) {
+        coordinationBloc.analytics.recordException(e, stack);
+
         yield AddItemSaveFailed(error: e);
       }
     }

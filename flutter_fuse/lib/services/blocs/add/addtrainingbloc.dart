@@ -45,7 +45,9 @@ class AddTrainingBloc extends Bloc<AddTrainingEvent, AddItemState> {
             .addTrainingEvents(updatedGame, event.repeatTimes);
 
         yield AddItemDone(uid: null);
-      } catch (e) {
+      } catch (e, stack) {
+        coordinationBloc.analytics.recordException(e, stack);
+
         yield AddItemSaveFailed(error: e);
       }
     }

@@ -51,23 +51,52 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
 
       try {
         // Create the season too.
-        List<SeasonPlayer> players = List<SeasonPlayer>();
+        List<SeasonPlayer> players = [];
         players.add(SeasonPlayer((b) => b
           ..playerUid = event.playerUid
           ..role = RoleInTeam.Player));
+        var entries = Map<String, Map<String, bool>>.fromEntries(
+          [
+            MapEntry<String, Map<String, bool>>(
+              coordinationBloc.authenticationBloc.currentUser.uid,
+              Map<String, bool>.fromEntries(
+                players.map(
+                  (e) => MapEntry(
+                    e.playerUid,
+                    true,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
         Season season = Season((b) => b
+          ..uid = ""
+          ..teamUid = ""
           ..name = event.seasonName
+          ..record = (WinRecordBuilder()
+            ..loss = 0
+            ..tie = 0
+            ..win = 0)
           ..playersData = MapBuilder(Map<String, SeasonPlayer>.fromIterable(
               players,
               key: (p) => p.playerUid,
-              value: (p) => p)));
+              value: (p) => p))
+          ..users = MapBuilder(entries));
 
+        event.team.uid = "";
         String uid = await coordinationBloc.databaseUpdateModel
-            .addFirestoreTeam(event.team.build(), null, season,
-                await event.teamImage.readAsBytes());
+            .addFirestoreTeam(
+                event.team.build(),
+                null,
+                season,
+                event.teamImage == null
+                    ? null
+                    : await event.teamImage.readAsBytes());
 
         yield AddItemDone(uid: uid);
-      } catch (e) {
+      } catch (e, stack) {
+        coordinationBloc.analytics.recordException(e, stack);
         yield AddItemSaveFailed(error: e);
       }
     }

@@ -54,7 +54,8 @@ class AddClubBloc extends Bloc<AddClubEvent, AddItemState> {
               updated.build(), await event.imageFile.readAsBytes());
         }
         yield AddItemDone(uid: uid);
-      } catch (e) {
+      } catch (e, stack) {
+        coordinationBloc.analytics.recordException(e, stack);
         yield AddItemSaveFailed(error: e);
       }
     }

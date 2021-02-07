@@ -68,7 +68,9 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
           await coordinationBloc.databaseUpdateModel.updateFirestoreMessageBody(
               messageUid: mess.uid, body: event.body);
           yield AddItemDone(uid: mess.uid);
-        } catch (e) {
+        } catch (e, stack) {
+          coordinationBloc.analytics.recordException(e, stack);
+
           yield AddItemSaveFailed(error: e);
         }
       }

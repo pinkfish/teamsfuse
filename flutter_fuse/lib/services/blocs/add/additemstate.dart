@@ -75,7 +75,7 @@ class AddItemDone extends AddItemState {
 /// Failed to save the player (this could be an accept or an add).
 ///
 class AddItemSaveFailed extends AddItemState {
-  final Exception error;
+  final dynamic error;
 
   AddItemSaveFailed({@required this.error}) : super();
 

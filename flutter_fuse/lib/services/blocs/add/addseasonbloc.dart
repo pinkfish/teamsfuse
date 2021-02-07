@@ -73,7 +73,9 @@ class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
         Season ret = await coordinationBloc.databaseUpdateModel
             .addFirestoreSeason(season, null);
         yield AddItemDone(uid: ret.uid);
-      } catch (e) {
+      } catch (e, stack) {
+        coordinationBloc.analytics.recordException(e, stack);
+
         yield AddItemSaveFailed(error: e);
       }
     }

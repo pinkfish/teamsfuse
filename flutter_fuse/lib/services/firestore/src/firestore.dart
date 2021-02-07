@@ -13,10 +13,10 @@ class Firestore extends wfs.FirestoreWrapper {
     return CollectionReference(fs.FirebaseFirestore.instance.collection(path));
   }
 
-  /// Gets a [DocumentReference] for the specified Firestore path.
+  /// Gets a [MyDocumentReference] for the specified Firestore path.
   @override
   wfs.DocumentReferenceWrapper document(String path) {
-    return DocumentReference(fs.FirebaseFirestore.instance.doc(path));
+    return MyDocumentReference(fs.FirebaseFirestore.instance.doc(path));
   }
 
   @override

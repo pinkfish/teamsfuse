@@ -7,11 +7,12 @@ part of firestore_mobile;
 /// A [DocumentReference] can also be used to create a [CollectionReference]
 /// to a subcollection.
 @immutable
-class DocumentReference extends wfs.DocumentReferenceWrapper {
+class MyDocumentReference extends wfs.DocumentReferenceWrapper {
   /// Constructor.
-  DocumentReference(this._doc);
+  MyDocumentReference(this._doc);
 
   final fs.DocumentReference _doc;
+
 
   @override
   bool operator ==(dynamic o);
@@ -92,7 +93,7 @@ class _DocumentSnapshotStreamTransformer extends StreamTransformerBase<
         });
   }
 
-  final DocumentReference ref;
+  final MyDocumentReference ref;
   StreamController<wfs.DocumentSnapshotWrapper> _controller;
 
   StreamSubscription<fs.DocumentSnapshot> _subscription;

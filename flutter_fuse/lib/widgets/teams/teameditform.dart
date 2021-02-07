@@ -123,9 +123,13 @@ class TeamEditFormState extends State<TeamEditForm> {
 
   Widget _buildImage() {
     if (!_changedImage) {
-      return TeamImage(
-        teamUid: _builder.uid,
-      );
+      if (_builder.uid == null) {
+        return Icon(Icons.upload_file);
+      } else {
+        return TeamImage(
+          teamUid: _builder.uid,
+        );
+      }
     }
     return Image.file(_imageFile);
   }
@@ -160,6 +164,7 @@ class TeamEditFormState extends State<TeamEditForm> {
           },
           onSaved: (value) {
             _seasonName = value;
+            _builder.currentSeason = value;
           },
         ),
       );
@@ -173,6 +178,7 @@ class TeamEditFormState extends State<TeamEditForm> {
         team: _builder.build(),
         initialValue: _builder.currentSeason,
         onSaved: (value) {
+          print("Saving $value");
           _builder.currentSeason = value;
         },
       );
@@ -213,7 +219,7 @@ class TeamEditFormState extends State<TeamEditForm> {
             hintText: Messages.of(context).sportselect,
             labelText: Messages.of(context).sportselect,
           ),
-          initialValue: _builder.sport,
+          initialValue: _builder.sport ?? Sport.None,
           validator: (value) {
             return _validations.validateSport(context, value);
           },
@@ -227,7 +233,7 @@ class TeamEditFormState extends State<TeamEditForm> {
             hintText: Messages.of(context).genderselect,
             labelText: Messages.of(context).genderselect,
           ),
-          initialValue: _builder.gender,
+          initialValue: _builder.gender ?? Gender.Female,
           onSaved: (value) {
             _builder.gender = value;
           },
@@ -272,7 +278,7 @@ class TeamEditFormState extends State<TeamEditForm> {
           ),
         ),
         SwitchFormField(
-          initialValue: _builder.trackAttendenceInternal,
+          initialValue: _builder.trackAttendenceInternal ?? true,
           icon: MdiIcons.trafficLight,
           enabled:
               widget.club != null ? widget.club.trackAttendence != null : true,
@@ -310,7 +316,7 @@ class TeamEditFormState extends State<TeamEditForm> {
         children: <Widget>[
           Form(
             key: _formKey,
-            autovalidate: false,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: DropdownButtonHideUnderline(
               child: Column(children: fields),
             ),

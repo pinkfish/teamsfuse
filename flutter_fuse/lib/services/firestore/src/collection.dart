@@ -26,7 +26,7 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   /// so that the resulting list will be chronologically-sorted.
   @override
   wfs.DocumentReferenceWrapper document([String path]) {
-    return DocumentReference(_doc.doc(path));
+    return MyDocumentReference(_doc.doc(path));
   }
 
   /// Returns a `DocumentReference` with an auto-generated ID, after
@@ -36,7 +36,7 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   /// so that the resulting list will be chronologically-sorted.
   @override
   Future<wfs.DocumentReferenceWrapper> add(Map<String, dynamic> data) async {
-    return DocumentReference(await _doc.add(data));
+    return MyDocumentReference(await _doc.add(data));
   }
 
   @override

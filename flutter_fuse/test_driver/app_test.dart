@@ -68,6 +68,23 @@ void main() {
       await driver.tap(addTeamButton);
 
       // Now in the add team form.
+      // PLayer paged
+      await driver.tap(find.byValueKey("PLAYER"));
+      await driver.tap(find.text('Rowen Bennett'));
+      expect(await driver.getText(find.text('Rowen Bennett')), isNotNull);
+      await driver.tap(find.byValueKey("CONTINUE"));
+
+      // Team page
+      await driver.tap(find.byTooltip("Name"));
+      await driver.enterText("Woggles");
+      await driver.tap(find.byTooltip("Current team season"));
+      await driver.enterText("Spring 2021");
+      await driver.tap(find.byValueKey("SPORT"));
+      await driver.tap(find.text('Basketball'));
+      expect(await driver.getText(find.text('Basketball')), isNotNull);
+      await driver.tap(find.byValueKey("CONTINUE"));
+
+      // Section details.
       await driver.tap(find.byValueKey("CONTINUE"));
 
       await driver.waitFor(find.byType("TeamAnimatedList"));

@@ -48,7 +48,6 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
   StepState _playerStepState = StepState.editing;
   File _imageFileToAdd;
   String _clubUid;
-  String _seasonNameInternal;
   String _playerUid;
   TeamBuilder _teamToAdd;
   AddTeamBloc _addTeamBloc;
@@ -88,18 +87,20 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         _teamToAdd.clubUid = _clubUid;
       }
       _addTeamBloc.add(AddTeamEventCommit(
-          seasonName: _seasonNameInternal,
-          team: _teamToAdd,
-          playerUid: _playerUid,
-          teamImage: _imageFileToAdd,));
+        seasonName: _teamToAdd.currentSeason,
+        team: _teamToAdd,
+        playerUid: _playerUid,
+        teamImage: _imageFileToAdd,
+      ));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
   }
 
   String _seasonName() {
-    if (_seasonNameInternal != null && _seasonNameInternal.isNotEmpty) {
-      return _seasonNameInternal;
+    print("Frogg ${_teamToAdd.currentSeason}");
+    if (_teamToAdd.currentSeason != null && _teamToAdd.currentSeason.isNotEmpty) {
+      return _teamToAdd.currentSeason;
     }
     return Messages.of(context).noseasons;
   }
@@ -211,9 +212,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
 
   Widget _buildImage() {
     if (_imageFileToAdd == null) {
-      return TeamImage(
-        team: _teamToAdd.build(),
-      );
+      return Icon(Icons.upload_file, size:100);
     }
     return TeamImage(teamImage: _imageFileToAdd);
   }
@@ -226,9 +225,9 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
   }
 
   Widget _buildSummary() {
-    return SingleClubProvider(
-      clubUid: _clubUid,
-      builder: (context, singleClubBloc) => SingleChildScrollView(
+    print(_currentStep);
+    if (_currentStep == 4) {
+      return SingleChildScrollView(
         child: Column(
           children: <Widget>[
             _buildImage(),
@@ -251,26 +250,34 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
               leading: const Icon(Icons.calendar_today),
               title: Text(_seasonName()),
             ),
-            BlocBuilder(
-                cubit: singleClubBloc,
-                builder: (context, clubState) {
-                  ListTile(
-                    leading: const Icon(MdiIcons.group),
-                    title: _clubUid != null && _clubUid != ClubPicker.noClub
-                        ? Text(singleClubBloc.state.club.name)
-                        : Text(Messages.of(context).noclub),
-                    trailing: _clubUid != null && _clubUid != ClubPicker.noClub
-                        ? ClubImage(
-                            clubUid: _clubUid,
-                            width: 20.0,
-                            height: 20.0,
-                          )
-                        : null,
-                  );
-                }),
+            _clubUid == null
+                ? SizedBox(height: 0)
+                : SingleClubProvider(
+                    clubUid: _clubUid,
+                    builder: (context, singleClubBloc) => BlocBuilder(
+                      cubit: singleClubBloc,
+                      builder: (context, clubState) {
+                        ListTile(
+                          leading: const Icon(MdiIcons.group),
+                          title:
+                              _clubUid != null && _clubUid != ClubPicker.noClub
+                                  ? Text(singleClubBloc.state.club.name)
+                                  : Text(Messages.of(context).noclub),
+                          trailing:
+                              _clubUid != null && _clubUid != ClubPicker.noClub
+                                  ? ClubImage(
+                                      clubUid: _clubUid,
+                                      width: 20.0,
+                                      height: 20.0,
+                                    )
+                                  : null,
+                        );
+                      },
+                    ),
+                  ),
             ListTile(
               leading: const Icon(MdiIcons.tshirtCrew),
-              title: Text(_teamToAdd.league),
+              title: Text(_teamToAdd.league.isEmpty ? Messages.of(context).noleagues:_teamToAdd.league),
             ),
             ListTile(
               leading: const Icon(Icons.timer),
@@ -286,8 +293,10 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
             )
           ],
         ),
-      ),
-    );
+      );
+    } else {
+      return SizedBox(height: 0);
+    }
   }
 
   Widget _teamEditForm(StartSection section) {
@@ -316,7 +325,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         _teamToAdd,
         null,
         _formKeyTeam,
-        startSection: StartSection.start,
+        startSection: section,
       );
     }
   }

@@ -117,6 +117,7 @@ class _TournamentOrLeagueTeamPickerState
                             height: 3.0),
                       )
                     : DropdownButton<String>(
+                        key: Key("LEAGUETEAM"),
                         hint: Text(Messages.of(context).teamselect),
                         items: _buildItems(state.teams.values),
                         value: widget.initialTeamUid,

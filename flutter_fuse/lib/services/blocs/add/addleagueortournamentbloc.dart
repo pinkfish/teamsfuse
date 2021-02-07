@@ -47,7 +47,9 @@ class AddLeagueOrTournamentBloc
         String uid = await coordinationBloc.databaseUpdateModel
             .updateLeague(event.leagueOrTournament);
         yield AddItemDone(uid: uid);
-      } catch (e) {
+      } catch (e, stack) {
+        coordinationBloc.analytics.recordException(e, stack);
+
         yield AddItemSaveFailed(error: e);
       }
     }

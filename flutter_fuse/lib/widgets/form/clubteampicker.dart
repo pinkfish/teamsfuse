@@ -126,6 +126,7 @@ class _ClubTeamPickerState extends State<ClubTeamPicker> {
             );
           } else {
             inner = DropdownButton<Team>(
+              key: Key("CLUBTEAM"),
               hint: Text(Messages.of(context).teamselect),
               items: _buildItems(state),
               value: widget.team,

@@ -83,6 +83,7 @@ class TeamPicker extends StatelessWidget {
                       cubit: BlocProvider.of<TeamBloc>(context),
                       builder: (context, state) {
                         return DropdownButton<String>(
+                          key: Key("TEAM"),
                           hint: Text(Messages.of(context).teamselect),
                           items: _buildItems(context, state),
                           value: teamUid,

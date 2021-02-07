@@ -50,7 +50,9 @@ class AddPlayerBloc extends Bloc<AddPlayerEvent, AddItemState> {
         String uid = await coordinationBloc.databaseUpdateModel
             .addFirestorePlayer(updatedPlayer);
         yield AddItemDone(uid: uid);
-      } catch (e) {
+      } catch (e, stack) {
+        coordinationBloc.analytics.recordException(e, stack);
+
         yield AddItemSaveFailed(error: e);
       }
     }

@@ -41,7 +41,9 @@ class AddSharedGameBloc extends Bloc<AddSharedGameEvent, AddItemState> {
         String uid = await coordinationBloc.databaseUpdateModel
             .updateFirestoreSharedGame(event.newSharedData);
         yield AddItemDone(uid: uid);
-      } catch (e) {
+      } catch (e, stack) {
+        coordinationBloc.analytics.recordException(e, stack);
+
         yield AddItemSaveFailed(error: e);
       }
     }

@@ -77,6 +77,7 @@ class ClubPicker extends StatelessWidget {
                   cubit: BlocProvider.of<ClubBloc>(context),
                   builder: (context, state) {
                     return DropdownButton<String>(
+                      key: Key("CLUB"),
                       hint: Text(Messages.of(context).selectclub),
                       items: _buildItems(context, state),
                       value: clubUid,

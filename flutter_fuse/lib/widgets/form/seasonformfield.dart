@@ -26,7 +26,7 @@ class SeasonFormField extends FormField<String> {
   })  : assert(initialValue != null),
         assert(teamBloc != null || team != null),
         super(
-          key: key,
+          key: key ?? Key("SPORT"),
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,
