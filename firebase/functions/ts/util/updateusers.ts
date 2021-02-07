@@ -18,6 +18,9 @@ export async function updateUsersAndPlayers(
     const retUser: Record<string, any> = {};
     const retPlayer: Record<string, any> = {};
     const playerSet: Set<string> = new Set<string>();
+    console.log(players);
+    console.log('do it');
+    console.log(users);
 
     // Go through the users and make sure there is still a a player for each one.
     for (const idx in users) {
