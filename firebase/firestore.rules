@@ -124,7 +124,8 @@ service cloud.firestore {
       allow write: if isSignedIn();
       allow list: if isSignedIn();
       allow create: if isSignedIn() &&
-         get(/databases/$(database)/documents/Team/$(incomingData().teamUid)).data.admin[request.auth.uid];
+         get(/databases/$(database)/documents/Team/$(incomingData().teamUid)).data.admin[request.auth.uid] &&
+         'players' in incomingData() && incomingData().players.size() > 1;
     }
 
     match /Teams/{team} {
