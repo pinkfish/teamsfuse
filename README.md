@@ -1,12 +1,18 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+TeamsFuse is a an app to help organize teams.  To gets this to work for your
+club or team, see the documentiona on how to setup firebase.
 
 ### What is this repository for? ###
 
 * Quick summary
+
+A flutter app for organzing teams.  Rbility to make a custom app for your
+team.
+
 * Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+
+Yay version.
 
 ### How do I get set up? ###
 
@@ -20,10 +26,7 @@ This README would normally document whatever steps are necessary to get your app
 ### Contribution guidelines ###
 
 * Writing tests
+Write tests.
+
 * Code review
 * Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
