@@ -9,7 +9,7 @@ import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Flutter fuse app', () async {
+  group('Flutter fuse app', () {
     final forgotButton = find.byValueKey("FORGOTPASSWORD");
     final createAccountButton = find.byValueKey("CREATEACCOUNT");
     final loginButton = find.byValueKey("LOGIN");
