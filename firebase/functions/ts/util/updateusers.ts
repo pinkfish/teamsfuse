@@ -4,18 +4,24 @@ const FieldValue = admin.firestore.FieldValue;
 
 const db = admin.firestore();
 
+interface UsersAndPlayers {
+    users: Record<string, any>;
+    players: Record<string, any>;
+}
+
 // Updates the usersAndPlayers with exciting data when created or updated.
 export async function updateUsersAndPlayers(
     players: Record<string, any>,
-    data: Record<string, any>,
+    users: Record<string, any>,
     force: boolean,
-): Promise<Record<string, any>> {
-    const ret: Record<string, any> = {};
+): Promise<UsersAndPlayers> {
+    const retUser: Record<string, any> = {};
+    const retPlayer: Record<string, any> = {};
     const playerSet: Set<string> = new Set<string>();
 
     // Go through the users and make sure there is still a a player for each one.
-    for (const idx in data) {
-        const user = data[idx];
+    for (const idx in users) {
+        const user = users[idx];
         let found = false;
         for (const player in user) {
             if (player !== 'added') {
@@ -24,7 +30,7 @@ export async function updateUsersAndPlayers(
             }
         }
         if (!found) {
-            ret[user] = FieldValue.delete();
+            retUser[user] = FieldValue.delete();
         }
     }
 
@@ -36,15 +42,15 @@ export async function updateUsersAndPlayers(
             const playerDataInner = playerData.data();
             if (playerDataInner !== null && playerDataInner !== undefined) {
                 for (const newIdx in playerDataInner.user) {
-                    ret[newIdx] = {
+                    retUser[newIdx] = {
                         added: true,
                     };
-                    ret[newIdx][idx] = true;
+                    retUser[newIdx][idx] = true;
                 }
             }
         }
     }
-    return ret;
+    return { users: retUser, players: retPlayer };
 }
 
 export function updateUsers(data: Record<string, any>): Record<string, any> {

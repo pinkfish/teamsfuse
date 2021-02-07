@@ -223,7 +223,7 @@ describe('Seasons Tests', () => {
         });
 
         try {
-            await test.wrap(onSeasonUpdate)(await admin.firestore().collection('Seasons').doc(seasonDocId).get(), {
+            await test.wrap(onSeasonCreate)(await admin.firestore().collection('Seasons').doc(seasonDocId).get(), {
                 auth: {
                     uid: 'me',
                 },
@@ -306,24 +306,15 @@ describe('Seasons Tests', () => {
             isPublic: true,
             players: playerStuff,
         });
-        const oldSeason = {
-            name: 'Old Season',
-            uid: seasonDocId,
-            teamUid: teamDocId,
-            isPublic: true,
-            players: {},
-        };
 
         try {
-            await test.wrap(onSeasonUpdate)(
-                test.makeChange(oldSeason, await admin.firestore().collection('Seasons').doc(seasonDocId).get()),
-                {
-                    auth: {
-                        uid: 'me',
-                    },
-                    authType: 'USER',
+            const newSeason = await admin.firestore().collection('Seasons').doc(seasonDocId).get();
+            await test.wrap(onSeasonUpdate)(test.makeChange(newSeason, newSeason), {
+                auth: {
+                    uid: 'me',
                 },
-            );
+                authType: 'USER',
+            });
             const data = await admin.firestore().collection('Seasons').doc(seasonDocId).get();
             expect(data).to.not.be.null;
             if (data !== null && data !== undefined) {
