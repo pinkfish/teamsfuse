@@ -83,7 +83,10 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
 
   @override
   bool validate() {
-    return _formState.currentState.validate();
+    if (_formState.currentState != null) {
+      return _formState.currentState.validate();
+    }
+    return false;
   }
 
   @override
@@ -124,7 +127,9 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
         controller: _scrollController,
         child: Form(
           key: _formState,
-          autovalidate: autoValidate,
+          autovalidateMode: autoValidate
+              ? AutovalidateMode.always
+              : AutovalidateMode.disabled,
           child: DropdownButtonHideUnderline(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

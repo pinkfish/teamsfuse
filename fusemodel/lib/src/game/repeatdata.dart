@@ -37,6 +37,7 @@ abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
 
   factory RepeatData([updates(RepeatDataBuilder b)]) => _$RepeatData((b) => b
     ..period = RepeatPeriod.None
+    ..endRepeat = DateTime.now()
     ..dayRepeats =
         ListBuilder([false, false, false, false, false, false, false])
     ..repeatUntil = false

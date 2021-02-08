@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:timezone/timezone.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/games/eventeditform.dart';
 import '../../widgets/teams/teamselection.dart';
@@ -56,66 +57,77 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   Widget _buildRepeatSummary() {
     print("${_eventFormKey.currentState}");
-    var myGame = _initGame;
-    String timeStr;
-    print("game -- ${myGame.sharedData.time} ${myGame.sharedData.endTime}");
-    if (myGame.sharedData.time != myGame.sharedData.endTime) {
-      var start = MaterialLocalizations.of(context)
-          .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
-      var end = MaterialLocalizations.of(context)
-          .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
-      timeStr = "$start - $end";
+    if (_initGame != null) {
+      var myGame = _initGame;
+      String timeStr;
+      print("game -- ${myGame.sharedData.time} ${myGame.sharedData.endTime}");
+      if (myGame.sharedData.time != myGame.sharedData.endTime) {
+        var start = MaterialLocalizations.of(context)
+            .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
+        var end = MaterialLocalizations.of(context)
+            .formatTimeOfDay(
+            TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
+        timeStr = "$start - $end";
+      } else {
+        timeStr = MaterialLocalizations.of(context)
+            .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
+      }
+      var cols = <Widget>[
+        RaisedButton(
+          child: Text(Messages
+              .of(context)
+              .createNew),
+          color: Theme
+              .of(context)
+              .accentColor,
+          textColor: Colors.white,
+          onPressed: () => _onStepperContinue(context),
+        ),
+        ListTile(
+          leading: Icon(Icons.calendar_today),
+          title: Text(MaterialLocalizations.of(context)
+              .formatFullDate(myGame.sharedData.tzTime)),
+          subtitle: Text(timeStr),
+        ),
+        ListTile(
+          leading: Icon(Icons.place),
+          title:
+          Text(myGame.sharedData.place.name ?? Messages
+              .of(context)
+              .unknown),
+          subtitle: Text(myGame.sharedData.place.address ?? ""),
+        ),
+      ];
+
+      if (myGame.notes.isNotEmpty) {
+        cols.add(
+          ListTile(
+            leading: Icon(Icons.note),
+            title: Text(myGame.notes),
+          ),
+        );
+      }
+      if (myGame.uniform.isNotEmpty) {
+        cols.add(
+          ListTile(
+            leading: Icon(MdiIcons.tshirtCrew),
+            title: Text(myGame.uniform),
+          ),
+        );
+      }
+
+      return Scrollbar(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: cols,
+          ),
+        ),
+      );
     } else {
-      timeStr = MaterialLocalizations.of(context)
-          .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
+      return SizedBox(height:0, width:0);
     }
-    var cols = <Widget>[
-      RaisedButton(
-        child: Text(Messages.of(context).createNew),
-        color: Theme.of(context).accentColor,
-        textColor: Colors.white,
-        onPressed: () => _onStepperContinue(context),
-      ),
-      ListTile(
-        leading: Icon(Icons.calendar_today),
-        title: Text(MaterialLocalizations.of(context)
-            .formatFullDate(myGame.sharedData.tzTime)),
-        subtitle: Text(timeStr),
-      ),
-      ListTile(
-        leading: Icon(Icons.place),
-        title:
-            Text(myGame.sharedData.place.name ?? Messages.of(context).unknown),
-        subtitle: Text(myGame.sharedData.place.address ?? ""),
-      ),
-    ];
-
-    if (myGame.notes.isNotEmpty) {
-      cols.add(
-        ListTile(
-          leading: Icon(Icons.note),
-          title: Text(myGame.notes),
-        ),
-      );
-    }
-    if (myGame.uniform.isNotEmpty) {
-      cols.add(
-        ListTile(
-          leading: Icon(MdiIcons.tshirtCrew),
-          title: Text(myGame.uniform),
-        ),
-      );
-    }
-
-    return Scrollbar(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: cols,
-        ),
-      ),
-    );
   }
 
   bool _leaveCurrentState(bool backwards) {
@@ -176,25 +188,52 @@ class _AddEventScreenState extends State<AddEventScreen> {
   }
 
   void newGame() {
-    var sharedGameData = GameSharedDataBuilder()
-      ..type = EventType.Event
-      ..officialResult.homeTeamLeagueUid = _team.uid;
-    _initGame = Game((b) => b
-      ..teamUid = _team.uid
-      ..sharedData = sharedGameData
-      ..uniform = ""
-      ..notes = "");
+    if (_team != null) {
+      var start = DateTime.now().add(const Duration(days: 1));
+
+      var sharedGameData = GameSharedData((b) => b
+        ..uid = ""
+        ..type = EventType.Event
+        ..time = start
+        ..endTime = start.add(const Duration(hours: 1))
+        ..timezone = local.name
+        ..officialResult.homeTeamLeagueUid = _team.uid);
+
+      var result = GameResultDetailsBuilder()
+        ..result = GameResult.Unknown
+        ..inProgress = GameInProgress.NotStarted;
+
+      _initGame = Game((b) => b
+        ..teamUid = _team.uid
+        ..sharedDataUid = ""
+        ..sharedData = sharedGameData.toBuilder()
+        ..uniform = ""
+        ..uid = ""
+        ..teamUid = _team.uid
+        ..seasonUid = _team.currentSeason
+        ..trackAttendance = _team.trackAttendenceInternal
+        ..arrivalTime =
+            start.subtract(Duration(minutes: _team.arriveEarlyInternal.toInt()))
+        ..result = result
+        ..notes = '');
+    }
   }
 
   void _teamChanged(Team team) {
+    _team = team;
     var start = DateTime.now().add(const Duration(days: 0));
-    _initGame = _initGame.rebuild((b) => b
-      ..teamUid = _team.uid
-      ..seasonUid = _team.currentSeason
-      ..trackAttendance = _team.trackAttendenceInternal
-      ..sharedData.time = start.toUtc()
-      ..sharedData.endTime = start.toUtc());
-    print('team changed ${_initGame.toMap()}');
+    if (_initGame == null) {
+      newGame();
+    }
+
+    setState(() {
+      _initGame = _initGame.rebuild((b) => b
+        ..teamUid = team.uid
+        ..sharedData.time = start.toUtc()
+        ..sharedData.endTime = _initGame.sharedData.time
+        ..seasonUid = team.currentSeason
+        ..trackAttendance = team.trackAttendenceInternal);
+    });
   }
 
   @override

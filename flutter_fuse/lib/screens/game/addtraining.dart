@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/games/repeatdetails.dart';
 import '../../widgets/games/trainingeditform.dart';
@@ -37,14 +37,17 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
   StepState createStepStage = StepState.disabled;
   Team _team;
   Game _initGame;
-  RepeatData _repeatData = RepeatData();
+  RepeatData _repeatData = RepeatData((b) => b
+    ..repeatInterval = 1
+    ..repeatUntil = true
+    ..endRepeat = DateTime.now()
+    ..period = RepeatPeriod.None);
   int currentStep = 0;
   List<TZDateTime> _repeatDates;
   AddTrainingBloc addTrainingBloc;
 
   @override
   void initState() {
-    newGame();
     super.initState();
     addTrainingBloc = AddTrainingBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
@@ -55,18 +58,27 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   Widget _buildForm(BuildContext context) {
-    return TrainingEditForm(
-      game: _initGame,
-      key: _trainingFormKey,
-    );
+    print("Building form $_initGame");
+    if (_initGame != null) {
+      return TrainingEditForm(
+        game: _initGame,
+        key: _trainingFormKey,
+      );
+    } else {
+      return SizedBox(height: 0, width: 0);
+    }
   }
 
   Widget _buildRepeat(BuildContext context) {
-    return RepeatDetailsWidget(
-      _initGame.sharedData.tzTime,
-      _repeatData,
-      key: _repeatKey,
-    );
+    if (_initGame != null) {
+      return RepeatDetailsWidget(
+        _initGame.sharedData.tzTime,
+        _repeatData,
+        key: _repeatKey,
+      );
+    } else {
+      return SizedBox(height: 0, width: 0);
+    }
   }
 
   Future<bool> _saveTraining() async {
@@ -248,29 +260,54 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   void newGame() {
-    var sharedGameData = GameSharedData((b) => b
-      ..type = EventType.Practice
-      ..officialResult.homeTeamLeagueUid = _team.uid);
-    _initGame = Game((b) => b
-      ..teamUid = _team.uid
-      ..sharedData = sharedGameData.toBuilder()
-      ..uniform = ""
-      ..notes = '');
+    if (_team != null) {
+      var start = DateTime.now().add(const Duration(days: 1));
+
+      var sharedGameData = GameSharedData((b) => b
+        ..uid = ""
+        ..type = EventType.Practice
+        ..time = start
+        ..endTime = start.add(const Duration(hours: 1))
+        ..timezone = local.name
+        ..officialResult.homeTeamLeagueUid = _team.uid);
+
+      var result = GameResultDetailsBuilder()
+        ..result = GameResult.Unknown
+        ..inProgress = GameInProgress.NotStarted;
+
+      _initGame = Game((b) => b
+        ..teamUid = _team.uid
+        ..sharedDataUid = ""
+        ..sharedData = sharedGameData.toBuilder()
+        ..uniform = ""
+        ..uid = ""
+        ..teamUid = _team.uid
+        ..seasonUid = _team.currentSeason
+        ..trackAttendance = _team.trackAttendenceInternal
+        ..arrivalTime =
+        start.subtract(Duration(minutes: _team.arriveEarlyInternal.toInt()))
+
+        ..result = result
+        ..notes = '');
+    }
   }
 
   void _teamChanged(Team team) {
+    _team = team;
     var start = DateTime.now().add(const Duration(days: 0));
-    _initGame = _initGame.rebuild((b) => b
-      ..teamUid = team.uid
-      ..sharedData.time = start.toUtc()
-      ..sharedData.endTime = _initGame.sharedData.time
-      ..seasonUid = team.currentSeason
-      ..trackAttendance = team.trackAttendenceInternal);
+    if (_initGame == null) {
+      newGame();
+    }
 
-    print('team changed ${_initGame.toMap()}');
     setState(() {
-      _team = team;
+      _initGame = _initGame.rebuild((b) => b
+        ..teamUid = team.uid
+        ..sharedData.time = start.toUtc()
+        ..sharedData.endTime = _initGame.sharedData.time
+        ..seasonUid = team.currentSeason
+        ..trackAttendance = team.trackAttendenceInternal);
     });
+    print("Happy _initGame");
   }
 
   @override
