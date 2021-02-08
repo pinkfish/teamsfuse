@@ -59,9 +59,23 @@ class _AddGameScreenState extends State<AddGameScreen> {
 
   Widget _buildSummary(BuildContext context) {
     print("Build summary");
-    return GameDetailsBase(
-      game: _initGame,
-      adding: true,
+    return Column(
+      children: [
+        GameDetailsBase(
+          game: _initGame,
+          adding: true,
+        ),
+        ButtonBar(
+          children: [
+            TextButton.icon(
+              icon: Icon(Icons.save),
+              label: Text(Messages.of(context).saveButtonText),
+              onPressed: () =>
+                  addGameBloc.add(AddGameEventCommit(newGame: _initGame)),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

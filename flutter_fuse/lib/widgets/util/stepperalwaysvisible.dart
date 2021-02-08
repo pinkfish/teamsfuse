@@ -49,6 +49,7 @@ class StepperAlwaysVisible extends StatefulWidget {
     this.onStepTapped,
     this.onStepContinue,
     this.onStepCancel,
+    this.controlsBuilder,
   })  : assert(steps != null),
         assert(type != null),
         assert(currentStep != null),
@@ -82,6 +83,9 @@ class StepperAlwaysVisible extends StatefulWidget {
   ///
   /// If null, the 'cancel' button will be disabled.
   final VoidCallback onStepCancel;
+
+  /// Builds the controls for the widget.
+  final ControlsWidgetBuilder controlsBuilder;
 
   @override
   _StepperAlwaysVisibleState createState() => _StepperAlwaysVisibleState();
@@ -256,6 +260,12 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
   }
 
   Widget _buildVerticalControls() {
+    if (widget.controlsBuilder != null) {
+      return widget.controlsBuilder!(
+          context, onStepContinue: widget.onStepContinue,
+          onStepCancel: widget.onStepCancel);
+    }
+
     Color cancelColor;
 
     switch (Theme.of(context).brightness) {
@@ -271,6 +281,10 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
 
     var themeData = Theme.of(context);
     var localizations = MaterialLocalizations.of(context);
+    final ColorScheme colorScheme = themeData.colorScheme;
+    const OutlinedBorder buttonShape = RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(2)));
+    const EdgeInsets buttonPadding = EdgeInsets.symmetric(horizontal: 16.0);
 
     return Container(
       margin: const EdgeInsets.only(top: 16.0),
@@ -278,24 +292,41 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
         constraints: const BoxConstraints.tightFor(height: 48.0),
         child: Row(
           children: <Widget>[
-            FlatButton(
+            TextButton(
               onPressed: widget.onStepContinue,
-              color: _isDark()
-                  ? themeData.backgroundColor
-                  : themeData.primaryColor,
-              textColor: Colors.white,
-              textTheme: ButtonTextTheme.normal,
+              style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                  return states.contains(MaterialState.disabled)
+                      ? null
+                      : (_isDark()
+                          ? colorScheme.onSurface
+                          : colorScheme.onPrimary);
+                }),
+                backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                  return _isDark() || states.contains(MaterialState.disabled)
+                      ? null
+                      : colorScheme.primary;
+                }),
+                padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                    buttonPadding),
+                shape: MaterialStateProperty.all<OutlinedBorder>(buttonShape),
+              ),
               child: Text(localizations.continueButtonLabel),
-              key: Key("BACK"),
+              key: Key("CONTINUE"),
             ),
             Container(
               margin: const EdgeInsetsDirectional.only(start: 8.0),
-              child: FlatButton(
+              child: TextButton(
                 onPressed: widget.onStepCancel,
-                textColor: cancelColor,
-                textTheme: ButtonTextTheme.normal,
+                style: TextButton.styleFrom(
+                  primary: cancelColor,
+                  padding: buttonPadding,
+                  shape: buttonShape,
+                ),
                 child: Text(localizations.cancelButtonLabel),
-                key: Key("CONTINUE"),
+                key: Key("BACK"),
               ),
             ),
           ],
