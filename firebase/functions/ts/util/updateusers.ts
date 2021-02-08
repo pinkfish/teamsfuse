@@ -46,8 +46,14 @@ export async function updateUsersAndPlayers(
             console.log(playerDataInner);
             if (playerDataInner !== null && playerDataInner !== undefined) {
                 for (const newIdx in playerDataInner.user) {
-                    retUser[newIdx + '.added'] = true;
-                    retUser[newIdx + '.' + idx] = true;
+                    if (!(newIdx in retUser)) {
+                    if (users !== null && users !== undefined && newIdx in users) {
+                      retUser[newIdx] =users[newIdx];
+                    } else {
+                      retUser[newIdx] = { added: true };
+                    }
+                    }
+                    retUser[newIdx][idx] = true;
                 }
             }
         }
