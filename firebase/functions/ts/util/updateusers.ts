@@ -47,11 +47,11 @@ export async function updateUsersAndPlayers(
             if (playerDataInner !== null && playerDataInner !== undefined) {
                 for (const newIdx in playerDataInner.user) {
                     if (!(newIdx in retUser)) {
-                    if (users !== null && users !== undefined && newIdx in users) {
-                      retUser[newIdx] =users[newIdx];
-                    } else {
-                      retUser[newIdx] = { added: true };
-                    }
+                        if (users !== null && users !== undefined && newIdx in users) {
+                            retUser[newIdx] = users[newIdx];
+                        } else {
+                            retUser[newIdx] = { added: true };
+                        }
                     }
                     retUser[newIdx][idx] = true;
                 }

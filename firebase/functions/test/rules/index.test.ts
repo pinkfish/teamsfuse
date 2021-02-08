@@ -244,12 +244,6 @@ describe('TeamsFuse rules', function () {
                 }),
         );
         await firebase.assertSucceeds(
-            db.collection('GamesShared').doc('sharedGame').set({
-                seasonUid: 'season',
-                uid: 'sharedGame',
-            }),
-        );
-        await firebase.assertSucceeds(
             db
                 .collection('Teams')
                 .doc('team')
@@ -259,11 +253,22 @@ describe('TeamsFuse rules', function () {
                     admins: ['alice'],
                 }),
         );
+
+        const gameRef = db.collection('Games').doc('game');
+        const sharedGameRef = db.collection('GamesShared').doc('sharedGame');
         await firebase.assertSucceeds(
-            db.collection('Games').doc('game').set({
-                seasonUid: 'season',
-                sharedDataUid: 'sharedGame',
-                teamUid: 'team',
+            db.runTransaction(async (t) => {
+                await t.set(sharedGameRef, {
+                    seasonUid: 'season',
+                    uid: 'sharedGame',
+                });
+
+                await t.set(gameRef, {
+                    seasonUid: 'season',
+                    sharedDataUid: 'sharedGame',
+                    teamUid: 'team',
+                });
+                return;
             }),
         );
         await firebase.assertSucceeds(db.collection('Games').doc('game').get());
