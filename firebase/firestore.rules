@@ -58,7 +58,8 @@ service cloud.firestore {
       // Only allow a create if the shared data exists and the team exists.
       allow create: if isSignedIn() &&
           existsAfter(/databases/$(database)/documents/GamesShared/$(incomingData().sharedDataUid)) &&
-          exists(/databases/$(database)/documents/Teams/$(incomingData().teamUid));
+          exists(/databases/$(database)/documents/Teams/$(incomingData().teamUid)) &&
+          exists(/databases/$(database)/documents/Seasons/$(incomingData().seasonUid));
     }
 
     match /GamesShared/{sharedGame} {

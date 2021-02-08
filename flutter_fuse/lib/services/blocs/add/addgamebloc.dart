@@ -42,8 +42,9 @@ class AddGameBloc extends Bloc<AddGameEvent, AddItemState> {
         Game updatedGame = event.newGame;
         Game g = await coordinationBloc.databaseUpdateModel
             .updateFirestoreGame(updatedGame, true);
+        print(g);
         yield AddItemDone(uid: g.uid);
-      } catch (e,  stack) {
+      } catch (e, stack) {
         coordinationBloc.analytics.recordException(e, stack);
         yield AddItemSaveFailed(error: e);
       }

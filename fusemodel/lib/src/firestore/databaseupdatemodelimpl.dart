@@ -48,7 +48,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           wrapper.collection(GAMES_COLLECTION).document();
       DocumentReferenceWrapper refShared =
           wrapper.collection(GAMES_SHARED_COLLECTION).document();
-      await wrapper.runTransaction((TransactionWrapper tx) async {
+      var data = await wrapper.runTransaction((TransactionWrapper tx) async {
         GameBuilder gameBuilder = game.toBuilder();
         // Add the shared stuff, then the game.
         if (game.sharedData.officialResult.homeTeamLeagueUid == null) {
@@ -64,6 +64,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         tx.set(ref, gameBuilder.build().toMap());
         return gameBuilder.build().toMap();
       });
+      return Game.fromMap(data);
     } else {
       if (sharedData) {
         if (game.sharedDataUid.isEmpty) {
