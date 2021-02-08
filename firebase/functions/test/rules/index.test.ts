@@ -228,9 +228,9 @@ describe('TeamsFuse rules', function () {
     it('get game requires season user', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
         await db
-                    .collection('Teams')
-                    .doc('team')
-                    .set({ admins: { alice: true  }, isPublic: true, });
+            .collection('Teams')
+            .doc('team')
+            .set({ admins: { alice: true }, isPublic: true });
         await firebase.assertSucceeds(
             db
                 .collection('Seasons')

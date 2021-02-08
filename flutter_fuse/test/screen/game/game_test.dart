@@ -42,7 +42,7 @@ void main() {
         child: GameDetailsScreen("123"),
       ),
     );
-  
+
     await tester.pumpWidget(
       testWidget,
     );
@@ -82,7 +82,6 @@ void main() {
     await tester.pump(Duration(milliseconds: 600));
 
     verify(mockObserver.didPop(any, any));
-
 
     gameController.close();
   });
