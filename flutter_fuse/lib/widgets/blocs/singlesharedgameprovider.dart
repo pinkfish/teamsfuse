@@ -26,6 +26,11 @@ class SingleSharedGameProvider
             builder: builder,
             prefix: "shared");
 
+  bool isBlocEqual(Bloc bloc) {
+    return (bloc is SingleSharedGameBloc && bloc.sharedGameUid == keyUid);
+  }
+
+
   static SingleSharedGameBloc _createBloc(BuildContext context, String uid) {
     return SingleSharedGameBloc(
       gameBloc: BlocProvider.of<GameBloc>(context),

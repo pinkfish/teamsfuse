@@ -25,6 +25,10 @@ class SingleGameProvider extends SingleBlocProvider<SingleGameBloc> {
             builder: builder,
             prefix: "game");
 
+  bool isBlocEqual(Bloc bloc) {
+    return (bloc is SingleGameBloc && bloc.gameUid == keyUid);
+  }
+
   static SingleGameBloc _createBloc(BuildContext context, String uid) {
     return SingleGameBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),

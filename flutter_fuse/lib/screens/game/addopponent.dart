@@ -38,6 +38,7 @@ class _AddOpponentState extends State<AddOpponent> {
 
   void _savePressed(BuildContext context, SingleTeamBloc singleTeamBloc) async {
     _formKey.currentState.save();
+    _opponent.uid = "";
     singleTeamBloc.add(SingleTeamAddOpponent(opponent: _opponent.build()));
   }
 
@@ -50,7 +51,7 @@ class _AddOpponentState extends State<AddOpponent> {
         appBar: AppBar(
           title: Text(Messages.of(context).addopponent),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               onPressed: () {
                 _savePressed(context, bloc);
               },
@@ -64,11 +65,14 @@ class _AddOpponentState extends State<AddOpponent> {
             ),
           ],
         ),
-        body: BlocListener(
+        body: BlocConsumer(
           cubit: bloc,
-          listener: (context, state) {},
-          child: BlocBuilder(
-            cubit: bloc,
+          listener: (context, state) {
+            if (state is SingleTeamSaveDone) {
+              Navigator.pop(context, state.savedUid);
+            }
+          },
+
             builder: (context, state) => SavingOverlay(
               saving: state is SingleTeamSaving,
               child: Container(
@@ -110,7 +114,7 @@ class _AddOpponentState extends State<AddOpponent> {
                     ],
                   ),
                 ),
-              ),
+
             ),
           ),
         ),

@@ -101,7 +101,7 @@ abstract class GameResultDetails
   GameInProgress get inProgress;
 
   GamePeriod get currentPeriod; // Null until the game started.
-  GameDivisionsType get divisions; // = GameDivisionsType.Halves;
+  GameDivisionsType get divisons; // = GameDivisionsType.Halves;
   GamePeriodTime get time;
 
   @memoized
@@ -122,8 +122,10 @@ abstract class GameResultDetails
       _$GameResultDetails;
 
   /// Defaults for the state.  Always default to no games loaded.
-  static void _initializeBuilder(GameResultDetailsBuilder b) =>
-      b..currentPeriod = GamePeriod.regulation1.toBuilder();
+  static void _initializeBuilder(GameResultDetailsBuilder b) => b
+    ..currentPeriod = GamePeriod.regulation1.toBuilder()
+    ..inProgress = GameInProgress.NotStarted
+  ..divisons = GameDivisionsType.Quarters;
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(GameResultDetails.serializer, this);

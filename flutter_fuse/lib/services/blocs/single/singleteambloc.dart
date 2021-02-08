@@ -229,6 +229,7 @@ class SingleTeamBloc
   SingleTeamBloc(
       {@required this.db, @required this.teamUid, @required this.crashes})
       : super(SingleTeamUninitialized(), "TeamState.$teamUid") {
+    print("Building bloc $teamUid");
     _teamSub = db.getTeamDetails(teamUid: teamUid).listen((team) {
       if (team != null) {
         add(
@@ -437,9 +438,9 @@ class SingleTeamBloc
 
     if (event is SingleTeamAddOpponent) {
       try {
-        await db.addFirestoreOpponent(
+        Opponent op = await db.addFirestoreOpponent(
             event.opponent.rebuild((b) => b..teamUid = teamUid));
-        yield SingleTeamSaveDone.fromState(state).build();
+        yield (SingleTeamSaveDone.fromState(state)..savedUid = op.uid).build();
         yield SingleTeamLoaded.fromState(state).build();
       } catch (e, stack) {
         yield (SingleTeamSaveFailed.fromState(state)

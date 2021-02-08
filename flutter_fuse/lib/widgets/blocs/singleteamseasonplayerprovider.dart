@@ -28,6 +28,11 @@ class SingleTeamSeasonPlayerProvider
                 _createBloc(context, playerUid, seasonUid),
             builder: builder);
 
+  bool isBlocEqual(Bloc bloc) {
+    return (bloc is SingleTeamSeasonPlayerBloc && bloc.playerUid == keyUid);
+  }
+
+
   static SingleTeamSeasonPlayerBloc _createBloc(
       BuildContext context, String playerUid, String seasonUid) {
     return SingleTeamSeasonPlayerBloc(

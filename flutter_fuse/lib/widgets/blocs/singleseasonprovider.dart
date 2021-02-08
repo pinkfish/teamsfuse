@@ -24,6 +24,11 @@ class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
             builder: builder,
             prefix: "season");
 
+  bool isBlocEqual(Bloc bloc) {
+    return (bloc is SingleSeasonBloc && bloc.seasonUid == keyUid);
+  }
+
+
   static SingleSeasonBloc _createBloc(BuildContext context, String uid) {
     assert(uid != null && uid.isNotEmpty);
     return SingleSeasonBloc(

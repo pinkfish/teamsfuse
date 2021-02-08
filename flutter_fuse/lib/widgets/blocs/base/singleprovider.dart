@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// Create a provider that will insert the single generic bloc into the tree if the
 /// bloc is not current provided.
 ///
-class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
+abstract class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
     extends StatefulWidget {
   /// Constructor for the single bloc provider.
   SingleBlocProvider(
@@ -23,6 +23,8 @@ class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
 
   /// Prefix to the uid so they don't get mixed up between namespaces;
   final String prefix;
+
+  bool isBlocEqual(Bloc bloc);
 
   @override
   State createState() => _SingleBlocProviderState<T>();
@@ -43,7 +45,12 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
 
   @override
   void initState() {
+    print("initState");
     super.initState();
+    _updateSingleBloc();
+  }
+
+  void _updateSingleBloc() {
     var totalKey = (widget.prefix ?? "") + widget.keyUid;
     if (!blocs.containsKey(totalKey) || blocs[totalKey] == null) {
       try {
@@ -52,7 +59,7 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
         _singleBloc = null;
       }
 
-      if (_singleBloc == null) {
+      if (_singleBloc == null || !widget.isBlocEqual(_singleBloc)) {
         _singleBloc = widget.creator(context, widget.keyUid);
         blocs[totalKey] = _BlocProviderState<T>(_singleBloc);
         _newBloc = true;
@@ -80,6 +87,11 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
 
   @override
   Widget build(BuildContext context) {
+    print("build");
+    // If the teamUid has changed, flip stuff.
+    if (!widget.isBlocEqual(_singleBloc)) {
+      _updateSingleBloc();
+    }
     if (_newBloc) {
       return BlocProvider.value(
         value: _singleBloc,

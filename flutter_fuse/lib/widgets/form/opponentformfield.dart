@@ -33,24 +33,32 @@ class OpponentFormField extends FormField<String> {
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
             return BlocBuilder(
               cubit: teamBloc,
-              builder: (context, singleTeamState) => InputDecorator(
-                decoration: effectiveDecoration.copyWith(
-                  errorText: field.errorText,
-                ),
-                child: DropdownButton<String>(
-                  hint: Text(Messages.of(state.context).opponentselect,
-                      overflow: TextOverflow.clip),
-                  items: state._buildItems(context, singleTeamState),
-                  value: state.value,
-                  onChanged: (val) {
-                    state.updateValue(val);
-                    field.didChange(val);
-                    if (onFieldSubmitted != null) {
-                      onFieldSubmitted(val);
-                    }
-                  },
-                ),
-              ),
+              builder: (context, singleTeamState) {
+                if (singleTeamState is SingleTeamLoaded && !singleTeamState.loadedOpponents) {
+                  teamBloc.add(SingleTeamLoadOpponents());
+                }
+                return InputDecorator(
+                  decoration: effectiveDecoration.copyWith(
+                    errorText: field.errorText,
+                  ),
+                  child: DropdownButton<String>(
+                    hint: Text(Messages
+                        .of(state.context)
+                        .opponentselect,
+                        overflow: TextOverflow.clip),
+                    items: state._buildItems(context, singleTeamState),
+                    value: state.value.isEmpty ? OpponentFormField.none : state
+                        .value,
+                    onChanged: (val) {
+                      state.updateValue(val);
+                      field.didChange(val);
+                      if (onFieldSubmitted != null) {
+                        onFieldSubmitted(val);
+                      }
+                    },
+                  ),
+                );
+              }
             );
           },
         );
@@ -92,7 +100,7 @@ class OpponentFormFieldState extends FormFieldState<String> {
           value: OpponentFormField.add),
     );
 
-    var uids = state.opponents.keys.toList();
+    var uids = state.opponents.keys.toSet().toList();
     uids.sort((v1, v2) =>
         state.opponents[v1].name.compareTo(state.opponents[v2].name));
     for (var opponentUid in uids) {

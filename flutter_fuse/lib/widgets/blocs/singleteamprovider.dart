@@ -24,6 +24,10 @@ class SingleTeamProvider extends SingleBlocProvider<SingleTeamBloc> {
             builder: builder,
             prefix: "team");
 
+  bool isBlocEqual(Bloc bloc) {
+    return (bloc is SingleTeamBloc && bloc.teamUid == keyUid);
+  }
+
   static SingleTeamBloc _createBloc(BuildContext context, String uid) {
     return SingleTeamBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),

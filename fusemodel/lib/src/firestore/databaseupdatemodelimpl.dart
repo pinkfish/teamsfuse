@@ -59,6 +59,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         tx.set(refShared, game.sharedData.toMap());
         gameBuilder.sharedDataUid = refShared.documentID;
         gameBuilder.uid = ref.documentID;
+        print("Writing game ${gameBuilder.sharedDataUid} ${gameBuilder.teamUid}");
         // Add the game.
         tx.set(ref, gameBuilder.build().toMap());
         return gameBuilder.build().toMap();
@@ -600,6 +601,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<Team> getTeamDetails({@required String teamUid}) async* {
+    print("Building $teamUid");
     DocumentReferenceWrapper referenceWrapper =
         wrapper.collection(TEAMS_COLLECTION).document(teamUid);
     DocumentSnapshotWrapper snap = await referenceWrapper.get();

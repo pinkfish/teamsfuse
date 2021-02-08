@@ -20,6 +20,11 @@ class SingleProfileProvider extends SingleBlocProvider<SingleProfileBloc> {
             creator: _createBloc,
             builder: builder, prefix: "profile");
 
+  bool isBlocEqual(Bloc bloc) {
+    return (bloc is SingleProfileBloc && bloc.profileUid == keyUid);
+  }
+
+
   static SingleProfileBloc _createBloc(BuildContext context, String uid) {
     return SingleProfileBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context),

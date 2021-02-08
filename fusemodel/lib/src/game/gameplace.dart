@@ -22,7 +22,11 @@ abstract class GamePlace implements Built<GamePlace, GamePlaceBuilder> {
   GamePlace._();
   factory GamePlace([updates(GamePlaceBuilder b)]) = _$GamePlace;
 
-  static void _initializeBuilder(GamePlaceBuilder b) => b..name = "";
+  static void _initializeBuilder(GamePlaceBuilder b) => b
+    ..name = ""
+    ..placeId = ""
+    ..address = ""
+    ..notes = ""..unknown=true..latitude=0..longitude=0;
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(GamePlace.serializer, this);

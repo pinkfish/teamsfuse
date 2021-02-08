@@ -26,6 +26,11 @@ class SingleOpponentProvider extends SingleBlocProvider<SingleOpponentBloc> {
             creator: (context, uid) => _createBloc(context, teamUid, uid),
             builder: builder, prefix: "opponent");
 
+  bool isBlocEqual(Bloc bloc) {
+    return (bloc is SingleOpponentBloc && bloc.opponentUid == keyUid);
+  }
+
+
   static SingleOpponentBloc _createBloc(
       BuildContext context, String teamUid, String uid) {
     return SingleOpponentBloc(

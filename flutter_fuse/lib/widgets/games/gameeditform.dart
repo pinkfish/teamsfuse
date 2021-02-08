@@ -210,7 +210,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
         controller: _scrollController,
         child: Form(
           key: _formKey,
-          autovalidate: autovalidate,
+          autovalidateMode: autovalidate ? AutovalidateMode.always : AutovalidateMode.disabled,
           child: DropdownButtonHideUnderline(
             child: Column(
               mainAxisSize: MainAxisSize.min,

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:timezone/timezone.dart' as tz;
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/games/gamedetailsbase.dart';
 import '../../widgets/games/gameeditform.dart';
@@ -49,7 +50,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   Widget _buildForm(BuildContext context) {
@@ -57,6 +58,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
   }
 
   Widget _buildSummary(BuildContext context) {
+    print("Build summary");
     return GameDetailsBase(
       game: _initGame,
       adding: true,
@@ -85,6 +87,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
         }
         teamStepState = StepState.complete;
         detailsStepState = StepState.editing;
+        createStepStage = StepState.disabled;
         break;
       // Verify the form is correct.
       case 2:
@@ -102,12 +105,11 @@ class _AddGameScreenState extends State<AddGameScreen> {
         }
         _gameFormKey.currentState.save();
         _initGame = _gameFormKey.currentState.finalGameResult.build();
-        print('Saved game $_initGame');
         detailsStepState = StepState.complete;
-        createStepStage = StepState.complete;
+        createStepStage = StepState.editing;
         break;
       case 3:
-        createStepStage = StepState.disabled;
+        createStepStage = StepState.editing;
         break;
     }
     return true;
@@ -116,13 +118,10 @@ class _AddGameScreenState extends State<AddGameScreen> {
   void _onStepperContinue(BuildContext context) {
     if (_leaveCurrentState(false)) {
       setState(() {
-        if (_currentStep < 2) {
+        if (_currentStep < 3) {
           _currentStep++;
         } else {
           // Write the game out.
-          setState(() {
-            //_saving = true;
-          });
           addGameBloc.add(AddGameEventCommit(newGame: _initGame));
         }
       });
@@ -138,13 +137,19 @@ class _AddGameScreenState extends State<AddGameScreen> {
   }
 
   void _teamChanged(Team team) {
-    print('Team $team');
-    //_gameFormKey.currentState.setTeam(str);
+    setState(() => _team = team);
     var sharedGameData = GameSharedDataBuilder()
+      ..uid = ""
+      ..timezone = tz.local.name
       ..officialResult.homeTeamLeagueUid = team.uid
       ..type = EventType.Game;
     var start = DateTime.now().add(const Duration(days: 1));
+    var result = GameResultDetailsBuilder()
+      ..result = GameResult.Unknown
+      ..inProgress = GameInProgress.NotStarted;
     _initGame = Game((b) => b
+      ..sharedDataUid = ""
+      ..uid = ""
       ..teamUid = team.uid
       ..sharedData = sharedGameData
       ..sharedData.time = start.toUtc()
@@ -154,6 +159,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
       ..seasonUid = team.currentSeason
       ..uniform = ""
       ..notes = ""
+      ..result = result
       ..trackAttendance = team.trackAttendenceInternal);
     setState(() {});
   }
@@ -168,7 +174,6 @@ class _AddGameScreenState extends State<AddGameScreen> {
   Widget build(BuildContext context) {
     var messages = Messages.of(context);
 
-    print(_team);
     return BlocProvider(
       create: (context) => addGameBloc,
       child: Scaffold(
@@ -183,15 +188,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
               Navigator.pop(context);
             }
             if (state is AddItemSaveFailed) {
-              showDialog<bool>(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text("Error"),
-                    content: Text("Error saving the game"),
-                  );
-                },
-              );
+              _showInSnackBar("Error saving the game");
             }
           },
           child: BlocBuilder(

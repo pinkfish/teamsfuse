@@ -24,6 +24,10 @@ class SingleClubProvider extends SingleBlocProvider<SingleClubBloc> {
             builder: builder,
             prefix: "club");
 
+  bool isBlocEqual(Bloc bloc) {
+    return (bloc is SingleClubBloc && bloc.clubUid == keyUid);
+  }
+
   static SingleClubBloc _createBloc(BuildContext context, String uid) {
     return SingleClubBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),

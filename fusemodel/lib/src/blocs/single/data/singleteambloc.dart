@@ -283,6 +283,8 @@ abstract class SingleTeamSaveDone
     implements
         SingleTeamState,
         Built<SingleTeamSaveDone, SingleTeamSaveDoneBuilder> {
+  String get savedUid;
+
   SingleTeamSaveDone._();
   factory SingleTeamSaveDone(
           [void Function(SingleTeamSaveDoneBuilder) updates]) =

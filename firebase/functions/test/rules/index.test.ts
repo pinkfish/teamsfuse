@@ -262,7 +262,7 @@ describe('TeamsFuse rules', function () {
         await firebase.assertSucceeds(
             db.collection('Games').doc('game').set({
                 seasonUid: 'season',
-                sharedGameUid: 'sharedGame',
+                sharedDataUid: 'sharedGame',
                 teamUid: 'team',
             }),
         );

@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleclubprovider.dart';
 import '../form/clubteampicker.dart';
@@ -47,6 +47,7 @@ class _TeamSelectionState extends State<TeamSelection> {
   }
 
   Widget _buildCurrentTeam(BuildContext context) {
+    print(" Building $_team");
     if (_team == null) {
       return Row(
         children: <Widget>[
@@ -72,7 +73,7 @@ class _TeamSelectionState extends State<TeamSelection> {
   }
 
   void _teamChanged(Team team) {
-    _team = team;
+    setState(() => _team = team);
     widget.onChanged(team);
   }
 
