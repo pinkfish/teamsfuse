@@ -66,99 +66,100 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
           return SingleTeamProvider(
             teamUid: gameState.game.teamUid,
             builder: (c, teamBloc) => BlocConsumer(
-                cubit: teamBloc,
-                listener: (context, state) {
-                  if (state is SingleTeamLoaded) {
-                    teamBloc.add(SingleTeamLoadOpponents());
-                  }
-                },
-                builder: (context, singleTeamState) {
-                  Game game = gameState.game;
-                  Widget body;
-                  var actions = <Widget>[];
-                  var opponentName = Messages.of(context).unknown;
+              cubit: teamBloc,
+              listener: (context, state) {
+                if (state is SingleTeamLoaded) {
+                  teamBloc.add(SingleTeamLoadOpponents());
+                }
+              },
+              builder: (context, singleTeamState) {
+                Game game = gameState.game;
+                Widget body;
+                var actions = <Widget>[];
+                var opponentName = Messages.of(context).unknown;
 
-                  if (!singleTeamState.loadedOpponents) {
-                    teamBloc.add(SingleTeamLoadOpponents());
-                  }
+                if (!singleTeamState.loadedOpponents) {
+                  teamBloc.add(SingleTeamLoadOpponents());
+                }
 
-                  if (singleTeamState is SingleTeamUninitialized ||
-                      !singleTeamState.loadedOpponents) {
-                    body = Text(Messages.of(context).loading);
+                if (singleTeamState is SingleTeamUninitialized ||
+                    !singleTeamState.loadedOpponents) {
+                  body = Text(Messages.of(context).loading);
+                } else {
+                  // This will return null if the opponent does not exist.
+                  var opponent = singleTeamState.opponents[game.opponentUid];
+
+                  if (_tabIndex == 0) {
+                    body = GameDetails(gameBloc);
                   } else {
-                    // This will return null if the opponent does not exist.
-                    var opponent = singleTeamState.opponents[game.opponentUid];
-
-                    if (_tabIndex == 0) {
-                      body = GameDetails(gameBloc);
-                    } else {
-                      body = Availaility(gameBloc);
-                    }
-
-                    if (singleTeamState.isAdmin()) {
-                      actions.add(
-                        PopupMenuButton<String>(
-                          onSelected: (str) => _select(str, gameBloc),
-                          itemBuilder: (context) {
-                            return <PopupMenuItem<String>>[
-                              PopupMenuItem<String>(
-                                value: "delete",
-                                child: Text(Messages.of(context)
-                                    .deletegame(game.sharedData)),
-                              ),
-                            ];
-                          },
-                        ),
-                      );
-                    }
-                    if (opponent != null) {
-                      opponentName = opponent.name;
-                    }
+                    body = Availaility(gameBloc);
                   }
 
-                  return Scaffold(
-                    appBar: AppBar(
-                      title: Text(Messages.of(context).gametitlevs(
-                          gameState.game.sharedData, opponentName)),
-                      actions: actions,
-                    ),
-                    bottomNavigationBar: BottomNavigationBar(
-                      onTap: (index) {
-                        setState(() {
-                          _tabIndex = index;
-                        });
-                      },
-                      currentIndex: _tabIndex,
-                      items: <BottomNavigationBarItem>[
-                        BottomNavigationBarItem(
-                          icon: const Icon(Icons.gamepad),
-                          label: Messages.of(context).details,
-                        ),
-                        BottomNavigationBarItem(
-                          icon: const Icon(Icons.people),
-                          label: Messages.of(context).gameavailability,
-                        )
-                      ],
-                    ),
-                    floatingActionButton: FloatingActionButton(
-                      onPressed: _editGame,
-                      child: Icon(Icons.edit),
-                      //backgroundColor: Colors.orange,
-                    ),
-                    floatingActionButtonLocation:
-                        FloatingActionButtonLocation.endFloat,
-                    body: Scrollbar(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        controller: _scrollController,
-                        child: AnimatedSwitcher(
-                          child: body,
-                          duration: Duration(milliseconds: 500),
-                        ),
+                  if (singleTeamState.isAdmin()) {
+                    actions.add(
+                      PopupMenuButton<String>(
+                        onSelected: (str) => _select(str, gameBloc),
+                        itemBuilder: (context) {
+                          return <PopupMenuItem<String>>[
+                            PopupMenuItem<String>(
+                              value: "delete",
+                              child: Text(Messages.of(context)
+                                  .deletegame(game.sharedData)),
+                            ),
+                          ];
+                        },
+                      ),
+                    );
+                  }
+                  if (opponent != null) {
+                    opponentName = opponent.name;
+                  }
+                }
+
+                return Scaffold(
+                  appBar: AppBar(
+                    title: Text(Messages.of(context)
+                        .gametitlevs(gameState.game.sharedData, opponentName)),
+                    actions: actions,
+                  ),
+                  bottomNavigationBar: BottomNavigationBar(
+                    onTap: (index) {
+                      setState(() {
+                        _tabIndex = index;
+                      });
+                    },
+                    currentIndex: _tabIndex,
+                    items: <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                        icon: const Icon(Icons.gamepad),
+                        label: Messages.of(context).details,
+                      ),
+                      BottomNavigationBarItem(
+                        icon: const Icon(Icons.people),
+                        label: Messages.of(context).gameavailability,
+                      )
+                    ],
+                  ),
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: _editGame,
+                    child: Icon(Icons.edit),
+                    //backgroundColor: Colors.orange,
+                  ),
+                  floatingActionButtonLocation:
+                      FloatingActionButtonLocation.endFloat,
+                  body: Scrollbar(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      controller: _scrollController,
+                      child: AnimatedSwitcher(
+                        child: body,
+                        duration: Duration(milliseconds: 500),
                       ),
                     ),
-                  );
-                }),
+                  ),
+                );
+              },
+            ),
           );
         },
       ),
