@@ -22,7 +22,7 @@ export async function updateUsersAndPlayers(
 
     // Go through the users and make sure there is still a a player for each one.
     for (const idx in users) {
-             const user = users[idx];
+        const user = users[idx];
         let found = false;
         for (const player in user) {
             if (player !== 'added') {
@@ -37,7 +37,7 @@ export async function updateUsersAndPlayers(
 
     // go through the players and make sure we have a corresponding user.
     for (let idx in players) {
-        console.log('player "' +  idx + '"');
+        console.log('player "' + idx + '"');
         idx = idx.trim();
         if (!playerSet.has(idx) || force) {
             // Load the user details from the player and update.

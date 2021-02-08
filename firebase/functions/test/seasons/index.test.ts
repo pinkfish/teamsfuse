@@ -129,18 +129,22 @@ describe('Seasons Tests', () => {
     async function createSeason(isPublicVisibleSeason: boolean, teamUid: string): Promise<DocumentSnapshot> {
         const seasonDocId = uuid();
 
-        await admin.firestore().collection('Seasons').doc(seasonDocId).set({
-            name: 'Current Season',
-            uid: seasonDocId,
-            teamUid: teamUid,
-            isPublic: isPublicVisibleSeason,
+        await admin
+            .firestore()
+            .collection('Seasons')
+            .doc(seasonDocId)
+            .set({
+                name: 'Current Season',
+                uid: seasonDocId,
+                teamUid: teamUid,
+                isPublic: isPublicVisibleSeason,
 
-            players: {
-               fluff: {
-                  added: true,
-               },
-            },
-        });
+                players: {
+                    fluff: {
+                        added: true,
+                    },
+                },
+            });
 
         return admin.firestore().collection('Seasons').doc(seasonDocId).get();
     }
