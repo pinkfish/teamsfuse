@@ -45,9 +45,9 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
     // Create a new Player.
     if (event is AddMessageEventCommit) {
       if (event.teamUid == null ||
-          event.recipients.length > 0 ||
-          event.body != null ||
-          event.subject != null) {
+          event.recipients.length == 0 ||
+          event.body == null ||
+          event.subject == null) {
         yield AddItemInvalidArguments(error: ArgumentError("Invalid args"));
       } else {
         yield AddItemSaving();
@@ -58,15 +58,34 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
             ..subject = event.subject
             ..fromUid = coordinationBloc.authenticationBloc.currentUser.uid;
           for (String str in event.recipients) {
-            builder.recipients[str] = MessageRecipient((b) => b
-              ..state = MessageReadState.Unread
-              ..playerId = str);
+            // Get all the users for the player.
+            var player = await coordinationBloc.databaseUpdateModel
+                .getPlayerDetails(str.trim())
+                .first;
+            if (player != null) {
+              for (var userId in player.users.keys) {
+                // Do this by user, so only one email for more than one player.
+                builder.recipients[userId] = MessageRecipient((b) => b
+                  ..state = MessageReadState.Unread
+                  ..userId = userId
+                  ..playerId = str.trim());
+              }
+            } else {
+              print("Cannot find player '$str'");
+            }
+          }
+          var newMess = builder.build();
+          if (newMess.recipients.isEmpty) {
+            print(newMess);
+            yield AddItemInvalidArguments(
+                error: ArgumentError("No users to message"));
+            return;
           }
 
           Message mess = await coordinationBloc.databaseUpdateModel
               .updateFirestoreMessage(builder);
-          await coordinationBloc.databaseUpdateModel.updateFirestoreMessageBody(
-              messageUid: mess.uid, body: event.body);
+          await coordinationBloc.databaseUpdateModel
+              .addMessage(mess, event.body);
           yield AddItemDone(uid: mess.uid);
         } catch (e, stack) {
           coordinationBloc.analytics.recordException(e, stack);

@@ -181,9 +181,10 @@ abstract class DatabaseUpdateModel {
 
   // Message for firestore.
   Future<Message> updateFirestoreMessage(MessageBuilder mess);
-  Future<void> updateFirestoreMessageBody({String messageUid, String body});
+  //Future<void> updateFirestoreMessageBody({String messageUid, String body});
   Stream<String> loadMessageBody(String messageUid);
   Future<Message> getMessage(String messageId);
+  Future<Message> addMessage(Message mess, String body);
 
   // Opponent update
   Future<void> updateFirestoreOpponent(Opponent opponent);

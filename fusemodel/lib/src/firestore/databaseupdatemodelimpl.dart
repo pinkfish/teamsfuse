@@ -59,7 +59,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         tx.set(refShared, game.sharedData.toMap());
         gameBuilder.sharedDataUid = refShared.documentID;
         gameBuilder.uid = ref.documentID;
-        print("Writing game ${gameBuilder.sharedDataUid} ${gameBuilder.teamUid}");
+        print(
+            "Writing game ${gameBuilder.sharedDataUid} ${gameBuilder.teamUid}");
         // Add the game.
         tx.set(ref, gameBuilder.build().toMap());
         return gameBuilder.build().toMap();
@@ -295,6 +296,48 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     await messageRef.updateData(messageData);
     analytics.logEvent(name: "updateMessageBody");
   }
+
+  @override
+  Future<Message> addMessage(Message mess, String body) async {
+    // Add or update this record into the database.
+    CollectionReferenceWrapper ref = wrapper.collection("Messages");
+    analytics.logEvent(name: "updateMessage");
+    var newDoc = ref.document();
+    mess = mess.rebuild((b) => b
+      ..timeSent = new DateTime.now().millisecondsSinceEpoch
+      ..uid = newDoc.documentID);
+    var bodyRef = wrapper
+        .collection(MESSAGES_COLLECTION)
+        .document(newDoc.documentID)
+        .collection(MESSAGES_COLLECTION)
+        .document(newDoc.documentID);
+    await wrapper.runTransaction( (t) async {
+      // Add the message.
+      await t.set(newDoc, mess.toMap());
+
+      // Add the body.
+      Map<String, dynamic> messageData = <String, dynamic>{};
+      messageData[Message.BODY] = body;
+      await t.set(bodyRef, messageData);
+
+
+      // Add in the recipients collection.
+      var recipients = mess.recipients.toBuilder();
+      for (String str in mess.recipients.keys) {
+        var docRef =
+            wrapper.collection(MESSAGE_RECIPIENTS_COLLECTION).document();
+        MessageRecipient rec = mess.recipients[str].rebuild((b) => b
+          ..messageId = mess.uid
+          ..sentAt = mess.timeSent
+          ..uid = docRef.documentID);
+        await t.set(docRef, rec.toMap());
+        recipients[str] = rec;
+      }
+      mess = mess.rebuild((b) => b..recipients = recipients);
+    });
+    return mess;
+  }
+
 
   @override
   Stream<String> loadMessageBody(String messageUid) async* {

@@ -87,18 +87,6 @@ class SingleMessageUpdate extends SingleMessageEvent {
 }
 
 ///
-/// Updates the Message (writes it out to firebase.
-///
-class SingleMessageUpdateBody extends SingleMessageEvent {
-  final String body;
-
-  SingleMessageUpdateBody({@required this.body});
-
-  @override
-  List<Object> get props => [body];
-}
-
-///
 /// Delete this Message from the world.
 ///
 class SingleMessageDelete extends SingleMessageEvent {
@@ -279,18 +267,6 @@ class SingleMessageBloc extends Bloc<SingleMessageEvent, SingleMessageState> {
           add(_SingleMessageSaveFailed(error: e));
         });
       }
-    }
-
-    // Save the message body
-    if (event is SingleMessageUpdateBody) {
-      yield SingleMessageSaving(state: state);
-
-      messageBloc.coordinationBloc.databaseUpdateModel
-          .updateFirestoreMessageBody(
-              messageUid: state.message.uid, body: event.body)
-          .then((void g) {}, onError: (Error error) {
-        add(_SingleMessageSaveFailed(error: error));
-      });
     }
   }
 }
