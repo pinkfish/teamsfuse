@@ -11,10 +11,12 @@ import '../blocs/singleprofileprovider.dart';
 ///
 class ByUserNameComponent extends StatelessWidget {
   /// Constructor.
-  ByUserNameComponent({@required this.userId});
+  ByUserNameComponent({@required this.userId, this.style});
 
   /// The userId to display the name of.
   final String userId;
+
+  final TextStyle style;
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +28,9 @@ class ByUserNameComponent extends StatelessWidget {
           Widget inner;
           if (state is SingleProfileLoaded) {
             inner =
-                Text(Messages.of(context).invitedby(state.profile.displayName));
+                Text(Messages.of(context).invitedby(state.profile.displayName), style: style);
           } else {
-            inner = Text(Messages.of(context).loading);
+            inner = Text(Messages.of(context).loading, style: style);
           }
           return AnimatedSwitcher(
             duration: Duration(milliseconds: 200),

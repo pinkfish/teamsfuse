@@ -5,6 +5,10 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../services/blocs.dart';
 import 'base/singleprovider.dart';
 
+///
+/// Builder to make the @SingleLeagueOrTournamentTeamBloc from the input
+/// stuff.
+///
 typedef SingleLeagueOrTournamentTeamProviderBuilder = Widget Function(
     BuildContext context,
     SingleLeagueOrTournamentTeamBloc singleLeagueOrTournamentTeamBloc);

@@ -38,8 +38,14 @@ abstract class MessageRecipient
   @nullable
   String get messageId;
   @nullable
-  num get sentAt;
+  DateTime get sentAt;
   MessageReadState get state;
+
+  @memoized
+  TZDateTime get tzSentAt {
+    return new TZDateTime.fromMillisecondsSinceEpoch(
+        local, sentAt.millisecondsSinceEpoch);
+  }
 
   MessageRecipient._();
   factory MessageRecipient([updates(MessageRecipientBuilder b)]) =
@@ -75,18 +81,20 @@ abstract class Message implements Built<Message, MessageBuilder> {
   String get subject;
 
   @nullable
-  num get timeSent;
+  DateTime get timeSent;
   @nullable
   num get fetched;
   @nullable
-  num get lastSeen;
+  DateTime get lastSeen;
   BuiltMap<String, MessageRecipient> get recipients;
 
   Message._();
   factory Message([updates(MessageBuilder b)]) = _$Message;
 
+  @memoized
   TZDateTime get tzTimeSent {
-    return new TZDateTime.fromMillisecondsSinceEpoch(local, timeSent);
+    return new TZDateTime.fromMillisecondsSinceEpoch(
+        local, timeSent.millisecondsSinceEpoch);
   }
 
   static const String TIMESENT = 'timeSent';

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
+import 'package:flutter_fuse/widgets/blocs/singlemessageprovider.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
+import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/player/playername.dart';
 import '../../widgets/teams/teamimage.dart';
@@ -27,16 +30,20 @@ class ShowMessageScreen extends StatelessWidget {
     bloc.add(SingleMessageDelete());
   }
 
-  void _readMessage(context) {
+  void _readMessage(context, SingleMessageState state) {
     var bloc = BlocProvider.of<SingleMessageBloc>(context);
-    bloc.add(SingleMessageRead());
+    var db = RepositoryProvider.of<DatabaseUpdateModel>(context);
+    if (state.message.recipients[db.currentUser.uid].state ==
+        MessageReadState.Unread) {
+      bloc.add(SingleMessageRead());
+    }
   }
 
   Widget _showMessage(BuildContext context, SingleMessageState state) {
     var messages = Messages.of(context);
     var mess = state.message;
     var kids = <Widget>[];
-    _readMessage(context);
+    _readMessage(context, state);
     kids.add(
       ListTile(
         leading: const Icon(Icons.subject),
@@ -132,30 +139,33 @@ class ShowMessageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var messages = Messages.of(context);
-    var bloc = SingleMessageBloc(
-        messageUid: messageUid,
-        messageBloc: BlocProvider.of<MessagesBloc>(context));
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(messages.message),
-      ),
-      body: BlocProvider(
-        create: (context) => bloc,
-        child: BlocListener(
-          cubit: bloc,
-          listener: (context, state) {
-            if (state is SingleMessageDeleted) {
-              Navigator.pop(context);
-            }
-
-            if (state is SingleMessageSaveFailed) {}
-          },
-          child: BlocBuilder(
+    return SingleMessageProvider(
+      messageId: messageUid,
+      builder: (context, bloc) => Scaffold(
+        appBar: AppBar(
+          title: Text(messages.message),
+        ),
+        body: BlocProvider(
+          create: (context) => bloc,
+          child: BlocListener(
             cubit: bloc,
-            builder: (context, state) => SavingOverlay(
-              saving: state is SingleMessageSaving,
-              child: _showMessage(context, state),
-            ),
+            listener: (context, state) {
+              if (state is SingleMessageDeleted) {
+                Navigator.pop(context);
+              }
+
+              if (state is SingleMessageSaveFailed) {}
+            },
+            child: BlocBuilder(
+                cubit: bloc,
+                builder: (context, state) {
+                  if (state is SingleMessageUninitialized) {
+                    return LoadingWidget();
+                  }
+                  return SavingOverlay(
+                      saving: state is SingleMessageSaving,
+                      child: _showMessage(context, state));
+                }),
           ),
         ),
       ),

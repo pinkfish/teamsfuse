@@ -183,7 +183,7 @@ abstract class DatabaseUpdateModel {
   Future<Message> updateFirestoreMessage(MessageBuilder mess);
   //Future<void> updateFirestoreMessageBody({String messageUid, String body});
   Stream<String> loadMessageBody(String messageUid);
-  Future<Message> getMessage(String messageId);
+  Stream<Message> getMessage(String messageId);
   Future<Message> addMessage(Message mess, String body);
 
   // Opponent update

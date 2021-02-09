@@ -19,7 +19,7 @@ class _MessagesEventLogout extends MessagesEvent {
 }
 
 class _MessagesEventNewUnReadLoaded extends MessagesEvent {
-  final MapBuilder<String, Message> unreadMessages;
+  final ListBuilder<MessageRecipient> unreadMessages;
 
   _MessagesEventNewUnReadLoaded({@required this.unreadMessages});
 
@@ -28,7 +28,7 @@ class _MessagesEventNewUnReadLoaded extends MessagesEvent {
 }
 
 class _MessagesEventNewRecentLoaded extends MessagesEvent {
-  final MapBuilder<String, Message> recentMessages;
+  final ListBuilder<MessageRecipient> recentMessages;
 
   _MessagesEventNewRecentLoaded({@required this.recentMessages});
 
@@ -81,6 +81,9 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
         _startLoadingFirestore(coordState);
       }
     });
+    _coordState.onError((e, stack) {
+      crashes.recordException(e, stack);
+    });
     if (coordinationBloc.state is CoordinationStateLoadingFirestore) {
       _startLoadingFirestore(coordinationBloc.state);
     }
@@ -109,75 +112,20 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
   }
 
   void _onUnreadMessagesUpdated(Iterable<MessageRecipient> data) async {
-    Set<String> toRemove = Set.from(state.unreadMessages.keys);
-    MapBuilder<String, Message> messages = MapBuilder<String, Message>();
-
     // Fill in all the messages.
     for (MessageRecipient recipient in data) {
       coordinationBloc.loadingTrace?.incrementCounter("message");
-
-      Message mess = state.getMessage(recipient.messageId);
-      if (mess != null) {
-        // Update just my recipient piece of this.
-        MessageBuilder builder = mess.toBuilder();
-
-        builder.recipients[recipient.userId] = recipient;
-        messages[mess.uid] = builder.build();
-        toRemove.remove(mess.uid);
-        mess = builder.build();
-      } else {
-        // Otherwise we need to load it.
-        mess = await coordinationBloc.databaseUpdateModel
-            .getMessage(recipient.messageId);
-        if (mess != null) {
-          messages[mess.uid] = mess;
-          toRemove.remove(mess.uid);
-          MessageBuilder builder = mess.toBuilder();
-          builder.recipients[recipient.userId] = recipient;
-          mess = builder.build();
-        }
-      }
     }
-    for (String _ in toRemove) {
-      coordinationBloc.loadingTrace?.incrementCounter("deletemessage");
-    }
+
     print('Loaded unread');
-    add(_MessagesEventNewUnReadLoaded(unreadMessages: messages));
+    add(_MessagesEventNewUnReadLoaded(unreadMessages: ListBuilder(data)));
     coordinationBloc
         .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Messages));
   }
 
   void _onReadMessagesUpdated(Iterable<MessageRecipient> data) async {
-    MapBuilder<String, Message> messages = MapBuilder<String, Message>();
-    Set<String> toRemove = Set.from(state.recentMessages.keys);
-
-    for (MessageRecipient recipient in data) {
-      coordinationBloc.loadingTrace?.incrementCounter("message");
-
-      Message mess = state.getMessage(recipient.messageId);
-      if (mess != null) {
-        // Update just my recipient piece of this.
-        MessageBuilder builder = mess.toBuilder();
-        builder.recipients[recipient.userId] = recipient;
-        messages[mess.uid] = builder.build();
-        toRemove.remove(mess.uid);
-      } else {
-        // Otherwise we need to load it.
-        Message mess = await coordinationBloc.databaseUpdateModel
-            .getMessage(recipient.messageId);
-        if (mess != null) {
-          MessageBuilder builder = mess.toBuilder();
-          builder.recipients[recipient.userId] = recipient;
-          messages[mess.uid] = builder.build();
-          toRemove.remove(mess.uid);
-        }
-      }
-    }
-    for (String _ in toRemove) {
-      coordinationBloc.loadingTrace?.incrementCounter("deletemessage");
-    }
     print('Loaded read');
-    add(_MessagesEventNewRecentLoaded(recentMessages: messages));
+    add(_MessagesEventNewRecentLoaded(recentMessages: ListBuilder(data)));
   }
 
   @override
@@ -190,12 +138,14 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
         coordinationBloc.loadingTrace?.incrementCounter("message");
         _onUnreadMessagesUpdated(messages);
       });
+      _messageSnapshot.onError((e, stack) => crashes.recordException(e, stack));
       _readMessageSnapshot = coordinationBloc.databaseUpdateModel
           .getMessages(false)
           .listen((Iterable<MessageRecipient> messages) {
         coordinationBloc.loadingTrace?.incrementCounter("message");
         this._onReadMessagesUpdated(messages);
       });
+      _readMessageSnapshot.onError((e, stack) => crashes.recordException(e, stack));
     }
 
     // New data from above.  Mark ourselves as done.

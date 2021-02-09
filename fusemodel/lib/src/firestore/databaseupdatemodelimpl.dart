@@ -199,12 +199,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<void> updateMessageRecipientState(
       MessageRecipient rec, MessageReadState state) {
+    print("Looking at ${rec}");
     DocumentReferenceWrapper doc =
         wrapper.collection(MESSAGE_RECIPIENTS_COLLECTION).document(rec.uid);
     analytics.logEvent(name: "updateMessageRecipientState");
 
     return doc
-        .updateData(<String, String>{MessageRecipient.STATE: state.toString()});
+        .updateData({MessageRecipient.STATE: state.toString()});
   }
 
   @override
@@ -257,7 +258,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     analytics.logEvent(name: "updateMessage");
     if (mess.uid == '' || mess.uid == null) {
       // Add the message.
-      mess.timeSent = new DateTime.now().millisecondsSinceEpoch;
+      mess.timeSent = new DateTime.now().toUtc();
       var newDoc = ref.document();
       mess.uid = newDoc.documentID;
       Message messageStuff = mess.build();
@@ -304,14 +305,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     analytics.logEvent(name: "updateMessage");
     var newDoc = ref.document();
     mess = mess.rebuild((b) => b
-      ..timeSent = new DateTime.now().millisecondsSinceEpoch
+      ..timeSent = new DateTime.now().toUtc()
       ..uid = newDoc.documentID);
     var bodyRef = wrapper
         .collection(MESSAGES_COLLECTION)
         .document(newDoc.documentID)
         .collection(MESSAGES_COLLECTION)
         .document(newDoc.documentID);
-    await wrapper.runTransaction( (t) async {
+    await wrapper.runTransaction((t) async {
       // Add the message.
       await t.set(newDoc, mess.toMap());
 
@@ -319,7 +320,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       Map<String, dynamic> messageData = <String, dynamic>{};
       messageData[Message.BODY] = body;
       await t.set(bodyRef, messageData);
-
 
       // Add in the recipients collection.
       var recipients = mess.recipients.toBuilder();
@@ -337,7 +337,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     });
     return mess;
   }
-
 
   @override
   Stream<String> loadMessageBody(String messageUid) async* {
@@ -357,13 +356,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<Message> getMessage(String messageId) async {
-    DocumentSnapshotWrapper ref =
-        await wrapper.collection(MESSAGES_COLLECTION).document(messageId).get();
-    if (ref.exists) {
-      return Message.fromMap(ref.data);
+  Stream<Message> getMessage(String messageId) async* {
+    var ref = await wrapper.collection(MESSAGES_COLLECTION).document(messageId);
+    var snap = await ref.get();
+    if (snap.exists) {
+      yield Message.fromMap(snap.data);
+    } else {
+      yield null;
     }
-    return null;
+    await for (var snap in ref.snapshots()) {
+      if (snap.exists) {
+        yield Message.fromMap(snap.data);
+      } else {
+        yield null;
+      }
+    }
   }
 
   // Opponent update

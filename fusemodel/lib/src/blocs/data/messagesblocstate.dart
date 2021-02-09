@@ -26,11 +26,11 @@ class MessagesBlocStateType extends EnumClass {
 /// exciting messages stuff.
 ///
 @BuiltValue(instantiable: false)
-abstract class MessagesBlocState with MessageMixin {
+abstract class MessagesBlocState {
   @override
-  BuiltMap<String, Message> get unreadMessages;
+  BuiltList<MessageRecipient> get unreadMessages;
   @override
-  BuiltMap<String, Message> get recentMessages;
+   BuiltList<MessageRecipient> get recentMessages;
   MessagesBlocStateType get type;
 
   // Don't save this stuff
@@ -51,26 +51,10 @@ abstract class MessagesBlocState with MessageMixin {
   Map<String, dynamic> toMap();
 }
 
-abstract class MessageMixin {
-  BuiltMap<String, Message> get unreadMessages;
-  BuiltMap<String, Message> get recentMessages;
-
-  Message getMessage(String uid) {
-    if (recentMessages.containsKey(uid)) {
-      return recentMessages[uid];
-    }
-    if (unreadMessages.containsKey(uid)) {
-      return unreadMessages[uid];
-    }
-    return null;
-  }
-}
-
 ///
 /// The messages loaded from the database.
 ///
 abstract class MessagesLoaded
-    with MessageMixin
     implements MessagesBlocState, Built<MessagesLoaded, MessagesLoadedBuilder> {
   MessagesLoaded._();
   factory MessagesLoaded([void Function(MessagesLoadedBuilder) updates]) =
@@ -103,7 +87,6 @@ abstract class MessagesLoaded
 /// The messages bloc that is unitialized.
 ///
 abstract class MessagesUninitialized
-    with MessageMixin
     implements
         MessagesBlocState,
         Built<MessagesUninitialized, MessagesUninitializedBuilder> {

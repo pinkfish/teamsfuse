@@ -7,6 +7,39 @@ export const onWrite = functions.firestore
     .document('/MessageRecipients/{messageid}')
     .onWrite(async (inputData, context) => {
         const data = inputData.after.data() ?? {};
+        const previousData = inputData.before.data() ?? {};
+
+        // If it exists afterwards, copy it to the message.
+        if (inputData.after.exists) {
+        const idx = `recipients.${data.userId}`;
+            await db
+                .collection('Messages')
+                .doc(data.messageId)
+                .update({
+                    [idx]: data,
+                });
+        }
+
+        // See if the name is different.
+        if (data.userId !== previousData.userId) {
+            console.log('checking for duplicates ' + data.userId + ' ' + data.messageId);
+            // Update everywhere.
+            const snapshot = await db
+                .collection('MessageRecipients')
+                .where('userId', '==', data.userId)
+                .where('messageId', '==', data.messageId)
+                .get();
+
+            console.log('checking for duplicates ' + snapshot.docs.length);
+
+            if (snapshot.docs.length > 1) {
+                // Set userid to 'ignore' and archived.
+                await inputData.after.ref.update({
+                    state: 'Archived',
+                    userId: 'ignore',
+                });
+            }
+        }
 
         // See if the name is different.
         if (data.userId === null) {

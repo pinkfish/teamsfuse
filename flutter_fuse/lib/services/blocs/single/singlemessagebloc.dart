@@ -1,76 +1,9 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_fuse/util/async_hydrated_bloc/asynchydratedbloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
-
-import '../messagesbloc.dart';
-
-abstract class SingleMessageState extends Equatable {
-  final Message message;
-  final String body;
-
-  SingleMessageState({@required this.message, @required this.body});
-
-  @override
-  List<Object> get props => [message, body];
-}
-
-///
-/// We have a Message, default state.
-///
-class SingleMessageLoaded extends SingleMessageState {
-  SingleMessageLoaded(
-      {@required SingleMessageState state, Message message, String body})
-      : super(message: message ?? state.message, body: body ?? state.body);
-
-  @override
-  String toString() {
-    return 'SingleMessageLoaded{}';
-  }
-}
-
-///
-/// Saving operation in progress.
-///
-class SingleMessageSaving extends SingleMessageState {
-  SingleMessageSaving({@required SingleMessageState state})
-      : super(message: state.message, body: state.body);
-
-  @override
-  String toString() {
-    return 'SingleMessageSaving{}';
-  }
-}
-
-///
-/// Saving operation failed (goes back to loaded for success).
-///
-class SingleMessageSaveFailed extends SingleMessageState {
-  final Error error;
-
-  SingleMessageSaveFailed(
-      {@required SingleMessageState state, @required this.error})
-      : super(message: state.message, body: state.body);
-
-  @override
-  String toString() {
-    return 'SingleMessageSaveFailed{}';
-  }
-}
-
-///
-/// Message got deleted.
-///
-class SingleMessageDeleted extends SingleMessageState {
-  SingleMessageDeleted() : super(message: null, body: null);
-
-  @override
-  String toString() {
-    return 'SingleMessageDeleted{}';
-  }
-}
 
 abstract class SingleMessageEvent extends Equatable {}
 
@@ -114,15 +47,6 @@ class _SingleMessageNewBody extends SingleMessageEvent {
   List<Object> get props => [newBody];
 }
 
-class _SingleMessageSaveFailed extends SingleMessageEvent {
-  final Error error;
-
-  _SingleMessageSaveFailed({@required this.error});
-
-  @override
-  List<Object> get props => [error];
-}
-
 class _SingleMessageDeleted extends SingleMessageEvent {
   _SingleMessageDeleted();
 
@@ -149,40 +73,34 @@ class SingleMessageArchive extends SingleMessageEvent {
 ///
 /// Bloc to handle updates and state of a specific Message.
 ///
-class SingleMessageBloc extends Bloc<SingleMessageEvent, SingleMessageState> {
-  final MessagesBloc messageBloc;
+class SingleMessageBloc
+    extends AsyncHydratedBloc<SingleMessageEvent, SingleMessageState> {
+  final DatabaseUpdateModel db;
+  final AnalyticsSubsystem crashes;
   final String messageUid;
 
-  StreamSubscription<MessagesBlocState> _messageSub;
+  StreamSubscription<Message> _messageSub;
   StreamSubscription<String> _bodyState;
 
-  SingleMessageBloc({@required this.messageBloc, @required this.messageUid})
-      : super(messageBloc.state.getMessage(messageUid) != null
-            ? SingleMessageLoaded(
-                message: messageBloc.state.getMessage(messageUid),
-                state: null,
-                body: null)
-            : SingleMessageDeleted()) {
-    _messageSub = messageBloc.listen((MessagesBlocState messageState) {
-      Message message = messageState.getMessage(messageUid);
+  SingleMessageBloc(
+      {@required this.db, @required this.messageUid, @required this.crashes})
+      : super(SingleMessageUninitialized(), messageUid) {
+    _messageSub = db.getMessage(messageUid).listen((message) {
       if (message != null) {
         // Only send this if the Message is not the same.
         if (message != state.message) {
           add(_SingleMessageNewMessage(newMessage: message));
+          _bodyState?.cancel();
+          _bodyState = db.loadMessageBody(messageUid).listen((String str) {
+            add(_SingleMessageNewBody(newBody: str));
+          });
+          _bodyState.onError((e, stack) => crashes.recordException(e, stack));
         }
       } else {
         add(_SingleMessageDeleted());
       }
     });
-    Message message = messageBloc.state.getMessage(messageUid);
-    if (message != null) {
-      // Load the body.
-      _bodyState = messageBloc.coordinationBloc.databaseUpdateModel
-          .loadMessageBody(messageUid)
-          .listen((String str) {
-        add(_SingleMessageNewBody(newBody: str));
-      });
-    }
+    _messageSub.onError((e, stack) => crashes.recordException(e, stack));
   }
 
   @override
@@ -195,10 +113,15 @@ class SingleMessageBloc extends Bloc<SingleMessageEvent, SingleMessageState> {
   @override
   Stream<SingleMessageState> mapEventToState(SingleMessageEvent event) async* {
     if (event is _SingleMessageNewMessage) {
-      yield SingleMessageLoaded(state: state, message: event.newMessage);
+      yield (SingleMessageLoaded.fromState(state)
+            ..message = event.newMessage.toBuilder())
+          .build();
     }
     if (event is _SingleMessageNewBody) {
-      yield SingleMessageLoaded(state: state, body: event.newBody);
+      yield (SingleMessageLoaded.fromState(state)
+            ..body = event.newBody
+            ..loadedBody = true)
+          .build();
     }
 
     // The Message is deleted.
@@ -208,65 +131,110 @@ class SingleMessageBloc extends Bloc<SingleMessageEvent, SingleMessageState> {
 
     // Save the Message.
     if (event is SingleMessageUpdate) {
-      yield SingleMessageSaving(state: state);
+      yield SingleMessageSaving.fromState(state).build();
 
       try {
-        await messageBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreMessage(event.message);
-      } catch (e) {
-        yield SingleMessageSaveFailed(state: state, error: e);
+        await db.updateFirestoreMessage(event.message);
+        yield (SingleMessageLoaded.fromState(state)..message = event.message)
+            .build();
+      } catch (e, stack) {
+        yield (SingleMessageSaveFailed.fromState(state)..error = e).build();
+        yield SingleMessageLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
       }
     }
 
-    if (event is _SingleMessageSaveFailed) {
-      yield SingleMessageSaveFailed(state: state, error: event.error);
-    }
-
     if (event is SingleMessageRead) {
-      String userUid =
-          messageBloc.coordinationBloc.authenticationBloc.currentUser.uid;
+      String userUid = db.currentUser.uid;
       if (state.message.recipients.containsKey(userUid)) {
         if (state.message.recipients[userUid].state ==
-            MessageReadState.Unread) {
-          yield SingleMessageSaving(state: state);
-          messageBloc.coordinationBloc.databaseUpdateModel
-              .updateMessageRecipientState(
-                  state.message.recipients[userUid], MessageReadState.Read)
-              .then((void c) {}, onError: (Error e) {
-            add(_SingleMessageSaveFailed(error: e));
-          });
+            MessageReadState.Unread && state.message.recipients[userUid].uid != null) {
+          yield SingleMessageSaving.fromState(state).build();
+          try {
+            await db.updateMessageRecipientState(
+                state.message.recipients[userUid], MessageReadState.Read);
+            yield SingleMessageLoaded.fromState(state).build();
+          } catch (e, stack) {
+            print(stack);
+            yield (SingleMessageSaveFailed.fromState(state)..error = e).build();
+            yield SingleMessageLoaded.fromState(state).build();
+            crashes.recordException(e, stack);
+          }
         }
       }
     }
 
     if (event is SingleMessageArchive) {
-      String userUid =
-          messageBloc.coordinationBloc.authenticationBloc.currentUser.uid;
+      String userUid = db.currentUser.uid;
       if (state.message.recipients.containsKey(userUid)) {
         if (state.message.recipients[userUid].state !=
             MessageReadState.Archived) {
-          yield SingleMessageSaving(state: state);
-          messageBloc.coordinationBloc.databaseUpdateModel
-              .updateMessageRecipientState(
-                  state.message.recipients[userUid], MessageReadState.Archived)
-              .then((void c) {}, onError: (Error e) {
-            add(_SingleMessageSaveFailed(error: e));
-          });
+          yield SingleMessageSaving.fromState(state).build();
+          try {
+            await db.updateMessageRecipientState(
+                state.message.recipients[userUid], MessageReadState.Archived);
+            yield SingleMessageLoaded.fromState(state).build();
+          } catch (e, stack) {
+            yield (SingleMessageSaveFailed.fromState(state)..error = e).build();
+            yield SingleMessageLoaded.fromState(state).build();
+            crashes.recordException(e, stack);
+          }
         }
       }
     }
 
     if (event is SingleMessageDelete) {
-      String userUid =
-          messageBloc.coordinationBloc.authenticationBloc.currentUser.uid;
+      String userUid = db.currentUser.uid;
       if (state.message.recipients.containsKey(userUid)) {
-        yield SingleMessageSaving(state: state);
-        messageBloc.coordinationBloc.databaseUpdateModel
-            .deleteRecipient(state.message.recipients[userUid])
-            .then((void c) {}, onError: (Error e) {
-          add(_SingleMessageSaveFailed(error: e));
-        });
+        yield SingleMessageSaving.fromState(state).build();
+        try {
+          await db.deleteRecipient(state.message.recipients[userUid]);
+          yield SingleMessageLoaded.fromState(state).build();
+        } catch (e, stack) {
+          yield (SingleMessageSaveFailed.fromState(state)..error = e).build();
+          yield SingleMessageLoaded.fromState(state).build();
+          crashes.recordException(e, stack);
+        }
       }
     }
+  }
+
+  @override
+  SingleMessageState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return SingleMessageUninitialized();
+    }
+
+    try {
+      SingleMessageBlocStateType type =
+          SingleMessageBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleMessageBlocStateType.Uninitialized:
+          return SingleMessageUninitialized();
+        case SingleMessageBlocStateType.Loaded:
+          return SingleMessageLoaded.fromMap(json);
+        case SingleMessageBlocStateType.Deleted:
+          return SingleMessageDeleted.fromMap(json);
+        case SingleMessageBlocStateType.SaveFailed:
+          return SingleMessageSaveFailed.fromMap(json);
+        case SingleMessageBlocStateType.Saving:
+          return SingleMessageSaving.fromMap(json);
+        case SingleMessageBlocStateType.SaveDone:
+          return SingleMessageSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
+    }
+
+    return SingleMessageUninitialized();
+  }
+
+  @override
+  Map<String, dynamic> toJson(SingleMessageState state) {
+    return state.toMap();
   }
 }

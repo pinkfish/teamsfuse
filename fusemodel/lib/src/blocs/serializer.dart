@@ -26,6 +26,7 @@ import 'single/data/singleprofilebloc.dart';
 import 'single/data/singleseasonbloc.dart';
 import 'single/data/singleteambloc.dart';
 import 'single/data/singleteamseasonplayerbloc.dart';
+import 'single/data/singlemessagebloc.dart';
 
 part 'serializer.g.dart';
 
@@ -123,6 +124,14 @@ part 'serializer.g.dart';
   SingleLeagueOrTournamentDivisonSaving,
   SingleLeagueOrTournamentDivisonSaveFailed,
   SingleLeagueOrTournamentDivisonSaveDone,
+  SingleMessageLoaded,
+  SingleMessageState,
+  SingleMessageBlocStateType,
+  SingleMessageUninitialized,
+  SingleMessageDeleted,
+  SingleMessageSaving,
+  SingleMessageSaveFailed,
+  SingleMessageSaveDone,
   SingleOpponentLoaded,
   SingleOpponentState,
   SingleOpponentBlocStateType,
