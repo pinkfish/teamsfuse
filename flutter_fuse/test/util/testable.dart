@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fuse/services/messages.dart';
+import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 ///
 /// Makes a happy little testable widget with a wrapper.
 ///
 Widget makeTestableWidget(Widget child, {NavigatorObserver observer}) {
+  AsyncHydratedStorage.storageDirectory = Directory("fail");
+
   return MediaQuery(
     data: MediaQueryData(),
     child: MaterialApp(

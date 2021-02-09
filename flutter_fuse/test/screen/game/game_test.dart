@@ -85,4 +85,37 @@ void main() {
 
     gameController.close();
   });
+
+  testWidgets('loaded', (tester) async {
+    final mockDb = MockDatabaseUpdateModel();
+    final mockAnalytics = MockAnalyticsSubsystem();
+    final gameController = StreamController<Game>();
+    final mockObserver = MockNavigatorObserver();
+
+    AsyncHydratedStorage.storageDirectory = Directory("fail");
+
+    when(mockDb.getGame("123")).thenAnswer((_) => gameController.stream);
+
+    // Build our app and trigger a frame.
+    var testWidget = makeTestableWidget(
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<DatabaseUpdateModel>(create: (c) => mockDb),
+          RepositoryProvider<AnalyticsSubsystem>(create: (c) => mockAnalytics)
+        ],
+        child: GameDetailsScreen("123"),
+      ),
+      observer: mockObserver,
+    );
+
+    await tester.pumpWidget(testWidget);
+    gameController.add(Game((b) => b..uid="123"..sharedDataUid="1234"));
+
+    await tester.pump(Duration(milliseconds: 600));
+
+    verify(mockObserver.didPop(any, any));
+
+    gameController.close();
+  });
+
 }
