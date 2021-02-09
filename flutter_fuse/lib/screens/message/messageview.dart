@@ -13,13 +13,21 @@ import '../../widgets/util/savingoverlay.dart';
 ///
 /// Show a specific message.
 ///
-class ShowMessageScreen extends StatelessWidget {
+class ShowMessageScreen extends StatefulWidget {
   /// Constructor.
   ShowMessageScreen({this.messageUid});
 
   /// The message to display.
   final String messageUid;
 
+  @override
+  State<StatefulWidget> createState() {
+    return _ShowMessageScreenState();
+  }
+}
+
+class _ShowMessageScreenState extends State<ShowMessageScreen> {
+bool _sentReadMessage = false;
   void _archiveMessage(context) {
     var bloc = BlocProvider.of<SingleMessageBloc>(context);
     bloc.add(SingleMessageArchive());
@@ -31,11 +39,14 @@ class ShowMessageScreen extends StatelessWidget {
   }
 
   void _readMessage(context, SingleMessageState state) {
-    var bloc = BlocProvider.of<SingleMessageBloc>(context);
-    var db = RepositoryProvider.of<DatabaseUpdateModel>(context);
-    if (state.message.recipients[db.currentUser.uid].state ==
-        MessageReadState.Unread) {
-      bloc.add(SingleMessageRead());
+    if (!_sentReadMessage) {
+      var bloc = BlocProvider.of<SingleMessageBloc>(context);
+      var db = RepositoryProvider.of<DatabaseUpdateModel>(context);
+      if (state.message.recipients[db.currentUser.uid].state ==
+          MessageReadState.Unread) {
+        _sentReadMessage = true;
+        bloc.add(SingleMessageRead());
+      }
     }
   }
 
@@ -140,7 +151,7 @@ class ShowMessageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     var messages = Messages.of(context);
     return SingleMessageProvider(
-      messageId: messageUid,
+      messageId: widget.messageUid,
       builder: (context, bloc) => Scaffold(
         appBar: AppBar(
           title: Text(messages.message),

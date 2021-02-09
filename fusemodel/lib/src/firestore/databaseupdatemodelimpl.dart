@@ -204,8 +204,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         wrapper.collection(MESSAGE_RECIPIENTS_COLLECTION).document(rec.uid);
     analytics.logEvent(name: "updateMessageRecipientState");
 
-    return doc
-        .updateData({MessageRecipient.STATE: state.toString()});
+    return doc.updateData({MessageRecipient.STATE: state.toString()});
   }
 
   @override
@@ -323,15 +322,19 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
       // Add in the recipients collection.
       var recipients = mess.recipients.toBuilder();
+      var sentTo = Set<String>();
       for (String str in mess.recipients.keys) {
-        var docRef =
-            wrapper.collection(MESSAGE_RECIPIENTS_COLLECTION).document();
-        MessageRecipient rec = mess.recipients[str].rebuild((b) => b
-          ..messageId = mess.uid
-          ..sentAt = mess.timeSent
-          ..uid = docRef.documentID);
-        await t.set(docRef, rec.toMap());
-        recipients[str] = rec;
+        if (!sentTo.contains(mess.recipients[str].userId)) {
+          var docRef =
+              wrapper.collection(MESSAGE_RECIPIENTS_COLLECTION).document();
+          MessageRecipient rec = mess.recipients[str].rebuild((b) => b
+            ..messageId = mess.uid
+            ..sentAt = mess.timeSent
+            ..uid = docRef.documentID);
+          await t.set(docRef, rec.toMap());
+          recipients[str] = rec;
+          sentTo.add(mess.recipients[str].userId);
+        }
       }
       mess = mess.rebuild((b) => b..recipients = recipients);
     });
@@ -341,18 +344,25 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Stream<String> loadMessageBody(String messageUid) async* {
     DocumentReferenceWrapper ref = wrapper
-        .collection("Messages")
+        .collection(MESSAGES_COLLECTION)
         .document(messageUid)
-        .collection(Message.BODY)
+        .collection(MESSAGES_COLLECTION)
         .document(messageUid);
     DocumentSnapshotWrapper snap = await ref.get();
+    print("Message body $messageUid");
     if (snap.exists) {
+      print(snap.data);
       yield snap.data[Message.BODY] as String;
-      await for (DocumentSnapshotWrapper snapper in ref.snapshots()) {
+    } else {
+      yield null;
+    }
+    await for (DocumentSnapshotWrapper snapper in ref.snapshots()) {
+      if (snapper.exists) {
         yield snapper.data[Message.BODY];
+      } else {
+        yield null;
       }
     }
-    yield null;
   }
 
   @override
