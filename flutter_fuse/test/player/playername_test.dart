@@ -80,6 +80,7 @@ void main() {
       ..uid = "123"));
 
     await tester.pump(Duration(milliseconds: 600));
+    await tester.pump(Duration(milliseconds: 600));
 
     await expectLater(find.text("Frog"), findsOneWidget);
   });
@@ -116,6 +117,7 @@ void main() {
       ..uid = "123"));
 
     await tester.pump(Duration(milliseconds: 600));
+    await tester.pump(Duration(milliseconds: 600));
 
     await expectLater(find.text("Frog"), findsOneWidget);
 
@@ -123,6 +125,7 @@ void main() {
       ..name = "Bluey"
       ..uid = "123"));
 
+    await tester.pump(Duration(milliseconds: 600));
     await tester.pump(Duration(milliseconds: 600));
 
     await expectLater(find.text("Bluey"), findsOneWidget);
