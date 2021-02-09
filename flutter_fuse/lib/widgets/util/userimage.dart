@@ -34,32 +34,29 @@ class UserImage extends StatelessWidget {
       builder: (context, bloc) => CircleAvatar(
         backgroundColor: backgroundColor,
         radius: radius,
-        child: BlocProvider(
-          create: (context) => bloc,
-          child: BlocConsumer(
-            cubit: bloc,
-            builder: (context, state) {
-              if (!(state is SingleProfileUninitialized) &&
-                  !state.loadedPlayers) {
-                bloc.add(SingleProfileLoadPlayers());
-              }
-              return AnimatedCrossFade(
-                duration: Duration(seconds: 3),
-                crossFadeState: state.players.length > 0 &&
-                        state.players.first.photoUrl.isNotEmpty
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
-                firstChild: Text(
-                  profile.initials(),
-                ),
-                secondChild: state.players.length > 0
-                    ? CachedNetworkImage(
-                        imageUrl: state.players.first.photoUrl,
-                      )
-                    : Text(""),
-              );
-            },
-          ),
+        child: BlocBuilder(
+          cubit: bloc,
+          builder: (context, state) {
+            if (state is SingleProfileLoaded && !state.loadedPlayers) {
+              bloc.add(SingleProfileLoadPlayers());
+            }
+            return AnimatedCrossFade(
+              duration: Duration(seconds: 3),
+              crossFadeState: state.loadedPlayers &&
+                      state.players.length > 0 &&
+                      state.players.first.photoUrl.isNotEmpty
+                  ? CrossFadeState.showSecond
+                  : CrossFadeState.showFirst,
+              firstChild: Text(
+                profile.initials(),
+              ),
+              secondChild: state.loadedPlayers && state.players.length > 0
+                  ? CachedNetworkImage(
+                      imageUrl: state.players.first.photoUrl,
+                    )
+                  : Text(""),
+            );
+          },
         ),
       ),
     );

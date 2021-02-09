@@ -1,14 +1,12 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
-import 'package:fusemodel/firestore.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:image_picker/image_picker.dart';
 
-
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../../widgets/blocs/singleprofileprovider.dart';
@@ -41,7 +39,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final FocusNode _focusNode = FocusNode();
   File _imageFile;
   bool _changedImage = false;
-  StreamSubscription<UserData> streamListen;
 
   // Details to update.
   String _displayName;
@@ -78,11 +75,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
   }
 
-  void _savePressed(BuildContext context, SingleProfileState profileState,
-      SingleProfileBloc profileBloc) async {
-    if (_formKey.currentState.validate()) {
+  void _savePressed(BuildContext context, SingleProfileBloc profileBloc) async {
+    if (_formKey.currentState.validate() &&
+        profileBloc.state is SinglePlayerLoaded) {
       _formKey.currentState.save();
-      var profile = profileState.profile.rebuild((b) => b
+      var state = profileBloc.state;
+      var profile = state.profile.rebuild((b) => b
         ..displayName = _displayName
         ..phoneNumber = _phoneNumber);
       profileBloc.add(SingleProfileUpdate(profile: profile, image: _imageFile));
@@ -105,116 +103,119 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Navigator.pop(context);
           }
         },
-        child: BlocBuilder(
-          cubit: profileBloc,
-          builder: (context, profileState) {
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(Messages.of(context).title),
-                key: _scaffoldKey,
-                actions: <Widget>[
-                  FlatButton(
-                    onPressed: () {
-                      _savePressed(context, profileState, profileBloc);
-                    },
-                    child: Text(
-                      Messages.of(context).savebuttontext,
-                      style: Theme.of(context)
-                          .textTheme
-                          .subtitle1
-                          .copyWith(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-              body: SavingOverlay(
-                saving: profileState is SingleProfileSaving,
-                child: Scrollbar(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    controller: _scrollController,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Form(
-                          key: _formKey,
-                          autovalidate: _autovalidate,
-                          child: DropdownButtonHideUnderline(
-                            child: Column(
-                              children: <Widget>[
-                                IconButton(
-                                  onPressed: _selectImage,
-                                  iconSize: (screenSize.width < 500)
-                                      ? 120.0
-                                      : (screenSize.width / 4) + 12.0,
-                                  icon: _buildImage(profileState),
-                                ),
-                                EnsureVisibleWhenFocused(
-                                  focusNode: _focusNode,
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                      icon: const Icon(Icons.person),
-                                      hintText:
-                                          Messages.of(context).displayname,
-                                      labelText:
-                                          Messages.of(context).displaynamehint,
-                                    ),
-                                    initialValue:
-                                        profileState.profile.displayName,
-                                    keyboardType: TextInputType.text,
-                                    obscureText: false,
-                                    validator: (name) {
-                                      return _validations.validateName(
-                                          context, name);
-                                    },
-                                    onSaved: (value) {
-                                      _displayName = value;
-                                    },
-                                  ),
-                                ),
-                                EnsureVisibleWhenFocused(
-                                  focusNode: _focusNode,
-                                  child: TextFormField(
-                                    decoration: InputDecoration(
-                                      icon: const Icon(Icons.phone),
-                                      hintText:
-                                          Messages.of(context).phonenumber,
-                                      labelText:
-                                          Messages.of(context).phonenumberhint,
-                                    ),
-                                    initialValue:
-                                        profileState.profile.phoneNumber,
-                                    keyboardType: TextInputType.text,
-                                    obscureText: false,
-                                    validator: (phone) {
-                                      return _validations.validatePhone(
-                                          context, phone);
-                                    },
-                                    onSaved: (value) {
-                                      _phoneNumber = value;
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+        child: Scaffold(
+            appBar: AppBar(
+              title: Text(Messages.of(context).title),
+              key: _scaffoldKey,
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    _savePressed(context, profileBloc);
+                  },
+                  child: Text(
+                    Messages.of(context).savebuttontext,
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle1
+                        .copyWith(color: Colors.white),
                   ),
                 ),
-              ),
-            );
-          },
-        ),
+              ],
+            ),
+            body: BlocBuilder(
+              cubit: profileBloc,
+              builder: (context, profileState) {
+                if (profileState is SingleProfileUninitialized) {
+                  return LoadingWidget();
+                }
+                return SavingOverlay(
+                  saving: profileState is SingleProfileSaving,
+                  child: Scrollbar(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      controller: _scrollController,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Form(
+                            key: _formKey,
+                            autovalidateMode: _autovalidate
+                                ? AutovalidateMode.always
+                                : AutovalidateMode.disabled,
+                            child: DropdownButtonHideUnderline(
+                              child: Column(
+                                children: <Widget>[
+                                  IconButton(
+                                    onPressed: _selectImage,
+                                    iconSize: (screenSize.width < 500)
+                                        ? 120.0
+                                        : (screenSize.width / 4) + 12.0,
+                                    icon: _buildImage(profileState),
+                                  ),
+                                  EnsureVisibleWhenFocused(
+                                    focusNode: _focusNode,
+                                    child: TextFormField(
+                                      decoration: InputDecoration(
+                                        icon: const Icon(Icons.person),
+                                        hintText:
+                                            Messages.of(context).displayname,
+                                        labelText: Messages.of(context)
+                                            .displaynamehint,
+                                      ),
+                                      initialValue:
+                                          profileState.profile.displayName,
+                                      keyboardType: TextInputType.text,
+                                      obscureText: false,
+                                      validator: (name) {
+                                        return _validations.validateName(
+                                            context, name);
+                                      },
+                                      onSaved: (value) {
+                                        _displayName = value;
+                                      },
+                                    ),
+                                  ),
+                                  EnsureVisibleWhenFocused(
+                                    focusNode: _focusNode,
+                                    child: TextFormField(
+                                      decoration: InputDecoration(
+                                        icon: const Icon(Icons.phone),
+                                        hintText:
+                                            Messages.of(context).phonenumber,
+                                        labelText: Messages.of(context)
+                                            .phonenumberhint,
+                                      ),
+                                      initialValue:
+                                          profileState.profile.phoneNumber,
+                                      keyboardType: TextInputType.text,
+                                      obscureText: false,
+                                      validator: (phone) {
+                                        return _validations.validatePhone(
+                                            context, phone);
+                                      },
+                                      onSaved: (value) {
+                                        _phoneNumber = value;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            )),
       ),
     );
   }
 
   @override
   void dispose() {
-    streamListen.cancel();
     super.dispose();
   }
 }
