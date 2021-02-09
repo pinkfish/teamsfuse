@@ -83,6 +83,9 @@ void main() {
     await tester.pump(Duration(milliseconds: 600));
 
     await expectLater(find.text("Frog"), findsOneWidget);
+
+    await expectLater(find.byType(PlayerName),
+        matchesGoldenFile('../golden/player_name_set.png'));
   });
 
   testWidgets('name change', (tester) async {

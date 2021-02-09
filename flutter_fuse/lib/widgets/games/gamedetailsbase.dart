@@ -454,7 +454,7 @@ class GameDetailsBase extends StatelessWidget {
           children: <Widget>[
             TeamResultsBySeason(
               teamUid: teamState.team.uid,
-              seasonUid: season.uid,
+              seasonUid: game.seasonUid,
               opponentUid: game.opponentUid,
             ),
           ],

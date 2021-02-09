@@ -484,7 +484,9 @@ class SingleTeamBloc
     }
 
     if (event is SingleTeamLoadOpponents) {
-      _loadOpponents();
+      if (_opponentSub == null) {
+        _loadOpponents();
+      }
     }
 
     if (event is _SingleTeamSeasonDataLoaded) {

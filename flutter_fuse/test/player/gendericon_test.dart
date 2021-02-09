@@ -39,8 +39,8 @@ void main() {
 
     // Verify that our icon is male.
     expect(find.byIcon(MdiIcons.genderFemale), findsOneWidget);
-    //await expectLater(find.byType(GenderIcon),
-    //    matchesGoldenFile('golden/gender_icon_female.png'));
+    await expectLater(find.byType(GenderIcon),
+        matchesGoldenFile('../golden/gender_icon_female.png'));
   });
   testWidgets('Gender icon coed', (tester) async {
     // Build our app and trigger a frame.
