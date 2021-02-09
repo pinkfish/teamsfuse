@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
+import 'package:flutter_fuse/widgets/teams/teamimage.dart';
+import 'package:flutter_fuse/widgets/teams/teamname.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleplayerprovider.dart';
 import '../../widgets/invites/deleteinvitedialog.dart';
@@ -195,6 +198,9 @@ class ProfileScreen extends StatelessWidget {
             builder: (context, playerBloc) => BlocBuilder(
               cubit: playerBloc,
               builder: (context, playerState) {
+                if (playerState is SinglePlayerUninitialized) {
+                  return LoadingWidget();
+                }
                 // List the teams they are in.
                 var teamNames = <Widget>[];
                 ImageProvider leading;
@@ -206,37 +212,77 @@ class ProfileScreen extends StatelessWidget {
                   leading =
                       const AssetImage("assets/images/defaultavatar2.png");
                 }
-                var teamBloc = BlocProvider.of<TeamBloc>(context);
-                if (teamBloc.state.playerTeams.containsKey(player.uid)) {
-                  var teams = teamBloc.state.playerTeams.values;
-                  var seasonBloc = BlocProvider.of<SeasonBloc>(context);
-
-                  for (var team in teams) {
-                    for (var season in seasonBloc.state.seasons.values) {
-                      var index = season.players.indexWhere((sp) {
-                        return sp.playerUid == player.uid;
-                      });
-                      if (index != -1) {
-                        teamNames.add(
-                          GestureDetector(
-                            onTap: () => Navigator.pushNamed(
-                                context, "EditPlayer/${player.uid}"),
-                            child: ListTile(
-                              leading: const Icon(Icons.people),
-                              title: Text(team.name),
-                              subtitle: Text(
-                                messages.roleingame(season.players[index].role),
-                              ),
-                              trailing: IconButton(
-                                onPressed: () {
-                                  _deletePlayer(context, player, playerBloc);
-                                },
-                                icon: const Icon(Icons.delete),
-                              ),
+                if (!playerState.seasonsLoaded) {
+                  playerBloc.add(SinglePlayerLoadSeasons());
+                }
+                if (playerState.seasonsLoaded) {
+                  var teams = Set<String>();
+                  for (Season season in playerState.seasons) {
+                    if (!teams.contains(season.teamUid)) {
+                      teams.add(season.teamUid);
+                      teamNames.add(
+                        GestureDetector(
+                          onTap: () => Navigator.pushNamed(
+                              context, "EditPlayer/${player.uid}"),
+                          child: ListTile(
+                            tileColor: Theme.of(context).selectedRowColor,
+                            minVerticalPadding: 10.0,
+                            leading: TeamImage(
+                                teamUid: season.teamUid, width: 40, height: 40),
+                            title: TeamName(
+                                teamUid: season.teamUid,
+                                style: Theme.of(context).textTheme.headline5),
+                            subtitle: Table(
+                              children: [
+                                TableRow(
+                                  children: [
+                                    Text(Messages.of(context).season,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold)),
+                                    Text(Messages.of(context).role,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                                ...(playerState.seasons
+                                    .where((s) => s.teamUid == season.teamUid)
+                                    .map<TableRow>((s) {
+                                  int index = s.players.indexWhere((p) =>
+                                      p.playerUid == playerState.player.uid);
+                                  return TableRow(
+                                    children: [
+                                      Text(s.name,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText2),
+                                      Text(
+                                        messages
+                                            .roleingame(s.players[index].role),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText2,
+                                      )
+                                    ],
+                                  );
+                                }).toList()),
+                              ],
+                            ),
+                            trailing: IconButton(
+                              onPressed: () {
+                                _deletePlayer(context, player, playerBloc);
+                              },
+                              icon: const Icon(Icons.delete),
                             ),
                           ),
-                        );
-                      }
+                        ),
+                      );
+                      teamNames.add(SizedBox(height:20));
                     }
                   }
                 }

@@ -79,6 +79,14 @@ class SinglePlayerLoadProfile extends SinglePlayerEvent {
   List<Object> get props => [];
 }
 
+///
+/// Loads the teams for this user from firebase.
+///
+class SinglePlayerLoadSeasons extends SinglePlayerEvent {
+  @override
+  List<Object> get props => [];
+}
+
 class _SinglePlayerNewPlayer extends SinglePlayerEvent {
   final Player newPlayer;
 
@@ -104,6 +112,16 @@ class _SinglePlayerInvitesAdded extends SinglePlayerEvent {
   List<Object> get props => [invites];
 }
 
+class _SinglePlayerSeasonsAdded extends SinglePlayerEvent {
+  final Iterable<Season> seasons;
+
+  _SinglePlayerSeasonsAdded({@required this.seasons});
+
+  @override
+  List<Object> get props => [seasons];
+}
+
+
 ///
 /// Bloc to handle updates and state of a specific Player.
 ///
@@ -115,6 +133,7 @@ class SinglePlayerBloc
 
   StreamSubscription<Player> _playerSub;
   StreamSubscription<Iterable<InviteToPlayer>> _inviteSub;
+  StreamSubscription<Iterable<Season>> _seasonSub;
 
   SinglePlayerBloc(
       {@required this.db, @required this.playerUid, @required this.crashes})
@@ -127,6 +146,7 @@ class SinglePlayerBloc
         add(_SinglePlayerNewPlayer(newPlayer: data));
       }
     });
+    _playerSub.onError((e, stack) => crashes.recordException(e, stack));
   }
 
   // Load this id from the hydratedBloc
@@ -206,6 +226,15 @@ class SinglePlayerBloc
           .build();
     }
 
+    if (event is _SinglePlayerSeasonsAdded) {
+      yield (SinglePlayerLoaded.fromState(state)
+        ..player = state.player.toBuilder()
+        ..seasons = ListBuilder(event.seasons)
+        ..seasonsLoaded = true)
+          .build();
+
+    }
+
     if (event is SinglePlayerLoadInvites) {
       if (_inviteSub == null) {
         _inviteSub = db
@@ -213,6 +242,15 @@ class SinglePlayerBloc
             .listen((Iterable<InviteToPlayer> invites) {
           add(_SinglePlayerInvitesAdded(invites: invites));
         });
+        _inviteSub.onError((e, stack) => crashes.recordException(e, stack));
+      }
+    }
+    if (event is SinglePlayerLoadSeasons) {
+      if (_seasonSub == null) {
+        _seasonSub = db.getPlayerSeasons(state.player.uid).listen((seasons) {
+          add(_SinglePlayerSeasonsAdded(seasons: seasons));
+        });
+        _seasonSub.onError((e, stack) => crashes.recordException(e, stack));
       }
     }
   }

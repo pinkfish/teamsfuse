@@ -44,6 +44,10 @@ abstract class SinglePlayerState {
   bool get invitesLoaded;
   @BuiltValueField(serialize: false)
   BuiltList<InviteToPlayer> get invites;
+  @BuiltValueField(serialize: false)
+  bool get seasonsLoaded;
+  @BuiltValueField(serialize: false)
+  BuiltList<Season> get seasons;
 
   static SinglePlayerStateBuilder fromState(
       SinglePlayerState state, SinglePlayerStateBuilder builder) {
@@ -51,11 +55,14 @@ abstract class SinglePlayerState {
       ..player = state.player?.toBuilder()
       ..mePlayer = state.mePlayer
       ..invites = state.invites.toBuilder()
-      ..invitesLoaded = state.invitesLoaded;
+      ..invitesLoaded = state.invitesLoaded
+      ..seasonsLoaded = state.seasonsLoaded
+      ..seasons = state.seasons.toBuilder();
   }
 
   static void initializeStateBuilder(SinglePlayerStateBuilder b) => b
     ..invitesLoaded = false
+    ..seasonsLoaded = false
     ..mePlayer = false;
 
   Map<String, dynamic> toMap();

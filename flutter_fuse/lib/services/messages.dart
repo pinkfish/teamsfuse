@@ -1143,10 +1143,13 @@ class Messages {
         name: 'No result for the game yet', desc: 'No result for the game');
   }
 
-  String get roleselect {
-    return Intl.message('Select role',
-        name: 'Drop down to select the role in the team');
-  }
+  String get roleselect =>
+     Intl.message('Select role',
+        name: 'Drop down to select the role in the team', locale: locale);
+  String get role =>
+      Intl.message('Role',
+          name: 'Header for a column talking about the role', locale: locale);
+
 
   String get savebuttontext {
     return Intl.message(
