@@ -1,76 +1,10 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
-import '../gamesbloc.dart';
-
-abstract class SingleSharedGameState extends Equatable {
-  final GameSharedData sharedData;
-
-  SingleSharedGameState({@required this.sharedData});
-
-  @override
-  List<Object> get props => [sharedData];
-}
-
-///
-/// We have a game, default state.
-///
-class SingleSharedGameLoaded extends SingleSharedGameState {
-  SingleSharedGameLoaded(
-      {@required SingleSharedGameState state, GameSharedData sharedData})
-      : super(sharedData: sharedData ?? state.sharedData);
-
-  @override
-  String toString() {
-    return 'SingleSharedGameLoaded{}';
-  }
-}
-
-///
-/// Saving operation in progress.
-///
-class SingleSharedGameSaving extends SingleSharedGameState {
-  SingleSharedGameSaving(
-      {@required SingleSharedGameState singleSharedGameState})
-      : super(sharedData: singleSharedGameState.sharedData);
-
-  @override
-  String toString() {
-    return 'SingleSharedGameSaving{}';
-  }
-}
-
-///
-/// Saving operation failed (goes back to loaded for success).
-///
-class SingleSharedGameSaveFailed extends SingleSharedGameState {
-  final Error error;
-
-  SingleSharedGameSaveFailed(
-      {@required SingleSharedGameState singleSharedGameState, this.error})
-      : super(sharedData: singleSharedGameState.sharedData);
-
-  @override
-  String toString() {
-    return 'SingleSharedGameSaveFailed{}';
-  }
-}
-
-///
-/// SharedGame got deleted.
-///
-class SingleSharedGameDeleted extends SingleSharedGameState {
-  SingleSharedGameDeleted.empty() : super(sharedData: null);
-
-  @override
-  String toString() {
-    return 'SingleSharedGameDeleted{}';
-  }
-}
+import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
 
 abstract class SingleSharedGameEvent extends Equatable {}
 
@@ -118,35 +52,30 @@ class _SingleSharedGameDeleted extends SingleSharedGameEvent {
 /// Bloc to handle updates and state of a specific game.
 ///
 class SingleSharedGameBloc
-    extends Bloc<SingleSharedGameEvent, SingleSharedGameState> {
-  final GameBloc gameBloc;
+    extends AsyncHydratedBloc<SingleSharedGameEvent, SingleSharedGameState> {
+  final DatabaseUpdateModel db;
   final String sharedGameUid;
   final AnalyticsSubsystem crashes;
 
   static String createNew = "new";
 
-  StreamSubscription<GameState> _gameSub;
+  StreamSubscription<GameSharedData> _gameSub;
 
+  ///
+  /// Build the shared game bloc for us to do fun stuff with.
+  ///
   SingleSharedGameBloc(
-      {@required this.gameBloc,
-      @required this.sharedGameUid,
-      @required this.crashes})
-      : super(gameBloc.state.getSharedData(sharedGameUid) != null
-            ? SingleSharedGameLoaded(
-                sharedData: gameBloc.state.getSharedData(sharedGameUid),
-                state: null)
-            : SingleSharedGameDeleted.empty()) {
-    _gameSub = gameBloc.listen((GameState gameState) {
-      GameSharedData data = gameState.getSharedData(sharedGameUid);
-      if (data != null) {
+      {@required this.db, @required this.sharedGameUid, @required this.crashes})
+      : super(SingleSharedGameUninitialized(), sharedGameUid) {
+    _gameSub = db.getSharedGame(sharedGameUid).listen((sharedGame) {
+      if (sharedGame != null) {
         // Only send this if the game is not the same.
-        if (data != state.sharedData) {
-          add(_SingleSharedGameNewSharedGame(sharedData: data));
-        }
+        add(_SingleSharedGameNewSharedGame(sharedData: sharedGame));
       } else {
         add(_SingleSharedGameDeleted());
       }
     });
+    _gameSub.onError((e, stack) => crashes.recordException(e, stack));
   }
 
   @override
@@ -159,42 +88,82 @@ class SingleSharedGameBloc
   Stream<SingleSharedGameState> mapEventToState(
       SingleSharedGameEvent event) async* {
     if (event is _SingleSharedGameNewSharedGame) {
-      yield SingleSharedGameLoaded(state: state, sharedData: event.sharedData);
+      yield (SingleSharedGameLoaded.fromState(state)
+            ..sharedGame = event.sharedData.toBuilder())
+          .build();
     }
 
     // The game is deleted.
     if (event is _SingleSharedGameDeleted) {
-      yield SingleSharedGameDeleted.empty();
+      yield SingleSharedGameDeleted.fromState(state).build();
     }
 
     // Update the shared data of the game.
     if (event is SingleSharedGameUpdateData) {
-      yield SingleSharedGameSaving(singleSharedGameState: state);
+      yield SingleSharedGameSaving.fromState(state).build();
       try {
-        await gameBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreSharedGame(event.sharedData);
-        yield SingleSharedGameLoaded(
-            state: state, sharedData: event.sharedData);
+        await db.updateFirestoreSharedGame(event.sharedData);
+        yield SingleSharedGameSaveDone.fromState(state).build();
+        yield (SingleSharedGameLoaded.fromState(state)
+              ..sharedGame = event.sharedData.toBuilder())
+            .build();
       } catch (e, stack) {
-        yield SingleSharedGameSaveFailed(
-            singleSharedGameState: state, error: e);
+        yield (SingleSharedGameSaveFailed.fromState(state)..error = e).build();
         crashes.recordException(e, stack);
       }
     }
 
     // Update offical game result
     if (event is SingleSharedGameUpdateOfficalResult) {
-      yield SingleSharedGameSaving(singleSharedGameState: state);
+      yield SingleSharedGameSaving.fromState(state).build();
       try {
-        await gameBloc.coordinationBloc.databaseUpdateModel
-            .updateFirestoreOfficalGameResult(
-                state.sharedData.uid, event.result);
-        yield SingleSharedGameLoaded(state: state);
+        await db.updateFirestoreOfficalGameResult(sharedGameUid, event.result);
+        yield SingleSharedGameSaveDone.fromState(state).build();
+        yield SingleSharedGameLoaded.fromState(state).build();
       } catch (e, stack) {
-        yield SingleSharedGameSaveFailed(
-            singleSharedGameState: state, error: e);
+        yield (SingleSharedGameSaveFailed.fromState(state)..error = e).build();
         crashes.recordException(e, stack);
       }
     }
+  }
+
+  @override
+  SingleSharedGameState fromJson(Map<String, dynamic> json) {
+    if (json == null || !json.containsKey("type")) {
+      return SingleSharedGameUninitialized();
+    }
+
+    try {
+      SingleSharedGameBlocStateType type =
+          SingleSharedGameBlocStateType.valueOf(json["type"]);
+      switch (type) {
+        case SingleSharedGameBlocStateType.Uninitialized:
+          return SingleSharedGameUninitialized();
+        case SingleSharedGameBlocStateType.Loaded:
+          var ret = SingleSharedGameLoaded.fromMap(json);
+          return ret;
+        case SingleSharedGameBlocStateType.Deleted:
+          return SingleSharedGameDeleted.fromMap(json);
+        case SingleSharedGameBlocStateType.SaveFailed:
+          return SingleSharedGameSaveFailed.fromMap(json);
+        case SingleSharedGameBlocStateType.Saving:
+          return SingleSharedGameSaving.fromMap(json);
+        case SingleSharedGameBlocStateType.SaveDone:
+          return SingleSharedGameSaveDone.fromMap(json);
+      }
+    } catch (e, stack) {
+      if (e is Error) {
+        crashes.recordError(e, stack);
+      } else {
+        crashes.recordException(e, stack);
+      }
+    }
+
+    return SingleSharedGameUninitialized();
+  }
+
+  @override
+  Map<String, dynamic> toJson(SingleSharedGameState state) {
+    return state.toMap();
   }
 }

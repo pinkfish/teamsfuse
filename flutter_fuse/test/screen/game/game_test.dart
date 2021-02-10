@@ -219,8 +219,10 @@ void main() {
     // Still loading when there is no team.
     expectLater(find.text("Fluff World"), findsOneWidget);
 
-    await expectLater(find.byType(GameDetailsScreen),
-        matchesGoldenFile('../../golden/game_details_set.png'));
+    if (String.fromEnvironment("GOLDEN", defaultValue: "").isNotEmpty) {
+      await expectLater(find.byType(GameDetailsScreen),
+          matchesGoldenFile('../../golden/game_details_set.png'));
+    }
 
     gameController.close();
   });

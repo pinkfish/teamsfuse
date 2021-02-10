@@ -1,0 +1,9 @@
+{
+  "@@last_modified": "2018-03-01T17:53:26.471832",
+  "title": "Team Fuse",
+  "@title": {
+    "description": "Title for the Team Fuse application",
+    "type": "text",
+    "placeholders": {}
+  }
+}

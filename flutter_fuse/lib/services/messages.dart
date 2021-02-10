@@ -23,10 +23,10 @@ class Messages {
     return Intl.message('Invited as an Administrator');
   }
 
-  String get addadmin {
-    return Intl.message('ADD ADMIN',
-        desc: 'Message to show as the title for the admin adding screen');
-  }
+  String get addadmin =>
+     Intl.message('ADD ADMIN',
+        desc: 'Message to show as the title for the admin adding screen', locale: locale);
+
 
   String get addclub {
     return Intl.message("ADD CLUB", name: "Add a new club button");

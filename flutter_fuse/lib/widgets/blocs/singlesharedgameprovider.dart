@@ -33,7 +33,7 @@ class SingleSharedGameProvider
 
   static SingleSharedGameBloc _createBloc(BuildContext context, String uid) {
     return SingleSharedGameBloc(
-      gameBloc: BlocProvider.of<GameBloc>(context),
+      db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       sharedGameUid: uid,
       crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
     );

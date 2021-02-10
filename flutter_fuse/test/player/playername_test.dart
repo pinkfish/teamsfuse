@@ -89,8 +89,10 @@ void main() {
 
     await expectLater(find.text("Frog"), findsOneWidget);
 
-    await expectLater(find.byType(PlayerName),
-        matchesGoldenFile('../golden/player_name_set.png'));
+    if (String.fromEnvironment("GOLDEN", defaultValue: "").isNotEmpty) {
+      await expectLater(find.byType(PlayerName),
+          matchesGoldenFile('../golden/player_name_set.png'));
+    }
   });
 
   testWidgets('name change', (tester) async {

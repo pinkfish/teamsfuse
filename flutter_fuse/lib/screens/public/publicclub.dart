@@ -27,7 +27,6 @@ class PublicClubDetailsScreen extends StatefulWidget {
 }
 
 class _PublicClubDetailsScreenState extends State<PublicClubDetailsScreen> {
-  int _tabIndex = 0;
   bool isWideScreen = true;
 
   Widget _buildBody(

@@ -20,13 +20,14 @@ import 'single/data/singleleagueortournamentbloc.dart';
 import 'single/data/singleleagueortournamentdivisonbloc.dart';
 import 'single/data/singleleagueortournamentseasonbloc.dart';
 import 'single/data/singleleagueortournamentteambloc.dart';
+import 'single/data/singlemessagebloc.dart';
 import 'single/data/singleopponentbloc.dart';
 import 'single/data/singleplayerbloc.dart';
 import 'single/data/singleprofilebloc.dart';
 import 'single/data/singleseasonbloc.dart';
+import 'single/data/singlesharedgamebloc.dart';
 import 'single/data/singleteambloc.dart';
 import 'single/data/singleteamseasonplayerbloc.dart';
-import 'single/data/singlemessagebloc.dart';
 
 part 'serializer.g.dart';
 
@@ -164,6 +165,14 @@ part 'serializer.g.dart';
   SingleSeasonSaving,
   SingleSeasonSaveFailed,
   SingleSeasonSaveDone,
+  SingleSharedGameLoaded,
+  SingleSharedGameState,
+  SingleSharedGameBlocStateType,
+  SingleSharedGameUninitialized,
+  SingleSharedGameDeleted,
+  SingleSharedGameSaving,
+  SingleSharedGameSaveFailed,
+  SingleSharedGameSaveDone,
   SingleTeamLoaded,
   SingleTeamState,
   SingleTeamBlocStateType,
