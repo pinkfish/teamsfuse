@@ -50,7 +50,9 @@ class ClubImage extends StatelessWidget {
         cubit: bloc,
         builder: (context, state) {
           Widget img;
-          if (state is SingleClubDeleted || state.club.photoUrl == null) {
+          if (state is SingleClubUninitialized ||
+              state is SingleClubDeleted ||
+              state.club.photoUrl == null) {
             img = Image.asset("assets/images/defaultavatar.png",
                 key: key,
                 width: width,

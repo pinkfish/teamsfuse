@@ -23,10 +23,12 @@ class Messages {
     return Intl.message('Invited as an Administrator');
   }
 
-  String get addadmin =>
-     Intl.message('ADD ADMIN',
-        desc: 'Message to show as the title for the admin adding screen', locale: locale);
+  String get addadmin => Intl.message('ADD ADMIN',
+      desc: 'Message to show as the title for the admin adding screen',
+      locale: locale);
 
+  String get coaches => Intl.message('Coaches',
+      desc: 'Header to display the coaches for the team/club', locale: locale);
 
   String get addclub {
     return Intl.message("ADD CLUB", name: "Add a new club button");
@@ -1143,13 +1145,10 @@ class Messages {
         name: 'No result for the game yet', desc: 'No result for the game');
   }
 
-  String get roleselect =>
-     Intl.message('Select role',
-        name: 'Drop down to select the role in the team', locale: locale);
-  String get role =>
-      Intl.message('Role',
-          name: 'Header for a column talking about the role', locale: locale);
-
+  String get roleselect => Intl.message('Select role',
+      name: 'Drop down to select the role in the team', locale: locale);
+  String get role => Intl.message('Role',
+      name: 'Header for a column talking about the role', locale: locale);
 
   String get savebuttontext {
     return Intl.message(

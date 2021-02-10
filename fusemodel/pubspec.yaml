@@ -10,21 +10,21 @@ environment:
 dependencies:
   timezone: ^0.6.1
   bloc: ^6.1.1
-  equatable: ^1.2.5
-  meta: ^1.2.4
-  async: ^2.4.2
-  built_value: ^7.1.0
-  built_collection: ^4.3.2
+  equatable: ^1.2.6
+  meta: ^1.3.0
+  async: ^2.5.0
+  built_value: ^8.0.0
+  built_collection: ^5.0.0
   hive: ^1.4.4+1
   synchronized: ^2.2.0+2
 
 dependency_overrides:
-  analyzer: ^0.41.2
+#  analyzer: ^0.41.2
 
 
 dev_dependencies:
   test: any
   mockito: any
-  build_runner: ^1.11.0
-  built_value_generator: ^7.1.0
+  build_runner: ^1.11.1
+  built_value_generator: ^8.0.0
   effective_dart: ^1.3.0

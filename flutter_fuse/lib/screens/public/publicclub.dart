@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singleclubprovider.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -31,21 +30,29 @@ class _PublicClubDetailsScreenState extends State<PublicClubDetailsScreen> {
 
   Widget _buildBody(
       Club club, SingleClubBloc singleClubBloc, BoxConstraints layout) {
-    print(layout);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 200,
-          child: ClubDetails(club),
-        ),
-        Expanded(
-          child: ClubTeams(club.uid,
-              onlyPublic: true,
-              onTap: (t) =>
-                  Navigator.pushNamed(context, "/Public/Team/" + t.uid)),
-        ),
-      ],
+    return DefaultTabController(
+      length: 3,
+      child: Column(
+        children: [
+          TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.people), text: Messages.of(context).about),
+              Tab(icon: Icon(Icons.people), text: Messages.of(context).teams),
+              Tab(icon: Icon(Icons.people), text: Messages.of(context).coaches),
+            ],
+          ),
+          TabBarView(
+            children: [
+              ClubDetails(club),
+              ClubTeams(club.uid,
+                  onlyPublic: true,
+                  onTap: (t) =>
+                      Navigator.pushNamed(context, "/Public/Team/" + t.uid)),
+              Text("Frogger froggerson")
+            ],
+          )
+        ],
+      ),
     );
   }
 
@@ -61,12 +68,6 @@ class _PublicClubDetailsScreenState extends State<PublicClubDetailsScreen> {
           }
         },
         builder: (context, state) {
-          String title;
-          if (state is SingleClubDeleted || state is SingleClubUninitialized) {
-            title = Messages.of(context).loading;
-          } else {
-            title = state.club.name;
-          }
           Widget theBody;
           if (state is SingleClubDeleted) {
             theBody = Center(
@@ -84,23 +85,7 @@ class _PublicClubDetailsScreenState extends State<PublicClubDetailsScreen> {
             );
           }
 
-          // Setup the navigation items.
-          var navItems = <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.gamepad),
-              label: Messages.of(context).clubdetails,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people),
-              label: Messages.of(context).teams,
-            ),
-          ];
-
           return Scaffold(
-            appBar: AppBar(
-              title: Text(title),
-              leading: Icon(MdiIcons.cardsClub),
-            ),
             body: theBody,
           );
         },

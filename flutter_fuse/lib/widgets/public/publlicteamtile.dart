@@ -1,0 +1,155 @@
+import 'package:fluro/fluro.dart' as fluro;
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/fusemodel.dart';
+
+import '../../services/messages.dart';
+import '../blocs/singleseasonprovider.dart';
+import '../blocs/singleteamprovider.dart';
+import '../teams/teamimage.dart';
+
+///
+/// The tile associated with the team, shows bonus details about the
+/// team.
+///
+class PublicTeamTile extends StatelessWidget {
+  /// Constructor for the team tile.
+  PublicTeamTile(this.teamUid,
+      {this.popBeforeNavigate = false,
+      this.showIconForTeam = false,
+      this.onTap,
+      this.selectedTileColor,
+      this.selected = false});
+
+  /// If we shuold do something exciting with the background.
+  final Color selectedTileColor;
+
+  /// If this tile is seltected.
+  final bool selected;
+
+  /// If the team tile has been tapped.
+  final GestureTapCallback onTap;
+
+  /// The teamUid to display.
+  final String teamUid;
+
+  /// If we should show an icon for the team.
+  final bool showIconForTeam;
+
+  /// If we should pop bevbore we navigate away,
+  final bool popBeforeNavigate;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleTeamProvider(
+      teamUid: teamUid,
+      builder: (c, singleTeamBloc) => BlocBuilder(
+        cubit: singleTeamBloc,
+        builder: (context, teamState) {
+          if (teamState is SingleTeamDeleted) {
+            return ListTile(
+                leading: Icon(Icons.delete),
+                title: Text(Messages.of(context).teamdeleted));
+          }
+          if (teamState is SingleTeamUninitialized) {
+            return ListTile(
+                leading: Icon(Icons.circle),
+                title: Text(Messages.of(context).loading));
+          }
+
+          return GestureDetector(
+            child: Card(
+              margin: EdgeInsets.all(5.0),
+              child: Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Row(
+                  children: [
+                    TeamImage(
+                      width: 100.0,
+                      height: 100.0,
+                      teamUid: teamState.team.uid,
+                      alignment: Alignment.centerLeft,
+                      showIcon: showIconForTeam,
+                    ),
+                    SizedBox(width: 10.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              text: teamState.team.name,
+                              style: Theme.of(context).textTheme.headline5,
+                              children: <TextSpan>[
+                                TextSpan(text: "  "),
+                              ],
+                            ),
+                          ),
+                          SingleSeasonProvider(
+                            seasonUid: teamState.team.currentSeason,
+                            builder: (context, seasonBloc) => BlocBuilder(
+                              cubit: seasonBloc,
+                              builder: (context, seasonState) {
+                                if (seasonState is SingleSeasonLoaded) {
+                                  return Text(
+                                    seasonState.season.record != null
+                                        ? Messages.of(context).winrecord(
+                                            seasonState.season.record)
+                                        : "",
+                                    style:
+                                        Theme.of(context).textTheme.subtitle1,
+                                  );
+                                }
+                                return Text(Messages.of(context).loading);
+                              },
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              TextButton(
+                                child: const Text('VIEW'),
+                                onPressed: onTap,
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            onTap: onTap ??
+                () {
+                  if (popBeforeNavigate) {
+                    Navigator.pop(context);
+                  }
+                  RepositoryProvider.of<fluro.FluroRouter>(context).navigateTo(
+                      context, "Team/${teamState.team.uid}",
+                      transition: fluro.TransitionType.inFromRight);
+                },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ColoredTabBar extends Container implements PreferredSizeWidget {
+  _ColoredTabBar({this.color, this.tabBar});
+
+  final Color color;
+  final TabBar tabBar;
+
+  @override
+  Size get preferredSize => tabBar.preferredSize;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        color: color,
+        child: tabBar,
+      );
+}

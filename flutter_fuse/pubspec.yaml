@@ -26,14 +26,14 @@ dependencies:
     git:
       url: https://github.com/pinkfish/charts.git
       path: charts_flutter
-  flutter_bloc: ^6.1.1
+  flutter_bloc: ^6.1.2
   flutter_svg: ^0.19.2+1
   video_player: ^1.0.1
   material_design_icons_flutter: ^4.0.5855
   bloc: ^6.1.1
   shared_preferences: ^0.5.12+4
   hydrated_bloc: ^6.1.0
-  package_info: ^0.4.3+2
+  package_info: ^0.4.3+4
   device_info: ^1.0.0
   path_provider: ^1.6.27
   uuid: any
@@ -58,7 +58,7 @@ dependencies:
   cupertino_icons: ^1.0.2
 
   built_value: '>=7.0.0 <8.1.0'
-  built_collection: ^4.3.2
+  built_collection: ^5.0.0
 
 dependency_overrides:
   analyzer: ^0.41.2
@@ -75,7 +75,7 @@ dev_dependencies:
   test: any
   mockito: ^4.1.4
   build_runner: ^1.11.1
-  built_value_generator: ^7.1.0
+  built_value_generator: ^8.0.0
   golden_toolkit: ^0.8.0
 
 

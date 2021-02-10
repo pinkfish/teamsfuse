@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/blocs/single/singleseasonbloc.dart';
-import 'package:flutter_fuse/widgets/blocs/singleseasonprovider.dart';
-import 'package:flutter_fuse/widgets/games/teamresults.dart';
-import 'package:flutter_fuse/widgets/util/deleted.dart';
-import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../../services/blocs/single/singleseasonbloc.dart';
 import '../../services/messages.dart';
+import '../blocs/singleseasonprovider.dart';
 import '../blocs/singleteamprovider.dart';
+import '../games/teamresults.dart';
 import '../player/gendericon.dart';
+import '../util/deleted.dart';
+import '../util/loading.dart';
 import 'stats/seasonplayerlist.dart';
+import 'stats/teamstats.dart';
 import 'teamimage.dart';
 
 ///
@@ -28,38 +29,36 @@ class PublicTeamDetails extends StatelessWidget {
   Widget _buildCurrentSeason(BuildContext context, SingleTeamState team,
       SingleSeasonBloc singleSeasonBloc) {
     return BlocBuilder(
-        cubit: singleSeasonBloc,
-        builder: (context, seasonState) {
-          if (seasonState is SingleSeasonDeleted) {
-            return DeletedWidget();
-          }
-          if (seasonState is SingleSeasonUninitialized) {
-            return LoadingWidget();
-          }
-          var season = seasonState.season;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "${season.name} W:${season.record.win} L:${season.record.loss} T:${season.record.tie}",
-                  style: Theme.of(context).textTheme.headline5,
-              ),
-              // Show the list of players here.
-            ],
-          );
-        });
+      cubit: singleSeasonBloc,
+      builder: (context, seasonState) {
+        if (seasonState is SingleSeasonDeleted) {
+          return DeletedWidget();
+        }
+        if (seasonState is SingleSeasonUninitialized) {
+          return LoadingWidget();
+        }
+        var season = seasonState.season;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "${season.name} W:${season.record.win} L:${season.record.loss} T:${season.record.tie}",
+              style: Theme.of(context).textTheme.headline5,
+            ),
+            // Show the list of players here.
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
 
-    var wideScreen = screenSize.width > 600;
     return DefaultTabController(
-      // The number of tabs / content sections to display.
-      length: 2,
-      child: // Complete this code in the next step.
-          SingleTeamProvider(
+      length: 3,
+      child: SingleTeamProvider(
         teamUid: teamuid,
         builder: (context, bloc) => BlocBuilder(
           cubit: bloc,
@@ -72,9 +71,11 @@ class PublicTeamDetails extends StatelessWidget {
                   Center(
                     child: Image(
                       image: ExactAssetImage("assets/images/abstractsport.png"),
-                      width: (screenSize.width < 500)
-                          ? 120.0
-                          : (screenSize.width / 4) + 12.0,
+                      width: DefaultTabController.of(context).index == 0
+                          ? (screenSize.width < 500)
+                              ? 120.0
+                              : (screenSize.width / 4) + 12.0
+                          : 0.0,
                       height: screenSize.height / 4 + 20,
                     ),
                   ),
@@ -87,90 +88,98 @@ class PublicTeamDetails extends StatelessWidget {
               return LoadingWidget();
             }
 
-            var tags = <Widget>[];
             var team = teamState.team;
-            if (team.archived) {
-              tags.add(
-                Chip(
-                  avatar: CircleAvatar(
-                    backgroundColor: Colors.white70,
-                    child: const Icon(Icons.archive),
-                  ),
-                  label: Text(Messages.of(context).archived),
-                ),
-              );
-            }
-
             return SingleSeasonProvider(
               seasonUid: team.currentSeason,
               builder: (context, singleSeasonBloc) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Center(
-                    child: TeamImage(
-                      teamUid: team.uid,
-                      showIcon: false,
-                      width: (screenSize.width < 500)
-                          ? 120.0
-                          : (screenSize.width / 4) + 12.0,
-                      height: screenSize.height / 4 + 20,
-                    ),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.people),
-                    title: Text(team.name,
-                        style: Theme.of(context).textTheme.headline4),
-                    subtitle: Text("${team.sport}(${team.league}, ) ",
-                        style: Theme.of(context).textTheme.headline5),
-                    trailing: GenderIcon(team.gender),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 10.0, right: 5.0),
-                    child: Wrap(
-                      spacing: 5.0,
-                      children: tags,
-                    ),
-                  ),
-                  _buildCurrentSeason(context, teamState, singleSeasonBloc),
-                  TabBar(
-                    labelColor: Colors.black,
-                    tabs: [
-                      Tab(
-                        text: Messages.of(context).player,
-                        icon: Icon(Icons.people),
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: TeamImage(
+                          teamUid: team.uid,
+                          showIcon: false,
+                          width: (screenSize.width < 500)
+                              ? 120.0
+                              : (screenSize.width / 4) + 12.0,
+                          height: screenSize.height / 4 + 20,
+                        ),
                       ),
-                      Tab(
-                        text: Messages.of(context).games,
-                        icon: Icon(MdiIcons.basketball),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Text(team.name,
+                                  style: Theme.of(context).textTheme.headline4),
+                              Text("${team.sport}(${team.league}, ) ",
+                                  style: Theme.of(context).textTheme.headline5),
+                              _buildCurrentSeason(
+                                  context, teamState, singleSeasonBloc),
+                            ],
+                          ),
+                        ),
                       ),
+                      GenderIcon(team.gender),
                     ],
                   ),
                   Expanded(
-                    child: TabBarView(
-                      children: [
-                        BlocBuilder(
-                          cubit: singleSeasonBloc,
-                          builder: (context, seasonState) {
-                            if (seasonState is SingleSeasonDeleted) {
-                              return DeletedWidget();
-                            }
-                            if (seasonState is SingleSeasonUninitialized) {
-                              return LoadingWidget();
-                            }
-                            return SeasonPlayerList(
-                              season: seasonState.season,
-                              orientation: Orientation.landscape,
-                            );
-                          },
+                      child: Column(
+                    children: [
+                      _ColoredTabBar(
+                        color: Colors.grey.shade200,
+                        tabBar: TabBar(
+                          labelColor: Colors.black,
+                          tabs: [
+                            Tab(
+                              text: Messages.of(context).player,
+                              icon: Icon(Icons.people),
+                            ),
+                            Tab(
+                              text: Messages.of(context).games,
+                              icon: Icon(MdiIcons.basketball),
+                            ),
+                            Tab(
+                              text: Messages.of(context).stats,
+                              icon: Icon(MdiIcons.graph),
+                            )
+                          ],
                         ),
-                        TeamResultsBySeason(
-                          teamUid: team.uid,
-                          seasonUid: team.currentSeason,
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          children: [
+                            BlocBuilder(
+                              cubit: singleSeasonBloc,
+                              builder: (context, seasonState) {
+                                if (seasonState is SingleSeasonDeleted) {
+                                  return DeletedWidget();
+                                }
+                                if (seasonState is SingleSeasonUninitialized) {
+                                  return LoadingWidget();
+                                }
+                                return SeasonPlayerList(
+                                  season: seasonState.season,
+                                  orientation: Orientation.landscape,
+                                );
+                              },
+                            ),
+                            TeamResultsBySeason(
+                              teamUid: team.uid,
+                              seasonUid: team.currentSeason,
+                            ),
+                            TeamStatsWidget(
+                              teamUid: team.uid,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    ],
+                  ))
                 ],
               ),
             );
@@ -179,4 +188,20 @@ class PublicTeamDetails extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ColoredTabBar extends Container implements PreferredSizeWidget {
+  _ColoredTabBar({this.color, this.tabBar});
+
+  final Color color;
+  final TabBar tabBar;
+
+  @override
+  Size get preferredSize => tabBar.preferredSize;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        color: color,
+        child: tabBar,
+      );
 }
