@@ -36,6 +36,7 @@ part 'serializer.g.dart';
   BroadcastStatus,
   BroadcastType,
   Club,
+  Coach,
   EventType,
   FusedUserProfile,
   Game,

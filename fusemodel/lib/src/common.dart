@@ -67,6 +67,7 @@ const String INVITE_COLLECTION = "Invites";
 const String PLAYERS_COLLECTION = "Players";
 const String USER_DATA_COLLECTION = "UserData";
 const String CLUB_COLLECTION = "Clubs";
+const String COACH_COLLECTION = "Coaches";
 const String LEAGUE_COLLECTON = "League";
 const String LEAGUE_DIVISION_COLLECTION = "LeagueDivision";
 const String LEAGUE_SEASON_COLLECTION = "LeagueSeason";

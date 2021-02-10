@@ -279,6 +279,14 @@ abstract class DatabaseUpdateModel {
   DocumentReferenceWrapper precreateTeamUid();
   Stream<BuiltList<InviteToClub>> getInviteToClubStream(String clubUid);
   Stream<Club> getClubData({@required String clubUid});
+  /// Get all the clubs asccociated with the clut.
+  Stream<BuiltList<Coach>> getClubCoaches(String clubUid);
+  /// Add the coach to the club.
+  Future<Coach> addClubCoach(Coach coach, Uint8List imageData);
+  /// Update the coach club stuff.
+  Future<Coach> updateClubCoach(Coach coach, Uint8List imageData);
+  /// Delete the coach club stuff.
+  Future<void> deleteClubCoach(Coach coach);
 
   // League and stuff.
   Stream<BuiltList<GameSharedData>> getLeagueGamesForDivison(

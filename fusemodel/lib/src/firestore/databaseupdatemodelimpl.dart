@@ -1329,6 +1329,86 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
+  @override
+  Stream<BuiltList<Coach>> getClubCoaches(String clubUid) async* {
+    QueryWrapper query = wrapper
+        .collection(CLUB_COLLECTION)
+        .document(clubUid)
+        .collection(COACH_COLLECTION);
+    QuerySnapshotWrapper wrap = await query.getDocuments();
+    var coaches = ListBuilder<Coach>();
+    for (DocumentSnapshotWrapper snap in wrap.documents) {
+      coaches.add(Coach.fromMap(snap.data));
+    }
+    yield coaches.build();
+
+    await for (QuerySnapshotWrapper wrap in query.snapshots()) {
+      var coaches = ListBuilder<Coach>();
+      for (DocumentSnapshotWrapper snap in wrap.documents) {
+        coaches.add(Coach.fromMap(snap.data));
+      }
+      yield coaches.build();
+    }
+  }
+
+  @override
+  Future<Coach> addClubCoach(Coach coach, Uint8List imageData) async {
+    final StorageReferenceWrapper imageRef =
+        wrapper.storageRef().child("coach_${coach.clubUid}_${coach.uid}.img");
+    if (imageData != null) {
+      var task = imageRef.putFile(imageData);
+      await task.future;
+      String downloadUrl = await imageRef.getDownloadURL();
+      coach = coach.rebuild((b) => b..photoUrl = downloadUrl);
+    }
+
+    try {
+      var ref = wrapper
+          .collection(CLUB_COLLECTION)
+          .document(coach.clubUid)
+          .collection(COACH_COLLECTION)
+          .document();
+      coach = coach.rebuild((b) => b..uid = ref.documentID);
+      await ref.setData(coach.toMap());
+    } catch (e) {
+      // Delete the image if the create failed.
+      if (imageData != null) {
+        imageRef.delete();
+      }
+      throw e;
+    }
+    return coach;
+  }
+
+  @override
+  Future<Coach> updateClubCoach(Coach coach, Uint8List imageData) async {
+    if (imageData != null) {
+      var imageRef =
+          wrapper.storageRef().child("coach_${coach.clubUid}_${coach.uid}.img");
+      var task = imageRef.putFile(imageData);
+      await task.future;
+      String downloadUrl = await imageRef.getDownloadURL();
+      coach = coach.rebuild((b) => b..photoUrl = downloadUrl);
+    }
+    var ref = wrapper
+        .collection(CLUB_COLLECTION)
+        .document(coach.clubUid)
+        .collection(COACH_COLLECTION)
+        .document(coach.uid);
+    await ref.updateData(coach.toMap());
+    return coach;
+  }
+
+  @override
+  Future<void> deleteClubCoach(Coach coach) async {
+    var ref = wrapper
+        .collection(CLUB_COLLECTION)
+        .document(coach.clubUid)
+        .collection(COACH_COLLECTION)
+        .document(coach.uid);
+    await ref.delete();
+  }
+
   // leagues!
   @override
   Stream<BuiltList<LeagueOrTournamentTeam>> getLeagueDivisionTeams(
