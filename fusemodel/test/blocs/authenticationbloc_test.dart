@@ -61,7 +61,7 @@ void main() {
     });
 
     test('emits [uninitialized, authenticated] for real data', () {
-      final var userData =  UserData((b) => b
+       var userData =  UserData((b) => b
         ..email = "frog@frog.com"
         ..uid = "ububng"
         ..isEmailVerified = true);
