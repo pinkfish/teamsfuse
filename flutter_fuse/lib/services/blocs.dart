@@ -23,6 +23,7 @@ export 'blocs/playerbloc.dart';
 export 'blocs/profilebloc.dart';
 export 'blocs/seasonbloc.dart';
 export 'blocs/single/singleclubbloc.dart';
+export 'blocs/single/singleclubcoachbloc.dart';
 export 'blocs/single/singlegamebloc.dart';
 export 'blocs/single/singleinvitebloc.dart';
 export 'blocs/single/singleleagueortournamentbloc.dart';

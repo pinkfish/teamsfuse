@@ -1,24 +1,26 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 
-import 'package:built_collection/built_collection.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
 
-abstract class SingleclubCoachEvent extends Equatable {}
+/// The base event type to use for all the club coach stuff.
+abstract class SingleClubCoachEvent extends Equatable {}
 
 ///
 /// Updates the clubCoach (writes it out to firebase.
 ///
-class SingleClubCoachUpdate extends SingleclubCoachEvent {
+class SingleClubCoachUpdate extends SingleClubCoachEvent {
+  /// The new value for the coach.
   final Coach coach;
+
+  /// Optional image, if this is set then the image is updated.
   final File image;
 
+  /// Creates a new update for the coach details.
   SingleClubCoachUpdate({@required this.coach, this.image});
 
   @override
@@ -28,55 +30,62 @@ class SingleClubCoachUpdate extends SingleclubCoachEvent {
 ///
 /// Delete this coach from the world.
 ///
-class SingleClubCoachDelete extends SingleclubCoachEvent {
+class SingleClubCoachDelete extends SingleClubCoachEvent {
   @override
   List<Object> get props => [];
 }
 
-class _SingleClubCoachDeleted extends SingleclubCoachEvent {
+class _SingleClubCoachDeleted extends SingleClubCoachEvent {
   @override
   List<Object> get props => [];
 }
 
-class _SingleClubCoachNew extends SingleclubCoachEvent {
+class _SingleClubCoachNewCoach extends SingleClubCoachEvent {
   final Coach coach;
 
-  _SingleClubCoachNew({this.coach});
+  _SingleClubCoachNewCoach({this.coach});
   @override
   List<Object> get props => [coach];
 }
 
-
 ///
 /// Bloc to handle updates and state of a specific clubCoach.
 ///
-class SingleclubCoachBloc
-    extends AsyncHydratedBloc<SingleclubCoachEvent, SingleClubCoachState> {
+class SingleClubCoachBloc
+    extends AsyncHydratedBloc<SingleClubCoachEvent, SingleClubCoachState> {
+  /// The database to use for writing out to firestore.
   final DatabaseUpdateModel db;
+
+  /// Handles all the crashes.
   final AnalyticsSubsystem crashes;
-  final String clubCoachUid;
+
+  /// The uid for the coach to load.
+  final String coachUid;
+
+  /// The uid for the club to load.
   final String clubUid;
 
   StreamSubscription<Coach> _clubCoachSub;
 
-  SingleclubCoachBloc(
+  ///
+  /// Creates the club coach bloc.
+  ///
+  SingleClubCoachBloc(
       {@required this.db,
-      @required this.clubCoachUid,
+      @required this.coachUid,
       @required this.clubUid,
       @required this.crashes})
-      : super(
-            SingleClubCoachUninitialized(), "SingleclubCoach" + clubCoachUid) {
-    _clubCoachSub = db
-        .getClubCoach(clubUid: clubUid, clubCoachUid: clubCoachUid)
-        .listen((clubCoach) {
+      : super(SingleClubCoachUninitialized(), "SingleclubCoach$coachUid") {
+    _clubCoachSub =
+        db.getSingleClubCoach(clubUid, coachUid).listen((clubCoach) {
       if (clubCoach != null) {
-        add(_SingleclubCoachNewclubCoach(newclubCoach: clubCoach));
+        add(_SingleClubCoachNewCoach(coach: clubCoach));
       } else {
-        add(_SingleclubCoachDeleted());
+        add(_SingleClubCoachDeleted());
       }
     });
     _clubCoachSub.onError((e, stack) {
-      add(_SingleclubCoachDeleted());
+      add(_SingleClubCoachDeleted());
       if (e is Exception) {
         crashes.recordException(e, stack);
       } else if (e is Error) {
@@ -89,58 +98,35 @@ class SingleclubCoachBloc
   Future<void> close() async {
     await super.close();
     _clubCoachSub?.cancel();
-    _inviteSub?.cancel();
   }
 
   @override
   Stream<SingleClubCoachState> mapEventToState(
-      SingleclubCoachEvent event) async* {
-    if (event is _SingleclubCoachNewclubCoach) {
+      SingleClubCoachEvent event) async* {
+    if (event is _SingleClubCoachNewCoach) {
       yield (SingleClubCoachLoaded.fromState(state)
-            ..clubCoach = event.newclubCoach.toBuilder())
+            ..coach = event.coach.toBuilder())
           .build();
     }
 
     // The clubCoach is deleted.
-    if (event is _SingleclubCoachDeleted) {
+    if (event is _SingleClubCoachDeleted) {
       yield SingleClubCoachDeleted.fromState(state).build();
     }
 
     // Save the clubCoach.
-    if (event is SingleclubCoachUpdate) {
+    if (event is SingleClubCoachUpdate) {
       yield SingleClubCoachSaving.fromState(state).build();
       try {
-        Coach clubCoach = event.clubCoach;
-        await db.updateClubCoach(
-            clubCoach, event.image != null ? event.image.readAsBytes() : null);
-        yield SingleClubCoachSaveDone.fromState(state).build();
-        yield (SingleclubCoachLoaded.fromState(state)
-              ..clubCoach = event.clubCoach.toBuilder())
-            .build();
-      } catch (e, stack) {
-        yield (SingleclubCoachSaveFailed.fromState(state)
-              ..error = RemoteError(e.message, stack.toString()))
-            .build();
-        yield SingleclubCoachLoaded.fromState(state).build();
-        crashes.recordException(e, stack);
-      }
-    }
-
-    if (event is SingleclubCoachUpdateImage) {
-      yield SingleClubCoachSaving.fromState(state).build();
-      try {
-        Uri clubCoachUri = await db.updateClubCoach(
-            state.clubCoach, await event.image.readAsBytes());
-
+        var clubCoach = event.coach;
+        await db.updateClubCoach(clubCoach,
+            event.image != null ? await event.image.readAsBytes() : null);
         yield SingleClubCoachSaveDone.fromState(state).build();
         yield (SingleClubCoachLoaded.fromState(state)
-              ..clubCoach = (state.clubCoach.toBuilder()
-                ..photoUrl = clubCoachUri.toString()))
+              ..coach = event.coach.toBuilder())
             .build();
-      } catch (e, stack) {
-        yield (SingleClubCoachSaveFailed.fromState(state)
-              ..error = RemoteError(e.message, stack.toString()))
-            .build();
+      } on Exception catch (e, stack) {
+        yield (SingleClubCoachSaveFailed.fromState(state)..error = e).build();
         yield SingleClubCoachLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -152,10 +138,8 @@ class SingleclubCoachBloc
         await db.deleteClubCoach(state.coach);
         yield SingleClubCoachSaveDone.fromState(state).build();
         yield SingleClubCoachLoaded.fromState(state).build();
-      } catch (e, stack) {
-        yield (SingleClubCoachSaveFailed.fromState(state)
-              ..error = RemoteError(e.message, stack.toString()))
-            .build();
+      } on Exception catch (e, stack) {
+        yield (SingleClubCoachSaveFailed.fromState(state)..error = e).build();
         yield SingleClubCoachLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -163,42 +147,37 @@ class SingleclubCoachBloc
   }
 
   @override
-  SingleclubCoachState fromJson(Map<String, dynamic> json) {
+  SingleClubCoachState fromJson(Map<String, dynamic> json) {
     if (json == null || !json.containsKey("type")) {
-      return SingleclubCoachUninitialized();
+      return SingleClubCoachUninitialized();
     }
 
     try {
-      SingleclubCoachBlocStateType type =
-          SingleclubCoachBlocStateType.valueOf(json["type"]);
+      var type = SingleClubCoachBlocStateType.valueOf(json["type"]);
       switch (type) {
-        case SingleclubCoachBlocStateType.Uninitialized:
-          return SingleclubCoachUninitialized();
-        case SingleclubCoachBlocStateType.Loaded:
-          return SingleclubCoachLoaded.fromMap(json);
-        case SingleclubCoachBlocStateType.Deleted:
-          return SingleclubCoachDeleted.fromMap(json);
-        case SingleclubCoachBlocStateType.SaveFailed:
-          return SingleclubCoachSaveFailed.fromMap(json);
-        case SingleclubCoachBlocStateType.Saving:
-          return SingleclubCoachSaving.fromMap(json);
-        case SingleclubCoachBlocStateType.SaveDone:
-          return SingleclubCoachSaveDone.fromMap(json);
+        case SingleClubCoachBlocStateType.Uninitialized:
+          return SingleClubCoachUninitialized();
+        case SingleClubCoachBlocStateType.Loaded:
+          return SingleClubCoachLoaded.fromMap(json);
+        case SingleClubCoachBlocStateType.Deleted:
+          return SingleClubCoachDeleted.fromMap(json);
+        case SingleClubCoachBlocStateType.SaveFailed:
+          return SingleClubCoachSaveFailed.fromMap(json);
+        case SingleClubCoachBlocStateType.Saving:
+          return SingleClubCoachSaving.fromMap(json);
+        case SingleClubCoachBlocStateType.SaveDone:
+          return SingleClubCoachSaveDone.fromMap(json);
       }
-    } catch (e, stack) {
-      if (e is Error) {
-        crashes.recordError(e, stack);
-      } else {
-        crashes.recordException(e, stack);
-      }
+    } on Exception catch (e, stack) {
+      crashes.recordException(e, stack);
       print(e);
     }
 
-    return SingleclubCoachUninitialized();
+    return SingleClubCoachUninitialized();
   }
 
   @override
-  Map<String, dynamic> toJson(SingleclubCoachState state) {
+  Map<String, dynamic> toJson(SingleClubCoachState state) {
     return state.toMap();
   }
 }
