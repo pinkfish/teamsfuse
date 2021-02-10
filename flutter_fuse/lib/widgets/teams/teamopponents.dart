@@ -245,7 +245,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                           }
                         }
                       }
-                      if (newData.itEmpty) {
+                      if (newData.isEmpty) {
                         newData
                             .add(Text(Messages.of(context).nogamesthisseason));
                       }
