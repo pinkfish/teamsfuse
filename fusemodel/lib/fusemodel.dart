@@ -23,6 +23,7 @@ export 'src/blocs/single/data/singleseasonbloc.dart';
 export 'src/blocs/single/data/singleteambloc.dart';
 export 'src/blocs/single/data/singleteamseasonplayerbloc.dart';
 export 'src/blocs/single/data/singlesharedgamebloc.dart';
+export 'src/blocs/single/data/singleclubcoachbloc.dart';
 export 'src/club.dart';
 export 'src/common.dart';
 export 'src/databaseupdatemodel.dart';

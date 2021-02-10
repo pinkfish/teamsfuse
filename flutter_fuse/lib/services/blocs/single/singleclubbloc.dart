@@ -114,11 +114,9 @@ class SingleClubLoadTeams extends SingleClubEvent {
 /// Loads the coaches from firebase.
 ///
 class SingleClubLoadCoaches extends SingleClubEvent {
-
   @override
   List<Object> get props => [];
 }
-
 
 class _SingleClubNewClub extends SingleClubEvent {
   final Club newClub;
@@ -157,12 +155,11 @@ class _SingleClubTeamsAdded extends SingleClubEvent {
 class _SingleClubCoachesAdded extends SingleClubEvent {
   final BuiltList<Coach> coaches;
 
-  _SingleClubTeamsAdded({@required this.coaches});
+  _SingleClubCoachesAdded({@required this.coaches});
 
   @override
   List<Object> get props => [coaches];
 }
-
 
 ///
 /// Bloc to handle updates and state of a specific club.
@@ -179,6 +176,7 @@ class SingleClubBloc
   StreamSubscription<Iterable<InviteToClub>> _inviteSub;
 
   StreamSubscription<BuiltList<Team>> _teamSub;
+  StreamSubscription<BuiltList<Coach>> _coachSub;
 
   SingleClubBloc(
       {@required this.db, @required this.clubUid, @required this.crashes})
@@ -191,7 +189,6 @@ class SingleClubBloc
       }
     });
     _clubSub.onError((e, stack) {
-      print("Error loading the club '$clubUid'");
       add(_SingleClubDeleted());
       if (e is Exception) {
         crashes.recordException(e, stack);
@@ -324,6 +321,17 @@ class SingleClubBloc
             .getInviteToClubStream(clubUid)
             .listen((Iterable<InviteToClub> invites) {
           add(_SingleClubInvitesAdded(invites: invites));
+          _inviteSub.onError((e, stack) => crashes.recordException(e, stack));
+        });
+      }
+    }
+
+    if (event is SingleClubLoadCoaches) {
+      if (_coachSub == null) {
+        _coachSub =
+            db.getClubCoaches(clubUid).listen((BuiltList<Coach> coaches) {
+          add(_SingleClubCoachesAdded(coaches: coaches));
+          _coachSub.onError((e, stack) => crashes.recordException(e, stack));
         });
       }
     }

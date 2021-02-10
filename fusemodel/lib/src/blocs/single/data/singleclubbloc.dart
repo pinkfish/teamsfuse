@@ -34,14 +34,35 @@ class SingleClubBlocStateType extends EnumClass {
 ///
 @BuiltValue(instantiable: false)
 abstract class SingleClubState {
+  /// The club for this bloc.
   @nullable
   Club get club;
-  bool get loadedTeams;
-  BuiltList<Team> get teams;
-  bool get loadedInvites;
-  BuiltList<InviteToClub> get invites;
+
+  /// The type of the state.
   SingleClubBlocStateType get type;
+
+  /// If the teams have been loaded.
+  @BuiltValueField(serialize: false)
+  bool get loadedTeams;
+
+  /// The loaded teams.
+  @BuiltValueField(serialize: false)
+  BuiltList<Team> get teams;
+
+  /// The invites have been loaded.
+  @BuiltValueField(serialize: false)
+  bool get loadedInvites;
+
+  /// The loaded invites
+  @BuiltValueField(serialize: false)
+  BuiltList<InviteToClub> get invites;
+
+  /// If the coaches have been loaded.
+  @BuiltValueField(serialize: false)
   bool get loadedCoaches;
+
+  /// The coaches that are loaded.
+  @BuiltValueField(serialize: false)
   BuiltList<Coach> get coaches;
 
   static SingleClubStateBuilder fromState(
@@ -176,7 +197,9 @@ abstract class SingleClubSaveFailed
     implements
         SingleClubState,
         Built<SingleClubSaveFailed, SingleClubSaveFailedBuilder> {
-  Error get error;
+  /// The error associatedf with this club.
+  @BuiltValueField(serialize: false)
+  Exception get error;
 
   SingleClubSaveFailed._();
   factory SingleClubSaveFailed(

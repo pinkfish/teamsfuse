@@ -267,26 +267,55 @@ abstract class DatabaseUpdateModel {
   Stream<GameSnapshotEvent> getBasicGames(
       {DateTime start, DateTime end, String teamUid, String seasonUid});
 
+  //
   // Clubs and stuff.
+  //
+
+  /// Get all the teams associated with the club.
   Stream<BuiltList<Team>> getClubTeams(Club club, bool isPublic);
+
+  /// Update the club in the database.
   Future<String> updateClub(Club club, {bool includeMembers});
+
+  /// Add a new club to the datbase
   Future<String> addClub(DocumentReferenceWrapper ref, Club club);
+
+  /// Update the image with the club.
   Future<Uri> updateClubImage(Club club, Uint8List imageFile);
+
+  /// add a user to the club.
   Future<void> addUserToClub(String clubUid, String newUserUid, bool admin);
+
+  /// Invite a user to the club.
   Future<String> inviteUserToClub(
       {String clubName, String clubUid, bool admin, String email});
+
+  /// Delete a member from the club
   Future<void> deleteClubMember(Club club, String memberUid);
+
+  /// Precreates a teamuid to use for places where the uis is needed ahead of time.
   DocumentReferenceWrapper precreateTeamUid();
+
+  /// Get all the invites to the club.
   Stream<BuiltList<InviteToClub>> getInviteToClubStream(String clubUid);
+
+  /// Gets the data associated withthe club.
   Stream<Club> getClubData({@required String clubUid});
+
   /// Get all the clubs asccociated with the clut.
   Stream<BuiltList<Coach>> getClubCoaches(String clubUid);
+
   /// Add the coach to the club.
   Future<Coach> addClubCoach(Coach coach, Uint8List imageData);
+
   /// Update the coach club stuff.
   Future<Coach> updateClubCoach(Coach coach, Uint8List imageData);
+
   /// Delete the coach club stuff.
   Future<void> deleteClubCoach(Coach coach);
+
+  /// Get all the clubs asccociated with the clut.
+  Stream<Coach> getSingleClubCoach(String clubUid, String coachUid);
 
   // League and stuff.
   Stream<BuiltList<GameSharedData>> getLeagueGamesForDivison(
