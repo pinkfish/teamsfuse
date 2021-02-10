@@ -4,13 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+import '../util/loadfonts.dart';
 import '../util/testable.dart';
 
 void main() {
   testWidgets('Gender icon male', (tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(
-      makeTestableWidget(
+      await makeTestableWidget(
         Directionality(
           textDirection: TextDirection.rtl,
           child: GenderIcon(Gender.Male),
@@ -24,9 +25,10 @@ void main() {
     expect(find.byIcon(MdiIcons.genderMale), findsOneWidget);
   });
   testWidgets('Gender icon female', (tester) async {
+    loadFonts();
     // Build our app and trigger a frame.
     await tester.pumpWidget(
-      makeTestableWidget(
+      await makeTestableWidget(
         Directionality(
           textDirection: TextDirection.rtl,
           child: RepaintBoundary(

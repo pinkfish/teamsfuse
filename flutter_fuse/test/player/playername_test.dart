@@ -26,7 +26,7 @@ void main() {
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(
-      makeTestableWidget(
+      await makeTestableWidget(
         MultiRepositoryProvider(
           providers: [
             RepositoryProvider<DatabaseUpdateModel>(
@@ -59,7 +59,7 @@ void main() {
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(
-      makeTestableWidget(
+      await makeTestableWidget(
         MultiRepositoryProvider(
           providers: [
             RepositoryProvider<DatabaseUpdateModel>(
@@ -70,7 +70,11 @@ void main() {
             ),
           ],
           child: RepaintBoundary(
-            child: PlayerName(playerUid: "123"),
+            child: PlayerName(
+              playerUid: "123",
+              style: TextStyle(
+                  fontFamily: "Roboto", fontSize: 12.0, color: Colors.black),
+            ),
           ),
         ),
       ),
@@ -79,6 +83,7 @@ void main() {
       ..name = "Frog"
       ..uid = "123"));
 
+    await tester.pump(Duration(milliseconds: 600));
     await tester.pump(Duration(milliseconds: 600));
     await tester.pump(Duration(milliseconds: 600));
 
@@ -94,12 +99,11 @@ void main() {
     var mockAnalytics = MockAnalyticsSubsystem();
 
     // Stub the state stream
-    //singlePlayerBloc.emit(SinglePlayerUninitialized());
     when(mockDb.getPlayerDetails("123")).thenAnswer((p) => gameData.stream);
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(
-      makeTestableWidget(
+      await makeTestableWidget(
         MultiRepositoryProvider(
           providers: [
             RepositoryProvider<DatabaseUpdateModel>(
@@ -110,7 +114,11 @@ void main() {
             ),
           ],
           child: RepaintBoundary(
-            child: PlayerName(playerUid: "123"),
+            child: PlayerName(
+              playerUid: "123",
+              style: TextStyle(
+                  fontFamily: "Roboto", fontSize: 12.0, color: Colors.white),
+            ),
           ),
         ),
       ),

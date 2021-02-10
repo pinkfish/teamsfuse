@@ -74,8 +74,9 @@ dev_dependencies:
     sdk: flutter
   test: any
   mockito: ^4.1.4
-  build_runner: ^1.11.0
+  build_runner: ^1.11.1
   built_value_generator: ^7.1.0
+  golden_toolkit: ^0.8.0
 
 
 flutter:

@@ -14,6 +14,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:mockito/mockito.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
+import '../../util/loadfonts.dart';
 import '../../util/testable.dart';
 import '../../util/testdata.dart';
 
@@ -27,6 +28,8 @@ class MockPlayerBloc extends MockBloc<PlayerState> implements PlayerBloc {}
 
 void main() {
   testWidgets('uninitialized', (tester) async {
+    loadFonts();
+
     var mockDb = MockDatabaseUpdateModel();
     var mockAnalytics = MockAnalyticsSubsystem();
     var gameController = StreamController<Game>();
@@ -37,7 +40,7 @@ void main() {
 
     // Build our app and trigger a frame.
 
-    var testWidget = makeTestableWidget(
+    var testWidget = await makeTestableWidget(
       MultiRepositoryProvider(
         providers: [
           RepositoryProvider<DatabaseUpdateModel>(create: (c) => mockDb),
@@ -59,6 +62,8 @@ void main() {
   });
 
   testWidgets('deleted', (tester) async {
+    loadFonts();
+
     final mockDb = MockDatabaseUpdateModel();
     final mockAnalytics = MockAnalyticsSubsystem();
     final gameController = StreamController<Game>();
@@ -70,7 +75,7 @@ void main() {
     when(mockDb.getGame("123")).thenAnswer((_) => gameController.stream);
 
     // Build our app and trigger a frame.
-    var testWidget = makeTestableWidget(
+    var testWidget = await makeTestableWidget(
       MultiRepositoryProvider(
         providers: [
           RepositoryProvider<DatabaseUpdateModel>(create: (c) => mockDb),
@@ -95,6 +100,8 @@ void main() {
   });
 
   testWidgets('loaded', (tester) async {
+    loadFonts();
+
     final mockDb = MockDatabaseUpdateModel();
     final mockAnalytics = MockAnalyticsSubsystem();
     final gameController = StreamController<Game>();
@@ -103,8 +110,6 @@ void main() {
     final mockObserver = MockNavigatorObserver();
     final mockPlayerBloc = MockPlayerBloc();
 
-    AsyncHydratedStorage.storageDirectory = Directory("fail");
-    tz.initializeTimeZones();
 
     when(mockDb.getGame("game123")).thenAnswer((_) => gameController.stream);
     when(mockDb.getTeamDetails(teamUid: "team123"))
@@ -114,7 +119,7 @@ void main() {
     whenListen(mockPlayerBloc, Stream.fromIterable([]));
 
     // Build our app and trigger a frame.
-    var testWidget = makeTestableWidget(
+    var testWidget = await makeTestableWidget(
       MultiRepositoryProvider(
         providers: [
           RepositoryProvider<DatabaseUpdateModel>(create: (c) => mockDb),
@@ -152,7 +157,6 @@ void main() {
     final mockObserver = MockNavigatorObserver();
     final mockPlayerBloc = MockPlayerBloc();
 
-    AsyncHydratedStorage.storageDirectory = Directory("fail");
 
     when(mockDb.getGame("game123")).thenAnswer((_) => gameController.stream);
     when(mockDb.getTeamDetails(teamUid: "team123"))
@@ -179,7 +183,7 @@ void main() {
     });
 
     // Build our app and trigger a frame.
-    var testWidget = makeTestableWidget(
+    var testWidget = await makeTestableWidget(
       MultiRepositoryProvider(
         providers: [
           RepositoryProvider<DatabaseUpdateModel>(create: (c) => mockDb),
