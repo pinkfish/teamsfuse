@@ -70,7 +70,6 @@ abstract class SingleClubState {
     return builder
       ..club = state.club?.toBuilder()
       ..teams = state.teams.toBuilder()
-      ..loadedTeams = state.loadedTeams
       ..invites = state.invites.toBuilder()
       ..loadedInvites = state.loadedInvites
       ..loadedCoaches = state.loadedCoaches
@@ -79,6 +78,7 @@ abstract class SingleClubState {
 
   static void initializeStateBuilder(SingleClubStateBuilder b) => b
     ..loadedTeams = false
+    ..loadedCoaches = false
     ..loadedInvites = false;
 
   Map<String, dynamic> toMap();
