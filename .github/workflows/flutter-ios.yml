@@ -47,7 +47,7 @@ jobs:
       working-directory: flutter_fuse
     - run: flutter test
       working-directory: flutter_fuse
-    - run: brew install graphicsmagick
+    - run: brew install ghostscript imagemagick
       working-directory: flutter_fuse
     - run: echo ${APPLE_APP_API_P8} > ./app-store-api.p8
       working-directory: flutter_fuse/ios
