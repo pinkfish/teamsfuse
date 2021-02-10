@@ -199,7 +199,7 @@ abstract class SingleClubSaveFailed
         Built<SingleClubSaveFailed, SingleClubSaveFailedBuilder> {
   /// The error associatedf with this club.
   @BuiltValueField(serialize: false)
-  Exception get error;
+  Object get error;
 
   SingleClubSaveFailed._();
   factory SingleClubSaveFailed(

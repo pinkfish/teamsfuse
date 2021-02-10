@@ -47,8 +47,7 @@ abstract class SingleClubCoachState {
   }
 
   static void initializeStateBuilder(SingleClubCoachStateBuilder b) => b
-    ..loadedTeams = false
-    ..loadedInvites = false;
+    ;
 
   Map<String, dynamic> toMap();
 }
@@ -176,7 +175,7 @@ abstract class SingleClubCoachSaveFailed
         Built<SingleClubCoachSaveFailed, SingleClubCoachSaveFailedBuilder> {
   /// The error associatedf with this clubCoach.
   @BuiltValueField(serialize: false)
-  Exception get error;
+  Object get error;
 
   SingleClubCoachSaveFailed._();
   factory SingleClubCoachSaveFailed(
