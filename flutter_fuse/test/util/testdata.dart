@@ -4,7 +4,9 @@ Game makeTestGame(
     {String gameUid = "game123",
     String sharedGameUid = "shared1234",
     String seasonUid = "season123",
-    String teamUid = "team123"}) {
+    String teamUid = "team123",
+    DateTime start,
+    DateTime end}) {
   var result = GameResultDetailsBuilder()
     ..inProgress = GameInProgress.NotStarted
     ..result = GameResult.Win
@@ -13,15 +15,16 @@ Game makeTestGame(
     ..divisons = GameDivisionsType.Quarters;
   var shared = GameSharedDataBuilder()
     ..uid = sharedGameUid
-    ..time = DateTime.now().toUtc()
+    ..time = start ?? DateTime.now().toUtc()
     ..name = "Work of waffles"
     ..timezone = "America/Los_Angeles"
     ..type = EventType.Game
-    ..endTime = DateTime.now().toUtc()
+    ..endTime = end ?? DateTime.now().toUtc()
     ..place.name = "Rabbit hole";
   return Game((b) => b
     ..uid = gameUid
-    ..arrivalTime = DateTime.now().toUtc()
+    ..arrivalTime =
+        (start ?? DateTime.now()).subtract(Duration(minutes: 30)).toUtc()
     ..sharedDataUid = sharedGameUid
     ..notes = "No need for fluff"
     ..seasonUid = seasonUid

@@ -12,7 +12,6 @@ import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:mockito/mockito.dart';
-import 'package:timezone/data/latest.dart' as tz;
 
 import '../../util/loadfonts.dart';
 import '../../util/testable.dart';
@@ -110,7 +109,6 @@ void main() {
     final mockObserver = MockNavigatorObserver();
     final mockPlayerBloc = MockPlayerBloc();
 
-
     when(mockDb.getGame("game123")).thenAnswer((_) => gameController.stream);
     when(mockDb.getTeamDetails(teamUid: "team123"))
         .thenAnswer((_) => teamController.stream);
@@ -157,7 +155,6 @@ void main() {
     final mockObserver = MockNavigatorObserver();
     final mockPlayerBloc = MockPlayerBloc();
 
-
     when(mockDb.getGame("game123")).thenAnswer((_) => gameController.stream);
     when(mockDb.getTeamDetails(teamUid: "team123"))
         .thenAnswer((_) => teamController.stream);
@@ -167,11 +164,14 @@ void main() {
         .thenAnswer((_) => opponentController.stream);
     when(mockDb.getSeasonsForTeam("team123"))
         .thenAnswer((_) => teamSeasonController.stream);
-    when(mockPlayerBloc.state).thenAnswer((_) => (PlayerLoaded.fromState(PlayerUninitialized())
-        ..players = MapBuilder({
-          'player123': Player((b) => b..name="Me"..uid="player123")
-        })
-    ).build());
+    when(mockPlayerBloc.state)
+        .thenAnswer((_) => (PlayerLoaded.fromState(PlayerUninitialized())
+              ..players = MapBuilder({
+                'player123': Player((b) => b
+                  ..name = "Me"
+                  ..uid = "player123")
+              }))
+            .build());
 
     // Fake out the places dialog.
     const MethodChannel('flutter_places_dialog')
@@ -202,7 +202,9 @@ void main() {
     await tester.pumpWidget(testWidget);
 
     var season = makeTestSeason();
-    gameController.add(makeTestGame());
+    gameController.add(makeTestGame(
+        start: DateTime(2021, 3, 2, 11, 3, 1).toUtc(),
+        end: DateTime(2021, 3, 44, 11, 3, 1).toUtc()));
     teamController.add(makeTestTeam());
     seasonController.add(season);
     opponentController.add([makeTestOpponent()]);
@@ -213,7 +215,6 @@ void main() {
     await tester.pump(Duration(milliseconds: 600));
     await tester.pump(Duration(milliseconds: 600));
     await tester.pump(Duration(milliseconds: 600));
-
 
     // Still loading when there is no team.
     expectLater(find.text("Fluff World"), findsOneWidget);
