@@ -41,6 +41,8 @@ abstract class SingleClubState {
   bool get loadedInvites;
   BuiltList<InviteToClub> get invites;
   SingleClubBlocStateType get type;
+  bool get loadedCoaches;
+  BuiltList<Coach> get coaches;
 
   static SingleClubStateBuilder fromState(
       SingleClubState state, SingleClubStateBuilder builder) {
@@ -49,7 +51,9 @@ abstract class SingleClubState {
       ..teams = state.teams.toBuilder()
       ..loadedTeams = state.loadedTeams
       ..invites = state.invites.toBuilder()
-      ..loadedInvites = state.loadedInvites;
+      ..loadedInvites = state.loadedInvites
+      ..loadedCoaches = state.loadedCoaches
+      ..coaches = state.coaches.toBuilder();
   }
 
   static void initializeStateBuilder(SingleClubStateBuilder b) => b
