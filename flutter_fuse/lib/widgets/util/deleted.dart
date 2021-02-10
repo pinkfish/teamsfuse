@@ -1,17 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_fuse/widgets/games/gametitle.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
+import '../games/gametitle.dart';
 
 ///
 /// Shows a nifty deleted message for bits of the app.
 ///
 class DeletedWidget extends StatelessWidget {
+  /// If we should show the app bar in the deleted widget.
   final bool showAppBar;
+
+  /// The game to display, if we have an app bar.
   final Game game;
 
+  /// Creates the deleted widget with stuff.
   DeletedWidget({this.showAppBar = false, this.game});
 
   @override

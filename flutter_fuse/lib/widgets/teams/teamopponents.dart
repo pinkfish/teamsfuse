@@ -115,7 +115,8 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                                 ? Colors.redAccent
                                 : Colors.black),
                     text:
-                        "${op.name} W:${record.win} L:${record.loss} T:${record.tie}",
+                        "${op.name} W:${record.win} L:${record.loss} "
+                            "T:${record.tie}",
                   ),
                 ),
                 initiallyExpanded: false,
@@ -159,7 +160,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                                 );
                               }
                             }
-                            if (newData.length == 0) {
+                            if (newData.isEmpty) {
                               newData.add(Text(Messages.of(context).nogames));
                             }
                             return Column(
@@ -244,7 +245,7 @@ class _TeamOpponentsState extends State<TeamOpponents> {
                           }
                         }
                       }
-                      if (newData.length == 0) {
+                      if (newData.itEmpty) {
                         newData
                             .add(Text(Messages.of(context).nogamesthisseason));
                       }
@@ -267,7 +268,6 @@ class _TeamOpponentsState extends State<TeamOpponents> {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    var messsages = Messages.of(context);
 
     return SingleTeamProvider(
       teamUid: widget.teamUid,

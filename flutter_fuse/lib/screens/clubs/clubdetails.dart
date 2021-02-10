@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/blocs/singleclubprovider.dart';
-import 'package:flutter_fuse/widgets/clubs/clubmembers.dart';
-import 'package:flutter_fuse/widgets/teams/publicteamdetails.dart';
-import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
+import '../../widgets/blocs/singleclubprovider.dart';
 import '../../widgets/clubs/clubdetails.dart';
+import '../../widgets/clubs/clubmembers.dart';
 import '../../widgets/clubs/clubteams.dart';
+import '../../widgets/util/loading.dart';
 
 ///
 /// The screen showing all the details of the club.
@@ -30,7 +29,6 @@ class ClubDetailsScreen extends StatefulWidget {
 
 class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
   int _tabIndex = 1;
-  Team _displayTeam = null;
 
   @override
   void dispose() {

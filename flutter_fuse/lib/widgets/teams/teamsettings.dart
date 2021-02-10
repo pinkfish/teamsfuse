@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleplayerprovider.dart';
 import '../blocs/singleteamprovider.dart';
@@ -166,7 +166,7 @@ class _TeamSettingsState extends State<TeamSettings> {
 
     Iterable<InviteAsAdmin> invites = state.invitesAsAdmin;
     // Load the existing stuff.
-    if (invites != null && invites.length > 0) {
+    if (invites != null && invites.isNotEmpty) {
       ret.add(
         ExpansionTile(
           title: Text(Messages.of(context).pendinginvites(invites.length)),

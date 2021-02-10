@@ -64,7 +64,7 @@ class _AddLeagueScreenState extends State<AddLeagueScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   bool _leaveCurrentState(bool backwards) {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
-import '../../services/blocs.dart';
 
 import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
@@ -39,7 +38,6 @@ class _TeamPlayersState extends State<TeamPlayers> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
     var messsages = Messages.of(context);
 
     return SingleTeamProvider(

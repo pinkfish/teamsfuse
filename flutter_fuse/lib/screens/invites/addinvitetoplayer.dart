@@ -29,7 +29,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
   AddInviteBloc addInviteBloc;
 
   void showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   @override

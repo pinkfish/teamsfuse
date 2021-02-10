@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/blocs/singleclubprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
+import '../../widgets/blocs/singleclubprovider.dart';
 import '../../widgets/clubs/clubimage.dart';
 import '../../widgets/form/switchformfield.dart';
 import '../../widgets/util/ensurevisiblewhenfocused.dart';
@@ -50,7 +50,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(value),
       ),

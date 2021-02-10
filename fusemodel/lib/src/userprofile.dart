@@ -26,11 +26,12 @@ abstract class FusedUserProfile
   /// The initials for the user.
   String initials() {
     return displayName.splitMapJoin(" ",
-        onNonMatch: (String str) => str.substring(0, 1));
+        onNonMatch: (str) => str.substring(0, 1));
   }
 
   String toString() {
-    return "UserProfile [$displayName $email $phoneNumber Upcoming: $emailUpcomingGame Updates: $emailOnUpdates]";
+    return "UserProfile [$displayName $email $phoneNumber "
+        "Upcoming: $emailUpcomingGame Updates: $emailOnUpdates]";
   }
 
   static const String TOKENS = "tokens";

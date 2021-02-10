@@ -27,11 +27,10 @@ class EditClubScreen extends StatefulWidget {
 class _EditClubScreenState extends State<EditClubScreen> {
   final GlobalKey<EditClubDetailsFormState> _formKey =
       GlobalKey<EditClubDetailsFormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _doingSave = false;
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed(SingleClubBloc singleClubBloc) async {

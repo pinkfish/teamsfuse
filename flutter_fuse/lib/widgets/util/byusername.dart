@@ -16,6 +16,7 @@ class ByUserNameComponent extends StatelessWidget {
   /// The userId to display the name of.
   final String userId;
 
+  /// The Style to display the text in.
   final TextStyle style;
 
   @override

@@ -29,7 +29,7 @@ class _AcceptInviteAsAdminScreenState extends State<AcceptInviteAsAdminScreen> {
   SingleInviteBloc _singleInviteBloc;
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   @override

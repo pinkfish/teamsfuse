@@ -37,7 +37,7 @@ void main() {
         .build();
     var serializer = GameSharedData.serializer;
 
-    GameSharedData newResult =
+    var newResult =
         dataSerializers.deserializeWith(serializer, gameSharedData.toMap());
 
     expect(newResult, equals(gameSharedData));

@@ -7,6 +7,7 @@ import '../../services/messages.dart';
 /// Shows a nifty loading message for bits of the app.
 ///
 class LoadingWidget extends StatelessWidget {
+  /// Simple loading widget to display the loading message.
   LoadingWidget();
 
   @override

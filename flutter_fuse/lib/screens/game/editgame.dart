@@ -37,7 +37,7 @@ class _EditGameScreenState extends State<EditGameScreen> {
       GlobalKey<EventEditFormState>();
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed(BuildContext context, SingleGameBloc gameBloc) async {

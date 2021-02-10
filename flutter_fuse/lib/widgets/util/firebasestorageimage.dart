@@ -9,10 +9,16 @@ import 'package:flutter/material.dart';
 /// till it is downloaded.
 ///
 class FirebaseStorageImage extends StatelessWidget {
+  /// The storageId in firebase to download the image for.
   final String storageId;
+
+  /// The place holder widget to display.
   final PlaceholderWidgetBuilder placeholder;
+
+  /// The loading error widget to display.
   final LoadingErrorWidgetBuilder errorWidget;
 
+  /// Constructore the firbasebase storage image.
   FirebaseStorageImage(
       {@required this.storageId, this.placeholder, this.errorWidget});
 
@@ -20,10 +26,9 @@ class FirebaseStorageImage extends StatelessWidget {
     return AnimatedSwitcher(
         duration: Duration(milliseconds: 500),
         child: FutureBuilder<Uint8List>(
-          future: FirebaseStorage.instance
-              .refFromURL(this.storageId)
-              .getData(100000),
-          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          future:
+              FirebaseStorage.instance.refFromURL(storageId).getData(100000),
+          builder: (context, snapshot) {
             if (snapshot.hasError) {
               if (errorWidget != null) {
                 return errorWidget(context, storageId, snapshot.error);

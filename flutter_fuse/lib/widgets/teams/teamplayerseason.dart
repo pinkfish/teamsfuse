@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleseasonprovider.dart';
 import '../blocs/singleteamprovider.dart';
@@ -70,7 +70,7 @@ class TeamPlayersSeason extends StatelessWidget {
         GestureDetector(
           onTap: () {
             Navigator.pushNamed(context,
-                "PlayerDetails/${_teamUid}/$_seasonUid/${player.playerUid}");
+                "PlayerDetails/$_teamUid/$_seasonUid/${player.playerUid}");
           },
           child: teamState.team.sport == Sport.Basketball
               ? PlayerTileBasketball(
@@ -94,7 +94,7 @@ class TeamPlayersSeason extends StatelessWidget {
           title: FlatButton(
             textColor: Theme.of(context).accentColor,
             onPressed: () {
-              Navigator.pushNamed(context, "AddPlayer/${_teamUid}/$_seasonUid");
+              Navigator.pushNamed(context, "AddPlayer/$_teamUid/$_seasonUid");
             },
             child: Text(Messages.of(context).addplayer),
           ),
@@ -104,7 +104,7 @@ class TeamPlayersSeason extends StatelessWidget {
 
     // Put in an expansion bar if there are pending invites.
     if (state.invites != null &&
-        state.invites.length > 0 &&
+        state.invites.isNotEmpty &&
         teamState.isAdmin()) {
       var kids = <Widget>[];
       for (var inv in state.invites) {
@@ -168,7 +168,6 @@ class TeamPlayersSeason extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    var messsages = Messages.of(context);
 
     return SingleTeamProvider(
       teamUid: _teamUid,

@@ -24,7 +24,6 @@ class _AddClubScreenState extends State<AddClubScreen> {
   final GlobalKey<EditClubDetailsFormState> _formKey =
       GlobalKey<EditClubDetailsFormState>();
   int _currentStep = 0;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   StepState _detailsStepState = StepState.editing;
   StepState _createStepStage = StepState.disabled;
   Club _clubToAdd;
@@ -43,7 +42,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _savePressed() async {

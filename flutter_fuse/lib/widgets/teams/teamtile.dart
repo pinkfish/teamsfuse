@@ -17,8 +17,8 @@ class TeamTile extends StatelessWidget {
   TeamTile(this.teamUid,
       {this.popBeforeNavigate = false,
       this.showIconForTeam = false,
-      this.onTap = null,
-      this.selectedTileColor = null,
+      this.onTap,
+      this.selectedTileColor,
       this.selected = false});
 
   /// If we shuold do something exciting with the background.

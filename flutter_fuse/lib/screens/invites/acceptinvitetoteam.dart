@@ -57,7 +57,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _onChangedPlayer(String name, String uid) {

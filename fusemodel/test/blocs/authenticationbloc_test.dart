@@ -18,7 +18,7 @@ void main() {
   setUp(() {
     userAuth = MockUserAuthImpl();
     analyticsSubsystem = MockAnalyticsSubsystem();
-    _streamController = new StreamController<UserData>();
+    _streamController =  StreamController<UserData>();
     when(userAuth.onAuthChanged()).thenAnswer((_) => _streamController.stream);
     when(analyticsSubsystem.debugMode).thenReturn(true);
     authenticationBloc = AuthenticationBloc(
@@ -61,7 +61,7 @@ void main() {
     });
 
     test('emits [uninitialized, authenticated] for real data', () {
-      final UserData userData = new UserData((b) => b
+      final var userData =  UserData((b) => b
         ..email = "frog@frog.com"
         ..uid = "ububng"
         ..isEmailVerified = true);
