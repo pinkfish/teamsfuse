@@ -1,38 +1,68 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <link rel="manifest" href="manifest.json" />
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
 
-  <meta name="theme-color" content="#ffffff" />
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    Fore more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+  -->
   <base href="/">
 
-  <title>Teams Fuse</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="icon" type="image/png" href="favicon.png">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
 
-  <!-- Bootstrap styles -->
-  <link rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-        integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
-        crossorigin="anonymous">
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="flutter_fuse">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- community material desogn icons -->
-  <link href="css/materialdesignicons.min.css" media="all" rel="stylesheet" type="text/css" />
-  <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/5.5.3/firebase-messaging.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpcE6m0ydl6S5ilZ8XwML7lZ0sUmYz8E8&libraries=places"></script>
-  <script defer src="main.dart.js"></script>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>flutter_fuse</title>
+  <link rel="manifest" href="manifest.json">
 </head>
-
 <body>
-  <my-app>
-    <div>Loading...</div>
-  </my-app>
-</body>
+  <!-- This script installs service_worker.js to provide PWA functionality to
+       application. For more information, see:
+       https://developers.google.com/web/fundamentals/primers/service-workers -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('flutter-first-frame', function () {
+        navigator.serviceWorker.register('flutter_service_worker.js?v=2707034952');
+      });
+    }
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-messaging.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-performance.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-remote-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-analytics.js"></script>
 
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyBdhSWSOEvnTMHMDf0bMEIb8i64uVcWL3U",
+      authDomain: "teamsfuse.firebaseapp.com",
+      databaseURL: "https://teamsfuse.firebaseio.com",
+      projectId: "teamsfuse",
+      storageBucket: "teamsfuse.appspot.com",
+      messagingSenderId: "400199897683",
+      appId: "1:400199897683:web:a76b9c523dbef7a408aca6"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+  <script src="main.dart.js" type="application/javascript"></script>
+</body>
 </html>

@@ -37,7 +37,9 @@ jobs:
       working-directory: flutter_fuse
     - run: flutter build web
       working-directory: flutter_fuse
-    - run: cp -fR flutter_fuse/build/web/* firebase/public
+    - run: |
+        mkdir -p firebase/public/flutter
+        cp -fR flutter_fuse/build/web/* firebase/public/flutter
     - name: Deploy to Firebase
       uses: w9jds/firebase-action@master
       with:
