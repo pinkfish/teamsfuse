@@ -29,11 +29,15 @@ class PublicCoachDetails extends StatelessWidget {
                 clubUid: coach.clubUid,
                 height: 200,
                 width: 200),
+            SizedBox(width: 10),
             Expanded(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(coach.name,
                       style: Theme.of(context).textTheme.headline5),
+                  SizedBox(height: 15),
                   Text(coach.about,
                       style: Theme.of(context).textTheme.bodyText1),
                 ],
