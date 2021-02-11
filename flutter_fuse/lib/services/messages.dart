@@ -2258,7 +2258,7 @@ class Messages {
   }
 
   QuoteAndAuthor quoteforsaving(int quoteId) {
-    switch (quoteId % 4) {
+    switch (quoteId % 7) {
       case 0:
         return QuoteAndAuthor(
             quote: Intl.message("Lies, Damn Lies and Statistics"),
@@ -2278,10 +2278,23 @@ class Messages {
               "I know I am getting better at golf because I am hitting fewer spectators."),
           author: Intl.message("Gerald R. Ford"),
         );
+      case 3: QuoteAndAuthor(
+        quote: Intl.message("What stands in the way, becomes the way."),
+        author: Intl.message("Marcus Aurelius"),
+      );
+      case 4: QuoteAndAuthor(
+        quote: Intl.message("You must expect great things of yourself before you can do them."),
+        author: Intl.message("Michael Jordan"),
+      );
+      case 5: QuoteAndAuthor(
+        quote: Intl.message("The only time you run out of chances is when you stop taking them."),
+        author: Intl.message("David Beckhame"),
+      )
       default:
         return QuoteAndAuthor(
             quote: Intl.message("Don't Panic"),
             author: Intl.message("Douglas Adams"));
+
     }
   }
 

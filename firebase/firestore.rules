@@ -25,13 +25,17 @@ service cloud.firestore {
     }
 
     function isUserOrAdmin(data) {
-      return data.data.users[request.auth.uid].added ||
+      return data.users[request.auth.uid].added ||
         request.auth.uid in data.data.admins ||
-        data.data.isPublic;
+        data.isPublic;
     }
 
     function isAdmin(data) {
       return request.auth.uid in data.admins;
+    }
+
+    function isClubAdmin(data) {
+      return data.members[request.auth.uid].admin;
     }
 
     function isPublicVisible() {
@@ -40,20 +44,33 @@ service cloud.firestore {
     }
 
     match /Clubs/{club} {
-      allow read: if isSignedIn() || 
-         isPublicVisible();
+      match /News/{opponent} {
+        // News is always publically visible.
+        allow read: if true;
+        allow create: if isSignedIn() &&
+          isClubAdmin(get(/databases/$(database)/documents/Clubs/$(incomingData().clubUid)).data);
+        allow update, delete: if isSignedIn() &&
+          isClubAdmin(get(/databases/$(database)/documents/Clubs/$(existingData().clubUid)).data);
+      }
+      match /Coaches/{opponent} {
+        // Coaches are always publically visible.
+        allow read: if true;
+        allow create: if isSignedIn() &&
+          isClubAdmin(get(/databases/$(database)/documents/Clubs/$(incomingData().clubUid)).data);
+        allow update, delete: if isSignedIn() &&
+          isClubAdmin(get(/databases/$(database)/documents/Clubs/$(existingData().clubUid)).data);
+      }
+      allow read: if isSignedIn() || isPublicVisible();
       // Only allow writes when the member is setup correctly.
-      allow update, delete: if isSignedIn() &&
-          existingData().members[request.auth.uid].admin;
-      allow create: if isSignedIn() &&
-          incomingData().members[request.auth.uid].admin;
+      allow update, delete: if isSignedIn() && isClubAdmin(existingData());
+      allow create: if isSignedIn() && isClubAdmin(incomingData());
     }
 
     match /Games/{game} {
       allow read: if isSignedIn() &&
-         isUserOrAdmin(get(/databases/$(database)/documents/Seasons/$(existingData().seasonUid)));
+         isUserOrAdmin(get(/databases/$(database)/documents/Seasons/$(existingData().seasonUid)).data);
       allow update, delete: if isSignedIn() &&
-         isAdmin(get(/databases/$(database)/documents/Seasons/$(resource.seasonUid)));
+         isAdmin(get(/databases/$(database)/documents/Teams/$(resource.teamUid)).data);
       allow list: if isSignedIn();
       // Only allow a create if the shared data exists and the team exists.
       allow create: if isSignedIn() &&

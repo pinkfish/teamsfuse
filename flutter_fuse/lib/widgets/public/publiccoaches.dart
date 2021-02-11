@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../clubs/coachimage.dart';
 
@@ -11,7 +11,7 @@ import '../clubs/coachimage.dart';
 ///
 class PublicCoachDetails extends StatelessWidget {
   /// The bloc to use to populate the coaches from.
-  SingleClubBloc bloc;
+  final SingleClubBloc bloc;
 
   /// The constructor.
   PublicCoachDetails(this.bloc);
@@ -57,9 +57,6 @@ class PublicCoachDetails extends StatelessWidget {
           if (state is SingleClubDeleted) {
             return Text(Messages.of(context).clubDeleted);
           }
-          if (state.coaches.isEmpty) {
-            return Text(Messages.of(context).noCoaches);
-          }
           return Column(
             children: [
               SizedBox(height: 10),
@@ -75,6 +72,10 @@ class PublicCoachDetails extends StatelessWidget {
                     .headline6
                     .copyWith(color: Colors.green),
               ),
+              state.coaches.isEmpty
+                  ? Text(Messages.of(context).noCoaches,
+                      style: Theme.of(context).textTheme.headline4)
+                  : SizedBox(height: 0, width: 0),
               ...state.coaches.map<Widget>((c) => _buildCoach(context, c))
             ],
           );

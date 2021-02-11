@@ -196,14 +196,34 @@ describe('TeamsFuse rules', function () {
                     },
                 },
             });
+        await db.collection('Clubs').doc('clubby').collection('Coaches').doc('coach').set({
+           clubUid: 'clubby',
+           uid: 'coach',
+        });
+        await db.collection('Clubs').doc('clubby').collection('News').doc('news').set({
+           clubUid: 'clubby',
+           uid: 'news',
+        });
         await firebase.assertSucceeds(db.collection('Teams').doc('frogpublic').get());
         await firebase.assertSucceeds(db.collection('Clubs').doc('clubby').get());
+        await firebase.assertSucceeds(db.collection('Clubs').doc('clubby').collection('Coaches').doc('coach').get());
+        await firebase.assertSucceeds(db.collection('Clubs').doc('clubby').collection('News').doc('news').get());
+        await firebase.assertSucceeds(db.collection('Clubs').doc('clubby').collection('Coaches').get());
+        await firebase.assertSucceeds(db.collection('Clubs').doc('clubby').collection('News').get());
         const aliceDb = authedApp({ uid: 'alice' });
         await firebase.assertSucceeds(aliceDb.collection('Teams').doc('frogpublic').get());
         await firebase.assertSucceeds(aliceDb.collection('Clubs').doc('clubby').get());
+        await firebase.assertSucceeds(aliceDb.collection('Clubs').doc('clubby').collection('Coaches').doc('coach').get());
+        await firebase.assertSucceeds(aliceDb.collection('Clubs').doc('clubby').collection('News').doc('news').get());
+        await firebase.assertSucceeds(aliceDb.collection('Clubs').doc('clubby').collection('Coaches').get());
+        await firebase.assertSucceeds(aliceDb.collection('Clubs').doc('clubby').collection('News').get());
         const dbAnon = authedApp();
         await firebase.assertSucceeds(dbAnon.collection('Teams').doc('frogpublic').get());
         await firebase.assertSucceeds(dbAnon.collection('Clubs').doc('clubby').get());
+        await firebase.assertSucceeds(dbAnon.collection('Clubs').doc('clubby').collection('Coaches').doc('coach').get());
+        await firebase.assertSucceeds(dbAnon.collection('Clubs').doc('clubby').collection('News').doc('news').get());
+        await firebase.assertSucceeds(dbAnon.collection('Clubs').doc('clubby').collection('Coaches').get());
+        await firebase.assertSucceeds(dbAnon.collection('Clubs').doc('clubby').collection('News').get());
 
         await firebase.assertSucceeds(
             db.collection('Teams').where('clubUid', '==', 'clubby').where('users.robert.added', '==', true).get(),
@@ -254,6 +274,7 @@ describe('TeamsFuse rules', function () {
                 }),
         );
 
+console.log('Game');
         const gameRef = db.collection('Games').doc('game');
         const sharedGameRef = db.collection('GamesShared').doc('sharedGame');
         await firebase.assertSucceeds(
@@ -271,7 +292,9 @@ describe('TeamsFuse rules', function () {
                 return;
             }),
         );
+console.log('Frog');
         await firebase.assertSucceeds(db.collection('Games').doc('game').get());
+console.log('Blue');
         const dbRobert = authedApp({ uid: 'robert', email_verified: true });
         await firebase.assertFails(dbRobert.collection('Games').doc('game').get());
     });

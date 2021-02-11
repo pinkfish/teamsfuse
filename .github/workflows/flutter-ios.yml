@@ -45,7 +45,7 @@ jobs:
       working-directory: fusemodel
     - run: |
         flutter packages get
-        flutter build ios
+        flutter build ios --debug
       working-directory: flutter_fuse
     - run: flutter test
       working-directory: flutter_fuse
