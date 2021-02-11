@@ -47,6 +47,7 @@ jobs:
         flutter packages get
         flutter build ios --debug
       working-directory: flutter_fuse
+      continue-on-error: true
     - run: flutter test
       working-directory: flutter_fuse
     - run: brew install ghostscript imagemagick
