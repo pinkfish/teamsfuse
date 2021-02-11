@@ -168,9 +168,11 @@ class PublicTeamDetails extends StatelessWidget {
                                 );
                               },
                             ),
-                            TeamResultsBySeason(
-                              teamUid: team.uid,
-                              seasonUid: team.currentSeason,
+                            SingleChildScrollView(
+                              child: TeamResultsBySeason(
+                                teamUid: team.uid,
+                                seasonUid: team.currentSeason,
+                              ),
                             ),
                             TeamStatsWidget(
                               teamUid: team.uid,

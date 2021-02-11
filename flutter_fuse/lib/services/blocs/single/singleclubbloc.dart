@@ -79,13 +79,13 @@ class SingleClubAddMember extends SingleClubEvent {
 ///
 class SingleClubDeleteMember extends SingleClubEvent {
   /// The uid of the member to delete.
-  final String adminUid;
+  final String memberUid;
 
   /// A request to delete a member from the club.
-  SingleClubDeleteMember({@required this.adminUid});
+  SingleClubDeleteMember({@required this.memberUid});
 
   @override
-  List<Object> get props => [adminUid];
+  List<Object> get props => [memberUid];
 }
 
 ///
@@ -296,7 +296,7 @@ class SingleClubBloc
     if (event is SingleClubDeleteMember) {
       yield SingleClubSaving.fromState(state).build();
       try {
-        await db.deleteClubMember(state.club, event.adminUid);
+        await db.deleteClubMember(state.club, event.memberUid);
         yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
       } on Exception catch (e, stack) {

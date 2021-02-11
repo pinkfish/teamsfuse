@@ -1805,6 +1805,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var query = _wrapper
         .collection(CLUB_COLLECTION)
         .where("${Club.MEMBERS}.${userData.uid}.$ADDED", isEqualTo: true);
+    print("Get main clubs ${Club.MEMBERS}.${userData.uid}.$ADDED");
     var wrap = await query.getDocuments();
     yield BuiltList(
         wrap.documents.map((snap) => Club.fromMap(userData.uid, snap.data)));

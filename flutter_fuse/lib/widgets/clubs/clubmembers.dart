@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
+import '../blocs/singleclubprovider.dart';
+import '../util/savingoverlay.dart';
 import '../util/userimage.dart';
 
 ///
@@ -16,9 +18,8 @@ class ClubMembers extends StatelessWidget {
   /// The club to show members for.
   final Club club;
 
-  void _deleteMember(BuildContext context, FusedUserProfile profile) async {
-    var clubBloc = BlocProvider.of<ClubBloc>(context);
-
+  void _deleteMember(BuildContext context, FusedUserProfile profile,
+      SingleClubBloc bloc) async {
     var mess = Messages.of(context);
     // Show an alert dialog first.
     var result = await showDialog<bool>(
@@ -35,14 +36,14 @@ class ClubMembers extends StatelessWidget {
             ),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
@@ -53,12 +54,12 @@ class ClubMembers extends StatelessWidget {
       },
     );
     if (result) {
-      clubBloc.add(ClubDeleteMember(clubUid: club.uid, memberUid: profile.uid));
+      bloc.add(SingleClubDeleteMember(memberUid: profile.uid));
     }
   }
 
-  Widget _buildFromFuture(
-      BuildContext context, SingleProfileState state, bool admin, String uid) {
+  Widget _buildFromFuture(BuildContext context, SingleProfileState state,
+      bool admin, String uid, SingleClubBloc bloc) {
     if ((state is SingleProfileLoaded)) {
       var profile = state.profile;
       if (profile != null) {
@@ -71,7 +72,7 @@ class ClubMembers extends StatelessWidget {
                   profile.uid != authenticationBloc.currentUser.uid
               ? IconButton(
                   icon: const Icon(Icons.delete),
-                  onPressed: () => _deleteMember(context, profile),
+                  onPressed: () => _deleteMember(context, profile, bloc),
                 )
               : null,
         );
@@ -83,12 +84,14 @@ class ClubMembers extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildMembers(BuildContext context) {
+  List<Widget> _buildMembers(
+      BuildContext context, SingleClubBloc singleClubBloc) {
     var members = <Widget>[];
 
     for (var adminUid in club.adminsUids) {
       var bloc = SingleProfileBloc(
           coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
+          crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
           profileUid: adminUid,
           playerBloc: BlocProvider.of<PlayerBloc>(context));
       members.add(
@@ -96,8 +99,8 @@ class ClubMembers extends StatelessWidget {
           create: (context) => bloc,
           child: BlocBuilder(
             cubit: bloc,
-            builder: (context, state) =>
-                _buildFromFuture(context, state, true, adminUid),
+            builder: (context, state) => _buildFromFuture(
+                context, state, true, adminUid, singleClubBloc),
           ),
         ),
       );
@@ -105,6 +108,7 @@ class ClubMembers extends StatelessWidget {
     for (var memberUid in club.members) {
       var bloc = SingleProfileBloc(
           coordinationBloc: BlocProvider.of<CoordinationBloc>(context),
+          crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
           profileUid: memberUid,
           playerBloc: BlocProvider.of<PlayerBloc>(context));
       members.add(
@@ -112,8 +116,8 @@ class ClubMembers extends StatelessWidget {
           create: (context) => bloc,
           child: BlocBuilder(
             cubit: bloc,
-            builder: (context, state) =>
-                _buildFromFuture(context, state, false, memberUid),
+            builder: (context, state) => _buildFromFuture(
+                context, state, false, memberUid, singleClubBloc),
           ),
         ),
       );
@@ -123,11 +127,21 @@ class ClubMembers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: _buildMembers(context),
+    return SingleClubProvider(
+      clubUid: club.uid,
+      builder: (context, singleClubBloc) => BlocBuilder(
+        cubit: singleClubBloc,
+        builder: (context, clubState) => SavingOverlay(
+          saving: clubState is SingleClubSaving ||
+              clubState is SingleClubUninitialized,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: _buildMembers(context, singleClubBloc),
+            ),
+          ),
+        ),
       ),
     );
   }

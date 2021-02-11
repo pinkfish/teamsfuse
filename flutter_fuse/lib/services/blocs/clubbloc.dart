@@ -9,6 +9,7 @@ import 'package:meta/meta.dart';
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
 
+/// The base event to use for all the club events.
 abstract class ClubEvent extends Equatable {}
 
 class _ClubEventLoadFromFirestore extends ClubEvent {
@@ -50,24 +51,13 @@ class _ClubEventNewTeamsLoaded extends ClubEvent {
 }
 
 ///
-/// Deletes an admin from the club.
-///
-class ClubDeleteMember extends ClubEvent {
-  final String memberUid;
-  final String clubUid;
-
-  ClubDeleteMember({@required this.memberUid, @required this.clubUid});
-
-  @override
-  List<Object> get props => [memberUid, clubUid];
-}
-
-///
 /// Handles the work around the clubs and club system inside of
 /// the app.
 ///
 class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
+  /// The bloc to use to work with all the other parts of the system.
   final CoordinationBloc coordinationBloc;
+  /// Setup to handle crashes.
   final AnalyticsSubsystem crashes;
   bool _loadingFirestore = false;
 
@@ -117,9 +107,10 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
   void _onClubsUpdated(Iterable<Club> clubs) {
     MapBuilder<String, Club> newClubs = MapBuilder();
 
+    // Look for all the teams.
     for (Club club in clubs) {
       newClubs[club.uid] = club;
-      String clubUid = club.uid;
+      var clubUid = club.uid;
       if (!_clubTeamsSubscriptions.containsKey(club.uid)) {
         _clubTeamsSubscriptions[club.uid] = coordinationBloc.databaseUpdateModel
             .getClubTeams(club, false)
@@ -129,6 +120,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
           // exist.
           add(_ClubEventNewTeamsLoaded(clubUid: clubUid, teams: teams));
         });
+        _clubTeamsSubscriptions[club.uid].onError(crashes.recordException);
       }
     }
     add(_ClubEventNewDataLoaded(clubs: newClubs.build()));
@@ -144,6 +136,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
       _clubChangeSub = clubData.listen((Iterable<Club> clubs) {
         _onClubsUpdated(clubs);
       });
+      _clubChangeSub.onError(crashes.recordException);
     }
 
     // New data from above.  Mark ourselves as done.
@@ -160,16 +153,6 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
     if (event is _ClubEventLogout) {
       yield ClubUninitialized();
       _cleanupStuff();
-    }
-
-    if (event is ClubDeleteMember) {
-      if (!state.clubs.containsKey(event.clubUid)) {
-        return;
-      }
-      try {
-        await coordinationBloc.databaseUpdateModel
-            .deleteClubMember(state.clubs[event.clubUid], event.memberUid);
-      } catch (e) {}
     }
 
     if (event is _ClubEventNewTeamsLoaded) {
