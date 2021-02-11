@@ -27,8 +27,8 @@ class PublicCoachDetails extends StatelessWidget {
             CoachImage(
                 coachUid: coach.uid,
                 clubUid: coach.clubUid,
-                height: 100,
-                width: 100),
+                height: 200,
+                width: 200),
             Expanded(
               child: Column(
                 children: [
