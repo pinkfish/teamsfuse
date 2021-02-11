@@ -52,10 +52,12 @@ class PublicCoachDetails extends StatelessWidget {
             bloc.add(SingleClubLoadCoaches());
           }
           if (state is SingleClubUninitialized || !state.loadedCoaches) {
-            return Text(Messages.of(context).loading);
+            return Text(Messages.of(context).loading,
+              style: Theme.of(context).textTheme.headline4,);
           }
           if (state is SingleClubDeleted) {
-            return Text(Messages.of(context).clubDeleted);
+            return Text(Messages.of(context).clubDeleted,
+              style: Theme.of(context).textTheme.headline4,);
           }
           return Column(
             children: [

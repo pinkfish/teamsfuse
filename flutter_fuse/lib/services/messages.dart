@@ -2287,7 +2287,7 @@ class Messages {
 
   String get quoteStatistics => Intl.message("Lies, damn lies and statistics",
       desc: "Mark Twain quote", locale: locale);
-  String get quoteMissingShots => Intl.mesage(
+  String get quoteMissingShots => Intl.message(
       "I've missed more than 9000 shots in my career. "
       "I've lost almost 300 games. 26 times, "
       "I've been trusted to take the game winning shot and missed. "
@@ -2295,18 +2295,18 @@ class Messages {
       "And that is why I succeed.",
       desc: "Michael Jordan quote",
       locale: locale);
-  String get quoteMissingSpecators => Intl.mesage(
+  String get quoteMissingSpecators => Intl.message(
       "I know I am getting better at golf because I am hitting fewer spectators.",
       desc: "Gerald R Ford quote",
       locale: locale);
   String get quoteInTheWay =>
-      Intl.mesage("What stands in the way, becomes the way.",
+      Intl.message("What stands in the way, becomes the way.",
           desc: "Marcus Aurelius quote", locale: locale);
-  String get quoteGreatThings => Intl.mesage(
+  String get quoteGreatThings => Intl.message(
       "You must expect great things of yourself before you can do them.",
       desc: "Michael Jordan quote",
       locale: locale);
-  String get quoteNoChanges => Intl.message(
+  String get quoteNoChances => Intl.message(
       "The only time you run out of chances is when you stop taking them.",
       desc: "David Beckham quote",
       locale: locale);
