@@ -27,7 +27,9 @@ class Messages {
       desc: 'Message to show as the title for the admin adding screen',
       locale: locale);
 
-  String get noCoaches => Intl.message("No coaches", desc: 'Message to show that there are no coaches for this club', locale: locale);
+  String get noCoaches => Intl.message("No coaches",
+      desc: 'Message to show that there are no coaches for this club',
+      locale: locale);
 
   String get coaches => Intl.message('Coaches',
       desc: 'Header to display the coaches for the team/club', locale: locale);
@@ -2254,70 +2256,87 @@ class Messages {
         'This will follow $name and allow you to see which games they are in and ' +
             'all the teams they are in.  Please setup your relationship with the ' +
             'player and save.',
-        desc: 'Long description of the player invite accept path.');
+        desc: 'Long description of the player invite accept path.',
+        locale: locale,
+        args: [name]);
   }
 
   QuoteAndAuthor quoteforsaving(int quoteId) {
     switch (quoteId % 7) {
       case 0:
-        return QuoteAndAuthor(
-            quote: Intl.message("Lies, Damn Lies and Statistics"),
-            author: Intl.message("Mark Twain"));
+        return QuoteAndAuthor(quote: quoteStatistics, author: "Mark Twain");
       case 1:
         return QuoteAndAuthor(
-            quote: Intl.message(
-                "I've missed more than 9000 shots in my career. "
-                "I've lost almost 300 games. 26 times, "
-                "I've been trusted to take the game winning shot and missed. "
-                "I've failed over and over and over again in my life. "
-                "And that is why I succeed."),
-            author: Intl.message("Michael Jordan"));
+            quote: quoteMissingShots, author: "Michael Jordan");
       case 2:
         return QuoteAndAuthor(
-          quote: Intl.message(
-              "I know I am getting better at golf because I am hitting fewer spectators."),
-          author: Intl.message("Gerald R. Ford"),
+          quote: quoteMissingSpecators,
+          author: "Gerald R. Ford",
         );
-      case 3: QuoteAndAuthor(
-        quote: Intl.message("What stands in the way, becomes the way."),
-        author: Intl.message("Marcus Aurelius"),
-      );
-      case 4: QuoteAndAuthor(
-        quote: Intl.message("You must expect great things of yourself before you can do them."),
-        author: Intl.message("Michael Jordan"),
-      );
-      case 5: QuoteAndAuthor(
-        quote: Intl.message("The only time you run out of chances is when you stop taking them."),
-        author: Intl.message("David Beckhame"),
-      )
-      default:
+      case 3:
+        return QuoteAndAuthor(quote: quoteInTheWay, author: "Marcus Aurelius");
+      case 4:
         return QuoteAndAuthor(
-            quote: Intl.message("Don't Panic"),
-            author: Intl.message("Douglas Adams"));
-
+            quote: quoteGreatThings, author: "Michael Jordan");
+      case 5:
+        return QuoteAndAuthor(quote: quoteNoChances, author: "David Beckham");
+      default:
+        return QuoteAndAuthor(quote: quoteDontPanic, author: "Douglas Adams");
     }
   }
+
+  String get quoteStatistics => Intl.message("Lies, damn lies and statistics",
+      desc: "Mark Twain quote", locale: locale);
+  String get quoteMissingShots => Intl.mesage(
+      "I've missed more than 9000 shots in my career. "
+      "I've lost almost 300 games. 26 times, "
+      "I've been trusted to take the game winning shot and missed. "
+      "I've failed over and over and over again in my life. "
+      "And that is why I succeed.",
+      desc: "Michael Jordan quote",
+      locale: locale);
+  String get quoteMissingSpecators => Intl.mesage(
+      "I know I am getting better at golf because I am hitting fewer spectators.",
+      desc: "Gerald R Ford quote",
+      locale: locale);
+  String get quoteInTheWay =>
+      Intl.mesage("What stands in the way, becomes the way.",
+          desc: "Marcus Aurelius quote", locale: locale);
+  String get quoteGreatThings => Intl.mesage(
+      "You must expect great things of yourself before you can do them.",
+      desc: "Michael Jordan quote",
+      locale: locale);
+  String get quoteNoChanges => Intl.message(
+      "The only time you run out of chances is when you stop taking them.",
+      desc: "David Beckham quote",
+      locale: locale);
+  String get quoteDontPanic =>
+      Intl.message("Don't Panic", desc: "Douglas Adams quote", locale: locale);
 
   String relationships(Relationship rel) {
     switch (rel) {
       case Relationship.Me:
-        return Intl.message('Me',
-            name: 'Relationship is me', desc: 'Relationship desc for me');
+        return relationshipMe;
       case Relationship.Friend:
-        return Intl.message('Friend',
-            name: 'Relationship is friend',
-            desc: 'Relationship desc for friend');
+        return relationshipFriend;
       case Relationship.Guardian:
-        return Intl.message('Guardian',
-            name: 'Relationship is guardian',
-            desc: 'Relationship desc for guardian');
+        return relationshipGuardian;
       case Relationship.Parent:
-        return Intl.message('Parent',
-            name: 'Relationship is parent',
-            desc: 'Relationship desc for parent');
+        return relationshipParent;
     }
     return unknown;
   }
+
+  String get relationshipMe => Intl.message('Me',
+      name: 'Relationship is me',
+      desc: 'Relationship desc for me',
+      locale: locale);
+  String get relationshipFriend => Intl.message('Friend',
+      name: 'Relationship is friend', desc: 'Relationship desc for friend');
+  String get relationshipGuardian => Intl.message('Guardian',
+      name: 'Relationship is guardian', desc: 'Relationship desc for guardian');
+  String get relationshipParent => Intl.message('Parent',
+      name: 'Relationship is parent', desc: 'Relationship desc for parent');
 
   String resultinprogress(GameResultSharedDetails result) {
     GameResultPerPeriod finalScore;

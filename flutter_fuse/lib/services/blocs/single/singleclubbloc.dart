@@ -336,7 +336,10 @@ class SingleClubBloc
       if (_inviteSub == null && state is SingleClubLoaded) {
         _inviteSub = db.getInviteToClubStream(clubUid).listen((invites) {
           add(_SingleClubInvitesAdded(invites: invites));
-          _inviteSub.onError(crashes.recordException);
+          _inviteSub.onError((e, stack) {
+            add(_SingleClubInvitesAdded(invites: BuiltList.of([])));
+            crashes.recordException(e, stack);
+          });
         });
       }
     }
@@ -345,7 +348,10 @@ class SingleClubBloc
       if (_coachSub == null && state is SingleClubLoaded) {
         _coachSub = db.getClubCoaches(clubUid).listen((coaches) {
           add(_SingleClubCoachesAdded(coaches: coaches));
-          _coachSub.onError(crashes.recordException);
+          _coachSub.onError((e, stack) {
+            add(_SingleClubCoachesAdded(coaches: BuiltList.of([])));
+            crashes.recordException(e, stack);
+          });
         });
       }
     }
