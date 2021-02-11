@@ -52,7 +52,9 @@ jobs:
       working-directory: flutter_fuse
     - run: brew install ghostscript imagemagick
       working-directory: flutter_fuse
-    - run: echo ${APPLE_APP_API_P8} > ./app-store-api.p8
+    - run: |
+        # Replace the newline with a \n
+        echo ${APPLE_APP_API_P8} | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' > ./app-store-api.p8
       working-directory: flutter_fuse/ios
       env: 	
         APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}

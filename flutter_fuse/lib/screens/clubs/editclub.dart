@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/blocs/singleclubprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
+import '../../widgets/blocs/singleclubprovider.dart';
 import '../../widgets/clubs/editclubdetails.dart';
 import '../../widgets/util/savingoverlay.dart';
 
@@ -27,7 +27,6 @@ class EditClubScreen extends StatefulWidget {
 class _EditClubScreenState extends State<EditClubScreen> {
   final GlobalKey<EditClubDetailsFormState> _formKey =
       GlobalKey<EditClubDetailsFormState>();
-  bool _doingSave = false;
 
   void _showInSnackBar(String value) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
@@ -38,7 +37,6 @@ class _EditClubScreenState extends State<EditClubScreen> {
       var club = _formKey.currentState.validateAndCreate();
       var imageFile = _formKey.currentState.getImageFile();
       if (club != null) {
-        _doingSave = true;
         singleClubBloc
             .add(SingleClubUpdate(club: club.build(), image: imageFile));
       } else {
@@ -50,7 +48,9 @@ class _EditClubScreenState extends State<EditClubScreen> {
   Widget _buildBody(SingleClubState state) {
     return SavingOverlay(
       saving: state is SingleClubSaving || state is SingleClubUninitialized,
-      child: EditClubDetailsForm(state.club, _formKey),
+      child: state is SingleClubUninitialized
+          ? SizedBox(height: 0, width: 0)
+          : EditClubDetailsForm(state.club, _formKey),
     );
   }
 
@@ -72,11 +72,9 @@ class _EditClubScreenState extends State<EditClubScreen> {
           listener: (context, state) {
             if (state is SingleClubDeleted) {
               Navigator.pop(context);
-            } else if (state is SingleClubLoaded) {
+            } else if (state is SingleClubSaveDone) {
               // finished saving.
-              if (_doingSave) {
-                Navigator.pop(context);
-              }
+              Navigator.pop(context);
             }
           },
           builder: (context, state) {

@@ -1,7 +1,6 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -9,48 +8,50 @@ import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 import 'clubimage.dart';
+import 'coachimage.dart';
 
 ///
 /// A form to edit the details of the club.
 ///
-class EditClubDetailsForm extends StatefulWidget {
+class EditCoachDetailsForm extends StatefulWidget {
   /// Constructor.
-  EditClubDetailsForm(this.club, GlobalKey<EditClubDetailsFormState> key)
+  EditCoachDetailsForm(
+      this.club, this.coach, GlobalKey<EditCoachDetailsFormState> key)
       : super(key: key);
 
-  /// The club to edit the details of.
+  /// The club the coach is part of.
   final Club club;
 
+  /// The club to edit the details of.
+  final Coach coach;
+
   @override
-  EditClubDetailsFormState createState() {
-    return EditClubDetailsFormState();
+  EditCoachDetailsFormState createState() {
+    return EditCoachDetailsFormState();
   }
 }
 
 ///
 /// State for editing the details of the club and doing stuff.
 ///
-class EditClubDetailsFormState extends State<EditClubDetailsForm> {
+class EditCoachDetailsFormState extends State<EditCoachDetailsForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final bool _autovalidate = false;
   final Validations _validations = Validations();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNodeName = FocusNode();
-  final FocusNode _focusNodeArriveBefore = FocusNode();
   final FocusNode _focusNodeAbout = FocusNode();
-  File _imageFile;
+  final _picker = ImagePicker();
+  Uint8List _imageFile;
   bool _changedImage = false;
-  String _clubName;
-  String _clubAbout;
-  int _clubArriveBefore;
-  Tristate _clubTrackAttendence = Tristate.Unset;
+  String _coachName;
+  String _coachAbout;
 
   @override
   void initState() {
     super.initState();
-    _clubTrackAttendence = widget.club.trackAttendence;
-    _clubName = widget.club.name;
-    _clubArriveBefore = widget.club.arriveBeforeGame;
+    _coachName = widget.coach.name;
+    _coachAbout = widget.coach.about;
   }
 
   /// Save the club details.
@@ -64,39 +65,32 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
   }
 
   /// Validate the details and create the club for saving.
-  ClubBuilder validateAndCreate() {
+  CoachBuilder validateAndCreate() {
     if (!_formKey.currentState.validate()) {
       return null;
     } else {
       _formKey.currentState.save();
-      var club = widget.club.toBuilder()
-        ..name = _clubName
-        ..about = _clubAbout
-        ..arriveBeforeGame = _clubArriveBefore
-        ..trackAttendence = _clubTrackAttendence;
+      var coach = widget.coach.toBuilder()
+        ..name = _coachName
+        ..about = _coachAbout;
 
       // club, add in the default admin.
-      if (club.uid == null) {
-        var bloc = BlocProvider.of<AuthenticationBloc>(context);
-        club.membersData[bloc.currentUser.uid] =
-            AddedOrAdmin((b) => b..admin = true);
-      }
-      return club;
+      return coach;
     }
   }
 
   /// Get the image file associated with this club.
-  File getImageFile() {
+  Uint8List getImageFile() {
     return _imageFile;
   }
 
   void _selectImage() async {
-    var imgFile = await ImagePicker.pickImage(
+    var imgFile = await _picker.getImage(
         source: ImageSource.gallery, maxHeight: 150.0, maxWidth: 150.0);
 
     if (imgFile != null) {
+      _imageFile = await imgFile.readAsBytes();
       setState(() {
-        _imageFile = imgFile;
         _changedImage = true;
       });
     }
@@ -104,9 +98,15 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
 
   Widget _buildImage() {
     if (!_changedImage) {
-      return ClubImage(clubUid: widget.club.uid);
+      return CoachImage(
+          clubUid: widget.club.uid,
+          coachUid: widget.coach.uid,
+          width: 100,
+          height: 100);
     }
-    return Image.file(_imageFile);
+    return ClipOval(
+      child: Image.memory(_imageFile),
+    );
   }
 
   @override
@@ -129,35 +129,18 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
         child: TextFormField(
           decoration: InputDecoration(
             icon: const Icon(Icons.text_snippet_outlined),
-            hintText: Messages.of(context).team,
-            labelText: Messages.of(context).teamnamehint,
+            hintText: Messages.of(context).coachNameHint,
+            labelText: Messages.of(context).coachName,
           ),
           focusNode: _focusNodeName,
-          initialValue: widget.club.name,
+          initialValue: widget.coach.name,
           keyboardType: TextInputType.text,
           obscureText: false,
           validator: (value) {
             return _validations.validateDisplayName(context, value);
           },
           onSaved: (value) {
-            _clubName = value;
-          },
-        ),
-      ),
-      EnsureVisibleWhenFocused(
-        focusNode: _focusNodeArriveBefore,
-        child: TextFormField(
-          decoration: InputDecoration(
-            icon: const Icon(Icons.timer),
-            hintText: Messages.of(context).arrivebeforehint,
-            labelText: Messages.of(context).arrivebeforelabel,
-          ),
-          focusNode: _focusNodeArriveBefore,
-          initialValue: widget.club.arriveBeforeGame.toString(),
-          keyboardType: TextInputType.number,
-          obscureText: false,
-          onSaved: (value) {
-            _clubArriveBefore = int.parse(value);
+            _coachName = value;
           },
         ),
       ),
@@ -165,20 +148,17 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
         focusNode: _focusNodeAbout,
         child: TextFormField(
           decoration: InputDecoration(
-            icon: const Icon(Icons.text_snippet_outlined),
-            hintText: Messages.of(context).team,
-            labelText: Messages.of(context).teamnamehint,
+            icon: const Icon(Icons.info_outline),
+            hintText: Messages.of(context).coachAboutHint,
+            labelText: Messages.of(context).coachAbout,
           ),
           focusNode: _focusNodeAbout,
-          initialValue: widget.club.about,
+          initialValue: widget.coach.about,
           keyboardType: TextInputType.text,
-          obscureText: false,
           maxLines: 4,
-          validator: (value) {
-            return _validations.validateDisplayName(context, value);
-          },
+          obscureText: false,
           onSaved: (value) {
-            _clubAbout = value;
+            _coachAbout = value;
           },
         ),
       ),
@@ -191,9 +171,18 @@ class EditClubDetailsFormState extends State<EditClubDetailsForm> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          ListTile(
+            leading: ClubImage(clubUid: widget.club.uid),
+            title: Text(
+              widget.club.name,
+              style: Theme.of(context).textTheme.headline5,
+            ),
+          ),
           Form(
             key: _formKey,
-            autovalidate: _autovalidate,
+            autovalidateMode: _autovalidate
+                ? AutovalidateMode.always
+                : AutovalidateMode.disabled,
             child: DropdownButtonHideUnderline(
               child: Column(children: fields),
             ),

@@ -24,7 +24,8 @@ class TeamDetails extends StatelessWidget {
     return ExpansionTile(
       key: PageStorageKey<Season>(season),
       title: Text(
-        "${season.name} W:${season.record.win} L:${season.record.loss} T:${season.record.tie}",
+        "${season.name} W:${season.record.win} L:${season.record.loss} "
+        "T:${season.record.tie}",
       ),
       children: <Widget>[
         TeamResultsBySeason(
@@ -42,7 +43,7 @@ class TeamDetails extends StatelessWidget {
 
     if (team.isAdmin()) {
       ret.add(
-        FlatButton(
+        TextButton(
           onPressed: () =>
               Navigator.pushNamed(context, "AddSeason/${team.team.uid}"),
           child: Text(Messages.of(context).addseason),
@@ -56,7 +57,7 @@ class TeamDetails extends StatelessWidget {
       ret.add(Text(Messages.of(context).loading));
     } else {
       var seasons = team.fullSeason.where((s) => s.teamUid == team.team.uid);
-      if (seasons.length == 0) {
+      if (seasons.isEmpty) {
         ret.add(Text(Messages.of(context).noseasons));
       } else {
         for (var season in seasons) {
@@ -126,7 +127,7 @@ class TeamDetails extends StatelessWidget {
               ),
               label: middle,
               onPressed: () => Navigator.pushNamed(
-                  context, "/Club/" + teamState.team.clubUid),
+                  context, "/Club/${teamState.team.clubUid}"),
             ));
           }
           if (team.archived) {

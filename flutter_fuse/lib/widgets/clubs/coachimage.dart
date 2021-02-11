@@ -56,9 +56,7 @@ class CoachImage extends StatelessWidget {
         builder: (context, state) {
           Widget img;
           if (state is SingleClubCoachUninitialized ||
-              state is SingleClubCoachDeleted ||
-              state.club.photoUrl == null ||
-              state.club.photoUrl.isEmpty) {
+              state is SingleClubCoachDeleted || state.coach.photoUrl == null || state.coach.photoUrl.isEmpty) {
             img = Image.asset("assets/images/defaultavatar.png",
                 key: key,
                 width: width,
@@ -86,11 +84,13 @@ class CoachImage extends StatelessWidget {
               alignment: alignment,
               repeat: repeat,
               matchTextDirection: matchTextDirection,
-              imageUrl: state.club.photoUrl,
+              imageUrl: state.coach.photoUrl,
             );
           }
           return AnimatedSwitcher(
-              duration: Duration(milliseconds: 500), child: img);
+            duration: Duration(milliseconds: 500),
+            child: ClipOval(child: img),
+          );
         },
       ),
     );

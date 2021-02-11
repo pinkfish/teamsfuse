@@ -27,13 +27,13 @@ class _AddClubScreenState extends State<AddClubScreen> {
   StepState _detailsStepState = StepState.editing;
   StepState _createStepStage = StepState.disabled;
   Club _clubToAdd;
-  AddClubBloc clubBloc;
+  AddClubBloc _clubBloc;
   File _imageFileToAdd;
 
   @override
   void initState() {
     super.initState();
-    clubBloc = AddClubBloc(
+    _clubBloc = AddClubBloc(
         coordinationBloc: BlocProvider.of<CoordinationBloc>(context));
     _clubToAdd = Club((b) => b
       ..name = ""
@@ -47,7 +47,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
 
   void _savePressed() async {
     if (_clubToAdd != null) {
-      clubBloc.add(
+      _clubBloc.add(
           AddClubEventCommit(club: _clubToAdd, imageFile: _imageFileToAdd));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
@@ -122,7 +122,9 @@ class _AddClubScreenState extends State<AddClubScreen> {
         clubUid: _clubToAdd.uid,
       );
     }
-    return Image.file(_imageFileToAdd);
+    return ClipOval(
+      child: Image.file(_imageFileToAdd),
+    );
   }
 
   Widget _buildSummary() {
@@ -132,7 +134,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
         children: <Widget>[
           _buildImage(),
           ListTile(
-            leading: Icon(Icons.title),
+            leading: Icon(Icons.event_note),
             title: Text(_clubToAdd.name),
           ),
           ListTile(
@@ -153,7 +155,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
   Widget _buildBody() {
     var messages = Messages.of(context);
     return BlocBuilder(
-      cubit: clubBloc,
+      cubit: _clubBloc,
       builder: (context, state) => SavingOverlay(
         saving: state is AddItemSaving,
         child: Stepper(
@@ -197,7 +199,7 @@ class _AddClubScreenState extends State<AddClubScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener(
-      cubit: clubBloc,
+      cubit: _clubBloc,
       listener: (context, state) {
         if (state is AddItemDone) {
           Navigator.pop(context);

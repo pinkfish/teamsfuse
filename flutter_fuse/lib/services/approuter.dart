@@ -1,6 +1,8 @@
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:fusemodel/fusemodel.dart';
 
+import '../screens/clubs/editcoach.dart';
+import '../screens/clubs/addcoach.dart';
 import '../screens/clubs/addclub.dart';
 import '../screens/clubs/addmember.dart';
 import '../screens/clubs/clubdetails.dart';
@@ -232,6 +234,7 @@ class AppRouter {
                   playerUid: vals["player"][0].toString(),
                 )));
 
+    // Club screens.
     router.define("/Club/:id",
         handler: fluro.Handler(
             handlerFunc: (context, vals) =>
@@ -251,6 +254,14 @@ class AppRouter {
     router.define("/AddClub",
         handler:
             fluro.Handler(handlerFunc: (context, vals) => AddClubScreen()));
+    router.define("/Club/Coach/Add/:id",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) =>
+                AddCoachScreen(vals["id"][0].toString())));
+    router.define("/Club/Coach/Edit/:clubId/:id",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) =>
+                EditCoachScreen(vals["clubId"][0].toString(), vals["id"][0].toString())));
 
     // League screens.
     router.define('/League/Home',

@@ -6,6 +6,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleclubprovider.dart';
+import '../../widgets/clubs/clubcoaches.dart';
 import '../../widgets/clubs/clubdetails.dart';
 import '../../widgets/clubs/clubmembers.dart';
 import '../../widgets/clubs/clubteams.dart';
@@ -45,6 +46,8 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
       );
     } else if (_tabIndex == 1) {
       return ClubTeams(club.uid, onlyPublic: false);
+    } else if (_tabIndex == 2) {
+      return ClubCoaches(club.uid);
     }
     print("$_tabIndex");
 
@@ -58,12 +61,13 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
       Navigator.pushNamed(context, "AddClubTeam/${widget.clubUid}");
     } else if (value == "editclub") {
       Navigator.pushNamed(context, "EditClub/${widget.clubUid}");
+    } else if (value == "addcoach") {
+      Navigator.pushNamed(context, "Club/Coach/Add/${widget.clubUid}");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Froggy: ${widget.clubUid}");
     return SingleClubProvider(
       clubUid: widget.clubUid,
       builder: (context, singleClubBloc) => BlocConsumer(
@@ -95,6 +99,10 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                     PopupMenuItem<String>(
                       value: "addteam",
                       child: Text(Messages.of(context).addteam),
+                    ),
+                    PopupMenuItem<String>(
+                      value: "addcoach",
+                      child: Text(Messages.of(context).addCoach),
                     ),
                     PopupMenuItem<String>(
                       value: 'addadmin',
@@ -131,6 +139,10 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.people),
               label: Messages.of(context).teams,
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people),
+              label: Messages.of(context).coaches,
             ),
           ];
 

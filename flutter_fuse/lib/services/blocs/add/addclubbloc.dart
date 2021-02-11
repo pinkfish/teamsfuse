@@ -9,19 +9,24 @@ import 'package:meta/meta.dart';
 import '../coordinationbloc.dart';
 import 'additemstate.dart';
 
+/// Basic event for adding things to the club.
 abstract class AddClubEvent extends Equatable {}
 
 ///
 /// Adds this player into the set of players.
 ///
 class AddClubEventCommit extends AddClubEvent {
+  /// The club to add.
   final Club club;
+
+  /// The image for the club to add.
   final File imageFile;
 
+  /// The add event to write this new club out.
   AddClubEventCommit({@required this.club, @required this.imageFile});
 
   @override
-  List<Object> get props => [this.club, this.imageFile];
+  List<Object> get props => [club, imageFile];
 }
 
 ///
@@ -29,8 +34,10 @@ class AddClubEventCommit extends AddClubEvent {
 /// players.
 ///
 class AddClubBloc extends Bloc<AddClubEvent, AddItemState> {
+  /// The coordination bloc to handle talking to the database and users.
   final CoordinationBloc coordinationBloc;
 
+  /// Create a new add club bloc with the right details.
   AddClubBloc({@required this.coordinationBloc})
       : super(AddItemUninitialized());
 
@@ -41,20 +48,23 @@ class AddClubBloc extends Bloc<AddClubEvent, AddItemState> {
       yield AddItemSaving();
 
       try {
-        ClubBuilder updated = event.club.toBuilder();
+        var updated = event.club.toBuilder();
         var wrap = coordinationBloc.databaseUpdateModel.precreateClubUid();
         updated.membersData[coordinationBloc.authenticationBloc.currentUser
             .uid] = AddedOrAdmin((b) => b..admin = true);
         updated.uid = wrap.documentID;
-        String uid = await coordinationBloc.databaseUpdateModel
+        var uid = await coordinationBloc.databaseUpdateModel
             .addClub(wrap, updated.build());
         if (event.imageFile != null) {
           updated.uid = uid;
           coordinationBloc.databaseUpdateModel.updateClubImage(
-              updated.build(), await event.imageFile.readAsBytes());
+              updated.build(),
+              event.imageFile != null
+                  ? await event.imageFile.readAsBytes()
+                  : null);
         }
         yield AddItemDone(uid: uid);
-      } catch (e, stack) {
+      } on Exception catch (e, stack) {
         coordinationBloc.analytics.recordException(e, stack);
         yield AddItemSaveFailed(error: e);
       }

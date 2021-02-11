@@ -1,4 +1,5 @@
 export 'blocs/add/addclubbloc.dart';
+export 'blocs/add/addcoachbloc.dart';
 export 'blocs/add/addgamebloc.dart';
 export 'blocs/add/addinvitebloc.dart';
 export 'blocs/add/additemstate.dart';

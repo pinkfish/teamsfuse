@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -18,7 +18,7 @@ class SingleClubCoachUpdate extends SingleClubCoachEvent {
   final Coach coach;
 
   /// Optional image, if this is set then the image is updated.
-  final File image;
+  final Uint8List image;
 
   /// Creates a new update for the coach details.
   SingleClubCoachUpdate({@required this.coach, this.image});
@@ -119,8 +119,8 @@ class SingleClubCoachBloc
       yield SingleClubCoachSaving.fromState(state).build();
       try {
         var clubCoach = event.coach;
-        await db.updateClubCoach(clubCoach,
-            event.image != null ? await event.image.readAsBytes() : null);
+        await db.updateClubCoach(
+            clubCoach, event.image != null ? await event.image : null);
         yield SingleClubCoachSaveDone.fromState(state).build();
         yield (SingleClubCoachLoaded.fromState(state)
               ..coach = event.coach.toBuilder())

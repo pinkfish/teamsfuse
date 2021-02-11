@@ -40,7 +40,11 @@ class ClubDetails extends StatelessWidget {
             leading: const Icon(Icons.check),
             title: Text(
                 Messages.of(context).trackattendence(club.trackAttendence)),
-          )
+          ),
+          Card(
+            child:
+                Text(club.about, style: Theme.of(context).textTheme.bodyText1),
+          ),
         ],
       ),
     );

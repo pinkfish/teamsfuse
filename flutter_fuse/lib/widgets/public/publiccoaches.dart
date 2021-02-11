@@ -4,6 +4,7 @@ import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
+import '../clubs/clubimage.dart';
 import '../clubs/coachimage.dart';
 
 ///
@@ -62,10 +63,17 @@ class PublicCoachDetails extends StatelessWidget {
           return Column(
             children: [
               SizedBox(height: 10),
-              Text(
+              Row(children: [
+                ClubImage(
+                  clubUid: state.coach.clubUid,
+                  width: 100,
+                  height: 100,
+                ),
+                Text(
                 state.club.name,
                 style: Theme.of(context).textTheme.headline4,
               ),
+              ],),
               SizedBox(height: 10),
               Text(
                 Messages.of(context).coaches,
