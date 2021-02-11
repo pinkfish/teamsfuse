@@ -21,6 +21,11 @@ or alternatively using `brew install fastlane`
 fastlane ios firebase
 ```
 Push a new beta build to firebase
+### ios apple_keys
+```
+fastlane ios apple_keys
+```
+Lane just to get the api key for apple
 ### ios beta
 ```
 fastlane ios beta
