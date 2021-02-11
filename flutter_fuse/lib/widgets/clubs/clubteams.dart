@@ -93,7 +93,7 @@ class ClubTeams extends StatelessWidget {
         cubit: singleClubBloc,
         builder: (context, state) {
           if (state is SingleClubLoaded && !state.loadedTeams) {
-            singleClubBloc.add(SingleClubLoadTeams(onlyPublic));
+            singleClubBloc.add(SingleClubLoadTeams(publicLoad: onlyPublic));
           }
           return _buildTeams(context, state);
         },

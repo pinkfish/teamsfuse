@@ -27,6 +27,8 @@ class Messages {
       desc: 'Message to show as the title for the admin adding screen',
       locale: locale);
 
+  String get noCoaches => Intl.message("No coaches", desc: 'Message to show that there are no coaches for this club', locale: locale);
+
   String get coaches => Intl.message('Coaches',
       desc: 'Header to display the coaches for the team/club', locale: locale);
 

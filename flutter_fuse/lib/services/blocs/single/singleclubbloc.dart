@@ -10,16 +10,25 @@ import 'package:meta/meta.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
 
+///
+/// The base class for all the single club events.
+///
 abstract class SingleClubEvent extends Equatable {}
 
 ///
 /// Updates the club (writes it out to firebase.
 ///
 class SingleClubUpdate extends SingleClubEvent {
+  /// The club to update.
   final Club club;
+
+  /// If we include the members in the update (or not).
   final bool includeMembers;
+
+  /// The data to update if there is a new image.
   final File image;
 
+  /// The constructor of the update.
   SingleClubUpdate(
       {@required this.club, this.includeMembers = false, this.image});
 
@@ -31,8 +40,6 @@ class SingleClubUpdate extends SingleClubEvent {
 /// Loads the invites for this club.
 ///
 class SingleClubLoadInvites extends SingleClubEvent {
-  SingleClubLoadInvites();
-
   @override
   List<Object> get props => [];
 }
@@ -41,8 +48,10 @@ class SingleClubLoadInvites extends SingleClubEvent {
 /// Updates the image for the club.
 ///
 class SingleClubUpdateImage extends SingleClubEvent {
+  /// The image to update for the club.
   final File image;
 
+  /// Constructor to update the image.
   SingleClubUpdateImage({@required this.image});
 
   @override
@@ -53,9 +62,13 @@ class SingleClubUpdateImage extends SingleClubEvent {
 /// Adds an admin to the club.
 ///
 class SingleClubAddMember extends SingleClubEvent {
+  /// The uid of the member to add.
   final String adminUid;
+
+  /// If the mbmer is an admin.
   final bool admin;
 
+  /// Create a new request to add a member to the club.
   SingleClubAddMember({@required this.adminUid, this.admin});
 
   @override
@@ -66,8 +79,10 @@ class SingleClubAddMember extends SingleClubEvent {
 /// Deletes an admin from the club.
 ///
 class SingleClubDeleteMember extends SingleClubEvent {
+  /// The uid of the member to delete.
   final String adminUid;
 
+  /// A request to delete a member from the club.
   SingleClubDeleteMember({@required this.adminUid});
 
   @override
@@ -78,9 +93,13 @@ class SingleClubDeleteMember extends SingleClubEvent {
 /// Invites someone to be an admin for this club.
 ///
 class SingleClubInviteMember extends SingleClubEvent {
+  /// Invite a new member to the club.
   final String email;
+
+  /// If we should invite them as an admin or not.
   final bool admin;
 
+  /// Create a request to invite a member to the club.
   SingleClubInviteMember({@required this.email, this.admin = false});
 
   @override
@@ -91,8 +110,6 @@ class SingleClubInviteMember extends SingleClubEvent {
 /// Delete this club from the world.
 ///
 class SingleClubDelete extends SingleClubEvent {
-  SingleClubDelete();
-
   @override
   List<Object> get props => [];
 }
@@ -102,9 +119,11 @@ class SingleClubDelete extends SingleClubEvent {
 /// public teams are loaded.
 ///
 class SingleClubLoadTeams extends SingleClubEvent {
-  bool publicLoad;
+  /// If this is to only load the public teams.
+  final bool publicLoad;
 
-  SingleClubLoadTeams(this.publicLoad);
+  /// Create a request to load the teams for the club.,
+  SingleClubLoadTeams({this.publicLoad = false});
 
   @override
   List<Object> get props => [publicLoad];
@@ -166,11 +185,14 @@ class _SingleClubCoachesAdded extends SingleClubEvent {
 ///
 class SingleClubBloc
     extends AsyncHydratedBloc<SingleClubEvent, SingleClubState> {
+  /// The database to use for updating the model.
   final DatabaseUpdateModel db;
-  final AnalyticsSubsystem crashes;
-  final String clubUid;
 
-  static String createNew = "new";
+  /// Where to route all the crashes and stats.
+  final AnalyticsSubsystem crashes;
+
+  /// The uid of the club to load.
+  final String clubUid;
 
   StreamSubscription<Club> _clubSub;
   StreamSubscription<Iterable<InviteToClub>> _inviteSub;
@@ -178,9 +200,12 @@ class SingleClubBloc
   StreamSubscription<BuiltList<Team>> _teamSub;
   StreamSubscription<BuiltList<Coach>> _coachSub;
 
+  ///
+  /// Creates a new club bloc to load all the things about the club.
+  ///
   SingleClubBloc(
       {@required this.db, @required this.clubUid, @required this.crashes})
-      : super(SingleClubUninitialized(), "Singleclub" + clubUid) {
+      : super(SingleClubUninitialized(), "Singleclub$clubUid") {
     _clubSub = db.getClubData(clubUid: clubUid).listen((club) {
       if (club != null) {
         add(_SingleClubNewClub(newClub: club));
@@ -222,9 +247,9 @@ class SingleClubBloc
     if (event is SingleClubUpdate) {
       yield SingleClubSaving.fromState(state).build();
       try {
-        Club club = event.club;
+        var club = event.club;
         if (event.image != null) {
-          Uri clubUri = await db.updateClubImage(
+          var clubUri = await db.updateClubImage(
               state.club, await event.image.readAsBytes());
           club = club.rebuild((b) => b..photoUrl = clubUri.toString());
         }
@@ -232,10 +257,8 @@ class SingleClubBloc
         yield SingleClubSaveDone.fromState(state).build();
         yield (SingleClubLoaded.fromState(state)..club = event.club.toBuilder())
             .build();
-      } catch (e, stack) {
-        yield (SingleClubSaveFailed.fromState(state)
-              ..error = RemoteError(e.message, stack.toString()))
-            .build();
+      } on Exception catch (e, stack) {
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
         yield SingleClubLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -244,17 +267,15 @@ class SingleClubBloc
     if (event is SingleClubUpdateImage) {
       yield SingleClubSaving.fromState(state).build();
       try {
-        Uri clubUri = await db.updateClubImage(
+        var clubUri = await db.updateClubImage(
             state.club, await event.image.readAsBytes());
 
         yield SingleClubSaveDone.fromState(state).build();
         yield (SingleClubLoaded.fromState(state)
               ..club = (state.club.toBuilder()..photoUrl = clubUri.toString()))
             .build();
-      } catch (e, stack) {
-        yield (SingleClubSaveFailed.fromState(state)
-              ..error = RemoteError(e.message, stack.toString()))
-            .build();
+      } on Exception catch (e, stack) {
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
         yield SingleClubLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -266,10 +287,8 @@ class SingleClubBloc
         await db.addUserToClub(clubUid, event.adminUid, event.admin);
         yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
-      } catch (e, stack) {
-        yield (SingleClubSaveFailed.fromState(state)
-              ..error = RemoteError(e.message, stack.toString()))
-            .build();
+      } on Exception catch (e, stack) {
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
         yield SingleClubLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -281,9 +300,9 @@ class SingleClubBloc
         await db.deleteClubMember(state.club, event.adminUid);
         yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
-      } catch (e, stack) {
+      } on Exception catch (e, stack) {
         yield (SingleClubSaveFailed.fromState(state)
-              ..error = RemoteError(e.message, stack.toString()))
+              ..error = e)
             .build();
         yield SingleClubLoaded.fromState(state).build();
         crashes.recordException(e, stack);
@@ -300,10 +319,8 @@ class SingleClubBloc
             clubUid: clubUid);
         yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
-      } catch (e, stack) {
-        yield (SingleClubSaveFailed.fromState(state)
-              ..error = RemoteError(e.message, stack.toString()))
-            .build();
+      } on Exception catch (e, stack) {
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
         yield SingleClubLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -316,22 +333,19 @@ class SingleClubBloc
     }
 
     if (event is SingleClubLoadInvites) {
-      if (_inviteSub == null) {
-        _inviteSub = db
-            .getInviteToClubStream(clubUid)
-            .listen((Iterable<InviteToClub> invites) {
+      if (_inviteSub == null && state is SingleClubLoaded) {
+        _inviteSub = db.getInviteToClubStream(clubUid).listen((invites) {
           add(_SingleClubInvitesAdded(invites: invites));
-          _inviteSub.onError((e, stack) => crashes.recordException(e, stack));
+          _inviteSub.onError(crashes.recordException);
         });
       }
     }
 
     if (event is SingleClubLoadCoaches) {
-      if (_coachSub == null) {
-        _coachSub =
-            db.getClubCoaches(clubUid).listen((BuiltList<Coach> coaches) {
+      if (_coachSub == null && state is SingleClubLoaded) {
+        _coachSub = db.getClubCoaches(clubUid).listen((coaches) {
           add(_SingleClubCoachesAdded(coaches: coaches));
-          _coachSub.onError((e, stack) => crashes.recordException(e, stack));
+          _coachSub.onError(crashes.recordException);
         });
       }
     }
@@ -339,9 +353,8 @@ class SingleClubBloc
     if (event is SingleClubLoadTeams) {
       try {
         if (_teamSub == null && state is SingleClubLoaded) {
-          _teamSub = db
-              .getClubTeams(state.club, event.publicLoad)
-              .listen((Iterable<Team> teams) {
+          _teamSub =
+              db.getClubTeams(state.club, event.publicLoad).listen((teams) {
             add(_SingleClubTeamsAdded(teams: teams));
           });
           _teamSub.onError((e, stack) {
@@ -357,7 +370,7 @@ class SingleClubBloc
             }
           });
         }
-      } catch (e, stack) {
+      } on Exception catch (e, stack) {
         crashes.recordException(e, stack);
         if (e is FirebaseException) {
           if (e.code == 'permission-denied') {
@@ -385,8 +398,7 @@ class SingleClubBloc
     }
 
     try {
-      SingleClubBlocStateType type =
-          SingleClubBlocStateType.valueOf(json["type"]);
+      var type = SingleClubBlocStateType.valueOf(json["type"]);
       switch (type) {
         case SingleClubBlocStateType.Uninitialized:
           return SingleClubUninitialized();
