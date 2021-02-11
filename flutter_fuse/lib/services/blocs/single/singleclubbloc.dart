@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:built_collection/built_collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -346,14 +345,19 @@ class SingleClubBloc
 
     if (event is SingleClubLoadCoaches) {
       if (_coachSub == null && state is SingleClubLoaded) {
+        print("Setup coaches");
         _coachSub = db.getClubCoaches(clubUid).listen((coaches) {
           add(_SingleClubCoachesAdded(coaches: coaches));
-          _coachSub.onError((e, stack) {
-            add(_SingleClubCoachesAdded(coaches: BuiltList.of([])));
-            crashes.recordException(e, stack);
-          });
+        });
+        _coachSub.onError((e, stack) {
+          add(_SingleClubCoachesAdded(coaches: BuiltList.of([])));
+          crashes.recordException(e, stack);
         });
       }
+    }
+
+    if (event is _SingleClubCoachesAdded) {
+      yield (SingleClubLoaded.fromState(state)..coaches = event.coaches.toBuilder()..loadedCoaches = true).build();
     }
 
     if (event is SingleClubLoadTeams) {

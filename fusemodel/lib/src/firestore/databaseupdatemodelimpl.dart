@@ -1275,11 +1275,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Stream<BuiltList<Coach>> getClubCoaches(String clubUid) async* {
+    print("Getting coaches");
     var query = _wrapper
         .collection(CLUB_COLLECTION)
         .document(clubUid)
         .collection(COACH_COLLECTION);
     var wrap = await query.getDocuments();
+
+    print("Got docs");
     var coaches = ListBuilder<Coach>();
     for (var snap in wrap.documents) {
       coaches.add(Coach.fromMap(snap.data));
