@@ -25,7 +25,6 @@ test.mockConfig({
 
 import { onWrite } from '../../ts/db/messages/update.f';
 
-
 describe('Teams Tests', () => {
     before(() => {
         return;
@@ -59,7 +58,7 @@ describe('Teams Tests', () => {
             recipients: {},
         });
 
-        return      await admin.firestore().collection('Messages').doc(messageDocId).get();
+        return await admin.firestore().collection('Messages').doc(messageDocId).get();
     }
 
     it('copy recipient', async () => {

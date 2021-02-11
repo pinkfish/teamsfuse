@@ -11,7 +11,7 @@ export const onWrite = functions.firestore
 
         // If it exists afterwards, copy it to the message.
         if (inputData.after.exists) {
-        const idx = `recipients.${data.userId}`;
+            const idx = `recipients.${data.userId}`;
             await db
                 .collection('Messages')
                 .doc(data.messageId)
