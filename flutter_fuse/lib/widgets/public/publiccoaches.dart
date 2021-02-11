@@ -65,7 +65,7 @@ class PublicCoachDetails extends StatelessWidget {
               SizedBox(height: 10),
               Row(children: [
                 ClubImage(
-                  clubUid: state.coach.clubUid,
+                  clubUid: state.club.uid,
                   width: 100,
                   height: 100,
                 ),
