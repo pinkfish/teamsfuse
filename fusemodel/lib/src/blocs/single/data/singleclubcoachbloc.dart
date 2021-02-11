@@ -46,8 +46,7 @@ abstract class SingleClubCoachState {
     return builder..coach = state.coach?.toBuilder();
   }
 
-  static void initializeStateBuilder(SingleClubCoachStateBuilder b) => b
-    ;
+  static void initializeStateBuilder(SingleClubCoachStateBuilder b) => b;
 
   Map<String, dynamic> toMap();
 }

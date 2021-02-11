@@ -1,9 +1,6 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
-import 'package:fusemodel/fusemodel.dart';
 
-import '../common.dart';
 import '../serializer.dart';
 
 part 'coach.g.dart';
@@ -30,17 +27,22 @@ abstract class Coach implements Built<Coach, CoachBuilder> {
   String get clubUid;
 
   Coach._();
-  factory Coach([updates(CoachBuilder b)]) => _$Coach((b) => b..about = "");
+
+  /// Factory to amke an exciting new coach
+  factory Coach([updates(CoachBuilder b)]) = _$Coach;
 
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(CoachBuilder b) => b..about = "";
 
+  /// Serialize the coach.
   Map<String, dynamic> toMap({bool includeMembers}) =>
       dataSerializers.serializeWith(Coach.serializer, this);
 
+  /// Deserialize the coach
   static Coach fromMap(Map<String, dynamic> jsonData) {
     return dataSerializers.deserializeWith(Coach.serializer, jsonData);
   }
 
+  /// The serializer to use for the coach data,
   static Serializer<Coach> get serializer => _$coachSerializer;
 }

@@ -8,6 +8,7 @@ import 'ant/broadcast.dart';
 import 'ant/broadcaststatus.dart';
 import 'ant/broadcasttype.dart';
 import 'club.dart';
+import 'clubs/newsitem.dart';
 import 'common.dart';
 import 'game.dart';
 import 'invite.dart';
@@ -29,8 +30,8 @@ part 'serializer.g.dart';
 /// Collection of generated serializers for the built_value chat example.
 ///
 @SerializersFor([
-  AddedUid,
   AddedOrAdmin,
+  AddedUid,
   Attendance,
   Broadcast,
   BroadcastStatus,
@@ -57,11 +58,11 @@ part 'serializer.g.dart';
   GameSummary,
   Gender,
   Invite,
-  InviteType,
   InviteAsAdmin,
   InviteToClub,
   InviteToLeagueAsAdmin,
   InviteToTeam,
+  InviteType,
   InviteType,
   LeagueOrTournament,
   LeagueOrTournamentDivison,
@@ -71,6 +72,7 @@ part 'serializer.g.dart';
   MediaType,
   Message,
   MessageReadState,
+  NewsItem,
   OfficialResult,
   Opponent,
   Player,
