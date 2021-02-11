@@ -13,7 +13,7 @@ class ResponsiveWidget extends StatelessWidget {
     return MediaQuery.of(context).size.width > 1200;
   }
 
-   /// Small screen is any screen whose width is less than 800 pixels
+  /// Small screen is any screen whose width is less than 800 pixels
   static bool isSmallScreen(BuildContext context) {
     return MediaQuery.of(context).size.width < 800;
   }
@@ -32,19 +32,24 @@ class ResponsiveWidget extends StatelessWidget {
 
   /// The small screen builder for the widget.
   final ResponsiveBuilder smallScreen;
+
   /// The medium screen builder for the widget.
   final ResponsiveBuilder mediumScreen;
+
   /// The large screen builder for the widget.
   final ResponsiveBuilder largeScreen;
 
   @override
   Widget build(BuildContext context) {
+    Widget inner;
     if (isLargeScreen(context) && largeScreen != null) {
-      return largeScreen(context);
+      inner = largeScreen(context);
+    } else if (isMediumScreen(context) && mediumScreen != null) {
+      inner = mediumScreen(context);
+    } else {
+      inner = smallScreen(context);
     }
-    if (isMediumScreen(context) && mediumScreen != null) {
-      return mediumScreen(context);
-    }
-    return smallScreen(context);
+    return AnimatedSwitcher(
+        child: inner, duration: Duration(milliseconds: 500));
   }
 }

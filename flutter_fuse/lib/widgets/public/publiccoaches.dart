@@ -4,6 +4,7 @@ import 'package:flutter_fuse/services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
+import '../clubs/coachimage.dart';
 
 ///
 /// Shows the details about the coaches in a specific club.
@@ -14,6 +15,34 @@ class PublicCoachDetails extends StatelessWidget {
 
   /// The constructor.
   PublicCoachDetails(this.bloc);
+
+  Widget _buildCoach(BuildContext context, Coach coach) {
+    return Card(
+      margin: EdgeInsets.all(5.0),
+      child: Padding(
+        padding: EdgeInsets.all(10.0),
+        child: Row(
+          children: [
+            CoachImage(
+                coachUid: coach.uid,
+                clubUid: coach.clubUid,
+                height: 100,
+                width: 100),
+            Expanded(
+              child: Column(
+                children: [
+                  Text(coach.name,
+                      style: Theme.of(context).textTheme.headline5),
+                  Text(coach.about,
+                      style: Theme.of(context).textTheme.bodyText1),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget build(BuildContext context) {
     return BlocBuilder(
@@ -31,6 +60,24 @@ class PublicCoachDetails extends StatelessWidget {
           if (state.coaches.isEmpty) {
             return Text(Messages.of(context).noCoaches);
           }
+          return Column(
+            children: [
+              SizedBox(height: 10),
+              Text(
+                state.club.name,
+                style: Theme.of(context).textTheme.headline4,
+              ),
+              SizedBox(height: 10),
+              Text(
+                Messages.of(context).coaches,
+                style: Theme.of(context)
+                    .textTheme
+                    .headline6
+                    .copyWith(color: Colors.green),
+              ),
+              ...state.coaches.map<Widget>((c) => _buildCoach(context, c))
+            ],
+          );
         });
   }
 }

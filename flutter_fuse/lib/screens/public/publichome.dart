@@ -6,6 +6,7 @@ import 'package:flutter_fuse/widgets/teams/publicteamdetails.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:flutter_fuse/widgets/util/responsivewidget.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -140,7 +141,56 @@ class PublicHomeScreen extends StatelessWidget {
       initialIndex:
           PublicTab.values.indexWhere((element) => element == tabSelected),
       child: Scaffold(
-        appBar: _buildAppBar(context, singleClubBloc),
+        appBar: AppBar(
+          title: BlocBuilder(
+            cubit: singleClubBloc,
+            builder: (context, state) {
+              if (state is SingleClubUninitialized) {
+                return Text(Messages.of(context).loading);
+              }
+              if (state is SingleClubDeleted) {
+                return Text(Messages.of(context).clubDeleted);
+              }
+              return Text(state.club.name);
+            },
+          ),
+        ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: BlocBuilder(
+                  cubit: singleClubBloc,
+                  builder: (context, state) => Text(
+                    state.club.name,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: Icon(MdiIcons.basketball),
+                title: Text(Messages.of(context).about),
+                onTap: () => Navigator.popAndPushNamed(
+                    context, "/Public/${PublicTab.Club.toString()}/$clubUid"),
+              ),
+              ListTile(
+                leading: Icon(Icons.people),
+                title: Text(Messages.of(context).teams),
+                onTap: () => Navigator.popAndPushNamed(
+                    context, "/Public/${PublicTab.Team.toString()}/$clubUid"),
+              ),
+              ListTile(
+                leading: Icon(Icons.people),
+                title: Text(Messages.of(context).coaches),
+                onTap: () => Navigator.popAndPushNamed(context,
+                    "/Public/${PublicTab.Coaches.toString()}/$clubUid"),
+              ),
+            ],
+          ),
+        ),
         body: BlocBuilder(
           cubit: singleClubBloc,
           builder: (context, singleClubState) {

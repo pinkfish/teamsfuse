@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../blocs/singleclubprovider.dart';
+import '../blocs/singleclubcoachprovider.dart';
 
 ///
-/// Show the image for the club.
+/// Show the image for the coach.
 ///
-class ClubImage extends StatelessWidget {
+class CoachImage extends StatelessWidget {
   /// Constructor.
-  ClubImage(
+  CoachImage(
       {@required this.clubUid,
+      @required this.coachUid,
       Key key,
       this.width,
       this.height,
@@ -23,6 +24,9 @@ class ClubImage extends StatelessWidget {
 
   /// The club to lookup.
   final String clubUid;
+
+  /// The uid for the coach.
+  final String coachUid;
 
   /// The width of the image.
   final double width;
@@ -44,14 +48,15 @@ class ClubImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleClubProvider(
+    return SingleClubCoachProvider(
       clubUid: clubUid,
+      coachUid: coachUid,
       builder: (context, bloc) => BlocBuilder(
         cubit: bloc,
         builder: (context, state) {
           Widget img;
-          if (state is SingleClubUninitialized ||
-              state is SingleClubDeleted ||
+          if (state is SingleClubCoachUninitialized ||
+              state is SingleClubCoachDeleted ||
               state.club.photoUrl == null ||
               state.club.photoUrl.isEmpty) {
             img = Image.asset("assets/images/defaultavatar.png",
@@ -67,6 +72,12 @@ class ClubImage extends StatelessWidget {
               width: width,
               height: height,
               placeholder: (context, url) => Image.asset(
+                "assets/images/defaultavatar.png",
+                width: width,
+                height: height,
+                fit: fit,
+              ),
+              errorWidget: (context, url, error) => Image.asset(
                 "assets/images/defaultavatar.png",
                 width: width,
                 height: height,

@@ -138,18 +138,3 @@ class PublicTeamTile extends StatelessWidget {
   }
 }
 
-class _ColoredTabBar extends Container implements PreferredSizeWidget {
-  _ColoredTabBar({this.color, this.tabBar});
-
-  final Color color;
-  final TabBar tabBar;
-
-  @override
-  Size get preferredSize => tabBar.preferredSize;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        color: color,
-        child: tabBar,
-      );
-}
