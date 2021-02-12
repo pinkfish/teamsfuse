@@ -36,7 +36,7 @@ class ClubTile extends StatelessWidget {
             return ListTile(
               leading: ClubImage(clubUid: clubUid, width: 50, height: 50),
               title: Text(clubState.club.name,
-                  style: Theme.of(context).textTheme.bodyText1),
+                  style: Theme.of(context).textTheme.headline5),
             );
           },
         ),

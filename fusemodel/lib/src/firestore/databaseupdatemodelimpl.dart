@@ -1406,13 +1406,16 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<NewsItem> addClubNews(NewsItem news) async {
-      var ref = _wrapper
-          .collection(CLUB_COLLECTION)
-          .document(news.clubUid)
-          .collection(NEWS_COLLECTION)
-          .document();
-      news = news.rebuild((b) => b..uid = ref.documentID);
-      await ref.setData(news.toMap());
+    var ref = _wrapper
+        .collection(CLUB_COLLECTION)
+        .document(news.clubUid)
+        .collection(NEWS_COLLECTION)
+        .document();
+    news = news.rebuild((b) => b
+      ..uid = ref.documentID
+      ..postedByUid = currentUser.uid
+      ..postedByName = currentUser.profile.displayName);
+    await ref.setData(news.toMap());
     return news;
   }
 
@@ -1458,7 +1461,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       }
     }
   }
-
 
   // leagues!
   @override
@@ -1528,7 +1530,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
     var wrapAway = await queryAway.getDocuments();
     for (var wrap in wrapAway.documents) {
-         games[wrap.documentID] = GameSharedData.fromMap(wrap.data);
+      games[wrap.documentID] = GameSharedData.fromMap(wrap.data);
     }
     yield BuiltList(games.values);
 

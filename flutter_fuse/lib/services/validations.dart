@@ -25,6 +25,15 @@ class Validations {
     return null;
   }
 
+  /// Validates a subject is correct.
+  String validateSubject(BuildContext context, String value) {
+    if (value.isEmpty) {
+      return Messages.of(context).subjectRequired;
+    }
+    return null;
+  }
+
+
   /// Validate an email is correct.
   String validateEmail(BuildContext context, String value) {
     if (value.isEmpty) {

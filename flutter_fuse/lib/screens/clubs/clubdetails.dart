@@ -54,7 +54,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
       return Column(
         children: [
           SizedBox(height:10),
-          ClubTile(clubUid: club.uid),
+          ClubTile(clubUid: club.uid, ),
           Divider(),
           Expanded(
             child: ClubTeams(club.uid, onlyPublic: false),
