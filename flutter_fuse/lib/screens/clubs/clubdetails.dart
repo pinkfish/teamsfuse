@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -10,6 +9,7 @@ import '../../widgets/clubs/clubcoaches.dart';
 import '../../widgets/clubs/clubdetails.dart';
 import '../../widgets/clubs/clubmembers.dart';
 import '../../widgets/clubs/clubteams.dart';
+import '../../widgets/clubs/clubtile.dart';
 import '../../widgets/util/loading.dart';
 
 ///
@@ -41,13 +41,24 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
     if (_tabIndex == 0) {
       return Scrollbar(
         child: SingleChildScrollView(
-          child: ClubDetails(club),
+          child: Column(
+            children: [
+              ClubDetails(club),
+              ClubCoaches(club.uid),
+            ],
+          ),
         ),
       );
     } else if (_tabIndex == 1) {
-      return ClubTeams(club.uid, onlyPublic: false);
-    } else if (_tabIndex == 2) {
-      return ClubCoaches(club.uid);
+      return Column(
+        children: [
+          ClubTile(clubUid: club.uid),
+          Divider(),
+          Expanded(
+            child: ClubTeams(club.uid, onlyPublic: false),
+          ),
+        ],
+      );
     }
     print("$_tabIndex");
 
@@ -140,10 +151,6 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
               icon: Icon(Icons.people),
               label: Messages.of(context).teams,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.people),
-              label: Messages.of(context).coaches,
-            ),
           ];
 
           var bloc = BlocProvider.of<AuthenticationBloc>(context);
@@ -158,7 +165,6 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
             appBar: AppBar(
               title: Text(title),
               actions: actions,
-              leading: Icon(MdiIcons.cardsClub),
             ),
             bottomNavigationBar: BottomNavigationBar(
               onTap: (index) {
@@ -166,6 +172,8 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                   _tabIndex = index;
                 });
               },
+              backgroundColor:
+                  Theme.of(context).bottomNavigationBarTheme.backgroundColor,
               currentIndex: _tabIndex,
               items: navItems,
             ),

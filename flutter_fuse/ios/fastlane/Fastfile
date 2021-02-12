@@ -98,20 +98,11 @@ platform :ios do
 
     project = 'Runner.xcodeproj'
 
-   # build_number = latest_testflight_build_number(
-   #   app_identifier: CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier),
-   #   version: version,
-   #   initial_build_number: 30
-   # )
-   # increment_build_number(
-   #   build_number: build_number + 1,
-   #   xcodeproj: project
-   # )
-
     begin
       commit_version_bump(
         message: "Version Bump to v#{@build_name}",
         xcodeproj: "./Runner.xcodeproj",
+        force: true,
       )
       add_git_tag(
         tag: version,

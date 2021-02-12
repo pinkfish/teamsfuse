@@ -22,6 +22,7 @@ class FusedDrawerContent extends StatelessWidget {
 
   Widget _buildClubSection(BuildContext context, ClubState state) {
     var data = <Widget>[];
+    print(state);
     // If we are specifically in a club, list that here.
     for (var club in state.clubs.values) {
       if (club.isMember()) {

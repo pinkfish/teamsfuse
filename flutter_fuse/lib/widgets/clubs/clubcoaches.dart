@@ -6,7 +6,6 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../blocs/singleclubprovider.dart';
-import 'clubimage.dart';
 import 'coachtile.dart';
 
 ///
@@ -21,14 +20,12 @@ class ClubCoaches extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size;
-
     return SingleClubProvider(
       clubUid: clubUid,
       builder: (context, singleClubBloc) => SingleChildScrollView(
         child: BlocBuilder(
           cubit: singleClubBloc,
-          builder: (context,  clubState) {
+          builder: (context, clubState) {
             BuiltList<Coach> coaches;
             if (clubState is SingleClubUninitialized) {
               coaches = null;
@@ -42,26 +39,15 @@ class ClubCoaches extends StatelessWidget {
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Center(
-                  child: ClubImage(
-                    clubUid: clubUid,
-                    width: (screenSize.width < 500)
-                        ? 120.0
-                        : (screenSize.width / 4) + 12.0,
-                    height: screenSize.height / 4 + 20,
-                  ),
-                ),
-                ...(coaches == null
-                    ? [Text(Messages.of(context).loading)]
-                    : coaches.isEmpty
-                        ? [Text(Messages.of(context).noCoaches)]
-                        : coaches.map<Widget>((c) => CoachTile(
-                              coachUid: c.uid,
-                              clubUid: c.clubUid,
-                              isAdmin: clubState.club.isAdmin(),
-                            ))),
-              ],
+              children: (coaches == null || coaches.isEmpty && !clubState.loadedCoaches
+                  ? [Text(Messages.of(context).loading)]
+                  : coaches.isEmpty
+                      ? [Text(Messages.of(context).noCoaches)]
+                      : coaches.map<Widget>((c) => CoachTile(
+                            coachUid: c.uid,
+                            clubUid: c.clubUid,
+                            isAdmin: clubState.club.isAdmin(),
+                          ))).toList(),
             );
           },
         ),
