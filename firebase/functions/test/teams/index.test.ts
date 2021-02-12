@@ -24,6 +24,7 @@ test.mockConfig({
 });
 
 import { onTeamUpdate } from '../../ts/db/team/update.f';
+import { onTeamCreate } from '../../ts/db/team/create.f';
 
 interface TeamAndSeason {
     team: DocumentSnapshot;
@@ -167,25 +168,44 @@ describe('Teams Tests', () => {
     async function createSeasonAndTeam(
         isPublicVisibleSeason: boolean,
         isPublicVisibleTeam: boolean,
+        clubUid?: string,
     ): Promise<TeamAndSeason> {
         const seasonDocId = uuid();
         const teamDocId = uuid();
 
         // Setup some data to be queried first.
-        await admin
-            .firestore()
-            .collection('Teams')
-            .doc(teamDocId)
-            .set({
-                name: 'Lookup TeamName',
-                photourl: null,
-                currentSeason: seasonDocId,
-                uid: teamDocId,
-                isPublic: isPublicVisibleTeam,
-                admins: {
-                    me: true,
-                },
-            });
+        if (clubUid !== undefined) {
+            await admin
+                .firestore()
+                .collection('Teams')
+                .doc(teamDocId)
+                .set({
+                    name: 'Lookup TeamName',
+                    photourl: null,
+                    currentSeason: seasonDocId,
+                    uid: teamDocId,
+                    isPublic: isPublicVisibleTeam,
+                    clubUid: clubUid,
+                    admins: {
+                        me: true,
+                    },
+                });
+        } else {
+            await admin
+                .firestore()
+                .collection('Teams')
+                .doc(teamDocId)
+                .set({
+                    name: 'Lookup TeamName',
+                    photourl: null,
+                    currentSeason: seasonDocId,
+                    uid: teamDocId,
+                    isPublic: isPublicVisibleTeam,
+                    admins: {
+                        me: true,
+                    },
+                });
+        }
         await admin.firestore().collection('Seasons').doc(seasonDocId).set({
             name: 'Current Season',
             uid: seasonDocId,
@@ -241,6 +261,99 @@ describe('Teams Tests', () => {
     }).timeout(10000);
 
     it('keeps admins correct', async () => {
+        return;
+    }).timeout(10000);
+
+    it('create with club', async () => {
+        const clubDocId = uuid();
+        await admin
+            .firestore()
+            .collection('Clubs')
+            .doc(clubDocId)
+            .set({
+                name: 'myclub',
+                members: {
+                    other: {
+                        added: true,
+                        admin: true,
+                    },
+                    member: {
+                        added: true,
+                    },
+                },
+            });
+        const stuff = await createSeasonAndTeam(false, false, clubDocId);
+        const teamDocId = stuff.team.id;
+        const seasonDocId = stuff.season.id;
+        try {
+            console.log('Creating');
+            await test.wrap(onTeamCreate)(stuff.team, {
+                auth: {
+                    uid: 'me',
+                },
+                authType: 'USER',
+            });
+
+            // Verify the users are updated (team).
+            const data = await admin.firestore().collection('Teams').doc(teamDocId).get();
+            expect(data).to.not.be.null;
+            if (data !== null && data !== undefined) {
+                expect(data.exists).to.be.true;
+                const myData = data.data();
+                expect(myData).to.not.be.null;
+                if (myData !== undefined && myData !== null) {
+                    expect(myData.uid).to.equal(teamDocId);
+                    expect(myData.users).to.deep.equal({
+                        other: {
+                            club: true,
+                            added: true,
+                        },
+                        member: {
+                            club: true,
+                            added: true,
+                        },
+                    });
+                    expect(myData.admins).to.deep.equal({
+                        me: true,
+                        other: true,
+                    });
+                }
+            }
+
+            // Verify the users are updated (seaspn).
+            const seasonData = await admin.firestore().collection('Seasons').doc(seasonDocId).get();
+            expect(seasonData).to.not.be.null;
+            if (seasonData !== null && seasonData !== undefined) {
+                expect(seasonData.exists).to.be.true;
+                const myData = seasonData.data();
+                expect(myData).to.not.be.null;
+                if (myData !== undefined && myData !== null) {
+                    expect(myData.uid).to.equal(seasonDocId);
+                    expect(myData.users).to.deep.equal({
+                        other: {
+                            club: true,
+                            added: true,
+                        },
+                        member: {
+                            club: true,
+                            added: true,
+                        },
+                    });
+                }
+            }
+
+            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
+            await admin.firestore().collection('Teams').doc(teamDocId).delete();
+            await admin.firestore().collection('Clubs').doc(clubDocId).delete();
+        } catch (e) {
+            console.log(e);
+            console.log(e.stack);
+            await admin.firestore().collection('Seasons').doc(seasonDocId).delete();
+            await admin.firestore().collection('Teams').doc(teamDocId).delete();
+            await admin.firestore().collection('Clubs').doc(clubDocId).delete();
+            throw e;
+        }
+
         return;
     }).timeout(10000);
 });

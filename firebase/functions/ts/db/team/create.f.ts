@@ -6,7 +6,8 @@ import { fixUsers } from './usersfix';
 // with a specific result we update the team values.
 export const onTeamCreate = functions.firestore.document('/Teams/{teamId}').onCreate(async (snap, context) => {
     await algolia.updateTeam(snap);
-    await fixUsers(snap.id, snap.data, { admins: {}, user: {} });
+    // If there is a club set, pull in the admins from the club.
+    await fixUsers(snap.id, snap.data()!, { admins: {}, users: {} });
     return;
 });
 

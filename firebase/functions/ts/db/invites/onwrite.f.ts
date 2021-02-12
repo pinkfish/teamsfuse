@@ -43,7 +43,7 @@ export const onWrite = functions.firestore.document('/Invites/{id}').onWrite(asy
 
     // lookup the person that sent the invite to get
     // their profile details.
-    const sentByDoc = await db.collection('UserData').doc(data.sentbyUid).get();
+    const sentByDoc = await db.collection('UserData').doc(data.sentByUid).get();
     await mailToSender(inputData.after, sentByDoc);
 
     console.log('Sent email to ' + data.email);

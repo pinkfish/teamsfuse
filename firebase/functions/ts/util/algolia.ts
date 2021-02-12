@@ -22,12 +22,20 @@ export async function updateTeam(teamDoc: functions.firestore.DocumentSnapshot):
     delete data.arrivalTime;
     delete data.arriveEarly;
     data.searchRanking = 1000;
-    await teamIndex.saveObjects([data]);
+    try {
+        await teamIndex.saveObjects([data]);
+    } catch (e) {
+        console.log('Error contacting algolia');
+    }
     return;
 }
 
 export async function deleteTeam(teamId: string): Promise<void> {
-    await teamIndex.deleteObjects(['T' + teamId]);
+    try {
+        await teamIndex.deleteObjects(['T' + teamId]);
+    } catch (e) {
+        console.log('Error contacting algolia');
+    }
     return;
 }
 
@@ -54,7 +62,12 @@ export async function updateLeagueTeam(teamDoc: functions.firestore.DocumentSnap
                 const leagueData = leagueSnap.data();
                 data!.leagueName = leagueData!.name;
             }
-            await teamIndex.saveObjects([data!]);
+            try {
+                await teamIndex.saveObjects([data!]);
+            } catch (e) {
+                console.log('Error contacting algolia');
+            }
+
             return;
         }
         return;
@@ -63,7 +76,11 @@ export async function updateLeagueTeam(teamDoc: functions.firestore.DocumentSnap
 }
 
 export async function deleteLeagueTeam(teamId: string): Promise<void> {
-    await teamIndex.deleteObjects(['t' + teamId]);
+    try {
+        await teamIndex.deleteObjects(['t' + teamId]);
+    } catch (e) {
+        console.log('Error contacting algolia');
+    }
 }
 
 export async function updateLeague(leagueDoc: functions.firestore.DocumentSnapshot): Promise<void> {
@@ -94,37 +111,49 @@ export async function updateLeague(leagueDoc: functions.firestore.DocumentSnapsh
         const pushData = { leagueDivisonName: leagueDoc!.data()!.name, objectID: id };
         records.push(pushData);
     });
-    await teamIndex.partialUpdateObjects(records);
+    try {
+        await teamIndex.partialUpdateObjects(records);
+    } catch (e) {
+        console.log('Error contacting algolia');
+    }
 }
 
 export async function deleteLeague(teamId: string): Promise<void> {
-    await teamIndex.deleteObjects(['L' + teamId]);
+    try {
+        await teamIndex.deleteObjects(['L' + teamId]);
+    } catch (e) {
+        console.log('Error contacting algolia');
+    }
 }
 
 export async function updateLeagueSeason(teamDoc: functions.firestore.DocumentSnapshot): Promise<void> {
     let hits: ObjectWithObjectID[] = [];
 
-    await teamIndex.browseObjects({
-        query: '',
-        filters: 'leagueSeasonUid="' + teamDoc.id + '"',
-        attributesToRetrieve: ['leagueSeasonName '],
-        batch: (batch) => {
-            hits = hits.concat(batch);
-        },
-    });
+    try {
+        await teamIndex.browseObjects({
+            query: '',
+            filters: 'leagueSeasonUid="' + teamDoc.id + '"',
+            attributesToRetrieve: ['leagueSeasonName '],
+            batch: (batch) => {
+                hits = hits.concat(batch);
+            },
+        });
 
-    // Get the records to update.
-    const toUpdateRecords = new Set();
-    for (const i in hits) {
-        const hit = hits[i];
-        toUpdateRecords.add(hit.objectID);
+        // Get the records to update.
+        const toUpdateRecords = new Set();
+        for (const i in hits) {
+            const hit = hits[i];
+            toUpdateRecords.add(hit.objectID);
+        }
+        const records: Record<string, any>[] = [];
+        toUpdateRecords.forEach((id) => {
+            const data = { leagueSeasonName: teamDoc!.data()!.name, objectID: id };
+            records.push(data);
+        });
+        await teamIndex.partialUpdateObjects(records);
+    } catch (e) {
+        console.log('Error contacting algolia');
     }
-    const records: Record<string, any>[] = [];
-    toUpdateRecords.forEach((id) => {
-        const data = { leagueSeasonName: teamDoc!.data()!.name, objectID: id };
-        records.push(data);
-    });
-    await teamIndex.partialUpdateObjects(records);
 }
 
 export function deleteLeagueSeason(teamId: string) {
@@ -134,27 +163,31 @@ export function deleteLeagueSeason(teamId: string) {
 export async function updateLeagueDivison(teamDoc: functions.firestore.DocumentSnapshot): Promise<void> {
     let hits: ObjectWithObjectID[] = [];
 
-    await teamIndex.browseObjects({
-        query: '',
-        filters: 'leagueDivisonUid="' + teamDoc.id + '"',
-        attributesToRetrieve: ['leagueDivisonName '],
-        batch: (batch) => {
-            hits = hits.concat(batch);
-        },
-    });
+    try {
+        await teamIndex.browseObjects({
+            query: '',
+            filters: 'leagueDivisonUid="' + teamDoc.id + '"',
+            attributesToRetrieve: ['leagueDivisonName '],
+            batch: (batch) => {
+                hits = hits.concat(batch);
+            },
+        });
 
-    // Get the records to update.
-    const toUpdateRecords = new Set();
-    for (const i in hits) {
-        const hit = hits[i];
-        toUpdateRecords.add(hit.objectID);
+        // Get the records to update.
+        const toUpdateRecords = new Set();
+        for (const i in hits) {
+            const hit = hits[i];
+            toUpdateRecords.add(hit.objectID);
+        }
+        const records: Record<string, any>[] = [];
+        toUpdateRecords.forEach((id) => {
+            const data = { leagueDivisonName: teamDoc!.data()!.name, objectID: id };
+            records.push(data);
+        });
+        await teamIndex.partialUpdateObjects(records);
+    } catch (e) {
+        console.log('Error contacting algolia');
     }
-    const records: Record<string, any>[] = [];
-    toUpdateRecords.forEach((id) => {
-        const data = { leagueDivisonName: teamDoc!.data()!.name, objectID: id };
-        records.push(data);
-    });
-    await teamIndex.partialUpdateObjects(records);
 }
 
 export function deleteLeagueDivison(teamId: string) {

@@ -38,7 +38,7 @@ describe('Invite Tests', () => {
 
     it('team invite', async () => {
         await sendTheMail({
-            sentbyUid: 'sentByFluff',
+            sentByUid: 'sentByFluff',
             name: 'Fluffy',
             teamUid: 'team',
             teamName: 'My Team Name',
@@ -51,7 +51,7 @@ describe('Invite Tests', () => {
 
     it('club invite', async () => {
         await sendTheMail({
-            sentbyUid: 'sentByFluff',
+            sentByUid: 'sentByFluff',
             name: 'Fluffy',
             clubUid: 'club',
             clubName: 'My Club Name',
@@ -64,7 +64,7 @@ describe('Invite Tests', () => {
 
     it('player invite', async () => {
         await sendTheMail({
-            sentbyUid: 'sentByFluff',
+            sentByUid: 'sentByFluff',
             name: 'Fluffy',
             playerUid: 'player',
             playerName: 'My Player Name',

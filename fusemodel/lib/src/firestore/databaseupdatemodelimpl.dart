@@ -868,14 +868,17 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(InviteToPlayer.PLAYERUID, isEqualTo: playerUid)
         .getDocuments();
     if (snapshot.documents.isEmpty) {
+      var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
+
       var invite = InviteToPlayer((b) => b
+        ..uid = docRef.documentID
         ..playerUid = playerUid
         ..email = email
         ..playerName = playerName
-        ..sentByUid = myUid);
+        ..sentByUid = userData.uid);
 
-      var doc = await ref.add(invite.toMap());
-      return doc.documentID;
+      await docRef.setData(invite.toMap());
+      return docRef.documentID;
     }
     _analytics.logEvent(name: "inviteUserToPlayer");
     return snapshot.documents[0].documentID;
@@ -895,14 +898,17 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         .where(InviteAsAdmin.TEAMUID, isEqualTo: teamUid)
         .getDocuments();
     if (snapshot.documents.isEmpty) {
+      var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
+
       var invite = InviteAsAdmin((b) => b
+        ..uid = docRef.documentID
         ..teamUid = teamUid
         ..email = email
         ..teamName = teamName
-        ..sentByUid = myUid);
+        ..sentByUid = userData.uid);
 
-      var doc = await ref.add(invite.toMap());
-      return doc.documentID;
+      await docRef.setData(invite.toMap());
+      return docRef.documentID;
     }
     _analytics.logEvent(name: "inviteAdminToTeam");
     return snapshot.documents[0].documentID;
@@ -1043,25 +1049,27 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..teamUid = invite.teamUid
         ..seasonUid = invite.uid
         ..playerName = newList
-        ..sentByUid = invite.sentByUid
+        ..sentByUid = userData.uid
         ..teamName = teamName
         ..seasonName = seasonName
         ..role = role);
       snapshot.documents[0].reference.updateData(updatedInvite.toMap());
       return snapshot.documents[0].documentID;
     } else {
+      var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
       var invite = InviteToTeam((b) => b
+        ..uid = docRef.documentID
         ..email = email
         ..teamUid = teamUid
         ..seasonUid = seasonUid
         ..playerName = ListBuilder([playername])
-        ..sentByUid = userId
+        ..sentByUid = userData.uid
         ..teamName = teamName
         ..seasonName = seasonName
         ..role = role);
 
-      var doc = await ref.add(invite.toMap());
-      return doc.documentID;
+      await docRef.setData(invite.toMap());
+      return docRef.documentID;
     }
   }
 
@@ -1198,14 +1206,17 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<String> inviteUserToClub(
       {String clubName, String clubUid, String email, bool admin}) async {
+    var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
     var invite = InviteToClub((b) => b
+      ..uid = docRef.documentID
+      ..sentByUid = userData.uid
       ..admin = admin
       ..clubUid = clubUid
       ..clubName = clubName
       ..email = email);
-    var ref = await _wrapper.collection(INVITE_COLLECTION).add(invite.toMap());
+    await docRef.setData(invite.toMap());
     _analytics.logEvent(name: "inviteUserToClub");
-    return ref.documentID;
+    return docRef.documentID;
   }
 
   @override
@@ -1597,20 +1608,24 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   @override
   Future<String> inviteUserToLeague(InviteToLeagueAsAdmin invite) async {
-    var ref = await _wrapper.collection(INVITE_COLLECTION).add(invite.toMap());
+    var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
+
+    docRef.setData(invite.rebuild((b) => b..uid = docRef.documentID).toMap());
     _analytics.logEvent(name: "inviteUserToLeague");
-    return ref.documentID;
+    return docRef.documentID;
   }
 
   Future<String> inviteUserToLeagueTeam(
       {String leagueSeasonUid,
       LeagueOrTournamentTeam leagueTeam,
       String email}) async {
+    var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
     var season = await getLeagueSeasonData(leagueSeasonUid).single;
     var str = getLeagueData(leagueUid: season.leagueOrTournmentUid);
     var leagueOrTournament = await str.single;
 
     var teamInvite = InviteToLeagueTeam((b) => b
+      ..uid = docRef.documentID
       ..email = email
       ..leagueName = leagueOrTournament.name
       ..sentByUid = userData.uid
@@ -1620,10 +1635,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       ..leagueSeasonName = season.name
       ..leagueTeamUid = leagueTeam.uid);
     // Write it out to firestore.  Yay.
-    var doc =
-        await _wrapper.collection(INVITE_COLLECTION).add(teamInvite.toMap());
+    await docRef.setData(teamInvite.toMap());
     _analytics.logEvent(name: "inviteUserToLeagueTeam");
-    return doc.documentID;
+    return docRef.documentID;
   }
 
   @override

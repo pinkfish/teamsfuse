@@ -1199,7 +1199,7 @@ class Messages {
           'Title for the drop down to say select place if nothing is selected',
       locale: locale);
 
-  String get subjectRequired => Intel.message('Need to have a subject',
+  String get subjectRequired => Intl.message('Need to have a subject',
       desc: 'Error to display for the form when a subject is empty.',
       locale: locale);
 

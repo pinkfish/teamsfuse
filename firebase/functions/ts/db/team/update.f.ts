@@ -46,11 +46,7 @@ export const onTeamUpdate = functions.firestore.document('/Teams/{teamId}').onUp
             }
         }
 
-        await fixUsers(
-            inputData.after.id,
-            { user: data!.user, admins: data!.admins },
-            { user: previousData!.user, admins: previousData!.admins },
-        );
+        await fixUsers(inputData.after.id, data!, previousData!);
 
         // See if the name changed.
         if (previousData!.name === null || previousData!.name !== data!.name) {
