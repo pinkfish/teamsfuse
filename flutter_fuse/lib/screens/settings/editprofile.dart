@@ -66,7 +66,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildImage(SingleProfileState profileState) {
     if (!_changedImage) {
-      return UserImage(profileState.profile);
+      return UserImage(profileState.profile.uid);
     }
     return Image.file(_imageFile);
   }

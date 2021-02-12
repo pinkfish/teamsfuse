@@ -65,7 +65,7 @@ class ClubMembers extends StatelessWidget {
       if (profile != null) {
         var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
         return ListTile(
-          leading: UserImage(profile),
+          leading: UserImage(profile.uid),
           title: Text(profile.displayName),
           subtitle: Text(admin ? Messages.of(context).administrator : ""),
           trailing: club.isAdmin() &&

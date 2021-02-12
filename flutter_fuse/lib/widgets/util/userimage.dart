@@ -11,15 +11,15 @@ import 'package:fusemodel/fusemodel.dart';
 class UserImage extends StatelessWidget {
   /// Constructor.
   UserImage(
-    this.profile, {
+    this.userId, {
     Key key,
     this.radius = 20.0,
     this.backgroundColor,
-  })  : assert(profile != null),
+  })  : assert(userId != null),
         super(key: key);
 
   /// The profile to display the user for.
-  final FusedUserProfile profile;
+  final String userId;
 
   /// The radius of the circle.
   final double radius;
@@ -30,7 +30,7 @@ class UserImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleProfileProvider(
-      userUid: profile.uid,
+      userUid: userId,
       builder: (context, bloc) => CircleAvatar(
         backgroundColor: backgroundColor,
         radius: radius,
@@ -40,6 +40,7 @@ class UserImage extends StatelessWidget {
             if (state is SingleProfileLoaded && !state.loadedPlayers) {
               bloc.add(SingleProfileLoadPlayers());
             }
+
             return AnimatedCrossFade(
               duration: Duration(seconds: 3),
               crossFadeState: state.loadedPlayers &&
@@ -48,7 +49,7 @@ class UserImage extends StatelessWidget {
                   ? CrossFadeState.showSecond
                   : CrossFadeState.showFirst,
               firstChild: Text(
-                profile.initials(),
+                state.profile?.initials() ?? "..",
               ),
               secondChild: state.loadedPlayers && state.players.length > 0
                   ? CachedNetworkImage(
