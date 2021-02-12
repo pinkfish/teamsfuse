@@ -97,12 +97,12 @@ export async function createClub(): Promise<DocumentSnapshot> {
 
 export async function createPlayer(users: string[]): Promise<DocumentSnapshot> {
     const playerDocId = uuid();
-    const userData: Record<string, any > = {};
-    for ( const u in users) {
-      userData[u] = {
-        added: true,
-        relationship: 'Parent',
-      };
+    const userData: Record<string, any> = {};
+    for (const u in users) {
+        userData[u] = {
+            added: true,
+            relationship: 'Parent',
+        };
     }
     await admin
         .firestore()
@@ -110,6 +110,7 @@ export async function createPlayer(users: string[]): Promise<DocumentSnapshot> {
         .doc(playerDocId)
         .set({
             name: 'Player ' + playerDocId,
+            uid: playerDocId,
             users: userData,
         });
     return await admin.firestore().collection('Players').doc(playerDocId).get();
