@@ -61,7 +61,6 @@ class _TeamPlayersState extends State<TeamPlayers> {
                       value: _seasonUid,
                       items: _buildItems(context, teamState),
                       onChanged: (val) {
-                        print('changed $val');
                         setState(() {
                           _seasonUid = val;
                         });

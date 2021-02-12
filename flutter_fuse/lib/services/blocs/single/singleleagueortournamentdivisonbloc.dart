@@ -247,10 +247,8 @@ class SingleLeagueOrTournamentDivisonBloc extends AsyncHydratedBloc<
 
     if (event is SingleLeagueOrTournamentDivisonLoadGames &&
         state is SingleLeagueOrTournamentDivisonLoaded) {
-      print("Divison load $_leagueOrTournamentSnapshot ");
       if (_leagueOrTournamentSnapshot == null &&
           state is SingleLeagueOrTournamentDivisonLoaded) {
-        print("Divison load fluff");
         _leagueOrTournamentSnapshot = db
             .getLeagueGamesForDivison(leagueDivisonUid)
             .listen((Iterable<GameSharedData> games) => _updateGames(games));

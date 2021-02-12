@@ -1379,6 +1379,87 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
+  @override
+  Stream<BuiltList<NewsItem>> getClubNews(String clubUid) async* {
+    print("Getting newses");
+    var query = _wrapper
+        .collection(CLUB_COLLECTION)
+        .document(clubUid)
+        .collection(NEWS_COLLECTION);
+    var wrap = await query.getDocuments();
+
+    print("Got docs");
+    var newses = ListBuilder<NewsItem>();
+    for (var snap in wrap.documents) {
+      newses.add(NewsItem.fromMap(snap.data));
+    }
+    yield newses.build();
+
+    await for (var wrap in query.snapshots()) {
+      var newses = ListBuilder<NewsItem>();
+      for (var snap in wrap.documents) {
+        newses.add(NewsItem.fromMap(snap.data));
+      }
+      yield newses.build();
+    }
+  }
+
+  @override
+  Future<NewsItem> addClubNews(NewsItem news) async {
+      var ref = _wrapper
+          .collection(CLUB_COLLECTION)
+          .document(news.clubUid)
+          .collection(NEWS_COLLECTION)
+          .document();
+      news = news.rebuild((b) => b..uid = ref.documentID);
+      await ref.setData(news.toMap());
+    return news;
+  }
+
+  @override
+  Future<NewsItem> updateClubNews(NewsItem news) async {
+    var ref = _wrapper
+        .collection(CLUB_COLLECTION)
+        .document(news.clubUid)
+        .collection(NEWS_COLLECTION)
+        .document(news.uid);
+    await ref.updateData(news.toMap());
+    return news;
+  }
+
+  @override
+  Future<void> deleteClubNews(NewsItem news) async {
+    var ref = _wrapper
+        .collection(CLUB_COLLECTION)
+        .document(news.clubUid)
+        .collection(NEWS_COLLECTION)
+        .document(news.uid);
+    await ref.delete();
+  }
+
+  @override
+  Stream<NewsItem> getSingleClubNews(String clubUid, String newsUid) async* {
+    var ref = _wrapper
+        .collection(CLUB_COLLECTION)
+        .document(clubUid)
+        .collection(NEWS_COLLECTION)
+        .document(newsUid);
+    var snap = await ref.get();
+    if (snap.exists) {
+      yield NewsItem.fromMap(snap.data);
+    } else {
+      yield null;
+    }
+    await for (var snap in ref.snapshots()) {
+      if (snap.exists) {
+        yield NewsItem.fromMap(snap.data);
+      } else {
+        yield null;
+      }
+    }
+  }
+
+
   // leagues!
   @override
   Stream<BuiltList<LeagueOrTournamentTeam>> getLeagueDivisionTeams(

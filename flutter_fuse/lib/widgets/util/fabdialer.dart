@@ -77,12 +77,10 @@ class FabDialerState extends State<FabDialer> with TickerProviderStateMixin {
         _isRotated = false;
         controller.forward();
       }
-      print('$_isRotated $rotate $_angle');
     });
   }
 
   void _rotate() {
-    print("rotate $_isRotated");
     _rotateTo(!_isRotated);
   }
 

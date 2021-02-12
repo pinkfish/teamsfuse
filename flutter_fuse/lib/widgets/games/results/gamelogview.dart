@@ -47,7 +47,6 @@ class GameLogView extends StatelessWidget {
         );
         break;
     }
-    print("$log");
     return ListTile(
       leading: CircleAvatar(
         child: Text(log.initials()),

@@ -58,7 +58,6 @@ class _AddGameScreenState extends State<AddGameScreen> {
   }
 
   Widget _buildSummary(BuildContext context) {
-    print("Build summary");
     return Column(
       children: [
         GameDetailsBase(

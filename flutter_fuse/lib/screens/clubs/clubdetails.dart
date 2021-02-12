@@ -43,6 +43,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height: 10),
               ClubDetails(club),
               ClubCoaches(club.uid),
             ],
@@ -52,6 +53,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
     } else if (_tabIndex == 1) {
       return Column(
         children: [
+          SizedBox(height:10),
           ClubTile(clubUid: club.uid),
           Divider(),
           Expanded(
@@ -60,7 +62,6 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
         ],
       );
     }
-    print("$_tabIndex");
 
     return ClubMembers(club);
   }

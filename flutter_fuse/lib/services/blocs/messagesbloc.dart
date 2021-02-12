@@ -117,14 +117,12 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
       coordinationBloc.loadingTrace?.incrementCounter("message");
     }
 
-    print('Loaded unread');
     add(_MessagesEventNewUnReadLoaded(unreadMessages: ListBuilder(data)));
     coordinationBloc
         .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Messages));
   }
 
   void _onReadMessagesUpdated(Iterable<MessageRecipient> data) async {
-    print('Loaded read');
     add(_MessagesEventNewRecentLoaded(recentMessages: ListBuilder(data)));
   }
 
@@ -189,7 +187,6 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
               coordinationBloc.analyticsSubsystem.newTrace("messagesTrace");
           messagesTrace.start();
           var loaded = MessagesLoaded.fromMap(json);
-          print('End messages ');
           messagesTrace.stop();
           return loaded;
         } catch (e, stack) {

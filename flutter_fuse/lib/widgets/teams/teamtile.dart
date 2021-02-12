@@ -57,7 +57,6 @@ class TeamTile extends StatelessWidget {
                 title: Text(Messages.of(context).loading));
           }
 
-          print("Building ${teamState.team} $teamUid");
           return SingleSeasonProvider(
               seasonUid: teamState.team.currentSeason,
               builder: (c, seasonBloc) {

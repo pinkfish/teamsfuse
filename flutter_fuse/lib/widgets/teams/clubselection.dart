@@ -44,7 +44,6 @@ class _ClubSelectionState extends State<ClubSelection> {
   @override
   Widget build(BuildContext context) {
     var widgets = <Widget>[];
-    print('$_clubUid');
     widgets.add(
       ClubPicker(
         onChanged: _updateClub,

@@ -60,7 +60,6 @@ class SplashScreen extends StatelessWidget {
 
   // Check the state and navigate after a timeout.
   void _checkState(BuildContext context, AuthenticationState state) {
-    print("_checkState $state");
     if (state is AuthenticationLoggedIn) {
       Timer(Duration(milliseconds: 1), () {
         RepositoryProvider.of<Notifications>(context).initForNotification();

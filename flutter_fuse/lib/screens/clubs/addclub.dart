@@ -128,7 +128,6 @@ class _AddClubScreenState extends State<AddClubScreen> {
   }
 
   Widget _buildSummary() {
-    print('$_clubToAdd');
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[

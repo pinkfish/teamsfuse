@@ -157,7 +157,6 @@ class _LeagueOrTournamentDivisonDetailsState
               displayEvents = <Widget>[];
             }
           }
-          print("Games ${children.length}");
 
           return Container(
             margin: EdgeInsets.all(5.0),
@@ -188,7 +187,6 @@ class _LeagueOrTournamentDivisonDetailsState
           if (!divisonState.loadedGames) {
             divisonBloc.add(SingleLeagueOrTournamentDivisonLoadGames());
           }
-          print(divisonState.divison);
 
           return Container(
             alignment: Alignment.topLeft,

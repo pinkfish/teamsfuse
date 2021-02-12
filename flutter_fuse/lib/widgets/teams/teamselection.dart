@@ -47,7 +47,6 @@ class _TeamSelectionState extends State<TeamSelection> {
   }
 
   Widget _buildCurrentTeam(BuildContext context) {
-    print(" Building $_team");
     if (_team == null) {
       return Row(
         children: <Widget>[

@@ -228,7 +228,6 @@ class CenterSliverMultiBoxAdaptorElement extends RenderObjectElement
   @override
   void insertChildRenderObject(covariant RenderObject child, int slot) {
     assert(slot != null);
-    print('$_currentlyUpdatingChildIndex $slot');
     assert(_currentlyUpdatingChildIndex == slot);
     assert(renderObject.debugValidateChild(child));
     var box = child as RenderBox;

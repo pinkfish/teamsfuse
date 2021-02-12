@@ -155,8 +155,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
     var expansionList = ExpansionPanelList.radio(
       initialOpenPanelValue: state.league.currentSeason ?? seasonSorted[0],
       expansionCallback: (pos, opened) {
-        print('Opening $pos $opened');
-        if (!opened) {
+         if (!opened) {
           _openedPanel = seasonSorted[pos].uid;
           setState(() {});
         }

@@ -63,7 +63,6 @@ class LeagueScreen extends StatelessWidget {
             } else if (state is SingleLeagueOrTournamentUninitialized) {
               return LoadingWidget();
             } else {
-              print('league stuff ${state.league}');
               if (state.league.isAdmin()) {
                 actions.add(
                   PopupMenuButton<String>(

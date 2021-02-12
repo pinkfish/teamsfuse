@@ -69,7 +69,6 @@ class _TeamSeasonStatsData extends State<TeamSeasonStats> {
               }
             }
           }
-          print("Found $eventType  $val");
           return _CumulativeScore(val, e.sharedData.time);
         }).toList(),
       ),

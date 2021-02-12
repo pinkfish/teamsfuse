@@ -53,9 +53,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     super.initState();
     _details = widget.game.state.game.result.toBuilder();
     if (widget.game.state.game.result.currentPeriod != null) {
-      print(
-          "${widget.game.gameUid} ${widget.game.state.game.result.currentPeriod} ${widget.game.state.game.result.scores}");
-      _currentPeriodResults = widget.game.state.game.result
+        _currentPeriodResults = widget.game.state.game.result
           .scores[widget.game.state.game.result.currentPeriod]
           .toBuilder();
     }
@@ -109,8 +107,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     }
 
     setState(() {
-      print("$period ${game.result.scores}");
-      if (game.result.scores.containsKey(period)) {
+       if (game.result.scores.containsKey(period)) {
         _currentPeriodResults.period =
             game.result.scores[period].period.toBuilder();
       }
@@ -171,7 +168,6 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       }
       _details.scoresInternal[_currentPeriodResults.period.build().toIndex()] =
           _currentPeriodResults.build();
-      print("Update score $_currentPeriodResults $_details");
       //widget.game.updateFirestoreResult(_details);
       _writeLog(GameLogType.ScoreUpdate);
     });
@@ -362,8 +358,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
             TZDateTime.now(local).millisecondsSinceEpoch;
       });
     }
-    print("Update result $_details");
-    widget.game.add(SingleGameUpdateResult(result: _details.build()));
+     widget.game.add(SingleGameUpdateResult(result: _details.build()));
   }
 
   void _resetTimer() async {

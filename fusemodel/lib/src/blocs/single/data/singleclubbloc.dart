@@ -11,14 +11,26 @@ part 'singleclubbloc.g.dart';
 /// The type of the club bloc state.
 ///
 class SingleClubBlocStateType extends EnumClass {
+  /// Serializer for the bluc bloc state type.
   static Serializer<SingleClubBlocStateType> get serializer =>
       _$singleClubBlocStateTypeSerializer;
 
+  /// Unitialized club bloc.
   static const SingleClubBlocStateType Uninitialized = _$uninitialized;
+
+  /// Loaded club bloc.
   static const SingleClubBlocStateType Loaded = _$loaded;
+
+  /// Deleted state for the club.
   static const SingleClubBlocStateType Deleted = _$deleted;
+
+  /// Save failed for the club.
   static const SingleClubBlocStateType SaveFailed = _$saveFailed;
+
+  /// Saving for the club.
   static const SingleClubBlocStateType Saving = _$saving;
+
+  /// Saveing is done for the club.
   static const SingleClubBlocStateType SaveDone = _$saveDone;
 
   const SingleClubBlocStateType._(String name) : super(name);
@@ -65,6 +77,14 @@ abstract class SingleClubState {
   @BuiltValueField(serialize: false)
   BuiltList<Coach> get coaches;
 
+  /// The invites have been loaded.
+  @BuiltValueField(serialize: false)
+  bool get loadedNewsItems;
+
+  /// The loaded invites
+  @BuiltValueField(serialize: false)
+  BuiltList<NewsItem> get newsItems;
+
   static SingleClubStateBuilder fromState(
       SingleClubState state, SingleClubStateBuilder builder) {
     return builder
@@ -73,12 +93,15 @@ abstract class SingleClubState {
       ..invites = state.invites.toBuilder()
       ..loadedInvites = state.loadedInvites
       ..loadedCoaches = state.loadedCoaches
+      ..loadedNewsItems = state.loadedNewsItems
+      ..newsItems = state.newsItems.toBuilder()
       ..coaches = state.coaches.toBuilder();
   }
 
   static void initializeStateBuilder(SingleClubStateBuilder b) => b
     ..loadedTeams = false
     ..loadedCoaches = false
+    ..loadedNewsItems = false
     ..loadedInvites = false;
 
   Map<String, dynamic> toMap();

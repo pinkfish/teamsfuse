@@ -135,7 +135,6 @@ class NumberPickerState extends State<NumberPicker> {
 
   /// Animate to the specific integer and decimal.
   void animateDecimalAndInteger(double valueToSelect) {
-    print(valueToSelect);
     animateInt(valueToSelect.floor());
     animateDecimal(((valueToSelect - valueToSelect.floorToDouble()) *
             pow(10, widget.decimalPlaces))

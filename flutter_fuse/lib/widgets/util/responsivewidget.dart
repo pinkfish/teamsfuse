@@ -42,7 +42,6 @@ class ResponsiveWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget inner;
-    print(MediaQuery.of(context).size.width);
     if (isLargeScreen(context) && largeScreen != null) {
       inner = largeScreen(context);
     } else if (isMediumScreen(context) && mediumScreen != null) {

@@ -58,7 +58,6 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   Widget _buildForm(BuildContext context) {
-    print("Building form $_initGame");
     if (_initGame != null) {
       return TrainingEditForm(
         game: _initGame,
@@ -92,13 +91,11 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
   }
 
   Widget _buildRepeatSummary() {
-    print("${_trainingFormKey.currentState} ${_repeatKey.currentState}");
     if (_repeatDates == null) {
       return Text(Messages.of(context).unknown);
     }
     var myGame = _initGame;
     String timeStr;
-    print("game -- ${myGame.sharedData.time} ${myGame.sharedData.endTime}");
     var start = MaterialLocalizations.of(context)
         .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
     var end = MaterialLocalizations.of(context)
@@ -307,7 +304,6 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
         ..seasonUid = team.currentSeason
         ..trackAttendance = team.trackAttendenceInternal);
     });
-    print("Happy _initGame");
   }
 
   @override

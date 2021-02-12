@@ -105,7 +105,6 @@ class _AddSharedGameScreenState extends State<AddSharedGameScreen> {
         }
         _gameFormKey.currentState.save();
         _initGame = _gameFormKey.currentState.finalGameResult.build();
-        print('Saved game $_initGame');
         detailsStepState = StepState.complete;
         createStepStage = StepState.complete;
         break;

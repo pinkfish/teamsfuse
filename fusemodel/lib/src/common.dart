@@ -72,6 +72,7 @@ const String LEAGUE_COLLECTON = "League";
 const String LEAGUE_DIVISION_COLLECTION = "LeagueDivision";
 const String LEAGUE_SEASON_COLLECTION = "LeagueSeason";
 const String LEAGUE_TEAM_COLLECTION = "LeagueTeam";
+const String NEWS_COLLECTION = "News";
 
 /// The reason for the update.
 enum UpdateReason { Delete, Update }

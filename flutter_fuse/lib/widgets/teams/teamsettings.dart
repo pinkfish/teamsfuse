@@ -114,7 +114,6 @@ class _TeamSettingsState extends State<TeamSettings> {
     ret.add(Text("Admins", style: theme.textTheme.headline6));
 
     for (var uid in state.team.admins) {
-      print('$uid');
       ret.add(
         SinglePlayerProvider(
           playerUid: uid,

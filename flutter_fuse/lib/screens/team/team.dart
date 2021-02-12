@@ -46,11 +46,9 @@ class _TeamScreenState extends State<TeamScreen> {
       }
       return TeamOpponents(widget.teamUid);
     } else if (_tabIndex == 3) {
-      print("Opponentts");
       return TeamOpponents(widget.teamUid);
     }
-    print("$_tabIndex");
-    return TeamPlayers(widget.teamUid);
+     return TeamPlayers(widget.teamUid);
   }
 
   void _onEditTeam(BuildContext context) {

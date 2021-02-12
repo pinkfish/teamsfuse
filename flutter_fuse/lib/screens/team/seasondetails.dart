@@ -142,8 +142,7 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
                     .add(SingleSeasonLoadGames());
               }
               if (state is SingleSeasonDeleted) {
-                print("Pop deleted");
-                Navigator.pop(context);
+                 Navigator.pop(context);
               }
             },
             builder: (BuildContext context, SingleSeasonState state) {
@@ -219,8 +218,7 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
             FlatButton(
               child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
-                print("Ok button");
-                Navigator.of(context).pop();
+                 Navigator.of(context).pop();
               },
             ),
           ],

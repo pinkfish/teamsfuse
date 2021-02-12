@@ -314,8 +314,22 @@ abstract class DatabaseUpdateModel {
   /// Delete the coach club stuff.
   Future<void> deleteClubCoach(Coach coach);
 
-  /// Get all the clubs asccociated with the clut.
   Stream<Coach> getSingleClubCoach(String clubUid, String coachUid);
+
+  /// Get all the clubs asccociated with the clut.
+  Stream<NewsItem> getSingleClubNews(String clubUid, String newsUid);
+
+  /// Get all the clubs asccociated with the clut.
+  Stream<BuiltList<NewsItem>> getClubNews(String clubUid);
+
+  /// Add the news to the club.
+  Future<NewsItem> addClubNews(NewsItem news);
+
+  /// Update the news club stuff.
+  Future<NewsItem> updateClubNews(NewsItem news);
+
+  /// Delete the news club stuff.
+  Future<void> deleteClubNews(NewsItem news);
 
   // League and stuff.
   Stream<BuiltList<GameSharedData>> getLeagueGamesForDivison(

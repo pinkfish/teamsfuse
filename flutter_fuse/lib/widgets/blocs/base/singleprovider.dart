@@ -45,8 +45,7 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
 
   @override
   void initState() {
-    print("initState");
-    super.initState();
+     super.initState();
     _updateSingleBloc();
   }
 
@@ -87,7 +86,6 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
 
   @override
   Widget build(BuildContext context) {
-    print("build");
     // If the teamUid has changed, flip stuff.
     if (!widget.isBlocEqual(_singleBloc)) {
       _updateSingleBloc();

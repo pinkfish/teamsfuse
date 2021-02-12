@@ -144,8 +144,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
             coordinationBloc.analyticsSubsystem.newTrace("SeasonData");
         seasonsTrace.start();
         try {
-          print('End Seasons ');
-          var state = SeasonLoaded.fromMap(json);
+           var state = SeasonLoaded.fromMap(json);
           seasonsTrace.stop();
           return state;
         } catch (e, stacktrace) {

@@ -56,11 +56,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
   }
 
   Widget _buildRepeatSummary() {
-    print("${_eventFormKey.currentState}");
     if (_initGame != null) {
       var myGame = _initGame;
       String timeStr;
-      print("game -- ${myGame.sharedData.time} ${myGame.sharedData.endTime}");
       if (myGame.sharedData.time != myGame.sharedData.endTime) {
         var start = MaterialLocalizations.of(context)
             .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));

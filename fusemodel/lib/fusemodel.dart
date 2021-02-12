@@ -16,6 +16,7 @@ export 'src/blocs/single/data/singleleagueortournamentdivisonbloc.dart';
 export 'src/blocs/single/data/singleleagueortournamentseasonbloc.dart';
 export 'src/blocs/single/data/singleleagueortournamentteambloc.dart';
 export 'src/blocs/single/data/singlemessagebloc.dart';
+export 'src/blocs/single/data/singlenewsitembloc.dart';
 export 'src/blocs/single/data/singleopponentbloc.dart';
 export 'src/blocs/single/data/singleplayerbloc.dart';
 export 'src/blocs/single/data/singleprofilebloc.dart';

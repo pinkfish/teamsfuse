@@ -100,7 +100,6 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
           .abbr;
       tzShortName = " ($abbr)";
     }
-    print('${widget.game.timezone} ${widget.game.tzTime}');
 
     var theme = Theme.of(context);
 

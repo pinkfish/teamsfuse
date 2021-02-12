@@ -68,7 +68,6 @@ class SqlData {
       });
     });
     _completer.complete(true);
-    print('out of here');
   }
 
   /// Close the database, delete everything and then reopen it.

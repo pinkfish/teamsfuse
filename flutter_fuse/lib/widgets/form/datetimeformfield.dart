@@ -34,7 +34,6 @@ class DateTimeFormField extends FormField<DateTime> {
                       InputDecoration(labelText: labelText))
                   .applyDefaults(Theme.of(field.context).inputDecorationTheme)
                   .copyWith(labelText: labelText);
-              print('label ${effectiveDecoration.labelText} $labelText');
 
               var children = <Widget>[];
               if (!hideDate && !hideTime) {

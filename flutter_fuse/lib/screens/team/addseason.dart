@@ -52,9 +52,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
   }
 
   void _handleSubmit() async {
-    print("Validating ${_formKey.currentState.validate()}");
     if (_formKey.currentState.validate()) {
-      print("Validated");
       _formKey.currentState.save();
       // Make a season.
       var players = ListBuilder<SeasonPlayer>();
@@ -71,8 +69,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
           teamUid: widget.teamUid,
           name: _seasonName,
           players: players.build()));
-      print("Doing the add");
-    } else {
+     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
   }
@@ -92,7 +89,6 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
             ),
             validator: (s) {
               String ret = _validations.validateDisplayName(context, s);
-              print(ret);
             },
             initialValue: '',
             keyboardType: TextInputType.text,
@@ -131,8 +127,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
                       String ret = _importPlayers && s == SeasonFormField.none
                           ? Messages.of(context).seasonrequired
                           : null;
-                      print(ret);
-                    },
+                     },
                   ),
                 ),
               ),
@@ -186,7 +181,6 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
                   Navigator.pop(context);
                 }
                 if (addState is AddItemSaveFailed) {
-                  print(addState.error);
                   _showInSnackBar(Messages.of(context).savefailed);
                 }
               },

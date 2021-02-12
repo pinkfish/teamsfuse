@@ -33,7 +33,7 @@ class ClubDetails extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.title),
+            leading: const Icon(Icons.text_snippet_outlined),
             title: Text(club.name),
           ),
           ListTile(
@@ -42,8 +42,12 @@ class ClubDetails extends StatelessWidget {
                 Messages.of(context).trackattendence(club.trackAttendence)),
           ),
           Card(
-            child:
-                Text(club.about, style: Theme.of(context).textTheme.bodyText1),
+            margin: EdgeInsets.all(10),
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: Text(club.about,
+                  style: Theme.of(context).textTheme.bodyText1),
+            ),
           ),
         ],
       ),

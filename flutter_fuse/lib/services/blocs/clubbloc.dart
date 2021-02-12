@@ -57,22 +57,24 @@ class _ClubEventNewTeamsLoaded extends ClubEvent {
 class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
   /// The bloc to use to work with all the other parts of the system.
   final CoordinationBloc coordinationBloc;
+
   /// Setup to handle crashes.
   final AnalyticsSubsystem crashes;
   bool _loadingFirestore = false;
+  final Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions = {};
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<Club>> _clubChangeSub;
-  Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions = {};
 
+  /// Create the club bloc.
   ClubBloc({@required this.coordinationBloc, @required this.crashes})
       : super(ClubUninitialized()) {
-    _coordSub = coordinationBloc.listen((CoordinationState coordinationState) {
-      if (state is CoordinationStateLoggedOut) {
+    _coordSub = coordinationBloc.listen((var coordinationState) {
+      if (coordinationState is CoordinationStateLoggedOut) {
         _loadingFirestore = false;
         add(_ClubEventLogout());
-      } else if (state is CoordinationStateLoadingFirestore) {
-        if (!_loadingFirestore) {
+      } else if (coordinationState is CoordinationStateLoadingFirestore) {
+        if (!_loadingFirestore || _clubChangeSub ==null) {
           _loadingFirestore = true;
           add(_ClubEventLoadFromFirestore(uid: coordinationState.uid));
         }
@@ -80,7 +82,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
     });
     if (!(coordinationBloc.state is CoordinationStateLoggedOut) &&
         !(coordinationBloc.state is CoordinationStateUninitialized)) {
-      if (!_loadingFirestore) {
+      if (!_loadingFirestore || _clubChangeSub == null) {
         _loadingFirestore = true;
         add(_ClubEventLoadFromFirestore(uid: coordinationBloc.state.uid));
       }
@@ -97,24 +99,24 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
   void _cleanupStuff() {
     _clubChangeSub?.cancel();
     _clubChangeSub = null;
-    for (StreamSubscription<Iterable<Team>> sub
+    for (var sub
         in _clubTeamsSubscriptions.values) {
       sub.cancel();
     }
     _clubTeamsSubscriptions.clear();
   }
 
-  void _onClubsUpdated(Iterable<Club> clubs) {
-    MapBuilder<String, Club> newClubs = MapBuilder();
+  void _onClubsUpdated(BuiltList<Club> clubs) {
+    var newClubs = MapBuilder<String, Club>();
 
     // Look for all the teams.
-    for (Club club in clubs) {
+    for (var club in clubs) {
       newClubs[club.uid] = club;
       var clubUid = club.uid;
       if (!_clubTeamsSubscriptions.containsKey(club.uid)) {
         _clubTeamsSubscriptions[club.uid] = coordinationBloc.databaseUpdateModel
             .getClubTeams(club, false)
-            .listen((Iterable<Team> teams) {
+            .listen((teams) {
           // Add in all the teams in the list to the teams list and
           // filter out any that have a club on them that now don't
           // exist.
@@ -131,11 +133,10 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
     if (event is _ClubEventLoadFromFirestore) {
       // Load the clubs first.
       _clubChangeSub?.cancel();
-      Stream<Iterable<Club>> clubData =
-          coordinationBloc.databaseUpdateModel.getMainClubs();
-      _clubChangeSub = clubData.listen((Iterable<Club> clubs) {
-        _onClubsUpdated(clubs);
-      });
+      _clubChangeSub =
+          coordinationBloc.databaseUpdateModel.getMainClubs().listen(
+        _onClubsUpdated
+      );
       _clubChangeSub.onError(crashes.recordException);
     }
 
@@ -156,7 +157,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
     }
 
     if (event is _ClubEventNewTeamsLoaded) {
-      MapBuilder<String, Iterable<Team>> teams = state.teams.toBuilder();
+      var teams = state.teams.toBuilder();
       teams[event.clubUid] = event.teams;
       yield (ClubLoaded.fromState(state)..teams = teams).build();
     }
@@ -168,13 +169,13 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
       return ClubUninitialized();
     }
 
-    ClubBlocStateType type = ClubBlocStateType.valueOf(json["type"]);
+    var type = ClubBlocStateType.valueOf(json["type"]);
     switch (type) {
       case ClubBlocStateType.Uninitialized:
         return ClubUninitialized();
       case ClubBlocStateType.Loaded:
         try {
-          TraceProxy clubTrace =
+          var clubTrace =
               coordinationBloc.analyticsSubsystem.newTrace("clubData");
           clubTrace.start();
           // If recovered this way it is only local data.
@@ -182,12 +183,8 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
           print('End clubs  ${loaded.clubs.length}');
           clubTrace.stop();
           return loaded;
-        } catch (e, stack) {
-          if (e is Error) {
-            crashes.recordError(e, stack);
-          } else {
+        } on Exception catch (e, stack) {
             crashes.recordException(e, stack);
-          }
         }
         return ClubUninitialized();
       default:

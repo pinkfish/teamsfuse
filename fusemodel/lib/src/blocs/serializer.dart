@@ -14,6 +14,7 @@ import 'data/profileblocstate.dart';
 import 'data/seasonblocstate.dart';
 import 'data/teamblocstate.dart';
 import 'single/data/singleclubbloc.dart';
+import 'single/data/singleclubcoachbloc.dart';
 import 'single/data/singlegamebloc.dart';
 import 'single/data/singleinvitebloc.dart';
 import 'single/data/singleleagueortournamentbloc.dart';
@@ -21,6 +22,7 @@ import 'single/data/singleleagueortournamentdivisonbloc.dart';
 import 'single/data/singleleagueortournamentseasonbloc.dart';
 import 'single/data/singleleagueortournamentteambloc.dart';
 import 'single/data/singlemessagebloc.dart';
+import 'single/data/singlenewsitembloc.dart';
 import 'single/data/singleopponentbloc.dart';
 import 'single/data/singleplayerbloc.dart';
 import 'single/data/singleprofilebloc.dart';
@@ -77,6 +79,14 @@ part 'serializer.g.dart';
   SingleClubCoachSaving,
   SingleClubCoachState,
   SingleClubCoachUninitialized,
+  SingleNewsItemBlocStateType,
+  SingleNewsItemDeleted,
+  SingleNewsItemLoaded,
+  SingleNewsItemSaveDone,
+  SingleNewsItemSaveFailed,
+  SingleNewsItemSaving,
+  SingleNewsItemState,
+  SingleNewsItemUninitialized,
   SingleClubDeleted,
   SingleClubLoaded,
   SingleClubSaveDone,

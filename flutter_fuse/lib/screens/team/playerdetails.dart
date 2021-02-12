@@ -58,8 +58,7 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
         items: widgets,
         value: _myRole,
         onChanged: (role) {
-          print('changed $role');
-          setState(() {
+           setState(() {
             _myRole = role;
           });
         },

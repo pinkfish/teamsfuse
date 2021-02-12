@@ -135,7 +135,6 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
   Stream<TeamState> mapEventToState(TeamEvent event) async* {
     // Start the firestore loading.
     if (event is _TeamFirestoreStart) {
-      print("TeamBloc start loading firestore");
       // Do the admin team loading thing.
       TraceProxy adminTrace = coordinationBloc.analytics.newTrace('adminTeams');
       Stream<Iterable<Team>> adminTeamStream =
@@ -172,7 +171,6 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
       });
       Iterable<Team> userStartStuff = await userData.future;
 
-      print("TeamBlock loaded");
 
       yield (TeamLoaded.fromState(state)
             ..loadedFirestore = true
@@ -249,8 +247,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
           TraceProxy teamsTrace =
               coordinationBloc.analyticsSubsystem.newTrace("teamData");
           teamsTrace.start();
-          print('End teams ');
-          var loaded = TeamLoaded.fromMap(json);
+           var loaded = TeamLoaded.fromMap(json);
           teamsTrace.stop();
           return loaded;
         } catch (e, stack) {

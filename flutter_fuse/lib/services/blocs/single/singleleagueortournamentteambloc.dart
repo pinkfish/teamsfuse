@@ -252,10 +252,8 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     }
 
     if (event is SingleLeagueOrTournamentTeamLoadGames) {
-      print("Doing the load $state $_gamesSnapshot");
-      if (state is SingleLeagueOrTournamentTeamLoaded &&
+       if (state is SingleLeagueOrTournamentTeamLoaded &&
           _gamesSnapshot == null) {
-        print("Doing the load");
         _gamesSnapshot = db.getLeagueGamesForTeam(leagueTeamUid).listen(
             (Iterable<GameSharedData> games) =>
                 add(_SingleLeagueOrTournamentEventTeamGames(games: games)));
@@ -272,7 +270,6 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     }
 
     if (event is _SingleLeagueOrTournamentEventTeamGames) {
-      print("New Games");
       MapBuilder<String, GameSharedData> newGames =
           MapBuilder<String, GameSharedData>();
       for (GameSharedData game in event.games) {

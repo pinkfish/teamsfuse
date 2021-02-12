@@ -298,8 +298,7 @@ class _TeamPlayerGraphsState extends State<TeamPlayerGraphs> {
             name = Messages.of(context).assistTitle;
             break;
         }
-        print("$name $total");
-        return _CumulativeScore(e.opponentUid, total);
+         return _CumulativeScore(e.opponentUid, total);
       }).toList(),
     );
   }

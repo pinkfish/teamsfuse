@@ -178,7 +178,6 @@ class TeamEditFormState extends State<TeamEditForm> {
         team: _builder.build(),
         initialValue: _builder.currentSeason,
         onSaved: (value) {
-          print("Saving $value");
           _builder.currentSeason = value;
         },
       );

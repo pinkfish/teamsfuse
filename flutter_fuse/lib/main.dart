@@ -41,7 +41,6 @@ void main() async {
   await Future.wait<dynamic>(<Future<dynamic>>[
     rootBundle.load('assets/timezone/2018c.tzf').then<ByteData>((data) {
       loadedData = data;
-      print('loaded data');
       return data;
     }),
     Platform.isAndroid || Platform.isIOS

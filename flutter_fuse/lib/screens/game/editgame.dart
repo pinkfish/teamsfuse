@@ -41,7 +41,6 @@ class _EditGameScreenState extends State<EditGameScreen> {
   }
 
   void _savePressed(BuildContext context, SingleGameBloc gameBloc) async {
-    print('save pressed');
     var game = gameBloc.state.game;
     EditFormBase baseForm;
     switch (game.sharedData.type) {
@@ -53,16 +52,12 @@ class _EditGameScreenState extends State<EditGameScreen> {
         break;
       case EventType.Practice:
         baseForm = _trainingFormKey.currentState;
-        print('${_trainingFormKey.currentState} $_eventFormKey $_gameFormKey');
         break;
     }
     if (baseForm.validate()) {
       baseForm.save();
-      print("updating firestore");
       gameBloc.add(SingleGameUpdate(game: baseForm.finalGameResult.build()));
-      print('finished update');
     } else {
-      print('error?');
       _showInSnackBar(Messages.of(context).formerror);
     }
   }
@@ -75,7 +70,6 @@ class _EditGameScreenState extends State<EditGameScreen> {
         cubit: gameBloc,
         listener: (context, state) {
           if (state is SingleGameSaveFailed) {
-            print('error?');
             _showInSnackBar(Messages.of(context).formerror);
           }
           if (state is SingleGameSaveDone) {

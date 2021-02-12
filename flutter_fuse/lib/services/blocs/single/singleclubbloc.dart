@@ -136,6 +136,16 @@ class SingleClubLoadCoaches extends SingleClubEvent {
   List<Object> get props => [];
 }
 
+///
+/// Loads the news items from firebase.
+///
+class SingleClubLoadNewsItems extends SingleClubEvent {
+  @override
+  List<Object> get props => [];
+}
+
+
+
 class _SingleClubNewClub extends SingleClubEvent {
   final Club newClub;
 
@@ -178,6 +188,16 @@ class _SingleClubCoachesAdded extends SingleClubEvent {
   @override
   List<Object> get props => [coaches];
 }
+
+class _SingleClubNewsItemsAdded extends SingleClubEvent {
+  final BuiltList<NewsItem> coaches;
+
+  _SingleClubNewsItemsAdded({@required this.coaches});
+
+  @override
+  List<Object> get props => [coaches];
+}
+
 
 ///
 /// Bloc to handle updates and state of a specific club.
