@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import * as admin from 'firebase-admin';
 import { v4 as uuid } from 'uuid';
 import { DocumentSnapshot } from '@google-cloud/firestore';
+import { createSeasonAndTeam, createSeason } from '../util/datacreation';
 
 const projectName = 'teamsfuse';
 
@@ -25,11 +26,6 @@ test.mockConfig({
 
 import { onSeasonCreate } from '../../ts/db/season/create.f';
 import { onSeasonUpdate } from '../../ts/db/season/update.f';
-
-interface TeamAndSeason {
-    team: DocumentSnapshot;
-    season: DocumentSnapshot;
-}
 
 describe('Seasons Tests', () => {
     before(() => {
@@ -124,64 +120,6 @@ describe('Seasons Tests', () => {
             throw e;
         }
         return;
-    }
-
-    async function createSeason(isPublicVisibleSeason: boolean, teamUid: string): Promise<DocumentSnapshot> {
-        const seasonDocId = uuid();
-
-        await admin
-            .firestore()
-            .collection('Seasons')
-            .doc(seasonDocId)
-            .set({
-                name: 'Current Season',
-                uid: seasonDocId,
-                teamUid: teamUid,
-                isPublic: isPublicVisibleSeason,
-
-                players: {
-                    fluff: {
-                        added: true,
-                    },
-                },
-            });
-
-        return admin.firestore().collection('Seasons').doc(seasonDocId).get();
-    }
-
-    async function createSeasonAndTeam(
-        isPublicVisibleSeason: boolean,
-        isPublicVisibleTeam: boolean,
-    ): Promise<TeamAndSeason> {
-        const seasonDocId = uuid();
-        const teamDocId = uuid();
-
-        // Setup some data to be queried first.
-        await admin
-            .firestore()
-            .collection('Teams')
-            .doc(teamDocId)
-            .set({
-                name: 'Lookup TeamName',
-                photourl: null,
-                currentSeason: seasonDocId,
-                uid: teamDocId,
-                isPublic: isPublicVisibleTeam,
-                admins: {
-                    me: true,
-                },
-            });
-        await admin.firestore().collection('Seasons').doc(seasonDocId).set({
-            name: 'Current Season',
-            uid: seasonDocId,
-            teamUid: teamDocId,
-            isPublic: isPublicVisibleSeason,
-        });
-
-        return {
-            team: await admin.firestore().collection('Teams').doc(teamDocId).get(),
-            season: await admin.firestore().collection('Seasons').doc(seasonDocId).get(),
-        };
     }
 
     // Validate it fills in the users correctly when the season is created.

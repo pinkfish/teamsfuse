@@ -2,8 +2,8 @@ import * as sinon from 'sinon';
 import { firebaseTest } from '../util/firebase';
 import { expect } from 'chai';
 import * as admin from 'firebase-admin';
-import { v4 as uuid } from 'uuid';
 import { DocumentSnapshot } from '@google-cloud/firestore';
+import { createSeasonAndTeam, createSeason, createClub } from '../util/datacreation';
 
 const projectName = 'teamsfuse';
 
@@ -25,11 +25,6 @@ test.mockConfig({
 
 import { onTeamUpdate } from '../../ts/db/team/update.f';
 import { onTeamCreate } from '../../ts/db/team/create.f';
-
-interface TeamAndSeason {
-    team: DocumentSnapshot;
-    season: DocumentSnapshot;
-}
 
 describe('Teams Tests', () => {
     before(() => {
@@ -152,73 +147,6 @@ describe('Teams Tests', () => {
         return;
     }
 
-    async function createSeason(isPublicVisibleSeason: boolean, teamUid: string): Promise<DocumentSnapshot> {
-        const seasonDocId = uuid();
-
-        await admin.firestore().collection('Seasons').doc(seasonDocId).set({
-            name: 'Current Season',
-            uid: seasonDocId,
-            teamUid: teamUid,
-            isPublic: isPublicVisibleSeason,
-        });
-
-        return admin.firestore().collection('Seasons').doc(seasonDocId).get();
-    }
-
-    async function createSeasonAndTeam(
-        isPublicVisibleSeason: boolean,
-        isPublicVisibleTeam: boolean,
-        clubUid?: string,
-    ): Promise<TeamAndSeason> {
-        const seasonDocId = uuid();
-        const teamDocId = uuid();
-
-        // Setup some data to be queried first.
-        if (clubUid !== undefined) {
-            await admin
-                .firestore()
-                .collection('Teams')
-                .doc(teamDocId)
-                .set({
-                    name: 'Lookup TeamName',
-                    photourl: null,
-                    currentSeason: seasonDocId,
-                    uid: teamDocId,
-                    isPublic: isPublicVisibleTeam,
-                    clubUid: clubUid,
-                    admins: {
-                        me: true,
-                    },
-                });
-        } else {
-            await admin
-                .firestore()
-                .collection('Teams')
-                .doc(teamDocId)
-                .set({
-                    name: 'Lookup TeamName',
-                    photourl: null,
-                    currentSeason: seasonDocId,
-                    uid: teamDocId,
-                    isPublic: isPublicVisibleTeam,
-                    admins: {
-                        me: true,
-                    },
-                });
-        }
-        await admin.firestore().collection('Seasons').doc(seasonDocId).set({
-            name: 'Current Season',
-            uid: seasonDocId,
-            teamUid: teamDocId,
-            isPublic: isPublicVisibleSeason,
-        });
-
-        return {
-            team: await admin.firestore().collection('Teams').doc(teamDocId).get(),
-            season: await admin.firestore().collection('Seasons').doc(seasonDocId).get(),
-        };
-    }
-
     it('keeps players correct', async () => {
         const stuff = await createSeasonAndTeam(false, false);
         const teamDocId = stuff.team.id;
@@ -265,23 +193,8 @@ describe('Teams Tests', () => {
     }).timeout(10000);
 
     it('create with club', async () => {
-        const clubDocId = uuid();
-        await admin
-            .firestore()
-            .collection('Clubs')
-            .doc(clubDocId)
-            .set({
-                name: 'myclub',
-                members: {
-                    other: {
-                        added: true,
-                        admin: true,
-                    },
-                    member: {
-                        added: true,
-                    },
-                },
-            });
+        const club = await createClub();
+        const clubDocId = club.id;
         const stuff = await createSeasonAndTeam(false, false, clubDocId);
         const teamDocId = stuff.team.id;
         const seasonDocId = stuff.season.id;

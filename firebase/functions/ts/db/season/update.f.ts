@@ -16,11 +16,12 @@ export const onSeasonUpdate = functions.firestore
             const newData = await updateUsersAndPlayers(data.players, data.users, false);
             if (Object.keys(newData.users).length > 0) {
                 // Do the update.
-                return db.collection('Seasons').doc(inputData.after.id).update({ users: newData.users });
+                await db.collection('Seasons').doc(inputData.after.id).update(newData.users);
+                await db.collection('Teams').doc(data.teamUid).update(newData.users);
             }
             if (Object.keys(newData.players).length > 0) {
                 // Do the update.
-                return db.collection('Seasons').doc(inputData.after.id).update({ players: newData.players });
+                await db.collection('Seasons').doc(inputData.after.id).update({ players: newData.players });
             }
         }
         return data;

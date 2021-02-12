@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 import * as _ from 'lodash';
-import {  updateAdmins } from '../../util/updateusers';
+import { updateAdmins } from '../../util/updateusers';
 const db = admin.firestore();
 
 export async function fixUsers(
@@ -44,19 +44,19 @@ export async function fixUsers(
         }
     }
 
-        const adminSet: Set<string> = new Set(_.keys(data.admins));
-        const oldAdminSet: Set<string> = new Set(_.keys(previousData.admins));
-        if (!_.isEqual(adminSet, oldAdminSet)) {
-            const toUpdate = updateAdmins(adminSet, oldAdminSet);
-            if (Object.keys(toUpdate).length > 0) {
-                // Go through all the seasons and update them.
-                const snap = await db.collection('Seasons').where('teamUid', '==', id).get();
-                for (const docIdx in snap.docs) {
-                    const doc = snap.docs[docIdx];
-                    await db.collection('Seasons').doc(doc.id).update({ users: toUpdate });
-                }
+    const adminSet: Set<string> = new Set(_.keys(data.admins));
+    const oldAdminSet: Set<string> = new Set(_.keys(previousData.admins));
+    if (!_.isEqual(adminSet, oldAdminSet)) {
+        const toUpdate = updateAdmins(adminSet, oldAdminSet);
+        if (Object.keys(toUpdate).length > 0) {
+            // Go through all the seasons and update them.
+            const snap = await db.collection('Seasons').where('teamUid', '==', id).get();
+            for (const docIdx in snap.docs) {
+                const doc = snap.docs[docIdx];
+                await db.collection('Seasons').doc(doc.id).update({ users: toUpdate });
             }
         }
+    }
 
     return;
 }
