@@ -1,24 +1,30 @@
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/clubs/clubimage.dart';
-import 'package:flutter_fuse/widgets/public/publicclub.dart';
-import 'package:flutter_fuse/widgets/teams/publicteamdetails.dart';
-import 'package:flutter_fuse/widgets/util/responsivewidget.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleclubprovider.dart';
+import '../../widgets/clubs/clubimage.dart';
+import '../../widgets/public/publicclub.dart';
 import '../../widgets/public/publicclubteans.dart';
 import '../../widgets/public/publiccoaches.dart';
+import '../../widgets/teams/publicteamdetails.dart';
+import '../../widgets/util/coloredtabbar.dart';
+import '../../widgets/util/responsivewidget.dart';
 
-/// WHich of the tabs in the public view are selected.
+/// Which of the tabs in the public view are selected.
 enum PublicTab {
-  Club,
-  Team,
-  Coaches,
+  /// The club tab.
+  club,
+
+  /// The team tab.
+  team,
+
+  /// The coaches tab.
+  coaches,
 }
 
 ///
@@ -29,7 +35,7 @@ class PublicHomeScreen extends StatelessWidget {
   PublicHomeScreen(String tab, this.clubUid, this.extraUid)
       : tabSelected = PublicTab.values.firstWhere(
             (v) => v.toString().endsWith(tab),
-            orElse: () => PublicTab.Club);
+            orElse: () => PublicTab.club);
 
   /// Club id to show the details for.
   final String clubUid;
@@ -110,17 +116,17 @@ class PublicHomeScreen extends StatelessWidget {
   Widget _buildStuff(
       BuildContext context, Club club, SingleClubBloc singleClubBloc) {
     switch (tabSelected) {
-      case PublicTab.Club:
+      case PublicTab.club:
         return PublicClub(club);
-      case PublicTab.Team:
+      case PublicTab.team:
         if (extraUid != null) {
           return PublicTeamDetails(extraUid);
         }
         return PublicClubTeams(club,
             onlyPublic: true,
             onTap: (t) => _navigateTo(context,
-                "/Public/${PublicTab.Team.toString()}/$clubUid/${t.uid}"));
-      case PublicTab.Coaches:
+                "/Public/${PublicTab.team.toString()}/$clubUid/${t.uid}"));
+      case PublicTab.coaches:
         return PublicCoachDetails(singleClubBloc);
     }
   }
@@ -140,7 +146,7 @@ class PublicHomeScreen extends StatelessWidget {
           return Text(state.club.name);
         },
       ),
-      bottom: _ColoredTabBar(
+      bottom: ColoredTabBar(
         color: Colors.white,
         tabBar: TabBar(
           labelColor: Colors.black,
@@ -206,19 +212,19 @@ class PublicHomeScreen extends StatelessWidget {
               leading: Icon(MdiIcons.basketball),
               title: Text(Messages.of(context).about),
               onTap: () => _navigateTo(
-                  context, "/Public/${PublicTab.Club.toString()}/$clubUid"),
+                  context, "/Public/${PublicTab.club.toString()}/$clubUid"),
             ),
             ListTile(
               leading: Icon(Icons.people),
               title: Text(Messages.of(context).teams),
               onTap: () => _navigateTo(
-                  context, "/Public/${PublicTab.Team.toString()}/$clubUid"),
+                  context, "/Public/${PublicTab.team.toString()}/$clubUid"),
             ),
             ListTile(
               leading: Icon(Icons.people),
               title: Text(Messages.of(context).coaches),
               onTap: () => Navigator.popAndPushNamed(
-                  context, "/Public/${PublicTab.Coaches.toString()}/$clubUid"),
+                  context, "/Public/${PublicTab.coaches.toString()}/$clubUid"),
             ),
           ],
         ),
@@ -251,20 +257,4 @@ class PublicHomeScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ColoredTabBar extends Container implements PreferredSizeWidget {
-  _ColoredTabBar({this.color, this.tabBar});
-
-  final Color color;
-  final TabBar tabBar;
-
-  @override
-  Size get preferredSize => tabBar.preferredSize;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        color: color,
-        child: tabBar,
-      );
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/blocs/singleclubprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
+import '../blocs/singleclubprovider.dart';
 import '../teams/teamtile.dart';
 
 ///
@@ -21,8 +21,14 @@ class ClubTeams extends StatelessWidget {
 
   /// The club to show the teams for.
   final String clubUid;
+
+  /// Only show public clubs.
   final bool onlyPublic;
+
+  /// The method to call when a team is tapped on.
   final TeamCallback onTap;
+
+  /// Which team is currently selected.
   final Team selected;
 
   List<Widget> _teamTiles(BuildContext context, Iterable<Team> teams) {
@@ -30,7 +36,7 @@ class ClubTeams extends StatelessWidget {
     var myTeam = teams.toList();
     myTeam.sort((a, b) => a.name.compareTo(b.name));
 
-    if (myTeam.length == 0) {
+    if (myTeam.isEmpty) {
       // Put in a no teams marker...
       teamWidgets.add(
         SizedBox(
@@ -59,20 +65,18 @@ class ClubTeams extends StatelessWidget {
 
   Widget _buildTeams(BuildContext context, SingleClubState singleClubState) {
     var teamWidgets = <Widget>[];
-    if (singleClubState is SingleClubLoaded) {
-      if (!singleClubState.loadedTeams) {
-        teamWidgets.add(Text(Messages.of(context).loading));
+    if (singleClubState is SingleClubUninitialized) {
+      teamWidgets.add(Text(Messages.of(context).loading));
+    } else if (singleClubState is SingleClubLoaded) {
+      if (singleClubState.teams.isNotEmpty) {
+        teamWidgets = _teamTiles(context, singleClubState.teams);
       } else {
-        if (singleClubState.teams.length != 0) {
-          teamWidgets = _teamTiles(context, singleClubState.teams);
-        } else {
-          teamWidgets.add(
-            Text(
-              Messages.of(context).noteams,
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          );
-        }
+        teamWidgets.add(
+          Text(
+            Messages.of(context).noteams,
+            style: Theme.of(context).textTheme.headline4,
+          ),
+        );
       }
     }
 
@@ -92,7 +96,7 @@ class ClubTeams extends StatelessWidget {
       builder: (context, singleClubBloc) => BlocBuilder(
         cubit: singleClubBloc,
         builder: (context, state) {
-          if (state is SingleClubLoaded && !state.loadedTeams) {
+          if (!state.loadedTeams) {
             singleClubBloc.add(SingleClubLoadTeams(publicLoad: onlyPublic));
           }
           return _buildTeams(context, state);
