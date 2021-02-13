@@ -72,10 +72,9 @@ function fixEmptyUserPlayer(
                     // Remove the user from the team altogether.
                     updateData['users.' + user] = admin.firestore.FieldValue.delete();
                     delete updateData['users.' + user + '.' + playerId];
-                       }
+                }
             }
         }
-
     }
     return;
 }
@@ -103,8 +102,6 @@ async function removeUser(user: string, playerId: string): Promise<any> {
         const seasonDoc = await db.collection('Seasons').doc(doc.data().uid).get();
         fixEmptyUserPlayer(seasonDoc, updateDataSeason, user, playerId);
 
-console.log(updateDataSeason);
-console.log(updateData);
         await db.collection('Seasons').doc(doc.id).update(updateDataSeason);
         await db.collection('Teams').doc(doc.data().teamUid).update(updateData);
     }

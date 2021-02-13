@@ -194,7 +194,6 @@ describe('Player Tests', () => {
                         added: true,
                         player: true,
                     },
-
                 });
                 expect(myData.players).to.deep.equal({
                     player: {
@@ -215,7 +214,6 @@ describe('Player Tests', () => {
                         added: true,
                         player: true,
                     },
-
                 });
             }
         }
