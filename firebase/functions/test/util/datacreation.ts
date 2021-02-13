@@ -95,10 +95,11 @@ export async function createClub(): Promise<DocumentSnapshot> {
     return await admin.firestore().collection('Clubs').doc(clubDocId).get();
 }
 
-export async function createPlayer(users: string[]): Promise<DocumentSnapshot> {
-    const playerDocId = uuid();
+export async function createPlayer(users: string[], uid?: string): Promise<DocumentSnapshot> {
+    const playerDocId = uid ?? uuid();
     const userData: Record<string, any> = {};
-    for (const u in users) {
+    for (const idx in users) {
+        const u = users[idx];
         userData[u] = {
             added: true,
             relationship: 'Parent',

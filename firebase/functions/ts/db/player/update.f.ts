@@ -12,17 +12,17 @@ export const onPlayerWrite = functions.firestore.document('/Players/{playerid}')
     const previousData = inputData.before.data();
 
     if (!data) {
-        return data;
+              return data;
     }
     // If we have a new user, update this everywhere.
-    for (const user in data.user) {
-        if (!previousData || !(user in previousData.user)) {
+    for (const user in data.users) {
+          if (!previousData || !(user in previousData.users)) {
             await addUser(user, inputData.after.id);
         }
     }
     if (previousData) {
-        for (const user in previousData.user) {
-            if (!(user in data.user)) {
+        for (const user in previousData.users) {
+            if (!(user in data.users)) {
                 await removeUser(user, inputData.after.id);
             }
         }

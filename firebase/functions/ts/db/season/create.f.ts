@@ -45,15 +45,12 @@ export const onSeasonCreate = functions.firestore.document('/Seasons/{seasonId}'
 
     if (data !== null && data !== undefined) {
         const newData = await updateUsersAndPlayers(data.players, data.users, true);
-        console.log(newData);
 
         if (Object.keys(newData.users).length > 0) {
-            console.log(newData.users);
             // Do the update.
             await snap.ref.update(newData.users);
         }
         if (Object.keys(newData.players).length > 0) {
-            console.log(newData.players);
             // Do the update.
             return snap.ref.update({ players: newData.players });
         }

@@ -41,7 +41,6 @@ export async function updateUsersAndPlayers(
             // Load the user details from the player and update.
             const playerData = await db.collection('Players').doc(idx).get();
             const playerDataInner = playerData.data();
-            console.log(playerDataInner);
             if (playerDataInner !== null && playerDataInner !== undefined) {
                 for (const newIdx in playerDataInner.user) {
                     if (!(newIdx in retUser)) {

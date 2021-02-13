@@ -278,7 +278,6 @@ describe('TeamsFuse rules', function () {
                 }),
         );
 
-        console.log('Game');
         const gameRef = db.collection('Games').doc('game');
         const sharedGameRef = db.collection('GamesShared').doc('sharedGame');
         await firebase.assertSucceeds(
@@ -296,9 +295,7 @@ describe('TeamsFuse rules', function () {
                 return;
             }),
         );
-        console.log('Frog');
         await firebase.assertSucceeds(db.collection('Games').doc('game').get());
-        console.log('Blue');
         const dbRobert = authedApp({ uid: 'robert', email_verified: true });
         await firebase.assertFails(dbRobert.collection('Games').doc('game').get());
     });
