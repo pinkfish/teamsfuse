@@ -31,6 +31,7 @@ class SeasonFormField extends FormField<String> {
           onSaved: onSaved,
           validator: validator,
           builder: (field) {
+            print("Frogg $initialValue");
             var state = field as SeasonFormFieldState;
             var effectiveDecoration = (decoration ?? const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);
@@ -138,6 +139,12 @@ class SeasonFormFieldState extends FormFieldState<String> {
   List<DropdownMenuItem<String>> _buildItems(
       BuildContext context, SingleTeamState state) {
     var ret = <DropdownMenuItem<String>>[];
+    if (state is SingleTeamUninitialized || !state.loadedSeasons) {
+      ret.add(DropdownMenuItem<String>(
+        child: Text(Messages.of(context).loading),
+        value: widget.initialValue,
+      ));
+    }
     if (_widget.includeNone) {
       ret.add(DropdownMenuItem<String>(
         child: Text(Messages.of(context).noseasons),
@@ -153,6 +160,11 @@ class SeasonFormFieldState extends FormFieldState<String> {
     for (var season in state.fullSeason) {
       ret.add(DropdownMenuItem<String>(
           child: Text(season.name), value: season.uid));
+    }
+    print("Frogg ${ret.where((element) => element.value == value)}");
+    if (ret.where((element) => element.value == value).isEmpty) {
+      setValue(ret[0].value);
+      print("Frogg ${ret[0].value}");
     }
 
     return ret;
