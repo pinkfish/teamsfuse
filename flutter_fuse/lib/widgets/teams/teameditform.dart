@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:built_collection/built_collection.dart';
 
 import '../../services/messages.dart';
 import '../../services/validations.dart';
@@ -95,7 +96,10 @@ class TeamEditFormState extends State<TeamEditForm> {
       if (_builder.uid == null) {
         var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
         // Add the current user as the admin.
-        _builder.adminsData[authenticationBloc.currentUser.uid] = true;
+        _builder.adminsData[authenticationBloc.currentUser.uid] = BuiltMap.of({
+          'added': true,
+          'admin': true,
+        });
       }
     }
     return _builder;

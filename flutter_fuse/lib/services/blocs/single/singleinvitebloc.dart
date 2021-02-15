@@ -227,7 +227,10 @@ class SingleInviteBloc
       if (event.teamUid == SingleInviteBloc.createNew) {
         TeamBuilder team = new TeamBuilder();
         team.name = invite.leagueTeamName;
-        team.adminsData[db.currentUser.uid] = true;
+        team.adminsData[db.currentUser.uid] = BuiltMap.of({
+          'admin': true,
+          'added': true,
+        });
         var pregen = db.precreateTeamUid();
         var pregenSeason = db.precreateUidSeason();
         team.uid = pregen.documentID;
