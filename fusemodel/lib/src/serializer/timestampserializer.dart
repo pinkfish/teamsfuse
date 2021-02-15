@@ -1,9 +1,24 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
 
+///
+/// Timestamp wrapper for handling timestamps in firestore.
+///
 class Timestamp extends DateTime {
+  /// Create the timestamp from microsectons.
   Timestamp.fromMicrosecondsSinceEpoch(int microsecondsSinceEpoch)
       : super.fromMicrosecondsSinceEpoch(microsecondsSinceEpoch, isUtc: true);
+
+  /// CReate the timestamp right now.
+  Timestamp.now() : super.now();
+
+  /// Create from a datetime object
+  Timestamp(DateTime t) : super.fromMicrosecondsSinceEpoch(t.microsecondsSinceEpoch);
+
+  /// Make sure toUtc() still converts to a timestamp.
+  Timestamp toUtc() {
+    return Timestamp(toUtc());
+  }
 }
 
 /// Serializer for [Timestamp].

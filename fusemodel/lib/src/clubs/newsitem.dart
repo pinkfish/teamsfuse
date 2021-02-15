@@ -1,9 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
-import '../serializer/timestampserializer.dart';
 
 import '../serializer.dart';
+import '../serializer/timestampserializer.dart';
 
 part 'newsitem.g.dart';
 
@@ -50,7 +50,7 @@ abstract class NewsItem implements Built<NewsItem, NewsItemBuilder> {
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(NewsItemBuilder b) => b
     ..body = ""
-    ..timeCreated = DateTime.now().toUtc();
+    ..timeCreated = Timestamp.now();
 
   /// The id to use for how to serialize the the news item.
   static const String timeCreatedId = "timeCreated";
