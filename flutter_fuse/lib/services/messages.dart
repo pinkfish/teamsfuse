@@ -740,6 +740,16 @@ class Messages {
     return Intl.message('New Season Name');
   }
 
+  String get news {
+    return Intl.message('News',
+        desc: 'Header the for the news section', locale: locale);
+  }
+
+  String get noNews {
+    return Intl.message('No News',
+        desc: 'No news in the stuff', locale: locale);
+  }
+
   String get noclub {
     return Intl.message('No club');
   }

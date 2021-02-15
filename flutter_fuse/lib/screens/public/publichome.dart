@@ -9,7 +9,8 @@ import '../../services/messages.dart';
 import '../../widgets/blocs/singleclubprovider.dart';
 import '../../widgets/clubs/clubimage.dart';
 import '../../widgets/public/publicclub.dart';
-import '../../widgets/public/publicclubteans.dart';
+import '../../widgets/public/publicclubnews.dart';
+import '../../widgets/public/publicclubteams.dart';
 import '../../widgets/public/publiccoaches.dart';
 import '../../widgets/teams/publicteamdetails.dart';
 import '../../widgets/util/coloredtabbar.dart';
@@ -25,6 +26,9 @@ enum PublicTab {
 
   /// The coaches tab.
   coaches,
+
+  /// The news tab.
+  news,
 }
 
 ///
@@ -53,42 +57,6 @@ class PublicHomeScreen extends StatelessWidget {
           PublicTab.values.indexWhere((element) => element == tabSelected),
       child: Scaffold(
         appBar: _buildAppBar(context, bloc),
-        /*body: Column(
-        children: [
-          BlocBuilder(
-            cubit: bloc,
-            builder: (context, singleClubState) {
-              if (singleClubState is SingleClubUninitialized) {
-                return TabBarView(children: [
-                  LoadingWidget(),
-                  LoadingWidget(),
-                  LoadingWidget(),
-                ]);
-              }
-              var club = singleClubState.club;
-              return Expanded(
-                child: Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: TabBarView(
-                    children: [
-                      tabSelected == PublicTab.Club
-                          ? PublicClub(club)
-                          : SizedBox(width: 0),
-                      tabSelected == PublicTab.Team
-                          ? (extraUid != null
-                              ? PublicTeamDetails(extraUid)
-                              : PublicClubTeams(club,
-                                  onlyPublic: true,
-                                  onTap: (t) => Navigator.pushNamed(context,
-                                      "/Public/${PublicTab.Team.toString()}/$clubUid/${t.uid}")))
-                          : SizedBox(width: 0),
-                      SizedBox(width: 0),
-                    ],
-                  ),
-                ),
-              );
-            },
-            */
         body: BlocBuilder(
           cubit: bloc,
           builder: (context, singleClubState) {
@@ -128,6 +96,8 @@ class PublicHomeScreen extends StatelessWidget {
                 "/Public/${PublicTab.team.toString()}/$clubUid/${t.uid}"));
       case PublicTab.coaches:
         return PublicCoachDetails(singleClubBloc);
+      case PublicTab.news:
+        return PublicClubNews(singleClubBloc);
     }
   }
 
@@ -155,9 +125,14 @@ class PublicHomeScreen extends StatelessWidget {
             borderSide: BorderSide(width: 2.0, color: Colors.green),
           ),
           tabs: [
-            Tab(icon: Icon(Icons.people), text: Messages.of(context).about),
+            Tab(
+                icon: Icon(MdiIcons.basketball),
+                text: Messages.of(context).about),
             Tab(icon: Icon(Icons.people), text: Messages.of(context).teams),
             Tab(icon: Icon(Icons.people), text: Messages.of(context).coaches),
+            Tab(
+                icon: Icon(MdiIcons.newspaper),
+                text: Messages.of(context).news),
           ],
           onTap: (idx) => _navigateTo(
               context, "/Public/${PublicTab.values[idx].toString()}/$clubUid"),
@@ -225,6 +200,12 @@ class PublicHomeScreen extends StatelessWidget {
               title: Text(Messages.of(context).coaches),
               onTap: () => Navigator.popAndPushNamed(
                   context, "/Public/${PublicTab.coaches.toString()}/$clubUid"),
+            ),
+            ListTile(
+              leading: Icon(MdiIcons.newspaper),
+              title: Text(Messages.of(context).news),
+              onTap: () => Navigator.popAndPushNamed(
+                  context, "/Public/${PublicTab.news.toString()}/$clubUid"),
             ),
           ],
         ),
