@@ -261,9 +261,6 @@ abstract class DatabaseUpdateModel {
   DocumentReferenceWrapper precreateUidSeason();
 
   // Games!
-
-  //GameSubscription getGames(Iterable<Game> cachedGames, Set<String> teams,
-  //    DateTime start, DateTime end, FilterDetails filterDetails);
   Stream<GameSnapshotEvent> getBasicGames(
       {DateTime start, DateTime end, String teamUid, String seasonUid});
 

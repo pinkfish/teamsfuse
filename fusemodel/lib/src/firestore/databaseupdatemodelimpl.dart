@@ -2007,7 +2007,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<Team>> getTeamAdmins() async* {
     var teamCollection = _wrapper
         .collection(TEAMS_COLLECTION)
-        .where("${Team.ADMINS}.${userData.uid}", isEqualTo: true);
+        .where("${Team.ADMINS}.${userData.uid}.$ADDED", isEqualTo: true);
 
     var wrap = await teamCollection.getDocuments();
     yield BuiltList(
