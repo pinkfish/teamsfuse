@@ -101,6 +101,7 @@ describe('Club Tests', () => {
                 expect(myData.users).to.deep.equal({
                     me: {
                         added: true,
+                        admin: true,
                         club: true,
                     },
                     other: {
@@ -123,6 +124,7 @@ describe('Club Tests', () => {
                 expect(myData.users).to.deep.equal({
                     me: {
                         added: true,
+                        admin: true,
                         club: true,
                     },
                     other: {
@@ -135,8 +137,8 @@ describe('Club Tests', () => {
                     },
                 });
                 expect(myData.admins).to.deep.equal({
-                    fluff: true,
-                    me: true,
+                    fluff: { added: true, club: true },
+                    me: { added: true, admin: true },
                 });
             }
         }
@@ -157,12 +159,10 @@ describe('Club Tests', () => {
         // Add in existing users.
         await teamAndSeason.season.ref.update('users', {
             me: { added: true, club: true },
-            other: { added: true, club: true },
             fluff: { added: true, club: true },
         });
         await teamAndSeason.team.ref.update('users', {
             me: { added: true, club: true },
-            other: { added: true, club: true },
             fluff: { added: true, club: true },
         });
 

@@ -102,6 +102,7 @@ describe('Player Tests', () => {
                 expect(myData.users).to.deep.equal({
                     me: {
                         added: true,
+                        admin: true,
                         player: true,
                     },
                     other: {
@@ -127,6 +128,7 @@ describe('Player Tests', () => {
                 expect(myData.users).to.deep.equal({
                     me: {
                         added: true,
+                        admin: true,
                         player: true,
                     },
                     other: {

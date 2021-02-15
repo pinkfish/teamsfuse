@@ -1,4 +1,5 @@
 import * as admin from 'firebase-admin';
+import { DocumentSnapshot } from '@google-cloud/firestore';
 
 const FieldValue = admin.firestore.FieldValue;
 
@@ -76,18 +77,65 @@ export function updateUsers(data: Record<string, any>): Record<string, any> {
     return ret;
 }
 
-export function updateAdmins(admins: Set<string>, oldAdmins: Set<string>): Record<string, any> {
+export function updateAdmins(doc: DocumentSnapshot, admins: Set<string>, oldAdmins: Set<string>): Record<string, any> {
     const ret: Record<string, any> = {};
     for (const idx in admins) {
         // Update the seasons with the admins bits.
-        ret[idx].admin = true;
+        ret['users.' + idx + '.admin'] = true;
+        ret['users.' + idx + '.added'] = true;
     }
 
     if (oldAdmins) {
         const difference = new Set([...oldAdmins].filter((x) => !admins.has(x)));
         for (const toRemove in difference) {
-            ret[toRemove].admin = FieldValue.delete();
+            ret['users.' + toRemove + '.admin'] = FieldValue.delete();
+            fixEmptyUser(doc, ret, toRemove, 'admin', false);
         }
     }
     return ret;
+}
+
+// CLeanup the user section if a user is completely removed.
+export function fixEmptyUser(
+    doc: DocumentSnapshot,
+    updateData: Record<string, any>,
+    user: string,
+    specialUser: string,
+    updateAdmin: boolean,
+): void {
+    const docData = doc.data();
+    if (docData && docData.users) {
+        const users = { ...docData.users };
+        if (users) {
+            const checkUser = users[user];
+            if (checkUser) {
+                delete checkUser[specialUser];
+                delete checkUser['added'];
+                if (Object.keys(checkUser).length === 0) {
+                    // Remove the user from the team altogether.
+                    updateData['users.' + user] = admin.firestore.FieldValue.delete();
+                    delete updateData['users.' + user + '.' + specialUser];
+                }
+            }
+        }
+    }
+    // See if we should delete the admin too.
+    if (updateAdmin) {
+        if (docData && docData.admins) {
+            const admins = { ...docData.admins };
+            if (admins) {
+                const checkAdmin = admins[user];
+                if (checkAdmin) {
+                    delete checkAdmin[specialUser];
+                    delete checkAdmin['added'];
+                    if (Object.keys(checkAdmin).length === 0) {
+                        // Remove the user from the team altogether.
+                        updateData['admins.' + user] = admin.firestore.FieldValue.delete();
+                        delete updateData['admins.' + user + '.' + specialUser];
+                    }
+                }
+            }
+        }
+    }
+    return;
 }

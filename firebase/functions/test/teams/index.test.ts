@@ -80,7 +80,7 @@ describe('Teams Tests', () => {
                     uid: teamDocId,
                     isPublic: isPublicVisibleTeamOld,
                     admins: {
-                        me: true,
+                        me: { added: true, admin: true },
                     },
                 },
                 'Teams/' + teamDocId,
@@ -217,18 +217,26 @@ describe('Teams Tests', () => {
                 if (myData !== undefined && myData !== null) {
                     expect(myData.uid).to.equal(teamDocId);
                     expect(myData.users).to.deep.equal({
-                        other: {
+                        waffles: {
                             club: true,
                             added: true,
                         },
+                        me: {
+                            added: true,
+                            admin: true,
+                        },
+
                         member: {
                             club: true,
                             added: true,
                         },
                     });
                     expect(myData.admins).to.deep.equal({
-                        me: true,
-                        other: true,
+                        me: {
+                            added: true,
+                            admin: true,
+                        },
+                        waffles: { added: true, club: true },
                     });
                 }
             }
@@ -243,9 +251,13 @@ describe('Teams Tests', () => {
                 if (myData !== undefined && myData !== null) {
                     expect(myData.uid).to.equal(seasonDocId);
                     expect(myData.users).to.deep.equal({
-                        other: {
+                        waffles: {
                             club: true,
                             added: true,
+                        },
+                        me: {
+                            added: true,
+                            admin: true,
                         },
                         member: {
                             club: true,

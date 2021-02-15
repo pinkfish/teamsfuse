@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { DocumentSnapshot } from '@google-cloud/firestore';
+import { fixEmptyUser } from '../../util/updateusers';
 
 const db = admin.firestore();
 const FieldValue = admin.firestore.FieldValue;
@@ -18,7 +18,7 @@ export const onClubWrite = functions.firestore.document('/Clubs/{playerid}').onW
     // If we have a new user, update this everywhere.
     for (const user in data.members) {
         if (!previousData || !(user in previousData.members)) {
-         console.log('Add ' + user);
+            console.log('Add ' + user);
 
             await addUser(inputData.after.id, user, data.members[user].admin ?? false);
         }
@@ -26,7 +26,7 @@ export const onClubWrite = functions.firestore.document('/Clubs/{playerid}').onW
     if (previousData) {
         for (const user in previousData.members) {
             if (!(user in data.members)) {
-                await removeUser(inputData.after.id, user);
+                await removeUser(inputData.after.id, user, previousData.members[user].admin ?? false);
             }
         }
     }
@@ -44,11 +44,11 @@ async function addUser(clubUid: string, user: string, adminClub: boolean): Promi
         updateData['users.' + user + '.added'] = true;
         updateData['users.' + user + '.club'] = true;
         if (adminClub) {
-            updateData['admins.' + user] = true;
+            updateData['admins.' + user + '.added'] = true;
+            updateData['admins.' + user + '.club'] = true;
         }
-
         await db.collection('Teams').doc(doc.id).update(updateData);
-     console.log('Team ' + doc.id);
+        console.log('Team ' + doc.id);
 
         // Get the seasons.
         const seasomSnapshot = await db.collection('Seasons').where('teamUid', '==', doc.id).get();
@@ -59,32 +59,12 @@ async function addUser(clubUid: string, user: string, adminClub: boolean): Promi
             await db.collection('Seasons').doc(seasonDoc.id).update(updateData);
         }
     }
-    return;
-}
 
-// CLeanup the user section if a user is completely removed.
-function fixEmptyUser(doc: DocumentSnapshot, updateData: Record<string, any>, user: string): void {
-    const docData = doc.data();
-    if (docData && docData.users) {
-        const users = { ...docData.users };
-        if (users) {
-            const checkUser = users[user];
-            if (checkUser) {
-                delete checkUser['club'];
-                delete checkUser['added'];
-                if (Object.keys(checkUser).length === 0) {
-                    // Remove the user from the team altogether.
-                    updateData['users.' + user] = admin.firestore.FieldValue.delete();
-                    delete updateData['users.' + user + '.club'];
-                }
-            }
-        }
-    }
     return;
 }
 
 // Remove this specific user from the user/seasons.
-async function removeUser(clubUid: string, user: string): Promise<any> {
+async function removeUser(clubUid: string, user: string, adminClub: boolean): Promise<any> {
     // Delete this user everywhere.
     const snapshot = await db.collection('Teams').where('clubUid', '==', clubUid).get();
     for (const idx in snapshot.docs) {
@@ -93,10 +73,12 @@ async function removeUser(clubUid: string, user: string): Promise<any> {
         const updateData: Record<string, any> = {};
         updateData['users.' + user + '.club'] = FieldValue.delete();
 
-        // Check and see if we need to remove the user altogether from the seasons/teams.
-        const teamDoc = await db.collection('Teams').doc(doc.id).get();
+        if (adminClub) {
+            updateData['admins.' + user + '.club'] = FieldValue.delete();
+        }
 
-        fixEmptyUser(teamDoc, updateData, user);
+        // Check and see if we need to remove the user altogether from the seasons/teams.
+        fixEmptyUser(doc, updateData, user, 'club', adminClub);
 
         await db.collection('Teams').doc(doc.id).update(updateData);
 
@@ -104,10 +86,11 @@ async function removeUser(clubUid: string, user: string): Promise<any> {
         const seasomSnapshot = await db.collection('Seasons').where('teamUid', '==', doc.id).get();
         for (const seasonIdx in seasomSnapshot.docs) {
             const seasonDoc = seasomSnapshot.docs[seasonIdx];
+            const newUpdateData = { ...updateData };
 
-            fixEmptyUser(seasonDoc, updateData, user);
+            fixEmptyUser(seasonDoc, newUpdateData, user, 'club', adminClub);
 
-            await db.collection('Seasons').doc(seasonDoc.id).update(updateData);
+            await db.collection('Seasons').doc(seasonDoc.id).update(newUpdateData);
         }
     }
     return;

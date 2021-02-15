@@ -42,7 +42,16 @@ export async function createSeasonAndTeam(
                 isPublic: isPublicVisibleTeam,
                 clubUid: clubUid,
                 admins: {
-                    me: true,
+                    me: {
+                        added: true,
+                        admin: true,
+                    },
+                },
+                users: {
+                    me: {
+                        added: true,
+                        admin: true,
+                    },
                 },
             });
     } else {
@@ -57,16 +66,32 @@ export async function createSeasonAndTeam(
                 uid: teamDocId,
                 isPublic: isPublicVisibleTeam,
                 admins: {
-                    me: true,
+                    me: { added: true, admin: true },
+                },
+                users: {
+                    me: {
+                        added: true,
+                        admin: true,
+                    },
                 },
             });
     }
-    await admin.firestore().collection('Seasons').doc(seasonDocId).set({
-        name: 'Current Season',
-        uid: seasonDocId,
-        teamUid: teamDocId,
-        isPublic: isPublicVisibleSeason,
-    });
+    await admin
+        .firestore()
+        .collection('Seasons')
+        .doc(seasonDocId)
+        .set({
+            name: 'Current Season',
+            uid: seasonDocId,
+            teamUid: teamDocId,
+            isPublic: isPublicVisibleSeason,
+            users: {
+                me: {
+                    added: true,
+                    admin: true,
+                },
+            },
+        });
 
     return {
         team: await admin.firestore().collection('Teams').doc(teamDocId).get(),
@@ -96,7 +121,7 @@ export async function createPlayer(users: string[], uid?: string): Promise<Docum
     return await admin.firestore().collection('Players').doc(playerDocId).get();
 }
 
-export async function createClub(members = ['member'], admins = ['other'], uid?: string): Promise<DocumentSnapshot> {
+export async function createClub(members = ['member'], admins = ['waffles'], uid?: string): Promise<DocumentSnapshot> {
     const clubDocId = uid ?? uuid();
     const userData: Record<string, any> = {};
     for (const idx in members) {

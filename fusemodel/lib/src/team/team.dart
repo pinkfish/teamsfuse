@@ -60,7 +60,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
 
   /// This is a list of user ids, not player Ids.
   @BuiltValueField(wireName: ADMINS)
-  BuiltMap<String, bool> get adminsData;
+  BuiltMap<String, BuiltMap<String, bool>> get adminsData;
 
   @memoized
   BuiltSet<String> get admins => BuiltSet.of(adminsData.keys);

@@ -497,7 +497,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var admins = team.adminsData.toBuilder();
 
     // Make sure we are admin in the team.
-    admins[currentUser.uid] = true;
+    admins[currentUser.uid] = BuiltMap.of({
+      'added': true,
+      'admin': true,
+    });
     await _wrapper.runTransaction((tx) async {
       await tx.set(
           pregen,
@@ -560,7 +563,10 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<String> addAdmin(String teamUid, String uid) async {
     var ref = _wrapper.collection(TEAMS_COLLECTION).document(teamUid);
-    await ref.updateData(<String, dynamic>{"${Team.ADMINS}.$uid": true});
+    await ref.updateData(<String, dynamic>{
+      "${Team.ADMINS}.$uid.added": true,
+      "${Team.ADMINS}.$uid.admin": true,
+    });
     _analytics.logEvent(name: "addAdmin");
     return ref.documentID;
   }
