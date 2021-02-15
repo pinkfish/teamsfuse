@@ -8,18 +8,6 @@ import 'package:meta/meta.dart';
 abstract class SingleMessageEvent extends Equatable {}
 
 ///
-/// Updates the Message (writes it out to firebase.
-///
-class SingleMessageUpdate extends SingleMessageEvent {
-  final MessageBuilder message;
-
-  SingleMessageUpdate({@required this.message});
-
-  @override
-  List<Object> get props => [message];
-}
-
-///
 /// Delete this Message from the world.
 ///
 class SingleMessageDelete extends SingleMessageEvent {
@@ -129,26 +117,12 @@ class SingleMessageBloc
       yield SingleMessageDeleted();
     }
 
-    // Save the Message.
-    if (event is SingleMessageUpdate) {
-      yield SingleMessageSaving.fromState(state).build();
-
-      try {
-        await db.updateFirestoreMessage(event.message);
-        yield (SingleMessageLoaded.fromState(state)..message = event.message)
-            .build();
-      } catch (e, stack) {
-        yield (SingleMessageSaveFailed.fromState(state)..error = e).build();
-        yield SingleMessageLoaded.fromState(state).build();
-        crashes.recordException(e, stack);
-      }
-    }
-
     if (event is SingleMessageRead) {
       String userUid = db.currentUser.uid;
       if (state.message.recipients.containsKey(userUid)) {
         if (state.message.recipients[userUid].state ==
-            MessageReadState.Unread && state.message.recipients[userUid].uid != null) {
+                MessageReadState.Unread &&
+            state.message.recipients[userUid].uid != null) {
           yield SingleMessageSaving.fromState(state).build();
           try {
             await db.updateMessageRecipientState(

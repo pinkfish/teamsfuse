@@ -78,16 +78,13 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
           }
           var newMess = builder.build();
           if (newMess.recipients.isEmpty) {
-            print(newMess);
             yield AddItemInvalidArguments(
                 error: ArgumentError("No users to message"));
             return;
           }
 
-          Message mess = await coordinationBloc.databaseUpdateModel
-              .updateFirestoreMessage(builder);
-          await coordinationBloc.databaseUpdateModel
-              .addMessage(mess, event.body);
+          var mess = await coordinationBloc.databaseUpdateModel
+              .addMessage(newMess, event.body);
           yield AddItemDone(uid: mess.uid);
         } catch (e, stack) {
           coordinationBloc.analytics.recordException(e, stack);

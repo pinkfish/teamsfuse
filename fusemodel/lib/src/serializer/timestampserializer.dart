@@ -12,12 +12,13 @@ class Timestamp extends DateTime {
   /// CReate the timestamp right now.
   Timestamp.now() : super.now();
 
-  /// Create from a datetime object
-  Timestamp(DateTime t) : super.fromMicrosecondsSinceEpoch(t.microsecondsSinceEpoch);
+  /// Create from a datetime object (in utc).
+  Timestamp.fromDateTime(DateTime t)
+      : super.fromMicrosecondsSinceEpoch(t.microsecondsSinceEpoch, isUtc: true);
 
   /// Make sure toUtc() still converts to a timestamp.
   Timestamp toUtc() {
-    return Timestamp(toUtc());
+    return Timestamp.fromDateTime(super.toUtc());
   }
 }
 

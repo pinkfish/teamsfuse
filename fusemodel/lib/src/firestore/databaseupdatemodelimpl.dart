@@ -238,44 +238,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     });
   }
 
-  // Message for firestore.
-  @override
-  Future<Message> updateFirestoreMessage(MessageBuilder mess) async {
-    // Add or update this record into the database.
-    var ref = _wrapper.collection("Messages");
-    _analytics.logEvent(name: "updateMessage");
-    if (mess.uid == '' || mess.uid == null) {
-      // Add the message.
-      mess.timeSent = DateTime.now().toUtc();
-      var newDoc = ref.document();
-      mess.uid = newDoc.documentID;
-      Message messageStuff = mess.build();
-      var messData = messageStuff.toMap();
-      messData[Message.timeSentId] = _wrapper.fieldValueServerTimestamp;
-      await newDoc.setData(messageStuff.toMap());
-
-      // Add in the recipients collection.
-      for (var str in messageStuff.recipients.keys) {
-        var docRef =
-            _wrapper.collection(MESSAGE_RECIPIENTS_COLLECTION).document();
-        var rec = mess.recipients[str].rebuild((b) => b
-          ..messageId = mess.uid
-          ..sentAt = mess.timeSent
-          ..uid = docRef.documentID);
-        var data = rec.toMap();
-        data[MessageRecipient.SENTAT] = _wrapper.fieldValueServerTimestamp;
-        await docRef.setData(data);
-        mess.recipients[str] = rec;
-      }
-      return mess.build();
-    } else {
-      // Update the message.
-      Message myMess = mess.build();
-      await ref.document(mess.uid).updateData(mess.build().toMap());
-      return myMess;
-    }
-  }
-
   @override
   Future<Message> addMessage(Message mess, String body) async {
     // Add or update this record into the database.
@@ -283,8 +245,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     _analytics.logEvent(name: "updateMessage");
     var newDoc = ref.document();
     mess = mess.rebuild((b) => b
-      ..timeSent = DateTime.now().toUtc()
+      ..timeSent = Timestamp.now().toUtc()
       ..uid = newDoc.documentID);
+    print("utc...?");
     var bodyRef = _wrapper
         .collection(MESSAGES_COLLECTION)
         .document(newDoc.documentID)

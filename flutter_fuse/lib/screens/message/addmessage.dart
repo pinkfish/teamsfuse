@@ -151,7 +151,8 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
               ret.add(
                 ListTile(
                   leading: const Icon(Icons.person_outline),
-                  title: Text(playerBloc.state.players[_sendAs]?.name ?? Messages.of(context).unknown),
+                  title: Text(playerBloc.state.players[_sendAs]?.name ??
+                      Messages.of(context).unknown),
                 ),
               );
             }
@@ -224,16 +225,18 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
                   focusNode: _focusNodeBody,
                   initialValue: _messageBody,
                   onSaved: (val) => _messageBody = val,
+                  minLines: 3,
+                  maxLines: 20,
                 ),
               ),
             );
           }
-          return Column(children:ret);
+          return Column(children: ret);
         },
       );
     }
 
-    return SizedBox(width:0, height:0);
+    return SizedBox(width: 0, height: 0);
   }
 
   @override
@@ -285,7 +288,8 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
                             onChanged: _changeTeam,
                           ),
                         ),
-                      _buildPlayerPicker()],
+                        _buildPlayerPicker()
+                      ],
                     ),
                   ),
                 ),

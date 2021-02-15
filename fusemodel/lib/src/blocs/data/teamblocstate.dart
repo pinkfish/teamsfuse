@@ -111,7 +111,7 @@ abstract class TeamStateUpdates {
     Set<String> set = Set.from(adminTeams.keys);
     clubTeams.forEach(
         (String clubUid, BuiltMap<String, Team> data) => set.addAll(data.keys));
-    set.addAll(clubTeams.keys);
+    set.addAll(publicTeams.keys);
     set.addAll(playerTeams.keys);
     return set;
   }
