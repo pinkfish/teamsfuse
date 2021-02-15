@@ -74,27 +74,6 @@ export async function createSeasonAndTeam(
     };
 }
 
-export async function createClub(): Promise<DocumentSnapshot> {
-    const clubDocId = uuid();
-    await admin
-        .firestore()
-        .collection('Clubs')
-        .doc(clubDocId)
-        .set({
-            name: 'myclub',
-            members: {
-                other: {
-                    added: true,
-                    admin: true,
-                },
-                member: {
-                    added: true,
-                },
-            },
-        });
-    return await admin.firestore().collection('Clubs').doc(clubDocId).get();
-}
-
 export async function createPlayer(users: string[], uid?: string): Promise<DocumentSnapshot> {
     const playerDocId = uid ?? uuid();
     const userData: Record<string, any> = {};
@@ -115,4 +94,33 @@ export async function createPlayer(users: string[], uid?: string): Promise<Docum
             users: userData,
         });
     return await admin.firestore().collection('Players').doc(playerDocId).get();
+}
+
+export async function createClub(members = ['member'], admins = ['other'], uid?: string): Promise<DocumentSnapshot> {
+    const clubDocId = uid ?? uuid();
+    const userData: Record<string, any> = {};
+    for (const idx in members) {
+        const u = members[idx];
+        userData[u] = {
+            added: true,
+            admin: false,
+        };
+    }
+    for (const idx in admins) {
+        const u = admins[idx];
+        userData[u] = {
+            added: true,
+            admin: true,
+        };
+    }
+    await admin
+        .firestore()
+        .collection('Clubs')
+        .doc(clubDocId)
+        .set({
+            name: 'Club ' + clubDocId,
+            uid: clubDocId,
+            members: userData,
+        });
+    return await admin.firestore().collection('Clubs').doc(clubDocId).get();
 }

@@ -1,7 +1,7 @@
 import * as sinon from 'sinon';
 import { firebaseTest } from '../util/firebase';
 import { expect } from 'chai';
-import { createPlayer, createSeasonAndTeam } from '../util/datacreation';
+import { createClub, createSeasonAndTeam } from '../util/datacreation';
 import * as admin from 'firebase-admin';
 
 const projectName = 'teamsfuse';
@@ -22,9 +22,9 @@ test.mockConfig({
     },
 });
 
-import { onPlayerWrite } from '../../ts/db/player/update.f';
+import { onClubWrite } from '../../ts/db/club/update.f';
 
-describe('Player Tests', () => {
+describe('Club Tests', () => {
     before(() => {
         return;
     });
@@ -35,62 +35,61 @@ describe('Player Tests', () => {
         return;
     });
 
-    it('create with a user, no teams', async () => {
-        // Just make sure creating a player actually works.
-        const player = await createPlayer(['me']);
-        const playerDocId = player.id;
-        const oldPlayer = test.firestore.makeDocumentSnapshot({}, 'Players/' + playerDocId);
-        await test.wrap(onPlayerWrite)(test.makeChange(oldPlayer, player), {
+    it('create with a member, no teams', async () => {
+        // Just make sure creating a club actually works.
+        const club = await createClub(['me']);
+        const clubDocId = club.id;
+        const oldClub = test.firestore.makeDocumentSnapshot({}, 'Clubs/' + clubDocId);
+        await test.wrap(onClubWrite)(test.makeChange(oldClub, club), {
             auth: {
                 uid: 'me',
             },
             authType: 'USER',
         });
 
-        const playerDoc = await player.ref.get();
-        const data = playerDoc;
+        const data = await club.ref.get();
         expect(data).to.not.be.null;
         if (data !== null && data !== undefined) {
             expect(data.exists).to.be.true;
             const myData = data.data();
             expect(myData).to.not.be.null;
             if (myData !== undefined && myData !== null) {
-                expect(myData.uid).to.equal(playerDocId);
+                expect(myData.uid).to.equal(clubDocId);
             }
         }
     });
 
     it('update add user, in a team', async () => {
-        // Just make sure creating a player actually works.
-        const player = await createPlayer(['me', 'other'], 'player');
+        // Just make sure creating a club actually works.
+        const club = await createClub(['me', 'other'], ['fluff'], 'club');
         const teamAndSeason = await createSeasonAndTeam(false, false);
-        const playerDocId = player.id;
+        const clubDocId = club.id;
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
+        // Put the club on the team
+        await admin.firestore().collection('Teams').doc(teamDocId).update({
+            clubUid: clubDocId,
+        });
 
-        // Add the player to the team.
-        await teamAndSeason.season.ref.update('players.player.added', true);
-        await teamAndSeason.season.ref.update('players.player.me', true);
+        const oldData = club.data()!;
+        oldData['members'] = {};
 
-        const oldData = player.data()!;
-        oldData['users'] = {};
-
-        const oldPlayer = test.firestore.makeDocumentSnapshot(oldData, 'Players/' + playerDocId);
-        await test.wrap(onPlayerWrite)(test.makeChange(oldPlayer, player), {
+        const oldClub = test.firestore.makeDocumentSnapshot(oldData, 'Clubs/' + clubDocId);
+        await test.wrap(onClubWrite)(test.makeChange(oldClub, club), {
             auth: {
                 uid: 'me',
             },
             authType: 'USER',
         });
 
-        const data = player;
+        const data = await club.ref.get();
         expect(data).to.not.be.null;
         if (data !== null && data !== undefined) {
             expect(data.exists).to.be.true;
             const myData = data.data();
             expect(myData).to.not.be.null;
             if (myData !== undefined && myData !== null) {
-                expect(myData.uid).to.equal(playerDocId);
+                expect(myData.uid).to.equal(clubDocId);
             }
         }
         const seasonData = await admin.firestore().collection('Seasons').doc(seasonDocId).get();
@@ -102,18 +101,15 @@ describe('Player Tests', () => {
                 expect(myData.users).to.deep.equal({
                     me: {
                         added: true,
-                        player: true,
+                        club: true,
                     },
                     other: {
                         added: true,
-                        player: true,
+                        club: true,
                     },
-                });
-                expect(myData.players).to.deep.equal({
-                    player: {
+                    fluff: {
                         added: true,
-                        me: true,
-                        other: true,
+                        club: true,
                     },
                 });
             }
@@ -127,61 +123,74 @@ describe('Player Tests', () => {
                 expect(myData.users).to.deep.equal({
                     me: {
                         added: true,
-                        player: true,
+                        club: true,
                     },
                     other: {
                         added: true,
-                        player: true,
+                        club: true,
                     },
+                    fluff: {
+                        added: true,
+                        club: true,
+                    },
+                });
+                expect(myData.admins).to.deep.equal({
+                    fluff: true,
+                    me: true,
                 });
             }
         }
     });
 
     it('update remove user, in a team', async () => {
-        // Just make sure creating a player actually works.
-        const player = await createPlayer(['me', 'other'], 'player');
+        // Just make sure creating a cub actually works.
+        const club = await createClub(['me', 'other'], ['fluff'], 'club');
         const teamAndSeason = await createSeasonAndTeam(false, false);
-        const playerDocId = player.id;
+        const clubDocId = club.id;
         const teamDocId = teamAndSeason.team.id;
         const seasonDocId = teamAndSeason.season.id;
 
-        // Add the player to the team.
-        await teamAndSeason.season.ref.update('players.player', { added: true, me: true, other: true });
-        await teamAndSeason.season.ref.update('users', {
-            me: { added: true, player: true },
-            other: { added: true, player: true },
+        // Add the club to the team.
+        await admin.firestore().collection('Teams').doc(teamDocId).update({
+            clubUid: clubDocId,
         });
-        await teamAndSeason.team.ref.update('players.player', { added: true, me: true, other: true });
+        // Add in existing users.
+        await teamAndSeason.season.ref.update('users', {
+            me: { added: true, club: true },
+            other: { added: true, club: true },
+            fluff: { added: true, club: true },
+        });
         await teamAndSeason.team.ref.update('users', {
-            me: { added: true, player: true },
-            other: { added: true, player: true },
+            me: { added: true, club: true },
+            other: { added: true, club: true },
+            fluff: { added: true, club: true },
         });
 
-        const newPlayerData = player.data()!;
-        newPlayerData['users'] = {
-            me: {
+        const newClubData = club.data()!;
+        newClubData['members'] = {
+            fluff: {
                 added: true,
-                relationship: 'Parent',
+                admin: true,
             },
         };
 
-        const newPlayer = test.firestore.makeDocumentSnapshot(newPlayerData, 'Players/' + playerDocId);
-        await test.wrap(onPlayerWrite)(test.makeChange(player, newPlayer), {
+        const newClub = test.firestore.makeDocumentSnapshot(newClubData, 'Clubs/' + clubDocId);
+        await test.wrap(onClubWrite)(test.makeChange(club, newClub), {
             auth: {
                 uid: 'me',
             },
             authType: 'USER',
         });
 
-        const data = player;
+        const data = await club.ref.get();
+
         expect(data).to.not.be.null;
         if (data !== null && data !== undefined) {
             expect(data.exists).to.be.true;
             const myData = data.data();
             expect(myData).to.not.be.null;
             if (myData !== undefined && myData !== null) {
-                expect(myData.uid).to.equal(playerDocId);
+                expect(myData.uid).to.equal(clubDocId);
             }
         }
         const seasonData = await admin.firestore().collection('Seasons').doc(seasonDocId).get();
@@ -191,15 +200,9 @@ describe('Player Tests', () => {
             expect(myData).to.not.be.null;
             if (myData !== undefined && myData !== null) {
                 expect(myData.users).to.deep.equal({
-                    me: {
+                    fluff: {
                         added: true,
-                        player: true,
-                    },
-                });
-                expect(myData.players).to.deep.equal({
-                    player: {
-                        added: true,
-                        me: true,
+                        club: true,
                     },
                 });
             }
@@ -211,9 +214,9 @@ describe('Player Tests', () => {
             expect(myData).to.not.be.null;
             if (myData !== undefined && myData !== null) {
                 expect(myData.users).to.deep.equal({
-                    me: {
+                    fluff: {
                         added: true,
-                        player: true,
+                        club: true,
                     },
                 });
             }
