@@ -9,7 +9,7 @@ import '../../services/messages.dart';
 import '../../widgets/blocs/singleclubprovider.dart';
 import '../../widgets/clubs/clubimage.dart';
 import '../../widgets/clubs/clubname.dart';
-import '../../widgets/clubs/editnewsItemdetails.dart';
+import '../../widgets/clubs/editnewsitemdetails.dart';
 import '../../widgets/util/savingoverlay.dart';
 
 ///

@@ -6,7 +6,7 @@ import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleclubprovider.dart';
 import '../../widgets/blocs/singlenewsprovider.dart';
-import '../../widgets/clubs/editnewsItemdetails.dart';
+import '../../widgets/clubs/editnewsitemdetails.dart';
 import '../../widgets/util/loading.dart';
 import '../../widgets/util/savingoverlay.dart';
 
