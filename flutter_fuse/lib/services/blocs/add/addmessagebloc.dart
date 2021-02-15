@@ -56,6 +56,7 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
           MessageBuilder builder = MessageBuilder()
             ..teamUid = event.teamUid
             ..subject = event.subject
+            ..timeSent = Timestamp.now().toUtc()
             ..fromUid = coordinationBloc.authenticationBloc.currentUser.uid;
           for (String str in event.recipients) {
             // Get all the users for the player.
@@ -68,6 +69,7 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
                 builder.recipients[userId] = MessageRecipient((b) => b
                   ..state = MessageReadState.Unread
                   ..userId = userId
+                  ..sentAt = Timestamp.now().toUtc()
                   ..playerId = str.trim());
               }
             } else {

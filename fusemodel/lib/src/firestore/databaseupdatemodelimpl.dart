@@ -251,7 +251,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       mess.uid = newDoc.documentID;
       Message messageStuff = mess.build();
       var messData = messageStuff.toMap();
-      messData[Message.TIMESENT] = _wrapper.fieldValueServerTimestamp;
+      messData[Message.timeSentId] = _wrapper.fieldValueServerTimestamp;
       await newDoc.setData(messageStuff.toMap());
 
       // Add in the recipients collection.
@@ -293,12 +293,12 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     await _wrapper.runTransaction((t) async {
       // Add the message.
       var data = mess.toMap();
-      data[Message.TIMESENT] = _wrapper.fieldValueServerTimestamp;
+      data[Message.timeSentId] = _wrapper.fieldValueServerTimestamp;
       await t.set(newDoc, data);
 
       // Add the body.
       var messageData = <String, dynamic>{};
-      messageData[Message.BODY] = body;
+      messageData[Message.bodyId] = body;
       await t.set(bodyRef, messageData);
 
       // Add in the recipients collection.
@@ -337,13 +337,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     print("Message body $messageUid");
     if (snap.exists) {
       print(snap.data);
-      yield snap.data[Message.BODY] as String;
+      yield snap.data[Message.bodyId] as String;
     } else {
       yield null;
     }
     await for (DocumentSnapshotWrapper snapper in ref.snapshots()) {
       if (snapper.exists) {
-        yield snapper.data[Message.BODY];
+        yield snapper.data[Message.bodyId];
       } else {
         yield null;
       }

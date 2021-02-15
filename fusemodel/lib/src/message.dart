@@ -80,11 +80,13 @@ abstract class Message implements Built<Message, MessageBuilder> {
   String get teamUid;
   String get subject;
 
+  @BuiltValueField(wireName: timeSentId)
   Timestamp get timeSent;
   @nullable
   num get fetched;
   @nullable
   Timestamp get lastSeen;
+  @BuiltValueField(wireName: recipientsId)
   BuiltMap<String, MessageRecipient> get recipients;
 
   Message._();
@@ -96,9 +98,9 @@ abstract class Message implements Built<Message, MessageBuilder> {
         local, timeSent.millisecondsSinceEpoch);
   }
 
-  static const String TIMESENT = 'timeSent';
-  static const String BODY = 'body';
-  static const String RECIPIENTS = 'recipients';
+  static const String timeSentId = 'timeSent';
+  static const String bodyId = 'body';
+  static const String recipientsId = 'recipients';
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(Message.serializer, this);
