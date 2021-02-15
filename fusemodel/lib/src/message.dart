@@ -34,11 +34,16 @@ abstract class MessageRecipient
     implements Built<MessageRecipient, MessageRecipientBuilder> {
   @nullable
   String get uid;
+  @BuiltValueField(wireName: playerIdId)
   String get playerId;
+  @BuiltValueField(wireName: userIdId)
   String get userId;
   @nullable
+  @BuiltValueField(wireName: messageIdId)
   String get messageId;
+  @BuiltValueField(wireName: sentAtId)
   Timestamp get sentAt;
+  @BuiltValueField(wireName: stateId)
   MessageReadState get state;
 
   @memoized
@@ -51,11 +56,11 @@ abstract class MessageRecipient
   factory MessageRecipient([updates(MessageRecipientBuilder b)]) =
       _$MessageRecipient;
 
-  static const String STATE = 'state';
-  static const String SENTAT = 'sentAt';
-  static const String MESSAGEID = 'messageId';
-  static const String PLAYERID = 'playerId';
-  static const String USERID = 'userId';
+  static const String stateId = 'state';
+  static const String sentAtId = 'sentAt';
+  static const String messageIdId = 'messageId';
+  static const String playerIdId = 'playerId';
+  static const String userIdId = 'userId';
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(MessageRecipient.serializer, this);

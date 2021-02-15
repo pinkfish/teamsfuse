@@ -195,7 +195,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         _wrapper.collection(MESSAGE_RECIPIENTS_COLLECTION).document(rec.uid);
     _analytics.logEvent(name: "updateMessageRecipientState");
 
-    return doc.updateData({MessageRecipient.STATE: state.toString()});
+    return doc.updateData({MessageRecipient.stateId: state.toString()});
   }
 
   @override
@@ -276,7 +276,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
             ..sentAt = mess.timeSent
             ..uid = docRef.documentID);
           var recipientData = mess.toMap();
-          recipientData[MessageRecipient.SENTAT] =
+          recipientData[MessageRecipient.sentAtId] =
               _wrapper.fieldValueServerTimestamp;
           await t.set(docRef, recipientData);
           recipients[str] = rec;
@@ -1921,14 +1921,14 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (unread) {
       query = _wrapper
           .collection(MESSAGE_RECIPIENTS_COLLECTION)
-          .where(MessageRecipient.USERID, isEqualTo: userData.uid)
-          .where(MessageRecipient.STATE,
+          .where(MessageRecipient.userIdId, isEqualTo: userData.uid)
+          .where(MessageRecipient.stateId,
               isEqualTo: MessageReadState.Unread.toString());
     } else {
       query = _wrapper
           .collection(MESSAGE_RECIPIENTS_COLLECTION)
-          .where(MessageRecipient.USERID, isEqualTo: userData.uid)
-          .orderBy(MessageRecipient.SENTAT)
+          .where(MessageRecipient.userIdId, isEqualTo: userData.uid)
+          .orderBy(MessageRecipient.sentAtId)
           .limit(_maxMessages);
     }
     var wrap = await query.getDocuments();
