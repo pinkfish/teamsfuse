@@ -1,6 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import '../serializer/timestampserializer.dart';
 
 import '../serializer.dart';
 
@@ -36,6 +37,10 @@ abstract class NewsItem implements Built<NewsItem, NewsItemBuilder> {
   /// Uid of the person that posted the item.
   String get postedByUid;
 
+  /// The news item when the item was created.
+  @BuiltValueField(wireName: timeCreatedId)
+  Timestamp get timeCreated;
+
   /// Creates a news item for the club.
   NewsItem._();
 
@@ -43,7 +48,12 @@ abstract class NewsItem implements Built<NewsItem, NewsItemBuilder> {
   factory NewsItem([updates(NewsItemBuilder b)]) = _$NewsItem;
 
   /// Defaults for the state.  Always default to no games loaded.
-  static void _initializeBuilder(NewsItemBuilder b) => b..body = "";
+  static void _initializeBuilder(NewsItemBuilder b) => b
+    ..body = ""
+    ..timeCreated = DateTime.now().toUtc();
+
+  /// The id to use for how to serialize the the news item.
+  static const String timeCreatedId = "timeCreated";
 
   /// Serialize the news item
   Map<String, dynamic> toMap({bool includeMembers}) =>

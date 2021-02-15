@@ -75,6 +75,13 @@ class Query extends wfs.QueryWrapper {
     return Query(_doc.orderBy(field, descending: descending));
   }
 
+  /// Creates and returns a [Query] that's additionally sorted by the specified
+  /// [field].
+  @override
+  wfs.QueryWrapper startAt(dynamic data) {
+    return Query(_doc.startAt(data));
+  }
+
   @override
   wfs.QueryWrapper limit(int num) {
     return Query(_doc.limit(num));

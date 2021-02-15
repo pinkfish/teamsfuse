@@ -6,7 +6,7 @@ class Timestamp extends DateTime {
       : super.fromMicrosecondsSinceEpoch(microsecondsSinceEpoch, isUtc: true);
 }
 
-/// Serializer for [DateTime].
+/// Serializer for [Timestamp].
 ///
 /// An exception will be thrown on attempt to serialize local DateTime
 /// instances; you must use UTC.
@@ -20,6 +20,7 @@ class TimestampSerializer implements PrimitiveSerializer<Timestamp> {
   @override
   Object serialize(Serializers serializers, Timestamp dateTime,
       {FullType specifiedType = FullType.unspecified}) {
+    print("Serializer $dateTime");
     if (!dateTime.isUtc) {
       throw ArgumentError.value(
           dateTime, 'dateTime', 'Must be in utc for serialization.');
@@ -33,11 +34,13 @@ class TimestampSerializer implements PrimitiveSerializer<Timestamp> {
   @override
   Timestamp deserialize(Serializers serializers, Object serialized,
       {FullType specifiedType = FullType.unspecified}) {
+    print("Deserialize $serialized");
     String bit = serialized.toString();
     bit = bit.replaceAll("Timestamp(", "");
     bit = bit.replaceAll(")", "");
     var parts = bit.split(",");
     int totalTs = 0;
+    print("Decode $parts");
     for (var p in parts) {
       p = p.trim();
       print("$p");
@@ -50,7 +53,7 @@ class TimestampSerializer implements PrimitiveSerializer<Timestamp> {
       }
     }
 
-    DateTime ret = Timestamp.fromMicrosecondsSinceEpoch(totalTs);
+    Timestamp ret = Timestamp.fromMicrosecondsSinceEpoch(totalTs);
     return ret;
   }
 }

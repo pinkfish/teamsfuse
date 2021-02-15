@@ -1397,15 +1397,21 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<BuiltList<NewsItem>> getClubNews(String clubUid) async* {
-    print("Getting newses");
+  Stream<BuiltList<NewsItem>> getClubNews(String clubUid,
+      {DateTime start, int limit}) async* {
+    print("getClubNews $clubUid $start $limit");
     var query = _wrapper
         .collection(CLUB_COLLECTION)
         .document(clubUid)
-        .collection(NEWS_COLLECTION);
+        .collection(NEWS_COLLECTION)
+        .orderBy(NewsItem.timeCreatedId)
+        .limit(limit);
+    if (start != null) {
+      query = query.startAt(start);
+    }
     var wrap = await query.getDocuments();
 
-    print("Got docs");
+    print("Got docs ${wrap.documents.length}");
     var newses = ListBuilder<NewsItem>();
     for (var snap in wrap.documents) {
       newses.add(NewsItem.fromMap(snap.data));
@@ -1432,7 +1438,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       ..uid = ref.documentID
       ..postedByUid = currentUser.uid
       ..postedByName = currentUser.profile.displayName);
-    await ref.setData(news.toMap());
+    var myData = news.toMap();
+    myData[NewsItem.timeCreatedId] = _wrapper.fieldValueServerTimestamp;
+    await ref.setData(myData);
     return news;
   }
 

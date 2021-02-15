@@ -27,10 +27,11 @@ class Messages {
       desc: 'Message to show as the title for the admin adding screen',
       locale: locale);
 
-  String get addclub {
-    return Intl.message("ADD CLUB",
-        desc: "Add a new club button", locale: locale);
-  }
+  String get addclub =>
+      Intl.message("ADD CLUB", desc: "Add a new club button", locale: locale);
+
+  String get addNews => Intl.message("Add News",
+      desc: "Add a new news drop down menu item", locale: locale);
 
   String get addclubmemebertitle =>
       Intl.message('Add club member', locale: locale);
@@ -230,6 +231,7 @@ class Messages {
       'connect the both together.  Once connected all administators of the '
       'club will also be adminstragtors for the team.',
       locale: locale);
+
   String get coachAbout => Intl.message("About",
       desc: "Title for a form field about the coach", locale: locale);
 
@@ -611,6 +613,7 @@ class Messages {
 
   String get invalidUrl => Intl.message('Invalid URL',
       desc: 'Error in a form when the url is invalid', locale: locale);
+
   String get invite {
     return Intl.message('Invites',
         desc: 'Title for the screen with the list of current invites');
@@ -618,6 +621,7 @@ class Messages {
 
   String get jersyNumber => Intl.message("Jersey Number",
       desc: "Jersey number for the playerr", locale: locale);
+
   String get joinleague {
     return Intl.message('JOIN LEAGUE');
   }
@@ -636,9 +640,19 @@ class Messages {
         desc: 'Link to the league/tournament section');
   }
 
-  String get loading {
-    return Intl.message('Loading...', desc: 'Message for loading the app');
-  }
+  String get loading => Intl.message('Loading...',
+      desc: 'Message for loading the app', locale: locale);
+
+  String get loadMore => Intl.message('Load more',
+      desc: 'Message to load more messages', locale: locale);
+
+  String get deleteNewsItem => Intl.message('Delete News Item',
+      desc: 'Dialog title to delete the news item', locale: locale);
+
+  String get newsItemToDelete =>
+      Intl.message('Are you sure you want to delete the news item?',
+          desc: 'Dialog text to see if the news item should be deleted',
+          locale: locale);
 
   String get location =>
       Intl.message("Location", desc: "Location of the game", locale: locale);
@@ -1050,6 +1064,7 @@ class Messages {
 
   String get pointsTitle =>
       Intl.message("Pts", desc: "Points abbreviation", locale: locale);
+
   String get previousSeasons {
     return Intl.message('Previous Seasons',
         desc: 'Previous seasons for this game');
@@ -1756,11 +1771,13 @@ class Messages {
   String eventTitleNowSpecialEventStartAndEnd(String time, String endTime) =>
       Intl.message('NOW! Event $time - $endTime',
           desc: 'Special event title in game list');
+
   String eventTitleNowSpecialEventStartAndEndTimezone(
           String time, String endTime, String tzShortName) =>
       Intl.message('NOW! Event $time - $endTime ($tzShortName)',
           desc: 'Special event title in game list',
           args: [time, endTime, tzShortName]);
+
   String eventTitleNowSpecialWithTimezone(String time, String tzShortName) =>
       Intl.message('NOW! Event $time ($tzShortName)',
           desc: 'Special event title in game list with timezone',
@@ -2086,12 +2103,14 @@ class Messages {
         desc: "+num points",
         locale: locale,
       );
+
   String missedEventType(int points) => Intl.message(
         "Miss $points",
         args: [points],
         desc: "missed num points",
         locale: locale,
       );
+
   String nameandteam(Team team, Player player) {
     return Intl.message("${team.name} ${player.name}",
         desc: "Format for name and player for the team",

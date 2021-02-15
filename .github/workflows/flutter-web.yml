@@ -27,6 +27,8 @@ jobs:
       working-directory: fusemodel 
     - run: flutter pub run build_runner build
       working-directory: fusemodel
+    - run: flutter test
+      working-directory: fusemodel
     - run: flutter packages get
       working-directory: flutter_fuse
     - run: flutter config --enable-web

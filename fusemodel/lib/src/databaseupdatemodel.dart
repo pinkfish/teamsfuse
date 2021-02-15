@@ -21,6 +21,7 @@ import 'winrecord.dart';
 ///
 class FirestoreWrappedData {
   FirestoreWrappedData({this.id, this.data, this.exists});
+
   final String id;
   final Map<String, dynamic> data;
   final bool exists;
@@ -112,17 +113,26 @@ abstract class DatabaseUpdateModel {
 
   // Stuff for game updates.
   Future<Game> updateFirestoreGame(Game game, bool allTeams);
+
   Future<String> updateFirestoreSharedGame(GameSharedData game);
+
   Future<void> deleteFirestoreGame(Game game);
+
   Future<void> updateFirestoreGameAttendence(
       Game game, String playerUid, Attendance attend);
+
   Future<void> updateFirestoreGameResult(
       String gameUid, GameResultDetails result);
+
   Future<void> updateFirestoreOfficalGameResult(
       String gameSharedUid, GameOfficialResults result);
+
   Stream<Iterable<GameLog>> readGameLogs(Game game);
+
   Future<String> addFirestoreGameLog(Game game, GameLog log);
+
   Stream<GameSharedData> getSharedGame(String sharedGameUid);
+
   Stream<Game> getGame(String gameUid);
 
   // Game events
@@ -168,84 +178,126 @@ abstract class DatabaseUpdateModel {
   /// Updates the season in the database.
   Future<void> updateMediaInfoThumbnail(
       {@required MediaInfo mediaInfo, @required String thumbnailUrl});
+
   Future<void> deleteMedia({@required String mediaInfoUid});
 
   // Invite firestore updates
   Future<void> firestoreInviteDelete(String inviteUid);
+
   Stream<Invite> getSingleInvite(String inviteUid);
 
   // Message Recipients
   Future<void> updateMessageRecipientState(
       MessageRecipient rec, MessageReadState state);
+
   Future<void> deleteRecipient(MessageRecipient rec);
 
   // Message for firestore.
   Future<Message> updateFirestoreMessage(MessageBuilder mess);
+
   //Future<void> updateFirestoreMessageBody({String messageUid, String body});
   Stream<String> loadMessageBody(String messageUid);
+
   Stream<Message> getMessage(String messageId);
+
   Future<Message> addMessage(Message mess, String body);
 
   // Opponent update
   Future<void> updateFirestoreOpponent(Opponent opponent);
+
   Future<Opponent> addFirestoreOpponent(Opponent opponent);
+
   Future<void> deleteFirestoreOpponent(Opponent opponent);
+
   Stream<Iterable<Game>> getOpponentGames(Opponent opponent);
+
   Stream<Opponent> getFirestoreOpponent(
       {@required String teamUid, @required String opponentUid});
 
   // Team stuff
   Future<void> updateFirestoreTeam(Team team);
+
   Future<void> addTrainingEvents(Game game, Iterable<DateTime> dates);
+
   Future<String> addFirestoreTeam(Team team, DocumentReferenceWrapper pregen,
       Season season, Uint8List imageFile);
+
   Future<Uri> updateTeamImage(String teamUid, Uint8List imgFile);
+
   DocumentReferenceWrapper precreateClubUid();
+
   Future<String> inviteAdminToTeam(
       {@required String myUid,
       @required String teamUid,
       @required String teamName,
       @required String email});
+
   Future<void> deleteAdmin(Team team, String uid);
+
   Future<String> addAdmin(String teamUid, String uid);
+
   Stream<Iterable<InviteAsAdmin>> getInviteForTeamStream(Team team);
+
   Stream<Team> getPublicTeamDetails({@required String teamUid});
+
   Stream<Iterable<InviteAsAdmin>> getInvitesForTeam(String teamUid);
+
   Stream<Iterable<Opponent>> getTeamOpponents(String teamUid);
+
   Stream<Team> getTeamDetails({@required String teamUid});
+
   Stream<BuiltList<Season>> getSeasonsForTeam(String teamUid);
+
   Stream<Iterable<Team>> getTeams();
+
   Stream<Iterable<Team>> getTeamAdmins();
 
   // Player stuff.
   Future<void> updateFirestorePlayer(Player player, bool includeUsers);
+
   Future<String> addFirestorePlayer(Player player);
+
   Future<Uri> updatePlayerImage(String playerUid, Uint8List imgFile);
+
   // Send an invite to a user for this season and team.
   Future<String> inviteUserToPlayer(
       {@required String playerUid,
       @required String playerName,
       @required String email,
       @required myUid});
+
   Stream<Iterable<InviteToPlayer>> getInviteForPlayerStream({String playerUid});
+
   Future<void> removeUserFromPlayer(Player player, String userId);
+
   Future<bool> playerExists(String uid);
+
   Stream<Player> getPlayerDetails(String uid);
+
   Future<bool> addUserToPlayer(String playerUid, PlayerUser player);
+
   Future<String> createPlayer(Player player);
+
   Future<void> deletePlayer(String playerUid);
 
   // Season updates
   Stream<Iterable<Season>> getPlayerSeasons(String playerUid);
+
   Future<void> updateFirestoreSeason(Season season, bool includePlayers);
+
   Future<Season> addFirestoreSeason(
       Season season, DocumentReferenceWrapper pregen);
+
   Future<void> removePlayerFromSeason(String seasonUid, String playerUid);
+
   Future<void> updateRoleInTeamForSeason(
       String seasonUid, SeasonPlayer player, RoleInTeam role);
+
   Stream<Iterable<InviteToTeam>> getInviteForSeasonStream(
       {@required String seasonUid, @required String teamUid});
+
   Stream<GameSnapshotEvent> getSeasonGames(Season season);
+
   // Send an invite to a user for this season and team.
   Future<String> inviteUserToSeason(
       {@required String seasonUid,
@@ -255,9 +307,13 @@ abstract class DatabaseUpdateModel {
       @required String playername,
       @required String email,
       @required RoleInTeam role});
+
   Stream<Season> getSingleSeason(String seasonUid);
+
   Stream<BuiltList<Season>> getSeasons();
+
   Future<void> addPlayerToSeason(String seasonUid, SeasonPlayer player);
+
   DocumentReferenceWrapper precreateUidSeason();
 
   // Games!
@@ -313,11 +369,12 @@ abstract class DatabaseUpdateModel {
 
   Stream<Coach> getSingleClubCoach(String clubUid, String coachUid);
 
-  /// Get all the clubs asccociated with the clut.
+  /// Get all the single news item for the club.
   Stream<NewsItem> getSingleClubNews(String clubUid, String newsUid);
 
-  /// Get all the clubs asccociated with the clut.
-  Stream<BuiltList<NewsItem>> getClubNews(String clubUid);
+  /// Get all the news items asccociated with the club.
+  Stream<BuiltList<NewsItem>> getClubNews(String clubUid,
+      {DateTime start, int limit});
 
   /// Add the news to the club.
   Future<NewsItem> addClubNews(NewsItem news);
@@ -331,38 +388,59 @@ abstract class DatabaseUpdateModel {
   // League and stuff.
   Stream<BuiltList<GameSharedData>> getLeagueGamesForDivison(
       String leagueDivisonUid);
+
   Stream<BuiltList<GameSharedData>> getLeagueGamesForTeam(String leagueTeamUid);
+
   Stream<BuiltList<LeagueOrTournamentSeason>> getLeagueSeasons(
       {String leagueUid});
+
   Stream<BuiltList<LeagueOrTournamentDivison>> getLeagueDivisonsForSeason(
       {String leagueSeasonUid, String memberUid});
+
   Stream<BuiltList<LeagueOrTournamentTeam>> getLeagueTeamsForTeamSeason(
       String teamSeasonUid);
+
   Future<String> updateLeague(LeagueOrTournament league, {bool includeMembers});
+
   Future<Uri> updateLeagueImage(LeagueOrTournament league, Uint8List imageFile);
+
   Future<void> addUserToLeague(String leagueUid, bool admin);
+
   Future<void> addUserToLeagueSeason(String leagueUid, bool admin);
+
   Future<void> addUserToLeagueDivison(String leagueUid, bool admin);
+
   Future<String> inviteUserToLeague(InviteToLeagueAsAdmin invite);
+
   Future<void> deleteLeagueMember(LeagueOrTournament league, String memberUid);
+
   Stream<LeagueOrTournament> getLeagueData({String leagueUid});
+
   Stream<LeagueOrTournamentTeam> getLeagueTeamData(String teamUid);
+
   Future<void> updateLeagueTeam(LeagueOrTournamentTeam team);
+
   Future<void> updateLeagueTeamRecord(
       LeagueOrTournamentTeam team, String season, WinRecord record);
+
   Future<String> inviteUserToLeagueTeam(
       {String leagueSeasonUid,
       LeagueOrTournamentTeam leagueTeam,
       String email});
+
   Stream<BuiltList<InviteToLeagueTeam>> getLeagueOrTournmentTeamInvitesStream(
       String leagueTeamUid);
 
   // League Season/Division.
   Stream<LeagueOrTournamentDivison> getLeagueDivisionData(
       {String leagueDivisionUid});
+
   Stream<LeagueOrTournamentSeason> getLeagueSeasonData(String leagueSeasonUid);
+
   Future<void> updateLeagueSeason(LeagueOrTournamentSeason season);
+
   Future<void> updateLeagueDivison(LeagueOrTournamentDivison division);
+
   Stream<BuiltList<LeagueOrTournamentTeam>> getLeagueDivisionTeams(
       String leagueDivisionUid);
 
@@ -371,8 +449,12 @@ abstract class DatabaseUpdateModel {
 
   // Initialized subscfriptions.
   Stream<BuiltList<LeagueOrTournament>> getMainLeagueOrTournaments();
+
   Stream<BuiltList<Club>> getMainClubs();
+
   Stream<BuiltList<Player>> getPlayers();
+
   Stream<BuiltList<Invite>> getInvites();
+
   Stream<BuiltList<MessageRecipient>> getMessages(bool unread);
 }

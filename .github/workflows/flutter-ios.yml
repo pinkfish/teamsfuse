@@ -43,6 +43,8 @@ jobs:
         flutter pub get
         flutter pub run build_runner build --delete-conflicting-outputs
       working-directory: fusemodel
+    - run: flutter test
+      working-directory: fusemodel
     - run: |
         flutter packages get
         flutter build ios --debug

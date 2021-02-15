@@ -3,6 +3,7 @@ import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:timezone/timezone.dart';
 
+import 'serializer/timestampserializer.dart';
 import 'serializer.dart';
 
 part 'message.g.dart';
@@ -37,8 +38,7 @@ abstract class MessageRecipient
   String get userId;
   @nullable
   String get messageId;
-  @nullable
-  DateTime get sentAt;
+  Timestamp get sentAt;
   MessageReadState get state;
 
   @memoized
@@ -80,12 +80,11 @@ abstract class Message implements Built<Message, MessageBuilder> {
   String get teamUid;
   String get subject;
 
-  @nullable
-  DateTime get timeSent;
+  Timestamp get timeSent;
   @nullable
   num get fetched;
   @nullable
-  DateTime get lastSeen;
+  Timestamp get lastSeen;
   BuiltMap<String, MessageRecipient> get recipients;
 
   Message._();

@@ -1,12 +1,14 @@
 import 'package:fluro/fluro.dart' as fluro;
 import 'package:fusemodel/fusemodel.dart';
 
-import '../screens/clubs/editcoach.dart';
-import '../screens/clubs/addcoach.dart';
 import '../screens/clubs/addclub.dart';
+import '../screens/clubs/addcoach.dart';
 import '../screens/clubs/addmember.dart';
+import '../screens/clubs/addnewsitem.dart';
 import '../screens/clubs/clubdetails.dart';
 import '../screens/clubs/editclub.dart';
+import '../screens/clubs/editcoach.dart';
+import '../screens/clubs/editnewsitem.dart';
 import '../screens/game/addevent.dart';
 import '../screens/game/addgame.dart';
 import '../screens/game/addtraining.dart';
@@ -36,6 +38,7 @@ import '../screens/login/verifyemail.dart';
 import '../screens/message/addmessage.dart';
 import '../screens/message/messages.dart';
 import '../screens/message/messageview.dart';
+import '../screens/public/publichome.dart';
 import '../screens/settings/about.dart';
 import '../screens/settings/editprofile.dart';
 import '../screens/settings/profile.dart';
@@ -53,7 +56,6 @@ import '../screens/team/seasondetails.dart';
 import '../screens/team/team.dart';
 import '../screens/team/teamhome.dart';
 import '../screens/team/teamsettings.dart';
-import '../screens/public/publichome.dart';
 import 'analytics.dart';
 
 ///
@@ -260,8 +262,16 @@ class AppRouter {
                 AddCoachScreen(vals["id"][0].toString())));
     router.define("/Club/Coach/Edit/:clubId/:id",
         handler: fluro.Handler(
+            handlerFunc: (context, vals) => EditCoachScreen(
+                vals["clubId"][0].toString(), vals["id"][0].toString())));
+    router.define("/Club/News/Add/:id",
+        handler: fluro.Handler(
             handlerFunc: (context, vals) =>
-                EditCoachScreen(vals["clubId"][0].toString(), vals["id"][0].toString())));
+                AddNewsItemScreen(vals["id"][0].toString())));
+    router.define("/Club/News/Edit/:clubId/:id",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) => EditNewsItemScreen(
+                vals["clubId"][0].toString(), vals["id"][0].toString())));
 
     // League screens.
     router.define('/League/Home',
@@ -309,13 +319,15 @@ class AppRouter {
     // Public section
     router.define("/Public/:tab/:id",
         handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                PublicHomeScreen(vals["tab"][0].toString(), vals["id"][0].toString(), null)));
+            handlerFunc: (context, vals) => PublicHomeScreen(
+                vals["tab"][0].toString(), vals["id"][0].toString(), null)));
 
     router.define("/Public/:tab/:id/:id2",
         handler: fluro.Handler(
-    handlerFunc: (context, vals) =>
-    PublicHomeScreen(vals["tab"][0].toString(), vals["id"][0].toString(), vals["id2"][0].toString())));
+            handlerFunc: (context, vals) => PublicHomeScreen(
+                vals["tab"][0].toString(),
+                vals["id"][0].toString(),
+                vals["id2"][0].toString())));
 
     return router;
   }

@@ -50,6 +50,11 @@ class CollectionReference extends wfs.CollectionReferenceWrapper {
   }
 
   @override
+  wfs.QueryWrapper startAt(dynamic data) {
+    return Query(_doc.startAt(data));
+  }
+
+  @override
   wfs.QueryWrapper where(String field,
       {dynamic isEqualTo,
       dynamic isLessThan,

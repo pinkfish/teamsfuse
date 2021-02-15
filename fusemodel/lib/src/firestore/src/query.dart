@@ -2,7 +2,6 @@ part of firestore_wrapper;
 
 /// Represents a query over the data at a particular location.
 abstract class QueryWrapper {
-
   /// Notifies of query results at this location
   // TODO(jackson): Reduce code duplication with [DocumentReference]
   Stream<QuerySnapshotWrapper> snapshots();
@@ -15,7 +14,8 @@ abstract class QueryWrapper {
   ///
   /// Only documents satisfying provided condition are included in the result
   /// set.
-  QueryWrapper where(String field, {
+  QueryWrapper where(
+    String field, {
     dynamic isEqualTo,
     dynamic isLessThan,
     dynamic isLessThanOrEqualTo,
@@ -27,6 +27,9 @@ abstract class QueryWrapper {
   /// Creates and returns a new [Query] that's additionally sorted by the specified
   /// [field].
   QueryWrapper orderBy(String field, {bool descending: false});
+
+  /// The point in which in the query should start at.
+  QueryWrapper startAt(dynamic arg);
 
   QueryWrapper limit(int num);
 }

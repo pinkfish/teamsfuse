@@ -8,6 +8,7 @@ import '../../widgets/blocs/singleclubprovider.dart';
 import '../../widgets/clubs/clubcoaches.dart';
 import '../../widgets/clubs/clubdetails.dart';
 import '../../widgets/clubs/clubmembers.dart';
+import '../../widgets/clubs/clubnews.dart';
 import '../../widgets/clubs/clubteams.dart';
 import '../../widgets/clubs/clubtile.dart';
 import '../../widgets/util/loading.dart';
@@ -42,9 +43,11 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
       return Scrollbar(
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 10),
               ClubDetails(club),
+              ClubNewsItems(club.uid),
               ClubCoaches(club.uid),
             ],
           ),
@@ -53,8 +56,10 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
     } else if (_tabIndex == 1) {
       return Column(
         children: [
-          SizedBox(height:10),
-          ClubTile(clubUid: club.uid, ),
+          SizedBox(height: 10),
+          ClubTile(
+            clubUid: club.uid,
+          ),
           Divider(),
           Expanded(
             child: ClubTeams(club.uid, onlyPublic: false),
@@ -75,6 +80,8 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
       Navigator.pushNamed(context, "EditClub/${widget.clubUid}");
     } else if (value == "addcoach") {
       Navigator.pushNamed(context, "Club/Coach/Add/${widget.clubUid}");
+    } else if (value == "addnews") {
+      Navigator.pushNamed(context, "Club/News/Add/${widget.clubUid}");
     }
   }
 
@@ -113,13 +120,17 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                       child: Text(Messages.of(context).addteam),
                     ),
                     PopupMenuItem<String>(
+                      value: 'addnews',
+                      child: Text(Messages.of(context).addNews),
+                    ),
+                    PopupMenuItem<String>(
                       value: "addcoach",
                       child: Text(Messages.of(context).addCoach),
                     ),
                     PopupMenuItem<String>(
                       value: 'addadmin',
                       child: Text(Messages.of(context).addadmin),
-                    )
+                    ),
                   ];
                 },
               ),

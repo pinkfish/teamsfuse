@@ -94,11 +94,11 @@ part 'serializer.g.dart';
   WinRecord
 ])
 final Serializers dataSerializers = (_$dataSerializers.toBuilder()
+      ..addPlugin(StandardJsonPlugin())
       ..add(TimestampSerializer())
       ..add(InviteSerializer())
       ..add(GamePeriodSerializer())
       ..addPlugin(CustomEnumJsonPlugin({
         GamePeriod,
-      }))
-      ..addPlugin(StandardJsonPlugin()))
+      })))
     .build();

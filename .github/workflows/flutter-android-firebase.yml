@@ -60,6 +60,8 @@ jobs:
         flutter pub get
         flutter packages pub run build_runner build --delete-conflicting-outputs
       working-directory: fusemodel
+    - run: flutter test
+      working-directory: fusemodel
     - run: flutter packages get
       working-directory: flutter_fuse
     - run: flutter test

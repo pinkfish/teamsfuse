@@ -85,12 +85,17 @@ abstract class SingleClubState {
   @BuiltValueField(serialize: false)
   BuiltList<NewsItem> get newsItems;
 
+  /// The loaded invites
+  @BuiltValueField(serialize: false)
+  BuiltMap<num, BuiltList<NewsItem>> get extraNewsItems;
+
   static SingleClubStateBuilder fromState(
       SingleClubState state, SingleClubStateBuilder builder) {
     return builder
       ..club = state.club?.toBuilder()
       ..teams = state.teams.toBuilder()
       ..invites = state.invites.toBuilder()
+      ..extraNewsItems = state.extraNewsItems.toBuilder()
       ..loadedInvites = state.loadedInvites
       ..loadedCoaches = state.loadedCoaches
       ..loadedNewsItems = state.loadedNewsItems
