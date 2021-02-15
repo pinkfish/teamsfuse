@@ -34,6 +34,7 @@ abstract class MessageRecipient
     implements Built<MessageRecipient, MessageRecipientBuilder> {
   @nullable
   String get uid;
+  String get fromUid;
   @BuiltValueField(wireName: playerIdId)
   String get playerId;
   @BuiltValueField(wireName: userIdId)

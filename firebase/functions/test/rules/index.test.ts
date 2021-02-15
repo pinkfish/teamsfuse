@@ -100,6 +100,21 @@ describe('TeamsFuse rules', function () {
         const db = authedApp();
         await firebase.assertFails(db.collection('Messages').where('uid', '==', true).get());
     });
+    it('get message', async () => {
+        const db = authedApp({ uid: 'alice', email_verified: true });
+        await db
+            .collection('Messages')
+            .doc('frog')
+            .set({
+                fromUid: 'alice',
+                timeSent: firebase.firestore.FieldValue.serverTimestamp(),
+                recipients: { robert: { added: true } },
+            });
+        await db.collection('MessageRecipients').doc('frog').set({ fromUid: 'alice', messageId: 'frog' });
+        await firebase.assertSucceeds(db.collection('Messages').doc('frog').get());
+        const dbRobert = authedApp({ uid: 'robert' });
+        await firebase.assertFails(dbRobert.collection('Messages').doc('frog').get());
+    });
     it('require users to log in before listing players', async () => {
         const db = authedApp();
         await firebase.assertFails(db.collection('Players').where('uid', '==', true).get());

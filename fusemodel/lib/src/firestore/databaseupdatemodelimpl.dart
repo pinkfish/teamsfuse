@@ -246,6 +246,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var newDoc = ref.document();
     mess = mess.rebuild((b) => b
       ..timeSent = Timestamp.now().toUtc()
+      ..fromUid = currentUser.uid
       ..uid = newDoc.documentID);
     print("utc...?");
     var bodyRef = _wrapper
@@ -274,8 +275,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
           var rec = mess.recipients[str].rebuild((b) => b
             ..messageId = mess.uid
             ..sentAt = mess.timeSent
+            ..fromUid = currentUser.uid
             ..uid = docRef.documentID);
-          var recipientData = mess.toMap();
+          var recipientData = mess.recipients[str].toMap();
           recipientData[MessageRecipient.sentAtId] =
               _wrapper.fieldValueServerTimestamp;
           await t.set(docRef, recipientData);

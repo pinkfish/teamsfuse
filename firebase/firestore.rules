@@ -121,6 +121,8 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
       allow list: if isSignedIn();
+      allow create: if isSignedIn &&
+          existsAfter(/databases/$(database)/documents/Messages/$(incomingData().messageId));
     }
 
     match /Messages/{message} {
@@ -128,11 +130,15 @@ service cloud.firestore {
             allow read: if isSignedIn();
             allow write: if isSignedIn();
       }
-      allow read: if isSignedIn();
-      allow write: if isSignedIn();
+      allow read: if isSignedIn() &&
+        (existingData().fromUid == request.auth.uid ||
+         request.auth.uid in existingData().recipients);
+      allow write: if isSignedIn() &&
+         existingData().userId == request.auth.uid;
       allow list: if isSignedIn();
       allow create: if isSignedIn() &&
-         request.resource.fromUid == request.auth.uid;
+         incomingData().fromUid == request.auth.uid &&
+         incomingData().timeSent == request.time;
     }
 
     match /Seasons/{season} {
