@@ -36,7 +36,7 @@ class GameLogView extends StatelessWidget {
         break;
       case GameLogType.ScoreUpdate:
         subtitle = Text(
-          Messages.of(context).onlyscore(log.score),
+          Messages.of(context).onlyScore(log.score),
           style: subheadStyle,
         );
         break;

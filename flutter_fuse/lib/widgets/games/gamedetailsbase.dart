@@ -438,7 +438,7 @@ class GameDetailsBase extends StatelessWidget {
             children: <Widget>[
               Text(
                 opponent != null
-                    ? Messages.of(context).opponentseason(opponent, seasonName)
+                    ? Messages.of(context).opponentSeason(opponent, seasonName)
                     : Messages.of(context).loading,
               ),
               Text(
@@ -470,7 +470,7 @@ class GameDetailsBase extends StatelessWidget {
             cols.add(
               Text(
                 opponent != null
-                    ? Messages.of(context).opponentseason(opponent, seasonName)
+                    ? Messages.of(context).opponentSeason(opponent, seasonName)
                     : Messages.of(context).loading,
               ),
             );

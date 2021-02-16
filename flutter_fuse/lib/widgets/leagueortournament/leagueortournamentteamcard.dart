@@ -34,13 +34,13 @@ class LeagueOrTournamentTeamCard extends StatelessWidget {
               if (divisonBloc != SingleLeagueOrTournamentDivisonUninitialized) {
                 if (team.record.containsKey(divisonState.divison.uid)) {
                   subtitle = Text(Messages.of(context)
-                      .winrecord(team.record[divisonState.divison.uid]));
+                      .winRecord(team.record[divisonState.divison.uid]));
                 } else {
                   var record = WinRecord((b) => b
                     ..win = 0
                     ..loss = 0
                     ..tie = 0);
-                  subtitle = Text(Messages.of(context).winrecord(record));
+                  subtitle = Text(Messages.of(context).winRecord(record));
                 }
               }
               return ListTile(

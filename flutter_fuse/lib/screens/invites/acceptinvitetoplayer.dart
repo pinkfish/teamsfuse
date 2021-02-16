@@ -120,7 +120,7 @@ class _AcceptInviteToPlayerScreenState
                               Container(
                                 padding: EdgeInsets.all(20.0),
                                 child: Text(
-                                  messages.playerinvitedesc(
+                                  messages.playerInviteDesc(
                                       (state.invite as InviteToPlayer)
                                           .playerName),
                                 ),

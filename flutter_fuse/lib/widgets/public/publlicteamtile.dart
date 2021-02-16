@@ -94,7 +94,7 @@ class PublicTeamTile extends StatelessWidget {
                                 if (seasonState is SingleSeasonLoaded) {
                                   return Text(
                                     seasonState.season.record != null
-                                        ? Messages.of(context).winrecord(
+                                        ? Messages.of(context).winRecord(
                                             seasonState.season.record)
                                         : "",
                                     style:
@@ -137,4 +137,3 @@ class PublicTeamTile extends StatelessWidget {
     );
   }
 }
-

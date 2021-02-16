@@ -108,7 +108,7 @@ class _TeamAnimatedListState extends State<TeamAnimatedList> {
           if (teamSorted.length == 0) {
             return Container(
               margin: EdgeInsets.only(top: 5.0, left: 20.0, right: 20.0),
-              child: Text(Messages.of(context).noteams),
+              child: Text(Messages.of(context).noTeams),
             );
           }
           teamSorted.sort((a, b) => a.name.compareTo(b.name) as int);

@@ -121,7 +121,7 @@ class TeamTile extends StatelessWidget {
                       if (seasonState is SingleSeasonLoaded) {
                         return Text(seasonState.season.record != null
                             ? Messages.of(context)
-                                .winrecord(seasonState.season.record)
+                                .winRecord(seasonState.season.record)
                             : "");
                       }
                       return Text(Messages.of(context).loading);

@@ -40,7 +40,7 @@ class PublicClubTeams extends StatelessWidget {
       );
       teamWidgets.add(
         Center(
-          child: Text(Messages.of(context).noteams,
+          child: Text(Messages.of(context).noTeams,
               style: Theme.of(context).textTheme.headline6),
         ),
       );
@@ -86,7 +86,7 @@ class PublicClubTeams extends StatelessWidget {
         } else {
           teamWidgets.add(
             Text(
-              Messages.of(context).noteams,
+              Messages.of(context).noTeams,
               style: Theme.of(context).textTheme.headline4,
             ),
           );

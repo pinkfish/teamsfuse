@@ -232,7 +232,7 @@ class _LeagueOrTournamentDivisonDetailsState
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(Messages.of(context).noteams),
+                                  Text(Messages.of(context).noTeams),
                                   FlatButton(
                                     onPressed: () => _addTeam(divisonBloc),
                                     child: Text(
@@ -251,7 +251,7 @@ class _LeagueOrTournamentDivisonDetailsState
                           } else {
                             return Container(
                               margin: EdgeInsets.all(5.0),
-                              child: Text(Messages.of(context).noteams),
+                              child: Text(Messages.of(context).noTeams),
                             );
                           }
                         }

@@ -302,13 +302,13 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       ExpansionTile(
                         title: Text(messages
-                            .numberofuserforplayer(player.users.length)),
+                            .numberOfUserForPlayer(player.users.length)),
                         initiallyExpanded: false,
                         children: _buildUserList(context, playerState),
                       ),
                       ExpansionTile(
                         title: Text(
-                            messages.numberofteamsforplayer(teamNames.length)),
+                            messages.numberOfTeamsForPlayer(teamNames.length)),
                         initiallyExpanded: false,
                         children: teamNames,
                       )
