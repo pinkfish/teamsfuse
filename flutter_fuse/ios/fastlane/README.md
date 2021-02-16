@@ -31,6 +31,11 @@ Lane just to get the api key for apple
 fastlane ios beta
 ```
 Push a new beta build to TestFlight
+### ios beta_local
+```
+fastlane ios beta_local
+```
+Push a new beta build to TestFlight
 ### ios screenshots
 ```
 fastlane ios screenshots

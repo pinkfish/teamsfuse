@@ -38,7 +38,7 @@ class PublicHomeScreen extends StatelessWidget {
   /// Constructor.
   PublicHomeScreen(String tab, this.clubUid, this.extraUid)
       : tabSelected = PublicTab.values.firstWhere(
-            (v) => v.toString().endsWith(tab),
+            (v) => v.toString().toLowerCase().endsWith(tab.toLowerCase()),
             orElse: () => PublicTab.club);
 
   /// Club id to show the details for.
@@ -93,7 +93,7 @@ class PublicHomeScreen extends StatelessWidget {
         return PublicClubTeams(club,
             onlyPublic: true,
             onTap: (t) => _navigateTo(context,
-                "/Public/${PublicTab.team.toString()}/$clubUid/${t.uid}"));
+                "/Public/${PublicTab.team.toString().replaceAll('PublicTab.', '')}/$clubUid/${t.uid}"));
       case PublicTab.coaches:
         return PublicCoachDetails(singleClubBloc);
       case PublicTab.news:
@@ -135,7 +135,10 @@ class PublicHomeScreen extends StatelessWidget {
                 text: Messages.of(context).news),
           ],
           onTap: (idx) => _navigateTo(
-              context, "/Public/${PublicTab.values[idx].toString()}/$clubUid"),
+              context,
+              "/Public/"
+              "${PublicTab.values[idx].toString().replaceAll('PublicTab.', '')}"
+              "/$clubUid"),
         ),
       ),
     );
@@ -187,25 +190,36 @@ class PublicHomeScreen extends StatelessWidget {
               leading: Icon(MdiIcons.basketball),
               title: Text(Messages.of(context).about),
               onTap: () => _navigateTo(
-                  context, "/Public/${PublicTab.club.toString()}/$clubUid"),
+                  context,
+                  "/Public/"
+                  "${PublicTab.club.toString().replaceAll('PublicTab.', '')}"
+                  "/$clubUid"),
             ),
             ListTile(
               leading: Icon(Icons.people),
               title: Text(Messages.of(context).teams),
               onTap: () => _navigateTo(
-                  context, "/Public/${PublicTab.team.toString()}/$clubUid"),
+                  context,
+                  "/Public/${PublicTab.team.toString().replaceAll('PublicTab.', '')}"
+                  "/$clubUid"),
             ),
             ListTile(
               leading: Icon(Icons.people),
               title: Text(Messages.of(context).coaches),
               onTap: () => Navigator.popAndPushNamed(
-                  context, "/Public/${PublicTab.coaches.toString()}/$clubUid"),
+                  context,
+                  "/Public/"
+                  "${PublicTab.coaches.toString().replaceAll('PublicTab.', '')}"
+                  "/$clubUid"),
             ),
             ListTile(
               leading: Icon(MdiIcons.newspaper),
               title: Text(Messages.of(context).news),
               onTap: () => Navigator.popAndPushNamed(
-                  context, "/Public/${PublicTab.news.toString()}/$clubUid"),
+                  context,
+                  "/Public/"
+                  "${PublicTab.news.toString().replaceAll('PublicTab.', '')}"
+                  "/$clubUid"),
             ),
           ],
         ),

@@ -34,7 +34,6 @@ platform :ios do
        appicon_image_file: '../assets/images/app_iconx1024.png'
     )
 
-    DEVELOPER_APP_ID = ENV["DEVELOPER_APP_ID"]
     DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
     PROVISIONING_PROFILE_SPECIFIER = ENV["PROVISIONING_PROFILE_SPECIFIER"]
     TEMP_KEYCHAIN_USER = ENV["TEMP_KEYCHAIN_USER"]
@@ -168,6 +167,84 @@ platform :ios do
       metadata_path: "./metadata",
       api_key: api_key,
       precheck_include_in_app_purchases: false,
+    )
+
+    delete_temp_keychain(keychain_name)
+  end
+
+  desc "Push a new beta build to TestFlight"
+  lane :beta_local do |options|
+    apple_api_p8 = "./app-store-api.p8"
+    UI.user_error!("Please provide a version using `version`") if options[:version].to_s.length == 0
+    version = options[:version]
+    @build_name=options[:version].delete("v")
+
+    DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
+    TEMP_KEYCHAIN_USER = ENV["TEMP_KEYCHAIN_USER"]
+    TEMP_KEYCHAIN_PASSWORD = ENV["TEMP_KEYCHAIN_PASSWORD"]
+
+    project = 'Runner.xcodeproj'
+
+    version = get_version_number(xcodeproj: project,)
+    desc "Version $version"
+
+
+    api_key = app_store_connect_api_key(
+       key_id: "D39Z87Q2S3",
+       issuer_id: "fc631508-7672-4236-a15a-21063621560e",
+       key_filepath: "./app-store-api.p8",
+       duration: 1200, # optional
+       in_house: false, # optional but may be required if using match/sigh
+    )
+
+    appicon(
+       appicon_devices: [:ipad, :iphone, :ios_marketing],
+       appicon_path: "Runner/Assets.xcassets",
+       appicon_image_file: '../assets/images/app_iconx1024.png'
+    )
+
+    # setup certs.
+    keychain_name = TEMP_KEYCHAIN_USER
+    keychain_password = TEMP_KEYCHAIN_PASSWORD
+    ensure_temp_keychain(keychain_name, keychain_password)
+
+    match(
+        type: 'appstore',
+        app_identifier: "com.teamfuse.flutterfuse",
+        git_basic_authorization: Base64.strict_encode64(ENV["GIT_AUTHORIZATION"]),
+        readonly: true,
+        keychain_name: keychain_name,
+        keychain_password: keychain_password
+    )
+
+    # Build the app
+    #build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
+    gym(
+      configuration: "Release",
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+            DEVELOPER_APP_ID => PROVISIONING_PROFILE_SPECIFIER
+        }
+      }
+    )
+
+    # Upload the app.
+    deliver(
+      submit_for_review: true,
+      force: true,
+      metadata_path: "./metadata",
+      api_key: api_key,
+      precheck_include_in_app_purchases: false,
+      apple_id: "#{DEVELOPER_APP_ID}",
+      app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
+      skip_waiting_for_build_processing: true,
+      skip_submission: true,
+      distribute_external: false,
+      notify_external_testers: false,
+      ipa: "./Runner.ipa"
     )
   end
 
