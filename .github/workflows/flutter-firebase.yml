@@ -1,20 +1,30 @@
-name: Flutter - ios - firebase
+name: Flutter - firebase
 
 on: 
  push:
     paths:
     - 'flutter_fuse/**'
     - 'fusemodel/**'
-    - '.github/workflows/flutter-ios-firebase.yml'
+    - '.github/workflows/flutter-firebase.yml'
  pull_request:
     paths:
     - 'flutter_fuse/**'
     - 'fusemodel/**'
-    - '.github/workflows/flutter-ios-firebase.yml'
+    - '.github/workflows/flutter-firebase.yml'
 
 jobs:
   build:
-   runs-on: macos-latest
+   runs-on: ${{ matrix.runs-on }}
+   strategy:
+     matrix:
+       os: [ios, android]
+       include:
+         - os: ios
+           runs-on: macos-latest
+           subdirectory: flutter_fuse/ios
+         - os: android
+           runs-on: ubuntu-latest
+           subdirectory: flutter_fuse/android
 
    steps:
     - uses: actions/checkout@v2
@@ -80,7 +90,7 @@ jobs:
       uses: maierj/fastlane-action@v1.4.0
       with:
         lane: firebase
-        subdirectory: flutter_fuse/ios
+        subdirectory: ${{ matrix.subdirectory }}
         options: '{"version": "${{ steps.branch_name.outputs.SOURCE_TAG }}"}'
       env:
         FL_GITHUB_RELEASE_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}

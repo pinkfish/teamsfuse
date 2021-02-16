@@ -1,0 +1,160 @@
+name: Flutter - release
+
+on: 
+  release:
+    types: [created,edited]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      matrix:
+        os: [web, ios, android]
+        include:
+          - os: web
+            runs-on: ubuntu-latest
+            subdirectory: flutter_fuse
+            artifacts: "flutter_fuse/build/web/*"
+          - os: ios
+            runs-on: macos-latest
+            subdirectory: flutter_fuse/ios
+            artifacts: "flutter_fuse/build/ios/iphoneos/*.app"
+          - os: android
+            runs-on: ubuntu-latest
+            subdirectory: flutter_fuse/android
+            artifacts: "flutter_fuse/build/app/outputs/apk/debug/*.apk"
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref }}
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '12.x'
+      - name: Branch name
+        id: branch_name
+        run: |
+          echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
+          echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
+          echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+      - name: Dump env
+        run: |
+          echo ${SOURCE_TAG}
+          echo ${SOURCE_BRANCH}
+          echo ${SOURCE_TAG}
+          echo ${{ GITHUB.ref }}
+        env:
+          SOURCE_NAME: ${{ steps.branch_name.outputs.SOURCE_NAME }}
+          SOURCE_BRANCH: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
+          SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'beta' # or: 'dev' or 'beta'
+      - run: flutter pub get
+        working-directory: fusemodel
+      - run: |
+          find ./ -type f -name "*.g.dart" -delete
+          flutter clean
+          flutter pub get
+          flutter pub run build_runner build --delete-conflicting-outputs
+        working-directory: fusemodel
+      - run: flutter test
+        working-directory: fusemodel
+      - run: |
+          flutter packages get
+          flutter build ios --debug
+        working-directory: flutter_fuse
+        continue-on-error: true
+      - run: flutter test
+        working-directory: flutter_fuse
+      - run: brew install ghostscript imagemagick
+        working-directory: flutter_fuse
+
+      # Android specific actions
+      - run: echo ${FASTLANE_ANDROID_API_KEY} > ./api-dash.json
+        working-directory: flutter_fuse/android
+        if: ${{ matrix.os == 'android' }}
+        env:
+          FASTLANE_ANDROID_API_KEY: ${{ secrets.FASTLANE_ANDROID_API_KEY }}
+      - run: |
+          echo ${ANDROID_KEY_JKS} > ./key.jks.asc
+          base64 --decode < ./key.jks.asc > ./key.jks
+        working-directory: flutter_fuse/android
+        if: ${{ matrix.os == 'android' }}
+        env:
+          ANDROID_KEY_JKS: ${{ secrets.ANDROID_KEY_JKS }}
+
+      # ios specific actions.
+      - run: |
+          # Replace the newline with a \n
+          echo ${APPLE_APP_API_P8} | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' > ./app-store-api.p8
+        if: ${{ matrix.os == 'ios' }}
+        working-directory: flutter_fuse/ios
+        env:
+          APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
+      - run:   echo $(PASSWORD) > fastlane/metadata/review_information/demo_password.txt
+        working-directory: flutter_fuse/ios
+        if: ${{ matrix.os == 'ios' }}
+        env:
+          PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
+      # Run the ios and android build.
+      - name: Fastlane Action
+        uses: maierj/fastlane-action@v1.4.0
+        if: ${{ matrix.os == 'android' || matrix.os == 'ios' }}
+        with:
+          lane: beta
+          subdirectory: ${{ matrix.subdirectory }}
+          bundle-install-path: "${{ matrix.subdirectory }}/packages"
+          options: '{"version": "${{ steps.branch_name.outputs.SOURCE_TAG }}"}'
+        env:
+          FASTLANE_SESSION: ${{ secrets.FASTLANE_APPLE_SESSION }}
+          FL_GITHUB_RELEASE_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 10 # Longer timeout for the build settings.
+          APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
+          DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
+          DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
+          FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
+          MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+          GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
+          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+
+
+      # Web specific actions
+      - run: flutter build web
+        working-directory: flutter_fuse
+        if: ${{ matrix.os == 'web' }}
+      - run: |
+          mkdir -p firebase/public/flutter
+          cp -fR flutter_fuse/build/web/* firebase/public/flutter
+        if: ${{ matrix.os == 'web' }}
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        if: ${{ matrix.os == 'web' }}
+        with:
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASETOKEN }}
+          FIREBASE_PROJECT: teamsfuse
+          PROJECT_PATH: ./firebase
+
+      # Cleanup and commit.
+      - name: Commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "Release notes for the ios ${{ steps.branch_name.outputs.SOURCE_TAG}} version" -a
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: ${{ matrix.artifacts }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUBPUSHTOKEN }}
+          branch: main
+          force: true
