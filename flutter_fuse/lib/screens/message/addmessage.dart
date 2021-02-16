@@ -51,6 +51,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
   final Set<String> _recipients = <String>{};
   String _subject;
   AutovalidateMode _autovalidateMode = AutovalidateMode.disabled;
+  int _currentStep = 0;
 
   @override
   void initState() {
@@ -109,131 +110,163 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
     }
   }
 
+  void _onStepTapped(int num) {
+    if (num < _currentStep) {
+      setState(() {
+        _currentStep = num;
+      });
+    }
+  }
+
+  void _onStepContinue() {
+    switch (_currentStep) {
+      case 0:
+        if (_teamUid == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(Messages.of(context).teamselect),
+            ),
+          );
+          return;
+        }
+        break;
+      case 1:
+        if (_seasonUid == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(Messages.of(context).seasonselect),
+            ),
+          );
+          return;
+        }
+        break;
+      case 2:
+        _sendMessage();
+        return;
+      default:
+        return;
+    }
+    setState(() {
+      _currentStep++;
+    });
+  }
+
+  void _onStepCancel() {
+    Navigator.pop(context);
+  }
+
   Widget _buildPlayerPicker() {
     var playerBloc = BlocProvider.of<PlayerBloc>(context);
 
-    if (_teamUid != null) {
-      return SingleTeamProvider(
-        teamUid: _teamUid,
-        builder: (context, singleTeamBloc) {
-          var ret = <Widget>[];
-          // Build the rest of the form.
+    if (_teamUid != null && _seasonUid != null) {
+      var ret = <Widget>[];
+      // Build the rest of the form.
+
+      if (_teamBloc.state.getTeam(_teamUid) != null &&
+          _seasonBloc.state.seasons.containsKey(_seasonUid)) {
+        // Show who we are sending as, drop down if there is more than one
+        // option.
+        if (_possiblePlayers.length > 1) {
           ret.add(
-            SeasonFormField(
-                teamBloc: singleTeamBloc,
-                initialValue: _seasonUid,
-                onSaved: (seasonUid) => _seasonUid = seasonUid),
+            ListTile(
+              leading: const Icon(Icons.person_outline),
+              title: DropdownButton<String>(
+                  value: _sendAs,
+                  items: _possiblePlayers.map((str) {
+                    var playerBloc = BlocProvider.of<PlayerBloc>(context);
+                    return DropdownMenuItem<String>(
+                        child: Text(playerBloc.state.players[str].name),
+                        value: str);
+                  }).toList(),
+                  onChanged: (str) {
+                    _sendAs = str;
+                  }),
+            ),
           );
-          if (_seasonUid != null &&
-              _teamBloc.state.getTeam(_teamUid) != null &&
-              _seasonBloc.state.seasons.containsKey(_seasonUid)) {
-            // Show who we are sending as, drop down if there is more than one
-            // option.
-            if (_possiblePlayers.length > 1) {
-              ret.add(
-                ListTile(
-                  leading: const Icon(Icons.person_outline),
-                  title: DropdownButton<String>(
-                      value: _sendAs,
-                      items: _possiblePlayers.map((str) {
-                        var playerBloc = BlocProvider.of<PlayerBloc>(context);
-                        return DropdownMenuItem<String>(
-                            child: Text(playerBloc.state.players[str].name),
-                            value: str);
-                      }).toList(),
-                      onChanged: (str) {
-                        _sendAs = str;
-                      }),
-                ),
-              );
-            } else {
-              _sendAs = playerBloc.state.me.uid;
-              ret.add(
-                ListTile(
-                  leading: const Icon(Icons.person_outline),
-                  title: Text(playerBloc.state.players[_sendAs]?.name ??
-                      Messages.of(context).unknown),
-                ),
-              );
-            }
-            // Show the player selection details.
+        } else {
+          _sendAs = playerBloc.state.me.uid;
+          ret.add(
+            ListTile(
+              leading: const Icon(Icons.person_outline),
+              title: Text(playerBloc.state.players[_sendAs]?.name ??
+                  Messages.of(context).unknown),
+            ),
+          );
+        }
+        // Show the player selection details.
+        ret.add(
+          CheckboxListTile(
+            secondary: const Icon(Icons.people),
+            controlAffinity: ListTileControlAffinity.trailing,
+            value: _allPlayers,
+            onChanged: (newVal) => setState(() => _allPlayers = newVal),
+            title: Text(Messages.of(context).everyone),
+          ),
+        );
+        if (_allPlayers) {
+          ret.add(
+            CheckboxListTile(
+              secondary: const Icon(Icons.person),
+              controlAffinity: ListTileControlAffinity.trailing,
+              value: _includeMyself,
+              onChanged: (newVal) => setState(() => _includeMyself = newVal),
+              title: Text(Messages.of(context).includemyself),
+            ),
+          );
+        } else {
+          // Show the list of players with checkboxes.
+          var season = _seasonBloc.state.seasons[_seasonUid];
+
+          for (var player in season.players) {
             ret.add(
               CheckboxListTile(
-                secondary: const Icon(Icons.people),
-                controlAffinity: ListTileControlAffinity.trailing,
-                value: _allPlayers,
-                onChanged: (newVal) => setState(() => _allPlayers = newVal),
-                title: Text(Messages.of(context).everyone),
-              ),
-            );
-            if (_allPlayers) {
-              ret.add(
-                CheckboxListTile(
-                  secondary: const Icon(Icons.person),
-                  controlAffinity: ListTileControlAffinity.trailing,
-                  value: _includeMyself,
-                  onChanged: (newVal) =>
-                      setState(() => _includeMyself = newVal),
-                  title: Text(Messages.of(context).includemyself),
-                ),
-              );
-            } else {
-              // Show the list of players with checkboxes.
-              var season = _seasonBloc.state.seasons[_seasonUid];
-
-              for (var player in season.players) {
-                ret.add(
-                  CheckboxListTile(
-                    title: PlayerName(playerUid: player.playerUid),
-                    subtitle:
-                        Text(Messages.of(context).roleingame(player.role)),
-                    value: _recipients.contains(player.playerUid),
-                    onChanged: (toAdd) {
-                      if (toAdd) {
-                        _recipients.add(player.playerUid);
-                      } else {
-                        _recipients.remove(player.playerUid);
-                      }
-                    },
-                  ),
-                );
-              }
-            }
-            // Add in the message box itself :)
-            ret.add(
-              EnsureVisibleWhenFocused(
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    icon: const Icon(Icons.subject),
-                    labelText: Messages.of(context).subject,
-                  ),
-                  focusNode: _focusNodeSubject,
-                  initialValue: _subject,
-                  onSaved: (val) => _subject = val,
-                ),
-                focusNode: _focusNodeSubject,
-              ),
-            );
-            ret.add(
-              EnsureVisibleWhenFocused(
-                focusNode: _focusNodeBody,
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    icon: const Icon(Icons.message),
-                    labelText: Messages.of(context).message,
-                  ),
-                  focusNode: _focusNodeBody,
-                  initialValue: _messageBody,
-                  onSaved: (val) => _messageBody = val,
-                  minLines: 3,
-                  maxLines: 20,
-                ),
+                title: PlayerName(playerUid: player.playerUid),
+                subtitle: Text(Messages.of(context).roleingame(player.role)),
+                value: _recipients.contains(player.playerUid),
+                onChanged: (toAdd) {
+                  if (toAdd) {
+                    _recipients.add(player.playerUid);
+                  } else {
+                    _recipients.remove(player.playerUid);
+                  }
+                },
               ),
             );
           }
-          return Column(children: ret);
-        },
-      );
+        }
+        // Add in the message box itself :)
+        ret.add(
+          EnsureVisibleWhenFocused(
+            child: TextFormField(
+              decoration: InputDecoration(
+                icon: const Icon(Icons.subject),
+                labelText: Messages.of(context).subject,
+              ),
+              focusNode: _focusNodeSubject,
+              initialValue: _subject,
+              onSaved: (val) => _subject = val,
+            ),
+            focusNode: _focusNodeSubject,
+          ),
+        );
+        ret.add(
+          EnsureVisibleWhenFocused(
+            focusNode: _focusNodeBody,
+            child: TextFormField(
+              decoration: InputDecoration(
+                icon: const Icon(Icons.message),
+                labelText: Messages.of(context).message,
+              ),
+              focusNode: _focusNodeBody,
+              initialValue: _messageBody,
+              onSaved: (val) => _messageBody = val,
+              minLines: 3,
+              maxLines: 20,
+            ),
+          ),
+        );
+      }
+      return Column(children: ret);
     }
 
     return SizedBox(width: 0, height: 0);
@@ -248,7 +281,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
       appBar: AppBar(
         title: Text(messages.title),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             onPressed: _sendMessage,
             child: Text(
               Messages.of(context).sendmessagebuttontext,
@@ -280,15 +313,57 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
                   child: Form(
                     key: _formKey,
                     autovalidateMode: _autovalidateMode,
-                    child: Column(
-                      children: <Widget>[
-                        ListTile(
-                          leading: const Icon(MdiIcons.tshirtCrew),
-                          title: TeamPicker(
-                            onChanged: _changeTeam,
+                    child: Stepper(
+                      currentStep: _currentStep,
+                      onStepTapped: _onStepTapped,
+                      onStepContinue: _onStepContinue,
+                      onStepCancel: _onStepCancel,
+                      steps: [
+                        Step(
+                          title: Text(Messages.of(context).teams),
+                          isActive: _currentStep == 0,
+                          state: _currentStep > 0
+                              ? StepState.complete
+                              : StepState.editing,
+                          content: ListTile(
+                            leading: const Icon(MdiIcons.tshirtCrew),
+                            title: TeamPicker(
+                              onChanged: _changeTeam,
+                              teamUid: _teamUid,
+                            ),
                           ),
                         ),
-                        _buildPlayerPicker()
+                        Step(
+                          title: Text(Messages.of(context).seasons),
+                          isActive: _currentStep == 1,
+                          state: _currentStep > 1
+                              ? StepState.complete
+                              : _currentStep == 1
+                                  ? StepState.editing
+                                  : StepState.disabled,
+                          content: SingleTeamProvider(
+                              teamUid: _teamUid,
+                              builder: (context, singleTeamBloc) {
+                                return SeasonFormField(
+                                  key: Key("season" + _teamUid),
+                                  teamBloc: singleTeamBloc,
+                                  initialValue: _seasonUid,
+                                  onSaved: (seasonUid) =>
+                                      _seasonUid = seasonUid,
+                                );
+                              }),
+                        ),
+                        Step(
+                          title: Text(Messages.of(context).message),
+                          isActive: _currentStep == 2,
+                          state: _currentStep > 2
+                              ? StepState.complete
+                              : _currentStep == 2
+                              ? StepState.editing
+                              : StepState.disabled,
+
+                          content: _buildPlayerPicker(),
+                        ),
                       ],
                     ),
                   ),

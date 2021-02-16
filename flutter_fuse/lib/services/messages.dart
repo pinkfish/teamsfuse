@@ -1189,12 +1189,13 @@ class Messages {
     );
   }
 
-  String get seasonhint {
-    return Intl.message(
+  String get seasonhint =>
+     Intl.message(
       'Current team season',
       desc: 'Hint for the season text box',
+       locale: locale,
     );
-  }
+
 
   String get seasonrequired {
     return Intl.message("Season name is required",
@@ -1320,38 +1321,40 @@ class Messages {
   String get takePhotoButton =>
       Intl.message("CAMERA", desc: "Live video streaming", locale: locale);
 
-  String get team {
-    return Intl.message(
+  String get team
+    => Intl.message(
       'Team',
       desc: 'Title for the team marker',
+      locale: locale,
     );
-  }
+
 
   String get teamdeleted => Intl.message('Team deleted', locale: locale);
 
-  String get teamedithint {
-    return Intl.message('Change team',
-        desc: 'Hint for the button to edit the team');
-  }
+  String get teamedithint =>
+     Intl.message('Change team',
+        desc: 'Hint for the button to edit the team', locale: locale);
 
-  String get teamname {
-    return Intl.message('Name', desc: 'Name of the team');
-  }
 
-  String get teamnamehint {
-    return Intl.message('Name', desc: 'Hint for the name of the team');
-  }
+  String get teamname =>
+     Intl.message('Name', desc: 'Name of the team', locale: locale);
 
-  String get teams {
-    return Intl.message('Teams');
-  }
 
-  String get teamselect {
-    return Intl.message(
+  String get teamnamehint
+    => Intl.message('Name', desc: 'Hint for the name of the team', locale: locale);
+
+
+  String get teams =>
+     Intl.message('Teams', locale: locale);
+
+
+  String get teamselect =>
+     Intl.message(
       'Select team',
       desc: 'The text for notes for selecting team for the event',
+       locale: locale,
     );
-  }
+
 
   String get teamselected {
     return Intl.message('Team Selected');
