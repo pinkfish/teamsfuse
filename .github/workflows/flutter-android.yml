@@ -37,7 +37,7 @@ jobs:
         channel: 'beta' # or: 'dev' or 'beta'
     - run: flutter pub get
       working-directory: fusemodel
-    - run: fluttern test
+    - run: flutter test
       working-directory: fusemodel
     - run: |
         find ./ -type f -name "*.g.dart" -delete

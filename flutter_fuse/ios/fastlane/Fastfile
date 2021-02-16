@@ -180,6 +180,7 @@ platform :ios do
     @build_name=options[:version].delete("v")
 
     DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
+    DEVELOPER_APP_ID = ENV["DEVELOPER_APP_ID"]
     TEMP_KEYCHAIN_USER = ENV["TEMP_KEYCHAIN_USER"]
     TEMP_KEYCHAIN_PASSWORD = ENV["TEMP_KEYCHAIN_PASSWORD"]
 
@@ -224,11 +225,7 @@ platform :ios do
       workspace: "Runner.xcworkspace",
       scheme: "Runner",
       export_method: "app-store",
-      export_options: {
-        provisioningProfiles: {
-            DEVELOPER_APP_ID => PROVISIONING_PROFILE_SPECIFIER
-        }
-      }
+      clean: false,
     )
 
     # Upload the app.
