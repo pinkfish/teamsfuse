@@ -79,13 +79,32 @@ jobs:
       continue-on-error: true
     - run: flutter test
       working-directory: flutter_fuse
+
+    # Android specific actions.
+    - run: echo ${FASTLANE_ANDROID_API_KEY} > ./api-dash.json
+      if: ${{ matrix.os == 'android' }}
+      working-directory: flutter_fuse/android
+      env:
+        FASTLANE_ANDROID_API_KEY: ${{ secrets.FASTLANE_ANDROID_API_KEY }}
+    - run: |
+        echo ${ANDROID_KEY_JKS} > ./key.jks.asc
+        base64 --decode < ./key.jks.asc > key.jks
+      if: ${{ matrix.os == 'android' }}
+      working-directory: flutter_fuse/android
+      env:
+        ANDROID_KEY_JKS: ${{ secrets.ANDROID_KEY_JKS }}
+
+    # IOS specific action.
     - run: echo ${APPLE_APP_API_P8} > ~/apple-app-api.p8
       working-directory: flutter_fuse/ios
+      if: ${{ matrix.os == 'ios' }}
       env: 	
         APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
     - run: |
         brew install ghostscript imagemagick
         magick --version
+
+    # Do the build.
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       with:
