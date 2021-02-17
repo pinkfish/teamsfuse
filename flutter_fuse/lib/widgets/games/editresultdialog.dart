@@ -28,13 +28,13 @@ class EditResultDialog extends StatelessWidget {
     if (game.result.inProgress == GameInProgress.Final) {
       switch (game.result.result) {
         case GameResult.Loss:
-          resultStr = Messages.of(context).resultloss(game.result);
+          resultStr = Messages.of(context).resultLoss(game.result);
           break;
         case GameResult.Tie:
-          resultStr = Messages.of(context).resulttie(game.result);
+          resultStr = Messages.of(context).resultTie(game.result);
           break;
         case GameResult.Win:
-          resultStr = Messages.of(context).resultwin(game.result);
+          resultStr = Messages.of(context).resultWin(game.result);
           break;
         default:
           resultStr = Messages.of(context).gameresult(game.result.result);
@@ -45,7 +45,7 @@ class EditResultDialog extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "${Messages.of(context).gametitlevs(game.sharedData, opponent?.name ?? Messages.of(context).unknown)}  $resultStr",
+          "${Messages.of(context).gameTitleVs(game.sharedData, opponent?.name ?? Messages.of(context).unknown)}  $resultStr",
           overflow: TextOverflow.clip,
         ),
       ),

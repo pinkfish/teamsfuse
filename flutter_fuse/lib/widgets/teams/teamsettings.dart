@@ -168,7 +168,7 @@ class _TeamSettingsState extends State<TeamSettings> {
     if (invites != null && invites.isNotEmpty) {
       ret.add(
         ExpansionTile(
-          title: Text(Messages.of(context).pendinginvites(invites.length)),
+          title: Text(Messages.of(context).pendingInvites(invites.length)),
           children: invites
               .map(
                 (adm) => ListTile(

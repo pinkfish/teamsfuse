@@ -258,7 +258,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
         children: <Widget>[
           RaisedButton(
             onPressed: _savePressed,
-            child: Text(messages.addinvite),
+            child: Text(messages.addInviteButton),
             color: theme.accentColor,
             textColor: Colors.white,
           ),

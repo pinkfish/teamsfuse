@@ -476,14 +476,14 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       var color = Colors.black;
       switch (_details.result) {
         case GameResult.Loss:
-          resultStr = Messages.of(context).resultloss(_details.build());
+          resultStr = Messages.of(context).resultLoss(_details.build());
           color = Theme.of(context).errorColor;
           break;
         case GameResult.Tie:
-          resultStr = Messages.of(context).resulttie(_details.build());
+          resultStr = Messages.of(context).resultTie(_details.build());
           break;
         case GameResult.Win:
-          resultStr = Messages.of(context).resultwin(_details.build());
+          resultStr = Messages.of(context).resultWin(_details.build());
           break;
         default:
           resultStr = Messages.of(context).gameresult(_details.result);

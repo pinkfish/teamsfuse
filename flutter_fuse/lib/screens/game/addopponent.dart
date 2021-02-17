@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/util/ensurevisiblewhenfocused.dart';
@@ -49,7 +49,7 @@ class _AddOpponentState extends State<AddOpponent> {
       builder: (context, bloc) => Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text(Messages.of(context).addopponent),
+          title: Text(Messages.of(context).addOpponent),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -72,49 +72,47 @@ class _AddOpponentState extends State<AddOpponent> {
               Navigator.pop(context, state.savedUid);
             }
           },
-
-            builder: (context, state) => SavingOverlay(
-              saving: state is SingleTeamSaving,
-              child: Container(
-                padding: EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      EnsureVisibleWhenFocused(
-                        focusNode: _focusNode,
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            icon: Icon(Icons.short_text),
-                            hintText: Messages.of(context).opponentnamehint,
-                            labelText: Messages.of(context).opponentname,
-                          ),
-                          keyboardType: TextInputType.text,
-                          obscureText: false,
-                          onSaved: (value) {
-                            _opponent.name = value;
-                          },
+          builder: (context, state) => SavingOverlay(
+            saving: state is SingleTeamSaving,
+            child: Container(
+              padding: EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    EnsureVisibleWhenFocused(
+                      focusNode: _focusNode,
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          icon: Icon(Icons.short_text),
+                          hintText: Messages.of(context).opponentnamehint,
+                          labelText: Messages.of(context).opponentname,
                         ),
+                        keyboardType: TextInputType.text,
+                        obscureText: false,
+                        onSaved: (value) {
+                          _opponent.name = value;
+                        },
                       ),
-                      EnsureVisibleWhenFocused(
-                        focusNode: _focusNode,
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            icon: Icon(Icons.email),
-                            hintText: Messages.of(context).opponentcontacthint,
-                            labelText: Messages.of(context).opponentcontact,
-                          ),
-                          keyboardType: TextInputType.text,
-                          obscureText: false,
-                          onSaved: (value) {
-                            _opponent.contact = value;
-                          },
+                    ),
+                    EnsureVisibleWhenFocused(
+                      focusNode: _focusNode,
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          icon: Icon(Icons.email),
+                          hintText: Messages.of(context).opponentcontacthint,
+                          labelText: Messages.of(context).opponentcontact,
                         ),
+                        keyboardType: TextInputType.text,
+                        obscureText: false,
+                        onSaved: (value) {
+                          _opponent.contact = value;
+                        },
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-
+              ),
             ),
           ),
         ),

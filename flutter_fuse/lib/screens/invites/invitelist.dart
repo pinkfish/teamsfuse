@@ -79,13 +79,13 @@ class _InviteListScreenState extends State<InviteListScreen> {
           },
         ),
         title: Text(
-          messages.teamandseason(invite.teamName, invite.seasonName),
+          messages.teamAndSeason(invite.teamName, invite.seasonName),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const SizedBox(height: 5.0),
-            Text(Messages.of(context).roleingame(invite.role)),
+            Text(Messages.of(context).roleInGame(invite.role)),
             const SizedBox(height: 5.0),
             Row(
               children: invite.playerName.map((name) {

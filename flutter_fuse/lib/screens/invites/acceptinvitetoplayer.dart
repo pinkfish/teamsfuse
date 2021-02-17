@@ -144,9 +144,9 @@ class _AcceptInviteToPlayerScreenState
                                 padding: EdgeInsets.only(top: 20.0),
                                 child: ButtonBar(
                                   children: <Widget>[
-                                    RaisedButton(
+                                    ElevatedButton(
                                       onPressed: _savePressed,
-                                      child: Text(messages.addplayer),
+                                      child: Text(messages.addPlayerButton),
                                     ),
                                     FlatButton(
                                       onPressed: () => showDeleteInvite(

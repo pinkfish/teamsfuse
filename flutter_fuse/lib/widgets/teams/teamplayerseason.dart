@@ -81,7 +81,7 @@ class TeamPlayersSeason extends StatelessWidget {
                   leading: PlayerImage(playerUid: player.playerUid),
                   title: PlayerName(playerUid: player.playerUid),
                   subtitle: Text(
-                    Messages.of(context).roleingame(player.role),
+                    Messages.of(context).roleInGame(player.role),
                   ),
                 ),
         ),
@@ -91,12 +91,14 @@ class TeamPlayersSeason extends StatelessWidget {
     if (teamState.isAdmin()) {
       ret.add(
         ListTile(
-          title: FlatButton(
-            textColor: Theme.of(context).accentColor,
+          title: TextButton(
             onPressed: () {
               Navigator.pushNamed(context, "AddPlayer/$_teamUid/$_seasonUid");
             },
-            child: Text(Messages.of(context).addplayer),
+             style: TextButton.styleFrom(
+            primary:
+            Theme.of(context).accentColor),
+            child: Text(Messages.of(context).addPlayerButton),
           ),
         ),
       );
@@ -127,7 +129,7 @@ class TeamPlayersSeason extends StatelessWidget {
                       .copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 5.0),
-                Text(Messages.of(context).roleingame(inv.role)),
+                Text(Messages.of(context).roleInGame(inv.role)),
               ],
             ),
             trailing: IconButton(
@@ -140,7 +142,7 @@ class TeamPlayersSeason extends StatelessWidget {
         );
       }
       ret.add(ExpansionTile(
-          title: Text(Messages.of(context).invitedpeople(state.invites.length)),
+          title: Text(Messages.of(context).invitedPeople(state.invites.length)),
           children: kids));
     }
     return ret;

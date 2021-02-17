@@ -46,7 +46,7 @@ class TeamDetails extends StatelessWidget {
         TextButton(
           onPressed: () =>
               Navigator.pushNamed(context, "AddSeason/${team.team.uid}"),
-          child: Text(Messages.of(context).addseason),
+          child: Text(Messages.of(context).addSeasonButton),
         ),
       );
     }

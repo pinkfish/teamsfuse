@@ -192,7 +192,7 @@ class _SeasonDetailsScreenState extends State<SeasonDetailsScreen> {
                       : Messages.of(context).addPlayerTooltip,
                   icon: Icon(Icons.add),
                   label: _currentIndex == 0
-                      ? Text(Messages.of(context).addgamebutton)
+                      ? Text(Messages.of(context).addGameButton)
                       : Text(Messages.of(context).addPlayerButton),
                 ),
               );

@@ -57,7 +57,7 @@ class AddInviteToTeamDialog extends Dialog {
         child: DefaultTextStyle(
           style: Theme.of(context).textTheme.headline6,
           child: Semantics(
-            child: Text(Messages.of(context).addseason),
+            child: Text(Messages.of(context).addSeason),
             namesRoute: true,
           ),
         ),

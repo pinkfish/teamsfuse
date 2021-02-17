@@ -123,7 +123,7 @@ class _LeagueOrTournamentTeamDetailsState
                             children.add(ExpansionTile(
                               title: Text(
                                 Messages.of(context)
-                                    .invitedpeople(teamState.invites.length),
+                                    .invitedPeople(teamState.invites.length),
                               ),
                               initiallyExpanded: false,
                               children: teamState.invites.map((invite) {
@@ -143,12 +143,12 @@ class _LeagueOrTournamentTeamDetailsState
                                 alignment: Alignment.topLeft,
                                 child: ButtonBar(
                                   children: <Widget>[
-                                    FlatButton(
+                                    TextButton(
                                       onPressed: () => AddInviteToTeamDialog
                                           .showAddTeamInviteDialog(
                                               context, bloc),
                                       child: Text(
-                                        Messages.of(context).addteamadmin,
+                                        Messages.of(context).addInviteButton,
                                         style: Theme.of(context)
                                             .textTheme
                                             .button

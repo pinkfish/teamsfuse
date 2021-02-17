@@ -61,7 +61,7 @@ class LeagueTeamScreen extends StatelessWidget {
                           return <PopupMenuItem<String>>[
                             PopupMenuItem<String>(
                               value: "invite",
-                              child: Text(Messages.of(context).addteamadmin),
+                              child: Text(Messages.of(context).shareTeam),
                             ),
                           ];
                         },

@@ -5,10 +5,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../../widgets/form/relationshipformfield.dart';
@@ -137,7 +137,7 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
       FlatButton(
         onPressed: () => _onAddPlayerInvite(context),
         color: Theme.of(context).highlightColor,
-        child: Text(Messages.of(context).addinvite),
+        child: Text(Messages.of(context).addInviteButton),
       ),
     );
 

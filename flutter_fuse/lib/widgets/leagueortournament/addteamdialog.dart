@@ -35,7 +35,7 @@ class AddTeamDialog extends Dialog {
         child: DefaultTextStyle(
           style: Theme.of(context).textTheme.headline6,
           child: Semantics(
-            child: Text(Messages.of(context).addteam),
+            child: Text(Messages.of(context).addTeam),
             namesRoute: true,
           ),
         ),

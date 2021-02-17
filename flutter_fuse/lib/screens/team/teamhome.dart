@@ -47,7 +47,7 @@ class TeamHomeScreen extends StatelessWidget {
               children: <Widget>[
                 TextButton(
                   key: Key("ADD_TEAM"),
-                  child: Text(Messages.of(context).addteam),
+                  child: Text(Messages.of(context).addTeamButton),
                   onPressed: () => _addTeam(context),
                 ),
               ],

@@ -54,7 +54,7 @@ class FusedDrawerContent extends StatelessWidget {
                 builder: (build, state) {
                   //if (snap.hasData) {
                   return Text(
-                    Messages.of(context).teamnumbers(state.playerTeams.length),
+                    Messages.of(context).teamNumbers(state.playerTeams.length),
                   );
                   /*}
                   //if (club.cachedTeams != null) {
@@ -101,7 +101,7 @@ class FusedDrawerContent extends StatelessWidget {
       ListTile(
         leading: const Icon(MdiIcons.teamviewer),
         title: Text(
-          Messages.of(context).allteamsbbutton,
+          Messages.of(context).allTeamsButton,
           style: Theme.of(context).textTheme.button,
         ),
         onTap: () => Navigator.popAndPushNamed(context, "AllTeams"),

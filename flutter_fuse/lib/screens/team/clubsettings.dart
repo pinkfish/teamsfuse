@@ -20,7 +20,7 @@ class ClubSettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          Messages.of(context).titlewith(teams.state.getTeam(teamUid).name),
+          Messages.of(context).titleWith(teams.state.getTeam(teamUid).name),
         ),
       ),
       body: ClubSettings(teamUid),

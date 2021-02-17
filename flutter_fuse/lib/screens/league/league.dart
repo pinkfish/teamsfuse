@@ -71,10 +71,10 @@ class LeagueScreen extends StatelessWidget {
                       return <PopupMenuItem<String>>[
                         PopupMenuItem<String>(
                           value: "season",
-                          child: Text(Messages.of(context).addseason),
+                          child: Text(Messages.of(context).addSeason),
                         ),
                         PopupMenuItem<String>(
-                          child: Text(Messages.of(context).addadmin),
+                          child: Text(Messages.of(context).addAdmin),
                           value: "admin",
                         ),
                         PopupMenuItem<String>(

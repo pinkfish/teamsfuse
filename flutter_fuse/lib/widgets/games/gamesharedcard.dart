@@ -101,9 +101,9 @@ class GameSharedCard extends StatelessWidget {
         (leagueOrTournament?.isAdmin() ?? false)) {
       // Show a result button (if an admin).
       buttons.add(
-        FlatButton(
+        TextButton(
           onPressed: () => _editResult(context),
-          child: Text(Messages.of(context).addresultbutton),
+          child: Text(Messages.of(context).addResultButton),
         ),
       );
     }

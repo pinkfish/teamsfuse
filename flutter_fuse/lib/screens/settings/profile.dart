@@ -87,7 +87,7 @@ class ProfileScreen extends StatelessWidget {
           children: invites.map((invite) {
             return ListTile(
               leading: const Icon(Icons.person_add),
-              title: Text(Messages.of(context).invitedemail(invite)),
+              title: Text(invite.email),
               trailing: IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () => _deleteInvite(context, invite)),
@@ -139,7 +139,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             SizedBox(width: 10.0),
             Text(
-              Messages.of(context).addinvite,
+              Messages.of(context).addInvite,
               style: theme.textTheme.button.copyWith(color: Colors.blueAccent),
             ),
           ],
@@ -263,7 +263,7 @@ class ProfileScreen extends StatelessWidget {
                                               .bodyText2),
                                       Text(
                                         messages
-                                            .roleingame(s.players[index].role),
+                                            .roleInGame(s.players[index].role),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyText2,

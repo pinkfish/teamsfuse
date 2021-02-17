@@ -60,7 +60,7 @@ class SportFormFieldState extends FormFieldState<Sport> {
 
     for (var sport in Sport.values) {
       ret.add(DropdownMenuItem<Sport>(
-        child: Text(Messages.of(context).sportname(sport)),
+        child: Text(Messages.of(context).sportName(sport)),
         value: sport,
       ));
     }

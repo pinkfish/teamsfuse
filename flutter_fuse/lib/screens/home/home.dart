@@ -179,19 +179,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 FabMiniMenuItemWidget(
                   icon: const Icon(Icons.calendar_today),
                   fabColor: Colors.blueAccent,
-                  text: messages.addevent,
+                  text: messages.addEventButton,
                   onPressed: () => Navigator.pushNamed(context, "AddEvent"),
                 ),
                 FabMiniMenuItemWidget(
                   icon: const Icon(Icons.people),
                   fabColor: Colors.blueGrey,
-                  text: messages.addtraining,
+                  text: messages.addTrainingButton,
                   onPressed: () => Navigator.pushNamed(context, "AddTraining"),
                 ),
                 FabMiniMenuItemWidget(
                   icon: const Icon(Icons.gamepad),
                   fabColor: theme.accentColor,
-                  text: messages.addgamebutton,
+                  text: messages.addGameButton,
                   onPressed: () => Navigator.pushNamed(context, "AddGame"),
                 ),
               ],

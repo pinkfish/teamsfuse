@@ -47,7 +47,7 @@ class AddInviteToLeagueDialog extends Dialog {
         child: DefaultTextStyle(
           style: Theme.of(context).textTheme.headline6,
           child: Semantics(
-            child: Text(Messages.of(context).addadmin),
+            child: Text(Messages.of(context).addAdmin),
             namesRoute: true,
           ),
         ),

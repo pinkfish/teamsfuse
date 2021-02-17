@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-02-16T14:08:47.813988",
+  "@@last_modified": "2021-02-16T16:30:55.970896",
   "About": "About",
   "@About": {
     "type": "text",
@@ -1909,28 +1909,16 @@
       "mins": {}
     }
   },
-  "One team": "One team",
-  "@One team": {
-    "description": "Number of teams associated with this player",
-    "type": "text",
-    "placeholders": {}
-  },
-  "numberOfTeamsForPlayerMultiple": "{num} teams",
-  "@numberOfTeamsForPlayerMultiple": {
+  "numberOfTeamsForPlayer": "{num,plural, =0{No teams}=1{One team}other{{num} teams}}",
+  "@numberOfTeamsForPlayer": {
     "description": "Number of teams associated with this player",
     "type": "text",
     "placeholders": {
       "num": {}
     }
   },
-  "One user": "One user",
-  "@One user": {
-    "description": "Number of user associated with this player",
-    "type": "text",
-    "placeholders": {}
-  },
-  "numberOfUserForPlayerMultiple": "{num} users",
-  "@numberOfUserForPlayerMultiple": {
+  "numberOfUserForPlayer": "{num,plural, =1{One user}other{{num} users}}",
+  "@numberOfUserForPlayer": {
     "description": "Number of user associated with this player",
     "type": "text",
     "placeholders": {
@@ -1945,12 +1933,156 @@
       "periodName": {}
     }
   },
+  "Basketball": "Basketball",
+  "@Basketball": {
+    "description": "Name for the item in a drop down for basketball",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Softball": "Softball",
+  "@Softball": {
+    "description": "Name for the item in a drop down for softball",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Soccer": "Soccer",
+  "@Soccer": {
+    "description": "Name for the item in a drop down for soccer",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Other sport": "Other sport",
+  "@Other sport": {
+    "description": "Name for the item in a drop down for other as the sport type",
+    "type": "text",
+    "placeholders": {}
+  },
+  "None": "None",
+  "@None": {
+    "description": "Name for the item in a drop down for none as the sport type",
+    "type": "text",
+    "placeholders": {}
+  },
+  "teamAndSeason": "Team {teamName}\nSeason {seasonName}",
+  "@teamAndSeason": {
+    "type": "text",
+    "placeholders": {
+      "teamName": {},
+      "seasonName": {}
+    }
+  },
+  "teamNumbers": "{num} club teams",
+  "@teamNumbers": {
+    "description": "How many teams in the club",
+    "type": "text",
+    "placeholders": {
+      "num": {}
+    }
+  },
+  "titleWith": "Team Fuse ({str})",
+  "@titleWith": {
+    "description": "Title for the Team Fuse application with some context",
+    "type": "text",
+    "placeholders": {
+      "str": {}
+    }
+  },
+  "trainingTitleEndShortName": "Practice {time} - {endTime} ({tzShortName})",
+  "@trainingTitleEndShortName": {
+    "description": "Training title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {},
+      "tzShortName": {}
+    }
+  },
+  "trainingTitleEnd": "Practice {time} - {endTime}",
+  "@trainingTitleEnd": {
+    "description": "Training title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {}
+    }
+  },
+  "trainingTitleShortName": "Practice {time} ({tzShortName})",
+  "@trainingTitleShortName": {
+    "description": "Training title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "tzShortName": {}
+    }
+  },
+  "trainingTitleTime": "Practice {time}",
+  "@trainingTitleTime": {
+    "description": "Training title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "trainingTitleNowEndShortName": "NOW! Practice {time} - {endTime} ({tzShortName})",
+  "@trainingTitleNowEndShortName": {
+    "description": "Training title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {},
+      "tzShortName": {}
+    }
+  },
+  "trainingTitleNowEnd": "NOW! Practice {time} - {endTime}",
+  "@trainingTitleNowEnd": {
+    "description": "Training title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {}
+    }
+  },
+  "trainingTitleNowShortName": "NOW! Practice {time} ({tzShortName})",
+  "@trainingTitleNowShortName": {
+    "description": "Training title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "tzShortName": {}
+    }
+  },
+  "trainingTitleNowTime": "NOW! Practice {time}",
+  "@trainingTitleNowTime": {
+    "description": "Training title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "verifyExplanation": "Email address {email} needs to be verified, please check your email or resend the verification details.",
+  "@verifyExplanation": {
+    "description": "Button to resend the email to verify their email address",
+    "type": "text",
+    "placeholders": {
+      "email": {}
+    }
+  },
   "wearUniform": "Wear {wear}",
   "@wearUniform": {
     "description": "Wear uniform in a game desc",
     "type": "text",
     "placeholders": {
       "wear": {}
+    }
+  },
+  "winRecordBreakout": "Win: {win} Loss: {loss} Tie: {tie}",
+  "@winRecordBreakout": {
+    "description": "Win record for a team",
+    "type": "text",
+    "placeholders": {
+      "win": {},
+      "loss": {},
+      "tie": {}
     }
   }
 }

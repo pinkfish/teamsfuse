@@ -133,7 +133,7 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text(Messages.of(context).addadmin),
+          title: Text(Messages.of(context).addAdmin),
         ),
         body: BlocListener(
           cubit: addInviteBloc,

@@ -355,9 +355,9 @@ class GameCard extends StatelessWidget {
       }
       // Show a result button.
       buttons.add(
-        FlatButton(
+        TextButton(
           onPressed: () => _editResult(context, gameBloc),
-          child: Text(Messages.of(context).addresultbutton),
+          child: Text(Messages.of(context).addResultButton),
         ),
       );
     }
@@ -434,7 +434,7 @@ class GameCard extends StatelessWidget {
                 subtitle.add(
                   TextSpan(
                     style: Theme.of(context).textTheme.subtitle1,
-                    text: Messages.of(context).nameandteam(state.team, play),
+                    text: Messages.of(context).nameAndTeam(state.team.name, play.name),
                   ),
                 );
               }

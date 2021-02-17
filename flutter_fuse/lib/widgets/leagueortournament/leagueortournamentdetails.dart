@@ -59,7 +59,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                       alignment: Alignment.topLeft,
                       child: FlatButton(
                         onPressed: () => _addDivison(seasonBloc),
-                        child: Text(Messages.of(context).adddivison,
+                        child: Text(Messages.of(context).addDivison,
                             style: Theme.of(context).textTheme.button.copyWith(
                                 color: Theme.of(context).accentColor)),
                       ),
@@ -96,7 +96,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
               FlatButton(
                 onPressed: () => _addDivison(seasonBloc),
                 child: Text(
-                  Messages.of(context).adddivison,
+                  Messages.of(context).addDivison,
                   style: Theme.of(context)
                       .textTheme
                       .button
@@ -131,9 +131,9 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
 
     if (state.seasons == 0) {
       if (state.league.isAdmin()) {
-        return FlatButton(
+        return TextButton(
             onPressed: () => _addSeason(leagueOrTournamentBloc),
-            child: Text(Messages.of(context).addseason,
+            child: Text(Messages.of(context).addSeasonButton,
                 style: Theme.of(context)
                     .textTheme
                     .button
@@ -155,7 +155,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
     var expansionList = ExpansionPanelList.radio(
       initialOpenPanelValue: state.league.currentSeason ?? seasonSorted[0],
       expansionCallback: (pos, opened) {
-         if (!opened) {
+        if (!opened) {
           _openedPanel = seasonSorted[pos].uid;
           setState(() {});
         }
@@ -186,10 +186,10 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
         children: <Widget>[
           ButtonBar(
             children: <Widget>[
-              FlatButton(
+              TextButton(
                 onPressed: () => _addSeason(leagueOrTournamentBloc),
                 child: Text(
-                  Messages.of(context).addseason,
+                  Messages.of(context).addSeason,
                   style: Theme.of(context)
                       .textTheme
                       .button
@@ -293,7 +293,7 @@ class _LeagueOrTournamentDetailsState extends State<LeagueOrTournamentDetails> {
                                   children: <Widget>[
                                     Text(
                                         Messages.of(context)
-                                            .sportname(state.league.sport),
+                                            .sportName(state.league.sport),
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyText2

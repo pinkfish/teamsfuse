@@ -45,7 +45,7 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
       widgets.add(
         DropdownMenuItem<RoleInTeam>(
           child: Text(
-            messages.roleingame(role),
+            messages.roleInGame(role),
           ),
           value: role,
         ),
@@ -209,7 +209,7 @@ class PlayerDetailsScreen extends StatelessWidget {
       ListTile(
         leading: const Icon(MdiIcons.bookOpenVariant),
         title: Text(
-          messages.roleingame(playerState.seasonPlayer.role),
+          messages.roleInGame(playerState.seasonPlayer.role),
         ),
       ),
     );
@@ -296,7 +296,7 @@ class PlayerDetailsScreen extends StatelessWidget {
           children: singlePlayerState.invites.map((invite) {
             return ListTile(
               leading: const Icon(Icons.person_add),
-              title: Text(Messages.of(context).invitedemail(invite)),
+              title: Text(invite.email),
               trailing: IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed: () => _deleteInvite(context, invite),
@@ -393,12 +393,12 @@ class PlayerDetailsScreen extends StatelessWidget {
                     var actions = <Widget>[];
                     if (teamState.isAdmin()) {
                       actions.add(
-                        FlatButton(
+                        TextButton(
                           onPressed: () {
                             _onInvite(context, seasonPlayerState);
                           },
                           child: Text(
-                            messages.addinvite,
+                            messages.addInviteButton,
                             style: Theme.of(context)
                                 .textTheme
                                 .subtitle1

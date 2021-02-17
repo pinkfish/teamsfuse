@@ -122,7 +122,7 @@ class _GameDetailsState extends State<GameDetails> {
                 text: TextSpan(
                     text: Messages.of(context).useofficialresultdialog,
                     children: <TextSpan>[
-                  TextSpan(text: Messages.of(context).resultinprogress(details))
+                  TextSpan(text: Messages.of(context).resultInProgress(details))
                 ])),
             actions: <Widget>[
               FlatButton(

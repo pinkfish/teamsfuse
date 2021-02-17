@@ -29,7 +29,7 @@ class ByUserNameComponent extends StatelessWidget {
           Widget inner;
           if (state is SingleProfileLoaded) {
             inner =
-                Text(Messages.of(context).invitedby(state.profile.displayName), style: style);
+                Text(Messages.of(context).invitedBy(state.profile.displayName), style: style);
           } else {
             inner = Text(Messages.of(context).loading, style: style);
           }

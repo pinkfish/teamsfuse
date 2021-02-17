@@ -21,7 +21,7 @@ class InviteCard extends StatelessWidget {
             child: ListTile(
               leading: const Icon(MdiIcons.emailOpen),
               title: Text(
-                Messages.of(context).invitedpeople(bloc.state.invites.length),
+                Messages.of(context).invitedPeople(bloc.state.invites.length),
               ),
             ),
           );

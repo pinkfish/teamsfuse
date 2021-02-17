@@ -149,7 +149,7 @@ class _TeamScreenState extends State<TeamScreen> {
           return Scaffold(
             appBar: AppBar(
               title: Text(
-                Messages.of(context).titlewith(singleTeamBloc.state.team.name),
+                Messages.of(context).titleWith(singleTeamBloc.state.team.name),
               ),
               actions: actions,
             ),

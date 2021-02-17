@@ -95,7 +95,7 @@ class OpponentFormFieldState extends FormFieldState<String> {
 
     ret.add(
       DropdownMenuItem<String>(
-          child: Text(Messages.of(context).addopponent,
+          child: Text(Messages.of(context).addOpponent,
               overflow: TextOverflow.clip),
           value: OpponentFormField.add),
     );

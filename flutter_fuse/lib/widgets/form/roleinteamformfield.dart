@@ -66,7 +66,7 @@ class RoleInTeamFormFieldState extends FormFieldState<String> {
 
     for (var role in RoleInTeam.values) {
       ret.add(DropdownMenuItem<String>(
-        child: Text(Messages.of(context).roleingame(role)),
+        child: Text(Messages.of(context).roleInGame(role)),
         value: role.toString(),
       ));
     }

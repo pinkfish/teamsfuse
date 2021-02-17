@@ -132,7 +132,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(messages
-                                .verifyexplanation(state.userData.email)),
+                                .verifyExplanation(state.userData.email)),
                             Container(
                               child: RaisedButton(
                                   child: Text(messages.resendverify),

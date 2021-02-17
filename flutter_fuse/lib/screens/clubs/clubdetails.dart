@@ -117,7 +117,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                     ),
                     PopupMenuItem<String>(
                       value: "addteam",
-                      child: Text(Messages.of(context).addteam),
+                      child: Text(Messages.of(context).addTeam),
                     ),
                     PopupMenuItem<String>(
                       value: 'addnews',
@@ -129,7 +129,7 @@ class _ClubDetailsScreenState extends State<ClubDetailsScreen> {
                     ),
                     PopupMenuItem<String>(
                       value: 'addadmin',
-                      child: Text(Messages.of(context).addadmin),
+                      child: Text(Messages.of(context).addAdmin),
                     ),
                   ];
                 },

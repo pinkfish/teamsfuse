@@ -202,7 +202,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
                   return FlatButton(
                     onPressed: () => _handleSubmit(singleTeamBloc.state.team,
                         singleSeasonBloc.state.season),
-                    child: Text(Messages.of(context).addplayer),
+                    child: Text(Messages.of(context).addPlayerButton),
                   );
                 },
               ),
@@ -220,7 +220,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text(Messages.of(context).addplayer),
+          title: Text(Messages.of(context).addPlayer),
         ),
         body: BlocListener(
           cubit: addInviteBloc,

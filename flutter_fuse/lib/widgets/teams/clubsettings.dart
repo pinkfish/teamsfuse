@@ -94,10 +94,10 @@ class _ClubSettingsState extends State<ClubSettings> {
                     .copyWith(color: Theme.of(context).accentColor),
               ),
             ),
-            FlatButton(
+            TextButton(
               onPressed: _addClub,
               child: Text(
-                Messages.of(context).addclub,
+                Messages.of(context).addClubButton,
                 style: Theme.of(context)
                     .textTheme
                     .button

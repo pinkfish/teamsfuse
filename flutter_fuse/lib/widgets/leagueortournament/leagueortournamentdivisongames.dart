@@ -81,7 +81,7 @@ class _LeagueOrTournamentDivisonDetailsState
                       child: FlatButton(
                         onPressed: () => _addGame(bloc.leagueDivisonUid,
                             divisonState.divison.leagueOrTournamentUid),
-                        child: Text(Messages.of(context).addgamebutton,
+                        child: Text(Messages.of(context).addGameButton,
                             style: Theme.of(context).textTheme.button.copyWith(
                                 color: Theme.of(context).accentColor)),
                       ),

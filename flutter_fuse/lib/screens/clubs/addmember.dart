@@ -147,7 +147,7 @@ class _AddMemberScreenState extends State<AddMemberScreen> {
       builder: (context, singleCLubBloc) => Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          title: Text(Messages.of(context).addclubmemebertitle),
+          title: Text(Messages.of(context).addClubMemeberTitle),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => _savePressed(singleCLubBloc),

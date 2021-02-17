@@ -77,7 +77,7 @@ class _EditTeamScreenState extends State<EditTeamScreen> {
             key: _scaffoldKey,
             appBar: AppBar(
               title: Text(
-                Messages.of(context).titlewith(
+                Messages.of(context).titleWith(
                     teamState.team?.name ?? Messages.of(context).unknown),
               ),
               actions: [

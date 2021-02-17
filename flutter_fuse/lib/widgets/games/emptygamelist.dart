@@ -20,17 +20,17 @@ class EmptyGameList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
-    RaisedButton button;
+    ElevatedButton button;
     var teams = BlocProvider.of<TeamBloc>(context);
     if (teams.state.allTeamUids.length == 0) {
-      button = RaisedButton(
+      button = ElevatedButton(
         onPressed: () => _addTeam(context),
-        child: Text(Messages.of(context).addteam),
+        child: Text(Messages.of(context).addTeamButton),
       );
     } else {
-      button = RaisedButton(
+      button = ElevatedButton(
         onPressed: () => _addGame(context),
-        child: Text(Messages.of(context).addgamebutton),
+        child: Text(Messages.of(context).addGameButton),
       );
     }
 

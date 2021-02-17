@@ -234,7 +234,7 @@ class _AcceptInviteToLeagueTeamScreenState
                               children: <Widget>[
                                 RaisedButton(
                                   onPressed: _savePressed,
-                                  child: Text(messages.addteam),
+                                  child: Text(messages.addTeamButton),
                                   color: theme.accentColor,
                                   textColor: Colors.white,
                                 ),

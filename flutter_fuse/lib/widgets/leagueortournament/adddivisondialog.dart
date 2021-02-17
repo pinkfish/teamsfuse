@@ -37,7 +37,7 @@ class AddDivisonDialog extends Dialog {
         child: DefaultTextStyle(
           style: Theme.of(context).textTheme.headline6,
           child: Semantics(
-            child: Text(Messages.of(context).adddivison),
+            child: Text(Messages.of(context).addDivison),
             namesRoute: true,
           ),
         ),

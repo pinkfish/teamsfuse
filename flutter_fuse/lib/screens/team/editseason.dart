@@ -87,7 +87,7 @@ class _EditSeasonScreenState extends State<EditSeasonScreen> {
                 onPressed: () => _handleSubmit(singleSeasonBloc, state),
                 //color: Theme.of(context).buttonTheme.colorScheme.primary,
                 child: Text(
-                  Messages.of(context).addseason,
+                  Messages.of(context).addSeason,
                 ),
               ),
             ],
@@ -111,7 +111,7 @@ class _EditSeasonScreenState extends State<EditSeasonScreen> {
         child: Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
-            title: Text(Messages.of(context).addseason),
+            title: Text(Messages.of(context).addSeason),
           ),
           backgroundColor: Colors.grey.shade100,
           resizeToAvoidBottomInset: true,

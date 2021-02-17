@@ -153,7 +153,7 @@ class SeasonFormFieldState extends FormFieldState<String> {
     }
     if (_widget.includeNew) {
       ret.add(DropdownMenuItem<String>(
-        child: Text(Messages.of(context).addseason),
+        child: Text(Messages.of(context).addSeason),
         value: SeasonFormField.createNew,
       ));
     }

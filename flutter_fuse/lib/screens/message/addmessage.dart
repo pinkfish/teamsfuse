@@ -221,7 +221,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
             ret.add(
               CheckboxListTile(
                 title: PlayerName(playerUid: player.playerUid),
-                subtitle: Text(Messages.of(context).roleingame(player.role)),
+                subtitle: Text(Messages.of(context).roleInGame(player.role)),
                 value: _recipients.contains(player.playerUid),
                 onChanged: (toAdd) {
                   if (toAdd) {

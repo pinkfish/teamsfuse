@@ -174,7 +174,7 @@ platform :ios do
       metadata_path: "./metadata",
       api_key: api_key,
       precheck_include_in_app_purchases: false,
-      apple_id: "#{DEVELOPER_APP_ID}",
+      username: "#{DEVELOPER_APP_ID}",
       app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
       ipa: "./Runner.ipa"
     )
@@ -245,7 +245,7 @@ platform :ios do
       metadata_path: "./metadata",
       api_key: api_key,
       precheck_include_in_app_purchases: false,
-      apple_id: "#{DEVELOPER_APP_ID}",
+      username: "#{DEVELOPER_APP_ID}",
       app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
       ipa: "./Runner.ipa"
     )

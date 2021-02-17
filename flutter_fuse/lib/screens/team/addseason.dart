@@ -69,7 +69,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
           teamUid: widget.teamUid,
           name: _seasonName,
           players: players.build()));
-     } else {
+    } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
   }
@@ -127,7 +127,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
                       String ret = _importPlayers && s == SeasonFormField.none
                           ? Messages.of(context).seasonrequired
                           : null;
-                     },
+                    },
                   ),
                 ),
               ),
@@ -139,7 +139,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
                 onPressed: _handleSubmit,
                 //color: Theme.of(context).buttonTheme.colorScheme.primary,
                 child: Text(
-                  Messages.of(context).addseason,
+                  Messages.of(context).addSeasonButton,
                 ),
               ),
             ],
@@ -170,7 +170,7 @@ class _AddSeasonScreenState extends State<AddSeasonScreen> {
           child: Scaffold(
             key: _scaffoldKey,
             appBar: AppBar(
-              title: Text(Messages.of(context).addseason),
+              title: Text(Messages.of(context).addSeason),
             ),
             backgroundColor: Colors.grey.shade100,
             resizeToAvoidBottomInset: true,

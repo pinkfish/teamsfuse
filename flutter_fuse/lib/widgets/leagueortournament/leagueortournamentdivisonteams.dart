@@ -233,10 +233,10 @@ class _LeagueOrTournamentDivisonDetailsState
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Text(Messages.of(context).noTeams),
-                                  FlatButton(
+                                  TextButton(
                                     onPressed: () => _addTeam(divisonBloc),
                                     child: Text(
-                                      Messages.of(context).addteam,
+                                      Messages.of(context).addTeamButton,
                                       style: Theme.of(context)
                                           .textTheme
                                           .button

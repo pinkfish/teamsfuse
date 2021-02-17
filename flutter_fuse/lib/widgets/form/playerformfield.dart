@@ -93,7 +93,7 @@ class PlayerFormFieldState extends FormFieldState<String> {
 
     if (_widget.addNew) {
       ret.add(DropdownMenuItem<String>(
-          child: Text(Messages.of(context).addplayer),
+          child: Text(Messages.of(context).addPlayer),
           value: PlayerFormField.addPlayer));
     }
 

@@ -238,7 +238,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                   text: _teamToAdd.currentSeason,
                   children: <TextSpan>[
                     TextSpan(
-                      text: Messages.of(context).sportname(_teamToAdd.sport),
+                      text: Messages.of(context).sportName(_teamToAdd.sport),
                     ),
                   ],
                 ),

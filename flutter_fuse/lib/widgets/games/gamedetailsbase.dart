@@ -131,7 +131,7 @@ class GameDetailsBase extends StatelessWidget {
       case GameResult.Unknown:
         if (inProgress) {
           title = TextSpan(
-              text: Messages.of(context).resultinprogress(details),
+              text: Messages.of(context).resultInProgress(details),
               style: theme.textTheme.subtitle1);
         } else {
           title = TextSpan(
@@ -141,18 +141,18 @@ class GameDetailsBase extends StatelessWidget {
         break;
       case GameResult.Loss:
         title = TextSpan(
-            text: Messages.of(context).resultloss(details),
+            text: Messages.of(context).resultLoss(details),
             style: theme.textTheme.subtitle1.copyWith(color: theme.errorColor));
         break;
       case GameResult.Win:
         title = TextSpan(
-            text: Messages.of(context).resultwin(details),
+            text: Messages.of(context).resultWin(details),
             style:
                 theme.textTheme.subtitle1.copyWith(color: theme.accentColor));
         break;
       case GameResult.Tie:
         title = TextSpan(
-            text: Messages.of(context).resulttie(details),
+            text: Messages.of(context).resultTie(details),
             style: theme.textTheme.subtitle1);
         break;
     }
@@ -333,8 +333,8 @@ class GameDetailsBase extends StatelessWidget {
           if (editResult != null) {
             body.add(ButtonBar(
               children: <Widget>[
-                FlatButton(
-                  child: Text(Messages.of(context).addresultbutton),
+                TextButton(
+                  child: Text(Messages.of(context).addResultButton),
                   onPressed: () => editResult(game),
                 ),
               ],
@@ -438,7 +438,8 @@ class GameDetailsBase extends StatelessWidget {
             children: <Widget>[
               Text(
                 opponent != null
-                    ? Messages.of(context).opponentSeason(opponent, seasonName)
+                    ? Messages.of(context)
+                        .opponentSeason(opponent.name, seasonName)
                     : Messages.of(context).loading,
               ),
               Text(
@@ -470,7 +471,8 @@ class GameDetailsBase extends StatelessWidget {
             cols.add(
               Text(
                 opponent != null
-                    ? Messages.of(context).opponentSeason(opponent, seasonName)
+                    ? Messages.of(context)
+                        .opponentSeason(opponent.name, seasonName)
                     : Messages.of(context).loading,
               ),
             );
