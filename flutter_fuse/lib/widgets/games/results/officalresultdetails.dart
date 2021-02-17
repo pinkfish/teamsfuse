@@ -366,7 +366,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                           Container(
                             margin: EdgeInsets.only(left: 15.0, right: 5.0),
                             child: Text(
-                              Messages.of(context).regulationperiod,
+                              Messages.of(context).periodNameRegulation,
                               style: header,
                             ),
                           ),
@@ -407,7 +407,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                             onChanged: (val) =>
                                 setState(() => _overtimePeriod = val),
                             title: Text(
-                              Messages.of(context).overtimeperiod,
+                              Messages.of(context).periodNameOvertime,
                             ),
                           ),
                           Container(

@@ -127,7 +127,9 @@ jobs:
 
 
       # Web specific actions
-      - run: flutter build web
+      - run: |
+          flutter config --enable-web
+          flutter build web
         working-directory: flutter_fuse
         if: ${{ matrix.os == 'web' }}
       - run: |

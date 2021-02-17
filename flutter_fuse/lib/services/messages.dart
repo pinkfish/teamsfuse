@@ -952,10 +952,6 @@ class Messages {
   String get optional => Intl.message('Optional',
       desc: 'Optional subtitle for a stepper', locale: locale);
 
-  String get overtimeperiod {
-    return Intl.message('Overtime');
-  }
-
   String get password {
     return Intl.message('Password', desc: 'Input box for a password');
   }
@@ -1140,10 +1136,6 @@ class Messages {
 
   String get reboundsGameSummary =>
       Intl.message("RBs", desc: "Rebounds in game summary", locale: locale);
-
-  String get regulationperiod {
-    return Intl.message('Regulation');
-  }
 
   String get relationshipFriend =>
       Intl.message('Friend', desc: 'Relationship desc for friend');
@@ -1964,20 +1956,42 @@ class Messages {
       String time, String endTime, String tzShortName, String opponent) {
     if (endTime != null) {
       if (tzShortName != null) {
-        return Intl.message('$time - $endTime ($tzShortName) vs $opponent',
-            desc: 'Game title in game list');
+        return gameTitleSharedEndShort(time, endTime, tzShortName);
       }
-      return Intl.message('$time - $endTime vs $opponent',
-          desc: 'Game title in game list');
+      return gameTitleSharedEnd(time, endTime);
     }
     if (tzShortName != null) {
-      return Intl.message('$time ($tzShortName} vs $opponent',
-          desc: 'Game title in game list');
+      return gameTitleSharedEnd(time, tzShortName);
     }
-    return Intl.message('$time vs $opponent', desc: 'Game title in game list');
+    return gameTitleSharedTime(time);
   }
 
-  String gametitlenow(
+  String gameTitleSharedEndShort(
+          String time, String endTime, String tzShortName) =>
+      Intl.message('$time - $endTime ($tzShortName)',
+          desc: 'Game title in game list',
+          locale: locale,
+          args: [time, endTime, tzShortName],
+          name: 'gameTitleSharedEndShort');
+  String gameTitleSharedEnd(String time, String endTime) =>
+      Intl.message('$time - $endTime',
+          desc: 'Game title in game list',
+          locale: locale,
+          args: [time, endTime],
+          name: 'gameTitleSharedEnd');
+  String gameTitleSharedShort(String time, String tzShortName) =>
+      Intl.message('$time ($tzShortName)',
+          desc: 'Game title in game list',
+          locale: locale,
+          args: [time, tzShortName],
+          name: 'gameTitleSharedShort');
+  String gameTitleSharedTime(String time) => Intl.message('$time',
+      desc: 'Game title in game list',
+      locale: locale,
+      args: [time],
+      name: 'gameTitleSharedTime');
+
+  String gameTitleNow(
       String time, String endTime, String tzShortName, String opponent) {
     if (endTime != null) {
       if (tzShortName != null) {
@@ -1991,14 +2005,30 @@ class Messages {
     return gameTitleNowSharedTime(time);
   }
 
-  String gameTitleNowSharedEndShort(String time, String endTime, String tzShortName) => Intl.message('NOW! $time - $endTime ($tzShortName)',
-      desc: 'Game title in game list');
-  String gameTitleNowSharedEnd(String time, String endTime) => Intl.message('NOW! $time - $endTime',
-      desc: 'Game title in game list');
-  String gameTitleNowSharedShort(String time, String tzShortName) => Intl.message('NOW! $time ($tzShortName)',
-      desc: 'Game title in game list');
+  String gameTitleNowSharedEndShort(
+          String time, String endTime, String tzShortName) =>
+      Intl.message('NOW! $time - $endTime ($tzShortName)',
+          desc: 'Game title in game list',
+          locale: locale,
+          args: [time, endTime, tzShortName],
+          name: 'gameTitleNowSharedEndShort');
+  String gameTitleNowSharedEnd(String time, String endTime) =>
+      Intl.message('NOW! $time - $endTime',
+          desc: 'Game title in game list',
+          locale: locale,
+          args: [time, endTime],
+          name: 'gameTitleNowSharedEnd');
+  String gameTitleNowSharedShort(String time, String tzShortName) =>
+      Intl.message('NOW! $time ($tzShortName)',
+          desc: 'Game title in game list',
+          locale: locale,
+          args: [time, tzShortName],
+          name: 'gameTitleNowSharedShort');
   String gameTitleNowSharedTime(String time) => Intl.message('NOW! $time',
-      desc: 'Game title in game list');
+      desc: 'Game title in game list',
+      locale: locale,
+      args: [time],
+      name: 'gameTitleNowSharedTime');
 
   String gameTitleShared(String time, String endTime, String tzShortName) {
     if (endTime != null) {
@@ -2013,14 +2043,6 @@ class Messages {
     return gameTitleSharedTime(time);
   }
 
-  String gameTitleSharedEndShort(String time, String endTime, String tzShortName) => Intl.message('$time - $endTime ($tzShortName)',
-      desc: 'Game title in game list');
-  String gameTitleSharedEnd(String time, String endTime) => Intl.message('$time - $endTime',
-      desc: 'Game title in game list');
-  String gameTitleSharedShort(String time, String tzShortName) => Intl.message('$time ($tzShortName)',
-      desc: 'Game title in game list');
-  String gameTitleSharedTime(String time) => Intl.message('$time',
-      desc: 'Game title in game list');
 
   String gameTitleVs(GameSharedData game, String oppponent) {
     switch (game.type) {
@@ -2212,14 +2234,13 @@ class Messages {
       args: [num],
       name: 'pendingInvites');
 
-  String periodEnd(String periodName) {
-    return Intl.message(
-      "End of $periodName",
-      args: [periodName],
-      desc: "End of period",
-      locale: locale,
-    );
-  }
+  String periodEnd(String periodName) => Intl.message(
+        "End of $periodName",
+        args: [periodName],
+        desc: "End of period",
+        name: 'periodEnd',
+        locale: locale,
+      );
 
   String periodName(GamePeriod period) {
     switch (period.type) {
@@ -2276,30 +2297,45 @@ class Messages {
     return unknown;
   }
 
-  String periodStartRegulation(GameLog period) => Intl.message(
-      "Start period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}",
-      args: [period],
-      name: 'periodStartRegulation');
+  String periodStartRegulation(GameLog period) => periodStartRegulationBreakout(
+        period.period.periodNumber,
+        period.score.ptsFor,
+        period.score.ptsAgainst,
+      );
+  String periodStartRegulationBreakout(
+          num periodNumber, num ptsFor, num ptsAgainst) =>
+      Intl.message("Start period $periodNumber Score: $ptsFor - $ptsAgainst",
+          args: [periodNumber, ptsFor, ptsAgainst],
+          name: 'periodStartRegulationBreakout');
 
-  String periodStartPenalty(GameLog period) => Intl.message(
-      "Start penalty Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}",
-      args: [period],
-      name: 'periodStartPenalty');
+  String periodStartPenalty(GameLog period) => periodStartPenaltyBreakout(
+        period.score.ptsFor,
+        period.score.ptsAgainst,
+      );
+  String periodStartPenaltyBreakout(num ptsFor, num ptsAgainst) =>
+      Intl.message("Start penalty Score: $ptsFor - $ptsAgainst",
+          args: [ptsFor, ptsAgainst], name: 'periodStartPenaltyBreakout');
 
-  String periodStartOvertime(GameLog period) => Intl.message(
-      "Start overtime ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}",
-      args: [period],
-      name: 'periodStartOvertime');
+  String periodStartOvertime(GameLog period) => periodStartOvertimeBreakout(
+      period.period.periodNumber, period.score.ptsFor, period.score.ptsAgainst);
+  String periodStartOvertimeBreakout(
+          num periodNumber, num ptsFor, num ptsAgainst) =>
+      Intl.message("Start overtime $periodNumber Score: $ptsFor - $ptsAgainst",
+          args: [periodNumber, ptsFor, ptsAgainst],
+          name: 'periodStartOvertimeBreakout');
 
-  String periodStartBreak(GameLog period) => Intl.message(
-      "Start break Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}",
-      args: [period],
-      name: 'periodStartBreak');
+  String periodStartBreak(GameLog period) =>
+      periodStartBreakBreakout(period.score.ptsFor, period.score.ptsAgainst);
+  String periodStartBreakBreakout(num ptsFor, num ptsAgainst) =>
+      Intl.message("Start break Score: $ptsFor - $ptsAgainst",
+          args: [ptsFor, ptsAgainst], name: 'periodStartBreakBreakout');
 
-  String periodStartOvertimeBreak(GameLog period) => Intl.message(
-      "Start overtime break Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}",
-      args: [period],
-      name: 'periodStartOvertimeBreak');
+  String periodStartOvertimeBreak(GameLog period) =>
+      periodStartOvertimeBreakBreakout(
+          period.score.ptsFor, period.score.ptsAgainst);
+  String periodStartOvertimeBreakBreakout(num ptsFor, num ptsAgainst) =>
+      Intl.message("Start overtime break Score: $ptsFor - $ptsAgainst",
+          args: [ptsFor, ptsAgainst], name: 'periodStartOvertimeBreakBreakout');
 
   String periodStart(String periodName) => Intl.message(
         "Start of $periodName",
@@ -2325,35 +2361,53 @@ class Messages {
     return unknown;
   }
 
-  String periodStopRegulation(GameLog period) => Intl.message(
-      "Stop period ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}",
-      desc: 'the stop for the regulation perod in the logs',
-      args: [period],
-      name: 'periodStopRegulation');
+  String periodStopRegulation(GameLog period) => periodStopRegulationBreakout(
+      period.period.periodNumber, period.score.ptsFor, period.score.ptsAgainst);
 
-  String periodStopBreak(GameLog period) => Intl.message(
-      "Stop break Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}",
-      desc: 'the stop for the regulation break in the logs',
-      args: [period],
-      name: 'periodStopBreak');
+  String periodStopRegulationBreakout(
+          num periodNumber, num ptsFor, num ptsAgainst) =>
+      Intl.message("Stop period $periodNumber Score: $ptsFor - $ptsAgainst",
+          desc: 'the stop for the regulation perod in the logs',
+          args: [periodNumber, ptsFor, ptsAgainst],
+          name: 'periodStopRegulationBreakout');
 
-  String periodStopOvertimeBreak(GameLog period) => Intl.message(
-      "Stop overttime break Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}",
-      desc: 'the stop for the overtime break in the logs',
-      args: [period],
-      name: 'periodStopBreak');
+  String periodStopBreak(GameLog period) =>
+      periodStopBreakBreakout(period.score.ptsFor, period.score.ptsAgainst);
 
-  String periodStopOvertime(GameLog period) => Intl.message(
-      "Stop overttime ${period.period.periodNumber} Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}",
-      desc: 'the stop for the overtime  in the logs',
-      args: [period],
-      name: 'periodStopOvertime');
+  String periodStopBreakBreakout(num ptsFor, num ptsAgainst) =>
+      Intl.message("Stop break Score: $ptsFor - $ptsAgainst",
+          desc: 'the stop for the regulation break in the logs',
+          args: [ptsFor, ptsAgainst],
+          name: 'periodStopBreakBreakout');
 
-  String periodStopPenalty(GameLog period) => Intl.message(
-      "Stop penalty Score: ${period.score.ptsFor} - ${period.score.ptsAgainst}",
-      desc: 'the stop for the penalty period in the logs',
-      args: [period],
-      name: 'periodStopPenalty');
+  String periodStopOvertimeBreak(GameLog period) =>
+      periodStopOvertimeBreakBreakout(
+          period.score.ptsFor, period.score.ptsAgainst);
+
+  String periodStopOvertimeBreakBreakout(num ptsFor, num ptsAgainst) =>
+      Intl.message("Stop overttime break Score: $ptsFor - $ptsAgainst",
+          desc: 'the stop for the overtime break in the logs',
+          args: [ptsFor, ptsAgainst],
+          name: 'periodStopOvertimeBreakBreakout');
+
+  String periodStopOvertime(GameLog period) => periodStopOvertimeBreakout(
+      period.period.periodNumber, period.score.ptsFor, period.score.ptsAgainst);
+
+  String periodStopOvertimeBreakout(
+          num periodNumber, num ptsFor, num ptsAgainst) =>
+      Intl.message("Stop overttime $periodNumber Score: $ptsFor - $ptsAgainst",
+          desc: 'the stop for the overtime  in the logs',
+          args: [periodNumber, ptsFor, ptsAgainst],
+          name: 'periodStopOvertimeBreakout');
+
+  String periodStopPenalty(GameLog period) =>
+      periodStopPenaltyBreakout(period.score.ptsFor, period.score.ptsAgainst);
+
+  String periodStopPenaltyBreakout(num ptsFor, num ptsAgainst) =>
+      Intl.message("Stop penalty Score: $ptsFor - $ptsAgainst",
+          desc: 'the stop for the penalty period in the logs',
+          args: [ptsFor, ptsAgainst],
+          name: 'periodStopPenaltyBreakout');
 
   String playerInviteDesc(String name) => Intl.message(
       'This will follow $name and allow you to see which games they are in and '

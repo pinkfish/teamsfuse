@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-02-16T18:24:16.376693",
+  "@@last_modified": "2021-02-16T18:56:43.446850",
   "About": "About",
   "@About": {
     "type": "text",
@@ -1191,11 +1191,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "Overtime": "Overtime",
-  "@Overtime": {
-    "type": "text",
-    "placeholders": {}
-  },
   "Password": "Password",
   "@Password": {
     "description": "Input box for a password",
@@ -1445,11 +1440,6 @@
   "RBs": "RBs",
   "@RBs": {
     "description": "Rebounds in game summary",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Regulation": "Regulation",
-  "@Regulation": {
     "type": "text",
     "placeholders": {}
   },
@@ -1944,6 +1934,78 @@
       "mins": {}
     }
   },
+  "gameTitleSharedEndShort": "{time} - {endTime} ({tzShortName})",
+  "@gameTitleSharedEndShort": {
+    "description": "Game title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {},
+      "tzShortName": {}
+    }
+  },
+  "gameTitleSharedEnd": "{time} - {endTime}",
+  "@gameTitleSharedEnd": {
+    "description": "Game title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {}
+    }
+  },
+  "gameTitleSharedShort": "{time} ({tzShortName})",
+  "@gameTitleSharedShort": {
+    "description": "Game title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "tzShortName": {}
+    }
+  },
+  "gameTitleSharedTime": "{time}",
+  "@gameTitleSharedTime": {
+    "description": "Game title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "gameTitleNowSharedEndShort": "NOW! {time} - {endTime} ({tzShortName})",
+  "@gameTitleNowSharedEndShort": {
+    "description": "Game title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {},
+      "tzShortName": {}
+    }
+  },
+  "gameTitleNowSharedEnd": "NOW! {time} - {endTime}",
+  "@gameTitleNowSharedEnd": {
+    "description": "Game title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {}
+    }
+  },
+  "gameTitleNowSharedShort": "NOW! {time} ({tzShortName})",
+  "@gameTitleNowSharedShort": {
+    "description": "Game title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "tzShortName": {}
+    }
+  },
+  "gameTitleNowSharedTime": "NOW! {time}",
+  "@gameTitleNowSharedTime": {
+    "description": "Game title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {}
+    }
+  },
   "gameTitleVsGame": "Game vs {opponent}",
   "@gameTitleVsGame": {
     "description": "Game details title for the screen",
@@ -2055,6 +2117,20 @@
       "num": {}
     }
   },
+  "periodEnd": "End of {periodName}",
+  "@periodEnd": {
+    "description": "End of period",
+    "type": "text",
+    "placeholders": {
+      "periodName": {}
+    }
+  },
+  "Regulation": "Regulation",
+  "@Regulation": {
+    "description": "Header for the regulation period",
+    "type": "text",
+    "placeholders": {}
+  },
   "periodNameRegulationNumber": "Regulation {periodNumber}",
   "@periodNameRegulationNumber": {
     "description": "Header for the regulation period with number",
@@ -2062,6 +2138,12 @@
     "placeholders": {
       "periodNumber": {}
     }
+  },
+  "Overtime": "Overtime",
+  "@Overtime": {
+    "description": "Header for the overtime period",
+    "type": "text",
+    "placeholders": {}
   },
   "periodNameOvertimeNumber": "Overtime {periodNumber}",
   "@periodNameOvertimeNumber": {
@@ -2071,12 +2153,101 @@
       "periodNumber": {}
     }
   },
+  "periodStartRegulationBreakout": "Start period {periodNumber} Score: {ptsFor} - {ptsAgainst}",
+  "@periodStartRegulationBreakout": {
+    "type": "text",
+    "placeholders": {
+      "periodNumber": {},
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "periodStartPenaltyBreakout": "Start penalty Score: {ptsFor} - {ptsAgainst}",
+  "@periodStartPenaltyBreakout": {
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "periodStartOvertimeBreakout": "Start overtime {periodNumber} Score: {ptsFor} - {ptsAgainst}",
+  "@periodStartOvertimeBreakout": {
+    "type": "text",
+    "placeholders": {
+      "periodNumber": {},
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "periodStartBreakBreakout": "Start break Score: {ptsFor} - {ptsAgainst}",
+  "@periodStartBreakBreakout": {
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "periodStartOvertimeBreakBreakout": "Start overtime break Score: {ptsFor} - {ptsAgainst}",
+  "@periodStartOvertimeBreakBreakout": {
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
   "periodStart": "Start of {periodName}",
   "@periodStart": {
     "description": "Start of period",
     "type": "text",
     "placeholders": {
       "periodName": {}
+    }
+  },
+  "periodStopRegulationBreakout": "Stop period {periodNumber} Score: {ptsFor} - {ptsAgainst}",
+  "@periodStopRegulationBreakout": {
+    "description": "the stop for the regulation perod in the logs",
+    "type": "text",
+    "placeholders": {
+      "periodNumber": {},
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "periodStopBreakBreakout": "Stop break Score: {ptsFor} - {ptsAgainst}",
+  "@periodStopBreakBreakout": {
+    "description": "the stop for the regulation break in the logs",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "periodStopOvertimeBreakBreakout": "Stop overttime break Score: {ptsFor} - {ptsAgainst}",
+  "@periodStopOvertimeBreakBreakout": {
+    "description": "the stop for the overtime break in the logs",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "periodStopOvertimeBreakout": "Stop overttime {periodNumber} Score: {ptsFor} - {ptsAgainst}",
+  "@periodStopOvertimeBreakout": {
+    "description": "the stop for the overtime  in the logs",
+    "type": "text",
+    "placeholders": {
+      "periodNumber": {},
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "periodStopPenaltyBreakout": "Stop penalty Score: {ptsFor} - {ptsAgainst}",
+  "@periodStopPenaltyBreakout": {
+    "description": "the stop for the penalty period in the logs",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
     }
   },
   "playerInviteDesc": "This will follow {name} and allow you to see which games they are in and all the teams they are in.  Please setup your relationship with the player and save.",
