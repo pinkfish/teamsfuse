@@ -81,8 +81,8 @@ class _MediaEditState extends State<MediaEdit> {
           TextFormField(
             decoration: InputDecoration(
               icon: Icon(MdiIcons.text),
-              hintText: Messages.of(context).descriptionTitle,
-              labelText: Messages.of(context).descriptionTitle,
+              hintText: Messages.of(context).description,
+              labelText: Messages.of(context).description,
             ),
             onSaved: (String str) {
               _description = str;
