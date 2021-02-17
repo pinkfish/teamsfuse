@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-02-16T18:03:27.899634",
+  "@@last_modified": "2021-02-16T18:24:16.376693",
   "About": "About",
   "@About": {
     "type": "text",
@@ -2055,12 +2055,36 @@
       "num": {}
     }
   },
+  "periodNameRegulationNumber": "Regulation {periodNumber}",
+  "@periodNameRegulationNumber": {
+    "description": "Header for the regulation period with number",
+    "type": "text",
+    "placeholders": {
+      "periodNumber": {}
+    }
+  },
+  "periodNameOvertimeNumber": "Overtime {periodNumber}",
+  "@periodNameOvertimeNumber": {
+    "description": "Header for the overtime period with number",
+    "type": "text",
+    "placeholders": {
+      "periodNumber": {}
+    }
+  },
   "periodStart": "Start of {periodName}",
   "@periodStart": {
     "description": "Start of period",
     "type": "text",
     "placeholders": {
       "periodName": {}
+    }
+  },
+  "playerInviteDesc": "This will follow {name} and allow you to see which games they are in and all the teams they are in.  Please setup your relationship with the player and save.",
+  "@playerInviteDesc": {
+    "description": "Long description of the player invite accept path.",
+    "type": "text",
+    "placeholders": {
+      "name": {}
     }
   },
   "resultInProgressOvertimePenalty": "Playing {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
@@ -2096,6 +2120,15 @@
       "ptsAgainst": {},
       "penaltyFor": {},
       "penaltyAgainst": {}
+    }
+  },
+  "resultInProgressRegulation": "Playing {ptsFor} - {ptsAgainst}",
+  "@resultInProgressRegulation": {
+    "description": "InProgress result details",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
     }
   },
   "resultLossOvertimePenalty": "Loss {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
