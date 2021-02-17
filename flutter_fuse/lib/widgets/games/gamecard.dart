@@ -375,7 +375,7 @@ class GameCard extends StatelessWidget {
               .subtitle1
               .copyWith(fontWeight: FontWeight.bold),
           text:
-              "${Messages.of(context).gameaddressarriveat(arriveFormat, addr)}\n",
+              "${Messages.of(context).gameAddressArriveAt(arriveFormat, addr)}\n",
         ),
       );
     } else {

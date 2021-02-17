@@ -74,7 +74,7 @@ class _AcceptInviteToPlayerScreenState
                 return Text(messages.loading);
               } else {
                 return Text(messages
-                    .followplayer((state.invite as InviteToPlayer).playerName));
+                    .followPlayer((state.invite as InviteToPlayer).playerName));
               }
             },
           ),

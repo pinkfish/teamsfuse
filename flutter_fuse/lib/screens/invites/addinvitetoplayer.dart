@@ -62,7 +62,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
         builder: (context, playerBloc) => Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
-            title: Text(messages.followplayer(
+            title: Text(messages.followPlayer(
                 playerBloc.state?.player?.name ?? messages.loading)),
             actions: <Widget>[
               FlatButton(

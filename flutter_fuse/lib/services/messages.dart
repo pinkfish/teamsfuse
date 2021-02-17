@@ -1891,17 +1891,21 @@ class Messages {
         args: [ptsFor, ptsAgainst, result]);
   }
 
-  String fixscore(GameLog log) =>
-      Intl.message("Fix score: ${log.score.ptsFor} - ${log.score.ptsAgainst}",
-          args: [log]);
+  String fixScore(GameLog log) =>
+      fixScoreBreakout(log.score.ptsFor, log.score.ptsAgainst);
+  String fixScoreBreakout(num ptsFor, num ptsAgainst) =>
+      Intl.message("Fix score: $ptsFor - $ptsAgainst",
+          args: [ptsFor, ptsAgainst], name: 'fixScoreBreakout', locale: locale);
 
-  String followplayer(String player) =>
-      Intl.message("Follow $player", args: [player]);
+  String followPlayer(String player) => Intl.message("Follow $player",
+      args: [player], name: 'followplayer', locale: locale);
 
-  String gameaddressarriveat(String arriveAt, String address) =>
+  String gameAddressArriveAt(String arriveAt, String address) =>
       Intl.message('Arrive by $arriveAt\n$address',
           desc: 'Game address in game list with arrive by',
-          args: [arriveAt, address]);
+          args: [arriveAt, address],
+          name: 'gameaddressarriveat',
+          locale: locale);
 
   String gameinprogress(GameInProgress val) {
     switch (val) {
@@ -1947,10 +1951,16 @@ class Messages {
 
   String gameResultOffical(
           String resultString, GameResultPerPeriod regulationPeriodResult) =>
+      gameResultOfficalBreakout(resultString, regulationPeriodResult.score.ptsFor,
+          regulationPeriodResult.score.ptsAgainst);
+  String gameResultOfficalBreakout(
+          String resultString, num ptsFor, num ptsAgainst) =>
       Intl.message(
-          "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} "
-          "Away: ${regulationPeriodResult.score.ptsAgainst}",
-          args: [resultString, regulationPeriodResult]);
+          "$resultString\nHome: $ptsFor "
+          "Away: $ptsAgainst",
+          args: [resultString, ptsFor, ptsAgainst],
+          locale: locale,
+          name: 'gameResultOfficalBreakout');
 
   String gametitle(
       String time, String endTime, String tzShortName, String opponent) {
@@ -2042,7 +2052,6 @@ class Messages {
     }
     return gameTitleSharedTime(time);
   }
-
 
   String gameTitleVs(GameSharedData game, String oppponent) {
     switch (game.type) {

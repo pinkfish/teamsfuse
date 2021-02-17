@@ -1,9 +1,9 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/invites/deleteinvitedialog.dart';
 import '../../widgets/util/savingoverlay.dart';
@@ -160,7 +160,7 @@ class _InviteListScreenState extends State<InviteListScreen> {
           onPressed: () => _addInviteToPlayer(invite),
         ),
         onTap: () => _addInviteToPlayer(invite),
-        title: Text(Messages.of(context).followplayer(invite.playerName)),
+        title: Text(Messages.of(context).followPlayer(invite.playerName)),
         trailing: IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () => _deleteInvite(invite),
