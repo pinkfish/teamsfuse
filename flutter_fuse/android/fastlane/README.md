@@ -39,9 +39,9 @@ Submit a new Beta Build to Crashlytics Beta
 fastlane android beta_local
 ```
 Submit a new Beta Build to App store
-### android alpha
+### android beta
 ```
-fastlane android alpha
+fastlane android beta
 ```
 Submit a new Alpha Build to App store
 
