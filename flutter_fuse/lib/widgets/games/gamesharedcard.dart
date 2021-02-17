@@ -168,7 +168,7 @@ class GameSharedCard extends StatelessWidget {
     switch (game.type) {
       case EventType.Game:
         title = Messages.of(context)
-            .gametitleshared(format, endTimeFormat, tzShortName);
+            .gameTitleShared(format, endTimeFormat, tzShortName);
 
         // Add in the offical results.
         if (game.officialResult.result != OfficialResult.NotStarted) {

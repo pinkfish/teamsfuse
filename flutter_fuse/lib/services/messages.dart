@@ -1981,34 +1981,46 @@ class Messages {
       String time, String endTime, String tzShortName, String opponent) {
     if (endTime != null) {
       if (tzShortName != null) {
-        return Intl.message('NOW! $time - $endTime ($tzShortName} vs $opponent',
-            desc: 'Game title in game list');
+        return gameTitleNowSharedEndShort(time, endTime, tzShortName);
       }
-      return Intl.message('NOW! $time - $endTime vs $opponent',
-          desc: 'Game title in game list');
+      return gameTitleNowSharedEnd(time, endTime);
     }
     if (tzShortName != null) {
-      return Intl.message('NOW! $time ($tzShortName) vs $opponent',
-          desc: 'Game title in game list');
+      return gameTitleNowSharedEnd(time, tzShortName);
     }
-    return Intl.message('NOW! $time vs $opponent',
-        desc: 'Game title in game list');
+    return gameTitleNowSharedTime(time);
   }
 
-  String gametitleshared(String time, String endTime, String tzShortName) {
+  String gameTitleNowSharedEndShort(String time, String endTime, String tzShortName) => Intl.message('NOW! $time - $endTime ($tzShortName)',
+      desc: 'Game title in game list');
+  String gameTitleNowSharedEnd(String time, String endTime) => Intl.message('NOW! $time - $endTime',
+      desc: 'Game title in game list');
+  String gameTitleNowSharedShort(String time, String tzShortName) => Intl.message('NOW! $time ($tzShortName)',
+      desc: 'Game title in game list');
+  String gameTitleNowSharedTime(String time) => Intl.message('NOW! $time',
+      desc: 'Game title in game list');
+
+  String gameTitleShared(String time, String endTime, String tzShortName) {
     if (endTime != null) {
       if (tzShortName != null) {
-        return Intl.message('$time - $endTime ($tzShortName)',
-            desc: 'Game title in game list');
+        return gameTitleSharedEndShort(time, endTime, tzShortName);
       }
-      return Intl.message('$time - $endTime', desc: 'Game title in game list');
+      return gameTitleSharedEnd(time, endTime);
     }
     if (tzShortName != null) {
-      return Intl.message('$time ($tzShortName}',
-          desc: 'Game title in game list');
+      return gameTitleSharedEnd(time, tzShortName);
     }
-    return Intl.message('$time', desc: 'Game title in game list');
+    return gameTitleSharedTime(time);
   }
+
+  String gameTitleSharedEndShort(String time, String endTime, String tzShortName) => Intl.message('$time - $endTime ($tzShortName)',
+      desc: 'Game title in game list');
+  String gameTitleSharedEnd(String time, String endTime) => Intl.message('$time - $endTime',
+      desc: 'Game title in game list');
+  String gameTitleSharedShort(String time, String tzShortName) => Intl.message('$time ($tzShortName)',
+      desc: 'Game title in game list');
+  String gameTitleSharedTime(String time) => Intl.message('$time',
+      desc: 'Game title in game list');
 
   String gameTitleVs(GameSharedData game, String oppponent) {
     switch (game.type) {
@@ -2209,27 +2221,44 @@ class Messages {
     );
   }
 
-  String periodname(GamePeriod period) {
+  String periodName(GamePeriod period) {
     switch (period.type) {
       case GamePeriodType.Regulation:
         if (period.periodNumber > 0) {
-          return Intl.message("Regulation ${period.periodNumber}");
+          return periodNameRegulationNumber(period.periodNumber);
         }
-        return Intl.message("Regulation");
+        return periodNameRegulation;
       case GamePeriodType.Break:
-        return Intl.message("Break ${period.periodNumber}");
+        return periodNameBreak;
       case GamePeriodType.OvertimeBreak:
-        return Intl.message("Overtime break${period.periodNumber}");
+        return periodNameOvertimeBreak;
       case GamePeriodType.Overtime:
         if (period.periodNumber > 0) {
-          return Intl.message("Overtime ${period.periodNumber}");
+          return periodNameOvertimeNumber(period.periodNumber);
         }
-        return Intl.message("Overtime");
+        return periodNameOvertime;
       case GamePeriodType.Penalty:
-        return Intl.message("Penalty");
+        return periodNamePenalty;
     }
     return unknown;
   }
+
+  String get periodNameRegulation => Intl.message("Regulation",
+      locale: locale, desc: 'Header for the regulation period');
+  String periodNameRegulationNumber(num periodNumber) =>
+      Intl.message("Regulation $periodNumber",
+          args: [periodNumber],
+          name: 'periodNameRegulationNumber',
+          locale: locale,
+          desc: 'Header for the regulation period with number');
+  String get periodNameOvertime => Intl.message("Overtime",
+      locale: locale, desc: 'Header for the overtime period');
+  String periodNameOvertimeNumber(num periodNumber) =>
+      Intl.message("Overtime $periodNumber",
+          args: [periodNumber],
+          name: 'periodNameOvertimeNumber',
+          locale: locale,
+          desc: 'Header for the overtime period with number');
 
   String periodstart(GameLog period) {
     switch (period.period.type) {
@@ -2327,9 +2356,9 @@ class Messages {
       name: 'periodStopPenalty');
 
   String playerInviteDesc(String name) => Intl.message(
-      'This will follow $name and allow you to see which games they are in and ' +
-          'all the teams they are in.  Please setup your relationship with the ' +
-          'player and save.',
+      'This will follow $name and allow you to see which games they are in and '
+      'all the teams they are in.  Please setup your relationship with the '
+      'player and save.',
       desc: 'Long description of the player invite accept path.',
       locale: locale,
       name: "playerInviteDesc",
@@ -2468,7 +2497,7 @@ class Messages {
   String resultInProgressRegulation(num ptsFor, num ptsAgainst) =>
       Intl.message('Playing $ptsFor - $ptsAgainst',
           args: [ptsFor, ptsAgainst],
-          name: 'resultInProgressBasic',
+          name: 'resultInProgressRegulation',
           desc: 'InProgress result details');
 
   String resultLoss(GameResultSharedDetails result) {
@@ -2549,7 +2578,7 @@ class Messages {
   String resultLossRegulation(num ptsFor, num ptsAgainst) =>
       Intl.message('Loss $ptsFor - $ptsAgainst',
           args: [ptsFor, ptsAgainst],
-          name: 'resultLossBasic',
+          name: 'resultLossRegulation',
           desc: 'Loss result details');
 
   String resultTie(GameResultSharedDetails result) {
@@ -2630,7 +2659,7 @@ class Messages {
   String resultTieRegulation(num ptsFor, num ptsAgainst) =>
       Intl.message('Tie $ptsFor - $ptsAgainst',
           args: [ptsFor, ptsAgainst],
-          name: 'resultTieBasic',
+          name: 'resultTieRegulation',
           desc: 'Tie result details');
 
   String resultWin(GameResultSharedDetails result) {
@@ -2711,7 +2740,7 @@ class Messages {
   String resultWinRegulation(num ptsFor, num ptsAgainst) =>
       Intl.message('Win ${ptsFor} - ${ptsAgainst}',
           args: [ptsFor, ptsAgainst],
-          name: 'resultWinBasic',
+          name: 'resultWinRegulation',
           desc: 'Win result details');
 
   String roleInGame(RoleInTeam role) {

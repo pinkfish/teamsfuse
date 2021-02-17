@@ -66,7 +66,7 @@ class _ChangeScoreState extends State<_ChangeScore> {
     for (var period in _builder.scoresInternal.build().keys) {
       var result = widget._details.scoresInternal[period];
       ret.add(Text(
-        Messages.of(context).periodname(result.period),
+        Messages.of(context).periodName(result.period),
         style: Theme.of(context)
             .textTheme
             .subtitle1

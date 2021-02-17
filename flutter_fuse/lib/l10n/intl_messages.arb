@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-02-16T16:30:55.970896",
+  "@@last_modified": "2021-02-16T18:03:27.899634",
   "About": "About",
   "@About": {
     "type": "text",
@@ -12,6 +12,12 @@
   },
   "ADD ADMIN": "ADD ADMIN",
   "@ADD ADMIN": {
+    "description": "Message to show as the title for the admin adding screen",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Add Admin": "Add Admin",
+  "@Add Admin": {
     "description": "Message to show as the title for the admin adding screen",
     "type": "text",
     "placeholders": {}
@@ -39,6 +45,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "Add Divison": "Add Divison",
+  "@Add Divison": {
+    "description": "Add a division inside a league/tournament",
+    "type": "text",
+    "placeholders": {}
+  },
   "ADD DIVISON": "ADD DIVISON",
   "@ADD DIVISON": {
     "description": "Add a division inside a league/tournament",
@@ -63,6 +75,18 @@
     "type": "text",
     "placeholders": {}
   },
+  "ADD INVITE": "ADD INVITE",
+  "@ADD INVITE": {
+    "description": "Button to add an invite",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Add Invite": "Add Invite",
+  "@Add Invite": {
+    "description": "Drop down to add an invite",
+    "type": "text",
+    "placeholders": {}
+  },
   "SHARE PLAYER": "SHARE PLAYER",
   "@SHARE PLAYER": {
     "type": "text",
@@ -79,9 +103,9 @@
     "type": "text",
     "placeholders": {}
   },
-  "ADD PLAYER": "ADD PLAYER",
-  "@ADD PLAYER": {
-    "description": "Message for loading the app",
+  "Add Player": "Add Player",
+  "@Add Player": {
+    "description": "Text on a add player drop down",
     "type": "text",
     "placeholders": {}
   },
@@ -91,14 +115,14 @@
     "type": "text",
     "placeholders": {}
   },
-  "Add Player": "Add Player",
-  "@Add Player": {
-    "description": "Message to on the tooltip to add a player",
+  "ADD RESULT": "ADD RESULT",
+  "@ADD RESULT": {
     "type": "text",
     "placeholders": {}
   },
-  "ADD RESULT": "ADD RESULT",
-  "@ADD RESULT": {
+  "Add Season": "Add Season",
+  "@Add Season": {
+    "description": "Add a season to the team",
     "type": "text",
     "placeholders": {}
   },
@@ -114,8 +138,19 @@
     "type": "text",
     "placeholders": {}
   },
+  "Add Team": "Add Team",
+  "@Add Team": {
+    "description": "Add a new team drop down item",
+    "type": "text",
+    "placeholders": {}
+  },
   "SHARE TEAM": "SHARE TEAM",
   "@SHARE TEAM": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Share team": "Share team",
+  "@Share team": {
     "type": "text",
     "placeholders": {}
   },
@@ -1909,6 +1944,66 @@
       "mins": {}
     }
   },
+  "gameTitleVsGame": "Game vs {opponent}",
+  "@gameTitleVsGame": {
+    "description": "Game details title for the screen",
+    "type": "text",
+    "placeholders": {
+      "opponent": {}
+    }
+  },
+  "Event": "Event",
+  "@Event": {
+    "description": "Event details title for the screen",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Practice": "Practice",
+  "@Practice": {
+    "description": "Practice details title for the screen",
+    "type": "text",
+    "placeholders": {}
+  },
+  "invitedBy": "By {by}",
+  "@invitedBy": {
+    "description": "Who did the invite to this team/player",
+    "type": "text",
+    "placeholders": {
+      "by": {}
+    }
+  },
+  "invitedPeople": "Invited: {num}",
+  "@invitedPeople": {
+    "type": "text",
+    "placeholders": {
+      "num": {}
+    }
+  },
+  "madeEventType": "{points}",
+  "@madeEventType": {
+    "description": "+num points",
+    "type": "text",
+    "placeholders": {
+      "points": {}
+    }
+  },
+  "missedEventType": "Miss {points}",
+  "@missedEventType": {
+    "description": "missed num points",
+    "type": "text",
+    "placeholders": {
+      "points": {}
+    }
+  },
+  "nameAndTeam": "{teamName} {playerName}",
+  "@nameAndTeam": {
+    "description": "Format for name and player for the team",
+    "type": "text",
+    "placeholders": {
+      "teamName": {},
+      "playerName": {}
+    }
+  },
   "numberOfTeamsForPlayer": "{num,plural, =0{No teams}=1{One team}other{{num} teams}}",
   "@numberOfTeamsForPlayer": {
     "description": "Number of teams associated with this player",
@@ -1925,12 +2020,236 @@
       "num": {}
     }
   },
+  "onlyScoreBreakout": "{ptsFor} - {ptsAgainst}",
+  "@onlyScoreBreakout": {
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "opponentSeason": "{opponentName} - {seasonName}",
+  "@opponentSeason": {
+    "description": "Shows the opponent and season",
+    "type": "text",
+    "placeholders": {
+      "opponentName": {},
+      "seasonName": {}
+    }
+  },
+  "opponentWinRecordBreakout": "Win: {win} Loss: {loss} Tie: {tie}",
+  "@opponentWinRecordBreakout": {
+    "description": "Win record for an opponent for this season",
+    "type": "text",
+    "placeholders": {
+      "win": {},
+      "loss": {},
+      "tie": {}
+    }
+  },
+  "pendingInvites": "Pending Invites: {num}",
+  "@pendingInvites": {
+    "description": "Header showing the number of pending invites",
+    "type": "text",
+    "placeholders": {
+      "num": {}
+    }
+  },
   "periodStart": "Start of {periodName}",
   "@periodStart": {
     "description": "Start of period",
     "type": "text",
     "placeholders": {
       "periodName": {}
+    }
+  },
+  "resultInProgressOvertimePenalty": "Playing {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
+  "@resultInProgressOvertimePenalty": {
+    "description": "InProgress result details with penalty shootout",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
+    }
+  },
+  "resultInProgressOvertime": "Playing {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
+  "@resultInProgressOvertime": {
+    "description": "InProgress result details in overtime",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {}
+    }
+  },
+  "resultInProgressPenalty": "Playing {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
+  "@resultInProgressPenalty": {
+    "description": "InProgress result details with penalty shootout",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
+    }
+  },
+  "resultLossOvertimePenalty": "Loss {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
+  "@resultLossOvertimePenalty": {
+    "description": "Loss result details with penalty shootout",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
+    }
+  },
+  "resultLossOvertime": "Loss {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
+  "@resultLossOvertime": {
+    "description": "Loss result details in overtime",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {}
+    }
+  },
+  "resultLossPenalty": "Loss {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
+  "@resultLossPenalty": {
+    "description": "Loss result details with penalty shootout",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
+    }
+  },
+  "resultLossRegulation": "Loss {ptsFor} - {ptsAgainst}",
+  "@resultLossRegulation": {
+    "description": "Loss result details",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "resultTieOvertimePenalty": "Tie {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
+  "@resultTieOvertimePenalty": {
+    "description": "Tie result details with penalty shootout",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
+    }
+  },
+  "resultTieOvertime": "Tie {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
+  "@resultTieOvertime": {
+    "description": "Tie result details in overtime",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {}
+    }
+  },
+  "resultTiePenalty": "Tie {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
+  "@resultTiePenalty": {
+    "description": "Tie result details with penalty shootout",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
+    }
+  },
+  "resultTieRegulation": "Tie {ptsFor} - {ptsAgainst}",
+  "@resultTieRegulation": {
+    "description": "Tie result details",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "resultWinOvertimePenalty": "Win {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
+  "@resultWinOvertimePenalty": {
+    "description": "Win result details with penalty shootout",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
+    }
+  },
+  "resultWinOvertime": "Win {ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
+  "@resultWinOvertime": {
+    "description": "Win result details in overtime",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {}
+    }
+  },
+  "resultWinPenalty": "Win {ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
+  "@resultWinPenalty": {
+    "description": "Win result details with penalty shootout",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
+    }
+  },
+  "resultWinRegulation": "Win {ptsFor} - {ptsAgainst}",
+  "@resultWinRegulation": {
+    "description": "Win result details",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "Coach": "Coach",
+  "@Coach": {
+    "description": "Coach role in the team",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Non Player": "Non Player",
+  "@Non Player": {
+    "description": "Non Player role in the team",
+    "type": "text",
+    "placeholders": {}
+  },
+  "seasonSummaryExpanded": "Pts {points} Blks {blocks} Stls {steals}",
+  "@seasonSummaryExpanded": {
+    "description": "Subtitle to markt he season as current",
+    "type": "text",
+    "placeholders": {
+      "points": {},
+      "blocks": {},
+      "steals": {}
     }
   },
   "Basketball": "Basketball",
