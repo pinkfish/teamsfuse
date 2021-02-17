@@ -104,7 +104,6 @@ platform :android do
       upload_to_play_store(
         track: options[:track],
         aab: '../build/app/outputs/bundle/release/app-release.aab',
-        version_code: @build_name,
         json_key: './api-dash.json',
         #skip_upload_screenshots: false,
         #skip_upload_images: false
