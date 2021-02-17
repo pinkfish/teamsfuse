@@ -89,8 +89,6 @@ platform :android do
 
       github_api_token = ENV["FL_GITHUB_RELEASE_API_TOKEN"]
       UI.user_error!("Please provide a GitHub API token using `FL_GITHUB_RELEASE_API_TOKEN`") if github_api_token.to_s.length == 0
-      # @build_number=number_of_commits()
-
 
       @build_name=options[:version].delete("v")
       release=get_github_release(url: "pinkfish/teamsfuse", version: options[:version], api_token: github_api_token)
@@ -106,6 +104,7 @@ platform :android do
       upload_to_play_store(
         track: options[:track],
         aab: '../build/app/outputs/bundle/release/app-release.aab',
+        version_code: @build_name,
         json_key: './api-dash.json',
         #skip_upload_screenshots: false,
         #skip_upload_images: false
