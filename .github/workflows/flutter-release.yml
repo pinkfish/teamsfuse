@@ -159,7 +159,8 @@ jobs:
         continue-on-error: true
       - name: Push changes
         uses: ad-m/github-push-action@master
+        continue-on-error: true
         with:
-          github_token: ${{ secrets.GITHUBPUSHTOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: main
           force: true
