@@ -75,7 +75,7 @@ jobs:
         working-directory: flutter_fuse
       - run: |
           sed -ie 's/^version: .*$/version: ${{ steps.branch_name.outputs.SOURCE_TAG }}/' pubspec.yaml
-        working-directory: flutter-fuse
+        working-directory: flutter_fuse
 
       # Android specific actions
       - run: echo ${FASTLANE_ANDROID_API_KEY} > ./api-dash.json
