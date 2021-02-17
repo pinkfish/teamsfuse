@@ -1663,10 +1663,12 @@ class Messages {
       Intl.message('Delete club member ${profile.displayName}?',
           args: [profile]);
 
-  String confirmdeleteplayer(Player player) =>
-      Intl.message("Do you want to delete your connection to ${player.name}?",
+  String confirmDeletePlayer(Player player) =>
+      confirmDeletePlayerBreakout(player.name);
+  String confirmDeletePlayerBreakout(String playerName) =>
+      Intl.message("Do you want to delete your connection to $playerName?",
           desc: 'Text to confirm asking if the players wants to be delete',
-          args: [player]);
+          args: [playerName], name: 'confirmDeletePlayerBreakout', locale: locale);
 
   String confirmremovefromteam(String name) {
     return Intl.message('Are you sure you want to remove $name from the team?',
@@ -1690,7 +1692,9 @@ class Messages {
     String rel = relationships(relationship);
     return Intl.message('$name ($rel)',
         desc: 'Name for the edit box to edit the user name',
-        args: [name, relationship]);
+        args: [name, rel],
+        name: 'displaynamerelationship',
+        locale: locale);
   }
 
   String eventtitle(
@@ -1751,84 +1755,120 @@ class Messages {
 
   String eventTitleNowSpecialEvent(String time) =>
       Intl.message('NOW! Event $time',
-          desc: 'Special event title in game list', args: [time]);
+          desc: 'Special event title in game list',
+          args: [time],
+          locale: locale,
+          name: 'eventTitleNowSpecialEvent');
 
   String eventTitleNowSpecialEventName(String name, String time) =>
       Intl.message("NOW! $name $time",
-          desc: 'Special event title in game list', args: [name, time]);
+          desc: 'Special event title in game list',
+          args: [name, time],
+          locale: locale,
+          name: 'eventTitleNowSpecialEventName');
 
   String eventTitleNowSpecialEventNameEndTime(
           String name, String time, String endTime) =>
       Intl.message('NOW! $name $time - $endTime',
           desc: 'Special event title in game list',
-          args: [name, time, endTime]);
+          args: [name, time, endTime],
+          locale: locale,
+          name: 'eventTitleNowSpecialEventNameEndTime');
 
   String eventTitleNowSpecialEventNameEndTimeTimeZone(
           String name, String time, String endTime, String tzShortName) =>
       Intl.message('NOW! $name $time - $endTime  ($tzShortName)',
           desc: 'Special event title in game list',
-          args: [name, time, endTime, tzShortName]);
+          args: [name, time, endTime, tzShortName],
+          locale: locale,
+          name: 'eventTitleNowSpecialEventNameEndTimeTimeZone');
 
   String eventTitleNowSpecialEventNameTimeZone(
           String name, String time, String tzShortName) =>
       Intl.message('NOW! $name $time ($tzShortName)',
           desc: 'Special event title in game list',
-          args: [name, time, tzShortName]);
+          args: [name, time, tzShortName],
+          locale: locale,
+          name: 'eventTitleNowSpecialEventNameTimeZone');
 
   String eventTitleNowSpecialEventStartAndEnd(String time, String endTime) =>
       Intl.message('NOW! Event $time - $endTime',
-          desc: 'Special event title in game list');
+          desc: 'Special event title in game list',
+          locale: locale,
+          name: 'eventTitleNowSpecialEventStartAndEnd');
 
   String eventTitleNowSpecialEventStartAndEndTimezone(
           String time, String endTime, String tzShortName) =>
       Intl.message('NOW! Event $time - $endTime ($tzShortName)',
           desc: 'Special event title in game list',
-          args: [time, endTime, tzShortName]);
+          args: [time, endTime, tzShortName],
+          locale: locale,
+          name: 'eventTitleNowSpecialEventStartAndEndTimezone');
 
   String eventTitleNowSpecialWithTimezone(String time, String tzShortName) =>
       Intl.message('NOW! Event $time ($tzShortName)',
           desc: 'Special event title in game list with timezone',
-          args: [time, tzShortName]);
+          args: [time, tzShortName],
+          locale: locale,
+          name: 'eventTitleNowSpecialWithTimezone');
 
   String eventTitleSpecialEvent(String time) => Intl.message('Event $time',
-      desc: 'Special event title in game list', args: [time]);
+      desc: 'Special event title in game list',
+      args: [time],
+      locale: locale,
+      name: 'eventTitleSpecialEvent');
 
   String eventTitleSpecialEventName(String name, String time) =>
       Intl.message("$name $time",
-          desc: 'Special event title in game list', args: [name, time]);
+          desc: 'Special event title in game list',
+          args: [name, time],
+          locale: locale,
+          name: 'eventTitleSpecialEventName');
 
   String eventTitleSpecialEventNameEndTime(
           String name, String time, String endTime) =>
       Intl.message('$name $time - $endTime',
           desc: 'Special event title in game list',
-          args: [name, time, endTime]);
+          args: [name, time, endTime],
+          locale: locale,
+          name: 'eventTitleSpecialEventNameEndTime');
 
   String eventTitleSpecialEventNameEndTimeTimeZone(
           String name, String time, String endTime, String tzShortName) =>
       Intl.message('$name $time - $endTime  ($tzShortName)',
           desc: 'Special event title in game list',
-          args: [name, time, endTime, tzShortName]);
+          args: [name, time, endTime, tzShortName],
+          locale: locale,
+          name: 'eventTitleSpecialEventNameEndTimeTimeZone');
 
   String eventTitleSpecialEventNameTimeZone(
           String name, String time, String tzShortName) =>
       Intl.message('$name $time ($tzShortName)',
           desc: 'Special event title in game list',
-          args: [name, time, tzShortName]);
+          args: [name, time, tzShortName],
+          locale: locale,
+          name: 'eventTitleSpecialEventNameTimeZone');
 
   String eventTitleSpecialEventStartAndEnd(String time, String endTime) =>
       Intl.message('Event $time - $endTime',
-          desc: 'Special event title in game list');
+          desc: 'Special event title in game list',
+          locale: locale,
+          name: 'eventTitleSpecialEventStartAndEnd');
 
   String eventTitleSpecialEventStartAndEndTimezone(
           String time, String endTime, String tzShortName) =>
       Intl.message('Event $time - $endTime ($tzShortName)',
           desc: 'Special event title in game list',
-          args: [time, endTime, tzShortName]);
+          args: [time, endTime, tzShortName],
+          locale: locale,
+          name: 'eventTitleSpecialEventStartAndEndTimezone');
 
   String eventTitleSpecialWithTimezone(String time, String tzShortName) =>
       Intl.message('Event $time ($tzShortName)',
           desc: 'Special event title in game list with timezone',
-          args: [time, tzShortName]);
+          args: [time, tzShortName],
+          locale: locale,
+          name: 'eventTitleSpecialWithTimezone');
 
   String finalofficalscorebody(GameOfficialResults result) {
     GamePeriod regulationPeriod = GamePeriod.regulation1;
@@ -1884,11 +1924,13 @@ class Messages {
     return gameResultOffical(resultString, regulationPeriodResult);
   }
 
-  String finalscorebody(num ptsFor, num ptsAgainst, String result) {
+  String finalScoreBody(num ptsFor, num ptsAgainst, String result) {
     return Intl.message(
         'Do you want to set $ptsFor $ptsAgainst $result as the final score?',
         desc: 'Start game dialofg body text',
-        args: [ptsFor, ptsAgainst, result]);
+        args: [ptsFor, ptsAgainst, result],
+        name: 'finalScoreBody',
+        locale: locale);
   }
 
   String fixScore(GameLog log) =>
@@ -1898,13 +1940,13 @@ class Messages {
           args: [ptsFor, ptsAgainst], name: 'fixScoreBreakout', locale: locale);
 
   String followPlayer(String player) => Intl.message("Follow $player",
-      args: [player], name: 'followplayer', locale: locale);
+      args: [player], name: 'followPlayer', locale: locale);
 
   String gameAddressArriveAt(String arriveAt, String address) =>
       Intl.message('Arrive by $arriveAt\n$address',
           desc: 'Game address in game list with arrive by',
           args: [arriveAt, address],
-          name: 'gameaddressarriveat',
+          name: 'gameAddressArriveAt',
           locale: locale);
 
   String gameinprogress(GameInProgress val) {
@@ -1951,7 +1993,9 @@ class Messages {
 
   String gameResultOffical(
           String resultString, GameResultPerPeriod regulationPeriodResult) =>
-      gameResultOfficalBreakout(resultString, regulationPeriodResult.score.ptsFor,
+      gameResultOfficalBreakout(
+          resultString,
+          regulationPeriodResult.score.ptsFor,
           regulationPeriodResult.score.ptsAgainst);
   String gameResultOfficalBreakout(
           String resultString, num ptsFor, num ptsAgainst) =>

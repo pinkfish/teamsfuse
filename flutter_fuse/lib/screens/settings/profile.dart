@@ -40,7 +40,7 @@ class ProfileScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 child: ListBody(
                   children: <Widget>[
-                    Text(mess.confirmdeleteplayer(player)),
+                    Text(mess.confirmDeletePlayer(player)),
                   ],
                 ),
               ),

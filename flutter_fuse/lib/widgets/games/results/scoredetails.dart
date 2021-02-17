@@ -191,7 +191,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
         builder: (context) {
           return AlertDialog(
             title: Text(Messages.of(context).finalscore),
-            content: Text(Messages.of(context).finalscorebody(
+            content: Text(Messages.of(context).finalScoreBody(
                 _currentPeriodResults.score.ptsFor,
                 _currentPeriodResults.score.ptsAgainst,
                 gameResult.toString())),

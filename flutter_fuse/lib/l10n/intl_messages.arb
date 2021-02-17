@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-02-16T18:56:43.446850",
+  "@@last_modified": "2021-02-16T19:23:14.127004",
   "About": "About",
   "@About": {
     "type": "text",
@@ -1932,6 +1932,191 @@
     "type": "text",
     "placeholders": {
       "mins": {}
+    }
+  },
+  "confirmDeletePlayerBreakout": "Do you want to delete your connection to {playerName}?",
+  "@confirmDeletePlayerBreakout": {
+    "description": "Text to confirm asking if the players wants to be delete",
+    "type": "text",
+    "placeholders": {
+      "playerName": {}
+    }
+  },
+  "eventTitleNowSpecialEvent": "NOW! Event {time}",
+  "@eventTitleNowSpecialEvent": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "eventTitleNowSpecialEventName": "NOW! {name} {time}",
+  "@eventTitleNowSpecialEventName": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "name": {},
+      "time": {}
+    }
+  },
+  "eventTitleNowSpecialEventNameEndTime": "NOW! {name} {time} - {endTime}",
+  "@eventTitleNowSpecialEventNameEndTime": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "name": {},
+      "time": {},
+      "endTime": {}
+    }
+  },
+  "eventTitleNowSpecialEventNameEndTimeTimeZone": "NOW! {name} {time} - {endTime}  ({tzShortName})",
+  "@eventTitleNowSpecialEventNameEndTimeTimeZone": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "name": {},
+      "time": {},
+      "endTime": {},
+      "tzShortName": {}
+    }
+  },
+  "eventTitleNowSpecialEventNameTimeZone": "NOW! {name} {time} ({tzShortName})",
+  "@eventTitleNowSpecialEventNameTimeZone": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "name": {},
+      "time": {},
+      "tzShortName": {}
+    }
+  },
+  "eventTitleNowSpecialEventStartAndEndTimezone": "NOW! Event {time} - {endTime} ({tzShortName})",
+  "@eventTitleNowSpecialEventStartAndEndTimezone": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {},
+      "tzShortName": {}
+    }
+  },
+  "eventTitleNowSpecialWithTimezone": "NOW! Event {time} ({tzShortName})",
+  "@eventTitleNowSpecialWithTimezone": {
+    "description": "Special event title in game list with timezone",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "tzShortName": {}
+    }
+  },
+  "eventTitleSpecialEvent": "Event {time}",
+  "@eventTitleSpecialEvent": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "eventTitleSpecialEventName": "{name} {time}",
+  "@eventTitleSpecialEventName": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "name": {},
+      "time": {}
+    }
+  },
+  "eventTitleSpecialEventNameEndTime": "{name} {time} - {endTime}",
+  "@eventTitleSpecialEventNameEndTime": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "name": {},
+      "time": {},
+      "endTime": {}
+    }
+  },
+  "eventTitleSpecialEventNameEndTimeTimeZone": "{name} {time} - {endTime}  ({tzShortName})",
+  "@eventTitleSpecialEventNameEndTimeTimeZone": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "name": {},
+      "time": {},
+      "endTime": {},
+      "tzShortName": {}
+    }
+  },
+  "eventTitleSpecialEventNameTimeZone": "{name} {time} ({tzShortName})",
+  "@eventTitleSpecialEventNameTimeZone": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "name": {},
+      "time": {},
+      "tzShortName": {}
+    }
+  },
+  "eventTitleSpecialEventStartAndEndTimezone": "Event {time} - {endTime} ({tzShortName})",
+  "@eventTitleSpecialEventStartAndEndTimezone": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {},
+      "tzShortName": {}
+    }
+  },
+  "eventTitleSpecialWithTimezone": "Event {time} ({tzShortName})",
+  "@eventTitleSpecialWithTimezone": {
+    "description": "Special event title in game list with timezone",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "tzShortName": {}
+    }
+  },
+  "finalScoreBody": "Do you want to set {ptsFor} {ptsAgainst} {result} as the final score?",
+  "@finalScoreBody": {
+    "description": "Start game dialofg body text",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "result": {}
+    }
+  },
+  "fixScoreBreakout": "Fix score: {ptsFor} - {ptsAgainst}",
+  "@fixScoreBreakout": {
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "followPlayer": "Follow {player}",
+  "@followPlayer": {
+    "type": "text",
+    "placeholders": {
+      "player": {}
+    }
+  },
+  "gameAddressArriveAt": "Arrive by {arriveAt}\n{address}",
+  "@gameAddressArriveAt": {
+    "description": "Game address in game list with arrive by",
+    "type": "text",
+    "placeholders": {
+      "arriveAt": {},
+      "address": {}
+    }
+  },
+  "gameResultOfficalBreakout": "{resultString}\nHome: {ptsFor} Away: {ptsAgainst}",
+  "@gameResultOfficalBreakout": {
+    "type": "text",
+    "placeholders": {
+      "resultString": {},
+      "ptsFor": {},
+      "ptsAgainst": {}
     }
   },
   "gameTitleSharedEndShort": "{time} - {endTime} ({tzShortName})",
