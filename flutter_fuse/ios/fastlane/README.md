@@ -36,6 +36,11 @@ Push a new beta build to TestFlight
 fastlane ios beta_local
 ```
 Push a new beta build to TestFlight
+### ios beta_deliver_local
+```
+fastlane ios beta_deliver_local
+```
+Only do the deliver
 ### ios screenshots
 ```
 fastlane ios screenshots
