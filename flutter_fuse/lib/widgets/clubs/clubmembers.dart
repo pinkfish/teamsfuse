@@ -31,7 +31,7 @@ class ClubMembers extends StatelessWidget {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(mess.confirmdeletemember(profile)),
+                Text(mess.confirmDeleteMember(profile.displayName)),
               ],
             ),
           ),

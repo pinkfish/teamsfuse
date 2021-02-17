@@ -112,14 +112,14 @@ class ProfileScreen extends StatelessWidget {
               if (userState is SingleProfileUninitialized ||
                   userState is SingleProfileDeleted) {
                 return ListTile(
-                  title: Text(Messages.of(context).displaynamerelationship(
+                  title: Text(Messages.of(context).displayNameRelationship(
                       Messages.of(context).loading, user.relationship)),
                 );
               }
               FusedUserProfile profile = userState.profile;
               return ListTile(
                 leading: const Icon(Icons.person),
-                title: Text(Messages.of(context).displaynamerelationship(
+                title: Text(Messages.of(context).displayNameRelationship(
                     profile.displayName, user.relationship)),
                 subtitle: Text(profile.email),
               );

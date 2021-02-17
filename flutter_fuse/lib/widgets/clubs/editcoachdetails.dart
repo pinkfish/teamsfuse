@@ -130,7 +130,7 @@ class EditCoachDetailsFormState extends State<EditCoachDetailsForm> {
           decoration: InputDecoration(
             icon: const Icon(Icons.text_snippet_outlined),
             hintText: Messages.of(context).coachNameHint,
-            labelText: Messages.of(context).coachName,
+            labelText: Messages.of(context).name,
           ),
           focusNode: _focusNodeName,
           initialValue: widget.coach.name,
@@ -150,7 +150,7 @@ class EditCoachDetailsFormState extends State<EditCoachDetailsForm> {
           decoration: InputDecoration(
             icon: const Icon(Icons.info_outline),
             hintText: Messages.of(context).coachAboutHint,
-            labelText: Messages.of(context).coachAbout,
+            labelText: Messages.of(context).about,
           ),
           focusNode: _focusNodeAbout,
           initialValue: widget.coach.about,

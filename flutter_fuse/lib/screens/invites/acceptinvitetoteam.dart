@@ -289,7 +289,7 @@ class _AcceptInviteToTeamScreenState extends State<AcceptInviteToTeamScreen> {
                   _savePressed();
                 },
                 child: Text(
-                  Messages.of(context).savebuttontext,
+                  Messages.of(context).saveButtonText,
                   style: Theme.of(context)
                       .textTheme
                       .subtitle1

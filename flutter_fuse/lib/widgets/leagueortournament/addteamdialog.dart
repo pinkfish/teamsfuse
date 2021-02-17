@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import '../../services/blocs.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 
 ///
@@ -51,8 +51,8 @@ class AddTeamDialog extends Dialog {
             controller: _controller,
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
-              labelText: Messages.of(context).teamname,
-              hintText: Messages.of(context).teamnamehint,
+              labelText: Messages.of(context).name,
+              hintText: Messages.of(context).teamNameHint,
             ),
           ),
         ),
@@ -62,10 +62,10 @@ class AddTeamDialog extends Dialog {
     children.add(ButtonBarTheme(
       child: ButtonBar(
         children: <Widget>[
-          FlatButton(
+          TextButton(
               onPressed: () => Navigator.pop(context, _controller.text),
               child: Text(MaterialLocalizations.of(context).okButtonLabel)),
-          FlatButton(
+          TextButton(
               onPressed: () => Navigator.pop(context, null),
               child: Text(MaterialLocalizations.of(context).cancelButtonLabel)),
         ],

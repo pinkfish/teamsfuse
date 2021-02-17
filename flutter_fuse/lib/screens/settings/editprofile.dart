@@ -113,7 +113,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _savePressed(context, profileBloc);
                   },
                   child: Text(
-                    Messages.of(context).savebuttontext,
+                    Messages.of(context).saveButtonText,
                     style: Theme.of(context)
                         .textTheme
                         .subtitle1
@@ -159,7 +159,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       decoration: InputDecoration(
                                         icon: const Icon(Icons.person),
                                         hintText:
-                                            Messages.of(context).displayname,
+                                            Messages.of(context).name,
                                         labelText: Messages.of(context)
                                             .displaynamehint,
                                       ),

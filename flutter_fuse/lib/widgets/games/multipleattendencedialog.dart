@@ -133,7 +133,7 @@ class _MultipleAttendanceDialogState extends State<MultipleAttendanceDialog> {
               ),
               FlatButton(
                   onPressed: _saveDialog,
-                  child: Text(Messages.of(context).savebuttontext))
+                  child: Text(Messages.of(context).saveButtonText))
             ],
           ),
         ),

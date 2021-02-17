@@ -82,7 +82,7 @@ class _AcceptInviteToLeagueTeamScreenState
             title: Text(Messages.of(context).league),
             content: RichText(
               text: TextSpan(
-                text: Messages.of(context).confirmcreateteamforleague(
+                text: Messages.of(context).confirmCreateTeamForLeague(
                     inviteToLeagueTeam.leagueTeamName,
                     _seasonName,
                     inviteToLeagueTeam.leagueName),

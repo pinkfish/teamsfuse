@@ -146,9 +146,9 @@ class PlayerDetailsScreen extends StatelessWidget {
 
                       if (state is SinglePlayerLoaded) {
                         arr.add(Text(
-                            mess.confirmremovefromteam(state.player.name)));
+                            mess.confirmRemoveFromTeam(state.player.name)));
                       } else {
-                        arr.add(Text(mess.confirmremovefromteam(mess.loading)));
+                        arr.add(Text(mess.confirmRemoveFromTeam(mess.loading)));
                       }
                       return ListBody(
                         children: arr,
@@ -244,7 +244,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                     return ListTile(
                       leading: const Icon(Icons.phone),
                       title: Text(
-                        messages.displaynamerelationship(
+                        messages.displayNameRelationship(
                             profile.displayName, player.relationship),
                       ),
                       subtitle: Column(

@@ -189,7 +189,7 @@ class _FilterHomeDialogState extends State<FilterHomeDialog> {
                     value: GameResult.Tie,
                   ),
                   DropdownMenuItem<GameResult>(
-                    child: Text(messages.notfinished),
+                    child: Text(messages.notFinished),
                     value: GameResult.Unknown,
                   ),
                 ],

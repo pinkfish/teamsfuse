@@ -84,7 +84,7 @@ class _AcceptInviteToPlayerScreenState
                 _savePressed();
               },
               child: Text(
-                messages.savebuttontext,
+                messages.saveButtonText,
                 style: Theme.of(context)
                     .textTheme
                     .subtitle1

@@ -218,7 +218,7 @@ class LeagueOrTournamentEditFormState
                               icon: const Icon(MdiIcons.text),
                               hintText:
                                   Messages.of(context).longDescriptionHint,
-                              labelText: Messages.of(context).longDescription,
+                              labelText: Messages.of(context).description,
                             ),
                             keyboardType: TextInputType.multiline,
                             focusNode: _focusNodeLongDescription,

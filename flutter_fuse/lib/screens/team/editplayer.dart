@@ -92,7 +92,7 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
     ret.add(
       TextFormField(
         decoration: InputDecoration(
-          labelText: messages.displayname,
+          labelText: messages.name,
           hintText: messages.displaynamehint,
           icon: const Icon(Icons.account_circle),
         ),
@@ -164,7 +164,7 @@ class _EditPlayerScreenState extends State<EditPlayerScreen> {
           FlatButton(
             onPressed: _saveData,
             child: Text(
-              Messages.of(context).savebuttontext,
+              Messages.of(context).saveButtonText,
               style: Theme.of(context)
                   .textTheme
                   .subtitle1

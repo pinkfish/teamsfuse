@@ -111,7 +111,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
             initialValue: '',
             decoration: InputDecoration(
                 icon: const Icon(Icons.person),
-                labelText: messages.displayname,
+                labelText: messages.name,
                 hintText: messages.displaynamehint),
             validator: (value) {
               return _validations.validateDisplayName(context, value);

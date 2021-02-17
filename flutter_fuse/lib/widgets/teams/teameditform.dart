@@ -202,7 +202,7 @@ class TeamEditFormState extends State<TeamEditForm> {
             decoration: InputDecoration(
               icon: const Icon(Icons.event_note),
               hintText: Messages.of(context).team,
-              labelText: Messages.of(context).teamnamehint,
+              labelText: Messages.of(context).teamNameHint,
             ),
             focusNode: _focusNodeName,
             initialValue: _builder.name,

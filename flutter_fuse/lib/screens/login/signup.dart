@@ -157,7 +157,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         hintText: Messages.of(context)
                                             .displaynamehint,
                                         labelText:
-                                            Messages.of(context).displayname),
+                                            Messages.of(context).name),
                                     keyboardType: TextInputType.text,
                                     obscureText: false,
                                     focusNode: _focusNodeDisplayName,

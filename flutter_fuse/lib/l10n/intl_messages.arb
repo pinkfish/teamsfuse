@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2021-02-16T19:23:14.127004",
+  "@@last_modified": "2021-02-17T00:38:33.666899",
   "About": "About",
   "@About": {
     "type": "text",
@@ -361,12 +361,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "Name": "Name",
-  "@Name": {
-    "description": "Title for a form field for the coachs name",
-    "type": "text",
-    "placeholders": {}
-  },
   "Name of the coach": "Name of the coach",
   "@Name of the coach": {
     "description": "Hint text for a form field for the coachs name",
@@ -491,14 +485,14 @@
     "type": "text",
     "placeholders": {}
   },
-  "Description": "Description",
-  "@Description": {
-    "description": "Title for the description of the media",
+  "DIRECTIONS": "DIRECTIONS",
+  "@DIRECTIONS": {
     "type": "text",
     "placeholders": {}
   },
-  "DIRECTIONS": "DIRECTIONS",
-  "@DIRECTIONS": {
+  "Name": "Name",
+  "@Name": {
+    "description": "Name for the edit box to edit the user name",
     "type": "text",
     "placeholders": {}
   },
@@ -728,21 +722,6 @@
     "type": "text",
     "placeholders": {}
   },
-  "Loss": "Loss",
-  "@Loss": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Tie": "Tie",
-  "@Tie": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Win": "Win",
-  "@Win": {
-    "type": "text",
-    "placeholders": {}
-  },
   "Games": "Games",
   "@Games": {
     "type": "text",
@@ -908,9 +887,21 @@
     "type": "text",
     "placeholders": {}
   },
+  "Description": "Description",
+  "@Description": {
+    "description": "Long description of a tournament/league to display on the league page",
+    "type": "text",
+    "placeholders": {}
+  },
   "Detailed Description": "Detailed Description",
   "@Detailed Description": {
     "description": "Long description of a tournament/league to display on the league/tournament page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Loss": "Loss",
+  "@Loss": {
+    "description": "Drop down for  the loss result",
     "type": "text",
     "placeholders": {}
   },
@@ -1111,6 +1102,12 @@
   },
   "No teams": "No teams",
   "@No teams": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Not finished": "Not finished",
+  "@Not finished": {
+    "description": "Drop down for the not finished result",
     "type": "text",
     "placeholders": {}
   },
@@ -1515,7 +1512,6 @@
   },
   "SAVE": "SAVE",
   "@SAVE": {
-    "description": "The save text for the dialog",
     "type": "text",
     "placeholders": {}
   },
@@ -1736,6 +1732,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "Team Name": "Team Name",
+  "@Team Name": {
+    "description": "Hint for the name of the team",
+    "type": "text",
+    "placeholders": {}
+  },
   "Teams": "Teams",
   "@Teams": {
     "type": "text",
@@ -1749,6 +1751,12 @@
   },
   "Team Selected": "Team Selected",
   "@Team Selected": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Tie": "Tie",
+  "@Tie": {
+    "description": "Drop down for  the tie result",
     "type": "text",
     "placeholders": {}
   },
@@ -1921,6 +1929,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "Win": "Win",
+  "@Win": {
+    "description": "Drop down for  the win result",
+    "type": "text",
+    "placeholders": {}
+  },
   "Your email address": "Your email address",
   "@Your email address": {
     "description": "Your email input field hint",
@@ -1934,12 +1948,138 @@
       "mins": {}
     }
   },
+  "cardResultInProgressFinal": "{ptsFor} - {ptsAgainst}",
+  "@cardResultInProgressFinal": {
+    "description": "In progress result details",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {}
+    }
+  },
+  "cardResultInProgressOvertime": "{ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})",
+  "@cardResultInProgressOvertime": {
+    "description": "Win result details with penalty shootout",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {}
+    }
+  },
+  "cardResultInProgressOvertimeAndPenalty": "{ptsFor} - {ptsAgainst} (Overtime {overtimeFor} - {overtimeAgainst})(Penalty {penaltyFor} - {penaltyAgainst})",
+  "@cardResultInProgressOvertimeAndPenalty": {
+    "description": "Win result details with penalty shootout",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
+    }
+  },
+  "cardResultInProgressPenalty": "{ptsFor} - {ptsAgainst} (Penalty {penaltyFor} - {penaltyAgainst})",
+  "@cardResultInProgressPenalty": {
+    "description": "In progress result details with penalty shootout",
+    "type": "text",
+    "placeholders": {
+      "ptsFor": {},
+      "ptsAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
+    }
+  },
+  "confirmCreateTeamForLeague": "Are you sure you want to create a team {teamName} with a season of {season} for the league {league}.  This is not possible to undo?",
+  "@confirmCreateTeamForLeague": {
+    "type": "text",
+    "placeholders": {
+      "teamName": {},
+      "season": {},
+      "league": {}
+    }
+  },
+  "confirmDeleteAsAdmin": "Do you want to delete the invite to be admin for the team {teamName}?",
+  "@confirmDeleteAsAdmin": {
+    "description": "Text to delete the invite to be an admin in the alert dialog.",
+    "type": "text",
+    "placeholders": {
+      "teamName": {}
+    }
+  },
+  "confirmDeleteClub": "Do you want to delete the invite to be in the club {clubName}?",
+  "@confirmDeleteClub": {
+    "description": "Text to delete the invite to the club in the alert dialog.",
+    "type": "text",
+    "placeholders": {
+      "clubName": {}
+    }
+  },
+  "confirmDeleteInvitePlayer": "Do you want to delete the invite to follow {playerName}?",
+  "@confirmDeleteInvitePlayer": {
+    "description": "Text to delete the invite to the team in the alert dialog.",
+    "type": "text",
+    "placeholders": {
+      "playerName": {}
+    }
+  },
+  "confirmDeleteInviteTeam": "Do you want to delete the invite to {teamName} for {playerName}?",
+  "@confirmDeleteInviteTeam": {
+    "description": "Text to delete the invite to the team in the alert dialog.",
+    "type": "text",
+    "placeholders": {
+      "teamName": {},
+      "playerName": {}
+    }
+  },
+  "confirmDeleteLeagueAsAdmin": "Do you want to delete the invite to be in the league {leagueName}?",
+  "@confirmDeleteLeagueAsAdmin": {
+    "description": "Text to delete the invite to the league in the alert dialog.",
+    "type": "text",
+    "placeholders": {
+      "leagueName": {}
+    }
+  },
+  "confirmDeleteLeagueTeam": "Do you want to delete the invite to be in the league {leagueName} with team {leagueTeamName}?",
+  "@confirmDeleteLeagueTeam": {
+    "type": "text",
+    "placeholders": {
+      "leagueName": {},
+      "leagueTeamName": {}
+    }
+  },
+  "confirmDeleteMember": "Delete club member {displayName}?",
+  "@confirmDeleteMember": {
+    "type": "text",
+    "placeholders": {
+      "displayName": {}
+    }
+  },
   "confirmDeletePlayerBreakout": "Do you want to delete your connection to {playerName}?",
   "@confirmDeletePlayerBreakout": {
     "description": "Text to confirm asking if the players wants to be delete",
     "type": "text",
     "placeholders": {
       "playerName": {}
+    }
+  },
+  "confirmRemoveFromTeam": "Are you sure you want to remove {name} from the team?",
+  "@confirmRemoveFromTeam": {
+    "description": "Dialog text to confirm removing a user from the team",
+    "type": "text",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "displayNameRelationshipBreakout": "{name} ({rel})",
+  "@displayNameRelationshipBreakout": {
+    "description": "Name for the edit box to edit the user name",
+    "type": "text",
+    "placeholders": {
+      "name": {},
+      "rel": {}
     }
   },
   "eventTitleNowSpecialEvent": "NOW! Event {time}",
@@ -1988,6 +2128,15 @@
       "name": {},
       "time": {},
       "tzShortName": {}
+    }
+  },
+  "eventTitleNowSpecialEventStartAndEnd": "NOW! Event {time} - {endTime}",
+  "@eventTitleNowSpecialEventStartAndEnd": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {}
     }
   },
   "eventTitleNowSpecialEventStartAndEndTimezone": "NOW! Event {time} - {endTime} ({tzShortName})",
@@ -2057,6 +2206,15 @@
       "tzShortName": {}
     }
   },
+  "eventTitleSpecialEventStartAndEnd": "Event {time} - {endTime}",
+  "@eventTitleSpecialEventStartAndEnd": {
+    "description": "Special event title in game list",
+    "type": "text",
+    "placeholders": {
+      "time": {},
+      "endTime": {}
+    }
+  },
   "eventTitleSpecialEventStartAndEndTimezone": "Event {time} - {endTime} ({tzShortName})",
   "@eventTitleSpecialEventStartAndEndTimezone": {
     "description": "Special event title in game list",
@@ -2074,6 +2232,41 @@
     "placeholders": {
       "time": {},
       "tzShortName": {}
+    }
+  },
+  "finalOfficalScoreBodyOvertimePenalty": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nOvertime Home: {overtimeFor} Away: {overtimeAgainst}Penalty Home: {penaltyFor} Away: {penaltyAgainst}",
+  "@finalOfficalScoreBodyOvertimePenalty": {
+    "type": "text",
+    "placeholders": {
+      "resultString": {},
+      "homeFor": {},
+      "homeAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
+    }
+  },
+  "finalOfficalScoreBodyOvertime": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nOvertime Home: {overtimeFor} Away: {overtimeAgainst}",
+  "@finalOfficalScoreBodyOvertime": {
+    "type": "text",
+    "placeholders": {
+      "resultString": {},
+      "homeFor": {},
+      "homeAgainst": {},
+      "overtimeFor": {},
+      "overtimeAgainst": {}
+    }
+  },
+  "finalOfficalScoreBodyPenalty": "{resultString}\nHome: {homeFor} Away: {homeAgainst}\nPenalty Home: {penaltyFor} Away: {penaltyAgainst}",
+  "@finalOfficalScoreBodyPenalty": {
+    "type": "text",
+    "placeholders": {
+      "resultString": {},
+      "homeFor": {},
+      "homeAgainst": {},
+      "penaltyFor": {},
+      "penaltyAgainst": {}
     }
   },
   "finalScoreBody": "Do you want to set {ptsFor} {ptsAgainst} {result} as the final score?",

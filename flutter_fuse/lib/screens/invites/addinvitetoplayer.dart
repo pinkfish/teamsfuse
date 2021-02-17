@@ -70,7 +70,7 @@ class _AddInviteToPlayerScreenState extends State<AddInviteToPlayerScreen> {
                   _savePressed(playerBloc.state);
                 },
                 child: Text(
-                  Messages.of(context).savebuttontext,
+                  Messages.of(context).saveButtonText,
                   style: Theme.of(context)
                       .textTheme
                       .subtitle1

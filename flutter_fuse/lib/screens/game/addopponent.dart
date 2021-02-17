@@ -56,7 +56,7 @@ class _AddOpponentState extends State<AddOpponent> {
                 _savePressed(context, bloc);
               },
               child: Text(
-                Messages.of(context).savebuttontext,
+                Messages.of(context).saveButtonText,
                 style: Theme.of(context)
                     .textTheme
                     .subtitle1
@@ -86,7 +86,7 @@ class _AddOpponentState extends State<AddOpponent> {
                         decoration: InputDecoration(
                           icon: Icon(Icons.short_text),
                           hintText: Messages.of(context).opponentnamehint,
-                          labelText: Messages.of(context).opponentname,
+                          labelText: Messages.of(context).name,
                         ),
                         keyboardType: TextInputType.text,
                         obscureText: false,

@@ -220,15 +220,15 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
             return AlertDialog(
               title: Text(Messages.of(context).finalscore),
               content: Text(
-                  Messages.of(context).finalofficalscorebody(_results.build())),
+                  Messages.of(context).finalOfficalScoreBody(_results.build())),
               actions: <Widget>[
-                FlatButton(
+                TextButton(
                   child: Text(MaterialLocalizations.of(context).okButtonLabel),
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
                 ),
-                FlatButton(
+                TextButton(
                   child:
                       Text(MaterialLocalizations.of(context).cancelButtonLabel),
                   onPressed: () {
@@ -275,7 +275,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
         Container(
           margin: EdgeInsets.only(top: 5.0, left: 25.0, right: 5.0),
           child: Text(
-            Messages.of(context).finalofficalscorebody(_results.build()),
+            Messages.of(context).finalOfficalScoreBody(_results.build()),
             style: Theme.of(context).textTheme.subtitle1,
           ),
         ),
@@ -450,7 +450,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                             value: _penaltyPeriod,
                             onChanged: (val) =>
                                 setState(() => _penaltyPeriod = val),
-                            title: Text(Messages.of(context).penaltyperiod),
+                            title: Text(Messages.of(context).penalty),
                           ),
                           Container(
                             margin: EdgeInsets.only(left: 25.0, right: 15.0),
@@ -496,7 +496,7 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     FlatButton(
-                      child: Text(Messages.of(context).savebuttontext),
+                      child: Text(Messages.of(context).saveButtonText),
                       onPressed: () => _updateGame(bloc),
                       color: Theme.of(context).accentColor,
                       textColor: Colors.white,

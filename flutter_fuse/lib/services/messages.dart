@@ -257,9 +257,6 @@ class Messages {
       'club will also be adminstragtors for the team.',
       locale: locale);
 
-  String get coachAbout => Intl.message("About",
-      desc: "Title for a form field about the coach", locale: locale);
-
   String get coachAboutHint => Intl.message("Information about the coach",
       desc: "Hint text for a form field about the coach", locale: locale);
 
@@ -269,8 +266,6 @@ class Messages {
   String get coaches => Intl.message('Coaches',
       desc: 'Header to display the coaches for the team/club', locale: locale);
 
-  String get coachName => Intl.message("Name",
-      desc: "Title for a form field for the coachs name", locale: locale);
 
   String get coachNameHint => Intl.message("Name of the coach",
       desc: "Hint text for a form field for the coachs name", locale: locale);
@@ -357,8 +352,6 @@ class Messages {
         desc: 'Button to change the remove a member from the team');
   }
 
-  String get descriptionTitle => Intl.message("Description",
-      desc: "Title for the description of the media", locale: locale);
 
   String get details {
     return Intl.message('Details',
@@ -369,7 +362,7 @@ class Messages {
     return Intl.message('DIRECTIONS');
   }
 
-  String get displayname => Intl.message('Name',
+  String get name => Intl.message('Name',
       desc: 'Name for the edit box to edit the user name', locale: locale);
 
   String get displaynamehint {
@@ -557,12 +550,6 @@ class Messages {
   String get gameResultInProgress =>
       Intl.message("In progress", locale: locale);
 
-  String get gameResultLoss => Intl.message("Loss", locale: locale);
-
-  String get gameResultTie => Intl.message("Tie", locale: locale);
-
-  String get gameResultWin => Intl.message("Win", locale: locale);
-
   String get games {
     return Intl.message('Games');
   }
@@ -696,11 +683,11 @@ class Messages {
     );
   }
 
-  String get longDescription {
-    return Intl.message('Description',
+  String get description =>
+     Intl.message('Description',
         desc:
             'Long description of a tournament/league to display on the league page');
-  }
+
 
   String get longDescriptionHint {
     return Intl.message('Detailed Description',
@@ -872,10 +859,10 @@ class Messages {
     return Intl.message('No teams');
   }
 
-  String get notfinished {
-    return Intl.message("Not finished",
-        name: 'Drop down for  the not finished result');
-  }
+  String get notFinished =>
+     Intl.message("Not finished",
+        desc: 'Drop down for the not finished result', locale: locale);
+
 
   String get notournaments {
     return Intl.message('No tournaments');
@@ -920,12 +907,7 @@ class Messages {
     );
   }
 
-  String get opponentname {
-    return Intl.message(
-      'Name',
-      desc: 'The text for the name of an opponent',
-    );
-  }
+
 
   String get opponentnamehint {
     return Intl.message(
@@ -966,9 +948,7 @@ class Messages {
         desc: 'Passwords must match signup form error');
   }
 
-  String get penaltyperiod {
-    return Intl.message('Penalty');
-  }
+  String get penalty => Intl.message('Penalty', locale: locale);
 
   String get percentageGameSummary => Intl.message("%age",
       desc: "Percentage made in game summary title", locale: locale);
@@ -1002,9 +982,6 @@ class Messages {
 
   String get periodNameOvertimeBreak => Intl.message("Overtime Break",
       desc: "The game is on an overtime break", locale: locale);
-
-  String get periodNamePenalty => Intl.message("Penalty",
-      desc: "The game is in penalty time", locale: locale);
 
   String get periodNamePeriod1 =>
       Intl.message("Period 1", desc: "The game is in period 1", locale: locale);
@@ -1186,13 +1163,6 @@ class Messages {
   String get roleselect => Intl.message('Select role',
       desc: 'Drop down to select the role in the team', locale: locale);
 
-  String get savebuttontext {
-    return Intl.message(
-      'SAVE',
-      desc: 'The save text for the dialog',
-    );
-  }
-
   String get saveButtonText => Intl.message('SAVE', locale: locale);
 
   String get savefailed {
@@ -1344,13 +1314,11 @@ class Messages {
 
   String get teamdeleted => Intl.message('Team deleted', locale: locale);
 
-  String get teamedithint => Intl.message('Change team',
+  String get teamEditHint => Intl.message('Change team',
       desc: 'Hint for the button to edit the team', locale: locale);
 
-  String get teamname =>
-      Intl.message('Name', desc: 'Name of the team', locale: locale);
 
-  String get teamnamehint => Intl.message('Name',
+  String get teamNameHint => Intl.message('Team Name',
       desc: 'Hint for the name of the team', locale: locale);
 
   String get teams => Intl.message('Teams', locale: locale);
@@ -1515,13 +1483,11 @@ class Messages {
     );
   }
 
-  String get where {
-    return Intl.message('Where', desc: 'Where the game is');
-  }
+  String get where =>
+      Intl.message('Where', desc: 'Where the game is', locale: locale);
 
-  String get win {
-    return Intl.message("Win", desc: 'Drop down for  the win result');
-  }
+  String get win => Intl.message("Win",
+      desc: 'Drop down for  the win result', locale: locale);
 
   String get youremailHint {
     return Intl.message('Your email address',
@@ -1548,133 +1514,196 @@ class Messages {
       GameResultPerPeriod overtimeScore = result.overtimeResult;
       if (result.penaltyResult != null) {
         GameResultPerPeriod penaltyScore = result.penaltyResult;
-        return cardresultinprogressovertimeandpenalty(
-            finalScore, overtimeScore, penaltyScore);
+        return cardResultInProgressOvertimeAndPenalty(
+            finalScore.score.ptsFor,
+            finalScore.score.ptsAgainst,
+            overtimeScore.score.ptsFor,
+            overtimeScore.score.ptsAgainst,
+            penaltyScore.score.ptsFor,
+            penaltyScore.score.ptsAgainst);
       }
-      return cardresultinprogressovertime(finalScore, overtimeScore);
+      return cardResultInProgressOvertime(
+          finalScore.score.ptsFor,
+          finalScore.score.ptsAgainst,
+          overtimeScore.score.ptsFor,
+          overtimeScore.score.ptsAgainst);
     }
     if (result.penaltyResult != null) {
       GameResultPerPeriod penaltyScore = result.penaltyResult;
-      return cardresultinprogresspenalty(finalScore, penaltyScore);
+      return cardResultInProgressPenalty(
+          finalScore.score.ptsFor,
+          finalScore.score.ptsAgainst,
+          penaltyScore.score.ptsFor,
+          penaltyScore.score.ptsAgainst);
     }
-    return cardresultinprogressfinal(finalScore);
+    return cardResultInProgressFinal(
+        finalScore.score.ptsFor, finalScore.score.ptsAgainst);
   }
 
-  String cardresultinprogressfinal(GameResultPerPeriod finalScore) =>
-      Intl.message(
-          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst}',
-          desc: 'In progress result details');
+  String cardResultInProgressFinal(
+    num ptsFor,
+    num ptsAgainst,
+  ) =>
+      Intl.message('$ptsFor - $ptsAgainst',
+          desc: 'In progress result details',
+          args: [ptsFor, ptsAgainst],
+          name: 'cardResultInProgressFinal');
 
-  String cardresultinprogressovertime(
-          GameResultPerPeriod finalScore, GameResultPerPeriod overtimeScore) =>
+  String cardResultInProgressOvertime(
+    num ptsFor,
+    num ptsAgainst,
+    num overtimeFor,
+    num overtimeAgainst,
+  ) =>
       Intl.message(
-          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
-          '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})',
-          desc: 'Win result details with penalty shootout',
-          args: [finalScore, overtimeScore]);
-
-  String cardresultinprogressovertimeandpenalty(
-          GameResultPerPeriod finalScore,
-          GameResultPerPeriod overtimeScore,
-          GameResultPerPeriod penaltyScore) =>
-      Intl.message(
-        '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} '
-        '(Overtime ${overtimeScore.score.ptsFor} - ${overtimeScore.score.ptsAgainst})'
-        '(Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
+        '$ptsFor - $ptsAgainst '
+        '(Overtime $overtimeFor - $overtimeAgainst)',
         desc: 'Win result details with penalty shootout',
-        args: [finalScore, overtimeScore, penaltyScore],
+        args: [
+          ptsFor,
+          ptsAgainst,
+          overtimeFor,
+          overtimeAgainst,
+        ],
+        name: 'cardResultInProgressOvertime',
+        locale: locale,
       );
 
-  String cardresultinprogresspenalty(
-          GameResultPerPeriod finalScore, GameResultPerPeriod penaltyScore) =>
+  String cardResultInProgressOvertimeAndPenalty(
+          num ptsFor,
+          num ptsAgainst,
+          num overtimeFor,
+          num overtimeAgainst,
+          num penaltyFor,
+          num penaltyAgainst) =>
       Intl.message(
-          '${finalScore.score.ptsFor} - ${finalScore.score.ptsAgainst} (Penalty ${penaltyScore.score.ptsFor} - ${penaltyScore.score.ptsAgainst})',
-          desc: 'In progress result details with penalty shootout',
-          args: [finalScore, penaltyScore]);
+        '$ptsFor - $ptsAgainst '
+        '(Overtime $overtimeFor - $overtimeAgainst)'
+        '(Penalty $penaltyFor - $penaltyAgainst)',
+        desc: 'Win result details with penalty shootout',
+        args: [
+          ptsFor,
+          ptsAgainst,
+          overtimeFor,
+          overtimeAgainst,
+          penaltyFor,
+          penaltyAgainst
+        ],
+        name: 'cardResultInProgressOvertimeAndPenalty',
+        locale: locale,
+      );
 
-  String confirmcreateteamforleague(
+  String cardResultInProgressPenalty(
+          num ptsFor, num ptsAgainst, num penaltyFor, num penaltyAgainst) =>
+      Intl.message(
+          '$ptsFor - $ptsAgainst (Penalty $penaltyFor - $penaltyAgainst)',
+          desc: 'In progress result details with penalty shootout',
+          args: [ptsFor, ptsAgainst, penaltyFor, penaltyAgainst],
+          name: 'cardResultInProgressPenalty',
+          locale: locale);
+
+  String confirmCreateTeamForLeague(
           String teamName, String season, String league) =>
       Intl.message(
           'Are you sure you want to create a team $teamName with a season of $season '
           'for the league $league.  This is not possible to undo?',
-          args: [teamName, league, season]);
+          args: [teamName, season, league],
+          name: 'confirmCreateTeamForLeague',
+          locale: locale);
 
   String confirmdelete(Invite invite) {
     if (invite is InviteToTeam) {
       InviteToTeam inviteTeam = invite;
-      return confirmdeleteinviteteam(inviteTeam);
+      return confirmDeleteInviteTeam(
+          inviteTeam.teamName, inviteTeam.playerName.first);
     }
     if (invite is InviteToPlayer) {
       InviteToPlayer invitePlayer = invite;
-      return confirmdeleteinviteplayer(invitePlayer);
+      return confirmDeleteInvitePlayer(invitePlayer.playerName);
     }
     if (invite is InviteAsAdmin) {
       InviteAsAdmin inviteAdmin = invite;
-      return confirmdeleteasadmin(inviteAdmin);
+      return confirmDeleteAsAdmin(inviteAdmin.teamName);
     }
     if (invite is InviteToClub) {
       InviteToClub inviteClub = invite;
-      return confirmdeleteclub(inviteClub);
+      return confirmDeleteClub(inviteClub.clubName);
     }
     if (invite is InviteToLeagueAsAdmin) {
       InviteToLeagueAsAdmin inviteLeague = invite;
-      return confirmdeleteleagueasadmin(inviteLeague);
+      return confirmDeleteLeagueAsAdmin(inviteLeague.leagueName);
     }
     if (invite is InviteToLeagueTeam) {
       InviteToLeagueTeam inviteLeagueTeam = invite;
-      return confirmdeleteleagueteam(inviteLeagueTeam);
+      return confirmDeleteLeagueTeam(
+          inviteLeagueTeam.leagueName, inviteLeagueTeam.leagueTeamName);
     }
     return unknown;
   }
 
-  String confirmdeleteasadmin(InviteAsAdmin inviteAdmin) => Intl.message(
-      'Do you want to delete the invite to be admin for the team ${inviteAdmin.teamName}?',
+  String confirmDeleteAsAdmin(String teamName) => Intl.message(
+      'Do you want to delete the invite to be admin for the team $teamName?',
       desc: 'Text to delete the invite to be an admin in the alert dialog.',
-      args: [inviteAdmin]);
+      args: [teamName],
+      name: 'confirmDeleteAsAdmin',
+      locale: locale);
 
-  String confirmdeleteclub(InviteToClub inviteClub) => Intl.message(
-      'Do you want to delete the invite to be in the club ${inviteClub.clubName}?',
+  String confirmDeleteClub(String clubName) => Intl.message(
+      'Do you want to delete the invite to be in the club $clubName?',
       desc: 'Text to delete the invite to the club in the alert dialog.',
-      args: [inviteClub]);
+      args: [clubName],
+      name: 'confirmDeleteClub',
+      locale: locale);
 
-  String confirmdeleteinviteplayer(InviteToPlayer invitePlayer) => Intl.message(
-      'Do you want to delete the invite to follow ${invitePlayer.playerName}?',
-      desc: 'Text to delete the invite to the team in the alert dialog.',
-      args: [invitePlayer]);
+  String confirmDeleteInvitePlayer(String playerName) =>
+      Intl.message('Do you want to delete the invite to follow $playerName?',
+          desc: 'Text to delete the invite to the team in the alert dialog.',
+          args: [playerName],
+          name: 'confirmDeleteInvitePlayer',
+          locale: locale);
 
-  String confirmdeleteinviteteam(InviteToTeam inviteTeam) => Intl.message(
-      'Do you want to delete the invite to ${inviteTeam.teamName} for ${inviteTeam.playerName}?',
-      desc: 'Text to delete the invite to the team in the alert dialog.',
-      args: [inviteTeam]);
-
-  String confirmdeleteleagueasadmin(InviteToLeagueAsAdmin invite) => Intl.message(
-      'Do you want to delete the invite to be in the league ${invite.leagueName}?',
-      desc: 'Text to delete the invite to the league in the alert dialog.',
-      args: [invite]);
-
-  String confirmdeleteleagueteam(InviteToLeagueTeam inviteLeagueTeam) =>
+  String confirmDeleteInviteTeam(String teamName, String playerName) =>
       Intl.message(
-        'Do you want to delete the invite to be in the league ${inviteLeagueTeam.leagueName} with team '
-        '${inviteLeagueTeam.leagueTeamName}?',
-        args: [inviteLeagueTeam],
-      );
+          'Do you want to delete the invite to $teamName for $playerName?',
+          desc: 'Text to delete the invite to the team in the alert dialog.',
+          args: [teamName, playerName],
+          locale: locale,
+          name: 'confirmDeleteInviteTeam');
 
-  String confirmdeletemember(FusedUserProfile profile) =>
-      Intl.message('Delete club member ${profile.displayName}?',
-          args: [profile]);
+  String confirmDeleteLeagueAsAdmin(String leagueName) => Intl.message(
+      'Do you want to delete the invite to be in the league $leagueName?',
+      desc: 'Text to delete the invite to the league in the alert dialog.',
+      args: [leagueName],
+      locale: locale,
+      name: 'confirmDeleteLeagueAsAdmin');
+
+  String confirmDeleteLeagueTeam(String leagueName, String leagueTeamName) =>
+      Intl.message(
+          'Do you want to delete the invite to be in the league $leagueName with team '
+          '$leagueTeamName?',
+          args: [leagueName, leagueTeamName],
+          name: 'confirmDeleteLeagueTeam',
+          locale: locale);
+
+  String confirmDeleteMember(String displayName) =>
+      Intl.message('Delete club member $displayName?',
+          args: [displayName], locale: locale, name: 'confirmDeleteMember');
 
   String confirmDeletePlayer(Player player) =>
       confirmDeletePlayerBreakout(player.name);
   String confirmDeletePlayerBreakout(String playerName) =>
       Intl.message("Do you want to delete your connection to $playerName?",
           desc: 'Text to confirm asking if the players wants to be delete',
-          args: [playerName], name: 'confirmDeletePlayerBreakout', locale: locale);
+          args: [playerName],
+          name: 'confirmDeletePlayerBreakout',
+          locale: locale);
 
-  String confirmremovefromteam(String name) {
-    return Intl.message('Are you sure you want to remove $name from the team?',
-        desc: 'Dialog text to confirm removing a user from the team',
-        args: [name]);
-  }
+  String confirmRemoveFromTeam(String name) =>
+      Intl.message('Are you sure you want to remove $name from the team?',
+          desc: 'Dialog text to confirm removing a user from the team',
+          args: [name],
+          locale: locale,
+          name: 'confirmRemoveFromTeam');
 
   String deletegame(GameSharedData game) {
     switch (game.type) {
@@ -1688,14 +1717,17 @@ class Messages {
     return unknown;
   }
 
-  String displaynamerelationship(String name, Relationship relationship) {
+  String displayNameRelationship(String name, Relationship relationship) {
     String rel = relationships(relationship);
-    return Intl.message('$name ($rel)',
-        desc: 'Name for the edit box to edit the user name',
-        args: [name, rel],
-        name: 'displaynamerelationship',
-        locale: locale);
+    return displayNameRelationshipBreakout(name, rel);
   }
+
+  String displayNameRelationshipBreakout(String name, String rel) =>
+      Intl.message('$name ($rel)',
+          desc: 'Name for the edit box to edit the user name',
+          args: [name, rel],
+          name: 'displayNameRelationshipBreakout',
+          locale: locale);
 
   String eventtitle(
       String time, String name, String endTime, String tzShortName) {
@@ -1795,6 +1827,7 @@ class Messages {
       Intl.message('NOW! Event $time - $endTime',
           desc: 'Special event title in game list',
           locale: locale,
+          args: [time, endTime],
           name: 'eventTitleNowSpecialEventStartAndEnd');
 
   String eventTitleNowSpecialEventStartAndEndTimezone(
@@ -1845,13 +1878,21 @@ class Messages {
           String name, String time, String tzShortName) =>
       Intl.message('$name $time ($tzShortName)',
           desc: 'Special event title in game list',
-          args: [name, time, tzShortName],
+          args: [
+            name,
+            time,
+            tzShortName,
+          ],
           locale: locale,
           name: 'eventTitleSpecialEventNameTimeZone');
 
   String eventTitleSpecialEventStartAndEnd(String time, String endTime) =>
       Intl.message('Event $time - $endTime',
           desc: 'Special event title in game list',
+          args: [
+            time,
+            endTime,
+          ],
           locale: locale,
           name: 'eventTitleSpecialEventStartAndEnd');
 
@@ -1870,7 +1911,7 @@ class Messages {
           locale: locale,
           name: 'eventTitleSpecialWithTimezone');
 
-  String finalofficalscorebody(GameOfficialResults result) {
+  String finalOfficalScoreBody(GameOfficialResults result) {
     GamePeriod regulationPeriod = GamePeriod.regulation1;
     GamePeriod overtimePeriod = GamePeriod.overtime1;
     GamePeriod penaltyPeriod = GamePeriod.penalty;
@@ -1899,36 +1940,106 @@ class Messages {
       GameResultPerPeriod overtimePeriodResult = result.scores[overtimePeriod];
       if (result.scores.containsKey(penaltyPeriod)) {
         GameResultPerPeriod penaltyPeriodResult = result.scores[penaltyPeriod];
-        return Intl.message(
-            "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} "
-            "Away: ${regulationPeriodResult.score.ptsAgainst}\n"
-            "Overtime Home:  ${overtimePeriodResult.score.ptsFor} "
-            "Away: ${overtimePeriodResult.score.ptsAgainst}\n"
-            "Penalty Home: ${penaltyPeriodResult.score.ptsFor} "
-            "Away: ${penaltyPeriodResult.score.ptsAgainst}");
+
+        return finalOfficalScoreBodyOvertimePenalty(
+            resultString,
+            regulationPeriodResult.score.ptsFor,
+            regulationPeriodResult.score.ptsAgainst,
+            overtimePeriodResult.score.ptsFor,
+            overtimePeriodResult.score.ptsAgainst,
+            penaltyPeriodResult.score.ptsFor,
+            penaltyPeriodResult.score.ptsAgainst);
       }
-      return Intl.message(
-          "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} "
-          "Away: ${regulationPeriodResult.score.ptsAgainst}\n"
-          "Overtime Home:  ${overtimePeriodResult.score.ptsFor} "
-          "Away: ${overtimePeriodResult.score.ptsAgainst}\n");
+
+      return finalOfficalScoreBodyOvertime(
+          resultString,
+          regulationPeriodResult.score.ptsFor,
+          regulationPeriodResult.score.ptsAgainst,
+          overtimePeriodResult.score.ptsFor,
+          overtimePeriodResult.score.ptsAgainst);
     }
     if (result.scores.containsKey(penaltyPeriod)) {
       GameResultPerPeriod penaltyPeriodResult = result.scores[penaltyPeriod];
-      return Intl.message(
-          "$resultString\nHome: ${regulationPeriodResult.score.ptsFor} "
-          "Away: ${regulationPeriodResult.score.ptsAgainst}\n"
-          "Penalty Home: ${penaltyPeriodResult.score.ptsFor} "
-          "Away: ${penaltyPeriodResult.score.ptsAgainst}");
+      return finalOfficalScoreBodyPenalty(
+          resultString,
+          regulationPeriodResult.score.ptsFor,
+          regulationPeriodResult.score.ptsAgainst,
+          penaltyPeriodResult.score.ptsFor,
+          penaltyPeriodResult.score.ptsAgainst);
     }
     return gameResultOffical(resultString, regulationPeriodResult);
   }
+
+  String finalOfficalScoreBodyOvertimePenalty(
+          String resultString,
+          num homeFor,
+          num homeAgainst,
+          num overtimeFor,
+          num overtimeAgainst,
+          num penaltyFor,
+          num penaltyAgainst) =>
+      Intl.message(
+          "$resultString\nHome: $homeFor "
+          "Away: $homeAgainst\n"
+          "Overtime Home: $overtimeFor "
+          "Away: $overtimeAgainst"
+          "Penalty Home: $penaltyFor "
+          "Away: $penaltyAgainst",
+          args: [
+            resultString,
+            homeFor,
+            homeAgainst,
+            overtimeFor,
+            overtimeAgainst,
+            penaltyFor,
+            penaltyAgainst
+          ],
+          name: 'finalOfficalScoreBodyOvertimePenalty',
+          locale: locale);
+
+  String finalOfficalScoreBodyOvertime(String resultString, num homeFor,
+          num homeAgainst, num overtimeFor, num overtimeAgainst) =>
+      Intl.message(
+          "$resultString\nHome: $homeFor "
+          "Away: $homeAgainst\n"
+          "Overtime Home: $overtimeFor "
+          "Away: $overtimeAgainst",
+          args: [
+            resultString,
+            homeFor,
+            homeAgainst,
+            overtimeFor,
+            overtimeAgainst,
+          ],
+          name: 'finalOfficalScoreBodyOvertime',
+          locale: locale);
+
+  String finalOfficalScoreBodyPenalty(String resultString, num homeFor,
+          num homeAgainst, num penaltyFor, num penaltyAgainst) =>
+      Intl.message(
+          "$resultString\nHome: $homeFor "
+          "Away: $homeAgainst\n"
+          "Penalty Home: $penaltyFor "
+          "Away: $penaltyAgainst",
+          args: [
+            resultString,
+            homeFor,
+            homeAgainst,
+            penaltyFor,
+            penaltyAgainst
+          ],
+          name: 'finalOfficalScoreBodyPenalty',
+          locale: locale);
 
   String finalScoreBody(num ptsFor, num ptsAgainst, String result) {
     return Intl.message(
         'Do you want to set $ptsFor $ptsAgainst $result as the final score?',
         desc: 'Start game dialofg body text',
-        args: [ptsFor, ptsAgainst, result],
+        args: [
+          ptsFor,
+          ptsAgainst,
+          result,
+        ],
         name: 'finalScoreBody',
         locale: locale);
   }
@@ -1972,7 +2083,7 @@ class Messages {
       case OfficialResult.HomeTeamWon:
         return gameResultHomeTeamWon;
       case OfficialResult.Tie:
-        return gameResultTie;
+        return tie;
     }
     return unknown;
   }
@@ -1982,11 +2093,11 @@ class Messages {
       case GameResult.Unknown:
         return unknown;
       case GameResult.Win:
-        return gameResultWin;
+        return win;
       case GameResult.Tie:
-        return gameResultTie;
+        return tie;
       case GameResult.Loss:
-        return gameResultLoss;
+        return loss;
     }
     return unknown;
   }
@@ -2192,7 +2303,7 @@ class Messages {
       case GamePeriodType.Final:
         return periodNameFinished;
       case GamePeriodType.Penalty:
-        return periodNamePenalty;
+        return penalty;
       case GamePeriodType.Break:
         return periodNameBreak;
       case GamePeriodType.OvertimeBreak:
@@ -2312,7 +2423,7 @@ class Messages {
         }
         return periodNameOvertime;
       case GamePeriodType.Penalty:
-        return periodNamePenalty;
+        return penalty;
     }
     return unknown;
   }
