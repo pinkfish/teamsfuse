@@ -172,8 +172,7 @@ class _SingleClubInvitesAdded extends SingleClubEvent {
   _SingleClubInvitesAdded({@required this.invites});
 
   @override
-  List<Object> get props =>
-      [
+  List<Object> get props => [
         invites,
       ];
 }
@@ -261,7 +260,7 @@ class SingleClubBloc
   Stream<SingleClubState> mapEventToState(SingleClubEvent event) async* {
     if (event is _SingleClubNewClub) {
       yield (SingleClubLoaded.fromState(state)
-        ..club = event.newClub.toBuilder())
+            ..club = event.newClub.toBuilder())
           .build();
     }
 
@@ -282,12 +281,10 @@ class SingleClubBloc
         }
         await db.updateClub(club, includeMembers: event.includeMembers);
         yield SingleClubSaveDone.fromState(state).build();
-        yield (SingleClubLoaded.fromState(state)
-          ..club = event.club.toBuilder())
+        yield (SingleClubLoaded.fromState(state)..club = event.club.toBuilder())
             .build();
       } on Exception catch (e, stack) {
-        yield (SingleClubSaveFailed.fromState(state)
-          ..error = e).build();
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
         yield SingleClubLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -301,12 +298,10 @@ class SingleClubBloc
 
         yield SingleClubSaveDone.fromState(state).build();
         yield (SingleClubLoaded.fromState(state)
-          ..club = (state.club.toBuilder()
-            ..photoUrl = clubUri.toString()))
+              ..club = (state.club.toBuilder()..photoUrl = clubUri.toString()))
             .build();
       } on Exception catch (e, stack) {
-        yield (SingleClubSaveFailed.fromState(state)
-          ..error = e).build();
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
         yield SingleClubLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -319,8 +314,7 @@ class SingleClubBloc
         yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
       } on Exception catch (e, stack) {
-        yield (SingleClubSaveFailed.fromState(state)
-          ..error = e).build();
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
         yield SingleClubLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -333,8 +327,7 @@ class SingleClubBloc
         yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
       } on Exception catch (e, stack) {
-        yield (SingleClubSaveFailed.fromState(state)
-          ..error = e).build();
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
         yield SingleClubLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -351,8 +344,7 @@ class SingleClubBloc
         yield SingleClubSaveDone.fromState(state).build();
         yield SingleClubLoaded.fromState(state).build();
       } on Exception catch (e, stack) {
-        yield (SingleClubSaveFailed.fromState(state)
-          ..error = e).build();
+        yield (SingleClubSaveFailed.fromState(state)..error = e).build();
         yield SingleClubLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -360,7 +352,7 @@ class SingleClubBloc
 
     if (event is _SingleClubInvitesAdded) {
       yield (SingleClubLoaded.fromState(state)
-        ..invites = event.invites.toBuilder())
+            ..invites = event.invites.toBuilder())
           .build();
     }
 
@@ -377,9 +369,7 @@ class SingleClubBloc
     }
 
     if (event is SingleClubLoadNewsItems) {
-      print("Loading ${event.startAt}");
-      if (!_newsSub.containsKey(event.startAt) &&
-          state is SingleClubLoaded) {
+      if (!_newsSub.containsKey(event.startAt) && state is SingleClubLoaded) {
         num idx = event?.startAt?.millisecondsSinceEpoch ?? 0;
         _newsSub[idx] = db
             .getClubNews(clubUid, start: event.startAt, limit: 10)
@@ -398,7 +388,7 @@ class SingleClubBloc
     if (event is _SingleClubNewsItemAdded) {
       if (event.start == null) {
         yield (SingleClubLoaded.fromState(state)
-          ..newsItems = event.newsItems.toBuilder())
+              ..newsItems = event.newsItems.toBuilder())
             .build();
       } else {
         num idx = event.start.millisecondsSinceEpoch;
@@ -406,14 +396,13 @@ class SingleClubBloc
         var extraNewsItems = state.extraNewsItems.toBuilder();
         extraNewsItems[idx] = event.newsItems;
         yield (SingleClubLoaded.fromState(state)
-          ..extraNewsItems = extraNewsItems)
+              ..extraNewsItems = extraNewsItems)
             .build();
       }
     }
 
     if (event is SingleClubLoadCoaches) {
       if (_coachSub == null && state is SingleClubLoaded) {
-        print("Setup coaches");
         _coachSub = db.getClubCoaches(clubUid).listen((coaches) {
           add(_SingleClubCoachesAdded(coaches: coaches));
         });
@@ -426,8 +415,8 @@ class SingleClubBloc
 
     if (event is _SingleClubCoachesAdded) {
       yield (SingleClubLoaded.fromState(state)
-        ..coaches = event.coaches.toBuilder()
-        ..loadedCoaches = true)
+            ..coaches = event.coaches.toBuilder()
+            ..loadedCoaches = true)
           .build();
     }
 
@@ -436,8 +425,8 @@ class SingleClubBloc
         if (_teamSub == null && state is SingleClubLoaded) {
           _teamSub =
               db.getClubTeams(state.club, event.publicLoad).listen((teams) {
-                add(_SingleClubTeamsAdded(teams: teams));
-              });
+            add(_SingleClubTeamsAdded(teams: teams));
+          });
           _teamSub.onError((e, stack) {
             if (e is Exception) {
               crashes.recordException(e, stack);
@@ -456,8 +445,8 @@ class SingleClubBloc
         if (e is FirebaseException) {
           if (e.code == 'permission-denied') {
             yield (SingleClubLoaded.fromState(state)
-              ..teams = ListBuilder()
-              ..loadedTeams = true)
+                  ..teams = ListBuilder()
+                  ..loadedTeams = true)
                 .build();
           }
         }
@@ -466,8 +455,8 @@ class SingleClubBloc
 
     if (event is _SingleClubTeamsAdded) {
       yield (SingleClubLoaded.fromState(state)
-        ..teams = event.teams.toBuilder()
-        ..loadedTeams = true)
+            ..teams = event.teams.toBuilder()
+            ..loadedTeams = true)
           .build();
     }
   }
@@ -495,11 +484,7 @@ class SingleClubBloc
           return SingleClubSaveDone.fromMap(json);
       }
     } catch (e, stack) {
-      if (e is Error) {
-        crashes.recordError(e, stack);
-      } else {
-        crashes.recordException(e, stack);
-      }
+      crashes.recordException(e, stack);
       print(e);
     }
 

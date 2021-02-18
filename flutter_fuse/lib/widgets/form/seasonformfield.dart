@@ -26,7 +26,7 @@ class SeasonFormField extends FormField<String> {
   })  : assert(initialValue != null),
         assert(teamBloc != null || team != null),
         super(
-          key: key ?? Key("SPORT"),
+          key: key ?? Key("SEASON"),
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,
@@ -161,10 +161,8 @@ class SeasonFormFieldState extends FormFieldState<String> {
       ret.add(DropdownMenuItem<String>(
           child: Text(season.name), value: season.uid));
     }
-    print("Frogg ${ret.where((element) => element.value == value)}");
     if (ret.where((element) => element.value == value).isEmpty) {
       setValue(ret[0].value);
-      print("Frogg ${ret[0].value}");
     }
 
     return ret;

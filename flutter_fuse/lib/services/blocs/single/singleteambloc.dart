@@ -353,11 +353,11 @@ class SingleTeamBloc
             await db.updateTeamImage(teamUid, await event.image.readAsBytes());
           }
           await db.updateFirestoreTeam(event.team.build());
-          yield SingleTeamSaveDone.fromState(state).build();
+          yield (SingleTeamSaveDone.fromState(state)..savedUid = event.team.uid).build();
           yield (SingleTeamLoaded.fromState(state)..team = event.team).build();
         } catch (e, stack) {
           yield (SingleTeamSaveFailed.fromState(state)
-                ..error = RemoteError(e.message, stack.toString()))
+                ..error = e)
               .build();
           yield SingleTeamLoaded.fromState(state).build();
           crashes.recordException(e, stack);
@@ -375,7 +375,7 @@ class SingleTeamBloc
       } else {
         try {
           await db.updateTeamImage(teamUid, await event.image.readAsBytes());
-          yield SingleTeamSaveDone.fromState(state).build();
+          yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid).build();
           yield SingleTeamLoaded.fromState(state).build();
         } catch (e, stack) {
           yield (SingleTeamSaveFailed.fromState(state)
@@ -391,7 +391,7 @@ class SingleTeamBloc
       yield SingleTeamSaving.fromState(state).build();
       try {
         await db.addAdmin(teamUid, event.adminUid);
-        yield SingleTeamSaveDone.fromState(state).build();
+        yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid).build();
         yield SingleTeamLoaded.fromState(state).build();
       } catch (e, stack) {
         yield (SingleTeamSaveFailed.fromState(state)
@@ -406,7 +406,7 @@ class SingleTeamBloc
       yield SingleTeamSaving.fromState(state).build();
       try {
         await db.deleteAdmin(state.team, event.adminUid);
-        yield SingleTeamSaveDone.fromState(state).build();
+        yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid).build();
         yield SingleTeamLoaded.fromState(state).build();
       } catch (e, stack) {
         yield (SingleTeamSaveFailed.fromState(state)
@@ -425,7 +425,7 @@ class SingleTeamBloc
             email: event.email,
             teamName: state.team.name,
             myUid: db.currentUser.uid);
-        yield SingleTeamSaveDone.fromState(state).build();
+        yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid).build();
         yield SingleTeamLoaded.fromState(state).build();
       } catch (e, stack) {
         yield (SingleTeamSaveFailed.fromState(state)
@@ -510,7 +510,7 @@ class SingleTeamBloc
       try {
         Team myTeam = state.team.rebuild((b) => b..clubUid = event.clubUid);
         await db.updateFirestoreTeam(myTeam);
-        yield SingleTeamSaveDone.fromState(state).build();
+        yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid).build();
         yield (SingleTeamLoaded.fromState(state)..team = myTeam.toBuilder())
             .build();
       } catch (e, stack) {
@@ -528,7 +528,7 @@ class SingleTeamBloc
         Team myTeam = state.team.rebuild(
             (b) => b..archivedData[state.team.userUid] = event.archive);
         await db.updateFirestoreTeam(myTeam);
-        yield SingleTeamSaveDone.fromState(state).build();
+        yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid).build();
         yield (SingleTeamLoaded.fromState(state)..team = myTeam.toBuilder())
             .build();
       } catch (e, stack) {

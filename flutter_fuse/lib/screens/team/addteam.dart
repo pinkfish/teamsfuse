@@ -47,7 +47,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
   StepState _clubStepState = StepState.disabled;
   StepState _playerStepState = StepState.editing;
   File _imageFileToAdd;
-  String _clubUid;
+  String _clubUid = ClubPicker.noClub;
   String _playerUid;
   TeamBuilder _teamToAdd;
   AddTeamBloc _addTeamBloc;
@@ -83,7 +83,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
 
   void _savePressed() async {
     if (_teamToAdd != null) {
-      if (_clubUid != null && _clubUid != ClubPicker.noClub) {
+      if (_clubUid != ClubPicker.noClub) {
         _teamToAdd.clubUid = _clubUid;
       }
       _addTeamBloc.add(AddTeamEventCommit(
@@ -250,7 +250,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
               leading: const Icon(Icons.calendar_today),
               title: Text(_seasonName()),
             ),
-            _clubUid == null
+            _clubUid == ClubPicker.noClub
                 ? SizedBox(height: 0)
                 : SingleClubProvider(
                     clubUid: _clubUid,
@@ -260,11 +260,11 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                         ListTile(
                           leading: const Icon(MdiIcons.group),
                           title:
-                              _clubUid != null && _clubUid != ClubPicker.noClub
+                              _clubUid != ClubPicker.noClub
                                   ? Text(singleClubBloc.state.club.name)
                                   : Text(Messages.of(context).noclub),
                           trailing:
-                              _clubUid != null && _clubUid != ClubPicker.noClub
+                             _clubUid != ClubPicker.noClub
                                   ? ClubImage(
                                       clubUid: _clubUid,
                                       width: 20.0,
@@ -300,12 +300,13 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
   }
 
   Widget _teamEditForm(StartSection section) {
-    if (_clubUid != null) {
+    if (_clubUid != ClubPicker.noClub) {
       return SingleClubProvider(
         clubUid: _clubUid,
         builder: (context, singleClubBloc) => BlocBuilder(
             cubit: singleClubBloc,
             builder: (context, singleClubState) {
+              print("Club $_clubUid $singleClubState");
               if (singleClubState is SingleClubDeleted) {
                 return DeletedWidget();
               }
@@ -365,7 +366,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                 Step(
                   title: Text(messages.club),
                   state: _clubStepState,
-                  isActive: isActiveClub(),
+                  isActive: isActiveClub() && _currentStep >= 0,
                   content: ClubPicker(
                     clubUid: _clubUid,
                     onChanged: (val) => setState(() => _clubUid = val),
@@ -374,7 +375,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                 Step(
                   title: Text(messages.player),
                   state: _playerStepState,
-                  isActive: true,
+                  isActive: _currentStep >= 1,
                   content: Form(
                     key: _formKeyPlayer,
                     child: PlayerFormField(
@@ -386,7 +387,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                 Step(
                   title: Text(messages.team),
                   state: _detailsStepState,
-                  isActive: true,
+                  isActive: _currentStep >= 2,
                   content: SingleChildScrollView(
                     child: _teamEditForm(StartSection.start),
                   ),
@@ -394,7 +395,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                 Step(
                   title: Text(messages.details),
                   state: _detailsSecondStepState,
-                  isActive: true,
+                  isActive: _currentStep >= 3,
                   content: SingleChildScrollView(
                     child: _teamEditForm(
                       StartSection.end,
@@ -404,7 +405,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                 Step(
                   title: Text(messages.create),
                   state: _createStepStage,
-                  isActive: true,
+                  isActive: _currentStep == 4,
                   content: _buildSummary(),
                 ),
               ],

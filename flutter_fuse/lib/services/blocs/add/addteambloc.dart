@@ -61,12 +61,15 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
               coordinationBloc.authenticationBloc.currentUser.uid,
               BuiltMap.of(
                 Map<String, bool>.fromEntries(
-                  players.map(
-                    (e) => MapEntry(
-                      e.playerUid.trim(),
-                      true,
+                  [
+                    ...players.map(
+                      (e) => MapEntry(
+                        e.playerUid.trim(),
+                        true,
+                      ),
                     ),
-                  ),
+                    MapEntry("admin", true),
+                  ],
                 ),
               ),
             ),
@@ -87,6 +90,12 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
           ..users = MapBuilder(entries));
         TeamBuilder team = event.team;
         team.uid = "";
+        team.adminsData = MapBuilder({
+          coordinationBloc.authenticationBloc.currentUser.uid: BuiltMap<String, bool>.of({
+            "added": true,
+            "admin": true,
+          }),
+        });
 
         String uid = await coordinationBloc.databaseUpdateModel
             .addFirestoreTeam(

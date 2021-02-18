@@ -2,7 +2,7 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    "pretty": "prettier --write **/*.js ts/**/*.ts ts/*/*/*.ts test/**/*.ts test/**/*/*.ts",
+    "pretty": "prettier --write **/*.js ts/**/*.ts ts/*/*/*.ts test/**/*.ts test/**/*/*.ts ../firestore.rules",
     "lint": "./node_modules/.bin/tslint -p tslint.json",
     "lintfix": "./node_modules/.bin/tslint -p tslint.json --fix",
     "copytemplate": "copyfiles --verbose \"templates/**\" lib/ts",
@@ -60,6 +60,7 @@
     "firebase-functions-test": "^0.2.3",
     "mocha": "^8.2.1",
     "prettier": "^2.2.1",
+    "prettier-plugin-firestore-rules": "^0.1.5",
     "sinon": "^9.2.1",
     "tslint": "^6.1.3"
   },

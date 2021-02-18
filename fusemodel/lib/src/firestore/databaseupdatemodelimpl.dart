@@ -922,17 +922,25 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
 
   Future<Season> addFirestoreSeason(
       Season season, DocumentReferenceWrapper pregenDoc) async {
-    var ref = _wrapper.collection(SEASONS_COLLECTION);
+    var ref = pregenDoc ?? _wrapper.collection(SEASONS_COLLECTION).document();
     // Add the game.
     DocumentReferenceWrapper doc;
+    // Make sure the current user is in the user list so it shows up for us.
+    season = season.rebuild((b) => b
+    ..uid = ref.documentID
+      ..users = MapBuilder(
+        {
+          currentUser.uid: BuiltMap.of({
+            'team': true,
+            'added': true,
+          }),
+        },
+      ));
     print(season.toMap(includePlayers: true));
-    if (pregenDoc != null) {
-      await pregenDoc.setData(season.toMap(includePlayers: true));
-    } else {
-      doc = await ref.add(season.toMap(includePlayers: true));
-    }
+    await ref.setData(season.toMap(includePlayers: true));
+
     _analytics.logEvent(name: "addFirestoreSeason");
-    return season.rebuild((b) => b..uid = doc.documentID);
+    return season;
   }
 
   @override
