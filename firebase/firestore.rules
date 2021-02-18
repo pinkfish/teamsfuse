@@ -37,8 +37,8 @@ service cloud.firestore {
       return data.members[request.auth.uid].admin;
     }
 
-    function isNotNullOrEmpty(data) {
-      return data != null && data != '';
+    function isUidCorrect(data) {
+      return incomingData() != null && incomingData().uid == request.resource == id;
     }
 
 
@@ -51,7 +51,7 @@ service cloud.firestore {
       match /News/{opponent} {
         // News is always publically visible.
         allow read: if true;
-        allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
+        allow create: if isSignedIn() && isUidCorrect() &&
           isClubAdmin(get(/databases/$(database)/documents/Clubs/$(incomingData().clubUid)).data);
         allow update, delete: if isSignedIn() &&
           isClubAdmin(get(/databases/$(database)/documents/Clubs/$(existingData().clubUid)).data);
@@ -59,7 +59,7 @@ service cloud.firestore {
       match /Coaches/{opponent} {
         // Coaches are always publically visible.
         allow read: if true;
-        allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
+        allow create: if isSignedIn() && isUidCorrect() &&
           isClubAdmin(get(/databases/$(database)/documents/Clubs/$(incomingData().clubUid)).data);
         allow update, delete: if isSignedIn() &&
           isClubAdmin(get(/databases/$(database)/documents/Clubs/$(existingData().clubUid)).data);
@@ -67,7 +67,7 @@ service cloud.firestore {
       allow read: if isSignedIn() || isPublicVisible();
       // Only allow writes when the member is setup correctly.
       allow update, delete: if isSignedIn() && isClubAdmin(existingData());
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) && isClubAdmin(incomingData()) ;
+      allow create: if isSignedIn() && isUidCorrect() && isClubAdmin(incomingData()) ;
     }
 
     match /Games/{game} {
@@ -77,7 +77,7 @@ service cloud.firestore {
          isAdmin(get(/databases/$(database)/documents/Teams/$(resource.teamUid)).data);
       allow list: if isSignedIn();
       // Only allow a create if the shared data exists and the team exists.
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
+      allow create: if isSignedIn() && isUidCorrect() &&
           existsAfter(/databases/$(database)/documents/GamesShared/$(incomingData().sharedDataUid)) &&
           exists(/databases/$(database)/documents/Teams/$(incomingData().teamUid)) &&
           exists(/databases/$(database)/documents/Seasons/$(incomingData().seasonUid));
@@ -86,13 +86,13 @@ service cloud.firestore {
     match /GamesShared/{sharedGame} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
-             allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) ;
+             allow create: if isSignedIn() && isUidCorrect() ;
     }
 
     match /Invites/{invite} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) ;
+      allow create: if isSignedIn() && isUidCorrect() ;
     }
 
     match /League/{league} {
@@ -100,21 +100,21 @@ service cloud.firestore {
       allow update, delete: if isSignedIn() &&
           resource.data.members[request.auth.uid].admin == true;
       // Only allow a create if they are set as an admin.
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
+      allow create: if isSignedIn() && isUidCorrect() &&
           request.resource.data.members[request.auth.uid].admin == true;
     }
 
     match /LeagueDivision/{leagueDivision} {
       allow read: if true;
       allow update, delete: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
+      allow create: if isSignedIn() && isUidCorrect() &&
           exists(/databases/$(database)/documents/LeagueSeason/$(request.resource.data.seasonUid));
     }
 
     match /LeagueSeason/{leagueSeason} {
       allow read: if true;
       allow write: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
+      allow create: if isSignedIn() && isUidCorrect() &&
           exists(/databases/$(database)/documents/League/$(request.resource.data.leagueUid));
     }
 
@@ -127,7 +127,7 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
       allow list: if isSignedIn();
-      allow create: if isSignedIn && isNotNullOrEmpty(incomingData().uid) &&
+      allow create: if isSignedIn && isUidCorrect() &&
           existsAfter(/databases/$(database)/documents/Messages/$(incomingData().messageId));
     }
 
@@ -142,7 +142,7 @@ service cloud.firestore {
       allow write: if isSignedIn() &&
          existingData().userId == request.auth.uid;
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
+      allow create: if isSignedIn() && isUidCorrect() &&
          incomingData().fromUid == request.auth.uid &&
          incomingData().timeSent == request.time;
     }
@@ -155,7 +155,7 @@ service cloud.firestore {
         incomingData().players.keys().size() > 0;
       allow delete: if isSignedIn();
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
+      allow create: if isSignedIn() && isUidCorrect() &&
          request.auth.uid in getAfter(/databases/$(database)/documents/Teams/$(incomingData().teamUid)).data.admins &&
          incomingData().players.keys().size() > 0;
     }
@@ -170,7 +170,7 @@ service cloud.firestore {
         request.auth.uid in existingData().admins)) ||
         isPublicVisible();
       allow write: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
+      allow create: if isSignedIn() && isUidCorrect() &&
         request.auth.uid in request.auth.uid in incomingData().admins;
     }
 
@@ -179,7 +179,7 @@ service cloud.firestore {
       allow read, update, delete: if isSignedInOnly() &&
           request.auth.uid == userId;
       allow list: if isSignedIn();
-      allow create: if isSignedInOnly() && isNotNullOrEmpty(incomingData().uid) && userId == request.auth.uid;
+      allow create: if isSignedInOnly() && isUidCorrect() && userId == request.auth.uid;
     }
 
     // UserData table (profile details).
@@ -188,7 +188,7 @@ service cloud.firestore {
       allow update, delete: if isSignedInOnly() &&
           request.auth.uid == resource.id;
       allow list: if isSignedIn();
-      allow create: if isSignedInOnly() && isNotNullOrEmpty(incomingData().uid)&&
+      allow create: if isSignedInOnly() && isUidCorrect()&&
           userId == request.auth.uid &&
           incomingData().createdAt == request.time;
     }
@@ -196,7 +196,7 @@ service cloud.firestore {
     match /Players/{player} {
       allow update, delete: if isSignedIn() &&
           resource.data.user[request.auth.uid].added;
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
+      allow create: if isSignedIn() && isUidCorrect() &&
           request.resource.data.user[request.auth.uid].added;
       allow read: if isSignedIn() ||
           isPublicVisible();
