@@ -94,7 +94,7 @@ jobs:
       # ios specific actions.
       - run: |
           # Replace the newline with a \n
-          echo ${APPLE_APP_API_P8} | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' > ./app-store-api.p8
+          echo ${APPLE_APP_API_P8} | base64 -d | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' > ./app-store-api.p8
         if: ${{ matrix.os == 'ios' }}
         working-directory: flutter_fuse/ios
         env:
