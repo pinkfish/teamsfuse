@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-02-17T08:51:25.049682",
+  "@@last_modified": "2021-02-18T23:25:32.354085",
   "About": "About",
   "@About": {
     "type": "text",
@@ -20,6 +20,12 @@
   "Add Admin": "Add Admin",
   "@Add Admin": {
     "description": "Message to show as the title for the admin adding screen",
+    "type": "text",
+    "placeholders": {}
+  },
+  "ADD": "ADD",
+  "@ADD": {
+    "description": "Add a new item button",
     "type": "text",
     "placeholders": {}
   },
