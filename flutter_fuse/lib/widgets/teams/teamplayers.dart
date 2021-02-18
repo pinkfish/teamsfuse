@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/blocs/single/singleteambloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
@@ -36,6 +37,19 @@ class _TeamPlayersState extends State<TeamPlayers> {
     return ret;
   }
 
+  Widget _showInvites(SingleTeamState state) {
+    if (!state.loadedInvites) {
+      return Text(Messages.of(context).loading);
+    }
+    return ExpansionTile(
+      children: [
+        SizedBox(height: 0),
+      ],
+      title: Text(
+          Messages.of(context).pendingInvites(state.invitesAsAdmin.length)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var messsages = Messages.of(context);
@@ -51,6 +65,9 @@ class _TeamPlayersState extends State<TeamPlayers> {
           } else {
             if (_seasonUid == null) {
               _seasonUid = teamState.team.currentSeason;
+            }
+            if (!teamState.loadedInvites) {
+              bloc.add(SingleTeamLoadInvites());
             }
             return Column(
               children: <Widget>[
@@ -68,6 +85,9 @@ class _TeamPlayersState extends State<TeamPlayers> {
                     ),
                   ],
                 ),
+                teamState.isAdmin()
+                    ? _showInvites(teamState)
+                    : SizedBox(height: 0),
                 Expanded(
                   child: TeamPlayersSeason(widget._teamUid, _seasonUid),
                 ),

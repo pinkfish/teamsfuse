@@ -148,6 +148,10 @@ class SingleClubCoachBloc
 
   @override
   SingleClubCoachState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleClubCoachUninitialized)) {
+      return state;
+    }
+
     if (json == null || !json.containsKey("type")) {
       return SingleClubCoachUninitialized();
     }

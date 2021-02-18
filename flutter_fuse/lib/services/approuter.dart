@@ -204,8 +204,12 @@ class AppRouter {
         handler:
             fluro.Handler(handlerFunc: (context, vals) => AddEventScreen()));
     router.define("/AddGame",
-        handler:
-            fluro.Handler(handlerFunc: (context, vals) => AddGameScreen()));
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) => AddGameScreen(null, null)));
+    router.define("/Game/Add/:teamId/:seasonId",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) => AddGameScreen(
+                vals["teamId"][0].toString(), vals["seasonId"][0].toString())));
     router.define("/AddTraining",
         handler:
             fluro.Handler(handlerFunc: (context, vals) => AddTrainingScreen()));

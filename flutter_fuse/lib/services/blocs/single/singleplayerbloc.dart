@@ -257,6 +257,9 @@ class SinglePlayerBloc
 
   @override
   SinglePlayerState fromJson(Map<String, dynamic> json) {
+    if (!(state is SinglePlayerUninitialized)) {
+      return state;
+    }
     if (json == null || !json.containsKey("type")) {
       return SinglePlayerUninitialized();
     }

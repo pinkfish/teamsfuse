@@ -294,7 +294,7 @@ abstract class DatabaseUpdateModel {
   Stream<Iterable<InviteToTeam>> getInviteForSeasonStream(
       {@required String seasonUid, @required String teamUid});
 
-  Stream<GameSnapshotEvent> getSeasonGames(Season season);
+  Stream<BuiltList<Game>> getSeasonGames(Season season);
 
   // Send an invite to a user for this season and team.
   Future<String> inviteUserToSeason(

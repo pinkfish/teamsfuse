@@ -142,7 +142,6 @@ class TeamResultsBySeason extends StatelessWidget {
       builder: (context, seasonBloc) => BlocListener(
         cubit: seasonBloc,
         listener: (context, state) {
-          seasonBloc.add(SingleSeasonLoadGames());
           if (state is SingleTeamDeleted) {
             Navigator.pop(context);
           }
@@ -150,6 +149,7 @@ class TeamResultsBySeason extends StatelessWidget {
         child: BlocBuilder(
           cubit: seasonBloc,
           builder: (context, state) {
+            print("Season asking for load ${state.loadedGames}");
             seasonBloc.add(SingleSeasonLoadGames());
             if (state is SingleOpponentDeleted) {
               return Center(

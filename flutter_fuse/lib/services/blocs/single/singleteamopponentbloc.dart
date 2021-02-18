@@ -170,8 +170,11 @@ class SingleOpponentBloc
 
   @override
   SingleOpponentState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleOpponentUninitialized)) {
+      return state;
+    }
     if (json == null || !json.containsKey("type")) {
-      return SingleOpponentUninitialized();
+      return state;
     }
 
     try {
@@ -200,7 +203,7 @@ class SingleOpponentBloc
       }
     }
 
-    return SingleOpponentUninitialized();
+    return state;
   }
 
   @override

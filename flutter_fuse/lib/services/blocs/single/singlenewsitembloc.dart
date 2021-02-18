@@ -145,6 +145,9 @@ class SingleNewsItemBloc
 
   @override
   SingleNewsItemState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleNewsItemUninitialized)) {
+      return state;
+    }
     if (json == null || !json.containsKey("type")) {
       return SingleNewsItemUninitialized();
     }

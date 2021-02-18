@@ -40,7 +40,7 @@ class TeamDetails extends StatelessWidget {
             ),
             TextButton(
               child: Text(Messages.of(context).addGameButton),
-              onPressed: () => Navigator.pushNamed(context, "/AddGame"),
+              onPressed: () => Navigator.pushNamed(context, "/Game/Add/${team.uid}/${season.uid}"),
             ),
             TextButton(
               child: Text(Messages.of(context).addTrainingButton),
@@ -53,7 +53,7 @@ class TeamDetails extends StatelessWidget {
           ],
         ) : SizedBox(height: 0),
       ],
-      initiallyExpanded: false,
+      initiallyExpanded: season.uid == team.currentSeason,
     );
   }
 

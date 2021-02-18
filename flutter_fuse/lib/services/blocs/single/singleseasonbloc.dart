@@ -85,13 +85,14 @@ class SingleSeasonBloc
 
   StreamSubscription<Season> _seasonSub;
   StreamSubscription<Iterable<InviteToTeam>> _inviteSub;
-  StreamSubscription<GameSnapshotEvent> _gameSub;
+  StreamSubscription<BuiltList<Game>> _gameSub;
 
   // Create the bloc and do exciting things with it.
   SingleSeasonBloc(
       {@required this.db, @required this.seasonUid, @required this.crashes})
       : super(SingleSeasonUninitialized(), seasonUid) {
     assert(seasonUid != null && seasonUid.isNotEmpty);
+    print("Season $seasonUid");
     _seasonSub = db.getSingleSeason(seasonUid).listen((season) {
       if (season != null) {
         // Only send this if the team is not the same.
@@ -101,6 +102,11 @@ class SingleSeasonBloc
       } else {
         add(_SingleSeasonDeleted());
       }
+    });
+    _seasonSub.onError((e, stack) {
+      print("$seasonUid");
+      add(_SingleSeasonDeleted());
+      crashes.recordException(e, stack);
     });
   }
 
@@ -163,21 +169,26 @@ class SingleSeasonBloc
               .getInviteForSeasonStream(
                   seasonUid: seasonUid, teamUid: state.season.teamUid)
               .listen((Iterable<InviteToTeam> invites) {
-            add(_SingleSeasonLoadedInvites(invites: invites));
+            add(_SingleSeasonLoadedInvites(invites: BuiltList.of(invites)));
           });
+          _inviteSub.onError(crashes.recordException);
         }
       }
     }
 
     if (event is SingleSeasonLoadGames) {
+      print("Season state $state");
       if (state is SingleSeasonUninitialized) {
         _willLoadGames = true;
       } else {
+        print("Season do it");
         if (_gameSub == null) {
-          _gameSub =
-              db.getSeasonGames(state.season).listen((GameSnapshotEvent games) {
-            add(_SingleSeasonLoadedGames(games: BuiltList.of(games.newGames)));
+          print("Season requesting games");
+          _gameSub = db.getSeasonGames(state.season).listen((games) {
+            print("Season $games");
+            add(_SingleSeasonLoadedGames(games: games));
           });
+          _gameSub.onError(crashes.recordException);
         }
       }
     }
@@ -199,8 +210,12 @@ class SingleSeasonBloc
 
   @override
   SingleSeasonState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleSeasonUninitialized)) {
+      return state;
+    }
+
     if (json == null || !json.containsKey("type")) {
-      return SingleSeasonUninitialized();
+      return state;
     }
 
     try {

@@ -463,6 +463,9 @@ class SingleClubBloc
 
   @override
   SingleClubState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleClubUninitialized)) {
+      return state;
+    }
     if (json == null || !json.containsKey("type")) {
       return SingleClubUninitialized();
     }

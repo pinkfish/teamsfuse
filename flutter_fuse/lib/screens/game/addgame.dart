@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -16,6 +17,11 @@ import '../../widgets/util/stepperalwaysvisible.dart';
 /// Screen to display when doing a game add sequence.
 ///
 class AddGameScreen extends StatefulWidget {
+  final String teamUid;
+  final String seasonUid;
+
+  AddGameScreen(this.teamUid, this.seasonUid);
+
   @override
   _AddGameScreenState createState() {
     return _AddGameScreenState();
@@ -43,6 +49,13 @@ class _AddGameScreenState extends State<AddGameScreen> {
       _currentStep = 0;
       clubStepState = StepState.editing;
       teamStepState = StepState.disabled;
+    }
+    if (widget.teamUid != null) {
+      _currentStep = 2;
+      var teamBloc = BlocProvider.of<TeamBloc>(context);
+      _team = teamBloc.state.getTeam(widget.teamUid);
+      _teamChanged(_team);
+      _initGame = _initGame.rebuild((b) => b..seasonUid = widget.seasonUid);
     }
     super.initState();
     addGameBloc = AddGameBloc(

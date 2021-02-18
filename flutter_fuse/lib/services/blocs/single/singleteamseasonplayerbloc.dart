@@ -129,6 +129,9 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
 
   @override
   SingleTeamSeasonPlayerState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleTeamSeasonPlayerUninitialized)) {
+      return state;
+    }
     if (json == null || !json.containsKey("type")) {
       return SingleTeamSeasonPlayerUninitialized();
     }

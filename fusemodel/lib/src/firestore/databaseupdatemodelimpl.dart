@@ -48,8 +48,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     if (game.uid == null || game.uid == '') {
       var ref = _wrapper.collection(GAMES_COLLECTION).document();
       var refShared = _wrapper.collection(GAMES_SHARED_COLLECTION).document();
-      var data = await _wrapper.runTransaction((tx) async {
-        var gameBuilder = game.toBuilder();
+      var gameBuilder = game.toBuilder();
+      await _wrapper.runTransaction((tx) async {
         // Add the shared stuff, then the game.
         if (game.sharedData.officialResult.homeTeamLeagueUid == null) {
           gameBuilder.sharedData.officialResult.homeTeamLeagueUid =
@@ -65,7 +65,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         tx.set(ref, gameBuilder.build().toMap());
         return gameBuilder.build().toMap();
       });
-      return Game.fromMap(data);
+      return gameBuilder.build();
     } else {
       if (sharedData) {
         if (game.sharedDataUid.isEmpty) {
@@ -927,7 +927,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     DocumentReferenceWrapper doc;
     // Make sure the current user is in the user list so it shows up for us.
     season = season.rebuild((b) => b
-    ..uid = ref.documentID
+      ..uid = ref.documentID
       ..users = MapBuilder(
         {
           currentUser.uid: BuiltMap.of({
@@ -1072,8 +1072,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<GameSnapshotEvent> getSeasonGames(Season season) {
-    return getBasicGames(teamUid: season.teamUid, seasonUid: season.uid);
+  Stream<BuiltList<Game>> getSeasonGames(Season season) {
+    return getBasicGames(teamUid: season.teamUid, seasonUid: season.uid)
+        .map((event) => BuiltList.of(event.newGames));
   }
 
   @override

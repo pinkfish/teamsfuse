@@ -27,10 +27,17 @@ class CustomEnumJsonPlugin extends StandardJsonPlugin {
   Object beforeDeserialize(object, type) {
     if (type.root == BuiltMap && type.parameters.isNotEmpty) {
       if (_customEnumTypes.contains(type.parameters.first.root)) {
-        object = _addEnumEncoding(object as Map<String, Object>);
+        if (object is Map && object.length == 0) {
+          object = _addEnumEncoding(object as Map<String, Object>);
+        }
       }
     }
     return super.beforeDeserialize(object, type);
+  }
+
+  @override
+  Object afterDeserialize(object, type) {
+    return super.afterDeserialize(object, type);
   }
 
   Map<String, Object> _addEnumEncoding(Map<String, Object> json) {

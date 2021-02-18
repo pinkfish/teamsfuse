@@ -84,6 +84,7 @@ mixin AsyncHydratedMixin<State> on Cubit<State> {
       // Cause a state change.
       if (!_loadedData) {
         _loadedData = true;
+        print("From data $state $stateJson");
         emit(_fromJson(stateJson));
         if (!_loadedDataCompletor.isCompleted) {
           _loadedDataCompletor.complete(true);

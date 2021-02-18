@@ -175,6 +175,9 @@ class SingleMessageBloc
 
   @override
   SingleMessageState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleMessageUninitialized)) {
+      return state;
+    }
     if (json == null || !json.containsKey("type")) {
       return SingleMessageUninitialized();
     }

@@ -37,14 +37,14 @@ class TeamPlayersSeason extends StatelessWidget {
             ),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text(MaterialLocalizations.of(context).okButtonLabel),
               onPressed: () {
                 // Do the delete.
                 Navigator.of(context).pop(true);
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
               onPressed: () {
                 Navigator.of(context).pop(false);
@@ -95,9 +95,7 @@ class TeamPlayersSeason extends StatelessWidget {
             onPressed: () {
               Navigator.pushNamed(context, "AddPlayer/$_teamUid/$_seasonUid");
             },
-             style: TextButton.styleFrom(
-            primary:
-            Theme.of(context).accentColor),
+            style: TextButton.styleFrom(primary: Theme.of(context).accentColor),
             child: Text(Messages.of(context).addPlayerButton),
           ),
         ),
@@ -159,6 +157,9 @@ class TeamPlayersSeason extends StatelessWidget {
             return Column(children: [
               Text(Messages.of(context).loading),
             ]);
+          }
+          if (!seasonState.loadedInvites) {
+            seasonBloc.add(SingleSeasonLoadInvites());
           }
           return Column(
               children: _buildPlayers(context, seasonState, teamState));

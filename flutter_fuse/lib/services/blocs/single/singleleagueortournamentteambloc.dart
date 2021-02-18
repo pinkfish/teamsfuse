@@ -320,6 +320,9 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
 
   @override
   SingleLeagueOrTournamentTeamState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleLeagueOrTournamentTeamUninitialized)) {
+      return state;
+    }
     if (json == null || !json.containsKey("type")) {
       return SingleLeagueOrTournamentTeamUninitialized();
     }

@@ -129,6 +129,10 @@ class SingleSharedGameBloc
 
   @override
   SingleSharedGameState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleSharedGameUninitialized)) {
+      return state;
+    }
+
     if (json == null || !json.containsKey("type")) {
       return SingleSharedGameUninitialized();
     }

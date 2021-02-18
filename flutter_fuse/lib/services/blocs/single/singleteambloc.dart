@@ -353,12 +353,11 @@ class SingleTeamBloc
             await db.updateTeamImage(teamUid, await event.image.readAsBytes());
           }
           await db.updateFirestoreTeam(event.team.build());
-          yield (SingleTeamSaveDone.fromState(state)..savedUid = event.team.uid).build();
+          yield (SingleTeamSaveDone.fromState(state)..savedUid = event.team.uid)
+              .build();
           yield (SingleTeamLoaded.fromState(state)..team = event.team).build();
         } catch (e, stack) {
-          yield (SingleTeamSaveFailed.fromState(state)
-                ..error = e)
-              .build();
+          yield (SingleTeamSaveFailed.fromState(state)..error = e).build();
           yield SingleTeamLoaded.fromState(state).build();
           crashes.recordException(e, stack);
         }
@@ -375,7 +374,8 @@ class SingleTeamBloc
       } else {
         try {
           await db.updateTeamImage(teamUid, await event.image.readAsBytes());
-          yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid).build();
+          yield (SingleTeamSaveDone.fromState(state)..savedUid = teamUid)
+              .build();
           yield SingleTeamLoaded.fromState(state).build();
         } catch (e, stack) {
           yield (SingleTeamSaveFailed.fromState(state)
@@ -463,7 +463,7 @@ class SingleTeamBloc
         _inviteAdminSub = db
             .getInvitesForTeam(teamUid)
             .listen((Iterable<InviteAsAdmin> invites) {
-          add(_SingleTeamInvitesAdminLoaded(invites: invites));
+          add(_SingleTeamInvitesAdminLoaded(invites: BuiltList.of(invites)));
         });
       }
     }
@@ -543,8 +543,11 @@ class SingleTeamBloc
 
   @override
   SingleTeamState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleTeamUninitialized)) {
+      return state;
+    }
     if (json == null || !json.containsKey("type")) {
-      return SingleTeamUninitialized();
+      return state;
     }
 
     try {

@@ -156,6 +156,9 @@ class SingleProfileBloc
 
   @override
   SingleProfileState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleProfileUninitialized)) {
+      return state;
+    }
     if (json == null || !json.containsKey("type")) {
       return SingleProfileUninitialized();
     }

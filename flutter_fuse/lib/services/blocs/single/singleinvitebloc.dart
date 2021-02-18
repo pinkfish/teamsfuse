@@ -483,6 +483,10 @@ class SingleInviteBloc
 
   @override
   SingleInviteState fromJson(Map<String, dynamic> json) {
+    if (!(state is SingleInviteUninitialized)) {
+      return state;
+    }
+
     if (json == null || !json.containsKey("type")) {
       return SingleInviteUninitialized();
     }
