@@ -153,18 +153,27 @@ describe('TeamsFuse rules', function () {
     });
     it('get season', async () => {
         const db = authedApp({ uid: 'robert', email_verified: true });
+        console.log('Team');
         await db
             .collection('Teams')
             .doc('team')
             .set({
+                uid: 'team',
                 admins: {
                     robert: true,
                 },
             });
+        console.log('Seasons');
         await db
             .collection('Seasons')
             .doc('frog')
-            .set({ users: { robert: { added: true } }, players: { fluff: { added: true } }, teamUid: 'team' });
+            .set({
+                uid: 'frog',
+                users: { robert: { added: true } },
+                players: { fluff: { added: true } },
+                teamUid: 'team',
+            });
+        console.log('Waffle');
         await firebase.assertSucceeds(db.collection('Seasons').doc('frog').get());
         const aliceDb = authedApp({ uid: 'alice' });
         await firebase.assertFails(aliceDb.collection('Seasons').doc('frog').get());
@@ -175,6 +184,7 @@ describe('TeamsFuse rules', function () {
             .collection('Teams')
             .doc('team')
             .set({
+                uid: 'team',
                 admins: {
                     robert: true,
                 },
@@ -183,6 +193,7 @@ describe('TeamsFuse rules', function () {
             .collection('Seasons')
             .doc('frogpublic')
             .set({
+                uid: 'frogpublic',
                 users: { robert: { added: true } },
                 isPublic: true,
                 players: { fluff: { added: true } },
@@ -199,11 +210,12 @@ describe('TeamsFuse rules', function () {
         await db
             .collection('Teams')
             .doc('frogpublic')
-            .set({ users: { robert: { added: true } }, isPublic: true, clubUid: 'clubby' });
+            .set({ uid: 'frogpublic', users: { robert: { added: true } }, isPublic: true, clubUid: 'clubby' });
         await db
             .collection('Clubs')
             .doc('clubby')
             .set({
+                uid: 'clubby',
                 isPublic: true,
                 members: {
                     robert: {
@@ -255,9 +267,10 @@ describe('TeamsFuse rules', function () {
     it('create user profiles', async () => {
         const db = authedApp({ uid: 'alice' });
         const profile = db.collection('UserData').doc('alice');
-        await firebase.assertFails(profile.set({ birthday: 'January 1' }));
+        await firebase.assertFails(profile.set({ uid: 'alice', birthday: 'January 1' }));
         await firebase.assertSucceeds(
             profile.set({
+                uid: 'alice',
                 birthday: 'January 1',
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             }),
@@ -269,12 +282,13 @@ describe('TeamsFuse rules', function () {
         await db
             .collection('Teams')
             .doc('team')
-            .set({ admins: { alice: true }, isPublic: true });
+            .set({ uid: 'alice', admins: { alice: true }, isPublic: true });
         await firebase.assertSucceeds(
             db
                 .collection('Seasons')
                 .doc('season')
                 .set({
+                    uid: 'season',
                     users: {
                         alice: { added: true },
                     },
@@ -303,6 +317,7 @@ describe('TeamsFuse rules', function () {
                 });
 
                 await t.set(gameRef, {
+                    uid: 'game',
                     seasonUid: 'season',
                     sharedDataUid: 'sharedGame',
                     teamUid: 'team',

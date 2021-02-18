@@ -2,12 +2,11 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-
     // [READ] Data that exists on the Firestore document
     function existingData() {
       return resource.data;
     }
+    
     // [WRITE] Data that is sent to a Firestore document
     function incomingData() {
       return request.resource.data;
@@ -43,7 +42,7 @@ service cloud.firestore {
     }
 
 
-function isPublicVisible() {
+    function isPublicVisible() {
       return "isPublic" in existingData() &&
         existingData().isPublic;
     }
@@ -52,7 +51,7 @@ function isPublicVisible() {
       match /News/{opponent} {
         // News is always publically visible.
         allow read: if true;
-        allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) &&
+        allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
           isClubAdmin(get(/databases/$(database)/documents/Clubs/$(incomingData().clubUid)).data);
         allow update, delete: if isSignedIn() &&
           isClubAdmin(get(/databases/$(database)/documents/Clubs/$(existingData().clubUid)).data);
@@ -60,7 +59,7 @@ function isPublicVisible() {
       match /Coaches/{opponent} {
         // Coaches are always publically visible.
         allow read: if true;
-        allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) &&
+        allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
           isClubAdmin(get(/databases/$(database)/documents/Clubs/$(incomingData().clubUid)).data);
         allow update, delete: if isSignedIn() &&
           isClubAdmin(get(/databases/$(database)/documents/Clubs/$(existingData().clubUid)).data);
@@ -68,7 +67,7 @@ function isPublicVisible() {
       allow read: if isSignedIn() || isPublicVisible();
       // Only allow writes when the member is setup correctly.
       allow update, delete: if isSignedIn() && isClubAdmin(existingData());
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) && isClubAdmin(incomingData()) ;
+      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) && isClubAdmin(incomingData()) ;
     }
 
     match /Games/{game} {
@@ -78,7 +77,7 @@ function isPublicVisible() {
          isAdmin(get(/databases/$(database)/documents/Teams/$(resource.teamUid)).data);
       allow list: if isSignedIn();
       // Only allow a create if the shared data exists and the team exists.
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) &&
+      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
           existsAfter(/databases/$(database)/documents/GamesShared/$(incomingData().sharedDataUid)) &&
           exists(/databases/$(database)/documents/Teams/$(incomingData().teamUid)) &&
           exists(/databases/$(database)/documents/Seasons/$(incomingData().seasonUid));
@@ -87,13 +86,13 @@ function isPublicVisible() {
     match /GamesShared/{sharedGame} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
-             allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) ;
+             allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) ;
     }
 
     match /Invites/{invite} {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) ;
+      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) ;
     }
 
     match /League/{league} {
@@ -101,21 +100,21 @@ function isPublicVisible() {
       allow update, delete: if isSignedIn() &&
           resource.data.members[request.auth.uid].admin == true;
       // Only allow a create if they are set as an admin.
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) &&
+      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
           request.resource.data.members[request.auth.uid].admin == true;
     }
 
     match /LeagueDivision/{leagueDivision} {
       allow read: if true;
       allow update, delete: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) &&
+      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
           exists(/databases/$(database)/documents/LeagueSeason/$(request.resource.data.seasonUid));
     }
 
     match /LeagueSeason/{leagueSeason} {
       allow read: if true;
       allow write: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) &&
+      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
           exists(/databases/$(database)/documents/League/$(request.resource.data.leagueUid));
     }
 
@@ -128,7 +127,7 @@ function isPublicVisible() {
       allow read: if isSignedIn();
       allow write: if isSignedIn();
       allow list: if isSignedIn();
-      allow create: if isSignedIn && isNotNullOrEmpty(incomingData().data.uid) &&
+      allow create: if isSignedIn && isNotNullOrEmpty(incomingData().uid) &&
           existsAfter(/databases/$(database)/documents/Messages/$(incomingData().messageId));
     }
 
@@ -143,20 +142,20 @@ function isPublicVisible() {
       allow write: if isSignedIn() &&
          existingData().userId == request.auth.uid;
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) &&
+      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
          incomingData().fromUid == request.auth.uid &&
          incomingData().timeSent == request.time;
     }
 
     match /Seasons/{season} {
       allow read: if (isSignedIn() &&
-        (resource.data.users[request.auth.uid].added)) ||
-        isPublicVisible();
+        (resource.data.users[request.auth.uid].added) ||
+        isPublicVisible());
       allow update: if isSignedIn() &&
         incomingData().players.keys().size() > 0;
       allow delete: if isSignedIn();
       allow list: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) &&
+      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
          request.auth.uid in getAfter(/databases/$(database)/documents/Teams/$(incomingData().teamUid)).data.admins &&
          incomingData().players.keys().size() > 0;
     }
@@ -171,7 +170,7 @@ function isPublicVisible() {
         request.auth.uid in existingData().admins)) ||
         isPublicVisible();
       allow write: if isSignedIn();
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) &&
+      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
         request.auth.uid in request.auth.uid in incomingData().admins;
     }
 
@@ -180,7 +179,7 @@ function isPublicVisible() {
       allow read, update, delete: if isSignedInOnly() &&
           request.auth.uid == userId;
       allow list: if isSignedIn();
-      allow create: if isSignedInOnly() && isNotNullOrEmpty(incomingData().data.uid) && userId == request.auth.uid;
+      allow create: if isSignedInOnly() && isNotNullOrEmpty(incomingData().uid) && userId == request.auth.uid;
     }
 
     // UserData table (profile details).
@@ -189,7 +188,7 @@ function isPublicVisible() {
       allow update, delete: if isSignedInOnly() &&
           request.auth.uid == resource.id;
       allow list: if isSignedIn();
-      allow create: if isSignedInOnly() && isNotNullOrEmpty(incomingData().data.uid)&&
+      allow create: if isSignedInOnly() && isNotNullOrEmpty(incomingData().uid)&&
           userId == request.auth.uid &&
           incomingData().createdAt == request.time;
     }
@@ -197,7 +196,7 @@ function isPublicVisible() {
     match /Players/{player} {
       allow update, delete: if isSignedIn() &&
           resource.data.user[request.auth.uid].added;
-      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().data.uid) &&
+      allow create: if isSignedIn() && isNotNullOrEmpty(incomingData().uid) &&
           request.resource.data.user[request.auth.uid].added;
       allow read: if isSignedIn() ||
           isPublicVisible();
