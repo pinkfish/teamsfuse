@@ -1,12 +1,16 @@
+# frozen_string_literal: true
+
 # This file contains the fastlane.tools configuration
 # You can find the documentation at https://docs.fastlane.tools
 
 default_platform(:ios)
 
 def delete_temp_keychain(name)
-  delete_keychain(
-    name: name
-  ) if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+  if File.exist? File.expand_path("~/Library/Keychains/#{name}-db")
+    delete_keychain(
+      name: name
+    )
+  end
 end
 
 def create_temp_keychain(name, password)
@@ -24,20 +28,20 @@ def ensure_temp_keychain(name, password)
 end
 
 platform :ios do
-  desc "Push a new beta build to firebase"
+  desc 'Push a new beta build to firebase'
   lane :firebase do
     project = 'Runner.xcodeproj'
 
     appicon(
-       appicon_devices: [:ipad, :iphone, :ios_marketing],
-       appicon_path: "Runner/Assets.xcassets",
-       appicon_image_file: '../assets/images/app_iconx1024.png'
+      appicon_devices: %i[ipad iphone ios_marketing],
+      appicon_path: 'Runner/Assets.xcassets',
+      appicon_image_file: '../assets/images/app_iconx1024.png'
     )
 
-    DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
-    PROVISIONING_PROFILE_SPECIFIER = ENV["PROVISIONING_PROFILE_SPECIFIER"]
-    TEMP_KEYCHAIN_USER = ENV["TEMP_KEYCHAIN_USER"]
-    TEMP_KEYCHAIN_PASSWORD = ENV["TEMP_KEYCHAIN_PASSWORD"]
+    DEVELOPER_APP_IDENTIFIER = ENV['DEVELOPER_APP_IDENTIFIER']
+    PROVISIONING_PROFILE_SPECIFIER = ENV['PROVISIONING_PROFILE_SPECIFIER']
+    TEMP_KEYCHAIN_USER = ENV['TEMP_KEYCHAIN_USER']
+    TEMP_KEYCHAIN_PASSWORD = ENV['TEMP_KEYCHAIN_PASSWORD']
 
     # setup certs.
     keychain_name = TEMP_KEYCHAIN_USER
@@ -45,97 +49,115 @@ platform :ios do
     ensure_temp_keychain(keychain_name, keychain_password)
 
     match(
-        type: 'appstore',
-        app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
-        git_basic_authorization: Base64.strict_encode64(ENV["GIT_AUTHORIZATION"]),
-        readonly: true,
-        keychain_name: keychain_name,
-        keychain_password: keychain_password
+      type: 'appstore',
+      app_identifier: DEVELOPER_APP_IDENTIFIER.to_s,
+      git_basic_authorization: Base64.strict_encode64(ENV['GIT_AUTHORIZATION']),
+      readonly: true,
+      keychain_name: keychain_name,
+      keychain_password: keychain_password
     )
 
-    build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
+    build_app(workspace: 'Runner.xcworkspace', scheme: 'Runner', export_xcargs: '-allowProvisioningUpdates')
     firebase_app_distribution(
-            app: "1:400199897683:ios:ce8c89497900217008aca6",
-            release_notes: "Lots of amazing new features to test out!",
-            groups: "teamsfuse",
+      app: '1:400199897683:ios:ce8c89497900217008aca6',
+      release_notes: 'Lots of amazing new features to test out!',
+      groups: 'teamsfuse'
     )
   end
 
-  desc "Lane just to get the api key for apple"
-  lane :upload_metadata do
-      api_key = app_store_connect_api_key(
-         key_id: "8X8J2VC32L",
-         issuer_id: "fc631508-7672-4236-a15a-21063621560e",
-         key_filepath: "./app-store-api.p8",
-         duration: 1200, # optional
-         in_house: false, # optional but may be required if using match/sigh
-       )
+  desc 'Only do the deliver'
+  lane :upload_app do |options|
+    UI.user_error!('Please provide a version using `version`') if options[:version].to_s.length.zero?
+    version = options[:version]
+    @build_name = options[:version].delete('v')
+    DEVELOPER_APP_ID = ENV['DEVELOPER_APP_ID']
+    DEVELOPER_APP_IDENTIFIER = ENV['DEVELOPER_APP_IDENTIFIER']
+    PROVISIONING_PROFILE_SPECIFIER = ENV['PROVISIONING_PROFILE_SPECIFIER']
+    TEMP_KEYCHAIN_USER = ENV['TEMP_KEYCHAIN_USER']
+    TEMP_KEYCHAIN_PASSWORD = ENV['TEMP_KEYCHAIN_PASSWORD']
+    APPLE_KEY_CONTENT = ENV['APPLE_KEY_CONTENT']
+
+    @api_key = app_store_connect_api_key(
+      key_id: '8X8J2VC32L',
+      issuer_id: 'fc631508-7672-4236-a15a-21063621560e',
+      key_content: APPLE_KEY_CONTENT,
+      is_key_content_base64: true,
+      in_house: false # optional but may be required if using match/sigh
+    )
+
+    # Upload the app.
     deliver(
       submit_for_review: false,
       force: true,
-      metadata_path: "./metadata",
-      api_key: api_key,
-      skip_binary_upload: true,
+      metadata_path: './metadata',
+      app_version: @build_name,
+      api_key: @api_key,
       precheck_include_in_app_purchases: false,
+      run_precheck_before_submit: false,
+      username: DEVELOPER_APP_ID.to_s,
+      app_identifier: 'com.teamfuse.flutterfuse',
+      ipa: './Runner.ipa',
+      team_id: '7L9UDTQJU8'
     )
+    delete_temp_keychain(keychain_name)
   end
 
-  desc "Push a new beta build to TestFlight"
+  desc 'Push a new beta build to TestFlight'
   lane :beta do |options|
-    github_api_token = ENV["FL_GITHUB_RELEASE_API_TOKEN"]
-    UI.user_error!("Please provide a GitHub API token using `FL_GITHUB_RELEASE_API_TOKEN`") if github_api_token.to_s.length == 0
-    UI.user_error!("Please provide a version using `version`") if options[:version].to_s.length == 0
+    github_api_token = ENV['FL_GITHUB_RELEASE_API_TOKEN']
+    if github_api_token.to_s.length.zero?
+      UI.user_error!('Please provide a GitHub API token using `FL_GITHUB_RELEASE_API_TOKEN`')
+    end
+    UI.user_error!('Please provide a version using `version`') if options[:version].to_s.length.zero?
     version = options[:version]
-    @build_name=options[:version].delete("v")
+    @build_name = options[:version].delete('v')
 
-    DEVELOPER_APP_ID = ENV["DEVELOPER_APP_ID"]
-    DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
-    PROVISIONING_PROFILE_SPECIFIER = ENV["PROVISIONING_PROFILE_SPECIFIER"]
-    TEMP_KEYCHAIN_USER = ENV["TEMP_KEYCHAIN_USER"]
-    TEMP_KEYCHAIN_PASSWORD = ENV["TEMP_KEYCHAIN_PASSWORD"]
-    APPLE_KEY_CONTENT = ENV["APPLE_KEY_CONTENT"]
+    DEVELOPER_APP_ID = ENV['DEVELOPER_APP_ID']
+    DEVELOPER_APP_IDENTIFIER = ENV['DEVELOPER_APP_IDENTIFIER']
+    PROVISIONING_PROFILE_SPECIFIER = ENV['PROVISIONING_PROFILE_SPECIFIER']
+    TEMP_KEYCHAIN_USER = ENV['TEMP_KEYCHAIN_USER']
+    TEMP_KEYCHAIN_PASSWORD = ENV['TEMP_KEYCHAIN_PASSWORD']
+    APPLE_KEY_CONTENT = ENV['APPLE_KEY_CONTENT']
 
     project = 'Runner.xcodeproj'
 
     begin
       increment_build_number(
-        xcodeproj: "./Runner.xcodeproj",
+        xcodeproj: './Runner.xcodeproj'
       )
       commit_version_bump(
         message: "Version Bump to v#{@build_name}",
-        xcodeproj: "./Runner.xcodeproj",
-        force: true,
+        xcodeproj: './Runner.xcodeproj',
+        force: true
       )
       add_git_tag(
         tag: version,
-        force: true,
+        force: true
       )
       push_to_git_remote(tags: true, force: true)
-    rescue => error
-      puts error
-      puts "Error commiting version number"
+    rescue StandardError => e
+      puts e
+      puts 'Error commiting version number'
     end
 
-    version = get_version_number(xcodeproj: project,)
-    desc "Version $version"
+    version = get_version_number(xcodeproj: project)
+    desc 'Version $version'
 
+    release = get_github_release(url: 'pinkfish/teamsfuse', version: options[:version], api_token: github_api_token)
 
-    release=get_github_release(url: "pinkfish/teamsfuse", version: options[:version], api_token: github_api_token)
+    puts release['name']
 
-    puts release["name"]
-
-    body = release["body"]
+    body = release['body']
 
     # Write the release notes out to the metadata.
     File.open('metadata/en-US/releast_notes.text', 'w') do |file|
       file.write(body)
     end
 
-
     appicon(
-       appicon_devices: [:ipad, :iphone, :ios_marketing],
-       appicon_path: "Runner/Assets.xcassets",
-       appicon_image_file: '../assets/images/app_iconx1024.png'
+      appicon_devices: %i[ipad iphone ios_marketing],
+      appicon_path: 'Runner/Assets.xcassets',
+      appicon_image_file: '../assets/images/app_iconx1024.png'
     )
 
     # setup certs.
@@ -144,74 +166,51 @@ platform :ios do
     ensure_temp_keychain(keychain_name, keychain_password)
 
     match(
-        type: 'appstore',
-        app_identifier: "#{DEVELOPER_APP_IDENTIFIER}",
-        git_basic_authorization: Base64.strict_encode64(ENV["GIT_AUTHORIZATION"]),
-        readonly: true,
-        clone_branch_directly: true,
-        shallow_clone: true,
-        keychain_name: keychain_name,
-        keychain_password: keychain_password
+      type: 'appstore',
+      app_identifier: DEVELOPER_APP_IDENTIFIER.to_s,
+      git_basic_authorization: Base64.strict_encode64(ENV['GIT_AUTHORIZATION']),
+      readonly: true,
+      clone_branch_directly: true,
+      shallow_clone: true,
+      keychain_name: keychain_name,
+      keychain_password: keychain_password
     )
 
     # Build the app
-    #build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
+    # build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
     gym(
-      configuration: "Release",
-      workspace: "Runner.xcworkspace",
-      scheme: "Runner",
-      export_method: "app-store",
-      clean: false,
+      configuration: 'Release',
+      workspace: 'Runner.xcworkspace',
+      scheme: 'Runner',
+      export_method: 'app-store',
+      clean: false
     )
 
     # Upload the app.
-    #upload_to_testflight(changelog: body)
-
-    api_key = app_store_connect_api_key(
-           key_id: "8X8J2VC32L",
-           issuer_id: "fc631508-7672-4236-a15a-21063621560e",
-           key_content: ENV["APPLE_APP_API_P8"],
-           is_key_content_base64: true,
-           duration: 1200, # optional
-           in_house: false, # optional but may be required if using match/sigh
-        )
-
-    deliver(
-      submit_for_review: true,
-      force: true,
-      metadata_path: "./metadata",
-      api_key: api_key,
-      precheck_include_in_app_purchases: false,
-      username: "#{DEVELOPER_APP_ID}",
-      app_identifier: "com.teamfuse.flutterfuse",
-      ipa: "./Runner.ipa"
-    )
-
-    delete_temp_keychain(keychain_name)
+    upload_app(version: version)
   end
 
-  desc "Push a new beta build to TestFlight"
+  desc 'Push a new beta build to TestFlight'
   lane :beta_local do |options|
-    UI.user_error!("Please provide a version using `version`") if options[:version].to_s.length == 0
+    UI.user_error!('Please provide a version using `version`') if options[:version].to_s.length.zero?
     version = options[:version]
-    @build_name=options[:version].delete("v")
+    @build_name = options[:version].delete('v')
 
-    DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
-    DEVELOPER_APP_ID = ENV["DEVELOPER_APP_ID"]
-    TEMP_KEYCHAIN_USER = ENV["TEMP_KEYCHAIN_USER"]
-    TEMP_KEYCHAIN_PASSWORD = ENV["TEMP_KEYCHAIN_PASSWORD"]
-    APPLE_KEY_CONTENT = ENV["APPLE_KEY_CONTENT"]
+    DEVELOPER_APP_IDENTIFIER = ENV['DEVELOPER_APP_IDENTIFIER']
+    DEVELOPER_APP_ID = ENV['DEVELOPER_APP_ID']
+    TEMP_KEYCHAIN_USER = ENV['TEMP_KEYCHAIN_USER']
+    TEMP_KEYCHAIN_PASSWORD = ENV['TEMP_KEYCHAIN_PASSWORD']
+    APPLE_KEY_CONTENT = ENV['APPLE_KEY_CONTENT']
 
     project = 'Runner.xcodeproj'
 
-    version = get_version_number(xcodeproj: project,)
-    desc "Version $version"
-
+    version = get_version_number(xcodeproj: project)
+    desc 'Version $version'
 
     appicon(
-       appicon_devices: [:ipad, :iphone, :ios_marketing],
-       appicon_path: "Runner/Assets.xcassets",
-       appicon_image_file: '../assets/images/app_iconx1024.png'
+      appicon_devices: %i[ipad iphone ios_marketing],
+      appicon_path: 'Runner/Assets.xcassets',
+      appicon_image_file: '../assets/images/app_iconx1024.png'
     )
 
     # setup certs.
@@ -220,120 +219,61 @@ platform :ios do
     ensure_temp_keychain(keychain_name, keychain_password)
 
     match(
-        type: 'appstore',
-        app_identifier: "com.teamfuse.flutterfuse",
-        git_basic_authorization: Base64.strict_encode64(ENV["GIT_AUTHORIZATION"]),
-        readonly: true,
-        keychain_name: keychain_name,
-        keychain_password: keychain_password
+      type: 'appstore',
+      app_identifier: 'com.teamfuse.flutterfuse',
+      git_basic_authorization: Base64.strict_encode64(ENV['GIT_AUTHORIZATION']),
+      readonly: true,
+      keychain_name: keychain_name,
+      keychain_password: keychain_password
     )
 
     # Increment the build number
     begin
-        increment_build_number(
-          xcodeproj: "./Runner.xcodeproj",
-        )
-        commit_version_bump(
-          message: "Version Bump to v#{@build_name}",
-          xcodeproj: "./Runner.xcodeproj",
-          force: true,
-        )
-    rescue => error
-      puts error
-      puts "Error commiting version number"
+      increment_build_number(
+        xcodeproj: './Runner.xcodeproj'
+      )
+      commit_version_bump(
+        message: "Version Bump to v#{@build_name}",
+        xcodeproj: './Runner.xcodeproj',
+        force: true
+      )
+    rescue StandardError => e
+      puts e
+      puts 'Error commiting version number'
     end
 
     # Build the app
-    #build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
+    # build_app(workspace: "Runner.xcworkspace", scheme: "Runner", export_xcargs: "-allowProvisioningUpdates")
     gym(
-      configuration: "Release",
-      workspace: "Runner.xcworkspace",
-      scheme: "Runner",
-      export_method: "app-store",
-      clean: false,
+      configuration: 'Release',
+      workspace: 'Runner.xcworkspace',
+      scheme: 'Runner',
+      export_method: 'app-store',
+      clean: false
     )
 
-    api_key = app_store_connect_api_key(
-       key_id: "8X8J2VC32L",
-       issuer_id: "fc631508-7672-4236-a15a-21063621560e",
-         key_content: APPLE_KEY_CONTENT,
-       duration: 1200, # optional
-       in_house: false, # optional but may be required if using match/sigh
-    )
-
-    # Upload the app.
-    deliver(
-      submit_for_review: true,
-      force: true,
-      metadata_path: "./metadata",
-      api_key: api_key,
-      precheck_include_in_app_purchases: false,
-      upload_app_privacy_details_to_app_store: false,
-      username: "#{DEVELOPER_APP_ID}",
-        app_identifier: "com.teamfuse.flutterfuse",
-      ipa: "./Runner.ipa",
-        team_id: '7L9UDTQJU8',
-    )
-    delete_temp_keychain(keychain_name)
+    upload_app(version: version)
   end
 
-  desc "Only do the deliver"
+  desc 'Only do the deliver'
   lane :beta_deliver_local do |options|
-      DEVELOPER_APP_ID = ENV["DEVELOPER_APP_ID"]
-      DEVELOPER_APP_IDENTIFIER = ENV["DEVELOPER_APP_IDENTIFIER"]
-      PROVISIONING_PROFILE_SPECIFIER = ENV["PROVISIONING_PROFILE_SPECIFIER"]
-    TEMP_KEYCHAIN_USER = ENV["TEMP_KEYCHAIN_USER"]
-    TEMP_KEYCHAIN_PASSWORD = ENV["TEMP_KEYCHAIN_PASSWORD"]
-    APPLE_KEY_CONTENT = ENV["APPLE_KEY_CONTENT"]
+    UI.user_error!('Please provide a version using `version`') if options[:version].to_s.length.zero?
+    version = options[:version]
+    @build_name = options[:version].delete('v')
 
-
+    # Create the app icon
     appicon(
-       appicon_devices: [:ipad, :iphone, :ios_marketing],
-       appicon_path: "Runner/Assets.xcassets",
-       appicon_image_file: '../assets/images/app_iconx1024.png'
+      appicon_devices: %i[ipad iphone ios_marketing],
+      appicon_path: 'Runner/Assets.xcassets',
+      appicon_image_file: '../assets/images/app_iconx1024.png'
     )
 
-          # setup certs.
-          keychain_name = TEMP_KEYCHAIN_USER
-          keychain_password = TEMP_KEYCHAIN_PASSWORD
-          ensure_temp_keychain(keychain_name, keychain_password)
-
-          match(
-              type: 'appstore',
-              app_identifier: "com.teamfuse.flutterfuse",
-              git_basic_authorization: Base64.strict_encode64(ENV["GIT_AUTHORIZATION"]),
-              readonly: true,
-              keychain_name: keychain_name,
-              keychain_password: keychain_password
-          )
-
-     @api_key = app_store_connect_api_key(
-         key_id: "JDFP6SM7TG",
-         issuer_id: "fc631508-7672-4236-a15a-21063621560e",
-         key_content: APPLE_KEY_CONTENT,
-         is_key_content_base64: true,
-         in_house: false, # optional but may be required if using match/sigh
-      )
-
-      # Upload the app.
-      deliver(
-        submit_for_review: false,
-        force: true,
-        metadata_path: "./metadata",
-        api_key: @api_key,
-        precheck_include_in_app_purchases: false,
-        run_precheck_before_submit: false,
-        username: "#{DEVELOPER_APP_ID}",
-        app_identifier: "com.teamfuse.flutterfuse",
-        ipa: "./Runner.ipa",
-        team_id: '7L9UDTQJU8',
-      )
-    delete_temp_keychain(keychain_name)
+    # Upload the app
+    upload_app(version: version)
   end
 
-  desc "Generate new localized screenshots"
+  desc 'Generate new localized screenshots'
   lane :screenshots do
-    capture_screenshots(workspace: "Runner.xcworkspace", scheme: "Runner")
+    capture_screenshots(workspace: 'Runner.xcworkspace', scheme: 'Runner')
   end
 end
-
