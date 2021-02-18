@@ -37,8 +37,8 @@ service cloud.firestore {
       return data.members[request.auth.uid].admin;
     }
 
-    function isUidCorrect(data) {
-      return incomingData() != null && incomingData().uid == request.resource == id;
+    function isUidCorrect() {
+      return incomingData() != null && incomingData().uid == request.resource.id;
     }
 
 
