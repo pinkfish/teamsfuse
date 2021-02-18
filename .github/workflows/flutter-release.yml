@@ -127,7 +127,7 @@ jobs:
           GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
           TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
           TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
-          APPLE_APP_API_P8: '${{ secrets.APPLE_APP_API_P8 }}'
+          APPLE_KEY_CONTENT: '${{ secrets.APPLE_APP_API_P8 }}'
 
 
       # Web specific actions

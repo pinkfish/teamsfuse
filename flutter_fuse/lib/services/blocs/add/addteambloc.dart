@@ -69,6 +69,7 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
                       ),
                     ),
                     MapEntry("admin", true),
+                    MapEntry("added", true),
                   ],
                 ),
               ),
