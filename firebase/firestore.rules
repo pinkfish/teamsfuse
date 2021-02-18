@@ -150,7 +150,7 @@ service cloud.firestore {
       allow delete: if isSignedIn();
       allow list: if isSignedIn();
       allow create: if isSignedIn() &&
-         get(/databases/$(database)/documents/Teams/$(incomingData().teamUid)).data.admins[request.auth.uid] &&
+         request.auth.uid in get(/databases/$(database)/documents/Teams/$(incomingData().teamUid)).data.admins &&
          incomingData().players.keys().size() > 0;
     }
 

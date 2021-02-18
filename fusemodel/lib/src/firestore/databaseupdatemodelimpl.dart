@@ -925,6 +925,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(SEASONS_COLLECTION);
     // Add the game.
     DocumentReferenceWrapper doc;
+    print(season.toMap(includePlayers: true));
     if (pregenDoc != null) {
       await pregenDoc.setData(season.toMap(includePlayers: true));
     } else {
