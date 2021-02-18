@@ -51,10 +51,6 @@ class _TeamScreenState extends State<TeamScreen> {
      return TeamPlayers(widget.teamUid);
   }
 
-  void _onEditTeam(BuildContext context) {
-    Navigator.pushNamed(context, "EditTeam/${widget.teamUid}");
-  }
-
   void _select(String choice, SingleTeamBloc singleTeamBloc) async {
     // Causes the app to rebuild with the _selectedChoice.
     setState(() {});

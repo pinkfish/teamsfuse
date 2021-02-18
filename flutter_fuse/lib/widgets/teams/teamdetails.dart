@@ -20,7 +20,7 @@ class TeamDetails extends StatelessWidget {
   /// The teamUid to show the details for.
   final String teamuid;
 
-  Widget _buildSeasonExpansionTitle(Team team, Season season) {
+  Widget _buildSeasonExpansionTitle(BuildContext context, Team team, Season season, bool admin) {
     return ExpansionTile(
       key: PageStorageKey<Season>(season),
       title: Text(
@@ -32,6 +32,26 @@ class TeamDetails extends StatelessWidget {
           teamUid: team.uid,
           seasonUid: season.uid,
         ),
+        admin ? ButtonBar(
+          children: [
+            TextButton(
+              child: Text(Messages.of(context).addPlayerButton),
+              onPressed: () => Navigator.pushNamed(context, "/AddPlayer/${team.uid}/${season.uid}"),
+            ),
+            TextButton(
+              child: Text(Messages.of(context).addGameButton),
+              onPressed: () => Navigator.pushNamed(context, "/AddGame"),
+            ),
+            TextButton(
+              child: Text(Messages.of(context).addTrainingButton),
+              onPressed: () => Navigator.pushNamed(context, "/AddTraining"),
+            ),
+            TextButton(
+              child: Text(Messages.of(context).addEventButton),
+              onPressed: () => Navigator.pushNamed(context, "/AddEvent"),
+            ),
+          ],
+        ) : SizedBox(height: 0),
       ],
       initiallyExpanded: false,
     );
@@ -61,7 +81,7 @@ class TeamDetails extends StatelessWidget {
         ret.add(Text(Messages.of(context).noseasons));
       } else {
         for (var season in seasons) {
-          happyData.add(_buildSeasonExpansionTitle(team.team, season));
+          happyData.add(_buildSeasonExpansionTitle(context, team.team, season, team.isAdmin()));
         }
       }
       ret.add(

@@ -29,6 +29,8 @@ class Messages {
   String get addAdmin => Intl.message('Add Admin',
       desc: 'Message to show as the title for the admin adding screen',
       locale: locale);
+  String get addButton =>
+      Intl.message("ADD", desc: "Add a new item button", locale: locale);
 
   String get addClubButton =>
       Intl.message("ADD CLUB", desc: "Add a new club button", locale: locale);

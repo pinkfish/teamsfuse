@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../../widgets/blocs/singleseasonprovider.dart';
@@ -31,7 +31,10 @@ class AddPlayerScreen extends StatefulWidget {
 class _EmailName {
   final GlobalKey<FormFieldState<String>> nameKey =
       GlobalKey<FormFieldState<String>>();
-  InviteTeamData data;
+  InviteTeamData data = InviteTeamData((b) => b
+    ..email = ''
+    ..playerName = ''
+    ..role = RoleInTeam.Player);
   FocusNode focusNodeEmail = FocusNode();
   FocusNode focusNodeName = FocusNode();
 }
@@ -119,7 +122,7 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
             focusNode: en.focusNodeName,
             keyboardType: TextInputType.text,
             onSaved: (value) {
-              en.data = en.data.rebuild((b) => b..playerName = value);
+                en.data = en.data.rebuild((b) => b..playerName = value);
             },
           ),
         ),
@@ -194,15 +197,20 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
                 builder: (context, seasonBloc) {
                   if (teamState is SingleTeamUninitialized ||
                       seasonBloc is SingleSeasonUninitialized) {
-                    return FlatButton(
+                    return TextButton(
                       onPressed: null,
                       child: Text(Messages.of(context).loading),
                     );
                   }
-                  return FlatButton(
-                    onPressed: () => _handleSubmit(singleTeamBloc.state.team,
-                        singleSeasonBloc.state.season),
-                    child: Text(Messages.of(context).addPlayerButton),
+                  return ButtonBar(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => _handleSubmit(
+                            singleTeamBloc.state.team,
+                            singleSeasonBloc.state.season),
+                        child: Text(Messages.of(context).addButton),
+                      ),
+                    ],
                   );
                 },
               ),
