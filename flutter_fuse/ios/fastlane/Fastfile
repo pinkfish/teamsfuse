@@ -99,7 +99,6 @@ platform :ios do
       ipa: './Runner.ipa',
       team_id: '7L9UDTQJU8'
     )
-    delete_temp_keychain(keychain_name)
   end
 
   desc 'Push a new beta build to TestFlight'
@@ -188,6 +187,9 @@ platform :ios do
 
     # Upload the app.
     upload_app(version: version)
+
+    # Cleanup.
+    delete_temp_keychain(keychain_name)
   end
 
   desc 'Push a new beta build to TestFlight'
@@ -252,7 +254,11 @@ platform :ios do
       clean: false
     )
 
+    # Upload to the app store.
     upload_app(version: version)
+
+    # Cleanup.
+    delete_temp_keychain(keychain_name)
   end
 
   desc 'Only do the deliver'
