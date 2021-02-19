@@ -41,6 +41,11 @@ Push a new beta build to TestFlight
 fastlane ios beta_deliver_local
 ```
 Only do the deliver
+### ios upload_metadata
+```
+fastlane ios upload_metadata
+```
+Only do the deliver
 ### ios screenshots
 ```
 fastlane ios screenshots

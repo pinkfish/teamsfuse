@@ -69,6 +69,7 @@ platform :ios do
   lane :upload_app do |options|
     UI.user_error!('Please provide a version using `version`') if options[:version].to_s.length.zero?
     version = options[:version]
+    skip_binary_upload = options[:skip_binary_upload]
     @build_name = options[:version].delete('v')
     DEVELOPER_APP_ID = ENV['DEVELOPER_APP_ID']
     DEVELOPER_APP_IDENTIFIER = ENV['DEVELOPER_APP_IDENTIFIER']
@@ -94,6 +95,7 @@ platform :ios do
       api_key: @api_key,
       precheck_include_in_app_purchases: false,
       run_precheck_before_submit: false,
+      skip_binary_upload: skip_binary_upload,
       username: DEVELOPER_APP_ID.to_s,
       app_identifier: 'com.teamfuse.flutterfuse',
       ipa: './Runner.ipa',
@@ -186,7 +188,7 @@ platform :ios do
     )
 
     # Upload the app.
-    upload_app(version: version)
+    upload_app(version: version, skip_binary_upload: false)
 
     # Cleanup.
     delete_temp_keychain(keychain_name)
@@ -255,7 +257,7 @@ platform :ios do
     )
 
     # Upload to the app store.
-    upload_app(version: version)
+    upload_app(version: version, skip_binary_upload: false)
 
     # Cleanup.
     delete_temp_keychain(keychain_name)
@@ -275,7 +277,12 @@ platform :ios do
     )
 
     # Upload the app
-    upload_app(version: version)
+    upload_app(version: version, skip_binary_upload: false)
+  end
+
+  desc 'Only do the deliver'
+  lane :upload_metadata do |options|
+    upload_app(version: options[:version], skip_binary_upload: true)
   end
 
   desc 'Generate new localized screenshots'
