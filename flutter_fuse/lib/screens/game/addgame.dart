@@ -131,6 +131,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
         }
         _gameFormKey.currentState.save();
         _initGame = _gameFormKey.currentState.finalGameResult.build();
+
         detailsStepState = StepState.complete;
         createStepStage = StepState.editing;
         break;

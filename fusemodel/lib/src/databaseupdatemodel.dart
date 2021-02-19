@@ -37,24 +37,6 @@ class FirestoreChangedData {
   final List<FirestoreWrappedData> removed;
 }
 
-///
-/// Updates the games when things change in the snapshot.
-///
-class GameSnapshotEvent {
-  final GameSharedData sharedGame;
-  final Iterable<Game> newGames;
-  final Iterable<String> deletedGames;
-  final String gameUid;
-  final String teamUid;
-
-  GameSnapshotEvent(
-      {this.gameUid,
-      this.teamUid,
-      this.sharedGame,
-      this.newGames,
-      this.deletedGames});
-}
-
 typedef void FirestoreDataCallback(
     String playerUid, List<FirestoreWrappedData> data);
 
@@ -315,7 +297,7 @@ abstract class DatabaseUpdateModel {
   DocumentReferenceWrapper precreateUidSeason();
 
   // Games!
-  Stream<GameSnapshotEvent> getBasicGames(
+  Stream<BuiltList<Game>> getBasicGames(
       {DateTime start, DateTime end, String teamUid, String seasonUid});
 
   //

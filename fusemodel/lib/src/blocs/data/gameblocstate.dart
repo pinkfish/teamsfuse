@@ -32,22 +32,18 @@ abstract class GameState with GameMixin {
   GameBlocStateType get type;
 
   BuiltMap<String, Game> get gamesByTeamToSerialize;
-  BuiltMap<String, GameSharedData> get sharedGameDataToSerialize;
 
   // Don't save this stuff
   @BuiltValueField(serialize: false)
   bool get loadedFirestore;
   @override
   @BuiltValueField(serialize: false)
-  BuiltMap<String, BuiltMap<String, Game>> get gamesByTeam;
-  @override
-  @BuiltValueField(serialize: false)
-  BuiltMap<String, GameSharedData> get sharedGameData;
+  BuiltMap<String, BuiltList<Game>> get gamesByTeam;
 
   static GameStateBuilder fromState(GameState state, GameStateBuilder builder) {
     return builder
       ..gamesByTeam = state.gamesByTeam.toBuilder()
-      ..sharedGameData = state.sharedGameData.toBuilder()
+      ..gamesByTeamToSerialize = state.gamesByTeamToSerialize.toBuilder()
       ..start = state.start
       ..end = state.end
       ..loadedFirestore = state.loadedFirestore;
@@ -62,27 +58,17 @@ abstract class GameState with GameMixin {
 }
 
 abstract class GameMixin {
-  BuiltMap<String, BuiltMap<String, Game>> get gamesByTeam;
-  BuiltMap<String, GameSharedData> get sharedGameData;
+  BuiltMap<String, BuiltList<Game>> get gamesByTeam;
 
   ///
   /// Finds the game in the currently loaded set of games.
   ///
   Game getGame(String uid) {
-    for (BuiltMap<String, Game> games in gamesByTeam.values) {
-      if (games.containsKey(uid)) {
-        return games[uid];
+    for (var games in gamesByTeam.values) {
+      var val = games.where((g) => g.uid == uid);
+      if (val.isNotEmpty) {
+        return val.first;
       }
-    }
-    return null;
-  }
-
-  ///
-  /// Finds the shared details for the game out of the loaded set.
-  ///
-  GameSharedData getSharedData(String uid) {
-    if (sharedGameData.containsKey(uid)) {
-      return sharedGameData[uid];
     }
     return null;
   }
@@ -132,7 +118,6 @@ abstract class GameUninitialized
   static GameUninitializedBuilder fromState(GameState state) {
     return GameUninitializedBuilder()
       ..gamesByTeam.clear()
-      ..sharedGameData.clear()
       ..loadedFirestore = false;
   }
 

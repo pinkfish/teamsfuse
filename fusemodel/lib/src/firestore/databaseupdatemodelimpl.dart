@@ -106,7 +106,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       tx.set(mainRef, gameBuilder.build().toMap());
       for (var i = 0; i < dates.length; i++) {
         var time = dates.elementAt(i);
-        if (game.sharedData.time != time.millisecondsSinceEpoch) {
+        if (game.sharedData.time != time.microsecondsSinceEpoch) {
           tx.set(refShared[i], game.sharedData.toMap());
           gameBuilder.sharedDataUid = refShared[i].documentID;
           // Add the game.
@@ -228,7 +228,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = coll.document();
 
     log = log.rebuild((b) => b
-      ..eventTimeInternal = TZDateTime.now(local).millisecondsSinceEpoch
+      ..eventTimeInternal = TZDateTime.now(local).microsecondsSinceEpoch
       ..uid = ref.documentID);
     return ref.setData(log.toMap()).then((v) {
       return ref.documentID;
@@ -622,84 +622,49 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   ///
   /// Returns the basic set of games for this specific team.
   ///
-  Stream<GameSnapshotEvent> getBasicGames(
+  Stream<BuiltList<Game>> getBasicGames(
       {DateTime start, DateTime end, String teamUid, String seasonUid}) async* {
-    Stream<GameSnapshotEvent> mainGameStream;
-    var str = StreamGroup<GameSnapshotEvent>();
-    try {
-      var gameQuery = _wrapper
-          .collection(GAMES_COLLECTION)
-          .where(Game.TEAMUID, isEqualTo: teamUid);
-      if (start != null) {
-        gameQuery = gameQuery
-            .where(ARRIVALTIME, isGreaterThan: start.millisecondsSinceEpoch)
-            .where(ARRIVALTIME, isLessThan: end.millisecondsSinceEpoch);
-      }
-      if (seasonUid != null) {
-        gameQuery = gameQuery.where(Game.SEASONUID, isEqualTo: seasonUid);
-      }
-      var queryGameSnap = await gameQuery.getDocuments();
+    var gameQuery = _wrapper
+        .collection(GAMES_COLLECTION)
+        .where(Game.TEAMUID, isEqualTo: teamUid);
+    if (start != null) {
+      print("Start ${start.microsecondsSinceEpoch}");
+      gameQuery = gameQuery
+          .where(ARRIVALTIME, isGreaterThan: start.microsecondsSinceEpoch)
+          .where(ARRIVALTIME, isLessThan: end.microsecondsSinceEpoch);
+    }
+    if (seasonUid != null) {
+      gameQuery = gameQuery.where(Game.SEASONUID, isEqualTo: seasonUid);
+    }
+    var queryGameSnap = await gameQuery.getDocuments();
 
+    var data = Set<Game>();
+    for (var snap in queryGameSnap.documents) {
+      var sharedGameUid = snap.data[Game.SHAREDDATAUID];
+      if (sharedGameUid == null || sharedGameUid.isEmpty) {
+        // Missing shared data uid.
+        snap.data[Game.GAMESHAREDDATA] = snap.data;
+      }
+      print(snap.documentID);
+      var g = Game.fromMap(snap.data);
+      data.add(g);
+    }
+    yield BuiltList.of(data);
+
+    // Merge the streams.
+    await for (queryGameSnap in gameQuery.snapshots()) {
       var data = Set<Game>();
       for (var snap in queryGameSnap.documents) {
-        var sharedGameUid = snap.data[Game.SHAREDDATAUID];
-        if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-          //print(snap.data[Game.GAMESHAREDDATA]);
-          //snap.data[Game.GAMESHAREDDATA]['uid'] = sharedGameUid;
-          // Not setup, load from the shared collection.
-          if (snap.data[Game.GAMESHAREDDATA] == null) {
-            // Need to read it ourselves right now.
-            var tempData = await _wrapper
-                .collection(GAMES_SHARED_COLLECTION)
-                .document(sharedGameUid)
-                .get();
-            snap.data[Game.GAMESHAREDDATA] = tempData.data;
-            // sharedData = GameSharedData.fromMap(tempData.data);
-            // Fix the doc too.
-            await _wrapper
-                .collection(GAMES_COLLECTION)
-                .document(snap.documentID)
-                .updateData({
-              Game.GAMESHAREDDATA: tempData.data,
-            });
-          }
-        } else {
-          // Missing shared data uid.
+        String sharedGameUid;
+        sharedGameUid = snap.data[Game.SHAREDDATAUID] as String;
+        if (sharedGameUid == null || sharedGameUid.isEmpty) {
           snap.data[Game.GAMESHAREDDATA] = snap.data;
         }
-        var g = Game.fromMap(snap.data);
-        data.add(g);
+
+        var newGame = Game.fromMap(snap.data);
+        data.add(newGame);
       }
-      yield GameSnapshotEvent(
-          teamUid: teamUid, newGames: data, deletedGames: []);
-
-      // Merge the streams.
-      mainGameStream = gameQuery.snapshots().asyncMap((queryGameSnap) async {
-        var data = Set<Game>();
-        for (var snap in queryGameSnap.documents) {
-          String sharedGameUid;
-          sharedGameUid = snap.data[Game.SHAREDDATAUID] as String;
-          if (sharedGameUid != null && sharedGameUid.isNotEmpty) {
-          } else {
-            snap.data[Game.GAMESHAREDDATA] = snap.data;
-          }
-
-          var newGame = Game.fromMap(snap.data);
-          data.add(newGame);
-        }
-        var toDelete = queryGameSnap.documentChanges
-            .where((wrap) => wrap.type == DocumentChangeTypeWrapper.removed)
-            .map<String>((wrap) => wrap.document.documentID);
-        return GameSnapshotEvent(
-            teamUid: teamUid, newGames: data, deletedGames: toDelete);
-      });
-
-      str.add(mainGameStream);
-      await for (GameSnapshotEvent queryGameSnap in str.stream) {
-        yield queryGameSnap;
-      }
-    } finally {
-      str.close();
+      yield BuiltList.of(data);
     }
   }
 
@@ -1072,9 +1037,20 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<BuiltList<Game>> getSeasonGames(Season season) {
-    return getBasicGames(teamUid: season.teamUid, seasonUid: season.uid)
-        .map((event) => BuiltList.of(event.newGames));
+  Stream<BuiltList<Game>> getSeasonGames(Season season) async* {
+    var query = _wrapper
+        .collection(GAMES_COLLECTION)
+        .where("teamUid", isEqualTo: season.teamUid)
+        .where("seasonUid", isEqualTo: season.uid);
+    var data = await query.getDocuments();
+    var stuff = data.documents.map((d) => Game.fromMap(d.data));
+    print(stuff);
+    yield BuiltList.of(stuff);
+    // Merge the streams.
+    await for (var querySnap in query.snapshots()) {
+      var stuff = data.documents.map((d) => Game.fromMap(d.data));
+      yield BuiltList.of(stuff);
+    }
   }
 
   @override

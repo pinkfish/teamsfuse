@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 
+import '../../services/blocs.dart';
 import '../games/gamecard.dart';
 
 typedef UpdateEvents = void Function();
@@ -14,10 +14,9 @@ typedef UpdateEvents = void Function();
 ///
 class GameListCalendarState {
   /// Constructor.
-  GameListCalendarState(this.details, this._gameBloc, this._updateEvents);
-
-  StreamSubscription<GameState> _listening;
-  List<Game> _listToShow = [];
+  GameListCalendarState(this._gameBloc, this._updateEvents) {
+    _listening = _gameBloc.listen(_setGames);
+  }
 
   /// Start point in the calendar for displaying thing on the screen.
   DateTime startPoint;
@@ -25,12 +24,13 @@ class GameListCalendarState {
   /// End point in the calendar for displaying thing on the screen.
   DateTime endPoint;
 
-  /// The current filter in terms of games being displayed.
-  FilterDetails details;
+  final UpdateEvents _updateEvents;
+  final FilteredGameBloc _gameBloc;
+
   StreamController<UpdateReason> _controller = StreamController<UpdateReason>();
   Stream<UpdateReason> _myStream;
-  final UpdateEvents _updateEvents;
-  final GameBloc _gameBloc;
+  StreamSubscription<FilteredGameState> _listening;
+  List<Game> _listToShow = [];
 
   ///
   /// Buildrs the widget for the specific calendar event.
@@ -73,11 +73,6 @@ class GameListCalendarState {
     return _myStream;
   }
 
-  /// Initializes the state and waits for game data.
-  void initState() {
-    _listening = _gameBloc.listen(_setGames);
-  }
-
   /// Cleans up the instances, closing all the various open streams.
   void dispose() {
     _listening?.cancel();
@@ -87,23 +82,20 @@ class GameListCalendarState {
   }
 
   /// Loads the games.
-  Future<void> loadGames(FilterDetails details) async {
-    this.details = details;
+  void loadGames(FilterDetails details)  {
     _resubscribe();
+    _gameBloc.add(FilteredGameEventUpdateFilter(filter: details));
   }
 
   void _resubscribe() {
-    _gameBloc.add(GameEventSetBoundaries(start: startPoint, end: endPoint));
+    _gameBloc
+        .add(FilteredGameEventUpdateDates(start: startPoint, end: endPoint));
   }
 
-  void _setGames(GameState res) {
-    Map<String, Game> gamesMap;
-    for (var t in res.gamesByTeam.keys) {
-      for (var g in res.gamesByTeam[t].values) {
-        gamesMap[g.uid] = g;
-      }
-    }
-    var games = gamesMap.values.toList();
+  void _setGames(FilteredGameState res) {
+    print("Games changed");
+    var games = res.games.values.toList();
+    print("Got ${games.length} games");
 
     if (games.length > 0 || _listToShow == null) {
       games.sort((a, b) => a.sharedData.time.compareTo(b.sharedData.time));

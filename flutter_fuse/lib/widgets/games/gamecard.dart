@@ -333,7 +333,7 @@ class GameCard extends StatelessWidget {
             .add(Duration(milliseconds: Duration.millisecondsPerHour * 3)))) {
       // Put in directions buttons.
       buttons.add(
-        FlatButton(
+        TextButton(
           onPressed: () => _showDirections(context, game),
           child: Text(
             Messages.of(context).directionsbuttons,
@@ -348,7 +348,7 @@ class GameCard extends StatelessWidget {
       if (game.sharedData.officialResult != null &&
           game.sharedData.officialResult.result != OfficialResult.InProgress &&
           game.sharedData.officialResult.result != OfficialResult.NotStarted) {
-        buttons.add(FlatButton(
+        buttons.add(TextButton(
           onPressed: () => _officalResult(context),
           child: Text(Messages.of(context).useofficialresultbutton),
         ));
@@ -404,10 +404,12 @@ class GameCard extends StatelessWidget {
     var players = <Player>[];
     var playerBloc = BlocProvider.of<PlayerBloc>(context);
 
-    players = playerBloc.state.players.values
-        .where((p) =>
-            seasonState.season.players.any((sp) => sp.playerUid == p.uid))
-        .toList();
+    if (seasonState.season != null) {
+      players = playerBloc.state.players.values
+          .where((p) =>
+              seasonState.season.players.any((sp) => sp.playerUid == p.uid))
+          .toList();
+    }
 
     var color = Colors.white;
 
@@ -434,7 +436,11 @@ class GameCard extends StatelessWidget {
                 subtitle.add(
                   TextSpan(
                     style: Theme.of(context).textTheme.subtitle1,
-                    text: Messages.of(context).nameAndTeam(state.team.name, play.name),
+                    text: Messages.of(context).nameAndTeam(
+                        state.team == null
+                            ? Messages.of(context).unknown
+                            : state.team.name,
+                        play?.name ?? Messages.of(context).unknown),
                   ),
                 );
               }

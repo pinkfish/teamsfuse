@@ -18,7 +18,7 @@ class _GameEventLogout extends GameBlocEvent {
 }
 
 class _GameEventNewDataLoaded extends GameBlocEvent {
-  final Iterable<Game> games;
+  final BuiltList<Game> games;
   final String teamUid;
 
   _GameEventNewDataLoaded({@required this.teamUid, @required this.games});
@@ -27,10 +27,16 @@ class _GameEventNewDataLoaded extends GameBlocEvent {
   List<Object> get props => [teamUid, games];
 }
 
+///
+/// Sets the boundaries for the games.
+///
 class GameEventSetBoundaries extends GameBlocEvent {
+  /// The new start point.
   final DateTime start;
+  /// The new end point.
   final DateTime end;
 
+  /// Create the game boundaries event
   GameEventSetBoundaries({this.start, this.end});
 
   @override
@@ -48,7 +54,7 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
 
   StreamSubscription<TeamState> _teamSub;
   StreamSubscription<FirestoreChangedData> _gameChangeSub;
-  Map<String, StreamSubscription<GameSnapshotEvent>> _gameSubscriptions = {};
+  Map<String, StreamSubscription<BuiltList<Game>>> _gameSubscriptions = {};
   DateTime _start;
   DateTime _end;
 
@@ -85,8 +91,7 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
   void _cleanupStuff() {
     _gameChangeSub?.cancel();
     _gameChangeSub = null;
-    for (StreamSubscription<GameSnapshotEvent> sub
-        in _gameSubscriptions.values) {
+    for (var sub in _gameSubscriptions.values) {
       sub.cancel();
     }
     _gameSubscriptions.clear();
@@ -98,10 +103,11 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
       if (!_gameSubscriptions.containsKey(teamUid) || updateBoundary) {
         _gameSubscriptions[teamUid]?.cancel();
         String myUid = teamUid;
+        print("Sub for $teamUid");
         _gameSubscriptions[teamUid] = coordinationBloc.databaseUpdateModel
             .getBasicGames(start: _start, end: _end, teamUid: teamUid)
-            .listen((GameSnapshotEvent gse) {
-          add(_GameEventNewDataLoaded(teamUid: myUid, games: gse.newGames));
+            .listen((gse) {
+          add(_GameEventNewDataLoaded(teamUid: myUid, games: gse));
         });
       }
     }
@@ -111,29 +117,16 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
   Stream<GameState> mapEventToState(GameBlocEvent event) async* {
     // New data from above.  Mark ourselves as done.
     if (event is _GameEventNewDataLoaded) {
-      MapBuilder<String, BuiltMap<String, Game>> newGames =
-          state.gamesByTeam.toBuilder();
-      MapBuilder<String, Game> gamesToSerialize = MapBuilder();
+      var newGames = state.gamesByTeam.toBuilder();
+      newGames[event.teamUid] = event.games;
+      var gamesToSerialize = state.gamesByTeamToSerialize.toBuilder();
       for (Game g in event.games) {
         if (g.sharedData.tzTime.isAfter(state.start) &&
             g.sharedData.tzTime.isBefore(state.end)) {
           gamesToSerialize[g.uid] = g;
         }
       }
-      MapBuilder<String, GameSharedData> sharedGameData = MapBuilder();
-      MapBuilder<String, GameSharedData> sharedGameToSerialize = MapBuilder();
-      for (Game g in event.games) {
-        if (g.sharedDataUid.isNotEmpty) {
-          sharedGameData[g.sharedDataUid] = g.sharedData;
-          if (g.sharedData.tzTime.isAfter(state.start) &&
-              g.sharedData.tzTime.isBefore(state.end)) {
-            sharedGameToSerialize[g.sharedDataUid] = g.sharedData;
-          }
-        }
-      }
       yield (GameLoaded.fromState(state)
-            ..sharedGameData = sharedGameData
-            ..sharedGameDataToSerialize = sharedGameToSerialize
             ..gamesByTeamToSerialize = gamesToSerialize
             ..gamesByTeam = newGames
             ..loadedFirestore = true
@@ -175,21 +168,19 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
               coordinationBloc.analyticsSubsystem.newTrace("gamaData");
           gamesTrace.start();
           var loaded = GameLoaded.fromMap(json);
-          MapBuilder<String, MapBuilder<String, Game>> gamesByTeam =
-              MapBuilder<String, MapBuilder<String, Game>>();
+          var gamesByTeam = MapBuilder<String, ListBuilder<Game>>();
           for (Game g in loaded.gamesByTeamToSerialize.values) {
-            gamesByTeam.putIfAbsent(
-                g.teamUid, () => MapBuilder<String, Game>());
-            gamesByTeam[g.teamUid][g.uid] = g;
+            gamesByTeam.putIfAbsent(g.teamUid, () => ListBuilder<Game>());
+            gamesByTeam[g.teamUid].add(g);
           }
 
-          var rebuilt = MapBuilder<String, BuiltMap<String, Game>>();
-          gamesByTeam.updateAllValues((k, v) {
-            rebuilt[k] = v.build();
-            return v;
-          });
+          var built = gamesByTeam.build();
+          var rebuild = MapBuilder<String, BuiltList<Game>>();
+          for (var uid in built.keys) {
+            rebuild[uid] = built[uid].build();
+          }
 
-          loaded = loaded.rebuild((b) => b..gamesByTeam = rebuilt);
+          loaded = loaded.rebuild((b) => b..gamesByTeam = rebuild);
           print('End games  ${loaded.gamesByTeam.length}');
           gamesTrace.stop();
           return loaded;

@@ -5,11 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
 
+import '../../../services/blocs.dart';
 import '../../../services/messages.dart';
 import '../../../util/debouncer.dart';
 import '../..//util/numberpicker.dart';
 import '../../util/stopwatchdisplay.dart';
-import '../../../services/blocs.dart';
 import 'changescoredialog.dart';
 import 'periodselector.dart';
 import 'timersetupdialog.dart';
@@ -333,7 +333,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
               ..message = message
               ..score = _currentPeriodResults.score
               ..period = _currentPeriodResults.period
-              ..eventTimeInternal = DateTime.now().millisecondsSinceEpoch
+              ..eventTimeInternal = DateTime.now().microsecondsSinceEpoch
               ..uid =
                   BlocProvider.of<AuthenticationBloc>(context).currentUser.uid
               ..displayName = BlocProvider.of<AuthenticationBloc>(context)

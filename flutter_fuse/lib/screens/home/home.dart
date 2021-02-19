@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:sliver_calendar/sliver_calendar.dart';
 import 'package:timezone/timezone.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/drawer/fuseddrawer.dart';
 import '../../widgets/games/gameslistcalendar.dart';
@@ -209,15 +209,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     _calendarEvents = GameListCalendarState(
-        _details,
-        BlocProvider.of<GameBloc>(context),
+        BlocProvider.of<FilteredGameBloc>(context),
         () => _calendarState?.currentState?.updateEvents());
-    _calendarEvents.loadGames(_details).then((d) {
-      setState(() {});
-    });
+    _calendarEvents.loadGames(_details);
     _calendarSub = _calendarEvents.stream.listen((readon) {
       setState(() {});
     });
+    _calendarSub.onError(RepositoryProvider.of<AnalyticsSubsystem>(context).recordException);
   }
 
   @override

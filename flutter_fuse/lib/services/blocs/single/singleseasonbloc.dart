@@ -123,6 +123,7 @@ class SingleSeasonBloc
 
   @override
   Stream<SingleSeasonState> mapEventToState(SingleSeasonEvent event) async* {
+    print("Season evnet $event");
     if (event is _SingleNewTeamSeason) {
       yield (SingleSeasonLoaded.fromState(state)
             ..season = event.newSeason.toBuilder())
@@ -177,15 +178,11 @@ class SingleSeasonBloc
     }
 
     if (event is SingleSeasonLoadGames) {
-      print("Season state $state");
       if (state is SingleSeasonUninitialized) {
         _willLoadGames = true;
       } else {
-        print("Season do it");
         if (_gameSub == null) {
-          print("Season requesting games");
           _gameSub = db.getSeasonGames(state.season).listen((games) {
-            print("Season $games");
             add(_SingleSeasonLoadedGames(games: games));
           });
           _gameSub.onError(crashes.recordException);

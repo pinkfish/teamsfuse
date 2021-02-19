@@ -97,6 +97,7 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
             "admin": true,
           }),
         });
+        team.users = MapBuilder(entries);
 
         String uid = await coordinationBloc.databaseUpdateModel
             .addFirestoreTeam(
