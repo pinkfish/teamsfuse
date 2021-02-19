@@ -23,7 +23,7 @@ test.mockConfig({
     },
 });
 
-import { onWrite } from '../../ts/db/messages/update.f';
+import { onMessageWrite } from '../../ts/db/messages/update.f';
 
 describe('Teams Tests', () => {
     before(() => {
@@ -66,7 +66,7 @@ describe('Teams Tests', () => {
         const messageRecipient = await createMessageRecipient(message.id, 'me');
 
         try {
-            await test.wrap(onWrite)(test.makeChange(messageRecipient, messageRecipient), {
+            await test.wrap(onMessageWrite)(test.makeChange(messageRecipient, messageRecipient), {
                 auth: {
                     uid: 'me',
                 },

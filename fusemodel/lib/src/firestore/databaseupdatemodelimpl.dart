@@ -1904,20 +1904,26 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Stream<BuiltList<MessageRecipient>> getMessages(bool unread) async* {
+  Stream<BuiltList<MessageRecipient>> getMessages(bool unread,
+      {DateTime start}) async* {
     QueryWrapper query;
     if (unread) {
       query = _wrapper
           .collection(MESSAGE_RECIPIENTS_COLLECTION)
           .where(MessageRecipient.userIdId, isEqualTo: userData.uid)
           .where(MessageRecipient.stateId,
-              isEqualTo: MessageReadState.Unread.toString());
+              isEqualTo: MessageReadState.Unread.toString())
+          .orderBy(MessageRecipient.sentAtId)
+          .limit(_maxMessages);
     } else {
       query = _wrapper
           .collection(MESSAGE_RECIPIENTS_COLLECTION)
           .where(MessageRecipient.userIdId, isEqualTo: userData.uid)
           .orderBy(MessageRecipient.sentAtId)
           .limit(_maxMessages);
+    }
+    if (start != null) {
+      query = query.startAt(start);
     }
     var wrap = await query.getDocuments();
     yield BuiltList(

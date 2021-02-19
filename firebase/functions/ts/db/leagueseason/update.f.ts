@@ -3,7 +3,7 @@ import * as algolia from '../../util/algolia';
 
 // Handle the creation case as well, so if we create a game
 // with a specific result we update the team values.
-export const onUpdate = functions.firestore
+export const onLeagueSeasonUpdate = functions.firestore
     .document('/LeagueSeason/{leagueId}')
     .onUpdate(async (inputData, context) => {
         const previousData = inputData.before.data();
@@ -15,4 +15,4 @@ export const onUpdate = functions.firestore
         }
     });
 
-export default onUpdate;
+export default onLeagueSeasonUpdate;

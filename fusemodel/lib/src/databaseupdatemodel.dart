@@ -436,5 +436,9 @@ abstract class DatabaseUpdateModel {
 
   Stream<BuiltList<Invite>> getInvites();
 
-  Stream<BuiltList<MessageRecipient>> getMessages(bool unread);
+  ///
+  /// Get the messages for the current user, with an optional start point
+  /// for pagination.
+  ///
+  Stream<BuiltList<MessageRecipient>> getMessages(bool unread, {DateTime start});
 }

@@ -7,7 +7,7 @@ const db = admin.firestore();
 
 // Handle the creation case as well, so if we create a game
 // with a specific result we update the team values.
-export const onWrite = functions.firestore.document('/LeagueTeam/{teamId}').onWrite(async (inputData, context) => {
+export const onLeagueTeamWrite = functions.firestore.document('/LeagueTeam/{teamId}').onWrite(async (inputData, context) => {
     const data = inputData.after.data();
     const previousData = inputData.before !== null ? inputData.before.data() : null;
 
@@ -66,4 +66,4 @@ export const onWrite = functions.firestore.document('/LeagueTeam/{teamId}').onWr
     return;
 });
 
-export default onWrite;
+export default onLeagueTeamWrite;

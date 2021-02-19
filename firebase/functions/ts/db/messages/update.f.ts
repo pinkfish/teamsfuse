@@ -3,7 +3,7 @@ import * as admin from 'firebase-admin';
 
 const db = admin.firestore();
 
-export const onWrite = functions.firestore
+export const onMessageWrite = functions.firestore
     .document('/MessageRecipients/{messageid}')
     .onWrite(async (inputData, context) => {
         const data = inputData.after.data() ?? {};
@@ -100,4 +100,4 @@ export const onWrite = functions.firestore
         return data;
     });
 
-export default onWrite;
+export default onMessageWrite;
