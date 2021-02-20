@@ -62,8 +62,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
       if (myGame.sharedData.time != myGame.sharedData.endTime) {
         var start = MaterialLocalizations.of(context)
             .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
-        var end = MaterialLocalizations.of(context)
-            .formatTimeOfDay(
+        var end = MaterialLocalizations.of(context).formatTimeOfDay(
             TimeOfDay.fromDateTime(myGame.sharedData.tzEndTime));
         timeStr = "$start - $end";
       } else {
@@ -71,14 +70,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
             .formatTimeOfDay(TimeOfDay.fromDateTime(myGame.sharedData.tzTime));
       }
       var cols = <Widget>[
-        RaisedButton(
-          child: Text(Messages
-              .of(context)
-              .createNew),
-          color: Theme
-              .of(context)
-              .accentColor,
-          textColor: Colors.white,
+        ElevatedButton(
+          child: Text(Messages.of(context).createNew),
+          style: ElevatedButton.styleFrom(
+            primary: Theme.of(context).accentColor,
+            onPrimary: Colors.white,
+          ),
           onPressed: () => _onStepperContinue(context),
         ),
         ListTile(
@@ -89,10 +86,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
         ),
         ListTile(
           leading: Icon(Icons.place),
-          title:
-          Text(myGame.sharedData.place.name ?? Messages
-              .of(context)
-              .unknown),
+          title: Text(
+              myGame.sharedData.place.name ?? Messages.of(context).unknown),
           subtitle: Text(myGame.sharedData.place.address ?? ""),
         ),
       ];
@@ -124,7 +119,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         ),
       );
     } else {
-      return SizedBox(height:0, width:0);
+      return SizedBox(height: 0, width: 0);
     }
   }
 

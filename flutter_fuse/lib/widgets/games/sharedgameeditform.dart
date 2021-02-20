@@ -4,11 +4,12 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 
-import '../../services/map.dart';
 import '../../services/messages.dart';
+import '../../services/validations.dart';
 import '../form/datetimeformfield.dart';
 import '../form/placesformfield.dart';
 import '../util/ensurevisiblewhenfocused.dart';
+
 
 ///
 /// This form has all the stuff needed to edit the main parts
@@ -38,6 +39,8 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
   final GlobalKey<DateTimeFormFieldState> _atEndKEy =
       GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final Validations _validations = Validations();
+
 
   /// If the form should validate on every change, or only on a save.
   bool autovalidate = false;
@@ -150,21 +153,15 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                   ],
                 ),
                 PlacesFormField(
-                  initialValue: LocationAndPlace.fromGame(
-                      _builder.place.build(), _builder.timezone),
+                  initialValue: PlaceAndTimezone(widget.game.place,
+                      widget.game.timezone),
                   labelText: Messages.of(context).selectplace,
                   decoration: const InputDecoration(icon: Icon(Icons.place)),
                   onSaved: (loc) {
-                    print('Saved location $loc');
-                    _builder.place.name = loc.details.name;
-                    _builder.place.address = loc.details.address;
-                    _builder.place.placeId = loc.details.placeid;
-                    _builder.place.latitude = loc.details.location.latitude;
-                    _builder.place.longitude = loc.details.location.longitude;
-                    loc.loc.then((location) {
-                      _builder.timezone = location.name;
-                    });
+                    _builder.place = loc.place.toBuilder();
+                    _builder.timezone = loc.timeZone;
                   },
+                  validator: (place) => _validations.validateGamePlace(context, place.place),
                 ),
                 EnsureVisibleWhenFocused(
                   focusNode: _focusNodePlaceNotes,

@@ -19,7 +19,7 @@ dependencies:
     git:
       url: "https://github.com/pinkfish/timezone.git"
   fusemodel:
-    path: ../../fusemodel
+    path: ../fusemodel
 
 
 dev_dependencies:

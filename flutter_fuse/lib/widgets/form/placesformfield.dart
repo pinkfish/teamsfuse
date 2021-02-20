@@ -1,23 +1,37 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+import 'package:google_maps_webservice/timezone.dart';
 
-import '../../services/map.dart';
+import '../../services/apikeys.dart';
 import '../../services/messages.dart';
 import '../util/inputdropdown.dart';
 
 ///
+/// The place and timezone for use in the place picked.
+///
+class PlaceAndTimezone {
+  final String timeZone;
+  final GamePlace place;
+
+  PlaceAndTimezone(this.place, this.timeZone);
+}
+
+///
 /// The places form field to use to select a specific place
 ///
-class PlacesFormField extends FormField<LocationAndPlace> {
+class PlacesFormField extends FormField<PlaceAndTimezone> {
   /// Constructor.
   PlacesFormField(
-      {@required LocationAndPlace initialValue,
+      {@required PlaceAndTimezone initialValue,
       Key key,
       InputDecoration decoration = const InputDecoration(),
-      ValueChanged<LocationAndPlace> onFieldSubmitted,
-      FormFieldSetter<LocationAndPlace> onSaved,
-      FormFieldValidator<LocationAndPlace> validator,
+      ValueChanged<PlaceAndTimezone> onFieldSubmitted,
+      FormFieldSetter<PlaceAndTimezone> onSaved,
+      FormFieldValidator<PlaceAndTimezone> validator,
       this.labelText})
       : assert(initialValue != null),
         super(
@@ -54,14 +68,14 @@ class PlacesFormField extends FormField<LocationAndPlace> {
                   children: children);
             });
 
-  static String _renderPlaceName(BuildContext context, LocationAndPlace loc) {
-    if (loc.details.name == null || loc.details.name.isEmpty) {
-      if (loc.details.address == null || loc.details.address.isEmpty) {
+  static String _renderPlaceName(BuildContext context, PlaceAndTimezone loc) {
+    if (loc.place.name == null || loc.place.name.isEmpty) {
+      if (loc.place.address == null || loc.place.address.isEmpty) {
         return Messages.of(context).selectplace;
       }
-      return loc.details.address;
+      return loc.place.address;
     }
-    return loc.details.name;
+    return loc.place.name;
   }
 
   /// The label text for the form field.
@@ -71,14 +85,49 @@ class PlacesFormField extends FormField<LocationAndPlace> {
   _PlacesFormFieldState createState() => _PlacesFormFieldState();
 }
 
-class _PlacesFormFieldState extends FormFieldState<LocationAndPlace> {
+class _PlacesFormFieldState extends FormFieldState<PlaceAndTimezone> {
+  static var _initialPosition = LatLng(47.6740, 122.1215);
   Future<Null> _selectPlace(
-      ValueChanged<LocationAndPlace> onFieldSubmitted) async {
-    var picked = await MapData.instance.getPlaceAndLocation();
-    if (picked != null) {
-      didChange(picked);
+      ValueChanged<PlaceAndTimezone> onFieldSubmitted) async {
+    PickResult myResult;
+    LatLng loc;
+    if (value != null && value.place.address.isNotEmpty) {
+      loc = LatLng(value.place.latitude, value.place.longitude);
+    }
+
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PlacePicker(
+          apiKey: googleMapsApiKey, // Put YOUR OWN KEY here.
+          onPlacePicked: (result) {
+            myResult = result;
+            Navigator.of(context).pop();
+          },
+          initialPosition: loc ?? _initialPosition,
+          initialSearchString: value?.place.address,
+          searchForInitialValue: loc != null,
+          useCurrentLocation: true,
+        ),
+      ),
+    );
+    if (myResult != null) {
+      var newPlace = GamePlace((b) => b
+        ..name = myResult.name
+        ..address = myResult.formattedAddress
+        ..placeId = myResult.placeId
+        ..notes = value?.place?.notes ?? ""
+        ..latitude = myResult.geometry.location.lat
+        ..longitude = myResult.geometry.location.lng);
+      // Get the timezone name for the location.
+      var tzReader = GoogleMapsTimezone(
+        apiKey: googleMapsApiKey,
+      );
+      var result = await tzReader.getByLocation(myResult.geometry.location);
+      var tzId = result.result.timeZoneId;
+      didChange(PlaceAndTimezone(newPlace, tzId));
       if (onFieldSubmitted != null) {
-        onFieldSubmitted(picked);
+        onFieldSubmitted(PlaceAndTimezone(newPlace, tzId));
       }
     }
   }

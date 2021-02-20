@@ -3,7 +3,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 
-import '../../services/map.dart';
+import '../form/placesformfield.dart';
 import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import '../form/datetimeformfield.dart';
@@ -42,7 +42,6 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
   DateTime _atDate;
   DateTime _atEnd;
-  GamePlaceBuilder _place;
   String _timezone;
   final FocusNode _focusNodeNotes = FocusNode();
 
@@ -58,7 +57,6 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
     builder = widget.game.toBuilder();
     _atDate = widget.game.sharedData.tzTime;
     _atEnd = widget.game.sharedData.tzEndTime;
-    _place = widget.game.sharedData.place.toBuilder();
     _timezone = local.name;
   }
 
@@ -83,7 +81,6 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
             end.month, end.day, end.hour, end.minute)
         .toUtc();
     builder.sharedData.endTime = _atEnd.toUtc();
-    builder.sharedData.place = _place;
     builder.sharedData.timezone = _timezone;
     return builder;
   }
@@ -93,21 +90,6 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
         .updateValue(_endTimeKey.currentState.value.subtract(diff));
   }
 
-  void _showPlacesPicker() async {
-    var place = await MapData.instance.getPlaceAndLocation();
-    if (place != null) {
-      // Yay!
-      setState(() {
-        _place.name = place.details.name;
-        _place.address = place.details.address;
-        _place.longitude = place.details.location.longitude;
-        _place.latitude = place.details.location.latitude;
-        place.loc.then((location) {
-          _timezone = location.name;
-        });
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,11 +145,15 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
                     _atEnd = value;
                   },
                 ),
-                ListTile(
-                  onTap: _showPlacesPicker,
-                  leading: const Icon(Icons.place),
-                  title: Text(_place.name ?? messages.unknown),
-                  subtitle: Text(_place.address ?? messages.unknown),
+                PlacesFormField(
+                  initialValue: PlaceAndTimezone(widget.game.sharedData.place,
+                      widget.game.sharedData.timezone),
+                  labelText: Messages.of(context).selectplace,
+                  decoration: const InputDecoration(icon: Icon(Icons.place)),
+                  onSaved: (loc) {
+                    builder.sharedData.place = loc.place.toBuilder();
+                    builder.sharedData.timezone = loc.timeZone;
+                  },
                 ),
                 EnsureVisibleWhenFocused(
                   focusNode: _focusNodeNotes,

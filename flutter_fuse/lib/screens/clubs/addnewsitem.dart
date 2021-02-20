@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -30,7 +28,7 @@ class AddNewsItemScreen extends StatefulWidget {
 
 class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
   final GlobalKey<EditNewsItemDetailsFormState> _formKey =
-  GlobalKey<EditNewsItemDetailsFormState>();
+      GlobalKey<EditNewsItemDetailsFormState>();
   int _currentStep = 0;
   StepState _detailsStepState = StepState.editing;
   StepState _createStepStage = StepState.disabled;
@@ -47,7 +45,9 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
       ..subject = ""
       ..uid = ""
       ..clubUid = widget.clubUid
-      ..body = ""..postedByName=""..postedByUid="");
+      ..body = ""
+      ..postedByName = ""
+      ..postedByUid = "");
   }
 
   void _showInSnackBar(String value) {
@@ -56,8 +56,7 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
 
   void _savePressed() async {
     if (_newsItemToAdd != null) {
-      _newsItemBloc.add(
-          AddNewsItemEventCommit(newsItem: _newsItemToAdd));
+      _newsItemBloc.add(AddNewsItemEventCommit(newsItem: _newsItemToAdd));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }
@@ -65,9 +64,9 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
 
   bool _leaveCurrentState(bool backwards) {
     switch (_currentStep) {
-    // Check to make sure a team is picked.
+      // Check to make sure a team is picked.
       case 0:
-      // Verify the form is correct.
+        // Verify the form is correct.
         if (backwards) {
           // Can always leave this step.
           _detailsStepState = StepState.editing;
@@ -123,7 +122,6 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
       });
     }
   }
-
 
   Widget _buildSummary() {
     return SingleChildScrollView(
@@ -220,9 +218,9 @@ class _AddNewsItemScreenState extends State<AddNewsItemScreen> {
         ),
         floatingActionButton: _currentStep == 1
             ? FloatingActionButton(
-          onPressed: _savePressed,
-          child: const Icon(Icons.check),
-        )
+                onPressed: _savePressed,
+                child: const Icon(Icons.check),
+              )
             : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         body: _buildBody(),

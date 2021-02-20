@@ -1,8 +1,8 @@
 name: shared_data
 description: The shared data for use in the main flutter app and the public flutter app.
 version: 0.0.1
-author:
-homepage:
+author: pinkfishfrog@gmail.com
+homepage: http://www.teamsfuse.com
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

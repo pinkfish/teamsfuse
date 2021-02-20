@@ -7,7 +7,6 @@ import 'package:timezone/timezone.dart';
 
 import '../../screens/game/addopponent.dart';
 import '../../services/blocs.dart';
-import '../../services/map.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../blocs/singleteamprovider.dart';
@@ -210,7 +209,9 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
         controller: _scrollController,
         child: Form(
           key: _formKey,
-          autovalidateMode: autovalidate ? AutovalidateMode.always : AutovalidateMode.disabled,
+          autovalidateMode: autovalidate
+              ? AutovalidateMode.always
+              : AutovalidateMode.disabled,
           child: DropdownButtonHideUnderline(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -265,23 +266,15 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                   ],
                 ),
                 PlacesFormField(
-                  initialValue: LocationAndPlace.fromGame(
-                      _builder.sharedData.place.build(),
-                      _builder.sharedData.timezone),
+                  initialValue: PlaceAndTimezone(widget.game.sharedData.place,
+                      widget.game.sharedData.timezone),
                   labelText: Messages.of(context).selectplace,
                   decoration: const InputDecoration(icon: Icon(Icons.place)),
                   onSaved: (loc) {
-                    _builder.sharedData.place.name = loc.details.name;
-                    _builder.sharedData.place.address = loc.details.address;
-                    _builder.sharedData.place.placeId = loc.details.placeid;
-                    _builder.sharedData.place.latitude =
-                        loc.details.location.latitude;
-                    _builder.sharedData.place.longitude =
-                        loc.details.location.longitude;
-                    loc.loc.then((location) {
-                      _builder.sharedData.timezone = location.name;
-                    });
+                    _builder.sharedData.place = loc.place.toBuilder();
+                    _builder.sharedData.timezone = loc.timeZone;
                   },
+                  validator: (place) => _validations.validateGamePlace(context, place.place),
                 ),
                 EnsureVisibleWhenFocused(
                   focusNode: _focusNodePlaceNotes,

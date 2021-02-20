@@ -98,4 +98,10 @@ class Validations {
   String validatePhone(BuildContext context, String value) {
     return null;
   }
+
+  String validateGamePlace(BuildContext context, GamePlace place) {
+    if (place.name.isEmpty && place.address.isEmpty) {
+      return Messages.of(context).needToSelectPlace;
+    }
+  }
 }

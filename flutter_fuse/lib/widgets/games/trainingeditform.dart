@@ -3,13 +3,14 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 
-import '../../services/map.dart';
 import '../../services/messages.dart';
+import '../../services/validations.dart';
 import '../blocs/singleteamprovider.dart';
 import '../form/datetimeformfield.dart';
 import '../form/seasonformfield.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 import 'editformbase.dart';
+import '../form/placesformfield.dart';
 
 ///
 /// Edit form to edit all the training stuff.
@@ -36,6 +37,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<DateTimeFormFieldState> _endTimeKey =
       GlobalKey<DateTimeFormFieldState>();
+  final Validations _validations = Validations();
+
 
   /// If the form should validate on every change or only a save.
   bool autoValidate = false;
@@ -63,22 +66,6 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
   void _updateTimes(Duration diff) {
     _endTimeKey.currentState
         .updateValue(_endTimeKey.currentState.value.subtract(diff));
-  }
-
-  void _showPlacesPicker() async {
-    var place = await MapData.instance.getPlaceAndLocation();
-    if (place != null) {
-      // Yay!
-      setState(() {
-        _builder.sharedData.place.name = place.details.name;
-        _builder.sharedData.place.address = place.details.address;
-        _builder.sharedData.place.longitude = place.details.location.longitude;
-        _builder.sharedData.place.latitude = place.details.location.latitude;
-        place.loc.then((location) {
-          _builder.sharedData.timezone = location.name;
-        });
-      });
-    }
   }
 
   @override
@@ -174,15 +161,16 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     _atEnd = value;
                   },
                 ),
-                ListTile(
-                  onTap: _showPlacesPicker,
-                  leading: const Icon(Icons.place),
-                  title: Text(widget.game.sharedData.place.name == null
-                      ? messages.unknown
-                      : widget.game.sharedData.place.name),
-                  subtitle: Text(widget.game.sharedData.place.address == null
-                      ? messages.unknown
-                      : widget.game.sharedData.place.address),
+                PlacesFormField(
+                  initialValue: PlaceAndTimezone(widget.game.sharedData.place,
+                      widget.game.sharedData.timezone),
+                  labelText: Messages.of(context).selectplace,
+                  decoration: const InputDecoration(icon: Icon(Icons.place)),
+                  onSaved: (loc) {
+                    _builder.sharedData.place = loc.place.toBuilder();
+                    _builder.sharedData.timezone = loc.timeZone;
+                  },
+                  validator: (place) => _validations.validateGamePlace(context, place.place),
                 ),
                 EnsureVisibleWhenFocused(
                   focusNode: _focusNodePlaceNotes,

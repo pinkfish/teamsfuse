@@ -1,9 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/teams/teamimage.dart';
-import 'package:flutter_fuse/widgets/teams/teamname.dart';
-import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/blocs.dart';
@@ -11,6 +8,9 @@ import '../../services/messages.dart';
 import '../../widgets/blocs/singleplayerprovider.dart';
 import '../../widgets/invites/deleteinvitedialog.dart';
 import '../../widgets/player/playerimage.dart';
+import '../../widgets/teams/teamimage.dart';
+import '../../widgets/teams/teamname.dart';
+import '../../widgets/util/loading.dart';
 
 ///
 /// Displays the profile for the user.
@@ -282,7 +282,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
                       );
-                      teamNames.add(SizedBox(height:20));
+                      teamNames.add(SizedBox(height: 20));
                     }
                   }
                 }

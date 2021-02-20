@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -17,9 +16,12 @@ import '../../widgets/util/stepperalwaysvisible.dart';
 /// Screen to display when doing a game add sequence.
 ///
 class AddGameScreen extends StatefulWidget {
+  /// Optional teamUid to use for the add game
   final String teamUid;
+  /// OPtional seasonUid to use for the add game.
   final String seasonUid;
 
+  /// Create the add game screen.
   AddGameScreen(this.teamUid, this.seasonUid);
 
   @override

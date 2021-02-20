@@ -268,7 +268,6 @@ class Messages {
   String get coaches => Intl.message('Coaches',
       desc: 'Header to display the coaches for the team/club', locale: locale);
 
-
   String get coachNameHint => Intl.message("Name of the coach",
       desc: "Hint text for a form field for the coachs name", locale: locale);
 
@@ -353,7 +352,6 @@ class Messages {
     return Intl.message('REMOVE FROM TEAM',
         desc: 'Button to change the remove a member from the team');
   }
-
 
   String get details {
     return Intl.message('Details',
@@ -685,11 +683,9 @@ class Messages {
     );
   }
 
-  String get description =>
-     Intl.message('Description',
-        desc:
-            'Long description of a tournament/league to display on the league page');
-
+  String get description => Intl.message('Description',
+      desc:
+          'Long description of a tournament/league to display on the league page');
 
   String get longDescriptionHint {
     return Intl.message('Detailed Description',
@@ -720,6 +716,8 @@ class Messages {
   String get namerequired => Intl.message('Username is empty.',
       desc: 'Message to say they have an empty email field', locale: locale);
 
+  String get needToSelectPlace =>
+      Intl.message('Need to select a place', locale: locale);
   String get needtobeadmin =>
       Intl.message('Need to be an administrator', locale: locale);
 
@@ -861,10 +859,8 @@ class Messages {
     return Intl.message('No teams');
   }
 
-  String get notFinished =>
-     Intl.message("Not finished",
-        desc: 'Drop down for the not finished result', locale: locale);
-
+  String get notFinished => Intl.message("Not finished",
+      desc: 'Drop down for the not finished result', locale: locale);
 
   String get notournaments {
     return Intl.message('No tournaments');
@@ -908,8 +904,6 @@ class Messages {
       desc: 'The hint text for the contact of an opponent',
     );
   }
-
-
 
   String get opponentnamehint {
     return Intl.message(
@@ -1318,7 +1312,6 @@ class Messages {
 
   String get teamEditHint => Intl.message('Change team',
       desc: 'Hint for the button to edit the team', locale: locale);
-
 
   String get teamNameHint => Intl.message('Team Name',
       desc: 'Hint for the name of the team', locale: locale);

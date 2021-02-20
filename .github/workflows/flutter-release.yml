@@ -90,6 +90,9 @@ jobs:
         if: ${{ matrix.os == 'android' }}
         env:
           ANDROID_KEY_JKS: ${{ secrets.ANDROID_KEY_JKS }}
+      - run: echo final String googleMapsApiKey = "${{ secrets.GOOGLE_MAPS_ANDROID }}"; > apikeys.dart
+        working-directory: flutter_fuse/lib/services
+        if: ${{ matrix.os == 'ios' }}
 
       # ios specific actions.
       - run: |
@@ -104,6 +107,10 @@ jobs:
         if: ${{ matrix.os == 'ios' }}
         env:
           PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+      - run: echo final String googleMapsApiKey = "${{ secrets.GOOGLE_MAPS_IOS }}"; > apikeys.dart
+        working-directory: flutter_fuse/lib/services
+        if: ${{ matrix.os == 'ios' }}
+
 
       # Run the ios and android build.
       - name: Fastlane Action
@@ -131,6 +138,9 @@ jobs:
 
 
       # Web specific actions
+      - run: echo final String googleMapsApiKey = "${{ secrets.GOOGLE_MAPS_WEB }}"; > apikeys.dart
+        working-directory: flutter_fuse/lib/services
+        if: ${{ matrix.os == 'web' }}
       - run: |
           flutter config --enable-web
           flutter build web

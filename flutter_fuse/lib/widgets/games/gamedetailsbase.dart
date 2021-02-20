@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -6,12 +5,11 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:timezone/timezone.dart';
 
 import '../../services/blocs.dart';
-import '../../services/map.dart';
-import '../../services/map_view/marker.dart';
 import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import '../games/attendanceicon.dart';
 import '../teams/teamimage.dart';
+import 'gamemapview.dart';
 import 'teamresults.dart';
 
 /// Callback for the game.
@@ -188,13 +186,6 @@ class GameDetailsBase extends StatelessWidget {
   Widget _buildGame(BuildContext context, SingleTeamState teamState) {
     print(
         'lat: ${game.sharedData.place.latitude} long: ${game.sharedData.place.longitude} ${game.uid}');
-    var marker = Marker(
-        game.sharedData.place.placeId,
-        game.sharedData.place.address,
-        game.sharedData.place.latitude.toDouble(),
-        game.sharedData.place.longitude.toDouble());
-    var uri = MapData.instance.provider
-        .getStaticUriWithMarkers(<Marker>[marker], width: 900, height: 400);
     var day = TimeOfDay.fromDateTime(game.sharedData.tzTime);
     var dayArrive = TimeOfDay.fromDateTime(game.tzArriveTime);
     var dayEnd = TimeOfDay.fromDateTime(game.sharedData.tzEndTime);
@@ -224,13 +215,6 @@ class GameDetailsBase extends StatelessWidget {
 
     var theme = Theme.of(context);
 
-    Widget loadingWidget = Column(
-      children: <Widget>[
-        Text(Messages.of(context).loading),
-        CircularProgressIndicator()
-      ],
-    );
-
     var body = <Widget>[];
     // Map view.
     body.add(
@@ -239,15 +223,7 @@ class GameDetailsBase extends StatelessWidget {
         child: Stack(
           children: <Widget>[
             Center(
-              child: CachedNetworkImage(
-                placeholder: (context, url) => Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(20.0),
-                    child: loadingWidget,
-                  ),
-                ),
-                imageUrl: uri.toString(),
-              ),
+              child: GameMapView(game.sharedData),
             ),
             Positioned(
               right: 20.0,
