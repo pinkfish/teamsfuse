@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-02-18T23:25:32.354085",
+  "@@last_modified": "2021-02-20T08:12:07.493586",
   "About": "About",
   "@About": {
     "type": "text",
@@ -322,6 +322,12 @@
   "Change Score": "Change Score",
   "@Change Score": {
     "description": "Title for the dialog box to change the score after the game has finished",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Are you sure you want to add a player with no email?": "Are you sure you want to add a player with no email?",
+  "@Are you sure you want to add a player with no email?": {
+    "description": "Text in a dialog for when adding a player with no email",
     "type": "text",
     "placeholders": {}
   },
@@ -932,6 +938,11 @@
   "Username is empty.": "Username is empty.",
   "@Username is empty.": {
     "description": "Message to say they have an empty email field",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Need to select a place": "Need to select a place",
+  "@Need to select a place": {
     "type": "text",
     "placeholders": {}
   },
@@ -2417,6 +2428,20 @@
     "type": "text",
     "placeholders": {
       "by": {}
+    }
+  },
+  "Invited to team": "Invited to team",
+  "@Invited to team": {
+    "description": "The user that is invited to the team",
+    "type": "text",
+    "placeholders": {}
+  },
+  "invitedToTeamWithName": "{name} (Invites)",
+  "@invitedToTeamWithName": {
+    "description": "Player name with the invited tag",
+    "type": "text",
+    "placeholders": {
+      "name": {}
     }
   },
   "invitedPeople": "Invited: {num}",
