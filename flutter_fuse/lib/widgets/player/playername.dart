@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/blocs/singleplayerprovider.dart';
 
 import '../../services/messages.dart';
+import '../blocs/singleplayerprovider.dart';
 
 ///
 /// Puts the name of the player in a nixe widget.
@@ -24,6 +24,7 @@ class PlayerName extends StatelessWidget {
   /// Style to use for the player name on the screen.
   final TextStyle style;
 
+  /// The scale factor for the player name text.
   final double textScaleFactor;
 
   @override
@@ -46,11 +47,19 @@ class PlayerName extends StatelessWidget {
               textScaleFactor: textScaleFactor,
             );
             if (play.name != null) {
-              widgetTwo = Text(
-                play.name,
-                style: style,
-                textScaleFactor: textScaleFactor,
-              );
+              if (play.users.isEmpty) {
+                widgetTwo = Text(
+                  Messages.of(context).invitedToTeamWithName(play.name),
+                  style: style,
+                  textScaleFactor: textScaleFactor,
+                );
+              } else {
+                widgetTwo = Text(
+                  play.name,
+                  style: style,
+                  textScaleFactor: textScaleFactor,
+                );
+              }
             }
             state = CrossFadeState.showSecond;
           } else {
