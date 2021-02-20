@@ -35,6 +35,9 @@ class _SingleTeamSeasonPlayerDeleted extends SingleTeamSeasonPlayerEvent {
   List<Object> get props => [];
 }
 
+///
+/// Delete this player from the season.
+///
 class SingleTeamSeasonPlayerDelete extends SingleTeamSeasonPlayerEvent {
   @override
   List<Object> get props => [];

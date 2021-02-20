@@ -2310,6 +2310,10 @@ class Messages {
       args: [by],
       name: 'invitedBy',
       locale: locale);
+  
+  String get invitedToTeam => Intl.message('Invited to team',
+      desc: 'The user that is invited to the team',
+      locale: locale);
 
   String invitedPeople(int num) => Intl.message("Invited: $num",
       args: [num], locale: locale, name: 'invitedPeople');

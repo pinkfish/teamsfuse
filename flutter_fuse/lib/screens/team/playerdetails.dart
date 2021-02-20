@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/util/loading.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/blocs/singleplayerprovider.dart';
 import '../../widgets/blocs/singleprofileprovider.dart';
@@ -14,6 +13,7 @@ import '../../widgets/blocs/singleteamseasonplayerprovider.dart';
 import '../../widgets/invites/deleteinvitedialog.dart';
 import '../../widgets/player/playerimage.dart';
 import '../../widgets/player/playername.dart';
+import '../../widgets/util/loading.dart';
 import '../../widgets/util/savingoverlay.dart';
 
 class _RoleInTeamAlertDialog extends StatefulWidget {
@@ -58,20 +58,20 @@ class _RoleInTeamAlertDialogState extends State<_RoleInTeamAlertDialog> {
         items: widgets,
         value: _myRole,
         onChanged: (role) {
-           setState(() {
+          setState(() {
             _myRole = role;
           });
         },
       ),
       actions: <Widget>[
-        FlatButton(
+        TextButton(
           child: Text(MaterialLocalizations.of(context).okButtonLabel),
           onPressed: () {
             // Do the delete.
             Navigator.of(context).pop(_myRole);
           },
         ),
-        FlatButton(
+        TextButton(
           child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
           onPressed: () {
             // Do the delete.
@@ -116,8 +116,8 @@ class PlayerDetailsScreen extends StatelessWidget {
     }
   }
 
-  void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(
+  void _showInSnackBar(BuildContext context, String value) {
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(value),
       ),
@@ -130,7 +130,11 @@ class PlayerDetailsScreen extends StatelessWidget {
       SingleTeamSeasonPlayerBloc playerBloc) async {
     var mess = Messages.of(context);
 
-    var bloc = SinglePlayerBloc(playerUid: playerBloc.playerUid);
+    var bloc = SinglePlayerBloc(
+      playerUid: playerBloc.playerUid,
+      crashes: RepositoryProvider.of<AnalyticsSubsystem>(context),
+      db: RepositoryProvider.of<DatabaseUpdateModel>(context),
+    );
     var result = await showDialog<bool>(
         context: context,
         barrierDismissible: false, // user must tap button!
@@ -157,14 +161,14 @@ class PlayerDetailsScreen extends StatelessWidget {
               ),
             ),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () {
                   // Do the delete.
                   Navigator.of(context).pop(true);
                 },
               ),
-              FlatButton(
+              TextButton(
                 child:
                     Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () {
@@ -225,73 +229,79 @@ class PlayerDetailsScreen extends StatelessWidget {
 
     if (singlePlayerState.player != null &&
         singlePlayerState.player.users != null) {
-      for (var userUid in singlePlayerState.player.users.keys) {
-        var player = singlePlayerState.player.users[userUid];
+      if (singlePlayerState.player.users.isEmpty) {
         ret.add(
-          SingleProfileProvider(
-            userUid: userUid,
-            builder: (context, singleUserBloc) => BlocBuilder(
-              cubit: singleUserBloc,
-              builder: (context, userState) {
-                if (userState is SingleProfileUninitialized) {
-                  return Text(messages.loading);
-                }
-                if (userState is SingleProfileLoaded) {
-                  var profile = userState.profile;
-
-                  if (profile.phoneNumber != null &&
-                      profile.phoneNumber.isNotEmpty) {
-                    return ListTile(
-                      leading: const Icon(Icons.phone),
-                      title: Text(
-                        messages.displayNameRelationship(
-                            profile.displayName, player.relationship),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("${profile.phoneNumber}\n${profile.email}"),
-                          Row(
-                            children: <Widget>[
-                              IconButton(
-                                icon: const Icon(Icons.sms),
-                                color: Theme.of(context).primaryColorDark,
-                                onPressed: () =>
-                                    launch("sms:${profile.phoneNumber}"),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.email),
-                                color: Theme.of(context).primaryColorDark,
-                                onPressed: () =>
-                                    launch("mailto:${profile.email}"),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.message),
-                                color: Theme.of(context).primaryColorDark,
-                                onPressed: () => Navigator.pushNamed(context,
-                                    "/AddMessagePlayer/$teamUid/$seasonUid/$playerUid"),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    );
-                  } else {
-                    return ListTile(
-                      leading: const Icon(Icons.email),
-                      title: Text(profile.displayName),
-                      subtitle: Text(messages.sendmessage),
-                    );
-                  }
-                }
-                return Text(messages.unknown);
-              },
-            ),
-          ),
+          Text(Messages.of(context).invitedToTeam),
         );
+      } else {
+        for (var userUid in singlePlayerState.player.users.keys) {
+          var player = singlePlayerState.player.users[userUid];
+          ret.add(
+            SingleProfileProvider(
+              userUid: userUid,
+              builder: (context, singleUserBloc) => BlocBuilder(
+                cubit: singleUserBloc,
+                builder: (context, userState) {
+                  if (userState is SingleProfileUninitialized) {
+                    return Text(messages.loading);
+                  }
+                  if (userState is SingleProfileLoaded) {
+                    var profile = userState.profile;
+
+                    if (profile.phoneNumber != null &&
+                        profile.phoneNumber.isNotEmpty) {
+                      return ListTile(
+                        leading: const Icon(Icons.phone),
+                        title: Text(
+                          messages.displayNameRelationship(
+                              profile.displayName, player.relationship),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text("${profile.phoneNumber}\n${profile.email}"),
+                            Row(
+                              children: <Widget>[
+                                IconButton(
+                                  icon: const Icon(Icons.sms),
+                                  color: Theme.of(context).primaryColorDark,
+                                  onPressed: () =>
+                                      launch("sms:${profile.phoneNumber}"),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.email),
+                                  color: Theme.of(context).primaryColorDark,
+                                  onPressed: () =>
+                                      launch("mailto:${profile.email}"),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.message),
+                                  color: Theme.of(context).primaryColorDark,
+                                  onPressed: () => Navigator.pushNamed(context,
+                                      "/AddMessagePlayer/$teamUid/$seasonUid/$playerUid"),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    } else {
+                      return ListTile(
+                        leading: const Icon(Icons.email),
+                        title: Text(profile.displayName),
+                        subtitle: Text(messages.sendmessage),
+                      );
+                    }
+                  }
+                  return Text(messages.unknown);
+                },
+              ),
+            ),
+          );
+        }
       }
       if (!singlePlayerState.invitesLoaded &&
-          singlePlayerState.invites.length != 0) {
+          singlePlayerState.invites.isNotEmpty) {
         ret.add(Column(
           children: singlePlayerState.invites.map((invite) {
             return ListTile(
@@ -324,16 +334,20 @@ class PlayerDetailsScreen extends StatelessWidget {
       ret.add(
         Row(
           children: <Widget>[
-            FlatButton(
+            TextButton(
               onPressed: () => _changeRole(context, playerBloc, playerState),
               child: Text(messages.changerole),
-              textColor: theme.accentColor,
+              style: TextButton.styleFrom(
+                primary: theme.accentColor,
+              ),
             ),
-            FlatButton(
+            TextButton(
               onPressed: () =>
                   _removeFromTeam(context, playerState, playerBloc),
               child: Text(messages.deleteplayer),
-              textColor: theme.accentColor,
+              style: TextButton.styleFrom(
+                primary: theme.accentColor,
+              ),
             ),
           ],
         ),
@@ -374,7 +388,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                   singlePlayerBloc.add(SinglePlayerLoadInvites());
                 }
                 if (singlePlayerState is SingleTeamSeasonPlayerSaveFailed) {
-                  _showInSnackBar(Messages.of(context).formerror);
+                  _showInSnackBar(context, Messages.of(context).formerror);
                 }
               },
               builder: (context, singlePlayerState) => BlocConsumer(
@@ -384,7 +398,7 @@ class PlayerDetailsScreen extends StatelessWidget {
                     Navigator.pop(context);
                   }
                   if (playerState is SingleTeamSeasonPlayerSaveFailed) {
-                    _showInSnackBar(Messages.of(context).formerror);
+                    _showInSnackBar(context, Messages.of(context).formerror);
                   }
                 },
                 builder: (context, seasonPlayerState) {

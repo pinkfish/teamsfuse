@@ -921,6 +921,18 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     data["${Season.PLAYERS}.$playerUid"] = null;
     await doc.updateData(data);
     _analytics.logEvent(name: "removePlayerFromSeason");
+
+    // Check and see if this player also has no other users associated with it.
+    var playerDoc =
+        await _wrapper.collection(PLAYERS_COLLECTION).document(playerUid).get();
+    if (playerDoc.exists) {
+      var player = Player.fromMap(playerDoc.data);
+      // No users so it has not been added.
+      if (player.users.isEmpty) {
+        // Delete the player.
+        playerDoc.reference.delete();
+      }
+    }
   }
 
   @override
