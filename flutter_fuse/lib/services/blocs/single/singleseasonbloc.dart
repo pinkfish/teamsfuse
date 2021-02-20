@@ -23,14 +23,6 @@ class SingleSeasonUpdate extends SingleSeasonEvent {
 }
 
 ///
-/// Loads all the invites for this season.
-///
-class SingleSeasonLoadInvites extends SingleSeasonEvent {
-  @override
-  List<Object> get props => [];
-}
-
-///
 /// Loads all the games for this season.
 ///
 class SingleSeasonLoadGames extends SingleSeasonEvent {
@@ -54,15 +46,6 @@ class _SingleSeasonDeleted extends SingleSeasonEvent {
   List<Object> get props => [];
 }
 
-class _SingleSeasonLoadedInvites extends SingleSeasonEvent {
-  final BuiltList<InviteToTeam> invites;
-
-  _SingleSeasonLoadedInvites({this.invites});
-
-  @override
-  List<Object> get props => [invites];
-}
-
 class _SingleSeasonLoadedGames extends SingleSeasonEvent {
   final BuiltList<Game> games;
 
@@ -81,10 +64,8 @@ class SingleSeasonBloc
   final String seasonUid;
   final AnalyticsSubsystem crashes;
   bool _willLoadGames = false;
-  bool _willLoadInvites = false;
 
   StreamSubscription<Season> _seasonSub;
-  StreamSubscription<Iterable<InviteToTeam>> _inviteSub;
   StreamSubscription<BuiltList<Game>> _gameSub;
 
   // Create the bloc and do exciting things with it.
@@ -115,8 +96,6 @@ class SingleSeasonBloc
     await super.close();
     _seasonSub?.cancel();
     _seasonSub = null;
-    _inviteSub?.cancel();
-    _inviteSub = null;
     _gameSub?.cancel();
     _gameSub = null;
   }
@@ -131,10 +110,6 @@ class SingleSeasonBloc
       if (_willLoadGames) {
         _willLoadGames = false;
         add(SingleSeasonLoadGames());
-      }
-      if (_willLoadInvites) {
-        _willLoadGames = false;
-        add(SingleSeasonLoadInvites());
       }
     }
 
@@ -161,22 +136,6 @@ class SingleSeasonBloc
       }
     }
 
-    if (event is SingleSeasonLoadInvites) {
-      if (state is SingleSeasonUninitialized) {
-        _willLoadInvites = true;
-      } else {
-        if (_inviteSub == null) {
-          _inviteSub = db
-              .getInviteForSeasonStream(
-                  seasonUid: seasonUid, teamUid: state.season.teamUid)
-              .listen((Iterable<InviteToTeam> invites) {
-            add(_SingleSeasonLoadedInvites(invites: BuiltList.of(invites)));
-          });
-          _inviteSub.onError(crashes.recordException);
-        }
-      }
-    }
-
     if (event is SingleSeasonLoadGames) {
       if (state is SingleSeasonUninitialized) {
         _willLoadGames = true;
@@ -194,13 +153,6 @@ class SingleSeasonBloc
       yield (SingleSeasonLoaded.fromState(state)
             ..games = event.games.toBuilder()
             ..loadedGames = true)
-          .build();
-    }
-
-    if (event is _SingleSeasonLoadedInvites) {
-      yield (SingleSeasonLoaded.fromState(state)
-            ..invites = event.invites.toBuilder()
-            ..loadedInvites = true)
           .build();
     }
   }

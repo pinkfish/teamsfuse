@@ -35,11 +35,6 @@ class _InviteListScreenState extends State<InviteListScreen> {
 
   void _deleteInvite(Invite invite) async {
     var result = await deleteInviteDialog(context, invite);
-    if (result) {
-      if (invite is InviteToTeam) {
-        Navigator.pop(context);
-      }
-    }
   }
 
   void _addInviteToTeam(Invite invite) {
@@ -64,45 +59,6 @@ class _InviteListScreenState extends State<InviteListScreen> {
 
   void _addInviteToClub(Invite invite) {
     Navigator.pushNamed(context, "AcceptInviteToClub/${invite.uid}");
-  }
-
-  Card _buildInviteToTeam(InviteToTeam invite) {
-    var messages = Messages.of(context);
-    var theme = Theme.of(context);
-    return Card(
-      child: ListTile(
-        leading: IconButton(
-          icon: const Icon(Icons.add),
-          color: theme.accentColor,
-          onPressed: () {
-            _addInviteToTeam(invite);
-          },
-        ),
-        title: Text(
-          messages.teamAndSeason(invite.teamName, invite.seasonName),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(height: 5.0),
-            Text(Messages.of(context).roleInGame(invite.role)),
-            const SizedBox(height: 5.0),
-            Row(
-              children: invite.playerName.map((name) {
-                return Chip(
-                    backgroundColor: Colors.lightBlueAccent, label: Text(name));
-              }).toList(),
-            ),
-          ],
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: () {
-            _deleteInvite(invite);
-          },
-        ),
-      ),
-    );
   }
 
   Card _buildInviteAsAdmin(InviteAsAdmin invite) {
@@ -235,9 +191,6 @@ class _InviteListScreenState extends State<InviteListScreen> {
       );
     } else {
       invites.forEach((key, invite) {
-        if (invite is InviteToTeam) {
-          inviteWidgets.add(_buildInviteToTeam(invite));
-        }
         if (invite is InviteToPlayer) {
           inviteWidgets.add(_buildInviteToPlayer(invite));
         }

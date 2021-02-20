@@ -15,7 +15,7 @@ class InviteSerializer implements StructuredSerializer<Invite> {
       final key = iterator.current as String;
       iterator.moveNext();
       final dynamic value = iterator.current;
-      if (key == Invite.TYPE) {
+      if (key == Invite.typeField) {
         // Deserialize the invite type.
         InviteType type = InviteType.values
             .firstWhere((InviteType ty) => ty.toString() == value);
@@ -28,11 +28,7 @@ class InviteSerializer implements StructuredSerializer<Invite> {
             return (InviteToPlayer.serializer
                     as StructuredSerializer<InviteToPlayer>)
                 .deserialize(serializers, serialized);
-          case InviteType.Team:
-            return (InviteToTeam.serializer
-                    as StructuredSerializer<InviteToTeam>)
-                .deserialize(serializers, serialized);
-          case InviteType.LeagueTeam:
+            case InviteType.LeagueTeam:
             return (InviteToLeagueTeam.serializer
                     as StructuredSerializer<InviteToLeagueTeam>)
                 .deserialize(serializers, serialized);

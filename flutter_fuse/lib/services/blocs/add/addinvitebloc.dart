@@ -31,22 +31,24 @@ class InviteEventAddUserToPlayer extends AddInviteEvent {
 /// Sends an invite to all the specified played to the team.
 ///
 class InvitePlayersToTeam extends AddInviteEvent {
-  final Iterable<InviteTeamData> invites;
+  final InviteTeamData invite;
   final String seasonUid;
   final String seasonName;
   final String teamUid;
   final String teamName;
+  final String jerseyNumber;
 
   InvitePlayersToTeam(
-      {@required this.invites,
+      {@required this.invite,
       @required this.seasonUid,
       @required this.teamUid,
       @required this.seasonName,
-      @required this.teamName});
+      @required this.teamName,
+      @required this.jerseyNumber});
 
   @override
   List<Object> get props =>
-      [this.invites, this.seasonUid, seasonName, teamUid, teamName];
+      [this.invite, this.seasonUid, seasonName, teamUid, teamName];
 }
 
 ///
@@ -98,16 +100,14 @@ class AddInviteBloc extends Bloc<AddInviteEvent, AddItemState> {
     if (event is InvitePlayersToTeam) {
       yield AddItemSaving();
       try {
-        for (InviteTeamData data in event.invites) {
-          await coordinationBloc.databaseUpdateModel.inviteUserToSeason(
-              seasonUid: event.seasonUid,
-              playername: data.playerName,
-              role: data.role,
-              email: data.email,
-              teamName: event.teamName,
-              teamUid: event.teamUid,
-              seasonName: event.seasonName);
-        }
+        await coordinationBloc.databaseUpdateModel.inviteUserToSeason(
+            invite: event.invite,
+            seasonUid: event.seasonUid,
+            teamName: event.teamName,
+            teamUid: event.teamUid,
+            seasonName: event.seasonName,
+            jerseyNumber: event.jerseyNumber);
+
         yield AddItemDone(uid: 'done');
       } catch (e, stack) {
         coordinationBloc.analytics.recordException(e, stack);

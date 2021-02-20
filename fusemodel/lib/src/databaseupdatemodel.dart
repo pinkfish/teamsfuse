@@ -273,20 +273,19 @@ abstract class DatabaseUpdateModel {
   Future<void> updateRoleInTeamForSeason(
       String seasonUid, SeasonPlayer player, RoleInTeam role);
 
-  Stream<Iterable<InviteToTeam>> getInviteForSeasonStream(
-      {@required String seasonUid, @required String teamUid});
 
   Stream<BuiltList<Game>> getSeasonGames(Season season);
 
   // Send an invite to a user for this season and team.
-  Future<String> inviteUserToSeason(
-      {@required String seasonUid,
-      @required String seasonName,
-      @required String teamUid,
-      @required String teamName,
-      @required String playername,
-      @required String email,
-      @required RoleInTeam role});
+  Future<String> inviteUserToSeason({
+    @required InviteTeamData invite,
+    @required String seasonUid,
+    @required String seasonName,
+    @required String teamUid,
+    @required String teamName,
+    String playerUid,
+    String jerseyNumber,
+  });
 
   Stream<Season> getSingleSeason(String seasonUid);
 
@@ -440,5 +439,6 @@ abstract class DatabaseUpdateModel {
   /// Get the messages for the current user, with an optional start point
   /// for pagination.
   ///
-  Stream<BuiltList<MessageRecipient>> getMessages(bool unread, {DateTime start});
+  Stream<BuiltList<MessageRecipient>> getMessages(bool unread,
+      {DateTime start});
 }

@@ -16,17 +16,6 @@ class SingleInviteEvent extends Equatable {
 }
 
 ///
-/// Accept this invite and do whatever than means in acceptance.
-///
-class SingleInviteEventAcceptInviteToTeam extends SingleInviteEvent {
-  final Map<String, String> playerNameToUid;
-  final Map<String, Relationship> relationship;
-
-  SingleInviteEventAcceptInviteToTeam(
-      {this.playerNameToUid, this.relationship});
-}
-
-///
 /// Accepts the invite to the club.
 ///
 class SingleInviteEventAcceptInviteToClub extends SingleInviteEvent {
@@ -300,66 +289,6 @@ class SingleInviteBloc
     }
   }
 
-  Future<SingleInviteState> _acceptInviteToTeam(
-      SingleInviteEventAcceptInviteToTeam event, Invite invite) async {
-    if (invite is InviteToTeam) {
-      //
-      // Invite to team
-      //
-      if (event.playerNameToUid == null ||
-          event.relationship == null ||
-          invite.seasonUid == null) {
-        return (SingleInviteSaveFailed.fromState(state)
-              ..error = ArgumentError(
-                  'Relationship or playerNameToUse or seasonUid incorrect'))
-            .build();
-      }
-      crashes.logInviteAccepted("teamSeason", invite.seasonUid);
-      // We add ourselves to the season.
-      Season doc = await db.getSingleSeason(invite.seasonUid).first;
-      if (doc == null) {
-        return (SingleInviteSaveFailed.fromState(state)
-              ..error = ArgumentError('Season alreeady added to tea,'))
-            .build();
-      }
-      //invite.playerName.clear();
-      for (String name in event.playerNameToUid.keys) {
-        String playerUid;
-        if (event.playerNameToUid[name].compareTo(SingleInviteBloc.createNew) ==
-            0) {
-          PlayerBuilder player = new PlayerBuilder();
-          player.name = name;
-          player.usersData[db.currentUser.uid] = PlayerUserInternal((b) => b
-            ..relationship = event.relationship[name]
-            ..added = true);
-          playerUid = await db.createPlayer(player.build());
-        } else {
-          playerUid = event.playerNameToUid[name];
-        }
-
-        crashes.logInviteAccepted("teamPlayer", playerUid);
-        // We add ourselves to the season.
-        Season doc = await db.getSingleSeason(invite.seasonUid).first;
-        if (doc != null) {
-          // Update it!  First we add to the player.
-          SeasonPlayer seasonPlayer = new SeasonPlayer((b) => b
-            ..playerUid = playerUid
-            ..role = invite.role);
-          await db.addPlayerToSeason(invite.seasonUid, seasonPlayer);
-          await db.firestoreInviteDelete(invite.uid);
-        }
-      }
-
-      // This should cause the data to update
-      await db.firestoreInviteDelete(invite.uid);
-      return SingleInviteDeleted();
-    } else {
-      return (SingleInviteSaveFailed.fromState(state)
-            ..error = ArgumentError('Not a team invite'))
-          .build();
-    }
-  }
-
   @override
   String get id => inviteUid;
 
@@ -382,20 +311,6 @@ class SingleInviteBloc
         yield (SingleInviteSaveFailed.fromState(state)
               ..error = RemoteError(e.message, stack.toString()))
             .build();
-        yield SingleInviteLoaded.fromState(state).build();
-        crashes.recordException(e, stack);
-      }
-    }
-
-    // Accept the invite to the team.
-    if (event is SingleInviteEventAcceptInviteToTeam) {
-      yield SingleInviteSaving.fromState(state).build();
-      try {
-        yield await _acceptInviteToTeam(event, state.invite);
-        yield SingleInviteSaveDone.fromState(state).build();
-        yield SingleInviteDeleted();
-      } catch (e, stack) {
-        yield (SingleInviteSaveFailed.fromState(state)..error = e).build();
         yield SingleInviteLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }

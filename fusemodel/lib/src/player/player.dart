@@ -38,9 +38,12 @@ abstract class PlayerUserInternal
 /// Externally visible version of this data.
 ///
 class PlayerUser {
+  /// The user id for the person associated with the player.
   final String userUid;
+  /// The relationship the user has with the player.
   final Relationship relationship;
 
+  /// The constructore for the player user connection.
   PlayerUser(this.userUid, this.relationship);
 }
 
@@ -59,7 +62,7 @@ abstract class Player implements Built<Player, PlayerBuilder> {
   String get photoUrl;
 
   /// The users that are associated with this player.
-  @BuiltValueField(wireName: USERS)
+  @BuiltValueField(wireName: usersField)
   BuiltMap<String, PlayerUserInternal> get usersData;
 
   /// The summary of the games per season.
@@ -68,33 +71,39 @@ abstract class Player implements Built<Player, PlayerBuilder> {
   /// If this player has their data visible to the public.
   bool get isPublic;
 
+  /// The users in a nice useful format merged from the internal data.
   @memoized
   BuiltMap<String, PlayerUser> get users =>
       BuiltMap.of(Map.fromIterable(usersData.entries,
           key: (d) => d.key,
           value: (d) => PlayerUser(d.key, d.value.relationship)));
 
+
   Player._();
+  /// Factory to create the player.
   factory Player([updates(PlayerBuilder b)]) = _$Player;
 
   static void _initializeBuilder(PlayerBuilder b) => b..isPublic = false;
 
+  /// The name of the field to serialize for the user data.
+  static const String usersField = 'user';
 
-  static const String USERS = 'user';
-
+  /// Serialize the player.
   Map<String, dynamic> toMap({bool includeUsers: false}) {
     Map<String, dynamic> ret =
         dataSerializers.serializeWith(Player.serializer, this);
     if (includeUsers) {
       return ret;
     }
-    ret.remove(USERS);
+    ret.remove(usersField);
     return ret;
   }
 
+  /// Deserialize the player.
   static Player fromMap(Map<String, dynamic> jsonData) {
     return dataSerializers.deserializeWith(Player.serializer, jsonData);
   }
 
+  /// The serializer to use for the player.
   static Serializer<Player> get serializer => _$playerSerializer;
 }

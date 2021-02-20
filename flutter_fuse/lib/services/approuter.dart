@@ -21,7 +21,6 @@ import '../screens/invites/acceptinvitetoclub.dart';
 import '../screens/invites/acceptinvitetoleague.dart';
 import '../screens/invites/acceptinvitetoleagueteam.dart';
 import '../screens/invites/acceptinvitetoplayer.dart';
-import '../screens/invites/acceptinvitetoteam.dart';
 import '../screens/invites/addinvitetoplayer.dart';
 import '../screens/invites/invitelist.dart';
 import '../screens/league/addleague.dart';
@@ -99,10 +98,6 @@ class AppRouter {
     router.define("/Invites",
         handler:
             fluro.Handler(handlerFunc: (context, vals) => InviteListScreen()));
-    router.define("/AcceptInviteToTeam/:id",
-        handler: fluro.Handler(
-            handlerFunc: (context, vals) =>
-                AcceptInviteToTeamScreen(vals["id"][0].toString())));
     router.define("/AddInviteToPlayer/:id",
         handler: fluro.Handler(
             handlerFunc: (context, vals) =>

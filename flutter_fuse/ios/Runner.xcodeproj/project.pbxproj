@@ -13,11 +13,9 @@
 		673C8445208EB85200E2A938 /* GoogleMaps.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 673C8444208EB85200E2A938 /* GoogleMaps.framework */; };
 		673C8447208EB86600E2A938 /* GoogleMapsCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 673C8446208EB86600E2A938 /* GoogleMapsCore.framework */; };
 		6754682D209C3CF800EBA2C2 /* EmptySwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6754682C209C3CF800EBA2C2 /* EmptySwift.swift */; };
-		67C2B97D208EBAA000EA0054 /* GooglePlacePicker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B97C208EBAA000EA0054 /* GooglePlacePicker.framework */; };
 		67C2B983208EBAC400EA0054 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B982208EBAC400EA0054 /* FirebaseInstanceID.framework */; };
 		67C2B98D208EBAD800EA0054 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B98C208EBAD800EA0054 /* FirebaseAnalytics.framework */; };
 		67C2B98F208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B98E208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework */; };
-		67C2B993208EBAE700EA0054 /* GooglePlaces.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67C2B992208EBAE700EA0054 /* GooglePlaces.framework */; };
 		67DE79B02046B76B00FCB169 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 67DE79AF2046B76B00FCB169 /* GoogleService-Info.plist */; };
 		978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */; };
 		97C146F31CF9000F007C117D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C146F21CF9000F007C117D /* main.m */; };
@@ -50,11 +48,9 @@
 		673C8446208EB86600E2A938 /* GoogleMapsCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleMapsCore.framework; path = Pods/GoogleMaps/Maps/Frameworks/GoogleMapsCore.framework; sourceTree = "<group>"; };
 		6754682B209C3CF700EBA2C2 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		6754682C209C3CF800EBA2C2 /* EmptySwift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptySwift.swift; sourceTree = "<group>"; };
-		67C2B97C208EBAA000EA0054 /* GooglePlacePicker.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GooglePlacePicker.framework; path = Pods/GooglePlacePicker/Frameworks/GooglePlacePicker.framework; sourceTree = "<group>"; };
 		67C2B982208EBAC400EA0054 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Pods/FirebaseInstanceID/Frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		67C2B98C208EBAD800EA0054 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Pods/FirebaseAnalytics/Frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
 		67C2B98E208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Pods/FirebaseAnalytics/Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
-		67C2B992208EBAE700EA0054 /* GooglePlaces.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GooglePlaces.framework; path = Pods/GooglePlaces/Frameworks/GooglePlaces.framework; sourceTree = "<group>"; };
 		67DE79AF2046B76B00FCB169 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		67F9B9A9209A08FB00CD5CBC /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -78,11 +74,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				673C8447208EB86600E2A938 /* GoogleMapsCore.framework in Frameworks */,
-				67C2B97D208EBAA000EA0054 /* GooglePlacePicker.framework in Frameworks */,
 				673C8443208EB83500E2A938 /* GoogleMapsBase.framework in Frameworks */,
 				67C2B98D208EBAD800EA0054 /* FirebaseAnalytics.framework in Frameworks */,
 				67C2B98F208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework in Frameworks */,
-				67C2B993208EBAE700EA0054 /* GooglePlaces.framework in Frameworks */,
 				67C2B983208EBAC400EA0054 /* FirebaseInstanceID.framework in Frameworks */,
 				673C8445208EB85200E2A938 /* GoogleMaps.framework in Frameworks */,
 				B6C247AC18567E682A774411 /* Pods_Runner.framework in Frameworks */,
@@ -107,11 +101,9 @@
 				673C8442208EB83500E2A938 /* GoogleMapsBase.framework */,
 				673C8446208EB86600E2A938 /* GoogleMapsCore.framework */,
 				673C8444208EB85200E2A938 /* GoogleMaps.framework */,
-				67C2B97C208EBAA000EA0054 /* GooglePlacePicker.framework */,
 				67C2B98C208EBAD800EA0054 /* FirebaseAnalytics.framework */,
 				67C2B98E208EBAD900EA0054 /* FirebaseCoreDiagnostics.framework */,
 				67C2B982208EBAC400EA0054 /* FirebaseInstanceID.framework */,
-				67C2B992208EBAE700EA0054 /* GooglePlaces.framework */,
 				D9EFE7E536F7A15607B8E7C2 /* Pods_Runner.framework */,
 			);
 			name = Frameworks;
@@ -571,7 +563,6 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/Pods/GoogleMaps/Base/Frameworks",
 					"$(PROJECT_DIR)/Pods/GoogleMaps/Maps/Frameworks",
-					"$(PROJECT_DIR)/Pods/GooglePlacePicker/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseStorage/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseMessaging/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks",
@@ -579,7 +570,6 @@
 					"$(PROJECT_DIR)/Pods/FirebaseCore/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseAnalytics/Frameworks",
-					"$(PROJECT_DIR)/Pods/GooglePlaces/Frameworks",
 					"$(PROJECT_DIR)/Pods/GoogleSignIn/Frameworks",
 					"$(PROJECT_DIR)/fastlane",
 				);
@@ -624,7 +614,6 @@
 					"$(PROJECT_DIR)/Flutter",
 					"$(PROJECT_DIR)/Pods/GoogleMaps/Base/Frameworks",
 					"$(PROJECT_DIR)/Pods/GoogleMaps/Maps/Frameworks",
-					"$(PROJECT_DIR)/Pods/GooglePlacePicker/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseStorage/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseMessaging/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks",
@@ -632,7 +621,6 @@
 					"$(PROJECT_DIR)/Pods/FirebaseCore/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseAnalytics/Frameworks",
-					"$(PROJECT_DIR)/Pods/GooglePlaces/Frameworks",
 					"$(PROJECT_DIR)/Pods/GoogleSignIn/Frameworks",
 				);
 				GROUP = "";

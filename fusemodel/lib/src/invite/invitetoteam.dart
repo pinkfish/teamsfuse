@@ -14,47 +14,17 @@ part 'invitetoteam.g.dart';
 ///
 abstract class InviteTeamData
     implements Built<InviteTeamData, InviteTeamDataBuilder> {
+  /// The email to add the invite.
   String get email;
+
+  /// The name of the player in the invite.
   String get playerName;
+
+  /// The role the user is added as.
   RoleInTeam get role;
 
+  /// The factory to crete the invite data.
   factory InviteTeamData([void Function(InviteTeamDataBuilder) updates]) =
       _$InviteTeamData;
   InviteTeamData._();
-}
-
-///
-/// Invited to the team.
-///
-abstract class InviteToTeam
-    implements Invite, Built<InviteToTeam, InviteToTeamBuilder> {
-  String get teamName;
-  String get seasonName;
-  String get teamUid;
-  String get seasonUid;
-  RoleInTeam get role;
-  BuiltList<String> get playerName;
-
-  factory InviteToTeam([void Function(InviteToTeamBuilder) updates]) =
-      _$InviteToTeam;
-  InviteToTeam._();
-
-  static const String TEAMUID = 'teamUid';
-  static const String TEAMNAME = 'teamName';
-  static const String SEASONNAME = 'seasonName';
-  static const String SEASONUID = 'seasonUid';
-  static const String ROLE = 'role';
-
-  Map<String, dynamic> toMap({bool includeMembers}) {
-    return dataSerializers.serializeWith(InviteToTeam.serializer, this);
-  }
-
-  static InviteToTeam fromMap(Map<String, dynamic> jsonData) {
-    return dataSerializers.deserializeWith(InviteToTeam.serializer, jsonData);
-  }
-
-  static Serializer<InviteToTeam> get serializer => _$inviteToTeamSerializer;
-
-  static void _initializeBuilder(InviteToTeamBuilder b) =>
-      b..type = InviteType.Team;
 }

@@ -232,15 +232,18 @@ class Messages {
         desc: 'Button to change the role of the member of the team');
   }
 
-  String get changescore {
-    return Intl.message('Change Score',
-        desc:
-            'Title for the dialog box to change the score after the game has finished');
-  }
+  String get changescore => Intl.message('Change Score',
+      desc:
+          'Title for the dialog box to change the score after the game has finished',
+      locale: locale);
 
-  String get choosedivisions {
-    return Intl.message("Start Game - Breaks");
-  }
+  String get checkPlayerNoEmail =>
+      Intl.message('Are you sure you want to add a player with no email?',
+          desc: 'Text in a dialog for when adding a player with no email',
+          locale: locale);
+
+  String get choosedivisions =>
+      Intl.message("Start Game - Breaks", locale: locale);
 
   String get club {
     return Intl.message('Club');
@@ -1607,11 +1610,6 @@ class Messages {
           locale: locale);
 
   String confirmdelete(Invite invite) {
-    if (invite is InviteToTeam) {
-      InviteToTeam inviteTeam = invite;
-      return confirmDeleteInviteTeam(
-          inviteTeam.teamName, inviteTeam.playerName.first);
-    }
     if (invite is InviteToPlayer) {
       InviteToPlayer invitePlayer = invite;
       return confirmDeleteInvitePlayer(invitePlayer.playerName);

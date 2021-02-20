@@ -541,7 +541,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     var snap = ref
-        .where(Invite.TYPE, isEqualTo: InviteType.Admin.toString())
+        .where(Invite.typeField, isEqualTo: InviteType.Admin.toString())
         .where(InviteAsAdmin.TEAMUID, isEqualTo: team.uid);
     var wrap = await snap.getDocuments();
     yield wrap.documents.map((wrap) => InviteAsAdmin.fromMap(wrap.data));
@@ -556,7 +556,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     var query = ref
-        .where(Invite.TYPE, isEqualTo: InviteType.Admin.toString())
+        .where(Invite.typeField, isEqualTo: InviteType.Admin.toString())
         .where(InviteAsAdmin.TEAMUID, isEqualTo: teamUid);
 
     var queryData = await query.getDocuments();
@@ -763,7 +763,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..added = true
         ..relationship = player.relationship);
       var data = <String, dynamic>{};
-      data["${Player.USERS}.${player.userUid}"] = playerInternal.toMap();
+      data["${Player.usersField}.${player.userUid}"] = playerInternal.toMap();
       doc.reference.updateData(data);
       _analytics.logEvent(name: "addUserToPlayer");
       return true;
@@ -799,9 +799,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     var snapshot = await ref
-        .where(Invite.EMAIL, isEqualTo: email)
-        .where(Invite.TYPE, isEqualTo: InviteType.Player.toString())
-        .where(InviteToPlayer.PLAYERUID, isEqualTo: playerUid)
+        .where(Invite.emailField, isEqualTo: email)
+        .where(Invite.typeField, isEqualTo: InviteType.Player.toString())
+        .where(InviteToPlayer.playerUidField, isEqualTo: playerUid)
         .getDocuments();
     if (snapshot.documents.isEmpty) {
       var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
@@ -829,8 +829,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     var snapshot = await ref
-        .where(Invite.EMAIL, isEqualTo: email)
-        .where(Invite.TYPE, isEqualTo: InviteType.Admin.toString())
+        .where(Invite.emailField, isEqualTo: email)
+        .where(Invite.typeField, isEqualTo: InviteType.Admin.toString())
         .where(InviteAsAdmin.TEAMUID, isEqualTo: teamUid)
         .getDocuments();
     if (snapshot.documents.isEmpty) {
@@ -856,8 +856,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     var query = ref
-        .where(Invite.TYPE, isEqualTo: InviteType.Player.toString())
-        .where(InviteToPlayer.PLAYERUID, isEqualTo: playerUid);
+        .where(Invite.typeField, isEqualTo: InviteType.Player.toString())
+        .where(InviteToPlayer.playerUidField, isEqualTo: playerUid);
     var wrap = await query.getDocuments();
     yield wrap.documents.map((snap) => InviteToPlayer.fromMap(snap.data));
     await for (var wrap in query.snapshots()) {
@@ -869,7 +869,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<void> removeUserFromPlayer(Player player, String userId) {
     var doc = _wrapper.collection(PLAYERS_COLLECTION).document(player.uid);
     _analytics.logEvent(name: "removeUserFromPlayer");
-    return doc.updateData(<String, dynamic>{Player.USERS + userId: null});
+    return doc.updateData(<String, dynamic>{
+      "${Player.usersField}.$userId": _wrapper.fieldValueDelete()
+    });
   }
 
   // Season updates
@@ -888,8 +890,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Future<Season> addFirestoreSeason(
       Season season, DocumentReferenceWrapper pregenDoc) async {
     var ref = pregenDoc ?? _wrapper.collection(SEASONS_COLLECTION).document();
-    // Add the game.
-    DocumentReferenceWrapper doc;
     // Make sure the current user is in the user list so it shows up for us.
     season = season.rebuild((b) => b
       ..uid = ref.documentID
@@ -962,78 +962,88 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     }
   }
 
-  // Send an invite to a user for this season and team.
-  @override
-  Future<String> inviteUserToSeason(
-      {@required String seasonUid,
-      @required String seasonName,
-      @required String teamUid,
-      @required String teamName,
-      @required String userId,
-      @required String playername,
-      @required String email,
-      @required RoleInTeam role}) async {
+  Future<String> _buildInviteToSeason(
+      TransactionWrapper t,
+      String playerUid,
+      String seasonUid,
+      String seasonName,
+      String teamUid,
+      String teamName,
+      InviteTeamData data) async {
     var ref = _wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     var snapshot = await ref
-        .where(Invite.EMAIL, isEqualTo: email)
-        .where(Invite.TYPE, isEqualTo: InviteType.Team.toString())
-        .where(InviteToTeam.SEASONUID, isEqualTo: seasonUid)
-        .where(InviteToTeam.TEAMUID, isEqualTo: teamUid)
+        .where(Invite.emailField, isEqualTo: data.email)
+        .where(Invite.typeField, isEqualTo: InviteType.Player.toString())
+        .where(InviteToPlayer.playerUidField, isEqualTo: playerUid)
         .getDocuments();
     _analytics.logEvent(name: "inviteUserToSeason");
     if (snapshot.documents.isNotEmpty) {
       var invite = InviteFactory.makeInviteFromJSON(
               snapshot.documents[0].documentID, snapshot.documents[0].data)
-          as InviteToTeam;
+          as InviteToPlayer;
 
-      var newList = invite.playerName.toBuilder();
-      newList.add(playername);
-      var updatedInvite = InviteToTeam((b) => b
+      var updatedInvite = InviteToPlayer((b) => b
         ..email = invite.email
-        ..teamUid = invite.teamUid
-        ..seasonUid = invite.uid
-        ..playerName = newList
+        ..playerName = data.playerName
         ..sentByUid = userData.uid
         ..teamName = teamName
-        ..seasonName = seasonName
-        ..role = role);
-      snapshot.documents[0].reference.updateData(updatedInvite.toMap());
+        ..seasonName = seasonName);
+      await t.update(snapshot.documents[0].reference, updatedInvite.toMap());
       return snapshot.documents[0].documentID;
     } else {
       var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
-      var invite = InviteToTeam((b) => b
+      var invite = InviteToPlayer((b) => b
         ..uid = docRef.documentID
-        ..email = email
-        ..teamUid = teamUid
-        ..seasonUid = seasonUid
-        ..playerName = ListBuilder([playername])
+        ..email = data.email
+        ..playerName = data.playerName
         ..sentByUid = userData.uid
         ..teamName = teamName
-        ..seasonName = seasonName
-        ..role = role);
+        ..seasonName = seasonName);
 
-      await docRef.setData(invite.toMap());
+      await t.set(docRef, invite.toMap());
       return docRef.documentID;
     }
   }
 
+  /// Send an invite to a user for this season and team.
   @override
-  Stream<Iterable<InviteToTeam>> getInviteForSeasonStream(
-      {@required String seasonUid, @required String teamUid}) async* {
-    var ref = _wrapper.collection(INVITE_COLLECTION);
-    // See if the invite already exists.
-    var query = ref
-        .where(Invite.TYPE, isEqualTo: InviteType.Team.toString())
-        .where(InviteToTeam.SEASONUID, isEqualTo: seasonUid)
-        .where(InviteToTeam.TEAMUID, isEqualTo: teamUid);
+  Future<String> inviteUserToSeason({
+    @required InviteTeamData invite,
+    @required String seasonUid,
+    @required String seasonName,
+    @required String teamUid,
+    @required String teamName,
+    String playerUid,
+    String jerseyNumber,
+  }) async {
+    String docId;
+    var playerDoc = _wrapper.collection(PLAYERS_COLLECTION).document();
+    var seasonDoc = _wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
+    await _wrapper.runTransaction((t) async {
+      if (playerUid == null) {
+        var basicPlayer = Player((b) => b
+          ..name = invite.playerName
+          ..uid = playerDoc.documentID
+          ..isPublic = false);
+        t.set(playerDoc, basicPlayer.toMap());
+        playerUid = playerDoc.documentID;
+        // Add the player to the season.
+        t.update(seasonDoc, {
+          "${Season.PLAYERS}.$playerUid": SeasonPlayer((b) => b
+            ..playerUid = playerUid
+            ..added = true
+            ..jerseyNumber = jerseyNumber ?? ""
+            ..role = invite.role),
+        });
+      }
 
-    var wrap = await query.getDocuments();
-    yield wrap.documents.map((doc) => InviteToTeam.fromMap(doc.data));
+      docId = await _buildInviteToSeason(
+          t, playerUid, seasonUid, seasonName, teamUid, teamName, invite);
 
-    await for (var wrap in query.snapshots()) {
-      yield wrap.documents.map((doc) => InviteToTeam.fromMap(doc.data));
-    }
+      return {};
+    });
+    return docId;
   }
 
   @override
@@ -1048,7 +1058,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     yield BuiltList.of(stuff);
     // Merge the streams.
     await for (var querySnap in query.snapshots()) {
-      var stuff = data.documents.map((d) => Game.fromMap(d.data));
+      var stuff = querySnap.documents.map((d) => Game.fromMap(d.data));
       yield BuiltList.of(stuff);
     }
   }
@@ -1611,7 +1621,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = _wrapper.collection(INVITE_COLLECTION);
     // See if the invite already exists.
     var query = ref
-        .where(Invite.TYPE, isEqualTo: InviteType.LeagueTeam.toString())
+        .where(Invite.typeField, isEqualTo: InviteType.LeagueTeam.toString())
         .where(InviteToLeagueTeam.LEAGUETEAMUID, isEqualTo: leagueTeamUid);
     var wrap = await query.getDocuments();
     yield BuiltList(
@@ -1895,7 +1905,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<Player>> getPlayers() async* {
     var query = _wrapper
         .collection(PLAYERS_COLLECTION)
-        .where("${Player.USERS}.${userData.uid}.$ADDED", isEqualTo: true);
+        .where("${Player.usersField}.${userData.uid}.$ADDED", isEqualTo: true);
     var wrap = await query.getDocuments();
     yield BuiltList(wrap.documents.map((snap) => Player.fromMap(snap.data)));
     await for (var wrap in query.snapshots()) {
@@ -1938,7 +1948,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   Stream<BuiltList<Invite>> getInvites() async* {
     var query = _wrapper
         .collection(INVITE_COLLECTION)
-        .where(Invite.EMAIL, isEqualTo: normalizeEmail(userData.email));
+        .where(Invite.emailField, isEqualTo: normalizeEmail(userData.email));
 
     var wrap = await query.getDocuments();
     yield BuiltList(wrap.documents.map((snap) =>
@@ -2002,7 +2012,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // See if the invite already exists.
     var snapshot = ref
         .where(InviteToClub.CLUBUID, isEqualTo: clubUid)
-        .where(Invite.TYPE, isEqualTo: InviteType.Club.toString());
+        .where(Invite.typeField, isEqualTo: InviteType.Club.toString());
 
     var wrap = await snapshot.getDocuments();
     yield BuiltList(

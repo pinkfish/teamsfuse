@@ -14,16 +14,13 @@ class InviteFactory {
   static Invite makeInviteFromJSON(String uid, Map<String, dynamic> data) {
     assert(uid != null);
     InviteType type = InviteType.primitiveSerializer
-        .deserialize(dataSerializers, data[Invite.TYPE]);
+        .deserialize(dataSerializers, data[Invite.typeField]);
 
     switch (type) {
       case InviteType.Player:
         InviteToPlayer ret = InviteToPlayer.fromMap(data);
         return ret;
-      case InviteType.Team:
-        InviteToTeam ret = InviteToTeam.fromMap(data);
-        return ret;
-      case InviteType.Admin:
+       case InviteType.Admin:
         InviteAsAdmin ret = InviteAsAdmin.fromMap(data);
         return ret;
       case InviteType.Club:

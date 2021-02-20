@@ -61,7 +61,6 @@ part 'serializer.g.dart';
   InviteAsAdmin,
   InviteToClub,
   InviteToLeagueAsAdmin,
-  InviteToTeam,
   InviteToPlayer,
   InviteAsAdmin,
   InviteToLeagueTeam,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -41,14 +42,16 @@ class _EmailName {
 
 class _AddPlayerScreenState extends State<AddPlayerScreen> {
   final Validations _validations = Validations();
-  final List<_EmailName> _emailNames = <_EmailName>[];
+  final _EmailName _emailName = _EmailName();
   bool autovalidate = false;
   String _curSeasonUid;
+  String _jerseyNumber;
 
   AddInviteBloc addInviteBloc;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final FocusNode _focusNodeJersey = FocusNode();
 
   @override
   void initState() {
@@ -59,28 +62,62 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(value),
       ),
     );
   }
 
-  void _handleSubmit(Team team, Season season) async {
+  Future<void> _handleSubmit(Team team, Season season) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      if (_emailNames.where((en) => en.data.email.isNotEmpty).length == 0) {
+      if (_emailName.data.email.isEmpty) {
         // Ask if they really want to add a player with no email address.
-
+        var res = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false, // user must tap button!
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(Messages.of(context).addPlayer),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Text(Messages.of(context).checkPlayerNoEmail),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child:
+                      Text(MaterialLocalizations.of(context).cancelButtonLabel),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+                TextButton(
+                  child: Text(MaterialLocalizations.of(context).okButtonLabel),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        if (!res) {
+          return;
+        }
       }
       // Send the invite, cloud functions will handle the email
       // part of this.
       addInviteBloc.add(InvitePlayersToTeam(
         seasonUid: widget._seasonUid,
         seasonName: season.name,
-        invites: _emailNames.map((b) => b.data),
+        invite: _emailName.data,
         teamUid: team.uid,
         teamName: team.name,
+        jerseyNumber: _jerseyNumber,
       ));
     } else {
       autovalidate = true;
@@ -105,89 +142,90 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
       ),
     );
 
-    if (_emailNames.length == 0) {
-      // Add in the start elements.
-      _emailNames.add(_EmailName());
-    }
-    for (var en in _emailNames) {
-      rows.add(
-        EnsureVisibleWhenFocused(
-          focusNode: en.focusNodeName,
-          child: TextFormField(
-            key: en.nameKey,
-            initialValue: '',
-            decoration: InputDecoration(
-                icon: const Icon(Icons.person),
-                labelText: messages.name,
-                hintText: messages.displaynamehint),
-            validator: (value) {
-              return _validations.validateDisplayName(context, value);
-            },
-            focusNode: en.focusNodeName,
-            keyboardType: TextInputType.text,
-            onSaved: (value) {
-                en.data = en.data.rebuild((b) => b..playerName = value);
-            },
-          ),
-        ),
-      );
-
-      rows.add(
-        EnsureVisibleWhenFocused(
-          focusNode: en.focusNodeEmail,
-          child: TextFormField(
-            initialValue: '',
-            decoration: InputDecoration(
-                icon: const Icon(Icons.email),
-                labelText: messages.email,
-                hintText: messages.playeremailHint),
-            validator: (value) {
-              // Allow no email, or an email for an invite.
-              if (value.isEmpty) {
-                return null;
-              }
-              return _validations.validateEmail(context, value);
-            },
-            focusNode: en.focusNodeEmail,
-            keyboardType: TextInputType.emailAddress,
-            onFieldSubmitted: (value) {
-              if (value.isNotEmpty &&
-                  en.nameKey.currentState.value.isNotEmpty &&
-                  en == _emailNames.last) {
-                setState(() {
-                  _emailNames.add(_EmailName());
-                });
-              }
-            },
-            onSaved: (value) {
-              en.data = en.data.rebuild((b) => b..email = value);
-            },
-          ),
-        ),
-      );
-
-      rows.add(
-        RoleInTeamFormField(
-          initialValue: 'none',
+    rows.add(
+      EnsureVisibleWhenFocused(
+        focusNode: _emailName.focusNodeName,
+        child: TextFormField(
+          key: _emailName.nameKey,
+          initialValue: '',
           decoration: InputDecoration(
-            icon: const Icon(Icons.message),
+              icon: const Icon(Icons.person),
+              labelText: messages.name,
+              hintText: messages.displaynamehint),
+          validator: (value) {
+            return _validations.validateDisplayName(context, value);
+          },
+          focusNode: _emailName.focusNodeName,
+          keyboardType: TextInputType.text,
+          onSaved: (value) {
+            _emailName.data =
+                _emailName.data.rebuild((b) => b..playerName = value);
+          },
+        ),
+      ),
+    );
+
+    rows.add(
+      EnsureVisibleWhenFocused(
+        focusNode: _emailName.focusNodeEmail,
+        child: TextFormField(
+          initialValue: '',
+          decoration: InputDecoration(
+              icon: const Icon(Icons.email),
+              labelText: messages.email,
+              hintText: messages.playeremailHint),
+          validator: (value) {
+            // Allow no email, or an email for an invite.
+            if (value.isEmpty) {
+              return null;
+            }
+            return _validations.validateEmail(context, value);
+          },
+          focusNode: _emailName.focusNodeEmail,
+          keyboardType: TextInputType.emailAddress,
+          onSaved: (value) {
+            _emailName.data = _emailName.data.rebuild((b) => b..email = value);
+          },
+        ),
+      ),
+    );
+
+    rows.add(
+      RoleInTeamFormField(
+        initialValue: 'none',
+        decoration: InputDecoration(
+          icon: const Icon(Icons.message),
+          labelText: messages.roleselect,
+        ),
+        validator: (val) {
+          return _validations.validateRoleInTeam(context, val);
+        },
+        onSaved: (val) {
+          _emailName.data = _emailName.data.rebuild((b) => b
+            ..role = RoleInTeam.values.firstWhere((e) => e.toString() == val));
+        },
+      ),
+    );
+
+    rows.add(
+      EnsureVisibleWhenFocused(
+        focusNode: _focusNodeJersey,
+        child: TextFormField(
+          initialValue: '',
+          decoration: InputDecoration(
+            icon: const Icon(MdiIcons.tshirtCrew),
             labelText: messages.roleselect,
           ),
-          validator: (val) {
-            return _validations.validateRoleInTeam(context, val);
-          },
           onSaved: (val) {
-            en.data = en.data.rebuild((b) => b
-              ..role =
-                  RoleInTeam.values.firstWhere((e) => e.toString() == val));
+            _jerseyNumber = val;
           },
         ),
-      );
-    }
+      ),
+    );
 
     return SingleChildScrollView(
       child: Form(
-        autovalidate: autovalidate,
+        autovalidateMode: autovalidate ? AutovalidateMode.always : AutovalidateMode.disabled,
         key: _formKey,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

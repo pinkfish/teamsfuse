@@ -41,23 +41,16 @@ abstract class SingleSeasonState {
 
   SingleSeasonBlocStateType get type;
 
-  @BuiltValueField(serialize: false)
-  bool get loadedInvites;
-  @BuiltValueField(serialize: false)
-  BuiltList<InviteToTeam> get invites;
-
   static SingleSeasonStateBuilder fromState(
       SingleSeasonState state, SingleSeasonStateBuilder builder) {
     return builder
       ..season = state.season?.toBuilder()
-      ..loadedInvites = state.loadedInvites
       ..loadedGames = state.loadedGames
       ..games = state.games.toBuilder();
   }
 
-  static void initializeStateBuilder(SingleSeasonStateBuilder b) => b
-    ..loadedGames = false
-    ..loadedInvites = false;
+  static void initializeStateBuilder(SingleSeasonStateBuilder b) =>
+      b..loadedGames = false;
 
   Map<String, dynamic> toMap();
 }
