@@ -1,6 +1,7 @@
 name: flutter_fuse
 description: A way to fuse the teams.
 version: 0.9.4
+homepage: http://www.teamsfuse.com
 publish_to: none
 
 environment:
@@ -40,9 +41,6 @@ dependencies:
   flutter_native_timezone: ^1.0.4
   google_maps_flutter: ^1.2.0
   google_maps_place_picker: ^1.0.1
-    #path: ../../flutter_native_timezone
-  #flutter_places_dialog: ^1.0.5
-    #path: ../../flutter_places_dialog
   fusemodel:
     path: ../fusemodel
   sqflite: any

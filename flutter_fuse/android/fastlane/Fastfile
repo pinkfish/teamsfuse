@@ -49,18 +49,12 @@ platform :android do
       )
 
       # Splash screens
-      #android_appicon(
-      #  appicon_icon_types: [:splash_port],
-      #  appicon_image_file: '../assets/icons/screen.png',
-      #  appicon_path: 'app/src/main/res/drawable',
-      #  appicon_filename: 'screen'
-      #)
-      #android_appicon(
-      #  appicon_icon_types: [:splash_land],
-      #  appicon_image_file: '../assets/icons/screen_land.png',
-      #  appicon_path: 'app/src/main/res/drawable',
-      #  appicon_filename: 'screen'
-      #)
+      android_appicon(
+        appicon_icon_types: [:splash_port, :splash_land],
+        appicon_image_file: '../assets/images/abstractsport.png',
+        appicon_path: 'app/src/main/res/drawable',
+        appicon_filename: 'splash'
+      )
   end
 
   desc "Build and push to play store track"
@@ -119,5 +113,10 @@ platform :android do
   lane :beta do |options|
       puts options[:version]
       build_and_push_to_play_store_track_github(track: "alpha", version: options[:version])
+  end
+
+  desc "Generate the images"
+  lane :icons do
+    create_icons
   end
 end

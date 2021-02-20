@@ -69,6 +69,10 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
   void _handleSubmit(Team team, Season season) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
+      if (_emailNames.where((en) => en.data.email.isNotEmpty).length == 0) {
+        // Ask if they really want to add a player with no email address.
+
+      }
       // Send the invite, cloud functions will handle the email
       // part of this.
       addInviteBloc.add(InvitePlayersToTeam(
@@ -138,6 +142,10 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
                 labelText: messages.email,
                 hintText: messages.playeremailHint),
             validator: (value) {
+              // Allow no email, or an email for an invite.
+              if (value.isEmpty) {
+                return null;
+              }
               return _validations.validateEmail(context, value);
             },
             focusNode: en.focusNodeEmail,

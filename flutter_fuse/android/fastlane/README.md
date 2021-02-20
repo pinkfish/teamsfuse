@@ -44,6 +44,11 @@ Submit a new Beta Build to App store
 fastlane android beta
 ```
 Submit a new Alpha Build to App store
+### android icons
+```
+fastlane android icons
+```
+Generate the images
 
 ----
 
