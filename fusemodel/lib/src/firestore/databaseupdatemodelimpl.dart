@@ -981,19 +981,13 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       String seasonName,
       String teamUid,
       String teamName,
-      InviteTeamData data) async {
-    var ref = _wrapper.collection(INVITE_COLLECTION);
-    // See if the invite already exists.
-    var snapshot = await ref
-        .where(Invite.emailField, isEqualTo: data.email)
-        .where(Invite.typeField, isEqualTo: InviteType.Player.toString())
-        .where(InviteToPlayer.playerUidField, isEqualTo: playerUid)
-        .getDocuments();
+      InviteTeamData data,
+      DocumentSnapshotWrapper document) async {
     _analytics.logEvent(name: "inviteUserToSeason");
-    if (snapshot.documents.isNotEmpty) {
-      var invite = InviteFactory.makeInviteFromJSON(
-              snapshot.documents[0].documentID, snapshot.documents[0].data)
-          as InviteToPlayer;
+    if (document != null) {
+      var invite =
+          InviteFactory.makeInviteFromJSON(document.documentID, document.data)
+              as InviteToPlayer;
 
       var updatedInvite = InviteToPlayer((b) => b
         ..email = invite.email
@@ -1001,17 +995,22 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..sentByUid = userData.uid
         ..teamName = teamName
         ..seasonName = seasonName);
-      await t.update(snapshot.documents[0].reference, updatedInvite.toMap());
-      return snapshot.documents[0].documentID;
+      print("old invite season");
+
+      await t.update(document.reference, updatedInvite.toMap());
+      return document.documentID;
     } else {
       var docRef = await _wrapper.collection(INVITE_COLLECTION).document();
       var invite = InviteToPlayer((b) => b
+        ..playerUid = playerUid
         ..uid = docRef.documentID
         ..email = data.email
         ..playerName = data.playerName
         ..sentByUid = userData.uid
         ..teamName = teamName
         ..seasonName = seasonName);
+
+      print("new invite season");
 
       await t.set(docRef, invite.toMap());
       return docRef.documentID;
@@ -1032,26 +1031,44 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     String docId;
     var playerDoc = _wrapper.collection(PLAYERS_COLLECTION).document();
     var seasonDoc = _wrapper.collection(SEASONS_COLLECTION).document(seasonUid);
+
+    var ref = _wrapper.collection(INVITE_COLLECTION);
+    // See if the invite already exists.
+    var snapshot = await ref
+        .where(Invite.emailField, isEqualTo: invite.email)
+        .where(Invite.typeField, isEqualTo: InviteType.Player.toString())
+        .where(InviteToPlayer.playerUidField, isEqualTo: playerUid)
+        .getDocuments();
+
     await _wrapper.runTransaction((t) async {
       if (playerUid == null) {
         var basicPlayer = Player((b) => b
           ..name = invite.playerName
           ..uid = playerDoc.documentID
           ..isPublic = false);
-        t.set(playerDoc, basicPlayer.toMap());
+        print("Create player");
+        await t.set(playerDoc, basicPlayer.toMap());
         playerUid = playerDoc.documentID;
         // Add the player to the season.
-        t.update(seasonDoc, {
+        print("Update season");
+        await t.update(seasonDoc, {
           "${Season.PLAYERS}.$playerUid": SeasonPlayer((b) => b
             ..playerUid = playerUid
             ..added = true
             ..jerseyNumber = jerseyNumber ?? ""
-            ..role = invite.role),
+            ..role = invite.role).toMap(),
         });
       }
 
       docId = await _buildInviteToSeason(
-          t, playerUid, seasonUid, seasonName, teamUid, teamName, invite);
+          t,
+          playerUid,
+          seasonUid,
+          seasonName,
+          teamUid,
+          teamName,
+          invite,
+          snapshot.documents.isEmpty ? null : snapshot.documents[0]);
 
       return {};
     });

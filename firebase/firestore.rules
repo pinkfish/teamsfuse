@@ -196,8 +196,7 @@ service cloud.firestore {
     match /Players/{player} {
       allow update, delete: if isSignedIn() &&
           resource.data.user[request.auth.uid].added;
-      allow create: if isSignedIn() && isUidCorrect() &&
-          request.resource.data.user[request.auth.uid].added;
+      allow create: if isSignedIn() && isUidCorrect();
       allow read: if isSignedIn() ||
           isPublicVisible();
     }
