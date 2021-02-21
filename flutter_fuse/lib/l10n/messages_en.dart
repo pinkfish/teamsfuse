@@ -121,7 +121,7 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static m50(num) => "Invited: ${num}";
 
-  static m51(name) => "${name} (Invites)";
+  static m51(name) => "${name} (Invited)";
 
   static m52(points) => "${points}";
 
