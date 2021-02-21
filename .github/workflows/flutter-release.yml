@@ -62,15 +62,6 @@ jobs:
           flutter pub get
           flutter pub run build_runner build --delete-conflicting-outputs
         working-directory: fusemodel
-      - run: flutter test
-        working-directory: fusemodel
-      - run: |
-          flutter packages get
-          flutter build ${{ matrix.build }} --debug
-        working-directory: flutter_fuse
-        continue-on-error: true
-      - run: flutter test
-        working-directory: flutter_fuse
       - run: brew install ghostscript imagemagick
         working-directory: flutter_fuse
       - run: |
@@ -113,6 +104,15 @@ jobs:
 
 
       # Run the ios and android build.
+      - run: |
+          flutter packages get
+          flutter build ${{ matrix.build }} --debug
+        working-directory: flutter_fuse
+        continue-on-error: true
+      - run: flutter test
+        working-directory: fusemodel
+      - run: flutter test
+        working-directory: flutter_fuse
       - name: Fastlane Action
         uses: maierj/fastlane-action@v1.4.0
         if: ${{ matrix.os == 'android' || matrix.os == 'ios' }}

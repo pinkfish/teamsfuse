@@ -41,6 +41,9 @@ jobs:
         working-directory: flutter_fuse
       - run: sudo apt-get install -y graphicsmagick
         working-directory: flutter_fuse
+      - run: echo final String googleMapsApiKey = "${{ secrets.GOOGLE_MAPS_WEB }}"; > apikeys.dart
+        working-directory: flutter_fuse/lib/services
+        if: ${{ matrix.os == 'web' }}
       - run: flutter test
         working-directory: flutter_fuse
       - run: |

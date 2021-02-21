@@ -74,15 +74,6 @@ jobs:
         flutter pub get
         flutter pub run build_runner build --delete-conflicting-outputs
       working-directory: fusemodel
-    - run: flutter test
-      working-directory: fusemodel
-    - run: |
-        flutter packages get
-        flutter build ${{ matrix.build }} --debug
-      working-directory: flutter_fuse
-      continue-on-error: true
-    - run: flutter test
-      working-directory: flutter_fuse
 
     # Android specific actions.
     - run: echo ${FASTLANE_ANDROID_API_KEY} > ./api-dash.json
@@ -97,6 +88,9 @@ jobs:
       working-directory: flutter_fuse/android
       env:
         ANDROID_KEY_JKS: ${{ secrets.ANDROID_KEY_JKS }}
+    - run: echo final String googleMapsApiKey = "${{ secrets.GOOGLE_MAPS_ANDROID }}"; > apikeys.dart
+      working-directory: flutter_fuse/lib/services
+      if: ${{ matrix.os == 'ios' }}
 
     # IOS specific action.
     - run: echo ${APPLE_APP_API_P8} > ~/apple-app-api.p8
@@ -107,8 +101,20 @@ jobs:
     - run: |
         brew install ghostscript imagemagick
         magick --version
+    - run: echo final String googleMapsApiKey = "${{ secrets.GOOGLE_MAPS_IOS }}"; > apikeys.dart
+      working-directory: flutter_fuse/lib/services
+      if: ${{ matrix.os == 'ios' }}
 
     # Do the build.
+    - run: flutter test
+      working-directory: fusemodel
+    - run: |
+        flutter packages get
+        flutter build ${{ matrix.build }} --debug
+      working-directory: flutter_fuse
+      continue-on-error: true
+    - run: flutter test
+      working-directory: flutter_fuse
     - name: Fastlane Action
       uses: maierj/fastlane-action@v1.4.0
       with:
