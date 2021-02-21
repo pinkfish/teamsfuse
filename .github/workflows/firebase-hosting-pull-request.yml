@@ -43,8 +43,6 @@ jobs:
         working-directory: flutter_fuse
       - run: |
           echo final String googleMapsApiKey = \"${{ secrets.GOOGLE_MAPS_WEB }}\"\; > apikeys.dart
-          ls
-          cat apikeys.dart
         working-directory: flutter_fuse/lib/services
       - run: flutter test
         working-directory: flutter_fuse
