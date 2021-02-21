@@ -90,6 +90,7 @@ jobs:
         ANDROID_KEY_JKS: ${{ secrets.ANDROID_KEY_JKS }}
     - run: |
         echo final String googleMapsApiKey = "${{ secrets.GOOGLE_MAPS_ANDROID }}"; > apikeys.dart
+        ls
       working-directory: flutter_fuse/lib/services
       if: ${{ matrix.os == 'android' }}
 

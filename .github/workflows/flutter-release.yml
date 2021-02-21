@@ -101,6 +101,7 @@ jobs:
           PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
       - run: |
           echo final String googleMapsApiKey = "${{ secrets.GOOGLE_MAPS_IOS }}"; > apikeys.dart
+          ls
         working-directory: flutter_fuse/lib/services
         if: ${{ matrix.os == 'ios' }}
 
