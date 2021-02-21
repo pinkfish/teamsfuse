@@ -35,7 +35,7 @@ class PlayerName extends StatelessWidget {
         cubit: bloc,
         builder: (context, playerState) {
           var play = playerState.player;
-     
+
           Widget widgetOne;
           Widget widgetTwo;
           var state = CrossFadeState.showFirst;

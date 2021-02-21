@@ -77,8 +77,11 @@ class GoogleMapPlacePicker extends StatelessWidget {
   final bool forceSearchOnZoomChanged;
   final bool hidePlaceDetailsWhenDraggingPin;
 
-  _searchByCameraLocation(PlaceProvider provider, {LatLng pos}) async {
-    // We don't want to search location again if camera location is changed by zooming in/out.
+  void _searchByCameraLocation(PlaceProvider provider, {LatLng pos}) async {
+    //
+    // We don't want to search location again if camera location is changed
+    // by zooming in/out.
+    //
     bool hasZoomChanged = provider.cameraPosition != null &&
         provider.prevCameraPosition != null &&
         provider.cameraPosition.zoom != provider.prevCameraPosition.zoom;
@@ -88,6 +91,7 @@ class GoogleMapPlacePicker extends StatelessWidget {
       return;
     }
 
+    print("Searching by camera loc");
     provider.placeSearchingState = SearchingState.Searching;
 
     final GeocodingResponse response =
@@ -166,7 +170,7 @@ class GoogleMapPlacePicker extends StatelessWidget {
             initialCameraPosition: initialCameraPosition,
             mapType: data,
             myLocationEnabled: true,
-            onMapCreated: (GoogleMapController controller) {
+            onMapCreated: ( controller) {
               provider.mapController = controller;
               provider.setCameraPosition(null);
               provider.pinState = PinState.Idle;
@@ -203,12 +207,14 @@ class GoogleMapPlacePicker extends StatelessWidget {
             },
             onTap: (latLng) {
               var newPos = CameraUpdate.newLatLng(latLng);
-              //provider.setCameraPosition(initialCameraPosition);
 
               provider.mapController.animateCamera(newPos);
               _searchByCameraLocation(provider, pos: latLng);
             },
             onCameraMoveStarted: () {
+              if (provider.isAutoCompleteSearching) {
+                return;
+              }
               provider.setPrevCameraPosition(provider.cameraPosition);
 
               // Cancel any other timer.
@@ -219,6 +225,7 @@ class GoogleMapPlacePicker extends StatelessWidget {
 
               // Begins the search state if the hide details is enabled
               if (this.hidePlaceDetailsWhenDraggingPin) {
+                print("Setting searching from move");
                 provider.placeSearchingState = SearchingState.Searching;
               }
 

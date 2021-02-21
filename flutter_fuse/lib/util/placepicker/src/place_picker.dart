@@ -1,20 +1,20 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_api_headers/google_api_headers.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_webservice/places.dart';
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
 import '../providers/place_provider.dart';
 import 'autocomplete_search.dart';
 import 'controllers/autocomplete_search_controller.dart';
 import 'google_map_place_picker.dart';
-import 'utils/uuid.dart';
 import 'models/pick_result.dart';
-import 'package:google_maps_webservice/places.dart';
-import 'package:http/http.dart';
-import 'package:provider/provider.dart';
-import 'dart:io' show Platform;
-
 
 class PlacePicker extends StatefulWidget {
   PlacePicker({
@@ -197,7 +197,7 @@ class _PlacePickerState extends State<PlacePicker> {
       widget.httpClient,
       headers,
     );
-    provider.sessionToken = Uuid().generateV4();
+    provider.sessionToken = Uuid().v4();
     provider.desiredAccuracy = widget.desiredLocationAccuracy;
     provider.setMapType(widget.initialMapType);
 
@@ -317,11 +317,11 @@ class _PlacePickerState extends State<PlacePicker> {
     );
   }
 
-  _pickPrediction(Prediction prediction) async {
+  void _pickPrediction(Prediction prediction) async {
     provider.placeSearchingState = SearchingState.Searching;
+    print("Searching by prediction");
 
-    final PlacesDetailsResponse response =
-        await provider.places.getDetailsByPlaceId(
+    var response = await provider.places.getDetailsByPlaceId(
       prediction.placeId,
       sessionToken: provider.sessionToken,
       language: widget.autocompleteLanguage,
@@ -329,10 +329,10 @@ class _PlacePickerState extends State<PlacePicker> {
 
     if (response.errorMessage?.isNotEmpty == true ||
         response.status == "REQUEST_DENIED") {
-      print("AutoCompleteSearch Error: " + response.errorMessage);
       if (widget.onAutoCompleteFailed != null) {
         widget.onAutoCompleteFailed(response.status);
       }
+      provider.placeSearchingState = SearchingState.Idle;
       return;
     }
 
@@ -344,10 +344,11 @@ class _PlacePickerState extends State<PlacePicker> {
     await _moveTo(provider.selectedPlace.geometry.location.lat,
         provider.selectedPlace.geometry.location.lng);
 
+    provider.isAutoCompleteSearching = true;
     provider.placeSearchingState = SearchingState.Idle;
   }
 
-  _moveTo(double latitude, double longitude) async {
+  void _moveTo(double latitude, double longitude) async {
     GoogleMapController controller = provider.mapController;
     if (controller == null) return;
 
@@ -361,7 +362,7 @@ class _PlacePickerState extends State<PlacePicker> {
     );
   }
 
-  _moveToCurrentPosition() async {
+  void _moveToCurrentPosition() async {
     if (provider.currentPosition != null) {
       await _moveTo(provider.currentPosition.latitude,
           provider.currentPosition.longitude);

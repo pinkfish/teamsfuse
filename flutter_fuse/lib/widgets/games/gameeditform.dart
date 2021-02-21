@@ -51,7 +51,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   /// If we should autovalidate the fiels in the form, or only on save.
-  bool autovalidate = false;
+  bool _autovalidate = false;
   final Validations _validations = Validations();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNodeNotes = FocusNode();
@@ -83,13 +83,17 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
     if (_formKey.currentState == null) {
       return false;
     }
-    return _formKey.currentState.validate();
+    if ( _formKey.currentState.validate()) {
+      return true;
+    }
+    _autovalidate = true;
+    return false;
   }
 
   @override
   GameBuilder get finalGameResult {
     if (!_formKey.currentState.validate()) {
-      autovalidate = true;
+      _autovalidate = true;
       return null;
     } else {
       _formKey.currentState.save();
@@ -209,7 +213,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
         controller: _scrollController,
         child: Form(
           key: _formKey,
-          autovalidateMode: autovalidate
+          autovalidateMode: _autovalidate
               ? AutovalidateMode.always
               : AutovalidateMode.disabled,
           child: DropdownButtonHideUnderline(
@@ -274,7 +278,8 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
                     _builder.sharedData.place = loc.place.toBuilder();
                     _builder.sharedData.timezone = loc.timeZone;
                   },
-                  validator: (place) => _validations.validateGamePlace(context, place.place),
+                  validator: (place) =>
+                      _validations.validateGamePlace(context, place.place),
                 ),
                 EnsureVisibleWhenFocused(
                   focusNode: _focusNodePlaceNotes,

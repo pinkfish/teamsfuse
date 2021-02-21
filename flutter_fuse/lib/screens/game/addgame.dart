@@ -128,7 +128,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
           detailsStepState = StepState.error;
           createStepStage = StepState.disabled;
           _showInSnackBar(Messages.of(context).formerror);
-          _gameFormKey.currentState.autovalidate = true;
+          //_gameFormKey.currentState.autovalidate = true;
           return false;
         }
         _gameFormKey.currentState.save();

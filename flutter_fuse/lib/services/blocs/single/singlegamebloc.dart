@@ -15,8 +15,9 @@ abstract class SingleGameEvent {}
 ///
 class SingleGameUpdate extends SingleGameEvent {
   final Game game;
+  final bool updateShared;
 
-  SingleGameUpdate({@required this.game});
+  SingleGameUpdate({@required this.game, this.updateShared = false});
 }
 
 ///
@@ -287,7 +288,7 @@ class SingleGameBloc
     if (event is SingleGameUpdate) {
       yield SingleGameSaving.fromState(state).build();
       try {
-        await db.updateFirestoreGame(event.game, false);
+        await db.updateFirestoreGame(event.game, event.updateShared);
         yield SingleGameSaveDone.fromState(state).build();
         yield (SingleGameLoaded.fromState(state)..game = event.game.toBuilder())
             .build();

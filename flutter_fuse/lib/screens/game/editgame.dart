@@ -57,7 +57,8 @@ class _EditGameScreenState extends State<EditGameScreen> {
     }
     if (baseForm.validate()) {
       baseForm.save();
-      gameBloc.add(SingleGameUpdate(game: baseForm.finalGameResult.build()));
+      gameBloc.add(SingleGameUpdate(
+          game: baseForm.finalGameResult.build(), updateShared: true));
     } else {
       _showInSnackBar(Messages.of(context).formerror);
     }

@@ -7,10 +7,10 @@ import 'package:provider/provider.dart';
 import '../../../services/messages.dart';
 import '../providers/place_provider.dart';
 import '../providers/search_provider.dart';
-import 'models/pick_result.dart';
 import 'components/prediction_tile.dart';
 import 'components/rounded_frame.dart';
 import 'controllers/autocomplete_search_controller.dart';
+import 'models/pick_result.dart';
 
 ///
 /// The auto complete search widget to look up the place.
@@ -140,27 +140,28 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
 
   Widget _buildTextClearIcon() {
     return Selector<SearchProvider, String>(
-        selector: (_, provider) => provider.searchTerm,
-        builder: (_, data, __) {
-          if (data.length > 0) {
-            return Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: GestureDetector(
-                child: Icon(
-                  Icons.clear,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.black,
-                ),
-                onTap: () {
-                  clearText();
-                },
+      selector: (_, provider) => provider.searchTerm,
+      builder: (_, data, __) {
+        if (data.length > 0) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: GestureDetector(
+              child: Icon(
+                Icons.clear,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
               ),
-            );
-          } else {
-            return SizedBox(width: 10);
-          }
-        },);
+              onTap: () {
+                clearText();
+              },
+            ),
+          );
+        } else {
+          return SizedBox(width: 10);
+        }
+      },
+    );
   }
 
   void _onSearchInputChange() {
@@ -212,7 +213,9 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
 
     _clearOverlay();
 
-    if (searchTerm.length < 1) { return;}
+    if (searchTerm.length < 1) {
+      return;
+    }
 
     _displayOverlay(_buildSearchingOverlay());
 
