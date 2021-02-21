@@ -26,22 +26,15 @@ class PlacePicker extends StatefulWidget {
     this.desiredLocationAccuracy = LocationAccuracy.high,
     this.onMapCreated,
     this.hintText,
-    this.searchingText,
-    // this.searchBarHeight,
-    // this.contentPadding,
+    this.initialPlaceId,
+    this.initialAddress,
     this.onAutoCompleteFailed,
     this.onGeocodingSearchFailed,
     this.proxyBaseUrl,
     this.httpClient,
     this.selectedPlaceWidgetBuilder,
-    this.pinBuilder,
-    this.autoCompleteDebounceInMilliseconds = 500,
-    this.cameraMoveDebounceInMilliseconds = 750,
     this.initialMapType = MapType.normal,
     this.enableMapTypeButton = true,
-    this.enableMyLocationButton = true,
-    this.myLocationButtonCooldown = 10,
-    this.usePinPointingSearch = true,
     this.usePlaceDetailSearch = false,
     this.autocompleteOffset,
     this.autocompleteRadius,
@@ -52,7 +45,6 @@ class PlacePicker extends StatefulWidget {
     this.region,
     this.selectInitialPosition = false,
     this.resizeToAvoidBottomInset = true,
-    this.initialSearchString,
     this.searchForInitialValue = false,
     this.forceAndroidLocationManager = false,
     this.forceSearchOnZoomChanged = false,
@@ -70,21 +62,17 @@ class PlacePicker extends StatefulWidget {
   final MapCreatedCallback onMapCreated;
 
   final String hintText;
-  final String searchingText;
+  final String initialPlaceId;
+  final String initialAddress;
   // final double searchBarHeight;
   // final EdgeInsetsGeometry contentPadding;
 
   final ValueChanged<String> onAutoCompleteFailed;
   final ValueChanged<String> onGeocodingSearchFailed;
-  final int autoCompleteDebounceInMilliseconds;
-  final int cameraMoveDebounceInMilliseconds;
 
   final MapType initialMapType;
   final bool enableMapTypeButton;
-  final bool enableMyLocationButton;
-  final int myLocationButtonCooldown;
 
-  final bool usePinPointingSearch;
   final bool usePlaceDetailSearch;
 
   final num autocompleteOffset;
@@ -120,11 +108,6 @@ class PlacePicker extends StatefulWidget {
   /// INPORTANT: If this is non-null, [onPlacePicked] will not be invoked, as there will be no default 'Select here' button.
   final SelectedPlaceWidgetBuilder selectedPlaceWidgetBuilder;
 
-  /// optional - builds customized pin widget which indicates current pointing position.
-  ///
-  /// It is provided by default if you leave it as a null.
-  final PinBuilder pinBuilder;
-
   /// optional - sets 'proxy' value in google_maps_webservice
   ///
   /// In case of using a proxy the baseUrl can be set.
@@ -137,9 +120,6 @@ class PlacePicker extends StatefulWidget {
   /// In case of using a proxy url that requires authentication
   /// or custom configuration
   final BaseClient httpClient;
-
-  /// Initial value of autocomplete search
-  final String initialSearchString;
 
   /// Whether to search for the initial value or not
   final bool searchForInitialValue;
@@ -173,6 +153,7 @@ class _PlacePickerState extends State<PlacePicker> {
   Future<PlaceProvider> _futureProvider;
   PlaceProvider provider;
   SearchBarController searchBarController = SearchBarController();
+  final MarkerId markerUuid = MarkerId(Uuid().v4());
 
   @override
   void initState() {
@@ -189,7 +170,6 @@ class _PlacePickerState extends State<PlacePicker> {
   }
 
   Future<PlaceProvider> _initPlaceProvider() async {
-    print("GEtting provider");
     final headers = await GoogleApiHeaders().getHeaders();
     final provider = PlaceProvider(
       widget.apiKey,
@@ -201,14 +181,47 @@ class _PlacePickerState extends State<PlacePicker> {
     provider.desiredAccuracy = widget.desiredLocationAccuracy;
     provider.setMapType(widget.initialMapType);
 
-    print("Donme getting provider");
+    // Lookup the address or the plaxce.
+    try {
+      if (widget.initialPlaceId != null && widget.initialPlaceId.isNotEmpty) {
+        var detailResponse = await provider.places.getDetailsByPlaceId(
+          widget.initialPlaceId,
+          language: widget.region,
+        );
+
+        if (detailResponse.errorMessage?.isNotEmpty == true ||
+            detailResponse.status == "REQUEST_DENIED") {
+          print("Fetching details by placeId Error: " +
+              detailResponse.errorMessage);
+        } else {
+          provider.selectedPlace =
+              PickResult.fromPlaceDetailResult(detailResponse.result);
+        }
+      }
+      if (provider.selectedPlace == null) {
+        // Search with the address.
+        var response = await provider.geocoding.searchByAddress(
+          widget.initialAddress,
+        );
+
+        if (response.errorMessage?.isNotEmpty == true ||
+            response.status == "REQUEST_DENIED") {
+          print("Fetching details by placeId Error: " + response.errorMessage);
+        } else if (response.results.isNotEmpty) {
+          // Yay, now we can set the result stuff.
+          provider.selectedPlace =
+              PickResult.fromGeocodingResult(response.results.first);
+        }
+      }
+    } catch (e) {
+      print("Exception getting the place $e");
+    }
 
     return provider;
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Picking the picker");
     return WillPopScope(
       onWillPop: () {
         searchBarController.clearOverlay();
@@ -290,8 +303,6 @@ class _PlacePickerState extends State<PlacePicker> {
               searchBarController: searchBarController,
               sessionToken: provider.sessionToken,
               hintText: widget.hintText,
-              searchingText: widget.searchingText,
-              debounceMilliseconds: widget.autoCompleteDebounceInMilliseconds,
               onPicked: (prediction) {
                 _pickPrediction(prediction);
               },
@@ -307,7 +318,6 @@ class _PlacePickerState extends State<PlacePicker> {
               autocompleteTypes: widget.autocompleteTypes,
               strictbounds: widget.strictbounds,
               region: widget.region,
-              initialSearchString: widget.initialSearchString,
               searchForInitialValue: widget.searchForInitialValue,
               autocompleteOnTrailingWhitespace:
                   widget.autocompleteOnTrailingWhitespace),
@@ -350,7 +360,9 @@ class _PlacePickerState extends State<PlacePicker> {
 
   void _moveTo(double latitude, double longitude) async {
     GoogleMapController controller = provider.mapController;
-    if (controller == null) return;
+    if (controller == null) {
+      return;
+    }
 
     await controller.animateCamera(
       CameraUpdate.newCameraPosition(
@@ -362,21 +374,13 @@ class _PlacePickerState extends State<PlacePicker> {
     );
   }
 
-  void _moveToCurrentPosition() async {
-    if (provider.currentPosition != null) {
-      await _moveTo(provider.currentPosition.latitude,
-          provider.currentPosition.longitude);
-    }
-  }
-
   Widget _buildMapWithLocation() {
-    print("Doing thius");
     if (widget.useCurrentLocation) {
       return FutureBuilder(
           future: provider
               .updateCurrentLocation(widget.forceAndroidLocationManager),
           builder: (context, snap) {
-            print("Build $snap");
+            print("Build $snap ${provider.currentPosition}");
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else {
@@ -392,11 +396,15 @@ class _PlacePickerState extends State<PlacePicker> {
       return FutureBuilder(
         future: Future.delayed(Duration(milliseconds: 1)),
         builder: (context, snap) {
-          print("Fluff $snap");
           if (snap.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else {
-            return _buildMap(widget.initialPosition);
+            if (provider.currentPosition == null) {
+              return _buildMap(widget.initialPosition);
+            } else {
+              return _buildMap(LatLng(provider.currentPosition.latitude,
+                  provider.currentPosition.longitude));
+            }
           }
         },
       );
@@ -408,12 +416,8 @@ class _PlacePickerState extends State<PlacePicker> {
       initialTarget: initialTarget,
       appBarKey: appBarKey,
       selectedPlaceWidgetBuilder: widget.selectedPlaceWidgetBuilder,
-      pinBuilder: widget.pinBuilder,
       onSearchFailed: widget.onGeocodingSearchFailed,
-      debounceMilliseconds: widget.cameraMoveDebounceInMilliseconds,
       enableMapTypeButton: widget.enableMapTypeButton,
-      enableMyLocationButton: widget.enableMyLocationButton,
-      usePinPointingSearch: widget.usePinPointingSearch,
       usePlaceDetailSearch: widget.usePlaceDetailSearch,
       onMapCreated: widget.onMapCreated,
       selectInitialPosition: widget.selectInitialPosition,
@@ -422,21 +426,6 @@ class _PlacePickerState extends State<PlacePicker> {
       hidePlaceDetailsWhenDraggingPin: widget.hidePlaceDetailsWhenDraggingPin,
       onToggleMapType: () {
         provider.switchMapType();
-      },
-      onMyLocation: () async {
-        // Prevent to click many times in short period.
-        if (provider.isOnUpdateLocationCooldown == false) {
-          provider.isOnUpdateLocationCooldown = true;
-          Timer(Duration(seconds: widget.myLocationButtonCooldown), () {
-            provider.isOnUpdateLocationCooldown = false;
-          });
-          await provider
-              .updateCurrentLocation(widget.forceAndroidLocationManager);
-          await _moveToCurrentPosition();
-        }
-      },
-      onMoveStart: () {
-        searchBarController.reset();
       },
       onPlacePicked: widget.onPlacePicked,
     );

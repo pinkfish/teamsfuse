@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +6,9 @@ import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:provider/provider.dart';
 import 'package:tuple/tuple.dart';
+import 'package:uuid/uuid.dart';
 
 import '../providers/place_provider.dart';
-import 'components/animated_pin.dart';
 import 'components/floating_card.dart';
 import 'models/pick_result.dart';
 
@@ -32,17 +30,11 @@ class GoogleMapPlacePicker extends StatelessWidget {
     @required this.initialTarget,
     @required this.appBarKey,
     this.selectedPlaceWidgetBuilder,
-    this.pinBuilder,
     this.onSearchFailed,
-    this.onMoveStart,
     this.onMapCreated,
-    this.debounceMilliseconds,
     this.enableMapTypeButton,
-    this.enableMyLocationButton,
     this.onToggleMapType,
-    this.onMyLocation,
     this.onPlacePicked,
-    this.usePinPointingSearch,
     this.usePlaceDetailSearch,
     this.selectInitialPosition,
     this.language,
@@ -54,20 +46,14 @@ class GoogleMapPlacePicker extends StatelessWidget {
   final GlobalKey appBarKey;
 
   final SelectedPlaceWidgetBuilder selectedPlaceWidgetBuilder;
-  final PinBuilder pinBuilder;
 
   final ValueChanged<String> onSearchFailed;
-  final VoidCallback onMoveStart;
   final MapCreatedCallback onMapCreated;
   final VoidCallback onToggleMapType;
-  final VoidCallback onMyLocation;
   final ValueChanged<PickResult> onPlacePicked;
 
-  final int debounceMilliseconds;
   final bool enableMapTypeButton;
-  final bool enableMyLocationButton;
 
-  final bool usePinPointingSearch;
   final bool usePlaceDetailSearch;
 
   final bool selectInitialPosition;
@@ -146,7 +132,6 @@ class GoogleMapPlacePicker extends StatelessWidget {
     return Stack(
       children: <Widget>[
         _buildGoogleMap(context),
-        _buildPin(),
         _buildFloatingCard(),
         _buildMapIcons(context),
       ],
@@ -155,25 +140,45 @@ class GoogleMapPlacePicker extends StatelessWidget {
 
   Widget _buildGoogleMap(BuildContext context) {
     print("Making map");
-    return Selector<PlaceProvider, MapType>(
-        selector: (_, provider) => provider.mapType,
+
+    return Selector<PlaceProvider, PickResult>(
+        selector: (_, provider) => provider.selectedPlace,
         builder: (_, data, __) {
           var provider = PlaceProvider.of(context, listen: false);
           var initialCameraPosition =
               CameraPosition(target: initialTarget, zoom: 15);
+          var markers = Set<Marker>.of([]);
 
-          print("Mapo type $data");
+          print("Rebuild map");
+
+          if (provider.selectedPlace != null) {
+            var markerUuid = MarkerId(Uuid().v4());
+
+            markers.add(Marker(
+              markerId: markerUuid,
+              position: LatLng(
+                provider.selectedPlace.geometry.location.lat,
+                provider.selectedPlace.geometry.location.lng,
+              ),
+              infoWindow: InfoWindow(
+                title: provider.selectedPlace.name ??
+                    provider.selectedPlace.formattedAddress,
+                snippet: provider.selectedPlace.formattedAddress,
+              ),
+            ));
+            print("Made a marker");
+          }
           return GoogleMap(
             myLocationButtonEnabled: false,
             compassEnabled: false,
             mapToolbarEnabled: false,
             initialCameraPosition: initialCameraPosition,
-            mapType: data,
+            mapType: provider.mapType,
             myLocationEnabled: true,
-            onMapCreated: ( controller) {
+            markers: markers,
+            onMapCreated: (controller) {
               provider.mapController = controller;
               provider.setCameraPosition(null);
-              provider.pinState = PinState.Idle;
 
               // When select initialPosition set to true.
               if (selectInitialPosition) {
@@ -181,59 +186,14 @@ class GoogleMapPlacePicker extends StatelessWidget {
                 _searchByCameraLocation(provider);
               }
             },
-            onCameraIdle: () {
-              if (provider.isAutoCompleteSearching) {
-                provider.isAutoCompleteSearching = false;
-                provider.pinState = PinState.Idle;
-                return;
-              }
 
-              // Perform search only if the setting is to true.
-              if (usePinPointingSearch) {
-                // Search current camera location only if camera has moved (dragged) before.
-                if (provider.pinState == PinState.Dragging) {
-                  // Cancel previous timer.
-                  if (provider.debounceTimer?.isActive ?? false) {
-                    provider.debounceTimer.cancel();
-                  }
-                  provider.debounceTimer =
-                      Timer(Duration(milliseconds: debounceMilliseconds), () {
-                    _searchByCameraLocation(provider);
-                  });
-                }
-              }
-
-              provider.pinState = PinState.Idle;
-            },
             onTap: (latLng) {
               var newPos = CameraUpdate.newLatLng(latLng);
 
               provider.mapController.animateCamera(newPos);
               _searchByCameraLocation(provider, pos: latLng);
             },
-            onCameraMoveStarted: () {
-              if (provider.isAutoCompleteSearching) {
-                return;
-              }
-              provider.setPrevCameraPosition(provider.cameraPosition);
 
-              // Cancel any other timer.
-              provider.debounceTimer?.cancel();
-
-              // Update state, dismiss keyboard and clear text.
-              provider.pinState = PinState.Dragging;
-
-              // Begins the search state if the hide details is enabled
-              if (this.hidePlaceDetailsWhenDraggingPin) {
-                print("Setting searching from move");
-                provider.placeSearchingState = SearchingState.Searching;
-              }
-
-              onMoveStart();
-            },
-            onCameraMove: (CameraPosition position) {
-              provider.setCameraPosition(position);
-            },
             // gestureRecognizers make it possible to navigate the map when it's a
             // child in a scroll view e.g ListView, SingleChildScrollView...
             gestureRecognizers: Set()
@@ -243,90 +203,14 @@ class GoogleMapPlacePicker extends StatelessWidget {
         });
   }
 
-  Widget _buildPin() {
-    return Center(
-      child: Selector<PlaceProvider, PinState>(
-        selector: (_, provider) => provider.pinState,
-        builder: (context, state, __) {
-          if (pinBuilder == null) {
-            return _defaultPinBuilder(context, state);
-          } else {
-            return Builder(
-                builder: (builderContext) => pinBuilder(builderContext, state));
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _defaultPinBuilder(BuildContext context, PinState state) {
-    if (state == PinState.Preparing) {
-      return Container();
-    } else if (state == PinState.Idle) {
-      return Stack(
-        children: <Widget>[
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(Icons.place, size: 36, color: Colors.red),
-                SizedBox(height: 42),
-              ],
-            ),
-          ),
-          Center(
-            child: Container(
-              width: 5,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-        ],
-      );
-    } else {
-      return Stack(
-        children: <Widget>[
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                AnimatedPin(
-                    child: Icon(Icons.place, size: 36, color: Colors.red)),
-                SizedBox(height: 42),
-              ],
-            ),
-          ),
-          Center(
-            child: Container(
-              width: 5,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-  }
-
   Widget _buildFloatingCard() {
-    return Selector<PlaceProvider,
-        Tuple4<PickResult, SearchingState, bool, PinState>>(
-      selector: (_, provider) => Tuple4(
-          provider.selectedPlace,
-          provider.placeSearchingState,
-          provider.isSearchBarFocused,
-          provider.pinState),
+    return Selector<PlaceProvider, Tuple3<PickResult, SearchingState, bool>>(
+      selector: (_, provider) => Tuple3(provider.selectedPlace,
+          provider.placeSearchingState, provider.isSearchBarFocused),
       builder: (context, data, __) {
+        print("Biggled ${data.item1.formattedAddress}");
         if ((data.item1 == null && data.item2 == SearchingState.Idle) ||
-            data.item3 == true ||
-            data.item4 == PinState.Dragging &&
-                this.hidePlaceDetailsWhenDraggingPin) {
+            data.item3 == true) {
           return Container();
         } else {
           if (selectedPlaceWidgetBuilder == null) {
@@ -420,22 +304,6 @@ class GoogleMapPlacePicker extends StatelessWidget {
                     elevation: 8.0,
                     onPressed: onToggleMapType,
                     child: Icon(Icons.layers),
-                  ),
-                )
-              : Container(),
-          SizedBox(height: 10),
-          enableMyLocationButton
-              ? Container(
-                  width: 35,
-                  height: 35,
-                  child: RawMaterialButton(
-                    shape: CircleBorder(),
-                    fillColor: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.black54
-                        : Colors.white,
-                    elevation: 8.0,
-                    onPressed: onMyLocation,
-                    child: Icon(Icons.my_location),
                   ),
                 )
               : Container(),

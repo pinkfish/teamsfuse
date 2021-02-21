@@ -91,7 +91,7 @@ class _PlacesFormFieldState extends FormFieldState<PlaceAndTimezone> {
       ValueChanged<PlaceAndTimezone> onFieldSubmitted) async {
     PickResult myResult;
     LatLng loc;
-    if (value != null && value.place.address.isNotEmpty) {
+    if (value != null && value.place != null) {
       loc = LatLng(value.place.latitude, value.place.longitude);
     }
 
@@ -105,13 +105,13 @@ class _PlacesFormFieldState extends FormFieldState<PlaceAndTimezone> {
             Navigator.of(context).pop();
           },
           initialPosition: loc ?? _initialPosition,
-          initialSearchString: value?.place.address,
-          selectInitialPosition: true,
+          initialPlaceId: value?.place?.placeId,
+          initialAddress: value?.place?.address,
+          selectInitialPosition: false,
           searchForInitialValue: loc != null,
           useCurrentLocation: true,
           enableMapTypeButton: true,
           initialMapType: MapType.normal,
-          usePinPointingSearch: true,
         ),
       ),
     );

@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../src/models/pick_result.dart';
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+
+import '../src/models/pick_result.dart';
 
 class PlaceProvider extends ChangeNotifier {
   PlaceProvider(
@@ -49,7 +50,8 @@ class PlaceProvider extends ChangeNotifier {
       if (await Permission.location.request().isGranted) {
         print("Permission granted");
         currentPosition = await Geolocator.getCurrentPosition(
-            desiredAccuracy: desiredAccuracy ?? LocationAccuracy.high, timeLimit: Duration(milliseconds: 500));
+            desiredAccuracy: desiredAccuracy ?? LocationAccuracy.high,
+            timeLimit: Duration(milliseconds: 500));
         print("Got position");
       } else {
         currentPosition = null;
@@ -106,13 +108,6 @@ class PlaceProvider extends ChangeNotifier {
   GoogleMapController get mapController => _mapController;
   set mapController(GoogleMapController controller) {
     _mapController = controller;
-    notifyListeners();
-  }
-
-  PinState _pinState = PinState.Preparing;
-  PinState get pinState => _pinState;
-  set pinState(PinState newState) {
-    _pinState = newState;
     notifyListeners();
   }
 
