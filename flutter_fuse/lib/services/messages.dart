@@ -307,135 +307,92 @@ class Messages {
   String get defensiveReboundTitle => Intl.message("D/RB",
       desc: "Defensive rebound abbreviation", locale: locale);
 
-  String get deleteadmin {
-    return Intl.message("Delete Admin");
-  }
+  String get deleteadmin => Intl.message("Delete Admin", locale: locale);
 
-  String get deleteadmininvite {
-    return Intl.message('Delete admin invite');
-  }
+  String get deleteadmininvite =>
+      Intl.message('Delete admin invite', locale: locale);
 
-  String get deletebuttontext {
-    return Intl.message('DELETE', desc: 'Button text to delete an iteam');
-  }
+  String get deletebuttontext => Intl.message('DELETE',
+      desc: 'Button text to delete an iteam', locale: locale);
 
-  String get deleteGameGame => Intl.message("Delete game");
+  String get deleteGameGame => Intl.message("Delete game", locale: locale);
 
-  String get deleteGamePractice => Intl.message("Delete training");
+  String get deleteGamePractice =>
+      Intl.message("Delete training", locale: locale);
 
-  String get deleteGameSpecialEvent => Intl.message("Delete special event");
+  String get deleteGameSpecialEvent =>
+      Intl.message("Delete special event", locale: locale);
 
-  String get deleteinvite {
-    return Intl.message('Delete invite',
-        desc: 'Title for the dialog to delete an invite');
-  }
+  String get deleteinvite => Intl.message('Delete invite',
+      desc: 'Title for the dialog to delete an invite', locale: locale);
 
-  String get deleteinvitebutton {
-    return Intl.message('DELETE INVITE',
-        desc: 'Title for the dialog to delete an invite');
-  }
+  String get deleteinvitebutton => Intl.message('DELETE INVITE',
+      desc: 'Title for the dialog to delete an invite', locale: locale);
 
-  String get deletemember {
-    return Intl.message('Delete member');
-  }
+  String get deletemember => Intl.message('Delete member', locale: locale);
 
-  String get deletemessage {
-    return Intl.message("Delete", desc: "Delete message button");
-  }
+  String get deletemessage =>
+      Intl.message("Delete", desc: "Delete message button", locale: locale);
 
-  String get deleteopponent {
-    return Intl.message('Delete opponent',
-        desc: 'Title to the alert dialog to delete an opponent from the team');
-  }
+  String get deleteopponent => Intl.message('Delete opponent',
+      desc: 'Title to the alert dialog to delete an opponent from the team',
+      locale: locale);
 
   String get deletePlayer => Intl.message("Delete Player",
       desc: "Dialog title for deleting a playern", locale: locale);
 
   String get deleteplayer {
     return Intl.message('REMOVE FROM TEAM',
-        desc: 'Button to change the remove a member from the team');
+        desc: 'Button to change the remove a member from the team',
+        locale: locale);
   }
 
-  String get details {
-    return Intl.message('Details',
-        desc: 'Details fin a stepper for a game or team');
-  }
+  String get details => Intl.message('Details',
+      desc: 'Details fin a stepper for a game or team', locale: locale);
 
-  String get directionsbuttons {
-    return Intl.message('DIRECTIONS');
-  }
+  String get directionsbuttons => Intl.message('DIRECTIONS', locale: locale);
 
   String get name => Intl.message('Name',
       desc: 'Name for the edit box to edit the user name', locale: locale);
 
-  String get displaynamehint {
-    return Intl.message('Your name',
-        desc: 'Name for the edit box to edit the user name');
-  }
+  String get displaynamehint => Intl.message('Your name',
+      desc: 'Name for the edit box to edit the user name', locale: locale);
 
-  String get divison {
-    return Intl.message('Divison');
-  }
+  String get divison => Intl.message('Divison', locale: locale);
 
   String get doneButton =>
       Intl.message('DONE', desc: 'Done completely button', locale: locale);
 
-  String get duration {
-    return Intl.message("Duration");
-  }
+  String get duration => Intl.message("Duration", locale: locale);
 
-  String get editbuttontext {
-    return Intl.message(
-      'EDIT',
-      desc: 'The edit text for the dialog',
-    );
-  }
+  String get editbuttontext => Intl.message('EDIT',
+      desc: 'The edit text for the dialog', locale: locale);
 
-  String get editgame {
-    return Intl.message(
-      'Edit Game',
-      desc: 'Edit Game help text for button',
-    );
-  }
+  String get editgame => Intl.message('Edit Game',
+      desc: 'Edit Game help text for button', locale: locale);
 
-  String get editimagebutton {
-    return Intl.message('EDIT IMAGE', desc: 'Button to edit the image');
-  }
+  String get editimagebutton => Intl.message('EDIT IMAGE',
+      desc: 'Button to edit the image', locale: locale);
 
-  String get editteam {
-    return Intl.message(
-      'Edit Team',
-      desc: 'Edit Team help text for button',
-    );
-  }
+  String get editteam => Intl.message('Edit Team',
+      desc: 'Edit Team help text for button', locale: locale);
 
-  String get email {
-    return Intl.message('Email', desc: 'Email input field');
-  }
+  String get email =>
+      Intl.message('Email', desc: 'Email input field', locale: locale);
 
-  String get emailheader {
-    return Intl.message("Email Preferences");
-  }
+  String get emailheader => Intl.message("Email Preferences", locale: locale);
 
-  String get emailonupcoming {
-    return Intl.message("Upcoming games/events",
-        desc: 'Switch text for emailing on upcoming games');
-  }
+  String get emailonupcoming => Intl.message("Upcoming games/events",
+      desc: 'Switch text for emailing on upcoming games', locale: locale);
 
-  String get emailonupdates {
-    return Intl.message("On changes to games/events",
-        desc: 'Switch text for emailing on updates');
-  }
+  String get emailonupdates => Intl.message("On changes to games/events",
+      desc: 'Switch text for emailing on updates', locale: locale);
 
-  String get emailrequired {
-    return Intl.message('Email is empty.',
-        desc: 'Message to say they have an empty email field');
-  }
+  String get emailrequired => Intl.message('Email is empty.',
+      desc: 'Message to say they have an empty email field', locale: locale);
 
-  String get emptypassword {
-    return Intl.message('Please choose a password.',
-        desc: 'Message to say they have an empty password field');
-  }
+  String get emptypassword => Intl.message('Please choose a password.',
+      desc: 'Message to say they have an empty password field', locale: locale);
 
   String get emptyText => Intl.message("Must not be empty",
       desc: "Hint text to say the name must not be empty", locale: locale);
@@ -2314,7 +2271,7 @@ class Messages {
   String get invitedToTeam => Intl.message('Invited to team',
       desc: 'The user that is invited to the team', locale: locale);
 
-  String invitedToTeamWithName(String name) => Intl.message('$name (Invites)',
+  String invitedToTeamWithName(String name) => Intl.message('$name (Invited)',
       desc: 'Player name with the invited tag',
       args: [name],
       name: 'invitedToTeamWithName',
@@ -2526,6 +2483,11 @@ class Messages {
     }
     return unknown;
   }
+
+  String get searching => Intl.message("Searching...",
+      desc:
+          'The searching text in the search box when the search is inprogress.',
+      locale: locale);
 
   String periodStopRegulation(GameLog period) => periodStopRegulationBreakout(
       period.period.periodNumber, period.score.ptsFor, period.score.ptsAgainst);

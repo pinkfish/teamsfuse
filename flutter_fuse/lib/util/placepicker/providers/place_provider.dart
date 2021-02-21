@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker/src/models/pick_result.dart';
-import 'package:google_maps_place_picker/src/place_picker.dart';
+import '../src/models/pick_result.dart';
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart';
@@ -45,10 +44,13 @@ class PlaceProvider extends ChangeNotifier {
 
   Future<void> updateCurrentLocation(bool forceAndroidLocationManager) async {
     try {
+      print("Waiting for the permisson");
       await Permission.location.request();
       if (await Permission.location.request().isGranted) {
-        currentPosition = await getCurrentPosition(
-            desiredAccuracy: desiredAccuracy ?? LocationAccuracy.high);
+        print("Permission granted");
+        currentPosition = await Geolocator.getCurrentPosition(
+            desiredAccuracy: desiredAccuracy ?? LocationAccuracy.high, timeLimit: Duration(milliseconds: 500));
+        print("Got position");
       } else {
         currentPosition = null;
       }

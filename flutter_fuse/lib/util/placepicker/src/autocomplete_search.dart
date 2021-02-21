@@ -1,15 +1,20 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_place_picker/google_maps_place_picker.dart';
-import 'package:google_maps_place_picker/providers/place_provider.dart';
-import 'package:google_maps_place_picker/providers/search_provider.dart';
-import 'package:google_maps_place_picker/src/components/prediction_tile.dart';
-import 'package:google_maps_place_picker/src/components/rounded_frame.dart';
-import 'package:google_maps_place_picker/src/controllers/autocomplete_search_controller.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:provider/provider.dart';
 
+import '../../../services/messages.dart';
+import '../providers/place_provider.dart';
+import '../providers/search_provider.dart';
+import 'models/pick_result.dart';
+import 'components/prediction_tile.dart';
+import 'components/rounded_frame.dart';
+import 'controllers/autocomplete_search_controller.dart';
+
+///
+/// The auto complete search widget to look up the place.
+///
 class AutoCompleteSearch extends StatefulWidget {
   const AutoCompleteSearch(
       {Key key,
@@ -17,7 +22,7 @@ class AutoCompleteSearch extends StatefulWidget {
       @required this.onPicked,
       @required this.appBarKey,
       this.hintText,
-      this.searchingText = "Searching...",
+      this.searchingText,
       this.height = 40,
       this.contentPadding = EdgeInsets.zero,
       this.debounceMilliseconds,
@@ -155,10 +160,10 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
           } else {
             return SizedBox(width: 10);
           }
-        });
+        },);
   }
 
-  _onSearchInputChange() {
+  void _onSearchInputChange() {
     if (!mounted) return;
     this.provider.searchTerm = controller.text;
 
@@ -191,35 +196,37 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
     });
   }
 
-  _onFocusChanged() {
+  void _onFocusChanged() {
     PlaceProvider provider = PlaceProvider.of(context, listen: false);
     provider.isSearchBarFocused = focus.hasFocus;
     provider.debounceTimer?.cancel();
     provider.placeSearchingState = SearchingState.Idle;
   }
 
-  _searchPlace(String searchTerm) {
+  void _searchPlace(String searchTerm) {
     this.provider.prevSearchTerm = searchTerm;
 
-    if (context == null) return;
+    if (context == null) {
+      return;
+    }
 
     _clearOverlay();
 
-    if (searchTerm.length < 1) return;
+    if (searchTerm.length < 1) { return;}
 
     _displayOverlay(_buildSearchingOverlay());
 
     _performAutoCompleteSearch(searchTerm);
   }
 
-  _clearOverlay() {
+  void _clearOverlay() {
     if (overlayEntry != null) {
       overlayEntry.remove();
       overlayEntry = null;
     }
   }
 
-  _displayOverlay(Widget overlayChild) {
+  void _displayOverlay(Widget overlayChild) {
     _clearOverlay();
 
     final RenderBox appBarRenderBox =
@@ -254,7 +261,7 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
           SizedBox(width: 24),
           Expanded(
             child: Text(
-              widget.searchingText ?? "Searching...",
+              widget.searchingText ?? Messages.of(context).searching,
               style: TextStyle(fontSize: 16),
             ),
           )

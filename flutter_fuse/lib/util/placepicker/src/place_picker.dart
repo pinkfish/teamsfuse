@@ -2,21 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker/google_maps_place_picker.dart';
-import 'package:google_maps_place_picker/providers/place_provider.dart';
-import 'package:google_maps_place_picker/src/autocomplete_search.dart';
-import 'package:google_maps_place_picker/src/controllers/autocomplete_search_controller.dart';
-import 'package:google_maps_place_picker/src/google_map_place_picker.dart';
-import 'package:google_maps_place_picker/src/utils/uuid.dart';
+import 'package:google_api_headers/google_api_headers.dart';
+import '../providers/place_provider.dart';
+import 'autocomplete_search.dart';
+import 'controllers/autocomplete_search_controller.dart';
+import 'google_map_place_picker.dart';
+import 'utils/uuid.dart';
+import 'models/pick_result.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' show Platform;
 
-enum PinState { Preparing, Idle, Dragging }
-enum SearchingState { Idle, Searching }
 
 class PlacePicker extends StatefulWidget {
   PlacePicker({
@@ -191,6 +189,7 @@ class _PlacePickerState extends State<PlacePicker> {
   }
 
   Future<PlaceProvider> _initPlaceProvider() async {
+    print("GEtting provider");
     final headers = await GoogleApiHeaders().getHeaders();
     final provider = PlaceProvider(
       widget.apiKey,
@@ -202,11 +201,14 @@ class _PlacePickerState extends State<PlacePicker> {
     provider.desiredAccuracy = widget.desiredLocationAccuracy;
     provider.setMapType(widget.initialMapType);
 
+    print("Donme getting provider");
+
     return provider;
   }
 
   @override
   Widget build(BuildContext context) {
+    print("Picking the picker");
     return WillPopScope(
       onWillPop: () {
         searchBarController.clearOverlay();
@@ -367,11 +369,13 @@ class _PlacePickerState extends State<PlacePicker> {
   }
 
   Widget _buildMapWithLocation() {
+    print("Doing thius");
     if (widget.useCurrentLocation) {
       return FutureBuilder(
           future: provider
               .updateCurrentLocation(widget.forceAndroidLocationManager),
           builder: (context, snap) {
+            print("Build $snap");
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else {
@@ -387,6 +391,7 @@ class _PlacePickerState extends State<PlacePicker> {
       return FutureBuilder(
         future: Future.delayed(Duration(milliseconds: 1)),
         builder: (context, snap) {
+          print("Fluff $snap");
           if (snap.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else {

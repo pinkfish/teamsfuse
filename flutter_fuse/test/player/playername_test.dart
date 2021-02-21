@@ -83,11 +83,9 @@ void main() {
       ..name = "Frog"
       ..uid = "123"));
 
-    await tester.pump(Duration(milliseconds: 600));
-    await tester.pump(Duration(milliseconds: 600));
-    await tester.pump(Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
 
-    await expectLater(find.text("Frog"), findsOneWidget);
+    await expectLater(find.text("Frog (Invited)"), findsOneWidget);
 
     if (String.fromEnvironment("GOLDEN", defaultValue: "").isNotEmpty) {
       await expectLater(find.byType(PlayerName),
@@ -127,10 +125,12 @@ void main() {
     );
     gameData.add(Player((b) => b
       ..name = "Frog"
-      ..uid = "123"));
+      ..uid = "123"
+      ..usersData["1232"] = PlayerUserInternal((b) => b
+        ..added = true
+        ..relationship = Relationship.Parent)));
 
-    await tester.pump(Duration(milliseconds: 600));
-    await tester.pump(Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
 
     await expectLater(find.text("Frog"), findsOneWidget);
 
@@ -138,9 +138,8 @@ void main() {
       ..name = "Bluey"
       ..uid = "123"));
 
-    await tester.pump(Duration(milliseconds: 600));
-    await tester.pump(Duration(milliseconds: 600));
+    await tester.pumpAndSettle();
 
-    await expectLater(find.text("Bluey"), findsOneWidget);
+    await expectLater(find.text("Bluey (Invited)"), findsOneWidget);
   });
 }

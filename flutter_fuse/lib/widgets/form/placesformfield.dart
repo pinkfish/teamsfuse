@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker/google_maps_place_picker.dart';
+import '../../util/placepicker/google_maps_place_picker.dart';
 import 'package:google_maps_webservice/timezone.dart';
 
 import '../../services/apikeys.dart';
@@ -106,16 +106,20 @@ class _PlacesFormFieldState extends FormFieldState<PlaceAndTimezone> {
           },
           initialPosition: loc ?? _initialPosition,
           initialSearchString: value?.place.address,
+          selectInitialPosition: true,
           searchForInitialValue: loc != null,
           useCurrentLocation: true,
+          enableMapTypeButton: true,
+          initialMapType: MapType.normal,
+            usePinPointingSearch: true,
         ),
       ),
     );
     if (myResult != null) {
       var newPlace = GamePlace((b) => b
-        ..name = myResult.name
+        ..name = myResult.name ?? ""
         ..address = myResult.formattedAddress
-        ..placeId = myResult.placeId
+        ..placeId = myResult.placeId ??""
         ..notes = value?.place?.notes ?? ""
         ..latitude = myResult.geometry.location.lat
         ..longitude = myResult.geometry.location.lng);

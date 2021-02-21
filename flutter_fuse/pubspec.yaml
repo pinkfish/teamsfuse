@@ -40,7 +40,10 @@ dependencies:
   url_launcher: ^5.7.10
   flutter_native_timezone: ^1.0.4
   google_maps_flutter: ^1.2.0
-  google_maps_place_picker: ^1.0.1
+  permission_handler: ^5.1.0+2
+  geolocator: ^6.2.0
+  google_maps_webservice: ^0.0.19
+  google_api_headers: ^0.1.1+2
   fusemodel:
     path: ../fusemodel
   sqflite: any

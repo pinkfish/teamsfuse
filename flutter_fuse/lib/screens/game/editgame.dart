@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../widgets/blocs/singlegameprovider.dart';
 import '../../widgets/games/editformbase.dart';
 import '../../widgets/games/eventeditform.dart';
 import '../../widgets/games/gameeditform.dart';
 import '../../widgets/games/trainingeditform.dart';
+import '../../widgets/util/loading.dart';
 import '../../widgets/util/savingoverlay.dart';
 
 ///
@@ -87,6 +88,9 @@ class _EditGameScreenState extends State<EditGameScreen> {
                 cubit: gameBloc,
                 builder: (context, gameState) {
                   Widget form;
+                  if (gameState is SingleGameUninitialized) {
+                    return LoadingWidget();
+                  }
                   switch (gameState.game.sharedData.type) {
                     case EventType.Game:
                       form =

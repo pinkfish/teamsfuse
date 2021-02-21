@@ -504,6 +504,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "START" : MessageLookupByLibrary.simpleMessage("START"),
     "STREAM" : MessageLookupByLibrary.simpleMessage("STREAM"),
     "Save Failed" : MessageLookupByLibrary.simpleMessage("Save Failed"),
+    "Searching..." : MessageLookupByLibrary.simpleMessage("Searching..."),
     "Season" : MessageLookupByLibrary.simpleMessage("Season"),
     "Season name is required" : MessageLookupByLibrary.simpleMessage("Season name is required"),
     "Seasons" : MessageLookupByLibrary.simpleMessage("Seasons"),

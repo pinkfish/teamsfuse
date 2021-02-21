@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-02-20T08:12:07.493586",
+  "@@last_modified": "2021-02-20T21:38:30.498392",
   "About": "About",
   "@About": {
     "type": "text",
@@ -2612,6 +2612,12 @@
     "placeholders": {
       "periodName": {}
     }
+  },
+  "Searching...": "Searching...",
+  "@Searching...": {
+    "description": "The searching text in the search box when the search is inprogress.",
+    "type": "text",
+    "placeholders": {}
   },
   "periodStopRegulationBreakout": "Stop period {periodNumber} Score: {ptsFor} - {ptsAgainst}",
   "@periodStopRegulationBreakout": {
