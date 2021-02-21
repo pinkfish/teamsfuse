@@ -89,7 +89,7 @@ jobs:
       env:
         ANDROID_KEY_JKS: ${{ secrets.ANDROID_KEY_JKS }}
     - run: |
-        echo final String googleMapsApiKey = "${{ secrets.GOOGLE_MAPS_ANDROID }}"; > apikeys.dart
+        echo final String googleMapsApiKey = \"${{ secrets.GOOGLE_MAPS_ANDROID }}\"\; > apikeys.dart
         ls
       working-directory: flutter_fuse/lib/services
       if: ${{ matrix.os == 'android' }}
@@ -104,7 +104,7 @@ jobs:
         brew install ghostscript imagemagick
         magick --version
     - run: |
-        echo final String googleMapsApiKey = "${{ secrets.GOOGLE_MAPS_IOS }}"; > apikeys.dart
+        echo final String googleMapsApiKey = \"${{ secrets.GOOGLE_MAPS_IOS }}\"\; > apikeys.dart
       working-directory: flutter_fuse/lib/services
       if: ${{ matrix.os == 'ios' }}
 
