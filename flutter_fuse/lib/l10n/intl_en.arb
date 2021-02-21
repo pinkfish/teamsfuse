@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-02-20T21:38:30.498392",
+  "@@last_modified": "2021-02-21T06:14:21.230102",
   "About": "About",
   "@About": {
     "type": "text",
@@ -2436,7 +2436,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "invitedToTeamWithName": "{name} (Invites)",
+  "invitedToTeamWithName": "{name} (Invited)",
   "@invitedToTeamWithName": {
     "description": "Player name with the invited tag",
     "type": "text",
