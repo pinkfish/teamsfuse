@@ -71,6 +71,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     if (widget._publicClub.isEmpty) {
       _loginBloc = LoginBloc(
           userAuth: userAuthImpl,
+          authBloc: _authenticationBloc,
           analyticsSubsystem: AnalyticsSubsystemImpl.instance);
       _coordinationBloc = CoordinationBloc(
           authenticationBloc: _authenticationBloc,

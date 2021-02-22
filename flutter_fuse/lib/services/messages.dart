@@ -368,7 +368,7 @@ class Messages {
   String get editbuttontext => Intl.message('EDIT',
       desc: 'The edit text for the dialog', locale: locale);
 
-  String get editgame => Intl.message('Edit Game',
+  String get editGame => Intl.message('Edit Game',
       desc: 'Edit Game help text for button', locale: locale);
 
   String get editimagebutton => Intl.message('EDIT IMAGE',

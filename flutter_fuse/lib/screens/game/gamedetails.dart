@@ -40,11 +40,9 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
       if (deleted) {
         Navigator.pop(context);
       }
+    } else if (choice == "edit") {
+      Navigator.pushNamed(context, "EditGame/${widget.gameUid}");
     }
-  }
-
-  void _editGame() {
-    Navigator.pushNamed(context, "EditGame/${widget.gameUid}");
   }
 
   @override
@@ -106,6 +104,10 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                               child: Text(Messages.of(context)
                                   .deletegame(game.sharedData)),
                             ),
+                            PopupMenuItem<String>(
+                              value: "edit",
+                              child: Text(Messages.of(context).editGame),
+                            ),
                           ];
                         },
                       ),
@@ -140,13 +142,6 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                       )
                     ],
                   ),
-                  floatingActionButton: FloatingActionButton(
-                    onPressed: _editGame,
-                    child: Icon(Icons.edit),
-                    //backgroundColor: Colors.orange,
-                  ),
-                  floatingActionButtonLocation:
-                      FloatingActionButtonLocation.endFloat,
                   body: Scrollbar(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,

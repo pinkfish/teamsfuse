@@ -335,8 +335,12 @@ class LoginEventSignupUser extends LoginEvent {
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final UserAuthImpl userAuth;
   final AnalyticsSubsystem analyticsSubsystem;
+  final AuthenticationBloc authBloc;
 
-  LoginBloc({@required this.userAuth, @required this.analyticsSubsystem})
+  LoginBloc(
+      {@required this.userAuth,
+      @required this.analyticsSubsystem,
+      this.authBloc})
       : super(LoginInitial());
 
   @override
@@ -375,6 +379,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         analyticsSubsystem.logLogin();
         // Reload the user.
         //userAuth.reloadUser();
+        if (authBloc != null) {
+          // Wait for the state to be logged in, or timeout.
+          try {
+            await for (var state
+                in authBloc.timeout(Duration(milliseconds: 1000))) {
+              if (state is AuthenticationLoggedIn) {
+                break;
+              }
+            }
+          } on TimeoutException catch (e, stack) {
+            analyticsSubsystem.recordException(e, stack);
+          }
+        }
         yield LoginSucceeded(userData: signedIn);
       }
     }
