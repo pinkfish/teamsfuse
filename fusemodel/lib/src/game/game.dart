@@ -86,9 +86,11 @@ abstract class Game implements Built<Game, GameBuilder> {
   String get leagueOpponentUid;
 
   /// Summary for this specific player.
+  @BuiltValueField(wireName: playersField)
   BuiltMap<String, GamePlayerSummary> get players;
 
   /// Summary for this specific opponent.
+  @BuiltValueField(wireName: opponentField)
   BuiltMap<String, GamePlayerSummary> get opponents;
 
   /// Summary for the overall game (this is only pts for vs against).
@@ -149,6 +151,8 @@ abstract class Game implements Built<Game, GameBuilder> {
   static const String SHAREDDATAUID = 'sharedDataUid';
   static const String LEAGUEOPPONENTUID = 'leagueOpponentUid';
   static const String GAMESHAREDDATA = 'sharedData';
+  static const String opponentField = "opponents";
+  static const String playersField = "players]";
 
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(GameBuilder b) => b

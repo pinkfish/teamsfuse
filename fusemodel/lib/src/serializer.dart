@@ -79,6 +79,7 @@ part 'serializer.g.dart';
   Opponent,
   Player,
   PlayerSummaryData,
+  PlayerType,
   PlayerUserInternal,
   Relationship,
   RepeatData,

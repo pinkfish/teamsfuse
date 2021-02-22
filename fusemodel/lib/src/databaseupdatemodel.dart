@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:built_collection/built_collection.dart';
-import 'package:fusemodel/firestore.dart';
 import 'package:meta/meta.dart';
 
 import 'club.dart';
+import 'firestore/firestore.dart';
 import 'game.dart';
 import 'invite.dart';
 import 'leagueortournament.dart';
@@ -14,31 +14,6 @@ import 'message.dart';
 import 'player/player.dart';
 import 'team.dart';
 import 'winrecord.dart';
-
-///
-/// Wraps up the firestore data to make it easier to use in the main
-/// data code, hiding the differences between the web and mobile.
-///
-class FirestoreWrappedData {
-  FirestoreWrappedData({this.id, this.data, this.exists});
-
-  final String id;
-  final Map<String, dynamic> data;
-  final bool exists;
-}
-
-///
-/// Changed data back from firestore.
-///
-class FirestoreChangedData {
-  FirestoreChangedData({this.newList, this.removed});
-
-  final List<FirestoreWrappedData> newList;
-  final List<FirestoreWrappedData> removed;
-}
-
-typedef void FirestoreDataCallback(
-    String playerUid, List<FirestoreWrappedData> data);
 
 ///
 /// Details the games can be filtered on.
@@ -128,7 +103,7 @@ abstract class DatabaseUpdateModel {
   Future<void> setGameEvent({@required GameEvent event});
 
   /// Delete the game event from the database.
-  Future<void> deleteGameEvent({@required String gameEventUid});
+  Future<void> deleteGameEvent({@required String gameUid, @required String gameEventUid});
 
   // Media
   /// Loads all the media for this game.
@@ -144,18 +119,25 @@ abstract class DatabaseUpdateModel {
   Future<void> updateGamePlayerData(
       {@required String gameUid,
       @required String playerUid,
-      @required bool opponent,
       @required GamePlayerSummary summary});
 
-  Future<void> addGamePlayer(
-      {@required String gameUid,
-      @required String playerUid,
-      @required bool opponent});
+  /// Updates the game player in the database.
+  Future<void> updateGameOpponentData({
+    @required String gameUid,
+    @required String opponentUid,
+    @required GamePlayerSummary summary,
+  });
 
-  Future<void> deleteGamePlayer(
-      {@required String gameUid,
-      @required String playerUid,
-      @required bool opponent});
+  ///
+  /// Add an opponent for a specific game.
+  ///
+  Future<void> addGameOpponentPlayer({
+    @required String gameUid,
+    @required String opponentUid,
+    @required String opponentName,
+    @required String jerseyNumber,
+  });
+
 
   /// Updates the season in the database.
   Future<void> updateMediaInfoThumbnail(
@@ -272,7 +254,6 @@ abstract class DatabaseUpdateModel {
 
   Future<void> updateRoleInTeamForSeason(
       String seasonUid, SeasonPlayer player, RoleInTeam role);
-
 
   Stream<BuiltList<Game>> getSeasonGames(Season season);
 

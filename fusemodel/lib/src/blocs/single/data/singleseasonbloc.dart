@@ -172,7 +172,8 @@ abstract class SingleSeasonSaveFailed
     implements
         SingleSeasonState,
         Built<SingleSeasonSaveFailed, SingleSeasonSaveFailedBuilder> {
-  Error get error;
+  @BuiltValueField(serialize: false)
+  Object get error;
 
   SingleSeasonSaveFailed._();
   factory SingleSeasonSaveFailed(

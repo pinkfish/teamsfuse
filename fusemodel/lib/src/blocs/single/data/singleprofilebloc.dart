@@ -172,7 +172,8 @@ abstract class SingleProfileSaveFailed
     implements
         SingleProfileState,
         Built<SingleProfileSaveFailed, SingleProfileSaveFailedBuilder> {
-  Error get error;
+  @BuiltValueField(serialize: false)
+  Object get error;
 
   SingleProfileSaveFailed._();
   factory SingleProfileSaveFailed(

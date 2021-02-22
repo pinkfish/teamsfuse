@@ -196,7 +196,8 @@ abstract class SingleLeagueOrTournamentSeasonSaveFailed
         SingleLeagueOrTournamentSeasonState,
         Built<SingleLeagueOrTournamentSeasonSaveFailed,
             SingleLeagueOrTournamentSeasonSaveFailedBuilder> {
-  Error get error;
+  @BuiltValueField(serialize: false)
+  Object get error;
 
   SingleLeagueOrTournamentSeasonSaveFailed._();
   factory SingleLeagueOrTournamentSeasonSaveFailed(

@@ -6,7 +6,7 @@ import '../../services/blocs.dart';
 import 'base/singleprovider.dart';
 
 ///
-///The builder for the single game bloc.
+/// The builder for the single game bloc.
 ///
 typedef SingleGameProviderBuilder = Widget Function(
     BuildContext context, SingleGameBloc singleGameBloc);
@@ -15,7 +15,6 @@ typedef SingleGameProviderBuilder = Widget Function(
 /// Create a provider that will insert the singe game bloc into the tree if the
 /// bloc is not current provided or is different than the gameuid.
 ///
-
 class SingleGameProvider extends SingleBlocProvider<SingleGameBloc> {
   /// Constructor.
   SingleGameProvider({String gameUid, SingleGameProviderBuilder builder})
@@ -25,6 +24,7 @@ class SingleGameProvider extends SingleBlocProvider<SingleGameBloc> {
             builder: builder,
             prefix: "game");
 
+  /// is the bloc equal to this one.
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleGameBloc && bloc.gameUid == keyUid);
   }

@@ -167,7 +167,8 @@ abstract class SingleSharedGameSaveFailed
     implements
         SingleSharedGameState,
         Built<SingleSharedGameSaveFailed, SingleSharedGameSaveFailedBuilder> {
-  Error get error;
+  @BuiltValueField(serialize: false)
+  Object get error;
 
   SingleSharedGameSaveFailed._();
   factory SingleSharedGameSaveFailed(

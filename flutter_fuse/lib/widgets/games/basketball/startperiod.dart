@@ -55,7 +55,7 @@ class _StartPeriodState extends State<StartPeriod> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      "assets/images/basketball.png",
+                      "assets/sports/Sport.Basketball.png",
                       height: 90.0,
                     ),
                   ],

@@ -204,7 +204,8 @@ abstract class SingleLeagueOrTournamentDivisonSaveFailed
         SingleLeagueOrTournamentDivisonState,
         Built<SingleLeagueOrTournamentDivisonSaveFailed,
             SingleLeagueOrTournamentDivisonSaveFailedBuilder> {
-  Error get error;
+  @BuiltValueField(serialize: false)
+  Object get error;
 
   SingleLeagueOrTournamentDivisonSaveFailed._();
   factory SingleLeagueOrTournamentDivisonSaveFailed(

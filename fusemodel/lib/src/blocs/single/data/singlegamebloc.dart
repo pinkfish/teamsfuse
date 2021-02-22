@@ -240,7 +240,8 @@ abstract class SingleGameSaveFailed
     implements
         SingleGameState,
         Built<SingleGameSaveFailed, SingleGameSaveFailedBuilder> {
-  Error get error;
+  @BuiltValueField(serialize: false)
+  Object get error;
 
   SingleGameSaveFailed._();
   factory SingleGameSaveFailed(

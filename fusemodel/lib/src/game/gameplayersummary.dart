@@ -14,10 +14,13 @@ part 'gameplayersummary.g.dart';
 ///
 abstract class GamePlayerSummary
     implements Built<GamePlayerSummary, GamePlayerSummaryBuilder> {
+  /// Per period stats and results.
   BuiltMap<GamePeriod, PlayerSummaryData> get perPeriod;
 
+  /// If the person is currently player.
   bool get currentlyPlaying;
 
+  /// If the person is playing.
   bool get playing;
 
   static void _initializeBuilder(GamePlayerSummaryBuilder b) => b
@@ -29,18 +32,22 @@ abstract class GamePlayerSummary
   factory GamePlayerSummary([updates(GamePlayerSummaryBuilder b)]) =
       _$GamePlayerSummary;
 
+  /// Seriallize the summary.
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(GamePlayerSummary.serializer, this);
   }
 
+  /// Deserailize the player.
   static GamePlayerSummary fromMap(Map<String, dynamic> jsonData) {
     return dataSerializers.deserializeWith(
         GamePlayerSummary.serializer, jsonData);
   }
 
+  /// The serializer fot eh player.
   static Serializer<GamePlayerSummary> get serializer =>
       _$gamePlayerSummarySerializer;
 
+  /// Pull the summary togather from all the periods.
   @memoized
   PlayerSummaryData get fullData {
     PlayerSummaryDataBuilder b = PlayerSummaryDataBuilder();

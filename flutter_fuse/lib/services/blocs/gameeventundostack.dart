@@ -2,9 +2,8 @@ import 'dart:collection';
 
 import 'package:bloc/bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:meta/meta.dart';
-
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:meta/meta.dart';
 
 ///
 /// Undo stack to deal with undoing GameEvents as they are written and
@@ -54,7 +53,8 @@ class GameEventUndoStack extends Cubit<GameEventWithChange> {
       },
       (val) {
         if (state.ev.type != GameEventType.EmptyEvent) {
-          db.deleteGameEvent(gameEventUid: state.ev.uid);
+          db.deleteGameEvent(
+              gameUid: state.ev.gameUid, gameEventUid: state.ev.uid);
         }
         state.changedOnce = true;
         super.emit(val);

@@ -174,7 +174,8 @@ abstract class SingleOpponentSaveFailed
     implements
         SingleOpponentState,
         Built<SingleOpponentSaveFailed, SingleOpponentSaveFailedBuilder> {
-  Error get error;
+  @BuiltValueField(serialize: false)
+  Object get error;
 
   SingleOpponentSaveFailed._();
   factory SingleOpponentSaveFailed(

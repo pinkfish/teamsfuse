@@ -68,6 +68,7 @@ class PlayerMultiselect extends StatelessWidget {
             padding: EdgeInsets.all(2.0),
             child: PlayerTileBasketball(
               playerUid: playerUid,
+              seasonUid: season.uid,
               editButton: false,
               color: isSelected(playerUid) ? mainColorSelected : mainColor,
               shape: ContinuousRectangleBorder(

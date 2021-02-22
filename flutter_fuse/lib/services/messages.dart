@@ -16,11 +16,11 @@ class Messages {
   Messages(this.locale);
 
   String get about {
-    return Intl.message('About');
+    return Intl.message('About', locale: locale);
   }
 
   String get acceptinviteasadmin {
-    return Intl.message('Invited as an Administrator');
+    return Intl.message('Invited as an Administrator', locale: locale);
   }
 
   String get addAdminButton => Intl.message('ADD ADMIN',
@@ -163,34 +163,36 @@ class Messages {
   }
 
   String get archived {
-    return Intl.message('Archived');
+    return Intl.message('Archived', locale: locale);
   }
 
   String get archivedteams {
-    return Intl.message('Archived Teams');
+    return Intl.message('Archived Teams', locale: locale);
   }
 
   String get archivemessage {
-    return Intl.message("Archive", desc: "Archive message button");
+    return Intl.message("Archive",
+        desc: "Archive message button", locale: locale);
   }
 
   String get archiveteam {
-    return Intl.message('Archive Team');
+    return Intl.message('Archive Team', locale: locale);
   }
 
   String get arriveat {
     return Intl.message(
       'Arrive At',
       desc: 'Title for when to arrive',
+      locale: locale,
     );
   }
 
   String get arrivebeforehint {
-    return Intl.message('Minutes to arrive before game');
+    return Intl.message('Minutes to arrive before game', locale: locale);
   }
 
   String get arrivebeforelabel {
-    return Intl.message('Minutes before game');
+    return Intl.message('Minutes before game', locale: locale);
   }
 
   String get assistTitle => Intl.message("Assists",
@@ -198,24 +200,26 @@ class Messages {
 
   String get attendanceno {
     return Intl.message('Not making it',
-        desc: 'Negative attendence for the game');
+        desc: 'Negative attendence for the game', locale: locale);
   }
 
   String get attendanceselect {
-    return Intl.message('Attendence', desc: 'Are you attending the game title');
+    return Intl.message('Attendence',
+        desc: 'Are you attending the game title', locale: locale);
   }
 
   String get attendanceyes {
     return Intl.message('Will be there',
-        desc: 'Positive attendence for the game');
+        desc: 'Positive attendence for the game', locale: locale);
   }
 
   String get attendncemaybe {
-    return Intl.message('Maybe', desc: 'Maybe attendence for the game');
+    return Intl.message('Maybe',
+        desc: 'Maybe attendence for the game', locale: locale);
   }
 
   String get away {
-    return Intl.message("away");
+    return Intl.message("away", locale: locale);
   }
 
   String get blockEventType =>
@@ -229,7 +233,8 @@ class Messages {
 
   String get changerole {
     return Intl.message('CHANGE ROLE',
-        desc: 'Button to change the role of the member of the team');
+        desc: 'Button to change the role of the member of the team',
+        locale: locale);
   }
 
   String get changescore => Intl.message('Change Score',
@@ -246,13 +251,13 @@ class Messages {
       Intl.message("Start Game - Breaks", locale: locale);
 
   String get club {
-    return Intl.message('Club');
+    return Intl.message('Club', locale: locale);
   }
 
   String get clubDeleted => Intl.message('Club deleted', locale: locale);
 
   String get clubdetails {
-    return Intl.message('Details');
+    return Intl.message('Details', locale: locale);
   }
 
   String get clubsettingdescription => Intl.message(
@@ -280,22 +285,26 @@ class Messages {
   String get create => Intl.message(
         'Create new',
         desc: 'Create new account button text',
+        locale: locale,
       );
 
   String get createaccount {
-    return Intl.message('CREATE', desc: 'Create account button text');
+    return Intl.message('CREATE',
+        desc: 'Create account button text', locale: locale);
   }
 
   String get createdaccount {
     return Intl.message(
         "Created an account, please look in your email for the verification code..",
         desc:
-            "Confirmation message after requesting the email verification code");
+            "Confirmation message after requesting the email verification code",
+        locale: locale);
   }
 
   String get createNew {
     return Intl.message('Create',
-        desc: 'Title for the step to create a game or team in a stepper');
+        desc: 'Title for the step to create a game or team in a stepper',
+        locale: locale);
   }
 
   String get currentSeason => Intl.message("Current",
@@ -405,33 +414,38 @@ class Messages {
 
   String get errorcreatinguser {
     return Intl.message(
-        "Error creating user, maybe the email address is already used");
+        "Error creating user, maybe the email address is already used",
+        locale: locale);
   }
 
   String get eventtype {
     return Intl.message("Special Events",
-        desc: 'Drop down for only the special events');
+        desc: 'Drop down for only the special events', locale: locale);
   }
 
   String get everyone {
     return Intl.message("Everyone",
-        desc: 'Message to mean everyone in the team (coaches + everyone)');
+        desc: 'Message to mean everyone in the team (coaches + everyone)',
+        locale: locale);
   }
 
   String get finalscore {
-    return Intl.message('Final score', desc: 'Final score dialofg title');
+    return Intl.message('Final score',
+        desc: 'Final score dialofg title', locale: locale);
   }
 
   String get finishgamebutton {
     return Intl.message("FINISH",
         desc:
-            "Text for the button to finish the game in the update score screen");
+            "Text for the button to finish the game in the update score screen",
+        locale: locale);
   }
 
   String get forgotPassword {
     return Intl.message(
       'FORGOT PASSWORD',
       desc: 'Forgot password button text',
+      locale: locale,
     );
   }
 
@@ -439,6 +453,7 @@ class Messages {
     return Intl.message(
       'The email to resend the password to',
       desc: 'Forgot password happy button',
+      locale: locale,
     );
   }
 
@@ -446,6 +461,7 @@ class Messages {
     return Intl.message(
       'Sent email to your email address to reset your password',
       desc: 'Forgot password happy button',
+      locale: locale,
     );
   }
 
@@ -455,7 +471,8 @@ class Messages {
   String get forpts {
     return Intl.message("For",
         desc:
-            "Title to the spinner for showing points for in the results screen");
+            "Title to the spinner for showing points for in the results screen",
+        locale: locale);
   }
 
   String get foulEventType =>
@@ -474,23 +491,26 @@ class Messages {
       desc: "Technical foul on player", locale: locale);
 
   String get game {
-    return Intl.message("Game");
+    return Intl.message("Game", locale: locale);
   }
 
   String get gameavailability {
     return Intl.message('Availability',
-        desc: 'Availability for the game, botton tab bar title');
+        desc: 'Availability for the game, botton tab bar title',
+        locale: locale);
   }
 
   String get gameend {
     return Intl.message('Game end',
-        desc: 'Title for the time drop down to choose the game end time');
+        desc: 'Title for the time drop down to choose the game end time',
+        locale: locale);
   }
 
   String get gamenotes {
     return Intl.message(
       'Game notes',
       desc: 'The notes associated with the game',
+      locale: locale,
     );
   }
 
@@ -498,6 +518,7 @@ class Messages {
     return Intl.message(
       'Notes for the game',
       desc: 'The hint text for notes associated with the game',
+      locale: locale,
     );
   }
 
@@ -511,52 +532,57 @@ class Messages {
       Intl.message("In progress", locale: locale);
 
   String get games {
-    return Intl.message('Games');
+    return Intl.message('Games', locale: locale);
   }
 
   String get gametime {
     return Intl.message(
       'Game Time',
       desc: 'Title for the game time',
+      locale: locale,
     );
   }
 
   String get gametype {
-    return Intl.message("Games", desc: 'Drop down for onlhy the game events');
+    return Intl.message("Games",
+        desc: 'Drop down for onlhy the game events', locale: locale);
   }
 
   String get gendercoed {
     return Intl.message('Coed',
-        desc: 'Coed gender for the sport in the drop down');
+        desc: 'Coed gender for the sport in the drop down', locale: locale);
   }
 
   String get genderfemale {
     return Intl.message('Female',
-        desc: 'Female gender for the sport in the drop down');
+        desc: 'Female gender for the sport in the drop down', locale: locale);
   }
 
   String get gendermale {
     return Intl.message('Male',
-        desc: 'Male gender for the sport in the drop down');
+        desc: 'Male gender for the sport in the drop down', locale: locale);
   }
 
   String get genderna {
     return Intl.message('N/A',
-        desc: 'Not applicable gender for the sport in the drop down');
+        desc: 'Not applicable gender for the sport in the drop down',
+        locale: locale);
   }
 
   String get genderselect {
-    return Intl.message('Select gender', desc: 'Hint text to select a gender');
+    return Intl.message('Select gender',
+        desc: 'Hint text to select a gender', locale: locale);
   }
 
   String get home {
-    return Intl.message("home");
+    return Intl.message("home", locale: locale);
   }
 
   String get homeaway {
     return Intl.message(
       'Home',
       desc: 'Title for the home game checkbox',
+      locale: locale,
     );
   }
 
@@ -565,22 +591,25 @@ class Messages {
 
   String get importplayers {
     return Intl.message('Import\nplayers',
-        desc: 'Import players from previous season');
+        desc: 'Import players from previous season', locale: locale);
   }
 
   String get includemyself {
     return Intl.message('Send to yourself',
-        desc: 'If the message should also be sent to ourselves');
+        desc: 'If the message should also be sent to ourselves',
+        locale: locale);
   }
 
   String get invalidemail {
     return Intl.message('Email address must be of form xxx@xxx.',
-        desc: 'Message to say they have an invalid email field');
+        desc: 'Message to say they have an invalid email field',
+        locale: locale);
   }
 
   String get invalidname {
     return Intl.message('Name can only contain alphanumerical characters.',
-        desc: 'Message to say they have an invalid user name field');
+        desc: 'Message to say they have an invalid user name field',
+        locale: locale);
   }
 
   String get invalidUrl => Intl.message('Invalid URL',
@@ -588,28 +617,30 @@ class Messages {
 
   String get invite {
     return Intl.message('Invites',
-        desc: 'Title for the screen with the list of current invites');
+        desc: 'Title for the screen with the list of current invites',
+        locale: locale);
   }
 
   String get jersyNumber => Intl.message("Jersey Number",
       desc: "Jersey number for the playerr", locale: locale);
 
   String get joinleague {
-    return Intl.message('JOIN LEAGUE');
+    return Intl.message('JOIN LEAGUE', locale: locale);
   }
 
   String get league {
-    return Intl.message('League', desc: 'The league the team is playing in');
+    return Intl.message('League',
+        desc: 'The league the team is playing in', locale: locale);
   }
 
   String get leaguehint {
     return Intl.message('League the team is playing in',
-        desc: 'League the team is playing in');
+        desc: 'League the team is playing in', locale: locale);
   }
 
   String get leaguetournament {
     return Intl.message('League/Tournaments',
-        desc: 'Link to the league/tournament section');
+        desc: 'Link to the league/tournament section', locale: locale);
   }
 
   String get loading => Intl.message('Loading...',
@@ -633,6 +664,7 @@ class Messages {
     return Intl.message(
       'LOGIN',
       desc: 'Login button text',
+      locale: locale,
     );
   }
 
@@ -640,36 +672,42 @@ class Messages {
     return Intl.message(
       'LOGOUT',
       desc: 'Logout button text',
+      locale: locale,
     );
   }
 
   String get description => Intl.message('Description',
       desc:
-          'Long description of a tournament/league to display on the league page');
+          'Long description of a tournament/league to display on the league page',
+      locale: locale);
 
   String get longDescriptionHint {
     return Intl.message('Detailed Description',
         desc:
-            'Long description of a tournament/league to display on the league/tournament page');
+            'Long description of a tournament/league to display on the league/tournament page',
+        locale: locale);
   }
 
   String get loss {
-    return Intl.message("Loss", desc: 'Drop down for  the loss result');
+    return Intl.message("Loss",
+        desc: 'Drop down for  the loss result', locale: locale);
   }
 
   String get members {
-    return Intl.message('Members');
+    return Intl.message('Members', locale: locale);
   }
 
   String get message {
     return Intl.message('Message',
-        desc: 'In a text edit box to send a message to the team');
+        desc: 'In a text edit box to send a message to the team',
+        locale: locale);
   }
 
   String get monthlyperiod {
     return Intl.message(
       'Monthly',
       desc: 'Monthly repeat',
+      locale: locale,
     );
   }
 
@@ -686,58 +724,67 @@ class Messages {
 
   String get needtoselectopponent {
     return Intl.message('Please choose an opponent.',
-        desc: 'Message to suggest they need to select an oppoent');
+        desc: 'Message to suggest they need to select an oppoent',
+        locale: locale);
   }
 
   String get needtoselectrole {
     return Intl.message('Need to select a role',
-        desc: 'Error to say they must select the role in the team');
+        desc: 'Error to say they must select the role in the team',
+        locale: locale);
   }
 
   String get needtoselectsport {
     return Intl.message('Please choose a sport.',
-        desc: 'Message to suggest they need to select a sport');
+        desc: 'Message to suggest they need to select a sport', locale: locale);
   }
 
   String get newbuttontext {
-    return Intl.message("NEW", desc: "New button text in the system");
+    return Intl.message("NEW",
+        desc: "New button text in the system", locale: locale);
   }
 
   String get newdivisonhint {
-    return Intl.message('New Divison Name');
+    return Intl.message('New Divison Name', locale: locale);
   }
 
   String get newmail {
     return Intl.message("NEW MESSAGE",
-        desc: "New message in the teamfuse system");
+        desc: "New message in the teamfuse system", locale: locale);
   }
 
   String get newplayername {
     return Intl.message('New player name',
-        desc: 'Text to show before the player name.');
+        desc: 'Text to show before the player name.', locale: locale);
   }
 
   String get newplayernamehint {
     return Intl.message('New player name of player in team',
-        desc: 'Hint for the name of the player in the team.');
+        desc: 'Hint for the name of the player in the team.', locale: locale);
   }
 
   String get newseasonhint {
-    return Intl.message('New Season Name');
+    return Intl.message('New Season Name', locale: locale);
   }
 
   String get news {
-    return Intl.message('News',
-        desc: 'Header the for the news section', locale: locale);
+    return Intl.message(
+      'News',
+      desc: 'Header the for the news section',
+      locale: locale,
+    );
   }
 
   String get noNews {
-    return Intl.message('No News',
-        desc: 'No news in the stuff', locale: locale);
+    return Intl.message(
+      'No News',
+      desc: 'No news in the stuff',
+      locale: locale,
+    );
   }
 
   String get noclub {
-    return Intl.message('No club');
+    return Intl.message('No club', locale: locale);
   }
 
   String get noCoaches => Intl.message("No coaches",
@@ -746,36 +793,40 @@ class Messages {
 
   String get nodivisons {
     return Intl.message("No divisions",
-        desc: "Divisons inside the season for a league/tournament");
+        desc: "Divisons inside the season for a league/tournament",
+        locale: locale);
   }
 
   String get noevent {
-    return Intl.message("All events", desc: 'Drop down for all the events');
+    return Intl.message("All events",
+        desc: 'Drop down for all the events', locale: locale);
   }
 
   String get nogames {
     return Intl.message(
       'No games',
       desc: 'No games scheduled',
+      locale: locale,
     );
   }
 
   String get nogamesfiltered {
     return Intl.message("No games to display, check filters",
-        desc: 'No games to display based on filters');
+        desc: 'No games to display based on filters', locale: locale);
   }
 
   String get nogamesthisseason {
     return Intl.message('No games this season',
-        desc: 'No games played this season, but some in a previous season');
+        desc: 'No games played this season, but some in a previous season',
+        locale: locale);
   }
 
   String get noinvites {
-    return Intl.message('No invites');
+    return Intl.message('No invites', locale: locale);
   }
 
   String get noleagues {
-    return Intl.message('No leagues');
+    return Intl.message('No leagues', locale: locale);
   }
 
   String get noMedia =>
@@ -783,18 +834,21 @@ class Messages {
 
   String get nomessages {
     return Intl.message('No Messages',
-        desc: 'In a text edit box to send a message to the team');
+        desc: 'In a text edit box to send a message to the team',
+        locale: locale);
   }
 
   String get noneperiod {
     return Intl.message(
       'No repeat',
       desc: 'No repeat period',
+      locale: locale,
     );
   }
 
   String get noplayers {
-    return Intl.message('No players', desc: 'Description for no players');
+    return Intl.message('No players',
+        desc: 'Description for no players', locale: locale);
   }
 
   String get noPlayersForSeasonDialog => Intl.message(
@@ -804,26 +858,27 @@ class Messages {
       locale: locale);
 
   String get noresult {
-    return Intl.message("All Games", desc: 'Drop down for all the games');
+    return Intl.message("All Games",
+        desc: 'Drop down for all the games', locale: locale);
   }
 
   String get noseasons {
-    return Intl.message("No seasons");
+    return Intl.message("No seasons", locale: locale);
   }
 
   String get notarchived {
-    return Intl.message('Not archived');
+    return Intl.message('Not archived', locale: locale);
   }
 
   String get noTeams {
-    return Intl.message('No teams');
+    return Intl.message('No teams', locale: locale);
   }
 
   String get notFinished => Intl.message("Not finished",
       desc: 'Drop down for the not finished result', locale: locale);
 
   String get notournaments {
-    return Intl.message('No tournaments');
+    return Intl.message('No tournaments', locale: locale);
   }
 
   String get offensiveReboundEventType =>
@@ -833,21 +888,22 @@ class Messages {
       desc: "Offensive rebound abbreviation", locale: locale);
 
   String get offical {
-    return Intl.message('Offical');
+    return Intl.message('Offical', locale: locale);
   }
 
   String get officialdontmatch {
-    return Intl.message('Offical results don\'t match');
+    return Intl.message('Offical results don\'t match', locale: locale);
   }
 
   String get openbutton {
-    return Intl.message('OPEN');
+    return Intl.message('OPEN', locale: locale);
   }
 
   String get opponent {
     return Intl.message(
       'Opponent',
       desc: 'Title for the opponent marker',
+      locale: locale,
     );
   }
 
@@ -855,6 +911,7 @@ class Messages {
     return Intl.message(
       'Contact',
       desc: 'The text for the contact of an opponent',
+      locale: locale,
     );
   }
 
@@ -862,6 +919,7 @@ class Messages {
     return Intl.message(
       'Contact for the opponent',
       desc: 'The hint text for the contact of an opponent',
+      locale: locale,
     );
   }
 
@@ -869,6 +927,7 @@ class Messages {
     return Intl.message(
       'Name of the opponent.',
       desc: 'The hint text for the name of an opponent',
+      locale: locale,
     );
   }
 
@@ -876,32 +935,35 @@ class Messages {
     return Intl.message(
       'Select opponent',
       desc: 'The hint text for selecting opponent for the game',
+      locale: locale,
     );
   }
 
   String get opponentwithnoresult {
-    return Intl.message('Opponents without results');
+    return Intl.message('Opponents without results', locale: locale);
   }
 
   String get opponentwithresult {
-    return Intl.message('Opponents with results');
+    return Intl.message('Opponents with results', locale: locale);
   }
 
   String get optional => Intl.message('Optional',
       desc: 'Optional subtitle for a stepper', locale: locale);
 
   String get password {
-    return Intl.message('Password', desc: 'Input box for a password');
+    return Intl.message('Password',
+        desc: 'Input box for a password', locale: locale);
   }
 
   String get passwordnotcorrect {
     return Intl.message('Email and/or password incorrect',
-        desc: 'Passwords or email is not correct, login failed');
+        desc: 'Passwords or email is not correct, login failed',
+        locale: locale);
   }
 
   String get passwordsnotmatching {
     return Intl.message('Passwords must match',
-        desc: 'Passwords must match signup form error');
+        desc: 'Passwords must match signup form error', locale: locale);
   }
 
   String get penalty => Intl.message('Penalty', locale: locale);
@@ -962,52 +1024,56 @@ class Messages {
 
   String get phonenumber {
     return Intl.message('Phone Number',
-        desc: 'Phone number for the edit box to edit the phone number');
+        desc: 'Phone number for the edit box to edit the phone number',
+        locale: locale);
   }
 
   String get phonenumberhint {
     return Intl.message('Contact phone number',
-        desc: 'Phone number for the edit box to edit the phone number');
+        desc: 'Phone number for the edit box to edit the phone number',
+        locale: locale);
   }
 
   String get phonenumberhintoptional {
     return Intl.message('Phone number (optional)',
         desc:
-            'Phone number for the edit box to edit the phone number marked as optional');
+            'Phone number for the edit box to edit the phone number marked as optional',
+        locale: locale);
   }
 
   String get placesnotes {
-    return Intl.message('Place notes, ie court #');
+    return Intl.message('Place notes, ie court #', locale: locale);
   }
 
   String get placesnoteshint {
-    return Intl.message('Details of the place');
+    return Intl.message('Details of the place', locale: locale);
   }
 
   String get player {
     return Intl.message('Player',
-        desc: 'Title in team stepper to select a player');
+        desc: 'Title in team stepper to select a player', locale: locale);
   }
 
   String get playeremailHint {
     return Intl.message('Player email address',
-        desc: 'Player email input field hint');
+        desc: 'Player email input field hint', locale: locale);
   }
 
   String get playerName => Intl.message('Player Name', locale: locale);
 
   String get players {
     return Intl.message('Players',
-        desc: 'Title in the bottom navigation tab for players');
+        desc: 'Title in the bottom navigation tab for players', locale: locale);
   }
 
   String get playerselect {
-    return Intl.message("Player", desc: "Label for the player drop down");
+    return Intl.message("Player",
+        desc: "Label for the player drop down", locale: locale);
   }
 
   String get playerselecthint {
     return Intl.message("Select player",
-        desc: "Label for the player drop down");
+        desc: "Label for the player drop down", locale: locale);
   }
 
   String get points => Intl.message("Points",
@@ -1021,7 +1087,7 @@ class Messages {
 
   String get previousSeasons {
     return Intl.message('Previous Seasons',
-        desc: 'Previous seasons for this game');
+        desc: 'Previous seasons for this game', locale: locale);
   }
 
   String get publicalyVisibleNo =>
@@ -1070,27 +1136,29 @@ class Messages {
   String get reboundsGameSummary =>
       Intl.message("RBs", desc: "Rebounds in game summary", locale: locale);
 
-  String get relationshipFriend =>
-      Intl.message('Friend', desc: 'Relationship desc for friend');
+  String get relationshipFriend => Intl.message('Friend',
+      desc: 'Relationship desc for friend', locale: locale);
 
-  String get relationshipGuardian =>
-      Intl.message('Guardian', desc: 'Relationship desc for guardian');
+  String get relationshipGuardian => Intl.message('Guardian',
+      desc: 'Relationship desc for guardian', locale: locale);
 
   String get relationshipMe =>
       Intl.message('Me', desc: 'Relationship desc for me', locale: locale);
 
-  String get relationshipParent =>
-      Intl.message('Parent', desc: 'Relationship desc for parent');
+  String get relationshipParent => Intl.message('Parent',
+      desc: 'Relationship desc for parent', locale: locale);
 
   String get relationshipselect {
     return Intl.message("Select relationship",
-        desc: "Label to select the relatiobship from a drop down");
+        desc: "Label to select the relatiobship from a drop down",
+        locale: locale);
   }
 
   String get repeat {
     return Intl.message(
       'Repeat',
       desc: 'Repeat title for the traning create steps',
+      locale: locale,
     );
   }
 
@@ -1098,19 +1166,22 @@ class Messages {
     return Intl.message(
       'RESEND EMAIL',
       desc: 'Button to resend the email to verify their email address',
+      locale: locale,
     );
   }
 
   String get resettimer {
-    return Intl.message("Reset Timer");
+    return Intl.message("Reset Timer", locale: locale);
   }
 
   String get resettimerbody {
-    return Intl.message("Do you want to reset the timer to zero?");
+    return Intl.message("Do you want to reset the timer to zero?",
+        locale: locale);
   }
 
   String get resultunknown {
-    return Intl.message('No result.', desc: 'No result for the game');
+    return Intl.message('No result.',
+        desc: 'No result for the game', locale: locale);
   }
 
   String get role => Intl.message('Role',
@@ -1122,13 +1193,18 @@ class Messages {
   String get saveButtonText => Intl.message('SAVE', locale: locale);
 
   String get savefailed {
-    return Intl.message('Save Failed', desc: 'Save failed, server error');
+    return Intl.message(
+      'Save Failed',
+      desc: 'Save failed, server error',
+      locale: locale,
+    );
   }
 
   String get season {
     return Intl.message(
       'Season',
       desc: 'Title for the season marker',
+      locale: locale,
     );
   }
 
@@ -1140,7 +1216,8 @@ class Messages {
 
   String get seasonrequired {
     return Intl.message("Season name is required",
-        desc: "The error text when the season name is required");
+        desc: "The error text when the season name is required",
+        locale: locale);
   }
 
   String get seasons => Intl.message("Seasons",
@@ -1150,6 +1227,7 @@ class Messages {
     return Intl.message(
       'Select season',
       desc: 'Title for the select season marker',
+      locale: locale,
     );
   }
 
@@ -1175,36 +1253,39 @@ class Messages {
 
   String get sendmessage {
     return Intl.message('Send message',
-        desc: 'In a text edit box to send a message to a user');
+        desc: 'In a text edit box to send a message to a user', locale: locale);
   }
 
   String get sendmessagebuttontext {
-    return Intl.message('SEND', desc: 'Button to send the message');
+    return Intl.message('SEND',
+        desc: 'Button to send the message', locale: locale);
   }
 
   String get setclub {
-    return Intl.message('SET CLUB');
+    return Intl.message('SET CLUB', locale: locale);
   }
 
   String get settings {
-    return Intl.message('Settings');
+    return Intl.message('Settings', locale: locale);
   }
 
   String get shortDescription {
     return Intl.message('Summary',
-        desc: 'Short description of a tournament/league to display in the ux');
+        desc: 'Short description of a tournament/league to display in the ux',
+        locale: locale);
   }
 
   String get shortDescriptionHint {
     return Intl.message('Short Description',
-        desc: 'Short description of a tournament/league to display in the ux');
+        desc: 'Short description of a tournament/league to display in the ux',
+        locale: locale);
   }
 
   String get shots => Intl.message("Shots",
       desc: "Heading for the shots sectionn", locale: locale);
 
   String get signout {
-    return Intl.message('Signout');
+    return Intl.message('Signout', locale: locale);
   }
 
   String get skipButton =>
@@ -1212,19 +1293,20 @@ class Messages {
 
   String get sportselect {
     return Intl.message('Select sport',
-        desc: 'Name for the default select sport text');
+        desc: 'Name for the default select sport text', locale: locale);
   }
 
   String get startButton => Intl.message("START",
       desc: "Text on a button to start the period", locale: locale);
 
   String get startgame {
-    return Intl.message('Start Game', desc: 'Start game dialofg title');
+    return Intl.message('Start Game',
+        desc: 'Start game dialofg title', locale: locale);
   }
 
   String get startgamebody {
     return Intl.message('Do you want to start the game?',
-        desc: 'Start game dialofg body text');
+        desc: 'Start game dialofg body text', locale: locale);
   }
 
   String get stats => Intl.message('Stats',
@@ -1253,7 +1335,7 @@ class Messages {
 
   String get subject {
     return Intl.message("Subject",
-        desc: "Subject for the message, title of input field");
+        desc: "Subject for the message, title of input field", locale: locale);
   }
 
   String get subsitutionEventType => Intl.message("Subsitution",
@@ -1285,21 +1367,23 @@ class Messages {
       );
 
   String get teamselected {
-    return Intl.message('Team Selected');
+    return Intl.message('Team Selected', locale: locale);
   }
 
   String get tie {
-    return Intl.message("Tie", desc: 'Drop down for  the tie result');
+    return Intl.message("Tie",
+        desc: 'Drop down for  the tie result', locale: locale);
   }
 
   String get timercountup {
-    return Intl.message("Timer count up");
+    return Intl.message("Timer count up", locale: locale);
   }
 
   String get title {
     return Intl.message(
       'Team Fuse',
       desc: 'Title for the Team Fuse application',
+      locale: locale,
     );
   }
 
@@ -1323,6 +1407,7 @@ class Messages {
     return Intl.message(
       'Training notes',
       desc: 'The notes associated with the game',
+      locale: locale,
     );
   }
 
@@ -1330,17 +1415,19 @@ class Messages {
     return Intl.message(
       'Notes for the training',
       desc: 'The hint text for notes associated with the game',
+      locale: locale,
     );
   }
 
   String get trainingtimes {
     return Intl.message("Training times",
-        desc: 'HEader for the extra training times in a repeat event');
+        desc: 'HEader for the extra training times in a repeat event',
+        locale: locale);
   }
 
   String get trainingtype {
     return Intl.message("Training",
-        desc: 'Drop down foronlhy the training events');
+        desc: 'Drop down foronlhy the training events', locale: locale);
   }
 
   String get turnOverEventType => Intl.message(
@@ -1359,37 +1446,35 @@ class Messages {
       Intl.message("T/O", desc: "Turnover abbreviation", locale: locale);
 
   String get unabletoloadgames {
-    return Intl.message('Unable to load games');
+    return Intl.message('Unable to load games', locale: locale);
   }
 
   String get uniform {
     return Intl.message(
       'Uniform',
       desc: 'Title for the uniform input box',
+      locale: locale,
     );
   }
 
   String get uniformhint {
-    return Intl.message(
-      'Uniform to wear',
-      desc: 'Hint for the uniform input box',
-    );
+    return Intl.message('Uniform to wear',
+        desc: 'Hint for the uniform input box', locale: locale);
   }
 
   String get unknown {
-    return Intl.message(
-      'Unknown',
-      desc: 'Unknown name',
-    );
+    return Intl.message('Unknown', desc: 'Unknown name', locale: locale);
   }
 
   String get until {
-    return Intl.message("Until", desc: 'Drop down for the until option');
+    return Intl.message("Until",
+        desc: 'Drop down for the until option', locale: locale);
   }
 
   String get updatescorebutton {
     return Intl.message("UPDATE SCORE",
-        desc: "Title to the button to update the score results screen");
+        desc: "Title to the button to update the score results screen",
+        locale: locale);
   }
 
   String get uploadButton => Intl.message("UPLOAD",
@@ -1401,28 +1486,34 @@ class Messages {
 
   String get useofficialresultbutton {
     return Intl.message('USE OFFICAL',
-        desc: 'Button to pull the offical results in from the shared game');
+        desc: 'Button to pull the offical results in from the shared game',
+        locale: locale);
   }
 
   String get useofficialresultdialog {
-    return Intl.message('Use the results of the offical game for '
-        'this game?');
+    return Intl.message(
+        'Use the results of the offical game for '
+        'this game?',
+        locale: locale);
   }
 
   String get verifyemailerror {
-    return Intl.message("No account found for email or internal error occured");
+    return Intl.message("No account found for email or internal error occured",
+        locale: locale);
   }
 
   String get verifyemailsent {
     return Intl.message(
         "Sent verification email, please check your email inbox.",
         desc:
-            "Confirmation message after requesting the email verification code");
+            "Confirmation message after requesting the email verification code",
+        locale: locale);
   }
 
   String get verifypassword {
     return Intl.message('Verify password',
-        desc: 'Input box for a verification to the main password password');
+        desc: 'Input box for a verification to the main password password',
+        locale: locale);
   }
 
   String get video =>
@@ -1435,6 +1526,7 @@ class Messages {
     return Intl.message(
       'Weekly',
       desc: 'Weekly repeat',
+      locale: locale,
     );
   }
 
@@ -1446,13 +1538,14 @@ class Messages {
 
   String get youremailHint {
     return Intl.message('Your email address',
-        desc: 'Your email input field hint');
+        desc: 'Your email input field hint', locale: locale);
   }
 
   String arrivebefore(int mins) => Intl.message(
         'Arrive ${mins} mins before games',
         args: [mins],
         name: 'arrivebefore',
+        locale: locale,
       );
 
   String cardresultinprogress(GameResultSharedDetails result) {
@@ -1502,7 +1595,8 @@ class Messages {
       Intl.message('$ptsFor - $ptsAgainst',
           desc: 'In progress result details',
           args: [ptsFor, ptsAgainst],
-          name: 'cardResultInProgressFinal');
+          name: 'cardResultInProgressFinal',
+          locale: locale);
 
   String cardResultInProgressOvertime(
     num ptsFor,
@@ -2326,13 +2420,16 @@ class Messages {
 
   String onlyScoreBreakout(num ptsFor, num ptsAgainst) =>
       Intl.message("$ptsFor - $ptsAgainst",
-          args: [ptsFor, ptsAgainst], name: 'onlyScoreBreakout');
+          args: [ptsFor, ptsAgainst],
+          name: 'onlyScoreBreakout',
+          locale: locale);
 
   String opponentSeason(String opponentName, String seasonName) =>
       Intl.message("$opponentName - $seasonName",
           desc: "Shows the opponent and season",
           args: [opponentName, seasonName],
-          name: 'opponentSeason');
+          name: 'opponentSeason',
+          locale: locale);
 
   String opponentwinrecord(
       Opponent opponent, String seasonUid, String seasonName) {
@@ -2350,12 +2447,14 @@ class Messages {
       Intl.message('Win: ${win} Loss: ${loss} Tie: ${tie}',
           desc: 'Win record for an opponent for this season',
           args: [win, loss, tie],
-          name: 'opponentWinRecordBreakout');
+          name: 'opponentWinRecordBreakout',
+          locale: locale);
 
   String pendingInvites(int num) => Intl.message('Pending Invites: $num',
       desc: 'Header showing the number of pending invites',
       args: [num],
-      name: 'pendingInvites');
+      name: 'pendingInvites',
+      locale: locale);
 
   String periodEnd(String periodName) => Intl.message(
         "End of $periodName",
@@ -2429,7 +2528,8 @@ class Messages {
           num periodNumber, num ptsFor, num ptsAgainst) =>
       Intl.message("Start period $periodNumber Score: $ptsFor - $ptsAgainst",
           args: [periodNumber, ptsFor, ptsAgainst],
-          name: 'periodStartRegulationBreakout');
+          name: 'periodStartRegulationBreakout',
+          locale: locale);
 
   String periodStartPenalty(GameLog period) => periodStartPenaltyBreakout(
         period.score.ptsFor,
@@ -2437,7 +2537,9 @@ class Messages {
       );
   String periodStartPenaltyBreakout(num ptsFor, num ptsAgainst) =>
       Intl.message("Start penalty Score: $ptsFor - $ptsAgainst",
-          args: [ptsFor, ptsAgainst], name: 'periodStartPenaltyBreakout');
+          args: [ptsFor, ptsAgainst],
+          name: 'periodStartPenaltyBreakout',
+          locale: locale);
 
   String periodStartOvertime(GameLog period) => periodStartOvertimeBreakout(
       period.period.periodNumber, period.score.ptsFor, period.score.ptsAgainst);
@@ -2445,20 +2547,25 @@ class Messages {
           num periodNumber, num ptsFor, num ptsAgainst) =>
       Intl.message("Start overtime $periodNumber Score: $ptsFor - $ptsAgainst",
           args: [periodNumber, ptsFor, ptsAgainst],
-          name: 'periodStartOvertimeBreakout');
+          name: 'periodStartOvertimeBreakout',
+          locale: locale);
 
   String periodStartBreak(GameLog period) =>
       periodStartBreakBreakout(period.score.ptsFor, period.score.ptsAgainst);
   String periodStartBreakBreakout(num ptsFor, num ptsAgainst) =>
       Intl.message("Start break Score: $ptsFor - $ptsAgainst",
-          args: [ptsFor, ptsAgainst], name: 'periodStartBreakBreakout');
+          args: [ptsFor, ptsAgainst],
+          name: 'periodStartBreakBreakout',
+          locale: locale);
 
   String periodStartOvertimeBreak(GameLog period) =>
       periodStartOvertimeBreakBreakout(
           period.score.ptsFor, period.score.ptsAgainst);
   String periodStartOvertimeBreakBreakout(num ptsFor, num ptsAgainst) =>
       Intl.message("Start overtime break Score: $ptsFor - $ptsAgainst",
-          args: [ptsFor, ptsAgainst], name: 'periodStartOvertimeBreakBreakout');
+          args: [ptsFor, ptsAgainst],
+          name: 'periodStartOvertimeBreakBreakout',
+          locale: locale);
 
   String periodStart(String periodName) => Intl.message(
         "Start of $periodName",
@@ -2497,7 +2604,8 @@ class Messages {
       Intl.message("Stop period $periodNumber Score: $ptsFor - $ptsAgainst",
           desc: 'the stop for the regulation perod in the logs',
           args: [periodNumber, ptsFor, ptsAgainst],
-          name: 'periodStopRegulationBreakout');
+          name: 'periodStopRegulationBreakout',
+          locale: locale);
 
   String periodStopBreak(GameLog period) =>
       periodStopBreakBreakout(period.score.ptsFor, period.score.ptsAgainst);
@@ -2506,7 +2614,8 @@ class Messages {
       Intl.message("Stop break Score: $ptsFor - $ptsAgainst",
           desc: 'the stop for the regulation break in the logs',
           args: [ptsFor, ptsAgainst],
-          name: 'periodStopBreakBreakout');
+          name: 'periodStopBreakBreakout',
+          locale: locale);
 
   String periodStopOvertimeBreak(GameLog period) =>
       periodStopOvertimeBreakBreakout(
@@ -2516,7 +2625,8 @@ class Messages {
       Intl.message("Stop overttime break Score: $ptsFor - $ptsAgainst",
           desc: 'the stop for the overtime break in the logs',
           args: [ptsFor, ptsAgainst],
-          name: 'periodStopOvertimeBreakBreakout');
+          name: 'periodStopOvertimeBreakBreakout',
+          locale: locale);
 
   String periodStopOvertime(GameLog period) => periodStopOvertimeBreakout(
       period.period.periodNumber, period.score.ptsFor, period.score.ptsAgainst);
@@ -2526,7 +2636,8 @@ class Messages {
       Intl.message("Stop overttime $periodNumber Score: $ptsFor - $ptsAgainst",
           desc: 'the stop for the overtime  in the logs',
           args: [periodNumber, ptsFor, ptsAgainst],
-          name: 'periodStopOvertimeBreakout');
+          name: 'periodStopOvertimeBreakout',
+          locale: locale);
 
   String periodStopPenalty(GameLog period) =>
       periodStopPenaltyBreakout(period.score.ptsFor, period.score.ptsAgainst);
@@ -2535,7 +2646,8 @@ class Messages {
       Intl.message("Stop penalty Score: $ptsFor - $ptsAgainst",
           desc: 'the stop for the penalty period in the logs',
           args: [ptsFor, ptsAgainst],
-          name: 'periodStopPenaltyBreakout');
+          name: 'periodStopPenaltyBreakout',
+          locale: locale);
 
   String playerInviteDesc(String name) => Intl.message(
       'This will follow $name and allow you to see which games they are in and '
@@ -2657,7 +2769,8 @@ class Messages {
             penaltyAgainst
           ],
           name: 'resultInProgressOvertimePenalty',
-          desc: 'InProgress result details with penalty shootout');
+          desc: 'InProgress result details with penalty shootout',
+          locale: locale);
 
   String resultInProgressOvertime(
           num ptsFor, num ptsAgainst, num overtimeFor, num overtimeAgainst) =>
@@ -2666,7 +2779,8 @@ class Messages {
           '(Overtime ${overtimeFor} - ${overtimeAgainst})',
           args: [ptsFor, ptsAgainst, overtimeFor, overtimeAgainst],
           name: 'resultInProgressOvertime',
-          desc: 'InProgress result details in overtime');
+          desc: 'InProgress result details in overtime',
+          locale: locale);
 
   String resultInProgressPenalty(
           num ptsFor, num ptsAgainst, num penaltyFor, num penaltyAgainst) =>
@@ -2674,13 +2788,15 @@ class Messages {
           'Playing ${ptsFor} - ${ptsAgainst} (Penalty ${penaltyFor} - ${penaltyAgainst})',
           args: [ptsFor, ptsAgainst, penaltyFor, penaltyAgainst],
           name: 'resultInProgressPenalty',
-          desc: 'InProgress result details with penalty shootout');
+          desc: 'InProgress result details with penalty shootout',
+          locale: locale);
 
   String resultInProgressRegulation(num ptsFor, num ptsAgainst) =>
       Intl.message('Playing $ptsFor - $ptsAgainst',
           args: [ptsFor, ptsAgainst],
           name: 'resultInProgressRegulation',
-          desc: 'InProgress result details');
+          desc: 'InProgress result details',
+          locale: locale);
 
   String resultLoss(GameResultSharedDetails result) {
     GameResultPerPeriod finalScore = result.regulationResult;
@@ -2738,7 +2854,8 @@ class Messages {
             penaltyAgainst
           ],
           name: 'resultLossOvertimePenalty',
-          desc: 'Loss result details with penalty shootout');
+          desc: 'Loss result details with penalty shootout',
+          locale: locale);
 
   String resultLossOvertime(
           num ptsFor, num ptsAgainst, num overtimeFor, num overtimeAgainst) =>
@@ -2747,7 +2864,8 @@ class Messages {
           '(Overtime $overtimeFor - $overtimeAgainst)',
           args: [ptsFor, ptsAgainst, overtimeFor, overtimeAgainst],
           name: 'resultLossOvertime',
-          desc: 'Loss result details in overtime');
+          desc: 'Loss result details in overtime',
+          locale: locale);
 
   String resultLossPenalty(
           num ptsFor, num ptsAgainst, num penaltyFor, num penaltyAgainst) =>
@@ -2755,13 +2873,15 @@ class Messages {
           'Loss $ptsFor - $ptsAgainst (Penalty $penaltyFor - $penaltyAgainst)',
           args: [ptsFor, ptsAgainst, penaltyFor, penaltyAgainst],
           name: 'resultLossPenalty',
-          desc: 'Loss result details with penalty shootout');
+          desc: 'Loss result details with penalty shootout',
+          locale: locale);
 
   String resultLossRegulation(num ptsFor, num ptsAgainst) =>
       Intl.message('Loss $ptsFor - $ptsAgainst',
           args: [ptsFor, ptsAgainst],
           name: 'resultLossRegulation',
-          desc: 'Loss result details');
+          desc: 'Loss result details',
+          locale: locale);
 
   String resultTie(GameResultSharedDetails result) {
     GameResultPerPeriod finalScore = result.regulationResult;
@@ -2819,7 +2939,8 @@ class Messages {
             penaltyAgainst
           ],
           name: 'resultTieOvertimePenalty',
-          desc: 'Tie result details with penalty shootout');
+          desc: 'Tie result details with penalty shootout',
+          locale: locale);
 
   String resultTieOvertime(
           num ptsFor, num ptsAgainst, num overtimeFor, num overtimeAgainst) =>
@@ -2828,7 +2949,8 @@ class Messages {
           '(Overtime ${overtimeFor} - ${overtimeAgainst})',
           args: [ptsFor, ptsAgainst, overtimeFor, overtimeAgainst],
           name: 'resultTieOvertime',
-          desc: 'Tie result details in overtime');
+          desc: 'Tie result details in overtime',
+          locale: locale);
 
   String resultTiePenalty(
           num ptsFor, num ptsAgainst, num penaltyFor, num penaltyAgainst) =>
@@ -2836,13 +2958,15 @@ class Messages {
           'Tie ${ptsFor} - ${ptsAgainst} (Penalty ${penaltyFor} - ${penaltyAgainst})',
           args: [ptsFor, ptsAgainst, penaltyFor, penaltyAgainst],
           name: 'resultTiePenalty',
-          desc: 'Tie result details with penalty shootout');
+          desc: 'Tie result details with penalty shootout',
+          locale: locale);
 
   String resultTieRegulation(num ptsFor, num ptsAgainst) =>
       Intl.message('Tie $ptsFor - $ptsAgainst',
           args: [ptsFor, ptsAgainst],
           name: 'resultTieRegulation',
-          desc: 'Tie result details');
+          desc: 'Tie result details',
+          locale: locale);
 
   String resultWin(GameResultSharedDetails result) {
     GameResultPerPeriod finalScore = result.regulationResult;
@@ -2900,7 +3024,8 @@ class Messages {
             penaltyAgainst
           ],
           name: 'resultWinOvertimePenalty',
-          desc: 'Win result details with penalty shootout');
+          desc: 'Win result details with penalty shootout',
+          locale: locale);
 
   String resultWinOvertime(
           num ptsFor, num ptsAgainst, num overtimeFor, num overtimeAgainst) =>
@@ -2909,7 +3034,8 @@ class Messages {
           '(Overtime ${overtimeFor} - ${overtimeAgainst})',
           args: [ptsFor, ptsAgainst, overtimeFor, overtimeAgainst],
           name: 'resultWinOvertime',
-          desc: 'Win result details in overtime');
+          desc: 'Win result details in overtime',
+          locale: locale);
 
   String resultWinPenalty(
           num ptsFor, num ptsAgainst, num penaltyFor, num penaltyAgainst) =>
@@ -2917,13 +3043,15 @@ class Messages {
           'Win ${ptsFor} - ${ptsAgainst} (Penalty ${penaltyFor} - ${penaltyAgainst})',
           args: [ptsFor, ptsAgainst, penaltyFor, penaltyAgainst],
           name: 'resultWinPenalty',
-          desc: 'Win result details with penalty shootout');
+          desc: 'Win result details with penalty shootout',
+          locale: locale);
 
   String resultWinRegulation(num ptsFor, num ptsAgainst) =>
       Intl.message('Win ${ptsFor} - ${ptsAgainst}',
           args: [ptsFor, ptsAgainst],
           name: 'resultWinRegulation',
-          desc: 'Win result details');
+          desc: 'Win result details',
+          locale: locale);
 
   String roleInGame(RoleInTeam role) {
     switch (role) {
@@ -2938,13 +3066,13 @@ class Messages {
   }
 
   String get roleInGamePlayer =>
-      Intl.message("Player", desc: "Player role in the team");
+      Intl.message("Player", desc: "Player role in the team", locale: locale);
 
   String get roleInGameCoach =>
-      Intl.message("Coach", desc: "Coach role in the team");
+      Intl.message("Coach", desc: "Coach role in the team", locale: locale);
 
-  String get roleInGameNonPlayer =>
-      Intl.message("Non Player", desc: "Non Player role in the team");
+  String get roleInGameNonPlayer => Intl.message("Non Player",
+      desc: "Non Player role in the team", locale: locale);
 
   String seasonSummary(SeasonPlayerSummary summary) {
     return seasonSummaryExpanded(summary.basketballSummary.points,
@@ -2978,28 +3106,33 @@ class Messages {
   }
 
   String get sportNameBasketball => Intl.message('Basketball',
-      desc: 'Name for the item in a drop down for basketball');
+      desc: 'Name for the item in a drop down for basketball', locale: locale);
 
   String get sportNameSoftball => Intl.message('Softball',
-      desc: 'Name for the item in a drop down for softball');
+      desc: 'Name for the item in a drop down for softball', locale: locale);
 
   String get sportNameSoccer => Intl.message('Soccer',
-      desc: 'Name for the item in a drop down for soccer');
+      desc: 'Name for the item in a drop down for soccer', locale: locale);
 
   String get sportNameOther => Intl.message('Other sport',
-      desc: 'Name for the item in a drop down for other as the sport type');
+      desc: 'Name for the item in a drop down for other as the sport type',
+      locale: locale);
 
   String get sportNameNone => Intl.message('None',
-      desc: 'Name for the item in a drop down for none as the sport type');
+      desc: 'Name for the item in a drop down for none as the sport type',
+      locale: locale);
 
   String teamAndSeason(String teamName, String seasonName) {
     return Intl.message("Team $teamName\nSeason $seasonName",
-        args: [teamName, seasonName], name: 'teamAndSeason');
+        args: [teamName, seasonName], name: 'teamAndSeason', locale: locale);
   }
 
   String teamNumbers(int num) {
     return Intl.message("${num} club teams",
-        desc: 'How many teams in the club', args: [num], name: 'teamNumbers');
+        desc: 'How many teams in the club',
+        args: [num],
+        name: 'teamNumbers',
+        locale: locale);
   }
 
   String titleWith(String str) {
@@ -3008,6 +3141,7 @@ class Messages {
       desc: 'Title for the Team Fuse application with some context',
       args: [str],
       name: 'titleWith',
+      locale: locale,
     );
   }
 
@@ -3039,24 +3173,28 @@ class Messages {
       Intl.message('Practice $time - $endTime ($tzShortName)',
           desc: 'Training title in game list',
           args: [time, endTime, tzShortName],
-          name: 'trainingTitleEndShortName');
+          name: 'trainingTitleEndShortName',
+          locale: locale);
 
   String trainingTitleEnd(String time, String endTime) =>
       Intl.message('Practice $time - $endTime',
           desc: 'Training title in game list',
           args: [time, endTime],
-          name: 'trainingTitleEnd');
+          name: 'trainingTitleEnd',
+          locale: locale);
 
   String trainingTitleShortName(String time, String tzShortName) =>
       Intl.message('Practice $time ($tzShortName)',
           desc: 'Training title in game list',
           args: [time, tzShortName],
-          name: 'trainingTitleShortName');
+          name: 'trainingTitleShortName',
+          locale: locale);
 
   String trainingTitleTime(String time) => Intl.message('Practice $time',
       desc: 'Training title in game list',
       args: [time],
-      name: 'trainingTitleTime');
+      name: 'trainingTitleTime',
+      locale: locale);
 
   String trainingTitleNow(String time, String endTime, String tzShortName) {
     if (endTime != null) {
@@ -3076,25 +3214,29 @@ class Messages {
       Intl.message('NOW! Practice $time - $endTime ($tzShortName)',
           desc: 'Training title in game list',
           args: [time, endTime, tzShortName],
-          name: 'trainingTitleNowEndShortName');
+          name: 'trainingTitleNowEndShortName',
+          locale: locale);
 
   String trainingTitleNowEnd(String time, String endTime) =>
       Intl.message('NOW! Practice $time - $endTime',
           desc: 'Training title in game list',
           args: [time, endTime],
-          name: 'trainingTitleNowEnd');
+          name: 'trainingTitleNowEnd',
+          locale: locale);
 
   String trainingTitleNowShortName(String time, String tzShortName) =>
       Intl.message('NOW! Practice $time ($tzShortName)',
           desc: 'Training title in game list',
           args: [time, tzShortName],
-          name: 'trainingTitleNowShortName');
+          name: 'trainingTitleNowShortName',
+          locale: locale);
 
   String trainingTitleNowTime(String time) =>
       Intl.message('NOW! Practice $time',
           desc: 'Training title in game list',
           args: [time],
-          name: 'trainingTitleNowTime');
+          name: 'trainingTitleNowTime',
+          locale: locale);
 
   String verifyExplanation(String email) {
     return Intl.message(
@@ -3102,11 +3244,15 @@ class Messages {
       desc: 'Button to resend the email to verify their email address',
       name: 'verifyExplanation',
       args: [email],
+      locale: locale,
     );
   }
 
   String wearUniform(String wear) => Intl.message('Wear $wear',
-      desc: 'Wear uniform in a game desc', args: [wear], name: 'wearUniform');
+      desc: 'Wear uniform in a game desc',
+      args: [wear],
+      name: 'wearUniform',
+      locale: locale);
 
   String winRecord(WinRecord record) =>
       winRecordBreakout(record.win, record.loss, record.tie);
@@ -3115,7 +3261,54 @@ class Messages {
       Intl.message('Win: ${win} Loss: ${loss} Tie: ${tie}',
           desc: 'Win record for a team',
           name: 'winRecordBreakout',
-          args: [win, loss, tie]);
+          args: [win, loss, tie],
+          locale: locale);
+
+  String get statsButton => Intl.message("STATS",
+      desc: 'Button to add states to the game', locale: locale);
+
+  String foulType(GameFoulType type) {
+    switch (type) {
+      case GameFoulType.Personal:
+        return foulTypePersonal;
+      case GameFoulType.Flagrant:
+        return foulTypeFlagrant;
+      case GameFoulType.Technical:
+        return foulTypeTechnical;
+    }
+    return unknown;
+  }
+
+  String get foulTypePersonal =>
+      Intl.message('Personal Foul', desc: 'Personal foul type', locale: locale);
+  String get foulTypeTechnical => Intl.message('Technical Foul',
+      desc: 'Technical foul type', locale: locale);
+  String get foulTypeFlagrant =>
+      Intl.message('Flagrant Foul', desc: 'Flagrant foul type', locale: locale);
+
+  String get foulButton =>
+      Intl.message("FOUL", desc: "Text on the foul button", locale: locale);
+
+  String get turnoverButton =>
+      Intl.message("T/O", desc: "Turnover button", locale: locale);
+
+  String get blockButton =>
+      Intl.message("BLK", desc: "Block button", locale: locale);
+
+  String get assistButton =>
+      Intl.message("ASST", desc: "Assist button", locale: locale);
+
+  String get stealButton =>
+      Intl.message("STL", desc: "Steal button", locale: locale);
+
+  String get defensiveReboundButton =>
+      Intl.message("DEF RB", desc: "Defensive Rebound button", locale: locale);
+
+  String get offensiveReboundButton =>
+      Intl.message("OFF RB", desc: "Offensive Rebound button", locale: locale);
+
+  String get subButton => Intl.message("SUB",
+      desc: "Text on a substitution button", locale: locale);
 
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {

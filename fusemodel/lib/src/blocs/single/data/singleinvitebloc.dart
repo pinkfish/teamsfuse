@@ -166,7 +166,8 @@ abstract class SingleInviteSaveFailed
     implements
         SingleInviteState,
         Built<SingleInviteSaveFailed, SingleInviteSaveFailedBuilder> {
-  Error get error;
+  @BuiltValueField(serialize: false)
+  Object get error;
 
   SingleInviteSaveFailed._();
   factory SingleInviteSaveFailed(

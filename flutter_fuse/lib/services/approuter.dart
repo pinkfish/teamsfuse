@@ -14,6 +14,7 @@ import '../screens/game/addgame.dart';
 import '../screens/game/addtraining.dart';
 import '../screens/game/editgame.dart';
 import '../screens/game/gamedetails.dart';
+import '../screens/game/gamestats.dart';
 import '../screens/game/sharedgamedetails.dart';
 import '../screens/home/home.dart';
 import '../screens/invites/acceptinviteasadmin.dart';
@@ -186,6 +187,15 @@ class AppRouter {
           itemCategory: "Game");
       return GameDetailsScreen(vals["id"][0].toString());
     }));
+    router.define("/GameStats/:id/:seasonId/:teamId",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) =>
+            GameStatsScreen(
+                vals["id"][0].toString(),
+                vals["seasonId"][0].toString(),
+                vals["teamId"][0].toString(),
+            )
+    ),);
     router.define("/SharedGame/:id",
         handler: fluro.Handler(handlerFunc: (context, vals) {
       AnalyticsSubsystemImpl.analytics.logViewItem(

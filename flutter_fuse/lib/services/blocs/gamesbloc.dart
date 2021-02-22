@@ -53,7 +53,6 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
   final AnalyticsSubsystem crashes;
 
   StreamSubscription<TeamState> _teamSub;
-  StreamSubscription<FirestoreChangedData> _gameChangeSub;
   Map<String, StreamSubscription<BuiltList<Game>>> _gameSubscriptions = {};
   DateTime _start;
   DateTime _end;
@@ -89,8 +88,6 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
   }
 
   void _cleanupStuff() {
-    _gameChangeSub?.cancel();
-    _gameChangeSub = null;
     for (var sub in _gameSubscriptions.values) {
       sub.cancel();
     }

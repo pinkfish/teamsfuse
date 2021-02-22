@@ -173,7 +173,7 @@ abstract class SingleMessageSaveFailed
         SingleMessageState,
         Built<SingleMessageSaveFailed, SingleMessageSaveFailedBuilder> {
   @BuiltValueField(serialize: false)
-  Exception get error;
+  Object get error;
 
   SingleMessageSaveFailed._();
   factory SingleMessageSaveFailed(

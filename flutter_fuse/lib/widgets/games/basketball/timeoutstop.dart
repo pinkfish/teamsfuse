@@ -32,7 +32,7 @@ class TimeoutEnd extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                "assets/images/basketball.png",
+                "assets/sports/Sport.Basketball.png",
                 height: 90.0,
               ),
             ],

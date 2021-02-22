@@ -209,7 +209,8 @@ abstract class SingleTeamSaveFailed
     implements
         SingleTeamState,
         Built<SingleTeamSaveFailed, SingleTeamSaveFailedBuilder> {
-  Error get error;
+  @BuiltValueField(serialize: false)
+  Object get error;
 
   SingleTeamSaveFailed._();
   factory SingleTeamSaveFailed(

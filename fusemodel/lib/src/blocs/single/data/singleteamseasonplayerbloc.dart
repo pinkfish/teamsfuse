@@ -180,7 +180,8 @@ abstract class SingleTeamSeasonPlayerSaveFailed
         SingleTeamSeasonPlayerState,
         Built<SingleTeamSeasonPlayerSaveFailed,
             SingleTeamSeasonPlayerSaveFailedBuilder> {
-  Error get error;
+  @BuiltValueField(serialize: false)
+  Object get error;
 
   SingleTeamSeasonPlayerSaveFailed._();
   factory SingleTeamSeasonPlayerSaveFailed(

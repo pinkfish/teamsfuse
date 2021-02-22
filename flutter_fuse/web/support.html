@@ -1,0 +1,50 @@
+<html>
+<head>
+
+    <meta charset="UTF-8">
+    <title>TeamsFuse contact form</title>
+
+    <meta name="robots" content="noindex">
+
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.css">
+    <link rel="stylesheet" href="support.css">
+    <script src="support.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1 class="title">Contact Form</h1>
+    <div class="wrapper animated bounceInLeft">
+        <div class="contact">
+            <h3 class="contact-us">Contact Us</h3>
+            <div class="alert">Your message has been sent!</div>
+            <form id="contactForm" action="?">
+                <p class="name-field">
+                    <label>Name <span>*</span></label>
+                    <input type="text" name="name" id="name" required>
+                </p>
+                <p class="email-field">
+                    <label>Email <span>*</span></label>
+                    <input type="email" name="email" id="email" required>
+                </p>
+                <p class="message-field full">
+                    <label>Message</label>
+                    <textarea name="message" rows="5" id="message"></textarea>
+                </p>
+                <p class="required-field">Required field <span>*</span></p>
+                <p class="recaptcha-field">
+                    <div class="g-recaptcha" data-sitekey="6LcKK2MaAAAAAOXAaemBVchVYv_A1FIrJAM6c50m"
+                         data-action="support" id="recaptcha"></div>
+                </p>
+                <p class="submit-button">
+                    <button type="submit">Submit</button>
+                </p>
+            </form>
+        </div>
+    </div>
+    <script src="https://www.google.com/recaptcha/enterprise.js?onload=onloadCallback&render=explicit" async defer></script>
+</div>
+</body>
+</html>

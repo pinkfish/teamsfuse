@@ -8,15 +8,19 @@ import 'package:synchronized/synchronized.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
 
+/// The base class for al the single game events.
 abstract class SingleGameEvent {}
 
 ///
 /// Updates the game (writes it out to firebase.
 ///
 class SingleGameUpdate extends SingleGameEvent {
+  /// The game to update.
   final Game game;
+  /// If we should update the shared data too.
   final bool updateShared;
 
+  /// Update the game with new data.
   SingleGameUpdate({@required this.game, this.updateShared = false});
 }
 
@@ -116,36 +120,40 @@ class SingleGameUpdatePlayer extends SingleGameEvent {
 }
 
 ///
-/// Adds an admin to the game.
-///
-class SingleGameAddPlayer extends SingleGameEvent {
-  final String playerUid;
-  final bool opponent;
-
-  SingleGameAddPlayer({@required this.playerUid, @required this.opponent});
-
-  @override
-  List<Object> get props => [playerUid, opponent];
-}
-
-///
-/// Deletes an player from the game.
-///
-class SingleGameRemovePlayer extends SingleGameEvent {
-  final String playerUid;
-  final bool opponent;
-
-  SingleGameRemovePlayer({@required this.playerUid, @required this.opponent});
-
-  @override
-  List<Object> get props => [playerUid, opponent];
-}
-
-///
 /// Loads the players for the game.
 ///
 class SingleGameLoadPlayers extends SingleGameEvent {
   List<Object> get props => [];
+}
+
+///
+/// Adds the guest player to the game.
+///
+class SingleGameAddGuestPlayer extends SingleGameEvent {
+  /// The player to add.
+  final Player player;
+
+  /// Create the guest player.
+  SingleGameAddGuestPlayer(this.player);
+
+  List<Object> get props => [player];
+}
+
+///
+/// Adds the opponent player to the game.
+///
+class SingleGameAddOpponentPlayer extends SingleGameEvent {
+  /// The opponent name to add.
+  final String opponentPlayerName;
+
+  /// The jersey number of the opponent player.
+  final String jerseyNumber;
+
+  /// Create the guest player.
+  SingleGameAddOpponentPlayer({this.opponentPlayerName, this.jerseyNumber})
+      : assert(opponentPlayerName != null && jerseyNumber != null);
+
+  List<Object> get props => [opponentPlayerName, jerseyNumber];
 }
 
 class _SingleGameNewGame extends SingleGameEvent {
@@ -258,6 +266,11 @@ class SingleGameBloc
           _gameEventSub = db
               .getGameEvents(gameUid: gameUid)
               .listen((BuiltList<GameEvent> ev) => _newGameEvents(ev));
+          _gameEventSub.onError((e, stack ) {
+            crashes.recordException(e, stack);
+            _newGameEvents(BuiltList.of(<GameEvent>[]));
+          });
+
         }
       });
     }
@@ -268,6 +281,10 @@ class SingleGameBloc
           _mediaInfoSub = db.getMediaForGame(gameUid: gameUid).listen(
               (BuiltList<MediaInfo> ev) =>
                   add(_SingleGameNewMedia(newMedia: ev)));
+          _mediaInfoSub.onError((e, stack ) {
+            crashes.recordException(e, stack);
+            add(_SingleGameNewMedia(newMedia:BuiltList.of(<MediaInfo>[])));
+          });
         }
       });
     }
@@ -294,7 +311,7 @@ class SingleGameBloc
             .build();
       } catch (e, stack) {
         yield (SingleGameSaveFailed.fromState(state)
-              ..error = RemoteError(e.message, stack.toString()))
+              ..error = e)
             .build();
         yield SingleGameLoaded.fromState(state).build();
         crashes.recordException(e, stack);
@@ -421,36 +438,23 @@ class SingleGameBloc
       });
     }
 
-    // Adds a player to the game
-    if (event is SingleGameAddPlayer) {
-      yield SingleGameSaving.fromState(state).build();
-      try {
-        await db.addGamePlayer(
-            gameUid: gameUid,
-            playerUid: event.playerUid,
-            opponent: event.opponent);
-        yield SingleGameSaveDone.fromState(state).build();
-        yield SingleGameLoaded.fromState(state).build();
-      } catch (error, stack) {
-        yield (SingleGameSaveFailed.fromState(state)
-              ..error = RemoteError(error.message, stack.toString()))
-            .build();
-        yield SingleGameLoaded.fromState(state).build();
-        crashes.recordException(error, stack);
-      }
-    }
-
     // Updates a player in the game
     if (event is SingleGameUpdatePlayer) {
       yield SingleGameSaving.fromState(state).build();
       try {
         for (MapEntry<String, PlayerSummaryWithOpponent> entry
             in event.summary.entries) {
-          await db.updateGamePlayerData(
-              gameUid: gameUid,
-              opponent: entry.value.opponent,
-              summary: entry.value.summary,
-              playerUid: entry.key);
+          if (entry.value.opponent) {
+            await db.updateGameOpponentData(
+                gameUid: gameUid,
+                summary: entry.value.summary,
+                opponentUid: entry.key);
+          } else {
+            await db.updateGamePlayerData(
+                gameUid: gameUid,
+                summary: entry.value.summary,
+                playerUid: entry.key);
+          }
         }
         yield SingleGameSaveDone.fromState(state).build();
         yield SingleGameLoaded.fromState(state).build();
@@ -462,37 +466,39 @@ class SingleGameBloc
         crashes.recordException(error, stack);
       }
     }
-    // Removes a player from the game.
-    if (event is SingleGameRemovePlayer) {
+
+    if (event is _SingleGameUpdatePlayers) {
+      yield (SingleGameLoaded.fromState(state)
+            ..players = event.players.toBuilder()
+            ..loadedPlayers = true)
+          .build();
+    }
+
+    if (event is _SingleGameUpdatePlayers) {
+      yield (SingleGameLoaded.fromState(state)
+            ..players = event.players.toBuilder()
+            ..loadedPlayers = true)
+          .build();
+    }
+
+    if (event is SingleGameAddOpponentPlayer) {
       yield SingleGameSaving.fromState(state).build();
       try {
-        await db.deleteGamePlayer(
-            gameUid: gameUid,
-            playerUid: event.playerUid,
-            opponent: event.opponent);
+        await db.addGameOpponentPlayer(
+          gameUid: state.game.uid,
+          opponentUid: state.game.opponentUid,
+          opponentName: event.opponentPlayerName,
+          jerseyNumber: event.jerseyNumber,
+        );
         yield SingleGameSaveDone.fromState(state).build();
-        yield SingleGameLoaded.fromState(state).build();
-      } catch (error, stack) {
+        yield (SingleGameLoaded.fromState(state)).build();
+      } catch (e, stack) {
         yield (SingleGameSaveFailed.fromState(state)
-              ..error = RemoteError(error.message, stack.toString()))
+          ..error = RemoteError(e.message, stack.toString()))
             .build();
         yield SingleGameLoaded.fromState(state).build();
-        crashes.recordException(error, stack);
+        crashes.recordException(e, stack);
       }
-    }
-
-    if (event is _SingleGameUpdatePlayers) {
-      yield (SingleGameLoaded.fromState(state)
-            ..players = event.players.toBuilder()
-            ..loadedPlayers = true)
-          .build();
-    }
-
-    if (event is _SingleGameUpdatePlayers) {
-      yield (SingleGameLoaded.fromState(state)
-            ..players = event.players.toBuilder()
-            ..loadedPlayers = true)
-          .build();
     }
   }
 

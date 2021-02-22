@@ -717,10 +717,35 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     // Add or update this record into the database.
     var ref = _wrapper.collection(PLAYERS_COLLECTION);
     var docRef = ref.document();
+    var eventName = "addPlayer";
+    switch (player.playerType) {
+      case PlayerType.player:
+        if (player.opponentUid != null || player.gameUid != null) {
+          throw FormatException("opponentuid or gameUid not null");
+        }
+        break;
+      case PlayerType.opponent:
+        if (player.opponentUid == null ||
+            player.opponentUid.isEmpty ||
+            player.gameUid == null ||
+            player.gameUid.isEmpty) {
+          throw FormatException("opponentuid or gameUid are null");
+        }
+        eventName = "addGameOpponent";
+        break;
+      case PlayerType.guest:
+        if (player.opponentUid != null ||
+            player.gameUid == null ||
+            player.gameUid.isEmpty) {
+          throw FormatException("opponentuid is null or gameUid not null");
+        }
+        eventName = "addGuestOpponent";
+        break;
+    }
     // Add the game.
     var p = player.rebuild((b) => b..uid = docRef.documentID);
     await docRef.setData(p.toMap(includeUsers: true));
-    _analytics.logEvent(name: "addPlayer");
+    _analytics.logEvent(name: eventName);
     return docRef.documentID;
   }
 
@@ -2055,11 +2080,11 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   // Game Events
   @override
   Future<String> getGameEventId({GameEvent event}) async {
-    var ref = _wrapper.collection(GAME_EVENT_COLLECTION).document();
-    _analytics.logEvent(name: "AddGameEvent", parameters: {
-      "type": event.type.toString(),
-      "points": event.points.toString()
-    });
+    var ref = _wrapper
+        .collection(GAMES_COLLECTION)
+        .document(event.gameUid)
+        .collection(GAME_EVENT_COLLECTION)
+        .document();
     return ref.documentID;
   }
 
@@ -2069,18 +2094,25 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       throw ArgumentError("uid must not be empty");
     }
     print("Saving game event $event");
-    _analytics.logEvent(name: "UpdateGameEvent");
+    _analytics.logEvent(name: "AddGameEvent", parameters: {
+      "type": event.type.toString(),
+      "points": event.points.toString()
+    });
     return _wrapper
+        .collection(GAMES_COLLECTION)
+        .document(event.gameUid)
         .collection(GAME_EVENT_COLLECTION)
         .document(event.uid)
         .setData(event.toMap());
   }
 
   @override
-  Future<void> deleteGameEvent({String gameEventUid}) {
+  Future<void> deleteGameEvent({String gameUid, String gameEventUid}) {
     print("Deleting event $gameEventUid");
     _analytics.logEvent(name: "DeleteGameEvent");
     return _wrapper
+        .collection(GAMES_COLLECTION)
+        .document(gameUid)
         .collection(GAME_EVENT_COLLECTION)
         .document(gameEventUid)
         .delete();
@@ -2089,8 +2121,9 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Stream<BuiltList<GameEvent>> getGameEvents({String gameUid}) async* {
     var q = _wrapper
+        .collection(GAMES_COLLECTION)
+        .document(gameUid)
         .collection(GAME_EVENT_COLLECTION)
-        .where("gameUid", isEqualTo: gameUid)
         .orderBy("timestamp");
     var snap = await q.getDocuments();
     yield BuiltList.of(snap.documents.map((snap) =>
@@ -2166,26 +2199,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }
 
   @override
-  Future<void> addGamePlayer(
-      {String gameUid, String playerUid, bool opponent}) {
-    var ref = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
-    _analytics.logEvent(name: "AddGamePlayer");
-    return ref.updateData(
-        {"${(opponent ? "opponents." : "players.")}$playerUid.player": true});
-  }
-
-  @override
-  Future<void> deleteGamePlayer(
-      {String gameUid, String playerUid, bool opponent}) {
-    var ref = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
-    _analytics.logEvent(name: "DeleteGamePlayer");
-    return ref.updateData({
-      (opponent ? "opponents." : "players.") + playerUid:
-          _wrapper.fieldValueDelete
-    });
-  }
-
-  @override
   Future<void> updateGamePlayerData(
       {String gameUid,
       String playerUid,
@@ -2193,6 +2206,44 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       bool opponent}) {
     var ref = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
     _analytics.logEvent(name: "UpdateGamePlayer");
-    return ref.updateData({"players.$playerUid": summary.toMap()});
+    return ref.updateData({
+      "${Game.playersField}.$playerUid": summary.toMap(),
+    });
+  }
+
+  @override
+  Future<void> updateGameOpponentData(
+      {String gameUid, String opponentUid, GamePlayerSummary summary}) {
+    var ref = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
+    _analytics.logEvent(name: "UpdateGameOpponent");
+    return ref.updateData({
+      "${Game.opponentField}.$opponentUid": summary.toMap(),
+    });
+  }
+
+  @override
+  Future<void> addGameOpponentPlayer({
+    @required String gameUid,
+    @required String opponentUid,
+    @required String opponentName,
+    @required String jerseyNumber,
+  }) async {
+    var playerDoc = _wrapper.collection(PLAYERS_COLLECTION).document();
+    var gameDoc = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
+    await _wrapper.runTransaction((t) async {
+      var play = Player((b) => b
+        ..opponentUid = opponentUid
+        ..isPublic = true
+        ..name = opponentName
+        ..uid = playerDoc.documentID
+        ..gameUid = gameUid);
+      await t.set(playerDoc, play.toMap());
+      await t.update(gameDoc, {
+        "${Game.opponentField}.${playerDoc.documentID}":
+            GamePlayerSummary((b) => b
+              ..playing = true
+              ..currentlyPlaying = true).toMap()
+      });
+    });
   }
 }

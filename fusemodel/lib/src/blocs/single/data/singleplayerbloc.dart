@@ -185,7 +185,8 @@ abstract class SinglePlayerSaveFailed
     implements
         SinglePlayerState,
         Built<SinglePlayerSaveFailed, SinglePlayerSaveFailedBuilder> {
-  Error get error;
+  @BuiltValueField(serialize: false)
+  Object get error;
 
   SinglePlayerSaveFailed._();
   factory SinglePlayerSaveFailed(

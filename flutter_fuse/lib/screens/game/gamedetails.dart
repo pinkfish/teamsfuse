@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -152,6 +153,21 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                       ),
                     ),
                   ),
+                  floatingActionButton: gameState.game.result.inProgress ==
+                      GameInProgress.Final
+                          ? null
+                          : FloatingActionButton.extended(
+                              icon: Icon(MdiIcons.graph),
+                              label: Text(Messages.of(context).statsButton),
+                              onPressed: () => Navigator.pushNamed(
+                                  context,
+                                  "/GameStats/" +
+                                      gameState.game.uid +
+                                      "/" +
+                                      gameState.game.seasonUid +
+                                      "/" +
+                                      gameState.game.teamUid),
+                            ),
                 );
               },
             ),
