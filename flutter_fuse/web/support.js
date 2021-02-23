@@ -14,13 +14,9 @@ function submitForm(e){
   xhr.open("POST", '/support/request', true);
   xhr.send(formData);
 
-  // Show alert
+  // Show alert and hide the contact form
   document.querySelector('.alert').style.display = 'block';
-
-  // Hide alert after 3 seconds
-  setTimeout(function(){
-    document.querySelector('.alert').style.display = 'none';
-  },3000);
+  document.getElementById("contactForm").style.display = 'none';
 }
 
 // Function to get form value
