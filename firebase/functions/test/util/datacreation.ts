@@ -117,6 +117,7 @@ export async function createPlayer(users: string[], uid?: string): Promise<Docum
             name: 'Player ' + playerDocId,
             uid: playerDocId,
             users: userData,
+            playerType: 'player',
         });
     return await admin.firestore().collection('Players').doc(playerDocId).get();
 }

@@ -2244,6 +2244,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..isPublic = true
         ..name = opponentName
         ..uid = playerDoc.documentID
+        ..playerType = PlayerType.opponent
         ..teamUid = teamUid);
       print("Bing ${play.toMap()}");
       await t.set(playerDoc, play.toMap());
@@ -2270,6 +2271,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..gameUid = gameUid
         ..isPublic = true
         ..name = guestName
+        ..playerType = PlayerType.guest
         ..uid = playerDoc.documentID);
       await t.set(playerDoc, play.toMap());
       await t.update(gameDoc, {

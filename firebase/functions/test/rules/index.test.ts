@@ -121,7 +121,7 @@ describe('TeamsFuse rules', function () {
             db
                 .collection('Players')
                 .doc('frog')
-                .set({ users: { alice: { added: true } } }),
+                .set({ users: { alice: { added: true } }, playerType: 'player' }),
         );
     });
     it('create player normal', async () => {
@@ -130,7 +130,7 @@ describe('TeamsFuse rules', function () {
             db
                 .collection('Players')
                 .doc('frog')
-                .set({ users: { alice: { added: true } }, uid: 'frog' }),
+                .set({ users: { alice: { added: true } }, uid: 'frog', playerType: 'player' }),
         );
     });
     it('create player user + opponent', async () => {
@@ -139,7 +139,7 @@ describe('TeamsFuse rules', function () {
             db
                 .collection('Players')
                 .doc('frog')
-                .set({ users: { alice: { added: true } }, uid: 'frog', opponentUid: 'fail' }),
+                .set({ users: { alice: { added: true } }, uid: 'frog', opponentUid: 'fail', playerType: 'opponent' }),
         );
     });
     it('create player user + game', async () => {
@@ -148,45 +148,90 @@ describe('TeamsFuse rules', function () {
             db
                 .collection('Players')
                 .doc('frog')
-                .set({ users: { alice: { added: true } }, uid: 'frog', gameUid: 'fail' }),
+                .set({ users: { alice: { added: true } }, uid: 'frog', gameUid: 'fail', playerType: 'guest' }),
         );
     });
     it('create player game + opponent', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
         await firebase.assertFails(
-            db.collection('Players').doc('frog').set({ uid: 'frog', gameUid: 'fail', opponentUid: 'fail' }),
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ uid: 'frog', gameUid: 'fail', opponentUid: 'fail', playerType: 'opponent' }),
+        );
+        await firebase.assertFails(
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ uid: 'frog', gameUid: 'fail', opponentUid: 'fail', playerType: 'guest' }),
         );
     });
     it('create player empty users', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertFails(db.collection('Players').doc('frog').set({ users: {}, uid: 'frog' }));
+        await firebase.assertFails(
+            db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', playerType: 'player' }),
+        );
     });
     it('create player opponent null', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
         await firebase.assertFails(
-            db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', opponentUid: null }),
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ users: {}, uid: 'frog', opponentUid: null, playerType: 'opponent' }),
         );
     });
     it('create player game null', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertFails(db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', gameUid: null }));
+        await firebase.assertFails(
+            db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', gameUid: null, playerType: 'guest' }),
+        );
     });
     it('create player game', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
         await firebase.assertSucceeds(
-            db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', gameUid: '1234' }),
+            db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', gameUid: '1234', playerType: 'guest' }),
+        );
+        await firebase.assertFails(
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ users: {}, uid: 'frog', gameUid: '1234', playerType: 'opponent' }),
         );
         await firebase.assertSucceeds(
-            db.collection('Players').doc('frog').set({  uid: 'frog', gameUid: '1234' }),
+            db.collection('Players').doc('frog').set({ uid: 'frog', gameUid: '1234', playerType: 'guest' }),
         );
     });
     it('create player opponent', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
         await firebase.assertSucceeds(
-            db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', opponentUid: '1234', teamUid: '1234' }),
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ users: {}, uid: 'frog', opponentUid: '1234', teamUid: '1234', playerType: 'opponent' }),
         );
         await firebase.assertSucceeds(
-            db.collection('Players').doc('frog').set({  uid: 'frog', opponentUid: '1234', teamUid: '1234' }),
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ uid: 'frog', opponentUid: '1234', teamUid: '1234', playerType: 'opponent' }),
+        );
+        await firebase.assertFails(
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ uid: 'frog', opponentUid: '1234', teamUid: '1234', playerType: 'player' }),
+        );
+        await firebase.assertSucceeds(
+            db.collection('Players').doc('ERiHpw8BYZ5pd6sodXUB').set({
+                name: 'Unknown',
+                uid: 'ERiHpw8BYZ5pd6sodXUB',
+                playerType: 'opponent',
+                perSeason: {},
+                isPublic: true,
+                opponentUid: 'whfuCWoIODiFwlBpZewD',
+                teamUid: 'lqxpi9dfOEvK02G5PbXi',
+            }),
         );
     });
     it('create player opponent team only', async () => {

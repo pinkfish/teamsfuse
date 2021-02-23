@@ -65,9 +65,9 @@ service cloud.firestore {
 
     function isPlayerCorrect() {
       return incomingData() != null &&
-         ((isNotEmpty(incomingData(), 'users') && isNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid')) ||
-          (isEmpty(incomingData(), 'users')  && isNotNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNotNull(incomingData(), 'teamUid')) ||
-           (isEmpty(incomingData(), 'users') && isNull(incomingData(), 'opponentUid') && isNotNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid')));
+         ((isNotEmpty(incomingData(), 'users') && isNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid') && incomingData().playerType == 'player') ||
+          (isEmpty(incomingData(), 'users')  && isNotNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNotNull(incomingData(), 'teamUid') && incomingData().playerType == 'opponent') ||
+           (isEmpty(incomingData(), 'users') && isNull(incomingData(), 'opponentUid') && isNotNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid') && incomingData().playerType == 'guest'));
     }
 
     function isPublicVisible() {
@@ -227,11 +227,11 @@ service cloud.firestore {
     }
 
     match /Players/{player} {
-      allow update, delete: if isSignedIn() && users in incomingData() &&
-          incomingData().users[request.auth.uid].added || isEmpty(incomingData(), 'users');
+      allow update, delete: if isSignedIn() &&
+          (isEmpty(existingData(), 'users') || existingData().users[request.auth.uid].added) &&
+          isPlayerCorrect();
       allow create: if isSignedIn() && isUidCorrect() && isPlayerCorrect();
-      allow read: if isSignedIn() ||
-          isPublicVisible();
+      allow read: if isSignedIn() || isPublicVisible();
     }
 
     match /Feedback/{feedback} {
