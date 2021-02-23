@@ -117,87 +117,83 @@ describe('TeamsFuse rules', function () {
     });
     it('create player no uid', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertFails( db
-            .collection('Players')
-            .doc('frog')
-            .set({ users: { alice: { added: true } } }));
-            });
+        await firebase.assertFails(
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ users: { alice: { added: true } } }),
+        );
+    });
     it('create player normal', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertSucceeds( db
-            .collection('Players')
-            .doc('frog')
-            .set({ users: { alice: { added: true } }, uid: 'frog' }));
+        await firebase.assertSucceeds(
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ users: { alice: { added: true } }, uid: 'frog' }),
+        );
     });
     it('create player user + opponent', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertFails( db
-            .collection('Players')
-            .doc('frog')
-            .set({ users: { alice: { added: true } }, uid: 'frog', opponentUid: 'fail' }));
+        await firebase.assertFails(
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ users: { alice: { added: true } }, uid: 'frog', opponentUid: 'fail' }),
+        );
     });
     it('create player user + game', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertFails( db
-            .collection('Players')
-            .doc('frog')
-            .set({ users: { alice: { added: true } }, uid: 'frog', gameUid: 'fail' }));
+        await firebase.assertFails(
+            db
+                .collection('Players')
+                .doc('frog')
+                .set({ users: { alice: { added: true } }, uid: 'frog', gameUid: 'fail' }),
+        );
     });
     it('create player game + opponent', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertFails( db
-            .collection('Players')
-            .doc('frog')
-            .set({  uid: 'frog', gameUid: 'fail', opponentUid: 'fail' }));
+        await firebase.assertFails(
+            db.collection('Players').doc('frog').set({ uid: 'frog', gameUid: 'fail', opponentUid: 'fail' }),
+        );
     });
     it('create player empty users', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertFails( db
-            .collection('Players')
-            .doc('frog')
-            .set({ users: {  }, uid: 'frog',  }));
+        await firebase.assertFails(db.collection('Players').doc('frog').set({ users: {}, uid: 'frog' }));
     });
     it('create player opponent null', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertFails( db
-            .collection('Players')
-            .doc('frog')
-            .set({ users: {  }, uid: 'frog', opponentUid: null }));
+        await firebase.assertFails(
+            db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', opponentUid: null }),
+        );
     });
     it('create player game null', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertFails( db
-            .collection('Players')
-            .doc('frog')
-            .set({ users: { }, uid: 'frog', gameUid: null }));
+        await firebase.assertFails(db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', gameUid: null }));
     });
     it('create player game', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertSucceeds( db
-            .collection('Players')
-            .doc('frog')
-            .set({ users: { }, uid: 'frog', gameUid: '1234' }));
+        await firebase.assertSucceeds(
+            db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', gameUid: '1234' }),
+        );
     });
     it('create player opponent', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertSucceeds( db
-            .collection('Players')
-            .doc('frog')
-            .set({ users: { }, uid: 'frog', opponentUid: '1234', teamUid: '1234' }));
+        await firebase.assertSucceeds(
+            db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', opponentUid: '1234', teamUid: '1234' }),
+        );
     });
     it('create player opponent team only', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertFails( db
-            .collection('Players')
-            .doc('frog')
-            .set({ users: { }, uid: 'frog',  teamUid: '1234' }));
+        await firebase.assertFails(
+            db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', teamUid: '1234' }),
+        );
     });
     it('create player opponent opponent only', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
-        await firebase.assertFails( db
-            .collection('Players')
-            .doc('frog')
-            .set({ users: { }, uid: 'frog', opponentUid: '1234', }));
+        await firebase.assertFails(
+            db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', opponentUid: '1234' }),
+        );
     });
     it('require users to log in before listing seasons', async () => {
         const db = authedApp();
@@ -233,7 +229,6 @@ describe('TeamsFuse rules', function () {
     });
     it('get season', async () => {
         const db = authedApp({ uid: 'robert', email_verified: true });
-        console.log('Team');
         await db
             .collection('Teams')
             .doc('team')
@@ -243,7 +238,6 @@ describe('TeamsFuse rules', function () {
                     robert: true,
                 },
             });
-        console.log('Seasons');
         await db
             .collection('Seasons')
             .doc('frog')
@@ -253,7 +247,6 @@ describe('TeamsFuse rules', function () {
                 players: { fluff: { added: true } },
                 teamUid: 'team',
             });
-        console.log('Waffle');
         await firebase.assertSucceeds(db.collection('Seasons').doc('frog').get());
         const aliceDb = authedApp({ uid: 'alice' });
         await firebase.assertFails(aliceDb.collection('Seasons').doc('frog').get());
@@ -408,6 +401,66 @@ describe('TeamsFuse rules', function () {
         await firebase.assertSucceeds(db.collection('Games').doc('game').get());
         const dbRobert = authedApp({ uid: 'robert', email_verified: true });
         await firebase.assertFails(dbRobert.collection('Games').doc('game').get());
+    });
+
+    it('get game events', async () => {
+        const db = authedApp({ uid: 'alice', email_verified: true });
+        await db
+            .collection('Teams')
+            .doc('team')
+            .set({ uid: 'alice', admins: { alice: true }, isPublic: true });
+        await firebase.assertSucceeds(
+            db
+                .collection('Seasons')
+                .doc('season')
+                .set({
+                    uid: 'season',
+                    users: {
+                        alice: { added: true },
+                    },
+                    players: { fluff: { added: true } },
+                    teamUid: 'team',
+                }),
+        );
+        await firebase.assertSucceeds(
+            db
+                .collection('Teams')
+                .doc('team')
+                .set({
+                    seasonUid: 'season',
+                    uid: 'sharedGame',
+                    admins: ['alice'],
+                }),
+        );
+
+        const gameRef = db.collection('Games').doc('game');
+        const sharedGameRef = db.collection('GamesShared').doc('sharedGame');
+        await firebase.assertSucceeds(
+            db.runTransaction(async (t) => {
+                await t.set(sharedGameRef, {
+                    seasonUid: 'season',
+                    uid: 'sharedGame',
+                });
+
+                await t.set(gameRef, {
+                    uid: 'game',
+                    seasonUid: 'season',
+                    sharedDataUid: 'sharedGame',
+                    teamUid: 'team',
+                });
+                return;
+            }),
+        );
+        await firebase.assertSucceeds(db.collection('Games').doc('game').get());
+        await firebase.assertSucceeds(db.collection('Games').doc('game').collection('GameEvents').get());
+        await firebase.assertSucceeds(
+            db.collection('Games').doc('game').collection('GameEvents').doc('ev').set({
+                uid: 'ev',
+            }),
+        );
+        await firebase.assertSucceeds(db.collection('Games').doc('game').collection('GameEvents').get());
+        const dbRobert = authedApp({ uid: 'robert', email_verified: true });
+        await firebase.assertSucceeds(dbRobert.collection('Games').doc('game').collection('GameEvents').get());
     });
 
     it('get opponents', async () => {
