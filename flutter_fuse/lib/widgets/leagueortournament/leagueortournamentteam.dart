@@ -99,7 +99,6 @@ class _LeagueOrTournamentTeamDetailsState
                           if (!teamState.loadedGames) {
                             bloc.add(SingleLeagueOrTournamentTeamLoadGames());
                           }
-                          print("Current team $teamState");
 
                           var sortedGames = teamState.games.values
                               .where((g) =>

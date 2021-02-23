@@ -150,8 +150,8 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
             adminTeams: BuiltMap.of(
                 Map.fromIterable(data, key: (t) => t.uid, value: (t) => t))));
       });
-      _adminTeamSub.onError((e) {
-        print("Failed to get teams $e");
+      _adminTeamSub.onError((error, stack) {
+        crashes.recordException(error, stack);
       });
       coordinationBloc.loadingTrace?.incrementCounter("teamAdmin");
       Iterable<Team> adminStartStuff = await adminData.future;

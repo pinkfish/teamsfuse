@@ -53,7 +53,6 @@ class _OfficalScoreDetailsState extends State<OfficalScoreDetails> {
   @override
   void initState() {
     super.initState();
-    print('init this state');
     // Make our own copy of it.
     _results = widget.game.officialResult.toBuilder();
     if (_results.result == OfficialResult.NotStarted) {

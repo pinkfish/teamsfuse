@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
@@ -48,10 +47,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleSubmitted() async {
-    print('Submit');
     var form = formKey.currentState;
     if (!form.validate()) {
-      print('Validate?');
       autovalidate = true; // Start validating on every change.
       setState(() {
         errorText = Messages.of(context).formerror;

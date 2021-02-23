@@ -209,7 +209,6 @@ class TeamResultsBySeason extends StatelessWidget {
                         cubit: gameBloc,
                         builder: (context, state) {
                           if (state is SingleGameLoaded) {
-                            print("Display ${state.game.uid}");
                             return GameCard(gameUid: state.game.uid);
                           }
                           return Center(

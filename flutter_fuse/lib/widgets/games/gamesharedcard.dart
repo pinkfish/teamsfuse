@@ -65,8 +65,6 @@ class GameSharedCard extends StatelessWidget {
           .abbr;
     }
 
-    print(
-        "Times: ${game.time} ${game.endTime} ${game.tzTime} ${game.tzEndTime}");
     if (game.time != game.endTime) {
       var endDay = TimeOfDay.fromDateTime(game.tzEndTime);
       endTimeFormat = MaterialLocalizations.of(context).formatTimeOfDay(endDay);
@@ -230,7 +228,6 @@ class GameSharedCard extends StatelessWidget {
 
         break;
     }
-    print("Shared Game ${game.uid}");
     Widget tile = Container(
       child: Column(
         children: <Widget>[

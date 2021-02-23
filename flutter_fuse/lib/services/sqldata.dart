@@ -44,7 +44,6 @@ class SqlData {
 
   /// Initialize the sql database.
   Future<void> initDatabase() async {
-    print('_initDatabase()');
     var documentsDirectory = await getApplicationDocumentsDirectory();
     _path = join(documentsDirectory.path, _dbName);
     _database = await openDatabase(_path, version: 6,

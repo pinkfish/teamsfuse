@@ -174,7 +174,6 @@ class SingleClubCoachBloc
       }
     } on Exception catch (e, stack) {
       crashes.recordException(e, stack);
-      print(e);
     }
 
     return SingleClubCoachUninitialized();

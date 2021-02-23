@@ -31,7 +31,6 @@ class SeasonFormField extends FormField<String> {
           onSaved: onSaved,
           validator: validator,
           builder: (field) {
-            print("Frogg $initialValue");
             var state = field as SeasonFormFieldState;
             var effectiveDecoration = (decoration ?? const InputDecoration())
                 .applyDefaults(Theme.of(field.context).inputDecorationTheme);

@@ -55,7 +55,6 @@ class _GameVideoPlayer extends State<GameVideoPlayer> {
       _controller?.dispose();
       _controller = VideoPlayerController.network(downloadUrl)
         ..initialize().then((_) {
-          print("Initialized ");
           // If the start point is set, go to there.
           if (widget.start != null) {
             seekTo(widget.start);

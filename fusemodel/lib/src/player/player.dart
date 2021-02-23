@@ -108,7 +108,7 @@ abstract class Player implements Built<Player, PlayerBuilder> {
     ..playerType = PlayerType.player;
 
   /// The name of the field to serialize for the user data.
-  static const String usersField = 'user';
+  static const String usersField = 'users';
 
   /// Serialize the player.
   Map<String, dynamic> toMap({bool includeUsers: false}) {

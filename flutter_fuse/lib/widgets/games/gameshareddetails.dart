@@ -76,8 +76,6 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        'lat: ${widget.game.place.latitude} long: ${widget.game.place.longitude} ${widget.game.uid}');
     var day = TimeOfDay.fromDateTime(widget.game.tzTime);
     var dayEnd = TimeOfDay.fromDateTime(widget.game.tzEndTime);
     var dateStr =

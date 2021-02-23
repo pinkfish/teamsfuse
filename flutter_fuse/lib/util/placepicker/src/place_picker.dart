@@ -191,8 +191,6 @@ class _PlacePickerState extends State<PlacePicker> {
 
         if (detailResponse.errorMessage?.isNotEmpty == true ||
             detailResponse.status == "REQUEST_DENIED") {
-          print("Fetching details by placeId Error: " +
-              detailResponse.errorMessage);
         } else {
           provider.selectedPlace =
               PickResult.fromPlaceDetailResult(detailResponse.result);
@@ -206,7 +204,6 @@ class _PlacePickerState extends State<PlacePicker> {
 
         if (response.errorMessage?.isNotEmpty == true ||
             response.status == "REQUEST_DENIED") {
-          print("Fetching details by placeId Error: " + response.errorMessage);
         } else if (response.results.isNotEmpty) {
           // Yay, now we can set the result stuff.
           provider.selectedPlace =
@@ -329,7 +326,6 @@ class _PlacePickerState extends State<PlacePicker> {
 
   void _pickPrediction(Prediction prediction) async {
     provider.placeSearchingState = SearchingState.Searching;
-    print("Searching by prediction");
 
     var response = await provider.places.getDetailsByPlaceId(
       prediction.placeId,
@@ -380,7 +376,6 @@ class _PlacePickerState extends State<PlacePicker> {
           future: provider
               .updateCurrentLocation(widget.forceAndroidLocationManager),
           builder: (context, snap) {
-            print("Build $snap ${provider.currentPosition}");
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else {

@@ -488,7 +488,6 @@ class SingleClubBloc
       }
     } catch (e, stack) {
       crashes.recordException(e, stack);
-      print(e);
     }
 
     return SingleClubUninitialized();

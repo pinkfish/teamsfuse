@@ -26,7 +26,6 @@ class SingleSeasonProvider extends SingleBlocProvider<SingleSeasonBloc> {
 
   bool isBlocEqual(Bloc bloc) {
     var myBloc = bloc as SingleSeasonBloc;
-    print("Compare $keyUid ${myBloc.seasonUid}");
     return (bloc is SingleSeasonBloc && bloc.seasonUid == keyUid);
   }
 

@@ -33,6 +33,7 @@ class _GameEventNewDataLoaded extends GameBlocEvent {
 class GameEventSetBoundaries extends GameBlocEvent {
   /// The new start point.
   final DateTime start;
+
   /// The new end point.
   final DateTime end;
 
@@ -100,12 +101,12 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
       if (!_gameSubscriptions.containsKey(teamUid) || updateBoundary) {
         _gameSubscriptions[teamUid]?.cancel();
         String myUid = teamUid;
-        print("Sub for $teamUid");
         _gameSubscriptions[teamUid] = coordinationBloc.databaseUpdateModel
             .getBasicGames(start: _start, end: _end, teamUid: teamUid)
             .listen((gse) {
           add(_GameEventNewDataLoaded(teamUid: myUid, games: gse));
         });
+        _gameSubscriptions[teamUid].onError(crashes.recordException);
       }
     }
   }

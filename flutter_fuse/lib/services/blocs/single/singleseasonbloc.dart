@@ -73,7 +73,6 @@ class SingleSeasonBloc
       {@required this.db, @required this.seasonUid, @required this.crashes})
       : super(SingleSeasonUninitialized(), seasonUid) {
     assert(seasonUid != null && seasonUid.isNotEmpty);
-    print("Season $seasonUid");
     _seasonSub = db.getSingleSeason(seasonUid).listen((season) {
       if (season != null) {
         // Only send this if the team is not the same.
@@ -85,7 +84,6 @@ class SingleSeasonBloc
       }
     });
     _seasonSub.onError((e, stack) {
-      print("$seasonUid");
       add(_SingleSeasonDeleted());
       crashes.recordException(e, stack);
     });
@@ -102,7 +100,6 @@ class SingleSeasonBloc
 
   @override
   Stream<SingleSeasonState> mapEventToState(SingleSeasonEvent event) async* {
-    print("Season evnet $event");
     if (event is _SingleNewTeamSeason) {
       yield (SingleSeasonLoaded.fromState(state)
             ..season = event.newSeason.toBuilder())

@@ -98,8 +98,8 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
   }
 
   String _seasonName() {
-    print("Frogg ${_teamToAdd.currentSeason}");
-    if (_teamToAdd.currentSeason != null && _teamToAdd.currentSeason.isNotEmpty) {
+    if (_teamToAdd.currentSeason != null &&
+        _teamToAdd.currentSeason.isNotEmpty) {
       return _teamToAdd.currentSeason;
     }
     return Messages.of(context).noseasons;
@@ -212,7 +212,7 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
 
   Widget _buildImage() {
     if (_imageFileToAdd == null) {
-      return Icon(Icons.upload_file, size:100);
+      return Icon(Icons.upload_file, size: 100);
     }
     return TeamImage(teamImage: _imageFileToAdd);
   }
@@ -225,7 +225,6 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
   }
 
   Widget _buildSummary() {
-    print(_currentStep);
     if (_currentStep == 4) {
       return SingleChildScrollView(
         child: Column(
@@ -259,25 +258,25 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
                       builder: (context, clubState) {
                         ListTile(
                           leading: const Icon(MdiIcons.group),
-                          title:
-                              _clubUid != ClubPicker.noClub
-                                  ? Text(singleClubBloc.state.club.name)
-                                  : Text(Messages.of(context).noclub),
-                          trailing:
-                             _clubUid != ClubPicker.noClub
-                                  ? ClubImage(
-                                      clubUid: _clubUid,
-                                      width: 20.0,
-                                      height: 20.0,
-                                    )
-                                  : null,
+                          title: _clubUid != ClubPicker.noClub
+                              ? Text(singleClubBloc.state.club.name)
+                              : Text(Messages.of(context).noclub),
+                          trailing: _clubUid != ClubPicker.noClub
+                              ? ClubImage(
+                                  clubUid: _clubUid,
+                                  width: 20.0,
+                                  height: 20.0,
+                                )
+                              : null,
                         );
                       },
                     ),
                   ),
             ListTile(
               leading: const Icon(MdiIcons.tshirtCrew),
-              title: Text(_teamToAdd.league.isEmpty ? Messages.of(context).noleagues:_teamToAdd.league),
+              title: Text(_teamToAdd.league.isEmpty
+                  ? Messages.of(context).noleagues
+                  : _teamToAdd.league),
             ),
             ListTile(
               leading: const Icon(Icons.timer),
@@ -306,7 +305,6 @@ class _AddTeamScreenState extends State<AddTeamScreen> {
         builder: (context, singleClubBloc) => BlocBuilder(
             cubit: singleClubBloc,
             builder: (context, singleClubState) {
-              print("Club $_clubUid $singleClubState");
               if (singleClubState is SingleClubDeleted) {
                 return DeletedWidget();
               }

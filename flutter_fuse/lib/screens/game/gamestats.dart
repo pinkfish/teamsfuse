@@ -27,6 +27,7 @@ import '../../widgets/util/loading.dart';
 import '../../widgets/util/roundbutton.dart';
 import '../../widgets/util/savingoverlay.dart';
 
+/// Callback for when once ot the items is selected.
 typedef SelectCallback = void Function(
     BuildContext context, SingleGameBloc singleGameBloc);
 
@@ -35,10 +36,14 @@ typedef SelectCallback = void Function(
 /// the current status, points ewtc.
 ///
 class GameStatsScreen extends StatelessWidget {
+  /// The game uid the stats are for.
   final String gameUid;
+  /// The season uid the stats are for.
   final String seasonUid;
+  /// The team uid the stats are for.
   final String teamUid;
 
+  /// Screen to display and edit the game stats.
   GameStatsScreen(this.gameUid, this.seasonUid, this.teamUid);
 
   Future<void> _doAddPoints(BuildContext context, int pts, bool made,
@@ -429,7 +434,6 @@ class GameStatsScreen extends StatelessWidget {
 
   Widget _buildSubButtons(BuildContext context, Orientation orientation,
       BoxConstraints boxConstraints, SingleGameBloc singleGameBloc) {
-    print(boxConstraints);
     return BlocBuilder(
         cubit: singleGameBloc,
         builder: (BuildContext context, SingleGameState state) {

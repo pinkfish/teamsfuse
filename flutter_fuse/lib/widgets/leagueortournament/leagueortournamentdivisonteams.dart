@@ -106,7 +106,6 @@ class _LeagueOrTournamentDivisonDetailsState
           i++;
           _listState.currentState.insertItem(i);
         } else {
-          print("${_listState.currentState}");
           var myTeam = oldList[j];
           _listState.currentState.removeItem(j, (context, animation) {
             // Nailed it.

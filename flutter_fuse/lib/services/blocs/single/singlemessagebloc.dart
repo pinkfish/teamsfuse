@@ -129,7 +129,6 @@ class SingleMessageBloc
                 state.message.recipients[userUid], MessageReadState.Read);
             yield SingleMessageLoaded.fromState(state).build();
           } catch (e, stack) {
-            print(stack);
             yield (SingleMessageSaveFailed.fromState(state)..error = e).build();
             yield SingleMessageLoaded.fromState(state).build();
             crashes.recordException(e, stack);

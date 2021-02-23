@@ -184,8 +184,6 @@ class GameDetailsBase extends StatelessWidget {
   }
 
   Widget _buildGame(BuildContext context, SingleTeamState teamState) {
-    print(
-        'lat: ${game.sharedData.place.latitude} long: ${game.sharedData.place.longitude} ${game.uid}');
     var day = TimeOfDay.fromDateTime(game.sharedData.tzTime);
     var dayArrive = TimeOfDay.fromDateTime(game.tzArriveTime);
     var dayEnd = TimeOfDay.fromDateTime(game.sharedData.tzEndTime);

@@ -273,7 +273,6 @@ class SinglePlayerBloc
         case SinglePlayerBlocStateType.Loaded:
           return SinglePlayerLoaded.fromMap(json);
         case SinglePlayerBlocStateType.Deleted:
-          print("Loading as deleted? $playerUid");
           return SinglePlayerDeleted.fromMap(json);
         case SinglePlayerBlocStateType.SaveFailed:
           return SinglePlayerSaveFailed.fromMap(json);

@@ -424,7 +424,6 @@ class _ScoreDetailsState extends State<ScoreDetails> {
 
   @override
   Widget build(BuildContext context) {
-    print("Stuff in here ${_details.inProgress}");
     return BlocListener(
       cubit: widget.game,
       listener: (context, state) {

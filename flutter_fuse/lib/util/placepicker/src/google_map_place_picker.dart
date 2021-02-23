@@ -77,7 +77,6 @@ class GoogleMapPlacePicker extends StatelessWidget {
       return;
     }
 
-    print("Searching by camera loc");
     provider.placeSearchingState = SearchingState.Searching;
 
     final GeocodingResponse response =
@@ -89,7 +88,6 @@ class GoogleMapPlacePicker extends StatelessWidget {
 
     if (response.errorMessage?.isNotEmpty == true ||
         response.status == "REQUEST_DENIED") {
-      print("Camera Location Search Error: " + response.errorMessage);
       if (onSearchFailed != null) {
         onSearchFailed(response.status);
       }
@@ -106,8 +104,6 @@ class GoogleMapPlacePicker extends StatelessWidget {
 
       if (detailResponse.errorMessage?.isNotEmpty == true ||
           detailResponse.status == "REQUEST_DENIED") {
-        print("Fetching details by placeId Error: " +
-            detailResponse.errorMessage);
         if (onSearchFailed != null) {
           onSearchFailed(detailResponse.status);
         }
@@ -127,8 +123,6 @@ class GoogleMapPlacePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Making stack");
-
     return Stack(
       children: <Widget>[
         _buildGoogleMap(context),
@@ -139,8 +133,6 @@ class GoogleMapPlacePicker extends StatelessWidget {
   }
 
   Widget _buildGoogleMap(BuildContext context) {
-    print("Making map");
-
     return Selector<PlaceProvider, PickResult>(
         selector: (_, provider) => provider.selectedPlace,
         builder: (_, data, __) {
@@ -148,8 +140,6 @@ class GoogleMapPlacePicker extends StatelessWidget {
           var initialCameraPosition =
               CameraPosition(target: initialTarget, zoom: 15);
           var markers = Set<Marker>.of([]);
-
-          print("Rebuild map");
 
           if (provider.selectedPlace != null) {
             var markerUuid = MarkerId(Uuid().v4());
@@ -166,7 +156,6 @@ class GoogleMapPlacePicker extends StatelessWidget {
                 snippet: provider.selectedPlace.formattedAddress,
               ),
             ));
-            print("Made a marker");
           }
           return GoogleMap(
             myLocationButtonEnabled: false,
@@ -208,7 +197,6 @@ class GoogleMapPlacePicker extends StatelessWidget {
       selector: (_, provider) => Tuple3(provider.selectedPlace,
           provider.placeSearchingState, provider.isSearchBarFocused),
       builder: (context, data, __) {
-        print("Biggled ${data.item1.formattedAddress}");
         if ((data.item1 == null && data.item2 == SearchingState.Idle) ||
             data.item3 == true) {
           return Container();

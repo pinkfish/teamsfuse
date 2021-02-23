@@ -69,12 +69,6 @@ void main() async {
   }
   print('$currentTimeZone ${local.toString()}');
 
-  // database
-  print('Making stuff in here');
-  // Setup the timestamps correctly.
-
-  //await Firestore.instance.settings();
-
   var firestoreWrapper = fs.Firestore();
   //UserDatabaseData.instance = new UserDatabaseData(Analytics.instance,
   //    LoggingData.instance, SqlData.instance, firestoreWrapper);

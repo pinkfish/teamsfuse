@@ -312,7 +312,6 @@ class AutoCompleteSearchState extends State<AutoCompleteSearch> {
 
       if (response.errorMessage?.isNotEmpty == true ||
           response.status == "REQUEST_DENIED") {
-        print("AutoCompleteSearch Error: " + response.errorMessage);
         if (widget.onSearchFailed != null) {
           widget.onSearchFailed(response.status);
         }

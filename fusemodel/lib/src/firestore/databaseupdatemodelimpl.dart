@@ -2238,6 +2238,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var playerDoc = _wrapper.collection(PLAYERS_COLLECTION).document();
     var gameDoc = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
     await _wrapper.runTransaction((t) async {
+      print("Creating player ${playerDoc.documentID} $opponentUid $teamUid");
+
       var play = Player((b) => b
         ..opponentUid = opponentUid
         ..isPublic = true
@@ -2245,6 +2247,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..uid = playerDoc.documentID
         ..teamUid = teamUid);
       await t.set(playerDoc, play.toMap());
+      print("Updaing game ${gameDoc.documentID}");
       await t.update(gameDoc, {
         "${Game.opponentField}.${playerDoc.documentID}":
             GamePlayerSummary((b) => b
@@ -2271,16 +2274,20 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
       await t.set(playerDoc, play.toMap());
       await t.update(gameDoc, {
         "${Game.opponentField}.${playerDoc.documentID}":
-        GamePlayerSummary((b) => b
-          ..playing = true
-          ..currentlyPlaying = true).toMap()
+            GamePlayerSummary((b) => b
+              ..playing = true
+              ..currentlyPlaying = true).toMap()
       });
     });
   }
 
   /// Gets the opponent players for the team/opponent.
-  Stream<BuiltList<Player>> getPlayersForOpponent({String teamUid, opponentUid}) async* {
-    var query = _wrapper.collection(PLAYERS_COLLECTION).where('teamUid', isEqualTo: teamUid).where('opponentUid', isEqualTo: opponentUid);
+  Stream<BuiltList<Player>> getPlayersForOpponent(
+      {String teamUid, opponentUid}) async* {
+    var query = _wrapper
+        .collection(PLAYERS_COLLECTION)
+        .where('teamUid', isEqualTo: teamUid)
+        .where('opponentUid', isEqualTo: opponentUid);
 
     var docs = await query.getDocuments();
     var result = docs.documents.map<Player>((d) => Player.fromMap(d.data));

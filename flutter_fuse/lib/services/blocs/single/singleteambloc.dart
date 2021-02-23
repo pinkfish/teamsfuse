@@ -229,7 +229,6 @@ class SingleTeamBloc
   SingleTeamBloc(
       {@required this.db, @required this.teamUid, @required this.crashes})
       : super(SingleTeamUninitialized(), "TeamState.$teamUid") {
-    print("Building bloc $teamUid");
     _teamSub = db.getTeamDetails(teamUid: teamUid).listen((team) {
       if (team != null) {
         add(
@@ -267,7 +266,6 @@ class SingleTeamBloc
         add(_SingleTeamLoadedOpponents(opponents: opponents.build()));
       });
       _opponentSub.onError((e) {
-        print("Error $e");
         _opponentSub.cancel();
         _opponentSub = null;
         throw e;

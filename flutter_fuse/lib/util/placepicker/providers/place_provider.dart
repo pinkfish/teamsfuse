@@ -48,16 +48,13 @@ class PlaceProvider extends ChangeNotifier {
       print("Waiting for the permisson");
       await Permission.location.request();
       if (await Permission.location.request().isGranted) {
-        print("Permission granted");
         currentPosition = await Geolocator.getCurrentPosition(
             desiredAccuracy: desiredAccuracy ?? LocationAccuracy.high,
             timeLimit: Duration(milliseconds: 500));
-        print("Got position");
       } else {
         currentPosition = null;
       }
     } catch (e) {
-      print(e);
       currentPosition = null;
     }
 

@@ -87,7 +87,6 @@ class SingleOpponentBloc
       if (op != null) {
         add(_SingleNewTeamOpponent(newOpponent: op));
       } else {
-        print("Deleted $teamUid $opponentUid");
         add(_SingleOpponentDeleted());
       }
     });

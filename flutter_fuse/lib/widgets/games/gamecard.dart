@@ -106,7 +106,7 @@ class GameCard extends StatelessWidget {
         attendence[player] = Attendance.Maybe;
       }
     }
-    if (attendence.length == 0) {
+    if (attendence.isEmpty) {
       return null;
     }
     var widgets = <Widget>[];
@@ -158,7 +158,8 @@ class GameCard extends StatelessWidget {
     if (overtimeResult != null) {
       children.add(
         Text(
-          "OT ${overtimeResult.score.ptsFor} - ${overtimeResult.score.ptsAgainst}",
+          "OT ${overtimeResult.score.ptsFor} - "
+              "${overtimeResult.score.ptsAgainst}",
           style: style,
         ),
       );
@@ -166,7 +167,8 @@ class GameCard extends StatelessWidget {
     if (penaltyResult != null) {
       children.add(
         Text(
-          "PT ${penaltyResult.score.ptsFor} - ${penaltyResult.score.ptsAgainst}",
+          "PT ${penaltyResult.score.ptsFor} - "
+              "${penaltyResult.score.ptsAgainst}",
           style: style,
         ),
       );
@@ -200,7 +202,7 @@ class GameCard extends StatelessWidget {
       }
 
       if (game.result.result != GameResult.Unknown) {
-        GameResultPerPeriod emptyPeriodResult = GameResultPerPeriod((q) => q
+        var emptyPeriodResult = GameResultPerPeriod((q) => q
           ..period = GamePeriod.finalPeriod.toBuilder()
           ..score.ptsFor = 0
           ..score.ptsAgainst = 0);
@@ -269,7 +271,8 @@ class GameCard extends StatelessWidget {
     url += "&destination=${Uri.encodeComponent(game.sharedData.place.address)}";
     if (game.sharedData.place.placeId != null) {
       url +=
-          "&destionation_place_id=${Uri.encodeComponent(game.sharedData.place.placeId)}";
+          "&destionation_place_id="
+              "${Uri.encodeComponent(game.sharedData.place.placeId)}";
     }
     launch(url);
   }
@@ -455,7 +458,7 @@ class GameCard extends StatelessWidget {
       ),
       trailing: _buildTrailing(context, gameBloc, seasonState.season, players),
     );
-    if (buttons.length > 0) {
+    if (buttons.isNotEmpty) {
       return Card(
         color: color,
         child: Column(
@@ -486,8 +489,11 @@ class GameCard extends StatelessWidget {
         }
         if (state is SingleGameUninitialized) {
           return Card(
-            color: Colors.lightGreenAccent,
-            child: Text(Messages.of(context).loading),
+            color: Colors.lightGreen.shade50,
+            child: SizedBox(
+              height: 100,
+              child: Text(Messages.of(context).loading),
+            ),
           );
         }
         Game game = state.game;

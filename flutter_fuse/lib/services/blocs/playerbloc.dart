@@ -140,7 +140,6 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
           return e;
         });
       } else {
-        print('Loaded for fluff');
       }
     }
     coordinationBloc

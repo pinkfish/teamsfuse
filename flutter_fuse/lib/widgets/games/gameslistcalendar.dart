@@ -43,7 +43,6 @@ class GameListCalendarState {
   /// Gets the calendar events between the specified time periods.
   ///
   List<CalendarEvent> getEvents(DateTime start, DateTime end) {
-    print('Get events $start $end');
     if (startPoint == null ||
         endPoint == null ||
         start.isBefore(startPoint) ||
@@ -61,7 +60,6 @@ class GameListCalendarState {
           instantEnd: g.sharedData.tzEndTime,
           index: pos++));
     }
-    print("returned ${events.length}");
     return events;
   }
 
@@ -93,9 +91,7 @@ class GameListCalendarState {
   }
 
   void _setGames(FilteredGameState res) {
-    print("Games changed");
     var games = res.games.values.toList();
-    print("Got ${games.length} games");
 
     if (games.length > 0 || _listToShow == null) {
       games.sort((a, b) => a.sharedData.time.compareTo(b.sharedData.time));

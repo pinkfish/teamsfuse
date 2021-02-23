@@ -152,7 +152,7 @@ abstract class Game implements Built<Game, GameBuilder> {
   static const String LEAGUEOPPONENTUID = 'leagueOpponentUid';
   static const String GAMESHAREDDATA = 'sharedData';
   static const String opponentField = "opponents";
-  static const String playersField = "players]";
+  static const String playersField = "players";
 
   /// Defaults for the state.  Always default to no games loaded.
   static void _initializeBuilder(GameBuilder b) => b
