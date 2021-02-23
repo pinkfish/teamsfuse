@@ -22,12 +22,12 @@
     ],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
-      },
-      {
         "source": "/support/request",
         "function": "functionsSupportrequest"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
       }
     ]
   },

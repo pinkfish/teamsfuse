@@ -11,7 +11,7 @@ function submitForm(e){
   // Save message
   var formData = new FormData(document.getElementById("contactForm"));
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", '/support/request', true);
+  xhr.open("POST", '/support/request');
   xhr.send(formData);
 
   // Show alert and hide the contact form
