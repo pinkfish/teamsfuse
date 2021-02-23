@@ -13,6 +13,12 @@ function submitForm(e){
   var xhr = new XMLHttpRequest();
   xhr.open("POST", '/support/request');
   xhr.send(formData);
+  xhr.onload = function () {
+     if (xhr.status != 303) {
+        document.querySelector('.alert').style.display = 'none';
+        document.querySelector('.error').style.display = 'block';
+     }
+  }
 
   // Show alert and hide the contact form
   document.querySelector('.alert').style.display = 'block';
