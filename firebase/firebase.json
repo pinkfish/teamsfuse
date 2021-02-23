@@ -24,7 +24,11 @@
       {
         "source": "**",
         "destination": "/index.html"
-      }
+      },
+      {
+        "source": "/support/request",
+        "function": "functionsSupportrequest"
+      },
     ]
   },
   "storage": {
