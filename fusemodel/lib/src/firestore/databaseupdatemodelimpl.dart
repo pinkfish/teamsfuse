@@ -720,23 +720,29 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var eventName = "addPlayer";
     switch (player.playerType) {
       case PlayerType.player:
-        if (player.opponentUid != null || player.gameUid != null) {
+        if (player.opponentUid != null ||
+            player.gameUid != null ||
+            player.teamUid != null) {
           throw FormatException("opponentuid or gameUid not null");
         }
         break;
       case PlayerType.opponent:
         if (player.opponentUid == null ||
             player.opponentUid.isEmpty ||
-            player.gameUid == null ||
-            player.gameUid.isEmpty) {
-          throw FormatException("opponentuid or gameUid are null");
+            player.teamUid == null ||
+            player.teamUid.isEmpty ||
+            player.gameUid != null ||
+            player.gameUid.isNotEmpty) {
+          throw FormatException("opponentuid or teamUid are null");
         }
         eventName = "addGameOpponent";
         break;
       case PlayerType.guest:
         if (player.opponentUid != null ||
             player.gameUid == null ||
-            player.gameUid.isEmpty) {
+            player.gameUid.isEmpty ||
+            player.teamUid != null ||
+            player.teamUid.isNotEmpty) {
           throw FormatException("opponentuid is null or gameUid not null");
         }
         eventName = "addGuestOpponent";

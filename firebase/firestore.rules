@@ -41,11 +41,19 @@ service cloud.firestore {
       return incomingData() != null && incomingData().uid == request.resource.id;
     }
 
+    function isNotNull(data, property) {
+       return property in data && data[property] != null;
+    }
+
+    function isNull(data, property) {
+      return !(property in data) || data[property] == null;
+    }
+
     function isPlayerCorrect() {
       return incomingData() != null &&
-         ((incomingData().users.keys().length > 0 && incomingData().opponentUid == null && incomingData().gameUid == null) ||
-          (incomingData().users.keys().length == 0 && incomingData().opponentUid != null && incomingData().gameUid == null) ||
-           (incomingData().users.keys().length > 0 && incomingData().opponentUid == null && incomingData().gameUid != null));
+         ((incomingData().users.keys().size() > 0 && isNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid')) ||
+          (incomingData().users.keys().size() == 0 && isNotNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNotNull(incomingData(), 'teamUid')) ||
+           (incomingData().users.keys().size() == 0 && isNull(incomingData(), 'opponentUid') && isNotNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid')));
     }
 
     function isPublicVisible() {

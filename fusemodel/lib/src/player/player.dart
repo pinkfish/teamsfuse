@@ -66,6 +66,10 @@ abstract class Player implements Built<Player, PlayerBuilder> {
   @nullable
   String get opponentUid;
 
+  /// The uid of the team the opponent is in.
+  @nullable
+  String get teamUid;
+
   /// The uid of the game.
   @nullable
   String get gameUid;
