@@ -51,7 +51,7 @@ async function sendFeedback(name: string, message: string, email: string, token:
     const assessment = {
         event: {
             token: token,
-            siteKey: functions.config().recaptchaSiteKey,
+            siteKey: "6LcKK2MaAAAAAOXAaemBVchVYv_A1FIrJAM6c50m",
         },
     };
     const request = {
