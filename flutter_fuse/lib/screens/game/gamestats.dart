@@ -571,9 +571,14 @@ class GameStatsScreen extends StatelessWidget {
                               );
                             }
 
+                            if (!state.loadedOpponentPlayers) {
+                              singleGameBloc.add(SingleGameLoadOpponentPlayers());
+                            }
+
+                            // Only add a player once we have loaded the ones
+                            // for the opponent and found it lacking.
                             if (state is SingleGameLoaded &&
-                                state.game.opponents.isEmpty) {
-                              // ignore: close_sinks
+                                state.game.opponents.isEmpty && state.loadedOpponentPlayers) {
                               print("Adding missing opponent");
                               singleGameBloc.add(
                                 SingleGameAddOpponentPlayer(
