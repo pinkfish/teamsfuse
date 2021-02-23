@@ -51,7 +51,7 @@ async function sendFeedback(name: string, message: string, email: string, token:
     const assessment = {
         event: {
             token: token,
-            siteKey: "6LcKK2MaAAAAAOXAaemBVchVYv_A1FIrJAM6c50m",
+            siteKey: "6LehBmUaAAAAAPYH2v-BdZrlmg50VZER8mmsCMTq",
         },
     };
     const request = {
