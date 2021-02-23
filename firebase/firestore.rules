@@ -49,11 +49,19 @@ service cloud.firestore {
       return !(property in data) || data[property] == null;
     }
 
+    function isEmpty(data, property) {
+      return !(property in data) || data[property].keys().size() == 0;
+    }
+
+    function isNotEmpty(data, property) {
+      return property in data && data[property].keys().size() > 0;
+    }
+
     function isPlayerCorrect() {
       return incomingData() != null &&
-         ((incomingData().users.keys().size() > 0 && isNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid')) ||
-          (incomingData().users.keys().size() == 0 && isNotNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNotNull(incomingData(), 'teamUid')) ||
-           (incomingData().users.keys().size() == 0 && isNull(incomingData(), 'opponentUid') && isNotNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid')));
+         ((isNotEmpty(incomingData(), 'users') && isNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid')) ||
+          (isEmpty(incomingData(), 'users')  && isNotNull(incomingData(), 'opponentUid') && isNull(incomingData(), 'gameUid') && isNotNull(incomingData(), 'teamUid')) ||
+           (isEmpty(incomingData(), 'users') && isNull(incomingData(), 'opponentUid') && isNotNull(incomingData(), 'gameUid') && isNull(incomingData(), 'teamUid')));
     }
 
     function isPublicVisible() {
@@ -213,8 +221,8 @@ service cloud.firestore {
     }
 
     match /Players/{player} {
-      allow update, delete: if isSignedIn() &&
-          resource.data.user[request.auth.uid].added;
+      allow update, delete: if isSignedIn() && users in incomingData() &&
+          incomingData().users[request.auth.uid].added || isEmpty(incomingData(), 'users');
       allow create: if isSignedIn() && isUidCorrect() && isPlayerCorrect();
       allow read: if isSignedIn() ||
           isPublicVisible();

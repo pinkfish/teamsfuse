@@ -2238,7 +2238,6 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var playerDoc = _wrapper.collection(PLAYERS_COLLECTION).document();
     var gameDoc = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
     await _wrapper.runTransaction((t) async {
-      print("Creating player ${playerDoc.documentID} $opponentUid $teamUid");
 
       var play = Player((b) => b
         ..opponentUid = opponentUid
@@ -2246,6 +2245,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..name = opponentName
         ..uid = playerDoc.documentID
         ..teamUid = teamUid);
+      print("Bing ${play.toMap()}");
       await t.set(playerDoc, play.toMap());
       print("Updaing game ${gameDoc.documentID}");
       await t.update(gameDoc, {

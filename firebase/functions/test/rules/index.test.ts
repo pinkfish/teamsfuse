@@ -176,11 +176,17 @@ describe('TeamsFuse rules', function () {
         await firebase.assertSucceeds(
             db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', gameUid: '1234' }),
         );
+        await firebase.assertSucceeds(
+            db.collection('Players').doc('frog').set({  uid: 'frog', gameUid: '1234' }),
+        );
     });
     it('create player opponent', async () => {
         const db = authedApp({ uid: 'alice', email_verified: true });
         await firebase.assertSucceeds(
             db.collection('Players').doc('frog').set({ users: {}, uid: 'frog', opponentUid: '1234', teamUid: '1234' }),
+        );
+        await firebase.assertSucceeds(
+            db.collection('Players').doc('frog').set({  uid: 'frog', opponentUid: '1234', teamUid: '1234' }),
         );
     });
     it('create player opponent team only', async () => {
