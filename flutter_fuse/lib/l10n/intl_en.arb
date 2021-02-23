@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "@@last_modified": "2021-02-21T06:14:21.230102",
+  "@@last_modified": "2021-02-23T01:03:05.728460",
   "About": "About",
   "@About": {
     "type": "text",
@@ -3023,5 +3023,71 @@
       "loss": {},
       "tie": {}
     }
+  },
+  "STATS": "STATS",
+  "@STATS": {
+    "description": "Button to add states to the game",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Personal Foul": "Personal Foul",
+  "@Personal Foul": {
+    "description": "Personal foul type",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Technical Foul": "Technical Foul",
+  "@Technical Foul": {
+    "description": "Technical foul type",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Flagrant Foul": "Flagrant Foul",
+  "@Flagrant Foul": {
+    "description": "Flagrant foul type",
+    "type": "text",
+    "placeholders": {}
+  },
+  "FOUL": "FOUL",
+  "@FOUL": {
+    "description": "Text on the foul button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "BLK": "BLK",
+  "@BLK": {
+    "description": "Block button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "ASST": "ASST",
+  "@ASST": {
+    "description": "Assist button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "STL": "STL",
+  "@STL": {
+    "description": "Steal button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "DEF RB": "DEF RB",
+  "@DEF RB": {
+    "description": "Defensive Rebound button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "OFF RB": "OFF RB",
+  "@OFF RB": {
+    "description": "Offensive Rebound button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "SUB": "SUB",
+  "@SUB": {
+    "description": "Text on a substitution button",
+    "type": "text",
+    "placeholders": {}
   }
 }
