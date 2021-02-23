@@ -1,17 +1,3 @@
-// Initialize Firebase
-var config = {
-  apiKey: "AIzaSyD5bCyvYm5adElW2tllyfYH-CXnyQdUxVY",
-  authDomain: "contactform-2086d.firebaseapp.com",
-  databaseURL: "https://contactform-2086d.firebaseio.com",
-  projectId: "contactform-2086d",
-  storageBucket: "contactform-2086d.appspot.com",
-  messagingSenderId: "35839015044"
-};
-firebase.initializeApp(config);
-
-// Reference messages collection
-var messagesRef = firebase.database().ref('messages');
-
 // Listen for form submit
 document.getElementById('contactForm').addEventListener('submit', submitForm);
 
@@ -23,9 +9,13 @@ function submitForm(e){
   var name = getInputVal('name');
   var email = getInputVal('email');
   var message = getInputVal('message');
+  var token = getInputVal("g-recaptcha-response");
 
   // Save message
-  saveMessage(name, email, message);
+  var formData = new FormData(document.getElementById("contactForm"));
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", '/support/request', true);
+  xhr.send(formData);
 
   // Show alert
   document.querySelector('.alert').style.display = 'block';
@@ -34,9 +24,6 @@ function submitForm(e){
   setTimeout(function(){
     document.querySelector('.alert').style.display = 'none';
   },3000);
-
-  // Clear form
-  document.getElementById('contactForm').reset();
 }
 
 // Function to get form value
@@ -44,12 +31,3 @@ function getInputVal(id){
   return document.getElementById(id).value;
 }
 
-// Save message to firebase
-function saveMessage(name, email, message){
-  var newMessageRef = messagesRef.push();
-  newMessageRef.set({
-    name: name,
-    email: email,
-    message: message
-  });
-}
