@@ -63,6 +63,8 @@ abstract class SingleGameState {
   BuiltMap<String, Player> get players;
   @BuiltValueField(serialize: false)
   bool get loadedPlayers;
+  @BuiltValueField(serialize: false)
+  bool get loadedOpponentPlayers;
 
   SingleGameBlocStateType get type;
 
@@ -75,6 +77,7 @@ abstract class SingleGameState {
       ..gameEvents = state.gameEvents.toBuilder()
       ..loadedEvents = state.loadedEvents
       ..loadedMedia = state.loadedMedia
+      ..loadedOpponentPlayers = state.loadedOpponentPlayers
       ..media = state.media.toBuilder();
   }
 
@@ -82,6 +85,7 @@ abstract class SingleGameState {
     ..loadedLogs = false
     ..loadedEvents = false
     ..loadedMedia = false
+    ..loadedOpponentPlayers = false
     ..loadedPlayers = false;
 
   Map<String, dynamic> toMap();

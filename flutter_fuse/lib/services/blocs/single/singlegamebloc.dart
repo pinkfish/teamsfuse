@@ -17,6 +17,7 @@ abstract class SingleGameEvent {}
 class SingleGameUpdate extends SingleGameEvent {
   /// The game to update.
   final Game game;
+
   /// If we should update the shared data too.
   final bool updateShared;
 
@@ -131,12 +132,15 @@ class SingleGameLoadPlayers extends SingleGameEvent {
 ///
 class SingleGameAddGuestPlayer extends SingleGameEvent {
   /// The player to add.
-  final Player player;
+  final String playerName;
+
+  /// The jersey number to add.
+  final String jerseyNumber;
 
   /// Create the guest player.
-  SingleGameAddGuestPlayer(this.player);
+  SingleGameAddGuestPlayer(this.playerName, this.jerseyNumber);
 
-  List<Object> get props => [player];
+  List<Object> get props => [playerName, jerseyNumber];
 }
 
 ///
@@ -154,6 +158,13 @@ class SingleGameAddOpponentPlayer extends SingleGameEvent {
       : assert(opponentPlayerName != null && jerseyNumber != null);
 
   List<Object> get props => [opponentPlayerName, jerseyNumber];
+}
+
+///
+/// Loads the players for the opponent.
+///
+class SingleGameLoadOpponentPlayers extends SingleGameEvent {
+  List<Object> get props => [];
 }
 
 class _SingleGameNewGame extends SingleGameEvent {
@@ -199,6 +210,15 @@ class _SingleGameUpdatePlayers extends SingleGameEvent {
   List<Object> get props => [players];
 }
 
+class _SingleGameUpdateOpponents extends SingleGameEvent {
+  final BuiltList<Player> opponentPlayers;
+
+  _SingleGameUpdateOpponents({@required this.opponentPlayers});
+
+  @override
+  List<Object> get props => [opponentPlayers];
+}
+
 ///
 /// Bloc to handle updates and state of a specific game.
 ///
@@ -218,6 +238,7 @@ class SingleGameBloc
 
   Map<String, StreamSubscription<Player>> _players;
   Map<String, Player> _loadedPlayers;
+  StreamSubscription<BuiltList<Player>> _opPlayers;
 
   SingleGameBloc(
       {@required this.gameUid, @required this.db, @required this.crashes})
@@ -238,6 +259,7 @@ class SingleGameBloc
     _gameLogSub?.cancel();
     _mediaInfoSub?.cancel();
     _gameEventSub?.cancel();
+    _opPlayers?.cancel();
   }
 
   @override
@@ -261,32 +283,70 @@ class SingleGameBloc
     }
 
     if (event is SingleGameLoadEvents) {
-      _lock.synchronized(() {
-        if (_gameEventSub == null) {
-          _gameEventSub = db
-              .getGameEvents(gameUid: gameUid)
-              .listen((BuiltList<GameEvent> ev) => _newGameEvents(ev));
-          _gameEventSub.onError((e, stack ) {
-            crashes.recordException(e, stack);
-            _newGameEvents(BuiltList.of(<GameEvent>[]));
-          });
+      if (state is SingleGameLoaded) {
+        _lock.synchronized(() {
+          if (_gameEventSub == null) {
+            _gameEventSub = db
+                .getGameEvents(gameUid: gameUid)
+                .listen((BuiltList<GameEvent> ev) => _newGameEvents(ev));
+            _gameEventSub.onError((e, stack) {
+              crashes.recordException(e, stack);
+              _newGameEvents(BuiltList.of(<GameEvent>[]));
+            });
+            // See if we can find a player(s) for the opponent.  If so,
+            // update our list.
+          }
+        });
+      }
+    }
 
+    if (event is SingleGameLoadOpponentPlayers) {
+      if (state is SingleGameLoaded) {
+        _lock.synchronized(() {
+          if (_opPlayers == null) {
+            _opPlayers = db
+                .getPlayersForOpponent(
+                    teamUid: state.game.teamUid,
+                    opponentUid: state.game.opponentUid)
+                .listen((pl) {
+              add(_SingleGameUpdateOpponents(opponentPlayers: pl));
+            });
+          }
+        });
+      }
+    }
+
+    if (event is _SingleGameUpdateOpponents) {
+      yield (SingleGameLoaded.fromState(state)..loadedOpponentPlayers = true)
+          .build();
+      var gameBuilder = state.game.toBuilder();
+      var modified = false;
+      for (var pl in event.opponentPlayers) {
+        // Update stuff.
+        if (!state.game.opponents.containsKey(pl.uid)) {
+          gameBuilder.opponents[pl.uid] = GamePlayerSummary();
+          modified = true;
         }
-      });
+      }
+      if (modified) {
+        add(SingleGameUpdate(game: gameBuilder.build(), updateShared: false));
+      }
     }
 
     if (event is SingleGameLoadMedia) {
-      _lock.synchronized(() {
-        if (_mediaInfoSub == null) {
-          _mediaInfoSub = db.getMediaForGame(gameUid: gameUid).listen(
-              (BuiltList<MediaInfo> ev) =>
-                  add(_SingleGameNewMedia(newMedia: ev)));
-          _mediaInfoSub.onError((e, stack ) {
-            crashes.recordException(e, stack);
-            add(_SingleGameNewMedia(newMedia:BuiltList.of(<MediaInfo>[])));
-          });
-        }
-      });
+      if (state is SingleGameLoaded) {
+        _lock.synchronized(() {
+          if (_mediaInfoSub == null) {
+            _mediaInfoSub = db.getMediaForGame(gameUid: gameUid).listen(
+                (BuiltList<MediaInfo> ev) =>
+                    add(_SingleGameNewMedia(newMedia: ev)));
+            _mediaInfoSub.onError((e, stack) {
+              crashes.recordException(e, stack);
+              add(_SingleGameNewMedia(newMedia: BuiltList.of(<MediaInfo>[])));
+            });
+          }
+        });
+      }
     }
 
     if (event is _SingleGameNewMedia) {
@@ -310,9 +370,7 @@ class SingleGameBloc
         yield (SingleGameLoaded.fromState(state)..game = event.game.toBuilder())
             .build();
       } catch (e, stack) {
-        yield (SingleGameSaveFailed.fromState(state)
-              ..error = e)
-            .build();
+        yield (SingleGameSaveFailed.fromState(state)..error = e).build();
         yield SingleGameLoaded.fromState(state).build();
         crashes.recordException(e, stack);
       }
@@ -481,10 +539,12 @@ class SingleGameBloc
           .build();
     }
 
+    // Add an opponent player.
     if (event is SingleGameAddOpponentPlayer) {
       yield SingleGameSaving.fromState(state).build();
       try {
         await db.addGameOpponentPlayer(
+          teamUid: state.game.teamUid,
           gameUid: state.game.uid,
           opponentUid: state.game.opponentUid,
           opponentName: event.opponentPlayerName,
@@ -494,7 +554,27 @@ class SingleGameBloc
         yield (SingleGameLoaded.fromState(state)).build();
       } catch (e, stack) {
         yield (SingleGameSaveFailed.fromState(state)
-          ..error = RemoteError(e.message, stack.toString()))
+              ..error = RemoteError(e.message, stack.toString()))
+            .build();
+        yield SingleGameLoaded.fromState(state).build();
+        crashes.recordException(e, stack);
+      }
+    }
+
+    // Add a guest player.
+    if (event is SingleGameAddGuestPlayer) {
+      yield SingleGameSaving.fromState(state).build();
+      try {
+        await db.addGameGuestPlayer(
+          gameUid: state.game.uid,
+          guestName: event.playerName,
+          jerseyNumber: event.jerseyNumber,
+        );
+        yield SingleGameSaveDone.fromState(state).build();
+        yield (SingleGameLoaded.fromState(state)).build();
+      } catch (e, stack) {
+        yield (SingleGameSaveFailed.fromState(state)
+              ..error = RemoteError(e.message, stack.toString()))
             .build();
         yield SingleGameLoaded.fromState(state).build();
         crashes.recordException(e, stack);

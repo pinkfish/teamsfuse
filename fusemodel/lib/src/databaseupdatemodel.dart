@@ -103,7 +103,8 @@ abstract class DatabaseUpdateModel {
   Future<void> setGameEvent({@required GameEvent event});
 
   /// Delete the game event from the database.
-  Future<void> deleteGameEvent({@required String gameUid, @required String gameEventUid});
+  Future<void> deleteGameEvent(
+      {@required String gameUid, @required String gameEventUid});
 
   // Media
   /// Loads all the media for this game.
@@ -129,15 +130,24 @@ abstract class DatabaseUpdateModel {
   });
 
   ///
-  /// Add an opponent for a specific game.
+  /// Add a player for opponent for a specific opponent.
   ///
   Future<void> addGameOpponentPlayer({
+    @required String teamUid,
     @required String gameUid,
     @required String opponentUid,
     @required String opponentName,
     @required String jerseyNumber,
   });
 
+  ///
+  /// Add a guest player just for one game.
+  ///
+  Future<void> addGameGuestPlayer({
+    @required String gameUid,
+    @required String guestName,
+    @required String jerseyNumber,
+  });
 
   /// Updates the season in the database.
   Future<void> updateMediaInfoThumbnail(
@@ -415,6 +425,9 @@ abstract class DatabaseUpdateModel {
   Stream<BuiltList<Player>> getPlayers();
 
   Stream<BuiltList<Invite>> getInvites();
+
+  /// Gets the opponent players for the team/opponent.
+  Stream<BuiltList<Player>> getPlayersForOpponent({@required String teamUid, @required opponentUid});
 
   ///
   /// Get the messages for the current user, with an optional start point

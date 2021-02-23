@@ -95,6 +95,7 @@ part 'serializer.g.dart';
   SingleClubState,
   SingleClubUninitialized,
   SingleGameBlocStateType,
+  SingleGameChangeEvents,
   SingleGameDeleted,
   SingleGameLoaded,
   SingleGameSaveDone,

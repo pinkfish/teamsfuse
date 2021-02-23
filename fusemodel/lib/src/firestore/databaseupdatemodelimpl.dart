@@ -2230,6 +2230,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   @override
   Future<void> addGameOpponentPlayer({
     @required String gameUid,
+    @required String teamUid,
     @required String opponentUid,
     @required String opponentName,
     @required String jerseyNumber,
@@ -2242,7 +2243,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         ..isPublic = true
         ..name = opponentName
         ..uid = playerDoc.documentID
-        ..gameUid = gameUid);
+        ..teamUid = teamUid);
       await t.set(playerDoc, play.toMap());
       await t.update(gameDoc, {
         "${Game.opponentField}.${playerDoc.documentID}":
@@ -2251,5 +2252,43 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
               ..currentlyPlaying = true).toMap()
       });
     });
+  }
+
+  @override
+  Future<void> addGameGuestPlayer({
+    @required String gameUid,
+    @required String guestName,
+    @required String jerseyNumber,
+  }) async {
+    var playerDoc = _wrapper.collection(PLAYERS_COLLECTION).document();
+    var gameDoc = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
+    await _wrapper.runTransaction((t) async {
+      var play = Player((b) => b
+        ..gameUid = gameUid
+        ..isPublic = true
+        ..name = guestName
+        ..uid = playerDoc.documentID);
+      await t.set(playerDoc, play.toMap());
+      await t.update(gameDoc, {
+        "${Game.opponentField}.${playerDoc.documentID}":
+        GamePlayerSummary((b) => b
+          ..playing = true
+          ..currentlyPlaying = true).toMap()
+      });
+    });
+  }
+
+  /// Gets the opponent players for the team/opponent.
+  Stream<BuiltList<Player>> getPlayersForOpponent({String teamUid, opponentUid}) async* {
+    var query = _wrapper.collection(PLAYERS_COLLECTION).where('teamUid', isEqualTo: teamUid).where('opponentUid', isEqualTo: opponentUid);
+
+    var docs = await query.getDocuments();
+    var result = docs.documents.map<Player>((d) => Player.fromMap(d.data));
+    yield BuiltList.of(result);
+
+    await for (var snap in query.snapshots()) {
+      var resultNew = snap.documents.map<Player>((d) => Player.fromMap(d.data));
+      yield BuiltList.of(resultNew);
+    }
   }
 }
