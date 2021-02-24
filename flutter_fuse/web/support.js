@@ -6,7 +6,7 @@ function submitForm(e){
   var name = getInputVal('name');
   var email = getInputVal('email');
   var message = getInputVal('message');
-  var token = getInputVal("g-recaptcha-response");
+  var token = grecaptcha.enterprise.getResponse();
 
   // Save message
   var formData = new FormData(document.getElementById("contactForm"));
