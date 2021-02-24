@@ -22,14 +22,20 @@ function submitForm(e){
       JSON.stringify(doc)
   );
   xhr.onload = function () {
-     if (xhr.status != 303) {
+     console.log(xhr.status);
+     if (xhr.status !== 303) {
+        document.querySelector('.sending').style.display = 'none';
         document.querySelector('.alert').style.display = 'none';
         document.querySelector('.error').style.display = 'block';
+     } else {
+        document.querySelector('.sending').style.display = 'none';
+        document.querySelector('.alert').style.display = 'block';
+        document.querySelector('.error').style.display = 'none';
      }
   }
 
   // Show alert and hide the contact form
-  document.querySelector('.alert').style.display = 'block';
+  document.querySelector('.sending').style.display = 'block';
   document.getElementById("contactForm").style.display = 'none';
 }
 

@@ -25,14 +25,14 @@ export const checkRecaptcha = functions.https.onRequest(async (req, res) => {
             name: req.body['name'],
             message: req.body['message'],
             email: req.body['email'],
-            token: req.body['g-recaptcha-response'],
+            token: req.body['token'],
         };
         const verified = await sendFeedback(data);
         if (verified) {
             res.writeHead(303, { Connection: 'close', Location: '/' });
         } else {
             res.status(405);
-            res.send('<b>Unable to verify recaptcha token' + fields['g-recaptcha-response'] + '</b>');
+            res.send('<b>Unable to verify recaptcha token' + fields['token'] + '</b>');
         }
         res.end();
     } else {

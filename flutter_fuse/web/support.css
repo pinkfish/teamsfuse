@@ -145,7 +145,7 @@ span {
   color: #5dc3f2;
 }
 
-.alert, .error {
+.alert, .error, .sending {
   margin-bottom: 1em;
   padding: 10px;
   background: #49b0e7;
