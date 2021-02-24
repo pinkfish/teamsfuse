@@ -7,6 +7,9 @@ interface TeamAndSeason {
     season: DocumentSnapshot;
 }
 
+
+
+
 export async function createSeason(isPublicVisibleSeason: boolean, teamUid: string): Promise<DocumentSnapshot> {
     const seasonDocId = uuid();
 
