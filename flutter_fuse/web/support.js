@@ -23,7 +23,7 @@ function submitForm(e){
   );
   xhr.onload = function () {
      console.log(xhr.status);
-     if (xhr.status !== 303) {
+     if (xhr.status !== 303 && xhr.status !== 200) {
         document.querySelector('.sending').style.display = 'none';
         document.querySelector('.alert').style.display = 'none';
         document.querySelector('.error').style.display = 'block';
