@@ -415,6 +415,7 @@ describe('TeamsFuse rules', function () {
                     uid: 'season',
                     users: {
                         alice: { added: true },
+                        other: { added: true },
                     },
                     players: { fluff: { added: true } },
                     teamUid: 'team',
@@ -450,8 +451,73 @@ describe('TeamsFuse rules', function () {
             }),
         );
         await firebase.assertSucceeds(db.collection('Games').doc('game').get());
+        // Make sure we can update the game too.
+        await firebase.assertSucceeds(
+            db.collection('Games').doc('game').update({
+                time: 1234,
+            }),
+        );
+        console.log('Raobert');
         const dbRobert = authedApp({ uid: 'robert', email_verified: true });
         await firebase.assertFails(dbRobert.collection('Games').doc('game').get());
+        await firebase.assertFails(
+            dbRobert.collection('Games').doc('game').update({
+                time: 12345,
+            }),
+        );
+        await firebase.assertFails(
+            dbRobert
+                .collection('Games')
+                .doc('game')
+                .update({
+                    players: {
+                        fluff: { added: true },
+                        biggles: { added: true },
+                    },
+                }),
+        );
+        console.log('Other');
+        const dbOther = authedApp({ uid: 'other', email_verified: true });
+        await firebase.assertFails(
+            dbOther.collection('Games').doc('game').update({
+                time: 12345,
+            }),
+        );
+        console.log('Add Player');
+        await firebase.assertSucceeds(
+            dbOther
+                .collection('Games')
+                .doc('game')
+                .update({
+                    players: {
+                        fluff: { added: true },
+                        biggles: { added: true },
+                    },
+                }),
+        );
+        console.log('Delete Player - fail');
+        await firebase.assertFails(
+            dbOther
+                .collection('Games')
+                .doc('game')
+                .update({
+                    players: {
+                        fluff: { added: true },
+                    },
+                }),
+        );
+        // Admin can delete a player.
+        console.log('Delete Player');
+        await firebase.assertSucceeds(
+            db
+                .collection('Games')
+                .doc('game')
+                .update({
+                    players: {
+                        fluff: { added: true },
+                    },
+                }),
+        );
     });
 
     it('get game events', async () => {

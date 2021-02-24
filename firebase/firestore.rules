@@ -75,6 +75,27 @@ service cloud.firestore {
         existingData().isPublic;
     }
 
+    function opponentChanges() {
+      return (('opponents' in incomingData()) ? incomingData().opponents : {}).diff(
+            ('opponents' in existingData()) ? existingData().opponents : {});
+    }
+
+    function playerChanges() {
+        return (('players' in incomingData()) ? incomingData().players : {}).diff(
+            ('players' in existingData()) ? existingData().players : {});
+    }
+
+    function isOpponentOrGuestPlayerAdded() {
+       let opponentChanges = opponentChanges();
+       let playerChanges = playerChanges();
+       // Cannot remove a player without being an admin.
+       return (existingData().diff(incomingData()).affectedKeys().intersection(['players', 'opponents'].toSet()).size() ==
+             existingData().diff(incomingData()).affectedKeys().size()) &&
+             playerChanges.removedKeys().size() == 0 && opponentChanges.removedKeys().size() == 0 &&
+            (playerChanges.addedKeys().size() > 0 || opponentChanges.addedKeys().size() > 0) &&
+             isUserOrAdmin(get(/databases/$(database)/documents/Seasons/$(existingData().seasonUid)).data);
+    }
+
     match /Clubs/{club} {
       match /News/{opponent} {
         // News is always publically visible.
@@ -107,7 +128,8 @@ service cloud.firestore {
       allow read: if isSignedIn() &&
          isUserOrAdmin(get(/databases/$(database)/documents/Seasons/$(existingData().seasonUid)).data);
       allow update, delete: if isSignedIn() &&
-         isAdmin(get(/databases/$(database)/documents/Seasons/$(existingData().teamUid)).data);
+           (isOpponentOrGuestPlayerAdded() ||
+         isAdmin(get(/databases/$(database)/documents/Teams/$(existingData().teamUid)).data));
       allow list: if isSignedIn();
       // Only allow a create if the shared data exists and the team exists.
       allow create: if isSignedIn() && isUidCorrect() &&
