@@ -1,5 +1,4 @@
 import * as functions from 'firebase-functions';
-import Busboy = require('busboy');
 import * as admin from 'firebase-admin';
 import { RecaptchaEnterpriseServiceClient } from '@google-cloud/recaptcha-enterprise';
 
@@ -18,34 +17,24 @@ interface ResponseData {
 
 export const checkRecaptcha = functions.https.onRequest(async (req, res) => {
     if (req.method === 'POST') {
-        const myBusboy = new Busboy({ headers: req.headers });
-
+        console.log(req.body);
         // This object will accumulate all the fields, keyed by their name
         const fields: Record<string, string> = {};
 
-        // This code will process each non-file field in the form.
-        myBusboy.on('field', (fieldname, val) => {
-            console.log(`Processed field ${fieldname}: ${val}.`);
-            fields[fieldname] = val;
-        });
-
-        myBusboy.on('finish', async function () {
-            const data: ResponseData = {
-                name: fields['name'],
-                message: fields['message'],
-                email: fields['email'],
-                token: fields['g-recaptcha-response'],
-            };
-            const verified = await sendFeedback(data);
-            if (verified) {
-                res.writeHead(303, { Connection: 'close', Location: '/' });
-            } else {
-                res.status(405);
-                res.send('<b>Unable to verify recaptcha token' + fields['g-recaptcha-response'] + '</b>');
-            }
-            res.end();
-        });
-        req.pipe(myBusboy);
+        const data: ResponseData = {
+            name: req.body['name'],
+            message: req.body['message'],
+            email: req.body['email'],
+            token: req.body['g-recaptcha-response'],
+        };
+        const verified = await sendFeedback(data);
+        if (verified) {
+            res.writeHead(303, { Connection: 'close', Location: '/' });
+        } else {
+            res.status(405);
+            res.send('<b>Unable to verify recaptcha token' + fields['g-recaptcha-response'] + '</b>');
+        }
+        res.end();
     } else {
         res.send('<b>Not a post message</b>');
         // Return a "method not allowed" error

@@ -9,10 +9,18 @@ function submitForm(e){
   var token = grecaptcha.enterprise.getResponse();
 
   // Save message
-  var formData = new FormData(document.getElementById("contactForm"));
   var xhr = new XMLHttpRequest();
   xhr.open("POST", '/support/request');
-  xhr.send(formData);
+  xhr.setRequestHeader("Content-Type", 'application/json');
+  var doc = {
+      name: name,
+      email: email,
+      message: message,
+      token: token,
+  };
+  xhr.send(
+      JSON.stringify(doc)
+  );
   xhr.onload = function () {
      if (xhr.status != 303) {
         document.querySelector('.alert').style.display = 'none';
