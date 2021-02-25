@@ -225,7 +225,8 @@ class _AddPlayerScreenState extends State<AddPlayerScreen> {
 
     return SingleChildScrollView(
       child: Form(
-        autovalidateMode: autovalidate ? AutovalidateMode.always : AutovalidateMode.disabled,
+        autovalidateMode:
+            autovalidate ? AutovalidateMode.always : AutovalidateMode.disabled,
         key: _formKey,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

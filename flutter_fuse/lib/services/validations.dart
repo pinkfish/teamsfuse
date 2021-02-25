@@ -33,7 +33,6 @@ class Validations {
     return null;
   }
 
-
   /// Validate an email is correct.
   String validateEmail(BuildContext context, String value) {
     if (value.isEmpty) {

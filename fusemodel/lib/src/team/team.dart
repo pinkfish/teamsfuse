@@ -66,7 +66,7 @@ abstract class Team implements Built<Team, TeamBuilder> {
   BuiltSet<String> get admins => BuiltSet.of(adminsData.keys);
 
   /// The users setup for the team.
-  @BuiltValueField(wireName : USER)
+  @BuiltValueField(wireName: USER)
   BuiltMap<String, BuiltMap<String, bool>> get users;
 
   @memoized

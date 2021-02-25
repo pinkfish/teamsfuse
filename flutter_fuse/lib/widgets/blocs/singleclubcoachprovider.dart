@@ -17,18 +17,22 @@ typedef SingleClubCoachProviderBuilder = Widget Function(
 ///
 class SingleClubCoachProvider extends SingleBlocProvider<SingleClubCoachBloc> {
   /// Constructor.
-  SingleClubCoachProvider({@required String clubUid, @required String coachUid, SingleClubCoachProviderBuilder builder})
+  SingleClubCoachProvider(
+      {@required String clubUid,
+      @required String coachUid,
+      SingleClubCoachProviderBuilder builder})
       : super(
-      keyUid: "$clubUid.$coachUid",
-      creator: (c, uid) => _createBloc(c, clubUid, coachUid),
-      builder: builder,
-      prefix: "club");
+            keyUid: "$clubUid.$coachUid",
+            creator: (c, uid) => _createBloc(c, clubUid, coachUid),
+            builder: builder,
+            prefix: "club");
 
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleClubBloc && bloc.clubUid == keyUid);
   }
 
-  static SingleClubCoachBloc _createBloc(BuildContext context, String uid, String coachUid) {
+  static SingleClubCoachBloc _createBloc(
+      BuildContext context, String uid, String coachUid) {
     return SingleClubCoachBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),
       clubUid: uid,

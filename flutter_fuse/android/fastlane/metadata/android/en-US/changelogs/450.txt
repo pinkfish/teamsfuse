@@ -11,4 +11,4 @@ Add in the api key for uploading to the android developer page.
 Add in the icon generation for android.
 Fix up the app id for the android app.
 Fix up fastlane.
-Merge branch 'main' of 
+Merge branch 'main' of

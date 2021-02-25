@@ -38,8 +38,10 @@ typedef SelectCallback = void Function(
 class GameStatsScreen extends StatelessWidget {
   /// The game uid the stats are for.
   final String gameUid;
+
   /// The season uid the stats are for.
   final String seasonUid;
+
   /// The team uid the stats are for.
   final String teamUid;
 
@@ -576,21 +578,21 @@ class GameStatsScreen extends StatelessWidget {
                             }
 
                             if (!state.loadedOpponentPlayers) {
-                              singleGameBloc.add(SingleGameLoadOpponentPlayers());
+                              singleGameBloc
+                                  .add(SingleGameLoadOpponentPlayers());
                             }
 
                             // Only add a player once we have loaded the ones
                             // for the opponent and found it lacking.
                             if (state is SingleGameLoaded &&
-                                state.game.opponents.isEmpty && state.loadedOpponentPlayers) {
+                                state.game.opponents.isEmpty &&
+                                state.loadedOpponentPlayers) {
                               print("Adding missing opponent");
                               singleGameBloc.add(
-                                SingleGameAddOpponentPlayer(
-                                    opponentPlayerName:
-                                        Messages.of(context).unknown,
-                                    jerseyNumber: "xx"),
+                                SingleGameAddOpponentPlayer(jerseyNumber: "xx"),
                               );
                             }
+
                             if ((state.loadedEvents &&
                                     (state.gameEvents.length == 0 ||
                                         state.gameEvents.last.type ==
@@ -605,10 +607,48 @@ class GameStatsScreen extends StatelessWidget {
                                       is SingleSeasonUninitialized) {
                                     return LoadingWidget();
                                   }
+                                  if (seasonState is SingleSeasonLoaded) {
+                                    GameBuilder builder;
+                                    // Make sure player state is correct.
+                                    for (var playerUid in seasonState
+                                        .season.playersData.keys) {
+                                      var data = seasonState
+                                          .season.playersData[playerUid];
+                                      if (!state.game.players
+                                          .containsKey(playerUid)) {
+                                        if (builder == null) {
+                                          builder = state.game.toBuilder();
+                                        }
+                                        builder.players[playerUid] =
+                                            GamePlayerSummary((b) => b
+                                              ..jerseyNumber = data.jerseyNumber
+                                              ..playing = true
+                                              ..currentlyPlaying = true);
+                                      } else {
+                                        if (state.game.players[playerUid]
+                                                .jerseyNumber !=
+                                            data.jerseyNumber) {
+                                          if (builder == null) {
+                                            builder = state.game.toBuilder();
+                                          }
+                                          builder.players[playerUid] = builder
+                                              .players[playerUid]
+                                              .rebuild((b) => b
+                                                ..jerseyNumber =
+                                                    data.jerseyNumber);
+                                        }
+                                      }
+                                      if (builder != null) {
+                                        singleGameBloc.add(SingleGameUpdate(
+                                            game: builder.build()));
+                                      }
+                                    }
+                                  }
                                   return StartPeriod(
                                     game: state.game,
                                     season: seasonState.season,
                                     orientation: orientation,
+                                    singleGameBloc: singleGameBloc,
                                   );
                                 },
                               );
@@ -617,7 +657,9 @@ class GameStatsScreen extends StatelessWidget {
                                 (state.gameEvents.length == 0 ||
                                     state.gameEvents.last.type ==
                                         GameEventType.TimeoutStart)) {
-                              return TimeoutEnd(game: state.game);
+                              return TimeoutEnd(
+                                game: state.game,
+                              );
                             }
                             if (orientation == Orientation.landscape) {
                               var undoBloc =
@@ -638,7 +680,8 @@ class GameStatsScreen extends StatelessWidget {
                                         undoBloc,
                                         orientation,
                                         _selectPeriod,
-                                        singleGameBloc),
+                                        singleGameBloc,
+                                        singleTeamBloc),
                                   ),
                                   LayoutBuilder(
                                     builder: (BuildContext context,
@@ -671,7 +714,8 @@ class GameStatsScreen extends StatelessWidget {
                                         undoBloc,
                                         orientation,
                                         _selectPeriod,
-                                        singleGameBloc),
+                                        singleGameBloc,
+                                        singleTeamBloc),
                                   ),
                                   Divider(),
                                   LayoutBuilder(
@@ -744,9 +788,10 @@ class _GameStateSection extends StatelessWidget {
   final Orientation orientation;
   final SelectCallback selectCallback;
   final SingleGameBloc singleGameBloc;
+  final SingleTeamBloc singleTeamBloc;
 
   _GameStateSection(this.undoCubit, this.orientation, this.selectCallback,
-      this.singleGameBloc);
+      this.singleGameBloc, this.singleTeamBloc);
 
   @override
   Widget build(BuildContext context) {
@@ -860,8 +905,7 @@ class _GameStateSection extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               BlocBuilder(
-                                  cubit:
-                                      BlocProvider.of<SingleTeamBloc>(context),
+                                  cubit: singleTeamBloc,
                                   builder: (BuildContext context,
                                       SingleTeamState teamState) {
                                     if (teamState is SingleTeamUninitialized ||

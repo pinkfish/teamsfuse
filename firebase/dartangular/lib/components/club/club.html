@@ -1,10 +1,6 @@
 <div>
-    <template [notNull]="club | async" let-realclub="notNullVal">
-        <club-details *ngIf="realclub != null" [club]="realclub" >
-
-        </club-details>
-        <div *ngIf="realclub == null">Loading...</div>
-    </template>
+  <template [notNull]="club | async" let-realclub="notNullVal">
+    <club-details *ngIf="realclub != null" [club]="realclub"> </club-details>
+    <div *ngIf="realclub == null">Loading...</div>
+  </template>
 </div>
-
-

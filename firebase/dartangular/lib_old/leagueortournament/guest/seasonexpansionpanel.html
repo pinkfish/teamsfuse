@@ -1,8 +1,18 @@
-<material-expansionpanel name="{{season.name}}" [showSaveCancel]="false" style="margin-top: 10px"
-                         (open)="openPanel()" (close)="closePanel()" [expanded]="enabled">
-    <div *deferredContent>
-        <divison-expansionpanel *ngFor="let frog of divisons; trackBy: trackByDivison" [divison]="frog" [season]="season" [league]="league">
-
-        </divison-expansionpanel>
-    </div>
+<material-expansionpanel
+  name="{{season.name}}"
+  [showSaveCancel]="false"
+  style="margin-top: 10px"
+  (open)="openPanel()"
+  (close)="closePanel()"
+  [expanded]="enabled"
+>
+  <div *deferredContent>
+    <divison-expansionpanel
+      *ngFor="let frog of divisons; trackBy: trackByDivison"
+      [divison]="frog"
+      [season]="season"
+      [league]="league"
+    >
+    </divison-expansionpanel>
+  </div>
 </material-expansionpanel>

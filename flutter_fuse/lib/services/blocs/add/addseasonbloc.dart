@@ -58,7 +58,7 @@ class AddSeasonBloc extends Bloc<AddSeasonEvent, AddItemState> {
         for (final pl in event.players) {
           if (playersBloc.state.players.containsKey(pl.playerUid)) {
             usersMap[coordinationBloc.authenticationBloc.currentUser.uid]
-            [pl.playerUid] = true;
+                [pl.playerUid] = true;
           }
         }
 

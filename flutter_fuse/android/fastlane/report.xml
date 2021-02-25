@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
   <testsuite name="fastlane.lanes">
-    
-    
-    
-      
+
+
+
+
       <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000959">
-        
+
       </testcase>
-    
-      
+
+
       <testcase classname="fastlane.lanes" name="1: Switch to android create_icons lane" time="0.000674">
-        
+
       </testcase>
-    
-      
+
+
       <testcase classname="fastlane.lanes" name="2: android_appicon" time="5.69063">
-        
+
       </testcase>
-    
-      
+
+
       <testcase classname="fastlane.lanes" name="3: android_appicon" time="39.769269">
-        
+
       </testcase>
-    
+
   </testsuite>
 </testsuites>

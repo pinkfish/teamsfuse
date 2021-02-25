@@ -15,8 +15,7 @@ typedef SingleClubNewsProviderBuilder = Widget Function(
 /// Create a provider that will insert the singe club bloc into the tree if the
 /// bloc is not current provided or is different than the clubuid.
 ///
-class SingleNewsItemProvider
-    extends SingleBlocProvider<SingleNewsItemBloc> {
+class SingleNewsItemProvider extends SingleBlocProvider<SingleNewsItemBloc> {
   /// Constructor.
   SingleNewsItemProvider(
       {@required String clubUid,

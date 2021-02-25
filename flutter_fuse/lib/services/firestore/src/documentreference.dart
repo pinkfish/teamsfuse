@@ -13,7 +13,6 @@ class MyDocumentReference extends wfs.DocumentReferenceWrapper {
 
   final fs.DocumentReference _doc;
 
-
   @override
   bool operator ==(dynamic o);
 

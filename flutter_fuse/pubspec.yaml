@@ -20,7 +20,7 @@ dependencies:
   firebase_analytics: ^7.0.1
   firebase_performance: ^0.5.0+1
   firebase_crashlytics: ^0.4.0+1
-  firebase_messaging:  ^8.0.0-dev.15
+  firebase_messaging: ^8.0.0-dev.15
   cached_network_image: ^2.5.0
   charts_flutter:
     git:
@@ -59,7 +59,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
 
-  built_value: '>=7.0.0 <8.1.0'
+  built_value: ">=7.0.0 <8.1.0"
   built_collection: ^5.0.0
 
 dependency_overrides:
@@ -85,18 +85,17 @@ dev_dependencies:
   built_value_generator: ^8.0.0
   golden_toolkit: ^0.8.0
 
-
 flutter:
   uses-material-design: true
 
   assets:
-     - assets/images/banner.jpg
-     - assets/images/abstractsport.png
-     - assets/images/defaultavatar.png
-     - assets/images/defaultavatar2.png
-     - assets/timezone/2018c.tzf
-     - assets/sports/Sport.Basketball.png
-     - assets/sports/Sport.Soccer.png
-     - assets/images/calendarbanner.jpg
-     - assets/images/calendarheader.png
-     - assets/images/leagueteam.png
+    - assets/images/banner.jpg
+    - assets/images/abstractsport.png
+    - assets/images/defaultavatar.png
+    - assets/images/defaultavatar2.png
+    - assets/timezone/2018c.tzf
+    - assets/sports/Sport.Basketball.png
+    - assets/sports/Sport.Soccer.png
+    - assets/images/calendarbanner.jpg
+    - assets/images/calendarheader.png
+    - assets/images/leagueteam.png

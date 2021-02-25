@@ -23,7 +23,7 @@ class OfficialResultDialog extends StatelessWidget {
         ),
       ),
       backgroundColor: Colors.grey.shade100,
-      resizeToAvoidBottomInset : true,
+      resizeToAvoidBottomInset: true,
       body: OfficalScoreDetails(_game),
     );
   }

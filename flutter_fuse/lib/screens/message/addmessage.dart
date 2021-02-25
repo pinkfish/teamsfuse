@@ -359,9 +359,8 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
                           state: _currentStep > 2
                               ? StepState.complete
                               : _currentStep == 2
-                              ? StepState.editing
-                              : StepState.disabled,
-
+                                  ? StepState.editing
+                                  : StepState.disabled,
                           content: _buildPlayerPicker(),
                         ),
                       ],

@@ -1,17 +1,17 @@
-@import 'package:angular_components/css/material/material';
-@import 'package:angular_components/material_button/mixins';
+@import "package:angular_components/css/material/material";
+@import "package:angular_components/material_button/mixins";
 
 @mixin colorize($selector, $color) {
-  $raised: $selector + '[raised]';
+  $raised: $selector + "[raised]";
   @include button-background-color($raised, $color);
   @include button-color($raised, $mat-white);
 
-  $not-raised: $selector + ':not([raised])';
+  $not-raised: $selector + ":not([raised])";
   @include button-color($not-raised, $color);
 }
 
 :host {
-  font-family: Roboto,"Helvetica Neue",Arial,Helvetica,sans-serif;
+  font-family: Roboto, "Helvetica Neue", Arial, Helvetica, sans-serif;
 
   //@include colorize("material-button.red", $mat-red);
   //@include colorize("material-button.blue", $mat-blue);
@@ -20,7 +20,7 @@
   //@include colorize("material-fab.blue", $mat-blue);
   @include colorize("material-fab.green", $mat-green);
   //@include icon-button-color("material-button.blue-icon", $mat-blue);
-  @include raised-button('material-button.raised-color-example', $mat-blue);
+  @include raised-button("material-button.raised-color-example", $mat-blue);
   //@include raised-button('.raised-example');
   //@include button-dense-theme('.dense-example');
 }

@@ -1,76 +1,85 @@
 <div style="display: flex">
-    <div *ngIf="homeLeagueTeam != null" style="flex-grow: 1">
-        <img *ngIf="homeTeam != null" src="{{homeTeamUrl}}" width="50" height="50"
-             style="padding-right: 10px; float: right"/>
-        <img *ngIf="homeTeam == null" src="{{homeTeamUrl}}" width="50" height="50"
-             style="padding-right: 10px; float: right"/>
+  <div *ngIf="homeLeagueTeam != null" style="flex-grow: 1">
+    <img
+      *ngIf="homeTeam != null"
+      src="{{homeTeamUrl}}"
+      width="50"
+      height="50"
+      style="padding-right: 10px; float: right"
+    />
+    <img
+      *ngIf="homeTeam == null"
+      src="{{homeTeamUrl}}"
+      width="50"
+      height="50"
+      style="padding-right: 10px; float: right"
+    />
 
-        <br clear="both">
-        <div style="text-align: right">
-            {{homeLeagueTeam.name}}
-            <div class="leagueteamresult {{homeResultClass}}">
-                <div>
-                    {{homeTeamResult.regulationResult.score.ptsFor}}
-                </div>
-                <div *ngIf="homeTeamResult.overtimeResult != null">
-                    Overtime: {{homeTeamResult.overtimeResult.score.ptsFor}}
-                </div>
-                <div *ngIf="homeTeamResult.penaltyResult != null">
-                    Penalty: {{homeTeamResult.penaltyResult.score.ptsFor}}
-                </div>
-            </div>
+    <br clear="both" />
+    <div style="text-align: right">
+      {{homeLeagueTeam.name}}
+      <div class="leagueteamresult {{homeResultClass}}">
+        <div>{{homeTeamResult.regulationResult.score.ptsFor}}</div>
+        <div *ngIf="homeTeamResult.overtimeResult != null">
+          Overtime: {{homeTeamResult.overtimeResult.score.ptsFor}}
         </div>
-
-    </div>
-    <div style="width: 20px">
-    </div>
-    <div *ngIf="homeLeagueTeam == null" style="flex-grow: 1">
-        Loading...
-    </div>
-    <div *ngIf="awayLeagueTeam != null" style="flex-grow: 1">
-        <img *ngIf="awayTeam != null" src="{{awayTeamUrl}}" width="50" height="50"
-             style="padding-right: 10px; float: left"/>
-        <img *ngIf="awayTeam == null" src="{{awayTeamUrl}}" width="50" height="50"
-             style="padding-right: 10px; float: left"/>
-
-        <br clear="both">
-        <div style="text-align: left">
-            {{awayLeagueTeam.name}}
-            <div class="leagueteamresult {{awayResultClass}}">
-                <div>
-                    {{homeTeamResult.regulationResult.score.ptsAgainst}}
-                </div>
-                <div *ngIf="homeTeamResult.overtimeResult != null">
-                    Overtime: {{homeTeamResult.overtimeResult.score.ptsAgainst}}
-                </div>
-                <div *ngIf="homeTeamResult.penaltyResult != null">
-                    Penalty: {{homeTeamResult.penaltyResult.score.ptsAgainst}}
-
-                </div>
-            </div>
+        <div *ngIf="homeTeamResult.penaltyResult != null">
+          Penalty: {{homeTeamResult.penaltyResult.score.ptsFor}}
         </div>
+      </div>
+    </div>
+  </div>
+  <div style="width: 20px"></div>
+  <div *ngIf="homeLeagueTeam == null" style="flex-grow: 1">Loading...</div>
+  <div *ngIf="awayLeagueTeam != null" style="flex-grow: 1">
+    <img
+      *ngIf="awayTeam != null"
+      src="{{awayTeamUrl}}"
+      width="50"
+      height="50"
+      style="padding-right: 10px; float: left"
+    />
+    <img
+      *ngIf="awayTeam == null"
+      src="{{awayTeamUrl}}"
+      width="50"
+      height="50"
+      style="padding-right: 10px; float: left"
+    />
 
+    <br clear="both" />
+    <div style="text-align: left">
+      {{awayLeagueTeam.name}}
+      <div class="leagueteamresult {{awayResultClass}}">
+        <div>{{homeTeamResult.regulationResult.score.ptsAgainst}}</div>
+        <div *ngIf="homeTeamResult.overtimeResult != null">
+          Overtime: {{homeTeamResult.overtimeResult.score.ptsAgainst}}
+        </div>
+        <div *ngIf="homeTeamResult.penaltyResult != null">
+          Penalty: {{homeTeamResult.penaltyResult.score.ptsAgainst}}
+        </div>
+      </div>
     </div>
-    <div *ngIf="awayLeagueTeam == null" style="flex-grow: 1">
-        Loading...
-    </div>
+  </div>
+  <div *ngIf="awayLeagueTeam == null" style="flex-grow: 1">Loading...</div>
 </div>
-<div *ngIf="homeTeamResult.result.toString() == 'GameResult.Win'" style="font-weight: bold">
-    <div *ngIf="homeLeagueTeam != null">
-        {{homeLeagueTeam.name}} won!
-    </div>
-    <div *ngIf="homeLeagueTeam == null">
-        Home team won!
-    </div>
+<div
+  *ngIf="homeTeamResult.result.toString() == 'GameResult.Win'"
+  style="font-weight: bold"
+>
+  <div *ngIf="homeLeagueTeam != null">{{homeLeagueTeam.name}} won!</div>
+  <div *ngIf="homeLeagueTeam == null">Home team won!</div>
 </div>
-<div *ngIf="homeTeamResult.result.toString() == 'GameResult.Loss'" style="font-weight: bold">
-    <div *ngIf="awayLeagueTeam != null">
-        {{awayLeagueTeam.name}} won!
-    </div>
-    <div *ngIf="awayLeagueTeam == null">
-        Away team won!
-    </div>
+<div
+  *ngIf="homeTeamResult.result.toString() == 'GameResult.Loss'"
+  style="font-weight: bold"
+>
+  <div *ngIf="awayLeagueTeam != null">{{awayLeagueTeam.name}} won!</div>
+  <div *ngIf="awayLeagueTeam == null">Away team won!</div>
 </div>
-<div *ngIf="homeTeamResult.result.toString() == 'GameResult.Tie'"  style="font-weight: bold">
-    Tie.
+<div
+  *ngIf="homeTeamResult.result.toString() == 'GameResult.Tie'"
+  style="font-weight: bold"
+>
+  Tie.
 </div>

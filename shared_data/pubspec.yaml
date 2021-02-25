@@ -17,7 +17,6 @@ dependencies:
   fusemodel:
     path: ../fusemodel
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

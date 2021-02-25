@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-@import 'package:angular_components/app_layout/mixins';
+@import "package:angular_components/app_layout/mixins";
 
 :host {
   display: block;
@@ -17,21 +17,20 @@
 }
 
 .leagueshortdesc {
-    display: inline;
-    font-style: italic;
-    font-size: 90%;
+  display: inline;
+  font-style: italic;
+  font-size: 90%;
 }
 
 .leagueimg {
-   width: 60px;
-   margin-left: 20px;
+  width: 60px;
+  margin-left: 20px;
 }
 
 .shadow {
-  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 
 .shadow:hover {
-  box-shadow: 0 .5rem 1rem rgba(0,0,0,.25)!important;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25) !important;
 }
-

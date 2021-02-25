@@ -16,12 +16,12 @@ const params = {
   authUri: serviceAccount.auth_uri,
   tokenUri: serviceAccount.token_uri,
   authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
-  clientC509CertUrl: serviceAccount.client_x509_cert_url
+  clientC509CertUrl: serviceAccount.client_x509_cert_url,
 };
 
 admin.initializeApp({
   credential: admin.credential.cert(params),
-  databaseURL: "https://teamsfuse.firebaseio.com"
+  databaseURL: "https://teamsfuse.firebaseio.com",
 });
 
 const db = admin.firestore();
@@ -122,29 +122,29 @@ const seasonsUid = [
     time: moment.tz(
       { years: 2015, months: 5, days: 10, hours: 0, minutes: 0 },
       "America/Los_Angeles"
-    )
+    ),
   },
   {
     uid: "-LJKC2rPUIoI3PFV53cM",
     time: moment.tz(
       { years: 2018, months: 5, days: 10, hours: 0, minutes: 0 },
       "America/Los_Angeles"
-    )
+    ),
   },
   {
     uid: "5CkFxhouoK37ZFIqerQ4",
     time: moment.tz(
       { years: 2019, months: 5, days: 10, hours: 0, minutes: 0 },
       "America/Los_Angeles"
-    )
+    ),
   },
   {
     uid: "3GHM8BfQEwmJe3qjeLe9",
     time: moment.tz(
       { years: 2020, months: 5, days: 10, hours: 0, minutes: 0 },
       "America/Los_Angeles"
-    )
-  }
+    ),
+  },
 ];
 
 export function generateUUID() {
@@ -197,9 +197,9 @@ function getGameResult(input: string): GameResultDetails {
         currentPeriodStartInternal: 0,
         currentOffsetInternal: 0,
         defaultPeriodDurationInternal: 0,
-        timeCountUp: true
+        timeCountUp: true,
       },
-      scores: {}
+      scores: {},
     };
   }
   // Do Stuff!
@@ -215,7 +215,7 @@ function getGameResult(input: string): GameResultDetails {
       currentPeriodStartInternal: 0,
       currentOffsetInternal: 0,
       defaultPeriodDurationInternal: 0,
-      timeCountUp: true
+      timeCountUp: true,
     },
     currentPeriod: "Final",
     scores: {
@@ -224,10 +224,10 @@ function getGameResult(input: string): GameResultDetails {
         score: {
           ptsFor: +nums[0],
           ptsAgainst: +nums[1],
-          intermediate: false
-        }
-      }
-    }
+          intermediate: false,
+        },
+      },
+    },
   };
 }
 
@@ -235,7 +235,7 @@ function getGameOfficialResult(input: string): GameOfficialResult {
   if (input === "") {
     return {
       result: "Unknown",
-      scores: {}
+      scores: {},
     };
   }
   // Do Stuff!
@@ -251,10 +251,10 @@ function getGameOfficialResult(input: string): GameOfficialResult {
         score: {
           ptsFor: +nums[0],
           ptsAgainst: +nums[1],
-          intermediate: false
-        }
-      }
-    }
+          intermediate: false,
+        },
+      },
+    },
   };
 }
 
@@ -267,7 +267,7 @@ async function getGamePlace(name: string, address: string): Promise<GamePlace> {
       long: 0,
       address: "",
       name: "Unknown",
-      notes: ""
+      notes: "",
     };
   }
   try {
@@ -277,8 +277,8 @@ async function getGamePlace(name: string, address: string): Promise<GamePlace> {
         input: address,
         inputtype: PlaceInputType.textQuery,
         fields: ["place_id", "formatted_address", "geometry/location"],
-        key: "AIzaSyBpcE6m0ydl6S5ilZ8XwML7lZ0sUmYz8E8"
-      }
+        key: "AIzaSyBpcE6m0ydl6S5ilZ8XwML7lZ0sUmYz8E8",
+      },
     });
 
     const latSt = result.data.candidates[0].geometry!.location.lat;
@@ -293,7 +293,7 @@ async function getGamePlace(name: string, address: string): Promise<GamePlace> {
       address: address,
       name: name,
       notes: "",
-      placeId: result.data.candidates[0].place_id!
+      placeId: result.data.candidates[0].place_id!,
     };
   } catch (e) {
     console.log("Error " + e);
@@ -344,10 +344,7 @@ async function loadOpponents(): Promise<void> {
 
   for (const index in snap.docs) {
     const doc = snap.docs[index];
-    const lowerName: string = doc
-      .data()
-      .name!.toLowerCase()
-      .replace(/\s/g, "");
+    const lowerName: string = doc.data().name!.toLowerCase().replace(/\s/g, "");
     _opponentUidLookup.set(lowerName, doc.id);
   }
   console.log(_opponentUidLookup);
@@ -381,7 +378,7 @@ function getArrivalTime(
       hour: hour,
       minute: minute,
       second: 0,
-      millisecond: 0
+      millisecond: 0,
     },
     "America/Los_Angeles"
   );
@@ -463,7 +460,7 @@ async function updateGameData(): Promise<BothBits[]> {
       uid: sharedDoc.id,
       endTime: endAt.valueOf(),
       homeTeam: teamUid,
-      officalResult: gameOfficialResult
+      officalResult: gameOfficialResult,
     };
     const gameEntry: GameEntry = {
       uid: gameDoc.id,
@@ -476,7 +473,7 @@ async function updateGameData(): Promise<BothBits[]> {
       trackAttendance: true,
       uniform: "blue",
       result: gameResult,
-      sharedDataUid: sharedDoc.id
+      sharedDataUid: sharedDoc.id,
     };
     //console.log(shared);
     //console.log(shared.officalResult.scores);

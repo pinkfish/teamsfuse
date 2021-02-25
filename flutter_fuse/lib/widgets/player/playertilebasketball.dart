@@ -3,12 +3,13 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fuse/widgets/blocs/singleteamseasonplayerprovider.dart';
-import '../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../../services/messages.dart';
+import '../blocs/singlegameprovider.dart';
+import '../blocs/singleplayerprovider.dart';
+import '../blocs/singleseasonprovider.dart';
 
 typedef void PlayerCallbackFunc(String playerUid);
 typedef Widget PlayerExtraFunc(String playerUid);
@@ -19,6 +20,7 @@ typedef Widget PlayerExtraFunc(String playerUid);
 class PlayerTileBasketball extends StatelessWidget {
   final String playerUid;
   final String seasonUid;
+  final String gameUid;
   final PlayerCallbackFunc onTap;
   final bool editButton;
   final Color color;
@@ -31,6 +33,7 @@ class PlayerTileBasketball extends StatelessWidget {
 
   PlayerTileBasketball(
       {this.playerUid,
+      this.gameUid,
       this.seasonUid,
       this.onTap,
       this.editButton = true,
@@ -41,114 +44,131 @@ class PlayerTileBasketball extends StatelessWidget {
       this.extra,
       this.compactDisplay = false,
       this.scale = 1.0})
-      : assert((playerUid != null && seasonUid != null));
+      : assert((playerUid != null && (gameUid != null || seasonUid != null)));
 
   @override
   Widget build(BuildContext context) {
-    return _innerBuild(context);
+    if (gameUid != null) {
+      return SingleGameProvider(
+        gameUid: gameUid,
+        builder: (context, singleGameBloc) => BlocBuilder(
+            cubit: singleGameBloc,
+            builder: (context, gameState) {
+              var jerseyNumber = "U";
+              if (gameState is SingleGameLoaded) {
+                var player = gameState.game.getPlayerSummary(playerUid);
+                jerseyNumber = player?.jerseyNumber ?? "U";
+              }
+              return _buildPlayer(context, jerseyNumber);
+            }),
+      );
+    } else {
+      return SingleSeasonProvider(
+        seasonUid: seasonUid,
+        builder: (context, singleSeasonBloc) => BlocBuilder(
+            cubit: singleSeasonBloc,
+            builder: (context, seasonState) {
+              var jerseyNumber = "U";
+              if (seasonState is SingleSeasonLoaded) {
+                var player = seasonState.season.playersData[playerUid];
+                jerseyNumber = player?.jerseyNumber ?? "U";
+              }
+              return _buildPlayer(context, jerseyNumber);
+            }),
+      );
+    }
   }
 
-  Widget _innerBuild(BuildContext context) {
-    return SingleTeamSeasonPlayerProvider(
-      seasonUid: seasonUid,
-      playerUid: playerUid,
-      builder: (context, seasonPlayerBloc) => BlocBuilder(
-        cubit: seasonPlayerBloc,
-        builder: (context, seasonPlayerState) => BlocProvider(
-          create: (BuildContext context) => SinglePlayerBloc(
-              playerUid: this.playerUid,
-              db: RepositoryProvider.of<DatabaseUpdateModel>(context)),
-          child: Builder(
-            builder: (BuildContext context) {
-              return AnimatedSwitcher(
-                duration: Duration(milliseconds: 500),
-                child: BlocBuilder(
-                  cubit: BlocProvider.of<SinglePlayerBloc>(context),
-                  builder: (BuildContext context, SinglePlayerState state) {
-                    if (state is SinglePlayerDeleted) {
-                      if (compactDisplay) {
-                        return Text(Messages.of(context).unknown);
-                      }
-                      return Card(
-                        color: color,
-                        shape: shape,
-                        child: ListTile(
-                          title: Text(Messages.of(context).unknown),
-                          subtitle: summary != null
-                              ? Text(
-                                  Messages.of(context).seasonSummary(summary),
-                                )
-                              : null,
-                          leading: Stack(
-                            children: <Widget>[
-                              Icon(MdiIcons.tshirtCrewOutline),
-                              Text(""),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                    if (state is SinglePlayerUninitialized) {
-                      if (compactDisplay) {
-                        return Text(Messages.of(context).loading);
-                      }
-                      return Card(
-                        color: color,
-                        shape: shape,
-                        child: ListTile(
-                          title: Text(Messages.of(context).loading,
-                              style: Theme.of(context).textTheme.caption),
-                          subtitle: summary != null
-                              ? Text(
-                                  Messages.of(context).seasonSummary(summary),
-                                )
-                              : null,
-                          leading: Stack(
-                            children: <Widget>[
-                              Icon(MdiIcons.tshirtCrewOutline),
-                              Text(""),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                    if (state is SinglePlayerLoaded) {
-                      return _loadedData(context,
-                          seasonPlayerState.seasonPlayer, state.player);
-                    }
-                    return Card(
-                      color: color,
-                      shape: shape,
-                      child: ListTile(
-                        title: Text(Messages.of(context).unknown),
-                        subtitle: summary != null
-                            ? Text(
-                                Messages.of(context).seasonSummary(summary),
-                              )
-                            : null,
-                        leading: Stack(
-                          children: <Widget>[
-                            Icon(MdiIcons.tshirtCrewOutline),
-                            Text(""),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+  Widget _buildPlayer(BuildContext context, String jerseyNumber) {
+    return SinglePlayerProvider(
+      playerUid: this.playerUid,
+      builder: (context, singlePlayerBloc) => AnimatedSwitcher(
+        duration: Duration(milliseconds: 500),
+        child: BlocBuilder(
+          cubit: singlePlayerBloc,
+          builder: (context, singlePlayerState) {
+            if (singlePlayerState is SinglePlayerDeleted) {
+              if (compactDisplay) {
+                return Text(Messages.of(context).unknown);
+              }
+              return Card(
+                color: color,
+                shape: shape,
+                child: ListTile(
+                  title: Text(Messages.of(context).unknown),
+                  subtitle: summary != null
+                      ? Text(
+                          Messages.of(context).seasonSummary(summary),
+                        )
+                      : null,
+                  leading: Stack(
+                    children: <Widget>[
+                      Icon(MdiIcons.tshirtCrewOutline),
+                      Text(""),
+                    ],
+                  ),
                 ),
               );
-            },
-          ),
+            }
+            if (singlePlayerState is SinglePlayerUninitialized) {
+              if (compactDisplay) {
+                return Text(Messages.of(context).loading);
+              }
+              return Card(
+                color: color,
+                shape: shape,
+                child: ListTile(
+                  title: Text(Messages.of(context).loading,
+                      style: Theme.of(context).textTheme.caption),
+                  subtitle: summary != null
+                      ? Text(
+                          Messages.of(context).seasonSummary(summary),
+                        )
+                      : null,
+                  leading: Stack(
+                    children: <Widget>[
+                      Icon(MdiIcons.tshirtCrewOutline),
+                      Text(""),
+                    ],
+                  ),
+                ),
+              );
+            }
+            if (singlePlayerState is SinglePlayerLoaded) {
+              print(
+                  "Loaded ${singlePlayerState.player.playerType} ${singlePlayerBloc.playerUid}");
+              return _loadedData(
+                  context, singlePlayerState.player, jerseyNumber);
+            }
+            return Card(
+              color: color,
+              shape: shape,
+              child: ListTile(
+                title: Text(Messages.of(context).unknown),
+                subtitle: summary != null
+                    ? Text(
+                        Messages.of(context).seasonSummary(summary),
+                      )
+                    : null,
+                leading: Stack(
+                  children: <Widget>[
+                    Icon(MdiIcons.tshirtCrewOutline),
+                    Text(""),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
   Widget _loadedData(
-      BuildContext context, SeasonPlayer player, Player loadedPlayer) {
+      BuildContext context, Player loadedPlayer, String jerseyNumber) {
     if (compactDisplay) {
       return GestureDetector(
-        onTap: () => onTap != null ? onTap(player.playerUid) : null,
+        onTap: () => onTap != null ? onTap(loadedPlayer.uid) : null,
         child: Container(
           decoration: BoxDecoration(
             color: color,
@@ -161,7 +181,7 @@ class PlayerTileBasketball extends StatelessWidget {
                 child: Container(
                   child: Center(
                     child: Text(
-                      player.jerseyNumber,
+                      jerseyNumber,
                       style: Theme.of(context).textTheme.caption.copyWith(
                             color: Theme.of(context).accentColor,
                             fontWeight: FontWeight.bold,
@@ -181,7 +201,7 @@ class PlayerTileBasketball extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               (this.extra != null
-                  ? extra(player.playerUid)
+                  ? extra(loadedPlayer.uid)
                   : SizedBox(width: 0)),
             ],
           ),
@@ -198,7 +218,7 @@ class PlayerTileBasketball extends StatelessWidget {
               ? VisualDensity.compact
               : VisualDensity.standard,
           contentPadding: box.maxHeight < 40.0 ? EdgeInsets.all(1.0) : null,
-          onTap: onTap != null ? () => onTap(player.playerUid) : null,
+          onTap: onTap != null ? () => onTap(loadedPlayer.uid) : null,
           title: Text(
             loadedPlayer.name,
             style: Theme.of(context).textTheme.headline6.copyWith(
@@ -214,7 +234,7 @@ class PlayerTileBasketball extends StatelessWidget {
             child: Container(
               child: Center(
                 child: Text(
-                  player.jerseyNumber ?? "U",
+                  jerseyNumber ?? "U",
                   style: Theme.of(context).textTheme.caption.copyWith(
                         color: contentColor ?? Theme.of(context).accentColor,
                         fontWeight: FontWeight.bold,
@@ -238,7 +258,7 @@ class PlayerTileBasketball extends StatelessWidget {
               ? IconButton(
                   icon: Icon(Icons.edit),
                   onPressed: () => Navigator.pushNamed(
-                      context, "/Player/Edit/" + player.playerUid),
+                      context, "/Player/Edit/" + loadedPlayer.uid),
                 )
               : null,
         );

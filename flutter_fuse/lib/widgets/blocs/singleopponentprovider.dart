@@ -22,14 +22,14 @@ class SingleOpponentProvider extends SingleBlocProvider<SingleOpponentBloc> {
       @required String teamUid,
       @required SingleOpponentProviderBuilder builder})
       : super(
-            keyUid:  opponentUid,
+            keyUid: opponentUid,
             creator: (context, uid) => _createBloc(context, teamUid, uid),
-            builder: builder, prefix: "opponent");
+            builder: builder,
+            prefix: "opponent");
 
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleOpponentBloc && bloc.opponentUid == keyUid);
   }
-
 
   static SingleOpponentBloc _createBloc(
       BuildContext context, String teamUid, String uid) {

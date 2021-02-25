@@ -1,40 +1,45 @@
 # Bild flutter_fuse for android in the cloud.
 
 steps:
-  - name: 'ubuntu'
-    args: ['bash', '-c', 'date -u +%Y%m%dT%H%M_$SHORT_SHA > _TAG']
+  - name: "ubuntu"
+    args: ["bash", "-c", "date -u +%Y%m%dT%H%M_$SHORT_SHA > _TAG"]
 
-  - name: 'gcr.io/cloud-builders/gcloud'
-    dir: 'flutter_fuse/android'
+  - name: "gcr.io/cloud-builders/gcloud"
+    dir: "flutter_fuse/android"
     args:
-    - kms
-    - decrypt
-    - --ciphertext-file=key_jks.enc
-    - --plaintext-file=key.jks
-    - --location=global
-    - --keyring=teamsfuse
-    - --key=android-builder
+      - kms
+      - decrypt
+      - --ciphertext-file=key_jks.enc
+      - --plaintext-file=key.jks
+      - --location=global
+      - --keyring=teamsfuse
+      - --key=android-builder
 
-  - name: 'gcr.io/teamsfuse/flutter'
-    dir: 'flutter_fuse'
-    args: ['packages', 'get']
+  - name: "gcr.io/teamsfuse/flutter"
+    dir: "flutter_fuse"
+    args: ["packages", "get"]
 
-  - name: 'gcr.io/teamsfuse/flutter'
-    dir: 'fusemodel'
-    args: ['pub', 'run', 'build_runner', 'build']
+  - name: "gcr.io/teamsfuse/flutter"
+    dir: "fusemodel"
+    args: ["pub", "run", "build_runner", "build"]
 
-  - name: 'gcr.io/teamsfuse/flutter'
-    dir: 'flutter_fuse'
-    args: ['build', 'apk']
+  - name: "gcr.io/teamsfuse/flutter"
+    dir: "flutter_fuse"
+    args: ["build", "apk"]
 
   # push apk into gcs
-  - name: 'gcr.io/cloud-builders/gsutil'
-    dir: 'flutter_fuse'
-    id: 'build'
-    args: ['cp', 'build/app/outputs/apk/release/app-release.apk', 'gs://flutter_fuse_release/flutter_fuse_$(cat _TAG).apk']
+  - name: "gcr.io/cloud-builders/gsutil"
+    dir: "flutter_fuse"
+    id: "build"
+    args:
+      [
+        "cp",
+        "build/app/outputs/apk/release/app-release.apk",
+        "gs://flutter_fuse_release/flutter_fuse_$(cat _TAG).apk",
+      ]
 
   # deploy with fastlane
-  - name: 'gcr.io/teamsfuse/fastlane'
-    args: ['beta']
+  - name: "gcr.io/teamsfuse/fastlane"
+    args: ["beta"]
     waitFor:
       - build

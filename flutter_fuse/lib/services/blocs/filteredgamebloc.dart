@@ -210,7 +210,8 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
     // Our internal set of stuff updated.
     if (event is FilteredGameEventUpdateDates) {
       gameBloc.add(GameEventSetBoundaries(
-        start: event.start, end: event.end,
+        start: event.start,
+        end: event.end,
       ));
       yield FilteredGameLoaded(
           games: _filterGames(gameBloc.state, state.filter),

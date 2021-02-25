@@ -25,4 +25,3 @@ component specific styling so you can easily override style values as needed.
       'my_component.scss.css'])
 class MyComponent {}
 ```
-

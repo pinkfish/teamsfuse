@@ -16,9 +16,13 @@ class StartPeriod extends StatefulWidget {
   final Game game;
   final Season season;
   final Orientation orientation;
+  final SingleGameBloc singleGameBloc;
 
   StartPeriod(
-      {@required this.game, @required this.season, @required this.orientation});
+      {@required this.game,
+      @required this.season,
+      @required this.orientation,
+      this.singleGameBloc});
 
   @override
   State<StatefulWidget> createState() {
@@ -42,7 +46,7 @@ class _StartPeriodState extends State<StartPeriod> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           AppBar(
             title: GameTitle(widget.game, null),
@@ -88,7 +92,6 @@ class _StartPeriodState extends State<StartPeriod> {
                 ),
                 onPressed: () {
                   // ignore: close_sinks
-                  var bloc = BlocProvider.of<SingleGameBloc>(context);
                   var undoBloc = BlocProvider.of<GameEventUndoStack>(context);
                   undoBloc.addEvent(
                     GameEvent((b) => b
@@ -97,25 +100,24 @@ class _StartPeriodState extends State<StartPeriod> {
                       ..period = period.toBuilder()
                       ..timestamp = DateTime.now().toUtc()
                       ..opponent = false
-                      ..eventTimeline = bloc.state.game.currentGameTime
+                      ..eventTimeline = widget.game.currentGameTime
                       ..points = 0
                       ..type = GameEventType.PeriodStart),
                     false,
                   );
                   // Update the game to start the clock.
-                  var players = bloc.state.game.players.map((u, d) => MapEntry(
+                  var players = widget.game.players.map((u, d) => MapEntry(
                       u,
                       d.rebuild((b) =>
                           b..currentlyPlaying = selectedPlayers.contains(u))));
                   // If there is no opponent, we add one.
-                  var opponents = bloc.state.game.opponents.map((u, d) =>
-                      MapEntry(
-                          u,
-                          d.rebuild((b) => b
-                            ..currentlyPlaying = selectedPlayers.contains(u))));
-                  bloc.add(
+                  var opponents = widget.game.opponents.map((u, d) => MapEntry(
+                      u,
+                      d.rebuild((b) =>
+                          b..currentlyPlaying = selectedPlayers.contains(u))));
+                  widget.singleGameBloc.add(
                     SingleGameUpdate(
-                      game: bloc.state.game.rebuild((b) => b
+                      game: widget.game.rebuild((b) => b
                         ..runningFrom = DateTime.now().toUtc()
                         ..currentPeriod = period.toBuilder()
                         ..players = players.toBuilder()

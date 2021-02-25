@@ -49,7 +49,7 @@ class PublicClubTeams extends StatelessWidget {
     for (var team in myTeam) {
       teamWidgets.add(
         SizedBox(
-            width: double.infinity,
+          width: double.infinity,
           child: PublicTeamTile(
             team.uid,
             onTap: onTap != null ? () => onTap(team) : null,

@@ -30,7 +30,6 @@ class SingleSharedGameProvider
     return (bloc is SingleSharedGameBloc && bloc.sharedGameUid == keyUid);
   }
 
-
   static SingleSharedGameBloc _createBloc(BuildContext context, String uid) {
     return SingleSharedGameBloc(
       db: RepositoryProvider.of<DatabaseUpdateModel>(context),

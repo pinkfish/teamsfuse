@@ -125,7 +125,7 @@ abstract class GameResultDetails
   static void _initializeBuilder(GameResultDetailsBuilder b) => b
     ..currentPeriod = GamePeriod.regulation1.toBuilder()
     ..inProgress = GameInProgress.NotStarted
-  ..divisons = GameDivisionsType.Quarters;
+    ..divisons = GameDivisionsType.Quarters;
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(GameResultDetails.serializer, this);

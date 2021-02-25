@@ -8,7 +8,6 @@ import '../../services/messages.dart';
 /// Shows a nifty deleted message for bits of the app.
 ///
 class DeletedWidget extends StatelessWidget {
-
   /// Creates the deleted widget with stuff.
   DeletedWidget();
 

@@ -18,8 +18,10 @@ part 'club.g.dart';
 abstract class Club implements Built<Club, ClubBuilder> {
   /// The uid for the club.
   String get uid;
+
   /// THe name of the club.
   String get name;
+
   /// The photoUrl to download the main photo for the club.
   @nullable
   String get photoUrl;

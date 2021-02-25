@@ -83,7 +83,7 @@ class GameEditFormState extends State<GameEditForm> with EditFormBase {
     if (_formKey.currentState == null) {
       return false;
     }
-    if ( _formKey.currentState.validate()) {
+    if (_formKey.currentState.validate()) {
       return true;
     }
     _autovalidate = true;

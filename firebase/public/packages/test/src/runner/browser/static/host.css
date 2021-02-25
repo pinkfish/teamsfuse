@@ -34,10 +34,14 @@ iframe {
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.paused #right-flank, .paused #right-ear, .paused #right-paw,
-.paused #left-flank,  .paused #left-ear,  .paused #left-paw {
+.paused #right-flank,
+.paused #right-ear,
+.paused #right-paw,
+.paused #left-flank,
+.paused #left-ear,
+.paused #left-paw {
   -webkit-animation-play-state: paused;
-          animation-play-state: paused;
+  animation-play-state: paused;
 }
 
 .debug body {
@@ -68,249 +72,257 @@ svg {
 }
 
 #right-flank {
-  fill: #0074C1;
-  stroke-color: #0074C1;
+  fill: #0074c1;
+  stroke-color: #0074c1;
   -webkit-animation: right-flank 8s ease infinite alternate;
-          animation: right-flank 8s ease infinite alternate;
+  animation: right-flank 8s ease infinite alternate;
 }
 
 #right-ear {
-  fill: #00B5AB;
-  stroke-color: #00B5AB;
+  fill: #00b5ab;
+  stroke-color: #00b5ab;
   -webkit-animation: right-ear 8s ease-in infinite alternate;
-          animation: right-ear 8s ease-in infinite alternate;
+  animation: right-ear 8s ease-in infinite alternate;
 }
 
 #right-paw {
-  fill: #00A6E4;
-  stroke-color: #00A6E4;
+  fill: #00a6e4;
+  stroke-color: #00a6e4;
   -webkit-animation: right-paw 8s ease-out infinite alternate;
-          animation: right-paw 8s ease-out infinite alternate;
+  animation: right-paw 8s ease-out infinite alternate;
 }
 
 #left-flank {
-  fill: #00B5AB;
-  stroke-color: #00B5AB;
+  fill: #00b5ab;
+  stroke-color: #00b5ab;
   -webkit-animation: left-flank 8s ease-in-out infinite alternate;
-          animation: left-flank 8s ease-in-out infinite alternate;
+  animation: left-flank 8s ease-in-out infinite alternate;
 }
 
 #left-ear {
-  fill: #0074C1;
-  stroke-color: #0074C1;
+  fill: #0074c1;
+  stroke-color: #0074c1;
   -webkit-animation: left-ear 8s linear infinite alternate;
-          animation: left-ear 8s linear infinite alternate;
+  animation: left-ear 8s linear infinite alternate;
 }
 
 #left-paw {
-  fill: #41C1BC;
-  stroke-color: #41C1BC;
+  fill: #41c1bc;
+  stroke-color: #41c1bc;
   -webkit-animation: left-paw 8s ease infinite alternate;
-          animation: left-paw 8s ease infinite alternate;
+  animation: left-paw 8s ease infinite alternate;
 }
 
 @-webkit-keyframes left-ear {
   20% {
     -webkit-transform: translate(250px, 150px) rotateY(180deg) scale(0.6);
-            transform: translate(250px, 150px) rotateY(180deg) scale(0.6);
-    fill: #00A6E4;
+    transform: translate(250px, 150px) rotateY(180deg) scale(0.6);
+    fill: #00a6e4;
   }
   50% {
     -webkit-transform: translate(100px, 75px) rotateY(80deg) scale(1.1);
-            transform: translate(100px, 75px) rotateY(80deg) scale(1.1);
-    fill: #41C1BC;
+    transform: translate(100px, 75px) rotateY(80deg) scale(1.1);
+    fill: #41c1bc;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #0074C1;
+    transform: translate(0px, 0px) scale(1);
+    fill: #0074c1;
   }
 }
 
 @keyframes left-ear {
   20% {
     -webkit-transform: translate(250px, 150px) rotateY(180deg) scale(0.6);
-            transform: translate(250px, 150px) rotateY(180deg) scale(0.6);
-    fill: #00A6E4;
+    transform: translate(250px, 150px) rotateY(180deg) scale(0.6);
+    fill: #00a6e4;
   }
   50% {
     -webkit-transform: translate(100px, 75px) rotateY(80deg) scale(1.1);
-            transform: translate(100px, 75px) rotateY(80deg) scale(1.1);
-    fill: #41C1BC;
+    transform: translate(100px, 75px) rotateY(80deg) scale(1.1);
+    fill: #41c1bc;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #0074C1;
+    transform: translate(0px, 0px) scale(1);
+    fill: #0074c1;
   }
 }
 @-webkit-keyframes right-ear {
   20% {
     -webkit-transform: translate(200px, 250px) rotateX(180deg) scale(0.6);
-            transform: translate(200px, 250px) rotateX(180deg) scale(0.6);
-    fill: #41C1BC;
+    transform: translate(200px, 250px) rotateX(180deg) scale(0.6);
+    fill: #41c1bc;
   }
   50% {
     -webkit-transform: translate(75px, 100px) rotateX(80deg) scale(1.1);
-            transform: translate(75px, 100px) rotateX(80deg) scale(1.1);
-    fill: #00A6E4;
+    transform: translate(75px, 100px) rotateX(80deg) scale(1.1);
+    fill: #00a6e4;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #00B5AB;
+    transform: translate(0px, 0px) scale(1);
+    fill: #00b5ab;
   }
 }
 @keyframes right-ear {
   20% {
     -webkit-transform: translate(200px, 250px) rotateX(180deg) scale(0.6);
-            transform: translate(200px, 250px) rotateX(180deg) scale(0.6);
-    fill: #41C1BC;
+    transform: translate(200px, 250px) rotateX(180deg) scale(0.6);
+    fill: #41c1bc;
   }
   50% {
     -webkit-transform: translate(75px, 100px) rotateX(80deg) scale(1.1);
-            transform: translate(75px, 100px) rotateX(80deg) scale(1.1);
-    fill: #00A6E4;
+    transform: translate(75px, 100px) rotateX(80deg) scale(1.1);
+    fill: #00a6e4;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #00B5AB;
+    transform: translate(0px, 0px) scale(1);
+    fill: #00b5ab;
   }
 }
 @-webkit-keyframes left-paw {
   20% {
-    -webkit-transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, 60deg) scale(0.6);
-            transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, 60deg) scale(0.6);
-    fill: #00B5AB;
+    -webkit-transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, 60deg)
+      scale(0.6);
+    transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, 60deg) scale(0.6);
+    fill: #00b5ab;
   }
   50% {
-    -webkit-transform: translate(150px, 250px) rotate3d(-1, 0, 0.5, 90deg) scale(0.6);
-            transform: translate(150px, 250px) rotate3d(-1, 0, 0.5, 90deg) scale(0.6);
-    fill: #00B5AB;
+    -webkit-transform: translate(150px, 250px) rotate3d(-1, 0, 0.5, 90deg)
+      scale(0.6);
+    transform: translate(150px, 250px) rotate3d(-1, 0, 0.5, 90deg) scale(0.6);
+    fill: #00b5ab;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #41C1BC;
+    transform: translate(0px, 0px) scale(1);
+    fill: #41c1bc;
   }
 }
 @keyframes left-paw {
   20% {
-    -webkit-transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, 60deg) scale(0.6);
-            transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, 60deg) scale(0.6);
-    fill: #00B5AB;
+    -webkit-transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, 60deg)
+      scale(0.6);
+    transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, 60deg) scale(0.6);
+    fill: #00b5ab;
   }
   50% {
-    -webkit-transform: translate(150px, 250px) rotate3d(-1, 0, 0.5, 90deg) scale(0.6);
-            transform: translate(150px, 250px) rotate3d(-1, 0, 0.5, 90deg) scale(0.6);
-    fill: #00B5AB;
+    -webkit-transform: translate(150px, 250px) rotate3d(-1, 0, 0.5, 90deg)
+      scale(0.6);
+    transform: translate(150px, 250px) rotate3d(-1, 0, 0.5, 90deg) scale(0.6);
+    fill: #00b5ab;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #41C1BC;
+    transform: translate(0px, 0px) scale(1);
+    fill: #41c1bc;
   }
 }
 @-webkit-keyframes right-paw {
   20% {
-    -webkit-transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, -60deg) scale(0.6);
-            transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, -60deg) scale(0.6);
-    fill: #41C1BC;
+    -webkit-transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, -60deg)
+      scale(0.6);
+    transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, -60deg) scale(0.6);
+    fill: #41c1bc;
   }
   50% {
-    -webkit-transform: translate(100px, 250px) rotate3d(-1, 0, 0.5, -90deg) scale(0.6);
-            transform: translate(100px, 250px) rotate3d(-1, 0, 0.5, -90deg) scale(0.6);
-    fill: #41C1BC;
+    -webkit-transform: translate(100px, 250px) rotate3d(-1, 0, 0.5, -90deg)
+      scale(0.6);
+    transform: translate(100px, 250px) rotate3d(-1, 0, 0.5, -90deg) scale(0.6);
+    fill: #41c1bc;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #00A6E4;
+    transform: translate(0px, 0px) scale(1);
+    fill: #00a6e4;
   }
 }
 @keyframes right-paw {
   20% {
-    -webkit-transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, -60deg) scale(0.6);
-            transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, -60deg) scale(0.6);
-    fill: #41C1BC;
+    -webkit-transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, -60deg)
+      scale(0.6);
+    transform: translate(200px, 200px) rotate3d(-1, 0, 0.5, -60deg) scale(0.6);
+    fill: #41c1bc;
   }
   50% {
-    -webkit-transform: translate(100px, 250px) rotate3d(-1, 0, 0.5, -90deg) scale(0.6);
-            transform: translate(100px, 250px) rotate3d(-1, 0, 0.5, -90deg) scale(0.6);
-    fill: #41C1BC;
+    -webkit-transform: translate(100px, 250px) rotate3d(-1, 0, 0.5, -90deg)
+      scale(0.6);
+    transform: translate(100px, 250px) rotate3d(-1, 0, 0.5, -90deg) scale(0.6);
+    fill: #41c1bc;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #00A6E4;
+    transform: translate(0px, 0px) scale(1);
+    fill: #00a6e4;
   }
 }
 @-webkit-keyframes left-flank {
   20% {
     -webkit-transform: translate(0px, 100px) scale(0.6);
-            transform: translate(0px, 100px) scale(0.6);
-    fill: #00A6E4;
+    transform: translate(0px, 100px) scale(0.6);
+    fill: #00a6e4;
   }
   50% {
     -webkit-transform: translate(0px, 100px) scale(0.4);
-            transform: translate(0px, 100px) scale(0.4);
-    fill: #00A6E4;
+    transform: translate(0px, 100px) scale(0.4);
+    fill: #00a6e4;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #00B5AB;
+    transform: translate(0px, 0px) scale(1);
+    fill: #00b5ab;
   }
 }
 @keyframes left-flank {
   20% {
     -webkit-transform: translate(0px, 100px) scale(0.6);
-            transform: translate(0px, 100px) scale(0.6);
-    fill: #00A6E4;
+    transform: translate(0px, 100px) scale(0.6);
+    fill: #00a6e4;
   }
   50% {
     -webkit-transform: translate(0px, 100px) scale(0.4);
-            transform: translate(0px, 100px) scale(0.4);
-    fill: #00A6E4;
+    transform: translate(0px, 100px) scale(0.4);
+    fill: #00a6e4;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #00B5AB;
+    transform: translate(0px, 0px) scale(1);
+    fill: #00b5ab;
   }
 }
 @-webkit-keyframes right-flank {
   20% {
     -webkit-transform: translate(100px, -25px) scale(0.6);
-            transform: translate(100px, -25px) scale(0.6);
-    fill: #41C1BC;
+    transform: translate(100px, -25px) scale(0.6);
+    fill: #41c1bc;
   }
   50% {
     -webkit-transform: translate(110px, 0px) scale(0.4);
-            transform: translate(110px, 0px) scale(0.4);
-    fill: #00A6E4;
+    transform: translate(110px, 0px) scale(0.4);
+    fill: #00a6e4;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #0074C1;
+    transform: translate(0px, 0px) scale(1);
+    fill: #0074c1;
   }
 }
 @keyframes right-flank {
   20% {
     -webkit-transform: translate(100px, -25px) scale(0.6);
-            transform: translate(100px, -25px) scale(0.6);
-    fill: #41C1BC;
+    transform: translate(100px, -25px) scale(0.6);
+    fill: #41c1bc;
   }
   50% {
     -webkit-transform: translate(110px, 0px) scale(0.4);
-            transform: translate(110px, 0px) scale(0.4);
-    fill: #00A6E4;
+    transform: translate(110px, 0px) scale(0.4);
+    fill: #00a6e4;
   }
   80% {
     -webkit-transform: translate(0px, 0px) scale(1);
-            transform: translate(0px, 0px) scale(1);
-    fill: #0074C1;
+    transform: translate(0px, 0px) scale(1);
+    fill: #0074c1;
   }
 }

@@ -90,7 +90,6 @@ class EventEditFormState extends State<EventEditForm> with EditFormBase {
         .updateValue(_endTimeKey.currentState.value.subtract(diff));
   }
 
-
   @override
   Widget build(BuildContext context) {
     var messages = Messages.of(context);

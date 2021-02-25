@@ -16,14 +16,13 @@ class Transaction extends wfs.TransactionWrapper {
       return DocumentSnapshot(snap);
     }
 
-
     throw ArgumentError("${ref.runtimeType} Not a DocumentReference");
   }
 
   @override
   Future<void> delete(wfs.DocumentReferenceWrapper ref) async {
     if (ref is MyDocumentReference) {
-     return await _transaction.delete(ref._doc);
+      return await _transaction.delete(ref._doc);
     }
     throw ArgumentError("${ref.runtimeType} Not a DocumentReference");
   }

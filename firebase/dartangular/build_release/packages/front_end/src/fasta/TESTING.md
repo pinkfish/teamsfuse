@@ -3,6 +3,7 @@ Copyright (c) 2017, the Dart project authors.  Please see the AUTHORS file
 for details. All rights reserved. Use of this source code is governed by a
 BSD-style license that can be found in the LICENSE file.
 -->
+
 # How to test Fasta
 
 When changing Fasta, your changes can affect dart2js or the VM, so you may need
@@ -42,7 +43,6 @@ Note that this test requires a 64-bit build because app-jit snapshot does not wo
 # Language, co19, kernel, for VM using Fasta.
 ./tools/build.py -mrelease runtime_kernel && ./tools/test.py -mrelease -cdartk co19 language kernel --time -pcolor --report -j16
 ```
-
 
 Notice that the option is -cdartk, but it is actually Fasta. Not dartk.
 

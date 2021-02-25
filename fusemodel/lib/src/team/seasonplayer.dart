@@ -46,7 +46,8 @@ abstract class SeasonPlayer
   static void _initializeBuilder(SeasonPlayerBuilder b) => b
     ..jerseyNumber = ""
     ..position = ""
-    ..isPublic = false..added = true;
+    ..isPublic = false
+    ..added = true;
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(SeasonPlayer.serializer, this);

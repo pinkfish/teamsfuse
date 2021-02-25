@@ -1,25 +1,38 @@
 steps:
-  - name: 'google/dart'
-    dir: 'firebase/dartangular'
-    args: [ 'pub', 'global', 'activate', 'webdev' ]
-  - name: 'google/dart'
-    dir: 'firebase/dartangular'
-    args: [ 'pub', 'get' ]
-  - name: 'google/dart'
-    dir: 'firebase/dartangular'
-    args: [ 'pub', 'global', 'run', 'webdev', 'build', '--release' ]
-  - name: 'google/dart'
-    dir: 'firebase/dartangular'
-    args: [ 'ls',  '/workspace/firebase/dartangular/build_release' ]
-  - name: 'google/dart'
-    dir: 'firebase/dartangular'
-    args: [ 'bash', '-c', 'ls /workspace/firebase/dartangular/build_release/*' ]
-  - name: 'google/dart'
-    dir: 'firebase/dartangular'
-    args: [ 'bash', '-c', 'cp -rf /workspace/firebase/dartangular/build_release/* /workspace/firebase/public' ]
-  - name: 'gcr.io/teamsfuse/firebasenode'
-    dir: 'firebase'
-    args: ['firebase', 'use', '--token', '$_FIREBASE_DEPLOY_KEY', 'default' ]
-  - name: 'gcr.io/teamsfuse/firebasenode'
-    dir: 'firebase'
-    args: ['firebase', 'deploy', '--token', '$_FIREBASE_DEPLOY_KEY', '--only', 'hosting']
+  - name: "google/dart"
+    dir: "firebase/dartangular"
+    args: ["pub", "global", "activate", "webdev"]
+  - name: "google/dart"
+    dir: "firebase/dartangular"
+    args: ["pub", "get"]
+  - name: "google/dart"
+    dir: "firebase/dartangular"
+    args: ["pub", "global", "run", "webdev", "build", "--release"]
+  - name: "google/dart"
+    dir: "firebase/dartangular"
+    args: ["ls", "/workspace/firebase/dartangular/build_release"]
+  - name: "google/dart"
+    dir: "firebase/dartangular"
+    args: ["bash", "-c", "ls /workspace/firebase/dartangular/build_release/*"]
+  - name: "google/dart"
+    dir: "firebase/dartangular"
+    args:
+      [
+        "bash",
+        "-c",
+        "cp -rf /workspace/firebase/dartangular/build_release/* /workspace/firebase/public",
+      ]
+  - name: "gcr.io/teamsfuse/firebasenode"
+    dir: "firebase"
+    args: ["firebase", "use", "--token", "$_FIREBASE_DEPLOY_KEY", "default"]
+  - name: "gcr.io/teamsfuse/firebasenode"
+    dir: "firebase"
+    args:
+      [
+        "firebase",
+        "deploy",
+        "--token",
+        "$_FIREBASE_DEPLOY_KEY",
+        "--only",
+        "hosting",
+      ]

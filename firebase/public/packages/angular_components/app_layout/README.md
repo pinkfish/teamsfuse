@@ -23,7 +23,6 @@ specific styling so you can easily override style values as needed.
 class MyComponent {}
 ```
 
-
 ## App Bar
 
 An app bar has the following classes which can be used together to create a
@@ -31,16 +30,16 @@ header:
 
 <!-- mdformat off(Basic table formatting for GitHub markdown compatibility) -->
 
-Class                   | Description
------------------------ | ------------------------------------------------------
-**material-header**     | Container element for the header.
-shadow                  | Modifier on material-header to apply a shadow to the <br>header.
-dense-header            | Makes the App Bar denser for interfaces that primarily <br>use mouse and keyboard.
-**material-header-row** | A row within the header.
-material-drawer-button  | A button within the row that is placed on the left and <br>is used for navigation.
-material-header-title   | A title for the header.
-material-spacer         | Consumes space between the title and any navigation <br>links. Needs to be placed after the title and before <br>any navigation elements.
-material-navigation     | Navigation elements which will be displayed on the <br>left side of the header. Only use with anchor tags, <br>material-button have there own styling built in.
+| Class                   | Description                                                                                                                                                     |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **material-header**     | Container element for the header.                                                                                                                               |
+| shadow                  | Modifier on material-header to apply a shadow to the <br>header.                                                                                                |
+| dense-header            | Makes the App Bar denser for interfaces that primarily <br>use mouse and keyboard.                                                                              |
+| **material-header-row** | A row within the header.                                                                                                                                        |
+| material-drawer-button  | A button within the row that is placed on the left and <br>is used for navigation.                                                                              |
+| material-header-title   | A title for the header.                                                                                                                                         |
+| material-spacer         | Consumes space between the title and any navigation <br>links. Needs to be placed after the title and before <br>any navigation elements.                       |
+| material-navigation     | Navigation elements which will be displayed on the <br>left side of the header. Only use with anchor tags, <br>material-button have there own styling built in. |
 
 <!-- mdformat on -->
 
@@ -49,8 +48,11 @@ Here is an example:
 ```html
 <header class="material-header">
   <div class="material-header-row">
-    <material-button icon
-        class="material-drawer-button" (trigger)="drawer.toggle()">
+    <material-button
+      icon
+      class="material-drawer-button"
+      (trigger)="drawer.toggle()"
+    >
       <material-icon icon="menu"></material-icon>
     </material-button>
     <span class="material-header-title">Simple Layout</span>
@@ -120,16 +122,17 @@ Here is a complete example:
   <header class="material-header shadow">
     <div class="material-header-row">
       <!-- This button will toggle (open/close) the drawer -->
-      <material-button icon
-          class="material-drawer-button" (trigger)="drawer.toggle()">
+      <material-button
+        icon
+        class="material-drawer-button"
+        (trigger)="drawer.toggle()"
+      >
         <material-icon icon="menu"></material-icon>
       </material-button>
       <!-- Other header info goes here -->
     </div>
   </header>
-  <div>
-    Content goes here.
-  </div>
+  <div>Content goes here.</div>
 </material-content>
 ```
 
@@ -148,15 +151,16 @@ Here is an example:
 
 ```html
 <material-drawer temporary #drawer="drawer" overlay>
-  <div *deferredContent>
-    Here is some drawer content.
-  </div>
+  <div *deferredContent>Here is some drawer content.</div>
 </material-drawer>
 <material-content>
   <header class="material-header shadow">
     <div class="material-header-row">
-      <material-button class="material-drawer-button" icon
-                       (trigger)="drawer.toggle()">
+      <material-button
+        class="material-drawer-button"
+        icon
+        (trigger)="drawer.toggle()"
+      >
         <material-icon icon="menu"></material-icon>
       </material-button>
       <span class="material-header-title">Mobile Layout</span>
@@ -195,8 +199,11 @@ Example:
 ```html
 <header class="material-header shadow">
   <div class="material-header-row">
-    <material-button icon
-        class="material-drawer-button" (trigger)="drawer.toggle()">
+    <material-button
+      icon
+      class="material-drawer-button"
+      (trigger)="drawer.toggle()"
+    >
       <material-icon icon="menu"></material-icon>
     </material-button>
     <span class="material-header-title">Simple Layout</span>
@@ -271,7 +278,7 @@ using a mixin.
 Example scss drawer content component:
 
 ```scss
-@import 'package:angular_components/lib/app_layout/mixins';
+@import "package:angular_components/lib/app_layout/mixins";
 
 :host {
   @include mat-drawer-list-items;

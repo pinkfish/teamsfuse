@@ -53,7 +53,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     super.initState();
     _details = widget.game.state.game.result.toBuilder();
     if (widget.game.state.game.result.currentPeriod != null) {
-        _currentPeriodResults = widget.game.state.game.result
+      _currentPeriodResults = widget.game.state.game.result
           .scores[widget.game.state.game.result.currentPeriod]
           .toBuilder();
     }
@@ -107,7 +107,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
     }
 
     setState(() {
-       if (game.result.scores.containsKey(period)) {
+      if (game.result.scores.containsKey(period)) {
         _currentPeriodResults.period =
             game.result.scores[period].period.toBuilder();
       }
@@ -358,7 +358,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
             TZDateTime.now(local).millisecondsSinceEpoch;
       });
     }
-     widget.game.add(SingleGameUpdateResult(result: _details.build()));
+    widget.game.add(SingleGameUpdateResult(result: _details.build()));
   }
 
   void _resetTimer() async {

@@ -7,11 +7,7 @@ import 'package:teamfuse/components/guest/pieces/header.dart';
 
 @Component(
   selector: 'verify-form',
-  directives: const [
-    MaterialButtonComponent,
-    GuestHeaderComponent,
-    NgIf
-  ],
+  directives: const [MaterialButtonComponent, GuestHeaderComponent, NgIf],
   templateUrl: 'verify.html',
   styleUrls: const [
     'login.css',
@@ -41,7 +37,6 @@ class VerifyComponent {
   void forgotPassword() {
     _router.navigate('/forgot');
   }
-
 
   void resendVerifyEmail() {
     resentEmail = true;

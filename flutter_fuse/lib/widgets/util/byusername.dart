@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-
 import '../../services/messages.dart';
 import '../blocs/singleprofileprovider.dart';
 
@@ -28,8 +27,9 @@ class ByUserNameComponent extends StatelessWidget {
         builder: (context, state) {
           Widget inner;
           if (state is SingleProfileLoaded) {
-            inner =
-                Text(Messages.of(context).invitedBy(state.profile.displayName), style: style);
+            inner = Text(
+                Messages.of(context).invitedBy(state.profile.displayName),
+                style: style);
           } else {
             inner = Text(Messages.of(context).loading, style: style);
           }

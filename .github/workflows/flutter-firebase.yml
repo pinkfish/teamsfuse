@@ -1,139 +1,139 @@
 name: Flutter - firebase
 
-on: 
- push:
+on:
+  push:
     paths:
-      - 'flutter_fuse/**'
-      - 'fusemodel/**'
-      - '.github/workflows/flutter-firebase.yml'
+      - "flutter_fuse/**"
+      - "fusemodel/**"
+      - ".github/workflows/flutter-firebase.yml"
     branches:
       - main
- pull_request:
+  pull_request:
     paths:
-      - 'flutter_fuse/**'
-      - 'fusemodel/**'
-      - '.github/workflows/flutter-firebase.yml'
+      - "flutter_fuse/**"
+      - "fusemodel/**"
+      - ".github/workflows/flutter-firebase.yml"
 
 jobs:
   build:
-   runs-on: ${{ matrix.runs-on }}
-   strategy:
-     matrix:
-       os: [ios, android]
-       include:
-         - os: ios
-           runs-on: macos-latest
-           subdirectory: flutter_fuse/ios
-           build: ios
-         - os: android
-           runs-on: ubuntu-latest
-           subdirectory: flutter_fuse/android
-           build: appbundle
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      matrix:
+        os: [ios, android]
+        include:
+          - os: ios
+            runs-on: macos-latest
+            subdirectory: flutter_fuse/ios
+            build: ios
+          - os: android
+            runs-on: ubuntu-latest
+            subdirectory: flutter_fuse/android
+            build: appbundle
 
-   steps:
-    - uses: actions/checkout@v2
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        ref: ${{ github.head_ref }}
-    - uses: actions/setup-java@v1
-      with:
-        java-version: '12.x'
-    - name: Branch name
-      id: branch_name
-      run: |
-        echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
-        echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
-        echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
-    - name: Dump env
-      run: |
-        echo ${SOURCE_TAG}
-        echo ${SOURCE_BRANCH}
-        echo ${SOURCE_TAG}
-        echo ${{ GITHUB.ref }}
-      env:
-        SOURCE_NAME: ${{ steps.branch_name.outputs.SOURCE_NAME }}
-        SOURCE_BRANCH: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
-        SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
-    - uses: subosito/flutter-action@v1
-      with:
-        channel: 'beta' # or: 'dev' or 'beta'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-    - name: Setup firebase tools
-      run: |
-        export PATH=$PATH:/usr/local/bin
-        npm install grpc --verbose
-        sudo npm install -g firebase-tools
-      working-directory: firebase/functions
-    - run: flutter pub get
-      working-directory: fusemodel
-    - run: |
-        find ./ -type f -name "*.g.dart" -delete
-        flutter clean
-        flutter pub get
-        flutter pub run build_runner build --delete-conflicting-outputs
-      working-directory: fusemodel
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref }}
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
+      - name: Branch name
+        id: branch_name
+        run: |
+          echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
+          echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
+          echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+      - name: Dump env
+        run: |
+          echo ${SOURCE_TAG}
+          echo ${SOURCE_BRANCH}
+          echo ${SOURCE_TAG}
+          echo ${{ GITHUB.ref }}
+        env:
+          SOURCE_NAME: ${{ steps.branch_name.outputs.SOURCE_NAME }}
+          SOURCE_BRANCH: ${{ steps.branch_name.outputs.SOURCE_BRANCH }}
+          SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: "beta" # or: 'dev' or 'beta'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+      - name: Setup firebase tools
+        run: |
+          export PATH=$PATH:/usr/local/bin
+          npm install grpc --verbose
+          sudo npm install -g firebase-tools
+        working-directory: firebase/functions
+      - run: flutter pub get
+        working-directory: fusemodel
+      - run: |
+          find ./ -type f -name "*.g.dart" -delete
+          flutter clean
+          flutter pub get
+          flutter pub run build_runner build --delete-conflicting-outputs
+        working-directory: fusemodel
 
-    # Android specific actions.
-    - run: echo ${FASTLANE_ANDROID_API_KEY} > ./api-dash.json
-      if: ${{ matrix.os == 'android' }}
-      working-directory: flutter_fuse/android
-      env:
-        FASTLANE_ANDROID_API_KEY: ${{ secrets.FASTLANE_ANDROID_API_KEY }}
-    - run: |
-        echo ${ANDROID_KEY_JKS} > ./key.jks.asc
-        base64 --decode < ./key.jks.asc > key.jks
-      if: ${{ matrix.os == 'android' }}
-      working-directory: flutter_fuse/android
-      env:
-        ANDROID_KEY_JKS: ${{ secrets.ANDROID_KEY_JKS }}
-    - run: |
-        echo final String googleMapsApiKey = \"${{ secrets.GOOGLE_MAPS_ANDROID }}\"\; > apikeys.dart
-        ls
-      working-directory: flutter_fuse/lib/services
-      if: ${{ matrix.os == 'android' }}
+      # Android specific actions.
+      - run: echo ${FASTLANE_ANDROID_API_KEY} > ./api-dash.json
+        if: ${{ matrix.os == 'android' }}
+        working-directory: flutter_fuse/android
+        env:
+          FASTLANE_ANDROID_API_KEY: ${{ secrets.FASTLANE_ANDROID_API_KEY }}
+      - run: |
+          echo ${ANDROID_KEY_JKS} > ./key.jks.asc
+          base64 --decode < ./key.jks.asc > key.jks
+        if: ${{ matrix.os == 'android' }}
+        working-directory: flutter_fuse/android
+        env:
+          ANDROID_KEY_JKS: ${{ secrets.ANDROID_KEY_JKS }}
+      - run: |
+          echo final String googleMapsApiKey = \"${{ secrets.GOOGLE_MAPS_ANDROID }}\"\; > apikeys.dart
+          ls
+        working-directory: flutter_fuse/lib/services
+        if: ${{ matrix.os == 'android' }}
 
-    # IOS specific action.
-    - run: echo ${APPLE_APP_API_P8} > ~/apple-app-api.p8
-      working-directory: flutter_fuse/ios
-      if: ${{ matrix.os == 'ios' }}
-      env: 	
-        APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
-    - run: |
-        brew install ghostscript imagemagick
-        magick --version
-    - run: |
-        echo final String googleMapsApiKey = \"${{ secrets.GOOGLE_MAPS_IOS }}\"\; > apikeys.dart
-      working-directory: flutter_fuse/lib/services
-      if: ${{ matrix.os == 'ios' }}
+      # IOS specific action.
+      - run: echo ${APPLE_APP_API_P8} > ~/apple-app-api.p8
+        working-directory: flutter_fuse/ios
+        if: ${{ matrix.os == 'ios' }}
+        env:
+          APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
+      - run: |
+          brew install ghostscript imagemagick
+          magick --version
+      - run: |
+          echo final String googleMapsApiKey = \"${{ secrets.GOOGLE_MAPS_IOS }}\"\; > apikeys.dart
+        working-directory: flutter_fuse/lib/services
+        if: ${{ matrix.os == 'ios' }}
 
-    # Do the build.
-    - run: flutter test
-      working-directory: fusemodel
-    - run: |
-        flutter packages get
-        flutter build ${{ matrix.build }} --debug
-      working-directory: flutter_fuse
-      continue-on-error: true
-    - run: flutter test
-      working-directory: flutter_fuse
-    - name: Fastlane Action
-      uses: maierj/fastlane-action@v1.4.0
-      with:
-        lane: firebase
-        subdirectory: ${{ matrix.subdirectory }}
-        options: '{"version": "${{ steps.branch_name.outputs.SOURCE_TAG }}"}'
-      env:
-        FL_GITHUB_RELEASE_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
-        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 10 # Longer timeout for the build settings.
-        FIREBASE_TOKEN: ${{ secrets.FIREBASETOKEN }}
-        APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
-        DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
-        DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
-        FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
-        MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
-        GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
-        TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
-        TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+      # Do the build.
+      - run: flutter test
+        working-directory: fusemodel
+      - run: |
+          flutter packages get
+          flutter build ${{ matrix.build }} --debug
+        working-directory: flutter_fuse
+        continue-on-error: true
+      - run: flutter test
+        working-directory: flutter_fuse
+      - name: Fastlane Action
+        uses: maierj/fastlane-action@v1.4.0
+        with:
+          lane: firebase
+          subdirectory: ${{ matrix.subdirectory }}
+          options: '{"version": "${{ steps.branch_name.outputs.SOURCE_TAG }}"}'
+        env:
+          FL_GITHUB_RELEASE_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 10 # Longer timeout for the build settings.
+          FIREBASE_TOKEN: ${{ secrets.FIREBASETOKEN }}
+          APP_STORE_CONNECT_TEAM_ID: "${{ secrets.APP_STORE_CONNECT_TEAM_ID }}"
+          DEVELOPER_APP_ID: "${{ secrets.DEVELOPER_APP_ID }}"
+          DEVELOPER_APP_IDENTIFIER: "${{ secrets.DEVELOPER_APP_IDENTIFIER }}"
+          FASTLANE_APPLE_ID: "${{ secrets.FASTLANE_APPLE_ID }}"
+          MATCH_PASSWORD: "${{ secrets.MATCH_PASSWORD }}"
+          GIT_AUTHORIZATION: "${{ secrets.GIT_AUTHORIZATION }}"
+          TEMP_KEYCHAIN_PASSWORD: "${{ secrets.TEMP_KEYCHAIN_PASSWORD }}"
+          TEMP_KEYCHAIN_USER: "${{ secrets.TEMP_KEYCHAIN_USER }}"

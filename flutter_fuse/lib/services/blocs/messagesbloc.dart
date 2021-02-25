@@ -143,7 +143,8 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
         coordinationBloc.loadingTrace?.incrementCounter("message");
         this._onReadMessagesUpdated(messages);
       });
-      _readMessageSnapshot.onError((e, stack) => crashes.recordException(e, stack));
+      _readMessageSnapshot
+          .onError((e, stack) => crashes.recordException(e, stack));
     }
 
     // New data from above.  Mark ourselves as done.

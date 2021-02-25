@@ -427,7 +427,8 @@ abstract class DatabaseUpdateModel {
   Stream<BuiltList<Invite>> getInvites();
 
   /// Gets the opponent players for the team/opponent.
-  Stream<BuiltList<Player>> getPlayersForOpponent({@required String teamUid, @required opponentUid});
+  Stream<BuiltList<Player>> getPlayersForOpponent(
+      {@required String teamUid, @required opponentUid});
 
   ///
   /// Get the messages for the current user, with an optional start point

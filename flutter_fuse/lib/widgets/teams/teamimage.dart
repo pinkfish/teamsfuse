@@ -86,17 +86,18 @@ class TeamImage extends StatelessWidget {
         height: width < height ? width : height,
         child: FittedBox(
           fit: fit,
-          child: t.photoUrl != null && t.photoUrl.isNotEmpty ?
-          CachedNetworkImage(
-            imageUrl: t.photoUrl ?? "",
-            fadeInDuration: Duration(milliseconds: 200),
-            fadeOutDuration: Duration(milliseconds: 200),
-            alignment: alignment,
-            repeat: repeat,
-            matchTextDirection: matchTextDirection,
-            placeholder: (context, url) => _getSportWidget(t),
-            errorWidget: (context, url, e) => _getSportWidget(t),
-          ) : _getSportWidget(t),
+          child: t.photoUrl != null && t.photoUrl.isNotEmpty
+              ? CachedNetworkImage(
+                  imageUrl: t.photoUrl ?? "",
+                  fadeInDuration: Duration(milliseconds: 200),
+                  fadeOutDuration: Duration(milliseconds: 200),
+                  alignment: alignment,
+                  repeat: repeat,
+                  matchTextDirection: matchTextDirection,
+                  placeholder: (context, url) => _getSportWidget(t),
+                  errorWidget: (context, url, e) => _getSportWidget(t),
+                )
+              : _getSportWidget(t),
         ),
       ),
     );

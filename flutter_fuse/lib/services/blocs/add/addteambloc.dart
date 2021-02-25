@@ -92,7 +92,8 @@ class AddTeamBloc extends Bloc<AddTeamEvent, AddItemState> {
         TeamBuilder team = event.team;
         team.uid = "";
         team.adminsData = MapBuilder({
-          coordinationBloc.authenticationBloc.currentUser.uid: BuiltMap<String, bool>.of({
+          coordinationBloc.authenticationBloc.currentUser.uid:
+              BuiltMap<String, bool>.of({
             "added": true,
             "admin": true,
           }),

@@ -1,7 +1,7 @@
 analyzer:
   strong-mode:
-      implicit-casts: false
-      implicit-dynamic: true
+    implicit-casts: false
+    implicit-dynamic: true
   errors:
     uri_has_not_been_generated: ignore
   plugins:

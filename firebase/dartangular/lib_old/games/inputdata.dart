@@ -567,7 +567,9 @@ class InputData {
 
   static PlaceResult makePlaceResult(Map<String, dynamic> data) {
     PlaceResult tmp = new PlaceResult.created(new JsObject.jsify(data));
-    tmp.geometry.location = new LatLng(data['geometry']['location']['lat'] as num, data['geometry']['location']['lng'] as num);
+    tmp.geometry.location = new LatLng(
+        data['geometry']['location']['lat'] as num,
+        data['geometry']['location']['lng'] as num);
     return tmp;
   }
 
@@ -608,159 +610,131 @@ class InputData {
     ret["redmond high school"] = tmp;
 
     tmp = makePlaceResult({
-      "formatted_address" : "600 2nd Ave SE, Issaquah, WA 98027, USA",
-      "geometry" : {
-        "location" : {
-          "lat" : 47.52463059999999,
-          "lng" : -122.0287266
-        },
-        "viewport" : {
-          "northeast" : {
-            "lat" : 47.52598042989272,
-            "lng" : -122.0273767701073
-          },
-          "southwest" : {
-            "lat" : 47.52328077010727,
-            "lng" : -122.0300764298928
-          }
+      "formatted_address": "600 2nd Ave SE, Issaquah, WA 98027, USA",
+      "geometry": {
+        "location": {"lat": 47.52463059999999, "lng": -122.0287266},
+        "viewport": {
+          "northeast": {"lat": 47.52598042989272, "lng": -122.0273767701073},
+          "southwest": {"lat": 47.52328077010727, "lng": -122.0300764298928}
         }
       },
-      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/school-71.png",
-      "id" : "0ab7d3d27aa4da01ac76525e0f24cab13dd92e81",
-      "name" : "Issaquah Middle School",
-      "photos" : [
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/school-71.png",
+      "id": "0ab7d3d27aa4da01ac76525e0f24cab13dd92e81",
+      "name": "Issaquah Middle School",
+      "photos": [
         {
-          "height" : 1836,
-          "html_attributions" : [
+          "height": 1836,
+          "html_attributions": [
             "\u003ca href=\"https://maps.google.com/maps/contrib/112067525194772510403/photos\"\u003eAlmondFace\u003c/a\u003e"
           ],
-          "photo_reference" : "CmRaAAAAhA7fPYfEwhnVWFulaO86fxaE0zIk4FY9iAVHwZs9dIXssZEcN_J6W71C0rGlSXcZmseur94BrAvI0hSjBnvrdls9ZgyOjAG6uE2Clw_Fiq9wKw4SyYsLjkChkxcoyL6VEhDdCDo3f6Olz_GVKxQUxHb5GhRHKgl9k60JN0fpPxJ256O5rkwq7g",
-          "width" : 3264
+          "photo_reference":
+              "CmRaAAAAhA7fPYfEwhnVWFulaO86fxaE0zIk4FY9iAVHwZs9dIXssZEcN_J6W71C0rGlSXcZmseur94BrAvI0hSjBnvrdls9ZgyOjAG6uE2Clw_Fiq9wKw4SyYsLjkChkxcoyL6VEhDdCDo3f6Olz_GVKxQUxHb5GhRHKgl9k60JN0fpPxJ256O5rkwq7g",
+          "width": 3264
         }
       ],
-      "place_id" : "ChIJZ6JW8oFlkFQR5MbmrRuWWmI",
-      "rating" : 2.7,
-      "reference" : "CmRbAAAAbbKlYJ6Wjfv8rMaruJx4GjZAyOcXHo_ZxJ2a4KRjNyWuWY3NVSFfJoWd6ZqQ7PLn0eljdssuqoSmpmFrYgmWTuOooNmxxqjQNYTnvO-KdJWZBn79GwfXgpMl6M_mozeCEhD17kBBqSFDNGKQox-XWjG7GhTNJwdcPhb9_UnroRYIfI7PBvXyFQ",
-      "types" : [ "school", "point_of_interest", "establishment" ]
+      "place_id": "ChIJZ6JW8oFlkFQR5MbmrRuWWmI",
+      "rating": 2.7,
+      "reference":
+          "CmRbAAAAbbKlYJ6Wjfv8rMaruJx4GjZAyOcXHo_ZxJ2a4KRjNyWuWY3NVSFfJoWd6ZqQ7PLn0eljdssuqoSmpmFrYgmWTuOooNmxxqjQNYTnvO-KdJWZBn79GwfXgpMl6M_mozeCEhD17kBBqSFDNGKQox-XWjG7GhTNJwdcPhb9_UnroRYIfI7PBvXyFQ",
+      "types": ["school", "point_of_interest", "establishment"]
     });
 
     ret["issaquah middle school"] = tmp;
 
     tmp = makePlaceResult({
-      "formatted_address" : "6046 West Lake Sammamish Pkwy NE, Redmond, WA 98052, USA",
-      "geometry" : {
-        "location" : {
-          "lat" : 47.6617093,
-          "lng" : -122.1214992
-        },
-        "viewport" : {
-          "northeast" : {
-            "lat" : 47.66305912989273,
-            "lng" : -122.1201493701072
-          },
-          "southwest" : {
-            "lat" : 47.66035947010729,
-            "lng" : -122.1228490298927
-          }
+      "formatted_address":
+          "6046 West Lake Sammamish Pkwy NE, Redmond, WA 98052, USA",
+      "geometry": {
+        "location": {"lat": 47.6617093, "lng": -122.1214992},
+        "viewport": {
+          "northeast": {"lat": 47.66305912989273, "lng": -122.1201493701072},
+          "southwest": {"lat": 47.66035947010729, "lng": -122.1228490298927}
         }
       },
-      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png",
-      "id" : "28d3b67202cfb71a7cc7c3f4740813e6f3ad9643",
-      "name" : "Marymoor Park",
-      "photos" : [
+      "icon":
+          "https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png",
+      "id": "28d3b67202cfb71a7cc7c3f4740813e6f3ad9643",
+      "name": "Marymoor Park",
+      "photos": [
         {
-          "height" : 2340,
-          "html_attributions" : [
+          "height": 2340,
+          "html_attributions": [
             "\u003ca href=\"https://maps.google.com/maps/contrib/109025050233410210310/photos\"\u003eAndrew Norris\u003c/a\u003e"
           ],
-          "photo_reference" : "CmRaAAAAEfLjWDQ2sMz6aG-cY_u0bEYvOPmd1h43IOFhm4hZbi6McB2ejhUkPwfJJUJ4TqKNQsZZlpTxd4MjLSDactq1MWMcnIjCJFvIeI6jmTwFdDyNlPLBPZKQmMs2DlZW1pUZEhAUtDMef3H_z4pntm4JWcWfGhTn7UBiMedgRaGZ3I_RBwdVL0F_lQ",
-          "width" : 4160
+          "photo_reference":
+              "CmRaAAAAEfLjWDQ2sMz6aG-cY_u0bEYvOPmd1h43IOFhm4hZbi6McB2ejhUkPwfJJUJ4TqKNQsZZlpTxd4MjLSDactq1MWMcnIjCJFvIeI6jmTwFdDyNlPLBPZKQmMs2DlZW1pUZEhAUtDMef3H_z4pntm4JWcWfGhTn7UBiMedgRaGZ3I_RBwdVL0F_lQ",
+          "width": 4160
         }
       ],
-      "place_id" : "ChIJ0fWNvq9ykFQRHWk-yNgbKgo",
-      "rating" : 4.7,
-      "reference" : "CmRbAAAAGgsiIM3fHEpM69M1tq54GPGXZo_ULdiZk7BaW8gsAK7rmfVahVUngAQKoPWlQduci0X-1e5f_d700082Rx-ii6LlK2vik7tKzRWeJjAkETPLrvKaAZvRwFYKZDZ6Uh30EhBd6UT9cKBPI_rJDdkEHwpmGhQqSJCwINjkODbIu6Y0lamY7f2iZw",
-      "types" : [ "park", "point_of_interest", "establishment" ]
+      "place_id": "ChIJ0fWNvq9ykFQRHWk-yNgbKgo",
+      "rating": 4.7,
+      "reference":
+          "CmRbAAAAGgsiIM3fHEpM69M1tq54GPGXZo_ULdiZk7BaW8gsAK7rmfVahVUngAQKoPWlQduci0X-1e5f_d700082Rx-ii6LlK2vik7tKzRWeJjAkETPLrvKaAZvRwFYKZDZ6Uh30EhBd6UT9cKBPI_rJDdkEHwpmGhQqSJCwINjkODbIu6Y0lamY7f2iZw",
+      "types": ["park", "point_of_interest", "establishment"]
     });
 
     ret["marymoor park"] = tmp;
     tmp = makePlaceResult({
-      "formatted_address" : "7031 148th Ave NE, Redmond, WA 98052, USA",
-      "geometry" : {
-        "location" : {
-          "lat" : 47.66835340000001,
-          "lng" : -122.1457814
-        },
-        "viewport" : {
-          "northeast" : {
-            "lat" : 47.66969767989273,
-            "lng" : -122.1418655
-          },
-          "southwest" : {
-            "lat" : 47.66699802010728,
-            "lng" : -122.1470867
-          }
+      "formatted_address": "7031 148th Ave NE, Redmond, WA 98052, USA",
+      "geometry": {
+        "location": {"lat": 47.66835340000001, "lng": -122.1457814},
+        "viewport": {
+          "northeast": {"lat": 47.66969767989273, "lng": -122.1418655},
+          "southwest": {"lat": 47.66699802010728, "lng": -122.1470867}
         }
       },
-      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png",
-      "id" : "74312c1ecb4a2178327cc3cd1ce21085c3a2a227",
-      "name" : "Grass Lawn Park",
-      "opening_hours" : {
-        "open_now" : true,
-        "weekday_text" : []
-      },
-      "photos" : [
+      "icon":
+          "https://maps.gstatic.com/mapfiles/place_api/icons/generic_recreational-71.png",
+      "id": "74312c1ecb4a2178327cc3cd1ce21085c3a2a227",
+      "name": "Grass Lawn Park",
+      "opening_hours": {"open_now": true, "weekday_text": []},
+      "photos": [
         {
-          "height" : 3456,
-          "html_attributions" : [
+          "height": 3456,
+          "html_attributions": [
             "\u003ca href=\"https://maps.google.com/maps/contrib/101447113087746267170/photos\"\u003eWilliam Wynn\u003c/a\u003e"
           ],
-          "photo_reference" : "CmRaAAAAlzWRrfBWdl8ebBjDEC54H2omfA-P82M_l0VAnEu5GkvLT2WnS_sJGyURMOVL7upuugrDRbR2Fg_L1dEM8vD7BSRslNyLbJnHYML0OKf4RMQlsb4hUfO05jIGcY3oKmfSEhC9zghD2_xvjZQV1U071UZaGhTOcl2VML301sFWe4FKCkMW3ie_pA",
-          "width" : 4608
+          "photo_reference":
+              "CmRaAAAAlzWRrfBWdl8ebBjDEC54H2omfA-P82M_l0VAnEu5GkvLT2WnS_sJGyURMOVL7upuugrDRbR2Fg_L1dEM8vD7BSRslNyLbJnHYML0OKf4RMQlsb4hUfO05jIGcY3oKmfSEhC9zghD2_xvjZQV1U071UZaGhTOcl2VML301sFWe4FKCkMW3ie_pA",
+          "width": 4608
         }
       ],
-      "place_id" : "ChIJz5Tea1RtkFQRKf5kSQ9qxzQ",
-      "rating" : 4.7,
-      "reference" : "CmRbAAAAqsIdV-zfBoSl1271nP4WhzBXDwSCntBkXpe8com7jUQwzNMDIZ5EY7ZHhWOe038SrjPZki12umCXoHhdYZpAHUITNseQOpGVh-0LdDYOGNyHBX4_2aa122cQTtWG1T64EhDjxtJDtoUegfzFGs_kKFxCGhRZAK2Z87r6OEdxYrvgCfBXf5lIZQ",
-      "types" : [ "park", "point_of_interest", "establishment" ]
+      "place_id": "ChIJz5Tea1RtkFQRKf5kSQ9qxzQ",
+      "rating": 4.7,
+      "reference":
+          "CmRbAAAAqsIdV-zfBoSl1271nP4WhzBXDwSCntBkXpe8com7jUQwzNMDIZ5EY7ZHhWOe038SrjPZki12umCXoHhdYZpAHUITNseQOpGVh-0LdDYOGNyHBX4_2aa122cQTtWG1T64EhDjxtJDtoUegfzFGs_kKFxCGhRZAK2Z87r6OEdxYrvgCfBXf5lIZQ",
+      "types": ["park", "point_of_interest", "establishment"]
     });
     ret["grasslawn"] = tmp;
 
     tmp = makePlaceResult({
-      "formatted_address" : "3200 228th Ave SE, Sammamish, WA 98075, USA",
-      "geometry" : {
-        "location" : {
-          "lat" : 47.581255,
-          "lng" : -122.0331577
-        },
-        "viewport" : {
-          "northeast" : {
-            "lat" : 47.58259197989273,
-            "lng" : -122.03198675
-          },
-          "southwest" : {
-            "lat" : 47.57989232010728,
-            "lng" : -122.03667055
-          }
+      "formatted_address": "3200 228th Ave SE, Sammamish, WA 98075, USA",
+      "geometry": {
+        "location": {"lat": 47.581255, "lng": -122.0331577},
+        "viewport": {
+          "northeast": {"lat": 47.58259197989273, "lng": -122.03198675},
+          "southwest": {"lat": 47.57989232010728, "lng": -122.03667055}
         }
       },
-      "icon" : "https://maps.gstatic.com/mapfiles/place_api/icons/school-71.png",
-      "id" : "491f62fd2a434d3c0f7bff340eea47a3a2efe5fe",
-      "name" : "Pine Lake Middle School",
-      "photos" : [
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/school-71.png",
+      "id": "491f62fd2a434d3c0f7bff340eea47a3a2efe5fe",
+      "name": "Pine Lake Middle School",
+      "photos": [
         {
-          "height" : 1944,
-          "html_attributions" : [
+          "height": 1944,
+          "html_attributions": [
             "\u003ca href=\"https://maps.google.com/maps/contrib/111363821853168072591/photos\"\u003eMayukha G\u003c/a\u003e"
           ],
-          "photo_reference" : "CmRaAAAArixWwJUYkgLjtP2VRgeZ2yqrqqNOhH3GZJa6trKX4a7NZE4GK4IhFsKGUJr6Htv3YY41-JyFADxCFW-OEmNRhTcCbCni6twV2QG11rPnoXEC00aEZUULYmBYyE7-VHjYEhBR4qhZHMxHQHjPFIcfdUW5GhRTdFMkYgdNE3smJK3d_ZYk73139w",
-          "width" : 2592
+          "photo_reference":
+              "CmRaAAAArixWwJUYkgLjtP2VRgeZ2yqrqqNOhH3GZJa6trKX4a7NZE4GK4IhFsKGUJr6Htv3YY41-JyFADxCFW-OEmNRhTcCbCni6twV2QG11rPnoXEC00aEZUULYmBYyE7-VHjYEhBR4qhZHMxHQHjPFIcfdUW5GhRTdFMkYgdNE3smJK3d_ZYk73139w",
+          "width": 2592
         }
       ],
-      "place_id" : "ChIJK9CTiytukFQRXmHYhQiaGmM",
-      "rating" : 3.6,
-      "reference" : "CmRbAAAAFAGfKhvRcwIkpaU18uCf2cfaEwAC0e8zFXXvAqqnS_pjLfYWV7U6hnL5cBNwRhWmL3sztvezFtT5ddMqoaUXA0yqqQ5Ad4rpyqrlf5YRF2IEVqT21XMdKyWwD7pLH6LEEhDSnBnSJHkkpN-UShAKOsKFGhSphEhVTHUOZnZZ2MaHr17GnqI3BA",
-      "types" : [ "school", "point_of_interest", "establishment" ]
+      "place_id": "ChIJK9CTiytukFQRXmHYhQiaGmM",
+      "rating": 3.6,
+      "reference":
+          "CmRbAAAAFAGfKhvRcwIkpaU18uCf2cfaEwAC0e8zFXXvAqqnS_pjLfYWV7U6hnL5cBNwRhWmL3sztvezFtT5ddMqoaUXA0yqqQ5Ad4rpyqrlf5YRF2IEVqT21XMdKyWwD7pLH6LEEhDSnBnSJHkkpN-UShAKOsKFGhSphEhVTHUOZnZZ2MaHr17GnqI3BA",
+      "types": ["school", "point_of_interest", "establishment"]
     });
 
     ret["pine lake middle school"] = tmp;

@@ -1,49 +1,49 @@
-<div *ngIf="game == null">
-    Loading...
-</div>
+<div *ngIf="game == null">Loading...</div>
 
 <div *ngIf="game != null" class="cardshared" (click)="openDetails()">
-    <div class="leading">
-        <league-name-and-result [game]="game" [homeTeam]="true" [leagueTeamUid]="game.officialResults.homeTeamLeagueUid">
-
-        </league-name-and-result>
-    </div>
-    <div class="details">
-        <div [ngSwitch]="game.type.toString()">
-            <template [ngSwitchCase]="'EventType.Game'">
-                {{GameSharedCardComponent.dateFormat.format(game.tzTime)}}
-                {{GameSharedCardComponent.timeFormat.format(game.tzTime)}}
-                <div *ngIf="game.time != game.endTime" style="display:inline">
-                    - {{GameSharedCardComponent.timeFormat.format(game.tzEndTime)}}
-                </div>
-            </template>
-            <template [ngSwitchCase]="'EventType.Practice'">
-                {{GameSharedCardComponent.dateFormat.format(game.tzTime)}}
-                {{GameSharedCardComponent.timeFormat.format(game.tzTime)}}
-                <div *ngIf="game.time != game.endTime" style="display:inline">
-                    - {{GameSharedCardComponent.timeFormat.format(game.tzEndTime)}}
-                </div>
-                practice
-            </template>
-            <template [ngSwitchCase]="'EventType.Event'">
-                {{GameSharedCardComponent.dateFormat.format(game.tzTime)}}
-                {{GameSharedCardComponent.timeFormat.format(game.tzTime)}}
-                <div *ngIf="game.time != game.endTime" style="display: inline">
-                    - {{GameSharedCardComponent.timeFormat.format(game.tzEndTime)}}
-                </div>
-                event
-            </template>
-            <template ngSwitchDefault>
-            </template>
-            <div class="address">
-                {{game.place.address}} {{game.place.notes}}
-            </div>
+  <div class="leading">
+    <league-name-and-result
+      [game]="game"
+      [homeTeam]="true"
+      [leagueTeamUid]="game.officialResults.homeTeamLeagueUid"
+    >
+    </league-name-and-result>
+  </div>
+  <div class="details">
+    <div [ngSwitch]="game.type.toString()">
+      <template [ngSwitchCase]="'EventType.Game'">
+        {{GameSharedCardComponent.dateFormat.format(game.tzTime)}}
+        {{GameSharedCardComponent.timeFormat.format(game.tzTime)}}
+        <div *ngIf="game.time != game.endTime" style="display: inline">
+          - {{GameSharedCardComponent.timeFormat.format(game.tzEndTime)}}
         </div>
+      </template>
+      <template [ngSwitchCase]="'EventType.Practice'">
+        {{GameSharedCardComponent.dateFormat.format(game.tzTime)}}
+        {{GameSharedCardComponent.timeFormat.format(game.tzTime)}}
+        <div *ngIf="game.time != game.endTime" style="display: inline">
+          - {{GameSharedCardComponent.timeFormat.format(game.tzEndTime)}}
+        </div>
+        practice
+      </template>
+      <template [ngSwitchCase]="'EventType.Event'">
+        {{GameSharedCardComponent.dateFormat.format(game.tzTime)}}
+        {{GameSharedCardComponent.timeFormat.format(game.tzTime)}}
+        <div *ngIf="game.time != game.endTime" style="display: inline">
+          - {{GameSharedCardComponent.timeFormat.format(game.tzEndTime)}}
+        </div>
+        event
+      </template>
+      <template ngSwitchDefault> </template>
+      <div class="address">{{game.place.address}} {{game.place.notes}}</div>
     </div>
-    <div class="trailing">
-        <league-name-and-result [game]="game" [homeTeam]="false" [leagueTeamUid]="game.officialResults.awayTeamLeagueUid">
-
-        </league-name-and-result>
-    </div>
-
+  </div>
+  <div class="trailing">
+    <league-name-and-result
+      [game]="game"
+      [homeTeam]="false"
+      [leagueTeamUid]="game.officialResults.awayTeamLeagueUid"
+    >
+    </league-name-and-result>
+  </div>
 </div>

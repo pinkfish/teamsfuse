@@ -215,7 +215,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _calendarSub = _calendarEvents.stream.listen((readon) {
       setState(() {});
     });
-    _calendarSub.onError(RepositoryProvider.of<AnalyticsSubsystem>(context).recordException);
+    _calendarSub.onError(
+        RepositoryProvider.of<AnalyticsSubsystem>(context).recordException);
   }
 
   @override

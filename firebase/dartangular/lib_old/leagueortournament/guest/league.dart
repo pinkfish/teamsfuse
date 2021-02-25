@@ -13,7 +13,7 @@ import 'leaguedetails.dart';
   ],
   pipes: const [AsyncPipe],
   templateUrl: 'league.html',
-  styleUrls: const [], 
+  styleUrls: const [],
 )
 class LeagueComponent implements OnInit, OnActivate, OnDestroy, OnChanges {
   Stream<LeagueOrTournament> league;

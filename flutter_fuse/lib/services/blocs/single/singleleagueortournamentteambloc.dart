@@ -252,7 +252,7 @@ class SingleLeagueOrTournamentTeamBloc extends AsyncHydratedBloc<
     }
 
     if (event is SingleLeagueOrTournamentTeamLoadGames) {
-       if (state is SingleLeagueOrTournamentTeamLoaded &&
+      if (state is SingleLeagueOrTournamentTeamLoaded &&
           _gamesSnapshot == null) {
         _gamesSnapshot = db.getLeagueGamesForTeam(leagueTeamUid).listen(
             (Iterable<GameSharedData> games) =>

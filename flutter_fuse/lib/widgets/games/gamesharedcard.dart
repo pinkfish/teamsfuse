@@ -145,12 +145,12 @@ class GameSharedCard extends StatelessWidget {
     var homeTeamDetails = <Widget>[
       game.officialResult.homeTeamLeagueUid == null
           ? Text(Messages.of(context).unknown)
-          :LeagueOrTournamentTeamName(
-        game.officialResult.homeTeamLeagueUid,
-        textAlign: TextAlign.start,
-        overflow: TextOverflow.ellipsis,
-        style: homeStyle,
-      ),
+          : LeagueOrTournamentTeamName(
+              game.officialResult.homeTeamLeagueUid,
+              textAlign: TextAlign.start,
+              overflow: TextOverflow.ellipsis,
+              style: homeStyle,
+            ),
     ];
     var awayTeamDetails = <Widget>[
       game.officialResult.awayTeamLeagueUid == null

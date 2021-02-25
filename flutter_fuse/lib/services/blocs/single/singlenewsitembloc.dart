@@ -17,7 +17,6 @@ class SingleNewsItemUpdate extends SingleNewsItemEvent {
   /// The new value for the coach.
   final NewsItem newsItem;
 
-
   /// Creates a new update for the coach details.
   SingleNewsItemUpdate({@required this.newsItem});
 
@@ -70,18 +69,19 @@ class SingleNewsItemBloc
   ///
   SingleNewsItemBloc(
       {@required this.db,
-        @required this.clubUid,
-        @required this.newsItemUid,
-        @required this.crashes})
-      : super(SingleNewsItemUninitialized(), "SinglenewsItem_$clubUid.$newsItemUid") {
+      @required this.clubUid,
+      @required this.newsItemUid,
+      @required this.crashes})
+      : super(SingleNewsItemUninitialized(),
+            "SinglenewsItem_$clubUid.$newsItemUid") {
     _newsItemSub =
         db.getSingleClubNews(clubUid, newsItemUid).listen((newsItem) {
-          if (newsItem != null) {
-            add(_SingleNewsItemNewCoach(newsItem: newsItem));
-          } else {
-            add(_SingleNewsItemDeleted());
-          }
-        });
+      if (newsItem != null) {
+        add(_SingleNewsItemNewCoach(newsItem: newsItem));
+      } else {
+        add(_SingleNewsItemDeleted());
+      }
+    });
     _newsItemSub.onError((e, stack) {
       add(_SingleNewsItemDeleted());
       if (e is Exception) {
@@ -103,7 +103,7 @@ class SingleNewsItemBloc
       SingleNewsItemEvent event) async* {
     if (event is _SingleNewsItemNewCoach) {
       yield (SingleNewsItemLoaded.fromState(state)
-        ..newsItem = event.newsItem.toBuilder())
+            ..newsItem = event.newsItem.toBuilder())
           .build();
     }
 
@@ -116,11 +116,10 @@ class SingleNewsItemBloc
     if (event is SingleNewsItemUpdate) {
       yield SingleNewsItemSaving.fromState(state).build();
       try {
-        await db.updateClubNews(
-            event.newsItem);
+        await db.updateClubNews(event.newsItem);
         yield SingleNewsItemSaveDone.fromState(state).build();
         yield (SingleNewsItemLoaded.fromState(state)
-          ..newsItem = event.newsItem.toBuilder())
+              ..newsItem = event.newsItem.toBuilder())
             .build();
       } on Exception catch (e, stack) {
         yield (SingleNewsItemSaveFailed.fromState(state)..error = e).build();

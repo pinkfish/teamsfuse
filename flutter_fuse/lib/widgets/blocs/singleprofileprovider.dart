@@ -16,14 +16,14 @@ class SingleProfileProvider extends SingleBlocProvider<SingleProfileBloc> {
   /// Constructor.
   SingleProfileProvider({String userUid, SingleUserProviderBuilder builder})
       : super(
-            keyUid:  userUid,
+            keyUid: userUid,
             creator: _createBloc,
-            builder: builder, prefix: "profile");
+            builder: builder,
+            prefix: "profile");
 
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleProfileBloc && bloc.profileUid == keyUid);
   }
-
 
   static SingleProfileBloc _createBloc(BuildContext context, String uid) {
     return SingleProfileBloc(

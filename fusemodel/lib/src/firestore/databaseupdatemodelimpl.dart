@@ -2237,8 +2237,19 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
   }) async {
     var playerDoc = _wrapper.collection(PLAYERS_COLLECTION).document();
     var gameDoc = _wrapper.collection(GAMES_COLLECTION).document(gameUid);
+    var opDoc = _wrapper
+        .collection(TEAMS_COLLECTION)
+        .document(teamUid)
+        .collection(OPPONENT_COLLECTION)
+        .document(opponentUid);
     await _wrapper.runTransaction((t) async {
-
+      if (opponentName == null) {
+        var op = await t.get(opDoc);
+        if (!op.exists) {
+          throw FormatException("No opponent $opponentUid");
+        }
+        opponentName = Opponent.fromMap(op.data).name;
+      }
       var play = Player((b) => b
         ..opponentUid = opponentUid
         ..isPublic = true
@@ -2253,6 +2264,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         "${Game.opponentField}.${playerDoc.documentID}":
             GamePlayerSummary((b) => b
               ..playing = true
+              ..jerseyNumber = jerseyNumber
               ..currentlyPlaying = true).toMap()
       });
     });
@@ -2278,6 +2290,7 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
         "${Game.opponentField}.${playerDoc.documentID}":
             GamePlayerSummary((b) => b
               ..playing = true
+              ..jerseyNumber = jerseyNumber
               ..currentlyPlaying = true).toMap()
       });
     });

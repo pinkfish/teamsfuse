@@ -159,7 +159,7 @@ class GameCard extends StatelessWidget {
       children.add(
         Text(
           "OT ${overtimeResult.score.ptsFor} - "
-              "${overtimeResult.score.ptsAgainst}",
+          "${overtimeResult.score.ptsAgainst}",
           style: style,
         ),
       );
@@ -168,7 +168,7 @@ class GameCard extends StatelessWidget {
       children.add(
         Text(
           "PT ${penaltyResult.score.ptsFor} - "
-              "${penaltyResult.score.ptsAgainst}",
+          "${penaltyResult.score.ptsAgainst}",
           style: style,
         ),
       );
@@ -270,9 +270,8 @@ class GameCard extends StatelessWidget {
     var url = "https://www.google.com/maps/dir/?api=1";
     url += "&destination=${Uri.encodeComponent(game.sharedData.place.address)}";
     if (game.sharedData.place.placeId != null) {
-      url +=
-          "&destionation_place_id="
-              "${Uri.encodeComponent(game.sharedData.place.placeId)}";
+      url += "&destionation_place_id="
+          "${Uri.encodeComponent(game.sharedData.place.placeId)}";
     }
     launch(url);
   }

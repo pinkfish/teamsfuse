@@ -88,4 +88,3 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     api 'com.google.gms:google-services:4.3.4'
 }
-

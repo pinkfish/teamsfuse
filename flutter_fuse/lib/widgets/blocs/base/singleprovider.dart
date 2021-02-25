@@ -45,7 +45,7 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
 
   @override
   void initState() {
-     super.initState();
+    super.initState();
     _updateSingleBloc();
   }
 

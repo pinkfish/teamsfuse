@@ -14,7 +14,7 @@ import 'package:teamfuse/components/common/search.dart';
     MaterialIconComponent,
     SearchComponent,
   ],
-   styleUrls: const [
+  styleUrls: const [
     'package:angular_components/app_layout/layout.scss.css',
     '../guest-component.css',
   ],
@@ -24,8 +24,7 @@ class GuestHeaderComponent implements OnActivate {
   final Router _router;
 
   @override
-  void onActivate(RouterState previous, RouterState current) {
-  }
+  void onActivate(RouterState previous, RouterState current) {}
 
   void signIn() {
     _router.navigate("/login");
@@ -35,8 +34,5 @@ class GuestHeaderComponent implements OnActivate {
     _router.navigate("/promo/guesthome");
   }
 
-
-
   GuestHeaderComponent(this._router);
 }
-

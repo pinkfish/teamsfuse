@@ -46,8 +46,8 @@ class _EditSeasonScreenState extends State<EditSeasonScreen> {
   }
 
   void _handleSubmit(SingleSeasonBloc bloc, SingleSeasonState state) async {
-     if (_formKey.currentState.validate()) {
-       _formKey.currentState.save();
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
       // Make a season.
       var season = state.season.rebuild((b) => b..name = _seasonName);
       bloc.add(SingleSeasonUpdate(season: season));
@@ -72,7 +72,7 @@ class _EditSeasonScreenState extends State<EditSeasonScreen> {
             ),
             validator: (s) {
               String ret = _validations.validateDisplayName(context, s);
-             },
+            },
             initialValue: '',
             keyboardType: TextInputType.text,
             obscureText: false,

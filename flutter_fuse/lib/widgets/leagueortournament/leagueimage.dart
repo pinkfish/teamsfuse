@@ -78,12 +78,11 @@ class LeagueImage extends StatelessWidget {
       errorWidget: (context, url, error) =>
           Image.asset("assets/images/defaultavatar.png"),
     );
-
   }
 
   @override
   Widget build(BuildContext context) {
-    if (leagueOrTournament!= null) {
+    if (leagueOrTournament != null) {
       return SizedBox(
         width: width,
         height: height,
@@ -93,8 +92,8 @@ class LeagueImage extends StatelessWidget {
           height: height,
           width: width,
           alignment: alignment,
-          child:
-        _buildInner(leagueOrTournament),),
+          child: _buildInner(leagueOrTournament),
+        ),
       );
     }
     return SizedBox(

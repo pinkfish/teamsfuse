@@ -17,8 +17,7 @@ class RelationshipFormField extends FormField<Relationship> {
     FormFieldValidator<Relationship> validator,
   })  : assert(initialValue != null),
         super(
-          key: key
-        ?? Key("RELATIONSHIP"),
+          key: key ?? Key("RELATIONSHIP"),
           initialValue: initialValue,
           onSaved: onSaved,
           validator: validator,

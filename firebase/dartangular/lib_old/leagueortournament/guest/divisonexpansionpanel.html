@@ -1,32 +1,36 @@
-<material-expansionpanel name="{{divison.name}}"  [showSaveCancel]="false" style="margin-top: 10px"
-                         (open)="openPanel()" (close)="closePanel()" [expanded]="expanded">
+<material-expansionpanel
+  name="{{divison.name}}"
+  [showSaveCancel]="false"
+  style="margin-top: 10px"
+  (open)="openPanel()"
+  (close)="closePanel()"
+  [expanded]="expanded"
+>
+  <material-tab-panel [activeTabIndex]="0" (tabChange)="tabChange($event)">
+    <material-tab label="Games">
+      <div *deferredContent>
+        <div *ngFor="let frog of games; trackBy: trackByGame" class="flex-grid">
+          <div class="col">
+            <game-shared-card [game]="frog.item1"> </game-shared-card>
+          </div>
+          <div class="col">
+            <game-shared-card *ngIf="frog.item2 != null" [game]="frog.item2">
+            </game-shared-card>
+          </div>
+        </div>
+      </div>
+    </material-tab>
 
-    <material-tab-panel [activeTabIndex]="0" (tabChange)="tabChange($event)">
-
-        <material-tab label="Games">
-            <div *deferredContent>
-                    <div *ngFor="let frog of games; trackBy: trackByGame" class="flex-grid">
-                        <div class="col">
-                            <game-shared-card [game]="frog.item1">
-                            </game-shared-card>
-                        </div>
-                        <div class="col">
-                            <game-shared-card *ngIf="frog.item2 != null" [game]="frog.item2">
-                            </game-shared-card>
-                        </div>
-                    </div>
-            </div>
-        </material-tab>
-
-        <material-tab label="Teams">
-            <div *deferredContent style="display: flex; flex-wrap: wrap">
-                <league-team-card *ngFor="let frog of teams; trackBy: trackByTeam" [leagueOrTournamentTeam]="frog" style="flex: 1">
-
-                    <br clear="both" />
-                </league-team-card>
-            </div>
-        </material-tab>
-    </material-tab-panel>
-
-
+    <material-tab label="Teams">
+      <div *deferredContent style="display: flex; flex-wrap: wrap">
+        <league-team-card
+          *ngFor="let frog of teams; trackBy: trackByTeam"
+          [leagueOrTournamentTeam]="frog"
+          style="flex: 1"
+        >
+          <br clear="both" />
+        </league-team-card>
+      </div>
+    </material-tab>
+  </material-tab-panel>
 </material-expansionpanel>

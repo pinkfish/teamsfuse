@@ -5,7 +5,6 @@ abstract class StorageReferenceWrapper {
   /// location of the current reference.
   StorageReferenceWrapper child(String path);
 
-
   /// This method is deprecated. Please use [putFile] instead.
   ///
   /// Asynchronously uploads a file to the currently specified
@@ -15,7 +14,7 @@ abstract class StorageReferenceWrapper {
 
   /// Asynchronously uploads a file to the currently specified
   /// [StorageReference], with an optional [metadata].
-  StorageUploadTaskWrapper putFile(Uint8List file, [StorageMetadata metadata]) ;
+  StorageUploadTaskWrapper putFile(Uint8List file, [StorageMetadata metadata]);
 
   /// Asynchronously uploads byte data to the currently specified
   /// [StorageReference], with an optional [metadata].
@@ -48,7 +47,7 @@ abstract class StorageReferenceWrapper {
   /// This method ignores fields of [metadata] that cannot be set by the public
   /// [StorageMetadata] constructor. Writable metadata properties can be deleted
   /// by passing the empty string.
-  Future<StorageMetadata> updateMetadata(StorageMetadata metadata) ;
+  Future<StorageMetadata> updateMetadata(StorageMetadata metadata);
 
   String get path;
 }

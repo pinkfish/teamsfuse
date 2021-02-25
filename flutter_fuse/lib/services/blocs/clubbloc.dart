@@ -61,7 +61,8 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
   /// Setup to handle crashes.
   final AnalyticsSubsystem crashes;
   bool _loadingFirestore = false;
-  final Map<String, StreamSubscription<Iterable<Team>>> _clubTeamsSubscriptions = {};
+  final Map<String, StreamSubscription<Iterable<Team>>>
+      _clubTeamsSubscriptions = {};
 
   StreamSubscription<CoordinationState> _coordSub;
   StreamSubscription<Iterable<Club>> _clubChangeSub;
@@ -74,7 +75,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
         _loadingFirestore = false;
         add(_ClubEventLogout());
       } else if (coordinationState is CoordinationStateLoadingFirestore) {
-        if (!_loadingFirestore || _clubChangeSub ==null) {
+        if (!_loadingFirestore || _clubChangeSub == null) {
           _loadingFirestore = true;
           add(_ClubEventLoadFromFirestore(uid: coordinationState.uid));
         }
@@ -99,8 +100,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
   void _cleanupStuff() {
     _clubChangeSub?.cancel();
     _clubChangeSub = null;
-    for (var sub
-        in _clubTeamsSubscriptions.values) {
+    for (var sub in _clubTeamsSubscriptions.values) {
       sub.cancel();
     }
     _clubTeamsSubscriptions.clear();
@@ -133,10 +133,9 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
     if (event is _ClubEventLoadFromFirestore) {
       // Load the clubs first.
       _clubChangeSub?.cancel();
-      _clubChangeSub =
-          coordinationBloc.databaseUpdateModel.getMainClubs().listen(
-        _onClubsUpdated
-      );
+      _clubChangeSub = coordinationBloc.databaseUpdateModel
+          .getMainClubs()
+          .listen(_onClubsUpdated);
       _clubChangeSub.onError(crashes.recordException);
     }
 
@@ -184,7 +183,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
           clubTrace.stop();
           return loaded;
         } on Exception catch (e, stack) {
-            crashes.recordException(e, stack);
+          crashes.recordException(e, stack);
         }
         return ClubUninitialized();
       default:

@@ -5,8 +5,6 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_data/util/async_hydrated_bloc/asynchydratedbloc.dart';
 
-
-
 abstract class SingleSharedGameEvent extends Equatable {}
 
 ///
@@ -66,14 +64,12 @@ class SingleSharedGameBloc
   /// Build the shared game bloc for us to do fun stuff with.
   ///
   SingleSharedGameBloc(
-      {@required this.db,
-      @required this.sharedGameUid,
-      @required this.crashes})
-      : super( SingleSharedGameUninitialized(), sharedGameUid) {
-    _gameSub = db.getSharedGame(sharedGameUid).listen(( sharedGame) {
+      {@required this.db, @required this.sharedGameUid, @required this.crashes})
+      : super(SingleSharedGameUninitialized(), sharedGameUid) {
+    _gameSub = db.getSharedGame(sharedGameUid).listen((sharedGame) {
       if (sharedGame != null) {
         // Only send this if the game is not the same.
-          add(_SingleSharedGameNewSharedGame(sharedData: sharedGame));
+        add(_SingleSharedGameNewSharedGame(sharedData: sharedGame));
       } else {
         add(_SingleSharedGameDeleted());
       }
@@ -91,7 +87,9 @@ class SingleSharedGameBloc
   Stream<SingleSharedGameState> mapEventToState(
       SingleSharedGameEvent event) async* {
     if (event is _SingleSharedGameNewSharedGame) {
-      yield (SingleSharedGameLoaded.fromState(state)..sharedGame= event.sharedData.toBuilder()).build();
+      yield (SingleSharedGameLoaded.fromState(state)
+            ..sharedGame = event.sharedData.toBuilder())
+          .build();
     }
 
     // The game is deleted.
@@ -103,13 +101,13 @@ class SingleSharedGameBloc
     if (event is SingleSharedGameUpdateData) {
       yield SingleSharedGameSaving.fromState(state).build();
       try {
-        await db
-            .updateFirestoreSharedGame(event.sharedData);
+        await db.updateFirestoreSharedGame(event.sharedData);
         yield SingleSharedGameSaveDone.fromState(state).build();
-        yield (SingleSharedGameLoaded.fromState(state)..
-             sharedGame= event.sharedData.toBuilder()).build();
+        yield (SingleSharedGameLoaded.fromState(state)
+              ..sharedGame = event.sharedData.toBuilder())
+            .build();
       } catch (e, stack) {
-        yield (SingleSharedGameSaveFailed.fromState(state)..error=e).build();
+        yield (SingleSharedGameSaveFailed.fromState(state)..error = e).build();
         crashes.recordException(e, stack);
       }
     }
@@ -118,13 +116,11 @@ class SingleSharedGameBloc
     if (event is SingleSharedGameUpdateOfficalResult) {
       yield SingleSharedGameSaving.fromState(state).build();
       try {
-        await db
-            .updateFirestoreOfficalGameResult(
-                sharedGameUid, event.result);
+        await db.updateFirestoreOfficalGameResult(sharedGameUid, event.result);
         yield SingleSharedGameSaveDone.fromState(state).build();
         yield SingleSharedGameLoaded.fromState(state).build();
       } catch (e, stack) {
-        yield (SingleSharedGameSaveFailed.fromState(state)..error=e).build();
+        yield (SingleSharedGameSaveFailed.fromState(state)..error = e).build();
         crashes.recordException(e, stack);
       }
     }
@@ -138,7 +134,7 @@ class SingleSharedGameBloc
 
     try {
       SingleSharedGameBlocStateType type =
-      SingleSharedGameBlocStateType.valueOf(json["type"]);
+          SingleSharedGameBlocStateType.valueOf(json["type"]);
       switch (type) {
         case SingleSharedGameBlocStateType.Uninitialized:
           return SingleSharedGameUninitialized();

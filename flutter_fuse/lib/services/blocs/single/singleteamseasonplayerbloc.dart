@@ -7,6 +7,9 @@ import 'package:meta/meta.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
 
+///
+/// The player in the specific team/season.
+///
 abstract class SingleTeamSeasonPlayerEvent extends Equatable {}
 
 ///
@@ -55,6 +58,7 @@ class SingleTeamSeasonPlayerBloc extends AsyncHydratedBloc<
 
   StreamSubscription<SeasonState> _seasonSub;
 
+  /// Create the bloc for the team season bloc.
   SingleTeamSeasonPlayerBloc(
       {@required this.db,
       @required this.seasonUid,

@@ -26,8 +26,7 @@ class LeagueComponent implements OnInit {
   LeagueComponent();
 
   @override
-  void ngOnInit() {
-  }
+  void ngOnInit() {}
 
   void search(String text) {}
 }

@@ -12,7 +12,7 @@ service cloud.firestore {
     function existingData() {
       return resource.data;
     }
-    
+
     // [WRITE] Data that is sent to a Firestore document
     function incomingData() {
       return request.resource.data;

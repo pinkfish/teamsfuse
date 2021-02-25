@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singleplayerprovider.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-
 import '../../services/blocs.dart';
 
 ///

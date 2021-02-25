@@ -171,7 +171,6 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
       });
       Iterable<Team> userStartStuff = await userData.future;
 
-
       yield (TeamLoaded.fromState(state)
             ..loadedFirestore = true
             ..playerTeams = MapBuilder(Map.fromIterable(userStartStuff,
@@ -247,7 +246,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
           TraceProxy teamsTrace =
               coordinationBloc.analyticsSubsystem.newTrace("teamData");
           teamsTrace.start();
-           var loaded = TeamLoaded.fromMap(json);
+          var loaded = TeamLoaded.fromMap(json);
           teamsTrace.stop();
           return loaded;
         } catch (e, stack) {

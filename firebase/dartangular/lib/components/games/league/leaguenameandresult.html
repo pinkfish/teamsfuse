@@ -1,10 +1,11 @@
-<img src="{{teamUrl}}" width="50" height="50" style="padding-right: 10px; float: {{float}}"/>
-<br clear="both">
+<img
+  src="{{teamUrl}}"
+  width="50"
+  height="50"
+  style="padding-right: 10px; float: {{float}}"
+/>
+<br clear="both" />
 <div *ngIf="(team | async) != null" style="text-align: {{float}}">
-    <div class="leagueteamname">
-        {{teamName}}
-    </div>
-    <div class="leagueteamresult {{resultclass}}">
-        {{gameResult()}}
-    </div>
+  <div class="leagueteamname">{{teamName}}</div>
+  <div class="leagueteamresult {{resultclass}}">{{gameResult()}}</div>
 </div>

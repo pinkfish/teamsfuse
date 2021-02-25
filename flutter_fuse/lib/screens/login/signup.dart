@@ -156,8 +156,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         icon: const Icon(Icons.account_box),
                                         hintText: Messages.of(context)
                                             .displaynamehint,
-                                        labelText:
-                                            Messages.of(context).name),
+                                        labelText: Messages.of(context).name),
                                     keyboardType: TextInputType.text,
                                     obscureText: false,
                                     focusNode: _focusNodeDisplayName,

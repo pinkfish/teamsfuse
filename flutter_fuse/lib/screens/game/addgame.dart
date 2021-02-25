@@ -18,6 +18,7 @@ import '../../widgets/util/stepperalwaysvisible.dart';
 class AddGameScreen extends StatefulWidget {
   /// Optional teamUid to use for the add game
   final String teamUid;
+
   /// OPtional seasonUid to use for the add game.
   final String seasonUid;
 

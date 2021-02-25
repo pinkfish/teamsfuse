@@ -15,11 +15,7 @@
   },
   "hosting": {
     "public": "public/flutter",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "/support/request",

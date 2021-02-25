@@ -30,7 +30,7 @@ abstract class MessagesBlocState {
   @override
   BuiltList<MessageRecipient> get unreadMessages;
   @override
-   BuiltList<MessageRecipient> get recentMessages;
+  BuiltList<MessageRecipient> get recentMessages;
   MessagesBlocStateType get type;
 
   // Don't save this stuff

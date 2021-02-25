@@ -35,7 +35,7 @@ In practice, this means that messages written in Dart source code should be writ
 
     "The class '#{className}' can't use 'super'."
 
-Notice that the word "class" in the preceding message is not quoted as it refers to the concept *class*, not the reserved word. On the other hand, `'super'` refers to the reserved word. Do not quote `null` and numeric literals.
+Notice that the word "class" in the preceding message is not quoted as it refers to the concept _class_, not the reserved word. On the other hand, `'super'` refers to the reserved word. Do not quote `null` and numeric literals.
 
 Also, remember that the output isn't Markdown, so be careful to not use Markdown syntax. In particular, do not use <code>\`</code> (backtick) for quoting.
 
@@ -55,9 +55,9 @@ Use simple words and terminology.
 
 Do not assume that
 
-* English is the reader's native language,
-* the reader has any formal computer science training, or
-* the reader has an advanced degree in mathematics.
+- English is the reader's native language,
+- the reader has any formal computer science training, or
+- the reader has an advanced degree in mathematics.
 
 Similarly, do not use Latin abbreviations (prefer "that is" over "i.e.," and "for example" over "e.g."). Also avoid phrases such as "if and only if" and "iff"; that level of precision is unnecessary.
 
@@ -75,7 +75,7 @@ It is extremely frustrating to work on a product that crashes with a tongue-in-c
 
 ## Things Can Happen
 
-Do not lie, that is, do not write error messages containing phrases like "can't happen".  If the user ever saw this message, it would be a lie. Prefer messages like:
+Do not lie, that is, do not write error messages containing phrases like "can't happen". If the user ever saw this message, it would be a lie. Prefer messages like:
 
     "Internal error: This function shouldn't be called when 'x' is null.".
 

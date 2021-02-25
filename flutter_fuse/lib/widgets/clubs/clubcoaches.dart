@@ -39,15 +39,17 @@ class ClubCoaches extends StatelessWidget {
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: (coaches == null || coaches.isEmpty && !clubState.loadedCoaches
-                  ? [Text(Messages.of(context).loading)]
-                  : coaches.isEmpty
-                      ? [Text(Messages.of(context).noCoaches)]
-                      : coaches.map<Widget>((c) => CoachTile(
-                            coachUid: c.uid,
-                            clubUid: c.clubUid,
-                            isAdmin: clubState.club.isAdmin(),
-                          ))).toList(),
+              children: (coaches == null ||
+                          coaches.isEmpty && !clubState.loadedCoaches
+                      ? [Text(Messages.of(context).loading)]
+                      : coaches.isEmpty
+                          ? [Text(Messages.of(context).noCoaches)]
+                          : coaches.map<Widget>((c) => CoachTile(
+                                coachUid: c.uid,
+                                clubUid: c.clubUid,
+                                isAdmin: clubState.club.isAdmin(),
+                              )))
+                  .toList(),
             );
           },
         ),

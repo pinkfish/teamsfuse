@@ -56,7 +56,9 @@ class CoachImage extends StatelessWidget {
         builder: (context, state) {
           Widget img;
           if (state is SingleClubCoachUninitialized ||
-              state is SingleClubCoachDeleted || state.coach.photoUrl == null || state.coach.photoUrl.isEmpty) {
+              state is SingleClubCoachDeleted ||
+              state.coach.photoUrl == null ||
+              state.coach.photoUrl.isEmpty) {
             img = Image.asset("assets/images/defaultavatar.png",
                 key: key,
                 width: width,

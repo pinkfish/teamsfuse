@@ -31,9 +31,9 @@ class GameSharedCardComponent {
   @Input()
   GameSharedData game;
   static DateFormat dateFormat = DateFormat.MEd();
-  static DateFormat dateWithTimeFormat = new DateFormat(
-      DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY);
-      static DateFormat timeFormat = DateFormat.jm();
+  static DateFormat dateWithTimeFormat =
+      new DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY);
+  static DateFormat timeFormat = DateFormat.jm();
   static const String API_KEY = "AIzaSyCP22ZMhWoQuzH9qIEnxYL7C_XfjWjo6tI";
   static Uri GOOGLE_PLACE_SEARCH =
       Uri.parse("https://maps.googleapis.com/maps/api/place/textsearch/json");
@@ -43,5 +43,5 @@ class GameSharedCardComponent {
 
   void openDetails() {
     _router.navigate("/a/gameshared/" + game.uid);
-   }
+  }
 }

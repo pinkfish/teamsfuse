@@ -1,8 +1,8 @@
 steps:
-- name: node
-  entrypoint: npm
-  args: ['install -g @google-cloud/functions-emulator']
-- name: node
-  entrypoint: npm
-  dir: firebase/functions
-  args: ['test']
+  - name: node
+    entrypoint: npm
+    args: ["install -g @google-cloud/functions-emulator"]
+  - name: node
+    entrypoint: npm
+    dir: firebase/functions
+    args: ["test"]

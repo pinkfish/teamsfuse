@@ -158,8 +158,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     child: TextFormField(
                                       decoration: InputDecoration(
                                         icon: const Icon(Icons.person),
-                                        hintText:
-                                            Messages.of(context).name,
+                                        hintText: Messages.of(context).name,
                                         labelText: Messages.of(context)
                                             .displaynamehint,
                                       ),

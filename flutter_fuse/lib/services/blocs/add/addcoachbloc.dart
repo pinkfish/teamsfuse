@@ -17,6 +17,7 @@ abstract class AddCoachEvent extends Equatable {}
 class AddCoachEventCommit extends AddCoachEvent {
   /// The coach to add.
   final Coach coach;
+
   /// The image file associated with the coach.
   final Uint8List imageFile;
 
@@ -34,6 +35,7 @@ class AddCoachEventCommit extends AddCoachEvent {
 class AddCoachBloc extends Bloc<AddCoachEvent, AddItemState> {
   /// The database model to use for updates to the db.
   final DatabaseUpdateModel db;
+
   /// The analytics system to use to track logged in ness.
   final AnalyticsSubsystem crashes;
 

@@ -23,9 +23,8 @@ class HighlightResult {
   final Map<String, ResultPiece> result;
 
   HighlightResult(Map<String, dynamic> data)
-      : result = (data).map(
-            (String fieldName, dynamic data) => MapEntry(fieldName,
-                ResultPiece(fieldName, data as Map<String, dynamic>)));
+      : result = (data).map((String fieldName, dynamic data) => MapEntry(
+            fieldName, ResultPiece(fieldName, data as Map<String, dynamic>)));
 
   @override
   String toString() {

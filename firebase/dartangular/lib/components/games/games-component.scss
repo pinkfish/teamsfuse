@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-@import 'package:angular_components/app_layout/mixins';
+@import "package:angular_components/app_layout/mixins";
 
 :host {
 }
@@ -34,22 +34,22 @@
 }
 
 .leading {
-   width: 100px;
-   margin: 0px;
+  width: 100px;
+  margin: 0px;
 }
 
 .trailing {
-   width: 100px;
+  width: 100px;
 }
 
 .leadingshared {
-   flex: 1;
-   margin: 0px;
+  flex: 1;
+  margin: 0px;
 }
 
 .trailingshared {
-   flex: 1;
-   width: 100px;
+  flex: 1;
+  width: 100px;
 }
 
 .resultWin {
@@ -65,20 +65,19 @@
 }
 
 .resultTie {
-  display:inline;
+  display: inline;
   font-size: 75%;
 }
 
 .teamimg {
-   width: 60px;
-   padding: 5px;
+  width: 60px;
+  padding: 5px;
 }
 
-
 .cardshared {
-  float:none;
+  float: none;
   clear: both;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
   display: flex;
   margin: 16px;
@@ -87,12 +86,11 @@
 }
 
 .cardshared:hover {
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
 }
 
-
 .card:hover {
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
 }
 
 .address {
@@ -123,7 +121,7 @@
   margin-left: 0px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis
+  text-overflow: ellipsis;
 }
 
 .leagueteamresult {

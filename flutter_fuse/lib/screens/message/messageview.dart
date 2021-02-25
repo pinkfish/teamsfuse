@@ -27,7 +27,7 @@ class ShowMessageScreen extends StatefulWidget {
 }
 
 class _ShowMessageScreenState extends State<ShowMessageScreen> {
-bool _sentReadMessage = false;
+  bool _sentReadMessage = false;
   void _archiveMessage(context) {
     var bloc = BlocProvider.of<SingleMessageBloc>(context);
     bloc.add(SingleMessageArchive());

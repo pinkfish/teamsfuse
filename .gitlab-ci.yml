@@ -19,7 +19,7 @@ unit_tests:
       - fastlane/logs
   script:
     - cd flutter_fuse/ios
-#    - fastlane tests
+  #    - fastlane tests
   tags:
     - ios
 
@@ -37,5 +37,5 @@ test_flight_build:
   tags:
     - ios
   only:
-     - /^release-.*$/
-     - master
+    - /^release-.*$/
+    - master

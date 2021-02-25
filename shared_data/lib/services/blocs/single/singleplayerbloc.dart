@@ -121,7 +121,6 @@ class _SinglePlayerSeasonsAdded extends SinglePlayerEvent {
   List<Object> get props => [seasons];
 }
 
-
 ///
 /// Bloc to handle updates and state of a specific Player.
 ///
@@ -228,11 +227,10 @@ class SinglePlayerBloc
 
     if (event is _SinglePlayerSeasonsAdded) {
       yield (SinglePlayerLoaded.fromState(state)
-        ..player = state.player.toBuilder()
-        ..seasons = ListBuilder(event.seasons)
-        ..seasonsLoaded = true)
+            ..player = state.player.toBuilder()
+            ..seasons = ListBuilder(event.seasons)
+            ..seasonsLoaded = true)
           .build();
-
     }
 
     if (event is SinglePlayerLoadInvites) {

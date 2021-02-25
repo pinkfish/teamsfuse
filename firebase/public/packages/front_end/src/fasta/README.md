@@ -3,9 +3,10 @@ Copyright (c) 2016, the Dart project authors.  Please see the AUTHORS file
 for details. All rights reserved. Use of this source code is governed by a
 BSD-style license that can be found in the LICENSE file.
 -->
+
 # Fasta -- Fully-resolved AST, Accelerated.
 
-Fasta is a compiler framework for compiling Dart sources to Kernel IR. When Fasta works well, you won't even know you're using it, as it will be transparently integrated in tools like *dart*, *dartanalyzer*, *dart2js*, etc.
+Fasta is a compiler framework for compiling Dart sources to Kernel IR. When Fasta works well, you won't even know you're using it, as it will be transparently integrated in tools like _dart_, _dartanalyzer_, _dart2js_, etc.
 
 Hopefully, you'll notice that Fasta-based tools are fast, with good error messages. If not, please let us [know](https://github.com/dart-lang/sdk/issues/new).
 

@@ -9,15 +9,20 @@ import 'package:meta/meta.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
 
+/// The event for all the single player bloc events
 abstract class SinglePlayerEvent extends Equatable {}
 
 ///
 /// Updates the Player (writes it out to firebase.
 ///
 class SinglePlayerUpdate extends SinglePlayerEvent {
+  /// The player to update.
   final PlayerBuilder player;
+
+  /// Optional image to set for the player.
   final File image;
 
+  /// Create the update request.
   SinglePlayerUpdate({@required this.player, this.image});
 
   @override
@@ -28,8 +33,10 @@ class SinglePlayerUpdate extends SinglePlayerEvent {
 /// Updates the image for the Player.
 ///
 class SinglePlayerUpdateImage extends SinglePlayerEvent {
+  /// The image for the player.
   final File image;
 
+  /// Update just just the image.
   SinglePlayerUpdateImage({@required this.image});
 
   @override
@@ -40,9 +47,13 @@ class SinglePlayerUpdateImage extends SinglePlayerEvent {
 /// Invites someone to be an person for this Player.
 ///
 class SinglePlayerInviteUser extends SinglePlayerEvent {
+  /// Email to invite to the player.
   final String email;
+
+  /// The relationship the player will have with this player.
   final Relationship relationship;
 
+  /// Create the invite to the user.
   SinglePlayerInviteUser({@required this.email, this.relationship});
 
   @override
@@ -53,8 +64,6 @@ class SinglePlayerInviteUser extends SinglePlayerEvent {
 /// Delete this Player from the world.
 ///
 class SinglePlayerDelete extends SinglePlayerEvent {
-  SinglePlayerDelete();
-
   @override
   List<Object> get props => [];
 }
@@ -63,8 +72,6 @@ class SinglePlayerDelete extends SinglePlayerEvent {
 /// Loads the invites from firebase.
 ///
 class SinglePlayerLoadInvites extends SinglePlayerEvent {
-  SinglePlayerLoadInvites();
-
   @override
   List<Object> get props => [];
 }
@@ -73,8 +80,6 @@ class SinglePlayerLoadInvites extends SinglePlayerEvent {
 /// Loads the profile from firebase.
 ///
 class SinglePlayerLoadProfile extends SinglePlayerEvent {
-  SinglePlayerLoadProfile();
-
   @override
   List<Object> get props => [];
 }
@@ -121,20 +126,25 @@ class _SinglePlayerSeasonsAdded extends SinglePlayerEvent {
   List<Object> get props => [seasons];
 }
 
-
 ///
 /// Bloc to handle updates and state of a specific Player.
 ///
 class SinglePlayerBloc
     extends AsyncHydratedBloc<SinglePlayerEvent, SinglePlayerState> {
+  /// The player uid to use to find the data.
   final String playerUid;
+
+  /// The database to get the data from.
   final DatabaseUpdateModel db;
+
+  /// Where to report crashes.
   final AnalyticsSubsystem crashes;
 
   StreamSubscription<Player> _playerSub;
   StreamSubscription<Iterable<InviteToPlayer>> _inviteSub;
   StreamSubscription<Iterable<Season>> _seasonSub;
 
+  /// Create the single player bloc to load the data for the player.
   SinglePlayerBloc(
       {@required this.db, @required this.playerUid, @required this.crashes})
       : super(SinglePlayerUninitialized(), playerUid) {
@@ -228,11 +238,10 @@ class SinglePlayerBloc
 
     if (event is _SinglePlayerSeasonsAdded) {
       yield (SinglePlayerLoaded.fromState(state)
-        ..player = state.player.toBuilder()
-        ..seasons = ListBuilder(event.seasons)
-        ..seasonsLoaded = true)
+            ..player = state.player.toBuilder()
+            ..seasons = ListBuilder(event.seasons)
+            ..seasonsLoaded = true)
           .build();
-
     }
 
     if (event is SinglePlayerLoadInvites) {

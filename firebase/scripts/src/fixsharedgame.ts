@@ -12,12 +12,12 @@ const params = {
   authUri: serviceAccount.auth_uri,
   tokenUri: serviceAccount.token_uri,
   authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
-  clientC509CertUrl: serviceAccount.client_x509_cert_url
+  clientC509CertUrl: serviceAccount.client_x509_cert_url,
 };
 
 admin.initializeApp({
   credential: admin.credential.cert(params),
-  databaseURL: "https://teamsfuse.firebaseio.com"
+  databaseURL: "https://teamsfuse.firebaseio.com",
 });
 
 const db = admin.firestore();
@@ -26,11 +26,11 @@ export async function updateSharedGames(): Promise<void> {
   await db
     .collection("GamesShared")
     .get()
-    .then(snap => {
+    .then((snap) => {
       const ret = [];
       for (const index in snap.docs) {
         ret.push(
-          (function(myDoc) {
+          (function (myDoc) {
             const sharedData = myDoc.data();
 
             console.log("fixing shared " + myDoc.id);
@@ -59,11 +59,11 @@ export async function updateGameScores(): Promise<void> {
   await db
     .collection("Games")
     .get()
-    .then(snap => {
+    .then((snap) => {
       const ret = [];
       for (const index in snap.docs) {
         ret.push(
-          (async function(myDoc) {
+          (async function (myDoc) {
             const sharedData = myDoc.data();
 
             console.log("fixing game " + myDoc.id);
@@ -83,8 +83,8 @@ export async function updateGameScores(): Promise<void> {
                 type: sharedData.type,
                 officialResult: {
                   scores: {},
-                  result: "NotStarted"
-                }
+                  result: "NotStarted",
+                },
               };
               console.log(toUpdate);
               await myDoc.ref.update({ sharedGameUid: newDoc.id });
@@ -102,10 +102,10 @@ export async function updateAllGames(): Promise<void> {
   await db
     .collection("Games")
     .get()
-    .then(snap => {
+    .then((snap) => {
       const ret = [];
       for (const index in snap.docs) {
-        (function(myDoc) {
+        (function (myDoc) {
           const data = myDoc.data();
           if (data != null) {
             // Add in the data and update the game.
@@ -197,11 +197,11 @@ export async function updateSeason(): Promise<void> {
   await db
     .collection("Seasons")
     .get()
-    .then(snap => {
+    .then((snap) => {
       const ret = [];
       for (const index in snap.docs) {
         ret.push(
-          (function(myDoc) {
+          (function (myDoc) {
             const sharedData = myDoc.data();
 
             console.log("fixing season " + myDoc.id);
@@ -218,11 +218,11 @@ export async function updateInvites(): Promise<void> {
   await db
     .collection("Invites")
     .get()
-    .then(snap => {
+    .then((snap) => {
       const ret = [];
       for (const index in snap.docs) {
         ret.push(
-          (function(myDoc) {
+          (function (myDoc) {
             const sharedData = myDoc.data();
 
             console.log("fixing invite " + myDoc.id);
@@ -239,19 +239,16 @@ export async function updateTeams(): Promise<void> {
   await db
     .collection("Teams")
     .get()
-    .then(snap => {
+    .then((snap) => {
       const ret = [];
       for (const index in snap.docs) {
         ret.push(
-          (function(myDoc) {
+          (function (myDoc) {
             const sharedData = myDoc.data();
 
             console.log("fixing team " + myDoc.id);
             sharedData.uid = myDoc.id;
-            return db
-              .collection("Teams")
-              .doc(myDoc.id)
-              .update(sharedData);
+            return db.collection("Teams").doc(myDoc.id).update(sharedData);
           })(snap.docs[index])
         );
       }
@@ -263,11 +260,11 @@ export async function updateGameLogs(): Promise<void> {
   await db
     .collectionGroup("Logs")
     .get()
-    .then(snap => {
+    .then((snap) => {
       const ret = [];
       for (const index in snap.docs) {
         ret.push(
-          (function(myDoc) {
+          (function (myDoc) {
             const sharedData = myDoc.data();
 
             console.log("fixing game log " + myDoc.id);
@@ -278,7 +275,7 @@ export async function updateGameLogs(): Promise<void> {
       }
       return Promise.all(ret);
     })
-    .catch(e => {
+    .catch((e) => {
       console.log(e);
     });
 }
@@ -314,10 +311,7 @@ export async function deleteAllGamesFor(): Promise<void> {
       const op = myDoc.data();
 
       console.log("deleteing game " + myDoc.id + "  " + op.sharedDataUid);
-      await db
-        .collection("Games")
-        .doc(myDoc.id)
-        .delete();
+      await db.collection("Games").doc(myDoc.id).delete();
       //await db.collection("GamesShared").doc(op.sharedDataUid).delete();
     }
   } catch (e) {
@@ -353,7 +347,7 @@ export async function fixupSharedGames(): Promise<void> {
       const myDoc = snap.docs[index];
       const op = myDoc.data();
 
-      if (op.type === "Training" ) {
+      if (op.type === "Training") {
         console.log("Updating " + myDoc.id);
         await db
           .collection("GamesShared")
@@ -373,19 +367,18 @@ export async function fixupGameScores(): Promise<void> {
       const myDoc = snap.docs[index];
       const op = myDoc.data();
 
-      if ( op.result.scores["Final"] !== undefined) {
+      if (op.result.scores["Final"] !== undefined) {
         console.log("Updating " + myDoc.id);
         await db
           .collection("Games")
           .doc(myDoc.id)
-          .update({ "result.scores.Regulation": op.result.scores["Final"], });
+          .update({ "result.scores.Regulation": op.result.scores["Final"] });
       }
     }
   } catch (e) {
     console.log(e);
   }
 }
-
 
 export async function deleteOrphanedSharedGames(): Promise<void> {
   try {
@@ -406,10 +399,7 @@ export async function deleteOrphanedSharedGames(): Promise<void> {
           sharedData.leagueUid === "")
       ) {
         console.log("Deleting " + myDoc.id + " " + gameSnap.size);
-        await db
-          .collection("GamesShared")
-          .doc(myDoc.id)
-          .delete();
+        await db.collection("GamesShared").doc(myDoc.id).delete();
       } else {
         console.log("Found " + myDoc.id + " " + sharedData.leagueUid);
       }
@@ -428,14 +418,12 @@ export async function deleteOrphanedSharedGames(): Promise<void> {
 //updateGameScores();
 //updateOpponents();
 
-
 //convertSharedGametoSharedData();
 
 export async function doStuff() {
-await fixupGameScores();
+  await fixupGameScores();
 }
 
 doStuff();
 
 //fixupSharedGames();
-

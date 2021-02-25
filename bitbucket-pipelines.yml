@@ -31,11 +31,11 @@ pipelines:
           - cd ..
           - pipe: atlassian/firebase-deploy:0.2.0
             variables:
-              FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
+              FIREBASE_TOKEN: "1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ"
               #PROJECT_ID: 'Teamsfuse'
-              MESSAGE: 'Deploying TeamsFuse functions'
-              EXTRA_ARGS: '--only functions,firestore'
-              DEBUG: 'false'
+              MESSAGE: "Deploying TeamsFuse functions"
+              EXTRA_ARGS: "--only functions,firestore"
+              DEBUG: "false"
   custom: # pipelines that can only be triggered manually.
     deploy-to-prod:
       - step:
@@ -57,8 +57,8 @@ pipelines:
             - git push
             - pipe: atlassian/firebase-deploy:0.2.0
               variables:
-                FIREBASE_TOKEN: '1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ'
+                FIREBASE_TOKEN: "1/AbUh26_WYBfWEJJLlJaXXCGwTRFGChXTRh_tvRWQTD0LQp8QLs0D36IInl9U6euQ"
                 #PROJECT_ID: 'teamsfuse'
-                MESSAGE: 'Deploying Teamsfuse hosting'
-                EXTRA_ARGS: '--only hosting'
-                DEBUG: 'false'
+                MESSAGE: "Deploying Teamsfuse hosting"
+                EXTRA_ARGS: "--only hosting"
+                DEBUG: "false"

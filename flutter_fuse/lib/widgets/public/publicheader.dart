@@ -35,7 +35,8 @@ class PublicHeader extends StatelessWidget {
               width: 50,
               height: 50,
             ),
-            Text(singleClubState.club?.name ?? "Womble?", style: Theme.of(context).textTheme.headline4),
+            Text(singleClubState.club?.name ?? "Womble?",
+                style: Theme.of(context).textTheme.headline4),
           ]);
         },
       ),

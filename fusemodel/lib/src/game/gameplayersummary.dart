@@ -23,9 +23,13 @@ abstract class GamePlayerSummary
   /// If the person is playing.
   bool get playing;
 
+  /// The jersey number for the player.
+  String get jerseyNumber;
+
   static void _initializeBuilder(GamePlayerSummaryBuilder b) => b
     ..currentlyPlaying = false
-    ..playing = true;
+    ..playing = true
+    ..jerseyNumber = "";
 
   GamePlayerSummary._();
 

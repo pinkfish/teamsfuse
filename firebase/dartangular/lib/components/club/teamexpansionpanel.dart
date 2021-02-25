@@ -38,12 +38,11 @@ class TeamExpansionPanelComponent implements OnDestroy, OnInit {
   @override
   void ngOnInit() {
     print('Making panel');
-_db.getSingleSeason(team.currentSeason).listen((s) {
-  _controllers.add(
-   "${s.name} Win: ${s.record.win} Loss: ${s.record.loss} Tie: ${s.record.tie}");
-});
+    _db.getSingleSeason(team.currentSeason).listen((s) {
+      _controllers.add(
+          "${s.name} Win: ${s.record.win} Loss: ${s.record.loss} Tie: ${s.record.tie}");
+    });
   }
-
 
   @override
   void ngOnDestroy() {}

@@ -124,6 +124,19 @@ abstract class Game implements Built<Game, GameBuilder> {
     ]);
   }
 
+  ///
+  /// Return the player summary for the player, null does not exist.
+  ///
+  GamePlayerSummary getPlayerSummary(String playerUid) {
+    if (players.containsKey(playerUid)) {
+      return players[playerUid];
+    }
+    if (opponents.containsKey(playerUid)) {
+      return opponents[playerUid];
+    }
+    return null;
+  }
+
   /// The current time of the game, used when making events.
   Duration get currentGameTime {
     int diff = 0;

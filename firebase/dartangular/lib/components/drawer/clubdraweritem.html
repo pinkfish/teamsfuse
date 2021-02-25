@@ -1,12 +1,21 @@
-<material-list-item (trigger)="openTeam()" style="flex-wrap: wrap; margin-bottom: 5px">
-    <material-icon icon="people"></material-icon>
-    <div style="align-items: stretch">
-        {{club.name}}
-    </div>
-    <br clear="both">
-    <i style="font-size:75%; align-items: stretch; line-height: 16px; margin-left: 24px; color: #9e9e9e;" >
-        {{numTeams}} club teams
-    </i>
-    <!--<div style="font-size:75%; display: block"> -->
-    <!-- </div> -->
+<material-list-item
+  (trigger)="openTeam()"
+  style="flex-wrap: wrap; margin-bottom: 5px"
+>
+  <material-icon icon="people"></material-icon>
+  <div style="align-items: stretch">{{club.name}}</div>
+  <br clear="both" />
+  <i
+    style="
+      font-size: 75%;
+      align-items: stretch;
+      line-height: 16px;
+      margin-left: 24px;
+      color: #9e9e9e;
+    "
+  >
+    {{numTeams}} club teams
+  </i>
+  <!--<div style="font-size:75%; display: block"> -->
+  <!-- </div> -->
 </material-list-item>

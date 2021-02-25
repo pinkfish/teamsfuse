@@ -12,7 +12,7 @@ typedef SingleTeamSeasonPlayerProviderBuilder = Widget Function(
     BuildContext context, SingleTeamSeasonPlayerBloc singleTeamSeasonBloc);
 
 ///
-/// Create a provider that will insert the singe teamSeason bloc into the tree if the
+/// Create a provider that will insert the single teamSeason bloc into the tree if the
 /// bloc is not current provided or is different than the teamSeasonuid.
 ///
 class SingleTeamSeasonPlayerProvider
@@ -31,7 +31,6 @@ class SingleTeamSeasonPlayerProvider
   bool isBlocEqual(Bloc bloc) {
     return (bloc is SingleTeamSeasonPlayerBloc && bloc.playerUid == keyUid);
   }
-
 
   static SingleTeamSeasonPlayerBloc _createBloc(
       BuildContext context, String playerUid, String seasonUid) {

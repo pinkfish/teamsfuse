@@ -10,7 +10,6 @@ import '../form/datetimeformfield.dart';
 import '../form/placesformfield.dart';
 import '../util/ensurevisiblewhenfocused.dart';
 
-
 ///
 /// This form has all the stuff needed to edit the main parts
 /// of the game.  Does not have the add game step flow.
@@ -40,7 +39,6 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
       GlobalKey<DateTimeFormFieldState>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Validations _validations = Validations();
-
 
   /// If the form should validate on every change, or only on a save.
   bool autovalidate = false;
@@ -153,15 +151,16 @@ class SharedGameEditFormState extends State<SharedGameEditForm> {
                   ],
                 ),
                 PlacesFormField(
-                  initialValue: PlaceAndTimezone(widget.game.place,
-                      widget.game.timezone),
+                  initialValue:
+                      PlaceAndTimezone(widget.game.place, widget.game.timezone),
                   labelText: Messages.of(context).selectplace,
                   decoration: const InputDecoration(icon: Icon(Icons.place)),
                   onSaved: (loc) {
                     _builder.place = loc.place.toBuilder();
                     _builder.timezone = loc.timeZone;
                   },
-                  validator: (place) => _validations.validateGamePlace(context, place.place),
+                  validator: (place) =>
+                      _validations.validateGamePlace(context, place.place),
                 ),
                 EnsureVisibleWhenFocused(
                   focusNode: _focusNodePlaceNotes,

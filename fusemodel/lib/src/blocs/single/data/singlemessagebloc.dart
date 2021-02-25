@@ -20,7 +20,8 @@ class SingleMessageBlocStateType extends EnumClass {
   static const SingleMessageBlocStateType SaveFailed = _$saveFailed;
   static const SingleMessageBlocStateType Saving = _$saving;
   static const SingleMessageBlocStateType SaveDone = _$saveDone;
-  static const SingleMessageBlocStateType SingleMessageChange = _$singleMessageChange;
+  static const SingleMessageBlocStateType SingleMessageChange =
+      _$singleMessageChange;
 
   const SingleMessageBlocStateType._(String name) : super(name);
 
@@ -28,7 +29,6 @@ class SingleMessageBlocStateType extends EnumClass {
 
   static SingleMessageBlocStateType valueOf(String name) => _$valueOf(name);
 }
-
 
 ///
 /// The base state for the singleMessage bloc.  It tracks all the
@@ -53,8 +53,8 @@ abstract class SingleMessageState {
       ..loadedBody = state.loadedBody;
   }
 
-  static void initializeStateBuilder(SingleMessageStateBuilder b) => b
-    ..loadedBody = false;
+  static void initializeStateBuilder(SingleMessageStateBuilder b) =>
+      b..loadedBody = false;
 
   Map<String, dynamic> toMap();
 }
@@ -67,8 +67,9 @@ abstract class SingleMessageLoaded
         SingleMessageState,
         Built<SingleMessageLoaded, SingleMessageLoadedBuilder> {
   SingleMessageLoaded._();
-  factory SingleMessageLoaded([void Function(SingleMessageLoadedBuilder) updates]) =
-  _$SingleMessageLoaded;
+  factory SingleMessageLoaded(
+          [void Function(SingleMessageLoadedBuilder) updates]) =
+      _$SingleMessageLoaded;
 
   static SingleMessageLoadedBuilder fromState(SingleMessageState state) {
     return SingleMessageState.fromState(state, SingleMessageLoadedBuilder());
@@ -86,7 +87,8 @@ abstract class SingleMessageLoaded
   }
 
   static SingleMessageLoaded fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(SingleMessageLoaded.serializer, jsonData);
+    return serializers.deserializeWith(
+        SingleMessageLoaded.serializer, jsonData);
   }
 
   static Serializer<SingleMessageLoaded> get serializer =>
@@ -102,8 +104,8 @@ abstract class SingleMessageUninitialized
         Built<SingleMessageUninitialized, SingleMessageUninitializedBuilder> {
   SingleMessageUninitialized._();
   factory SingleMessageUninitialized(
-      [void Function(SingleMessageUninitializedBuilder) updates]) =
-  _$SingleMessageUninitialized;
+          [void Function(SingleMessageUninitializedBuilder) updates]) =
+      _$SingleMessageUninitialized;
 
   static SingleMessageUninitializedBuilder fromState(SingleMessageState state) {
     // Nothing set in this case, just the type and defaults.
@@ -118,7 +120,8 @@ abstract class SingleMessageUninitialized
   }
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(SingleMessageUninitialized.serializer, this);
+    return serializers.serializeWith(
+        SingleMessageUninitialized.serializer, this);
   }
 
   static SingleMessageUninitialized fromMap(Map<String, dynamic> jsonData) {
@@ -138,8 +141,9 @@ abstract class SingleMessageDeleted
         SingleMessageState,
         Built<SingleMessageDeleted, SingleMessageDeletedBuilder> {
   SingleMessageDeleted._();
-  factory SingleMessageDeleted([void Function(SingleMessageDeletedBuilder) updates]) =
-  _$SingleMessageDeleted;
+  factory SingleMessageDeleted(
+          [void Function(SingleMessageDeletedBuilder) updates]) =
+      _$SingleMessageDeleted;
 
   static SingleMessageDeletedBuilder fromState(SingleMessageState state) {
     // Nothing set in this case, just the type.
@@ -158,7 +162,8 @@ abstract class SingleMessageDeleted
   }
 
   static SingleMessageDeleted fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(SingleMessageDeleted.serializer, jsonData);
+    return serializers.deserializeWith(
+        SingleMessageDeleted.serializer, jsonData);
   }
 
   static Serializer<SingleMessageDeleted> get serializer =>
@@ -177,11 +182,12 @@ abstract class SingleMessageSaveFailed
 
   SingleMessageSaveFailed._();
   factory SingleMessageSaveFailed(
-      [void Function(SingleMessageSaveFailedBuilder) updates]) =
-  _$SingleMessageSaveFailed;
+          [void Function(SingleMessageSaveFailedBuilder) updates]) =
+      _$SingleMessageSaveFailed;
 
   static SingleMessageSaveFailedBuilder fromState(SingleMessageState state) {
-    return SingleMessageState.fromState(state, SingleMessageSaveFailedBuilder());
+    return SingleMessageState.fromState(
+        state, SingleMessageSaveFailedBuilder());
   }
 
   /// Defaults for the state.  Always default to no messages loaded.
@@ -212,8 +218,9 @@ abstract class SingleMessageSaving
         SingleMessageState,
         Built<SingleMessageSaving, SingleMessageSavingBuilder> {
   SingleMessageSaving._();
-  factory SingleMessageSaving([void Function(SingleMessageSavingBuilder) updates]) =
-  _$SingleMessageSaving;
+  factory SingleMessageSaving(
+          [void Function(SingleMessageSavingBuilder) updates]) =
+      _$SingleMessageSaving;
 
   static SingleMessageSavingBuilder fromState(SingleMessageState state) {
     return SingleMessageState.fromState(state, SingleMessageSavingBuilder());
@@ -231,7 +238,8 @@ abstract class SingleMessageSaving
   }
 
   static SingleMessageSaving fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(SingleMessageSaving.serializer, jsonData);
+    return serializers.deserializeWith(
+        SingleMessageSaving.serializer, jsonData);
   }
 
   static Serializer<SingleMessageSaving> get serializer =>
@@ -247,8 +255,8 @@ abstract class SingleMessageSaveDone
         Built<SingleMessageSaveDone, SingleMessageSaveDoneBuilder> {
   SingleMessageSaveDone._();
   factory SingleMessageSaveDone(
-      [void Function(SingleMessageSaveDoneBuilder) updates]) =
-  _$SingleMessageSaveDone;
+          [void Function(SingleMessageSaveDoneBuilder) updates]) =
+      _$SingleMessageSaveDone;
 
   static SingleMessageSaveDoneBuilder fromState(SingleMessageState state) {
     return SingleMessageState.fromState(state, SingleMessageSaveDoneBuilder());
@@ -266,7 +274,8 @@ abstract class SingleMessageSaveDone
   }
 
   static SingleMessageSaveDone fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(SingleMessageSaveDone.serializer, jsonData);
+    return serializers.deserializeWith(
+        SingleMessageSaveDone.serializer, jsonData);
   }
 
   static Serializer<SingleMessageSaveDone> get serializer =>

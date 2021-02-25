@@ -4,63 +4,73 @@
 
 // This script runs in HTML files and loads the corresponding test scripts for
 // a JS browser. It's used by "pub serve" and user-authored HTML files;
-window.onload = function() {
+window.onload = function () {
+  // Sends an error message to the server indicating that the script failed to
+  // load.
+  //
+  // This mimics a MultiChannel-formatted message.
+  var sendLoadException = function (message) {
+    window.parent.postMessage(
+      {
+        href: window.location.href,
+        data: [0, { type: "loadException", message: message }],
+      },
+      window.location.origin
+    );
+  };
 
-// Sends an error message to the server indicating that the script failed to
-// load.
-//
-// This mimics a MultiChannel-formatted message.
-var sendLoadException = function(message) {
-  window.parent.postMessage({
-    "href": window.location.href,
-    "data": [0, {"type": "loadException", "message": message}]
-  }, window.location.origin);
-}
+  // Listen for dartLoadException events and forward to the server.
+  window.addEventListener("dartLoadException", function (e) {
+    sendLoadException(e.detail);
+  });
 
-// Listen for dartLoadException events and forward to the server.
-window.addEventListener('dartLoadException', function(e) {
-  sendLoadException(e.detail);
-});
+  // The basename of the current page.
+  var name = window.location.href.replace(/.*\//, "").replace(/#.*/, "");
 
-// The basename of the current page.
-var name = window.location.href.replace(/.*\//, '').replace(/#.*/, '');
+  // Find <link rel="x-dart-test">.
+  var links = document.getElementsByTagName("link");
+  var testLinks = [];
+  var length = links.length;
+  for (var i = 0; i < length; ++i) {
+    if (links[i].rel == "x-dart-test") testLinks.push(links[i]);
+  }
 
-// Find <link rel="x-dart-test">.
-var links = document.getElementsByTagName("link");
-var testLinks = [];
-var length = links.length;
-for (var i = 0; i < length; ++i) {
-  if (links[i].rel == "x-dart-test") testLinks.push(links[i]);
-}
+  if (testLinks.length != 1) {
+    sendLoadException(
+      'Expected exactly 1 <link rel="x-dart-test"> in ' +
+        name +
+        ", found " +
+        testLinks.length +
+        "."
+    );
+    return;
+  }
 
-if (testLinks.length != 1) {
-  sendLoadException(
-      'Expected exactly 1 <link rel="x-dart-test"> in ' + name + ', found ' +
-          testLinks.length + '.');
-  return;
-}
+  var link = testLinks[0];
 
-var link = testLinks[0];
+  if (link.href == "") {
+    sendLoadException(
+      'Expected <link rel="x-dart-test"> in ' +
+        name +
+        ' to have an "href" ' +
+        "attribute."
+    );
+    return;
+  }
 
-if (link.href == '') {
-  sendLoadException(
-      'Expected <link rel="x-dart-test"> in ' + name + ' to have an "href" ' +
-          'attribute.');
-  return;
-}
+  var script = document.createElement("script");
 
-var script = document.createElement('script');
+  script.src = link.href + ".browser_test.dart.js";
 
-script.src = link.href + '.browser_test.dart.js';
-
-script.onerror = function(event) {
-  var message = "Failed to load script at " + script.src +
+  script.onerror = function (event) {
+    var message =
+      "Failed to load script at " +
+      script.src +
       (event.message ? ": " + event.message : ".");
-  sendLoadException(message);
-}
+    sendLoadException(message);
+  };
 
-var parent = link.parentNode;
-document.currentScript = script;
-parent.replaceChild(script, link);
-
+  var parent = link.parentNode;
+  document.currentScript = script;
+  parent.replaceChild(script, link);
 };

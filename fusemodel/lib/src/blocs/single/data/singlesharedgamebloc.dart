@@ -38,11 +38,9 @@ abstract class SingleSharedGameState {
   GameSharedData get sharedGame;
   SingleSharedGameBlocStateType get type;
 
-
   static SingleSharedGameStateBuilder fromState(
       SingleSharedGameState state, SingleSharedGameStateBuilder builder) {
-    return builder
-      ..sharedGame = state.sharedGame?.toBuilder();
+    return builder..sharedGame = state.sharedGame?.toBuilder();
   }
 
   static void initializeStateBuilder(SingleSharedGameStateBuilder b) => b;
@@ -59,11 +57,12 @@ abstract class SingleSharedGameLoaded
         Built<SingleSharedGameLoaded, SingleSharedGameLoadedBuilder> {
   SingleSharedGameLoaded._();
   factory SingleSharedGameLoaded(
-      [void Function(SingleSharedGameLoadedBuilder) updates]) =
-  _$SingleSharedGameLoaded;
+          [void Function(SingleSharedGameLoadedBuilder) updates]) =
+      _$SingleSharedGameLoaded;
 
   static SingleSharedGameLoadedBuilder fromState(SingleSharedGameState state) {
-    return SingleSharedGameState.fromState(state, SingleSharedGameLoadedBuilder());
+    return SingleSharedGameState.fromState(
+        state, SingleSharedGameLoadedBuilder());
   }
 
   /// Defaults for the state.  Always default to no games loaded.
@@ -78,7 +77,8 @@ abstract class SingleSharedGameLoaded
   }
 
   static SingleSharedGameLoaded fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(SingleSharedGameLoaded.serializer, jsonData);
+    return serializers.deserializeWith(
+        SingleSharedGameLoaded.serializer, jsonData);
   }
 
   static Serializer<SingleSharedGameLoaded> get serializer =>
@@ -91,13 +91,15 @@ abstract class SingleSharedGameLoaded
 abstract class SingleSharedGameUninitialized
     implements
         SingleSharedGameState,
-        Built<SingleSharedGameUninitialized, SingleSharedGameUninitializedBuilder> {
+        Built<SingleSharedGameUninitialized,
+            SingleSharedGameUninitializedBuilder> {
   SingleSharedGameUninitialized._();
   factory SingleSharedGameUninitialized(
-      [void Function(SingleSharedGameUninitializedBuilder) updates]) =
-  _$SingleSharedGameUninitialized;
+          [void Function(SingleSharedGameUninitializedBuilder) updates]) =
+      _$SingleSharedGameUninitialized;
 
-  static SingleSharedGameUninitializedBuilder fromState(SingleSharedGameState state) {
+  static SingleSharedGameUninitializedBuilder fromState(
+      SingleSharedGameState state) {
     // Nothing set in this case, just the type and defaults.
     return SingleSharedGameUninitializedBuilder();
   }
@@ -132,8 +134,8 @@ abstract class SingleSharedGameDeleted
         Built<SingleSharedGameDeleted, SingleSharedGameDeletedBuilder> {
   SingleSharedGameDeleted._();
   factory SingleSharedGameDeleted(
-      [void Function(SingleSharedGameDeletedBuilder) updates]) =
-  _$SingleSharedGameDeleted;
+          [void Function(SingleSharedGameDeletedBuilder) updates]) =
+      _$SingleSharedGameDeleted;
 
   static SingleSharedGameDeletedBuilder fromState(SingleSharedGameState state) {
     // Nothing set in this case, just the type.
@@ -172,11 +174,13 @@ abstract class SingleSharedGameSaveFailed
 
   SingleSharedGameSaveFailed._();
   factory SingleSharedGameSaveFailed(
-      [void Function(SingleSharedGameSaveFailedBuilder) updates]) =
-  _$SingleSharedGameSaveFailed;
+          [void Function(SingleSharedGameSaveFailedBuilder) updates]) =
+      _$SingleSharedGameSaveFailed;
 
-  static SingleSharedGameSaveFailedBuilder fromState(SingleSharedGameState state) {
-    return SingleSharedGameState.fromState(state, SingleSharedGameSaveFailedBuilder());
+  static SingleSharedGameSaveFailedBuilder fromState(
+      SingleSharedGameState state) {
+    return SingleSharedGameState.fromState(
+        state, SingleSharedGameSaveFailedBuilder());
   }
 
   /// Defaults for the state.  Always default to no games loaded.
@@ -187,7 +191,8 @@ abstract class SingleSharedGameSaveFailed
   }
 
   Map<String, dynamic> toMap() {
-    return serializers.serializeWith(SingleSharedGameSaveFailed.serializer, this);
+    return serializers.serializeWith(
+        SingleSharedGameSaveFailed.serializer, this);
   }
 
   static SingleSharedGameSaveFailed fromMap(Map<String, dynamic> jsonData) {
@@ -208,11 +213,12 @@ abstract class SingleSharedGameSaving
         Built<SingleSharedGameSaving, SingleSharedGameSavingBuilder> {
   SingleSharedGameSaving._();
   factory SingleSharedGameSaving(
-      [void Function(SingleSharedGameSavingBuilder) updates]) =
-  _$SingleSharedGameSaving;
+          [void Function(SingleSharedGameSavingBuilder) updates]) =
+      _$SingleSharedGameSaving;
 
   static SingleSharedGameSavingBuilder fromState(SingleSharedGameState state) {
-    return SingleSharedGameState.fromState(state, SingleSharedGameSavingBuilder());
+    return SingleSharedGameState.fromState(
+        state, SingleSharedGameSavingBuilder());
   }
 
   /// Defaults for the state.  Always default to no games loaded.
@@ -227,7 +233,8 @@ abstract class SingleSharedGameSaving
   }
 
   static SingleSharedGameSaving fromMap(Map<String, dynamic> jsonData) {
-    return serializers.deserializeWith(SingleSharedGameSaving.serializer, jsonData);
+    return serializers.deserializeWith(
+        SingleSharedGameSaving.serializer, jsonData);
   }
 
   static Serializer<SingleSharedGameSaving> get serializer =>
@@ -243,11 +250,13 @@ abstract class SingleSharedGameSaveDone
         Built<SingleSharedGameSaveDone, SingleSharedGameSaveDoneBuilder> {
   SingleSharedGameSaveDone._();
   factory SingleSharedGameSaveDone(
-      [void Function(SingleSharedGameSaveDoneBuilder) updates]) =
-  _$SingleSharedGameSaveDone;
+          [void Function(SingleSharedGameSaveDoneBuilder) updates]) =
+      _$SingleSharedGameSaveDone;
 
-  static SingleSharedGameSaveDoneBuilder fromState(SingleSharedGameState state) {
-    return SingleSharedGameState.fromState(state, SingleSharedGameSaveDoneBuilder());
+  static SingleSharedGameSaveDoneBuilder fromState(
+      SingleSharedGameState state) {
+    return SingleSharedGameState.fromState(
+        state, SingleSharedGameSaveDoneBuilder());
   }
 
   /// Defaults for the state.  Always default to no games loaded.

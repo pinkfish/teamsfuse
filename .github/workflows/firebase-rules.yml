@@ -3,13 +3,13 @@ name: Firebase rules
 # Update when the functions change or this changes.
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - "firebase/*.rules"
       - "firebase/*.indexes.json"
       - ".github/workflows/firebase-rules.yml"
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
       - "firebase/*.rules"
       - "firebase/*.indexes.json"
@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@master
       - uses: actions/setup-java@v1
         with:
-          java-version: '12.x'
+          java-version: "12.x"
       - name: Get npm cache directory
         id: npm-cache
         run: |

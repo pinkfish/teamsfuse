@@ -70,7 +70,8 @@ class AddMessageBloc extends Bloc<AddMessageEvent, AddItemState> {
                   ..state = MessageReadState.Unread
                   ..userId = userId
                   ..sentAt = Timestamp.now().toUtc()
-                  ..fromUid = coordinationBloc.authenticationBloc.currentUser.uid
+                  ..fromUid =
+                      coordinationBloc.authenticationBloc.currentUser.uid
                   ..playerId = str.trim());
               }
             } else {

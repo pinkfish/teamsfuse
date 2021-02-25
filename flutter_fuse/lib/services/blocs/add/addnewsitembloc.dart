@@ -31,6 +31,7 @@ class AddNewsItemEventCommit extends AddNewsItemEvent {
 class AddNewsItemBloc extends Bloc<AddNewsItemEvent, AddItemState> {
   /// The database model to use for updates to the db.
   final DatabaseUpdateModel db;
+
   /// The analytics system to use to track logged in ness.
   final AnalyticsSubsystem crashes;
 

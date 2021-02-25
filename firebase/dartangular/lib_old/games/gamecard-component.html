@@ -1,57 +1,72 @@
-<div *ngIf="game == null">
-    Loading...
-</div>
+<div *ngIf="game == null">Loading...</div>
 
-<div *ngIf="game != null" class="card shadow rounded" (click)="openDetails()" style="margin-bottom:10px">
-    <div class="card-body">
-        <img src="{{teamUrl}}" width="50" height="50" style="float: right; margin-right: 10px"/>
-        <h6 [ngSwitch]="game.sharedData.type.toString()" class="card-title">
-            <template [ngSwitchCase]="'EventType.Game'">
-                {{GameCardComponent.dateWithTimeFormat.format(game.sharedData.tzTime)}}  vs {{opponent}}
-            </template>
-            <template [ngSwitchCase]="'EventType.Practice'">
-                {{GameCardComponent.dateWithTimeFormat.format(game.sharedData.tzTime)}} <small class="text-muted">practice</small>
-            </template>
-            <template [ngSwitchCase]="'EventType.Event'">
-                {{GameCardComponent.dateWithTimeFormat.format(game.sharedData.tzTime)}} <small class="text-muted">event</small>
-            </template>
-            <template ngSwitchDefault>
-                {{game.sharedData.type.toString() == 'EventType.Game'}}
-            </template>
-        </h6>
-        <h6 class="card-subtitle text-muted mb-2 small"><i>{{teamName}}</i></h6>
-        <div class="card-text">
-            <div *ngIf="game.result.inProgress.toString() == 'GameInProgress.InProgress'">
-                {{gameResult()}}
-            </div>
-            <div>
-                {{game.sharedData.place.address}} {{game.sharedData.place.notes}} {{game.uniform}}
-            </div>
-        </div>
-        <template [ngSwitch]="game.sharedData.type">
-            <template [ngSwitchCase]="'EventType.Game'">
-                <div *ngIf="game.sharedData.time != game.arriveTime">
-                    Arrive at {{GameCardComponent.justTimeFormat.format(game.tzArriveTime)}}
-                </div>
-            </template>
-            <template [ngSwitchCase]="'EventType.Practice'">
-            </template>
-            <template [ngSwitchCase]="'EventType.Event'">
-            </template>
-        </template>
-        <div class="card-text">
-            <div [ngSwitch]="game.result.result.toString()" class="result{{game.result.result.toString().substring(11)}}">
-                <template [ngSwitchCase]="'GameResult.Win'">
-                    Win: {{gameResult()}}
-                </template>
-                <template [ngSwitchCase]="'GameResult.Loss'">
-                    Loss: {{gameResult()}}
-                </template>
-                <template [ngSwitchCase]="'GameResult.Tie'">
-                    Tie: {{gameResult()}}
-                </template>
-            </div>
-        </div>
+<div
+  *ngIf="game != null"
+  class="card shadow rounded"
+  (click)="openDetails()"
+  style="margin-bottom: 10px"
+>
+  <div class="card-body">
+    <img
+      src="{{teamUrl}}"
+      width="50"
+      height="50"
+      style="float: right; margin-right: 10px"
+    />
+    <h6 [ngSwitch]="game.sharedData.type.toString()" class="card-title">
+      <template [ngSwitchCase]="'EventType.Game'">
+        {{GameCardComponent.dateWithTimeFormat.format(game.sharedData.tzTime)}}
+        vs {{opponent}}
+      </template>
+      <template [ngSwitchCase]="'EventType.Practice'">
+        {{GameCardComponent.dateWithTimeFormat.format(game.sharedData.tzTime)}}
+        <small class="text-muted">practice</small>
+      </template>
+      <template [ngSwitchCase]="'EventType.Event'">
+        {{GameCardComponent.dateWithTimeFormat.format(game.sharedData.tzTime)}}
+        <small class="text-muted">event</small>
+      </template>
+      <template ngSwitchDefault>
+        {{game.sharedData.type.toString() == 'EventType.Game'}}
+      </template>
+    </h6>
+    <h6 class="card-subtitle text-muted mb-2 small"><i>{{teamName}}</i></h6>
+    <div class="card-text">
+      <div
+        *ngIf="game.result.inProgress.toString() == 'GameInProgress.InProgress'"
+      >
+        {{gameResult()}}
+      </div>
+      <div>
+        {{game.sharedData.place.address}} {{game.sharedData.place.notes}}
+        {{game.uniform}}
+      </div>
     </div>
-
+    <template [ngSwitch]="game.sharedData.type">
+      <template [ngSwitchCase]="'EventType.Game'">
+        <div *ngIf="game.sharedData.time != game.arriveTime">
+          Arrive at
+          {{GameCardComponent.justTimeFormat.format(game.tzArriveTime)}}
+        </div>
+      </template>
+      <template [ngSwitchCase]="'EventType.Practice'"> </template>
+      <template [ngSwitchCase]="'EventType.Event'"> </template>
+    </template>
+    <div class="card-text">
+      <div
+        [ngSwitch]="game.result.result.toString()"
+        class="result{{game.result.result.toString().substring(11)}}"
+      >
+        <template [ngSwitchCase]="'GameResult.Win'">
+          Win: {{gameResult()}}
+        </template>
+        <template [ngSwitchCase]="'GameResult.Loss'">
+          Loss: {{gameResult()}}
+        </template>
+        <template [ngSwitchCase]="'GameResult.Tie'">
+          Tie: {{gameResult()}}
+        </template>
+      </div>
+    </div>
+  </div>
 </div>

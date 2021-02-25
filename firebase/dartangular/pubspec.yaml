@@ -3,7 +3,7 @@ description: A web app that uses AngularDart with lots of fun
 version: 0.0.1
 
 environment:
-  sdk: '>=1.9.0 <3.0.0'
+  sdk: ">=1.9.0 <3.0.0"
 
 dependencies:
   angular_components: ^1.0.2
@@ -24,7 +24,6 @@ dependencies:
 dependency_overrides:
   built_collection: ^5.0.0-nullsafety
   fixnum: ^1.0.0-nullsafety
-
 
 dev_dependencies:
   sass_builder: ^2.1.3

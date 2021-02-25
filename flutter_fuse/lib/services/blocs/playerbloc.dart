@@ -139,8 +139,7 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
             .catchError((dynamic e, StackTrace trace) {
           return e;
         });
-      } else {
-      }
+      } else {}
     }
     coordinationBloc
         .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Player));

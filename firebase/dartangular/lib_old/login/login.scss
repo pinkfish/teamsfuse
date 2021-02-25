@@ -2,33 +2,30 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-@import 'package:angular_components/css/material/material';
-@import 'package:angular_components/css/material/shadow';
-
+@import "package:angular_components/css/material/material";
+@import "package:angular_components/css/material/shadow";
 
 @mixin card() {
   @include shadow-elevation();
 }
 
-  .login-section {
-    display: flex;
-    flex-direction: row;
-    padding: $mat-grid;
+.login-section {
+  display: flex;
+  flex-direction: row;
+  padding: $mat-grid;
+}
+
+.login-container,
+.knob-container {
+  margin: $mat-grid;
+  padding: $mat-grid;
+  max-width: $mat-grid * 75;
+
+  display: flex;
+  flex: 1;
+  @include shadow-elevation();
+
+  .caption {
+    @include mat-font-caption();
   }
-
-  .login-container,
-  .knob-container {
-    margin: $mat-grid;
-    padding: $mat-grid;
-    max-width: $mat-grid * 75;
-
-    display: flex;
-    flex: 1;
-    @include shadow-elevation();
-
-    .caption {
-      @include mat-font-caption();
-    }
-  }
-
-
+}

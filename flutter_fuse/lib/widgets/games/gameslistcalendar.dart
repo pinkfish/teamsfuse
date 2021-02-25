@@ -80,7 +80,7 @@ class GameListCalendarState {
   }
 
   /// Loads the games.
-  void loadGames(FilterDetails details)  {
+  void loadGames(FilterDetails details) {
     _resubscribe();
     _gameBloc.add(FilteredGameEventUpdateFilter(filter: details));
   }

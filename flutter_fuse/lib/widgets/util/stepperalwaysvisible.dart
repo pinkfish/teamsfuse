@@ -261,8 +261,8 @@ class _StepperAlwaysVisibleState extends State<StepperAlwaysVisible>
 
   Widget _buildVerticalControls() {
     if (widget.controlsBuilder != null) {
-      return widget.controlsBuilder(
-          context, onStepContinue: widget.onStepContinue,
+      return widget.controlsBuilder(context,
+          onStepContinue: widget.onStepContinue,
           onStepCancel: widget.onStepCancel);
     }
 

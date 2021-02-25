@@ -4,7 +4,10 @@ import 'package:fusemodel/fusemodel.dart';
 import '../../../services/localutilities.dart';
 import '../../player/playertilebasketball.dart';
 
+/// Callback for when a player is selected.
 typedef void PlayerSelectFunction(String uid, bool selected);
+
+/// Check to see if this player is selected.
 typedef bool PlayerIsSelected(String uid);
 
 ///
@@ -12,11 +15,22 @@ typedef bool PlayerIsSelected(String uid);
 /// is currently playing.
 ///
 class PlayerMultiselect extends StatelessWidget {
+  /// Game to get the players for.
   final Game game;
+
+  /// The season to get the players for.
   final Season season;
+
+  /// If the player is selected check
   final PlayerIsSelected isSelected;
+
+  /// Select the specific player.
   final PlayerSelectFunction selectPlayer;
+
+  /// Orientation to display the users,
   final Orientation orientation;
+
+  /// Any specific additional players to pass in.
   final Map<String, Player> additionalPlayers;
 
   List<Widget> _populateList(BuildContext context, Orientation o) {
@@ -68,7 +82,7 @@ class PlayerMultiselect extends StatelessWidget {
             padding: EdgeInsets.all(2.0),
             child: PlayerTileBasketball(
               playerUid: playerUid,
-              seasonUid: season.uid,
+              gameUid: game.uid,
               editButton: false,
               color: isSelected(playerUid) ? mainColorSelected : mainColor,
               shape: ContinuousRectangleBorder(
@@ -87,6 +101,7 @@ class PlayerMultiselect extends StatelessWidget {
         .toList();
   }
 
+  /// Create the player multiselect widget.
   PlayerMultiselect(
       {@required this.game,
       @required this.season,

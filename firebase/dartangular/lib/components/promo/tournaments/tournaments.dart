@@ -23,6 +23,5 @@ import 'package:angular_components/content/deferred_content.dart';
   ],
 )
 class TournamentsComponent {
-
   TournamentsComponent();
 }

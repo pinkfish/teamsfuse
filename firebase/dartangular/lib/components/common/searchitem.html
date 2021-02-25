@@ -1,7 +1,14 @@
 <div (click)="openDetails()" class="searchresult" *ngIf="item != null">
-    <img *ngIf="hasPhotoUrl" src="{{getPhotoUrl()}}" style="float:right" width="50" height="50">
-    <h5 [outerHTML]="getTitle()"></h5>
-    <div class="small text-muted">{{type}} <i *ngIf="genderIcon != null" class="mdi mdi-{{genderIcon}}"></i></div>
-    <div [outerHTML]="getBody()">
-    </div>
+  <img
+    *ngIf="hasPhotoUrl"
+    src="{{getPhotoUrl()}}"
+    style="float: right"
+    width="50"
+    height="50"
+  />
+  <h5 [outerHTML]="getTitle()"></h5>
+  <div class="small text-muted">
+    {{type}} <i *ngIf="genderIcon != null" class="mdi mdi-{{genderIcon}}"></i>
+  </div>
+  <div [outerHTML]="getBody()"></div>
 </div>

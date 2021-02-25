@@ -31,7 +31,7 @@ class EditNewsItemScreen extends StatefulWidget {
 
 class _EditNewsItemScreenState extends State<EditNewsItemScreen> {
   final GlobalKey<EditNewsItemDetailsFormState> _formKey =
-  GlobalKey<EditNewsItemDetailsFormState>();
+      GlobalKey<EditNewsItemDetailsFormState>();
   bool _doingSave = false;
 
   void _showInSnackBar(String value) {

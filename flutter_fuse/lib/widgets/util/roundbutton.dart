@@ -9,28 +9,34 @@ import 'package:flutter/material.dart';
 class RoundButton extends StatelessWidget {
   /// The size of the button
   final double size;
+
   /// The widget to render inside the button
   final Widget child;
+
   /// What to do when the button is pressed.
   final Function onPressed;
+
   /// Color of the border of the button
   final Color borderColor;
+
   /// Padding aeround the button
   final double padding;
+
   /// Padding inside the button
   final double innerPadding;
+
   /// The max height of the button
   final double maxHeight;
 
   /// Create the round button.
   RoundButton(
       {this.size = 20.0,
-        this.child,
-        this.onPressed,
-        this.borderColor,
-        this.padding = 5.0,
-        this.innerPadding = 2.0,
-        this.maxHeight = 40.0});
+      this.child,
+      this.onPressed,
+      this.borderColor,
+      this.padding = 5.0,
+      this.innerPadding = 2.0,
+      this.maxHeight = 40.0});
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +52,8 @@ class RoundButton extends StatelessWidget {
             child: FittedBox(
               child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints box) {
-                    return child;
-                  }),
+                return child;
+              }),
             ),
           ),
           onPressed: onPressed,

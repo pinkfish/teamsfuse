@@ -75,7 +75,6 @@ class GamesComponent implements OnInit, OnDestroy {
 
     _teamSub = UserDatabaseData.instance.teamStream
         .listen((UpdateReason reason) => setupListeners());
-
   }
 
   void setupListeners() {

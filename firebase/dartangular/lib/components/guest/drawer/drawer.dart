@@ -34,22 +34,17 @@ class Drawer implements OnInit, OnDestroy {
 
   Drawer(this._router);
 
+  @override
+  void ngOnInit() {}
 
   @override
-  void ngOnInit() {
-  }
-
-  @override
-  void ngOnDestroy() {
-  }
+  void ngOnDestroy() {}
 
   String get profileUrl {
     return "assets/defaultavatar2.png";
   }
 
-  void openInfo() {
-
-  }
+  void openInfo() {}
 
   void openLogin() {
     _router.navigate("/login");

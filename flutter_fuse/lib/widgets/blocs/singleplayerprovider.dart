@@ -26,7 +26,6 @@ class SinglePlayerProvider extends SingleBlocProvider<SinglePlayerBloc> {
     return (bloc is SinglePlayerBloc && bloc.playerUid == keyUid);
   }
 
-
   static SinglePlayerBloc _createBloc(BuildContext context, String uid) {
     return SinglePlayerBloc(
         db: RepositoryProvider.of<DatabaseUpdateModel>(context),

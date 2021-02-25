@@ -34,13 +34,13 @@ class MessageList extends StatelessWidget {
         builder: (context, SingleMessageState singleMessageState) {
           if (singleMessageState is SingleMessageUninitialized) {
             return ListTile(
-              onTap: () =>
-                  Navigator.pushNamed(context, "/ShowMessage/${mess.messageId}"),
+              onTap: () => Navigator.pushNamed(
+                  context, "/ShowMessage/${mess.messageId}"),
               title: Text(Messages.of(context).loading),
             );
           }
           if (singleMessageState is SingleMessageDeleted) {
-            return SizedBox(height:0, width:0);
+            return SizedBox(height: 0, width: 0);
           }
           return ListTile(
             onTap: () =>
@@ -118,8 +118,8 @@ class MessageList extends StatelessWidget {
         var dayCutoff = DateTime.now().subtract(Duration(days: 1));
         var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
         for (var mess in sortedList) {
-          messages.add(
-              _buildMessage(context, mess, dayCutoff, authenticationBloc));
+          messages
+              .add(_buildMessage(context, mess, dayCutoff, authenticationBloc));
         }
         return SingleChildScrollView(
           child: Column(

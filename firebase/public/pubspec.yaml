@@ -3,7 +3,7 @@ description: A web app that uses AngularDart with lots of fun
 version: 0.0.1
 
 environment:
-  sdk: '>=1.9.0 <3.0.0'
+  sdk: ">=1.9.0 <3.0.0"
 
 dependencies:
   angular: ^5.0.0-alpha+12
@@ -15,13 +15,13 @@ dependencies:
   csv: "^4.0.1"
   google_maps: ">=3.0.0 <4.0.0"
   googleapis_auth: ^0.2.5+2
-  timezone: any
-   # git:
-   #   url: "https://github.com/pinkfish/timezone.git"
+  timezone:
+    any
+    # git:
+    #   url: "https://github.com/pinkfish/timezone.git"
   service_worker: any
   fusemodel:
     path: ../../fusemodel
-
 
 dev_dependencies:
   sass_builder: ^2.0.0

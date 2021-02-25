@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
+import '../../../services/blocs.dart';
 import '../../../services/messages.dart';
 import '../gametitle.dart';
 
+///
+/// DIsplay information to end the timeout.
+///
 class TimeoutEnd extends StatelessWidget {
+  /// The game to update the timeout for.
   final Game game;
 
+  /// Create the timeout end screen.
   TimeoutEnd({@required this.game});
 
   @override
@@ -55,7 +60,6 @@ class TimeoutEnd extends StatelessWidget {
                 ),
                 onPressed: () {
                   // ignore: close_sinks
-                  var bloc = BlocProvider.of<SingleGameBloc>(context);
                   var undoBloc = BlocProvider.of<GameEventUndoStack>(context);
                   undoBloc.addEvent(
                     GameEvent((b) => b
@@ -64,7 +68,7 @@ class TimeoutEnd extends StatelessWidget {
                       ..period = game.currentPeriod.toBuilder()
                       ..timestamp = DateTime.now().toUtc()
                       ..opponent = false
-                      ..eventTimeline = bloc.state.game.currentGameTime
+                      ..eventTimeline = game.currentGameTime
                       ..points = 0
                       ..type = GameEventType.TimeoutEnd),
                     false,

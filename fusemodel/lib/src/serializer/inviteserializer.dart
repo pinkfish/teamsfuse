@@ -28,7 +28,7 @@ class InviteSerializer implements StructuredSerializer<Invite> {
             return (InviteToPlayer.serializer
                     as StructuredSerializer<InviteToPlayer>)
                 .deserialize(serializers, serialized);
-            case InviteType.LeagueTeam:
+          case InviteType.LeagueTeam:
             return (InviteToLeagueTeam.serializer
                     as StructuredSerializer<InviteToLeagueTeam>)
                 .deserialize(serializers, serialized);

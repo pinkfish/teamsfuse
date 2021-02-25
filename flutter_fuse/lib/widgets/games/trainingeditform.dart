@@ -39,7 +39,6 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
       GlobalKey<DateTimeFormFieldState>();
   final Validations _validations = Validations();
 
-
   /// If the form should validate on every change or only a save.
   bool autoValidate = false;
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
@@ -170,7 +169,8 @@ class TrainingEditFormState extends State<TrainingEditForm> with EditFormBase {
                     _builder.sharedData.place = loc.place.toBuilder();
                     _builder.sharedData.timezone = loc.timeZone;
                   },
-                  validator: (place) => _validations.validateGamePlace(context, place.place),
+                  validator: (place) =>
+                      _validations.validateGamePlace(context, place.place),
                 ),
                 EnsureVisibleWhenFocused(
                   focusNode: _focusNodePlaceNotes,

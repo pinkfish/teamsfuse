@@ -23,9 +23,10 @@ HTML:
 
 ```html
 <material-auto-suggest-input
-    [selectionOptions]="myOptions"
-    [(inputText)]="myInput"
-    ...>
+  [selectionOptions]="myOptions"
+  [(inputText)]="myInput"
+  ...
+>
 </material-auto-suggest-input>
 ```
 
@@ -47,9 +48,10 @@ HTML:
 
 ```html
 <material-auto-suggest-input
-    [selectionOptions]="myOptions"
-    [(selection)]="mySelection"
-    ...>
+  [selectionOptions]="myOptions"
+  [(selection)]="mySelection"
+  ...
+>
 </material-auto-suggest-input>
 ```
 

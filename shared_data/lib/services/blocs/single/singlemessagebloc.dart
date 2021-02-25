@@ -149,7 +149,8 @@ class SingleMessageBloc
       String userUid = db.currentUser.uid;
       if (state.message.recipients.containsKey(userUid)) {
         if (state.message.recipients[userUid].state ==
-            MessageReadState.Unread && state.message.recipients[userUid].uid != null) {
+                MessageReadState.Unread &&
+            state.message.recipients[userUid].uid != null) {
           yield SingleMessageSaving.fromState(state).build();
           try {
             await db.updateMessageRecipientState(

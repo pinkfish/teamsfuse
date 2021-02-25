@@ -2,19 +2,19 @@ name: Deploy to Firebase Hosting on PR
 on:
   pull_request:
     paths:
-      - 'flutter_fuse/**'
-      - 'fusemodel/**'
-      - 'firebase/**'
-      - '.github/workflows/firebase-hosting-pull-request.yml'
+      - "flutter_fuse/**"
+      - "fusemodel/**"
+      - "firebase/**"
+      - ".github/workflows/firebase-hosting-pull-request.yml"
     branches:
       - main
   push:
     paths:
-      - 'flutter_fuse/**'
-      - 'fusemodel/**'
-      - 'firebase/**'
-      - '.github/workflows/firebase-hosting-pull-request.yml'
-   
+      - "flutter_fuse/**"
+      - "fusemodel/**"
+      - "firebase/**"
+      - ".github/workflows/firebase-hosting-pull-request.yml"
+
 jobs:
   build_and_preview:
     runs-on: ubuntu-latest
@@ -22,17 +22,17 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: '12.x'
+          java-version: "12.x"
       - uses: subosito/flutter-action@v1
         with:
-          channel: 'beta' # or: 'dev' or 'beta'
+          channel: "beta" # or: 'dev' or 'beta'
       - run: flutter pub get
         working-directory: fusemodel
       - run: |
-         find ./ -type f -name "*.g.dart" -delete
-         flutter clean
-         flutter pub get
-         flutter pub run build_runner build
+          find ./ -type f -name "*.g.dart" -delete
+          flutter clean
+          flutter pub get
+          flutter pub run build_runner build
         working-directory: fusemodel
       - run: flutter packages get
         working-directory: flutter_fuse
@@ -50,11 +50,11 @@ jobs:
           mkdir -p ../firebase/public/flutter
           cp -fR build/web/* ../firebase/public/flutter
         working-directory: flutter_fuse
-      
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TEAMSFUSE }}'
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_TEAMSFUSE }}"
           projectId: teamsfuse
           entryPoint: firebase
           channelId: alpha

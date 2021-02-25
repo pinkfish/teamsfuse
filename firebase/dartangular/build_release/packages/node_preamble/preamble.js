@@ -3,12 +3,12 @@
 var self = Object.create(global);
 
 self.scheduleImmediate = self.setImmediate
-    ? function (cb) {
-        global.setImmediate(cb);
-      }
-    : function(cb) {
-        setTimeout(cb, 0);
-      };
+  ? function (cb) {
+      global.setImmediate(cb);
+    }
+  : function (cb) {
+      setTimeout(cb, 0);
+    };
 
 self.require = require;
 self.exports = exports;
@@ -25,19 +25,23 @@ if (!global.window) {
   // dart-lang/sdk#27979 is fixed, it should be possible to make it better.
   self.location = {
     get href() {
-      return "file://" + (function() {
-        var cwd = process.cwd();
-        if (process.platform != "win32") return cwd;
-        return "/" + cwd.replace(/\\/g, "/");
-      })() + "/";
-    }
+      return (
+        "file://" +
+        (function () {
+          var cwd = process.cwd();
+          if (process.platform != "win32") return cwd;
+          return "/" + cwd.replace(/\\/g, "/");
+        })() +
+        "/"
+      );
+    },
   };
 
-  (function() {
+  (function () {
     function computeCurrentScript() {
       try {
         throw new Error();
-      } catch(e) {
+      } catch (e) {
         var stack = e.stack;
         var re = new RegExp("^ *at [^(]*\\((.*):[0-9]*:[0-9]*\\)$", "mg");
         var lastMatch = null;
@@ -53,16 +57,20 @@ if (!global.window) {
     self.document = {
       get currentScript() {
         if (cachedCurrentScript == null) {
-          cachedCurrentScript = {src: computeCurrentScript()};
+          cachedCurrentScript = { src: computeCurrentScript() };
         }
         return cachedCurrentScript;
-      }
+      },
     };
   })();
 
-  self.dartDeferredLibraryLoader = function(uri, successCallback, errorCallback) {
+  self.dartDeferredLibraryLoader = function (
+    uri,
+    successCallback,
+    errorCallback
+  ) {
     try {
-     load(uri);
+      load(uri);
       successCallback();
     } catch (error) {
       errorCallback(error);

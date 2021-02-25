@@ -48,7 +48,7 @@ class _TeamScreenState extends State<TeamScreen> {
     } else if (_tabIndex == 3) {
       return TeamOpponents(widget.teamUid);
     }
-     return TeamPlayers(widget.teamUid);
+    return TeamPlayers(widget.teamUid);
   }
 
   void _select(String choice, SingleTeamBloc singleTeamBloc) async {

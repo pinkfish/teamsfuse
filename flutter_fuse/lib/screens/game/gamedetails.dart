@@ -153,8 +153,8 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                       ),
                     ),
                   ),
-                  floatingActionButton: gameState.game.result.inProgress ==
-                      GameInProgress.Final
+                  floatingActionButton:
+                      gameState.game.result.inProgress == GameInProgress.Final
                           ? null
                           : FloatingActionButton.extended(
                               icon: Icon(MdiIcons.graph),

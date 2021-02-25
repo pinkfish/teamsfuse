@@ -10,5 +10,4 @@ import 'package:angular/angular.dart';
     'package:angular_components/app_layout/layout.scss.css',
   ],
 )
-class LoadingComponent  {
-}
+class LoadingComponent {}

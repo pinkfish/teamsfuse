@@ -1,37 +1,57 @@
 <div class="container">
-    <form class="row" (ngSubmit)="onSubmit()" #searchForm="ngForm">
-        <div class="col-sm">
-            <input type="text" class="form-control" id="search" placeholder="Search" required [(ngModel)]="search" ngControl="Search">
-        </div>
-        <div >
-            <button [disabled]="!searchForm.form.valid" type="submit" class="btn btn-primary">Go</button>
-        </div>
-    </form>
+  <form class="row" (ngSubmit)="onSubmit()" #searchForm="ngForm">
+    <div class="col-sm">
+      <input
+        type="text"
+        class="form-control"
+        id="search"
+        placeholder="Search"
+        required
+        [(ngModel)]="search"
+        ngControl="Search"
+      />
+    </div>
+    <div>
+      <button
+        [disabled]="!searchForm.form.valid"
+        type="submit"
+        class="btn btn-primary"
+      >
+        Go
+      </button>
+    </div>
+  </form>
 </div>
 
 <modal [visible]="showSearchResults" class="modal" role="dialog">
-    <material-dialog class="modal-dialog" *deferredContent role="document" style="max-height:90%">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Search for "{{search}}"</h5>
-            </div>
+  <material-dialog
+    class="modal-dialog"
+    *deferredContent
+    role="document"
+    style="max-height: 90%"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Search for "{{search}}"</h5>
+      </div>
 
-
-            <div *ngIf="result != null && result.items != null" class="modal-body" style="overflow: scroll">
-                <search-item *ngFor="let fluff of items; trackBy: trackBySearch" [item]="fluff">
-
-                </search-item>
-
-            </div>
-            <h4 *ngIf="result == null || result.items.length == 0" class="modal-body">
-                No results
-            </h4>
-            <div class="modal-footer">
-                <material-button (trigger)="closeDialog()">
-                    OK
-                </material-button>
-            </div>
-        </div>
-
-     </material-dialog>
+      <div
+        *ngIf="result != null && result.items != null"
+        class="modal-body"
+        style="overflow: scroll"
+      >
+        <search-item
+          *ngFor="let fluff of items; trackBy: trackBySearch"
+          [item]="fluff"
+        >
+        </search-item>
+      </div>
+      <h4 *ngIf="result == null || result.items.length == 0" class="modal-body">
+        No results
+      </h4>
+      <div class="modal-footer">
+        <material-button (trigger)="closeDialog()"> OK </material-button>
+      </div>
+    </div>
+  </material-dialog>
 </modal>

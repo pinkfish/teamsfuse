@@ -25,8 +25,7 @@ class SharedSingleGameComponent implements OnInit, OnActivate, OnDestroy {
   SharedSingleGameComponent();
 
   @override
-  Future<Null> ngOnInit() async {
-  }
+  Future<Null> ngOnInit() async {}
 
   @override
   void ngOnDestroy() {

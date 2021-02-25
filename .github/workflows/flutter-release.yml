@@ -1,8 +1,8 @@
 name: Flutter - release
 
-on: 
+on:
   release:
-    types: [created,edited]
+    types: [created, edited]
 
 jobs:
   build:
@@ -34,7 +34,7 @@ jobs:
           ref: ${{ github.head_ref }}
       - uses: actions/setup-java@v1
         with:
-          java-version: '12.x'
+          java-version: "12.x"
       - name: Branch name
         id: branch_name
         run: |
@@ -53,7 +53,7 @@ jobs:
           SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
       - uses: subosito/flutter-action@v1
         with:
-          channel: 'beta' # or: 'dev' or 'beta'
+          channel: "beta" # or: 'dev' or 'beta'
       - run: flutter pub get
         working-directory: fusemodel
       - run: |
@@ -94,7 +94,7 @@ jobs:
         working-directory: flutter_fuse/ios
         env:
           APPLE_APP_API_P8: ${{ secrets.APPLE_APP_API_P8 }}
-      - run:   echo $(PASSWORD) > fastlane/metadata/review_information/demo_password.txt
+      - run: echo $(PASSWORD) > fastlane/metadata/review_information/demo_password.txt
         working-directory: flutter_fuse/ios
         if: ${{ matrix.os == 'ios' }}
         env:
@@ -104,7 +104,6 @@ jobs:
           ls
         working-directory: flutter_fuse/lib/services
         if: ${{ matrix.os == 'ios' }}
-
 
       # Run the ios and android build.
       - run: |
@@ -129,16 +128,15 @@ jobs:
           FL_GITHUB_RELEASE_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SOURCE_TAG: ${{ steps.branch_name.outputs.SOURCE_TAG }}
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 10 # Longer timeout for the build settings.
-          APP_STORE_CONNECT_TEAM_ID: '${{ secrets.APP_STORE_CONNECT_TEAM_ID }}'
-          DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
-          DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
-          FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
-          MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
-          GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
-          TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
-          TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
-          APPLE_KEY_CONTENT: '${{ secrets.APPLE_APP_API_P8 }}'
-
+          APP_STORE_CONNECT_TEAM_ID: "${{ secrets.APP_STORE_CONNECT_TEAM_ID }}"
+          DEVELOPER_APP_ID: "${{ secrets.DEVELOPER_APP_ID }}"
+          DEVELOPER_APP_IDENTIFIER: "${{ secrets.DEVELOPER_APP_IDENTIFIER }}"
+          FASTLANE_APPLE_ID: "${{ secrets.FASTLANE_APPLE_ID }}"
+          MATCH_PASSWORD: "${{ secrets.MATCH_PASSWORD }}"
+          GIT_AUTHORIZATION: "${{ secrets.GIT_AUTHORIZATION }}"
+          TEMP_KEYCHAIN_PASSWORD: "${{ secrets.TEMP_KEYCHAIN_PASSWORD }}"
+          TEMP_KEYCHAIN_USER: "${{ secrets.TEMP_KEYCHAIN_USER }}"
+          APPLE_KEY_CONTENT: "${{ secrets.APPLE_APP_API_P8 }}"
 
       # Web specific actions
       - run: |

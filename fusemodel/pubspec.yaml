@@ -21,7 +21,6 @@ dependencies:
 dependency_overrides:
 #  analyzer: ^0.41.2
 
-
 dev_dependencies:
   test: any
   mockito: any

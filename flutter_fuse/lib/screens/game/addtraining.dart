@@ -282,8 +282,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
         ..seasonUid = _team.currentSeason
         ..trackAttendance = _team.trackAttendenceInternal
         ..arrivalTime =
-        start.subtract(Duration(minutes: _team.arriveEarlyInternal.toInt()))
-
+            start.subtract(Duration(minutes: _team.arriveEarlyInternal.toInt()))
         ..result = result
         ..notes = '');
     }
