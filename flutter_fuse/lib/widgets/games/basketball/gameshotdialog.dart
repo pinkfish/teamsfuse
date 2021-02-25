@@ -124,7 +124,7 @@ class _GameShotDialogState extends State<GameShotDialog> {
     if (_currentTab == 0) {
       // Verify the form first.
       if (_selectedIncoming == null) {
-        Scaffold.of(context).showSnackBar(
+        ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(Messages.of(context).formerror)));
         return;
       }
@@ -162,7 +162,7 @@ class _GameShotDialogState extends State<GameShotDialog> {
             constraints: BoxConstraints.tightFor(height: 48.0),
             child: ButtonBar(
               children: [
-                _currentTab > 0
+                _currentTab == 1
                     ? FlatButton(
                         onPressed: () {
                           setState(() => _currentTab++);
@@ -187,7 +187,7 @@ class _GameShotDialogState extends State<GameShotDialog> {
             constraints: BoxConstraints.tightFor(height: 48.0),
             child: ButtonBar(
               children: <Widget>[
-                _currentTab == 1
+                _currentTab == 2
                     ? FlatButton(
                         onPressed: () {
                           Navigator.pop(

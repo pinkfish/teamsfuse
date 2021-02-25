@@ -155,7 +155,7 @@ class SingleGameAddOpponentPlayer extends SingleGameEvent {
 
   /// Create the guest player.
   SingleGameAddOpponentPlayer({this.opponentPlayerName, this.jerseyNumber})
-      : assert(opponentPlayerName != null && jerseyNumber != null);
+      : assert(jerseyNumber != null);
 
   List<Object> get props => [opponentPlayerName, jerseyNumber];
 }
@@ -602,9 +602,7 @@ class SingleGameBloc
     Map<String, GamePlayerSummaryBuilder> opponents = state.game.opponents
         .toMap()
         .map((var e, var v) => MapEntry(e, GamePlayerSummaryBuilder()));
-    GameSummaryBuilder gameSummary = GameSummaryBuilder()
-      ..pointsFor = 0
-      ..pointsAgainst = 0;
+    var result = state.game.result.toBuilder();
     GamePlayerSummaryBuilder playerSummary = GamePlayerSummaryBuilder();
     GamePlayerSummaryBuilder opponentSummary = GamePlayerSummaryBuilder();
 
@@ -612,6 +610,8 @@ class SingleGameBloc
     sortedList
         .sort((GameEvent a, GameEvent b) => a.timestamp.compareTo(b.timestamp));
     GamePeriod currentPeriod = GamePeriod.notStarted;
+    int ptsAgainst = 0;
+    int ptsFor = 0;
 
     // Check the summary and update if needed.
     for (GameEvent ev in sortedList) {
@@ -665,6 +665,7 @@ class SingleGameBloc
             playerSum.one.attempts++;
           } else if (ev.points == 2) {
             sum.two.made++;
+            sum.two.made++;
             sum.two.attempts++;
             playerSum.two.made++;
             playerSum.two.attempts++;
@@ -675,9 +676,9 @@ class SingleGameBloc
             playerSum.three.attempts++;
           }
           if (ev.opponent) {
-            gameSummary.pointsAgainst += ev.points;
+            ptsAgainst += ev.points;
           } else {
-            gameSummary.pointsFor += ev.points;
+            ptsFor += ev.points;
           }
           if (ev.assistPlayerUid != null) {
             var assistSummary = getPlayerSum(ev.playerUid);
@@ -731,18 +732,29 @@ class SingleGameBloc
           playerSum.turnovers++;
           break;
         case GameEventType.PeriodStart:
-          currentPeriod = ev.period;
-          if (ev.period == GamePeriod.finalPeriod) {
-            gameSummary.finished = true;
-          } else {
-            gameSummary.finished = false;
+          if (result.currentPeriod.type != ev.period.type) {
+            ptsFor = 0;
+            ptsAgainst = 0;
           }
+          if (ev.period == GamePeriod.finalPeriod) {
+            result.inProgress = GameInProgress.Final;
+          } else {
+            currentPeriod = ev.period;
+            result.inProgress = GameInProgress.InProgress;
+          }
+          break;
+        case GameEventType.PeriodEnd:
+          var newCurrentPeriod = ev.period.toBuilder();
+          newCurrentPeriod.periodNumber = 1;
+          result.scoresInternal[newCurrentPeriod.build().toIndex()] =
+              GameResultPerPeriod((b) => b
+                ..period = newCurrentPeriod
+                ..score.ptsFor = ptsFor
+                ..score.ptsAgainst = ptsAgainst);
           break;
       }
       if (ev.type != GameEventType.PeriodStart &&
-          ev.type != GameEventType.PeriodEnd &&
-          ev.type != GameEventType.TimeoutEnd &&
-          ev.type != GameEventType.TimeoutStart) {
+          ev.type != GameEventType.PeriodEnd) {
         if (ev.opponent) {
           opponentSummary.perPeriod[oldPeriod] = sum.build();
           opponents[ev.playerUid].perPeriod[oldPeriod] = playerSum.build();
@@ -753,10 +765,22 @@ class SingleGameBloc
       }
     }
 
+    if (result.inProgress == GameInProgress.Final) {
+      /// Setup the win/loss.
+      var b = result.build();
+      if (b.totalScore.ptsFor > b.totalScore.ptsAgainst) {
+        result.result = GameResult.Win;
+      } else if (b.totalScore.ptsFor < b.totalScore.ptsAgainst) {
+        result.result = GameResult.Loss;
+      } else {
+        result.result = GameResult.Tie;
+      }
+    }
+
     // See if this is different the current state and update if it is.
-    if (state.game.playerSummaery != playerSummary.build() ||
+    if (state.game.playerSummary != playerSummary.build() ||
         state.game.opponentSummary != opponentSummary.build() ||
-        state.game.summary != gameSummary.build() ||
+        state.game.result != result.build() ||
         state.game.players.entries.every(
             (MapEntry<String, GamePlayerSummary> e) =>
                 players[e.key].build() == e.value) ||
@@ -766,9 +790,9 @@ class SingleGameBloc
                 opponents[e.key].build() == e.value)) {
       db.updateFirestoreGame(
           state.game.rebuild((b) => b
-            ..summary = gameSummary
+            ..result = result
             ..opponentSummary = opponentSummary
-            ..playerSummaery = playerSummary
+            ..playerSummary = playerSummary
             ..currentPeriod = currentPeriod.toBuilder()
             ..players = MapBuilder(
                 players.map((var e, var v) => MapEntry(e, v.build())))

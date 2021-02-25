@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 import '../blocs/singleplayerprovider.dart';
@@ -40,14 +41,16 @@ class PlayerName extends StatelessWidget {
           Widget widgetTwo;
           var state = CrossFadeState.showFirst;
 
+          print("Yay ${playerState.player} ${bloc.playerUid}");
           if (play != null) {
             widgetTwo = Text(
               fallback ?? Messages.of(context).unknown,
               style: style,
               textScaleFactor: textScaleFactor,
             );
+            print("Yay ${play.name}");
             if (play.name != null) {
-              if (play.users.isEmpty) {
+              if (play.users.isEmpty && play.playerType == PlayerType.player) {
                 widgetTwo = Text(
                   Messages.of(context).invitedToTeamWithName(play.name),
                   style: style,

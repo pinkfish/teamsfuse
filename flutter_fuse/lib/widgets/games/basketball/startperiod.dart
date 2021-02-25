@@ -115,15 +115,30 @@ class _StartPeriodState extends State<StartPeriod> {
                       u,
                       d.rebuild((b) =>
                           b..currentlyPlaying = selectedPlayers.contains(u))));
-                  widget.singleGameBloc.add(
-                    SingleGameUpdate(
-                      game: widget.game.rebuild((b) => b
-                        ..runningFrom = DateTime.now().toUtc()
-                        ..currentPeriod = period.toBuilder()
-                        ..players = players.toBuilder()
-                        ..opponents = opponents.toBuilder()),
-                    ),
-                  );
+                  if (period.type == GamePeriodType.Final) {
+                    // Finish the game.
+                    widget.singleGameBloc.add(
+                      SingleGameUpdate(
+                        game: widget.game.rebuild((b) => b
+                          ..runningFrom = null
+                          ..currentPeriod = period.toBuilder()
+                          ..players = players.toBuilder()
+                          ..result.inProgress = GameInProgress.Final
+                          ..opponents = opponents.toBuilder()),
+                      ),
+                    );
+                  } else {
+                    widget.singleGameBloc.add(
+                      SingleGameUpdate(
+                        game: widget.game.rebuild((b) => b
+                          ..runningFrom = DateTime.now().toUtc()
+                          ..currentPeriod = period.toBuilder()
+                          ..result.inProgress = GameInProgress.InProgress
+                          ..players = players.toBuilder()
+                          ..opponents = opponents.toBuilder()),
+                      ),
+                    );
+                  }
                 },
               ),
             ],

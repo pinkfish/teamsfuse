@@ -208,6 +208,7 @@ class GameStatsScreen extends StatelessWidget {
 
   Widget _buildPointSection(BuildContext context, BoxConstraints constraints,
       Orientation orientation, SingleGameBloc singleGameBloc) {
+    print("Game ${singleGameBloc.gameUid}");
     double buttonSize;
     if (orientation == Orientation.portrait) {
       buttonSize = constraints.maxWidth / 4;
@@ -931,9 +932,11 @@ class _GameStateSection extends StatelessWidget {
                         ),
                         Column(
                           children: [
-                            Text(state.game.summary.pointsAgainst.toString(),
+                            Text(state.game.result.totalScore.ptsFor.toString(),
                                 style: style),
-                            Text(state.game.summary.pointsAgainst.toString(),
+                            Text(
+                                state.game.result.totalScore.ptsAgainst
+                                    .toString(),
                                 style: style),
                           ],
                         ),

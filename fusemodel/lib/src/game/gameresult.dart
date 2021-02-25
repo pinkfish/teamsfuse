@@ -68,24 +68,30 @@ class GameDivisionsType extends EnumClass {
 ///
 abstract class GameResultPerPeriod
     implements Built<GameResultPerPeriod, GameResultPerPeriodBuilder> {
+  /// The period the score is for.
   GamePeriod get period;
 
+  /// The current score for the game
   GameScore get score;
 
   GameResultPerPeriod._();
 
+  /// Factory to create the game result from the builder.
   factory GameResultPerPeriod([updates(GameResultPerPeriodBuilder b)]) =
       _$GameResultPerPeriod;
 
+  /// Serilizer to a json form
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(GameResultPerPeriod.serializer, this);
   }
 
+  /// Deseatialize from jason
   static GameResultPerPeriod fromMap(Map<String, dynamic> jsonData) {
     return dataSerializers.deserializeWith(
         GameResultPerPeriod.serializer, jsonData);
   }
 
+  /// The serailizer to use.
   static Serializer<GameResultPerPeriod> get serializer =>
       _$gameResultPerPeriodSerializer;
 }
@@ -93,17 +99,25 @@ abstract class GameResultPerPeriod
 abstract class GameResultDetails
     with GameResultSharedDetails
     implements Built<GameResultDetails, GameResultDetailsBuilder> {
+  /// The scores on a per period basis.
   @BuiltValueField(wireName: "scores")
   BuiltMap<String, GameResultPerPeriod> get scoresInternal;
 
+  /// The result of this game.
   GameResult get result;
 
+  /// If the game is currently in progress.
   GameInProgress get inProgress;
 
-  GamePeriod get currentPeriod; // Null until the game started.
+  /// The current peirod the game is in.
+  GamePeriod get currentPeriod;
+
+  /// How many divisons in the game.
   GameDivisionsType get divisons; // = GameDivisionsType.Halves;
+  /// The time the period started at.
   GamePeriodTime get time;
 
+  /// Version of the scaores to use for most lookups.
   @memoized
   BuiltMap<GamePeriod, GameResultPerPeriod> get scores =>
       BuiltMap(scoresInternal
@@ -118,6 +132,7 @@ abstract class GameResultDetails
 
   GameResultDetails._();
 
+  /// Factory to create the game result.
   factory GameResultDetails([updates(GameResultDetailsBuilder b)]) =
       _$GameResultDetails;
 
@@ -127,15 +142,18 @@ abstract class GameResultDetails
     ..inProgress = GameInProgress.NotStarted
     ..divisons = GameDivisionsType.Quarters;
 
+  /// Serialize the data.
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(GameResultDetails.serializer, this);
   }
 
+  /// Deserailize the data.
   static GameResultDetails fromMap(Map<String, dynamic> jsonData) {
     return dataSerializers.deserializeWith(
         GameResultDetails.serializer, jsonData);
   }
 
+  /// The serializer to use.
   static Serializer<GameResultDetails> get serializer =>
       _$gameResultDetailsSerializer;
 
@@ -162,6 +180,23 @@ abstract class GameResultDetails
   ///
   /// Result for the penalty period.
   /// (can be null!)
+  ///
+  @memoized
+  GameScore get totalScore {
+    var finalResultInt = regulationResult?.score ?? GameScore();
+    var overtimeResultInt = overtimeResult?.score ?? GameScore();
+    var penaltyResultInt = penaltyResult?.score ?? GameScore();
+    return GameScore((b) => b
+      ..ptsFor = finalResultInt.ptsFor +
+          overtimeResultInt.ptsFor +
+          penaltyResultInt.ptsFor
+      ..ptsAgainst = finalResultInt.ptsAgainst +
+          overtimeResultInt.ptsAgainst +
+          penaltyResultInt.ptsAgainst);
+  }
+
+  ///
+  /// Total score for the game.
   ///
   @memoized
   GameResultPerPeriod get penaltyResult =>

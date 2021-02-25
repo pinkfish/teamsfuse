@@ -73,12 +73,12 @@ class GameTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  game.summary.pointsFor.toString(),
+                  game.result.totalScore.ptsFor.toString(),
                   style: style.copyWith(fontWeight: FontWeight.w600),
                   textScaleFactor: 1.3,
                 ),
                 Text(
-                  game.summary.pointsAgainst.toString(),
+                  game.result.totalScore.ptsAgainst.toString(),
                   style: style.copyWith(fontWeight: FontWeight.w600),
                   textScaleFactor: 1.3,
                 )

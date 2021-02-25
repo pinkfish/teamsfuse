@@ -93,11 +93,8 @@ abstract class Game implements Built<Game, GameBuilder> {
   @BuiltValueField(wireName: opponentField)
   BuiltMap<String, GamePlayerSummary> get opponents;
 
-  /// Summary for the overall game (this is only pts for vs against).
-  GameSummary get summary;
-
   /// Total summary for the game for this players.
-  GamePlayerSummary get playerSummaery;
+  GamePlayerSummary get playerSummary;
 
   /// Total summary for the game for the opponents.
   GamePlayerSummary get opponentSummary;

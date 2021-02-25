@@ -195,8 +195,7 @@ class FilteredGameBloc extends Bloc<FilteredGameEvent, FilteredGameState> {
     }
     if (event is FilteredGameEventUpdateFilter) {
       yield FilteredGameLoaded(
-          games: _filterGames(
-              gameBloc.state.gamesByTeam as GameLoaded, event.filter),
+          games: _filterGames(gameBloc.state, event.filter),
           filter: event.filter,
           start: state.start,
           end: state.end);

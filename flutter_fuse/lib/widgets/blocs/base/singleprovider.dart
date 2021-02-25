@@ -76,11 +76,13 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
     super.dispose();
     var totalKey = (widget.prefix ?? "") + widget.keyUid;
     if (blocs.containsKey(totalKey)) {
+      /*
       blocs[totalKey].ref--;
       if (blocs[totalKey].ref <= 0) {
         var state = blocs.remove(totalKey);
         state.bloc.close();
       }
+       */
     }
   }
 
@@ -91,7 +93,7 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
       _updateSingleBloc();
     }
     if (_newBloc) {
-      return BlocProvider.value(
+      return BlocProvider<T>.value(
         value: _singleBloc,
         child: widget.builder(context, _singleBloc),
       );

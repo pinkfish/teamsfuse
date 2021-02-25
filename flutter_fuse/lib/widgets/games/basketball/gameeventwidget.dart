@@ -14,14 +14,25 @@ typedef GameEventTapCallback = void Function(GameEvent ev);
 /// that can be places inside other lists and places.
 ///
 class GameEventWidget extends StatelessWidget {
+  /// The game event to display.
   final GameEvent gameEvent;
+
+  /// The timestamp, if we should show it.
   final bool showTimestamp;
+
+  /// If we shouldshow the period name.
   final bool showPeriod;
+
+  /// If we should show the name of the player.
   final bool showName;
+
+  /// What to call when we tap on this event/
   final GameEventTapCallback onTap;
 
+  /// The format for the datetime.
   static DateFormat format = DateFormat("HH:mm");
 
+  /// The widget to display the game event
   GameEventWidget(
       {@required this.gameEvent,
       this.showTimestamp = false,
