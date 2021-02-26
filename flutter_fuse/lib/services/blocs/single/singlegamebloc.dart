@@ -248,6 +248,7 @@ class SingleGameBloc
       if (g != null) {
         add(_SingleGameNewGame(newGame: g));
       } else {
+        print("Got null, pushing game deleted");
         add(_SingleGameDeleted());
       }
     });

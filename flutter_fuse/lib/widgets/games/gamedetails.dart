@@ -173,7 +173,7 @@ class _GameDetailsState extends State<GameDetails> {
           return SavingOverlay(
             saving: state is SingleGameSaving,
             child: GameDetailsBase(
-              game: state.game,
+              gameState: state,
               adding: widget.adding,
               editResult: _editResult,
               editOfficialResult: _editOfficialResult,

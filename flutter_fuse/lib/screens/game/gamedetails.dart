@@ -10,7 +10,6 @@ import '../../widgets/blocs/singlegameprovider.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/games/availability.dart';
 import '../../widgets/games/basketball/gameshotlocations.dart';
-import '../../widgets/games/basketball/gamesummary.dart';
 import '../../widgets/games/basketball/gametimeseries.dart';
 import '../../widgets/games/basketball/playerdatatable.dart';
 import '../../widgets/games/deletegamedialog.dart';
@@ -62,7 +61,8 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
           }
         },
         builder: (context, gameState) {
-          if (gameState is SingleGameUninitialized) {
+          if (gameState is SingleGameUninitialized ||
+              gameState is SingleGameDeleted) {
             return LoadingWidget();
           }
 
@@ -114,27 +114,7 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                   }
 
                   if (_tabIndex == 0) {
-                    if (singleTeamState?.team?.sport == Sport.Basketball) {
-                      body = Column(
-                        children: [
-                          GameDetails(gameBloc),
-                          Expanded(
-                            child: Padding(
-                              child: BasketballGameSummary(gameState),
-                              padding: EdgeInsets.all(5),
-                            ),
-                          ),
-                        ],
-                      );
-                    } else {
-                      body = Scrollbar(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          controller: _scrollController,
-                          child: GameDetails(gameBloc),
-                        ),
-                      );
-                    }
+                    body = GameDetails(gameBloc);
                   } else if (_tabIndex == 1) {
                     if (game.result.inProgress != GameInProgress.NotStarted &&
                         singleTeamState?.team?.sport == Sport.Basketball) {

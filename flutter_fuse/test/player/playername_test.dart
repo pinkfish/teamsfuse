@@ -10,6 +10,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:mockito/mockito.dart';
 
 import '../util/testable.dart';
+import '../util/widgetvariant.dart';
 
 class MockDatabaseUpdateModel extends Mock implements DatabaseUpdateModel {}
 
@@ -44,7 +45,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text("Loading..."), findsOneWidget);
-  });
+  }, variant: TeamsFuseTestVariant());
 
   testWidgets('name set', (tester) async {
     var gameData = StreamController<Player>();
@@ -91,7 +92,7 @@ void main() {
       await expectLater(find.byType(PlayerName),
           matchesGoldenFile('../golden/player_name_set.png'));
     }
-  });
+  }, variant: TeamsFuseTestVariant());
 
   testWidgets('name change', (tester) async {
     var gameData = StreamController<Player>();
@@ -141,5 +142,5 @@ void main() {
     await tester.pumpAndSettle();
 
     await expectLater(find.text("Bluey (Invited)"), findsOneWidget);
-  });
+  }, variant: TeamsFuseTestVariant());
 }

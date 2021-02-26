@@ -28,6 +28,14 @@ abstract class SingleBlocProvider<T extends Bloc<dynamic, dynamic>>
 
   @override
   State createState() => _SingleBlocProviderState<T>();
+
+  ///
+  /// Clear blocs from stuff.
+  ///
+  @visibleForTesting
+  static void clearBlocs() {
+    _SingleBlocProviderState.clearBlocs();
+  }
 }
 
 class _BlocProviderState<T extends Bloc<dynamic, dynamic>> {
@@ -99,5 +107,16 @@ class _SingleBlocProviderState<T extends Bloc<dynamic, dynamic>>
       );
     }
     return widget.builder(context, _singleBloc);
+  }
+
+  ///
+  /// Clear blocs from stuff.
+  ///
+  @visibleForTesting
+  static void clearBlocs() {
+    for (var bloc in blocs.values) {
+      bloc.bloc.close();
+    }
+    blocs.clear();
   }
 }

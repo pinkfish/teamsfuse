@@ -16,6 +16,7 @@ import 'package:mockito/mockito.dart';
 import '../../util/loadfonts.dart';
 import '../../util/testable.dart';
 import '../../util/testdata.dart';
+import '../../util/widgetvariant.dart';
 
 class MockDatabaseUpdateModel extends Mock implements DatabaseUpdateModel {}
 
@@ -58,7 +59,7 @@ void main() {
 
     expect(find.text("Loading..."), findsOneWidget);
     gameController.close();
-  });
+  }, variant: TeamsFuseTestVariant());
 
   testWidgets('deleted', (tester) async {
     loadFonts();
@@ -92,11 +93,12 @@ void main() {
     gameController.add(null);
 
     await tester.pump(Duration(milliseconds: 600));
+    await tester.pump(Duration(milliseconds: 600));
 
     verify(mockObserver.didPop(any, any));
 
     gameController.close();
-  });
+  }, variant: TeamsFuseTestVariant());
 
   testWidgets('loaded', (tester) async {
     loadFonts();
@@ -142,7 +144,7 @@ void main() {
     expect(find.text("Loading..."), findsOneWidget);
 
     gameController.close();
-  });
+  }, variant: TeamsFuseTestVariant());
 
   testWidgets('loaded team', (tester) async {
     final mockDb = MockDatabaseUpdateModel();
@@ -225,5 +227,5 @@ void main() {
     }
 
     gameController.close();
-  });
+  }, variant: TeamsFuseTestVariant());
 }

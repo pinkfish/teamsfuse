@@ -10,6 +10,7 @@ import '../blocs/singleteamprovider.dart';
 import '../games/attendanceicon.dart';
 import '../teams/teamimage.dart';
 import 'basketball/gameduration.dart';
+import 'basketball/gamesummary.dart';
 import 'gamemapview.dart';
 import 'teamresults.dart';
 
@@ -34,15 +35,19 @@ typedef GameOpenAttendence = void Function(
 class GameDetailsBase extends StatelessWidget {
   /// Constructor.
   GameDetailsBase(
-      {this.game,
+      {this.gameState,
       this.adding,
       this.editResult,
       this.openAttendence,
       this.openNavigation,
       this.editOfficialResult,
-      this.copyOfficalResult});
+      this.copyOfficalResult})
+      : game = gameState.game;
 
   /// The game to show the details of
+  final SingleGameState gameState;
+
+  /// The game.
   final Game game;
 
   /// If we are currently adding this game
@@ -231,9 +236,9 @@ class GameDetailsBase extends StatelessWidget {
 
     var theme = Theme.of(context);
 
-    var body = <Widget>[];
+    var top = <Widget>[];
     // Map view.
-    body.add(
+    top.add(
       Container(
         height: 250.0,
         child: Stack(
@@ -258,7 +263,7 @@ class GameDetailsBase extends StatelessWidget {
     );
 
     // Team details
-    body.add(
+    top.add(
       ListTile(
         leading: TeamImage(
           team: teamState.team,
@@ -279,6 +284,7 @@ class GameDetailsBase extends StatelessWidget {
     var timeEnd = (game.sharedData.endTime == game.sharedData.time
         ? ''
         : " - $endTimeStr ${tzShortName ?? ''}");
+    var body = <Widget>[];
     body.add(
       ListTile(
         leading: Icon(Icons.directions),
@@ -494,11 +500,24 @@ class GameDetailsBase extends StatelessWidget {
           ),
         );
       }
+      if (teamState.team?.sport == Sport.Basketball &&
+          game.result.inProgress != GameInProgress.NotStarted) {
+        body.add(BasketballGameSummary(gameState));
+      }
     }
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
-      children: body,
+      children: [
+        ...top,
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(
+              children: body,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
