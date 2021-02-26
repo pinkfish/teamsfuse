@@ -228,4 +228,101 @@ void main() {
 
     gameController.close();
   }, variant: TeamsFuseTestVariant());
+
+  testWidgets('loaded basketball, finished', (tester) async {
+    final mockDb = MockDatabaseUpdateModel();
+    final mockAnalytics = MockAnalyticsSubsystem();
+    final gameController = StreamController<Game>();
+    final teamController = StreamController<Team>();
+    final seasonController = StreamController<Season>();
+    final opponentController = StreamController<Iterable<Opponent>>();
+    final teamSeasonController = StreamController<BuiltList<Season>>();
+    final mockObserver = MockNavigatorObserver();
+    final mockPlayerBloc = MockPlayerBloc();
+
+    when(mockDb.getGame("game123")).thenAnswer((_) => gameController.stream);
+    when(mockDb.getTeamDetails(teamUid: "team123"))
+        .thenAnswer((_) => teamController.stream);
+    when(mockDb.getSingleSeason("season123"))
+        .thenAnswer((_) => seasonController.stream);
+    when(mockDb.getTeamOpponents("team123"))
+        .thenAnswer((_) => opponentController.stream);
+    when(mockDb.getSeasonsForTeam("team123"))
+        .thenAnswer((_) => teamSeasonController.stream);
+    when(mockPlayerBloc.state)
+        .thenAnswer((_) => (PlayerLoaded.fromState(PlayerUninitialized())
+              ..players = MapBuilder({
+                'player123': Player((b) => b
+                  ..name = "Me"
+                  ..uid = "player123")
+              }))
+            .build());
+
+    // Fake out the places dialog.
+    const MethodChannel('flutter_places_dialog')
+        .setMockMethodCallHandler((MethodCall methodCall) async {
+      if (methodCall.method == 'setApiKey') {
+        return true; // set initial values here if desired
+      }
+      return null;
+    });
+
+    // Build our app and trigger a frame.
+    var testWidget = await makeTestableWidget(
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<DatabaseUpdateModel>(create: (c) => mockDb),
+          RepositoryProvider<AnalyticsSubsystem>(create: (c) => mockAnalytics)
+        ],
+        child: BlocProvider<PlayerBloc>(
+          create: (_) => mockPlayerBloc,
+          child: RepaintBoundary(
+            child: GameDetailsScreen("game123"),
+          ),
+        ),
+      ),
+      observer: mockObserver,
+    );
+
+    await tester.pumpWidget(testWidget);
+
+    var season = makeTestSeason();
+    var newScores = Map<GamePeriod, GameResultPerPeriod>.fromEntries([
+      MapEntry(
+          GamePeriod.regulation1,
+          GameResultPerPeriod((b) => b
+            ..score.ptsFor = 12
+            ..score.ptsAgainst = 12
+            ..period = GamePeriod.regulation1.toBuilder()))
+    ]);
+    var game = makeTestGame(
+            start: DateTime(2021, 3, 2, 11, 3, 1).toUtc(),
+            end: DateTime(2021, 3, 44, 11, 3, 1).toUtc())
+        .rebuild((b) => b
+          ..result.inProgress = GameInProgress.Final
+          ..result.result = GameResult.Win
+          ..result.scoresInternal = MapBuilder(newScores));
+    gameController.add(game);
+    teamController
+        .add(makeTestTeam().rebuild((b) => b..sport = Sport.Basketball));
+    seasonController.add(season);
+    opponentController.add([makeTestOpponent()]);
+    teamSeasonController.add(BuiltList.of([season]));
+
+    await tester.pump(Duration(milliseconds: 600));
+    await tester.pump(Duration(milliseconds: 600));
+    await tester.pump(Duration(milliseconds: 600));
+    await tester.pump(Duration(milliseconds: 600));
+    await tester.pump(Duration(milliseconds: 600));
+
+    // Still loading when there is no team.
+    expectLater(find.text("Fluff World"), findsOneWidget);
+
+    if (String.fromEnvironment("GOLDEN", defaultValue: "").isNotEmpty) {
+      await expectLater(find.byType(GameDetailsScreen),
+          matchesGoldenFile('../../golden/game_details_set.png'));
+    }
+
+    gameController.close();
+  }, variant: TeamsFuseTestVariant());
 }

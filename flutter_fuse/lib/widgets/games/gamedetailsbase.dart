@@ -35,17 +35,13 @@ typedef GameOpenAttendence = void Function(
 class GameDetailsBase extends StatelessWidget {
   /// Constructor.
   GameDetailsBase(
-      {this.gameState,
+      {this.game,
       this.adding,
       this.editResult,
       this.openAttendence,
       this.openNavigation,
       this.editOfficialResult,
-      this.copyOfficalResult})
-      : game = gameState.game;
-
-  /// The game to show the details of
-  final SingleGameState gameState;
+      this.copyOfficalResult});
 
   /// The game.
   final Game game;
@@ -502,7 +498,12 @@ class GameDetailsBase extends StatelessWidget {
       }
       if (teamState.team?.sport == Sport.Basketball &&
           game.result.inProgress != GameInProgress.NotStarted) {
-        body.add(BasketballGameSummary(gameState));
+        body.add(
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: BasketballGameSummary(game),
+          ),
+        );
       }
     }
 

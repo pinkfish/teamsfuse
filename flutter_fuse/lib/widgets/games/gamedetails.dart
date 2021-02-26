@@ -167,13 +167,13 @@ class _GameDetailsState extends State<GameDetails> {
       child: BlocBuilder(
         cubit: widget.gameBloc,
         builder: (context, state) {
-          if (state is SingleGameDeleted) {
+          if (state is SingleGameDeleted || state is SingleGameUninitialized) {
             return CircularProgressIndicator();
           }
           return SavingOverlay(
             saving: state is SingleGameSaving,
             child: GameDetailsBase(
-              gameState: state,
+              game: state.game,
               adding: widget.adding,
               editResult: _editResult,
               editOfficialResult: _editOfficialResult,
