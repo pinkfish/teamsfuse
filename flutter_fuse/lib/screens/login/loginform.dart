@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 
-import '../../services/blocs.dart';
 import '../../services/messages.dart';
 import '../../services/validations.dart';
 import '../../widgets/login/loginheader.dart';
@@ -23,27 +22,19 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController scrollController = ScrollController();
   bool autovalidate = false;
   final Validations validations = Validations();
   String email;
   String password;
   String errorText = '';
-  LoginBloc _loginBloc;
-
-  @override
-  void initState() {
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
-    super.initState();
-  }
 
   void _onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
   }
 
   void _showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _handleSubmitted() async {
@@ -57,8 +48,8 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       // Save the data and login.
       form.save();
-      _loginBloc
-          .add(LoginEventAttempt(email: email.trim(), password: password));
+      BlocProvider.of<AuthenticationBloc>(context).add(
+          AuthenticationLoginAttempt(email: email.trim(), password: password));
     }
   }
 
@@ -78,11 +69,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: <Widget>[
                   Form(
                     key: formKey,
-                    autovalidate: autovalidate,
+                    autovalidateMode: autovalidate
+                        ? AutovalidateMode.always
+                        : AutovalidateMode.disabled,
                     child: Column(
                       children: <Widget>[
                         Text(errorText),
                         TextFormField(
+                          key: Key("EMAIL"),
                           decoration: const InputDecoration(
                             icon: Icon(Icons.email),
                             hintText: 'Your email address',
@@ -95,6 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         TextFormField(
+                          key: Key("PASSWORD"),
                           decoration: InputDecoration(
                             icon: Icon(Icons.lock_open),
                             hintText: 'Password',
@@ -147,36 +142,24 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-      body: BlocListener(
+      body: BlocConsumer(
         cubit: BlocProvider.of<AuthenticationBloc>(context),
         listener: (context, state) {
           if (state is AuthenticationLoggedIn) {
             Navigator.pushNamedAndRemoveUntil(context, "/Home", (d) => false);
           }
+          if (state is AuthenticationFailed) {
+            errorText = Messages.of(context).passwordnotcorrect;
+            _showInSnackBar(errorText);
+          }
+          if (state is AuthenticationLoggedInUnverified) {
+            Navigator.popAndPushNamed(context, "/Login/Verify");
+          }
         },
-        child: BlocListener(
-          cubit: _loginBloc,
-          listener: (context, state) {
-            if (state is LoginFailed) {
-              errorText = Messages.of(context).passwordnotcorrect;
-              _showInSnackBar(errorText);
-            }
-            if (state is LoginSucceeded) {
-              Navigator.pushNamedAndRemoveUntil(context, "/Home", (d) => false);
-            }
-            if (state is LoginEmailNotValidated) {
-              Navigator.popAndPushNamed(context, "/Login/Verify");
-            }
-          },
-          child: BlocBuilder(
-            cubit: _loginBloc,
-            builder: (context, state) {
-              return SavingOverlay(
-                  saving: state is LoginValidating, child: _buildLoginForm());
-            },
-          ),
-        ),
+        builder: (context, state) {
+          return SavingOverlay(
+              saving: state is AuthenticationLoading, child: _buildLoginForm());
+        },
       ),
     );
   }

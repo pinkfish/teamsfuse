@@ -6,6 +6,12 @@ import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 
+/// The reason the login failed.
+enum LoginFailedReason {
+  /// Bad password logging in.
+  BadPassword,
+}
+
 ///
 /// States for the authentication bloc.
 ///
@@ -18,6 +24,7 @@ abstract class AuthenticationState extends Equatable {
   List<Object> get props => [user];
 }
 
+/// The auth state is unknown.
 class AuthenticationUninitialized extends AuthenticationState {
   AuthenticationUninitialized() : super(user: null);
 
@@ -25,11 +32,20 @@ class AuthenticationUninitialized extends AuthenticationState {
   String toString() => "AuthenticationState::AuthenticatonUninitialized";
 }
 
+/// The auth state is loading.
 class AuthenticationLoading extends AuthenticationState {
   AuthenticationLoading() : super(user: null);
 
   @override
   String toString() => "AuthenticationState::AuthenticationLoading";
+}
+
+/// The auth operation is done.
+class AuthenticationDone extends AuthenticationState {
+  AuthenticationDone() : super(user: null);
+
+  @override
+  String toString() => "AuthenticationState::AuthenticationDone";
 }
 
 ///
@@ -61,6 +77,25 @@ class AuthenticationLoggedOut extends AuthenticationState {
 
   @override
   String toString() => "AuthenticationState::AuthenticatonUninitialized";
+}
+
+///
+/// The login failed.
+///
+class AuthenticationFailed extends AuthenticationState {
+  final UserData userData;
+  final LoginFailedReason reason;
+  final dynamic error;
+
+  AuthenticationFailed({this.userData, this.reason, this.error});
+
+  @override
+  String toString() {
+    return 'LoginFailed{}';
+  }
+
+  @override
+  List<Object> get props => [userData, reason];
 }
 
 ///
@@ -117,6 +152,73 @@ class AuthenticationNotificationToken extends AuthenticationEvent {
 }
 
 ///
+/// Updates the notification token so we can receive notifications.
+///
+class AuthenticationResendEmail extends AuthenticationEvent {
+  @override
+  List<Object> get props => [];
+}
+
+///
+/// Sends a login attempt request.
+///
+class AuthenticationLoginAttempt extends AuthenticationEvent {
+  final String email;
+  final String password;
+
+  AuthenticationLoginAttempt({@required this.email, @required this.password});
+
+  @override
+  String toString() {
+    return 'AuthenticationLoginAttempt{user: $email}';
+  }
+
+  @override
+  List<Object> get props => [email, password];
+}
+
+///
+/// Sends a forgot password request.
+///
+class AuthenticationForgotPasswordSend extends AuthenticationEvent {
+  final String email;
+
+  AuthenticationForgotPasswordSend({@required this.email});
+
+  @override
+  String toString() {
+    return 'AuthenticationForgotPasswordSend{user: $email}';
+  }
+
+  @override
+  List<Object> get props => [email];
+}
+
+///
+/// Requests signing up the user.
+///
+class AuthenticationSignupUser extends AuthenticationEvent {
+  final String email;
+  final String password;
+  final String displayName;
+  final String phoneNumber;
+
+  AuthenticationSignupUser(
+      {@required this.email,
+      @required this.password,
+      @required this.displayName,
+      @required this.phoneNumber});
+
+  @override
+  String toString() {
+    return 'AuthenticationSignupUser{user: $email}';
+  }
+
+  @override
+  List<Object> get props => [email, password, displayName, phoneNumber];
+}
+
+///
 /// This bloc deals with all the pieces related to authentication.
 ///
 class AuthenticationBloc
@@ -146,7 +248,9 @@ class AuthenticationBloc
   }
 
   AuthenticationState _updateWithUser(UserData user) {
-    if (user.isEmailVerified) {
+    if (user == null) {
+      return AuthenticationLoggedOut();
+    } else if (user.isEmailVerified) {
       analyticsSubsystem.setUserId(user.uid);
       if (analyticsSubsystem.debugMode) {
         analyticsSubsystem.setUserProperty(name: "developer", value: "true");
@@ -172,24 +276,24 @@ class AuthenticationBloc
     if (event is AuthenticationAppStarted) {
       UserData data = await userAuth.currentUser();
       if (data == null) {
+        yield AuthenticationDone();
         yield AuthenticationLoggedOut();
       } else {
         try {
-          var state = _updateWithUser(data);
-          yield state;
+          yield AuthenticationDone();
+          yield _updateWithUser(data);
         } catch (e, stacktrace) {
           print("Error loading $e $stacktrace");
+          yield AuthenticationFailed(error: e);
           yield AuthenticationLoggedOut();
+          analyticsSubsystem.recordException(e, stacktrace);
         }
       }
     }
 
     if (event is _AuthenticationLogIn) {
       _AuthenticationLogIn loggedInEvent = event;
-      var state = _updateWithUser(loggedInEvent.user);
-      if (state != null) {
-        yield state;
-      }
+      yield _updateWithUser(loggedInEvent.user);
     }
 
     if (event is AuthenticationLogOut) {
@@ -197,6 +301,7 @@ class AuthenticationBloc
         yield AuthenticationLoading();
         await userAuth.signOut();
         // Finished logging out.
+        yield AuthenticationDone();
         yield AuthenticationLoggedOut();
       }
     }
@@ -204,6 +309,71 @@ class AuthenticationBloc
     if (event is AuthenticationNotificationToken) {
       // Ignore the errors here.
       userAuth.setNotificationToken(event.notificationToken);
+    }
+
+    if (event is AuthenticationResendEmail) {
+      userAuth.sendEmailVerification();
+    }
+
+    if (event is AuthenticationLoginAttempt) {
+      yield AuthenticationLoading();
+      AuthenticationLoginAttempt attempt = event;
+      UserData data = UserData((b) => b
+        ..uid = "unknown"
+        ..isEmailVerified = false
+        ..email = attempt.email
+        ..password = attempt.password);
+      UserData signedIn;
+      try {
+        signedIn = await userAuth.signIn(data);
+      } catch (error, stack) {
+        // Failed to login, probably bad password.
+        yield AuthenticationFailed(
+            userData: signedIn, reason: LoginFailedReason.BadPassword);
+        analyticsSubsystem.recordException(error, stack);
+      }
+
+      if (signedIn != null) {
+        yield AuthenticationDone();
+        analyticsSubsystem.logLogin();
+        yield _updateWithUser(signedIn);
+      } else {
+        yield AuthenticationLoggedOut();
+      }
+    }
+    if (event is AuthenticationForgotPasswordSend) {
+      yield AuthenticationLoading();
+
+      AuthenticationForgotPasswordSend forgot = event;
+      try {
+        await userAuth.sendPasswordResetEmail(forgot.email);
+        yield AuthenticationDone();
+        yield AuthenticationLoggedOut();
+      } catch (error) {
+        yield AuthenticationFailed(error: error);
+      }
+    }
+    if (event is AuthenticationSignupUser) {
+      yield AuthenticationLoading();
+      AuthenticationSignupUser signup = event;
+      UserData user = new UserData((b) => b
+        ..email = signup.email
+        ..password = signup.password);
+      FusedUserProfile profile = new FusedUserProfile((b) => b
+        ..displayName = signup.displayName
+        ..phoneNumber = signup.phoneNumber
+        ..email = signup.email
+        ..emailOnUpdates = true
+        ..emailUpcomingGame = true
+        ..notifyOnlyForGames = true);
+      UserData data = await userAuth.createUser(user, profile);
+      if (data == null) {
+        yield AuthenticationFailed(userData: user);
+        yield AuthenticationLoggedOut();
+      } else {
+        yield AuthenticationDone();
+        yield _updateWithUser(data);
+      }
     }
   }
 

@@ -1,0 +1,177 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/screens/login/loginform.dart';
+import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:fusemodel/firestore.dart';
+import 'package:fusemodel/fusemodel.dart';
+import 'package:mockito/mockito.dart';
+
+import '../../util/loadfonts.dart';
+import '../../util/testable.dart';
+import '../../util/widgetvariant.dart';
+
+class MockDatabaseUpdateModel extends Mock implements DatabaseUpdateModel {}
+
+class MockAnalyticsSubsystem extends Mock implements AnalyticsSubsystem {}
+
+class MockNavigatorObserver extends Mock implements NavigatorObserver {}
+
+class MockUserAuth extends Mock implements UserAuthImpl {}
+
+void main() {
+  testWidgets('forgot button', (tester) async {
+    var loginForm = _LoginFormTest();
+    await loginForm.setup(tester);
+
+    expect(loginForm.forgotButton, findsOneWidget);
+    expect(loginForm.createAccountButton, findsOneWidget);
+
+    // Click on the forgot button.
+    await tester.tap(loginForm.forgotButton);
+    await tester.pump(Duration(milliseconds: 600));
+
+    // Verify the router is pushed.
+    verify(loginForm.mockObserver
+        .didPush(argThat(HasRouteName("/Login/ForgotPassword")), any));
+  }, variant: TeamsFuseTestVariant());
+
+  testWidgets('signup button', (tester) async {
+    var loginForm = _LoginFormTest();
+    await loginForm.setup(tester);
+
+    expect(loginForm.forgotButton, findsOneWidget);
+    expect(loginForm.createAccountButton, findsOneWidget);
+
+    // Click on the forgot button.
+    await tester.tap(loginForm.createAccountButton);
+    await tester.pump(Duration(milliseconds: 600));
+
+    // Verify the router is pushed.
+    verify(loginForm.mockObserver
+        .didPush(argThat(HasRouteName("/Login/SignUp")), any));
+  }, variant: TeamsFuseTestVariant());
+
+  testWidgets('login failed', (tester) async {
+    var loginForm = _LoginFormTest();
+    await loginForm.setup(tester);
+
+    expect(loginForm.forgotButton, findsOneWidget);
+    expect(loginForm.createAccountButton, findsOneWidget);
+    expect(loginForm.submitButton, findsOneWidget);
+    expect(loginForm.userNameBox, findsOneWidget);
+    expect(loginForm.passwordBox, findsOneWidget);
+
+    await tester.enterText(loginForm.userNameBox, "frog@frog.com");
+    await tester.enterText(loginForm.passwordBox, "womble");
+
+    // Click on the forgot button.
+    await tester.tap(loginForm.submitButton);
+    await tester.pump(Duration(milliseconds: 600));
+
+    // Send back a fail to login message.
+    loginForm.authBloc.emit(
+      AuthenticationFailed(
+        userData: UserData((b) => b
+          ..email = 'frog@frog.com'
+          ..uid = ''
+          ..isEmailVerified = false),
+        reason: LoginFailedReason.BadPassword,
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump();
+    await tester.pump();
+
+    // Verify the router is pushed.
+    expect(find.text('Email and/or password incorrect'), findsWidgets);
+  }, variant: TeamsFuseTestVariant());
+
+  testWidgets('login success', (tester) async {
+    var loginForm = _LoginFormTest();
+    await loginForm.setup(tester);
+
+    expect(loginForm.forgotButton, findsOneWidget);
+    expect(loginForm.createAccountButton, findsOneWidget);
+    expect(loginForm.submitButton, findsOneWidget);
+    expect(loginForm.userNameBox, findsOneWidget);
+    expect(loginForm.passwordBox, findsOneWidget);
+
+    await tester.enterText(loginForm.userNameBox, "frog@frog.com");
+    await tester.enterText(loginForm.passwordBox, "womble");
+
+    // Click on the forgot button.
+    await tester.tap(loginForm.submitButton);
+    await tester.pump(Duration(milliseconds: 600));
+
+    // Send back a fail to login message.
+    loginForm.authBloc.emit(
+      AuthenticationLoggedIn(
+        user: UserData((b) => b
+          ..email = 'frog@frog.com'
+          ..uid = '1234'
+          ..isEmailVerified = true),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump();
+    await tester.pump();
+
+    // Verify the router is pushed.
+    verify(loginForm.mockObserver.didPush(argThat(HasRouteName("/Home")), any));
+  }, variant: TeamsFuseTestVariant());
+}
+
+class _LoginFormTest {
+  final mockObserver = MockNavigatorObserver();
+
+  final mockAnalytics = MockAnalyticsSubsystem();
+  final mockUserAuth = MockUserAuth();
+  final userController = StreamController<UserData>();
+  AuthenticationBloc authBloc;
+  final forgotButton = find.byKey(Key("FORGOTPASSWORD"));
+  final createAccountButton = find.byKey(Key("CREATEACCOUNT"));
+  final submitButton = find.byKey(Key("SUBMIT"));
+  final addTeamButton = find.byKey(Key("ADD_TEAM"));
+  final userNameBox = find.byKey(Key("EMAIL"));
+  final passwordBox = find.byKey(Key("PASSWORD"));
+  Widget testWidget;
+  final screen = LoginScreen();
+
+  void setup(WidgetTester tester) async {
+    loadFonts();
+
+    when(mockUserAuth.onAuthChanged()).thenAnswer((_) => userController.stream);
+    authBloc = AuthenticationBloc(mockUserAuth, mockAnalytics);
+
+    AsyncHydratedStorage.storageDirectory = Directory("fail");
+
+    // Build our app and trigger a frame.
+
+    testWidget = await makeTestableWidget(
+      MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider<AnalyticsSubsystem>(create: (c) => mockAnalytics),
+        ],
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<AuthenticationBloc>(create: (c) => authBloc),
+          ],
+          child: screen,
+        ),
+      ),
+      observer: mockObserver,
+    );
+
+    await tester.pumpWidget(
+      testWidget,
+    );
+
+    await tester.pump(Duration(milliseconds: 600));
+  }
+}

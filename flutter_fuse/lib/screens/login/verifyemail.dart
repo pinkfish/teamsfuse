@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../services/blocs.dart';
+import 'package:fusemodel/fusemodel.dart';
 
 import '../../services/messages.dart';
 
@@ -19,35 +19,28 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   ScrollController scrollController = ScrollController();
   bool autovalidate = false;
-  LoginBloc _loginBloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
-    _loginBloc.add(LoginEventReload());
-  }
 
   void onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
   }
 
   void showInSnackBar(String value) {
-    _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(value)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(value)));
   }
 
   void _handleSubmitted() {
-    _loginBloc.add(LoginEventResendEmail());
+    BlocProvider.of<AuthenticationBloc>(context)
+        .add(AuthenticationResendEmail());
   }
 
   void _onLogout(BuildContext context) async {
-    _loginBloc.add(LoginEventLogout());
+    BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogOut());
     // Now navigate back to the login screen.
     Navigator.pushNamed(context, "/Login/Home");
   }
 
   void _onSignup(BuildContext context) async {
-    _loginBloc.add(LoginEventLogout());
+    BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLogOut());
     // Now navigate back to the signup screen.
     Navigator.pushNamed(context, "/Login/SignUp");
   }
@@ -73,16 +66,16 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
       ),
       body: SingleChildScrollView(
         controller: scrollController,
-        child: BlocListener(
-          cubit: _loginBloc,
+        child: BlocConsumer(
+          cubit: BlocProvider.of<AuthenticationBloc>(context),
           listener: (context, state) {
-            if (state is LoginVerificationDone) {
+            if (state is AuthenticationDone) {
               showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
                   content: Text(Messages.of(context).verifyemailsent),
                   actions: <Widget>[
-                    FlatButton(
+                    TextButton(
                         onPressed: () {
                           Navigator.pop(context, true);
                         },
@@ -93,83 +86,78 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               ).then((res) {
                 Navigator.pushNamed(context, "/");
               });
-            } else if (state is LoginVerificationFailed) {
+            } else if (state is AuthenticationFailed) {
               showInSnackBar(Messages.of(context).verifyemailerror);
-            } else if (!(state is LoginEmailNotValidated)) {
+            } else if (!(state is AuthenticationLoggedInUnverified)) {
               Navigator.popAndPushNamed(context, "/Login/Home");
             }
           },
-          child: BlocBuilder(
-            cubit: _loginBloc,
-            builder: (context, state) {
-              if (state is LoginEmailNotValidated) {
-                return Container(
-                  padding: EdgeInsets.all(16.0),
-                  //decoration: BoxDecoration(image: backgroundImage),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            // Show a circle avatar just to make it clear that
-                            // this is signed in page.
-                            Center(
-                              child: CircleAvatar(
-                                radius: width / 2,
-                                child: Text(
-                                    state.userData.profile?.initials() ??
-                                        Messages.of(context).unknown),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(messages
-                                .verifyExplanation(state.userData.email)),
-                            Container(
-                              child: RaisedButton(
-                                  child: Text(messages.resendverify),
-                                  color: Theme.of(context).primaryColor,
-                                  textColor: Colors.white,
-                                  key: Key("SUBMIT"),
-                                  onPressed: _handleSubmitted),
-                              margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          builder: (context, state) {
+            if (state is AuthenticationLoggedInUnverified) {
+              return Container(
+                padding: EdgeInsets.all(16.0),
+                //decoration: BoxDecoration(image: backgroundImage),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          FlatButton(
-                            child: Text(messages.createaccount),
-                            textColor: Theme.of(context).accentColor,
-                            key: Key("CREATEACCOUNT"),
-                            onPressed: () => _onSignup(context),
-                          ),
-                          FlatButton(
-                            child: Text(messages.logout),
-                            textColor: Theme.of(context).accentColor,
-                            key: Key("LOGOUT"),
-                            onPressed: () => _onLogout(context),
+                          // Show a circle avatar just to make it clear that
+                          // this is signed in page.
+                          Center(
+                            child: CircleAvatar(
+                              radius: width / 2,
+                              child: Text(state.user.profile?.initials() ??
+                                  Messages.of(context).unknown),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(messages.verifyExplanation(state.user.email)),
+                          Container(
+                            child: RaisedButton(
+                                child: Text(messages.resendverify),
+                                color: Theme.of(context).primaryColor,
+                                textColor: Colors.white,
+                                key: Key("SUBMIT"),
+                                onPressed: _handleSubmitted),
+                            margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
                           ),
                         ],
-                      )
-                    ],
-                  ),
-                );
-              } else {
-                return Text(Messages.of(context).loading);
-              }
-            },
-          ),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        FlatButton(
+                          child: Text(messages.createaccount),
+                          textColor: Theme.of(context).accentColor,
+                          key: Key("CREATEACCOUNT"),
+                          onPressed: () => _onSignup(context),
+                        ),
+                        FlatButton(
+                          child: Text(messages.logout),
+                          textColor: Theme.of(context).accentColor,
+                          key: Key("LOGOUT"),
+                          onPressed: () => _onLogout(context),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              );
+            } else {
+              return Text(Messages.of(context).loading);
+            }
+          },
         ),
       ),
     );

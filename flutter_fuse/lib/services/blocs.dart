@@ -19,7 +19,6 @@ export 'blocs/gamesbloc.dart';
 export 'blocs/invitebloc.dart';
 export 'blocs/leagueortournamentbloc.dart';
 export 'blocs/loadedstatebloc.dart';
-export 'blocs/loginbloc.dart';
 export 'blocs/messagesbloc.dart';
 export 'blocs/playerbloc.dart';
 export 'blocs/profilebloc.dart';

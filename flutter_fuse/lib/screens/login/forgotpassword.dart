@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fusemodel/fusemodel.dart';
 import '../../services/blocs.dart';
 
 import '../../services/messages.dart';
@@ -26,13 +27,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   AutovalidateMode autovalidate = AutovalidateMode.disabled;
   Validations validations = Validations();
   String email = '';
-  LoginBloc _loginBloc;
-
-  @override
-  void initState() {
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
-    super.initState();
-  }
 
   void onPressed(String routeName) {
     Navigator.of(context).pushNamed(routeName);
@@ -50,7 +44,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       showInSnackBar('Please fix the errors in red before submitting.');
     } else {
       form.save();
-      _loginBloc.add(LoginEventForgotPasswordSend(email: email));
+      BlocProvider.of<AuthenticationBloc>(context)
+          .add(AuthenticationForgotPasswordSend(email: email));
     }
   }
 
@@ -96,7 +91,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 textColor: Theme.of(context).accentColor,
                 key: Key("CREATEACCOUNT"),
                 onPressed: () {
-                  _loginBloc.add(LoginEventReset());
                   onPressed("/Login/SignUp");
                 },
               ),
@@ -105,7 +99,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 textColor: Theme.of(context).accentColor,
                 key: Key("LOGIN"),
                 onPressed: () {
-                  _loginBloc.add(LoginEventReset());
                   onPressed("/Login/Home");
                 },
               ),
@@ -131,7 +124,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 textColor: Theme.of(context).accentColor,
                 key: Key("CREATEACCOUNT"),
                 onPressed: () {
-                  _loginBloc.add(LoginEventReset());
                   onPressed("/Login/SignUp");
                 },
               ),
@@ -140,7 +132,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   textColor: Theme.of(context).accentColor,
                   key: Key("LOGIN"),
                   onPressed: () {
-                    _loginBloc.add(LoginEventReset());
                     // Go back to the initial state.
                     onPressed("/Login/Home");
                   }),
@@ -162,17 +153,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           child: Column(
             children: <Widget>[
               LoginHeader(),
-              BlocBuilder(
-                  cubit: _loginBloc,
-                  builder: (context, state) {
-                    var loading = LoginState is LoginValidatingForgotPassword;
-                    if (state is LoginForgotPasswordFailed) {
+              BlocConsumer(
+                  cubit: BlocProvider.of<AuthenticationBloc>(context),
+                  listener: (context, state) {
+                    if (state is AuthenticationFailed) {
                       showInSnackBar(state.error.toString());
-                      return SavingOverlay(
-                        saving: false,
-                        child: _buildForgotPasswordDone(),
-                      );
                     }
+                  },
+                  builder: (context, state) {
+                    var loading = state is AuthenticationLoading;
                     return SavingOverlay(
                       saving: loading,
                       child: _buildForgotPasswordForm(),

@@ -37,7 +37,6 @@ class FlutterFuseApp extends StatefulWidget {
 
 class _FuseFuseAppState extends State<FlutterFuseApp> {
   AuthenticationBloc _authenticationBloc;
-  LoginBloc _loginBloc;
   InviteBloc _inviteBloc;
   GameBloc _gameBloc;
   FilteredGameBloc _filteredGameBloc;
@@ -69,10 +68,6 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     _databaseUpdateModel = DatabaseUpdateModelImpl(
         Firestore(), _authenticationBloc, AnalyticsSubsystemImpl.instance);
     if (widget._publicClub.isEmpty) {
-      _loginBloc = LoginBloc(
-          userAuth: userAuthImpl,
-          authBloc: _authenticationBloc,
-          analyticsSubsystem: AnalyticsSubsystemImpl.instance);
       _coordinationBloc = CoordinationBloc(
           authenticationBloc: _authenticationBloc,
           analytics: AnalyticsSubsystemImpl.instance,
@@ -127,7 +122,6 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     if (widget._publicClub.isEmpty) {
       extra.addAll([
         BlocProvider<CoordinationBloc>(create: (context) => _coordinationBloc),
-        BlocProvider<LoginBloc>(create: (context) => _loginBloc),
         BlocProvider<InviteBloc>(create: (context) => _inviteBloc),
         BlocProvider<TeamBloc>(create: (context) => _teamBloc),
         BlocProvider<SeasonBloc>(create: (context) => _seasonBloc),
@@ -185,7 +179,6 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
     _teamBloc.close();
     _seasonBloc.close();
     _inviteBloc.close();
-    _loginBloc.close();
     _coordinationBloc.close();
     _authenticationBloc.close();
   }
