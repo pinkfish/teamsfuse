@@ -11,7 +11,7 @@ Game makeTestGame(
     ..inProgress = GameInProgress.NotStarted
     ..result = GameResult.Win
     ..time.currentOffsetInternal = 0
-    ..result.currentPeriod = GamePeriod.notStarted.toBuilder()
+    ..currentPeriod = GamePeriod.notStarted.toBuilder()
     ..divisons = GameDivisionsType.Quarters;
   var shared = GameSharedDataBuilder()
     ..uid = sharedGameUid
