@@ -10,12 +10,20 @@ part 'gamescore.g.dart';
 ///
 abstract class GameScore implements Built<GameScore, GameScoreBuilder> {
   GameScore._();
+
+  /// Factory to make the score.
   factory GameScore([updates(GameScoreBuilder b)]) = _$GameScore;
 
+  /// Points for the game.
   num get ptsFor;
+
+  /// Points against in the game.
   num get ptsAgainst;
+
+  /// If this is a partial result.
   bool get intermediate;
 
+  /// The key index for ptsFor.
   static const String PTS_FOR = 'ptsFor';
 
   /// Defaults for the state.  Always default to no games loaded.
@@ -24,16 +32,20 @@ abstract class GameScore implements Built<GameScore, GameScoreBuilder> {
     ..ptsAgainst = 0
     ..intermediate = false;
 
+  /// Serialize the score.
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(GameScore.serializer, this);
   }
 
+  /// Desearcialize the score.
   static GameScore fromMap(Map<String, dynamic> jsonData) {
     return dataSerializers.deserializeWith(GameScore.serializer, jsonData);
   }
 
+  /// The serializer for the score.
   static Serializer<GameScore> get serializer => _$gameScoreSerializer;
 
+  @override
   String toString() {
     return "GameScore[ ptsFor: $ptsFor, ptsAgainst: $ptsAgainst, intermediate $intermediate]";
   }

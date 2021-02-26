@@ -41,14 +41,12 @@ class PlayerName extends StatelessWidget {
           Widget widgetTwo;
           var state = CrossFadeState.showFirst;
 
-          print("Yay ${playerState.player} ${bloc.playerUid}");
           if (play != null) {
             widgetTwo = Text(
               fallback ?? Messages.of(context).unknown,
               style: style,
               textScaleFactor: textScaleFactor,
             );
-            print("Yay ${play.name}");
             if (play.name != null) {
               if (play.users.isEmpty && play.playerType == PlayerType.player) {
                 widgetTwo = Text(

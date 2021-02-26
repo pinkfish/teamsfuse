@@ -309,7 +309,7 @@ class _GameSharedDetailsState extends State<GameSharedDetails> {
               title = Messages.of(context)
                   .gameofficalinprogress(widget.game.officialResult.result);
             } else {
-              title = Messages.of(context).resultunknown;
+              title = Messages.of(context).noResult;
             }
             break;
           case OfficialResult.HomeTeamWon:

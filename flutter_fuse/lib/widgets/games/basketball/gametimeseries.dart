@@ -1,7 +1,6 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../services/blocs.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../../../services/localutilities.dart';
@@ -168,7 +167,9 @@ class _GameTimeseriesData extends State<GameTimeseries> {
   @override
   Widget build(BuildContext context) {
     if (!widget.state.loadedEvents) {
-      return LoadingWidget();
+      return Center(
+        child: LoadingWidget(),
+      );
     }
 
     return Column(

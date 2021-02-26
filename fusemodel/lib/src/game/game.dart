@@ -8,7 +8,6 @@ import 'gameperiod.dart';
 import 'gameplayersummary.dart';
 import 'gameresult.dart';
 import 'gamesharedata.dart';
-import 'gamesummary.dart';
 
 part 'game.g.dart';
 
@@ -34,9 +33,6 @@ class Attendance extends EnumClass {
 /// the view of the same game for different teams will look different.
 ///
 abstract class Game implements Built<Game, GameBuilder> {
-  /// The current period of the game.
-  GamePeriod get currentPeriod;
-
   /// Uid of the game
   String get uid;
 
@@ -168,8 +164,10 @@ abstract class Game implements Built<Game, GameBuilder> {
   static void _initializeBuilder(GameBuilder b) => b
     ..trackAttendance = true
     ..opponentUid = ""
-    ..currentPeriod = GamePeriod.notStarted.toBuilder()
-    ..gameTime = Duration();
+    ..result.currentPeriod = GamePeriod.notStarted.toBuilder()
+    ..gameTime = Duration()
+    ..playerSummary = GamePlayerSummaryBuilder()
+    ..opponentSummary = GamePlayerSummaryBuilder();
 
   Map<String, dynamic> toMap() {
     return dataSerializers.serializeWith(Game.serializer, this);

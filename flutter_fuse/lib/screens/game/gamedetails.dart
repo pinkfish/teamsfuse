@@ -9,6 +9,10 @@ import '../../services/messages.dart';
 import '../../widgets/blocs/singlegameprovider.dart';
 import '../../widgets/blocs/singleteamprovider.dart';
 import '../../widgets/games/availability.dart';
+import '../../widgets/games/basketball/gameshotlocations.dart';
+import '../../widgets/games/basketball/gamesummary.dart';
+import '../../widgets/games/basketball/gametimeseries.dart';
+import '../../widgets/games/basketball/playerdatatable.dart';
 import '../../widgets/games/deletegamedialog.dart';
 import '../../widgets/games/gamedetails.dart';
 
@@ -80,6 +84,16 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                 if (!singleTeamState.loadedOpponents) {
                   teamBloc.add(SingleTeamLoadOpponents());
                 }
+                var navItems = <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.gamepad),
+                    label: Messages.of(context).details,
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.people),
+                    label: Messages.of(context).gameavailability,
+                  )
+                ];
 
                 if (singleTeamState is SingleTeamUninitialized ||
                     !singleTeamState.loadedOpponents) {
@@ -88,10 +102,65 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                   // This will return null if the opponent does not exist.
                   var opponent = singleTeamState.opponents[game.opponentUid];
 
+                  if (singleTeamState.team.sport == Sport.Basketball) {
+                    navItems.add(BottomNavigationBarItem(
+                      icon: const Icon(MdiIcons.graph),
+                      label: Messages.of(context).stats,
+                    ));
+                    navItems.add(BottomNavigationBarItem(
+                      icon: const Icon(MdiIcons.basketball),
+                      label: Messages.of(context).shots,
+                    ));
+                  }
+
                   if (_tabIndex == 0) {
-                    body = GameDetails(gameBloc);
+                    if (singleTeamState?.team?.sport == Sport.Basketball) {
+                      body = Column(
+                        children: [
+                          GameDetails(gameBloc),
+                          Expanded(
+                            child: Padding(
+                              child: BasketballGameSummary(gameState),
+                              padding: EdgeInsets.all(5),
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+                      body = Scrollbar(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          controller: _scrollController,
+                          child: GameDetails(gameBloc),
+                        ),
+                      );
+                    }
+                  } else if (_tabIndex == 1) {
+                    if (game.result.inProgress != GameInProgress.NotStarted &&
+                        singleTeamState?.team?.sport == Sport.Basketball) {
+                      body = OrientationBuilder(
+                        builder: (context, orientation) => PlayerDataTable(
+                            game: gameState, orientation: orientation),
+                      );
+                    } else {
+                      body = Scrollbar(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          controller: _scrollController,
+                          child: Availaility(gameBloc),
+                        ),
+                      );
+                    }
+                  } else if (_tabIndex == 2) {
+                    if (!gameState.loadedEvents) {
+                      gameBloc.add(SingleGameLoadEvents());
+                    }
+                    body = GameTimeseries(state: gameState);
                   } else {
-                    body = Availaility(gameBloc);
+                    if (!gameState.loadedEvents) {
+                      gameBloc.add(SingleGameLoadEvents());
+                    }
+                    body = GameShotLocations(state: gameState);
                   }
 
                   if (singleTeamState.isAdmin()) {
@@ -126,32 +195,18 @@ class _GameDetailsScreenState extends State<GameDetailsScreen> {
                     actions: actions,
                   ),
                   bottomNavigationBar: BottomNavigationBar(
+                    type: BottomNavigationBarType.fixed,
                     onTap: (index) {
                       setState(() {
                         _tabIndex = index;
                       });
                     },
                     currentIndex: _tabIndex,
-                    items: <BottomNavigationBarItem>[
-                      BottomNavigationBarItem(
-                        icon: const Icon(Icons.gamepad),
-                        label: Messages.of(context).details,
-                      ),
-                      BottomNavigationBarItem(
-                        icon: const Icon(Icons.people),
-                        label: Messages.of(context).gameavailability,
-                      )
-                    ],
+                    items: navItems,
                   ),
-                  body: Scrollbar(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      controller: _scrollController,
-                      child: AnimatedSwitcher(
-                        child: body,
-                        duration: Duration(milliseconds: 500),
-                      ),
-                    ),
+                  body: AnimatedSwitcher(
+                    child: body,
+                    duration: Duration(milliseconds: 500),
                   ),
                   floatingActionButton:
                       gameState.game.result.inProgress == GameInProgress.Final

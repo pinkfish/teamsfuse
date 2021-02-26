@@ -1179,7 +1179,7 @@ class Messages {
         locale: locale);
   }
 
-  String get resultunknown {
+  String get noResult {
     return Intl.message('No result.',
         desc: 'No result for the game', locale: locale);
   }

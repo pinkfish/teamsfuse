@@ -9,9 +9,9 @@ import 'package:fusemodel/fusemodel.dart';
 class GameDuration extends StatefulWidget {
   final TextStyle style;
   final double textScaleFactor;
-  final SingleGameState state;
+  final Game game;
 
-  GameDuration({this.style, this.textScaleFactor, this.state});
+  GameDuration({this.game, this.textScaleFactor, this.style});
 
   @override
   State<StatefulWidget> createState() {
@@ -29,12 +29,12 @@ class _GameDurationState extends State<GameDuration> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.state.game == null) {
+    if (widget.game == null) {
       return SizedBox(
         height: 0,
       );
     }
-    if (widget.state.game.runningFrom != null) {
+    if (widget.game.runningFrom != null) {
       if (_timer == null) {
         _timer = Timer.periodic(Duration(seconds: 1), (t) => setState(() {}));
       }
@@ -44,11 +44,10 @@ class _GameDurationState extends State<GameDuration> {
     }
 
     int diff = 0;
-    if (widget.state.game.runningFrom != null) {
-      diff +=
-          DateTime.now().difference(widget.state.game.runningFrom).inSeconds;
+    if (widget.game.runningFrom != null) {
+      diff += DateTime.now().difference(widget.game.runningFrom).inSeconds;
     }
-    diff += widget.state.game.gameTime.inSeconds;
+    diff += widget.game.gameTime.inSeconds;
 
     return Text(
       twoDigits(diff ~/ 60) + ":" + twoDigits(diff % 60),

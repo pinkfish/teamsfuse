@@ -26,13 +26,15 @@ class GamePlayerList extends StatelessWidget {
     players.addAll(game.opponents.keys);
     players.sort((String p1, String p2) => sort(game, p1, p2));
     return players
-        .where((String playerUid) =>
-            filterPlayer != null ? filterPlayer(playerUid) : null)
+        .where((String playerUid) => filterPlayer != null && playerUid != null
+            ? filterPlayer(playerUid)
+            : false)
         .map(
           (String playerUid) => Padding(
             padding: EdgeInsets.all(2.0),
             child: PlayerTileBasketball(
               extra: extra,
+              gameUid: game.uid,
               compactDisplay: this.compactDisplay,
               playerUid: playerUid,
               editButton: false,

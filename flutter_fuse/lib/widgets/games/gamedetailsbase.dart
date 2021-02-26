@@ -9,6 +9,7 @@ import '../../services/messages.dart';
 import '../blocs/singleteamprovider.dart';
 import '../games/attendanceicon.dart';
 import '../teams/teamimage.dart';
+import 'basketball/gameduration.dart';
 import 'gamemapview.dart';
 import 'teamresults.dart';
 
@@ -133,7 +134,7 @@ class GameDetailsBase extends StatelessWidget {
               style: theme.textTheme.subtitle1);
         } else {
           title = TextSpan(
-              text: Messages.of(context).resultunknown,
+              text: Messages.of(context).noResult,
               style: theme.textTheme.subtitle1);
         }
         break;
@@ -179,7 +180,24 @@ class GameDetailsBase extends StatelessWidget {
                   .bodyText2
                   .copyWith(color: theme.errorColor),
             )
-          : null,
+          : inProgress
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      Messages.of(context)
+                          .getPeriodName(game.result.currentPeriod),
+                      style: Theme.of(context).textTheme.bodyText2,
+                      textScaleFactor: 1.5,
+                    ),
+                    GameDuration(
+                      game: game,
+                      style: Theme.of(context).textTheme.bodyText2,
+                      textScaleFactor: 1.5,
+                    ),
+                  ],
+                )
+              : null,
     );
   }
 

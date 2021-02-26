@@ -9,7 +9,6 @@ export 'game/gameresult.dart';
 export 'game/gameresultshareddetails.dart';
 export 'game/gamescore.dart';
 export 'game/gamesharedata.dart';
-export 'game/gamesummary.dart';
 export 'game/gameplayersummary.dart';
 export 'game/repeatdata.dart';
 export 'game/gamefoultype.dart';

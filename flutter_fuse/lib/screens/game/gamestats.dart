@@ -67,7 +67,7 @@ class GameStatsScreen extends StatelessWidget {
         ..points = pts
         ..timestamp = (DateTime.now().toUtc())
         ..gameUid = gameUid
-        ..period = singleGameBloc.state.game.currentPeriod.toBuilder()
+        ..period = singleGameBloc.state.game.result.currentPeriod.toBuilder()
         ..eventTimeline = singleGameBloc.state.game.currentGameTime
         ..opponent = singleGameBloc.state.game.opponents
             .containsKey(playerData.playerUid)
@@ -85,7 +85,8 @@ class GameStatsScreen extends StatelessWidget {
             ..points = pts
             ..timestamp = (DateTime.now().toUtc())
             ..gameUid = gameUid
-            ..period = singleGameBloc.state.game.currentPeriod.toBuilder()
+            ..period =
+                singleGameBloc.state.game.result.currentPeriod.toBuilder()
             ..eventTimeline = singleGameBloc.state.game.currentGameTime
             ..opponent = singleGameBloc.state.game.opponents
                 .containsKey(playerData.playerUid)
@@ -117,7 +118,7 @@ class GameStatsScreen extends StatelessWidget {
         ..replacementPlayerUid = playerData.item2
         ..points = 0
         ..gameUid = gameUid
-        ..period = bloc.state.game.currentPeriod.toBuilder()
+        ..period = bloc.state.game.result.currentPeriod.toBuilder()
         ..opponent = bloc.state.game.opponents.containsKey(playerData.item1)
         ..eventTimeline = bloc.state.game.currentGameTime
         ..timestamp = DateTime.now().toUtc()
@@ -196,7 +197,7 @@ class GameStatsScreen extends StatelessWidget {
         ..playerUid = playerUid
         ..points = 0
         ..gameUid = gameUid
-        ..period = singleGameBloc.state.game.currentPeriod.toBuilder()
+        ..period = singleGameBloc.state.game.result.currentPeriod.toBuilder()
         ..opponent = singleGameBloc.state.game.opponents.containsKey(playerUid)
         ..eventTimeline = singleGameBloc.state.game.currentGameTime
         ..timestamp = DateTime.now().toUtc()
@@ -598,7 +599,7 @@ class GameStatsScreen extends StatelessWidget {
                                     (state.gameEvents.length == 0 ||
                                         state.gameEvents.last.type ==
                                             GameEventType.PeriodEnd)) ||
-                                state.game?.currentPeriod ==
+                                state.game?.result.currentPeriod ==
                                     GamePeriod.notStarted) {
                               return BlocBuilder(
                                 cubit: singleSeasonBloc,
@@ -761,7 +762,7 @@ class GameStatsScreen extends StatelessWidget {
         ..points = 0
         ..timestamp = (DateTime.now().toUtc())
         ..gameUid = singleGameBloc.gameUid
-        ..period = singleGameBloc.state.game.currentPeriod.toBuilder()
+        ..period = singleGameBloc.state.game.result.currentPeriod.toBuilder()
         ..opponent = false
         ..type = GameEventType.PeriodEnd),
       false,
@@ -842,8 +843,8 @@ class _GameStateSection extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                Messages.of(context)
-                                    .getPeriodName(state.game.currentPeriod),
+                                Messages.of(context).getPeriodName(
+                                    state.game.result.currentPeriod),
                                 style: Theme.of(context).textTheme.bodyText2,
                                 textScaleFactor: 1.5,
                               ),
@@ -861,7 +862,7 @@ class _GameStateSection extends StatelessWidget {
                                     context, state.game, singleGameBloc),
                               ),
                               GameDuration(
-                                state: state,
+                                game: state.game,
                                 style: Theme.of(context).textTheme.bodyText2,
                                 textScaleFactor: 1.5,
                               ),
@@ -956,8 +957,8 @@ class _GameStateSection extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                Messages.of(context)
-                                    .getPeriodName(state.game.currentPeriod),
+                                Messages.of(context).getPeriodName(
+                                    state.game.result.currentPeriod),
                                 style: Theme.of(context).textTheme.bodyText2,
                                 textScaleFactor: 1.5,
                               ),
@@ -975,7 +976,7 @@ class _GameStateSection extends StatelessWidget {
                                     context, state.game, singleGameBloc),
                               ),
                               GameDuration(
-                                state: state,
+                                game: state.game,
                                 style: Theme.of(context).textTheme.bodyText2,
                                 textScaleFactor: 1.5,
                               ),

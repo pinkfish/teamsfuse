@@ -5,6 +5,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:meta/meta.dart';
 import 'package:synchronized/synchronized.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../util/async_hydrated_bloc/asynchydratedbloc.dart';
 
@@ -250,6 +251,10 @@ class SingleGameBloc
         add(_SingleGameDeleted());
       }
     });
+    _gameSub.onError((e, stack) {
+      crashes.recordException(e, stack);
+      add(_SingleGameDeleted());
+    });
   }
 
   @override
@@ -310,6 +315,12 @@ class SingleGameBloc
                     opponentUid: state.game.opponentUid)
                 .listen((pl) {
               add(_SingleGameUpdateOpponents(opponentPlayers: pl));
+            });
+            _opPlayers.onError((e, stack) {
+              crashes.recordException(e, stack);
+              debugPrint(stack, wrapWidth: 1024);
+              add(_SingleGameUpdateOpponents(
+                  opponentPlayers: BuiltList<Player>.of([])));
             });
           }
         });
@@ -746,7 +757,7 @@ class SingleGameBloc
         case GameEventType.PeriodEnd:
           var newCurrentPeriod = ev.period.toBuilder();
           newCurrentPeriod.periodNumber = 1;
-          result.scoresInternal[newCurrentPeriod.build().toIndex()] =
+          result.scoresInternal[newCurrentPeriod.build()] =
               GameResultPerPeriod((b) => b
                 ..period = newCurrentPeriod
                 ..score.ptsFor = ptsFor
@@ -775,6 +786,15 @@ class SingleGameBloc
       } else {
         result.result = GameResult.Tie;
       }
+    } else {
+      // Update the current period score.
+      var newCurrentPeriod = currentPeriod.toBuilder();
+      newCurrentPeriod.periodNumber = 1;
+      result.scoresInternal[newCurrentPeriod.build()] =
+          GameResultPerPeriod((b) => b
+            ..period = newCurrentPeriod
+            ..score.ptsFor = ptsFor
+            ..score.ptsAgainst = ptsAgainst);
     }
 
     // See if this is different the current state and update if it is.
@@ -784,7 +804,7 @@ class SingleGameBloc
         state.game.players.entries.every(
             (MapEntry<String, GamePlayerSummary> e) =>
                 players[e.key].build() == e.value) ||
-        state.game.currentPeriod != currentPeriod ||
+        state.game.result.currentPeriod != currentPeriod ||
         state.game.opponents.entries.every(
             (MapEntry<String, GamePlayerSummary> e) =>
                 opponents[e.key].build() == e.value)) {
@@ -793,7 +813,7 @@ class SingleGameBloc
             ..result = result
             ..opponentSummary = opponentSummary
             ..playerSummary = playerSummary
-            ..currentPeriod = currentPeriod.toBuilder()
+            ..result.currentPeriod = currentPeriod.toBuilder()
             ..players = MapBuilder(
                 players.map((var e, var v) => MapEntry(e, v.build())))
             ..opponents = MapBuilder(

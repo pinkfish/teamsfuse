@@ -2,7 +2,6 @@ library serializers;
 
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
-import 'package:built_value/standard_json_plugin.dart';
 
 import 'ant/broadcast.dart';
 import 'ant/broadcaststatus.dart';
@@ -55,7 +54,6 @@ part 'serializer.g.dart';
   GameResultPerPeriod,
   GameScore,
   GameSharedData,
-  GameSummary,
   Gender,
   Invite,
   InviteAsAdmin,
@@ -94,7 +92,6 @@ part 'serializer.g.dart';
   WinRecord
 ])
 final Serializers dataSerializers = (_$dataSerializers.toBuilder()
-      ..addPlugin(StandardJsonPlugin())
       ..add(TimestampSerializer())
       ..add(InviteSerializer())
       ..add(GamePeriodSerializer())

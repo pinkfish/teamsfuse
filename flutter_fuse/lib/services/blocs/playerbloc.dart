@@ -120,26 +120,26 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
     toDeletePlayers.forEach((String id) {
       players.remove(id);
     });
-    if (data.length == 0) {
-      if (!foundMe && !_createdMePlayer) {
-        PlayerUserInternal playerUser = new PlayerUserInternal((b) => b
-          ..added = true
-          ..relationship = Relationship.Me);
-        PlayerBuilder player = PlayerBuilder();
-        player.usersData[coordinationBloc.authenticationBloc.currentUser.uid] =
-            playerUser;
-        player.name = coordinationBloc
-                .authenticationBloc.currentUser.profile?.displayName ??
-            "Frog";
-        _createdMePlayer = true;
-        me = player.build();
-        coordinationBloc.databaseUpdateModel
-            .updateFirestorePlayer(player.build(), true)
-            .then((void val) {})
-            .catchError((dynamic e, StackTrace trace) {
-          return e;
-        });
-      } else {}
+    if (!foundMe && !_createdMePlayer) {
+      PlayerUserInternal playerUser = new PlayerUserInternal((b) => b
+        ..added = true
+        ..relationship = Relationship.Me);
+      PlayerBuilder player = PlayerBuilder()
+        ..uid = ""
+        ..playerType = PlayerType.player;
+      player.usersData[coordinationBloc.authenticationBloc.currentUser.uid] =
+          playerUser;
+      player.name = coordinationBloc
+              .authenticationBloc.currentUser.profile?.displayName ??
+          "Frog";
+      _createdMePlayer = true;
+      me = player.build();
+      coordinationBloc.databaseUpdateModel
+          .addFirestorePlayer(player.build())
+          .then((void val) {})
+          .catchError((dynamic e, StackTrace trace) {
+        return e;
+      });
     }
     coordinationBloc
         .add(CoordinationEventLoadedData(loaded: BlocsToLoad.Player));

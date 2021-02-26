@@ -101,7 +101,7 @@ abstract class GameResultDetails
     implements Built<GameResultDetails, GameResultDetailsBuilder> {
   /// The scores on a per period basis.
   @BuiltValueField(wireName: "scores")
-  BuiltMap<String, GameResultPerPeriod> get scoresInternal;
+  BuiltMap<GamePeriod, GameResultPerPeriod> get scoresInternal;
 
   /// The result of this game.
   GameResult get result;
@@ -109,7 +109,7 @@ abstract class GameResultDetails
   /// If the game is currently in progress.
   GameInProgress get inProgress;
 
-  /// The current peirod the game is in.
+  /// The current period of the game.
   GamePeriod get currentPeriod;
 
   /// How many divisons in the game.
@@ -120,9 +120,7 @@ abstract class GameResultDetails
   /// Version of the scaores to use for most lookups.
   @memoized
   BuiltMap<GamePeriod, GameResultPerPeriod> get scores =>
-      BuiltMap(scoresInternal
-          .map((k, v) => MapEntry(GamePeriod.fromIndex(k), v))
-          .rebuild((b) {
+      BuiltMap(scoresInternal.rebuild((b) {
         // Turn a 'final' into a 'regulation'.
         if (scoresInternal.containsKey("Final")) {
           b[GamePeriod.regulation1] = b[GamePeriod.finalPeriod];

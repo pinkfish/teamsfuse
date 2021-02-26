@@ -73,6 +73,8 @@ class _GameShotLocationsState extends State<GameShotLocations>
               )
             : SvgPicture.asset(
                 "assets/images/Basketball_Halfcourt.svg",
+                height: min(box.maxWidth, box.maxHeight),
+                width: min(box.maxWidth, box.maxHeight),
               ),
         SizedBox(
           height: min(box.maxWidth, box.maxHeight),

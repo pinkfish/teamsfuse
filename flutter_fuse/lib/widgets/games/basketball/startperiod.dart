@@ -121,7 +121,7 @@ class _StartPeriodState extends State<StartPeriod> {
                       SingleGameUpdate(
                         game: widget.game.rebuild((b) => b
                           ..runningFrom = null
-                          ..currentPeriod = period.toBuilder()
+                          ..result.currentPeriod = period.toBuilder()
                           ..players = players.toBuilder()
                           ..result.inProgress = GameInProgress.Final
                           ..opponents = opponents.toBuilder()),
@@ -132,7 +132,7 @@ class _StartPeriodState extends State<StartPeriod> {
                       SingleGameUpdate(
                         game: widget.game.rebuild((b) => b
                           ..runningFrom = DateTime.now().toUtc()
-                          ..currentPeriod = period.toBuilder()
+                          ..result.currentPeriod = period.toBuilder()
                           ..result.inProgress = GameInProgress.InProgress
                           ..players = players.toBuilder()
                           ..opponents = opponents.toBuilder()),
@@ -162,23 +162,23 @@ class _StartPeriodState extends State<StartPeriod> {
 
   @override
   void initState() {
-    switch (widget.game.currentPeriod.type) {
+    switch (widget.game.result.currentPeriod.type) {
       case GamePeriodType.NotStarted:
         period = GamePeriod.regulation1;
         break;
       case GamePeriodType.Regulation:
-        period = widget.game.currentPeriod.rebuild((b) =>
-            b..periodNumber = widget.game.currentPeriod.periodNumber + 1);
+        period = widget.game.result.currentPeriod.rebuild((b) => b
+          ..periodNumber = widget.game.result.currentPeriod.periodNumber + 1);
         break;
       case GamePeriodType.Overtime:
-        period = widget.game.currentPeriod.rebuild((b) =>
-            b..periodNumber = widget.game.currentPeriod.periodNumber + 1);
+        period = widget.game.result.currentPeriod.rebuild((b) => b
+          ..periodNumber = widget.game.result.currentPeriod.periodNumber + 1);
         break;
       case GamePeriodType.Penalty:
         period = GamePeriod.finalPeriod;
         break;
       default:
-        period = widget.game.currentPeriod;
+        period = widget.game.result.currentPeriod;
         break;
     }
 

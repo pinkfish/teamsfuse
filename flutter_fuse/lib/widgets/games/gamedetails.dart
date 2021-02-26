@@ -125,11 +125,11 @@ class _GameDetailsState extends State<GameDetails> {
                   TextSpan(text: Messages.of(context).resultInProgress(details))
                 ])),
             actions: <Widget>[
-              FlatButton(
+              TextButton(
                 child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 onPressed: () => Navigator.pop(context, true),
               ),
-              FlatButton(
+              TextButton(
                 child:
                     Text(MaterialLocalizations.of(context).cancelButtonLabel),
                 onPressed: () => Navigator.pop(context, false),
@@ -140,15 +140,13 @@ class _GameDetailsState extends State<GameDetails> {
     if (ret != null && ret) {
       // Copy the result over and save.
       var newResult = GameResultDetailsBuilder();
-      newResult.scoresInternal[GamePeriod.regulation1.toIndex()] =
+      newResult.scoresInternal[GamePeriod.regulation1] =
           details.regulationResult;
       if (details.overtimeResult != null) {
-        newResult.scoresInternal[GamePeriod.overtime1.toIndex()] =
-            details.overtimeResult;
+        newResult.scoresInternal[GamePeriod.overtime1] = details.overtimeResult;
       }
       if (details.penaltyResult != null) {
-        newResult.scoresInternal[GamePeriod.penalty.toIndex()] =
-            details.penaltyResult;
+        newResult.scoresInternal[GamePeriod.penalty] = details.penaltyResult;
       }
       newResult.result = details.result;
       widget.gameBloc.add(SingleGameUpdateResult(result: newResult.build()));

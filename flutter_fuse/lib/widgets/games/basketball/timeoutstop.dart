@@ -65,7 +65,7 @@ class TimeoutEnd extends StatelessWidget {
                     GameEvent((b) => b
                       ..gameUid = game.uid
                       ..playerUid = ""
-                      ..period = game.currentPeriod.toBuilder()
+                      ..period = game.result.currentPeriod.toBuilder()
                       ..timestamp = DateTime.now().toUtc()
                       ..opponent = false
                       ..eventTimeline = game.currentGameTime
