@@ -276,11 +276,9 @@ class AuthenticationBloc
     if (event is AuthenticationAppStarted) {
       UserData data = await userAuth.currentUser();
       if (data == null) {
-        yield AuthenticationDone();
         yield AuthenticationLoggedOut();
       } else {
         try {
-          yield AuthenticationDone();
           yield _updateWithUser(data);
         } catch (e, stacktrace) {
           print("Error loading $e $stacktrace");
