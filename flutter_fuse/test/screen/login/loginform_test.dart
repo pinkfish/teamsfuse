@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:mockito/mockito.dart';
+import 'dart:io' show Platform;
 
 import '../../util/loadfonts.dart';
 import '../../util/testable.dart';
@@ -45,6 +46,12 @@ void main() {
 
     expect(loginForm.forgotButton, findsOneWidget);
     expect(loginForm.createAccountButton, findsOneWidget);
+
+    if (Platform.environment["GOLDEN"] != null) {
+      print("Golden!");
+      await expectLater(find.byType(LoginScreen),
+          matchesGoldenFile('../../golden/login_form.png'));
+    }
 
     // Click on the forgot button.
     await tester.tap(loginForm.createAccountButton);

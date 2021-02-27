@@ -11,8 +11,10 @@ import 'package:flutter_fuse/services/blocs/playerbloc.dart';
 import 'package:flutter_fuse/util/async_hydrated_bloc/asyncstorage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:mockito/mockito.dart';
 
+import '../../util/googlemapsplatformtest.dart';
 import '../../util/loadfonts.dart';
 import '../../util/testable.dart';
 import '../../util/testdata.dart';
@@ -27,6 +29,8 @@ class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 class MockPlayerBloc extends MockBloc<PlayerState> implements PlayerBloc {}
 
 void main() {
+  var platform = MockGoogleMapsFlutterPlatform();
+
   testWidgets('uninitialized', (tester) async {
     loadFonts();
 
@@ -101,6 +105,11 @@ void main() {
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('loaded', (tester) async {
+    resetMockitoState();
+    print("Made platform");
+    setupGoogleMapsMock(platform);
+    GoogleMapsFlutterPlatform.instance = platform;
+
     loadFonts();
 
     final mockDb = MockDatabaseUpdateModel();
@@ -147,6 +156,11 @@ void main() {
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('loaded team', (tester) async {
+    resetMockitoState();
+    print("Made platform");
+    setupGoogleMapsMock(platform);
+    GoogleMapsFlutterPlatform.instance = platform;
+
     final mockDb = MockDatabaseUpdateModel();
     final mockAnalytics = MockAnalyticsSubsystem();
     final gameController = StreamController<Game>();
@@ -177,7 +191,7 @@ void main() {
 
     // Fake out the places dialog.
     const MethodChannel('flutter_places_dialog')
-        .setMockMethodCallHandler((MethodCall methodCall) async {
+        .setMockMethodCallHandler((methodCall) async {
       if (methodCall.method == 'setApiKey') {
         return true; // set initial values here if desired
       }
@@ -219,9 +233,9 @@ void main() {
     await tester.pump(Duration(milliseconds: 600));
 
     // Still loading when there is no team.
-    expectLater(find.text("Fluff World"), findsOneWidget);
+    expect(find.text("Fluff World"), findsOneWidget);
 
-    if (String.fromEnvironment("GOLDEN", defaultValue: "").isNotEmpty) {
+    if (Platform.environment["GOLDEN"] != null) {
       await expectLater(find.byType(GameDetailsScreen),
           matchesGoldenFile('../../golden/game_details_set.png'));
     }
@@ -260,7 +274,7 @@ void main() {
 
     // Fake out the places dialog.
     const MethodChannel('flutter_places_dialog')
-        .setMockMethodCallHandler((MethodCall methodCall) async {
+        .setMockMethodCallHandler((methodCall) async {
       if (methodCall.method == 'setApiKey') {
         return true; // set initial values here if desired
       }
@@ -316,11 +330,11 @@ void main() {
     await tester.pump(Duration(milliseconds: 600));
 
     // Still loading when there is no team.
-    expectLater(find.text("Fluff World"), findsOneWidget);
+    expect(find.text("Fluff World"), findsOneWidget);
 
-    if (String.fromEnvironment("GOLDEN", defaultValue: "").isNotEmpty) {
+    if (Platform.environment["GOLDEN"] != null) {
       await expectLater(find.byType(GameDetailsScreen),
-          matchesGoldenFile('../../golden/game_details_set.png'));
+          matchesGoldenFile('../../golden/game_details_basketball.png'));
     }
 
     gameController.close();

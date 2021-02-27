@@ -88,7 +88,7 @@ void main() {
 
     await expectLater(find.text("Frog (Invited)"), findsOneWidget);
 
-    if (String.fromEnvironment("GOLDEN", defaultValue: "").isNotEmpty) {
+    if (Platform.environment["GOLDEN"] != null) {
       await expectLater(find.byType(PlayerName),
           matchesGoldenFile('../golden/player_name_set.png'));
     }

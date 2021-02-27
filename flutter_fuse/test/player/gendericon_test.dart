@@ -3,6 +3,7 @@ import 'package:flutter_fuse/widgets/player/gendericon.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'dart:io' show Platform;
 
 import '../util/loadfonts.dart';
 import '../util/testable.dart';
@@ -41,7 +42,7 @@ void main() {
 
     // Verify that our icon is male.
     expect(find.byIcon(MdiIcons.genderFemale), findsOneWidget);
-    if (String.fromEnvironment("GOLDEN", defaultValue: "").isNotEmpty) {
+    if (Platform.environment["GOLDEN"] != null) {
       await expectLater(find.byType(GenderIcon),
           matchesGoldenFile('../golden/gender_icon_female.png'));
     }
