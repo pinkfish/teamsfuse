@@ -244,7 +244,7 @@ class TeamBloc extends HydratedBloc<TeamEvent, TeamState> {
         try {
           // Starting, nothing loaded yet.
           TraceProxy teamsTrace =
-              coordinationBloc.analyticsSubsystem.newTrace("teamData");
+              coordinationBloc.analytics.newTrace("teamData");
           teamsTrace.start();
           var loaded = TeamLoaded.fromMap(json);
           teamsTrace.stop();

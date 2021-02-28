@@ -174,8 +174,7 @@ class ClubBloc extends HydratedBloc<ClubEvent, ClubState> {
         return ClubUninitialized();
       case ClubBlocStateType.Loaded:
         try {
-          var clubTrace =
-              coordinationBloc.analyticsSubsystem.newTrace("clubData");
+          var clubTrace = coordinationBloc.analytics.newTrace("clubData");
           clubTrace.start();
           // If recovered this way it is only local data.
           var loaded = ClubLoaded.fromMap(json);

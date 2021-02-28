@@ -38,6 +38,8 @@ void main() {
     // Verify the router is pushed.
     verify(loginForm.mockObserver
         .didPush(argThat(HasRouteName("/Login/ForgotPassword")), any));
+
+    loginForm.dispose();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('signup button', (tester) async {
@@ -60,6 +62,8 @@ void main() {
     // Verify the router is pushed.
     verify(loginForm.mockObserver
         .didPush(argThat(HasRouteName("/Login/SignUp")), any));
+
+    loginForm.dispose();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('login failed', (tester) async {
@@ -96,6 +100,7 @@ void main() {
 
     // Verify the router is pushed.
     expect(find.text('Email and/or password incorrect'), findsWidgets);
+    loginForm.dispose();
   }, variant: TeamsFuseTestVariant());
 
   testWidgets('login success', (tester) async {
@@ -131,6 +136,8 @@ void main() {
 
     // Verify the router is pushed.
     verify(loginForm.mockObserver.didPush(argThat(HasRouteName("/Home")), any));
+
+    loginForm.dispose();
   }, variant: TeamsFuseTestVariant());
 }
 
@@ -180,5 +187,9 @@ class _LoginFormTest {
     );
 
     await tester.pump(Duration(milliseconds: 600));
+  }
+
+  void dispose() {
+    userController.close();
   }
 }

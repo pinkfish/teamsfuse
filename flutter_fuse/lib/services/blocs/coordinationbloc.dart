@@ -137,7 +137,6 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
   final AuthenticationBloc authenticationBloc;
   final AnalyticsSubsystem analytics;
   final DatabaseUpdateModel databaseUpdateModel;
-  final AnalyticsSubsystem analyticsSubsystem;
 
   TraceProxy loadingTrace;
   DateTime start;
@@ -145,8 +144,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
   CoordinationBloc(
       {@required this.authenticationBloc,
       @required this.analytics,
-      @required this.databaseUpdateModel,
-      @required this.analyticsSubsystem})
+      @required this.databaseUpdateModel})
       : super(CoordinationStateUninitialized(BuiltSet())) {
     authenticationBloc.listen((AuthenticationState authState) {
       if (authState is AuthenticationLoggedIn) {

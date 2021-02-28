@@ -69,10 +69,10 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         Firestore(), _authenticationBloc, AnalyticsSubsystemImpl.instance);
     if (widget._publicClub.isEmpty) {
       _coordinationBloc = CoordinationBloc(
-          authenticationBloc: _authenticationBloc,
-          analytics: AnalyticsSubsystemImpl.instance,
-          databaseUpdateModel: _databaseUpdateModel,
-          analyticsSubsystem: AnalyticsSubsystemImpl.instance);
+        authenticationBloc: _authenticationBloc,
+        analytics: AnalyticsSubsystemImpl.instance,
+        databaseUpdateModel: _databaseUpdateModel,
+      );
       _playerBloc = PlayerBloc(
         coordinationBloc: _coordinationBloc,
         crashes: AnalyticsSubsystemImpl.instance,
@@ -83,7 +83,6 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
           databaseUpdateModel: _databaseUpdateModel);
       _messagesBloc = MessagesBloc(
         coordinationBloc: _coordinationBloc,
-        teamBloc: _teamBloc,
         crashes: AnalyticsSubsystemImpl.instance,
       );
       _clubBloc = ClubBloc(

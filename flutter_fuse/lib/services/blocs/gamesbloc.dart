@@ -163,7 +163,7 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
       case GameBlocStateType.Loaded:
         try {
           TraceProxy gamesTrace =
-              coordinationBloc.analyticsSubsystem.newTrace("gamaData");
+              coordinationBloc.analytics.newTrace("gamaData");
           gamesTrace.start();
           var loaded = GameLoaded.fromMap(json);
           var gamesByTeam = MapBuilder<String, ListBuilder<Game>>();

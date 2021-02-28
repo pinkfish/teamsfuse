@@ -141,7 +141,7 @@ class SeasonBloc extends HydratedBloc<SeasonEvent, SeasonState> {
       case SeasonBlocStateType.Loaded:
         // Starting, nothing loaded yet.
         TraceProxy seasonsTrace =
-            coordinationBloc.analyticsSubsystem.newTrace("SeasonData");
+            coordinationBloc.analytics.newTrace("SeasonData");
         seasonsTrace.start();
         try {
           var state = SeasonLoaded.fromMap(json);

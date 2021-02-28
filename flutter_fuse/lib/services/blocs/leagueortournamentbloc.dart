@@ -142,8 +142,8 @@ class LeagueOrTournamentBloc
         return LeagueOrTournamentUninitialized();
       case LeagueOrTournamentBlocStateType.Loaded:
         try {
-          TraceProxy leagueTrace = coordinationBloc.analyticsSubsystem
-              .newTrace("leagueOrTournamentData");
+          TraceProxy leagueTrace =
+              coordinationBloc.analytics.newTrace("leagueOrTournamentData");
           leagueTrace.start();
           var loaded = LeagueOrTournamentLoaded.fromMap(json);
           leagueTrace.stop();

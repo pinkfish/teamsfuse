@@ -9,7 +9,6 @@ import 'package:meta/meta.dart';
 
 import 'coordinationbloc.dart';
 import 'internal/blocstoload.dart';
-import 'teambloc.dart';
 
 abstract class MessagesEvent extends Equatable {}
 
@@ -56,7 +55,6 @@ class _MessagesEventFirestore extends MessagesEvent {
 ///
 class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
   final CoordinationBloc coordinationBloc;
-  final TeamBloc teamBloc;
   final AnalyticsSubsystem crashes;
 
   StreamSubscription<CoordinationState> _coordState;
@@ -65,10 +63,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
 
   bool _loadingFirestore = false;
 
-  MessagesBloc(
-      {@required this.coordinationBloc,
-      @required this.teamBloc,
-      @required this.crashes})
+  MessagesBloc({@required this.coordinationBloc, @required this.crashes})
       : super(MessagesUninitialized()) {
     coordinationBloc
         .add(CoordinationEventTrackLoading(toLoad: BlocsToLoad.Messages));
@@ -185,7 +180,7 @@ class MessagesBloc extends HydratedBloc<MessagesEvent, MessagesBlocState> {
       case MessagesBlocStateType.Loaded:
         try {
           TraceProxy messagesTrace =
-              coordinationBloc.analyticsSubsystem.newTrace("messagesTrace");
+              coordinationBloc.analytics.newTrace("messagesTrace");
           messagesTrace.start();
           var loaded = MessagesLoaded.fromMap(json);
           messagesTrace.stop();

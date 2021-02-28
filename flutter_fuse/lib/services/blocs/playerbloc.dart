@@ -196,7 +196,7 @@ class PlayerBloc extends HydratedBloc<PlayerEvent, PlayerState> {
       case PlayerBlocStateType.Loaded:
         try {
           TraceProxy playerTrace =
-              coordinationBloc.analyticsSubsystem.newTrace("playerData");
+              coordinationBloc.analytics.newTrace("playerData");
           playerTrace.start();
           var loaded = PlayerLoaded.fromMap(json);
           playerTrace.stop();
