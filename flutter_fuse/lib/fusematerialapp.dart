@@ -30,6 +30,7 @@ class FuseMaterialApp extends StatelessWidget {
       route = "/Public/Club/$_publicClub";
     }
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         MessagesDelegate(),
         GlobalMaterialLocalizations.delegate,
