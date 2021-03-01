@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:clock/clock.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -38,8 +39,8 @@ class FilteredGameUninitialized extends FilteredGameState {
       : super(
             games: {},
             filter: FilterDetails(),
-            start: DateTime.now(),
-            end: DateTime.now());
+            start: clock.now(),
+            end: clock.now());
 }
 
 ///

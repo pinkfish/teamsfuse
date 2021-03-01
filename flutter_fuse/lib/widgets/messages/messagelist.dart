@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fuse/widgets/blocs/singlemessageprovider.dart';
 import 'package:flutter_fuse/widgets/util/username.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:clock/clock.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -115,7 +116,7 @@ class MessageList extends StatelessWidget {
         var sortedList = [...state.unreadMessages, ...state.recentMessages];
         sortedList.sort((m1, m2) => m1.sentAt.compareTo(m2.sentAt));
         var messages = <Widget>[];
-        var dayCutoff = DateTime.now().subtract(Duration(days: 1));
+        var dayCutoff = clock.now().subtract(Duration(days: 1));
         var authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
         for (var mess in sortedList) {
           messages

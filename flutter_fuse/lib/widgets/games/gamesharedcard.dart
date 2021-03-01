@@ -6,6 +6,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:clock/clock.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -53,7 +54,7 @@ class GameSharedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     var buttons = <Widget>[];
 
-    var timeNow = TZDateTime.now(local);
+    var timeNow = TZDateTime.from(clock.now(), local);
     var dur = timeNow.difference(game.tzTime).abs();
     var day = TimeOfDay.fromDateTime(game.tzTime);
     var format = MaterialLocalizations.of(context).formatTimeOfDay(day);
@@ -93,7 +94,7 @@ class GameSharedCard extends StatelessWidget {
       leagueOrTournament =
           leagueOrTournamentBloc.state.leagueOrTournaments[game.leagueUid];
     }
-    if (game.time.isBefore(DateTime.now()) &&
+    if (game.time.isBefore(clock.now()) &&
         game.type == EventType.Game &&
         game.officialResult.result == OfficialResult.NotStarted &&
         (leagueOrTournament?.isAdmin() ?? false)) {

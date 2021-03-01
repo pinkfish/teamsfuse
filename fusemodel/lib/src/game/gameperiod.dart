@@ -1,6 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:clock/clock.dart';
 
 import '../common.dart';
 import '../serializer.dart';
@@ -180,11 +181,11 @@ abstract class GamePeriodTime
     if (currentPeriodStartInternal != null) {
       if (timeCountUp) {
         return new Duration(
-            milliseconds: new DateTime.now().millisecondsSinceEpoch -
+            milliseconds: clock.now().millisecondsSinceEpoch -
                 currentPeriodStartInternal +
                 currentOffsetInternal);
       } else {
-        int diff = new DateTime.now().millisecondsSinceEpoch -
+        int diff = clock.now().millisecondsSinceEpoch -
             currentPeriodStartInternal +
             currentOffsetInternal;
         if (diff > currentOffsetInternal) {

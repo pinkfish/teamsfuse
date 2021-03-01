@@ -1,6 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:clock/clock.dart';
 import 'package:timezone/timezone.dart';
 
 import '../serializer.dart';
@@ -134,7 +135,7 @@ abstract class Game implements Built<Game, GameBuilder> {
   Duration get currentGameTime {
     int diff = 0;
     if (runningFrom != null) {
-      diff += DateTime.now().difference(runningFrom).inSeconds;
+      diff += clock.now().difference(runningFrom).inSeconds;
     }
     diff += gameTime.inSeconds;
     return Duration(seconds: diff);

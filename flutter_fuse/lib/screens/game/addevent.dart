@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
+import 'package:clock/clock.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -182,7 +183,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   void newGame() {
     if (_team != null) {
-      var start = DateTime.now().add(const Duration(days: 1));
+      var start = clock.now().add(const Duration(days: 1));
 
       var sharedGameData = GameSharedData((b) => b
         ..uid = ""
@@ -214,7 +215,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   void _teamChanged(Team team) {
     _team = team;
-    var start = DateTime.now().add(const Duration(days: 0));
+    var start = clock.now().add(const Duration(days: 0));
     if (_initGame == null) {
       newGame();
     }

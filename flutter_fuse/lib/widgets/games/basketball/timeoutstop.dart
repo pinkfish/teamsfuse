@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:clock/clock.dart';
 
 import '../../../services/blocs.dart';
 import '../../../services/messages.dart';
@@ -66,7 +67,7 @@ class TimeoutEnd extends StatelessWidget {
                       ..gameUid = game.uid
                       ..playerUid = ""
                       ..period = game.result.currentPeriod.toBuilder()
-                      ..timestamp = DateTime.now().toUtc()
+                      ..timestamp = clock.now().toUtc()
                       ..opponent = false
                       ..eventTimeline = game.currentGameTime
                       ..points = 0

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:built_collection/built_collection.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -65,7 +66,7 @@ class GameStatsScreen extends StatelessWidget {
       GameEvent((b) => b
         ..playerUid = playerData.playerUid
         ..points = pts
-        ..timestamp = (DateTime.now().toUtc())
+        ..timestamp = (clock.now().toUtc())
         ..gameUid = gameUid
         ..period = singleGameBloc.state.game.result.currentPeriod.toBuilder()
         ..eventTimeline = singleGameBloc.state.game.currentGameTime
@@ -83,7 +84,7 @@ class GameStatsScreen extends StatelessWidget {
           (b) => b
             ..playerUid = playerData.assistPlayerUid
             ..points = pts
-            ..timestamp = (DateTime.now().toUtc())
+            ..timestamp = (clock.now().toUtc())
             ..gameUid = gameUid
             ..period =
                 singleGameBloc.state.game.result.currentPeriod.toBuilder()
@@ -121,7 +122,7 @@ class GameStatsScreen extends StatelessWidget {
         ..period = bloc.state.game.result.currentPeriod.toBuilder()
         ..opponent = bloc.state.game.opponents.containsKey(playerData.item1)
         ..eventTimeline = bloc.state.game.currentGameTime
-        ..timestamp = DateTime.now().toUtc()
+        ..timestamp = clock.now().toUtc()
         ..type = type),
       false,
     );
@@ -200,7 +201,7 @@ class GameStatsScreen extends StatelessWidget {
         ..period = singleGameBloc.state.game.result.currentPeriod.toBuilder()
         ..opponent = singleGameBloc.state.game.opponents.containsKey(playerUid)
         ..eventTimeline = singleGameBloc.state.game.currentGameTime
-        ..timestamp = DateTime.now().toUtc()
+        ..timestamp = clock.now().toUtc()
         ..foulType = foulType
         ..type = type),
       false,
@@ -760,7 +761,7 @@ class GameStatsScreen extends StatelessWidget {
       GameEvent((b) => b
         ..playerUid = ""
         ..points = 0
-        ..timestamp = (DateTime.now().toUtc())
+        ..timestamp = (clock.now().toUtc())
         ..gameUid = singleGameBloc.gameUid
         ..period = singleGameBloc.state.game.result.currentPeriod.toBuilder()
         ..opponent = false
@@ -771,7 +772,8 @@ class GameStatsScreen extends StatelessWidget {
     // Update the game to stop the clock.
     if (singleGameBloc.state.game.runningFrom != null) {
       int newSeconds = singleGameBloc.state.game.gameTime.inSeconds +
-          DateTime.now()
+          clock
+              .now()
               .difference(singleGameBloc.state.game.runningFrom)
               .inSeconds;
       singleGameBloc.add(
@@ -1012,13 +1014,13 @@ class _GameStateSection extends StatelessWidget {
       BuildContext context, Game g, SingleGameBloc singleGameBloc) {
     if (g.runningFrom != null) {
       int newSeconds = g.gameTime.inSeconds +
-          DateTime.now().difference(g.runningFrom).inSeconds;
+          clock.now().difference(g.runningFrom).inSeconds;
       Game newGame = g.rebuild((b) => b
         ..gameTime = Duration(seconds: newSeconds)
         ..runningFrom = null);
       singleGameBloc.add(SingleGameUpdate(game: newGame));
     } else {
-      Game newGame = g.rebuild((b) => b..runningFrom = DateTime.now().toUtc());
+      Game newGame = g.rebuild((b) => b..runningFrom = clock.now().toUtc());
       singleGameBloc.add(SingleGameUpdate(game: newGame));
     }
   }

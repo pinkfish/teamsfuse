@@ -1,6 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:clock/clock.dart';
 import 'package:fusemodel/fusemodel.dart';
 
 import '../serializer.dart';
@@ -51,8 +52,8 @@ abstract class GameState with GameMixin {
 
   static void initializeStateBuilder(GameStateBuilder b) => b
     ..loadedFirestore = false
-    ..start = new DateTime.now().subtract(new Duration(days: 60)).toUtc()
-    ..end = new DateTime.now().add(new Duration(days: 240)).toUtc();
+    ..start = clock.now().subtract(new Duration(days: 60)).toUtc()
+    ..end = clock.now().add(new Duration(days: 240)).toUtc();
 
   Map<String, dynamic> toMap();
 }

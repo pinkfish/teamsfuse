@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:clock/clock.dart';
 
 ///
 /// Shows a stopwatch on the screen in a nice widget that updates itself
@@ -190,6 +191,6 @@ class MyStopwatch {
   bool get isRunning => _stop == null;
 
   int _now() {
-    return DateTime.now().microsecondsSinceEpoch;
+    return clock.now().microsecondsSinceEpoch;
   }
 }

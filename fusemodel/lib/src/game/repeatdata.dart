@@ -1,6 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
+import 'package:clock/clock.dart';
 import 'package:timezone/timezone.dart';
 
 import '../serializer.dart';
@@ -37,7 +38,7 @@ abstract class RepeatData implements Built<RepeatData, RepeatDataBuilder> {
 
   factory RepeatData([updates(RepeatDataBuilder b)]) => _$RepeatData((b) => b
     ..period = RepeatPeriod.None
-    ..endRepeat = DateTime.now()
+    ..endRepeat = clock.now()
     ..dayRepeats =
         ListBuilder([false, false, false, false, false, false, false])
     ..repeatUntil = false

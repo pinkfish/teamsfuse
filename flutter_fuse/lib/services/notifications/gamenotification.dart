@@ -40,7 +40,7 @@ class GameNotification {
       season = Season();
     }
 
-    TZDateTime timeNow = TZDateTime.now(local);
+    TZDateTime timeNow = TZDateTime.from(clock.now(), local);
     TimeOfDay day = TimeOfDay.fromDateTime(game.tzTime);
     String format = materialLocalizations.formatTimeOfDay(day);
     String endTimeFormat;

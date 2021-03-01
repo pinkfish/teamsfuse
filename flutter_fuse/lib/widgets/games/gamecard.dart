@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -257,7 +258,7 @@ class GameCard extends StatelessWidget {
     if (game.result.inProgress == GameInProgress.NotStarted) {
       if ((game.trackAttendance &&
           game.sharedData.time
-              .isAfter(DateTime.now().subtract(Duration(hours: 2))))) {
+              .isAfter(clock.now().subtract(Duration(hours: 2))))) {
         return _buildAvailability(context, gameBloc, season, players);
       }
     } else if (game.result.inProgress != GameInProgress.NotStarted) {
@@ -315,7 +316,7 @@ class GameCard extends StatelessWidget {
     }
     */
 
-    var timeNow = TZDateTime.now(local);
+    var timeNow = TZDateTime.from(clock.now(), local);
     var dur = timeNow.difference(game.sharedData.tzTime).abs();
 
     String arriveFormat;
@@ -344,7 +345,7 @@ class GameCard extends StatelessWidget {
       );
     }
 
-    if (game.sharedData.time.isBefore(DateTime.now()) &&
+    if (game.sharedData.time.isBefore(clock.now()) &&
         game.sharedData.type == EventType.Game &&
         game.result.result == GameResult.Unknown) {
       if (game.sharedData.officialResult != null &&

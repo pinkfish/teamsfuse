@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:built_collection/built_collection.dart';
+import 'package:clock/clock.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -117,7 +118,7 @@ class InviteBloc extends HydratedBloc<InviteEvent, InviteState> {
         this._onInviteUpdated(invites);
       });
       print(
-          'End firebase invites ${coordinationBloc.start.difference(new DateTime.now())}');
+          'End firebase invites ${coordinationBloc.start.difference(clock.now())}');
     }
 
     // New data from above.  Mark ourselves as done.

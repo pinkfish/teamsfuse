@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -322,7 +323,7 @@ class GameDetailsBase extends StatelessWidget {
         body.add(_buildGameResult(context, false, game.sharedData, game.result,
             game.result.inProgress == GameInProgress.InProgress, false));
         if (game.sharedData.time
-                .isAfter(DateTime.now().subtract(const Duration(hours: 1))) &&
+                .isAfter(clock.now().subtract(const Duration(hours: 1))) &&
             !game.result.isGameFinished) {
           if (editResult != null) {
             body.add(ButtonBar(
@@ -386,7 +387,7 @@ class GameDetailsBase extends StatelessWidget {
       if (!adding &&
           game.trackAttendance &&
           game.sharedData.time
-              .isAfter(DateTime.now().subtract(const Duration(hours: 1)))) {
+              .isAfter(clock.now().subtract(const Duration(hours: 1)))) {
         body.add(
           BlocBuilder(
             cubit: BlocProvider.of<PlayerBloc>(context),

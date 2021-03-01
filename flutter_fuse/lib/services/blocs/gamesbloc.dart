@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:built_collection/built_collection.dart';
+import 'package:clock/clock.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -62,17 +63,16 @@ class GameBloc extends HydratedBloc<GameBlocEvent, GameState> {
       {@required this.coordinationBloc,
       @required this.teamBloc,
       @required this.crashes})
-      : _start = new DateTime.now().subtract(new Duration(days: 60)).toUtc(),
-        _end = new DateTime.now().add(new Duration(days: 240)).toUtc(),
+      : _start = clock.now().subtract(new Duration(days: 60)).toUtc(),
+        _end = clock.now().add(new Duration(days: 240)).toUtc(),
         super(GameUninitialized()) {
     if (teamBloc.state is TeamLoaded) {
       _onTeamsUpdates(teamBloc.state.allTeamUids, true);
     }
     _teamSub = teamBloc.listen((TeamState state) {
       if (state is TeamLoaded) {
-        _start = _start ??
-            new DateTime.now().subtract(new Duration(days: 60)).toUtc();
-        _end = _end ?? new DateTime.now().add(new Duration(days: 240)).toUtc();
+        _start = _start ?? clock.now().subtract(new Duration(days: 60)).toUtc();
+        _end = _end ?? clock.now().add(new Duration(days: 240)).toUtc();
         _onTeamsUpdates(state.allTeamUids, false);
       } else {
         add(_GameEventLogout());

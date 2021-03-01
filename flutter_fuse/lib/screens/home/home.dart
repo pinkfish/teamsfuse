@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:badges/badges.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
@@ -57,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     var messages = Messages.of(context);
-    var nowTime = TZDateTime.now(local);
+    var nowTime = TZDateTime.from(clock.now(), local);
 
     var actions = <Widget>[
       IconButton(
@@ -69,8 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           IconButton(
             icon: const Icon(Icons.calendar_today, color: Colors.white),
-            onPressed: () =>
-                _calendarState.currentState.scrollToDay(TZDateTime.now(local)),
+            onPressed: () => _calendarState.currentState
+                .scrollToDay(TZDateTime.from(clock.now(), local)),
           ),
           Positioned(
             top: 22.0,
@@ -150,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Expanded(
                   child: CalendarWidget(
-                    initialDate: TZDateTime.now(local),
+                    initialDate: TZDateTime.from(clock.now(), local),
                     key: _calendarState,
                     getEvents: _calendarEvents.getEvents,
                     buildItem: _calendarEvents.buildWidget,

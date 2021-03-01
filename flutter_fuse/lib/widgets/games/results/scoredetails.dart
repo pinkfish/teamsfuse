@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart';
+import 'package:clock/clock.dart';
 
 import '../../../services/blocs.dart';
 import '../../../services/messages.dart';
@@ -330,7 +331,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
               ..message = message
               ..score = _currentPeriodResults.score
               ..period = _currentPeriodResults.period
-              ..eventTimeInternal = DateTime.now().microsecondsSinceEpoch
+              ..eventTimeInternal = clock.now().microsecondsSinceEpoch
               ..uid =
                   BlocProvider.of<AuthenticationBloc>(context).currentUser.uid
               ..displayName = BlocProvider.of<AuthenticationBloc>(context)
@@ -352,7 +353,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       stopwatch.start();
       setState(() {
         _details.time.currentPeriodStartInternal =
-            TZDateTime.now(local).millisecondsSinceEpoch;
+            TZDateTime.from(clock.now(), local).millisecondsSinceEpoch;
       });
     }
     widget.game.add(SingleGameUpdateResult(result: _details.build()));
@@ -387,7 +388,7 @@ class _ScoreDetailsState extends State<ScoreDetails> {
       if (stopwatch.isRunning) {
         setState(() {
           _details.time.currentPeriodStartInternal =
-              DateTime.now().millisecondsSinceEpoch;
+              clock.now().millisecondsSinceEpoch;
           _details.time.currentOffsetInternal = 0;
         });
       } else {

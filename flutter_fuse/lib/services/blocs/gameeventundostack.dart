@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:bloc/bloc.dart';
+import 'package:clock/clock.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
@@ -21,7 +22,7 @@ class GameEventUndoStack extends Cubit<GameEventWithChange> {
               ..opponent = false
               ..playerUid = ""
               ..timestamp = Timestamp.fromMicrosecondsSinceEpoch(
-                  DateTime.now().millisecondsSinceEpoch)
+                  clock.now().millisecondsSinceEpoch)
               ..uid = ""
               ..type = GameEventType.EmptyEvent
               ..period = GamePeriod.regulation1.toBuilder()

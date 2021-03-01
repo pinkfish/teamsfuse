@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fusemodel/fusemodel.dart';
 
@@ -45,7 +46,7 @@ class _GameDurationState extends State<GameDuration> {
 
     int diff = 0;
     if (widget.game.runningFrom != null) {
-      diff += DateTime.now().difference(widget.game.runningFrom).inSeconds;
+      diff += clock.now().difference(widget.game.runningFrom).inSeconds;
     }
     diff += widget.game.gameTime.inSeconds;
 

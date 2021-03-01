@@ -6,6 +6,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timezone/timezone.dart';
 import 'package:uuid/uuid.dart';
+import 'package:clock/clock.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -40,7 +41,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
   RepeatData _repeatData = RepeatData((b) => b
     ..repeatInterval = 1
     ..repeatUntil = true
-    ..endRepeat = DateTime.now()
+    ..endRepeat = clock.now()
     ..period = RepeatPeriod.None);
   int currentStep = 0;
   List<TZDateTime> _repeatDates;
@@ -258,7 +259,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
 
   void newGame() {
     if (_team != null) {
-      var start = DateTime.now().add(const Duration(days: 1));
+      var start = clock.now().add(const Duration(days: 1));
 
       var sharedGameData = GameSharedData((b) => b
         ..uid = ""
@@ -290,7 +291,7 @@ class _AddTrainingScreenState extends State<AddTrainingScreen> {
 
   void _teamChanged(Team team) {
     _team = team;
-    var start = DateTime.now().add(const Duration(days: 0));
+    var start = clock.now().add(const Duration(days: 0));
     if (_initGame == null) {
       newGame();
     }

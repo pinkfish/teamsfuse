@@ -11,6 +11,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:timezone/timezone.dart';
 import 'package:universal_io/io.dart';
+import 'package:clock/clock.dart';
 
 import 'flutterfuseapp.dart';
 import 'services/analytics.dart';
@@ -49,7 +50,7 @@ void main() async {
         : Future.value(true)
   ]);
   if (!Platform.isAndroid && !Platform.isIOS) {
-    var dt = DateTime.now();
+    var dt = clock.now();
     currentTimeZone = dt.timeZoneName;
   }
 

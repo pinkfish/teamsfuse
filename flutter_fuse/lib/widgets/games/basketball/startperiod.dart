@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
+import 'package:clock/clock.dart';
 
 import '../../../services/blocs.dart';
 import '../../../services/localutilities.dart';
@@ -98,7 +99,7 @@ class _StartPeriodState extends State<StartPeriod> {
                       ..gameUid = widget.game.uid
                       ..playerUid = ""
                       ..period = period.toBuilder()
-                      ..timestamp = DateTime.now().toUtc()
+                      ..timestamp = clock.now().toUtc()
                       ..opponent = false
                       ..eventTimeline = widget.game.currentGameTime
                       ..points = 0
@@ -131,7 +132,7 @@ class _StartPeriodState extends State<StartPeriod> {
                     widget.singleGameBloc.add(
                       SingleGameUpdate(
                         game: widget.game.rebuild((b) => b
-                          ..runningFrom = DateTime.now().toUtc()
+                          ..runningFrom = clock.now().toUtc()
                           ..result.currentPeriod = period.toBuilder()
                           ..result.inProgress = GameInProgress.InProgress
                           ..players = players.toBuilder()

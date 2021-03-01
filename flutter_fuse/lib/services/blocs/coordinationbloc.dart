@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:clock/clock.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:meta/meta.dart';
-
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:meta/meta.dart';
 import 'internal/blocstoload.dart';
 
 ///
@@ -149,7 +149,7 @@ class CoordinationBloc extends Bloc<CoordinationEvent, CoordinationState> {
     authenticationBloc.listen((AuthenticationState authState) {
       if (authState is AuthenticationLoggedIn) {
         loadingTrace = analytics.newTrace("fullLoadTrace");
-        start = DateTime.now();
+        start = clock.now();
         assert(authState.user.uid != null);
         add(_CoordintationStateStart(uid: authState.user.uid));
       } else {

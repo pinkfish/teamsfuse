@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:async/async.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:clock/clock.dart';
 import 'package:meta/meta.dart';
 import 'package:timezone/timezone.dart';
 
@@ -228,7 +229,8 @@ class DatabaseUpdateModelImpl implements DatabaseUpdateModel {
     var ref = coll.document();
 
     log = log.rebuild((b) => b
-      ..eventTimeInternal = TZDateTime.now(local).microsecondsSinceEpoch
+      ..eventTimeInternal =
+          TZDateTime.from(clock.now(), local).microsecondsSinceEpoch
       ..uid = ref.documentID);
     return ref.setData(log.toMap()).then((v) {
       return ref.documentID;

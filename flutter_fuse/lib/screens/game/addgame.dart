@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:clock/clock.dart';
 
 import '../../services/blocs.dart';
 import '../../services/messages.dart';
@@ -173,7 +174,7 @@ class _AddGameScreenState extends State<AddGameScreen> {
       ..timezone = tz.local.name
       ..officialResult.homeTeamLeagueUid = team.uid
       ..type = EventType.Game;
-    var start = DateTime.now().add(const Duration(days: 1));
+    var start = clock.now().add(const Duration(days: 1));
     var result = GameResultDetailsBuilder()
       ..result = GameResult.Unknown
       ..inProgress = GameInProgress.NotStarted;
