@@ -33,7 +33,8 @@ class SplashScreen extends StatelessWidget {
                 children: <Widget>[
                   Center(
                       child: Image(
-                    image: ExactAssetImage("assets/images/abstractsport.png"),
+                    image:
+                        ExactAssetImage("assets/images/hands_and_trophy.png"),
                     width: (screenSize.width < 500)
                         ? 120.0
                         : (screenSize.width / 4) + 12.0,

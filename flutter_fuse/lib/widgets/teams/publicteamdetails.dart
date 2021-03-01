@@ -70,7 +70,8 @@ class PublicTeamDetails extends StatelessWidget {
                 children: <Widget>[
                   Center(
                     child: Image(
-                      image: ExactAssetImage("assets/images/abstractsport.png"),
+                      image:
+                          ExactAssetImage("assets/images/hands_and_trophy.png"),
                       width: DefaultTabController.of(context).index == 0
                           ? (screenSize.width < 500)
                               ? 120.0
