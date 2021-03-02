@@ -8,11 +8,11 @@ import 'package:flutter_fuse/services/blocs.dart';
 import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/blocs/singleclubprovider.dart';
 import 'package:flutter_fuse/widgets/clubs/clubimage.dart';
-import 'package:flutter_fuse/widgets/public/publicclub.dart';
-import 'package:flutter_fuse/widgets/public/publicclubnews.dart';
-import 'package:flutter_fuse/widgets/public/publicclubteams.dart';
-import 'package:flutter_fuse/widgets/public/publiccoaches.dart';
-import 'package:flutter_fuse/widgets/teams/publicteamdetails.dart';
+import '../widgets/publicclub.dart';
+import '../widgets/publicclubnews.dart';
+import '../widgets/publicclubteams.dart';
+import '../widgets/publiccoaches.dart';
+import '../widgets/publicteamdetails.dart';
 import 'package:flutter_fuse/widgets/util/coloredtabbar.dart';
 import 'package:flutter_fuse/widgets/util/responsivewidget.dart';
 

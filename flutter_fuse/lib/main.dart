@@ -95,10 +95,7 @@ void main() async {
   });
   trace.stop();
 
-  const club = String.fromEnvironment("DART_STARTUP_CLUB", defaultValue: "");
-  print("From env $club");
-
-  runApp(FlutterFuseApp(firestoreWrapper, config, loggingData, club));
+  runApp(FlutterFuseApp(firestoreWrapper, config, loggingData));
 }
 
 ///

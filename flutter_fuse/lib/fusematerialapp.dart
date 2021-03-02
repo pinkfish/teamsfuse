@@ -15,20 +15,16 @@ import 'services/messages.dart';
 ///
 class FuseMaterialApp extends StatelessWidget {
   final ThemeData _theme;
-  final String _publicClub;
 
   ///
   /// Create the material app pieces.
   ///
-  FuseMaterialApp(this._theme, this._publicClub);
+  FuseMaterialApp(this._theme);
 
   @override
   Widget build(BuildContext context) {
     var route = "Home";
 
-    if (_publicClub != null && _publicClub.isNotEmpty) {
-      route = "/Public/Club/$_publicClub";
-    }
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[

@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>TeamsFuse contact form</title>
+
+    <meta name="robots" content="noindex" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.css"
+    />
+    <link rel="stylesheet" href="support.css" />
+    <script
+      src="https://www.google.com/recaptcha/enterprise.js"
+      async
+      defer
+    ></script>
+    <script src="support.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">TeamsFuse Contact Form</h1>
+      <div class="wrapper animated bounceInLeft">
+        <div class="contact">
+          <h3 class="contact-us">Contact Us!</h3>
+          <div class="sending">Your message is being sent.</div>
+          <div class="alert">Your message has been sent!</div>
+          <div class="error">Error sending your message</div>
+          <form
+            id="contactForm"
+            action="?"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <p class="name-field">
+              <label>Name <span>*</span></label>
+              <input type="text" name="name" id="name" required />
+            </p>
+            <p class="email-field">
+              <label>Email <span>*</span></label>
+              <input type="email" name="email" id="email" required />
+            </p>
+            <p class="message-field full">
+              <label>Message</label>
+              <textarea name="message" rows="5" id="message"></textarea>
+            </p>
+            <p class="required-field">Required field <span>*</span></p>
+            <p class="recaptcha-field"></p>
+            <div
+              class="g-recaptcha"
+              data-sitekey="6LehBmUaAAAAAPYH2v-BdZrlmg50VZER8mmsCMTq"
+              data-action="support"
+              id="recaptcha"
+            ></div>
+            <p class="submit-button">
+              <button type="submit">Submit</button>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Listen for form submit
+      document
+        .getElementById("contactForm")
+        .addEventListener("submit", submitForm);
+    </script>
+  </body>
+</html>

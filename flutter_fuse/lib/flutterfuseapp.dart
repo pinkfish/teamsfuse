@@ -21,13 +21,11 @@ class FlutterFuseApp extends StatefulWidget {
   final FirestoreWrapper _firestore;
   final AppConfiguration _config;
   final LoggingData _loggingData;
-  final String _publicClub;
 
   ///
   /// Create the app.
   ///
-  FlutterFuseApp(
-      this._firestore, this._config, this._loggingData, this._publicClub);
+  FlutterFuseApp(this._firestore, this._config, this._loggingData);
 
   @override
   State<StatefulWidget> createState() {
@@ -56,7 +54,7 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
 
   Widget _materialApp(BuildContext context) {
     // Setup the app and do exciting things.
-    return FuseMaterialApp(_theme, widget._publicClub);
+    return FuseMaterialApp(_theme);
   }
 
   @override
@@ -67,73 +65,55 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
         AuthenticationBloc(userAuthImpl, AnalyticsSubsystemImpl.instance);
     _databaseUpdateModel = DatabaseUpdateModelImpl(
         Firestore(), _authenticationBloc, AnalyticsSubsystemImpl.instance);
-    if (widget._publicClub.isEmpty) {
-      _coordinationBloc = CoordinationBloc(
-        authenticationBloc: _authenticationBloc,
-        analytics: AnalyticsSubsystemImpl.instance,
-        databaseUpdateModel: _databaseUpdateModel,
-      );
-      _playerBloc = PlayerBloc(
+    _coordinationBloc = CoordinationBloc(
+      authenticationBloc: _authenticationBloc,
+      analytics: AnalyticsSubsystemImpl.instance,
+      databaseUpdateModel: _databaseUpdateModel,
+    );
+    _playerBloc = PlayerBloc(
+      coordinationBloc: _coordinationBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _inviteBloc = InviteBloc(
         coordinationBloc: _coordinationBloc,
         crashes: AnalyticsSubsystemImpl.instance,
-      );
-      _inviteBloc = InviteBloc(
-          coordinationBloc: _coordinationBloc,
-          crashes: AnalyticsSubsystemImpl.instance,
-          databaseUpdateModel: _databaseUpdateModel);
-      _messagesBloc = MessagesBloc(
-        coordinationBloc: _coordinationBloc,
-        crashes: AnalyticsSubsystemImpl.instance,
-      );
-      _clubBloc = ClubBloc(
-        coordinationBloc: _coordinationBloc,
-        crashes: AnalyticsSubsystemImpl.instance,
-      );
-      _teamBloc = TeamBloc(
-        coordinationBloc: _coordinationBloc,
-        clubBloc: _clubBloc,
-        crashes: AnalyticsSubsystemImpl.instance,
-      );
-      _seasonBloc = SeasonBloc(
-        coordinationBloc: _coordinationBloc,
-        crashes: AnalyticsSubsystemImpl.instance,
-      );
-      _leagueOrTournamentBloc = LeagueOrTournamentBloc(
-        coordinationBloc: _coordinationBloc,
-        crashes: AnalyticsSubsystemImpl.instance,
-      );
-      _gameBloc = GameBloc(
-        coordinationBloc: _coordinationBloc,
-        teamBloc: _teamBloc,
-        crashes: AnalyticsSubsystemImpl.instance,
-      );
-      _filteredGameBloc = FilteredGameBloc(
-          gameBloc: _gameBloc, teamBloc: _teamBloc, seasonBloc: _seasonBloc);
-      _loadedStateBloc = LoadedStateBloc(coordinationBloc: _coordinationBloc);
+        databaseUpdateModel: _databaseUpdateModel);
+    _messagesBloc = MessagesBloc(
+      coordinationBloc: _coordinationBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _clubBloc = ClubBloc(
+      coordinationBloc: _coordinationBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _teamBloc = TeamBloc(
+      coordinationBloc: _coordinationBloc,
+      clubBloc: _clubBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _seasonBloc = SeasonBloc(
+      coordinationBloc: _coordinationBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _leagueOrTournamentBloc = LeagueOrTournamentBloc(
+      coordinationBloc: _coordinationBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _gameBloc = GameBloc(
+      coordinationBloc: _coordinationBloc,
+      teamBloc: _teamBloc,
+      crashes: AnalyticsSubsystemImpl.instance,
+    );
+    _filteredGameBloc = FilteredGameBloc(
+        gameBloc: _gameBloc, teamBloc: _teamBloc, seasonBloc: _seasonBloc);
+    _loadedStateBloc = LoadedStateBloc(coordinationBloc: _coordinationBloc);
 
-      _authenticationBloc.add(AuthenticationAppStarted());
-    }
+    _authenticationBloc.add(AuthenticationAppStarted());
   }
 
   @override
   Widget build(BuildContext context) {
     final extra = [];
-    if (widget._publicClub.isEmpty) {
-      extra.addAll([
-        BlocProvider<CoordinationBloc>(create: (context) => _coordinationBloc),
-        BlocProvider<InviteBloc>(create: (context) => _inviteBloc),
-        BlocProvider<TeamBloc>(create: (context) => _teamBloc),
-        BlocProvider<SeasonBloc>(create: (context) => _seasonBloc),
-        BlocProvider<MessagesBloc>(create: (context) => _messagesBloc),
-        BlocProvider<LeagueOrTournamentBloc>(
-            create: (context) => _leagueOrTournamentBloc),
-        BlocProvider<ClubBloc>(create: (context) => _clubBloc),
-        BlocProvider<GameBloc>(create: (context) => _gameBloc),
-        BlocProvider<FilteredGameBloc>(create: (context) => _filteredGameBloc),
-        BlocProvider<PlayerBloc>(create: (context) => _playerBloc),
-        BlocProvider<LoadedStateBloc>(create: (context) => _loadedStateBloc),
-      ]);
-    }
 
     return MultiRepositoryProvider(
       providers: [

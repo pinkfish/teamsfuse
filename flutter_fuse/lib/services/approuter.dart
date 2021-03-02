@@ -38,7 +38,6 @@ import '../screens/login/verifyemail.dart';
 import '../screens/message/addmessage.dart';
 import '../screens/message/messages.dart';
 import '../screens/message/messageview.dart';
-import '../screens/public/publichome.dart';
 import '../screens/settings/about.dart';
 import '../screens/settings/editprofile.dart';
 import '../screens/settings/profile.dart';
@@ -324,19 +323,6 @@ class AppRouter {
     router.define("/Login/ForgotPassword",
         handler: fluro.Handler(
             handlerFunc: (context, vals) => ForgotPasswordScreen()));
-
-    // Public section
-    router.define("/Public/:tab/:id",
-        handler: fluro.Handler(
-            handlerFunc: (context, vals) => PublicHomeScreen(
-                vals["tab"][0].toString(), vals["id"][0].toString(), null)));
-
-    router.define("/Public/:tab/:id/:id2",
-        handler: fluro.Handler(
-            handlerFunc: (context, vals) => PublicHomeScreen(
-                vals["tab"][0].toString(),
-                vals["id"][0].toString(),
-                vals["id2"][0].toString())));
 
     return router;
   }
