@@ -6,7 +6,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:http/http.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../src/models/pick_result.dart';
@@ -46,13 +45,12 @@ class PlaceProvider extends ChangeNotifier {
   Future<void> updateCurrentLocation(bool forceAndroidLocationManager) async {
     try {
       print("Waiting for the permisson");
-      await Permission.location.request();
-      if (await Permission.location.request().isGranted) {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.always ||
+          permission == LocationPermission.whileInUse) {
         currentPosition = await Geolocator.getCurrentPosition(
             desiredAccuracy: desiredAccuracy ?? LocationAccuracy.high,
             timeLimit: Duration(milliseconds: 500));
-      } else {
-        currentPosition = null;
       }
     } catch (e) {
       currentPosition = null;
