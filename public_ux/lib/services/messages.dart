@@ -14,14 +14,6 @@ class Messages {
 
   Messages(this.locale);
 
-  String get loading => Intl.message("Loading...",
-      locale: locale,
-      desc: "THe message to display when tomsehting is loading");
-
-  String get deleted => Intl.message("Deleted.",
-      locale: locale,
-      desc: "THe message to display when tomsehting is deleted");
-
   /// Load the messages for the specific locale.
   static Future<Messages> load(Locale locale) async {
     var name =

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_fuse/services/messages.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -9,7 +12,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        MessagesDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      title: "Teams Fuse",
       theme: ThemeData(
         // This is the theme of your application.
         //
