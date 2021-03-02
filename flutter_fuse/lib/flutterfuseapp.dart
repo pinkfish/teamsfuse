@@ -138,7 +138,20 @@ class _FuseFuseAppState extends State<FlutterFuseApp> {
           BlocProvider<AuthenticationBloc>(
             create: (context) => _authenticationBloc,
           ),
-          ...extra
+          BlocProvider<CoordinationBloc>(
+              create: (context) => _coordinationBloc),
+          BlocProvider<InviteBloc>(create: (context) => _inviteBloc),
+          BlocProvider<TeamBloc>(create: (context) => _teamBloc),
+          BlocProvider<SeasonBloc>(create: (context) => _seasonBloc),
+          BlocProvider<MessagesBloc>(create: (context) => _messagesBloc),
+          BlocProvider<LeagueOrTournamentBloc>(
+              create: (context) => _leagueOrTournamentBloc),
+          BlocProvider<ClubBloc>(create: (context) => _clubBloc),
+          BlocProvider<GameBloc>(create: (context) => _gameBloc),
+          BlocProvider<FilteredGameBloc>(
+              create: (context) => _filteredGameBloc),
+          BlocProvider<PlayerBloc>(create: (context) => _playerBloc),
+          BlocProvider<LoadedStateBloc>(create: (context) => _loadedStateBloc),
         ],
         child: _materialApp(context),
       ),
