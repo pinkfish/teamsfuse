@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - "flutter_fuse/**"
+      - "public_ux/**"
       - "fusemodel/**"
       - "firebase/**"
       - ".github/workflows/firebase-hosting-pull-request.yml"
@@ -11,6 +12,7 @@ on:
   push:
     paths:
       - "flutter_fuse/**"
+      - "public_ux/**"
       - "fusemodel/**"
       - "firebase/**"
       - ".github/workflows/firebase-hosting-pull-request.yml"
@@ -49,6 +51,11 @@ jobs:
           flutter build web
           mkdir -p ../firebase/public/flutter
           cp -fR build/web/* ../firebase/public/flutter
+        working-directory: public_ux
+      - run: |
+          flutter build web
+          mkdir -p ../firebase/public/flutter/main
+          cp -fR build/web/* ../firebase/public/flutter/main
         working-directory: flutter_fuse
 
       - uses: FirebaseExtended/action-hosting-deploy@v0

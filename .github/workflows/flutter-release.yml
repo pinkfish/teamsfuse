@@ -152,8 +152,16 @@ jobs:
         working-directory: flutter_fuse
         if: ${{ matrix.os == 'web' }}
       - run: |
+          flutter build web
+        working-directory: public_ux
+        if: ${{ matrix.os == 'web' }}
+      - run: |
           mkdir -p firebase/public/flutter
-          cp -fR flutter_fuse/build/web/* firebase/public/flutter
+          cp -fR public_ux/build/web/* firebase/public/flutter
+        if: ${{ matrix.os == 'web' }}
+      - run: |
+          mkdir -p firebase/public/flutter/main
+          cp -fR flutter_fuse/build/web/* firebase/public/flutter/main
         if: ${{ matrix.os == 'web' }}
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master

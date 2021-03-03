@@ -11,6 +11,7 @@ import 'package:fusemodel/fusemodel.dart';
 import 'package:public_ux/screens/publichome.dart';
 
 import 'services/approuter.dart';
+import 'services/messagespublic.dart';
 
 void main() {
   runApp(PublicTeamsFuse());
@@ -46,6 +47,7 @@ class PublicTeamsFuse extends StatelessWidget {
         providers: <BlocProvider>[],
         child: MaterialApp(
           localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+            MessagesPublicDelegate(),
             MessagesDelegate(),
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
