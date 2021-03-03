@@ -9,10 +9,26 @@ const algolia = algoliasearch(functions.config().algolia.appid, functions.config
 const teamIndex = algolia.initIndex('teams');
 const db = admin.firestore();
 
-export async function updateTeam(teamDoc: functions.firestore.DocumentSnapshot): Promise<void> {
+export async function updateTeam(
+    teamDoc: functions.firestore.DocumentSnapshot,
+    oldDoc?: functions.firestore.DocumentSnapshot,
+): Promise<void> {
     const data = teamDoc!.data();
     if (data === null || data === undefined) {
         return;
+    }
+    if (oldDoc) {
+        const oldData = oldDoc.data();
+        if (oldData !== null && oldData !== undefined) {
+            if (
+                oldData.name === data.name &&
+                oldData.gender === data.gender &&
+                oldData.league === data.league &&
+                oldData.sport === data.sport
+            ) {
+                return;
+            }
+        }
     }
     const updateData = {
         objectID: 'T' + teamDoc.id,
