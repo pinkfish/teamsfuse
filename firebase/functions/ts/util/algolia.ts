@@ -14,16 +14,16 @@ export async function updateTeam(teamDoc: functions.firestore.DocumentSnapshot):
     if (data === null || data === undefined) {
         return;
     }
-    data.objectID = 'T' + teamDoc.id;
-    delete data.archived;
-    delete data.admins;
-    delete data.currentSeason;
-    delete data.trackAttendence;
-    delete data.arrivalTime;
-    delete data.arriveEarly;
+    const updateData = {
+        objectID: 'T' + teamDoc.id,
+        name: data.name,
+        gender: data.gender,
+        league: data.league,
+        sport: data.sport,
+    };
     data.searchRanking = 1000;
     try {
-        await teamIndex.saveObjects([data]);
+        await teamIndex.saveObjects([updateData]);
     } catch (e) {
         console.log('Error contacting algolia');
     }
@@ -33,6 +33,35 @@ export async function updateTeam(teamDoc: functions.firestore.DocumentSnapshot):
 export async function deleteTeam(teamId: string): Promise<void> {
     try {
         await teamIndex.deleteObjects(['T' + teamId]);
+    } catch (e) {
+        console.log('Error contacting algolia');
+    }
+    return;
+}
+
+export async function updateClub(clubDoc: functions.firestore.DocumentSnapshot): Promise<void> {
+    const data = clubDoc!.data();
+    if (data === null || data === undefined) {
+        return;
+    }
+    const updateData = {
+        objectID: 'C' + clubDoc.id,
+        name: data.name,
+        about: data.about,
+        sport: data.sport,
+    };
+    data.searchRanking = 1000;
+    try {
+        await teamIndex.saveObjects([updateData]);
+    } catch (e) {
+        console.log('Error contacting algolia');
+    }
+    return;
+}
+
+export async function deleteClub(clubId: string): Promise<void> {
+    try {
+        await teamIndex.deleteObjects(['C' + clubId]);
     } catch (e) {
         console.log('Error contacting algolia');
     }
