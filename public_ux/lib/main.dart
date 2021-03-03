@@ -8,8 +8,9 @@ import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fusemodel/firestore.dart';
 import 'package:fusemodel/fusemodel.dart';
-import 'package:public_ux/screens/publichome.dart';
 
+import 'screens/publichome.dart';
+import 'services/algolia.dart';
 import 'services/approuter.dart';
 import 'services/messagespublic.dart';
 
@@ -42,6 +43,9 @@ class PublicTeamsFuse extends StatelessWidget {
                 Firestore(), null, AnalyticsSubsystemImpl.instance)),
         RepositoryProvider<BaseCacheManager>(
             create: (context) => DefaultCacheManager()),
+        RepositoryProvider<AlgoliaSearch>(
+          create: (context) => AlgoliaSearch(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: <BlocProvider>[],
@@ -56,7 +60,7 @@ class PublicTeamsFuse extends StatelessWidget {
           title: "Teams Fuse",
           theme: theme,
           initialRoute: route,
-          home: PublicHomeScreen("club", "-LFYVrTV145zE21C4O24", null),
+          home: PublicHomeScreen(""),
           onGenerateRoute: (settings) => _buildRoute(context, settings),
         ),
       ),

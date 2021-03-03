@@ -1,4 +1,5 @@
 import 'package:fluro/fluro.dart' as fluro;
+import '../screens/publicclubhome.dart';
 import '../screens/publichome.dart';
 
 ///
@@ -16,15 +17,20 @@ class AppRouter {
     // Public section
     router.define("/Public/:tab/:id",
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => PublicHomeScreen(
+            handlerFunc: (context, vals) => PublicClubHomeScreen(
                 vals["tab"][0].toString(), vals["id"][0].toString(), null)));
 
     router.define("/Public/:tab/:id/:id2",
         handler: fluro.Handler(
-            handlerFunc: (context, vals) => PublicHomeScreen(
+            handlerFunc: (context, vals) => PublicClubHomeScreen(
                 vals["tab"][0].toString(),
                 vals["id"][0].toString(),
                 vals["id2"][0].toString())));
+
+    router.define("/Search/:query",
+        handler: fluro.Handler(
+            handlerFunc: (context, vals) =>
+                PublicHomeScreen(vals["query"][0].toString())));
 
     return router;
   }

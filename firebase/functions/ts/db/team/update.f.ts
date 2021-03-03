@@ -50,7 +50,7 @@ export const onTeamUpdate = functions.firestore.document('/Teams/{teamId}').onUp
 
         // See if the name changed.
         if (previousData!.name === null || previousData!.name !== data!.name) {
-            await algolia.updateTeam(inputData.after);
+            await algolia.updateTeam(inputData.after, inputData.before);
         }
 
         return;

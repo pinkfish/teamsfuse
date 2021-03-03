@@ -14,6 +14,13 @@ class MessagesPublic {
 
   MessagesPublic(this.locale);
 
+  String get search => Intl.message("Search...",
+      desc: "Title in the search box", locale: locale);
+
+  String get noResults => Intl.message("No Results",
+      desc: "Description in the search results if there is no result",
+      locale: locale);
+
   /// Load the messages for the specific locale.
   static Future<MessagesPublic> load(Locale locale) async {
     var name =

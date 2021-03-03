@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fuse/services/messages.dart';
 import 'package:flutter_fuse/widgets/blocs/singleteamprovider.dart';
 import 'package:flutter_fuse/widgets/clubs/clubteams.dart';
-import 'package:flutter_fuse/widgets/teams/publicteamdetails.dart';
 import 'package:flutter_fuse/widgets/util/loading.dart';
 import 'package:fusemodel/fusemodel.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-import 'package:flutter_fuse/services/messages.dart';
+import '../widgets/publicteamdetails.dart';
 
 ///
 /// Shows the public details of the team.
