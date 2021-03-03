@@ -55,10 +55,21 @@ export async function deleteTeam(teamId: string): Promise<void> {
     return;
 }
 
-export async function updateClub(clubDoc: functions.firestore.DocumentSnapshot): Promise<void> {
+export async function updateClub(
+    clubDoc: functions.firestore.DocumentSnapshot,
+    oldDoc?: functions.firestore.DocumentSnapshot,
+): Promise<void> {
     const data = clubDoc!.data();
     if (data === null || data === undefined) {
         return;
+    }
+    if (oldDoc) {
+        const oldData = oldDoc.data();
+        if (oldData !== null && oldData !== undefined) {
+            if (oldData.name === data.name && oldData.about === data.about && oldData.sport === data.sport) {
+                return;
+            }
+        }
     }
     const updateData = {
         objectID: 'C' + clubDoc.id,
