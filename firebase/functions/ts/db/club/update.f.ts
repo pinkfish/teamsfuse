@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { fixEmptyUser } from '../../util/updateusers';
+import * as algolia from '../../util/algolia';
 
 const db = admin.firestore();
 const FieldValue = admin.firestore.FieldValue;
