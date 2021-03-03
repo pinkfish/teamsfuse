@@ -33,7 +33,7 @@ export const onClubWrite = functions.firestore.document('/Clubs/{playerid}').onW
     }
 
     // See if the name changed.
-    await algolia.updatwClub(inputData.after);
+    await algolia.updateClub(inputData.after);
 
     return;
 });
